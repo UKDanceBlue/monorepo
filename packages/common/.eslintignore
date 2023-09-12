@@ -1,0 +1,8 @@
+jest.config.ts
+jest.setup.js
+public-ts/
+public/script*
+dist/
+coverage/
+.vscode/
+scripts/*

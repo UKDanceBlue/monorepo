@@ -1,0 +1,9 @@
+jest.config.js
+jest.setup.js
+sqlcli/
+public-ts/
+public/script*
+dist/
+coverage/
+.vscode/
+*.log

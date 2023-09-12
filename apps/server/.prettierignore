@@ -1,0 +1,7 @@
+jest.config.js
+jest.setup.js
+public/script*
+dist/
+coverage/
+.vscode/
+*.ignore

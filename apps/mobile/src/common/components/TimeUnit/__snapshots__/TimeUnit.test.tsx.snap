@@ -1,0 +1,151 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<TimeUnit /> renders correctly with a plural unit 1`] = `
+<RNCSafeAreaProvider
+  onInsetsChange={[Function]}
+  style={
+    [
+      {
+        "flex": 1,
+      },
+      undefined,
+    ]
+  }
+>
+  <View
+    dataSet={{}}
+    style={
+      [
+        {
+          "backgroundColor": "#0e7490BD",
+          "marginLeft": 8,
+          "marginRight": 8,
+          "minWidth": 60,
+        },
+        {
+          "alignItems": "center",
+          "flex": 1,
+          "paddingLeft": 7,
+          "paddingRight": 7,
+        },
+      ]
+    }
+  >
+    <Text
+      dataSet={{}}
+      style={
+        {
+          "backgroundColor": undefined,
+          "color": "#f472b6",
+          "flex": 1,
+          "fontFamily": undefined,
+          "fontSize": 30,
+          "fontStyle": "normal",
+          "fontWeight": "400",
+          "letterSpacing": 0,
+          "lineHeight": 45,
+          "minHeight": 320,
+          "textDecorationLine": undefined,
+        }
+      }
+    >
+      10
+    </Text>
+    <Text
+      dataSet={{}}
+      style={
+        {
+          "backgroundColor": undefined,
+          "color": "#f472b6",
+          "flex": 1,
+          "fontFamily": undefined,
+          "fontSize": 20,
+          "fontStyle": "normal",
+          "fontWeight": "400",
+          "letterSpacing": 0,
+          "lineHeight": 30,
+          "minHeight": 60,
+          "textDecorationLine": undefined,
+        }
+      }
+    >
+      sec
+    </Text>
+  </View>
+</RNCSafeAreaProvider>
+`;
+
+exports[`<TimeUnit /> renders correctly with a singular unit 1`] = `
+<RNCSafeAreaProvider
+  onInsetsChange={[Function]}
+  style={
+    [
+      {
+        "flex": 1,
+      },
+      undefined,
+    ]
+  }
+>
+  <View
+    dataSet={{}}
+    style={
+      [
+        {
+          "backgroundColor": "#0e7490BD",
+          "marginLeft": 8,
+          "marginRight": 8,
+          "minWidth": 60,
+        },
+        {
+          "alignItems": "center",
+          "flex": 1,
+          "paddingLeft": 7,
+          "paddingRight": 7,
+        },
+      ]
+    }
+  >
+    <Text
+      dataSet={{}}
+      style={
+        {
+          "backgroundColor": undefined,
+          "color": "#f472b6",
+          "flex": 1,
+          "fontFamily": undefined,
+          "fontSize": 30,
+          "fontStyle": "normal",
+          "fontWeight": "400",
+          "letterSpacing": 0,
+          "lineHeight": 45,
+          "minHeight": 320,
+          "textDecorationLine": undefined,
+        }
+      }
+    >
+      1
+    </Text>
+    <Text
+      dataSet={{}}
+      style={
+        {
+          "backgroundColor": undefined,
+          "color": "#f472b6",
+          "flex": 1,
+          "fontFamily": undefined,
+          "fontSize": 20,
+          "fontStyle": "normal",
+          "fontWeight": "400",
+          "letterSpacing": 0,
+          "lineHeight": 30,
+          "minHeight": 60,
+          "textDecorationLine": undefined,
+        }
+      }
+    >
+      se
+    </Text>
+  </View>
+</RNCSafeAreaProvider>
+`;

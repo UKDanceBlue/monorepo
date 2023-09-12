@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "lib": ["ES2015", "DOM"],
+    "target": "ES2015",
+    "module": "System",
+    "moduleResolution": "classic",
+    "outFile": "./public/script.js",
+    "noResolve": true,
+    "sourceMap": true,
+    "allowJs": true,
+    "checkJs": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "exactOptionalPropertyTypes": true,
+    "esModuleInterop": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "useUnknownInCatchVariables": true,
+    "skipLibCheck": true
+  },
+  "include": ["public-ts/**/*.ts"]
+}

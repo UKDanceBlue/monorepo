@@ -1,0 +1,81 @@
+{
+  "cli": {
+    "version": ">=2.9.0",
+    "requireCommit": true
+  },
+  "build": {
+    "dev-client": {
+      "distribution": "internal",
+      "releaseChannel": "development",
+      "developmentClient": true,
+      "cache": {
+        "key": "3"
+      },
+      "env": {
+        "APP_VARIANT": "development",
+        "FIREBASE_APP_CHECK_DEBUG_TOKEN": "3B7C4299-3FEA-47CA-80C5-953A6AC54D54"
+      }
+    },
+    "development": {
+      "distribution": "internal",
+      "releaseChannel": "development",
+      "ios": {
+        "simulator": true
+      },
+      "cache": {
+        "key": "2"
+      },
+      "env": {
+        "APP_VARIANT": "development"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "releaseChannel": "preview",
+      "cache": {
+        "key": "2"
+      },
+      "env": {
+        "APP_VARIANT": "production"
+      }
+    },
+    "production": {
+      "distribution": "store",
+      "releaseChannel": "prod-v2",
+      "cache": {
+        "key": "2"
+      },
+      "env": {
+        "APP_VARIANT": "production",
+        "CHECK_VERSION": "true"
+      }
+    }
+  },
+  "submit": {
+    "dev-client": {
+      "ios": {
+        "appleId": "app@danceblue.org",
+        "appleTeamId": "622DXM8F44"
+      }
+    },
+    "development": {
+      "ios": {
+        "appleId": "app@danceblue.org",
+        "appleTeamId": "622DXM8F44"
+      }
+    },
+    "preview": {
+      "ios": {
+        "appleId": "app@danceblue.org",
+        "appleTeamId": "622DXM8F44"
+      }
+    },
+    "production": {
+      "ios": {
+        "appleId": "app@danceblue.org",
+        "appleTeamId": "622DXM8F44",
+        "ascAppId": "1602033154"
+      }
+    }
+  }
+}

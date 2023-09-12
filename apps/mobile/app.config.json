@@ -1,0 +1,106 @@
+{
+  "expo": {
+    "name": "UK DanceBlue",
+    "description": "University of Kentucky DanceBlue Mobile Application",
+    "slug": "danceblue-mobile",
+    "privacy": "unlisted",
+    "owner": "university-of-kentucky-danceblue",
+    "scheme": "danceblue",
+    "jsEngine": "hermes",
+    "notification": {
+      "icon": "./assets/app/icon-2.png"
+    },
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "orientation": "portrait",
+    "icon": "./assets/app/icon-2.png",
+    "splash": {
+      "image": "./assets/app/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#ffffff"
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/crashlytics",
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "You can add events to your calendar from the events tab"
+        }
+      ],
+      "expo-camera",
+      "expo-av",
+      "expo-file-system",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to allow you to submit images for various DanceBlue activities.",
+          "cameraPermission": "The app accesses your camera to allow you to submit images for various DanceBlue activities."
+        }
+      ],
+      "expo-splash-screen",
+      "expo-dev-client",
+      "expo-updates",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/app/icon-2.png",
+          "color": "#ffffff"
+        }
+      ],
+      "./config-plugins/rnf-disable-ai-id-support.plugin"
+    ],
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD"
+    },
+    "assetBundlePatterns": [
+      "assets/**"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "NSRemindersUsageDescription": "Users may add DanceBlue events to their calendar.",
+        "UIBackgroundModes": [
+          "audio"
+        ]
+      },
+      "associatedDomains": [
+        "https://www.danceblue.org"
+      ]
+    },
+    "android": {
+      "permissions": [
+        "WRITE_CALENDAR",
+        "READ_CALENDAR",
+        "CAMERA"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "*.danceblue.org",
+              "pathPrefix": "/redirect"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "86042d7a-cd35-415c-87ed-f53c008b3827"
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "bycedric.vscode-expo",
+    "christian-kohler.npm-intellisense",
+    "cmstead.js-codeformer",
+    "orta.vscode-jest",
+    "msjsdiag.vscode-react-native"
+  ]
+}
