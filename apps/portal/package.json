@@ -1,6 +1,6 @@
 {
-  "name": "admin-portal",
-  "version": "0.1.0",
+  "name": "@ukdanceblue/portal",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -16,7 +16,7 @@
     "@types/node": "20.1.2",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
-    "@ukdanceblue/db-app-common": "1.0.13",
+    "@ukdanceblue/common": "2.0.0",
     "autoprefixer": "10.4.14",
     "client-only": "^0.0.1",
     "eslint": "8.40.0",

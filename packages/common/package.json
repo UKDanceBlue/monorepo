@@ -1,7 +1,7 @@
 {
-  "name": "@ukdanceblue/db-app-common",
-  "private": false,
-  "version": "1.0.13",
+  "name": "@ukdanceblue/common",
+  "private": true,
+  "version": "2.0.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -24,9 +24,7 @@
     "test-coverage": "jest --coverage",
     "test-coverage-all": "jest --coverage --collectCoverageFrom=./lib/**/*",
     "build": "tsc",
-    "prepare": "pnpm run build",
-    "lint": "eslint . --ext .ts",
-    "generate-resources-schema": "node ./scripts/gen-schemas.js"
+    "lint": "eslint . --ext .ts"
   },
   "author": "UKDanceBlue",
   "license": "ISC",
@@ -49,7 +47,16 @@
     "ts-jest": "^29.1.0",
     "ts-json-schema-generator": "^1.2.0",
     "ts-node": "^10.9.1",
-    "typescript": "^5.0.4"
+    "typescript": "^5.2.2",
+    "luxon": "^3.3.0",
+    "reflect-metadata": "^0.1.13",
+    "graphql": "^16.8.0",
+    "graphql-scalars": "^1.22.2",
+    "type-graphql": "^2.0.0-beta.3",
+    "typedi": "^0.10.0",
+    "class-validator": "0.14.0",
+    "utility-types": "^3.10.0",
+    "validator": "^13.9.0"
   },
   "peerDependencies": {
     "luxon": "^3.3.0",
