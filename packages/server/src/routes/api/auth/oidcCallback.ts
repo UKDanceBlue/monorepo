@@ -1,4 +1,4 @@
-import { AuthSource } from "@ukdanceblue/db-app-common";
+import { AuthSource } from "@ukdanceblue/common";
 import type { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import jsonwebtoken from "jsonwebtoken";
@@ -39,7 +39,7 @@ export const oidcCallback = async (
     }
     // Perform OIDC validation
     const tokenSet = await res.locals.oidcClient.callback(
-      new URL("/api/auth/oidc-callback", res.locals.applicationUrl).toString(),
+      new URL("/api/auth/oidc-callback", res.locals.applicationUrl.toString()).toString(),
       parameters,
       { code_verifier: session.codeVerifier, state: flowSessionId }
     );

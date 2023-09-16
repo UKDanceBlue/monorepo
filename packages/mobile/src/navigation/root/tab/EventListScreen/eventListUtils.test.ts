@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import firestore from "@react-native-firebase/firestore";
-import { FirestoreEvent } from "@ukdanceblue/db-app-common";
+import { FirestoreEvent } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 
 import { dateDataToLuxonDateTime, luxonDateTimeToDateData, luxonDateTimeToDateString, luxonDateTimeToMonthString, markEvents, splitEvents } from "./eventListUtils";
@@ -178,7 +178,7 @@ describe("splitEvents", () => {
   it("Outputs the correct month string for each event", () => {
     const events = Object.entries(splitEvents(fakeEvents));
 
-    for (const [ monthString, event ] of events) {
+    for (const [monthString, event] of events) {
       for (const e of event ?? []) {
         expect(e.interval).toBeDefined();
         expect(luxonDateTimeToMonthString(DateTime.fromJSDate(e.interval!.start.toDate()))).toBe(monthString);

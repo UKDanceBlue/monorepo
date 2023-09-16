@@ -1,5 +1,5 @@
-import type { ApiError, ErrorApiResponse } from "@ukdanceblue/db-app-common";
-import { ValidationError, errorResponseFrom } from "@ukdanceblue/db-app-common";
+import type { ApiError, ErrorApiResponse } from "@ukdanceblue/common";
+import { ValidationError, errorResponseFrom } from "@ukdanceblue/common";
 import type { HttpError } from "http-errors";
 import createHttpError from "http-errors";
 import type { DateTime, Duration, Interval } from "luxon";

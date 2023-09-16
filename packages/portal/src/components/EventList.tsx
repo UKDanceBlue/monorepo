@@ -1,4 +1,4 @@
-import { ApiClient, EventResource } from "@ukdanceblue/db-app-common";
+import { ApiClient, EventResource } from "@ukdanceblue/common";
 import { Interval, DateTime } from "luxon";
 import EventView from "./EventView";
 import dbApiClient from "@/lib/apiClient";

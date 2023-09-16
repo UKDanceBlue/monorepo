@@ -4,7 +4,7 @@
 //   // GetEventParams,
 //   // ListEventsQuery,
 //   // PlainImage,
-// } from "@ukdanceblue/db-app-common";
+// } from "@ukdanceblue/common";
 // import joi from "joi";
 // import { DateTime, Duration } from "luxon";
 

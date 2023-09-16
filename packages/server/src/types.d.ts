@@ -1,6 +1,6 @@
 import type { URL } from "node:url";
 
-import type { UserData } from "@ukdanceblue/db-app-common";
+import type { UserData } from "@ukdanceblue/common";
 import type { Client } from "openid-client";
 import type { Logger } from "winston";
 
@@ -50,4 +50,4 @@ declare global {
 //   }
 // }
 
-export {};
+export { };

@@ -1,11 +1,11 @@
-/** @deprecated Use types from @ukdanceblue/db-app-common instead */
+/** @deprecated Use types from @ukdanceblue/common instead */
 export interface FirestoreDevice {
   audiences?: string[] | null;
   expoPushToken?: string | null;
   latestUserId?: string | null;
 }
 
-/** @deprecated Use types from @ukdanceblue/db-app-common instead */
+/** @deprecated Use types from @ukdanceblue/common instead */
 export function isFirestoreDevice(documentData?: object): documentData is FirestoreDevice {
   // If documentData is nullish, return false
   if (documentData == null) {

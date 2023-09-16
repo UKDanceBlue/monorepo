@@ -13,7 +13,7 @@ import {
   PlainEvent,
   formDataToJson,
   stripNullish,
-} from "@ukdanceblue/db-app-common";
+} from "@ukdanceblue/common";
 import Joi from "joi";
 import { useEffect, useState } from "react";
 import { Duration, DateTime } from "luxon";

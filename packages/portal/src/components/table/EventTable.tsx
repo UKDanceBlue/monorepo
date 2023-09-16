@@ -13,7 +13,7 @@ import {
 import { DateTime, Duration } from "luxon";
 import { useMemo, useEffect, useState, useReducer } from "react";
 
-import { EventResource } from "@ukdanceblue/db-app-common";
+import { EventResource } from "@ukdanceblue/common";
 import dbApiClient from "@/lib/apiClient";
 
 const columnHelper = createColumnHelper<EventResource>();

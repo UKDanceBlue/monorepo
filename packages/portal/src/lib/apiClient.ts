@@ -1,4 +1,4 @@
-import { ApiClient } from "@ukdanceblue/db-app-common";
+import { ApiClient } from "@ukdanceblue/common";
 
 const dbApiClient = ApiClient.initializeInstance({
   fetch,

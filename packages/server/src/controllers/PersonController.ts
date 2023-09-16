@@ -2,7 +2,7 @@ import type {
   AuthSource,
   GraphQLResource,
   OptionalNullOrUndefined,
-} from "@ukdanceblue/db-app-common";
+} from "@ukdanceblue/common";
 
 import { PersonModel } from ".././models/Person.js";
 import { TeamModel } from "../models/Team.js";

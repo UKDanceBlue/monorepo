@@ -1,5 +1,5 @@
 import type { Model } from "@sequelize/core";
-import type { GraphQLResource } from "@ukdanceblue/db-app-common";
+import type { GraphQLResource } from "@ukdanceblue/common";
 
 import type { IntermediateClass } from "../modelTypes.js";
 

@@ -8,12 +8,12 @@ import { DataTypes, Model } from "@sequelize/core";
 import type {
   AuthSource,
   UserData
-} from "@ukdanceblue/db-app-common";
+} from "@ukdanceblue/common";
 import {
   CommitteeRole,
   DbRole,
   GraphQLResource,
-} from "@ukdanceblue/db-app-common";
+} from "@ukdanceblue/common";
 
 
 import { sequelizeDb } from "../data-source.js";

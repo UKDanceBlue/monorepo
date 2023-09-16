@@ -4361,9 +4361,9 @@
     "@typescript-eslint/types" "5.62.0"
     eslint-visitor-keys "^3.3.0"
 
-"@ukdanceblue/db-app-common@1.0.10":
+"@ukdanceblue/common@1.0.10":
   version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@ukdanceblue/db-app-common/-/db-app-common-1.0.10.tgz#d2a6618e65a0ed07abe6e8b062c8ac76c874ae66"
+  resolved "https://registry.yarnpkg.com/@ukdanceblue/common/-/db-app-common-1.0.10.tgz#d2a6618e65a0ed07abe6e8b062c8ac76c874ae66"
   integrity sha512-qUvsLCObJPR3wHgwyxY026+8EvdiiqXgO8+D2cJI2UG+Ke0ePUWNXB2o7iA8LXfQH3Pp+Sf9cqgGnq04woeRPw==
 
 "@urql/core@2.3.6":

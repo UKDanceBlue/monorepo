@@ -1,4 +1,4 @@
-import { FirestoreEvent } from "@ukdanceblue/db-app-common";
+import { FirestoreEvent } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 
 const partition = (array: { date: DateTime; event: FirestoreEvent }[], left = 0, right: number = array.length - 1) => {
@@ -16,7 +16,7 @@ const partition = (array: { date: DateTime; event: FirestoreEvent }[], left = 0,
     }
 
     if (i <= j) {
-      [ array[i], array[j] ] = [ array[j], array[i] ];
+      [array[i], array[j]] = [array[j], array[i]];
       i++;
       j--;
     }
@@ -26,7 +26,7 @@ const partition = (array: { date: DateTime; event: FirestoreEvent }[], left = 0,
 };
 
 export const quickSort = (array: { date: DateTime; event: FirestoreEvent }[], left = 0, right: number = array.length - 1) => {
-  let index : number;
+  let index: number;
 
   if (array.length > 1) {
     index = partition(array, left, right);

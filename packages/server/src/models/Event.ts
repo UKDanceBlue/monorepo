@@ -25,9 +25,9 @@ import type {
   NonAttribute,
 } from "@sequelize/core";
 import { DataTypes, Model } from "@sequelize/core";
-// import type { ImageResource } from "@ukdanceblue/db-app-common";
-// import { EventResource } from "@ukdanceblue/db-app-common";
-import { GraphQLResource } from "@ukdanceblue/db-app-common";
+// import type { ImageResource } from "@ukdanceblue/common";
+// import { EventResource } from "@ukdanceblue/common";
+import { GraphQLResource } from "@ukdanceblue/common";
 import type { Duration } from "luxon";
 
 import { sequelizeDb } from "../data-source.js";

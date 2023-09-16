@@ -1,6 +1,6 @@
 import FirestoreModule, { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import { FirestoreEvent, FirestoreEventJson } from "@ukdanceblue/db-app-common";
-import { MaybeWithFirestoreMetadata } from "@ukdanceblue/db-app-common/dist/firestore/internal";
+import { FirestoreEvent, FirestoreEventJson } from "@ukdanceblue/common";
+import { MaybeWithFirestoreMetadata } from "@ukdanceblue/common/dist/firestore/internal";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { DateData } from "react-native-calendars";
@@ -185,20 +185,20 @@ export const useEventsStateInternal = () => useReducer(
   ): Partial<Record<string, FirestoreEvent>> => {
     try {
       switch (action) {
-      case "reset":
-        return {};
-      case "setEvents":{
-        return Object.fromEntries(payload.map((event) => {
-          const documentId = event.documentMetadata?.documentId;
-          if (documentId) {
-            return ([ documentId, event ]);
-          } else {
-            throw new Error("Event has no document metadata");
-          }
-        })) as Partial<Record<string, FirestoreEvent>>;
-      }
-      default:
-        throw new Error("Invalid action");
+        case "reset":
+          return {};
+        case "setEvents": {
+          return Object.fromEntries(payload.map((event) => {
+            const documentId = event.documentMetadata?.documentId;
+            if (documentId) {
+              return ([documentId, event]);
+            } else {
+              throw new Error("Event has no document metadata");
+            }
+          })) as Partial<Record<string, FirestoreEvent>>;
+        }
+        default:
+          throw new Error("Invalid action");
       }
     } catch (e) {
       console.error(e);
@@ -224,7 +224,7 @@ export async function loadEvents(earliestTimestamp: DateTime, fbFirestore: Fireb
   for await (const doc of snapshot.docs) {
     let firestoreEvent: FirestoreEvent;
     try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       firestoreEvent = FirestoreEvent.fromSnapshot(doc);
     } catch (e) {
       console.error(e);
@@ -242,10 +242,10 @@ export const useEvents = ({ earliestTimestamp }: {
   const lastEarliestTimestamp = useRef<DateTime | null>(null);
 
   const { fbFirestore } = useFirebase();
-  const [ refreshing, setRefreshing ] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const disableRefresh = useRef(false);
 
-  const [ events, updateEvents ] = useEventsStateInternal();
+  const [events, updateEvents] = useEventsStateInternal();
 
   const refresh = useCallback(async (earliestTimestamp: DateTime) => {
     setRefreshing(true);
@@ -257,7 +257,7 @@ export const useEvents = ({ earliestTimestamp }: {
       action: "setEvents",
       payload: eventsToSet
     });
-  }, [ fbFirestore, updateEvents ]);
+  }, [fbFirestore, updateEvents]);
 
   useEffect(() => {
     if (
@@ -274,7 +274,7 @@ export const useEvents = ({ earliestTimestamp }: {
           lastEarliestTimestamp.current = earliestTimestamp;
         });
     }
-  }, [ earliestTimestamp, refresh ]);
+  }, [earliestTimestamp, refresh]);
 
   const eventsByMonth = useMemo(() => splitEvents(Object.values(events) as NonNullable<typeof events[string]>[]), [events]);
 
@@ -292,7 +292,7 @@ export const useEvents = ({ earliestTimestamp }: {
           disableRefresh.current = false;
           lastEarliestTimestamp.current = earliestTimestamp;
         }),
-      [ earliestTimestamp, refresh ]
+      [earliestTimestamp, refresh]
     )
   ];
 };

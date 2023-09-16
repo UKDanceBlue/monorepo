@@ -3,8 +3,8 @@ import type {
   FilterOptions,
   PaginationOptions,
   SortingOptions,
-} from "@ukdanceblue/db-app-common";
-import { Comparator } from "@ukdanceblue/db-app-common";
+} from "@ukdanceblue/common";
+import { Comparator } from "@ukdanceblue/common";
 import type { Schema } from "joi";
 import Joi from "joi";
 

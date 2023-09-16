@@ -1,5 +1,5 @@
-import type { GraphQLResource } from "@ukdanceblue/db-app-common";
-import { GraphQLService } from "@ukdanceblue/db-app-common";
+import type { GraphQLResource } from "@ukdanceblue/common";
+import { GraphQLService } from "@ukdanceblue/common";
 
 import { InvariantError } from "../lib/CustomErrors.js";
 import { ImageIntermediate, ImageModel } from "../models/Image.js";

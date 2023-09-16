@@ -17,7 +17,7 @@ export const authMiddleware = async (
         redirect_uris: [
           new URL(
             "/api/auth/oidc-callback",
-            res.locals.applicationUrl
+            res.locals.applicationUrl.toString()
           ).toString(),
         ],
         response_types: ["code"],

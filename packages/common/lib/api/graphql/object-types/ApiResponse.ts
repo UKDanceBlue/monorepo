@@ -197,12 +197,21 @@ export class GraphQLErrorResponse extends GraphQLBaseResponse {
 }
 
 export function withGraphQLErrorUnion<R extends GraphQLBaseResponse>(type: ClassType<R>, typeName?: string) {
-  // return createUnionType({
-  //   name: `${typeName ?? type.name}OrError`,
-  //   types: (): readonly [ClassType<R>, typeof GraphQLErrorResponse] => [type, GraphQLErrorResponse] as const,
-  //   resolveType: (value) => {
-  //     return value.ok ? type : GraphQLErrorResponse;
-  //   }
-  // });
-  return type;
+  const unionType = createUnionType({
+    name: `${typeName ?? type.name}OrError`,
+    types: () => [type, GraphQLErrorResponse] as const,
+    // resolveType: (value) => {
+    //   if (!("ok" in value)) {
+    //     return undefined;
+    //   } else if (value.ok) {
+    //     return type;
+    //   } else if ("message" in value) {
+    //     return GraphQLErrorResponse;
+    //   } else {
+    //     return undefined;
+    //   }
+    // }
+  });
+  console.log("unionType", unionType);
+  return unionType;
 }

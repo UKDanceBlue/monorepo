@@ -3,7 +3,7 @@ import "client-only";
 
 import Joi from "joi";
 
-import { formDataToJson } from "@ukdanceblue/db-app-common";
+import { formDataToJson } from "@ukdanceblue/common";
 import { useEffect } from "react";
 
 export function applyValidation(

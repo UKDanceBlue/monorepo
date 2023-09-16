@@ -1,5 +1,5 @@
 import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import { FirestoreNotification, isFirestoreNotification } from "@ukdanceblue/db-app-common";
+import { FirestoreNotification, isFirestoreNotification } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 import { Dispatch, SetStateAction } from "react";
 import { Alert } from "react-native";
@@ -62,10 +62,10 @@ export async function refreshNotificationScreen(
         ? 0
         : DateTime.fromISO(b.notification.sendTime).toMillis()
     ) -
-        (a.notification?.sendTime == null
-          ? 0
-          : DateTime.fromISO(a.notification.sendTime).toMillis()
-        )
+      (a.notification?.sendTime == null
+        ? 0
+        : DateTime.fromISO(a.notification.sendTime).toMillis()
+      )
     );
   setNotifications(notificationsByDate);
 }

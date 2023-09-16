@@ -1,5 +1,5 @@
-import type { EditArray } from "@ukdanceblue/db-app-common";
-import { EditType } from "@ukdanceblue/db-app-common";
+import type { EditArray } from "@ukdanceblue/common";
+import { EditType } from "@ukdanceblue/common";
 import type { AlternativesSchema, Schema } from "joi";
 import Joi from "joi";
 

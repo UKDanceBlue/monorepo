@@ -1,4 +1,4 @@
-// import type { EventResource } from "@ukdanceblue/db-app-common";
+// import type { EventResource } from "@ukdanceblue/common";
 
 import type { EventIntermediate, EventModel } from ".././models/Event.js";
 import type { ResourceToModelKeyMapping } from "../lib/dbHelpers/common.js";

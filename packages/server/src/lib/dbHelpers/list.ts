@@ -4,7 +4,7 @@ import type {
   GraphQLResource,
   PaginationOptions,
   SortingOptions,
-} from "@ukdanceblue/db-app-common";
+} from "@ukdanceblue/common";
 
 import type { IntermediateClass } from "../modelTypes.js";
 

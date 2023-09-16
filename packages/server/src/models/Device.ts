@@ -9,8 +9,8 @@ import type {
   NonAttribute,
 } from "@sequelize/core";
 import { DataTypes, Model } from "@sequelize/core";
-// import { DeviceResource } from "@ukdanceblue/db-app-common";
-import { GraphQLResource } from "@ukdanceblue/db-app-common";
+// import { DeviceResource } from "@ukdanceblue/common";
+import { GraphQLResource } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 
 import { sequelizeDb } from "../data-source.js";

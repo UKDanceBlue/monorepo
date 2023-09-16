@@ -1,4 +1,4 @@
-import { GraphQLResolver } from "@ukdanceblue/db-app-common";
+import { GraphQLResolver } from "@ukdanceblue/common";
 import { buildSchema } from "type-graphql";
 
 export default await buildSchema({

@@ -1,6 +1,6 @@
 import EventView from "@/components/EventView";
 import dbApiClient from "@/lib/apiClient";
-import { ApiClient, EventResource } from "@ukdanceblue/db-app-common";
+import { ApiClient, EventResource } from "@ukdanceblue/common";
 
 async function getData(eventId: string): Promise<
   | {

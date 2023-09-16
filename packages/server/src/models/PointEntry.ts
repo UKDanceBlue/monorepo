@@ -8,7 +8,7 @@ import type {
   NonAttribute,
 } from "@sequelize/core";
 import { DataTypes, Model } from "@sequelize/core";
-import { GraphQLResource, TeamType } from "@ukdanceblue/db-app-common";
+import { GraphQLResource, TeamType } from "@ukdanceblue/common";
 
 
 import { sequelizeDb } from "../data-source.js";

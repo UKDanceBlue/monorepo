@@ -1,5 +1,5 @@
 import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import { DownloadableImage, FirestoreImage, FirestoreImageJsonV1 } from "@ukdanceblue/db-app-common";
+import { DownloadableImage, FirestoreImage, FirestoreImageJsonV1 } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -22,7 +22,7 @@ export function isFirestoreHour(obj: unknown): obj is FirestoreHour {
   return (
     typeof (obj as FirestoreHour).hourNumber === "number" &&
     typeof (obj as FirestoreHour).hourName === "string" &&
-    (obj as FirestoreHour).graphic == null|| FirestoreImage.isValidJson((obj as FirestoreHour).graphic) &&
+    (obj as FirestoreHour).graphic == null || FirestoreImage.isValidJson((obj as FirestoreHour).graphic) &&
     typeof (obj as FirestoreHour).content === "string"
   );
 }
@@ -32,10 +32,10 @@ export function useCurrentFirestoreHour(): [boolean, string | null, FirestoreHou
     fbStorage, fbFirestore
   } = useFirebase();
 
-  const [ loading, setLoading ] = useState(true);
-  const [ error, setError ] = useState<string | null>(null);
-  const [ hour, setHour ] = useState<FirestoreHour | null>(null);
-  const [ hourImage, setHourImage ] = useState<DownloadableImage | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [hour, setHour] = useState<FirestoreHour | null>(null);
+  const [hourImage, setHourImage] = useState<DownloadableImage | null>(null);
 
   const currentHour = lookupHourByTime(DateTime.now());
   const lastHour = useRef(currentHour);
@@ -126,7 +126,7 @@ export function useCurrentFirestoreHour(): [boolean, string | null, FirestoreHou
     return () => {
       clearTimeout(interval);
     };
-  }, [ currentHour, refresh ]);
+  }, [currentHour, refresh]);
 
   return [
     loading, error, hour, hourImage, refresh

@@ -1,4 +1,4 @@
-import { EventResource } from "@ukdanceblue/db-app-common";
+import { EventResource } from "@ukdanceblue/common";
 import { Interval, DateTime } from "luxon";
 
 export default function EventView({

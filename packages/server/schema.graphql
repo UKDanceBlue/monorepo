@@ -31,8 +31,40 @@ type CreateConfigurationResponse {
   uuid: String!
 }
 
+input CreateImageInput {
+  fileName: String!
+  mimeType: String!
+}
+
 """API response"""
-type DeleteResourceResponse {
+type CreateImageResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """The payload of the response"""
+  data: ImageResource
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+
+  """The UUID of the created resource"""
+  uuid: String!
+}
+
+"""API response"""
+type DeleteConfigurationResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """The payload of the response"""
+  data: Boolean
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+"""API response"""
+type DeleteImageResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -55,19 +87,8 @@ type GetAllConfigurationsResponse {
   ok: Boolean!
 }
 
-type Mutation {
-  createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
-  deleteConfiguration(id: String!): DeleteResourceResponse
-  setConfiguration(id: String!, input: SetConfigurationInput!): SetConfigurationResponse!
-}
-
-type Query {
-  getAllConfigurations: GetAllConfigurationsResponse!
-  getConfigurationById(id: String!): ResourceByIdResponse
-}
-
 """API response"""
-type ResourceByIdResponse {
+type GetConfigurationByIdResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -76,6 +97,57 @@ type ResourceByIdResponse {
 
   """Whether the operation was successful"""
   ok: Boolean!
+}
+
+"""API response"""
+type GetImageByIdResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """The payload of the response"""
+  data: ImageResource
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+"""API response"""
+type GetThumbHashByUuidResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """The payload of the response"""
+  data: String
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+type ImageResource {
+  alt: String
+  height: Int!
+  imageData: String
+  imageId: ID!
+  mimeType: String!
+  thumbHash: String
+  url: URL
+  width: Int!
+}
+
+type Mutation {
+  createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
+  createImage(input: CreateImageInput!): CreateImageResponse!
+  deleteConfiguration(id: String!): DeleteConfigurationResponse
+  deleteImage(id: String!): DeleteImageResponse
+  setConfiguration(id: String!, input: SetConfigurationInput!): SetConfigurationResponse!
+  setImage(id: String!, input: SetImageInput!): SetImageResponse!
+}
+
+type Query {
+  getAllConfigurations: GetAllConfigurationsResponse!
+  getConfigurationById(id: String!): GetConfigurationByIdResponse
+  getImageById(id: String!): GetImageByIdResponse
+  getThumbHashByUuid(uuid: String!): GetThumbHashByUuidResponse
 }
 
 input SetConfigurationInput {
@@ -93,3 +165,23 @@ type SetConfigurationResponse {
   """Whether the operation was successful"""
   ok: Boolean!
 }
+
+input SetImageInput {
+  fileName: String!
+  mimeType: String!
+}
+
+"""API response"""
+type SetImageResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """The payload of the response"""
+  data: ImageResource
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+"""URL custom scalar type"""
+scalar URL

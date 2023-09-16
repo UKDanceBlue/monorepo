@@ -1,5 +1,5 @@
-import type { Authorization, GraphQLResource } from "@ukdanceblue/db-app-common";
-import { AccessLevel, CommitteeRole, DbRole } from "@ukdanceblue/db-app-common";
+import type { Authorization, GraphQLResource } from "@ukdanceblue/common";
+import { AccessLevel, CommitteeRole, DbRole } from "@ukdanceblue/common";
 
 import { logError } from "../../logger.js";
 

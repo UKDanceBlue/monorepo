@@ -1,4 +1,4 @@
-import type { ErrorApiResponse } from "@ukdanceblue/db-app-common";
+import type { ErrorApiResponse } from "@ukdanceblue/common";
 import type { ErrorRequestHandler } from "express";
 import createHttpError from "http-errors";
 import { getReasonPhrase } from "http-status-codes";
@@ -38,14 +38,11 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
         res
           .type("html")
           .send(
-            `<html><head><title>${
-              httpError.statusCode
-            } ${errorReason}</title></head><body><h1>${
-              httpError.statusCode
-            } ${errorReason}</h1>Message: ${httpError.message}${
-              httpError.stack
-                ? `<br><code><pre style="border-radius: 10px;background-color: #ededed;padding:1em;">Stack Trace:\n${httpError.stack}</pre></code>`
-                : ""
+            `<html><head><title>${httpError.statusCode
+            } ${errorReason}</title></head><body><h1>${httpError.statusCode
+            } ${errorReason}</h1>Message: ${httpError.message}${httpError.stack
+              ? `<br><code><pre style="border-radius: 10px;background-color: #ededed;padding:1em;">Stack Trace:\n${httpError.stack}</pre></code>`
+              : ""
             }</body></html>`
           );
       } else {

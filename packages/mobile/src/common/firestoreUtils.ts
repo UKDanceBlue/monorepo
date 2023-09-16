@@ -1,4 +1,4 @@
-import { BasicTimestamp } from "@ukdanceblue/db-app-common/dist/shims/Firestore";
+import { BasicTimestamp } from "@ukdanceblue/common/dist/shims/Firestore";
 import { DateTime, Interval } from "luxon";
 
 export function firestoreIntervalToLuxon(interval: {
