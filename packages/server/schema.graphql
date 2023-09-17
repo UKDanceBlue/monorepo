@@ -31,6 +31,8 @@ type CreateConfigurationResponse {
   uuid: String!
 }
 
+union CreateConfigurationResponseOrError = CreateConfigurationResponse | GraphQLErrorResponse
+
 input CreateImageInput {
   fileName: String!
   mimeType: String!
@@ -51,6 +53,8 @@ type CreateImageResponse {
   uuid: String!
 }
 
+union CreateImageResponseOrError = CreateImageResponse | GraphQLErrorResponse
+
 """API response"""
 type DeleteConfigurationResponse {
   """Client actions to perform"""
@@ -62,6 +66,8 @@ type DeleteConfigurationResponse {
   """Whether the operation was successful"""
   ok: Boolean!
 }
+
+union DeleteConfigurationResponseOrError = DeleteConfigurationResponse | GraphQLErrorResponse
 
 """API response"""
 type DeleteImageResponse {
@@ -75,6 +81,8 @@ type DeleteImageResponse {
   ok: Boolean!
 }
 
+union DeleteImageResponseOrError = DeleteImageResponse | GraphQLErrorResponse
+
 """API response"""
 type GetAllConfigurationsResponse {
   """Client actions to perform"""
@@ -86,6 +94,8 @@ type GetAllConfigurationsResponse {
   """Whether the operation was successful"""
   ok: Boolean!
 }
+
+union GetAllConfigurationsResponseOrError = GetAllConfigurationsResponse | GraphQLErrorResponse
 
 """API response"""
 type GetConfigurationByIdResponse {
@@ -99,6 +109,8 @@ type GetConfigurationByIdResponse {
   ok: Boolean!
 }
 
+union GetConfigurationByIdResponseOrError = GetConfigurationByIdResponse | GraphQLErrorResponse
+
 """API response"""
 type GetImageByIdResponse {
   """Client actions to perform"""
@@ -111,6 +123,8 @@ type GetImageByIdResponse {
   ok: Boolean!
 }
 
+union GetImageByIdResponseOrError = GetImageByIdResponse | GraphQLErrorResponse
+
 """API response"""
 type GetThumbHashByUuidResponse {
   """Client actions to perform"""
@@ -118,6 +132,29 @@ type GetThumbHashByUuidResponse {
 
   """The payload of the response"""
   data: String
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+union GetThumbHashByUuidResponseOrError = GetThumbHashByUuidResponse | GraphQLErrorResponse
+
+"""API response"""
+type GraphQLErrorResponse {
+  """Cause of the error, if any. May contain sensitive information"""
+  cause: String
+
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """Error details, explains the problem, but not for end users"""
+  details: String
+
+  """Error explanation, can be shown to end users"""
+  explanation: String
+
+  """The error message"""
+  message: String!
 
   """Whether the operation was successful"""
   ok: Boolean!
@@ -135,19 +172,19 @@ type ImageResource {
 }
 
 type Mutation {
-  createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
-  createImage(input: CreateImageInput!): CreateImageResponse!
-  deleteConfiguration(id: String!): DeleteConfigurationResponse
-  deleteImage(id: String!): DeleteImageResponse
-  setConfiguration(id: String!, input: SetConfigurationInput!): SetConfigurationResponse!
-  setImage(id: String!, input: SetImageInput!): SetImageResponse!
+  createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponseOrError!
+  createImage(input: CreateImageInput!): CreateImageResponseOrError!
+  deleteConfiguration(id: String!): DeleteConfigurationResponseOrError
+  deleteImage(id: String!): DeleteImageResponseOrError
+  setConfiguration(id: String!, input: SetConfigurationInput!): SetConfigurationResponseOrError!
+  setImage(id: String!, input: SetImageInput!): SetImageResponseOrError!
 }
 
 type Query {
-  getAllConfigurations: GetAllConfigurationsResponse!
-  getConfigurationById(id: String!): GetConfigurationByIdResponse
-  getImageById(id: String!): GetImageByIdResponse
-  getThumbHashByUuid(uuid: String!): GetThumbHashByUuidResponse
+  getAllConfigurations: GetAllConfigurationsResponseOrError!
+  getConfigurationById(id: String!): GetConfigurationByIdResponseOrError
+  getImageById(id: String!): GetImageByIdResponseOrError
+  getThumbHashByUuid(uuid: String!): GetThumbHashByUuidResponseOrError
 }
 
 input SetConfigurationInput {
@@ -166,6 +203,8 @@ type SetConfigurationResponse {
   ok: Boolean!
 }
 
+union SetConfigurationResponseOrError = GraphQLErrorResponse | SetConfigurationResponse
+
 input SetImageInput {
   fileName: String!
   mimeType: String!
@@ -182,6 +221,8 @@ type SetImageResponse {
   """Whether the operation was successful"""
   ok: Boolean!
 }
+
+union SetImageResponseOrError = GraphQLErrorResponse | SetImageResponse
 
 """URL custom scalar type"""
 scalar URL

@@ -11,7 +11,7 @@ const files = await readdir(__dirname);
 
 await Promise.all(
   files
-    .filter((file) => file.endsWith("Service.ts"))
+    .filter((file) => file.endsWith("Service.js"))
     .map(async (file) => {
       await import(join(__dirname, file));
     })

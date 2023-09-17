@@ -32,19 +32,20 @@ class SetImageInput implements Partial<ImageResource> {
   mimeType?: string;
 }
 
+const GetThumbHashByUuidResponseUnion = withGraphQLErrorUnion(GetThumbHashByUuidResponse, "GetThumbHashByUuidResponse");
+const CreateImageResponseUnion = withGraphQLErrorUnion(CreateImageResponse, "CreateImageResponse");
+const SetImageResponseUnion = withGraphQLErrorUnion(SetImageResponse, "SetImageResponse");
+
 @Resolver(() => ImageResource)
 export class ImageResolver extends ImageResourceBaseResolver {
-  @Query(() => withGraphQLErrorUnion(GetThumbHashByUuidResponse), { name: "getThumbHashByUuid", nullable: true })
-  async getThumbHashByUuid(@Arg("uuid") uuid: string): Promise<AbstractGraphQLArrayOkResponse<string> | GraphQLErrorResponse | null> {
+  @Query(() => GetThumbHashByUuidResponseUnion, { name: "getThumbHashByUuid", nullable: true })
+  async getThumbHashByUuid(@Arg("uuid") uuid: string): Promise<typeof GetThumbHashByUuidResponseUnion> {
     const result = await this.service.getThumbHashByUUid(uuid);
-    if (!result) {
-      return null;
-    }
     return GetThumbHashByUuidResponse.newOk(result);
   }
 
-  @Mutation(() => withGraphQLErrorUnion(CreateImageResponse), { name: "createImage" })
-  async create(@Arg("input") input: CreateImageInput): Promise<AbstractGraphQLArrayOkResponse<ImageResource> | GraphQLErrorResponse> {
+  @Mutation(() => CreateImageResponseUnion, { name: "createImage" })
+  async create(@Arg("input") input: CreateImageInput): Promise<typeof CreateImageResponseUnion> {
     const result = await this.service.create(input);
     if (!("uuid" in result)) {
       return GraphQLErrorResponse.from(result);
@@ -55,8 +56,8 @@ export class ImageResolver extends ImageResourceBaseResolver {
     return response;
   }
 
-  @Mutation(() => withGraphQLErrorUnion(SetImageResponse), { name: "setImage" })
-  async set(@Arg("id") id: string, @Arg("input") input: SetImageInput): Promise<AbstractGraphQLArrayOkResponse<ImageResource> | GraphQLErrorResponse> {
+  @Mutation(() => SetImageResponseUnion, { name: "setImage" })
+  async set(@Arg("id") id: string, @Arg("input") input: SetImageInput): Promise<typeof SetImageResponseUnion> {
     const result = await this.service.set(id, input);
     if (result instanceof Error) {
       return GraphQLErrorResponse.from(result);

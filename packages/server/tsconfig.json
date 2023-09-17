@@ -21,12 +21,29 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "types": [
+      "body-parser",
+      "cookie-parser",
+      "cors",
+      "ejs",
+      "express",
+      "express-session",
+      "http-errors",
+      "jsonwebtoken",
+      "luxon",
+      "multer",
+      "node-fetch",
+      "normalize-path",
+      "qs",
+      "ws"
+    ]
   },
   "include": [
     "src/**/*.ts",
     "models/**/*.ts",
     "migrations/**/*.ts",
     "seeders/**/*.ts"
-  ]
+  ],
+  "extends": "../../tsconfig.json"
 }

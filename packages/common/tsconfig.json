@@ -89,8 +89,9 @@
     // "allowUnusedLabels": true,                        /* Disable error reporting for unused labels. */
     // "allowUnreachableCode": true,                     /* Disable error reporting for unreachable code. */
     /* Completeness */
-    "skipDefaultLibCheck": false /* Skip type checking .d.ts files that are included with TypeScript. */
+    "skipDefaultLibCheck": false /* Skip type checking .d.ts files that are included with TypeScript. */,
     // "skipLibCheck": false /* Skip type checking all .d.ts files. */
+    "types": ["luxon", "react", "validator"]
   },
   "include": ["lib"]
 }
