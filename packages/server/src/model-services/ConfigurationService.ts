@@ -54,7 +54,6 @@ export class ConfigurationService implements GraphQLService.ConfigurationService
       key: input.key,
     });
     const data = new ConfigurationIntermediate(configuration).toResource();
-    console.log(data);
     return {
       data,
       uuid: configuration.key,

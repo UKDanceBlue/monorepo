@@ -12,7 +12,6 @@ import { graphQLServiceContainer } from "../service-declarations/index.js";
 
 export function createBaseResolver<T extends Resource, S extends ServiceInterface<T>>(resourceName: string, objectTypeCls: ClassType<T>, token: Token<S>) {
   const getResourceByIdResponseName = `Get${resourceName}ByIdResponse`;
-  console.trace("getResourceByIdResponseName", getResourceByIdResponseName);
   const GetResourceByIdResponse = defineGraphQlOkResponse(getResourceByIdResponseName, objectTypeCls);
   const deleteResourceResponseName = `Delete${resourceName}Response`;
   const DeleteResourceResponse = defineGraphQlOkResponse(deleteResourceResponseName, Boolean);

@@ -74,7 +74,6 @@ export class ImageService implements GraphQLService.ImageServiceInterface {
       thumbHash: input.thumbHash ? Buffer.from(input.thumbHash, "base64") : null,
     });
     const data = new ImageIntermediate(image).toResource();
-    console.log(data);
     return {
       data,
       uuid: image.uuid,

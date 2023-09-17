@@ -212,6 +212,5 @@ export function withGraphQLErrorUnion<R extends GraphQLBaseResponse>(type: Class
     //   }
     // }
   });
-  console.log("unionType", unionType);
   return unionType;
 }
