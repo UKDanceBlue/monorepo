@@ -3,19 +3,11 @@ import { GraphQLService } from "@ukdanceblue/common";
 
 import { InvariantError } from "../lib/CustomErrors.js";
 import { ConfigurationIntermediate, ConfigurationModel } from "../models/Configuration.js";
+import { modelServiceDeleteHelper, modelServiceGetByUuidHelper, modelServiceSetHelper } from "./helpers.js";
 
 export class ConfigurationService implements GraphQLService.ConfigurationServiceInterface {
   async getByUuid(key: string) {
-    const result = await ConfigurationModel.findOne({
-      where: {
-        key,
-      },
-    });
-    if (!result) {
-      return null;
-    }
-    const intermediate = new ConfigurationIntermediate(result);
-    return intermediate.toResource();
+    return modelServiceGetByUuidHelper("Configuration", "key", key, ConfigurationModel, ConfigurationIntermediate);
   }
 
   async getAll() {
@@ -35,18 +27,7 @@ export class ConfigurationService implements GraphQLService.ConfigurationService
         returning: true,
       },
     );
-    if (affected === 0) {
-      return {
-        errorMessage: `Configuration does not exist`,
-        errorDetails: `Configuration with key ${key} does not exist`,
-      };
-    } else if (affected > 1) {
-      throw new InvariantError(`More than one configuration with key ${key} exists`);
-    } else if (result[0]) {
-      return new ConfigurationIntermediate(result[0]).toResource();
-    } else {
-      throw new InvariantError(`No value returned from update`);
-    }
+    return modelServiceSetHelper("Configuration", key, affected, result, ConfigurationIntermediate)
   }
 
   async create(input: GraphQLResource.ConfigurationResource) {
@@ -61,12 +42,7 @@ export class ConfigurationService implements GraphQLService.ConfigurationService
   }
 
   async delete(key: string) {
-    const deletedCount = await ConfigurationModel.destroy({
-      where: {
-        key,
-      },
-    });
-    return deletedCount > 0;
+    return modelServiceDeleteHelper("Configuration", "key", key, ConfigurationModel);
   }
 }
 
