@@ -9,14 +9,13 @@
   },
   "scripts": {
     "build": "tsc",
-    "build-public": "tsc -p ./tsconfig.public.json",
+    "bs": "yarn run build && yarn run start",
     "start": "node .",
     "start-seed": "node . --seed-db --reset-db",
     "start-reset": "node . --reset-db",
-    "watch": "nodemon -w ./dist ./dist/index.js --",
+    "mon": "nodemon -w ./dist ./dist/index.js ../common/dist --",
     "lint": "eslint . --ext .ts",
-    "test": "jest",
-    "typeorm": "typeorm-ts-node-esm"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
