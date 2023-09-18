@@ -1,12 +1,12 @@
 import { Arg, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
 
-import type { AbstractGraphQLArrayOkResponse } from "../object-types/ApiResponse.js";
 import { GraphQLErrorResponse, defineGraphQLArrayOkResponse, defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "../object-types/ApiResponse.js";
 import { ConfigurationResource } from "../object-types/Configuration.js";
 import type { ConfigurationServiceInterface } from "../service-declarations/ConfigurationServiceInterface.js";
 import { configurationServiceToken } from "../service-declarations/ConfigurationServiceInterface.js";
 
 import { createBaseResolver } from "./BaseResolver.js";
+import { resolverCreateHelper, resolverSetHelper } from "./helpers.js";
 
 const ConfigurationResourceBaseResolver = createBaseResolver<ConfigurationResource, ConfigurationServiceInterface>("Configuration", ConfigurationResource, configurationServiceToken);
 
@@ -44,21 +44,12 @@ export class ConfigurationResolver extends ConfigurationResourceBaseResolver {
   @Mutation(() => CreateResponseUnion, { name: "createConfiguration" })
   async create(@Arg("input") input: CreateConfigurationInput): Promise<typeof CreateResponseUnion> {
     const result = await this.service.create(input);
-    if (!("uuid" in result)) {
-      return GraphQLErrorResponse.from(result);
-    }
-
-    const response = CreateConfigurationResponse.newOk(result);
-    response.uuid = result.uuid;
-    return response;
+    return resolverCreateHelper(CreateConfigurationResponse, result);
   }
 
   @Mutation(() => SetResponseUnion, { name: "setConfiguration" })
   async set(@Arg("id") id: string, @Arg("input") input: SetConfigurationInput): Promise<typeof SetResponseUnion> {
     const result = await this.service.set(id, input);
-    if (result instanceof Error) {
-      return GraphQLErrorResponse.from(result);
-    }
-    return SetConfigurationResponse.newOk(result);
+    return resolverSetHelper(SetConfigurationResponse, result);
   }
 }
