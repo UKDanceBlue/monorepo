@@ -4,7 +4,7 @@ import type {
   InferCreationAttributes,
 } from "@sequelize/core";
 import { DataTypes, Model } from "@sequelize/core";
-import { GraphQLResource } from "@ukdanceblue/common";
+import { ConfigurationResource } from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
 import { IntermediateClass } from "../lib/modelTypes.js";
@@ -47,7 +47,7 @@ ConfigurationModel.init(
 );
 
 export class ConfigurationIntermediate extends IntermediateClass<
-  GraphQLResource.ConfigurationResource,
+  ConfigurationResource,
   ConfigurationIntermediate
 > {
   public declare id: CoreProperty<number>;
@@ -59,9 +59,9 @@ export class ConfigurationIntermediate extends IntermediateClass<
     this.key = configuration.key;
   }
 
-  public toResource(): GraphQLResource.ConfigurationResource {
+  public toResource(): ConfigurationResource {
     if (this.hasCoreProperties()) {
-      return GraphQLResource.ConfigurationResource.init({
+      return ConfigurationResource.init({
         key: this.key,
       });
     } else {

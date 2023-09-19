@@ -1,20 +1,29 @@
 import firestore from "@react-native-firebase/firestore";
 import { Box, Button, Row, useTheme } from "native-base";
-import { Alert, SectionListRenderItem, useWindowDimensions } from "react-native";
+import {
+  Alert,
+  SectionListRenderItem,
+  useWindowDimensions,
+} from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
-import Animated, { useAnimatedGestureHandler,
+import Animated, {
+  useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
-  withSpring } from "react-native-reanimated";
+  withSpring,
+} from "react-native-reanimated";
 
-import { universalCatch } from "../../../../common/logging";
+import { universalCatch } from "../@ukdanceblue/common/logging";
 import { useAuthData, useFirebase } from "../../../../context";
 import { useRefreshUserData } from "../../../../context/user";
 import { NotificationListDataEntry } from "../NotificationScreen";
 
 import { NotificationRowContent } from "./NotificationRowContent";
 
-export const AnimatedNotificationRow: SectionListRenderItem<NotificationListDataEntry | undefined, { title: string; data: (NotificationListDataEntry | undefined)[] }> = ({ item }: { item: NotificationListDataEntry | undefined }) => {
+export const AnimatedNotificationRow: SectionListRenderItem<
+  NotificationListDataEntry | undefined,
+  { title: string; data: (NotificationListDataEntry | undefined)[] }
+> = ({ item }: { item: NotificationListDataEntry | undefined }) => {
   const { width: screenWidth } = useWindowDimensions();
   const { sizes } = useTheme();
   const refreshUserData = useRefreshUserData();
@@ -62,16 +71,12 @@ export const AnimatedNotificationRow: SectionListRenderItem<NotificationListData
     }
 
     return { width, height: buttonRowHeight.value };
-  }, [
-    x, buttonRowHeight, flung
-  ]);
+  }, [x, buttonRowHeight, flung]);
 
   const notification = item?.notification;
   const loading = notification == null;
 
-  const {
-    isLoggedIn, isAnonymous
-  } = useAuthData();
+  const { isLoggedIn, isAnonymous } = useAuthData();
 
   // TODO: When Backend for Read/Unread Notifications are done, pls add compatibility
   const unread = true;
@@ -79,32 +84,35 @@ export const AnimatedNotificationRow: SectionListRenderItem<NotificationListData
   const canDelete = !isAnonymous && isLoggedIn;
 
   return (
-    <PanGestureHandler onGestureEvent={canDelete ? panGestureHandler : () => undefined} minDist={15} enabled={canDelete}>
+    <PanGestureHandler
+      onGestureEvent={canDelete ? panGestureHandler : () => undefined}
+      minDist={15}
+      enabled={canDelete}
+    >
       <Animated.View style={animatedViewStyle}>
-        <Row
-          width={screenWidth + sideMenuWidth}
-          collapsable={false}
-          my="2">
+        <Row width={screenWidth + sideMenuWidth} collapsable={false} my="2">
           <Box
             mx="4"
             p="1.5"
-            background= {unread ? "primary.100" : undefined}
+            background={unread ? "primary.100" : undefined}
             rounded="md"
             shadow="2"
             style={{ shadowOpacity: 0.18 }}
-            width={screenWidth - (sizes[4] * 2)}
+            width={screenWidth - sizes[4] * 2}
             borderStyle="solid"
             borderWidth="1"
             borderColor="primary.600"
             onLayout={(event) => {
-              buttonRowHeight.value = (event.nativeEvent.layout.height);
+              buttonRowHeight.value = event.nativeEvent.layout.height;
             }}
           >
-            <NotificationRowContent loading={loading} notification={notification} unread={unread}/>
+            <NotificationRowContent
+              loading={loading}
+              notification={notification}
+              unread={unread}
+            />
           </Box>
-          <Animated.View
-            style={animatedButtonRowStyle}
-          >
+          <Animated.View style={animatedButtonRowStyle}>
             <Button
               disabled={!canDelete}
               onPress={() => {
@@ -114,7 +122,7 @@ export const AnimatedNotificationRow: SectionListRenderItem<NotificationListData
                   [
                     {
                       style: "cancel",
-                      text: "Cancel"
+                      text: "Cancel",
                     },
                     {
                       style: "destructive",
@@ -125,16 +133,27 @@ export const AnimatedNotificationRow: SectionListRenderItem<NotificationListData
                             fbFirestore
                               .collection("users")
                               .doc(uid)
-                              .update({ notificationReferences: firestore.FieldValue.arrayRemove(item.reference) })
+                              .update({
+                                notificationReferences:
+                                  firestore.FieldValue.arrayRemove(
+                                    item.reference
+                                  ),
+                              })
                               .then(refreshUserData)
                               .catch(universalCatch);
-                            if (item.reference?.parent.isEqual(fbFirestore.collection(`users/${uid}/past-notifications`))) {
+                            if (
+                              item.reference?.parent.isEqual(
+                                fbFirestore.collection(
+                                  `users/${uid}/past-notifications`
+                                )
+                              )
+                            ) {
                               item.reference.delete().catch(universalCatch);
                             }
                           }
                         }
-                      }
-                    }
+                      },
+                    },
                   ]
                 );
               }}

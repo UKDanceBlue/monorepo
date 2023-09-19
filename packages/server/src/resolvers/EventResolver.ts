@@ -1,10 +1,10 @@
 import { DateTime, Duration } from "luxon";
 import { Arg, Field, InputType, Mutation, Resolver } from "type-graphql";
 
-import { DateTimeScalar } from "../custom-scalars/DateTimeScalar.js"
-import { DurationScalar } from "../custom-scalars/DurationScalar.js"
-import { defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "../object-types/ApiResponse.js";
-import { EventResource } from "../object-types/Event.js";
+import { DateTimeScalar } from "@ukdanceblue/common/lib/api/graphql/custom-scalars/DateTimeScalar.js"
+import { DurationScalar } from "@ukdanceblue/common/lib/api/graphql/custom-scalars/DurationScalar.js"
+import { defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "@ukdanceblue/common";
+import { EventResource } from "@ukdanceblue/common/lib/api/graphql/object-types/Event.js";
 import { eventServiceToken } from "../service-declarations/EventServiceInterface.js";
 
 import { createBaseResolver } from "./BaseResolver.js";

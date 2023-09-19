@@ -14,8 +14,17 @@
       "require": "./dist/index.js",
       "node": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./react": {
+      "node": null,
+      "browser": "./dist/react.js",
+      "react-native": "./dist/react.js",
+      "import": "./dist/react.js",
+      "require": "./dist/react.js",
+      "types": "./dist/react.d.ts"
     }
   },
+  "main": "./dist/index.js",
   "files": [
     "dist"
   ],

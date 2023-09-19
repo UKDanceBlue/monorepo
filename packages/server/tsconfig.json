@@ -44,6 +44,5 @@
     "models/**/*.ts",
     "migrations/**/*.ts",
     "seeders/**/*.ts"
-  ],
-  "extends": "../../tsconfig.json"
+  ]
 }

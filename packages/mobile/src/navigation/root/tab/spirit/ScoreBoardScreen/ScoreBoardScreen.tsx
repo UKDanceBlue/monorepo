@@ -6,8 +6,8 @@ import { View } from "native-base";
 import { Pressable } from "native-base/src/components/primitives";
 import { useCallback, useEffect, useState } from "react";
 
-import Jumbotron from "../../../../../common/components/Jumbotron";
-import { universalCatch } from "../../../../../common/logging";
+import Jumbotron from "../../@ukdanceblue/common/components/Jumbotron";
+import { universalCatch } from "../../@ukdanceblue/common/logging";
 import { useAuthData, useUserData } from "../../../../../context";
 import { StandingType } from "../../../../../types/StandingType";
 import { SpiritStackScreenProps } from "../../../../../types/navigationTypes";

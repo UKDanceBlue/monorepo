@@ -28,11 +28,11 @@ import { ActivityIndicator, useWindowDimensions } from "react-native";
 import openMaps from "react-native-open-maps";
 import { WebView } from "react-native-webview";
 
-import NativeBaseMarkdown from "../../../common/components/NativeBaseMarkdown";
-import { firestoreIntervalToLuxon } from "../../../common/firestoreUtils";
-import { log, universalCatch } from "../../../common/logging";
-import { showMessage } from "../../../common/util/alertUtils";
-import { discoverDefaultCalendar } from "../../../common/util/calendar";
+import NativeBaseMarkdown from "@ukdanceblue/common/components/NativeBaseMarkdown";
+import { firestoreIntervalToLuxon } from "@ukdanceblue/common/firestoreUtils";
+import { log, universalCatch } from "@ukdanceblue/common/logging";
+import { showMessage } from "@ukdanceblue/common/util/alertUtils";
+import { discoverDefaultCalendar } from "@ukdanceblue/common/util/calendar";
 import { useFirebase } from "../../../context";
 import { RootStackScreenProps } from "../../../types/navigationTypes";
 

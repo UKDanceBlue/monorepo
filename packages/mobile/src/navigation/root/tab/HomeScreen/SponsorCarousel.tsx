@@ -2,15 +2,15 @@ import firebaseFirestore from "@react-native-firebase/firestore";
 import { Box, ScrollView, Text, View } from "native-base";
 import { useEffect, useState } from "react";
 
-import SponsorCard from "../../../../common/components/ImageCard";
-import { universalCatch } from "../../../../common/logging";
+import SponsorCard from "../@ukdanceblue/common/components/ImageCard";
+import { universalCatch } from "../@ukdanceblue/common/logging";
 import { LegacyFirestoreSponsor } from "../../../../types/FirestoreSponsor";
 
 /**
  * A horizontally scrolling carousel of SponsorCards
  */
 const SponsorCarousel = () => {
-  const [ sponsors, setSponsors ] = useState<LegacyFirestoreSponsor[]>([]);
+  const [sponsors, setSponsors] = useState<LegacyFirestoreSponsor[]>([]);
 
   useEffect(() => {
     let shouldUpdateState = true;
@@ -42,7 +42,9 @@ const SponsorCarousel = () => {
   return (
     <View height="100%" flex={1} alignContent="flex-end">
       <View>
-        <Text fontSize="xl" fontFamily="body" paddingLeft="2">Sponsors</Text>
+        <Text fontSize="xl" fontFamily="body" paddingLeft="2">
+          Sponsors
+        </Text>
       </View>
       <Box flexDirection="row" flex={1} alignItems="center">
         <ScrollView
@@ -51,7 +53,8 @@ const SponsorCarousel = () => {
           flex={1}
           height="4/5"
           paddingLeft="2"
-          paddingRight="2">
+          paddingRight="2"
+        >
           {cards}
         </ScrollView>
       </Box>

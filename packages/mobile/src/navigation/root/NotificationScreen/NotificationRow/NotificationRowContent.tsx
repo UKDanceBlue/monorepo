@@ -17,7 +17,7 @@ import { useWindowDimensions } from "react-native";
 
 import DBLogoCondensed from "../../../../../assets/svgs/DBLogoCondensed";
 import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
-import { useThemeFonts } from "../../../../common/customHooks";
+import { useThemeFonts } from "../@ukdanceblue/common/customHooks";
 
 const NonMemoizedNotificationRowContent = ({
   loading,

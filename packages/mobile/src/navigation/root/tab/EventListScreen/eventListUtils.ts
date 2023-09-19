@@ -6,8 +6,8 @@ import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "r
 import { DateData } from "react-native-calendars";
 import { MarkedDates } from "react-native-calendars/src/types";
 
-import { universalCatch } from "../../../../common/logging";
-import { timestampToDateTime } from "../../../../common/util/dateTools";
+import { universalCatch } from "../@ukdanceblue/common/logging";
+import { timestampToDateTime } from "../@ukdanceblue/common/util/dateTools";
 import { useFirebase } from "../../../../context";
 
 import { LOADED_MONTHS, RNCAL_DATE_FORMAT, RNCAL_DATE_FORMAT_NO_DAY } from "./constants";

@@ -6,7 +6,7 @@ import { MutableRefObject, useCallback, useMemo } from "react";
 import { ListRenderItem } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import { timestampToDateTime } from "../../../../common/util/dateTools";
+import { timestampToDateTime } from "../@ukdanceblue/common/util/dateTools";
 
 import EventRow from "./EventRow";
 import { RNCAL_DATE_FORMAT } from "./constants";

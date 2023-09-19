@@ -1,7 +1,7 @@
 import { Arg, Field, InputType, Mutation, Resolver } from "type-graphql";
 
-import { defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "../object-types/ApiResponse.js";
-import { DeviceResource } from "../object-types/Device.js";
+import { defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "@ukdanceblue/common";
+import { DeviceResource } from "@ukdanceblue/common/lib/api/graphql/object-types/Device.js";
 import type { DeviceServiceInterface } from "../service-declarations/DeviceServiceInterface.js";
 import { deviceServiceToken } from "../service-declarations/DeviceServiceInterface.js";
 

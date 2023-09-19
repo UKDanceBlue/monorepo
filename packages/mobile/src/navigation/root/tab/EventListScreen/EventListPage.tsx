@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { FlatList } from "react-native";
 import { DateData, MarkedDates } from "react-native-calendars/src/types";
 
-import { universalCatch } from "../../../../common/logging";
+import { universalCatch } from "../@ukdanceblue/common/logging";
 
 import Calendar from "./Calendar";
 import { EventListRenderItem } from "./EventListRenderItem";

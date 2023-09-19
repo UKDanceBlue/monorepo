@@ -1,10 +1,15 @@
 import { Button, Center, Image, Text, View, ZStack } from "native-base";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Dimensions, ImageSourcePropType, StatusBar } from "react-native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  ImageSourcePropType,
+  StatusBar,
+} from "react-native";
 
-import { useLinkBlueLogin } from "../../../common/auth";
-import { universalCatch } from "../../../common/logging";
-import { showMessage } from "../../../common/util/alertUtils";
+import { useLinkBlueLogin } from "@ukdanceblue/common/auth";
+import { universalCatch } from "@ukdanceblue/common/logging";
+import { showMessage } from "@ukdanceblue/common/util/alertUtils";
 import { useAppConfig, useFirebase } from "../../../context";
 
 import { getRandomSplashLoginBackground } from "./SplashLoginBackgrounds";
@@ -12,16 +17,9 @@ import { getRandomSplashLoginBackground } from "./SplashLoginBackgrounds";
 const SplashLoginScreen = () => {
   const { allowedLoginTypes } = useAppConfig();
 
-  const {
-    fbAuth, fbFunctions
-  } = useFirebase();
+  const { fbAuth, fbFunctions } = useFirebase();
 
-  const [
-    loading,
-    trigger,
-    ,
-    error
-  ] = useLinkBlueLogin(fbAuth, fbFunctions);
+  const [loading, trigger, , error] = useLinkBlueLogin(fbAuth, fbFunctions);
 
   useEffect(() => {
     if (error) {
@@ -33,7 +31,7 @@ const SplashLoginScreen = () => {
   const heightOfContent = Dimensions.get("window").height * 0.4;
 
   // TODO: FIX INTERVAL
-  const [ bgImage, setbgImage ] = useState(getRandomSplashLoginBackground());
+  const [bgImage, setbgImage] = useState(getRandomSplashLoginBackground());
   useEffect(() => {
     const unsub = setInterval(() => {
       setbgImage(getRandomSplashLoginBackground());
@@ -43,7 +41,7 @@ const SplashLoginScreen = () => {
 
   return (
     <>
-      <StatusBar hidden/>
+      <StatusBar hidden />
       <ZStack>
         <Image
           source={bgImage}
@@ -51,14 +49,18 @@ const SplashLoginScreen = () => {
           width={Dimensions.get("window").width}
           height={heightOfBackground}
           overflow="hidden"
-          resizeMode="cover"/>
+          resizeMode="cover"
+        />
         <Image
           alt="Welcome Overlay"
-          source={require("../../../../assets/screens/login-modal/welcome-back-overlay.png") as ImageSourcePropType}
+          source={
+            require("../../../../assets/screens/login-modal/welcome-back-overlay.png") as ImageSourcePropType
+          }
           height={Dimensions.get("window").height}
           width={Dimensions.get("window").width}
           resizeMode="cover"
-          zIndex={0}/>
+          zIndex={0}
+        />
         <View>
           <View
             justifyContent="center"
@@ -67,8 +69,9 @@ const SplashLoginScreen = () => {
             zIndex={100}
             position="absolute"
             width={Dimensions.get("window").width}
-            marginTop={15}>
-            { allowedLoginTypes.includes("ms-oath-linkblue") && (
+            marginTop={15}
+          >
+            {allowedLoginTypes.includes("ms-oath-linkblue") && (
               <View>
                 <Button
                   onPress={() => trigger()}
@@ -82,15 +85,20 @@ const SplashLoginScreen = () => {
                     color="primary.600"
                     textAlign="center"
                     fontFamily="body"
-                    fontSize="xl">Login with Linkblue</Text>
+                    fontSize="xl"
+                  >
+                    Login with Linkblue
+                  </Text>
                 </Button>
               </View>
             )}
 
-            { allowedLoginTypes.includes("anonymous") && (
+            {allowedLoginTypes.includes("anonymous") && (
               <View>
                 <Button
-                  onPress={() => fbAuth.signInAnonymously().catch(universalCatch)}
+                  onPress={() =>
+                    fbAuth.signInAnonymously().catch(universalCatch)
+                  }
                   width={Dimensions.get("window").width - 50}
                   backgroundColor="primary.600"
                   _pressed={{ backgroundColor: "secondary.400" }}
@@ -101,12 +109,15 @@ const SplashLoginScreen = () => {
                     color="#ffffff"
                     textAlign="center"
                     fontFamily="body"
-                    fontSize="xl">Continue as Guest</Text>
+                    fontSize="xl"
+                  >
+                    Continue as Guest
+                  </Text>
                 </Button>
               </View>
             )}
           </View>
-          { loading && (
+          {loading && (
             <Center position="absolute" width="full" height="full">
               <ActivityIndicator size="large" />
             </Center>

@@ -3,8 +3,8 @@ import { DownloadableImage, FirestoreImage, FirestoreImageJsonV1 } from "@ukdanc
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { universalCatch } from "../../../../common/logging";
-import { lookupHourByTime } from "../../../../common/marathonTime";
+import { universalCatch } from "../@ukdanceblue/common/logging";
+import { lookupHourByTime } from "../@ukdanceblue/common/marathonTime";
 import { useFirebase } from "../../../../context";
 
 // Found at /marathon/2023/hours/[HOUR NUMBER]

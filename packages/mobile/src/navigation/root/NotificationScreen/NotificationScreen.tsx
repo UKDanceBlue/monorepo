@@ -9,8 +9,8 @@ import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import Animated, { useSharedValue } from "react-native-reanimated";
 
-import JumbotronGeometric from "../../../common/components/JumbotronGeometric";
-import { log, universalCatch } from "../../../common/logging";
+import JumbotronGeometric from "@ukdanceblue/common/components/JumbotronGeometric";
+import { log, universalCatch } from "@ukdanceblue/common/logging";
 import { useDeviceData, useLoading, useUserData } from "../../../context";
 import { useRefreshUserData } from "../../../context/user";
 

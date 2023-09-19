@@ -1,7 +1,7 @@
-import type { ApiError } from "../../response/JsonResponse.js";
-import { GraphQLErrorResponse } from "../object-types/ApiResponse.js";
-import type { AbstractGraphQLCreatedResponse, AbstractGraphQLOkResponse } from "../object-types/ApiResponse.js";
-import { Resource } from "../object-types/Resource.js";
+import type { ApiError } from "@ukdanceblue/common";
+import { GraphQLErrorResponse } from "@ukdanceblue/common";
+import type { AbstractGraphQLCreatedResponse, AbstractGraphQLOkResponse } from "@ukdanceblue/common";
+import { Resource } from "@ukdanceblue/common";
 
 export function resolverCreateHelper<R extends Resource, Resp extends AbstractGraphQLCreatedResponse<{ data?: R; uuid: string; }>, E extends boolean>(responseClass: {
   newOk: (data: { data?: R; uuid: string; }) => Resp;

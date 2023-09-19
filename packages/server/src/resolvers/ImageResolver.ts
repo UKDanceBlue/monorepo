@@ -1,8 +1,8 @@
 import { Arg, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
 
-import type { AbstractGraphQLArrayOkResponse } from "../object-types/ApiResponse.js";
-import { GraphQLErrorResponse, defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "../object-types/ApiResponse.js";
-import { ImageResource } from "../object-types/Image.js";
+import type { AbstractGraphQLArrayOkResponse } from "@ukdanceblue/common";
+import { GraphQLErrorResponse, defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "@ukdanceblue/common";
+import { ImageResource } from "@ukdanceblue/common/lib/api/graphql/object-types/Image.js";
 import type { ImageServiceInterface } from "../service-declarations/ImageServiceInterface.js";
 import { imageServiceToken } from "../service-declarations/ImageServiceInterface.js";
 

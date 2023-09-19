@@ -1,14 +1,14 @@
 import { DateTime } from "luxon";
 import { useEffect, useRef, useState } from "react";
 
-import { marathonInterval } from "../../../../common/marathonTime";
+import { marathonInterval } from "../@ukdanceblue/common/marathonTime";
 
 import { HourScreenComponent } from "./HourScreenComponent";
 import { MarathonCountdownScreen } from "./MarathonCountdownScreen";
 
 export const MarathonScreen = () => {
   const showingCountdown = useRef(false);
-  const [ showCountdown, setShowCountdown ] = useState(false);
+  const [showCountdown, setShowCountdown] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -26,10 +26,8 @@ export const MarathonScreen = () => {
   }, []);
 
   if (showCountdown) {
-    return (<MarathonCountdownScreen />);
+    return <MarathonCountdownScreen />;
   } else {
-    return (
-      <HourScreenComponent/>
-    );
+    return <HourScreenComponent />;
   }
 };

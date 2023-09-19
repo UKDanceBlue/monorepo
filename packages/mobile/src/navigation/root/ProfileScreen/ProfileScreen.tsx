@@ -1,10 +1,18 @@
 import { startCase } from "lodash";
-import { Button, Center, Container, Spinner, Text, VStack, theme } from "native-base";
+import {
+  Button,
+  Center,
+  Container,
+  Spinner,
+  Text,
+  VStack,
+  theme,
+} from "native-base";
 
-import { useLinkBlueLogin } from "../../../common/auth";
-import JumbotronGeometric from "../../../common/components/JumbotronGeometric";
-import { useThemeFonts } from "../../../common/customHooks";
-import { showMessage } from "../../../common/util/alertUtils";
+import { useLinkBlueLogin } from "@ukdanceblue/common/auth";
+import JumbotronGeometric from "@ukdanceblue/common/components/JumbotronGeometric";
+import { useThemeFonts } from "@ukdanceblue/common/customHooks";
+import { showMessage } from "@ukdanceblue/common/util/alertUtils";
 import { useAuthData, useFirebase, useUserData } from "../../../context";
 
 import { ProfileFooter } from "./ProfileFooter";
@@ -15,15 +23,11 @@ import { ProfileFooter } from "./ProfileFooter";
 const ProfileScreen = () => {
   const authData = useAuthData();
   const userData = useUserData();
-  const {
-    fbAuth, fbFunctions
-  } = useFirebase();
+  const { fbAuth, fbFunctions } = useFirebase();
 
-  const {
-    headingBold, body, mono
-  } = useThemeFonts();
+  const { headingBold, body, mono } = useThemeFonts();
 
-  const [ loading, trigger ] = useLinkBlueLogin(fbAuth, fbFunctions);
+  const [loading, trigger] = useLinkBlueLogin(fbAuth, fbFunctions);
 
   function jumboText() {
     let welcomeString = "Welcome to DanceBlue!";
@@ -36,8 +40,12 @@ const ProfileScreen = () => {
 
   function nameString() {
     let userName = "Anonymous :)";
-    if (userData.firstName != null && userData.lastName != null && !authData.isAnonymous) {
-      userName = `${ userData.firstName } ${ userData.lastName }`;
+    if (
+      userData.firstName != null &&
+      userData.lastName != null &&
+      !authData.isAnonymous
+    ) {
+      userName = `${userData.firstName} ${userData.lastName}`;
     }
 
     return userName;
@@ -52,16 +60,25 @@ const ProfileScreen = () => {
   } else if (authData.isLoggedIn) {
     return (
       <>
-        <JumbotronGeometric title={jumboText()}/>
+        <JumbotronGeometric title={jumboText()} />
         <VStack flex={0.95} justifyContent="space-between" display="flex">
           <Container maxWidth="full">
-            <Text width="full" textAlign="center" fontSize={theme.fontSizes["2xl"]}>You&apos;re currently logged in as:</Text>
+            <Text
+              width="full"
+              textAlign="center"
+              fontSize={theme.fontSizes["2xl"]}
+            >
+              You&apos;re currently logged in as:
+            </Text>
             <Text
               width="full"
               textAlign="center"
               fontSize={theme.fontSizes["2xl"]}
               fontFamily={body}
-              color="primary.600">{nameString()}</Text>
+              color="primary.600"
+            >
+              {nameString()}
+            </Text>
             {authData.authClaims?.dbRole === "committee" && (
               <Text
                 width="full"
@@ -69,30 +86,45 @@ const ProfileScreen = () => {
                 textAlign="center"
                 color="primary.600"
                 fontSize={theme.fontSizes.lg}
-                fontFamily={mono}>
+                fontFamily={mono}
+              >
                 {[
-                  typeof authData.authClaims.committee === "string" ? startCase(authData.authClaims.committee) : undefined,
-                  typeof authData.authClaims.committeeRank === "string" ? startCase(authData.authClaims.committeeRank) : undefined
-                ].filter((s) => s != null).join(" - ")}
+                  typeof authData.authClaims.committee === "string"
+                    ? startCase(authData.authClaims.committee)
+                    : undefined,
+                  typeof authData.authClaims.committeeRank === "string"
+                    ? startCase(authData.authClaims.committeeRank)
+                    : undefined,
+                ]
+                  .filter((s) => s != null)
+                  .join(" - ")}
               </Text>
             )}
           </Container>
-          {
-            userData.team && userData.linkblue && userData.team.individualTotals &&
-          (
-            <Container maxWidth="full">
-              <Text width="full" textAlign="center" fontSize={theme.fontSizes["2xl"]}>Spirit Point Count:</Text>
-              <Text
-                width="full"
-                textAlign="center"
-                fontFamily={headingBold}
-                color="primary.600"
-                fontSize={theme.fontSizes["2xl"]}>{userData.team.individualTotals[userData.linkblue]} points</Text>
-            </Container>
-          )
-          }
+          {userData.team &&
+            userData.linkblue &&
+            userData.team.individualTotals && (
+              <Container maxWidth="full">
+                <Text
+                  width="full"
+                  textAlign="center"
+                  fontSize={theme.fontSizes["2xl"]}
+                >
+                  Spirit Point Count:
+                </Text>
+                <Text
+                  width="full"
+                  textAlign="center"
+                  fontFamily={headingBold}
+                  color="primary.600"
+                  fontSize={theme.fontSizes["2xl"]}
+                >
+                  {userData.team.individualTotals[userData.linkblue]} points
+                </Text>
+              </Container>
+            )}
           <Container maxWidth="full" alignItems="center">
-            <ProfileFooter/>
+            <ProfileFooter />
           </Container>
         </VStack>
       </>
@@ -102,24 +134,23 @@ const ProfileScreen = () => {
     return (
       <Center>
         <VStack>
-          <Text>
-          You are not logged in.
-          </Text>
+          <Text>You are not logged in.</Text>
           <Button
             onPress={() => {
               trigger();
             }}
             style={{ marginTop: 10 }}
           >
-          Login with linkblue
+            Login with linkblue
           </Button>
           <Button
             onPress={() => {
               fbAuth.signInAnonymously().catch((error) => {
                 showMessage(error);
               });
-            }}>
-          Login anonymously
+            }}
+          >
+            Login anonymously
           </Button>
         </VStack>
       </Center>

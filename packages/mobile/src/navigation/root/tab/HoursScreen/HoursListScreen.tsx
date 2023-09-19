@@ -5,9 +5,9 @@ import { Button, Divider, Image, Text, View } from "native-base";
 import { useEffect, useState } from "react";
 import { FlatList, useWindowDimensions } from "react-native";
 
-import { useCachedFiles } from "../../../../common/cacheUtils";
-import { useAppSelector, useCurrentDate } from "../../../../common/customHooks";
-import { universalCatch } from "../../../../common/logging";
+import { useCachedFiles } from "../@ukdanceblue/common/cacheUtils";
+import { useAppSelector, useCurrentDate } from "../@ukdanceblue/common/customHooks";
+import { universalCatch } from "../@ukdanceblue/common/logging";
 import { FirestoreHour } from "../../../../types/firebaseTypes";
 import { TabNavigatorProps } from "../../../../types/navigationTypes";
 

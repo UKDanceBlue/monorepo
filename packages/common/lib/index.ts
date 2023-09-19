@@ -17,9 +17,7 @@ export * from "./util/TypeUtils.js";
 export * from "./util/typeTransformers.js";
 export * from "./util/validation.js";
 
-export * as GraphQLResource from "./api/graphql/object-types/index.js";
-export * as GraphQLService from "./api/graphql/service-declarations/index.js";
-export * as GraphQLResolver from "./api/graphql/resolvers/index.js";
+export * from "./api/graphql/object-types/index.js";
 
 export { TeamType } from "./api/graphql/object-types/Team.js";
 

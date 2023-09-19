@@ -4,7 +4,7 @@ import { FirestoreNotification } from "@ukdanceblue/common";
 import { useEffect, useMemo, useState } from "react";
 import { SharedValue } from "react-native-reanimated";
 
-import { universalCatch } from "../../../common/logging";
+import { universalCatch } from "@ukdanceblue/common/logging";
 import { useFirebase } from "../../../context";
 
 import { NotificationListDataEntry } from "./NotificationScreen";

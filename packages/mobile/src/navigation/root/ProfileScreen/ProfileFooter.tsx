@@ -1,19 +1,31 @@
 import { Ionicons } from "@expo/vector-icons";
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import { openURL } from "expo-linking";
-import { Button, HStack, Icon, IconButton, Text, View, useColorMode } from "native-base";
+import {
+  Button,
+  HStack,
+  Icon,
+  IconButton,
+  Text,
+  View,
+  useColorMode,
+} from "native-base";
 import { useState } from "react";
 import { TextInput } from "react-native";
 
-import { useColorModeValue } from "../../../common/customHooks";
-import { universalCatch } from "../../../common/logging";
-import { useAuthData, useFirebase, useTryToSetDemoMode } from "../../../context";
+import { useColorModeValue } from "@ukdanceblue/common/customHooks";
+import { universalCatch } from "@ukdanceblue/common/logging";
+import {
+  useAuthData,
+  useFirebase,
+  useTryToSetDemoMode,
+} from "../../../context";
 
 export const ProfileFooter = () => {
   const tryToEnterDemoMode = useTryToSetDemoMode();
   const { fbAuth } = useFirebase();
-  const [ reportLongPressed, setReportLongPressed ] = useState(false);
-  const [ suggestLongPressed, setSuggestLongPressed ] = useState(false);
+  const [reportLongPressed, setReportLongPressed] = useState(false);
+  const [suggestLongPressed, setSuggestLongPressed] = useState(false);
 
   const { toggleColorMode } = useColorMode();
   const colorModeIcon = useColorModeValue("moon", "md-sunny");
@@ -39,14 +51,16 @@ export const ProfileFooter = () => {
       <HStack justifyContent="center">
         <Button
           onPress={() => {
-            openURL("https://danceblue.networkforgood.com").catch(universalCatch);
+            openURL("https://danceblue.networkforgood.com").catch(
+              universalCatch
+            );
           }}
           width="2/5"
           backgroundColor="primary.600"
           _text={{ color: "secondary.400" }}
           _pressed={{ opacity: 0.6 }}
         >
-            Donate #FTK!
+          Donate #FTK!
         </Button>
         <Button
           onPress={() => {
@@ -73,10 +87,11 @@ export const ProfileFooter = () => {
           onLongPress={() => {
             setReportLongPressed(true);
           }}
-        >Report issue
+        >
+          Report issue
         </Button>
 
-        <View width="10%"/>
+        <View width="10%" />
 
         <Button
           variant="outline"
@@ -89,24 +104,31 @@ export const ProfileFooter = () => {
           onLongPress={() => {
             setSuggestLongPressed(!!reportLongPressed);
           }}
-        >Suggest change
+        >
+          Suggest change
         </Button>
       </HStack>
 
-      <HStack marginTop="2" alignItems="center">{ __DEV__ && (
-        <>
-          <IconButton icon={<Icon
-            size="6"
-            as={Ionicons}
-            name={colorModeIcon}
-            onPress={toggleColorMode}/>}/>
-          {/* <Switch onToggle={toggleColorMode}/> */}
-          <View width="3%"/>
-        </>
-      )}
-      <Text
-        style={{ textAlign: "center" }}
-      >{`Version: ${nativeApplicationVersion ?? ""} (${nativeBuildVersion ?? ""})`}</Text>
+      <HStack marginTop="2" alignItems="center">
+        {__DEV__ && (
+          <>
+            <IconButton
+              icon={
+                <Icon
+                  size="6"
+                  as={Ionicons}
+                  name={colorModeIcon}
+                  onPress={toggleColorMode}
+                />
+              }
+            />
+            {/* <Switch onToggle={toggleColorMode}/> */}
+            <View width="3%" />
+          </>
+        )}
+        <Text style={{ textAlign: "center" }}>{`Version: ${
+          nativeApplicationVersion ?? ""
+        } (${nativeBuildVersion ?? ""})`}</Text>
       </HStack>
     </>
   );

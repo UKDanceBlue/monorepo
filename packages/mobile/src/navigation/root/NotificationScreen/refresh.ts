@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction } from "react";
 import { Alert } from "react-native";
 import { SharedValue } from "react-native-reanimated";
 
-import { log, universalCatch } from "../../../common/logging";
+import { log, universalCatch } from "@ukdanceblue/common/logging";
 
 import { NotificationListDataEntry } from "./NotificationScreen";
 
