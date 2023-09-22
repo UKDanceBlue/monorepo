@@ -1,14 +1,14 @@
 import type { ApiError, BaseResponse, CreatedApiResponse, ErrorApiResponse, OkApiResponse, PaginatedApiResponse } from "@ukdanceblue/common";
 import { ClientAction, ErrorCode, VoidScalar } from "@ukdanceblue/common";
 import type { ClassType } from "type-graphql";
-import { Field, ObjectType, createUnionType, registerEnumType } from "type-graphql";
+import { Field, InterfaceType, ObjectType, createUnionType, registerEnumType } from "type-graphql";
 
 
 
 
 registerEnumType(ClientAction, { name: "ClientAction", description: "Actions that the client MUST take if specified" });
 
-@ObjectType({ description: "API response" })
+@InterfaceType({ description: "API response" })
 export class GraphQLBaseResponse implements BaseResponse {
   @Field(() => Boolean, { description: "Whether the operation was successful" })
   ok!: boolean;
@@ -25,7 +25,7 @@ export class GraphQLBaseResponse implements BaseResponse {
   }
 }
 
-@ObjectType({ description: "API response" })
+@InterfaceType({ description: "API response", implements: GraphQLBaseResponse })
 export abstract class AbstractGraphQLOkResponse<T> extends GraphQLBaseResponse implements OkApiResponse<T> {
   @Field(() => Boolean, { description: "Whether the operation was successful", defaultValue: true })
   ok!: true;
@@ -55,7 +55,7 @@ export abstract class AbstractGraphQLOkResponse<T> extends GraphQLBaseResponse i
  * @param type
  */
 export function defineGraphQlOkResponse<T extends object>(name: string, type?: ClassType<T>) {
-  @ObjectType(name, { description: "API response" })
+  @ObjectType(name, { description: "API response", implements: AbstractGraphQLOkResponse })
   class GraphQLOkResponse extends AbstractGraphQLOkResponse<T> {
     @Field(() => Boolean, { description: "Whether the operation was successful", defaultValue: true })
     ok!: true;
@@ -66,7 +66,7 @@ export function defineGraphQlOkResponse<T extends object>(name: string, type?: C
   return GraphQLOkResponse;
 }
 
-@ObjectType({ description: "API response" })
+@InterfaceType({ description: "API response", implements: GraphQLBaseResponse })
 export abstract class AbstractGraphQLArrayOkResponse<T> extends AbstractGraphQLOkResponse<T[]> implements OkApiResponse<T[]> {
   toJson(): OkApiResponse<T[]> {
     const baseResponse: OkApiResponse<T[]> = {
@@ -84,7 +84,7 @@ export abstract class AbstractGraphQLArrayOkResponse<T> extends AbstractGraphQLO
  * @param type
  */
 export function defineGraphQLArrayOkResponse<T extends object>(name: string, type: ClassType<T>) {
-  @ObjectType(name, { description: "API response" })
+  @ObjectType(name, { description: "API response", implements: AbstractGraphQLArrayOkResponse })
   class GraphQLArrayOkResponse extends AbstractGraphQLArrayOkResponse<T> {
     @Field(() => Boolean, { description: "Whether the operation was successful", defaultValue: true })
     ok!: true;
@@ -95,7 +95,7 @@ export function defineGraphQLArrayOkResponse<T extends object>(name: string, typ
   return GraphQLArrayOkResponse;
 }
 
-@ObjectType({ description: "API response" })
+@InterfaceType({ description: "API response", implements: AbstractGraphQLOkResponse })
 export abstract class AbstractGraphQLCreatedResponse<T> extends AbstractGraphQLOkResponse<T> implements CreatedApiResponse<T> {
   uuid!: string;
 
@@ -116,7 +116,7 @@ export abstract class AbstractGraphQLCreatedResponse<T> extends AbstractGraphQLO
  * @param type
  */
 export function defineGraphQlCreatedResponse<T extends object>(name: string, type: ClassType<T>) {
-  @ObjectType(name, { description: "API response" })
+  @ObjectType(name, { description: "API response", implements: AbstractGraphQLCreatedResponse })
   class GraphQLCreatedResponse extends AbstractGraphQLCreatedResponse<T> {
     @Field(() => Boolean, { description: "Whether the operation was successful", defaultValue: true })
     ok!: true;
@@ -130,7 +130,7 @@ export function defineGraphQlCreatedResponse<T extends object>(name: string, typ
   return GraphQLCreatedResponse;
 }
 
-@ObjectType({ description: "API response" })
+@InterfaceType({ description: "API response", implements: AbstractGraphQLOkResponse })
 export abstract class AbstractGraphQLPaginatedResponse<T> extends AbstractGraphQLOkResponse<T[]> {
   total!: number;
   pageSize!: number;
@@ -157,7 +157,7 @@ export abstract class AbstractGraphQLPaginatedResponse<T> extends AbstractGraphQ
  * @param type
  */
 export function defineGraphQlPaginatedResponse<T extends object>(name: string, type: ClassType<T>) {
-  @ObjectType(name, { description: "API response" })
+  @ObjectType(name, { description: "API response", implements: AbstractGraphQLPaginatedResponse })
   class GraphQLPaginatedResponse extends AbstractGraphQLPaginatedResponse<T> {
     @Field(() => Boolean, { description: "Whether the operation was successful", defaultValue: true })
     ok!: true;
@@ -179,7 +179,7 @@ export function defineGraphQlPaginatedResponse<T extends object>(name: string, t
 
 registerEnumType(ErrorCode, { name: "ErrorCode", description: "Error codes" })
 
-@ObjectType({ description: "API response" })
+@ObjectType({ description: "API response", implements: GraphQLBaseResponse })
 export class GraphQLErrorResponse extends GraphQLBaseResponse {
   @Field(() => Boolean, { description: "Whether the operation was successful", defaultValue: false })
   ok!: false;

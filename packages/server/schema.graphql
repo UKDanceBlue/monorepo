@@ -3,6 +3,33 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+"""API response"""
+interface AbstractGraphQLArrayOkResponse implements GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+"""API response"""
+interface AbstractGraphQLCreatedResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+"""API response"""
+interface AbstractGraphQLOkResponse implements GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
 """The source of authentication"""
 enum AuthSource {
   Anonymous
@@ -30,7 +57,7 @@ input CreateConfigurationInput {
 }
 
 """API response"""
-type CreateConfigurationResponse {
+type CreateConfigurationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -51,7 +78,7 @@ input CreateDeviceInput {
 }
 
 """API response"""
-type CreateDeviceResponse {
+type CreateDeviceResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -76,7 +103,7 @@ input CreateEventInput {
 }
 
 """API response"""
-type CreateEventResponse {
+type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -103,7 +130,7 @@ input CreateImageInput {
 }
 
 """API response"""
-type CreateImageResponse {
+type CreateImageResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -124,7 +151,7 @@ input CreatePersonInput {
 }
 
 """API response"""
-type CreatePersonResponse {
+type CreatePersonResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -153,7 +180,7 @@ enum DbRole {
 }
 
 """API response"""
-type DeleteConfigurationResponse {
+type DeleteConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -167,7 +194,7 @@ type DeleteConfigurationResponse {
 union DeleteConfigurationResponseOrError = DeleteConfigurationResponse | GraphQLErrorResponse
 
 """API response"""
-type DeleteDeviceResponse {
+type DeleteDeviceResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -181,7 +208,7 @@ type DeleteDeviceResponse {
 union DeleteDeviceResponseOrError = DeleteDeviceResponse | GraphQLErrorResponse
 
 """API response"""
-type DeleteEventResponse {
+type DeleteEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -195,7 +222,7 @@ type DeleteEventResponse {
 union DeleteEventResponseOrError = DeleteEventResponse | GraphQLErrorResponse
 
 """API response"""
-type DeleteImageResponse {
+type DeleteImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -209,7 +236,7 @@ type DeleteImageResponse {
 union DeleteImageResponseOrError = DeleteImageResponse | GraphQLErrorResponse
 
 """API response"""
-type DeletePersonResponse {
+type DeletePersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -255,7 +282,7 @@ type EventResource {
 }
 
 """API response"""
-type GetAllConfigurationsResponse {
+type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -269,7 +296,7 @@ type GetAllConfigurationsResponse {
 union GetAllConfigurationsResponseOrError = GetAllConfigurationsResponse | GraphQLErrorResponse
 
 """API response"""
-type GetConfigurationByUuidResponse {
+type GetConfigurationByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -283,7 +310,7 @@ type GetConfigurationByUuidResponse {
 union GetConfigurationByUuidResponseOrError = GetConfigurationByUuidResponse | GraphQLErrorResponse
 
 """API response"""
-type GetDeviceByUuidResponse {
+type GetDeviceByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -297,7 +324,7 @@ type GetDeviceByUuidResponse {
 union GetDeviceByUuidResponseOrError = GetDeviceByUuidResponse | GraphQLErrorResponse
 
 """API response"""
-type GetEventByUuidResponse {
+type GetEventByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -311,7 +338,7 @@ type GetEventByUuidResponse {
 union GetEventByUuidResponseOrError = GetEventByUuidResponse | GraphQLErrorResponse
 
 """API response"""
-type GetImageByUuidResponse {
+type GetImageByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -325,7 +352,7 @@ type GetImageByUuidResponse {
 union GetImageByUuidResponseOrError = GetImageByUuidResponse | GraphQLErrorResponse
 
 """API response"""
-type GetPersonByUuidResponse {
+type GetPersonByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -339,7 +366,7 @@ type GetPersonByUuidResponse {
 union GetPersonByUuidResponseOrError = GetPersonByUuidResponse | GraphQLErrorResponse
 
 """API response"""
-type GetThumbHashByUuidResponse {
+type GetThumbHashByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -353,7 +380,16 @@ type GetThumbHashByUuidResponse {
 union GetThumbHashByUuidResponseOrError = GetThumbHashByUuidResponse | GraphQLErrorResponse
 
 """API response"""
-type GraphQLErrorResponse {
+interface GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+"""API response"""
+type GraphQLErrorResponse implements GraphQLBaseResponse {
   """Cause of the error, if any. May contain sensitive information"""
   cause: String
 
@@ -434,7 +470,7 @@ input SetConfigurationInput {
 }
 
 """API response"""
-type SetConfigurationResponse {
+type SetConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
