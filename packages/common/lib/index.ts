@@ -18,6 +18,7 @@ export * from "./util/typeTransformers.js";
 export * from "./util/validation.js";
 
 export * from "./api/graphql/object-types/index.js";
+export * from "./api/graphql/error.js";
 
 export { TeamType } from "./api/graphql/object-types/Team.js";
 

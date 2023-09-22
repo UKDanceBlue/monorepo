@@ -1,10 +1,11 @@
+import { ConfigurationResource, ErrorCode } from "@ukdanceblue/common";
 import { Arg, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
 
-import { ConfigurationResource, GraphQLErrorResponse, defineGraphQLArrayOkResponse, defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "@ukdanceblue/common";
 
-import { resolverCreateHelper, resolverSetHelper } from "./helpers.js";
-import { ResolverInterface } from "./BaseResolver.js";
 import { ConfigurationIntermediate, ConfigurationModel } from "../models/Configuration.js";
+
+import { GraphQLErrorResponse, defineGraphQLArrayOkResponse, defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "./ApiResponse.js";
+import type { ResolverInterface } from "./ResolverInterface.js";
 
 const GetConfigurationByUuidResponse = defineGraphQlOkResponse("GetConfigurationByUuidResponse", ConfigurationResource);
 const GetAllConfigurationsResponse = defineGraphQLArrayOkResponse("GetAllConfigurationsResponse", ConfigurationResource);
@@ -37,35 +38,46 @@ export class ConfigurationResolver implements ResolverInterface<ConfigurationRes
     const row = await ConfigurationModel.findOne({ where: { key: uuid } });
 
     if (row == null) {
-      return GraphQLErrorResponse.from("Configuration not found");
+      return GraphQLErrorResponse.from("Configuration not found", ErrorCode.NotFound);
     }
     return GetConfigurationByUuidResponse.newOk(new ConfigurationIntermediate(row).toResource());
   }
 
   @Query(() => GetAllResponseUnion, { name: "getAllConfigurations" })
   async getAll(): Promise<typeof GetAllResponseUnion> {
-    const resources = await this.service.getAll();
-    if (resources instanceof Error) {
-      return GraphQLErrorResponse.from(resources);
-    }
-    return GetAllConfigurationsResponse.newOk(resources);
+    const resources = await ConfigurationModel.findAll();
+
+    return GetAllConfigurationsResponse.newOk(resources.map(r => new ConfigurationIntermediate(r).toResource()));
   }
 
   @Mutation(() => CreateResponseUnion, { name: "createConfiguration" })
   async create(@Arg("input") input: CreateConfigurationInput): Promise<typeof CreateResponseUnion> {
-    const result = await this.service.create(input);
-    return resolverCreateHelper(CreateConfigurationResponse, result);
+    const row = await ConfigurationModel.create(input);
+
+    return CreateConfigurationResponse.newOk(new ConfigurationIntermediate(row).toResource());
   }
 
   @Mutation(() => SetResponseUnion, { name: "setConfiguration" })
   async set(@Arg("id") id: string, @Arg("input") input: SetConfigurationInput): Promise<typeof SetResponseUnion> {
-    const result = await this.service.set(id, input);
-    return resolverSetHelper(SetConfigurationResponse, result);
+    const row = await ConfigurationModel.findOne({ where: { key: id } });
+
+    if (row == null) {
+      return GraphQLErrorResponse.from("Configuration not found", ErrorCode.NotFound);
+    }
+    await row.update(input);
+
+    return SetConfigurationResponse.newOk(new ConfigurationIntermediate(row).toResource());
   }
 
   @Mutation(() => DeleteResponseUnion, { name: "deleteConfiguration" })
   async delete(@Arg("id") id: string): Promise<typeof DeleteResponseUnion> {
-    const result = await this.service.delete(id);
-    return resolverSetHelper(DeleteConfigurationResponse, result);
+    const row = await ConfigurationModel.findOne({ where: { key: id }, attributes: ["id"], include: [] });
+
+    if (row == null) {
+      return GraphQLErrorResponse.from("Configuration not found", ErrorCode.NotFound);
+    }
+    await row.destroy();
+
+    return DeleteConfigurationResponse.newOk(true);
   }
 }

@@ -4,7 +4,7 @@ import type {
   InferCreationAttributes,
 } from "@sequelize/core";
 import { DataTypes, Model } from "@sequelize/core";
-import { GraphQLResource } from "@ukdanceblue/common";
+import { ImageResource } from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
 import { IntermediateClass } from "../lib/modelTypes.js";
@@ -107,7 +107,7 @@ ImageModel.init(
 );
 
 export class ImageIntermediate extends IntermediateClass<
-  GraphQLResource.ImageResource,
+  ImageResource,
   ImageIntermediate
 > {
   public id?: CoreProperty<number>;
@@ -133,9 +133,9 @@ export class ImageIntermediate extends IntermediateClass<
     if (model.height) this.height = model.height;
   }
 
-  public toResource(): GraphQLResource.ImageResource {
+  public toResource(): ImageResource {
     if (this.hasImportantProperties()) {
-      return GraphQLResource.ImageResource.init({
+      return ImageResource.init({
         imageId: this.uuid,
         url: this.url ?? null,
         mimeType: this.mimeType,

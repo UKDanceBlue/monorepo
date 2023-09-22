@@ -7,7 +7,7 @@ import { defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLError
 import { EventResource } from "@ukdanceblue/common/lib/api/graphql/object-types/Event.js";
 import { eventServiceToken } from "../service-declarations/EventServiceInterface.js";
 
-import { createBaseResolver } from "./BaseResolver.js";
+import { createBaseResolver } from "./ResolverInterface.js";
 import { resolverCreateHelper, resolverSetHelper } from "./helpers.js";
 
 const EventBaseResolver = createBaseResolver(

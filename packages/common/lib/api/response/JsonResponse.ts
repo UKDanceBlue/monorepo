@@ -1,5 +1,6 @@
 import type { Primitive, PrimitiveObject } from "../../index.js";
 import { isPrimitive, isPrimitiveObject } from "../../index.js";
+import { ErrorCode } from "../graphql/error.js";
 
 export enum ClientAction {
   LOGOUT = "logout",
@@ -197,6 +198,11 @@ export function paginatedResponseFrom<DataType>({
 
 export interface ApiError<HasCause extends boolean = boolean> {
   /**
+   * The error code, this should be a short machine-readable code that
+   * can be used to identify the error.
+   */
+  code: ErrorCode;
+  /**
    * The error message, this should be a short human-readable, but not
    * necessarily user-friendly, message.
    */
@@ -223,6 +229,8 @@ export function isApiError(error: unknown): error is ApiError {
   if (
     typeof error !== "object" ||
     error === null ||
+    !("code" in error) ||
+    typeof error.code !== "string" ||
     !("errorMessage" in error) ||
     typeof error.errorMessage !== "string"
   ) {
@@ -276,12 +284,14 @@ export function isErrorApiResponse(
  * @return The error API response
  */
 export function errorResponseFrom({
+  code = ErrorCode.Unknown,
   errorMessage,
   errorDetails = undefined,
   errorExplanation = undefined,
   errorCause = undefined,
 }: ApiError): ErrorApiResponse {
   const response: ErrorApiResponse = {
+    code,
     errorMessage,
     ok: false,
   };

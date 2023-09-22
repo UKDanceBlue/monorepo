@@ -5,7 +5,8 @@ import type {
   NonAttribute,
 } from "@sequelize/core";
 import { DataTypes, Model } from "@sequelize/core";
-import { DbRole, GraphQLResource, TeamType } from "@ukdanceblue/common";
+import type { PointEntryResource } from "@ukdanceblue/common";
+import { DbRole, TeamResource, TeamType } from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
 import { IntermediateClass } from "../lib/modelTypes.js";
@@ -81,7 +82,7 @@ TeamModel.init(
 );
 
 export class TeamIntermediate extends IntermediateClass<
-  GraphQLResource.TeamResource,
+  TeamResource,
   TeamIntermediate
 > {
   public id?: CoreProperty<number>;
@@ -103,25 +104,25 @@ export class TeamIntermediate extends IntermediateClass<
     );
   }
 
-  public toResource(): GraphQLResource.TeamResource {
+  public toResource(): TeamResource {
     if (!this.hasImportantProperties()) {
       throw new Error("TeamIntermediate is not complete");
     }
 
-    let pointEntries: string[] | GraphQLResource.PointEntryResource[];
+    let pointEntries: string[] | PointEntryResource[];
     if (typeof this.pointEntries[0] === "string") {
       pointEntries = [] as string[];
       for (const pe of this.pointEntries) {
         pointEntries.push(pe as string);
       }
     } else {
-      pointEntries = [] as GraphQLResource.PointEntryResource[];
+      pointEntries = [] as PointEntryResource[];
       for (const pe of this.pointEntries) {
         pointEntries.push((pe as PointEntryIntermediate).toResource());
       }
     }
 
-    return GraphQLResource.TeamResource.init({
+    return TeamResource.init({
       teamId: this.uuid,
       name: this.name,
       type: this.type,

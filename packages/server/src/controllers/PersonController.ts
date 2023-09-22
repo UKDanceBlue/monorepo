@@ -1,7 +1,7 @@
 import type {
   AuthSource,
-  GraphQLResource,
   OptionalNullOrUndefined,
+  PersonResource,
 } from "@ukdanceblue/common";
 
 import { PersonModel } from ".././models/Person.js";
@@ -15,7 +15,7 @@ import { TeamModel } from "../models/Team.js";
  */
 export async function findPersonForLogin(
   authIds: Partial<Record<AuthSource, string>>,
-  userData: OptionalNullOrUndefined<GraphQLResource.PersonResource>
+  userData: OptionalNullOrUndefined<PersonResource>
 ): Promise<[PersonModel, boolean]> {
   let currentPerson = await PersonModel.findOne({ where: { authIds } });
   let created = false;

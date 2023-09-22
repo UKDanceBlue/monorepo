@@ -4,7 +4,7 @@ import type {
   InferCreationAttributes,
 } from "@sequelize/core";
 import { DataTypes, Model } from "@sequelize/core";
-import { GraphQLResource } from "@ukdanceblue/common";
+import { LoginFlowSessionResource } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 import { generators } from "openid-client";
 
@@ -66,7 +66,7 @@ LoginFlowSessionModel.init(
 );
 
 export class LoginFlowSessionIntermediate extends IntermediateClass<
-  GraphQLResource.LoginFlowSessionResource,
+  LoginFlowSessionResource,
   LoginFlowSessionIntermediate
 > {
   public id?: CoreProperty<number>;
@@ -82,14 +82,14 @@ export class LoginFlowSessionIntermediate extends IntermediateClass<
     );
   }
 
-  toResource(): GraphQLResource.LoginFlowSessionResource {
+  toResource(): LoginFlowSessionResource {
     if (!this.hasImportantProperties()) {
       throw new Error(
         "Cannot convert LoginFlowSessionIntermediate to LoginFlowSessionResource: missing properties"
       );
     }
 
-    return GraphQLResource.LoginFlowSessionResource.init({
+    return LoginFlowSessionResource.init({
       sessionId: this.uuid,
       creationDate: DateTime.fromJSDate(this.createdAt),
       codeVerifier: this.codeVerifier,

@@ -10,7 +10,7 @@ import type {
 } from "@sequelize/core";
 import { DataTypes, Model } from "@sequelize/core";
 // import { DeviceResource } from "@ukdanceblue/common";
-import { GraphQLResource } from "@ukdanceblue/common";
+import { DeviceResource } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 
 import { sequelizeDb } from "../data-source.js";
@@ -91,7 +91,7 @@ DeviceModel.belongsTo(PersonModel, {
 });
 
 export class DeviceIntermediate extends IntermediateClass<
-  GraphQLResource.DeviceResource,
+  DeviceResource,
   DeviceIntermediate
 > {
   public id?: CoreProperty<number>;
@@ -112,9 +112,9 @@ export class DeviceIntermediate extends IntermediateClass<
     this.lastLogin = device.lastLogin;
   }
 
-  public toResource(): GraphQLResource.DeviceResource {
+  public toResource(): DeviceResource {
     if (this.hasImportantProperties()) {
-      return GraphQLResource.DeviceResource.init({
+      return DeviceResource.init({
         deviceId: this.uuid,
         expoPushToken: this.expoPushToken ?? null,
         lastUser: this.lastUser?.toResource() ?? null,

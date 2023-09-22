@@ -1,10 +1,11 @@
-import { Arg, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
 
 import { defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "@ukdanceblue/common";
 import { PersonResource } from "@ukdanceblue/common/lib/api/graphql/object-types/Person.js";
+import { Arg, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
+
 import { personServiceToken } from "../service-declarations/PersonServiceInterface.js";
 
-import { createBaseResolver } from "./BaseResolver.js";
+import { createBaseResolver } from "./ResolverInterface.js";
 import { resolverCreateHelper, resolverSetHelper } from "./helpers.js";
 
 const BaseResolver = createBaseResolver("Person", PersonResource, personServiceToken);

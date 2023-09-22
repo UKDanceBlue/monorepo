@@ -10,10 +10,13 @@ import type {
   UserData
 } from "@ukdanceblue/common";
 import {
-  CommitteeRole,
+  CommitteeRole
+  ,
   DbRole,
-  GraphQLResource,
+  PersonResource,
+  RoleResource,
 } from "@ukdanceblue/common";
+
 
 
 import { sequelizeDb } from "../data-source.js";
@@ -123,7 +126,7 @@ PersonModel.init(
 );
 
 export class PersonIntermediate extends IntermediateClass<
-  GraphQLResource.PersonResource,
+  PersonResource,
   PersonIntermediate
 > {
   public id?: CoreProperty<number>;
@@ -162,27 +165,27 @@ export class PersonIntermediate extends IntermediateClass<
       this.captainOf = init.captainOf.map((t) => new TeamIntermediate(t));
   }
 
-  get role(): NonAttribute<GraphQLResource.RoleResource> {
+  get role(): NonAttribute<RoleResource> {
     if (this.dbRole === undefined) {
       throw new Error("PersonIntermediate was not initialized with DB role");
     }
 
-    const roleInit: Partial<GraphQLResource.RoleResource> = {
+    const roleInit: Partial<RoleResource> = {
       dbRole: this.dbRole,
     };
     if (this.committeeRole !== undefined)
       roleInit.committeeRole = this.committeeRole;
     if (this.committeeName !== undefined)
       roleInit.committee = this.committeeName;
-    return GraphQLResource.RoleResource.init(roleInit);
+    return RoleResource.init(roleInit);
   }
 
-  toResource(): GraphQLResource.PersonResource {
+  toResource(): PersonResource {
     if (!this.hasImportantProperties()) {
       throw new Error("PersonIntermediate is not complete");
     }
 
-    return GraphQLResource.PersonResource.init({
+    return PersonResource.init({
       personId: this.uuid,
       firstName: this.firstName ?? null,
       lastName: this.lastName ?? null,

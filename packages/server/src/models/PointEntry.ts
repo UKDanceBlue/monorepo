@@ -8,7 +8,7 @@ import type {
   NonAttribute,
 } from "@sequelize/core";
 import { DataTypes, Model } from "@sequelize/core";
-import { GraphQLResource, TeamType } from "@ukdanceblue/common";
+import { PointEntryResource, TeamType } from "@ukdanceblue/common";
 
 
 import { sequelizeDb } from "../data-source.js";
@@ -104,7 +104,7 @@ PointEntryModel.init(
 );
 
 export class PointEntryIntermediate extends IntermediateClass<
-  GraphQLResource.PointEntryResource,
+  PointEntryResource,
   PointEntryIntermediate
 > {
   public id?: CoreProperty<number>;
@@ -147,12 +147,12 @@ export class PointEntryIntermediate extends IntermediateClass<
     );
   }
 
-  public toResource(): GraphQLResource.PointEntryResource {
+  public toResource(): PointEntryResource {
     if (!this.hasNonOptionalProperties()) {
       throw new Error("PointEntryIntermediate is not complete");
     }
 
-    return GraphQLResource.PointEntryResource.init({
+    return PointEntryResource.init({
       entryId: this.uuid,
       type: this.type,
       comment: this.comment,

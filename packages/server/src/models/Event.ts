@@ -27,7 +27,8 @@ import type {
 import { DataTypes, Model } from "@sequelize/core";
 // import type { ImageResource } from "@ukdanceblue/common";
 // import { EventResource } from "@ukdanceblue/common";
-import { GraphQLResource } from "@ukdanceblue/common";
+import type { ImageResource } from "@ukdanceblue/common";
+import { EventResource } from "@ukdanceblue/common";
 import type { Duration } from "luxon";
 
 import { sequelizeDb } from "../data-source.js";
@@ -177,7 +178,7 @@ EventModel.init(
 );
 
 export class EventIntermediate extends IntermediateClass<
-  GraphQLResource.EventResource,
+  EventResource,
   EventIntermediate
 > {
   public id?: CoreProperty<number>;
@@ -207,12 +208,12 @@ export class EventIntermediate extends IntermediateClass<
       this.images = model.images.map((image) => new ImageIntermediate(image));
   }
 
-  public toResource(): GraphQLResource.EventResource {
+  public toResource(): EventResource {
     if (!this.hasImportantProperties()) {
       throw new Error("Cannot convert incomplete Event to Resource");
     }
 
-    let images: string[] | GraphQLResource.ImageResource[] | null = null;
+    let images: string[] | ImageResource[] | null = null;
     if (this.images != null) {
       if (typeof this.images[0] === "string") {
         images = [] as string[];
@@ -221,13 +222,13 @@ export class EventIntermediate extends IntermediateClass<
         }
       } else {
         for (const image of this.images as ImageIntermediate[]) {
-          images = [] as GraphQLResource.ImageResource[];
+          images = [] as ImageResource[];
           images.push(image.toResource());
         }
       }
     }
 
-    return GraphQLResource.EventResource.init({
+    return EventResource.init({
       title: this.title,
       summary: this.summary ?? null,
       description: this.description ?? null,

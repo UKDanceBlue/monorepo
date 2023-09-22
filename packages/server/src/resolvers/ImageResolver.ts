@@ -1,12 +1,13 @@
-import { Arg, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
 
 import type { AbstractGraphQLArrayOkResponse } from "@ukdanceblue/common";
 import { GraphQLErrorResponse, defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "@ukdanceblue/common";
 import { ImageResource } from "@ukdanceblue/common/lib/api/graphql/object-types/Image.js";
+import { Arg, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
+
 import type { ImageServiceInterface } from "../service-declarations/ImageServiceInterface.js";
 import { imageServiceToken } from "../service-declarations/ImageServiceInterface.js";
 
-import { createBaseResolver } from "./BaseResolver.js";
+import { createBaseResolver } from "./ResolverInterface.js";
 
 const ImageResourceBaseResolver = createBaseResolver<ImageResource, ImageServiceInterface>("Image", ImageResource, imageServiceToken);
 

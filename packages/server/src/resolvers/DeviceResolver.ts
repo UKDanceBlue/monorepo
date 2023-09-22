@@ -1,44 +1,35 @@
-import { Arg, Field, InputType, Mutation, Resolver } from "type-graphql";
+import { DeviceResource, ErrorCode } from "@ukdanceblue/common";
+import type { ResolverInterface } from "type-graphql";
+import { Arg, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
 
-import { defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "@ukdanceblue/common";
-import { DeviceResource } from "@ukdanceblue/common/lib/api/graphql/object-types/Device.js";
-import type { DeviceServiceInterface } from "../service-declarations/DeviceServiceInterface.js";
-import { deviceServiceToken } from "../service-declarations/DeviceServiceInterface.js";
+import { DeviceModel } from "../models/Device.js";
 
-import { createBaseResolver } from "./BaseResolver.js";
-import { resolverCreateHelper, resolverSetHelper } from "./helpers.js";
+import { GraphQLErrorResponse, defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "./ApiResponse.js";
 
-const BaseResolver = createBaseResolver<DeviceResource, DeviceServiceInterface>("Device", DeviceResource, deviceServiceToken);
-
+const GetDeviceByUuidResponse = defineGraphQlOkResponse("GetDeviceByUuidResponse", DeviceResource);
 const CreateDeviceResponse = defineGraphQlCreatedResponse("CreateDeviceResponse", DeviceResource);
-const SetDeviceResponse = defineGraphQlOkResponse("SetDeviceResponse", DeviceResource);
+const DeleteDeviceResponse = defineGraphQlOkResponse("DeleteDeviceResponse", Boolean);
 
 @InputType()
-class CreateDeviceInput {
+class CreateDeviceInput implements Partial<DeviceResource> {
   @Field()
-  public expoPushToken!: string;
+  key!: string;
 }
 
-@InputType()
-class UpdateDeviceInput {
-  @Field()
-  public expoPushToken!: string;
-}
+const GetByUuidResponseUnion = withGraphQLErrorUnion(GetDeviceByUuidResponse, "GetDeviceByUuidResponse");
+const CreateResponseUnion = withGraphQLErrorUnion(CreateDeviceResponse, "CreateDeviceResponse");
+const DeleteResponseUnion = withGraphQLErrorUnion(DeleteDeviceResponse, "DeleteDeviceResponse");
 
-const CreateDeviceResponseUnion = withGraphQLErrorUnion(CreateDeviceResponse, "CreateDeviceResponse");
-const SetDeviceResponseUnion = withGraphQLErrorUnion(SetDeviceResponse, "SetDeviceResponse");
+@Resolver(() => DeviceResource)
+export class DeviceResolver implements ResolverInterface<DeviceResource> {
+  @Query(() => DeviceResource, { name: "getDeviceByUuid" })
+  async getByUuid(@Arg("uuid") uuid: string): Promise<typeof GetByUuidResponseUnion> {
+    const row = await DeviceModel.findOne({ where: { uuid } });
 
-@Resolver()
-export class DeviceResolver extends BaseResolver {
-  @Mutation(() => CreateDeviceResponseUnion)
-  public async createDevice(@Arg("input") input: CreateDeviceInput): Promise<typeof CreateDeviceResponseUnion> {
-    const result = await this.service.create(input);
-    return resolverCreateHelper(CreateDeviceResponse, result);
-  }
+    if (row == null) {
+      return GraphQLErrorResponse.from("Device not found", ErrorCode.NotFound);
+    }
 
-  @Mutation(() => SetDeviceResponseUnion)
-  public async setDevice(@Arg("id") id: string, @Arg("input") input: UpdateDeviceInput): Promise<typeof SetDeviceResponseUnion> {
-    const result = await this.service.set(id, input);
-    return resolverSetHelper(SetDeviceResponse, result);
+    return new DeviceResource(row);
   }
 }
