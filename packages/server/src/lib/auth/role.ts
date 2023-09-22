@@ -1,4 +1,4 @@
-import type { Authorization, GraphQLResource } from "@ukdanceblue/common";
+import type { Authorization, RoleResource } from "@ukdanceblue/common";
 import { AccessLevel, CommitteeRole, DbRole } from "@ukdanceblue/common";
 
 import { logError } from "../../logger.js";
@@ -10,7 +10,7 @@ import { logError } from "../../logger.js";
  * @return The equivalent AccessLevel
  * @throws Error if the DbRole is not a valid member of the DbRole enum
  */
-export function roleToAccessLevel(role: GraphQLResource.RoleResource): AccessLevel {
+export function roleToAccessLevel(role: RoleResource): AccessLevel {
   switch (role.dbRole) {
     case DbRole.None: {
       return AccessLevel.None;
@@ -54,7 +54,7 @@ export function roleToAccessLevel(role: GraphQLResource.RoleResource): AccessLev
  * @return An Authorization object representing the same role
  * @throws Error if one of committee or committeeRole is set without the other
  */
-export function roleToAuthorization(role: GraphQLResource.RoleResource): Authorization {
+export function roleToAuthorization(role: RoleResource): Authorization {
   let accessLevel: AccessLevel = AccessLevel.None;
   switch (role.dbRole) {
     case DbRole.Committee: {

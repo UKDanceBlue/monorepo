@@ -20,6 +20,12 @@ export * from "./util/validation.js";
 export * from "./api/graphql/object-types/index.js";
 export * from "./api/graphql/error.js";
 
+export * from "./api/graphql/custom-scalars/DateTimeScalar.js";
+export * from "./api/graphql/custom-scalars/DurationScalar.js";
+export * from "./api/graphql/custom-scalars/IntervalScalar.js";
+export * from "./api/graphql/custom-scalars/UrlScalar.js";
+export * from "./api/graphql/custom-scalars/VoidScalar.js";
+
 export { TeamType } from "./api/graphql/object-types/Team.js";
 
 export * from "./style/color.js";

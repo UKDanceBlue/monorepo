@@ -6,7 +6,7 @@ export function formDataToJson(
 ): Record<string, Primitive | Primitive[]> {
   const json: Record<string, Primitive | Primitive[]> = {};
 
-  for (const [key, value] of formData.entries()) {
+  for (const [key, value] of (formData as unknown as { entries: () => [string, string | Blob][] }).entries()) {
     if (omitEmptyValues && value === "") {
       continue;
     }

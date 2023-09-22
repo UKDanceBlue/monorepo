@@ -1,10 +1,10 @@
-import { ErrorCode } from "@ukdanceblue/common";
+import type { ApiError, BaseResponse, CreatedApiResponse, ErrorApiResponse, OkApiResponse, PaginatedApiResponse } from "@ukdanceblue/common";
+import { ClientAction, ErrorCode, VoidScalar } from "@ukdanceblue/common";
 import type { ClassType } from "type-graphql";
 import { Field, ObjectType, createUnionType, registerEnumType } from "type-graphql";
 
-import { VoidScalar } from "../../../common/lib/api/graphql/custom-scalars/VoidScalar.js";
-import type { ApiError, BaseResponse, CreatedApiResponse, ErrorApiResponse, OkApiResponse, PaginatedApiResponse } from "../../../common/lib/api/response/JsonResponse.js";
-import { ClientAction } from "../../../common/lib/api/response/JsonResponse.js";
+
+
 
 registerEnumType(ClientAction, { name: "ClientAction", description: "Actions that the client MUST take if specified" });
 

@@ -1,8 +1,8 @@
 import type { Attributes, FindOptions, Model } from "@sequelize/core";
 import type {
   FilterOptions,
-  GraphQLResource,
   PaginationOptions,
+  Resource,
   SortingOptions,
 } from "@ukdanceblue/common";
 
@@ -10,7 +10,7 @@ import type { IntermediateClass } from "../modelTypes.js";
 
 import type { ResourceToModelKeyMapping } from "./common.js";
 
-type QueryFor<T extends GraphQLResource.Resource> = SortingOptions &
+type QueryFor<T extends Resource> = SortingOptions &
   PaginationOptions &
   FilterOptions<T>;
 type FilterFor<T extends object> = NonNullable<FilterOptions<T>["filter"]>;
@@ -23,7 +23,7 @@ type FilterFor<T extends object> = NonNullable<FilterOptions<T>["filter"]>;
  * @return The mapped filter object
  */
 function mapFilterKeys<
-  R extends GraphQLResource.Resource,
+  R extends Resource,
   M extends Model,
   I extends IntermediateClass<R, I>
 >(
@@ -49,7 +49,7 @@ function mapFilterKeys<
  * @return The Sequelize FindOptions object
  */
 export function makeListOptions<
-  R extends GraphQLResource.Resource,
+  R extends Resource,
   M extends Model,
   I extends IntermediateClass<R, I>
 >(

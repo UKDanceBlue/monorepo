@@ -3,9 +3,22 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+"""The source of authentication"""
+enum AuthSource {
+  Anonymous
+  UkyLinkblue
+}
+
 """Actions that the client MUST take if specified"""
 enum ClientAction {
   LOGOUT
+}
+
+"""Roles within a committee"""
+enum CommitteeRole {
+  Chair
+  Coordinator
+  Member
 }
 
 type ConfigurationResource {
@@ -33,9 +46,60 @@ type CreateConfigurationResponse {
 
 union CreateConfigurationResponseOrError = CreateConfigurationResponse | GraphQLErrorResponse
 
+input CreateDeviceInput {
+  deviceId: String!
+}
+
+"""API response"""
+type CreateDeviceResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """The payload of the response"""
+  data: DeviceResource
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+
+  """The UUID of the created resource"""
+  uuid: String!
+}
+
+union CreateDeviceResponseOrError = CreateDeviceResponse | GraphQLErrorResponse
+
+input CreateEventInput {
+  description: String!
+  duration: Duration!
+  location: String!
+  name: String!
+  start: DateTime!
+}
+
+"""API response"""
+type CreateEventResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """The payload of the response"""
+  data: EventResource
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+
+  """The UUID of the created resource"""
+  uuid: String!
+}
+
+union CreateEventResponseOrError = CreateEventResponse | GraphQLErrorResponse
+
 input CreateImageInput {
-  fileName: String!
+  alt: String
+  height: Float!
+  imageData: String
   mimeType: String!
+  thumbHash: String
+  url: String
+  width: Float!
 }
 
 """API response"""
@@ -55,6 +119,39 @@ type CreateImageResponse {
 
 union CreateImageResponseOrError = CreateImageResponse | GraphQLErrorResponse
 
+input CreatePersonInput {
+  email: String!
+}
+
+"""API response"""
+type CreatePersonResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """The payload of the response"""
+  data: PersonResource
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+
+  """The UUID of the created resource"""
+  uuid: String!
+}
+
+union CreatePersonResponseOrError = CreatePersonResponse | GraphQLErrorResponse
+
+"""Luxon DateTime custom scalar type"""
+scalar DateTime
+
+"""DanceBlue roles"""
+enum DbRole {
+  Committee
+  None
+  Public
+  TeamCaptain
+  TeamMember
+}
+
 """API response"""
 type DeleteConfigurationResponse {
   """Client actions to perform"""
@@ -68,6 +165,34 @@ type DeleteConfigurationResponse {
 }
 
 union DeleteConfigurationResponseOrError = DeleteConfigurationResponse | GraphQLErrorResponse
+
+"""API response"""
+type DeleteDeviceResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """The payload of the response"""
+  data: Boolean
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+union DeleteDeviceResponseOrError = DeleteDeviceResponse | GraphQLErrorResponse
+
+"""API response"""
+type DeleteEventResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """The payload of the response"""
+  data: Boolean
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+union DeleteEventResponseOrError = DeleteEventResponse | GraphQLErrorResponse
 
 """API response"""
 type DeleteImageResponse {
@@ -84,6 +209,52 @@ type DeleteImageResponse {
 union DeleteImageResponseOrError = DeleteImageResponse | GraphQLErrorResponse
 
 """API response"""
+type DeletePersonResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """The payload of the response"""
+  data: Boolean
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+union DeletePersonResponseOrError = DeletePersonResponse | GraphQLErrorResponse
+
+type DeviceResource {
+  deviceId: ID!
+  expoPushToken: String
+  lastLogin: DateTime
+  lastUser: PersonResource
+}
+
+"""Luxon Duration custom scalar type"""
+scalar Duration
+
+"""Error codes"""
+enum ErrorCode {
+  InternalFailure
+  InvalidRequest
+  MissingRequiredInput
+  NotFound
+  NotLoggedIn
+  Unauthorized
+  Unknown
+}
+
+type EventResource {
+  description: String
+  duration: Duration
+  eventId: ID!
+  images: [ImageResource!]
+  location: String
+  occurrences: [DateTime!]!
+  summary: String
+  title: String!
+}
+
+"""API response"""
 type GetAllConfigurationsResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
@@ -98,7 +269,7 @@ type GetAllConfigurationsResponse {
 union GetAllConfigurationsResponseOrError = GetAllConfigurationsResponse | GraphQLErrorResponse
 
 """API response"""
-type GetConfigurationByIdResponse {
+type GetConfigurationByUuidResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -109,10 +280,38 @@ type GetConfigurationByIdResponse {
   ok: Boolean!
 }
 
-union GetConfigurationByIdResponseOrError = GetConfigurationByIdResponse | GraphQLErrorResponse
+union GetConfigurationByUuidResponseOrError = GetConfigurationByUuidResponse | GraphQLErrorResponse
 
 """API response"""
-type GetImageByIdResponse {
+type GetDeviceByUuidResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """The payload of the response"""
+  data: DeviceResource
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+union GetDeviceByUuidResponseOrError = GetDeviceByUuidResponse | GraphQLErrorResponse
+
+"""API response"""
+type GetEventByUuidResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """The payload of the response"""
+  data: EventResource
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+union GetEventByUuidResponseOrError = GetEventByUuidResponse | GraphQLErrorResponse
+
+"""API response"""
+type GetImageByUuidResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
@@ -123,7 +322,21 @@ type GetImageByIdResponse {
   ok: Boolean!
 }
 
-union GetImageByIdResponseOrError = GetImageByIdResponse | GraphQLErrorResponse
+union GetImageByUuidResponseOrError = GetImageByUuidResponse | GraphQLErrorResponse
+
+"""API response"""
+type GetPersonByUuidResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """The payload of the response"""
+  data: PersonResource
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+union GetPersonByUuidResponseOrError = GetPersonByUuidResponse | GraphQLErrorResponse
 
 """API response"""
 type GetThumbHashByUuidResponse {
@@ -150,6 +363,9 @@ type GraphQLErrorResponse {
   """Error details, explains the problem, but not for end users"""
   details: String
 
+  """The error code"""
+  errorCode: ErrorCode!
+
   """Error explanation, can be shown to end users"""
   explanation: String
 
@@ -172,19 +388,45 @@ type ImageResource {
 }
 
 type Mutation {
+  create(input: CreatePersonInput!): CreatePersonResponseOrError!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponseOrError!
+  createDevice(input: CreateDeviceInput!): CreateDeviceResponseOrError!
+  createEvent(input: CreateEventInput!): CreateEventResponseOrError!
   createImage(input: CreateImageInput!): CreateImageResponseOrError!
-  deleteConfiguration(id: String!): DeleteConfigurationResponseOrError
-  deleteImage(id: String!): DeleteImageResponseOrError
+  delete(id: String!): DeletePersonResponseOrError!
+  deleteConfiguration(id: String!): DeleteConfigurationResponseOrError!
+  deleteDevice(id: String!): DeleteDeviceResponseOrError!
+  deleteEvent(id: String!): DeleteEventResponseOrError!
+  deleteImage(id: String!): DeleteImageResponseOrError!
   setConfiguration(id: String!, input: SetConfigurationInput!): SetConfigurationResponseOrError!
-  setImage(id: String!, input: SetImageInput!): SetImageResponseOrError!
+}
+
+type PersonResource {
+  authIds: AuthSource!
+  captainOf: [TeamResource!]!
+  email: String!
+  firstName: String
+  lastName: String
+  linkblue: String
+  memberOf: [TeamResource!]!
+  personId: ID!
+  role: RoleResource!
 }
 
 type Query {
   getAllConfigurations: GetAllConfigurationsResponseOrError!
-  getConfigurationById(id: String!): GetConfigurationByIdResponseOrError
-  getImageById(id: String!): GetImageByIdResponseOrError
+  getConfigurationByUuid(uuid: String!): GetConfigurationByUuidResponseOrError!
+  getDeviceByUuid(uuid: String!): GetDeviceByUuidResponseOrError!
+  getEventByUuid(uuid: String!): GetEventByUuidResponseOrError!
+  getImageByUuid(uuid: String!): GetImageByUuidResponseOrError!
+  getPersonByUuid(uuid: String!): GetPersonByUuidResponseOrError!
   getThumbHashByUuid(uuid: String!): GetThumbHashByUuidResponseOrError
+}
+
+type RoleResource {
+  committee: String
+  committeeRole: CommitteeRole
+  dbRole: DbRole!
 }
 
 input SetConfigurationInput {
@@ -205,24 +447,21 @@ type SetConfigurationResponse {
 
 union SetConfigurationResponseOrError = GraphQLErrorResponse | SetConfigurationResponse
 
-input SetImageInput {
-  fileName: String!
-  mimeType: String!
+type TeamResource {
+  captains: [String!]!
+  members: [String!]!
+  name: String!
+  pointEntries: [String!]!
+  teamId: ID!
+  type: TeamType!
+  visibility: DbRole!
 }
 
-"""API response"""
-type SetImageResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
-
-  """The payload of the response"""
-  data: ImageResource
-
-  """Whether the operation was successful"""
-  ok: Boolean!
+"""Types of teams"""
+enum TeamType {
+  Morale
+  Spirit
 }
-
-union SetImageResponseOrError = GraphQLErrorResponse | SetImageResponse
 
 """URL custom scalar type"""
 scalar URL

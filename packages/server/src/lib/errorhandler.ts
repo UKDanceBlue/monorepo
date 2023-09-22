@@ -1,4 +1,4 @@
-import type { ErrorApiResponse } from "@ukdanceblue/common";
+import { type ErrorApiResponse, ErrorCode } from "@ukdanceblue/common";
 import type { ErrorRequestHandler } from "express";
 import createHttpError from "http-errors";
 import { getReasonPhrase } from "http-status-codes";
@@ -56,6 +56,7 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
     }
     case "json": {
       const responseObject: ErrorApiResponse = {
+        code: ErrorCode.Unknown,
         ok: false,
         errorMessage: errorReason,
       };

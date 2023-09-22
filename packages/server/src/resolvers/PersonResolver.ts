@@ -1,52 +1,58 @@
-
-import { defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "@ukdanceblue/common";
-import { PersonResource } from "@ukdanceblue/common/lib/api/graphql/object-types/Person.js";
+import { ErrorCode, PersonResource } from "@ukdanceblue/common";
 import { Arg, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
 
-import { personServiceToken } from "../service-declarations/PersonServiceInterface.js";
+import { PersonIntermediate, PersonModel } from "../models/Person.js";
 
-import { createBaseResolver } from "./ResolverInterface.js";
-import { resolverCreateHelper, resolverSetHelper } from "./helpers.js";
+import { GraphQLErrorResponse, defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "./ApiResponse.js";
+import type { ResolverInterface } from "./ResolverInterface.js";
 
-const BaseResolver = createBaseResolver("Person", PersonResource, personServiceToken);
-
-// This is a different naming convention than the other resolvers, but let's try it out.
-const PersonOkResponse = defineGraphQlOkResponse("Person", PersonResource);
-const PersonCreatedResponse = defineGraphQlCreatedResponse("PersonCreated", PersonResource);
+const CreatePersonResponse = defineGraphQlCreatedResponse("CreatePersonResponse", PersonResource);
+const GetPersonByUuidResponse = defineGraphQlOkResponse("GetPersonByUuidResponse", PersonResource);
+const DeletePersonResponse = defineGraphQlOkResponse("DeletePersonResponse", Boolean);
 
 @InputType()
 class CreatePersonInput {
   @Field()
-  name!: string;
+  email!: string;
 }
 
-@InputType()
-class SetPersonInput {
-  @Field({ nullable: true })
-  name?: string;
-}
+const CreatePersonResponseUnion = withGraphQLErrorUnion(CreatePersonResponse, "CreatePersonResponse");
+const GetPersonByUuidResponseUnion = withGraphQLErrorUnion(GetPersonByUuidResponse, "GetPersonByUuidResponse");
+const DeletePersonResponseUnion = withGraphQLErrorUnion(DeletePersonResponse, "DeletePersonResponse");
 
-const PersonOkResponseUnion = withGraphQLErrorUnion(PersonOkResponse, "PersonOkResponse");
-const PersonCreatedResponseUnion = withGraphQLErrorUnion(PersonCreatedResponse, "PersonCreatedResponse");
+@Resolver(() => PersonResource)
+export class PersonResolver implements ResolverInterface<PersonResource> {
+  @Query(() => GetPersonByUuidResponseUnion, { name: "getPersonByUuid" })
+  async getByUuid(@Arg("uuid") uuid: string): Promise<typeof GetPersonByUuidResponseUnion> {
+    const row = await PersonModel.findOne({ where: { uuid } });
 
-@Resolver()
-export class PersonResolver extends BaseResolver {
-  @Query(() => PersonCreatedResponseUnion)
-  async createPerson(
-    @Arg("input") input: CreatePersonInput,
-  ): Promise<typeof PersonCreatedResponseUnion> {
-    return resolverCreateHelper(PersonCreatedResponse, await this.service.create({
-      firstName: input.name,
-    }));
+    if (row == null) {
+      return GraphQLErrorResponse.from("Person not found", ErrorCode.NotFound);
+    }
+
+    return GetPersonByUuidResponse.newOk(new PersonIntermediate(row).toResource());
   }
 
-  @Mutation(() => PersonOkResponseUnion)
-  async setPerson(
-    @Arg("id") id: string,
-    @Arg("input") input: SetPersonInput,
-  ): Promise<typeof PersonOkResponseUnion> {
-    return resolverSetHelper(PersonOkResponse, await this.service.set(id, {
-      firstName: input.name,
-    }));
+  @Mutation(() => CreatePersonResponseUnion, { name: "create" })
+  async create(@Arg("input") input: CreatePersonInput): Promise<typeof CreatePersonResponseUnion> {
+    const result = await PersonModel.create({
+      email: input.email,
+      authIds: {}
+    });
+
+    return CreatePersonResponse.newOk(new PersonIntermediate(result).toResource());
+  }
+
+  @Mutation(() => DeletePersonResponseUnion, { name: "delete" })
+  async delete(@Arg("id") id: string): Promise<typeof DeletePersonResponseUnion> {
+    const row = await PersonModel.findOne({ where: { uuid: id }, attributes: ["id"] });
+
+    if (row == null) {
+      return GraphQLErrorResponse.from("Person not found", ErrorCode.NotFound);
+    }
+
+    await row.destroy();
+
+    return DeletePersonResponse.newOk(true);
   }
 }

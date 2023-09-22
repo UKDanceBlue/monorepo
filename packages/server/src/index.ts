@@ -15,9 +15,6 @@ logInfo("Loaded environment variables");
 await import("./models/init.js");
 logInfo("Initialized database models");
 
-await import("./model-services/index.js");
-logInfo("Registered model services");
-
 // Seed the database if passed the --seed flag
 if (argv.includes("--seed-db")) {
   logInfo("'--seed-db' flag detected, seeding database");

@@ -6,6 +6,7 @@
     "module": "NodeNext",
     "moduleResolution": "nodenext",
     "outDir": "./dist",
+    "rootDir": "./src",
     "sourceMap": true,
     "allowJs": true,
     "checkJs": true,
@@ -39,10 +40,5 @@
       "ws"
     ]
   },
-  "include": [
-    "src/**/*.ts",
-    "models/**/*.ts",
-    "migrations/**/*.ts",
-    "seeders/**/*.ts"
-  ]
+  "include": ["src"]
 }
