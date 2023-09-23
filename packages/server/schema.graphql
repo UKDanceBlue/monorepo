@@ -30,6 +30,15 @@ interface AbstractGraphQLOkResponse implements GraphQLBaseResponse {
   ok: Boolean!
 }
 
+"""API response"""
+interface AbstractGraphQLPaginatedResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
 """The source of authentication"""
 enum AuthSource {
   Anonymous
@@ -74,7 +83,14 @@ type CreateConfigurationResponse implements AbstractGraphQLCreatedResponse & Abs
 union CreateConfigurationResponseOrError = CreateConfigurationResponse | GraphQLErrorResponse
 
 input CreateDeviceInput {
+  """The UUID of the device"""
   deviceId: String!
+
+  """The Expo push token of the device"""
+  expoPushToken: String
+
+  """The ID of the last user to log in on this device"""
+  lastUserId: String
 }
 
 """API response"""
@@ -166,6 +182,14 @@ type CreatePersonResponse implements AbstractGraphQLCreatedResponse & AbstractGr
 }
 
 union CreatePersonResponseOrError = CreatePersonResponse | GraphQLErrorResponse
+
+input DateFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The value to filter by"""
+  value: DateTime!
+}
 
 """Luxon DateTime custom scalar type"""
 scalar DateTime
@@ -423,6 +447,35 @@ type ImageResource {
   width: Int!
 }
 
+"""API response"""
+type ListDevicesResponse implements AbstractGraphQLOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+
+  """The payload of the response"""
+  data: [DeviceResource!]
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+
+  """The current page number (1-indexed)"""
+  page: Float!
+
+  """The number of items per page"""
+  pageSize: Float!
+
+  """The total number of items"""
+  total: Float!
+}
+
+union ListDevicesResponseOrError = GraphQLErrorResponse | ListDevicesResponse
+
+input ListQueryArgs {
+  expoPushToken: StringFilterItem
+  lastLogin: DateFilterItem
+  lastUserId: StringFilterItem
+}
+
 type Mutation {
   create(input: CreatePersonInput!): CreatePersonResponseOrError!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponseOrError!
@@ -435,6 +488,14 @@ type Mutation {
   deleteEvent(id: String!): DeleteEventResponseOrError!
   deleteImage(id: String!): DeleteImageResponseOrError!
   setConfiguration(id: String!, input: SetConfigurationInput!): SetConfigurationResponseOrError!
+}
+
+enum NumericComparator {
+  EQUALS
+  GREATER_THAN
+  GREATER_THAN_OR_EQUAL_TO
+  LESS_THAN
+  LESS_THAN_OR_EQUAL_TO
 }
 
 type PersonResource {
@@ -457,6 +518,7 @@ type Query {
   getImageByUuid(uuid: String!): GetImageByUuidResponseOrError!
   getPersonByUuid(uuid: String!): GetPersonByUuidResponseOrError!
   getThumbHashByUuid(uuid: String!): GetThumbHashByUuidResponseOrError
+  listDevices(query: ListQueryArgs!): ListDevicesResponseOrError!
 }
 
 type RoleResource {
@@ -482,6 +544,19 @@ type SetConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLBase
 }
 
 union SetConfigurationResponseOrError = GraphQLErrorResponse | SetConfigurationResponse
+
+enum StringComparator {
+  EQUALS
+  INCLUDES
+}
+
+input StringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The value to filter by"""
+  value: String!
+}
 
 type TeamResource {
   captains: [String!]!

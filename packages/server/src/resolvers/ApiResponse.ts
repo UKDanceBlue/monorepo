@@ -1,10 +1,9 @@
 import type { ApiError, BaseResponse, CreatedApiResponse, ErrorApiResponse, OkApiResponse, PaginatedApiResponse } from "@ukdanceblue/common";
 import { ClientAction, ErrorCode, VoidScalar } from "@ukdanceblue/common";
 import type { ClassType } from "type-graphql";
-import { Field, InterfaceType, ObjectType, createUnionType, registerEnumType } from "type-graphql";
+import { ArgsType, Field, InterfaceType, ObjectType, createUnionType, registerEnumType } from "type-graphql";
 
-
-
+import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "./ListQueryArgs.js";
 
 registerEnumType(ClientAction, { name: "ClientAction", description: "Actions that the client MUST take if specified" });
 
@@ -41,7 +40,7 @@ export abstract class AbstractGraphQLOkResponse<T> extends GraphQLBaseResponse i
     return baseResponse;
   }
 
-  static newOk<T, R extends AbstractGraphQLOkResponse<T>>(this: ClassType<R>, data?: T): R {
+  static newOk<T, OkRes extends AbstractGraphQLOkResponse<T>>(this: ClassType<OkRes>, data?: T): OkRes {
     const response = new this();
     response.ok = true;
     if (data != null) response.data = data;
@@ -135,6 +134,20 @@ export abstract class AbstractGraphQLPaginatedResponse<T> extends AbstractGraphQ
   total!: number;
   pageSize!: number;
   page!: number;
+
+  static newOk(): never {
+    throw new Error("Cannot call newOk on a subclass of AbstractGraphQLPaginatedResponse, use newPaginated instead");
+  }
+
+  static newPaginated<T, PRes extends AbstractGraphQLPaginatedResponse<T>>(this: ClassType<PRes>, data: T[], total: number, pageSize?: number | null | undefined, page?: number | null | undefined): PRes {
+    const response = new this();
+    response.ok = true;
+    response.data = data;
+    response.total = total;
+    response.pageSize = pageSize ?? DEFAULT_PAGE_SIZE;
+    response.page = page ?? DEFAULT_PAGE;
+    return response;
+  }
 
   toJson(): PaginatedApiResponse<T> {
     const baseResponse: PaginatedApiResponse<T> = {

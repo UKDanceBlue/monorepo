@@ -16,22 +16,22 @@ interface SearchEntryBase<
 
 export interface StringSearchEntry<FieldName extends string>
   extends SearchEntryBase<FieldName, string> {
-  comparison: Comparator.EQUALS | Comparator.INCLUDES;
+  comparison: typeof Comparator["EQUALS"] | typeof Comparator["INCLUDES"];
 }
 
 export interface NumericSearchEntry<FieldName extends string>
   extends SearchEntryBase<FieldName, number> {
   comparison:
-    | Comparator.EQUALS
-    | Comparator.GREATER_THAN
-    | Comparator.LESS_THAN
-    | Comparator.GREATER_THAN_OR_EQUAL_TO
-    | Comparator.LESS_THAN_OR_EQUAL_TO;
+  | typeof Comparator["EQUALS"]
+  | typeof Comparator["GREATER_THAN"]
+  | typeof Comparator["LESS_THAN"]
+  | typeof Comparator["GREATER_THAN_OR_EQUAL_TO"]
+  | typeof Comparator["LESS_THAN_OR_EQUAL_TO"];
 }
 
 export interface BooleanSearchEntry<FieldName extends string>
   extends SearchEntryBase<FieldName, boolean> {
-  comparison: Comparator.EQUALS;
+  comparison: typeof Comparator["EQUALS"];
 }
 
 export type SearchEntry<FieldName extends string = string> =

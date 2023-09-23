@@ -13,10 +13,10 @@ export function isPrimitive(value: unknown): value is Primitive {
 
 export interface PrimitiveObject {
   [key: string | number | symbol]:
-    | PrimitiveObject
-    | PrimitiveObject[]
-    | Primitive
-    | Primitive[];
+  | PrimitiveObject
+  | PrimitiveObject[]
+  | Primitive
+  | Primitive[];
 }
 
 /**
@@ -100,10 +100,10 @@ export type TypeOfMap<T extends TypeOfTypeNames> = T extends "undefined"
 
 export type RecursivePartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]
-    ? RecursivePartial<U>[]
-    : T[P] extends object
-    ? RecursivePartial<T[P]>
-    : T[P];
+  ? RecursivePartial<U>[]
+  : T[P] extends object
+  ? RecursivePartial<T[P]>
+  : T[P];
 };
 export type OptionalNullOrUndefined<T> = Partial<{
   [K in keyof T]: NonNullable<T[K]> | null | undefined;
@@ -120,8 +120,8 @@ export type Class<T> = Abstract<T> | Constructor<T>;
 
 export type OptionalToNullable<T> = T extends object
   ? {
-      [K in keyof T]: T[K] extends NonNullable<T[K]> ? T[K] : T[K] | null;
-    }
+    [K in keyof T]: T[K] extends NonNullable<T[K]> ? T[K] : T[K] | null;
+  }
   : T extends NonNullable<T>
   ? T
   : T | null;
@@ -133,8 +133,8 @@ export type OmitNever<T> = {
 type NullishToOptionalPart1<T extends object> = Partial<
   OmitNever<{
     [K in keyof T]: T[K] extends NonNullable<T[K]>
-      ? never
-      : Exclude<T[K], null | undefined>;
+    ? never
+    : Exclude<T[K], null | undefined>;
   }>
 >;
 
@@ -156,20 +156,40 @@ export function isArrayOf<TypeName extends TypeOfTypeNames>(
   return typeof value[0] === type;
 }
 
-export enum Comparator {
-  EQUALS = "eq",
-  GREATER_THAN = "gt",
-  LESS_THAN = "lt",
-  GREATER_THAN_OR_EQUAL_TO = "gte",
-  LESS_THAN_OR_EQUAL_TO = "lte",
-  INCLUDES = "incl",
-}
+export const Comparator = {
+  EQUALS: "eq",
+  GREATER_THAN: "gt",
+  LESS_THAN: "lt",
+  GREATER_THAN_OR_EQUAL_TO: "gte",
+  LESS_THAN_OR_EQUAL_TO: "lte",
+  INCLUDES: "incl",
+} as const;
+export type Comparator = typeof Comparator[keyof typeof Comparator];
 
-export type StringComparator = Comparator.EQUALS | Comparator.INCLUDES;
-export type NumericComparator =
-  | Comparator.EQUALS
-  | Comparator.GREATER_THAN
-  | Comparator.LESS_THAN
-  | Comparator.GREATER_THAN_OR_EQUAL_TO
-  | Comparator.LESS_THAN_OR_EQUAL_TO;
-export type BooleanComparator = Comparator.EQUALS;
+export const StringComparator = {
+  EQUALS: "eq",
+  INCLUDES: "incl",
+} as const;
+export type StringComparator = typeof StringComparator[keyof typeof StringComparator];
+
+export const NumericComparator = {
+  EQUALS: "eq",
+  GREATER_THAN: "gt",
+  LESS_THAN: "lt",
+  GREATER_THAN_OR_EQUAL_TO: "gte",
+  LESS_THAN_OR_EQUAL_TO: "lte",
+} as const;
+export type NumericComparator = typeof NumericComparator[keyof typeof NumericComparator];
+
+export const EqualityComparator = {
+  EQUALS: "eq",
+} as const;
+export type EqualityComparator = typeof EqualityComparator[keyof typeof EqualityComparator];
+
+() => {
+  const stringComparator: Comparator = "" as StringComparator;
+  const numericComparator: Comparator = "" as NumericComparator;
+  const equalityComparator: Comparator = "" as EqualityComparator;
+
+  throw new Error("This function should never be exported");
+}

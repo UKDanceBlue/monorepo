@@ -1,7 +1,7 @@
 import type { DateTime } from "luxon";
 
 import type {
-  BooleanComparator,
+  EqualityComparator,
   Comparator,
   NumericComparator,
   StringComparator,
@@ -20,20 +20,18 @@ export interface FilterItem<
    * If this is an array, the field will be filtered on any of the values.
    */
   value: ValueType extends DateTime
-    ? string // DateTime uses ISO 8601 strings
-    : ValueType;
+  ? string // DateTime uses ISO 8601 strings
+  : ValueType;
   /**
    * The operator to use for the filter.
    */
   comparison: ValueType extends DateTime
-    ? NumericComparator // DateTime uses NumericComparators
-    : ValueType extends string
-    ? StringComparator // String uses StringComparators
-    : ValueType extends number
-    ? NumericComparator // Number uses NumericComparators
-    : ValueType extends boolean
-    ? BooleanComparator // Boolean uses BooleanComparators
-    : Comparator.EQUALS; // Default to Comparator.EQUALS
+  ? NumericComparator // DateTime uses NumericComparators
+  : ValueType extends string
+  ? StringComparator // String uses StringComparators
+  : ValueType extends number
+  ? NumericComparator // Number uses NumericComparators
+  : EqualityComparator; // Default to Comparator.EQUALS
 }
 
 // type StringFilter<
@@ -52,32 +50,28 @@ export interface PaginationOptions {
   pageSize: number;
 }
 
+export const SortDirection = {
+  ASCENDING: "asc",
+  DESCENDING: "desc",
+} as const;
+
+export type SortDirection = typeof SortDirection[keyof typeof SortDirection];
+
 export interface SortingOptions {
   /**
    * The field to sort by.
    */
-  sortBy: string;
+  sortBy: string[];
   /**
    * The direction to sort by.
    * Default depends on the field type, for example a numeric
    * field would be ascending by default, while a date field
    * would be descending by default.
    */
-  sortDirection?: "asc" | "desc";
+  sortDirection?: SortDirection[];
 }
 
 export interface FilterOptions<Resource extends object> {
-  /**
-   * The fields to include in the response.
-   * If this is not specified, default fields will be included.
-   */
-  include?: (keyof Resource)[];
-  /**
-   * The fields to exclude from the response.
-   * If this is not specified, no fields will be excluded.
-   * This has precedence over `include`.
-   */
-  exclude?: (keyof Resource)[];
   /**
    * A list of filters to apply to the request, this will search
    * the database for only the resources that match the filters.
@@ -93,30 +87,3 @@ export interface FilterOptions<Resource extends object> {
 export type ListQueryType<Resource extends object> = FilterOptions<Resource> &
   PaginationOptions &
   SortingOptions;
-
-export function makeListQuery<Resource extends object>(
-  options: Partial<ListQueryType<Resource>> = {}
-) {
-  const { page, pageSize, sortBy, sortDirection, filter } = options;
-
-  const query = new URLSearchParams();
-
-  if (page) {
-    query.set("page", page.toString());
-  }
-  if (pageSize) {
-    query.set("pageSize", pageSize.toString());
-  }
-  if (sortBy) {
-    query.set("sortBy", sortBy);
-  }
-  if (sortDirection) {
-    query.set("sortDirection", sortDirection);
-  }
-
-  if (filter) {
-    // TODO: Implement filters
-  }
-
-  return query;
-}
