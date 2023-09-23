@@ -9,6 +9,10 @@ import bodyParser from "koa-bodyparser";
 
 import graphqlSchema from "./lib/graphqlSchema.js";
 import { logDebug, logError, logInfo, logWarning } from "./logger.js";
+import { DetailedError } from "./resolvers/ApiResponse.js";
+import { GraphQLError } from "graphql";
+import { ConnectionAcquireTimeoutError, Sequelize } from "@sequelize/core";
+import { formatError } from "./lib/formatError.js";
 
 /**
  * Create the Koa, HTTP, and Apollo servers
@@ -33,6 +37,12 @@ export function createServer() {
       info: logInfo,
       warn: logWarning,
       error: logError,
+    },
+    status400ForVariableCoercionErrors: true,
+    formatError(formatted, error) {
+      const newError = formatError(formatted, error, false);
+      console.log("formatError", newError);
+      return newError;
     },
   });
 

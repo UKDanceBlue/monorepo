@@ -80,8 +80,6 @@ type CreateConfigurationResponse implements AbstractGraphQLCreatedResponse & Abs
   uuid: String!
 }
 
-union CreateConfigurationResponseOrError = CreateConfigurationResponse | GraphQLErrorResponse
-
 input CreateDeviceInput {
   """The UUID of the device"""
   deviceId: String!
@@ -108,8 +106,6 @@ type CreateDeviceResponse implements AbstractGraphQLCreatedResponse & AbstractGr
   uuid: String!
 }
 
-union CreateDeviceResponseOrError = CreateDeviceResponse | GraphQLErrorResponse
-
 input CreateEventInput {
   description: String!
   duration: Duration!
@@ -132,8 +128,6 @@ type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGra
   """The UUID of the created resource"""
   uuid: String!
 }
-
-union CreateEventResponseOrError = CreateEventResponse | GraphQLErrorResponse
 
 input CreateImageInput {
   alt: String
@@ -160,8 +154,6 @@ type CreateImageResponse implements AbstractGraphQLCreatedResponse & AbstractGra
   uuid: String!
 }
 
-union CreateImageResponseOrError = CreateImageResponse | GraphQLErrorResponse
-
 input CreatePersonInput {
   email: String!
 }
@@ -180,8 +172,6 @@ type CreatePersonResponse implements AbstractGraphQLCreatedResponse & AbstractGr
   """The UUID of the created resource"""
   uuid: String!
 }
-
-union CreatePersonResponseOrError = CreatePersonResponse | GraphQLErrorResponse
 
 input DateFilterItem {
   """The comparator to use for the filter"""
@@ -215,8 +205,6 @@ type DeleteConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLB
   ok: Boolean!
 }
 
-union DeleteConfigurationResponseOrError = DeleteConfigurationResponse | GraphQLErrorResponse
-
 """API response"""
 type DeleteDeviceResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
@@ -228,8 +216,6 @@ type DeleteDeviceResponse implements AbstractGraphQLOkResponse & GraphQLBaseResp
   """Whether the operation was successful"""
   ok: Boolean!
 }
-
-union DeleteDeviceResponseOrError = DeleteDeviceResponse | GraphQLErrorResponse
 
 """API response"""
 type DeleteEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -243,8 +229,6 @@ type DeleteEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseRespo
   ok: Boolean!
 }
 
-union DeleteEventResponseOrError = DeleteEventResponse | GraphQLErrorResponse
-
 """API response"""
 type DeleteImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
@@ -256,8 +240,6 @@ type DeleteImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseRespo
   """Whether the operation was successful"""
   ok: Boolean!
 }
-
-union DeleteImageResponseOrError = DeleteImageResponse | GraphQLErrorResponse
 
 """API response"""
 type DeletePersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -271,8 +253,6 @@ type DeletePersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResp
   ok: Boolean!
 }
 
-union DeletePersonResponseOrError = DeletePersonResponse | GraphQLErrorResponse
-
 type DeviceResource {
   deviceId: ID!
   expoPushToken: String
@@ -282,17 +262,6 @@ type DeviceResource {
 
 """Luxon Duration custom scalar type"""
 scalar Duration
-
-"""Error codes"""
-enum ErrorCode {
-  InternalFailure
-  InvalidRequest
-  MissingRequiredInput
-  NotFound
-  NotLoggedIn
-  Unauthorized
-  Unknown
-}
 
 type EventResource {
   description: String
@@ -317,8 +286,6 @@ type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & Gr
   ok: Boolean!
 }
 
-union GetAllConfigurationsResponseOrError = GetAllConfigurationsResponse | GraphQLErrorResponse
-
 """API response"""
 type GetConfigurationByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
@@ -330,8 +297,6 @@ type GetConfigurationByUuidResponse implements AbstractGraphQLOkResponse & Graph
   """Whether the operation was successful"""
   ok: Boolean!
 }
-
-union GetConfigurationByUuidResponseOrError = GetConfigurationByUuidResponse | GraphQLErrorResponse
 
 """API response"""
 type GetDeviceByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -345,8 +310,6 @@ type GetDeviceByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseR
   ok: Boolean!
 }
 
-union GetDeviceByUuidResponseOrError = GetDeviceByUuidResponse | GraphQLErrorResponse
-
 """API response"""
 type GetEventByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
@@ -358,8 +321,6 @@ type GetEventByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseRe
   """Whether the operation was successful"""
   ok: Boolean!
 }
-
-union GetEventByUuidResponseOrError = GetEventByUuidResponse | GraphQLErrorResponse
 
 """API response"""
 type GetImageByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -373,8 +334,6 @@ type GetImageByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseRe
   ok: Boolean!
 }
 
-union GetImageByUuidResponseOrError = GetImageByUuidResponse | GraphQLErrorResponse
-
 """API response"""
 type GetPersonByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
@@ -386,8 +345,6 @@ type GetPersonByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseR
   """Whether the operation was successful"""
   ok: Boolean!
 }
-
-union GetPersonByUuidResponseOrError = GetPersonByUuidResponse | GraphQLErrorResponse
 
 """API response"""
 type GetThumbHashByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -401,36 +358,10 @@ type GetThumbHashByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBa
   ok: Boolean!
 }
 
-union GetThumbHashByUuidResponseOrError = GetThumbHashByUuidResponse | GraphQLErrorResponse
-
 """API response"""
 interface GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
-
-  """Whether the operation was successful"""
-  ok: Boolean!
-}
-
-"""API response"""
-type GraphQLErrorResponse implements GraphQLBaseResponse {
-  """Cause of the error, if any. May contain sensitive information"""
-  cause: String
-
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
-
-  """Error details, explains the problem, but not for end users"""
-  details: String
-
-  """The error code"""
-  errorCode: ErrorCode!
-
-  """Error explanation, can be shown to end users"""
-  explanation: String
-
-  """The error message"""
-  message: String!
 
   """Whether the operation was successful"""
   ok: Boolean!
@@ -468,8 +399,6 @@ type ListDevicesResponse implements AbstractGraphQLOkResponse & AbstractGraphQLP
   total: Float!
 }
 
-union ListDevicesResponseOrError = GraphQLErrorResponse | ListDevicesResponse
-
 input ListQueryArgs {
   expoPushToken: StringFilterItem
   lastLogin: DateFilterItem
@@ -477,17 +406,17 @@ input ListQueryArgs {
 }
 
 type Mutation {
-  create(input: CreatePersonInput!): CreatePersonResponseOrError!
-  createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponseOrError!
-  createDevice(input: CreateDeviceInput!): CreateDeviceResponseOrError!
-  createEvent(input: CreateEventInput!): CreateEventResponseOrError!
-  createImage(input: CreateImageInput!): CreateImageResponseOrError!
-  delete(id: String!): DeletePersonResponseOrError!
-  deleteConfiguration(id: String!): DeleteConfigurationResponseOrError!
-  deleteDevice(id: String!): DeleteDeviceResponseOrError!
-  deleteEvent(id: String!): DeleteEventResponseOrError!
-  deleteImage(id: String!): DeleteImageResponseOrError!
-  setConfiguration(id: String!, input: SetConfigurationInput!): SetConfigurationResponseOrError!
+  create(input: CreatePersonInput!): CreatePersonResponse!
+  createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
+  createDevice(input: CreateDeviceInput!): CreateDeviceResponse!
+  createEvent(input: CreateEventInput!): CreateEventResponse!
+  createImage(input: CreateImageInput!): CreateImageResponse!
+  delete(id: String!): DeletePersonResponse!
+  deleteConfiguration(id: String!): DeleteConfigurationResponse!
+  deleteDevice(id: String!): DeleteDeviceResponse!
+  deleteEvent(id: String!): DeleteEventResponse!
+  deleteImage(id: String!): DeleteImageResponse!
+  setConfiguration(id: String!, input: SetConfigurationInput!): SetConfigurationResponse!
 }
 
 enum NumericComparator {
@@ -511,14 +440,14 @@ type PersonResource {
 }
 
 type Query {
-  getAllConfigurations: GetAllConfigurationsResponseOrError!
-  getConfigurationByUuid(uuid: String!): GetConfigurationByUuidResponseOrError!
-  getDeviceByUuid(uuid: String!): GetDeviceByUuidResponseOrError!
-  getEventByUuid(uuid: String!): GetEventByUuidResponseOrError!
-  getImageByUuid(uuid: String!): GetImageByUuidResponseOrError!
-  getPersonByUuid(uuid: String!): GetPersonByUuidResponseOrError!
-  getThumbHashByUuid(uuid: String!): GetThumbHashByUuidResponseOrError
-  listDevices(query: ListQueryArgs!): ListDevicesResponseOrError!
+  getAllConfigurations: GetAllConfigurationsResponse!
+  getConfigurationByUuid(uuid: String!): GetConfigurationByUuidResponse!
+  getDeviceByUuid(uuid: String!): GetDeviceByUuidResponse!
+  getEventByUuid(uuid: String!): GetEventByUuidResponse!
+  getImageByUuid(uuid: String!): GetImageByUuidResponse!
+  getPersonByUuid(uuid: String!): GetPersonByUuidResponse!
+  getThumbHashByUuid(uuid: String!): GetThumbHashByUuidResponse
+  listDevices(query: ListQueryArgs!): ListDevicesResponse!
 }
 
 type RoleResource {
@@ -542,8 +471,6 @@ type SetConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLBase
   """Whether the operation was successful"""
   ok: Boolean!
 }
-
-union SetConfigurationResponseOrError = GraphQLErrorResponse | SetConfigurationResponse
 
 enum StringComparator {
   EQUALS

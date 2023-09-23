@@ -4,6 +4,7 @@ import type { ClassType } from "type-graphql";
 import { ArgsType, Field, InterfaceType, ObjectType, createUnionType, registerEnumType } from "type-graphql";
 
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "./ListQueryArgs.js";
+import { GraphQLError } from "graphql";
 
 registerEnumType(ClientAction, { name: "ClientAction", description: "Actions that the client MUST take if specified" });
 
@@ -192,80 +193,50 @@ export function defineGraphQlPaginatedResponse<T extends object>(name: string, t
 
 registerEnumType(ErrorCode, { name: "ErrorCode", description: "Error codes" })
 
-@ObjectType({ description: "API response", implements: GraphQLBaseResponse })
-export class GraphQLErrorResponse extends GraphQLBaseResponse {
-  @Field(() => Boolean, { description: "Whether the operation was successful", defaultValue: false })
-  ok!: false;
-
-  @Field(() => ErrorCode, { description: "The error code", defaultValue: ErrorCode.Unknown })
-  errorCode!: ErrorCode;
-
-  @Field(() => String, { description: "The error message" })
-  message!: string;
-
-  @Field(() => String, { description: "Error details, explains the problem, but not for end users", nullable: true })
+export class DetailedError extends Error implements ErrorApiResponse {
+  ok: false = false;
+  code: ErrorCode;
   details?: string;
-
-  @Field(() => String, { description: "Error explanation, can be shown to end users", nullable: true })
   explanation?: string;
 
-  @Field(() => String, { description: "Cause of the error, if any. May contain sensitive information", nullable: true })
-  cause?: string;
+  clientActions?: ClientAction[];
 
-  toJson(): ErrorApiResponse {
-    const baseResponse: ErrorApiResponse = {
-      ok: this.ok,
-      code: this.errorCode,
-      errorMessage: this.message,
-    };
-    if (this.clientActions != null) baseResponse.clientActions = this.clientActions;
-    if (this.details != null) baseResponse.errorDetails = this.details;
-    if (this.explanation != null) baseResponse.errorExplanation = this.explanation;
-    return baseResponse;
+  constructor(code: ErrorCode = ErrorCode.Unknown, message?: string) {
+    super(message ?? code);
+    this.code = code;
   }
 
-  static from(val: Error | string | ApiError, code: ErrorCode = ErrorCode.Unknown): GraphQLErrorResponse {
-    const response = new GraphQLErrorResponse();
-    response.ok = false;
-    response.errorCode = code;
+  static from(val: Error | string | ApiError, code: ErrorCode = ErrorCode.Unknown): DetailedError {
+    const response = new DetailedError(code);
 
     if (typeof val === "string") {
       response.message = val;
-      return response;
     } else if (val instanceof Error) {
       response.message = val.message;
-      if (val.stack) response.cause = val.stack;
-      return response;
+      if (val.stack) response.stack = val.stack;
+      if (val.cause) response.cause = val.cause;
     } else {
-      response.message = val.errorMessage;
-      if (val.errorDetails) response.details = val.errorDetails;
-      if (val.errorExplanation) response.explanation = val.errorExplanation;
-      if (val.errorCause) response.cause = typeof val.errorCause === "string" ? val.errorCause : JSON.stringify(val.errorCause);
-      return response;
+      response.message = val.message;
+      response.code = code ?? val.code;
+      if (val.details) response.details = val.details;
+      if (val.explanation) response.explanation = val.explanation;
+      if (val.cause) response.cause = val.cause;
     }
+
+    return response;
   }
 }
 
-/**
- *
- * @param type
- * @param typeName
- */
-export function withGraphQLErrorUnion<R extends GraphQLBaseResponse>(type: ClassType<R>, typeName?: string) {
-  const unionType = createUnionType({
-    name: `${typeName ?? type.name}OrError`,
-    types: () => [type, GraphQLErrorResponse] as const,
-    // resolveType: (value) => {
-    //   if (!("ok" in value)) {
-    //     return undefined;
-    //   } else if (value.ok) {
-    //     return type;
-    //   } else if ("message" in value) {
-    //     return GraphQLErrorResponse;
-    //   } else {
-    //     return undefined;
-    //   }
-    // }
-  });
-  return unionType;
+
+/** @deprecated */
+export function withGraphQLErrorUnion<T extends abstract new (...args: any) => any>(arg1: InstanceType<T>, arg2: string): InstanceType<T> {
+  return arg1;
+}
+
+/** @deprecated */
+export const GraphQLErrorResponse = {
+  /** @deprecated */
+  from(val: Error | string | ApiError, code: ErrorCode = ErrorCode.Unknown): DetailedError {
+    throw DetailedError.from(val, code);
+  }
 }

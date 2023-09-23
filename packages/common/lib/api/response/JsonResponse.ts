@@ -206,23 +206,23 @@ export interface ApiError<HasCause extends boolean = boolean> {
    * The error message, this should be a short human-readable, but not
    * necessarily user-friendly, message.
    */
-  errorMessage: string;
+  message: string;
   /**
    * The error details, this should be a longer human-readable, but not
    * necessarily user-friendly, message.
    */
-  errorDetails?: string;
+  details?: string;
   /**
    * The error explanation, this should be a user-friendly message.
    * If present, this should be shown to the user.
    */
-  errorExplanation?: string;
+  explanation?: string;
   /**
    * The error cause, this should be the original error that caused the
    * error response. This should not be shown to the user and for some
    * errors can be used to address the issue.
    */
-  errorCause?: HasCause extends true ? unknown : never;
+  cause?: HasCause extends true ? unknown : never;
 }
 
 export function isApiError(error: unknown): error is ApiError {
@@ -281,29 +281,34 @@ export function isErrorApiResponse(
  * @param root0.errorDetails The error details
  * @param root0.errorCause The error cause
  * @param root0.errorExplanation The error explanation
+ * @param root0.code
+ * @param root0.message
+ * @param root0.details
+ * @param root0.explanation
+ * @param root0.cause
  * @return The error API response
  */
 export function errorResponseFrom({
   code = ErrorCode.Unknown,
-  errorMessage,
-  errorDetails = undefined,
-  errorExplanation = undefined,
-  errorCause = undefined,
+  message: errorMessage,
+  details: errorDetails = undefined,
+  explanation: errorExplanation = undefined,
+  cause: errorCause = undefined,
 }: ApiError): ErrorApiResponse {
   const response: ErrorApiResponse = {
     code,
-    errorMessage,
+    message: errorMessage,
     ok: false,
   };
 
   if (errorDetails !== undefined) {
-    response.errorDetails = errorDetails;
+    response.details = errorDetails;
   }
   if (errorExplanation !== undefined) {
-    response.errorExplanation = errorExplanation;
+    response.explanation = errorExplanation;
   }
   if (errorCause !== undefined) {
-    response.errorCause = errorCause;
+    response.cause = errorCause;
   }
 
   return response;
