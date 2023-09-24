@@ -1,10 +1,9 @@
 import type { ApiError, BaseResponse, CreatedApiResponse, ErrorApiResponse, OkApiResponse, PaginatedApiResponse } from "@ukdanceblue/common";
-import { ClientAction, ErrorCode, VoidScalar } from "@ukdanceblue/common";
+import { ClientAction, ErrorCode } from "@ukdanceblue/common";
 import type { ClassType } from "type-graphql";
-import { ArgsType, Field, InterfaceType, ObjectType, createUnionType, registerEnumType } from "type-graphql";
+import { Field, InterfaceType, registerEnumType } from "type-graphql";
 
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "./ListQueryArgs.js";
-import { GraphQLError } from "graphql";
 
 registerEnumType(ClientAction, { name: "ClientAction", description: "Actions that the client MUST take if specified" });
 
@@ -49,23 +48,6 @@ export abstract class AbstractGraphQLOkResponse<T> extends GraphQLBaseResponse i
   }
 }
 
-/**
- *
- * @param name
- * @param type
- */
-export function defineGraphQlOkResponse<T extends object>(name: string, type?: ClassType<T>) {
-  @ObjectType(name, { description: "API response", implements: AbstractGraphQLOkResponse })
-  class GraphQLOkResponse extends AbstractGraphQLOkResponse<T> {
-    @Field(() => Boolean, { description: "Whether the operation was successful", defaultValue: true })
-    ok!: true;
-
-    @Field(() => type ?? VoidScalar, { nullable: true, description: "The payload of the response" })
-    data?: T;
-  }
-  return GraphQLOkResponse;
-}
-
 @InterfaceType({ description: "API response", implements: GraphQLBaseResponse })
 export abstract class AbstractGraphQLArrayOkResponse<T> extends AbstractGraphQLOkResponse<T[]> implements OkApiResponse<T[]> {
   toJson(): OkApiResponse<T[]> {
@@ -78,25 +60,9 @@ export abstract class AbstractGraphQLArrayOkResponse<T> extends AbstractGraphQLO
   }
 }
 
-/**
- *
- * @param name
- * @param type
- */
-export function defineGraphQLArrayOkResponse<T extends object>(name: string, type: ClassType<T>) {
-  @ObjectType(name, { description: "API response", implements: AbstractGraphQLArrayOkResponse })
-  class GraphQLArrayOkResponse extends AbstractGraphQLArrayOkResponse<T> {
-    @Field(() => Boolean, { description: "Whether the operation was successful", defaultValue: true })
-    ok!: true;
-
-    @Field(() => [type], { nullable: true, description: "The payload of the response" })
-    data?: T[];
-  }
-  return GraphQLArrayOkResponse;
-}
-
 @InterfaceType({ description: "API response", implements: AbstractGraphQLOkResponse })
 export abstract class AbstractGraphQLCreatedResponse<T> extends AbstractGraphQLOkResponse<T> implements CreatedApiResponse<T> {
+  @Field(() => String, { description: "The UUID of the created resource" })
   uuid!: string;
 
   toJson(): CreatedApiResponse<T> {
@@ -110,30 +76,15 @@ export abstract class AbstractGraphQLCreatedResponse<T> extends AbstractGraphQLO
   }
 }
 
-/**
- *
- * @param name
- * @param type
- */
-export function defineGraphQlCreatedResponse<T extends object>(name: string, type: ClassType<T>) {
-  @ObjectType(name, { description: "API response", implements: AbstractGraphQLCreatedResponse })
-  class GraphQLCreatedResponse extends AbstractGraphQLCreatedResponse<T> {
-    @Field(() => Boolean, { description: "Whether the operation was successful", defaultValue: true })
-    ok!: true;
-
-    @Field(() => String, { description: "The UUID of the created resource" })
-    uuid!: string;
-
-    @Field(() => type, { nullable: true, description: "The payload of the response" })
-    data?: T;
-  }
-  return GraphQLCreatedResponse;
-}
-
-@InterfaceType({ description: "API response", implements: AbstractGraphQLOkResponse })
-export abstract class AbstractGraphQLPaginatedResponse<T> extends AbstractGraphQLOkResponse<T[]> {
+@InterfaceType({ description: "API response", implements: AbstractGraphQLArrayOkResponse })
+export abstract class AbstractGraphQLPaginatedResponse<T> extends AbstractGraphQLArrayOkResponse<T> {
+  @Field(() => Number, { description: "The total number of items" })
   total!: number;
+
+  @Field(() => Number, { description: "The number of items per page" })
   pageSize!: number;
+
+  @Field(() => Number, { description: "The current page number (1-indexed)" })
   page!: number;
 
   static newOk(): never {
@@ -165,36 +116,10 @@ export abstract class AbstractGraphQLPaginatedResponse<T> extends AbstractGraphQ
   }
 }
 
-/**
- *
- * @param name
- * @param type
- */
-export function defineGraphQlPaginatedResponse<T extends object>(name: string, type: ClassType<T>) {
-  @ObjectType(name, { description: "API response", implements: AbstractGraphQLPaginatedResponse })
-  class GraphQLPaginatedResponse extends AbstractGraphQLPaginatedResponse<T> {
-    @Field(() => Boolean, { description: "Whether the operation was successful", defaultValue: true })
-    ok!: true;
-
-    @Field(() => [type], { nullable: true, description: "The payload of the response" })
-    data?: T[];
-
-    @Field(() => Number, { description: "The total number of items" })
-    total!: number;
-
-    @Field(() => Number, { description: "The number of items per page" })
-    pageSize!: number;
-
-    @Field(() => Number, { description: "The current page number (1-indexed)" })
-    page!: number;
-  }
-  return GraphQLPaginatedResponse;
-}
-
 registerEnumType(ErrorCode, { name: "ErrorCode", description: "Error codes" })
 
 export class DetailedError extends Error implements ErrorApiResponse {
-  ok: false = false;
+  ok = false as const;
   code: ErrorCode;
   details?: string;
   explanation?: string;
@@ -224,19 +149,5 @@ export class DetailedError extends Error implements ErrorApiResponse {
     }
 
     return response;
-  }
-}
-
-
-/** @deprecated */
-export function withGraphQLErrorUnion<T extends abstract new (...args: any) => any>(arg1: InstanceType<T>, arg2: string): InstanceType<T> {
-  return arg1;
-}
-
-/** @deprecated */
-export const GraphQLErrorResponse = {
-  /** @deprecated */
-  from(val: Error | string | ApiError, code: ErrorCode = ErrorCode.Unknown): DetailedError {
-    throw DetailedError.from(val, code);
   }
 }

@@ -7,12 +7,10 @@ import cors from "@koa/cors";
 import Koa from "koa";
 import bodyParser from "koa-bodyparser";
 
+import { formatError } from "./lib/formatError.js";
 import graphqlSchema from "./lib/graphqlSchema.js";
 import { logDebug, logError, logInfo, logWarning } from "./logger.js";
-import { DetailedError } from "./resolvers/ApiResponse.js";
-import { GraphQLError } from "graphql";
-import { ConnectionAcquireTimeoutError, Sequelize } from "@sequelize/core";
-import { formatError } from "./lib/formatError.js";
+
 
 /**
  * Create the Koa, HTTP, and Apollo servers
@@ -40,9 +38,7 @@ export function createServer() {
     },
     status400ForVariableCoercionErrors: true,
     formatError(formatted, error) {
-      const newError = formatError(formatted, error, false);
-      console.log("formatError", newError);
-      return newError;
+      return formatError(formatted, error, false);
     },
   });
 

@@ -1,40 +1,46 @@
 import { ErrorCode, PersonResource } from "@ukdanceblue/common";
-import { Arg, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 
 import { PersonIntermediate, PersonModel } from "../models/Person.js";
 
-import { GraphQLErrorResponse, defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "./ApiResponse.js";
+import { AbstractGraphQLCreatedResponse, AbstractGraphQLOkResponse, DetailedError } from "./ApiResponse.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 
-const CreatePersonResponse = defineGraphQlCreatedResponse("CreatePersonResponse", PersonResource);
-const GetPersonByUuidResponse = defineGraphQlOkResponse("GetPersonByUuidResponse", PersonResource);
-const DeletePersonResponse = defineGraphQlOkResponse("DeletePersonResponse", Boolean);
-
+@ObjectType("CreatePersonResponse", { implements: AbstractGraphQLCreatedResponse<PersonResource> })
+class CreatePersonResponse extends AbstractGraphQLCreatedResponse<PersonResource> {
+  @Field(() => PersonResource)
+  data!: PersonResource;
+}
+@ObjectType("GetPersonByUuidResponse", { implements: AbstractGraphQLOkResponse<PersonResource> })
+class GetPersonByUuidResponse extends AbstractGraphQLOkResponse<PersonResource> {
+  @Field(() => PersonResource)
+  data!: PersonResource;
+} @ObjectType("DeletePersonResponse", { implements: AbstractGraphQLOkResponse<boolean> })
+class DeletePersonResponse extends AbstractGraphQLOkResponse<boolean> {
+  @Field(() => Boolean)
+  data!: boolean;
+}
 @InputType()
 class CreatePersonInput {
   @Field()
   email!: string;
 }
 
-const CreatePersonResponseUnion = withGraphQLErrorUnion(CreatePersonResponse, "CreatePersonResponse");
-const GetPersonByUuidResponseUnion = withGraphQLErrorUnion(GetPersonByUuidResponse, "GetPersonByUuidResponse");
-const DeletePersonResponseUnion = withGraphQLErrorUnion(DeletePersonResponse, "DeletePersonResponse");
-
 @Resolver(() => PersonResource)
 export class PersonResolver implements ResolverInterface<PersonResource> {
-  @Query(() => GetPersonByUuidResponseUnion, { name: "getPersonByUuid" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<typeof GetPersonByUuidResponseUnion> {
+  @Query(() => GetPersonByUuidResponse, { name: "getPersonByUuid" })
+  async getByUuid(@Arg("uuid") uuid: string): Promise<GetPersonByUuidResponse> {
     const row = await PersonModel.findOne({ where: { uuid } });
 
     if (row == null) {
-      return GraphQLErrorResponse.from("Person not found", ErrorCode.NotFound);
+      throw new DetailedError(ErrorCode.NotFound, "Person not found");
     }
 
     return GetPersonByUuidResponse.newOk(new PersonIntermediate(row).toResource());
   }
 
-  @Mutation(() => CreatePersonResponseUnion, { name: "create" })
-  async create(@Arg("input") input: CreatePersonInput): Promise<typeof CreatePersonResponseUnion> {
+  @Mutation(() => CreatePersonResponse, { name: "createPerson" })
+  async create(@Arg("input") input: CreatePersonInput): Promise<CreatePersonResponse> {
     const result = await PersonModel.create({
       email: input.email,
       authIds: {}
@@ -43,12 +49,12 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     return CreatePersonResponse.newOk(new PersonIntermediate(result).toResource());
   }
 
-  @Mutation(() => DeletePersonResponseUnion, { name: "delete" })
-  async delete(@Arg("id") id: string): Promise<typeof DeletePersonResponseUnion> {
+  @Mutation(() => DeletePersonResponse, { name: "deletePerson" })
+  async delete(@Arg("id") id: string): Promise<DeletePersonResponse> {
     const row = await PersonModel.findOne({ where: { uuid: id }, attributes: ["id"] });
 
     if (row == null) {
-      return GraphQLErrorResponse.from("Person not found", ErrorCode.NotFound);
+      throw new DetailedError(ErrorCode.NotFound, "Person not found");
     }
 
     await row.destroy();

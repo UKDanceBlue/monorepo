@@ -1,16 +1,26 @@
 import { DateTimeScalar, DurationScalar, ErrorCode, EventResource } from "@ukdanceblue/common";
 import { DateTime, Duration } from "luxon";
-import { Arg, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 
 import { EventIntermediate, EventModel } from "../models/Event.js";
 
-import { GraphQLErrorResponse, defineGraphQlCreatedResponse, defineGraphQlOkResponse, withGraphQLErrorUnion } from "./ApiResponse.js";
+import { AbstractGraphQLCreatedResponse, AbstractGraphQLOkResponse, DetailedError } from "./ApiResponse.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 
-const GetEventByUuidResponse = defineGraphQlOkResponse("GetEventByUuidResponse", EventResource);
-const CreateEventResponse = defineGraphQlCreatedResponse("CreateEventResponse", EventResource);
-const DeleteEventResponse = defineGraphQlOkResponse("DeleteEventResponse", Boolean);
-
+@ObjectType("GetEventByUuidResponse", { implements: AbstractGraphQLOkResponse<EventResource> })
+class GetEventByUuidResponse extends AbstractGraphQLOkResponse<EventResource> {
+  @Field(() => EventResource)
+  data!: EventResource;
+} @ObjectType("CreateEventResponse", { implements: AbstractGraphQLCreatedResponse<EventResource> })
+class CreateEventResponse extends AbstractGraphQLCreatedResponse<EventResource> {
+  @Field(() => EventResource)
+  data!: EventResource;
+}
+@ObjectType("DeleteEventResponse", { implements: AbstractGraphQLOkResponse<boolean> })
+class DeleteEventResponse extends AbstractGraphQLOkResponse<boolean> {
+  @Field(() => Boolean)
+  data!: boolean;
+}
 @InputType()
 class CreateEventInput {
   @Field()
@@ -29,26 +39,21 @@ class CreateEventInput {
   duration!: Duration;
 }
 
-
-const GetByUuidResponseUnion = withGraphQLErrorUnion(GetEventByUuidResponse, "GetEventByUuidResponse");
-const CreateResponseUnion = withGraphQLErrorUnion(CreateEventResponse, "CreateEventResponse");
-const DeleteResponseUnion = withGraphQLErrorUnion(DeleteEventResponse, "DeleteEventResponse");
-
 @Resolver(() => EventResource)
 export class EventResolver implements ResolverInterface<EventResource> {
-  @Query(() => GetByUuidResponseUnion, { name: "getEventByUuid" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<typeof GetByUuidResponseUnion> {
+  @Query(() => GetEventByUuidResponse, { name: "getEventByUuid" })
+  async getByUuid(@Arg("uuid") uuid: string): Promise<GetEventByUuidResponse> {
     const row = await EventModel.findOne({ where: { uuid } });
 
     if (row == null) {
-      return GraphQLErrorResponse.from("Event not found", ErrorCode.NotFound);
+      throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
 
     return GetEventByUuidResponse.newOk(new EventIntermediate(row).toResource());
   }
 
-  @Mutation(() => CreateResponseUnion, { name: "createEvent" })
-  async create(@Arg("input") input: CreateEventInput): Promise<typeof CreateResponseUnion> {
+  @Mutation(() => CreateEventResponse, { name: "createEvent" })
+  async create(@Arg("input") input: CreateEventInput): Promise<CreateEventResponse> {
     const row = await EventModel.create({
       title: input.name,
       description: input.description,
@@ -59,12 +64,12 @@ export class EventResolver implements ResolverInterface<EventResource> {
     return CreateEventResponse.newOk(new EventIntermediate(row).toResource());
   }
 
-  @Mutation(() => DeleteResponseUnion, { name: "deleteEvent" })
-  async delete(@Arg("id") id: string): Promise<typeof DeleteResponseUnion> {
+  @Mutation(() => DeleteEventResponse, { name: "deleteEvent" })
+  async delete(@Arg("id") id: string): Promise<DeleteEventResponse> {
     const row = await EventModel.findOne({ where: { uuid: id }, attributes: ["id"] });
 
     if (row == null) {
-      return GraphQLErrorResponse.from("Event not found", ErrorCode.NotFound);
+      throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
 
     await row.destroy();

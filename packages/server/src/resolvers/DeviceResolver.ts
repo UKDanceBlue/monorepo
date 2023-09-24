@@ -1,17 +1,33 @@
 import { DeviceResource, ErrorCode } from "@ukdanceblue/common";
-import { Arg, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 
 import { DeviceIntermediate, DeviceModel } from "../models/Device.js";
 import { PersonModel } from "../models/Person.js";
 
-import { GraphQLErrorResponse, defineGraphQlCreatedResponse, defineGraphQlOkResponse, defineGraphQlPaginatedResponse, withGraphQLErrorUnion } from "./ApiResponse.js";
+import { AbstractGraphQLCreatedResponse, AbstractGraphQLOkResponse, AbstractGraphQLPaginatedResponse, DetailedError } from "./ApiResponse.js";
 import { DateFilterItem, StringFilterItem, UnfilteredListQueryArgs } from "./ListQueryArgs.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 
-const GetDeviceByUuidResponse = defineGraphQlOkResponse("GetDeviceByUuidResponse", DeviceResource);
-const ListDevicesResponse = defineGraphQlPaginatedResponse("ListDevicesResponse", DeviceResource);
-const CreateDeviceResponse = defineGraphQlCreatedResponse("CreateDeviceResponse", DeviceResource);
-const DeleteDeviceResponse = defineGraphQlOkResponse("DeleteDeviceResponse", Boolean);
+@ObjectType("GetDeviceByUuidResponse", { implements: AbstractGraphQLOkResponse<DeviceResource> })
+class GetDeviceByUuidResponse extends AbstractGraphQLOkResponse<DeviceResource> {
+  @Field(() => DeviceResource, { description: "The payload of the response" })
+  data!: DeviceResource;
+}
+@ObjectType("ListDevicesResponse", { implements: AbstractGraphQLPaginatedResponse<DeviceResource> })
+class ListDevicesResponse extends AbstractGraphQLPaginatedResponse<DeviceResource> {
+  @Field(() => [DeviceResource], { description: "The payload of the response" })
+  data!: DeviceResource[];
+}
+@ObjectType("CreateDeviceResponse", { implements: AbstractGraphQLCreatedResponse<DeviceResource> })
+class CreateDeviceResponse extends AbstractGraphQLCreatedResponse<DeviceResource> {
+  @Field(() => DeviceResource, { description: "The payload of the response" })
+  data!: DeviceResource;
+}
+@ObjectType("DeleteDeviceResponse", { implements: AbstractGraphQLOkResponse<boolean> })
+class DeleteDeviceResponse extends AbstractGraphQLOkResponse<boolean> {
+  @Field(() => Boolean, { description: "The payload of the response" })
+  data!: boolean;
+}
 
 @InputType()
 class CreateDeviceInput implements Partial<DeviceResource> {
@@ -37,26 +53,21 @@ class ListQueryArgs extends UnfilteredListQueryArgs<"deviceId" | "expoPushToken"
   lastLogin?: DateFilterItem;
 }
 
-const GetByUuidResponseUnion = withGraphQLErrorUnion(GetDeviceByUuidResponse, "GetDeviceByUuidResponse");
-const ListResponseUnion = withGraphQLErrorUnion(ListDevicesResponse, "ListDevicesResponse");
-const CreateResponseUnion = withGraphQLErrorUnion(CreateDeviceResponse, "CreateDeviceResponse");
-const DeleteResponseUnion = withGraphQLErrorUnion(DeleteDeviceResponse, "DeleteDeviceResponse");
-
 @Resolver(() => DeviceResource)
 export class DeviceResolver implements ResolverInterface<DeviceResource> {
-  @Query(() => GetByUuidResponseUnion, { name: "getDeviceByUuid" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<typeof GetByUuidResponseUnion> {
+  @Query(() => GetDeviceByUuidResponse, { name: "getDeviceByUuid" })
+  async getByUuid(@Arg("uuid") uuid: string): Promise<GetDeviceByUuidResponse> {
     const row = await DeviceModel.findOne({ where: { uuid } });
 
     if (row == null) {
-      return GraphQLErrorResponse.from("Device not found", ErrorCode.NotFound);
+      throw new DetailedError(ErrorCode.NotFound, "Device not found");
     }
 
     return GetDeviceByUuidResponse.newOk(new DeviceIntermediate(row).toResource());
   }
 
-  @Query(() => ListResponseUnion, { name: "listDevices" })
-  async list(@Arg("query", () => ListQueryArgs) query: ListQueryArgs): Promise<typeof ListResponseUnion> {
+  @Query(() => ListDevicesResponse, { name: "listDevices" })
+  async list(@Arg("query", () => ListQueryArgs) query: ListQueryArgs): Promise<ListDevicesResponse> {
     const findOptions = query.toSequelizeFindOptions({
       deviceId: "deviceId",
       expoPushToken: "expoPushToken",
@@ -76,14 +87,14 @@ export class DeviceResolver implements ResolverInterface<DeviceResource> {
     return ListDevicesResponse.newPaginated(rows.map((row) => new DeviceIntermediate(row).toResource()), count, query.page, query.pageSize);
   }
 
-  @Mutation(() => CreateResponseUnion, { name: "createDevice" })
-  async create(@Arg("input") input: CreateDeviceInput): Promise<typeof CreateResponseUnion> {
+  @Mutation(() => CreateDeviceResponse, { name: "createDevice" })
+  async create(@Arg("input") input: CreateDeviceInput): Promise<CreateDeviceResponse> {
     let lastUserId: number | null = null;
 
     if (input.lastUserId != null) {
       const lastUser = await PersonModel.findOne({ where: { uuid: input.lastUserId } });
       if (lastUser == null) {
-        return GraphQLErrorResponse.from("Last user not found", ErrorCode.NotFound);
+        throw new DetailedError(ErrorCode.NotFound, "Last user not found");
       }
       lastUserId = lastUser.id;
     }
@@ -97,12 +108,12 @@ export class DeviceResolver implements ResolverInterface<DeviceResource> {
     return CreateDeviceResponse.newOk(new DeviceIntermediate(row).toResource());
   }
 
-  @Mutation(() => DeleteResponseUnion, { name: "deleteDevice" })
-  async delete(@Arg("id") id: string): Promise<typeof DeleteResponseUnion> {
+  @Mutation(() => DeleteDeviceResponse, { name: "deleteDevice" })
+  async delete(@Arg("id") id: string): Promise<DeleteDeviceResponse> {
     const row = await DeviceModel.findOne({ where: { uuid: id }, attributes: ["id"] });
 
     if (row == null) {
-      return GraphQLErrorResponse.from("Device not found", ErrorCode.NotFound);
+      throw new DetailedError(ErrorCode.NotFound, "Device not found");
     }
 
     await row.destroy();

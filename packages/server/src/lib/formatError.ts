@@ -1,12 +1,14 @@
-import { GraphQLError, GraphQLFormattedError } from "graphql";
-import { DetailedError } from "../resolvers/ApiResponse.js";
-import { BaseError, DatabaseError, QueryError } from "@sequelize/core";
-import jwt from "jsonwebtoken";
-import { ValidationError as SequelizeValidationError } from "class-validator";
-import { LuxonError, UnionValidationError, TypeMismatchError, ValidationError as DbValidationError, ParsingError, ErrorCode, ErrorApiResponse, ApiError, isErrorCode, ClientAction } from "@ukdanceblue/common"
-import { Writable } from "utility-types";
-
 import { unwrapResolverError } from "@apollo/server/errors"
+import { BaseError, DatabaseError, QueryError } from "@sequelize/core";
+import type { ApiError } from "@ukdanceblue/common";
+import { ClientAction, ValidationError as DbValidationError, ErrorCode, LuxonError, TypeMismatchError, UnionValidationError, isErrorCode } from "@ukdanceblue/common"
+import { ValidationError as SequelizeValidationError } from "class-validator";
+import type { GraphQLFormattedError } from "graphql";
+import { GraphQLError } from "graphql";
+import jwt from "jsonwebtoken";
+import type { Writable } from "utility-types";
+
+import { DetailedError } from "../resolvers/ApiResponse.js";
 
 export interface DbGraphQLFormattedErrorExtensions extends Omit<ApiError, "cause" | "message"> {
   clientActions: ClientAction[];
@@ -15,6 +17,12 @@ export interface DbGraphQLFormattedErrorExtensions extends Omit<ApiError, "cause
 }
 
 
+/**
+ *
+ * @param originalFormattedError
+ * @param maybeWrappedError
+ * @param shouldIncludeSensitiveInfo
+ */
 export function formatError(originalFormattedError: GraphQLFormattedError, maybeWrappedError: unknown, shouldIncludeSensitiveInfo: boolean): GraphQLFormattedError {
   const error = unwrapResolverError(maybeWrappedError);
 
@@ -23,13 +31,11 @@ export function formatError(originalFormattedError: GraphQLFormattedError, maybe
     message: "Unknown error",
     extensions: {
       code: ErrorCode.Unknown,
-      stacktrace: shouldIncludeSensitiveInfo && Array.isArray(originalFormattedError.extensions?.stacktrace) ? originalFormattedError.extensions!.stacktrace.map(s => String(s)) : [],
+      stacktrace: shouldIncludeSensitiveInfo && Array.isArray(originalFormattedError.extensions?.stacktrace) ? originalFormattedError.extensions!.stacktrace.map(String) : [],
       clientActions: [],
       internalDetails: {},
     }
   };
-
-  console.log("formatError", error);
 
   if (error instanceof Error) {
     formattedError.message = error.message;
@@ -38,14 +44,14 @@ export function formatError(originalFormattedError: GraphQLFormattedError, maybe
     }
 
     if (error instanceof DetailedError) {
-      formattedError.extensions.code = error.code ?? ErrorCode.Unknown;
+      formattedError.extensions.code = error.code;
     } else if (error instanceof GraphQLError) {
       Object.assign(formattedError.extensions, error.extensions);
-      formattedError.extensions.code = isErrorCode(error.extensions?.code) ? error.extensions.code : ErrorCode.Unknown;
-      if (shouldIncludeSensitiveInfo && formattedError.extensions.stacktrace?.length === 0 && Array.isArray(error.extensions?.stacktrace)) {
-        formattedError.extensions.stacktrace = error.extensions.stacktrace.map(s => String(s));
+      formattedError.extensions.code = isErrorCode(error.extensions.code) ? error.extensions.code : ErrorCode.Unknown;
+      if (shouldIncludeSensitiveInfo && formattedError.extensions.stacktrace?.length === 0 && Array.isArray(error.extensions.stacktrace)) {
+        formattedError.extensions.stacktrace = error.extensions.stacktrace.map(String);
       }
-      formattedError.extensions.details = `A GraphQLError was thrown originating at ${error.positions?.join(", ")} in ${error.source?.name ?? "unknown source"}.`;
+      formattedError.extensions.details = `A GraphQLError was thrown originating at ${error.positions?.join(", ") ?? "unknown"} in ${error.source?.name ?? "unknown source"}.`;
     } else if (error instanceof jwt.NotBeforeError || error instanceof jwt.TokenExpiredError) {
       formattedError.extensions.code = ErrorCode.NotLoggedIn;
       formattedError.extensions.clientActions.push(ClientAction.LOGOUT);
@@ -92,10 +98,10 @@ export function formatError(originalFormattedError: GraphQLFormattedError, maybe
       formattedError.extensions.explanation = error.explanation;
     }
     if ("stacktrace" in error && Array.isArray(error.stacktrace) && shouldIncludeSensitiveInfo && formattedError.extensions.stacktrace?.length === 0) {
-      formattedError.extensions.stacktrace = error.stacktrace.map(s => String(s));
+      formattedError.extensions.stacktrace = error.stacktrace.map(String);
     }
     if ("clientActions" in error && Array.isArray(error.clientActions)) {
-      formattedError.extensions.clientActions = error.clientActions;
+      formattedError.extensions.clientActions = error.clientActions.map(String) as ClientAction[];
     }
   }
 

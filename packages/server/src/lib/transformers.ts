@@ -1,3 +1,4 @@
+import { LuxonError } from "@ukdanceblue/common";
 import { DateTime, Interval } from "luxon";
 import {
   Range,
@@ -5,7 +6,6 @@ import {
   serialize as serializeRange,
 } from "postgres-range";
 
-import { LuxonError } from "@ukdanceblue/common";
 
 export const luxonDateTimeJsDateTransformer = {
   from: (value: Date): DateTime => {
