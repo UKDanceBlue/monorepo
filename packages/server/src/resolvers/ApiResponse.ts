@@ -142,7 +142,7 @@ export class DetailedError extends Error implements ErrorApiResponse {
       if (val.cause) response.cause = val.cause;
     } else {
       response.message = val.message;
-      response.code = code ?? val.code;
+      response.code = code;
       if (val.details) response.details = val.details;
       if (val.explanation) response.explanation = val.explanation;
       if (val.cause) response.cause = val.cause;

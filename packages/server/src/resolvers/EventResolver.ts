@@ -21,6 +21,7 @@ class DeleteEventResponse extends AbstractGraphQLOkResponse<boolean> {
   @Field(() => Boolean)
   data!: boolean;
 }
+
 @InputType()
 class CreateEventInput {
   @Field()

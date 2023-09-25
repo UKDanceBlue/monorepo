@@ -10,12 +10,3 @@ EventOccurrenceModel.belongsTo(EventModel, {
   foreignKey: "eventId",
   as: "event",
 });
-
-EventModel.addScope("defaultScope", {
-  include: [
-    {
-      model: EventOccurrenceModel,
-      as: "occurrences",
-    },
-  ],
-});
