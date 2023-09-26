@@ -1,10 +1,6 @@
 import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import type {
-  FirestoreImageJsonV1} from "@ukdanceblue/common";
-import {
-  DownloadableImage,
-  FirestoreImage
-} from "@ukdanceblue/common";
+import type { FirestoreImageJsonV1 } from "@ukdanceblue/common";
+import { DownloadableImage, FirestoreImage } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 

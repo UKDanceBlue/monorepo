@@ -1,5 +1,1 @@
-
-
-
-
-export {default} from "./TeamScreen";
+export { default } from "./TeamScreen";

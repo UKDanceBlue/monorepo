@@ -1,6 +1,6 @@
 import type { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import type { FirebaseFunctionsTypes } from "@react-native-firebase/functions";
-import type { AuthError} from "expo-auth-session";
+import type { AuthError } from "expo-auth-session";
 import { useAuthRequest, useAutoDiscovery } from "expo-auth-session";
 import { createURL } from "expo-linking";
 import { getRandomBytes } from "expo-random";

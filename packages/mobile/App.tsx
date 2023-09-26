@@ -13,7 +13,7 @@ import {
   fetchUpdateAsync,
   reloadAsync,
 } from "expo-updates";
-import type { ICustomTheme} from "native-base";
+import type { ICustomTheme } from "native-base";
 import { NativeBaseProvider } from "native-base";
 import { useEffect, useRef, useState } from "react";
 import type { EventSubscription } from "react-native";

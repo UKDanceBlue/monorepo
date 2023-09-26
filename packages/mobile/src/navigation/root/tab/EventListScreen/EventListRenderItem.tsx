@@ -2,7 +2,7 @@ import type { FirestoreEvent } from "@ukdanceblue/common";
 import { Platform } from "expo-modules-core";
 import { DateTime, Interval } from "luxon";
 import { Box, Column, Heading, Row } from "native-base";
-import type { MutableRefObject} from "react";
+import type { MutableRefObject } from "react";
 import { useCallback, useMemo } from "react";
 import type { ListRenderItem } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";

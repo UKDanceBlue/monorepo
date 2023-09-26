@@ -97,7 +97,6 @@ export const EventListPage = ({
     const returnVal = { ...marked };
     if (selectedDay?.dateString) {
       returnVal[selectedDay.dateString] = {
-         
         ...(returnVal[selectedDay.dateString] ?? {}),
         selected: true,
       };

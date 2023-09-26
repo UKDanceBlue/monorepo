@@ -1,4 +1,1 @@
-
-
-
-export {default} from "./Place";
+export { default } from "./Place";

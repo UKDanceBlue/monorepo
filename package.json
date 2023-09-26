@@ -2,6 +2,11 @@
   "private": true,
   "name": "@ukdanceblue/monorepo",
   "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "format": "prettier --write ."
+  },
   "devDependencies": {
     "@eslint/js": "^8.50.0",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
@@ -18,6 +23,7 @@
     "eslint-plugin-react-native": "^4.0.0",
     "eslint-plugin-unicorn": "^48.0.0",
     "globals": "^13.22.0",
+    "prettier": "^3.0.3",
     "typescript": "^5.2.2"
   },
   "workspaces": [

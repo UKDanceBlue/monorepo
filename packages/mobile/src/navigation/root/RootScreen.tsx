@@ -1,8 +1,5 @@
-import type {
-  NativeStackNavigationProp} from "@react-navigation/native-stack";
-import {
-  createNativeStackNavigator,
-} from "@react-navigation/native-stack";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Text, useTheme } from "native-base";
 import { useWindowDimensions } from "react-native";
 

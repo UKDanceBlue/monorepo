@@ -1,32 +1,20 @@
-import type {
-  FirebaseAnalyticsTypes,
-} from "@react-native-firebase/analytics";
+import type { FirebaseAnalyticsTypes } from "@react-native-firebase/analytics";
 import analytics from "@react-native-firebase/analytics";
-import type {
-  FirebaseAppCheckTypes,
-} from "@react-native-firebase/app-check";
+import type { FirebaseAppCheckTypes } from "@react-native-firebase/app-check";
 import appCheck from "@react-native-firebase/app-check";
 import type { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import auth from "@react-native-firebase/auth";
-import type {
-  FirebaseCrashlyticsTypes,
-} from "@react-native-firebase/crashlytics";
+import type { FirebaseCrashlyticsTypes } from "@react-native-firebase/crashlytics";
 import crashlytics from "@react-native-firebase/crashlytics";
-import type {
-  FirebaseFirestoreTypes,
-} from "@react-native-firebase/firestore";
+import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import firestore from "@react-native-firebase/firestore";
-import type {
-  FirebaseFunctionsTypes,
-} from "@react-native-firebase/functions";
+import type { FirebaseFunctionsTypes } from "@react-native-firebase/functions";
 import functions from "@react-native-firebase/functions";
-import type {
-  FirebaseRemoteConfigTypes,
-} from "@react-native-firebase/remote-config";
+import type { FirebaseRemoteConfigTypes } from "@react-native-firebase/remote-config";
 import remoteConfig from "@react-native-firebase/remote-config";
 import type { FirebaseStorageTypes } from "@react-native-firebase/storage";
 import storage from "@react-native-firebase/storage";
-import type { ReactNode} from "react";
+import type { ReactNode } from "react";
 import { createContext, useContext, useEffect } from "react";
 
 jest.mock("@react-native-firebase/analytics", () => {

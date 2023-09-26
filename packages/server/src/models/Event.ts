@@ -193,19 +193,35 @@ export class EventIntermediate extends IntermediateClass<
 
   constructor(model: Partial<EventModel>) {
     super(["id", "uuid"], ["title", "occurrences"]);
-    if (model.id !== undefined) {this.id = model.id;}
-    if (model.uuid !== undefined) {this.uuid = model.uuid;}
-    if (model.title !== undefined) {this.title = model.title;}
-    if (model.summary !== undefined) {this.summary = model.summary;}
-    if (model.description !== undefined) {this.description = model.description;}
-    if (model.location !== undefined) {this.location = model.location;}
-    if (model.occurrences !== undefined)
-      {this.occurrences = model.occurrences.map(
+    if (model.id !== undefined) {
+      this.id = model.id;
+    }
+    if (model.uuid !== undefined) {
+      this.uuid = model.uuid;
+    }
+    if (model.title !== undefined) {
+      this.title = model.title;
+    }
+    if (model.summary !== undefined) {
+      this.summary = model.summary;
+    }
+    if (model.description !== undefined) {
+      this.description = model.description;
+    }
+    if (model.location !== undefined) {
+      this.location = model.location;
+    }
+    if (model.occurrences !== undefined) {
+      this.occurrences = model.occurrences.map(
         (occurrence) => new EventOccurrenceIntermediate(occurrence)
-      );}
-    if (model.duration !== undefined) {this.duration = model.duration;}
-    if (model.images !== undefined)
-      {this.images = model.images.map((image) => new ImageIntermediate(image));}
+      );
+    }
+    if (model.duration !== undefined) {
+      this.duration = model.duration;
+    }
+    if (model.images !== undefined) {
+      this.images = model.images.map((image) => new ImageIntermediate(image));
+    }
   }
 
   public toResource(): EventResource {

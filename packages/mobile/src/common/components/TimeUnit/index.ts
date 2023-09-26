@@ -1,4 +1,1 @@
-
-
-
-export {default} from "./TimeUnit";
+export { default } from "./TimeUnit";

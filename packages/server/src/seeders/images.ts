@@ -21,14 +21,13 @@ export default async function () {
         const imageUrl = `https://picsum.photos/seed/${faker.word.noun()}/${width}/${height}.${
           jpegOrWebp ? "jpg" : "webp"
         }`;
-         
+
         const imageRes = await fetch(imageUrl);
         let imageData: ArrayBuffer | null = null;
         let thumbHash: Buffer | null = null;
         if (imageRes.ok) {
-           
           imageData = await imageRes.arrayBuffer();
-           
+
           thumbHash = Buffer.from(
             // eslint-disable-next-line unicorn/no-await-expression-member
             (await generateThumbHash(imageData, {})).buffer

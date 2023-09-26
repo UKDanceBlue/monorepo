@@ -1,4 +1,3 @@
-
 import { useLinkBlueLogin } from "@ukdanceblue/common/auth";
 import JumbotronGeometric from "@ukdanceblue/common/components/JumbotronGeometric";
 import { useThemeFonts } from "@ukdanceblue/common/customHooks";

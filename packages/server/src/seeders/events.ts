@@ -25,7 +25,7 @@ export default async function () {
       });
     }
     const adjective = capitalize(faker.word.adjective());
-     
+
     const aOrAn = ["A", "E", "I", "O", "U"].includes(adjective[0]!)
       ? "an"
       : "a";

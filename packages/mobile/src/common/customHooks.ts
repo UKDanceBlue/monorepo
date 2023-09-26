@@ -1,23 +1,16 @@
 import type {
   NetInfoState,
-  NetInfoUnknownState} from "@react-native-community/netinfo";
-import NetInfo, {
-  NetInfoStateType
+  NetInfoUnknownState,
 } from "@react-native-community/netinfo";
+import NetInfo, { NetInfoStateType } from "@react-native-community/netinfo";
 import firebaseStorage from "@react-native-firebase/storage";
 import { isEqual } from "lodash";
 import {
   useColorModeValue as useColorModeValueNativeBase,
   useTheme,
 } from "native-base";
-import type {
-  DependencyList} from "react";
-import {
-  useDebugValue,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import type { DependencyList } from "react";
+import { useDebugValue, useEffect, useRef, useState } from "react";
 
 export function useFirebaseStorageUrl(googleUri?: string) {
   useDebugValue(`Storage for ${googleUri ?? "undefined"}`);

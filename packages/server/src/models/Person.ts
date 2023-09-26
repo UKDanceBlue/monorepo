@@ -141,22 +141,42 @@ export class PersonIntermediate extends IntermediateClass<
       ["id", "uuid"],
       ["authIds", "captainOf", "dbRole", "email", "memberOf"]
     );
-    if (init.id !== undefined) {this.id = init.id;}
-    if (init.uuid !== undefined) {this.uuid = init.uuid;}
-    if (init.firstName !== undefined) {this.firstName = init.firstName;}
-    if (init.lastName !== undefined) {this.lastName = init.lastName;}
-    if (init.email !== undefined) {this.email = init.email;}
-    if (init.linkblue !== undefined) {this.linkblue = init.linkblue;}
-    if (init.authIds !== undefined) {this.authIds = init.authIds;}
-    if (init.dbRole !== undefined) {this.dbRole = init.dbRole;}
-    if (init.committeeRole !== undefined)
-      {this.committeeRole = init.committeeRole;}
-    if (init.committeeName !== undefined)
-      {this.committeeName = init.committeeName;}
-    if (init.memberOf !== undefined)
-      {this.memberOf = init.memberOf.map((t) => new TeamIntermediate(t));}
-    if (init.captainOf !== undefined)
-      {this.captainOf = init.captainOf.map((t) => new TeamIntermediate(t));}
+    if (init.id !== undefined) {
+      this.id = init.id;
+    }
+    if (init.uuid !== undefined) {
+      this.uuid = init.uuid;
+    }
+    if (init.firstName !== undefined) {
+      this.firstName = init.firstName;
+    }
+    if (init.lastName !== undefined) {
+      this.lastName = init.lastName;
+    }
+    if (init.email !== undefined) {
+      this.email = init.email;
+    }
+    if (init.linkblue !== undefined) {
+      this.linkblue = init.linkblue;
+    }
+    if (init.authIds !== undefined) {
+      this.authIds = init.authIds;
+    }
+    if (init.dbRole !== undefined) {
+      this.dbRole = init.dbRole;
+    }
+    if (init.committeeRole !== undefined) {
+      this.committeeRole = init.committeeRole;
+    }
+    if (init.committeeName !== undefined) {
+      this.committeeName = init.committeeName;
+    }
+    if (init.memberOf !== undefined) {
+      this.memberOf = init.memberOf.map((t) => new TeamIntermediate(t));
+    }
+    if (init.captainOf !== undefined) {
+      this.captainOf = init.captainOf.map((t) => new TeamIntermediate(t));
+    }
   }
 
   get role(): NonAttribute<RoleResource> {
@@ -167,10 +187,12 @@ export class PersonIntermediate extends IntermediateClass<
     const roleInit: Partial<RoleResource> = {
       dbRole: this.dbRole,
     };
-    if (this.committeeRole !== undefined)
-      {roleInit.committeeRole = this.committeeRole;}
-    if (this.committeeName !== undefined)
-      {roleInit.committee = this.committeeName;}
+    if (this.committeeRole !== undefined) {
+      roleInit.committeeRole = this.committeeRole;
+    }
+    if (this.committeeName !== undefined) {
+      roleInit.committee = this.committeeName;
+    }
     return RoleResource.init(roleInit);
   }
 

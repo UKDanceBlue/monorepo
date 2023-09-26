@@ -1,4 +1,1 @@
-
-
-
-export {default} from "./Badges";
+export { default } from "./Badges";

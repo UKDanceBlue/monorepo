@@ -3,7 +3,10 @@ import type {
   BottomTabBarProps,
   BottomTabNavigationOptions,
 } from "@react-navigation/bottom-tabs";
-import type { ParamListBase, TabNavigationState } from "@react-navigation/native";
+import type {
+  ParamListBase,
+  TabNavigationState,
+} from "@react-navigation/native";
 import {
   useColorModeValue,
   useThemeColors,

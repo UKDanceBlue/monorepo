@@ -24,7 +24,9 @@ export function applyValidation(
       element instanceof HTMLOutputElement
     )
   ) {
-    throw new TypeError(`Element ${elementSelector} is not an input or textarea`);
+    throw new TypeError(
+      `Element ${elementSelector} is not an input or textarea`
+    );
   }
 
   let friendlyName = element.name;
@@ -60,7 +62,9 @@ export function applyValidations(
 ): () => void {
   const cleanupFunctions = argsList.map((args) => applyValidation(...args));
   return () => {
-    for (const fn of cleanupFunctions) {fn();}
+    for (const fn of cleanupFunctions) {
+      fn();
+    }
   };
 }
 

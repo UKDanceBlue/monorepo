@@ -1,5 +1,1 @@
-
-
-
-
-export {default} from "./Scoreboard";
+export { default } from "./Scoreboard";

@@ -1,5 +1,1 @@
-
-
-
-
-export {MarathonScreen as default} from "./MarathonScreen";
+export { MarathonScreen as default } from "./MarathonScreen";

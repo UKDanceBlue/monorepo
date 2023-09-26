@@ -2,8 +2,7 @@ import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { openURL } from "expo-linking";
 import { DateTime } from "luxon";
 import { Box, Button, HStack, Text, VStack } from "native-base";
-import type {
-  ImageSourcePropType} from "react-native";
+import type { ImageSourcePropType } from "react-native";
 import {
   ImageBackground,
   PixelRatio,

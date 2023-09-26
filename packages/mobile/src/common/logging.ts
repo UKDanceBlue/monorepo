@@ -9,12 +9,10 @@ export function log(
 ) {
   try {
     if (__DEV__) {
-       
       const consoleMethod = console[level];
       if (typeof consoleMethod === "function") {
         consoleMethod(message);
       } else {
-         
         console.log(message);
       }
     } else {

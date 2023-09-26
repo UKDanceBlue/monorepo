@@ -9,7 +9,7 @@ import {
 } from "react";
 
 import { log, universalCatch } from "../common/logging";
-import type { FirestoreTeam} from "../types/FirestoreTeam";
+import type { FirestoreTeam } from "../types/FirestoreTeam";
 import { isFirestoreTeam } from "../types/FirestoreTeam";
 import { isFirestoreUser } from "../types/FirestoreUser";
 

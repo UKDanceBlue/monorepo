@@ -9,7 +9,7 @@ interface MockedSubCollection<T> {
   documents: Partial<Record<string, FirebaseFirestoreTypes.DocumentData>>;
   collections: Partial<Record<string, T>>;
 }
- 
+
 interface MockedCollection extends MockedSubCollection<MockedCollection> {}
 type MockedFirestore = Partial<Record<string, MockedCollection>>;
 
@@ -65,7 +65,6 @@ function extractDocDataByPath<
   };
 }
 
- 
 function extractCollectionRefByPath<
   T extends FirebaseFirestoreTypes.DocumentData = FirebaseFirestoreTypes.DocumentData
 >(

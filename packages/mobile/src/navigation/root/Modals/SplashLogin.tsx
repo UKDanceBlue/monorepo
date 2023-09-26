@@ -3,14 +3,8 @@ import { universalCatch } from "@ukdanceblue/common/logging";
 import { showMessage } from "@ukdanceblue/common/util/alertUtils";
 import { Button, Center, Image, Text, View, ZStack } from "native-base";
 import { useEffect, useState } from "react";
-import type {
-  ImageSourcePropType} from "react-native";
-import {
-  ActivityIndicator,
-  Dimensions,
-  StatusBar,
-} from "react-native";
-
+import type { ImageSourcePropType } from "react-native";
+import { ActivityIndicator, Dimensions, StatusBar } from "react-native";
 
 import { useAppConfig, useFirebase } from "../../../context";
 

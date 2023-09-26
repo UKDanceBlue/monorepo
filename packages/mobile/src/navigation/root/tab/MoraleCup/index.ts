@@ -1,5 +1,1 @@
-
-
-
-
-export {MoraleCup as default} from "./MoraleCup";
+export { MoraleCup as default } from "./MoraleCup";

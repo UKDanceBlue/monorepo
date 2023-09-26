@@ -1,4 +1,3 @@
- 
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import type {
   CompositeScreenProps,
@@ -50,7 +49,6 @@ export type RootStackScreenProps<T extends keyof RootStackParamList> =
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace ReactNavigation {
-     
     interface RootParamList extends RootStackParamList {}
   }
 }

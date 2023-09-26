@@ -1,4 +1,1 @@
-
-
-
-export {default} from "./AudioPlayer";
+export { default } from "./AudioPlayer";

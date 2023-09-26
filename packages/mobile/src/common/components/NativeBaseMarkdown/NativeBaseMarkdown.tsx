@@ -1,7 +1,6 @@
-import type {
-  MarkdownProps} from "@jonasmerlin/react-native-markdown-display";
+import type { MarkdownProps } from "@jonasmerlin/react-native-markdown-display";
 import Markdown, {
-  MarkdownIt
+  MarkdownIt,
 } from "@jonasmerlin/react-native-markdown-display";
 import { canOpenURL, openURL } from "expo-linking";
 
@@ -28,7 +27,10 @@ const NativeBaseMarkdown = ({
           canOpenURL(url)
             .then((canOpen) => (canOpen ? openURL(url) : null))
             .catch((error) => {
-              log(`Failed to open URL ${url}: ${JSON.stringify(error)}`, "error");
+              log(
+                `Failed to open URL ${url}: ${JSON.stringify(error)}`,
+                "error"
+              );
             });
           return false;
         })
@@ -38,7 +40,7 @@ const NativeBaseMarkdown = ({
       style={style}
       markdownit={
         // This is caused by using a reexport
-         
+
         MarkdownIt({ linkify: true, typographer: true, html: true })
       }
     >

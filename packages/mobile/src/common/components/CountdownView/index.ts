@@ -1,4 +1,1 @@
-
-
-
-export {default} from "./CountdownView";
+export { default } from "./CountdownView";

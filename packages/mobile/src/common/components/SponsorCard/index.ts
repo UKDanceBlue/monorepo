@@ -1,5 +1,1 @@
-
-
-
-
-export {default} from "./SponsorCard";
+export { default } from "./SponsorCard";

@@ -1,6 +1,5 @@
 import { Center, Spinner, ZStack } from "native-base";
-import type {
-  ReactNode} from "react";
+import type { ReactNode } from "react";
 import {
   createContext,
   useCallback,

@@ -1,4 +1,1 @@
-
-
-
-export {default} from "./NotificationInfoModal";
+export { default } from "./NotificationInfoModal";

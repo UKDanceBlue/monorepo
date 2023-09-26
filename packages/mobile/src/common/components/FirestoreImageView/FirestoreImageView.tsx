@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useFirebase } from "../../../context";
 import type {
   DownloadableImage,
-  FirestoreImage} from "../../../types/commonStructs";
+  FirestoreImage,
+} from "../../../types/commonStructs";
 import {
   isFirestoreImage,
   parseFirestoreImage,

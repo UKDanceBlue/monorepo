@@ -31,7 +31,9 @@ export async function generateThumbHash(
 
   // Get the width and height of the image
   const { width, height } = await baseImage.metadata();
-  if (!width || !height) {throw new Error("Could not get image metadata");}
+  if (!width || !height) {
+    throw new Error("Could not get image metadata");
+  }
 
   // Calculate the aspect ratio
   const aspectRatio = width / height;

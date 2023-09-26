@@ -41,9 +41,15 @@ export async function findPersonForLogin(
     const { firstName, lastName, linkblue, role, memberOf, captainOf } =
       userData;
 
-    if (firstName) {currentPerson.firstName = firstName;}
-    if (lastName) {currentPerson.lastName = lastName;}
-    if (linkblue) {currentPerson.linkblue = linkblue;}
+    if (firstName) {
+      currentPerson.firstName = firstName;
+    }
+    if (lastName) {
+      currentPerson.lastName = lastName;
+    }
+    if (linkblue) {
+      currentPerson.linkblue = linkblue;
+    }
     if (role) {
       currentPerson.dbRole = role.dbRole;
       currentPerson.committeeRole = role.committeeRole;

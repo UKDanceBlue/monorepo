@@ -1,4 +1,1 @@
-
-
-
-export {default} from "./Standings";
+export { default } from "./Standings";

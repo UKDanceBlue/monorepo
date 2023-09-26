@@ -1,4 +1,1 @@
-
-
-
-export {default} from "./EventScreen";
+export { default } from "./EventScreen";

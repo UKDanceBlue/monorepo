@@ -1,6 +1,4 @@
-import type {
-  FirebaseFirestoreTypes,
-} from "@react-native-firebase/firestore";
+import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import firestore from "@react-native-firebase/firestore";
 import { DateTime, Interval } from "luxon";
 

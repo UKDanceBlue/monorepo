@@ -1,4 +1,3 @@
- 
 /*
 import firebaseAuth from "@react-native-firebase/auth";
 import firebaseFirestore from "@react-native-firebase/firestore";

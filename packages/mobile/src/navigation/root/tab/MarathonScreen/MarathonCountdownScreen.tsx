@@ -1,11 +1,7 @@
 import { DateTime } from "luxon";
 import { Image, Text, View } from "native-base";
-import type {
-  ImageSourcePropType} from "react-native";
-import {
-  ImageBackground,
-  useWindowDimensions,
-} from "react-native";
+import type { ImageSourcePropType } from "react-native";
+import { ImageBackground, useWindowDimensions } from "react-native";
 
 import CommitteeHoldingSign from "../../../../../assets/svgs/CommitteeHoldingSign";
 import CountdownView from "../@ukdanceblue/common/components/CountdownView";

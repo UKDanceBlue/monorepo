@@ -13,8 +13,12 @@ export const luxonDateTimeJsDateTransformer = {
   to: (
     value?: DateTime | null | undefined | Record<string, never>
   ): Date | undefined => {
-    if (!value) {return undefined;}
-    if (!DateTime.isDateTime(value)) {throw new Error("Not a DateTime");}
+    if (!value) {
+      return undefined;
+    }
+    if (!DateTime.isDateTime(value)) {
+      throw new Error("Not a DateTime");
+    }
     return value.toJSDate();
   },
 };
@@ -24,10 +28,16 @@ export const luxonDateTimeJsDateArrayTransformer = {
     return value.map((date) => DateTime.fromJSDate(date, { zone: "utc" }));
   },
   to: (value?: DateTime[] | null | undefined | Record<string, never>) => {
-    if (!value) {return undefined;}
-    if (!Array.isArray(value)) {throw new TypeError("Not an array");}
+    if (!value) {
+      return undefined;
+    }
+    if (!Array.isArray(value)) {
+      throw new TypeError("Not an array");
+    }
     return value.map((dateTime) => {
-      if (!DateTime.isDateTime(dateTime)) {throw new Error("Not a DateTime");}
+      if (!DateTime.isDateTime(dateTime)) {
+        throw new Error("Not a DateTime");
+      }
       return dateTime.toJSDate();
     });
   },
@@ -36,15 +46,25 @@ export const luxonDateTimeJsDateArrayTransformer = {
 export const luxonIntervalPgRangeTransformer = {
   from: (value: string) => {
     const range = parseRange(value, (value) => DateTime.fromISO(value));
-    if (range.lower == null || range.upper == null)
-      {throw new Error("Not a range");}
+    if (range.lower == null || range.upper == null) {
+      throw new Error("Not a range");
+    }
     return Interval.fromDateTimes(range.lower, range.upper);
   },
   to: (value?: Interval | null | undefined | Record<string, never>) => {
-    if (value == null) {return null;}
-    if (!Interval.isInterval(value) || value.start == null || value.end == null)
-      {throw new Error("Not an Interval");}
-    if (!value.isValid) {throw new LuxonError(value);}
+    if (value == null) {
+      return null;
+    }
+    if (
+      !Interval.isInterval(value) ||
+      value.start == null ||
+      value.end == null
+    ) {
+      throw new Error("Not an Interval");
+    }
+    if (!value.isValid) {
+      throw new LuxonError(value);
+    }
     const range = new Range<DateTime>(value.start, value.end, 0);
     return serializeRange<DateTime>(range, (dateTime) => {
       const iso = dateTime.toISO();

@@ -1,5 +1,1 @@
-
-
-
-
-export {default} from "./SponsorsBlock";
+export { default } from "./SponsorsBlock";

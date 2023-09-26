@@ -1,5 +1,1 @@
-
-
-
-
-export {default} from "./ScoreboardItem";
+export { default } from "./ScoreboardItem";

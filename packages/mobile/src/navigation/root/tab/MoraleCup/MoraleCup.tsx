@@ -4,10 +4,9 @@ import { Heading, Row, ScrollView, Spinner, Text, VStack } from "native-base";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type {
   NativeSyntheticEvent,
-  TextInputSubmitEditingEventData} from "react-native";
-import {
-  TextInput
+  TextInputSubmitEditingEventData,
 } from "react-native";
+import { TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useFirebase, useUserData } from "../../../../context";

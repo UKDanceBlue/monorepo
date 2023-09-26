@@ -1,5 +1,5 @@
 import { Text, View } from "native-base";
-import type { ReactElement} from "react";
+import type { ReactElement } from "react";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
 

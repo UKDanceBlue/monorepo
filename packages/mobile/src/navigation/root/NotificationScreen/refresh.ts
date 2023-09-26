@@ -1,15 +1,11 @@
 import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import type {
-  FirestoreNotification} from "@ukdanceblue/common";
-import {
-  isFirestoreNotification,
-} from "@ukdanceblue/common";
+import type { FirestoreNotification } from "@ukdanceblue/common";
+import { isFirestoreNotification } from "@ukdanceblue/common";
 import { log, universalCatch } from "@ukdanceblue/common/logging";
 import { DateTime } from "luxon";
 import type { Dispatch, SetStateAction } from "react";
 import { Alert } from "react-native";
 import type { SharedValue } from "react-native-reanimated";
-
 
 import type { NotificationListDataEntry } from "./NotificationScreen";
 
@@ -40,7 +36,7 @@ export async function refreshNotificationScreen(
             pastNotificationSnapshot = await pastNotificationRef.get();
           } catch (error) {
             universalCatch(error);
-             
+
             if (!hasAlerted) {
               Alert.alert(
                 "Error",

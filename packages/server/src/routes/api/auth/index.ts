@@ -31,7 +31,6 @@ authApiRouter.get("/logout", (req: Request, res: Response) => {
 
 authApiRouter.post("/oidc-callback", oidcCallback);
 
- 
 authApiRouter.get("/login", login);
 
 export default authApiRouter;

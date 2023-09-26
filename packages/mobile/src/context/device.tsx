@@ -14,7 +14,7 @@ import {
   setItemAsync,
 } from "expo-secure-store";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { V4Options} from "uuid";
+import type { V4Options } from "uuid";
 import { v4 } from "uuid";
 
 import { universalCatch } from "../common/logging";

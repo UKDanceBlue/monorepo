@@ -1,9 +1,5 @@
-import type {
-  Calendar} from "expo-calendar";
-import {
-  getCalendarsAsync,
-  getDefaultCalendarAsync,
-} from "expo-calendar";
+import type { Calendar } from "expo-calendar";
+import { getCalendarsAsync, getDefaultCalendarAsync } from "expo-calendar";
 import { Platform } from "react-native";
 
 export async function discoverDefaultCalendar(): Promise<Calendar | null> {

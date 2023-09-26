@@ -16,6 +16,15 @@ import globals from "globals";
  * @type {import('@types/eslint').Linter.FlatConfig[]}
  */
 const eslintConfig = [
+  {
+    ignores: [
+      "**/*.d.ts",
+      "**/node_modules/**",
+      "**/coverage/**",
+      "**/dist/**",
+      "**/build/**",
+    ],
+  },
   eslintJs.configs.recommended,
   {
     files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],

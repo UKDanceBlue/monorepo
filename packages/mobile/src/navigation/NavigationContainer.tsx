@@ -1,9 +1,6 @@
 import analytics from "@react-native-firebase/analytics";
-import type {
-  NavigationContainerRef} from "@react-navigation/native";
-import {
-  NavigationContainer
-} from "@react-navigation/native";
+import type { NavigationContainerRef } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import {
   addEventListener as addLinkingEventListener,
   canOpenURL,

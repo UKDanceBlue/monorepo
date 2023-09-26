@@ -62,12 +62,17 @@ ImageModel.init(
       type: DataTypes.TEXT,
       get(): URL | null {
         const url = this.getDataValue("url") as string | null;
-        if (url != null) {return new URL(url);}
+        if (url != null) {
+          return new URL(url);
+        }
         return url;
       },
       set(value: URL | null) {
-        if (value != null) {this.setDataValue("url", value.toString() as never);}
-        else {this.setDataValue("url", null);}
+        if (value != null) {
+          this.setDataValue("url", value.toString() as never);
+        } else {
+          this.setDataValue("url", null);
+        }
       },
       allowNull: true,
     },
@@ -122,15 +127,33 @@ export class ImageIntermediate extends IntermediateClass<
 
   constructor(model: Partial<ImageModel>) {
     super(["id", "uuid"], ["mimeType", "width", "height"]);
-    if (model.id) {this.id = model.id;}
-    if (model.uuid) {this.uuid = model.uuid;}
-    if (model.url) {this.url = model.url;}
-    if (model.imageData) {this.imageData = model.imageData;}
-    if (model.mimeType) {this.mimeType = model.mimeType;}
-    if (model.thumbHash) {this.thumbHash = model.thumbHash;}
-    if (model.alt) {this.alt = model.alt;}
-    if (model.width) {this.width = model.width;}
-    if (model.height) {this.height = model.height;}
+    if (model.id) {
+      this.id = model.id;
+    }
+    if (model.uuid) {
+      this.uuid = model.uuid;
+    }
+    if (model.url) {
+      this.url = model.url;
+    }
+    if (model.imageData) {
+      this.imageData = model.imageData;
+    }
+    if (model.mimeType) {
+      this.mimeType = model.mimeType;
+    }
+    if (model.thumbHash) {
+      this.thumbHash = model.thumbHash;
+    }
+    if (model.alt) {
+      this.alt = model.alt;
+    }
+    if (model.width) {
+      this.width = model.width;
+    }
+    if (model.height) {
+      this.height = model.height;
+    }
   }
 
   public toResource(): ImageResource {

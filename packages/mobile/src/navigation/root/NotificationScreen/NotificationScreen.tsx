@@ -12,7 +12,6 @@ import { RefreshControl } from "react-native";
 import type Animated from "react-native-reanimated";
 import { useSharedValue } from "react-native-reanimated";
 
-
 import { useDeviceData, useLoading, useUserData } from "../../../context";
 import { useRefreshUserData } from "../../../context/user";
 

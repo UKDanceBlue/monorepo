@@ -1,4 +1,1 @@
-
-
-
-export {default} from "./WebpageModal";
+export { default } from "./WebpageModal";

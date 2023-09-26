@@ -1,5 +1,1 @@
-
-
-
-
-export {default} from "./TemplateComponent";
+export { default } from "./TemplateComponent";

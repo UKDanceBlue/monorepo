@@ -33,7 +33,6 @@ import { ActivityIndicator, useWindowDimensions } from "react-native";
 import openMaps from "react-native-open-maps";
 import { WebView } from "react-native-webview";
 
-
 import { useFirebase } from "../../../context";
 import type { RootStackScreenProps } from "../../../types/navigationTypes";
 
@@ -74,7 +73,7 @@ const EventScreen = () => {
   >(
     firestoreImages == null
       ? undefined
-      : Array.from({length: firestoreImages.length}).fill(null)
+      : Array.from({ length: firestoreImages.length }).fill(null)
   );
 
   const { colors } = useTheme();
@@ -87,7 +86,9 @@ const EventScreen = () => {
       Promise.all(
         firestoreImages.map((image) => {
           return DownloadableImage.fromFirestoreImage(image, (uri: string) => {
-            return uri.startsWith("gs://") ? fbStorage.refFromURL(uri).getDownloadURL() : Promise.resolve(uri);
+            return uri.startsWith("gs://")
+              ? fbStorage.refFromURL(uri).getDownloadURL()
+              : Promise.resolve(uri);
           });
         })
       )

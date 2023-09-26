@@ -19,7 +19,7 @@ async function getData(eventId: string): Promise<
   let event: EventResource | undefined = undefined;
   try {
     const res = await dbApiClient.eventApi.getEvent(eventId);
-    const {resource} = res.resource;
+    const { resource } = res.resource;
     event = resource;
   } catch (error_) {
     error = error_ instanceof Error ? error_ : new Error("Unknown error");

@@ -1,4 +1,3 @@
- 
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "fs";
 
 import type { ConfigContext, ExpoConfig } from "@expo/config"; // WARNING - @expo/config types aren't versioned
@@ -114,15 +113,16 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       const linesOfNewVersionFile = newVersionFile.split("\n").splice(1);
       for (const [index, line] of lastVersionFile
         .split("\n")
-        .splice(1).entries()) {
-          if (line === linesOfNewVersionFile[index]) {
-            console.warn(
-              `Warning: version.txt line ${
-                index + 2
-              } is the same as the last build. If this was unintentional, bump the version in app.config.ts.`
-            );
-          }
+        .splice(1)
+        .entries()) {
+        if (line === linesOfNewVersionFile[index]) {
+          console.warn(
+            `Warning: version.txt line ${
+              index + 2
+            } is the same as the last build. If this was unintentional, bump the version in app.config.ts.`
+          );
         }
+      }
     }
     writeFileSync("./version.txt", newVersionFile);
   }

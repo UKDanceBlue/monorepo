@@ -1,11 +1,7 @@
 import firestore from "@react-native-firebase/firestore";
 import { Box, Button, Row, useTheme } from "native-base";
-import type {
-  SectionListRenderItem} from "react-native";
-import {
-  Alert,
-  useWindowDimensions,
-} from "react-native";
+import type { SectionListRenderItem } from "react-native";
+import { Alert, useWindowDimensions } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedGestureHandler,
@@ -51,7 +47,10 @@ export const AnimatedNotificationRow: SectionListRenderItem<
       }
     },
     onEnd: () => {
-      x.value = x.value < -sideMenuWidth ? withSpring(-sideMenuWidth * 1.25) : withSpring(0);
+      x.value =
+        x.value < -sideMenuWidth
+          ? withSpring(-sideMenuWidth * 1.25)
+          : withSpring(0);
     },
   });
 

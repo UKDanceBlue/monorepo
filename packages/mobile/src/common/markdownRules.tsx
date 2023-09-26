@@ -1,6 +1,7 @@
 import type {
   ASTNode,
-  RenderRules} from "@jonasmerlin/react-native-markdown-display";
+  RenderRules,
+} from "@jonasmerlin/react-native-markdown-display";
 import {
   hasParents,
   renderRules,
@@ -151,10 +152,9 @@ const CustomImageRenderer = ({
 
   useEffect(() => {
     // we check that the source starts with at least one of the elements in allowedImageHandlers
-    const show =
-      allowedImageHandlers.some((value) => {
-        return src?.toLowerCase().startsWith(value.toLowerCase());
-      });
+    const show = allowedImageHandlers.some((value) => {
+      return src?.toLowerCase().startsWith(value.toLowerCase());
+    });
 
     if (!show) {
       if (defaultImageHandler == null) {
@@ -366,7 +366,6 @@ export const rules: RenderRules = {
       const orderedList = parent[orderedListIndex];
       let listItemNumber;
 
-       
       if (
         (orderedList.attributes as undefined | Record<string, any | undefined>)
           ?.start

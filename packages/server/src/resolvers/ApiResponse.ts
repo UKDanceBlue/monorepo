@@ -32,8 +32,9 @@ export class GraphQLBaseResponse implements BaseResponse {
     const baseResponse: BaseResponse = {
       ok: this.ok,
     };
-    if (this.clientActions != null)
-      {baseResponse.clientActions = this.clientActions;}
+    if (this.clientActions != null) {
+      baseResponse.clientActions = this.clientActions;
+    }
     return baseResponse;
   }
 }
@@ -55,9 +56,12 @@ export abstract class AbstractGraphQLOkResponse<T>
     const baseResponse: OkApiResponse<T> = {
       ok: this.ok,
     };
-    if (this.clientActions != null)
-      {baseResponse.clientActions = this.clientActions;}
-    if (this.data != null) {baseResponse.data = this.data;}
+    if (this.clientActions != null) {
+      baseResponse.clientActions = this.clientActions;
+    }
+    if (this.data != null) {
+      baseResponse.data = this.data;
+    }
     return baseResponse;
   }
 
@@ -67,7 +71,9 @@ export abstract class AbstractGraphQLOkResponse<T>
   ): OkRes {
     const response = new this();
     response.ok = true;
-    if (data != null) {response.data = data;}
+    if (data != null) {
+      response.data = data;
+    }
     return response;
   }
 }
@@ -81,9 +87,12 @@ export abstract class AbstractGraphQLArrayOkResponse<T>
     const baseResponse: OkApiResponse<T[]> = {
       ok: this.ok,
     };
-    if (this.clientActions != null)
-      {baseResponse.clientActions = this.clientActions;}
-    if (this.data != null) {baseResponse.data = this.data;}
+    if (this.clientActions != null) {
+      baseResponse.clientActions = this.clientActions;
+    }
+    if (this.data != null) {
+      baseResponse.data = this.data;
+    }
     return baseResponse;
   }
 }
@@ -104,9 +113,12 @@ export abstract class AbstractGraphQLCreatedResponse<T>
       ok: this.ok,
       uuid: this.uuid,
     };
-    if (this.clientActions != null)
-      {baseResponse.clientActions = this.clientActions;}
-    if (this.data != null) {baseResponse.data = this.data;}
+    if (this.clientActions != null) {
+      baseResponse.clientActions = this.clientActions;
+    }
+    if (this.data != null) {
+      baseResponse.data = this.data;
+    }
     return baseResponse;
   }
 }
@@ -158,9 +170,12 @@ export abstract class AbstractGraphQLPaginatedResponse<
         page: this.page,
       },
     };
-    if (this.clientActions != null)
-      {baseResponse.clientActions = this.clientActions;}
-    if (this.data != null) {baseResponse.data = this.data;}
+    if (this.clientActions != null) {
+      baseResponse.clientActions = this.clientActions;
+    }
+    if (this.data != null) {
+      baseResponse.data = this.data;
+    }
     return baseResponse;
   }
 }
@@ -190,14 +205,24 @@ export class DetailedError extends Error implements ErrorApiResponse {
       response.message = val;
     } else if (val instanceof Error) {
       response.message = val.message;
-      if (val.stack) {response.stack = val.stack;}
-      if (val.cause) {response.cause = val.cause;}
+      if (val.stack) {
+        response.stack = val.stack;
+      }
+      if (val.cause) {
+        response.cause = val.cause;
+      }
     } else {
       response.message = val.message;
       response.code = code;
-      if (val.details) {response.details = val.details;}
-      if (val.explanation) {response.explanation = val.explanation;}
-      if (val.cause) {response.cause = val.cause;}
+      if (val.details) {
+        response.details = val.details;
+      }
+      if (val.explanation) {
+        response.explanation = val.explanation;
+      }
+      if (val.cause) {
+        response.cause = val.cause;
+      }
     }
 
     return response;

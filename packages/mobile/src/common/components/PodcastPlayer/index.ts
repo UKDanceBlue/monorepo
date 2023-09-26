@@ -1,4 +1,1 @@
-
-
-
-export {default} from "./PodcastPlayer";
+export { default } from "./PodcastPlayer";

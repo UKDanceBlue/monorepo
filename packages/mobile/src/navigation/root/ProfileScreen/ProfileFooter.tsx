@@ -15,7 +15,6 @@ import {
 import { useState } from "react";
 import { TextInput } from "react-native";
 
-
 import {
   useAuthData,
   useFirebase,

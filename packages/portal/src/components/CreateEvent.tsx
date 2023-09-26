@@ -1,8 +1,7 @@
 "use client";
 import "client-only";
 
-import type {
-  CreateEventBody} from "@ukdanceblue/common";
+import type { CreateEventBody } from "@ukdanceblue/common";
 import {
   ApiClient,
   EventResource,

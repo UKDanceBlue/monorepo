@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import type { RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { log } from "@ukdanceblue/common/logging";
-import type { ReactElement} from "react";
+import type { ReactElement } from "react";
 import { useEffect, useState } from "react";
 
 import { useAppConfig } from "../../../context";

@@ -1,15 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import type { RefObject} from "react";
+import type { RefObject } from "react";
 import { useCallback, useMemo, useRef } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { View } from "react-native";
 import BasicDay from "react-native-calendars/src/calendar/day/basic";
 import type { DayProps } from "react-native-calendars/src/calendar/day/index";
 import Day from "react-native-calendars/src/calendar/day/index";
-import type {
-  CalendarHeaderProps,
-} from "react-native-calendars/src/calendar/header";
+import type { CalendarHeaderProps } from "react-native-calendars/src/calendar/header";
 import CalendarHeader from "react-native-calendars/src/calendar/header";
 import styleConstructor from "react-native-calendars/src/calendar/style";
 import {
@@ -27,7 +25,11 @@ import {
   parseDate as paseDateUntyped,
   toMarkingFormat,
 } from "react-native-calendars/src/interface";
-import type { DateData, MarkedDates, Theme } from "react-native-calendars/src/types";
+import type {
+  DateData,
+  MarkedDates,
+  Theme,
+} from "react-native-calendars/src/types";
 import XDate from "xdate";
 
 const parseDate = paseDateUntyped as (
@@ -98,7 +100,7 @@ export interface CalendarProps extends CalendarHeaderProps, DayProps {
   /** Style passed to the header */
   headerStyle?: StyleProp<ViewStyle>;
   /** Allow rendering a totally custom header */
-   
+
   // customHeader?: any;
   /** Allow selection of dates before minDate or after maxDate */
   // allowSelectionOutOfRange?: boolean;

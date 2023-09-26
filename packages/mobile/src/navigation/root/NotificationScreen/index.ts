@@ -1,5 +1,1 @@
-
-
-
-
-export {default} from "./NotificationScreen";
+export { default } from "./NotificationScreen";

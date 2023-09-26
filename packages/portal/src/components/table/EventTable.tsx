@@ -1,6 +1,5 @@
 "use client";
-import type {
-  ColumnDef} from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import {
   Row,
   SortingState,
@@ -100,10 +99,9 @@ export default function EventTable() {
               {footerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className={
-                    `px-4 py-2${ 
-                    header.isPlaceholder ? " border-2 border-gray-500" : ""}`
-                  }
+                  className={`px-4 py-2${
+                    header.isPlaceholder ? " border-2 border-gray-500" : ""
+                  }`}
                 >
                   {header.isPlaceholder
                     ? null

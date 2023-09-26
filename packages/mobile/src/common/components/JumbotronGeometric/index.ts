@@ -1,5 +1,1 @@
-
-
-
-
-export {default} from "./JumbotronGeometric";
+export { default } from "./JumbotronGeometric";

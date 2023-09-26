@@ -1,7 +1,7 @@
 import NetInfo from "@react-native-community/netinfo";
 import firebaseStorage from "@react-native-firebase/storage";
 import * as FileSystem from "expo-file-system";
-import type { SetStateAction} from "react";
+import type { SetStateAction } from "react";
 import { useEffect, useState } from "react";
 import { Image } from "react-native";
 
@@ -99,11 +99,11 @@ export function useCachedFiles(
 ) {
   const [hookState, setHookState] = useState<
     [string | null, Error | null][] | [string | null, Error | null]
-  >(Array.from({length: options.length}).fill([null, null]));
+  >(Array.from({ length: options.length }).fill([null, null]));
   const [localUris, setLocalUris] = useState<(string | null)[]>([]);
 
   useDeepEffect(() => {
-    const tempLocalUris = Array.from({length: options.length}).fill("");
+    const tempLocalUris = Array.from({ length: options.length }).fill("");
     for (let i = 0; i < options.length; i++) {
       if (options[i]) {
         tempLocalUris[i] = `${
@@ -179,9 +179,9 @@ export interface UseCachedImagesReturnType {
 export function useCachedImages(options: UseCachedFilesType[]) {
   const [hookState, setHookState] = useState<
     [UseCachedImagesReturnType | null, Error | null][]
-  >(Array.from({length: options.length}).fill([null, null]));
+  >(Array.from({ length: options.length }).fill([null, null]));
   const [imageSizes, setImageSizes] = useState<[number, number][]>(
-    Array.from({length: options.length}).fill([null, null])
+    Array.from({ length: options.length }).fill([null, null])
   );
   const cachedFiles = useCachedFiles(options, true);
 

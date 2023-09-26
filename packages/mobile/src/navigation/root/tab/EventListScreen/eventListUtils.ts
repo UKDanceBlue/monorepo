@@ -1,6 +1,4 @@
-import type {
-  FirebaseFirestoreTypes,
-} from "@react-native-firebase/firestore";
+import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import FirestoreModule from "@react-native-firebase/firestore";
 import type { FirestoreEventJson } from "@ukdanceblue/common";
 import { FirestoreEvent } from "@ukdanceblue/common";
@@ -66,7 +64,9 @@ export function luxonDateTimeToMonthString(
 export function luxonDateTimeToMonthString(
   dateTime: DateTime | undefined | null
 ): string | undefined | null {
-  return dateTime == null ? dateTime : dateTime.toFormat(RNCAL_DATE_FORMAT_NO_DAY);
+  return dateTime == null
+    ? dateTime
+    : dateTime.toFormat(RNCAL_DATE_FORMAT_NO_DAY);
 }
 
 /**
@@ -343,20 +343,11 @@ export const useEvents = ({
   }, [earliestTimestamp, refresh]);
 
   const eventsByMonth = useMemo(
-    () =>
-      splitEvents(
-        Object.values(events) 
-      ),
+    () => splitEvents(Object.values(events)),
     [events]
   );
 
-  const marked = useMemo(
-    () =>
-      markEvents(
-        Object.values(events) 
-      ),
-    [events]
-  );
+  const marked = useMemo(() => markEvents(Object.values(events)), [events]);
 
   return [
     marked,

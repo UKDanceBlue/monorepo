@@ -1,5 +1,1 @@
-
-
-
-
-export {default} from "./AboutItem";
+export { default } from "./AboutItem";

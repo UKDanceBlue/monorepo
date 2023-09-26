@@ -1,5 +1,1 @@
-
-
-
-
-export {default} from "./TeamInformation";
+export { default } from "./TeamInformation";
