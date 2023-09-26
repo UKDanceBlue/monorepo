@@ -1,7 +1,5 @@
 import type { NonUndefined, RequiredKeys } from "utility-types";
 
-
-
 declare const CoreIntermediateProperty: unique symbol;
 declare const ImportantIntermediateProperty: unique symbol;
 
@@ -22,13 +20,13 @@ export type ImportantProperty<T> = T & {
 
 type BrandRequired<T, Brand extends symbol> = {
   [Key in keyof T as IsBranded<T[Key], Brand> extends true
-  ? Key
-  : never]-?: NonUndefined<T[Key]>;
+    ? Key
+    : never]-?: NonUndefined<T[Key]>;
 } & {
-    [Key in keyof T as IsBranded<T[Key], Brand> extends true
+  [Key in keyof T as IsBranded<T[Key], Brand> extends true
     ? never
     : Key]+?: T[Key];
-  };
+};
 
 /**
  * Same as T except any properties that are branded as core are required
@@ -46,10 +44,10 @@ export type ImportantRequired<T> = StripBrands<
 
 export type StripBrands<T> = {
   [Key in keyof T]: T[Key] extends CoreProperty<infer U>
-  ? U
-  : T[Key] extends ImportantProperty<infer U>
-  ? U
-  : T[Key];
+    ? U
+    : T[Key] extends ImportantProperty<infer U>
+    ? U
+    : T[Key];
 };
 
 /**
@@ -114,9 +112,15 @@ export abstract class IntermediateClass<
     this.importantPropertyNames = importantPropertyNames;
   }
 
-  public hasCoreProperties(this: SubClass, verbose: false): this is CoreRequired<SubClass>;
+  public hasCoreProperties(
+    this: SubClass,
+    verbose: false
+  ): this is CoreRequired<SubClass>;
   public hasCoreProperties(this: SubClass, verbose: true): string[];
-  public hasCoreProperties(this: SubClass, verbose = false): string[] | boolean {
+  public hasCoreProperties(
+    this: SubClass,
+    verbose = false
+  ): string[] | boolean {
     const errors: string[] = [];
 
     for (const propertyName of this.corePropertyNames) {
@@ -124,18 +128,22 @@ export abstract class IntermediateClass<
         (this as Record<typeof propertyName, unknown>)[propertyName] ===
         undefined
       ) {
-        errors.push(
-          String(propertyName)
-        );
+        errors.push(String(propertyName));
       }
     }
 
     return verbose ? errors : errors.length === 0;
   }
 
-  public hasImportantProperties(this: SubClass, verbose: false): this is ImportantRequired<SubClass>;
+  public hasImportantProperties(
+    this: SubClass,
+    verbose: false
+  ): this is ImportantRequired<SubClass>;
   public hasImportantProperties(this: SubClass, verbose: true): string[];
-  public hasImportantProperties(this: SubClass, verbose = false): string[] | boolean {
+  public hasImportantProperties(
+    this: SubClass,
+    verbose = false
+  ): string[] | boolean {
     const errors: string[] = [];
 
     for (const propertyName of this.importantPropertyNames) {
@@ -143,9 +151,7 @@ export abstract class IntermediateClass<
         (this as Record<typeof propertyName, unknown>)[propertyName] ===
         undefined
       ) {
-        errors.push(
-          String(propertyName)
-        );
+        errors.push(String(propertyName));
       }
     }
 

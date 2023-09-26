@@ -3,15 +3,18 @@ import { isError } from "lodash";
 
 import { isFirebaseError } from "../types/firebaseTypes";
 
-export function log(message: string | boolean | number | object, level: "trace" | "debug" | "log" | "info" | "warn" | "error" = "log") {
+export function log(
+  message: string | boolean | number | object,
+  level: "trace" | "debug" | "log" | "info" | "warn" | "error" = "log"
+) {
   try {
     if (__DEV__) {
-      // eslint-disable-next-line no-console
+       
       const consoleMethod = console[level];
       if (typeof consoleMethod === "function") {
         consoleMethod(message);
       } else {
-        // eslint-disable-next-line no-console
+         
         console.log(message);
       }
     } else {
@@ -45,7 +48,12 @@ export function universalCatch(error: unknown) {
       logError(error);
     } else if (isError(error)) {
       logError(error);
-    } else if (typeof error === "string" || typeof error === "number" || typeof error === "boolean" || (typeof error === "object" && error !== null)) {
+    } else if (
+      typeof error === "string" ||
+      typeof error === "number" ||
+      typeof error === "boolean" ||
+      (typeof error === "object" && error !== null)
+    ) {
       log(error, "error");
     } else {
       console.error(error);

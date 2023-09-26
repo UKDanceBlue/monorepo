@@ -38,18 +38,12 @@ export async function findPersonForLogin(
       email: userData.email,
     });
 
-    const {
-      firstName,
-      lastName,
-      linkblue,
-      role,
-      memberOf,
-      captainOf,
-    } = userData;
+    const { firstName, lastName, linkblue, role, memberOf, captainOf } =
+      userData;
 
-    if (firstName) currentPerson.firstName = firstName;
-    if (lastName) currentPerson.lastName = lastName;
-    if (linkblue) currentPerson.linkblue = linkblue;
+    if (firstName) {currentPerson.firstName = firstName;}
+    if (lastName) {currentPerson.lastName = lastName;}
+    if (linkblue) {currentPerson.linkblue = linkblue;}
     if (role) {
       currentPerson.dbRole = role.dbRole;
       currentPerson.committeeRole = role.committeeRole;
@@ -57,18 +51,26 @@ export async function findPersonForLogin(
     }
 
     if (memberOf) {
-      const memberOfArray = await Promise.all(memberOf.map((c) => {
-        c = (typeof c === "string") ? c : c.teamId;
-        return TeamModel.findOne({ where: { uuid: c } });
-      }));
-      currentPerson.memberOf = memberOfArray.filter((c): c is TeamModel => c != null)
+      const memberOfArray = await Promise.all(
+        memberOf.map((c) => {
+          c = typeof c === "string" ? c : c.teamId;
+          return TeamModel.findOne({ where: { uuid: c } });
+        })
+      );
+      currentPerson.memberOf = memberOfArray.filter(
+        (c): c is TeamModel => c != null
+      );
     }
     if (captainOf) {
-      const captainOfArray = await Promise.all(captainOf.map((c) => {
-        c = (typeof c === "string") ? c : c.teamId;
-        return TeamModel.findOne({ where: { uuid: c } });
-      }));
-      currentPerson.captainOf = captainOfArray.filter((c): c is TeamModel => c != null)
+      const captainOfArray = await Promise.all(
+        captainOf.map((c) => {
+          c = typeof c === "string" ? c : c.teamId;
+          return TeamModel.findOne({ where: { uuid: c } });
+        })
+      );
+      currentPerson.captainOf = captainOfArray.filter(
+        (c): c is TeamModel => c != null
+      );
     }
 
     created = true;

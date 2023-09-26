@@ -2,6 +2,8 @@
 // For example you can do:   *import { EventScreen } from '../EventScreen'*
 // Instead of:               *import { EventScreen } from '../EventScreen/EventScreen'*
 
-import ScoreboardScreen from "./ScoreBoardScreen";
 
-export default ScoreboardScreen;
+
+
+
+export {default} from "./ScoreBoardScreen";

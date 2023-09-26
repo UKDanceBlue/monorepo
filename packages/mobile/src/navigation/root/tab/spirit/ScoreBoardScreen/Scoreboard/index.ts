@@ -1,3 +1,5 @@
-import Scoreboard from "./Scoreboard";
 
-export default Scoreboard;
+
+
+
+export {default} from "./Scoreboard";

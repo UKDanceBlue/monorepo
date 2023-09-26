@@ -1,15 +1,10 @@
 import { memo } from "react";
-import Svg, { Path, SvgProps } from "react-native-svg";
+import type { SvgProps } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 /* SVGR has dropped some elements not supported by react-native-svg: style */
 
 const FirstPlaceMedal = (props: SvgProps) => (
-  <Svg
-    id="Layer_1"
-    x={0}
-    y={0}
-    viewBox="0 0 248 343"
-    {...props}
-  >
+  <Svg id="Layer_1" x={0} y={0} viewBox="0 0 248 343" {...props}>
     <Path
       d="M129.75 27.54c6.13 1.2 12.38 2 18.38 3.68 14.63 4.09 27.14 11.94 37.66 22.87 11.28 11.73 18.71 25.61 22.13 41.53 3.33 15.46 2.58 30.8-2.56 45.76-7.16 20.84-20.37 36.86-39.56 47.73-15.95 9.03-33.14 12.5-51.39 10.54-21.88-2.35-40.21-11.81-54.95-28.04-11.43-12.57-18.48-27.37-21.1-44.22-2.91-18.69-.14-36.5 8.61-53.24 9.94-19.03 25.01-32.54 44.94-40.57 7.69-3.1 15.7-4.94 23.96-5.66.5-.04.99-.25 1.49-.37 4.13-.01 8.26-.01 12.39-.01zm-6.24 15.69c-39.22.3-70.54 31.48-70.58 70.8-.05 39.01 32.11 70.82 70.93 70.47 38.74-.35 70.25-31.05 70.29-70.56.04-39.66-31.77-70.49-70.64-70.71z"
       // @ts-expect-error This works

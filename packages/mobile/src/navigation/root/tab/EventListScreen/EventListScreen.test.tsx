@@ -1,3 +1,3 @@
 describe("<EventListScreen />", () => {
-  it.todo("renders correctly");
+  test.todo("renders correctly");
 });

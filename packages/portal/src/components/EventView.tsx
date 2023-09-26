@@ -1,5 +1,5 @@
-import { EventResource } from "@ukdanceblue/common";
-import { Interval, DateTime } from "luxon";
+import type { EventResource } from "@ukdanceblue/common";
+import { DateTime, Interval } from "luxon";
 
 export default function EventView({
   e,
@@ -11,8 +11,7 @@ export default function EventView({
   showDetails?: boolean;
 }) {
   const intervals = e.occurrences.map((o) => {
-    if (e.duration) return o.until(o.plus(e.duration));
-    else return o;
+    return e.duration ? o.until(o.plus(e.duration)) : o;
   });
 
   return (

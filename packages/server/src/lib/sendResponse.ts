@@ -25,10 +25,11 @@ function htmlifyJson(
   indentationLevel = 0
 ): string {
   if (Array.isArray(content)) {
-    return `<article><span>Array (${content.length
-      } Elements)</span><ol style="margin-block-start: 0; margin-block-end: 0;" start="0">${content
-        .map((item) => `<li>${htmlifyJson(item, indentationLevel + 1)}</li>`)
-        .join("")}</ol></article>`;
+    return `<article><span>Array (${
+      content.length
+    } Elements)</span><ol style="margin-block-start: 0; margin-block-end: 0;" start="0">${content
+      .map((item) => `<li>${htmlifyJson(item, indentationLevel + 1)}</li>`)
+      .join("")}</ol></article>`;
   }
   if (isPrimitiveObject(content)) {
     // If we are at indent level 0 skip the list
@@ -54,8 +55,9 @@ function htmlifyJson(
     return `<span style="color: ${numberColor}">${content}</span>`;
   }
   if (typeof content === "boolean") {
-    return `<span style="color: ${content ? trueColor : falseColor}">${content ? "True" : "False"
-      }</span>`;
+    return `<span style="color: ${content ? trueColor : falseColor}">${
+      content ? "True" : "False"
+    }</span>`;
   }
   if (content === null) {
     return `<span style="color: ${nullColor}">Null</span>`;

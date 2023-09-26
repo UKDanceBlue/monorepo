@@ -13,9 +13,7 @@ export interface FirestoreTeam {
 }
 
 /** @deprecated Use types from @ukdanceblue/common instead */
-export function isFirestoreTeam(
-  data: unknown
-): data is FirestoreTeam {
+export function isFirestoreTeam(data: unknown): data is FirestoreTeam {
   if (data == null) {
     return false;
   }
@@ -24,37 +22,71 @@ export function isFirestoreTeam(
     return false;
   }
 
-  if ((data as Partial<FirestoreTeam>).teamClass != null && typeof (data as Partial<FirestoreTeam>).teamClass !== "string") {
+  if (
+    (data as Partial<FirestoreTeam>).teamClass != null &&
+    typeof (data as Partial<FirestoreTeam>).teamClass !== "string"
+  ) {
     return false;
   }
 
-  if (!Array.isArray((data as Partial<FirestoreTeam>).members) || (data as Partial<FirestoreTeam>).members?.some((m: unknown) => typeof m !== "string")) {
+  if (
+    !Array.isArray((data as Partial<FirestoreTeam>).members) ||
+    (data as Partial<FirestoreTeam>).members?.some(
+      (m: unknown) => typeof m !== "string"
+    )
+  ) {
     return false;
   }
 
-  if (!Array.isArray((data as Partial<FirestoreTeam>).captains) || (data as Partial<FirestoreTeam>).captains?.some((m: unknown) => typeof m !== "string")) {
+  if (
+    !Array.isArray((data as Partial<FirestoreTeam>).captains) ||
+    (data as Partial<FirestoreTeam>).captains?.some(
+      (m: unknown) => typeof m !== "string"
+    )
+  ) {
     return false;
   }
 
-  if (typeof (data as Partial<FirestoreTeam>).memberAccounts !== "object" || (data as Partial<FirestoreTeam>).memberAccounts == null) {
+  if (
+    typeof (data as Partial<FirestoreTeam>).memberAccounts !== "object" ||
+    (data as Partial<FirestoreTeam>).memberAccounts == null
+  ) {
     return false;
   }
 
-  if (typeof (data as Partial<FirestoreTeam>).memberNames !== "object" || (data as Partial<FirestoreTeam>).memberNames == null) {
+  if (
+    typeof (data as Partial<FirestoreTeam>).memberNames !== "object" ||
+    (data as Partial<FirestoreTeam>).memberNames == null
+  ) {
     return false;
   }
 
-  if ((data as Partial<FirestoreTeam>).fundraisingTotal != null && typeof (data as Partial<FirestoreTeam>).fundraisingTotal !== "number") {
+  if (
+    (data as Partial<FirestoreTeam>).fundraisingTotal != null &&
+    typeof (data as Partial<FirestoreTeam>).fundraisingTotal !== "number"
+  ) {
     return false;
   }
 
-  if ((data as Partial<FirestoreTeam>).totalPoints != null && typeof (data as Partial<FirestoreTeam>).totalPoints !== "number") {
+  if (
+    (data as Partial<FirestoreTeam>).totalPoints != null &&
+    typeof (data as Partial<FirestoreTeam>).totalPoints !== "number"
+  ) {
     return false;
   }
 
-  if ((data as Partial<FirestoreTeam>).networkForGoodId != null && typeof (data as Partial<FirestoreTeam>).networkForGoodId !== "number" && typeof ((data as Partial<FirestoreTeam>).networkForGoodId as string | number) !== "string") {
+  if (
+    (data as Partial<FirestoreTeam>).networkForGoodId != null &&
+    typeof (data as Partial<FirestoreTeam>).networkForGoodId !== "number" &&
+    typeof ((data as Partial<FirestoreTeam>).networkForGoodId as
+      | string
+      | number) !== "string"
+  ) {
     return false;
   }
 
-  return !(typeof (data as Partial<FirestoreTeam>).individualTotals !== "object" || (data as Partial<FirestoreTeam>).individualTotals == null);
+  return !(
+    typeof (data as Partial<FirestoreTeam>).individualTotals !== "object" ||
+    (data as Partial<FirestoreTeam>).individualTotals == null
+  );
 }

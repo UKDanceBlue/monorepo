@@ -6,14 +6,18 @@ import "intl/locale-data/jsonp/en";
 import NetInfo from "@react-native-community/netinfo";
 import { useFonts } from "expo-font";
 import { hideAsync } from "expo-splash-screen";
-import { UpdateEventType,
+import {
+  UpdateEventType,
   addListener as addUpdateListener,
   checkForUpdateAsync,
   fetchUpdateAsync,
-  reloadAsync } from "expo-updates";
-import { ICustomTheme, NativeBaseProvider } from "native-base";
+  reloadAsync,
+} from "expo-updates";
+import type { ICustomTheme} from "native-base";
+import { NativeBaseProvider } from "native-base";
 import { useEffect, useRef, useState } from "react";
-import { AppState, EventSubscription } from "react-native";
+import type { EventSubscription } from "react-native";
+import { AppState } from "react-native";
 
 import "./src/common/util/AndroidTimerFix"; // https://github.com/firebase/firebase-js-sdk/issues/97#issuecomment-427512040
 
@@ -38,16 +42,16 @@ import { getCustomTheme } from "./src/theme";
  */
 const App = () => {
   const isOfflineInternal = useRef(false);
-  const [ theme, setTheme ] = useState<ICustomTheme | undefined>(undefined);
+  const [theme, setTheme] = useState<ICustomTheme | undefined>(undefined);
 
-  const [ fontsLoaded, error ] = useFonts({
+  const [fontsLoaded, error] = useFonts({
     "bodoni-flf-bold": BoldoniFlfBoldFont,
     "bodoni-flf-bold-italic": BoldoniFlfBoldItalicFont,
     "bodoni-flf-italic": BoldoniFlfItalicFont,
     "bodoni-flf-roman": BoldoniFlfRomanFont,
     "opensans-condensed-bold": OpenSansCondensedBoldFont,
     "opensans-condensed-light": OpenSansCondensedLightFont,
-    "opensans-condensed-light-italic": OpenSansCondensedLightItalicFont
+    "opensans-condensed-light-italic": OpenSansCondensedLightItalicFont,
   });
 
   useEffect(() => {
@@ -65,33 +69,31 @@ const App = () => {
   }, [fontsLoaded]);
 
   useEffect(
-    () => NetInfo.addEventListener((state) => {
-      if (!state.isConnected && !isOfflineInternal.current) {
-        isOfflineInternal.current = true;
-        showMessage(
-          "You seem to be offline, some functionality may be unavailable or out of date"
-        );
-        // Store.dispatch(appConfigSlice.actions.goOffline()); TODO Reimplement
-      } else if (isOfflineInternal.current) {
-        isOfflineInternal.current = false;
-      }
-    }),
+    () =>
+      NetInfo.addEventListener((state) => {
+        if (!state.isConnected && !isOfflineInternal.current) {
+          isOfflineInternal.current = true;
+          showMessage(
+            "You seem to be offline, some functionality may be unavailable or out of date"
+          );
+          // Store.dispatch(appConfigSlice.actions.goOffline()); TODO Reimplement
+        } else if (isOfflineInternal.current) {
+          isOfflineInternal.current = false;
+        }
+      }),
     []
   );
 
   useEffect(() => {
     if (!__DEV__) {
-      const updatesSubscription = addUpdateListener(({
-        type, message
-      }) => {
+      const updatesSubscription = addUpdateListener(({ type, message }) => {
         if (type === UpdateEventType.UPDATE_AVAILABLE) {
           showPrompt(
             "Updated data for the DanceBlue app is available, reload the app now?",
             "New Content Available",
             undefined,
             () => {
-              reloadAsync()
-                .catch(universalCatch);
+              reloadAsync().catch(universalCatch);
             },
             "Later",
             "Yes"
@@ -103,11 +105,13 @@ const App = () => {
 
       const listener = AppState.addEventListener("change", (nextAppState) => {
         if (nextAppState === "active") {
-          checkForUpdateAsync().then(({ isAvailable }) => {
-            if (isAvailable) {
-              return fetchUpdateAsync();
-            }
-          }).catch(universalCatch);
+          checkForUpdateAsync()
+            .then(({ isAvailable }) => {
+              if (isAvailable) {
+                return fetchUpdateAsync();
+              }
+            })
+            .catch(universalCatch);
         }
       });
 
@@ -119,16 +123,19 @@ const App = () => {
   }, []);
 
   return (
-    fontsLoaded && (<NativeBaseProvider config={{ strictMode: __DEV__ ? "error" : "off" }} theme={theme}>
-      <ErrorBoundary>
-        <CombinedContext>
-          <FilledNavigationContainer />
-        </CombinedContext>
-      </ErrorBoundary>
-    </NativeBaseProvider>
+    fontsLoaded && (
+      <NativeBaseProvider
+        config={{ strictMode: __DEV__ ? "error" : "off" }}
+        theme={theme}
+      >
+        <ErrorBoundary>
+          <CombinedContext>
+            <FilledNavigationContainer />
+          </CombinedContext>
+        </ErrorBoundary>
+      </NativeBaseProvider>
     )
   );
 };
 
 export default App;
-

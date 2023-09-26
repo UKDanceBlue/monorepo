@@ -16,10 +16,14 @@ export const DurationScalar = new GraphQLScalarType({
       if (durationFromObject.isValid) {
         return durationFromObject;
       } else {
-        throw new TypeError("DurationScalar can only parse objects that are valid Luxon Duration objects");
+        throw new TypeError(
+          "DurationScalar can only parse objects that are valid Luxon Duration objects"
+        );
       }
     } else {
-      throw new TypeError("DurationScalar can only parse strings, numbers, or Luxon Duration objects");
+      throw new TypeError(
+        "DurationScalar can only parse strings, numbers, or Luxon Duration objects"
+      );
     }
   },
   serialize(value): string {
@@ -28,19 +32,25 @@ export const DurationScalar = new GraphQLScalarType({
       if (duration.isValid) {
         return duration.toISO()!;
       } else {
-        throw new TypeError("DurationScalar can only serialize strings that are valid ISO 8601 durations");
+        throw new TypeError(
+          "DurationScalar can only serialize strings that are valid ISO 8601 durations"
+        );
       }
     } else if (Duration.isDuration(value) && value.isValid) {
       return value.toISO()!;
     } else {
-      throw new TypeError("DurationScalar can only serialize strings or Luxon Duration objects");
+      throw new TypeError(
+        "DurationScalar can only serialize strings or Luxon Duration objects"
+      );
     }
   },
   parseLiteral(ast): Duration {
     if (ast.kind === Kind.STRING) {
       return Duration.fromISO(ast.value);
     } else {
-      throw new TypeError("DurationScalar can only parse literal string values");
+      throw new TypeError(
+        "DurationScalar can only parse literal string values"
+      );
     }
-  }
+  },
 });

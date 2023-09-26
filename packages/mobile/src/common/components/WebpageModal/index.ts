@@ -1,2 +1,4 @@
-import WebpageModal from "./WebpageModal";
-export default WebpageModal;
+
+
+
+export {default} from "./WebpageModal";

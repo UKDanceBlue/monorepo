@@ -1,8 +1,14 @@
 import { useCallback } from "react";
 import { View } from "react-native";
 
-import { AuthDataProvider, useEnterDemoMode as useEnterAuthDemoMode } from "./auth";
-import { AppConfigProvider, useEnterDemoMode as useEnterConfigDemoMode } from "./config";
+import {
+  AuthDataProvider,
+  useEnterDemoMode as useEnterAuthDemoMode,
+} from "./auth";
+import {
+  AppConfigProvider,
+  useEnterDemoMode as useEnterConfigDemoMode,
+} from "./config";
 import { DeviceDataProvider } from "./device";
 import { FirebaseProvider } from "./firebase";
 import { LoadingWrapper } from "./loading";
@@ -19,17 +25,24 @@ export const useTryToSetDemoMode = (): ((key: string) => boolean) => {
   const tryToSetConfigDemoMode = useEnterConfigDemoMode();
   const setAuthDemoMode = useEnterAuthDemoMode();
 
-  return useCallback((key: string): boolean => {
-    if (tryToSetConfigDemoMode(key)) {
-      setAuthDemoMode();
-      return true;
-    } else {
-      return false;
-    }
-  }, [ tryToSetConfigDemoMode, setAuthDemoMode ]);
+  return useCallback(
+    (key: string): boolean => {
+      if (tryToSetConfigDemoMode(key)) {
+        setAuthDemoMode();
+        return true;
+      } else {
+        return false;
+      }
+    },
+    [tryToSetConfigDemoMode, setAuthDemoMode]
+  );
 };
 
-export const CombinedContext = ({ children }: { children: React.ReactNode }) => (
+export const CombinedContext = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => (
   <LoadingWrapper>
     <FirebaseProvider>
       <DeviceDataProvider>

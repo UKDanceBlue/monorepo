@@ -4,7 +4,6 @@ import { PersonResource } from "./Person.js";
 import { Resource } from "./Resource.js";
 import { TeamResource, TeamType } from "./Team.js";
 
-
 @ObjectType()
 export class PointEntryResource extends Resource {
   @Field(() => ID)

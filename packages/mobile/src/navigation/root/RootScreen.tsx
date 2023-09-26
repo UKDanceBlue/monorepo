@@ -1,11 +1,15 @@
-import { NativeStackNavigationProp, createNativeStackNavigator } from "@react-navigation/native-stack";
+import type {
+  NativeStackNavigationProp} from "@react-navigation/native-stack";
+import {
+  createNativeStackNavigator,
+} from "@react-navigation/native-stack";
 import { Text, useTheme } from "native-base";
 import { useWindowDimensions } from "react-native";
 
 import { useColorModeValue } from "../../common/customHooks";
 import { log } from "../../common/logging";
 import { useAuthData } from "../../context";
-import { RootStackParamList } from "../../types/navigationTypes";
+import type { RootStackParamList } from "../../types/navigationTypes";
 import HeaderIcons from "../HeaderIcons";
 
 import EventScreen from "./EventScreen";
@@ -19,9 +23,7 @@ const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 const RootScreen = () => {
   const { fontScale } = useWindowDimensions();
-  const {
-    isAuthLoaded, isLoggedIn
-  } = useAuthData();
+  const { isAuthLoaded, isLoggedIn } = useAuthData();
 
   const { colors } = useTheme();
   const headerBgColor = useColorModeValue(colors.white, colors.gray[800]);
@@ -31,21 +33,36 @@ const RootScreen = () => {
     <>
       {isAuthLoaded && (
         <RootStack.Navigator
-          screenOptions={({ navigation }: { navigation: NativeStackNavigationProp<RootStackParamList> }) => ({
+          screenOptions={({
+            navigation,
+          }: {
+            navigation: NativeStackNavigationProp<RootStackParamList>;
+          }) => ({
             headerStyle: { backgroundColor: headerBgColor },
             headerTitleStyle: { color: headerFgColor },
-            headerRight: () => <HeaderIcons navigation={navigation} color={headerFgColor} />,
+            headerRight: () => (
+              <HeaderIcons navigation={navigation} color={headerFgColor} />
+            ),
             headerBackTitle: "Back",
-          })}>
+          })}
+        >
           {isLoggedIn ? (
             <>
-              <RootStack.Screen name="Tab" options={{ headerShown: false }} component={TabBar} />
+              <RootStack.Screen
+                name="Tab"
+                options={{ headerShown: false }}
+                component={TabBar}
+              />
               <RootStack.Screen
                 name="Notifications"
                 component={NotificationScreen}
                 options={{ headerRight: undefined }}
               />
-              <RootStack.Screen name="Profile" component={ProfileScreen} options={{ headerRight: undefined }} />
+              <RootStack.Screen
+                name="Profile"
+                component={ProfileScreen}
+                options={{ headerRight: undefined }}
+              />
               <RootStack.Screen
                 name="Event"
                 component={EventScreen}
@@ -78,20 +95,23 @@ const RootScreen = () => {
                       titleWidth = title.length * fontScale;
 
                       if (++loopCount > 100) {
-                        log("Infinite loop detected while calculating title width for event screen.", "warn");
+                        log(
+                          "Infinite loop detected while calculating title width for event screen.",
+                          "warn"
+                        );
                       }
                     }
 
                     if (hadToBreakWord) {
-                      title = `${title }...`;
+                      title = `${title}...`;
                     }
                   }
 
-                  return ({
+                  return {
                     title,
                     headerMode: "screen",
-                  // headerRight: undefined,
-                  });
+                    // headerRight: undefined,
+                  };
                 }}
               />
               {/* <RootStack.Screen name="Hour Details" component={HourScreen} /> */}
@@ -100,7 +120,11 @@ const RootScreen = () => {
             <RootStack.Screen
               name="SplashLogin"
               component={SplashLogin}
-              options={{ headerShown: false, presentation: "modal", gestureEnabled: false }}
+              options={{
+                headerShown: false,
+                presentation: "modal",
+                gestureEnabled: false,
+              }}
             />
           )}
         </RootStack.Navigator>

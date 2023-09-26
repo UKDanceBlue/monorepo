@@ -1,15 +1,21 @@
 import analytics from "@react-native-firebase/analytics";
-import { NavigationContainer, NavigationContainerRef } from "@react-navigation/native";
-import { addEventListener as addLinkingEventListener,
+import type {
+  NavigationContainerRef} from "@react-navigation/native";
+import {
+  NavigationContainer
+} from "@react-navigation/native";
+import {
+  addEventListener as addLinkingEventListener,
   canOpenURL,
   createURL as createLinkingURL,
   getInitialURL as getInitialLinkingURL,
-  openURL } from "expo-linking";
+  openURL,
+} from "expo-linking";
 import { addNotificationResponseReceivedListener } from "expo-notifications";
 import { useDisclose } from "native-base";
 import { useRef, useState } from "react";
 import { StatusBar } from "react-native";
-import { WebViewSource } from "react-native-webview/lib/WebViewTypes";
+import type { WebViewSource } from "react-native-webview/lib/WebViewTypes";
 
 import "../common/util/AndroidTimerFix"; // https://github.com/firebase/firebase-js-sdk/issues/97#issuecomment-427512040
 import NotificationInfoModal from "../common/components/NotificationInfoModal";
@@ -18,8 +24,8 @@ import { useColorModeValue } from "../common/customHooks";
 import { universalCatch } from "../common/logging";
 import RootScreen from "../navigation/root/RootScreen";
 import { useReactNavigationTheme } from "../theme";
-import { NotificationInfoPopup } from "../types/NotificationPayload";
-import { RootStackParamList } from "../types/navigationTypes";
+import type { NotificationInfoPopup } from "../types/NotificationPayload";
+import type { RootStackParamList } from "../types/navigationTypes";
 
 const linkingPrefixes = [
   createLinkingURL("/"),
@@ -29,25 +35,31 @@ const linkingPrefixes = [
 
 export const FilledNavigationContainer = () => {
   const routeNameRef = useRef<string>();
-  const navigationRef = useRef<NavigationContainerRef<RootStackParamList>>(null);
+  const navigationRef =
+    useRef<NavigationContainerRef<RootStackParamList>>(null);
 
   const {
     isOpen: isNotificationInfoOpen,
     onClose: onNotificationInfoClose,
     onOpen: onNotificationInfoOpen,
   } = useDisclose(false);
-  const [ notificationInfoPopupContent, setNotificationInfoPopupContent ] = useState<NotificationInfoPopup | null>(null);
+  const [notificationInfoPopupContent, setNotificationInfoPopupContent] =
+    useState<NotificationInfoPopup | null>(null);
 
   const {
     isOpen: isNotificationWebviewPopupSourceOpen,
     onClose: onNotificationWebviewPopupSourceClose,
     onOpen: onNotificationWebviewPopupSourceOpen,
   } = useDisclose(false);
-  const [ notificationWebviewPopupSource, setNotificationWebviewPopupSource ] = useState<WebViewSource | null>(null);
+  const [notificationWebviewPopupSource, setNotificationWebviewPopupSource] =
+    useState<WebViewSource | null>(null);
 
   return (
     <>
-      <StatusBar backgroundColor="white" barStyle={useColorModeValue("dark-content", "light-content")} />
+      <StatusBar
+        backgroundColor="white"
+        barStyle={useColorModeValue("dark-content", "light-content")}
+      />
       <NavigationContainer
         theme={useReactNavigationTheme()}
         ref={navigationRef}
@@ -57,7 +69,8 @@ export const FilledNavigationContainer = () => {
         onStateChange={async () => {
           try {
             const lastRouteName = routeNameRef.current;
-            const currentRouteName = navigationRef.current?.getCurrentRoute()?.name;
+            const currentRouteName =
+              navigationRef.current?.getCurrentRoute()?.name;
 
             routeNameRef.current = currentRouteName;
 
@@ -80,44 +93,56 @@ export const FilledNavigationContainer = () => {
             const onReceiveURL = ({ url }: { url: string }) => listener(url);
 
             // Listen to incoming links from deep linking
-            const linkingSubscription = addLinkingEventListener("url", onReceiveURL);
+            const linkingSubscription = addLinkingEventListener(
+              "url",
+              onReceiveURL
+            );
 
             // THIS IS THE NOTIFICATION ENTRY POINT
-            const notificationSubscription = addNotificationResponseReceivedListener((response) => {
-              const {
-                url: notificationUrl, textPopup, webviewPopup
-              } = response.notification.request.content.data as {
-              url?: string;
-              textPopup?: NotificationInfoPopup;
-              webviewPopup?: WebViewSource;
-            };
+            const notificationSubscription =
+              addNotificationResponseReceivedListener((response) => {
+                const {
+                  url: notificationUrl,
+                  textPopup,
+                  webviewPopup,
+                } = response.notification.request.content.data as {
+                  url?: string;
+                  textPopup?: NotificationInfoPopup;
+                  webviewPopup?: WebViewSource;
+                };
 
-              if (textPopup != null) {
-                setNotificationInfoPopupContent(textPopup);
-                onNotificationInfoOpen();
-              }
-
-              if (webviewPopup != null) {
-                setNotificationWebviewPopupSource(webviewPopup);
-                onNotificationWebviewPopupSourceOpen();
-              }
-
-              if (notificationUrl != null) {
-                const decodedUrl = decodeURI(notificationUrl);
-                if (linkingPrefixes.every((prefix) => !decodedUrl.includes(prefix))) {
-                  canOpenURL(decodedUrl).then((canOpen) => {
-                    if (canOpen) {
-                      return openURL(decodedUrl);
-                    }
-                  }).catch(universalCatch);
+                if (textPopup != null) {
+                  setNotificationInfoPopupContent(textPopup);
+                  onNotificationInfoOpen();
                 }
-                // Let React Navigation handle the URL
-                listener(decodedUrl);
-              }
-            });
+
+                if (webviewPopup != null) {
+                  setNotificationWebviewPopupSource(webviewPopup);
+                  onNotificationWebviewPopupSourceOpen();
+                }
+
+                if (notificationUrl != null) {
+                  const decodedUrl = decodeURI(notificationUrl);
+                  if (
+                    linkingPrefixes.every(
+                      (prefix) => !decodedUrl.includes(prefix)
+                    )
+                  ) {
+                    canOpenURL(decodedUrl)
+                      .then((canOpen) => {
+                        if (canOpen) {
+                          return openURL(decodedUrl);
+                        }
+                      })
+                      .catch(universalCatch);
+                  }
+                  // Let React Navigation handle the URL
+                  listener(decodedUrl);
+                }
+              });
 
             return () => {
-            // Clean up the event listeners
+              // Clean up the event listeners
               linkingSubscription.remove();
               notificationSubscription.remove();
             };
@@ -133,13 +158,21 @@ export const FilledNavigationContainer = () => {
                   Team: { path: "/my-team" },
                   Scoreboard: { path: "/scoreboard" },
                 },
-              }
-            }
-          }
+              },
+            },
+          },
         }}
       >
-        <NotificationInfoModal isNotificationInfoOpen={isNotificationInfoOpen} onNotificationInfoClose={onNotificationInfoClose} notificationInfoPopupContent={notificationInfoPopupContent} />
-        <WebpageModal isOpen={isNotificationWebviewPopupSourceOpen} onClose={onNotificationWebviewPopupSourceClose} source={notificationWebviewPopupSource} />
+        <NotificationInfoModal
+          isNotificationInfoOpen={isNotificationInfoOpen}
+          onNotificationInfoClose={onNotificationInfoClose}
+          notificationInfoPopupContent={notificationInfoPopupContent}
+        />
+        <WebpageModal
+          isOpen={isNotificationWebviewPopupSourceOpen}
+          onClose={onNotificationWebviewPopupSourceClose}
+          source={notificationWebviewPopupSource}
+        />
         <RootScreen />
       </NavigationContainer>
     </>

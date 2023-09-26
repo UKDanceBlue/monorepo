@@ -39,7 +39,10 @@ export const oidcCallback = async (
     }
     // Perform OIDC validation
     const tokenSet = await res.locals.oidcClient.callback(
-      new URL("/api/auth/oidc-callback", res.locals.applicationUrl.toString()).toString(),
+      new URL(
+        "/api/auth/oidc-callback",
+        res.locals.applicationUrl.toString()
+      ).toString(),
       parameters,
       { code_verifier: session.codeVerifier, state: flowSessionId }
     );

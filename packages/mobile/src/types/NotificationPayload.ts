@@ -1,4 +1,4 @@
-import { FirestoreImage } from "./commonStructs";
+import type { FirestoreImage } from "./commonStructs";
 
 /** @deprecated Use types from @ukdanceblue/common instead */
 export interface NotificationInfoPopup {

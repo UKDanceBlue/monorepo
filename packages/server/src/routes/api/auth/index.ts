@@ -31,7 +31,7 @@ authApiRouter.get("/logout", (req: Request, res: Response) => {
 
 authApiRouter.post("/oidc-callback", oidcCallback);
 
-// eslint-disable-next-line @typescript-eslint/require-await
+ 
 authApiRouter.get("/login", login);
 
 export default authApiRouter;

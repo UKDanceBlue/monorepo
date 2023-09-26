@@ -13,7 +13,7 @@ function Award({ rank, size }: { rank: number; size: number }) {
   const colors = useThemeColors();
 
   switch (rank) {
-    case 1:
+    case 1: {
       return (
         <FirstPlaceMedal
           width={size}
@@ -21,7 +21,8 @@ function Award({ rank, size }: { rank: number; size: number }) {
           color={colors.secondary[400]}
         />
       );
-    case 2:
+    }
+    case 2: {
       return (
         <SecondPlaceMedal
           width={size}
@@ -29,7 +30,8 @@ function Award({ rank, size }: { rank: number; size: number }) {
           color={colors.primary[400]}
         />
       );
-    case 3:
+    }
+    case 3: {
       return (
         <ThirdPlaceMedal
           width={size}
@@ -37,12 +39,14 @@ function Award({ rank, size }: { rank: number; size: number }) {
           color={colors.tertiary[400]}
         />
       );
-    default:
+    }
+    default: {
       return (
         <Text color="primary.600" fontSize="3xl" bold>
           {rank}
         </Text>
       );
+    }
   }
 }
 

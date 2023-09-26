@@ -1,9 +1,9 @@
-import { FirestoreEvent } from "@ukdanceblue/common";
-import { DateTime } from "luxon";
+import type { FirestoreEvent } from "@ukdanceblue/common";
+import type { DateTime } from "luxon";
 import { Column, Divider, Spinner, Text } from "native-base";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FlatList } from "react-native";
-import { DateData, MarkedDates } from "react-native-calendars/src/types";
+import type { DateData, MarkedDates } from "react-native-calendars/src/types";
 
 import { universalCatch } from "../@ukdanceblue/common/logging";
 
@@ -97,7 +97,7 @@ export const EventListPage = ({
     const returnVal = { ...marked };
     if (selectedDay?.dateString) {
       returnVal[selectedDay.dateString] = {
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+         
         ...(returnVal[selectedDay.dateString] ?? {}),
         selected: true,
       };

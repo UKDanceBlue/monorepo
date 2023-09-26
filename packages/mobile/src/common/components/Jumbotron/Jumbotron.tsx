@@ -1,13 +1,25 @@
 import { FontAwesome5 } from "@expo/vector-icons";
-import { Icon as IconType } from "@expo/vector-icons/build/createIconSet";
+import type { Icon as IconType } from "@expo/vector-icons/build/createIconSet";
 import { Icon, Text, View } from "native-base";
-import { ThemeComponentSizeType } from "native-base/src/components/types";
+import type { ThemeComponentSizeType } from "native-base/src/components/types";
 
 import { useThemeColors } from "../../customHooks";
 
-const JumbotronIcon = <PossibleIconNames extends string, IconFontName extends string, IconName extends PossibleIconNames>({
-  icon, iconColor, iconType, iconSize = 36
-}: { icon:IconName; iconColor:string; iconType: IconType<PossibleIconNames, IconFontName>; iconSize: ThemeComponentSizeType<"Icon"> }) => {
+const JumbotronIcon = <
+  PossibleIconNames extends string,
+  IconFontName extends string,
+  IconName extends PossibleIconNames
+>({
+  icon,
+  iconColor,
+  iconType,
+  iconSize = 36,
+}: {
+  icon: IconName;
+  iconColor: string;
+  iconType: IconType<PossibleIconNames, IconFontName>;
+  iconSize: ThemeComponentSizeType<"Icon">;
+}) => {
   const colors = useThemeColors();
   if (iconType === FontAwesome5) {
     let cssIconColor = iconColor;
@@ -19,23 +31,33 @@ const JumbotronIcon = <PossibleIconNames extends string, IconFontName extends st
         cssIconColor = iconColor;
       }
     }
-    return (
-      <FontAwesome5 name={icon} size={iconSize} color={cssIconColor}/>
-    );
+    return <FontAwesome5 name={icon} size={iconSize} color={cssIconColor} />;
   } else {
-    return (
-      <Icon
-        as={iconType}
-        name={icon}
-        color={iconColor}
-        size={iconSize}/>
-    );
+    return <Icon as={iconType} name={icon} color={iconColor} size={iconSize} />;
   }
 };
 
-const Jumbotron = <PossibleIconNames extends string, IconFontName extends string, IconName extends PossibleIconNames>({
-  icon, iconColor, iconType, title, subTitle, bodyText, iconSize = 36
-}: { icon?:IconName; iconColor?:string; iconType?: IconType<PossibleIconNames, IconFontName>; title?:string; subTitle?:string; bodyText?:string; iconSize?: ThemeComponentSizeType<"Icon"> }) => {
+const Jumbotron = <
+  PossibleIconNames extends string,
+  IconFontName extends string,
+  IconName extends PossibleIconNames
+>({
+  icon,
+  iconColor,
+  iconType,
+  title,
+  subTitle,
+  bodyText,
+  iconSize = 36,
+}: {
+  icon?: IconName;
+  iconColor?: string;
+  iconType?: IconType<PossibleIconNames, IconFontName>;
+  title?: string;
+  subTitle?: string;
+  bodyText?: string;
+  iconSize?: ThemeComponentSizeType<"Icon">;
+}) => {
   return (
     <View
       margin={3}
@@ -45,32 +67,29 @@ const Jumbotron = <PossibleIconNames extends string, IconFontName extends string
       alignItems="center"
       display="flex"
       flexDirection="column"
-      justifyContent="space-evenly">
-      {
-        icon && iconType && iconColor && (
-          <JumbotronIcon
-            icon={icon}
-            iconColor={iconColor}
-            iconType={iconType}
-            iconSize={iconSize}/>
-        )
-      }
+      justifyContent="space-evenly"
+    >
+      {icon && iconType && iconColor && (
+        <JumbotronIcon
+          icon={icon}
+          iconColor={iconColor}
+          iconType={iconType}
+          iconSize={iconSize}
+        />
+      )}
       {title && (
         <Text
           textAlign="center"
           fontSize="2xl"
           color="primary.600"
           fontFamily="headingBold"
-          bold>
+          bold
+        >
           {title}
         </Text>
       )}
       {subTitle && (
-        <Text
-          textAlign="center"
-          fontSize="lg"
-          color="primary.600"
-          bold>
+        <Text textAlign="center" fontSize="lg" color="primary.600" bold>
           {subTitle}
         </Text>
       )}
@@ -79,7 +98,8 @@ const Jumbotron = <PossibleIconNames extends string, IconFontName extends string
           textAlign="center"
           fontSize="md"
           color="primary.600"
-          fontFamily="mono">
+          fontFamily="mono"
+        >
           {bodyText}
         </Text>
       )}

@@ -1,3 +1,5 @@
-import JumbotronGeometric from "./JumbotronGeometric";
 
-export default JumbotronGeometric;
+
+
+
+export {default} from "./JumbotronGeometric";

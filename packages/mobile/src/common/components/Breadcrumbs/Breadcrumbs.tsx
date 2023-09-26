@@ -1,11 +1,25 @@
 import { Text, View } from "native-base";
 
 const Breadcrumbs = ({
-  pageName, includeBreadcrumbs, previousPage
-}: { pageName:string; includeBreadcrumbs:boolean; previousPage:string }) => {
+  pageName,
+  includeBreadcrumbs,
+  previousPage,
+}: {
+  pageName: string;
+  includeBreadcrumbs: boolean;
+  previousPage: string;
+}) => {
   function ReturnElement() {
     if (includeBreadcrumbs) {
-      return <View><Text fontSize="lg" fontFamily="mono" marginLeft={"3"}>{`< ${previousPage}`}</Text></View>;
+      return (
+        <View>
+          <Text
+            fontSize="lg"
+            fontFamily="mono"
+            marginLeft={"3"}
+          >{`< ${previousPage}`}</Text>
+        </View>
+      );
     }
   }
 
@@ -17,7 +31,10 @@ const Breadcrumbs = ({
         textAlign="center"
         fontSize="lg"
         fontFamily="body"
-        bold>{pageName}</Text>
+        bold
+      >
+        {pageName}
+      </Text>
 
       {ReturnElement()}
     </View>

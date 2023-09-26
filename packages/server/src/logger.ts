@@ -77,10 +77,10 @@ function logMessage(logLevel: string, content: unknown, ...data: unknown[]) {
     const firstData = data.length === 1 ? data[0] : undefined;
     return typeof firstData === "function"
       ? logger.log(
-        logLevel,
-        String(content),
-        ...(firstData as () => (Primitive | object)[])()
-      )
+          logLevel,
+          String(content),
+          ...(firstData as () => (Primitive | object)[])()
+        )
       : logger.log(logLevel, String(content), ...data);
   } else {
     return logger;

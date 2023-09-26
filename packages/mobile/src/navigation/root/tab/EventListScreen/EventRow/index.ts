@@ -1,2 +1,4 @@
-import EventRow from "./EventRow";
-export default EventRow;
+
+
+
+export {default} from "./EventRow";

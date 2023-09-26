@@ -15,17 +15,25 @@ const SponsorCard = ({
   sponsorLink?: string;
   name: string;
 }) => {
-  const [url] = useFirebaseStorageUrl(`gs://react-danceblue.appspot.com${imagePath}`);
+  const [url] = useFirebaseStorageUrl(
+    `gs://react-danceblue.appspot.com${imagePath}`
+  );
 
   return (
     <TouchableHighlight
-      onPress={sponsorLink ? () => WebBrowser.openBrowserAsync(sponsorLink) : undefined}
+      onPress={
+        sponsorLink ? () => WebBrowser.openBrowserAsync(sponsorLink) : undefined
+      }
       underlayColor="transparent"
     >
       <View backgroundColor="primary.100" style={styles.item}>
         <Image
           borderRadius={"8"}
-          source={{ uri: url ?? undefined, width: PixelRatio.getPixelSizeForLayoutSize(75), height: PixelRatio.getPixelSizeForLayoutSize(50) }}
+          source={{
+            uri: url ?? undefined,
+            width: PixelRatio.getPixelSizeForLayoutSize(75),
+            height: PixelRatio.getPixelSizeForLayoutSize(50),
+          }}
           alt={name}
           resizeMode="contain"
         />
@@ -34,7 +42,10 @@ const SponsorCard = ({
           fontSize="md"
           color="primary.600"
           textAlign="center"
-          style={styles.text}>Click to learn more</Text>
+          style={styles.text}
+        >
+          Click to learn more
+        </Text>
       </View>
     </TouchableHighlight>
   );
@@ -42,12 +53,15 @@ const SponsorCard = ({
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  img: { borderRadius: 8 },
   item: {
-    padding: 8,
-    borderRadius: 8,
     alignItems: "center",
     alignSelf: "stretch",
+    borderRadius: 8,
+    elevation: 3,
     justifyContent: "center",
+    margin: 10,
+    padding: 8,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -55,13 +69,10 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
-    margin: 10,
-    elevation: 3,
   },
-  img: { borderRadius: 8 },
   text: {
-    marginVertical: 8,
     alignSelf: "center",
+    marginVertical: 8,
   },
 });
 

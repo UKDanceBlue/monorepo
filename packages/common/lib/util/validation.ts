@@ -61,6 +61,6 @@ export class ParsingError extends ValidationError {
     super("Error parsing body");
 
     this.message = message;
-    if (cause) this.cause = cause;
+    if (cause) {this.cause = cause;}
   }
 }

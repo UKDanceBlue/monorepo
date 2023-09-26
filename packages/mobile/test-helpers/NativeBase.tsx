@@ -1,6 +1,7 @@
 import { render } from "@testing-library/react-native";
-import { NativeBaseProvider, NativeBaseProviderProps } from "native-base";
-import { ReactElement } from "react";
+import type { NativeBaseProviderProps } from "native-base";
+import { NativeBaseProvider } from "native-base";
+import type { ReactElement } from "react";
 
 const inset = {
   frame: { x: 0, y: 0, width: 0, height: 0 },
@@ -13,7 +14,10 @@ const inset = {
  * @param nativeBaseProps
  * @returns The output of *render()*, wrapped with the NativeBaseProvider.
  */
-export const renderWithNativeBase = (element: ReactElement, nativeBaseProps: NativeBaseProviderProps = {}) => {
+export const renderWithNativeBase = (
+  element: ReactElement,
+  nativeBaseProps: NativeBaseProviderProps = {}
+) => {
   return render(
     <NativeBaseProvider
       initialWindowMetrics={inset}

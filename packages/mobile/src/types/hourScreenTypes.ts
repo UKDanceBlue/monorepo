@@ -5,7 +5,9 @@ export interface SpecialComponentType {
   uniqueOptions: Record<string, string>;
 }
 
-export function isSpecialComponentType(specialComponent?: object): specialComponent is SpecialComponentType {
+export function isSpecialComponentType(
+  specialComponent?: object
+): specialComponent is SpecialComponentType {
   // If specialComponent is nullish, return false
   if (specialComponent == null) {
     return false;

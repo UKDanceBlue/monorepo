@@ -1,17 +1,18 @@
 import * as React from "react";
-import Svg, { G, Path, SvgProps } from "react-native-svg";
+import type { SvgProps } from "react-native-svg";
+import Svg, { G, Path } from "react-native-svg";
 /* SVGR has dropped some elements not supported by react-native-svg: style */
 
 const DBLogoCondensed = ({
-  svgProps, letterColor, ribbonColor
-}: { svgProps: SvgProps; letterColor?:string; ribbonColor?:string }) => (
-  <Svg
-    id="Layer_1"
-    x={0}
-    y={0}
-    viewBox="0 0 100 100"
-    {...svgProps}
-  >
+  svgProps,
+  letterColor,
+  ribbonColor,
+}: {
+  svgProps: SvgProps;
+  letterColor?: string;
+  ribbonColor?: string;
+}) => (
+  <Svg id="Layer_1" x={0} y={0} viewBox="0 0 100 100" {...svgProps}>
     <Path
       // @ts-expect-error This works
       style={{ fill: ribbonColor ?? "#FFC72C" }}

@@ -1,2 +1,4 @@
-import CountdownView from "./CountdownView";
-export default CountdownView;
+
+
+
+export {default} from "./CountdownView";

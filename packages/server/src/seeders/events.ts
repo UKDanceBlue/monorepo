@@ -25,7 +25,7 @@ export default async function () {
       });
     }
     const adjective = capitalize(faker.word.adjective());
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+     
     const aOrAn = ["A", "E", "I", "O", "U"].includes(adjective[0]!)
       ? "an"
       : "a";

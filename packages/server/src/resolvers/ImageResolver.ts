@@ -1,9 +1,21 @@
 import { ErrorCode, ImageResource } from "@ukdanceblue/common";
-import { Arg, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Field,
+  InputType,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
+} from "type-graphql";
 
 import { ImageIntermediate, ImageModel } from "../models/Image.js";
 
-import { AbstractGraphQLCreatedResponse, AbstractGraphQLOkResponse, DetailedError } from "./ApiResponse.js";
+import {
+  AbstractGraphQLCreatedResponse,
+  AbstractGraphQLOkResponse,
+  DetailedError,
+} from "./ApiResponse.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 
 @ObjectType("GetImageByUuidResponse", { implements: AbstractGraphQLOkResponse })
@@ -11,16 +23,23 @@ class GetImageByUuidResponse extends AbstractGraphQLOkResponse<ImageResource> {
   @Field(() => ImageResource)
   data!: ImageResource;
 }
-@ObjectType("GetThumbHashByUuidResponse", { implements: AbstractGraphQLOkResponse<string> })
+@ObjectType("GetThumbHashByUuidResponse", {
+  implements: AbstractGraphQLOkResponse<string>,
+})
 class GetThumbHashByUuidResponse extends AbstractGraphQLOkResponse<string> {
   @Field(() => String)
   data!: string;
-} @ObjectType("CreateImageResponse", { implements: AbstractGraphQLCreatedResponse<ImageResource> })
+}
+@ObjectType("CreateImageResponse", {
+  implements: AbstractGraphQLCreatedResponse<ImageResource>,
+})
 class CreateImageResponse extends AbstractGraphQLCreatedResponse<ImageResource> {
   @Field(() => ImageResource)
   data!: ImageResource;
 }
-@ObjectType("DeleteImageResponse", { implements: AbstractGraphQLOkResponse<boolean> })
+@ObjectType("DeleteImageResponse", {
+  implements: AbstractGraphQLOkResponse<boolean>,
+})
 class DeleteImageResponse extends AbstractGraphQLOkResponse<boolean> {
   @Field(() => Boolean)
   data!: boolean;
@@ -57,24 +76,41 @@ export class ImageResolver implements ResolverInterface<ImageResource> {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");
     }
 
-    return GetImageByUuidResponse.newOk(new ImageIntermediate(row).toResource());
+    return GetImageByUuidResponse.newOk(
+      new ImageIntermediate(row).toResource()
+    );
   }
 
-  @Query(() => GetThumbHashByUuidResponse, { name: "getThumbHashByUuid", nullable: true })
-  async getThumbHashByUuid(@Arg("uuid") uuid: string): Promise<GetThumbHashByUuidResponse> {
-    const result = await ImageModel.findOne({ where: { uuid }, attributes: ["thumbHash"] });
+  @Query(() => GetThumbHashByUuidResponse, {
+    name: "getThumbHashByUuid",
+    nullable: true,
+  })
+  async getThumbHashByUuid(
+    @Arg("uuid") uuid: string
+  ): Promise<GetThumbHashByUuidResponse> {
+    const result = await ImageModel.findOne({
+      where: { uuid },
+      attributes: ["thumbHash"],
+    });
 
     if (result == null) {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");
     }
 
-    return GetThumbHashByUuidResponse.newOk(result.thumbHash?.toString("base64"));
+    return GetThumbHashByUuidResponse.newOk(
+      result.thumbHash?.toString("base64")
+    );
   }
 
   @Mutation(() => CreateImageResponse, { name: "createImage" })
-  async create(@Arg("input") input: CreateImageInput): Promise<CreateImageResponse> {
+  async create(
+    @Arg("input") input: CreateImageInput
+  ): Promise<CreateImageResponse> {
     if (input.imageData == null && input.url == null) {
-      throw new DetailedError(ErrorCode.MissingRequiredInput, "Must provide either imageData or url");
+      throw new DetailedError(
+        ErrorCode.MissingRequiredInput,
+        "Must provide either imageData or url"
+      );
     }
 
     const result = await ImageModel.create({
@@ -82,24 +118,36 @@ export class ImageResolver implements ResolverInterface<ImageResource> {
       height: input.height,
       mimeType: input.mimeType,
       alt: input.alt ?? null,
-      imageData: input.imageData ? Buffer.from(input.imageData, "base64") : null,
+      imageData: input.imageData
+        ? Buffer.from(input.imageData, "base64")
+        : null,
       url: input.url ?? null,
-      thumbHash: input.thumbHash ? Buffer.from(input.thumbHash, "base64") : null,
+      thumbHash: input.thumbHash
+        ? Buffer.from(input.thumbHash, "base64")
+        : null,
     });
 
     if (!("uuid" in result)) {
       // return GraphQLErrorResponse.from(result);
-      throw new DetailedError(ErrorCode.InternalFailure, "UUID not found on created image");
+      throw new DetailedError(
+        ErrorCode.InternalFailure,
+        "UUID not found on created image"
+      );
     }
 
-    const response = CreateImageResponse.newOk(new ImageIntermediate(result).toResource());
+    const response = CreateImageResponse.newOk(
+      new ImageIntermediate(result).toResource()
+    );
     response.uuid = result.uuid;
     return response;
   }
 
   @Mutation(() => DeleteImageResponse, { name: "deleteImage" })
   async delete(@Arg("id") id: string): Promise<DeleteImageResponse> {
-    const row = await ImageModel.findOne({ where: { uuid: id }, attributes: ["id"] });
+    const row = await ImageModel.findOne({
+      where: { uuid: id },
+      attributes: ["id"],
+    });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");

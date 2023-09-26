@@ -1,2 +1,4 @@
-import PodcastPlayer from "./PodcastPlayer";
-export default PodcastPlayer;
+
+
+
+export {default} from "./PodcastPlayer";

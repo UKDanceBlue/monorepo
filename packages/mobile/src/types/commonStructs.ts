@@ -1,4 +1,4 @@
-import { FirebaseStorageTypes } from "@react-native-firebase/storage";
+import type { FirebaseStorageTypes } from "@react-native-firebase/storage";
 
 /** @deprecated Use types from @ukdanceblue/common instead */
 export interface FirestoreImage {
@@ -13,9 +13,7 @@ export function isFirestoreImage(image?: object): image is FirestoreImage {
     return false;
   }
 
-  const {
-    uri, width, height
-  } = image as Partial<FirestoreImage>;
+  const { uri, width, height } = image as Partial<FirestoreImage>;
   if (uri == null) {
     return false;
   } else if (typeof uri !== "string") {
@@ -55,8 +53,16 @@ export interface DownloadableImage {
 }
 
 /** @deprecated Use types from @ukdanceblue/common instead */
-export const parseFirestoreImage = async (firestoreImage: FirestoreImage, fbStorage: FirebaseStorageTypes.Module): Promise<DownloadableImage> => ({
-  url: firestoreImage.uri.startsWith("gs://") ? await fbStorage.refFromURL(firestoreImage.uri).getDownloadURL().catch(() => undefined) : firestoreImage.uri,
+export const parseFirestoreImage = async (
+  firestoreImage: FirestoreImage,
+  fbStorage: FirebaseStorageTypes.Module
+): Promise<DownloadableImage> => ({
+  url: firestoreImage.uri.startsWith("gs://")
+    ? await fbStorage
+        .refFromURL(firestoreImage.uri)
+        .getDownloadURL()
+        .catch(() => undefined)
+    : firestoreImage.uri,
   width: firestoreImage.width,
   height: firestoreImage.height,
 });

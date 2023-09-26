@@ -10,7 +10,6 @@ import type {
 import { DataTypes, Model } from "@sequelize/core";
 import { PointEntryResource, TeamType } from "@ukdanceblue/common";
 
-
 import { sequelizeDb } from "../data-source.js";
 import { IntermediateClass } from "../lib/modelTypes.js";
 

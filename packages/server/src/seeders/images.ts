@@ -21,14 +21,14 @@ export default async function () {
         const imageUrl = `https://picsum.photos/seed/${faker.word.noun()}/${width}/${height}.${
           jpegOrWebp ? "jpg" : "webp"
         }`;
-        // eslint-disable-next-line no-await-in-loop
+         
         const imageRes = await fetch(imageUrl);
         let imageData: ArrayBuffer | null = null;
         let thumbHash: Buffer | null = null;
         if (imageRes.ok) {
-          // eslint-disable-next-line no-await-in-loop
+           
           imageData = await imageRes.arrayBuffer();
-          // eslint-disable-next-line no-await-in-loop, unicorn/no-await-expression-member
+           
           thumbHash = Buffer.from(
             // eslint-disable-next-line unicorn/no-await-expression-member
             (await generateThumbHash(imageData, {})).buffer

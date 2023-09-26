@@ -9,9 +9,5 @@ export const jsonCompress = (json: unknown): string => {
 export const jsonDecompress = (json: string): unknown => {
   const decompressed = decompress(json);
 
-  if (decompressed === null) {
-    return null;
-  } else {
-    return JSON.parse(decompressed);
-  }
+  return decompressed === null ? null : JSON.parse(decompressed);
 };

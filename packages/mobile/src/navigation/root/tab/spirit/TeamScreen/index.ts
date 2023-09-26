@@ -1,3 +1,5 @@
-import TeamScreen from "./TeamScreen";
 
-export default TeamScreen;
+
+
+
+export {default} from "./TeamScreen";

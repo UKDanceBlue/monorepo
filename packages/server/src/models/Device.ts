@@ -108,7 +108,8 @@ export class DeviceIntermediate extends IntermediateClass<
     this.id = device.id;
     this.uuid = device.uuid;
     this.expoPushToken = device.expoPushToken;
-    this.lastUser = device.lastUser == null ? null : new PersonIntermediate(device.lastUser);
+    this.lastUser =
+      device.lastUser == null ? null : new PersonIntermediate(device.lastUser);
     this.lastLogin = device.lastLogin;
   }
 

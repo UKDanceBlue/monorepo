@@ -1,8 +1,9 @@
 import { DateTime } from "luxon";
 import { Image, Text, View } from "native-base";
+import type {
+  ImageSourcePropType} from "react-native";
 import {
   ImageBackground,
-  ImageSourcePropType,
   useWindowDimensions,
 } from "react-native";
 

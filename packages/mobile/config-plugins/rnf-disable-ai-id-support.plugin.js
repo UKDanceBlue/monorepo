@@ -1,10 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 
+const { withDangerousMod, withPlugins } = require("@expo/config-plugins");
 const {
-  withDangerousMod, withPlugins
-} = require("@expo/config-plugins");
-const { mergeContents } = require("@expo/config-plugins/build/utils/generateCode");
+  mergeContents,
+} = require("@expo/config-plugins/build/utils/generateCode");
 
 async function readFileAsync(path) {
   return fs.promises.readFile(path, "utf8");

@@ -1,9 +1,8 @@
 "use client";
 import "client-only";
 
-import Joi from "joi";
-
 import { formDataToJson } from "@ukdanceblue/common";
+import Joi from "joi";
 import { useEffect } from "react";
 
 export function applyValidation(
@@ -25,7 +24,7 @@ export function applyValidation(
       element instanceof HTMLOutputElement
     )
   ) {
-    throw new Error(`Element ${elementSelector} is not an input or textarea`);
+    throw new TypeError(`Element ${elementSelector} is not an input or textarea`);
   }
 
   let friendlyName = element.name;
@@ -61,7 +60,7 @@ export function applyValidations(
 ): () => void {
   const cleanupFunctions = argsList.map((args) => applyValidation(...args));
   return () => {
-    cleanupFunctions.forEach((fn) => fn());
+    for (const fn of cleanupFunctions) {fn();}
   };
 }
 
@@ -77,7 +76,7 @@ export function useJsonFormSubmission(
       throw new Error(`Form ${formSelector} not found`);
     }
     if (!(form instanceof HTMLFormElement)) {
-      throw new Error(`Element ${formSelector} is not a form`);
+      throw new TypeError(`Element ${formSelector} is not a form`);
     }
 
     const listener = (event: SubmitEvent) => {

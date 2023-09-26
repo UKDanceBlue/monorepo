@@ -1,6 +1,8 @@
 import type { FirebaseCrashlyticsTypes } from "@react-native-firebase/crashlytics";
 
-export function mockCrashlytics({ didCrashOnPreviousExecution = false }: {
+export function mockCrashlytics({
+  didCrashOnPreviousExecution = false,
+}: {
   didCrashOnPreviousExecution?: boolean;
 }) {
   const mockLog = jest.fn();
@@ -9,13 +11,20 @@ export function mockCrashlytics({ didCrashOnPreviousExecution = false }: {
   const mockSetAttribute = jest.fn();
   const mockSetUserId = jest.fn();
   const mockSetCrashlyticsCollectionEnabled = jest.fn();
-  const mockDidCrashOnPreviousExecution = jest.fn().mockReturnValue(Promise.resolve(didCrashOnPreviousExecution));
+  const mockDidCrashOnPreviousExecution = jest
+    .fn()
+    .mockReturnValue(Promise.resolve(didCrashOnPreviousExecution));
   const mockSendUnsentReports = jest.fn().mockReturnValue(Promise.resolve());
   const mockDeleteUnsentReports = jest.fn().mockReturnValue(Promise.resolve());
-  const mockCheckForUnsentReports = jest.fn().mockReturnValue(Promise.resolve());
+  const mockCheckForUnsentReports = jest
+    .fn()
+    .mockReturnValue(Promise.resolve());
   const mockCrash = jest.fn();
 
-  const replacementImplementation: Omit<FirebaseCrashlyticsTypes.Module, "native" | "app" | "emitter"> = {
+  const replacementImplementation: Omit<
+    FirebaseCrashlyticsTypes.Module,
+    "native" | "app" | "emitter"
+  > = {
     log: mockLog,
     recordError: mockRecordError,
     setAttributes: mockSetAttributes,
@@ -30,13 +39,16 @@ export function mockCrashlytics({ didCrashOnPreviousExecution = false }: {
     crash: mockCrash,
   };
 
-  const mockCrashlyticsFactory = jest.fn<Omit<FirebaseCrashlyticsTypes.Module, "native" | "app" | "emitter">, []>().mockImplementation(() => (replacementImplementation));
+  const mockCrashlyticsFactory = jest
+    .fn<
+      Omit<FirebaseCrashlyticsTypes.Module, "native" | "app" | "emitter">,
+      []
+    >()
+    .mockImplementation(() => replacementImplementation);
 
   return {
     mockLog,
     mockRecordError,
-    mockCrashlyticsFactory
+    mockCrashlyticsFactory,
   };
 }
-
-

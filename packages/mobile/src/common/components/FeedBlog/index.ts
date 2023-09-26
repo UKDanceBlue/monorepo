@@ -1,3 +1,5 @@
-import TemplateComponent from "./TemplateComponent";
 
-export default TemplateComponent;
+
+
+
+export {default} from "./TemplateComponent";

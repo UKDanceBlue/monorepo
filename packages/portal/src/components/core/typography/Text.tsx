@@ -8,7 +8,7 @@ export function Text({
   return (
     <p
       {...props}
-      className={"font-sans" + (props?.className ? " " + props.className : "")}
+      className={`font-sans${  props?.className ? ` ${  props.className}` : ""}`}
     >
       {children}
     </p>

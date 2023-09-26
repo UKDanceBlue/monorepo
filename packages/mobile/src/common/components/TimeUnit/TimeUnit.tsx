@@ -3,9 +3,7 @@ import { useWindowDimensions } from "react-native";
 
 import { useThemeColors, useThemeFonts } from "../../customHooks";
 
-const validUnits = [
-  "sec", "min", "hours", "days", "months", "years"
-] as const;
+const validUnits = ["sec", "min", "hours", "days", "months", "years"] as const;
 
 /**
  * A label for a unit of time
@@ -18,11 +16,9 @@ const TimeUnit = ({
   unit,
 }: {
   value: number | undefined;
-  unit: typeof validUnits[number];
+  unit: (typeof validUnits)[number];
 }) => {
-  const {
-    headingBold, body
-  } = useThemeFonts();
+  const { headingBold, body } = useThemeFonts();
   const { fontScale } = useWindowDimensions();
   const { primary } = useThemeColors();
 
@@ -35,13 +31,15 @@ const TimeUnit = ({
       bgColor={`${primary[700]}BD`}
       marginX={2}
       style={{ alignItems: "center", paddingLeft: 7, paddingRight: 7, flex: 1 }}
-      minWidth={30*fontScale}>
+      minWidth={30 * fontScale}
+    >
       <Text
         color="secondary.400"
         fontSize="3xl"
         fontFamily={headingBold}
         flex={1}
-        minHeight={fontScale*40}>
+        minHeight={fontScale * 40}
+      >
         {Math.max(0, value ?? 0)}
       </Text>
       <Text
@@ -49,7 +47,8 @@ const TimeUnit = ({
         fontSize="xl"
         fontFamily={body}
         flex={1}
-        minHeight={fontScale*30}>
+        minHeight={fontScale * 30}
+      >
         {unit}
       </Text>
     </View>

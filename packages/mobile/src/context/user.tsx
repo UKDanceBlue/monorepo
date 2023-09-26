@@ -1,5 +1,5 @@
-import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import { FirestoreNotification } from "@ukdanceblue/common";
+import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
+import type { FirestoreNotification } from "@ukdanceblue/common";
 import {
   createContext,
   useCallback,
@@ -9,7 +9,8 @@ import {
 } from "react";
 
 import { log, universalCatch } from "../common/logging";
-import { FirestoreTeam, isFirestoreTeam } from "../types/FirestoreTeam";
+import type { FirestoreTeam} from "../types/FirestoreTeam";
+import { isFirestoreTeam } from "../types/FirestoreTeam";
 import { isFirestoreUser } from "../types/FirestoreUser";
 
 import { useAuthData } from "./auth";
@@ -105,7 +106,7 @@ const loadUserData = async (
 
 const UserDataContext = createContext<[UserData, () => Promise<void>]>([
   initialUserDataState,
-  async () => Promise.resolve(),
+  async () => {},
 ]);
 
 export const UserDataProvider = ({

@@ -1,5 +1,7 @@
-import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import { FirestoreNotification } from "@ukdanceblue/common";
+import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
+import type { FirestoreNotification } from "@ukdanceblue/common";
+import JumbotronGeometric from "@ukdanceblue/common/components/JumbotronGeometric";
+import { log, universalCatch } from "@ukdanceblue/common/logging";
 import { manufacturer as deviceManufacturer } from "expo-device";
 import { openSettings } from "expo-linking";
 import { setBadgeCountAsync } from "expo-notifications";
@@ -7,10 +9,10 @@ import { DateTime } from "luxon";
 import { Button, SectionList, Text, View, useTheme } from "native-base";
 import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
-import Animated, { useSharedValue } from "react-native-reanimated";
+import type Animated from "react-native-reanimated";
+import { useSharedValue } from "react-native-reanimated";
 
-import JumbotronGeometric from "@ukdanceblue/common/components/JumbotronGeometric";
-import { log, universalCatch } from "@ukdanceblue/common/logging";
+
 import { useDeviceData, useLoading, useUserData } from "../../../context";
 import { useRefreshUserData } from "../../../context/user";
 

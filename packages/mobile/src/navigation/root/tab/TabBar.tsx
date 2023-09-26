@@ -1,11 +1,12 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { RouteProp } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { ReactElement, useEffect, useState } from "react";
-
+import type { RouteProp } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { log } from "@ukdanceblue/common/logging";
+import type { ReactElement} from "react";
+import { useEffect, useState } from "react";
+
 import { useAppConfig } from "../../../context";
-import {
+import type {
   RootStackParamList,
   TabNavigatorParamList,
 } from "../../../types/navigationTypes";

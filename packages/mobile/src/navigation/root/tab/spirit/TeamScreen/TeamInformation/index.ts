@@ -1,3 +1,5 @@
-import TeamInformation from "./TeamInformation";
 
-export default TeamInformation;
+
+
+
+export {default} from "./TeamInformation";

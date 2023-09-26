@@ -10,10 +10,7 @@
     "notification": {
       "icon": "./assets/app/icon-2.png"
     },
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    "platforms": ["ios", "android"],
     "orientation": "portrait",
     "icon": "./assets/app/icon-2.png",
     "splash": {
@@ -56,9 +53,7 @@
       "enabled": true,
       "checkAutomatically": "ON_LOAD"
     },
-    "assetBundlePatterns": [
-      "assets/**"
-    ],
+    "assetBundlePatterns": ["assets/**"],
     "ios": {
       "supportsTablet": true,
       "config": {
@@ -66,20 +61,12 @@
       },
       "infoPlist": {
         "NSRemindersUsageDescription": "Users may add DanceBlue events to their calendar.",
-        "UIBackgroundModes": [
-          "audio"
-        ]
+        "UIBackgroundModes": ["audio"]
       },
-      "associatedDomains": [
-        "https://www.danceblue.org"
-      ]
+      "associatedDomains": ["https://www.danceblue.org"]
     },
     "android": {
-      "permissions": [
-        "WRITE_CALENDAR",
-        "READ_CALENDAR",
-        "CAMERA"
-      ],
+      "permissions": ["WRITE_CALENDAR", "READ_CALENDAR", "CAMERA"],
       "intentFilters": [
         {
           "action": "VIEW",
@@ -90,10 +77,7 @@
               "pathPrefix": "/redirect"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
     },

@@ -1,4 +1,4 @@
-import { DownloadableImage, FirestoreImage } from "./commonStructs";
+import type { DownloadableImage, FirestoreImage } from "./commonStructs";
 
 /** @deprecated TODO: Switch to FirestoreSponsor structure */
 export interface LegacyFirestoreSponsor {

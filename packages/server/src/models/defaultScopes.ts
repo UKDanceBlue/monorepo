@@ -9,49 +9,37 @@ import { PointEntryModel } from "./PointEntry.js";
 import { TeamModel } from "./Team.js";
 
 ConfigurationModel.addScope("defaultScope", {
-  include: [
-  ]
+  include: [],
 });
 
 DeviceModel.addScope("defaultScope", {
-  include: [
-  ]
+  include: [],
 });
 
 EventModel.addScope("defaultScope", {
-  include: [
-    EventOccurrenceModel,
-    ImageModel
-  ]
+  include: [EventOccurrenceModel, ImageModel],
 });
 
 EventOccurrenceModel.addScope("defaultScope", {
-  include: [
-  ]
+  include: [],
 });
 
 ImageModel.addScope("defaultScope", {
-  include: [
-  ]
+  include: [],
 });
 
 LoginFlowSessionModel.addScope("defaultScope", {
-  include: [
-  ]
+  include: [],
 });
 
 PersonModel.addScope("defaultScope", {
-  include: [
-  ]
+  include: [],
 });
 
 PointEntryModel.addScope("defaultScope", {
-  include: [
-  ]
+  include: [],
 });
 
 TeamModel.addScope("defaultScope", {
-  include: [
-    PointEntryModel
-  ]
+  include: [PointEntryModel],
 });

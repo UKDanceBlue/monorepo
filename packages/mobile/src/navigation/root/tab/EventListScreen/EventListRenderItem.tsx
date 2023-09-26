@@ -1,9 +1,10 @@
-import { FirestoreEvent } from "@ukdanceblue/common";
+import type { FirestoreEvent } from "@ukdanceblue/common";
 import { Platform } from "expo-modules-core";
 import { DateTime, Interval } from "luxon";
 import { Box, Column, Heading, Row } from "native-base";
-import { MutableRefObject, useCallback, useMemo } from "react";
-import { ListRenderItem } from "react-native";
+import type { MutableRefObject} from "react";
+import { useCallback, useMemo } from "react";
+import type { ListRenderItem } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 import { timestampToDateTime } from "../@ukdanceblue/common/util/dateTools";
@@ -31,7 +32,7 @@ export const EventListRenderItem = ({
   }, [thisEvent.interval?.start]);
 
   if (eventDate != null) {
-    if (!((dayIndexesRef.current[eventDate] ?? NaN) < index)) {
+    if (!((dayIndexesRef.current[eventDate] ?? Number.NaN) < index)) {
       dayIndexesRef.current[eventDate] = index;
     }
   }

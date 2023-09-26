@@ -2,9 +2,10 @@ import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { openURL } from "expo-linking";
 import { DateTime } from "luxon";
 import { Box, Button, HStack, Text, VStack } from "native-base";
+import type {
+  ImageSourcePropType} from "react-native";
 import {
   ImageBackground,
-  ImageSourcePropType,
   PixelRatio,
   Share,
   StatusBar,
@@ -12,9 +13,9 @@ import {
   useWindowDimensions,
 } from "react-native";
 
+import { useReactNavigationTheme } from "../../../../theme";
 import CountdownView from "../@ukdanceblue/common/components/CountdownView";
 import { universalCatch } from "../@ukdanceblue/common/logging";
-import { useReactNavigationTheme } from "../../../../theme";
 
 import HeaderImage from "./HeaderImage";
 import SponsorCarousel from "./SponsorCarousel";

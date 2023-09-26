@@ -1,17 +1,16 @@
 import { memo } from "react";
-import Svg, { Path, SvgProps } from "react-native-svg";
+import type { SvgProps } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 /* SVGR has dropped some elements not supported by react-native-svg: style */
 
 const DanceBlueRibbon = ({
-  svgProps, color
-}: { svgProps?: SvgProps; color?: string }) => (
-  <Svg
-    id="Layer_1"
-    x={0}
-    y={0}
-    viewBox="0 0 248 343"
-    {...svgProps}
-  >
+  svgProps,
+  color,
+}: {
+  svgProps?: SvgProps;
+  color?: string;
+}) => (
+  <Svg id="Layer_1" x={0} y={0} viewBox="0 0 248 343" {...svgProps}>
     <Path
       // @ts-expect-error This works
       style={{ fill: color ?? "#FFC72C" }}

@@ -7,7 +7,7 @@ const config = {
   },
   typescript: {
     tsconfigPath: "./tsconfig.json",
-  }
+  },
 };
 
 export default config;

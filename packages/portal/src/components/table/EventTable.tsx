@@ -1,19 +1,20 @@
 "use client";
+import type {
+  ColumnDef} from "@tanstack/react-table";
 import {
-  ColumnDef,
+  Row,
+  SortingState,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  Row,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import type { EventResource } from "@ukdanceblue/common";
+import type { Duration } from "luxon";
+import { DateTime } from "luxon";
+import { useEffect, useMemo, useReducer, useState } from "react";
 
-import { DateTime, Duration } from "luxon";
-import { useMemo, useEffect, useState, useReducer } from "react";
-
-import { EventResource } from "@ukdanceblue/common";
 import dbApiClient from "@/lib/apiClient";
 
 const columnHelper = createColumnHelper<EventResource>();
@@ -100,8 +101,8 @@ export default function EventTable() {
                 <th
                   key={header.id}
                   className={
-                    "px-4 py-2" +
-                    (header.isPlaceholder ? " border-2 border-gray-500" : "")
+                    `px-4 py-2${ 
+                    header.isPlaceholder ? " border-2 border-gray-500" : ""}`
                   }
                 >
                   {header.isPlaceholder

@@ -16,11 +16,15 @@ const SponsorCard = ({
   sponsorLink?: string;
   name: string;
 }) => {
-  const [url] = useFirebaseStorageUrl(`gs://react-danceblue.appspot.com${imagePath}`);
+  const [url] = useFirebaseStorageUrl(
+    `gs://react-danceblue.appspot.com${imagePath}`
+  );
 
   return (
     <TouchableHighlight
-      onPress={sponsorLink ? () => WebBrowser.openBrowserAsync(sponsorLink) : undefined}
+      onPress={
+        sponsorLink ? () => WebBrowser.openBrowserAsync(sponsorLink) : undefined
+      }
       underlayColor="#dddddd"
       style={{ flex: 1 }}
     >
@@ -31,9 +35,14 @@ const SponsorCard = ({
         p="1"
         m="2"
         borderRadius={6}
-        justifyContent="center">
+        justifyContent="center"
+      >
         <Image
-          source={{ uri: url ?? undefined, width: PixelRatio.getPixelSizeForLayoutSize(75), height: PixelRatio.getPixelSizeForLayoutSize(50) }}
+          source={{
+            uri: url ?? undefined,
+            width: PixelRatio.getPixelSizeForLayoutSize(75),
+            height: PixelRatio.getPixelSizeForLayoutSize(50),
+          }}
           alt={name}
           flex={1}
           style={{ resizeMode: "contain" }}

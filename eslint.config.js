@@ -2,7 +2,6 @@ import eslintJs from "@eslint/js";
 import eslintPluginTypescript from "@typescript-eslint/eslint-plugin";
 import eslintParserTypescript from "@typescript-eslint/parser";
 import eslintConfigPrettier from "eslint-config-prettier";
-// const eslintConfigNext = await import('eslint-config-next');
 import eslintPluginImport from "eslint-plugin-import";
 import eslintPluginJest from "eslint-plugin-jest";
 import eslintPluginJsdoc from "eslint-plugin-jsdoc";
@@ -28,14 +27,9 @@ const eslintConfig = [
       reportUnusedDisableDirectives: true,
     },
     plugins: {
-      "import": eslintPluginImport,
-      "jsdoc": eslintPluginJsdoc,
-      "node": eslintPluginNode,
-      "react": eslintPluginReact,
-      "react-hooks": eslintPluginReactHooks,
-      "react-native": eslintPluginReactNative,
-      "unicorn": eslintPluginUnicorn,
-      "jest": eslintPluginJest,
+      import: eslintPluginImport,
+      jsdoc: eslintPluginJsdoc,
+      unicorn: eslintPluginUnicorn,
     },
     settings: {
       jsdoc: {
@@ -245,6 +239,9 @@ const eslintConfig = [
   },
   {
     files: ["**/*.test.*"],
+    plugins: {
+      jest: eslintPluginJest,
+    },
     rules: {
       ...eslintPluginJest.configs.recommended.rules,
       ...eslintPluginJest.configs.style.rules,
@@ -276,6 +273,11 @@ const eslintConfig = [
   },
   {
     files: ["packages/**/mobile/**/*"],
+    plugins: {
+      "react": eslintPluginReact,
+      "react-native": eslintPluginReactNative,
+      "react-hooks": eslintPluginReactHooks,
+    },
     languageOptions: {
       globals: {
         ...eslintPluginReactNative.environments["react-native"].globals,
@@ -289,9 +291,18 @@ const eslintConfig = [
       ...eslintPluginReactHooks.configs.recommended.rules,
       ...eslintPluginReactNative.configs.all.rules,
     },
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
   },
   {
     files: ["packages/**/portal/**/*"],
+    plugins: {
+      "react": eslintPluginReact,
+      "react-hooks": eslintPluginReactHooks,
+    },
     languageOptions: {
       globals: {
         ...globals.es2017,
@@ -305,9 +316,17 @@ const eslintConfig = [
       ...eslintPluginReact.configs.recommended.rules,
       ...eslintPluginReactHooks.configs.recommended.rules,
     },
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
   },
   {
     files: ["packages/**/server/**/*"],
+    plugins: {
+      node: eslintPluginNode,
+    },
     languageOptions: {
       parserOptions: {
         project: "./packages/server/tsconfig.json",

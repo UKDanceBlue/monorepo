@@ -10,9 +10,21 @@ export function showMessage(
   title = "Error",
   onAccept: () => unknown = () => undefined
 ) {
-  Alert.alert(title.toString(), typeof message === "string" ? message : JSON.stringify(message, undefined, 2), [{ text: "OK", onPress: onAccept }]);
+  Alert.alert(
+    title.toString(),
+    typeof message === "string"
+      ? message
+      : JSON.stringify(message, undefined, 2),
+    [{ text: "OK", onPress: onAccept }]
+  );
 
-  log(`${title}:\n${typeof message === "string" ? message : JSON.stringify(message, undefined, 2)}`);
+  log(
+    `${title}:\n${
+      typeof message === "string"
+        ? message
+        : JSON.stringify(message, undefined, 2)
+    }`
+  );
 }
 
 /**
@@ -26,10 +38,22 @@ export function showPrompt(
   negativeText = "No",
   positiveText = "Yes"
 ) {
-  Alert.alert(title.toString(), typeof message === "string" ? message : JSON.stringify(message, undefined, 2), [
-    { text: negativeText, onPress: negativeAction, style: "cancel" },
-    { text: positiveText, onPress: positiveAction },
-  ]);
+  Alert.alert(
+    title.toString(),
+    typeof message === "string"
+      ? message
+      : JSON.stringify(message, undefined, 2),
+    [
+      { text: negativeText, onPress: negativeAction, style: "cancel" },
+      { text: positiveText, onPress: positiveAction },
+    ]
+  );
 
-  log(`${title}:\n${typeof message === "string" ? message : JSON.stringify(message, undefined, 2)}`);
+  log(
+    `${title}:\n${
+      typeof message === "string"
+        ? message
+        : JSON.stringify(message, undefined, 2)
+    }`
+  );
 }

@@ -1,3 +1,5 @@
-import FAQItem from "./FAQItem";
 
-export default FAQItem;
+
+
+
+export {default} from "./FAQItem";

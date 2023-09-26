@@ -1,4 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useColorModeValue } from "@ukdanceblue/common/customHooks";
+import { universalCatch } from "@ukdanceblue/common/logging";
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import { openURL } from "expo-linking";
 import {
@@ -13,8 +15,7 @@ import {
 import { useState } from "react";
 import { TextInput } from "react-native";
 
-import { useColorModeValue } from "@ukdanceblue/common/customHooks";
-import { universalCatch } from "@ukdanceblue/common/logging";
+
 import {
   useAuthData,
   useFirebase,

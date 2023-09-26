@@ -1,3 +1,5 @@
-import { MarathonScreen } from "./MarathonScreen";
 
-export default MarathonScreen;
+
+
+
+export {MarathonScreen as default} from "./MarathonScreen";

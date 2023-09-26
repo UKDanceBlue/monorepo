@@ -1,22 +1,46 @@
-import { DateTimeScalar, DurationScalar, ErrorCode, EventResource } from "@ukdanceblue/common";
+import {
+  DateTimeScalar,
+  DurationScalar,
+  ErrorCode,
+  EventResource,
+} from "@ukdanceblue/common";
 import { DateTime, Duration } from "luxon";
-import { Arg, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Field,
+  InputType,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
+} from "type-graphql";
 
 import { EventIntermediate, EventModel } from "../models/Event.js";
 
-import { AbstractGraphQLCreatedResponse, AbstractGraphQLOkResponse, DetailedError } from "./ApiResponse.js";
+import {
+  AbstractGraphQLCreatedResponse,
+  AbstractGraphQLOkResponse,
+  DetailedError,
+} from "./ApiResponse.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 
-@ObjectType("GetEventByUuidResponse", { implements: AbstractGraphQLOkResponse<EventResource> })
+@ObjectType("GetEventByUuidResponse", {
+  implements: AbstractGraphQLOkResponse<EventResource>,
+})
 class GetEventByUuidResponse extends AbstractGraphQLOkResponse<EventResource> {
   @Field(() => EventResource)
   data!: EventResource;
-} @ObjectType("CreateEventResponse", { implements: AbstractGraphQLCreatedResponse<EventResource> })
+}
+@ObjectType("CreateEventResponse", {
+  implements: AbstractGraphQLCreatedResponse<EventResource>,
+})
 class CreateEventResponse extends AbstractGraphQLCreatedResponse<EventResource> {
   @Field(() => EventResource)
   data!: EventResource;
 }
-@ObjectType("DeleteEventResponse", { implements: AbstractGraphQLOkResponse<boolean> })
+@ObjectType("DeleteEventResponse", {
+  implements: AbstractGraphQLOkResponse<boolean>,
+})
 class DeleteEventResponse extends AbstractGraphQLOkResponse<boolean> {
   @Field(() => Boolean)
   data!: boolean;
@@ -50,11 +74,15 @@ export class EventResolver implements ResolverInterface<EventResource> {
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
 
-    return GetEventByUuidResponse.newOk(new EventIntermediate(row).toResource());
+    return GetEventByUuidResponse.newOk(
+      new EventIntermediate(row).toResource()
+    );
   }
 
   @Mutation(() => CreateEventResponse, { name: "createEvent" })
-  async create(@Arg("input") input: CreateEventInput): Promise<CreateEventResponse> {
+  async create(
+    @Arg("input") input: CreateEventInput
+  ): Promise<CreateEventResponse> {
     const row = await EventModel.create({
       title: input.name,
       description: input.description,
@@ -67,7 +95,10 @@ export class EventResolver implements ResolverInterface<EventResource> {
 
   @Mutation(() => DeleteEventResponse, { name: "deleteEvent" })
   async delete(@Arg("id") id: string): Promise<DeleteEventResponse> {
-    const row = await EventModel.findOne({ where: { uuid: id }, attributes: ["id"] });
+    const row = await EventModel.findOne({
+      where: { uuid: id },
+      attributes: ["id"],
+    });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Event not found");

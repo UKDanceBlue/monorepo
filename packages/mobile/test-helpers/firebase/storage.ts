@@ -1,4 +1,4 @@
-import { FirebaseStorageTypes } from "@react-native-firebase/storage";
+import type { FirebaseStorageTypes } from "@react-native-firebase/storage";
 
 export interface MockRefArgs {
   bucket: string;
@@ -10,9 +10,13 @@ export interface MockRefArgs {
 }
 
 export function createMockedStorageRef({
-  bucket, fullPath, name, root, parent, downloadURL
-}: MockRefArgs
-) {
+  bucket,
+  fullPath,
+  name,
+  root,
+  parent,
+  downloadURL,
+}: MockRefArgs) {
   const mockDelete = jest.fn();
   const mockGetDownloadURL = jest.fn().mockResolvedValue(downloadURL);
   const mockGetMetadata = jest.fn();
@@ -23,17 +27,24 @@ export function createMockedStorageRef({
   const mockPutString = jest.fn();
   const mockUpdateMetadata = jest.fn();
 
-  const mockChild: jest.MockedFunction<FirebaseStorageTypes.Reference["child"]> = jest.fn().mockImplementation(function (this: FirebaseStorageTypes.Reference, path: string) {
-    const childFullPath = `${fullPath}/${path}`;
-    return createMockedStorageRef({
-      bucket,
-      fullPath: childFullPath,
-      name: path,
-      root,
-      parent: this,
-      downloadURL: `${downloadURL}/${path}`
+  const mockChild: jest.MockedFunction<
+    FirebaseStorageTypes.Reference["child"]
+  > = jest
+    .fn()
+    .mockImplementation(function (
+      this: FirebaseStorageTypes.Reference,
+      path: string
+    ) {
+      const childFullPath = `${fullPath}/${path}`;
+      return createMockedStorageRef({
+        bucket,
+        fullPath: childFullPath,
+        name: path,
+        root,
+        parent: this,
+        downloadURL: `${downloadURL}/${path}`,
+      });
     });
-  });
   const mockToString = jest.fn().mockReturnValue(fullPath);
   const mockWriteToFile = jest.fn();
 
@@ -80,25 +91,32 @@ export function createMockedStorageRef({
 }
 
 export function mockStorage({
-  maxDownloadRetryTime, maxOperationRetryTime, maxUploadRetryTime, refsByPath, refsByUrl
+  maxDownloadRetryTime,
+  maxOperationRetryTime,
+  maxUploadRetryTime,
+  refsByPath,
+  refsByUrl,
 }: {
   maxDownloadRetryTime: number;
   maxOperationRetryTime: number;
   maxUploadRetryTime: number;
   refsByPath: Partial<Record<string, MockRefArgs>>;
   refsByUrl: Partial<Record<string, MockRefArgs>>;
-}
-) {
-  const mockedRefsByPath: Partial<Record<string, ReturnType<typeof createMockedStorageRef>>> = {};
-  const mockedRefsByUrl: Partial<Record<string, ReturnType<typeof createMockedStorageRef>>> = {};
+}) {
+  const mockedRefsByPath: Partial<
+    Record<string, ReturnType<typeof createMockedStorageRef>>
+  > = {};
+  const mockedRefsByUrl: Partial<
+    Record<string, ReturnType<typeof createMockedStorageRef>>
+  > = {};
 
-  for (const [ path, args ] of Object.entries(refsByPath)) {
+  for (const [path, args] of Object.entries(refsByPath)) {
     if (args) {
       mockedRefsByPath[path] = createMockedStorageRef(args);
     }
   }
 
-  for (const [ url, args ] of Object.entries(refsByUrl)) {
+  for (const [url, args] of Object.entries(refsByUrl)) {
     if (args) {
       mockedRefsByUrl[url] = createMockedStorageRef(args);
     }
@@ -119,7 +137,10 @@ export function mockStorage({
     throw new Error(`No mocked ref found for url: ${url}`);
   });
 
-  const replacementImplementation: Omit<FirebaseStorageTypes.Module, "native" | "app" | "emitter" | "useEmulator"> = {
+  const replacementImplementation: Omit<
+    FirebaseStorageTypes.Module,
+    "native" | "app" | "emitter" | "useEmulator"
+  > = {
     maxDownloadRetryTime,
     maxOperationRetryTime,
     maxUploadRetryTime,
@@ -129,7 +150,15 @@ export function mockStorage({
     setMaxOperationRetryTime: jest.fn(),
     setMaxUploadRetryTime: jest.fn(),
   };
-  const mockStorageFactory = jest.fn<Omit<FirebaseStorageTypes.Module, "native" | "app" | "emitter" | "useEmulator">, []>().mockImplementation(() => (replacementImplementation));
+  const mockStorageFactory = jest
+    .fn<
+      Omit<
+        FirebaseStorageTypes.Module,
+        "native" | "app" | "emitter" | "useEmulator"
+      >,
+      []
+    >()
+    .mockImplementation(() => replacementImplementation);
   return {
     mockStorageFactory,
     mockedRefsByPath,

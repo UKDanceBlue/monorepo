@@ -1,8 +1,9 @@
 import { Text, View } from "native-base";
-import { ReactElement, useEffect, useState } from "react";
+import type { ReactElement} from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
 
-import { StandingType } from "../../../types/StandingType";
+import type { StandingType } from "../../../types/StandingType";
 import Place from "../Place";
 
 /**
@@ -22,16 +23,14 @@ const Standings = ({
   collapsedRows?: number;
   dadJokeTempMagicCallback?: (arg0: boolean, arg1: string) => unknown;
 }) => {
-  const [ rows, setRows ] = useState<ReactElement[]>([]);
-  const [ expanded, setExpanded ] = useState<boolean>(!!startExpanded);
-  const [ rowsToShow, setRowsToShow ] = useState<number>(collapsedRows);
-  const [ isLoading, setIsLoading ] = useState<boolean>(true);
+  const [rows, setRows] = useState<ReactElement[]>([]);
+  const [expanded, setExpanded] = useState<boolean>(!!startExpanded);
+  const [rowsToShow, setRowsToShow] = useState<number>(collapsedRows);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(
     () => setRowsToShow(expanded ? standingData.length : collapsedRows),
-    [
-      expanded, standingData, collapsedRows
-    ]
+    [expanded, standingData, collapsedRows]
   );
 
   useEffect(() => {
@@ -42,11 +41,7 @@ const Standings = ({
     }));
     sortedStandings.sort((a, b) => {
       if (b.points === a.points) {
-        if (a.name > b.name) {
-          return 1;
-        } else {
-          return 0;
-        }
+        return a.name > b.name ? 1 : 0;
       } else {
         return b.points - a.points;
       }
@@ -66,7 +61,7 @@ const Standings = ({
     }
     setRows(tempRows);
     setIsLoading(false);
-  }, [ standingData, rowsToShow ]);
+  }, [standingData, rowsToShow]);
 
   return (
     <View>
@@ -90,7 +85,6 @@ const Standings = ({
       {isLoading && (
         <ActivityIndicator
           size="large"
-
           style={{
             alignItems: "center",
             justifyContent: "center",

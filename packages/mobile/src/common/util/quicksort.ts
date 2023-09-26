@@ -1,7 +1,11 @@
-import { FirestoreEvent } from "@ukdanceblue/common";
-import { DateTime } from "luxon";
+import type { FirestoreEvent } from "@ukdanceblue/common";
+import type { DateTime } from "luxon";
 
-const partition = (array: { date: DateTime; event: FirestoreEvent }[], left = 0, right: number = array.length - 1) => {
+const partition = (
+  array: { date: DateTime; event: FirestoreEvent }[],
+  left = 0,
+  right: number = array.length - 1
+) => {
   const pivot = array[Math.floor((right + left) / 2)];
   let i = left;
   let j = right;
@@ -25,7 +29,11 @@ const partition = (array: { date: DateTime; event: FirestoreEvent }[], left = 0,
   return i;
 };
 
-export const quickSort = (array: { date: DateTime; event: FirestoreEvent }[], left = 0, right: number = array.length - 1) => {
+export const quickSort = (
+  array: { date: DateTime; event: FirestoreEvent }[],
+  left = 0,
+  right: number = array.length - 1
+) => {
   let index: number;
 
   if (array.length > 1) {

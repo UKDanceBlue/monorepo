@@ -1,8 +1,8 @@
 import type { DateTime } from "luxon";
 
 import type {
-  EqualityComparator,
   Comparator,
+  EqualityComparator,
   NumericComparator,
   StringComparator,
 } from "../../util/TypeUtils.js";
@@ -20,18 +20,18 @@ export interface FilterItem<
    * If this is an array, the field will be filtered on any of the values.
    */
   value: ValueType extends DateTime
-  ? string // DateTime uses ISO 8601 strings
-  : ValueType;
+    ? string // DateTime uses ISO 8601 strings
+    : ValueType;
   /**
    * The operator to use for the filter.
    */
   comparison: ValueType extends DateTime
-  ? NumericComparator // DateTime uses NumericComparators
-  : ValueType extends string
-  ? StringComparator // String uses StringComparators
-  : ValueType extends number
-  ? NumericComparator // Number uses NumericComparators
-  : EqualityComparator; // Default to Comparator.EQUALS
+    ? NumericComparator // DateTime uses NumericComparators
+    : ValueType extends string
+    ? StringComparator // String uses StringComparators
+    : ValueType extends number
+    ? NumericComparator // Number uses NumericComparators
+    : EqualityComparator; // Default to Comparator.EQUALS
 }
 
 // type StringFilter<
@@ -55,7 +55,7 @@ export const SortDirection = {
   DESCENDING: "desc",
 } as const;
 
-export type SortDirection = typeof SortDirection[keyof typeof SortDirection];
+export type SortDirection = (typeof SortDirection)[keyof typeof SortDirection];
 
 export interface SortingOptions {
   /**

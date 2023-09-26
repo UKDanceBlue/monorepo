@@ -4,15 +4,14 @@ import { StyleSheet } from "react-native";
 /**
  * A badge icon for use with profiles
  */
-const Badge = ({
-  imageURL, name
-}: {
-  imageURL: string;
-  name?: string;
-}) => {
+const Badge = ({ imageURL, name }: { imageURL: string; name?: string }) => {
   return (
     <View style={styles.container}>
-      <Image style={styles.icon} source={{ uri: imageURL }} alt={name ? `Icon for ${name}` : "Badge Icon"} />
+      <Image
+        style={styles.icon}
+        source={{ uri: imageURL }}
+        alt={name ? `Icon for ${name}` : "Badge Icon"}
+      />
       {name && <Text>{name}</Text>}
     </View>
   );

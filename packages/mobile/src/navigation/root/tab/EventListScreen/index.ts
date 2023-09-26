@@ -2,5 +2,7 @@
 // For example you can do:   *import { EventScreen } from '../EventScreen'*
 // Instead of:               *import { EventScreen } from '../EventScreen/EventScreen'*
 
-import EventListScreen from "./EventListScreen";
-export default EventListScreen;
+
+
+
+export {default} from "./EventListScreen";

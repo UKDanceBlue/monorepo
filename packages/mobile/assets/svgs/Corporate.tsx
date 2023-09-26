@@ -1,20 +1,17 @@
-import Svg, { G, Path, SvgProps } from "react-native-svg";
+import type { SvgProps } from "react-native-svg";
+import Svg, { G, Path } from "react-native-svg";
 /* SVGR has dropped some elements not supported by react-native-svg: style */
 
 const Corporate = ({
-  svgProps, color
-}: { svgProps?: SvgProps; color?: string }) => (
-  <Svg
-    id="Layer_1"
-    x={0}
-    y={0}
-    viewBox="0 0 248 343"
-    {...svgProps}
-  >
+  svgProps,
+  color,
+}: {
+  svgProps?: SvgProps;
+  color?: string;
+}) => (
+  <Svg id="Layer_1" x={0} y={0} viewBox="0 0 248 343" {...svgProps}>
     {/* @ts-expect-error This works */}
-    <G
-      style={{ enableBackground: "new" }}
-    >
+    <G style={{ enableBackground: "new" }}>
       <Path
         // @ts-expect-error This works
         style={{ fill: color ?? "#0032A0" }}

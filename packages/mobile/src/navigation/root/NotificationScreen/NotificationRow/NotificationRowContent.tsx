@@ -1,5 +1,5 @@
 import { Entypo } from "@expo/vector-icons";
-import { FirestoreNotification } from "@ukdanceblue/common";
+import type { FirestoreNotification } from "@ukdanceblue/common";
 import { isEqual } from "lodash";
 import { DateTime } from "luxon";
 import {

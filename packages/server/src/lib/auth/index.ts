@@ -1,8 +1,4 @@
-import type {
-  Authorization,
-  JwtPayload,
-  UserData,
-} from "@ukdanceblue/common";
+import type { Authorization, JwtPayload, UserData } from "@ukdanceblue/common";
 import {
   AccessLevel,
   AuthSource,
@@ -289,9 +285,9 @@ export function tokenFromRequest(
 export function checkTokenFromRequest(
   req: Request
 ): [
-    code: undefined | "invalid_request" | "invalid_token" | "no_auth",
-    description: undefined | string
-  ] {
+  code: undefined | "invalid_request" | "invalid_token" | "no_auth",
+  description: undefined | string
+] {
   const [token, error] = tokenFromRequest(req);
   if (error) {
     let description: string | undefined = undefined;

@@ -14,7 +14,8 @@ const HeaderImage = () => (
       size="full"
       resizeMode="cover"
       // blurRadius={10}
-      alt="Picture of DB Marathon" />
+      alt="Picture of DB Marathon"
+    />
     {/* <Box
       style={{ backgroundColor: "#ffffff55" }}
       width="full"

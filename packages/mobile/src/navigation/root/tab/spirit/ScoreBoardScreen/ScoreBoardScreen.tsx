@@ -6,11 +6,11 @@ import { View } from "native-base";
 import { Pressable } from "native-base/src/components/primitives";
 import { useCallback, useEffect, useState } from "react";
 
+import { useAuthData, useUserData } from "../../../../../context";
+import type { StandingType } from "../../../../../types/StandingType";
+import type { SpiritStackScreenProps } from "../../../../../types/navigationTypes";
 import Jumbotron from "../../@ukdanceblue/common/components/Jumbotron";
 import { universalCatch } from "../../@ukdanceblue/common/logging";
-import { useAuthData, useUserData } from "../../../../../context";
-import { StandingType } from "../../../../../types/StandingType";
-import { SpiritStackScreenProps } from "../../../../../types/navigationTypes";
 
 import Scoreboard from "./Scoreboard/Scoreboard";
 

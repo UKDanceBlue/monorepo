@@ -1,19 +1,19 @@
 import { FontAwesome5 } from "@expo/vector-icons";
-import {
+import type {
   BottomTabBarProps,
   BottomTabNavigationOptions,
 } from "@react-navigation/bottom-tabs";
-import { ParamListBase, TabNavigationState } from "@react-navigation/native";
+import type { ParamListBase, TabNavigationState } from "@react-navigation/native";
+import {
+  useColorModeValue,
+  useThemeColors,
+} from "@ukdanceblue/common/customHooks";
 import { Box, VStack, View } from "native-base";
 import { ZStack } from "native-base/src/components/primitives";
 import { Text, TouchableOpacity, useWindowDimensions } from "react-native";
 
 import BackgroundCutout from "../../../../assets/screens/navigation/background-cutout";
 import DanceBlueRibbon from "../../../../assets/svgs/DBRibbon";
-import {
-  useColorModeValue,
-  useThemeColors,
-} from "@ukdanceblue/common/customHooks";
 import { useReactNavigationTheme } from "../../../theme";
 
 // From https://reactnavigation.org/docs/bottom-tab-navigator#tabbar
@@ -21,16 +21,16 @@ import { useReactNavigationTheme } from "../../../theme";
 const iconMap = {
   // https://icons.expo.fyi/
   // Key: Screen   Value: Icon ID
-  Home: "home",
-  Events: "calendar",
-  Store: "store",
-  More: "ellipsis-h",
-  Scoreboard: "list-ol",
-  Teams: "users",
-  Donate: "hand-holding-heart",
-  Marathon: "people-arrows",
+  "Home": "home",
+  "Events": "calendar",
+  "Store": "store",
+  "More": "ellipsis-h",
+  "Scoreboard": "list-ol",
+  "Teams": "users",
+  "Donate": "hand-holding-heart",
+  "Marathon": "people-arrows",
   "Scavenger Hunt": "search",
-  Logo: null,
+  "Logo": null,
   "Morale Cup": "trophy",
 };
 

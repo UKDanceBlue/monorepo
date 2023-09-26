@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { SpiritStackParamList } from "../../../../types/navigationTypes";
+import type { SpiritStackParamList } from "../../../../types/navigationTypes";
 
 import ScoreboardScreen from "./ScoreBoardScreen";
 import TeamScreen from "./TeamScreen";
@@ -11,10 +11,7 @@ const SpiritScreen = () => {
   return (
     <SpiritStack.Navigator screenOptions={{ headerShown: false }}>
       <SpiritStack.Screen name="Scoreboard" component={ScoreboardScreen} />
-      <SpiritStack.Screen
-        name="MyTeam"
-        component={TeamScreen}
-      />
+      <SpiritStack.Screen name="MyTeam" component={TeamScreen} />
     </SpiritStack.Navigator>
   );
 };

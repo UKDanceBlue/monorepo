@@ -1,3 +1,5 @@
-import SponsorsBlock from "./SponsorsBlock";
 
-export default SponsorsBlock;
+
+
+
+export {default} from "./SponsorsBlock";

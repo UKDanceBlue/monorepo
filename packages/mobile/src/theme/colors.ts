@@ -1,8 +1,9 @@
-import { Theme } from "native-base";
+import type { Theme } from "native-base";
 import type { IColorHues } from "native-base/src/theme/base/colors";
 
 export const colors: Partial<Record<keyof Theme["colors"], IColorHues>> = {
-  primary: { // BASE COLOR: #0032A0 (level 600), Dark Blue
+  primary: {
+    // BASE COLOR: #0032A0 (level 600), Dark Blue
     50: "#e0edff",
     100: "#BBC9E8",
     200: "#7fa7ff",
@@ -14,7 +15,8 @@ export const colors: Partial<Record<keyof Theme["colors"], IColorHues>> = {
     800: "#001850",
     900: "#000820",
   },
-  secondary: { // SECONDARY COLOR: #FFC72C (level 400), Gold
+  secondary: {
+    // SECONDARY COLOR: #FFC72C (level 400), Gold
     50: "#fff8da",
     100: "#ffebad",
     200: "#ffdd7d",
@@ -26,7 +28,8 @@ export const colors: Partial<Record<keyof Theme["colors"], IColorHues>> = {
     800: "#4e3800",
     900: "#1d1300",
   },
-  tertiary: { // TERTIARY COLOR: #F0740C (level 500), Orange
+  tertiary: {
+    // TERTIARY COLOR: #F0740C (level 500), Orange
     50: "#ffefdd",
     100: "#fed5b1",
     200: "#faba84",
@@ -38,7 +41,8 @@ export const colors: Partial<Record<keyof Theme["colors"], IColorHues>> = {
     800: "#4b2200",
     900: "#1e0900",
   },
-  danger: { // 600 default?
+  danger: {
+    // 600 default?
     50: "#fff1f2",
     100: "#ffe4e6",
     200: "#fecdd3",

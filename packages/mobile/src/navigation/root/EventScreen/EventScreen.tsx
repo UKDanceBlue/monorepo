@@ -1,5 +1,10 @@
 import { useRoute } from "@react-navigation/native";
 import { DownloadableImage } from "@ukdanceblue/common";
+import NativeBaseMarkdown from "@ukdanceblue/common/components/NativeBaseMarkdown";
+import { firestoreIntervalToLuxon } from "@ukdanceblue/common/firestoreUtils";
+import { log, universalCatch } from "@ukdanceblue/common/logging";
+import { showMessage } from "@ukdanceblue/common/util/alertUtils";
+import { discoverDefaultCalendar } from "@ukdanceblue/common/util/calendar";
 import {
   PermissionStatus,
   createEventAsync,
@@ -28,13 +33,9 @@ import { ActivityIndicator, useWindowDimensions } from "react-native";
 import openMaps from "react-native-open-maps";
 import { WebView } from "react-native-webview";
 
-import NativeBaseMarkdown from "@ukdanceblue/common/components/NativeBaseMarkdown";
-import { firestoreIntervalToLuxon } from "@ukdanceblue/common/firestoreUtils";
-import { log, universalCatch } from "@ukdanceblue/common/logging";
-import { showMessage } from "@ukdanceblue/common/util/alertUtils";
-import { discoverDefaultCalendar } from "@ukdanceblue/common/util/calendar";
+
 import { useFirebase } from "../../../context";
-import { RootStackScreenProps } from "../../../types/navigationTypes";
+import type { RootStackScreenProps } from "../../../types/navigationTypes";
 
 const EventScreen = () => {
   const {
@@ -73,7 +74,7 @@ const EventScreen = () => {
   >(
     firestoreImages == null
       ? undefined
-      : Array(firestoreImages.length).fill(null)
+      : Array.from({length: firestoreImages.length}).fill(null)
   );
 
   const { colors } = useTheme();
@@ -86,11 +87,7 @@ const EventScreen = () => {
       Promise.all(
         firestoreImages.map((image) => {
           return DownloadableImage.fromFirestoreImage(image, (uri: string) => {
-            if (uri.startsWith("gs://")) {
-              return fbStorage.refFromURL(uri).getDownloadURL();
-            } else {
-              return Promise.resolve(uri);
-            }
+            return uri.startsWith("gs://") ? fbStorage.refFromURL(uri).getDownloadURL() : Promise.resolve(uri);
           });
         })
       )

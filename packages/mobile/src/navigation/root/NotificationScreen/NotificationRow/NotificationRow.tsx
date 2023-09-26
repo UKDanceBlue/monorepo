@@ -1,8 +1,9 @@
 import firestore from "@react-native-firebase/firestore";
 import { Box, Button, Row, useTheme } from "native-base";
+import type {
+  SectionListRenderItem} from "react-native";
 import {
   Alert,
-  SectionListRenderItem,
   useWindowDimensions,
 } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
@@ -13,10 +14,10 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
-import { universalCatch } from "../@ukdanceblue/common/logging";
 import { useAuthData, useFirebase } from "../../../../context";
 import { useRefreshUserData } from "../../../../context/user";
-import { NotificationListDataEntry } from "../NotificationScreen";
+import { universalCatch } from "../@ukdanceblue/common/logging";
+import type { NotificationListDataEntry } from "../NotificationScreen";
 
 import { NotificationRowContent } from "./NotificationRowContent";
 
@@ -50,11 +51,7 @@ export const AnimatedNotificationRow: SectionListRenderItem<
       }
     },
     onEnd: () => {
-      if (x.value < -sideMenuWidth) {
-        x.value = withSpring(-sideMenuWidth * 1.25);
-      } else {
-        x.value = withSpring(0);
-      }
+      x.value = x.value < -sideMenuWidth ? withSpring(-sideMenuWidth * 1.25) : withSpring(0);
     },
   });
 

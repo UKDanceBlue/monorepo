@@ -25,9 +25,5 @@ export const MarathonScreen = () => {
     };
   }, []);
 
-  if (showCountdown) {
-    return <MarathonCountdownScreen />;
-  } else {
-    return <HourScreenComponent />;
-  }
+  return showCountdown ? <MarathonCountdownScreen /> : <HourScreenComponent />;
 };

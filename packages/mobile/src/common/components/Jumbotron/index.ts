@@ -1,3 +1,5 @@
-import Jumbotron from "./Jumbotron";
 
-export default Jumbotron;
+
+
+
+export {default} from "./Jumbotron";

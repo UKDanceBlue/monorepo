@@ -8,14 +8,15 @@ export interface FirestoreNotification {
 }
 
 /** @deprecated Use types from @ukdanceblue/common instead */
-export function isFirestoreNotification(notification?: object): notification is FirestoreNotification {
+export function isFirestoreNotification(
+  notification?: object
+): notification is FirestoreNotification {
   if (notification == null) {
     return false;
   }
 
-  const {
-    body, payload, sendTime, sound, title
-  } = notification as Partial<FirestoreNotification>;
+  const { body, payload, sendTime, sound, title } =
+    notification as Partial<FirestoreNotification>;
 
   // Check that all required fields are present and of the correct type
   if (body == null) {

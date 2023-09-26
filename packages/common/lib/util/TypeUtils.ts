@@ -13,10 +13,10 @@ export function isPrimitive(value: unknown): value is Primitive {
 
 export interface PrimitiveObject {
   [key: string | number | symbol]:
-  | PrimitiveObject
-  | PrimitiveObject[]
-  | Primitive
-  | Primitive[];
+    | PrimitiveObject
+    | PrimitiveObject[]
+    | Primitive
+    | Primitive[];
 }
 
 /**
@@ -100,10 +100,10 @@ export type TypeOfMap<T extends TypeOfTypeNames> = T extends "undefined"
 
 export type RecursivePartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]
-  ? RecursivePartial<U>[]
-  : T[P] extends object
-  ? RecursivePartial<T[P]>
-  : T[P];
+    ? RecursivePartial<U>[]
+    : T[P] extends object
+    ? RecursivePartial<T[P]>
+    : T[P];
 };
 export type OptionalNullOrUndefined<T> = Partial<{
   [K in keyof T]: NonNullable<T[K]> | null | undefined;
@@ -120,8 +120,8 @@ export type Class<T> = Abstract<T> | Constructor<T>;
 
 export type OptionalToNullable<T> = T extends object
   ? {
-    [K in keyof T]: T[K] extends NonNullable<T[K]> ? T[K] : T[K] | null;
-  }
+      [K in keyof T]: T[K] extends NonNullable<T[K]> ? T[K] : T[K] | null;
+    }
   : T extends NonNullable<T>
   ? T
   : T | null;
@@ -133,8 +133,8 @@ export type OmitNever<T> = {
 type NullishToOptionalPart1<T extends object> = Partial<
   OmitNever<{
     [K in keyof T]: T[K] extends NonNullable<T[K]>
-    ? never
-    : Exclude<T[K], null | undefined>;
+      ? never
+      : Exclude<T[K], null | undefined>;
   }>
 >;
 
@@ -164,13 +164,14 @@ export const Comparator = {
   LESS_THAN_OR_EQUAL_TO: "lte",
   INCLUDES: "incl",
 } as const;
-export type Comparator = typeof Comparator[keyof typeof Comparator];
+export type Comparator = (typeof Comparator)[keyof typeof Comparator];
 
 export const StringComparator = {
   EQUALS: "eq",
   INCLUDES: "incl",
 } as const;
-export type StringComparator = typeof StringComparator[keyof typeof StringComparator];
+export type StringComparator =
+  (typeof StringComparator)[keyof typeof StringComparator];
 
 export const NumericComparator = {
   EQUALS: "eq",
@@ -179,12 +180,14 @@ export const NumericComparator = {
   GREATER_THAN_OR_EQUAL_TO: "gte",
   LESS_THAN_OR_EQUAL_TO: "lte",
 } as const;
-export type NumericComparator = typeof NumericComparator[keyof typeof NumericComparator];
+export type NumericComparator =
+  (typeof NumericComparator)[keyof typeof NumericComparator];
 
 export const EqualityComparator = {
   EQUALS: "eq",
 } as const;
-export type EqualityComparator = typeof EqualityComparator[keyof typeof EqualityComparator];
+export type EqualityComparator =
+  (typeof EqualityComparator)[keyof typeof EqualityComparator];
 
 () => {
   const stringComparator: Comparator = "" as StringComparator;
@@ -192,4 +195,4 @@ export type EqualityComparator = typeof EqualityComparator[keyof typeof Equality
   const equalityComparator: Comparator = "" as EqualityComparator;
 
   throw new Error("This function should never be exported");
-}
+};

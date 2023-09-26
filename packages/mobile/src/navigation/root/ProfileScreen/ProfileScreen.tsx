@@ -1,3 +1,8 @@
+
+import { useLinkBlueLogin } from "@ukdanceblue/common/auth";
+import JumbotronGeometric from "@ukdanceblue/common/components/JumbotronGeometric";
+import { useThemeFonts } from "@ukdanceblue/common/customHooks";
+import { showMessage } from "@ukdanceblue/common/util/alertUtils";
 import { startCase } from "lodash";
 import {
   Button,
@@ -9,10 +14,6 @@ import {
   theme,
 } from "native-base";
 
-import { useLinkBlueLogin } from "@ukdanceblue/common/auth";
-import JumbotronGeometric from "@ukdanceblue/common/components/JumbotronGeometric";
-import { useThemeFonts } from "@ukdanceblue/common/customHooks";
-import { showMessage } from "@ukdanceblue/common/util/alertUtils";
 import { useAuthData, useFirebase, useUserData } from "../../../context";
 
 import { ProfileFooter } from "./ProfileFooter";

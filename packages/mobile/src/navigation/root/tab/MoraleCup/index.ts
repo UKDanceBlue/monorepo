@@ -1,3 +1,5 @@
-import { MoraleCup } from "./MoraleCup";
 
-export default MoraleCup;
+
+
+
+export {MoraleCup as default} from "./MoraleCup";

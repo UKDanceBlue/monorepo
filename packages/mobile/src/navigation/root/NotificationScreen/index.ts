@@ -1,3 +1,5 @@
-import NotificationScreen from "./NotificationScreen";
 
-export default NotificationScreen;
+
+
+
+export {default} from "./NotificationScreen";

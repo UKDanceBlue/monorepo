@@ -1,6 +1,8 @@
+import type { EventResource } from "@ukdanceblue/common";
+import { ApiClient } from "@ukdanceblue/common";
+
 import EventView from "@/components/EventView";
 import dbApiClient from "@/lib/apiClient";
-import { ApiClient, EventResource } from "@ukdanceblue/common";
 
 async function getData(eventId: string): Promise<
   | {
@@ -17,11 +19,10 @@ async function getData(eventId: string): Promise<
   let event: EventResource | undefined = undefined;
   try {
     const res = await dbApiClient.eventApi.getEvent(eventId);
-    const resource = res.resource.resource;
+    const {resource} = res.resource;
     event = resource;
-  } catch (e) {
-    if (e instanceof Error) error = e;
-    else error = new Error("Unknown error");
+  } catch (error_) {
+    error = error_ instanceof Error ? error_ : new Error("Unknown error");
   }
 
   if (!event) {

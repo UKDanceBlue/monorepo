@@ -39,14 +39,19 @@ const loggedOutAuthState: AuthData = {
   authClaims: null,
 };
 
-const AuthDataContext = createContext<[AuthData, () => void]>([ initialAuthState, () => undefined ]);
+const AuthDataContext = createContext<[AuthData, () => void]>([
+  initialAuthState,
+  () => undefined,
+]);
 
-export const AuthDataProvider = ({ children }: { children: React.ReactNode }) => {
-  const [ authData, setAuthData ] = useState<AuthData>(initialAuthState);
+export const AuthDataProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const [authData, setAuthData] = useState<AuthData>(initialAuthState);
 
-  const {
-    fbAuth, fbAnalytics, fbCrashlytics, fbFirestore
-  } = useFirebase();
+  const { fbAuth, fbAnalytics, fbCrashlytics, fbFirestore } = useFirebase();
 
   const { deviceId } = useDeviceData();
 
@@ -65,12 +70,10 @@ export const AuthDataProvider = ({ children }: { children: React.ReactNode }) =>
               authClaims: idTokenResult.claims,
             });
 
-            await Promise.all(
-              [
-                fbAnalytics.setUserId(user.uid),
-                fbCrashlytics.setUserId(user.uid)
-              ]
-            )
+            await Promise.all([
+              fbAnalytics.setUserId(user.uid),
+              fbCrashlytics.setUserId(user.uid),
+            ])
               .then(() => {
                 log("Updated userId for analytics and crashlytics");
               })
@@ -82,12 +85,10 @@ export const AuthDataProvider = ({ children }: { children: React.ReactNode }) =>
           universalCatch(error);
           setAuthData(initialAuthState);
 
-          Promise.all(
-            [
-              fbAnalytics.setUserId(null),
-              fbCrashlytics.setUserId("[LOGGED_OUT]")
-            ]
-          )
+          Promise.all([
+            fbAnalytics.setUserId(null),
+            fbCrashlytics.setUserId("[LOGGED_OUT]"),
+          ])
             .then(() => {
               log("Updated userId for analytics and crashlytics");
             })
@@ -95,7 +96,7 @@ export const AuthDataProvider = ({ children }: { children: React.ReactNode }) =>
         }
 
         if (deviceId != null) {
-        // Update the user's uid in firestore when auth state changes so long as the uuid has ben initialized
+          // Update the user's uid in firestore when auth state changes so long as the uuid has ben initialized
           await fbFirestore
             .doc(`devices/${deviceId}`)
             .set({ latestUserId: user?.uid ?? null }, { merge: true })
@@ -108,21 +109,19 @@ export const AuthDataProvider = ({ children }: { children: React.ReactNode }) =>
     });
 
     return unsubscribe;
-  }, [
-    deviceId, fbAnalytics, fbAuth, fbCrashlytics, fbFirestore
-  ]);
+  }, [deviceId, fbAnalytics, fbAuth, fbCrashlytics, fbFirestore]);
 
   const setDemoMode = () => {
     setAuthData({
       ...initialAuthState,
       isAuthLoaded: true,
       isLoggedIn: true,
-      uid: "demo"
+      uid: "demo",
     });
   };
 
   return (
-    <AuthDataContext.Provider value={[ authData, setDemoMode ]}>
+    <AuthDataContext.Provider value={[authData, setDemoMode]}>
       {children}
     </AuthDataContext.Provider>
   );

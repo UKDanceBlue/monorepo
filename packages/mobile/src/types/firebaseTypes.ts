@@ -1,9 +1,11 @@
-import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import { FirebaseStorageTypes } from "@react-native-firebase/storage";
+import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
+import type { FirebaseStorageTypes } from "@react-native-firebase/storage";
 
-import { HourInstructionsType, SpecialComponentType } from "./hourScreenTypes";
+import type { HourInstructionsType, SpecialComponentType } from "./hourScreenTypes";
 
-export type NativeFirebaseError = Parameters<FirebaseStorageTypes.TaskSnapshotObserver["error"]>[0];
+export type NativeFirebaseError = Parameters<
+  FirebaseStorageTypes.TaskSnapshotObserver["error"]
+>[0];
 export function isFirebaseError(error: unknown): error is NativeFirebaseError {
   if (typeof error !== "object" || error == null) {
     return false;
@@ -20,10 +22,16 @@ export function isFirebaseError(error: unknown): error is NativeFirebaseError {
   if (typeof (error as NativeFirebaseError).namespace !== "string") {
     return false;
   }
-  if (typeof (error as NativeFirebaseError).stack !== "string" && (error as NativeFirebaseError).stack != null) {
+  if (
+    typeof (error as NativeFirebaseError).stack !== "string" &&
+    (error as NativeFirebaseError).stack != null
+  ) {
     return false;
   }
-  return !(typeof (error as NativeFirebaseError).cause !== "string" && (error as NativeFirebaseError).cause != null);
+  return !(
+    typeof (error as NativeFirebaseError).cause !== "string" &&
+    (error as NativeFirebaseError).cause != null
+  );
 }
 
 export interface FirestoreHour {
@@ -43,7 +51,9 @@ export interface FirestoreHour {
   textInstructions?: HourInstructionsType; // Text-instructions
   firebaseImageUri?: string | string[]; // Gs-image
   imageUri?: string | string[]; // Http-image
-  buttonConfig?: { text: string; url: string } | { text: string; url: string }[]; // Button
+  buttonConfig?:
+    | { text: string; url: string }
+    | { text: string; url: string }[]; // Button
   specialComponent?: SpecialComponentType | SpecialComponentType[]; // Special
   textBlock?: string | string[];
 }
@@ -55,25 +65,44 @@ export interface FirestoreMoraleTeam {
   points: number;
 }
 
-export const isCollectionReference = (firestoreReference?: unknown): firestoreReference is FirebaseFirestoreTypes.CollectionReference => {
+export const isCollectionReference = (
+  firestoreReference?: unknown
+): firestoreReference is FirebaseFirestoreTypes.CollectionReference => {
   if (typeof firestoreReference !== "object" || firestoreReference == null) {
     return false;
   }
-  if (typeof (firestoreReference as FirebaseFirestoreTypes.CollectionReference).id !== "string") {
+  if (
+    typeof (firestoreReference as FirebaseFirestoreTypes.CollectionReference)
+      .id !== "string"
+  ) {
     return false;
   }
-  return typeof (firestoreReference as FirebaseFirestoreTypes.CollectionReference).path === "string";
+  return (
+    typeof (firestoreReference as FirebaseFirestoreTypes.CollectionReference)
+      .path === "string"
+  );
 };
 
-export const isDocumentReference = (firestoreReference?: unknown): firestoreReference is FirebaseFirestoreTypes.DocumentReference => {
+export const isDocumentReference = (
+  firestoreReference?: unknown
+): firestoreReference is FirebaseFirestoreTypes.DocumentReference => {
   if (typeof firestoreReference !== "object" || firestoreReference == null) {
     return false;
   }
-  if (typeof (firestoreReference as FirebaseFirestoreTypes.DocumentReference).id !== "string") {
+  if (
+    typeof (firestoreReference as FirebaseFirestoreTypes.DocumentReference)
+      .id !== "string"
+  ) {
     return false;
   }
-  if (typeof (firestoreReference as FirebaseFirestoreTypes.DocumentReference).path !== "string") {
+  if (
+    typeof (firestoreReference as FirebaseFirestoreTypes.DocumentReference)
+      .path !== "string"
+  ) {
     return false;
   }
-  return typeof (firestoreReference as FirebaseFirestoreTypes.DocumentReference).parent === "object";
+  return (
+    typeof (firestoreReference as FirebaseFirestoreTypes.DocumentReference)
+      .parent === "object"
+  );
 };

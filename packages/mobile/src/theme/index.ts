@@ -1,20 +1,10 @@
-import { Theme as ReactNavigationTheme } from "@react-navigation/native";
+import type { Theme as ReactNavigationTheme } from "@react-navigation/native";
 import { extendTheme, useColorMode, useTheme } from "native-base";
 import { useMemo } from "react";
 
 import { colors } from "./colors";
 import { components } from "./components";
-import { fontConfig, fontSizes, fontWeights, fonts, letterSpacings, lineHeights, opacity, shadows } from "./typography";
-
-/*
- * Useful links for extending the theme:
- * https://docs.nativebase.io/default-theme
- * https://docs.nativebase.io/dark-mode
- */
-export const getCustomTheme = () => extendTheme({
-  colors,
-  components,
-  config: { "initialColorMode": "light" },
+import {
   fontConfig,
   fontSizes,
   fontWeights,
@@ -23,14 +13,34 @@ export const getCustomTheme = () => extendTheme({
   lineHeights,
   opacity,
   shadows,
-} as const);
+} from "./typography";
+
+/*
+ * Useful links for extending the theme:
+ * https://docs.nativebase.io/default-theme
+ * https://docs.nativebase.io/dark-mode
+ */
+export const getCustomTheme = () =>
+  extendTheme({
+    colors,
+    components,
+    config: { initialColorMode: "light" },
+    fontConfig,
+    fontSizes,
+    fontWeights,
+    fonts,
+    letterSpacings,
+    lineHeights,
+    opacity,
+    shadows,
+  } as const);
 
 // 2. Get the type of the CustomTheme
 type CustomThemeType = ReturnType<typeof getCustomTheme>;
 
 // 3. Extend the internal NativeBase Theme
 declare module "native-base" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+   
   interface ICustomTheme extends CustomThemeType {}
 }
 
@@ -70,5 +80,5 @@ export const useReactNavigationTheme = (): ReactNavigationTheme => {
         },
       };
     }
-  }, [ isDark, theme ]);
+  }, [isDark, theme]);
 };

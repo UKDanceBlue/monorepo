@@ -11,5 +11,5 @@ export const VoidScalar = new GraphQLScalarType<void, 0>({
   },
   parseLiteral(): void {
     return;
-  }
-})
+  },
+});

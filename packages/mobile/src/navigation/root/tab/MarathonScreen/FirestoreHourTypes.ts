@@ -1,11 +1,16 @@
-import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import { DownloadableImage, FirestoreImage, FirestoreImageJsonV1 } from "@ukdanceblue/common";
+import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
+import type {
+  FirestoreImageJsonV1} from "@ukdanceblue/common";
+import {
+  DownloadableImage,
+  FirestoreImage
+} from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useFirebase } from "../../../../context";
 import { universalCatch } from "../@ukdanceblue/common/logging";
 import { lookupHourByTime } from "../@ukdanceblue/common/marathonTime";
-import { useFirebase } from "../../../../context";
 
 // Found at /marathon/2023/hours/[HOUR NUMBER]
 export interface FirestoreHour {
@@ -20,17 +25,22 @@ export function isFirestoreHour(obj: unknown): obj is FirestoreHour {
     return false;
   }
   return (
-    typeof (obj as FirestoreHour).hourNumber === "number" &&
-    typeof (obj as FirestoreHour).hourName === "string" &&
-    (obj as FirestoreHour).graphic == null || FirestoreImage.isValidJson((obj as FirestoreHour).graphic) &&
-    typeof (obj as FirestoreHour).content === "string"
+    (typeof (obj as FirestoreHour).hourNumber === "number" &&
+      typeof (obj as FirestoreHour).hourName === "string" &&
+      (obj as FirestoreHour).graphic == null) ||
+    (FirestoreImage.isValidJson((obj as FirestoreHour).graphic) &&
+      typeof (obj as FirestoreHour).content === "string")
   );
 }
 
-export function useCurrentFirestoreHour(): [boolean, string | null, FirestoreHour | null, DownloadableImage | null, () => Promise<void>] {
-  const {
-    fbStorage, fbFirestore
-  } = useFirebase();
+export function useCurrentFirestoreHour(): [
+  boolean,
+  string | null,
+  FirestoreHour | null,
+  DownloadableImage | null,
+  () => Promise<void>
+] {
+  const { fbStorage, fbFirestore } = useFirebase();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,14 +61,20 @@ export function useCurrentFirestoreHour(): [boolean, string | null, FirestoreHou
 
     setLoading(true);
 
-    const hourRef = fbFirestore.collection("marathon").doc("2023").collection("hours")
+    const hourRef = fbFirestore
+      .collection("marathon")
+      .doc("2023")
+      .collection("hours")
       .doc(currentHour.toString());
     let hourDoc: FirebaseFirestoreTypes.DocumentSnapshot;
     try {
       hourDoc = await hourRef.get();
-    } catch (e) {
-      console.error(e);
-      setError((e as Error | Record<string, undefined> | undefined)?.message ?? "Unknown error");
+    } catch (error_) {
+      console.error(error_);
+      setError(
+        (error_ as Error | Record<string, undefined> | undefined)?.message ??
+          "Unknown error"
+      );
       setHour(null);
       setHourImage(null);
       setLoading(false);
@@ -98,18 +114,19 @@ export function useCurrentFirestoreHour(): [boolean, string | null, FirestoreHou
 
     try {
       const image = FirestoreImage.fromJson(hourData.graphic);
-      const downloadableImage = await DownloadableImage.fromFirestoreImage(image, (uri: string) => fbStorage.refFromURL(uri).getDownloadURL());
+      const downloadableImage = await DownloadableImage.fromFirestoreImage(
+        image,
+        (uri: string) => fbStorage.refFromURL(uri).getDownloadURL()
+      );
       setHourImage(downloadableImage);
-    } catch (e) {
-      console.error(e);
+    } catch (error_) {
+      console.error(error_);
       setHourImage(null);
       return;
     } finally {
       setLoading(false);
     }
-  }, [
-    fbStorage, fbFirestore, currentHour
-  ]);
+  }, [fbStorage, fbFirestore, currentHour]);
 
   useEffect(() => {
     if (currentHour) {
@@ -128,7 +145,5 @@ export function useCurrentFirestoreHour(): [boolean, string | null, FirestoreHou
     };
   }, [currentHour, refresh]);
 
-  return [
-    loading, error, hour, hourImage, refresh
-  ];
+  return [loading, error, hour, hourImage, refresh];
 }

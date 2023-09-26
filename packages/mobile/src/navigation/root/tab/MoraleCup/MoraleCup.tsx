@@ -2,17 +2,18 @@ import { Entypo } from "@expo/vector-icons";
 import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 import { Heading, Row, ScrollView, Spinner, Text, VStack } from "native-base";
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
+import type {
   NativeSyntheticEvent,
-  TextInput,
-  TextInputSubmitEditingEventData,
+  TextInputSubmitEditingEventData} from "react-native";
+import {
+  TextInput
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useFirebase, useUserData } from "../../../../context";
+import type { StandingType } from "../../../../types/StandingType";
 import Standings from "../@ukdanceblue/common/components/Standings";
 import { universalCatch } from "../@ukdanceblue/common/logging";
-import { useFirebase, useUserData } from "../../../../context";
-import { StandingType } from "../../../../types/StandingType";
 
 import { useFirestoreMoralePoints } from "./FirestoreMoralePoints";
 
@@ -76,7 +77,7 @@ export const MoraleCup = () => {
 
   const handleSetTeamId = useCallback(
     (teamId: string) => {
-      const numericTeamId = parseInt(teamId, 10);
+      const numericTeamId = Number.parseInt(teamId, 10);
       if (isNaN(numericTeamId)) {
         alert("Invalid team ID");
       } else if (numericTeamId < 1 || numericTeamId > 24) {
@@ -232,11 +233,7 @@ export const MoraleCup = () => {
           size={40}
           color="gold"
           onPress={() => {
-            if (secretTaps.current === 1) {
-              secretTaps.current = 2;
-            } else {
-              secretTaps.current = 0;
-            }
+            secretTaps.current = secretTaps.current === 1 ? 2 : 0;
           }}
           suppressHighlighting
         />

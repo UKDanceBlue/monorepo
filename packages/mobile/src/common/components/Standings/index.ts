@@ -1,2 +1,4 @@
-import Standings from "./Standings";
-export default Standings;
+
+
+
+export {default} from "./Standings";

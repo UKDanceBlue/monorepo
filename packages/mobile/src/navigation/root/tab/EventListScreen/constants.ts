@@ -13,7 +13,9 @@ if (__DEV__ && LOADED_MONTHS % 2 === 0) {
  */
 export const LOADED_MONTHS_BEFORE_AFTER = Math.floor(LOADED_MONTHS / 2);
 if (__DEV__ && LOADED_MONTHS_BEFORE_AFTER < 1) {
-  throw new Error(`LOADED_MONTHS_BEFORE_AFTER must be at least 1, but is ${LOADED_MONTHS_BEFORE_AFTER}`);
+  throw new Error(
+    `LOADED_MONTHS_BEFORE_AFTER must be at least 1, but is ${LOADED_MONTHS_BEFORE_AFTER}`
+  );
 }
 
 export const RNCAL_DATE_FORMAT = "yyyy-MM-dd" as const;

@@ -1,4 +1,4 @@
-import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
+import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 
 import { useFirebase } from "../../../../context";
@@ -12,13 +12,13 @@ export interface MoraleTeamPoints {
 }
 
 export const useFirestoreMoralePoints = () => {
-  const [ loadingNames, setLoadingNames ] = useState(true);
-  const [ loadingPoints, setLoadingPoints ] = useState(true);
+  const [loadingNames, setLoadingNames] = useState(true);
+  const [loadingPoints, setLoadingPoints] = useState(true);
 
   const { fbFirestore } = useFirebase();
-  const [ teamNames, setTeamNames ] = useState<MoraleTeamNames | null>(null);
-  const [ teamPoints, setTeamPoints ] = useState<MoraleTeamPoints | null>(null);
-  const [ errorMessage, setErrorMessage ] = useState<string | null>(null);
+  const [teamNames, setTeamNames] = useState<MoraleTeamNames | null>(null);
+  const [teamPoints, setTeamPoints] = useState<MoraleTeamPoints | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleError = useCallback((error: unknown) => {
     console.error(error);
@@ -29,10 +29,11 @@ export const useFirestoreMoralePoints = () => {
     }
   }, []);
 
-
   useEffect(() => {
     const pointsDoc = fbFirestore.doc("marathon/2023/morale/points");
-    const handleSnapshot = (snapshot: FirebaseFirestoreTypes.DocumentSnapshot) => {
+    const handleSnapshot = (
+      snapshot: FirebaseFirestoreTypes.DocumentSnapshot
+    ) => {
       try {
         const data = snapshot.data();
         if (data) {
@@ -47,16 +48,21 @@ export const useFirestoreMoralePoints = () => {
       }
     };
 
-    pointsDoc.get().then(handleSnapshot).catch(handleError)
+    pointsDoc
+      .get()
+      .then(handleSnapshot)
+      .catch(handleError)
       .finally(() => setLoadingPoints(false));
     const unsubscribe = pointsDoc.onSnapshot(handleSnapshot, handleError);
 
     return unsubscribe;
-  }, [ fbFirestore, handleError ]);
+  }, [fbFirestore, handleError]);
 
   useEffect(() => {
     const teamNamesDoc = fbFirestore.doc("marathon/2023/morale/teams");
-    const handleSnapshot = (snapshot: FirebaseFirestoreTypes.DocumentSnapshot) => {
+    const handleSnapshot = (
+      snapshot: FirebaseFirestoreTypes.DocumentSnapshot
+    ) => {
       try {
         const data = snapshot.data();
         if (data) {
@@ -71,12 +77,20 @@ export const useFirestoreMoralePoints = () => {
       }
     };
 
-    teamNamesDoc.get().then(handleSnapshot).catch(handleError)
+    teamNamesDoc
+      .get()
+      .then(handleSnapshot)
+      .catch(handleError)
       .finally(() => setLoadingNames(false));
     const unsubscribe = teamNamesDoc.onSnapshot(handleSnapshot, handleError);
 
     return unsubscribe;
-  }, [ fbFirestore, handleError ]);
+  }, [fbFirestore, handleError]);
 
-  return { teamNames, teamPoints, errorMessage, loading: loadingNames || loadingPoints };
+  return {
+    teamNames,
+    teamPoints,
+    errorMessage,
+    loading: loadingNames || loadingPoints,
+  };
 };

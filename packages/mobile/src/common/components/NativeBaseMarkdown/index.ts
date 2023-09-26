@@ -1,2 +1,4 @@
-import NativeBaseMarkdown from "./NativeBaseMarkdown";
-export default NativeBaseMarkdown;
+
+
+
+export {default} from "./NativeBaseMarkdown";

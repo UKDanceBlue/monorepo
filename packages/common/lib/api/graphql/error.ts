@@ -21,7 +21,7 @@ export const ErrorCode = {
   GQLBadRequest: "BAD_REQUEST",
   GQLInternalServerError: "INTERNAL_SERVER_ERROR",
 } as const;
-export type ErrorCode = typeof ErrorCode[keyof typeof ErrorCode];
+export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
 
 export function isErrorCode(code: unknown): code is ErrorCode {
   return Object.values(ErrorCode).includes(code as ErrorCode);

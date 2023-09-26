@@ -6,7 +6,9 @@ export interface FirestoreDevice {
 }
 
 /** @deprecated Use types from @ukdanceblue/common instead */
-export function isFirestoreDevice(documentData?: object): documentData is FirestoreDevice {
+export function isFirestoreDevice(
+  documentData?: object
+): documentData is FirestoreDevice {
   // If documentData is nullish, return false
   if (documentData == null) {
     return false;

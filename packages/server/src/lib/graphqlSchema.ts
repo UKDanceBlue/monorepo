@@ -12,7 +12,7 @@ export default await buildSchema({
     EventResolver,
     ImageResolver,
     PersonResolver,
-    DeviceResolver
+    DeviceResolver,
   ],
-  emitSchemaFile: true
+  emitSchemaFile: true,
 });

@@ -1,2 +1,4 @@
-import TimeUnit from "./TimeUnit";
-export default TimeUnit;
+
+
+
+export {default} from "./TimeUnit";

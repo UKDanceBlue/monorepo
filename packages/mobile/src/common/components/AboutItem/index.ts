@@ -1,3 +1,5 @@
-import AboutItem from "./AboutItem";
 
-export default AboutItem;
+
+
+
+export {default} from "./AboutItem";

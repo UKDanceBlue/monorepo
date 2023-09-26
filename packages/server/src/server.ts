@@ -11,7 +11,6 @@ import { formatError } from "./lib/formatError.js";
 import graphqlSchema from "./lib/graphqlSchema.js";
 import { logDebug, logError, logInfo, logWarning } from "./logger.js";
 
-
 /**
  * Create the Koa, HTTP, and Apollo servers
  *

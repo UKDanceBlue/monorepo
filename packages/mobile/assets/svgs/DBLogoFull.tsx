@@ -1,17 +1,18 @@
 import { memo } from "react";
-import Svg, { Path, SvgProps } from "react-native-svg";
+import type { SvgProps } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 /* SVGR has dropped some elements not supported by react-native-svg: style */
 
 const DBLogoFull = ({
-  svgProps, letterColor, ribbonColor
-}: { svgProps?: SvgProps; letterColor?: string; ribbonColor?: string }) => (
-  <Svg
-    id="Layer_1"
-    x={0}
-    y={0}
-    viewBox="0 0 612 792"
-    {...svgProps}
-  >
+  svgProps,
+  letterColor,
+  ribbonColor,
+}: {
+  svgProps?: SvgProps;
+  letterColor?: string;
+  ribbonColor?: string;
+}) => (
+  <Svg id="Layer_1" x={0} y={0} viewBox="0 0 612 792" {...svgProps}>
     <Path
       // @ts-expect-error This works
       style={{ fill: ribbonColor ?? "#ffc628" }}

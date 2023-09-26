@@ -29,7 +29,7 @@ if (Platform.OS === "android") {
   global.setTimeout = (fn, time, ...args) => {
     if (MAX_TIMER_DURATION_MS < time) {
       const ttl = Date.now() + time;
-      const id = `_lt_${ Object.keys(timerFix).length}`;
+      const id = `_lt_${Object.keys(timerFix).length}`;
       runTask(id, fn, ttl, args);
       return id;
     }

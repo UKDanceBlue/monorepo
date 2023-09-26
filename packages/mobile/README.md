@@ -1,6 +1,7 @@
 [![Lint Codebase](https://github.com/UKDanceBlue/danceblue-react-app/actions/workflows/lint.yml/badge.svg)](https://github.com/UKDanceBlue/danceblue-react-app/actions/workflows/lint.yml)
 [![Test Codebase](https://github.com/UKDanceBlue/danceblue-react-app/actions/workflows/test.yml/badge.svg)](https://github.com/UKDanceBlue/danceblue-react-app/actions/workflows/test.yml)
 [![Expo Publish (preview)](https://github.com/UKDanceBlue/danceblue-react-app/actions/workflows/expo-publish.yml/badge.svg)](https://github.com/UKDanceBlue/danceblue-react-app/actions/workflows/expo-publish.yml)
+
 <div id="top"></div>
 
 <a href="https://expo.dev/%40university-of-kentucky-danceblue/danceblue-mobile?serviceType=classic&distribution=expo-dev-client&releaseChannel=preview&scheme=exp%2Bdanceblue-mobile">
@@ -56,14 +57,14 @@ year-round and culminates in a 24-hour no sitting, no sleeping dance marathon.
 The money raised through DanceBlue is donated to the Golden Matrix Fund,
 established to support the kids of the DanceBlue Kentucky Children’s Hospital
 Hematology/Oncology Clinic both today and well into the future through an
-endowment. DanceBlue funds also support the year-long fundraising engine
-and operations that underpin the mission, as well as providing funds to
-support research at the UK Markey Cancer Center. The Golden Matrix Fund
-was created to benefit the DanceBlue KCH Hematology/Oncology Clinic patients
-and families. Childhood cancer not only affects the child physically, but it
-also creates many emotional and financial difficulties for the entire family.
-The goal of the Golden Matrix Fund is to provide care and support for the kids
-through giving them and their parent’s comfort.
+endowment. DanceBlue funds also support the year-long fundraising engine and
+operations that underpin the mission, as well as providing funds to support
+research at the UK Markey Cancer Center. The Golden Matrix Fund was created to
+benefit the DanceBlue KCH Hematology/Oncology Clinic patients and families.
+Childhood cancer not only affects the child physically, but it also creates many
+emotional and financial difficulties for the entire family. The goal of the
+Golden Matrix Fund is to provide care and support for the kids through giving
+them and their parent’s comfort.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -82,19 +83,23 @@ through giving them and their parent’s comfort.
 
 To get a local copy up and running follow these simple steps.
 
-
 ### Getting up and running
 
 1. Run `yarn install` to install project dependencies, this will take some time
-2. Install the development build of the app on your phone (contact the app coordinator if you have an iPhone)
-3. Run `yarn start` (or ctrl+shift+b in VSCode) to start Expo's testing environment
+2. Install the development build of the app on your phone (contact the app
+   coordinator if you have an iPhone)
+3. Run `yarn start` (or ctrl+shift+b in VSCode) to start Expo's testing
+   environment
 4. Scan the QR code Expo generates with your phone's camera
-5. You should now be able to work on the code and hot reload the app on expo go as you work
-6. In VSCode you can also activate the "attach to packager" debug  configuration to interactively debug the app using VSCode's built-in debugger
+5. You should now be able to work on the code and hot reload the app on expo go
+   as you work
+6. In VSCode you can also activate the "attach to packager" debug configuration
+   to interactively debug the app using VSCode's built-in debugger
 
 ### Building
 
-See Expo's [guide](https://docs.expo.dev/distribution/introduction/) on "distributing your app"
+See Expo's [guide](https://docs.expo.dev/distribution/introduction/) on
+"distributing your app"
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -102,10 +107,13 @@ See Expo's [guide](https://docs.expo.dev/distribution/introduction/) on "distrib
 
 ## Contributing
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions are what make the open source community such an amazing place to
+learn, inspire, and create. Any contributions you make are **greatly
+appreciated**.
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+If you have a suggestion that would make this better, please fork the repo and
+create a pull request. You can also simply open an issue with the tag
+"enhancement". Don't forget to give the project a star! Thanks again!
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -113,16 +121,23 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-If you are interested in joining DanceBlue, send me a message (see my contact info)!
+If you are interested in joining DanceBlue, send me a message (see my contact
+info)!
 
 ### Some notes for contributors
 
 - Naming convention for files is:
-  - PascalCase for files that represent a single entity (i.e. a type or component) unless it is a plain function
-  - camelCase for files that represent a collection of entities (i.e. an index file, a collection of values, multiple unrelated exports) or a plain function
-  - Folders that are intended to be imported directly should match the case of their subject (i.e. PascalCase for a folder with a component)
+  - PascalCase for files that represent a single entity (i.e. a type or
+    component) unless it is a plain function
+  - camelCase for files that represent a collection of entities (i.e. an index
+    file, a collection of values, multiple unrelated exports) or a plain
+    function
+  - Folders that are intended to be imported directly should match the case of
+    their subject (i.e. PascalCase for a folder with a component)
   - kebab-case for other folders
-- ESlint has rules for most other cases, it is *highly* recommended to install the eslint plugin for your editor or keep `eslint --watch` running in the background
+- ESlint has rules for most other cases, it is _highly_ recommended to install
+  the eslint plugin for your editor or keep `eslint --watch` running in the
+  background
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -140,7 +155,8 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Tag Howard - app@danceblue.com
 
-Project Link: [https://github.com/UKDanceBlue/danceblue-react-app](https://github.com/UKDanceBlue/danceblue-react-app)
+Project Link:
+[https://github.com/UKDanceBlue/danceblue-react-app](https://github.com/UKDanceBlue/danceblue-react-app)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

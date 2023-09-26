@@ -2,9 +2,9 @@ import firebaseFirestore from "@react-native-firebase/firestore";
 import { Box, ScrollView, Text, View } from "native-base";
 import { useEffect, useState } from "react";
 
+import type { LegacyFirestoreSponsor } from "../../../../types/FirestoreSponsor";
 import SponsorCard from "../@ukdanceblue/common/components/ImageCard";
 import { universalCatch } from "../@ukdanceblue/common/logging";
-import { LegacyFirestoreSponsor } from "../../../../types/FirestoreSponsor";
 
 /**
  * A horizontally scrolling carousel of SponsorCards
@@ -17,9 +17,9 @@ const SponsorCarousel = () => {
     async function getSnapshot() {
       const dbSponsors: LegacyFirestoreSponsor[] = [];
       const snapshot = await firebaseFirestore().collection("sponsors").get();
-      snapshot.forEach((document) => {
+      for (const document of snapshot) {
         dbSponsors.push(document.data());
-      });
+      }
       if (shouldUpdateState) {
         setSponsors(dbSponsors);
       }

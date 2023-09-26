@@ -36,10 +36,8 @@ export function isSingularOkApiResponse(
     "ok" in response &&
     response.ok === true &&
     ("data" in response
-      ? (
-        (isPrimitive(response.data) || isPrimitiveObject(response.data)) &&
+      ? (isPrimitive(response.data) || isPrimitiveObject(response.data)) &&
         !Array.isArray(response.data)
-      )
       : true)
   );
 }
@@ -320,6 +318,8 @@ export type ApiResponse<DataType> =
   | PaginatedApiResponse<DataType>
   | ErrorApiResponse;
 
-export function isApiResponse(response: unknown): response is ApiResponse<unknown> {
+export function isApiResponse(
+  response: unknown
+): response is ApiResponse<unknown> {
   return isOkApiResponse(response) || isErrorApiResponse(response);
 }

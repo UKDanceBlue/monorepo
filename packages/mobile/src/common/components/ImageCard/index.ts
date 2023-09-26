@@ -1,2 +1,4 @@
-import ImageCard from "./ImageCard";
-export default ImageCard;
+
+
+
+export {default} from "./ImageCard";

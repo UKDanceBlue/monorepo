@@ -1,23 +1,25 @@
 "use client";
 import "client-only";
 
-import {
-  applyValidation,
-  applyValidations,
-  useJsonFormSubmission,
-} from "@/lib/formTools";
+import type {
+  CreateEventBody} from "@ukdanceblue/common";
 import {
   ApiClient,
-  CreateEventBody,
   EventResource,
   PlainEvent,
   formDataToJson,
   stripNullish,
 } from "@ukdanceblue/common";
 import Joi from "joi";
+import { DateTime, Duration } from "luxon";
 import { useEffect, useState } from "react";
-import { Duration, DateTime } from "luxon";
+
 import dbApiClient from "@/lib/apiClient";
+import {
+  applyValidation,
+  applyValidations,
+  useJsonFormSubmission,
+} from "@/lib/formTools";
 
 export default function CreateEvent() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -52,7 +54,7 @@ export default function CreateEvent() {
       description: castData.description,
       location: castData.location,
       duration: castData.duration
-        ? Duration.fromObject({ minutes: parseInt(castData.duration) })
+        ? Duration.fromObject({ minutes: Number.parseInt(castData.duration) })
             .normalize()
             .rescale()
             .toISO()
@@ -63,9 +65,8 @@ export default function CreateEvent() {
     try {
       const res = await dbApiClient.eventApi.createEvent(plainEvent);
       console.log(JSON.stringify(res, null, 2));
-    } catch (e) {
-      if (e instanceof Error) error = e;
-      else error = new Error("Unknown error");
+    } catch (error_) {
+      error = error_ instanceof Error ? error_ : new Error("Unknown error");
     }
 
     if (error) {

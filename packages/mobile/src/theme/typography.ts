@@ -1,4 +1,4 @@
-import { Theme } from "native-base";
+import type { Theme } from "native-base";
 
 export const letterSpacings: Partial<Theme["letterSpacings"]> = {
   "xs": "-0.05em",
@@ -116,7 +116,7 @@ export const fonts = {
   headingBold: "bodoni-flf-bold",
   heading: "bodoni-flf-roman",
   body: "opensans-condensed-bold",
-  mono: "opensans-condensed-light"
+  mono: "opensans-condensed-light",
 } as const;
 
 export const fontSizes: Partial<Theme["fontSizes"]> = {
@@ -160,7 +160,7 @@ export const shadows: Partial<Theme["shadows"]> = {
       height: 1,
     },
     shadowOpacity: 0.18,
-    shadowRadius: 1.0,
+    shadowRadius: 1,
     elevation: 1,
   },
   1: {

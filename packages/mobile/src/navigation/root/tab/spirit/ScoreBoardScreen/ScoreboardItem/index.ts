@@ -1,3 +1,5 @@
-import ScoreboardItem from "./ScoreboardItem";
 
-export default ScoreboardItem;
+
+
+
+export {default} from "./ScoreboardItem";

@@ -1,7 +1,7 @@
+import { universalCatch } from "@ukdanceblue/common/logging";
 import { Text } from "native-base";
 import { Linking, useWindowDimensions } from "react-native";
 
-import { universalCatch } from "@ukdanceblue/common/logging";
 
 export function DBHeaderText() {
   const { width, fontScale } = useWindowDimensions();

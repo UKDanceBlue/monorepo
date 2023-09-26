@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
 import Image from "next/image";
+
 import dbWatermark from "../../public/db-watermark.svg";
 
 const inter = Inter({ subsets: ["latin"] });

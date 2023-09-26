@@ -49,9 +49,15 @@ export abstract class IntermediateClass<
     this.importantPropertyNames = importantPropertyNames;
   }
 
-  public hasCoreProperties(this: SubClass, verbose?: false): this is CoreRequired<SubClass>;
+  public hasCoreProperties(
+    this: SubClass,
+    verbose?: false
+  ): this is CoreRequired<SubClass>;
   public hasCoreProperties(this: SubClass, verbose: true): string[];
-  public hasCoreProperties(this: SubClass, verbose = false): string[] | boolean {
+  public hasCoreProperties(
+    this: SubClass,
+    verbose = false
+  ): string[] | boolean {
     const errors: string[] = [];
 
     for (const propertyName of this.corePropertyNames) {
@@ -59,18 +65,22 @@ export abstract class IntermediateClass<
         (this as Record<typeof propertyName, unknown>)[propertyName] ===
         undefined
       ) {
-        errors.push(
-          String(propertyName)
-        );
+        errors.push(String(propertyName));
       }
     }
 
     return verbose ? errors : errors.length === 0;
   }
 
-  public hasImportantProperties(this: SubClass, verbose?: false): this is ImportantRequired<SubClass>;
+  public hasImportantProperties(
+    this: SubClass,
+    verbose?: false
+  ): this is ImportantRequired<SubClass>;
   public hasImportantProperties(this: SubClass, verbose?: true): string[];
-  public hasImportantProperties(this: SubClass, verbose = false): string[] | boolean {
+  public hasImportantProperties(
+    this: SubClass,
+    verbose = false
+  ): string[] | boolean {
     const errors: string[] = [];
 
     for (const propertyName of this.importantPropertyNames) {
@@ -78,9 +88,7 @@ export abstract class IntermediateClass<
         (this as Record<typeof propertyName, unknown>)[propertyName] ===
         undefined
       ) {
-        errors.push(
-          String(propertyName)
-        );
+        errors.push(String(propertyName));
       }
     }
 

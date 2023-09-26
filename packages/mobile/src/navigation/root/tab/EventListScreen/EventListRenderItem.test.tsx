@@ -18,13 +18,13 @@ describe("<EventListRenderItem />", () => {
     />
   );
 
-  it("calls tryToNavigate when pressed", () => {
+  test("calls tryToNavigate when pressed", () => {
     expect(tree.queryByTestId("event-list-row-0-touchable")).not.toBeNull();
     fireEvent.press(tree.queryByTestId("event-list-row-0-touchable"));
     expect(tryToNavigate).toHaveBeenCalledWith(testEvent);
   });
 
-  it("renders correctly", () => {
+  test("renders correctly", () => {
     expect(tree).toMatchSnapshot();
   });
 });

@@ -17,7 +17,10 @@ export abstract class Resource {
     throw new Error(`Method not implemented by subclass.`);
   }
 
-  protected static doInit<R extends object>(this: Class<R>, init: Partial<R>): R {
+  protected static doInit<R extends object>(
+    this: Class<R>,
+    init: Partial<R>
+  ): R {
     const instance = new this();
     Object.assign(instance, init);
     return instance;

@@ -18,7 +18,9 @@ export const UrlScalar = new GraphQLScalarType({
     } else if (value instanceof URL) {
       return value.toString();
     } else {
-      throw new TypeError("URLScalar can only serialize strings or URL objects");
+      throw new TypeError(
+        "URLScalar can only serialize strings or URL objects"
+      );
     }
   },
   parseLiteral(ast): URL {
@@ -27,5 +29,5 @@ export const UrlScalar = new GraphQLScalarType({
     } else {
       throw new TypeError("URLScalar can only parse literal string values");
     }
-  }
-})
+  },
+});

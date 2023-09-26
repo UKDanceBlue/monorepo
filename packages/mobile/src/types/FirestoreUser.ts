@@ -1,5 +1,5 @@
-import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import { FirestoreNotification } from "@ukdanceblue/common";
+import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
+import type { FirestoreNotification } from "@ukdanceblue/common";
 
 import { isDocumentReference } from "./firebaseTypes";
 
@@ -11,11 +11,15 @@ export interface FirestoreUser {
   lastName: string;
   linkblue?: string | null;
   team?: FirebaseFirestoreTypes.DocumentReference | null;
-  notificationReferences?: FirebaseFirestoreTypes.DocumentReference<FirestoreNotification>[] | null;
+  notificationReferences?:
+    | FirebaseFirestoreTypes.DocumentReference<FirestoreNotification>[]
+    | null;
 }
 
 /** @deprecated Use types from @ukdanceblue/common instead */
-export function isFirestoreUser(documentData?: FirebaseFirestoreTypes.DocumentData): documentData is FirestoreUser {
+export function isFirestoreUser(
+  documentData?: FirebaseFirestoreTypes.DocumentData
+): documentData is FirestoreUser {
   if (documentData == null) {
     return false;
   }
@@ -47,11 +51,18 @@ export function isFirestoreUser(documentData?: FirebaseFirestoreTypes.DocumentDa
     return false;
   }
 
-  if (documentData.linkblue != null && typeof documentData.linkblue !== "string") {
+  if (
+    documentData.linkblue != null &&
+    typeof documentData.linkblue !== "string"
+  ) {
     return false;
   }
-  if (documentData.team != null && !(isDocumentReference(documentData.team))) {
+  if (documentData.team != null && !isDocumentReference(documentData.team)) {
     return false;
   }
-  return !(documentData.pastNotifications != null && (!Array.isArray(documentData.pastNotifications) || documentData.pastNotifications.some((x) => !(isDocumentReference(x)))));
+  return !(
+    documentData.pastNotifications != null &&
+    (!Array.isArray(documentData.pastNotifications) ||
+      documentData.pastNotifications.some((x) => !isDocumentReference(x)))
+  );
 }

@@ -1,11 +1,19 @@
-import { ASTNode, RenderRules, hasParents, renderRules } from "@jonasmerlin/react-native-markdown-display";
+import type {
+  ASTNode,
+  RenderRules} from "@jonasmerlin/react-native-markdown-display";
+import {
+  hasParents,
+  renderRules,
+} from "@jonasmerlin/react-native-markdown-display";
 // @ts-expect-error - this is a private type
 import { openUrl } from "@jonasmerlin/react-native-markdown-display/src/lib/util/openUrl";
 import { Platform } from "expo-modules-core";
 import { Box, Divider, Heading, Link, Row, Text, VStack } from "native-base";
 import React, { useEffect, useState } from "react";
-import { FlexAlignType, StyleSheet, TextStyle } from "react-native";
-import FitImage, { IFitImageProps } from "react-native-fit-image";
+import type { FlexAlignType, TextStyle } from "react-native";
+import { StyleSheet } from "react-native";
+import type { IFitImageProps } from "react-native-fit-image";
+import FitImage from "react-native-fit-image";
 
 import { useFirebase } from "../context";
 
@@ -18,12 +26,22 @@ export interface MarkdownRuleStyle {
   height: number;
   fontWeight: "bold" | "normal";
   fontStyle: "italic" | "normal";
-  textDecorationLine: "none" | "underline" | "line-through" | "underline line-through";
+  textDecorationLine:
+    | "none"
+    | "underline"
+    | "line-through"
+    | "underline line-through";
   borderColor: string;
   borderLeftWidth: number;
   marginLeft: number;
   paddingHorizontal: number;
-  justifyContent: "center" | "flex-start" | "flex-end" | "space-between" | "space-around" | "space-evenly";
+  justifyContent:
+    | "center"
+    | "flex-start"
+    | "flex-end"
+    | "space-between"
+    | "space-around"
+    | "space-evenly";
   marginRight: number;
   flex: number;
   borderWidth: number;
@@ -61,82 +79,142 @@ const mardownTextStyleKeys: (keyof Partial<TextStyle>)[] = [
 ];
 
 const styleRuleKeys = [
-  "body", "heading1", "heading2", "heading3", "heading4", "heading5", "heading6", "hr", "strong", "em", "s", "blockquote", "bullet_list", "ordered_list", "list_item", "bullet_list_icon", "bullet_list_content", "ordered_list_icon", "ordered_list_content", "code_inline", "code_block", "fence", "table", "thead", "tbody", "th", "tr", "td", "link", "blocklink", "image", "text", "textgroup", "paragraph", "hardbreak", "softbreak", "pre", "inline", "span"
+  "body",
+  "heading1",
+  "heading2",
+  "heading3",
+  "heading4",
+  "heading5",
+  "heading6",
+  "hr",
+  "strong",
+  "em",
+  "s",
+  "blockquote",
+  "bullet_list",
+  "ordered_list",
+  "list_item",
+  "bullet_list_icon",
+  "bullet_list_content",
+  "ordered_list_icon",
+  "ordered_list_content",
+  "code_inline",
+  "code_block",
+  "fence",
+  "table",
+  "thead",
+  "tbody",
+  "th",
+  "tr",
+  "td",
+  "link",
+  "blocklink",
+  "image",
+  "text",
+  "textgroup",
+  "paragraph",
+  "hardbreak",
+  "softbreak",
+  "pre",
+  "inline",
+  "span",
 ] as const;
-export type StyleRuleKeysType = typeof styleRuleKeys[number] | `_VIEW_SAFE_${typeof styleRuleKeys[number]}`;
+export type StyleRuleKeysType =
+  | (typeof styleRuleKeys)[number]
+  | `_VIEW_SAFE_${(typeof styleRuleKeys)[number]}`;
 
-type MarkdownRuleStyles = Partial<Record<StyleRuleKeysType, Partial<MarkdownRuleStyle>>>;
+type MarkdownRuleStyles = Partial<
+  Record<StyleRuleKeysType, Partial<MarkdownRuleStyle>>
+>;
 
 const CustomImageRenderer = ({
   node,
   styles,
   allowedImageHandlers,
-  defaultImageHandler
+  defaultImageHandler,
 }: {
   node: ASTNode;
   styles: MarkdownRuleStyles;
-    allowedImageHandlers: string[];
-    defaultImageHandler: string | null | undefined;
-   }) => {
+  allowedImageHandlers: string[];
+  defaultImageHandler: string | null | undefined;
+}) => {
   const src = node.attributes.src ? String(node.attributes.src) : undefined;
   const alt = node.attributes.alt ? String(node.attributes.alt) : undefined;
-  const title = node.attributes.title ? String(node.attributes.title) : undefined;
+  const title = node.attributes.title
+    ? String(node.attributes.title)
+    : undefined;
 
-  const [ imageProps, setImageProps ] = useState<IFitImageProps & { key?: React.Key } | null>(null);
+  const [imageProps, setImageProps] = useState<
+    (IFitImageProps & { key?: React.Key }) | null
+  >(null);
   const { fbStorage } = useFirebase();
 
   useEffect(() => {
     // we check that the source starts with at least one of the elements in allowedImageHandlers
-    const show = allowedImageHandlers.filter((value) => {
-      return src?.toLowerCase().startsWith(value.toLowerCase());
-    }).length > 0;
+    const show =
+      allowedImageHandlers.some((value) => {
+        return src?.toLowerCase().startsWith(value.toLowerCase());
+      });
 
     if (!show) {
       if (defaultImageHandler == null) {
         return;
       } else if (src?.startsWith("gs://")) {
-        fbStorage.refFromURL(src)
+        fbStorage
+          .refFromURL(src)
           .getDownloadURL()
-          .then((downloadUrl) => setImageProps({
-            style: styles._VIEW_SAFE_image,
-            accessibilityLabel: alt ?? title,
-            source: { uri: downloadUrl }
-          }))
+          .then((downloadUrl) =>
+            setImageProps({
+              style: styles._VIEW_SAFE_image,
+              accessibilityLabel: alt ?? title,
+              source: { uri: downloadUrl },
+            })
+          )
           .catch(universalCatch);
       } else {
         let srcWithoutProtocol = src ?? "";
         if (srcWithoutProtocol.includes("://")) {
-          srcWithoutProtocol = srcWithoutProtocol.substring(srcWithoutProtocol.indexOf("://") + 3);
-        }setImageProps({
+          srcWithoutProtocol = srcWithoutProtocol.substring(
+            srcWithoutProtocol.indexOf("://") + 3
+          );
+        }
+        setImageProps({
           style: styles._VIEW_SAFE_image,
           accessibilityLabel: alt ?? title,
-          source: { uri: `${defaultImageHandler}${srcWithoutProtocol}` }
+          source: { uri: `${defaultImageHandler}${srcWithoutProtocol}` },
         });
       }
     } else {
       setImageProps({
         style: styles._VIEW_SAFE_image,
         accessibilityLabel: alt ?? title,
-        source: { uri: src }
+        source: { uri: src },
       });
     }
   }, [
-    allowedImageHandlers, alt, defaultImageHandler, fbStorage, src, styles._VIEW_SAFE_image, title
+    allowedImageHandlers,
+    alt,
+    defaultImageHandler,
+    fbStorage,
+    src,
+    styles._VIEW_SAFE_image,
+    title,
   ]);
 
   if (imageProps == null) {
     return null;
   } else {
-    return (<FitImage
-      {...imageProps}
-      {...(
-        (alt ?? title)
+    return (
+      <FitImage
+        {...imageProps}
+        {...(alt ?? title
           ? {
-            accessible: true,
-            accessibilityLabel: alt ?? title
-          }
-          : {}
-      )} />);
+              accessible: true,
+              accessibilityLabel: alt ?? title,
+            }
+          : {})}
+      />
+    );
   }
 };
 
@@ -154,90 +232,58 @@ export const rules: RenderRules = {
 
   // Headings
   heading1: (node, children, parent, styles: MarkdownRuleStyles) => (
-    <Heading
-      size="2xl"
-      key={node.key}
-      style={styles.heading1}
-      selectable>
+    <Heading size="2xl" key={node.key} style={styles.heading1} selectable>
       {children}
     </Heading>
   ),
   heading2: (node, children, parent, styles: MarkdownRuleStyles) => (
-    <Heading
-      size="xl"
-      key={node.key}
-      style={styles.heading2}
-      selectable>
+    <Heading size="xl" key={node.key} style={styles.heading2} selectable>
       {children}
     </Heading>
   ),
   heading3: (node, children, parent, styles: MarkdownRuleStyles) => (
-    <Heading
-      size="lg"
-      key={node.key}
-      style={styles.heading3}
-      selectable>
+    <Heading size="lg" key={node.key} style={styles.heading3} selectable>
       {children}
     </Heading>
   ),
   heading4: (node, children, parent, styles: MarkdownRuleStyles) => (
-    <Heading
-      size="md"
-      key={node.key}
-      style={styles.heading4}
-      selectable>
+    <Heading size="md" key={node.key} style={styles.heading4} selectable>
       {children}
     </Heading>
   ),
   heading5: (node, children, parent, styles: MarkdownRuleStyles) => (
-    <Heading
-      size="sm"
-      key={node.key}
-      style={styles.heading5}
-      selectable>
+    <Heading size="sm" key={node.key} style={styles.heading5} selectable>
       {children}
     </Heading>
   ),
   heading6: (node, children, parent, styles: MarkdownRuleStyles) => (
-    <Heading
-      size="xs"
-      key={node.key}
-      style={styles.heading6}
-      selectable>
+    <Heading size="xs" key={node.key} style={styles.heading6} selectable>
       {children}
     </Heading>
   ),
 
   // Horizontal Rule
   hr: (node, children, parent, styles: MarkdownRuleStyles) => (
-    <Divider key={node.key} style={styles._VIEW_SAFE_hr} thickness={styles._VIEW_SAFE_hr?.height} />
+    <Divider
+      key={node.key}
+      style={styles._VIEW_SAFE_hr}
+      thickness={styles._VIEW_SAFE_hr?.height}
+    />
   ),
 
   // Emphasis
   strong: (node, children, parent, styles: MarkdownRuleStyles) => (
-    <Text
-      bold
-      key={node.key}
-      style={styles.strong}
-      selectable>
+    <Text bold key={node.key} style={styles.strong} selectable>
       {children}
     </Text>
   ),
   em: (node, children, parent, styles: MarkdownRuleStyles) => (
-    <Text
-      italic
-      key={node.key}
-      style={styles.em}
-      selectable>
+    <Text italic key={node.key} style={styles.em} selectable>
       {children}
     </Text>
   ),
   s: (node, children, parent, styles: MarkdownRuleStyles) => (
-    <Text
-      strikeThrough
-      key={node.key}
-      style={styles.s}
-      selectable>
+    <Text strikeThrough key={node.key} style={styles.s} selectable>
       {children}
     </Text>
   ),
@@ -264,7 +310,13 @@ export const rules: RenderRules = {
   // child items that can be styled (the list icon and the list content)
   // outside of the AST tree so there are some work arounds in the
   // AST renderer specifically to get the styling right here
-  list_item: (node, children, parent, styles: MarkdownRuleStyles, inheritedStyles: Partial<MarkdownRuleStyles> = {}) => {
+  list_item: (
+    node,
+    children,
+    parent,
+    styles: MarkdownRuleStyles,
+    inheritedStyles: Partial<MarkdownRuleStyles> = {}
+  ) => {
     // we need to grab any text specific stuff here that is applied on the list_item style
     // and apply it onto bullet_list_icon. the AST renderer has some workaround code to make
     // the content classes apply correctly to the child AST tree items as well
@@ -274,7 +326,9 @@ export const rules: RenderRules = {
       ...StyleSheet.flatten(styles.list_item),
     };
 
-    const arr: (keyof MarkdownRuleStyle)[] = Object.keys(refStyle) as (keyof MarkdownRuleStyle)[];
+    const arr: (keyof MarkdownRuleStyle)[] = Object.keys(
+      refStyle
+    ) as (keyof MarkdownRuleStyle)[];
 
     const modifiedInheritedStylesObj: TextStyle = {};
 
@@ -289,9 +343,10 @@ export const rules: RenderRules = {
       return (
         <Box key={node.key} style={styles._VIEW_SAFE_list_item}>
           <Text
-            style={[ modifiedInheritedStylesObj, styles.bullet_list_icon ]}
+            style={[modifiedInheritedStylesObj, styles.bullet_list_icon]}
             accessible={false}
-            selectable>
+            selectable
+          >
             {Platform.select({
               android: "\u2022",
               ios: "\u00B7",
@@ -311,8 +366,11 @@ export const rules: RenderRules = {
       const orderedList = parent[orderedListIndex];
       let listItemNumber;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if ((orderedList.attributes as undefined | Record<string, any | undefined>)?.start) {
+       
+      if (
+        (orderedList.attributes as undefined | Record<string, any | undefined>)
+          ?.start
+      ) {
         listItemNumber = Number(orderedList.attributes.start) + node.index;
       } else {
         listItemNumber = node.index + 1;
@@ -320,7 +378,10 @@ export const rules: RenderRules = {
 
       return (
         <Box key={node.key} style={styles._VIEW_SAFE_list_item}>
-          <Text style={[ modifiedInheritedStylesObj, styles.ordered_list_icon ]} selectable>
+          <Text
+            style={[modifiedInheritedStylesObj, styles.ordered_list_icon]}
+            selectable
+          >
             {listItemNumber}
             {node.markup}
           </Text>
@@ -338,41 +399,61 @@ export const rules: RenderRules = {
   },
 
   // Code
-  code_inline: (node, children, parent, styles: MarkdownRuleStyles, inheritedStyles = {}) => (
-    <Text key={node.key} style={[ inheritedStyles, styles.code_block ]} selectable>
+  code_inline: (
+    node,
+    children,
+    parent,
+    styles: MarkdownRuleStyles,
+    inheritedStyles = {}
+  ) => (
+    <Text
+      key={node.key}
+      style={[inheritedStyles, styles.code_block]}
+      selectable
+    >
       {children}
     </Text>
   ),
-  code_block: (node, children, parent, styles: MarkdownRuleStyles, inheritedStyles = {}) => {
+  code_block: (
+    node,
+    children,
+    parent,
+    styles: MarkdownRuleStyles,
+    inheritedStyles = {}
+  ) => {
     // we trim new lines off the end of code blocks because the parser sends an extra one.
     let { content } = node;
 
-    if (
-      typeof node.content === "string" &&
-      node.content.endsWith("\n")
-    ) {
+    if (typeof node.content === "string" && node.content.endsWith("\n")) {
       content = node.content.substring(0, node.content.length - 1);
     }
 
     return (
-      <Text key={node.key} style={[ inheritedStyles, styles.code_block ]} selectable>
+      <Text
+        key={node.key}
+        style={[inheritedStyles, styles.code_block]}
+        selectable
+      >
         {content}
       </Text>
     );
   },
-  fence: (node, children, parent, styles: MarkdownRuleStyles, inheritedStyles = {}) => {
+  fence: (
+    node,
+    children,
+    parent,
+    styles: MarkdownRuleStyles,
+    inheritedStyles = {}
+  ) => {
     // we trim new lines off the end of code blocks because the parser sends an extra one.
     let { content } = node;
 
-    if (
-      typeof node.content === "string" &&
-      node.content.endsWith("\n")
-    ) {
+    if (typeof node.content === "string" && node.content.endsWith("\n")) {
       content = node.content.substring(0, node.content.length - 1);
     }
 
     return (
-      <Text key={node.key} style={[ inheritedStyles, styles.fence ]} selectable>
+      <Text key={node.key} style={[inheritedStyles, styles.fence]} selectable>
         {content}
       </Text>
     );
@@ -401,14 +482,19 @@ export const rules: RenderRules = {
   ),
   tr: (node, children, parent, styles: MarkdownRuleStyles) => {
     const siblings = parent[0]?.children ?? [];
-    if (siblings.length < 1) {
+    if (siblings.length === 0) {
       // Should never happen, but just in case.
       // This would only occur if the node had no siblings including itself (not logical)
       return null;
     } else {
-      const styleForRow = siblings[siblings.length-1]?.index === node.index
-        ? { ...styles._VIEW_SAFE_tr, borderBottomWidth: undefined, borderColor: undefined }
-        : styles._VIEW_SAFE_tr;
+      const styleForRow =
+        siblings[siblings.length - 1]?.index === node.index
+          ? {
+              ...styles._VIEW_SAFE_tr,
+              borderBottomWidth: undefined,
+              borderColor: undefined,
+            }
+          : styles._VIEW_SAFE_tr;
 
       return (
         <Row key={node.key} style={styleForRow}>
@@ -428,26 +514,43 @@ export const rules: RenderRules = {
     <Link
       key={node.key}
       style={styles._VIEW_SAFE_link}
-      href={String(node.attributes.href)}>
-      <Text
-        color={"blue.600"}>
-        {children}
-      </Text>
+      href={String(node.attributes.href)}
+    >
+      <Text color={"blue.600"}>{children}</Text>
     </Link>
   ),
-  blocklink: (node, children, parent, styles: MarkdownRuleStyles, onLinkPress) => (
+  blocklink: (
+    node,
+    children,
+    parent,
+    styles: MarkdownRuleStyles,
+    onLinkPress
+  ) => (
     <Link
       key={node.key}
-      onPress={() => (openUrl as (url:string, callback?: (url: string) => boolean) => undefined)(String(node.attributes.href), onLinkPress)}
-      style={styles._VIEW_SAFE_blocklink}>
+      onPress={() =>
+        (
+          openUrl as (
+            url: string,
+            callback?: (url: string) => boolean
+          ) => undefined
+        )(String(node.attributes.href), onLinkPress)
+      }
+      style={styles._VIEW_SAFE_blocklink}
+    >
       <Box style={styles.image}>{children}</Box>
     </Link>
   ),
 
   // Images
-  image: (node, children, parent, styles: MarkdownRuleStyles,
+  image: (
+    node,
+    children,
+    parent,
+    styles: MarkdownRuleStyles,
     allowedImageHandlers,
-    defaultImageHandler: string | null | undefined) => (
+    defaultImageHandler: string | null | undefined
+  ) => (
     <CustomImageRenderer
       key={node.key}
       node={node}
@@ -458,8 +561,14 @@ export const rules: RenderRules = {
   ),
 
   // Text Output
-  text: (node, children, parent, styles: MarkdownRuleStyles, inheritedStyles = {}) => (
-    <Text key={node.key} style={[ inheritedStyles, styles.text ]} selectable>
+  text: (
+    node,
+    children,
+    parent,
+    styles: MarkdownRuleStyles,
+    inheritedStyles = {}
+  ) => (
+    <Text key={node.key} style={[inheritedStyles, styles.text]} selectable>
       {node.content}
     </Text>
   ),
@@ -501,15 +610,9 @@ export const rules: RenderRules = {
     </Text>
   ),
 
-  html_inline: ({
-    content, key
-  }: { content: string; key: React.Key }) => {
+  html_inline: ({ content, key }: { content: string; key: React.Key }) => {
     if (content === "<br>" || content === "<br/>" || content === "<br />") {
-      return (
-        <Text key={key}>
-          {"\n"}
-        </Text>
-      );
+      return <Text key={key}>{"\n"}</Text>;
     }
     return null;
   },

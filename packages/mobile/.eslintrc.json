@@ -5,10 +5,7 @@
     "es2021": true,
     "react-native/react-native": true
   },
-  "plugins": [
-    "jsdoc",
-    "react-native"
-  ],
+  "plugins": ["jsdoc", "react-native"],
   "extends": [
     "eslint:recommended",
     "plugin:import/recommended",
@@ -20,12 +17,8 @@
   "overrides": [
     // Eslint rules
     {
-      "files": [
-        "**/*.ts*"
-      ],
-      "plugins": [
-        "@typescript-eslint"
-      ],
+      "files": ["**/*.ts*"],
+      "plugins": ["@typescript-eslint"],
       "extends": [
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
@@ -36,14 +29,8 @@
         "@typescript-eslint/consistent-indexed-object-style": "off",
         "@typescript-eslint/require-await": "error",
         "@typescript-eslint/return-await": "error",
-        "@typescript-eslint/quotes": [
-          "error",
-          "double"
-        ],
-        "@typescript-eslint/semi": [
-          "error",
-          "always"
-        ],
+        "@typescript-eslint/quotes": ["error", "double"],
+        "@typescript-eslint/semi": ["error", "always"],
         "@typescript-eslint/member-delimiter-style": "error",
         "@typescript-eslint/brace-style": [
           "error",
@@ -60,10 +47,7 @@
             "exceptAfterSingleLine": true
           }
         ],
-        "@typescript-eslint/object-curly-spacing": [
-          "error",
-          "always"
-        ],
+        "@typescript-eslint/object-curly-spacing": ["error", "always"],
         "@typescript-eslint/space-before-function-paren": [
           "error",
           {
@@ -93,16 +77,9 @@
       }
     },
     {
-      "files": [
-        "**/*.test.*"
-      ],
-      "plugins": [
-        "jest"
-      ],
-      "extends": [
-        "plugin:jest/recommended",
-        "plugin:jest/style"
-      ],
+      "files": ["**/*.test.*"],
+      "plugins": ["jest"],
+      "extends": ["plugin:jest/recommended", "plugin:jest/style"],
       "rules": {
         "jest/prefer-todo": "warn",
         "jest/consistent-test-it": "error",
@@ -114,10 +91,7 @@
   "rules": {
     // Possible Errors
     "no-undef": "off",
-    "spaced-comment": [
-      "error",
-      "always"
-    ],
+    "spaced-comment": ["error", "always"],
     "radix": "error",
     "yoda": "error",
     "prefer-template": "warn",
@@ -126,18 +100,13 @@
     "no-console": [
       "warn",
       {
-        "allow": [
-          "warn",
-          "error"
-        ]
+        "allow": ["warn", "error"]
       }
     ],
     "no-implicit-coercion": [
       "error",
       {
-        "allow": [
-          "!!"
-        ]
+        "allow": ["!!"]
       }
     ],
     "no-implicit-globals": "error",
@@ -174,16 +143,10 @@
     "no-self-compare": "error",
     "require-atomic-updates": "error",
     "class-methods-use-this": "error",
-    "eqeqeq": [
-      "error",
-      "smart"
-    ],
+    "eqeqeq": ["error", "smart"],
     // Style
     "react/jsx-wrap-multilines": "warn",
-    "react/jsx-first-prop-new-line": [
-      1,
-      "multiline-multiprop"
-    ],
+    "react/jsx-first-prop-new-line": [1, "multiline-multiprop"],
     "react/jsx-max-props-per-line": [
       1,
       {
@@ -193,10 +156,7 @@
         }
       }
     ],
-    "arrow-parens": [
-      "error",
-      "always"
-    ],
+    "arrow-parens": ["error", "always"],
     "no-multi-spaces": "error",
     "newline-per-chained-call": [
       "error",
@@ -239,14 +199,8 @@
         }
       }
     ],
-    "padded-blocks": [
-      "error",
-      "never"
-    ],
-    "rest-spread-spacing": [
-      "error",
-      "never"
-    ],
+    "padded-blocks": ["error", "never"],
+    "rest-spread-spacing": ["error", "never"],
     "semi-spacing": [
       "error",
       {
@@ -254,10 +208,7 @@
         "after": true
       }
     ],
-    "unicode-bom": [
-      "error",
-      "never"
-    ],
+    "unicode-bom": ["error", "never"],
     "array-bracket-newline": [
       "error",
       {
@@ -288,34 +239,13 @@
         "after": true
       }
     ],
-    "comma-style": [
-      "error",
-      "last"
-    ],
-    "dot-location": [
-      "error",
-      "property"
-    ],
-    "eol-last": [
-      "error",
-      "always"
-    ],
-    "jsx-quotes": [
-      "error",
-      "prefer-double"
-    ],
-    "function-call-argument-newline": [
-      "error",
-      "consistent"
-    ],
-    "indent": [
-      "error",
-      2
-    ],
-    "implicit-arrow-linebreak": [
-      "error",
-      "beside"
-    ],
+    "comma-style": ["error", "last"],
+    "dot-location": ["error", "property"],
+    "eol-last": ["error", "always"],
+    "jsx-quotes": ["error", "prefer-double"],
+    "function-call-argument-newline": ["error", "consistent"],
+    "indent": ["error", 2],
+    "implicit-arrow-linebreak": ["error", "beside"],
     "key-spacing": [
       "error",
       {
@@ -337,13 +267,7 @@
     "import/order": [
       "error",
       {
-        "groups": [
-          "builtin",
-          "external",
-          "parent",
-          "sibling",
-          "index"
-        ],
+        "groups": ["builtin", "external", "parent", "sibling", "index"],
         "pathGroups": [
           {
             "pattern": "@custom-lib/**",
@@ -351,9 +275,7 @@
             "position": "after"
           }
         ],
-        "pathGroupsExcludedImportTypes": [
-          "builtin"
-        ],
+        "pathGroupsExcludedImportTypes": ["builtin"],
         "alphabetize": {
           "order": "asc"
         },
@@ -386,9 +308,7 @@
     "ecmaFeatures": {
       "jsx": true
     },
-    "project": [
-      "./tsconfig.json"
-    ],
+    "project": ["./tsconfig.json"],
     "sourceType": "module",
     "tsconfigRootDir": "."
   }
