@@ -23,6 +23,7 @@ const eslintConfig = [
       "**/coverage/**",
       "**/dist/**",
       "**/build/**",
+      "**/.next/**",
     ],
   },
   eslintJs.configs.recommended,
@@ -90,7 +91,6 @@ const eslintConfig = [
       "no-promise-executor-return": "error",
       "no-self-compare": "error",
       "require-atomic-updates": "error",
-      "class-methods-use-this": "error",
       "eqeqeq": ["error", "smart"],
       // jsdoc
       "jsdoc/no-types": "off",
@@ -201,6 +201,8 @@ const eslintConfig = [
       "unicorn/switch-case-braces": "error",
       "unicorn/text-encoding-identifier-case": "error",
       "unicorn/throw-new-error": "error",
+      // Personal preferences
+      "class-methods-use-this": "off",
     },
   },
   {
@@ -230,16 +232,34 @@ const eslintConfig = [
 
     rules: {
       ...eslintPluginTypescript.configs.recommended.rules,
-      ...eslintPluginTypescript.configs["recommended-requiring-type-checking"]
-        .rules,
+      ...eslintPluginTypescript.configs["eslint-recommended"].rules,
+      ...eslintPluginTypescript.configs["strict-type-checked"].rules,
       ...eslintPluginTypescript.configs.strict.rules,
       "@typescript-eslint/no-var-requires": "off",
       "@typescript-eslint/require-await": "error",
       "@typescript-eslint/return-await": "error",
       "@typescript-eslint/no-misused-promises": "off",
       "@typescript-eslint/prefer-for-of": "off",
-      "@typescript-eslint/consistent-type-imports": "error",
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        {
+          prefer: "type-imports",
+        },
+      ],
+      "@typescript-eslint/consistent-type-exports": [
+        "error",
+        { fixMixedExportsWithInlineTypeSpecifier: false },
+      ],
       "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-confusing-void-expression": "off",
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "TSEnumDeclaration",
+          message: "Use an object with `as const` instead of an enum.",
+        },
+      ],
+      "no-dupe-class-members": "off",
     },
   },
   {
@@ -296,7 +316,7 @@ const eslintConfig = [
       },
     },
     rules: {
-      ...eslintPluginReact.configs.recommended.rules,
+      ...eslintPluginReact.configs["jsx-runtime"].rules,
       ...eslintPluginReactHooks.configs.recommended.rules,
       ...eslintPluginReactNative.configs.all.rules,
     },
@@ -322,7 +342,7 @@ const eslintConfig = [
       },
     },
     rules: {
-      ...eslintPluginReact.configs.recommended.rules,
+      ...eslintPluginReact.configs["jsx-runtime"].rules,
       ...eslintPluginReactHooks.configs.recommended.rules,
     },
     settings: {
@@ -346,8 +366,17 @@ const eslintConfig = [
       },
     },
     rules: {
-      ...eslintPluginNode.configs["recommended-module"].rules,
-      "node/no-missing-import": "off",
+      "no-process-exit": "error",
+      "node/no-deprecated-api": "error",
+      "node/no-extraneous-import": "error",
+      "node/no-extraneous-require": "error",
+      "node/no-exports-assign": "error",
+      "node/no-missing-require": "error",
+      "node/no-unpublished-bin": "error",
+      "node/no-unpublished-import": "error",
+      "node/no-unpublished-require": "error",
+      "node/process-exit-as-throw": "error",
+      "node/shebang": "error",
     },
     settings: {},
   },

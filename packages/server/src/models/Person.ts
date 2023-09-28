@@ -4,7 +4,7 @@ import type {
   InferCreationAttributes,
   NonAttribute,
 } from "@sequelize/core";
-import { DataTypes, Model } from "@sequelize/core";
+import { DataTypes } from "@sequelize/core";
 import type { AuthSource, UserData } from "@ukdanceblue/common";
 import {
   CommitteeRole,
@@ -17,11 +17,12 @@ import { sequelizeDb } from "../data-source.js";
 import { roleToAuthorization } from "../lib/auth/role.js";
 import { IntermediateClass } from "../lib/modelTypes.js";
 
+import { BaseModel } from "./BaseModel.js";
 import type { TeamModel } from "./Team.js";
 import { TeamIntermediate } from "./Team.js";
 import type { CoreProperty, ImportantProperty } from "./intermediate.js";
 
-export class PersonModel extends Model<
+export class PersonModel extends BaseModel<
   InferAttributes<PersonModel>,
   InferCreationAttributes<PersonModel>
 > {

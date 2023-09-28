@@ -4,18 +4,19 @@ import type {
   InferCreationAttributes,
   NonAttribute,
 } from "@sequelize/core";
-import { DataTypes, Model } from "@sequelize/core";
+import { DataTypes } from "@sequelize/core";
 import type { PointEntryResource } from "@ukdanceblue/common";
 import { DbRole, TeamResource, TeamType } from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
 import { IntermediateClass } from "../lib/modelTypes.js";
 
+import { BaseModel } from "./BaseModel.js";
 import type { PointEntryModel } from "./PointEntry.js";
 import { PointEntryIntermediate } from "./PointEntry.js";
 import type { CoreProperty, ImportantProperty } from "./intermediate.js";
 
-export class TeamModel extends Model<
+export class TeamModel extends BaseModel<
   InferAttributes<TeamModel>,
   InferCreationAttributes<TeamModel>
 > {

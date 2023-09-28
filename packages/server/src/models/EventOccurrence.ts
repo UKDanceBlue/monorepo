@@ -6,16 +6,17 @@ import type {
   InferCreationAttributes,
   NonAttribute,
 } from "@sequelize/core";
-import { DataTypes, Model } from "@sequelize/core";
+import { DataTypes } from "@sequelize/core";
 import { DateTime } from "luxon";
 
 import { sequelizeDb } from "../data-source.js";
 import { IntermediateClass } from "../lib/modelTypes.js";
 
+import { BaseModel } from "./BaseModel.js";
 import type { EventModel } from "./Event.js";
 import type { CoreProperty, ImportantProperty } from "./intermediate.js";
 
-export class EventOccurrenceModel extends Model<
+export class EventOccurrenceModel extends BaseModel<
   InferAttributes<EventOccurrenceModel>,
   InferCreationAttributes<EventOccurrenceModel>
 > {

@@ -3,16 +3,17 @@ import type {
   InferAttributes,
   InferCreationAttributes,
 } from "@sequelize/core";
-import { DataTypes, Model } from "@sequelize/core";
+import { DataTypes } from "@sequelize/core";
 import { ImageResource } from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
 import { IntermediateClass } from "../lib/modelTypes.js";
 
+import { BaseModel } from "./BaseModel.js";
 import type { EventModel } from "./Event.js";
 import type { CoreProperty, ImportantProperty } from "./intermediate.js";
 
-export class ImageModel extends Model<
+export class ImageModel extends BaseModel<
   InferAttributes<ImageModel>,
   InferCreationAttributes<ImageModel>
 > {

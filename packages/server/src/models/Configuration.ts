@@ -3,15 +3,16 @@ import type {
   InferAttributes,
   InferCreationAttributes,
 } from "@sequelize/core";
-import { DataTypes, Model } from "@sequelize/core";
+import { DataTypes } from "@sequelize/core";
 import { ConfigurationResource } from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
 import { IntermediateClass } from "../lib/modelTypes.js";
 
+import { BaseModel } from "./BaseModel.js";
 import type { CoreProperty } from "./intermediate.js";
 
-export class ConfigurationModel extends Model<
+export class ConfigurationModel extends BaseModel<
   InferAttributes<ConfigurationModel>,
   InferCreationAttributes<ConfigurationModel>
 > {
@@ -27,6 +28,13 @@ ConfigurationModel.init(
       autoIncrement: true,
       autoIncrementIdentity: true,
       primaryKey: true,
+    },
+    uuid: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false,
+      unique: true,
+      index: true,
     },
     key: {
       type: DataTypes.TEXT,

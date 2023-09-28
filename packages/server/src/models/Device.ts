@@ -8,7 +8,7 @@ import type {
   InferCreationAttributes,
   NonAttribute,
 } from "@sequelize/core";
-import { DataTypes, Model } from "@sequelize/core";
+import { DataTypes } from "@sequelize/core";
 // import { DeviceResource } from "@ukdanceblue/common";
 import { DeviceResource } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
@@ -16,10 +16,11 @@ import { DateTime } from "luxon";
 import { sequelizeDb } from "../data-source.js";
 import { IntermediateClass } from "../lib/modelTypes.js";
 
+import { BaseModel } from "./BaseModel.js";
 import { PersonIntermediate, PersonModel } from "./Person.js";
 import type { CoreProperty } from "./intermediate.js";
 
-export class DeviceModel extends Model<
+export class DeviceModel extends BaseModel<
   InferAttributes<DeviceModel>,
   InferCreationAttributes<DeviceModel>
 > {

@@ -24,7 +24,7 @@ import type {
   InferCreationAttributes,
   NonAttribute,
 } from "@sequelize/core";
-import { DataTypes, Model } from "@sequelize/core";
+import { DataTypes } from "@sequelize/core";
 // import type { ImageResource } from "@ukdanceblue/common";
 // import { EventResource } from "@ukdanceblue/common";
 import type { ImageResource } from "@ukdanceblue/common";
@@ -35,13 +35,14 @@ import { sequelizeDb } from "../data-source.js";
 import { DurationDataType } from "../lib/customdatatypes/Duration.js";
 import { IntermediateClass } from "../lib/modelTypes.js";
 
+import { BaseModel } from "./BaseModel.js";
 import type { EventOccurrenceModel } from "./EventOccurrence.js";
 import { EventOccurrenceIntermediate } from "./EventOccurrence.js";
 import type { ImageModel } from "./Image.js";
 import { ImageIntermediate } from "./Image.js";
 import type { CoreProperty, ImportantProperty } from "./intermediate.js";
 
-export class EventModel extends Model<
+export class EventModel extends BaseModel<
   InferAttributes<EventModel>,
   InferCreationAttributes<EventModel>
 > {

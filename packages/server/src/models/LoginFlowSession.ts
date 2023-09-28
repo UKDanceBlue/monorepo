@@ -3,7 +3,7 @@ import type {
   InferAttributes,
   InferCreationAttributes,
 } from "@sequelize/core";
-import { DataTypes, Model } from "@sequelize/core";
+import { DataTypes } from "@sequelize/core";
 import { LoginFlowSessionResource } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 import { generators } from "openid-client";
@@ -11,9 +11,10 @@ import { generators } from "openid-client";
 import { sequelizeDb } from "../data-source.js";
 import { IntermediateClass } from "../lib/modelTypes.js";
 
+import { BaseModel } from "./BaseModel.js";
 import type { CoreProperty, ImportantProperty } from "./intermediate.js";
 
-export class LoginFlowSessionModel extends Model<
+export class LoginFlowSessionModel extends BaseModel<
   InferAttributes<LoginFlowSessionModel>,
   InferCreationAttributes<LoginFlowSessionModel>
 > {

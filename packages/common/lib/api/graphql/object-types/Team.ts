@@ -6,10 +6,11 @@ import type { PersonResource } from "./Person.js";
 import type { PointEntryResource } from "./PointEntry.js";
 import { Resource } from "./Resource.js";
 
-export enum TeamType {
-  Spirit = "Spirit",
-  Morale = "Morale",
-}
+export const TeamType = {
+  Spirit: "Spirit",
+  Morale: "Morale",
+} as const;
+export type TeamType = (typeof TeamType)[keyof typeof TeamType];
 
 // Registering the TeamType enum with TypeGraphQL
 registerEnumType(TeamType, {
