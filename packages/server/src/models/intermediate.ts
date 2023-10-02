@@ -25,7 +25,7 @@ type BrandRequired<T, Brand extends symbol> = {
 } & {
   [Key in keyof T as IsBranded<T[Key], Brand> extends true
     ? never
-    : Key]+?: T[Key];
+    : Key]: T[Key];
 };
 
 /**
@@ -65,7 +65,7 @@ export type StripBrands<T> = {
 // this is important because "Brand<value | null>" are transformed into "Brand<value> | null" to not break null & undefined
 type IsBranded<
   T,
-  Brand extends symbol
+  Brand extends symbol,
 > = keyof NonNullable<T> extends keyof Omit<NonNullable<T>, Brand>
   ? false
   : true;

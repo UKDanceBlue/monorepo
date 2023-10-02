@@ -1,5 +1,15 @@
 import type {
   CreationOptional,
+  HasManyAddAssociationMixin,
+  HasManyAddAssociationsMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  HasManyHasAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   NonAttribute,
@@ -18,9 +28,17 @@ import { roleToAuthorization } from "../lib/auth/role.js";
 import { IntermediateClass } from "../lib/modelTypes.js";
 
 import { BaseModel } from "./BaseModel.js";
-import type { TeamModel } from "./Team.js";
+import type { MembershipModel } from "./Membership.js";
+import {
+  MembershipIntermediate,
+  MembershipPositionType,
+} from "./Membership.js";
 import { TeamIntermediate } from "./Team.js";
-import type { CoreProperty, ImportantProperty } from "./intermediate.js";
+import type {
+  CoreProperty,
+  CoreRequired,
+  ImportantProperty,
+} from "./intermediate.js";
 
 export class PersonModel extends BaseModel<
   InferAttributes<PersonModel>,
@@ -50,9 +68,38 @@ export class PersonModel extends BaseModel<
 
   public declare committeeName: string | null;
 
-  public declare memberOf: NonAttribute<TeamModel[]>;
-
-  public declare captainOf: NonAttribute<TeamModel[]>;
+  public declare memberships: NonAttribute<MembershipModel[]>;
+  public declare getMemberships: HasManyGetAssociationsMixin<MembershipModel>;
+  public declare hasMembership: HasManyHasAssociationMixin<
+    MembershipModel,
+    MembershipModel["id"]
+  >;
+  public declare hasMemberships: HasManyHasAssociationsMixin<
+    MembershipModel,
+    MembershipModel["id"]
+  >;
+  public declare countMemberships: HasManyCountAssociationsMixin<MembershipModel>;
+  public declare addMembership: HasManyAddAssociationMixin<
+    MembershipModel,
+    MembershipModel["id"]
+  >;
+  public declare addMemberships: HasManyAddAssociationsMixin<
+    MembershipModel,
+    MembershipModel["id"]
+  >;
+  public declare removeMembership: HasManyRemoveAssociationMixin<
+    MembershipModel,
+    MembershipModel["id"]
+  >;
+  public declare removeMemberships: HasManyRemoveAssociationsMixin<
+    MembershipModel,
+    MembershipModel["id"]
+  >;
+  public declare createMembership: HasManyCreateAssociationMixin<MembershipModel>;
+  public declare setMemberships: HasManySetAssociationsMixin<
+    MembershipModel,
+    MembershipModel["id"]
+  >;
 }
 
 PersonModel.init(
@@ -134,14 +181,10 @@ export class PersonIntermediate extends IntermediateClass<
   public dbRole?: ImportantProperty<DbRole>;
   public committeeRole?: CommitteeRole | null;
   public committeeName?: string | null;
-  public memberOf?: ImportantProperty<TeamIntermediate[]>;
-  public captainOf?: ImportantProperty<TeamIntermediate[]>;
+  public memberships?: MembershipIntermediate[];
 
   constructor(init: Partial<PersonModel>) {
-    super(
-      ["id", "uuid"],
-      ["authIds", "captainOf", "dbRole", "email", "memberOf"]
-    );
+    super(["id", "uuid"], ["authIds", "dbRole", "email"]);
     if (init.id !== undefined) {
       this.id = init.id;
     }
@@ -172,11 +215,10 @@ export class PersonIntermediate extends IntermediateClass<
     if (init.committeeName !== undefined) {
       this.committeeName = init.committeeName;
     }
-    if (init.memberOf !== undefined) {
-      this.memberOf = init.memberOf.map((t) => new TeamIntermediate(t));
-    }
-    if (init.captainOf !== undefined) {
-      this.captainOf = init.captainOf.map((t) => new TeamIntermediate(t));
+    if (init.memberships !== undefined) {
+      this.memberships = init.memberships.map(
+        (membership) => new MembershipIntermediate(membership)
+      );
     }
   }
 
@@ -197,6 +239,52 @@ export class PersonIntermediate extends IntermediateClass<
     return RoleResource.init(roleInit);
   }
 
+  getMemberOf(): CoreRequired<TeamIntermediate>[] {
+    if (this.memberships === undefined) {
+      throw new Error(
+        "PersonIntermediate was not initialized with memberships"
+      );
+    }
+    const memberOf: CoreRequired<TeamIntermediate>[] = [];
+    for (const membership of this.memberships) {
+      if (membership.team === undefined) {
+        throw new Error("MembershipIntermediate was not initialized with team");
+      }
+      const team = new TeamIntermediate(membership.team);
+      if (team.hasCoreProperties()) {
+        memberOf.push(team);
+      } else {
+        throw new Error("TeamIntermediate is not complete");
+      }
+    }
+    return memberOf;
+  }
+
+  getCaptainOf(): CoreRequired<TeamIntermediate>[] {
+    if (this.memberships === undefined) {
+      throw new Error(
+        "PersonIntermediate was not initialized with memberships"
+      );
+    }
+    const captainOf: CoreRequired<TeamIntermediate>[] = [];
+    for (const membership of this.memberships) {
+      if (membership.position === MembershipPositionType.Captain) {
+        if (membership.team === undefined) {
+          throw new Error(
+            "MembershipIntermediate was not initialized with team"
+          );
+        }
+        const team = new TeamIntermediate(membership.team);
+        if (team.hasCoreProperties()) {
+          captainOf.push(team);
+        } else {
+          throw new Error("TeamIntermediate is not complete");
+        }
+      }
+    }
+    return captainOf;
+  }
+
   toResource(): PersonResource {
     if (!this.hasImportantProperties()) {
       throw new Error("PersonIntermediate is not complete");
@@ -209,29 +297,24 @@ export class PersonIntermediate extends IntermediateClass<
       authIds: this.authIds,
       email: this.email,
       linkblue: this.linkblue ?? null,
-      memberOf: this.memberOf.map((team) => team.toResource()),
-      captainOf: this.captainOf.map((team) => team.toResource()),
+      memberOf: this.getMemberOf().map((team) => team.toResource()),
+      captainOf: this.getCaptainOf().map((team) => team.toResource()),
       // pointEntries: [],
       role: this.role,
     });
   }
 
   toUserData(): UserData {
-    if (this.uuid === undefined) {
-      throw new Error("PersonIntermediate was not initialized with UUID");
+    if (!this.hasImportantProperties()) {
+      throw new Error("PersonIntermediate is not complete");
     }
-    if (this.memberOf === undefined) {
-      throw new Error("PersonIntermediate was not initialized with memberOf");
-    }
-    if (this.captainOf === undefined) {
-      throw new Error("PersonIntermediate was not initialized with captainOf");
-    }
+
     const userData: UserData = {
       userId: this.uuid,
       auth: roleToAuthorization(this.role),
+      captainOfTeamIds: this.getCaptainOf().map((team) => team.uuid),
+      teamIds: this.getMemberOf().map((team) => team.uuid),
     };
-    userData.teamIds = this.memberOf.map((team) => team.uuid!);
-    userData.captainOfTeamIds = this.captainOf.map((team) => team.uuid!);
     return userData;
   }
 }

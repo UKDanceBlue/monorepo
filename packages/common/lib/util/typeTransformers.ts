@@ -1,7 +1,7 @@
 import type { NullishToOptional } from "./TypeUtils.js";
 
 export function stripNullish<
-  T extends Record<string | number | symbol, unknown>
+  T extends Record<string | number | symbol, unknown>,
 >(data: T): NullishToOptional<T> {
   const result: NullishToOptional<T> = {} as NullishToOptional<T>;
 
@@ -13,4 +13,8 @@ export function stripNullish<
   }
 
   return result;
+}
+
+export function isNonNullable<T>(data: T): data is NonNullable<T> {
+  return data != null;
 }

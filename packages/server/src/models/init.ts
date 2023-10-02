@@ -16,12 +16,14 @@ await import("./LoginFlowSession.js");
 await import("./EventOccurrence.js");
 await import("./Person.js");
 await import("./PointEntry.js");
+await import("./Membership.js");
 await import("./Team.js");
 logDebug("Initialized models");
 
 logDebug("Initializing model relations");
 await import("./EventImages.js");
 await import("./TeamPointEntries.js");
+await import("./Memberships.js");
 await import("./PointEntryPersonFrom.js");
 await import("./EventOccurrences.js");
 logDebug("Initialized model relations");

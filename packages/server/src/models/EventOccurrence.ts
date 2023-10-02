@@ -78,9 +78,9 @@ export class EventOccurrenceIntermediate extends IntermediateClass<
   DateTime,
   EventOccurrenceIntermediate
 > {
-  public declare id: CoreProperty<number>;
-  public declare uuid: CoreProperty<string>;
-  public declare date: ImportantProperty<Date>;
+  public declare id?: CoreProperty<number>;
+  public declare uuid?: CoreProperty<string>;
+  public declare date?: ImportantProperty<Date>;
 
   constructor(model: EventOccurrenceModel) {
     super(["id", "uuid"], ["date"]);
@@ -90,6 +90,11 @@ export class EventOccurrenceIntermediate extends IntermediateClass<
   }
 
   public toResource(): DateTime {
+    if (!this.date) {
+      throw new Error(
+        "EventOccurrenceIntermediate was not properly initialized"
+      );
+    }
     return DateTime.fromJSDate(this.date);
   }
 }

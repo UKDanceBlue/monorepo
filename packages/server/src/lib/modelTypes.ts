@@ -9,9 +9,11 @@ import type {
 
 export abstract class IntermediateClass<
   R extends object,
-  SubClass extends object & IntermediateClass<R, SubClass>
+  SubClass extends object & IntermediateClass<R, SubClass>,
 > {
-  abstract toResource(): R;
+  toResource(): R {
+    throw new Error(`toResource() not supported on ${this.constructor.name}`);
+  }
 
   private readonly corePropertyNames: RequiredKeys<CoreRequired<SubClass>>[];
   private readonly importantPropertyNames: (Exclude<
@@ -100,7 +102,7 @@ export class WithTimestamps<
   // eslint-disable-next-line @typescript-eslint/ban-types
   TModelAttributes extends {} = never,
   // eslint-disable-next-line @typescript-eslint/ban-types
-  TCreationAttributes extends {} = TModelAttributes
+  TCreationAttributes extends {} = TModelAttributes,
 > extends Model<TModelAttributes, TCreationAttributes> {
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;

@@ -1,3 +1,6 @@
+import { dirname, join, normalize } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import eslintJs from "@eslint/js";
 import eslintPluginTypescript from "@typescript-eslint/eslint-plugin";
 import eslintParserTypescript from "@typescript-eslint/parser";
@@ -12,6 +15,8 @@ import eslintPluginReactNative from "eslint-plugin-react-native";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import globals from "globals";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 /**
  * @type {import('@types/eslint').Linter.FlatConfig[]}
  */
@@ -24,6 +29,7 @@ const eslintConfig = [
       "**/dist/**",
       "**/build/**",
       "**/.next/**",
+      "**/*.json",
     ],
   },
   eslintJs.configs.recommended,
@@ -259,6 +265,7 @@ const eslintConfig = [
           message: "Use an object with `as const` instead of an enum.",
         },
       ],
+      "no-redeclare": "off",
       "no-dupe-class-members": "off",
     },
   },
@@ -289,19 +296,29 @@ const eslintConfig = [
     },
   },
   {
-    files: ["packages/**/common/**/*"],
+    files: [
+      normalize("packages/**/common/**/**/*.js"),
+      normalize("packages/**/common/**/**/*.ts"),
+      normalize("packages/**/common/**/**/*.jsx"),
+      normalize("packages/**/common/**/**/*.tsx"),
+    ],
     languageOptions: {
       globals: {
         ...globals["shared-node-browser"],
         ...globals.es2015,
       },
       parserOptions: {
-        project: "./packages/common/tsconfig.json",
+        project: normalize(join(__dirname, "packages/common/tsconfig.json")),
       },
     },
   },
   {
-    files: ["packages/**/mobile/**/*"],
+    files: [
+      normalize("packages/**/mobile/**/**/*.js"),
+      normalize("packages/**/mobile/**/**/*.ts"),
+      normalize("packages/**/mobile/**/**/*.jsx"),
+      normalize("packages/**/mobile/**/**/*.tsx"),
+    ],
     plugins: {
       "react": eslintPluginReact,
       "react-native": eslintPluginReactNative,
@@ -312,7 +329,7 @@ const eslintConfig = [
         ...eslintPluginReactNative.environments["react-native"].globals,
       },
       parserOptions: {
-        project: "./packages/mobile/tsconfig.json",
+        project: normalize(join(__dirname, "packages/mobile/tsconfig.json")),
       },
     },
     rules: {
@@ -327,7 +344,12 @@ const eslintConfig = [
     },
   },
   {
-    files: ["packages/**/portal/**/*"],
+    files: [
+      normalize("packages/**/portal/**/**/*.js"),
+      normalize("packages/**/portal/**/**/*.ts"),
+      normalize("packages/**/portal/**/**/*.jsx"),
+      normalize("packages/**/portal/**/**/*.tsx"),
+    ],
     plugins: {
       "react": eslintPluginReact,
       "react-hooks": eslintPluginReactHooks,
@@ -338,7 +360,7 @@ const eslintConfig = [
         ...globals.browser,
       },
       parserOptions: {
-        project: "./packages/portal/tsconfig.json",
+        project: normalize(join(__dirname, "packages/portal/tsconfig.json")),
       },
     },
     rules: {
@@ -352,13 +374,16 @@ const eslintConfig = [
     },
   },
   {
-    files: ["packages/**/server/**/*"],
+    files: [
+      normalize("packages/**/server/**/**/*.js"),
+      normalize("packages/**/server/**/**/*.ts"),
+    ],
     plugins: {
       node: eslintPluginNode,
     },
     languageOptions: {
       parserOptions: {
-        project: "./packages/server/tsconfig.json",
+        project: normalize(join(__dirname, "packages/server/tsconfig.json")),
       },
       globals: {
         ...globals.nodeBuiltin,

@@ -1,5 +1,15 @@
 import type {
   CreationOptional,
+  HasManyAddAssociationMixin,
+  HasManyAddAssociationsMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  HasManyHasAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   NonAttribute,
@@ -12,6 +22,7 @@ import { sequelizeDb } from "../data-source.js";
 import { IntermediateClass } from "../lib/modelTypes.js";
 
 import { BaseModel } from "./BaseModel.js";
+import type { MembershipModel } from "./Membership.js";
 import type { PointEntryModel } from "./PointEntry.js";
 import { PointEntryIntermediate } from "./PointEntry.js";
 import type { CoreProperty, ImportantProperty } from "./intermediate.js";
@@ -34,12 +45,71 @@ export class TeamModel extends BaseModel<
 
   public declare visibility: CreationOptional<DbRole>;
 
-  // TODO: convert to a memberships table that also stores the captain status
-  // public declare members: PersonModel[];
-
-  // public declare captains: PersonModel[];
-
   public declare pointEntries: NonAttribute<PointEntryModel[]>;
+  public declare addPointEntry: HasManyAddAssociationMixin<
+    PointEntryModel,
+    PointEntryModel["id"]
+  >;
+  public declare addPointEntries: HasManyAddAssociationsMixin<
+    PointEntryModel,
+    PointEntryModel["id"]
+  >;
+  public declare countPointEntries: HasManyCountAssociationsMixin<PointEntryModel>;
+  public declare createPointEntry: HasManyCreateAssociationMixin<PointEntryModel>;
+  public declare getPointEntries: HasManyGetAssociationsMixin<PointEntryModel>;
+  public declare hasPointEntry: HasManyHasAssociationMixin<
+    PointEntryModel,
+    PointEntryModel["id"]
+  >;
+  public declare hasPointEntries: HasManyHasAssociationsMixin<
+    PointEntryModel,
+    PointEntryModel["id"]
+  >;
+  public declare removePointEntry: HasManyRemoveAssociationMixin<
+    PointEntryModel,
+    PointEntryModel["id"]
+  >;
+  public declare removePointEntries: HasManyRemoveAssociationsMixin<
+    PointEntryModel,
+    PointEntryModel["id"]
+  >;
+  public declare setPointEntries: HasManySetAssociationsMixin<
+    PointEntryModel,
+    PointEntryModel["id"]
+  >;
+
+  public declare memberships: NonAttribute<MembershipModel[]>;
+  public declare getMemberships: HasManyGetAssociationsMixin<MembershipModel>;
+  public declare hasMembership: HasManyHasAssociationMixin<
+    MembershipModel,
+    MembershipModel["id"]
+  >;
+  public declare hasMemberships: HasManyHasAssociationsMixin<
+    MembershipModel,
+    MembershipModel["id"]
+  >;
+  public declare countMemberships: HasManyCountAssociationsMixin<MembershipModel>;
+  public declare addMembership: HasManyAddAssociationMixin<
+    MembershipModel,
+    MembershipModel["id"]
+  >;
+  public declare addMemberships: HasManyAddAssociationsMixin<
+    MembershipModel,
+    MembershipModel["id"]
+  >;
+  public declare removeMembership: HasManyRemoveAssociationMixin<
+    MembershipModel,
+    MembershipModel["id"]
+  >;
+  public declare removeMemberships: HasManyRemoveAssociationsMixin<
+    MembershipModel,
+    MembershipModel["id"]
+  >;
+  public declare createMembership: HasManyCreateAssociationMixin<MembershipModel>;
+  public declare setMemberships: HasManySetAssociationsMixin<
+    MembershipModel,
+    MembershipModel["id"]
+  >;
 }
 
 TeamModel.init(

@@ -4,6 +4,7 @@ import { EventModel } from "./Event.js";
 import { EventOccurrenceModel } from "./EventOccurrence.js";
 import { ImageModel } from "./Image.js";
 import { LoginFlowSessionModel } from "./LoginFlowSession.js";
+import { MembershipModel } from "./Membership.js";
 import { PersonModel } from "./Person.js";
 import { PointEntryModel } from "./PointEntry.js";
 import { TeamModel } from "./Team.js";
@@ -32,8 +33,20 @@ LoginFlowSessionModel.addScope("defaultScope", {
   include: [],
 });
 
-PersonModel.addScope("defaultScope", {
+MembershipModel.addScope("defaultScope", {
   include: [],
+});
+
+MembershipModel.addScope("withPerson", {
+  include: [PersonModel],
+});
+
+MembershipModel.addScope("withTeam", {
+  include: [TeamModel],
+});
+
+PersonModel.addScope("defaultScope", {
+  include: [MembershipModel.withScope("withTeam")],
 });
 
 PointEntryModel.addScope("defaultScope", {
@@ -41,5 +54,5 @@ PointEntryModel.addScope("defaultScope", {
 });
 
 TeamModel.addScope("defaultScope", {
-  include: [PointEntryModel],
+  include: [PointEntryModel, MembershipModel.withScope("withPerson")],
 });

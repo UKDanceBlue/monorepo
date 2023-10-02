@@ -33,7 +33,7 @@ export abstract class BaseModel<
     options?: (NonNull extends true
       ? NonNullFindOptions<Attributes<M>>
       : FindOptions<Attributes<M>>) & {
-      where: never;
+      where?: never;
     }
   ): Promise<NonNull extends true ? M : M | null> {
     const result: M | null = await this.findOne({

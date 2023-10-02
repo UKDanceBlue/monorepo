@@ -14,7 +14,8 @@
     "dev": "nodemon -w ./dist ./dist/index.js ../common/dist --",
     "test": "jest",
     "start-seed": "node . --seed-db --reset-db",
-    "start-reset": "node . --reset-db"
+    "start-reset": "node . --reset-db",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
