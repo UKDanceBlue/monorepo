@@ -1,33 +1,37 @@
 import { registerEnumType } from "type-graphql";
 
-export enum AuthSource {
-  UkyLinkblue = "uky_linkblue",
-  Anonymous = "anonymous",
-}
+export const AuthSource = {
+  UkyLinkblue: "uky_linkblue",
+  Anonymous: "anonymous",
+} as const;
+export type AuthSource = (typeof AuthSource)[keyof typeof AuthSource];
 
-export enum AccessLevel {
-  None = -1,
-  Public = 0,
-  TeamMember = 1,
-  TeamCaptain = 2,
-  Committee = 3,
-  CommitteeChairOrCoordinator = 3.5,
-  Admin = 4, // Tech committee
-}
+export const AccessLevel =  {
+  None:  -1,
+  Public:  0,
+  TeamMember:  1,
+  TeamCaptain:  2,
+  Committee:  3,
+  CommitteeChairOrCoordinator:  3.5,
+  Admin:  4, // Tech committee
+} as const;
+export type AccessLevel = (typeof AccessLevel)[keyof typeof AccessLevel];
 
-export enum DbRole {
-  None = "none",
-  Public = "public",
-  TeamMember = "team_member",
-  TeamCaptain = "team_captain",
-  Committee = "committee",
-}
+export const DbRole = {
+  None:  "none",
+  Public:  "public",
+  TeamMember:  "team_member",
+  TeamCaptain:  "team_captain",
+  Committee:  "committee",
+} as const;
+export type DbRole = (typeof DbRole)[keyof typeof DbRole];
 
-export enum CommitteeRole {
-  Chair = "chair",
-  Coordinator = "coordinator",
-  Member = "member",
-}
+export const CommitteeRole = {
+  Chair:  "chair",
+  Coordinator:  "coordinator",
+  Member:  "member",
+} as const;
+export type CommitteeRole = (typeof CommitteeRole)[keyof typeof CommitteeRole];
 
 export interface Authorization {
   dbRole: DbRole;
