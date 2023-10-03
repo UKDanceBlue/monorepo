@@ -12,6 +12,7 @@ import eslintPluginNode from "eslint-plugin-node";
 import eslintPluginReact from "eslint-plugin-react";
 import eslintPluginReactHooks from "eslint-plugin-react-hooks";
 import eslintPluginReactNative from "eslint-plugin-react-native";
+import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import globals from "globals";
 
@@ -353,6 +354,7 @@ const eslintConfig = [
     plugins: {
       "react": eslintPluginReact,
       "react-hooks": eslintPluginReactHooks,
+      "react-refresh": eslintPluginReactRefresh,
     },
     languageOptions: {
       globals: {
@@ -366,6 +368,7 @@ const eslintConfig = [
     rules: {
       ...eslintPluginReact.configs["jsx-runtime"].rules,
       ...eslintPluginReactHooks.configs.recommended.rules,
+      "react-refresh/only-export-components": "warn",
     },
     settings: {
       react: {

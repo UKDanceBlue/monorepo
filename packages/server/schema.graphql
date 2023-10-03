@@ -70,7 +70,9 @@ enum CommitteeRole {
 }
 
 type ConfigurationResource {
+  createdAt: DateTimeISO
   key: String!
+  updatedAt: DateTimeISO
 }
 
 input CreateConfigurationInput {
@@ -175,6 +177,11 @@ type CreatePersonResponse implements AbstractGraphQLCreatedResponse & AbstractGr
 """Luxon DateTime custom scalar type"""
 scalar DateTime
 
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
+"""
+scalar DateTimeISO
+
 """DanceBlue roles"""
 enum DbRole {
   Committee
@@ -232,13 +239,17 @@ type DeletePersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResp
 }
 
 enum DeviceResolverAllKeys {
+  createdAt
   deviceId
   expoPushToken
   lastLogin
+  updatedAt
 }
 
 enum DeviceResolverDateFilterKeys {
+  createdAt
   lastLogin
+  updatedAt
 }
 
 input DeviceResolverKeyedDateFilterItem {
@@ -302,26 +313,32 @@ enum DeviceResolverStringFilterKeys {
 }
 
 type DeviceResource {
+  createdAt: DateTimeISO
   deviceId: ID!
   expoPushToken: String
   lastLogin: DateTime
   lastUser: PersonResource
+  updatedAt: DateTimeISO
 }
 
 """Luxon Duration custom scalar type"""
 scalar Duration
 
 enum EventResolverAllKeys {
+  createdAt
   description
   duration
   location
   occurrence
   summary
   title
+  updatedAt
 }
 
 enum EventResolverDateFilterKeys {
+  createdAt
   occurrence
+  updatedAt
 }
 
 input EventResolverKeyedDateFilterItem {
@@ -407,6 +424,7 @@ enum EventResolverStringFilterKeys {
 }
 
 type EventResource {
+  createdAt: DateTimeISO
   description: String
   duration: Duration
   eventId: ID!
@@ -415,6 +433,7 @@ type EventResource {
   occurrences: [DateTime!]!
   summary: String
   title: String!
+  updatedAt: DateTimeISO
 }
 
 type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
@@ -493,11 +512,13 @@ interface GraphQLBaseResponse {
 
 type ImageResource {
   alt: String
+  createdAt: DateTimeISO
   height: Int!
   imageData: String
   imageId: ID!
   mimeType: String!
   thumbHash: String
+  updatedAt: DateTimeISO
   url: URL
   width: Int!
 }
@@ -566,6 +587,7 @@ enum NumericComparator {
 type PersonResource {
   authIds: AuthSource!
   captainOf: [TeamResource!]!
+  createdAt: DateTimeISO
   email: String!
   firstName: String
   lastName: String
@@ -573,6 +595,7 @@ type PersonResource {
   memberOf: [TeamResource!]!
   personId: ID!
   role: RoleResource!
+  updatedAt: DateTimeISO
 }
 
 type Query {
@@ -658,7 +681,9 @@ type Query {
 type RoleResource {
   committee: String
   committeeRole: CommitteeRole
+  createdAt: DateTimeISO
   dbRole: DbRole!
+  updatedAt: DateTimeISO
 }
 
 input SetConfigurationInput {
@@ -691,11 +716,13 @@ enum StringComparator {
 
 type TeamResource {
   captains: [String!]!
+  createdAt: DateTimeISO
   members: [String!]!
   name: String!
   pointEntries: [String!]!
   teamId: ID!
   type: TeamType!
+  updatedAt: DateTimeISO
   visibility: DbRole!
 }
 
