@@ -37,7 +37,7 @@ export function createServer() {
     },
     status400ForVariableCoercionErrors: true,
     formatError(formatted, error) {
-      return formatError(formatted, error, false);
+      return formatError(formatted, error, true);
     },
   });
 

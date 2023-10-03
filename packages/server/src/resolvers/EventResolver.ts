@@ -7,6 +7,8 @@ import {
 import { DateTime, Duration } from "luxon";
 import {
   Arg,
+  Args,
+  ArgsType,
   Field,
   InputType,
   Mutation,
@@ -20,9 +22,14 @@ import { EventIntermediate, EventModel } from "../models/Event.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
+  AbstractGraphQLPaginatedResponse,
   DetailedError,
 } from "./ApiResponse.js";
-import type { ResolverInterface } from "./ResolverInterface.js";
+import { FilteredListQueryArgs } from "./ListQueryArgs.js";
+import type {
+  ResolverInterface,
+  ResolverListInterface,
+} from "./ResolverInterface.js";
 
 @ObjectType("GetEventByUuidResponse", {
   implements: AbstractGraphQLOkResponse<EventResource>,
@@ -46,6 +53,14 @@ class DeleteEventResponse extends AbstractGraphQLOkResponse<boolean> {
   data!: boolean;
 }
 
+@ObjectType("ListEventsResponse", {
+  implements: AbstractGraphQLPaginatedResponse<EventResource[]>,
+})
+class ListEventsResponse extends AbstractGraphQLPaginatedResponse<EventResource> {
+  @Field(() => [EventResource])
+  data!: EventResource[];
+}
+
 @InputType()
 class CreateEventInput {
   @Field()
@@ -64,22 +79,27 @@ class CreateEventInput {
   duration!: Duration;
 }
 
-// @InputType()
-// class ListEvents extends FilteredListQueryArgs<
-//   | "name"
-//   | "description"
-//   | "location"
-//   | "firstOccurrence"
-//   | "lastOccurrence"
-//   | "duration",
-//   "name" | "description" | "location",
-//   "duration",
-//   "firstOccurrence" | "lastOccurrence",
-//   never
-// > {}
+@ArgsType()
+class ListEventsArgs extends FilteredListQueryArgs("EventResolver", {
+  all: [
+    "title",
+    "description",
+    "summary",
+    "location",
+    "occurrence",
+    "duration",
+  ],
+  string: ["title", "summary", "description", "location"],
+  numeric: ["duration"],
+  date: ["occurrence"],
+}) {}
 
 @Resolver(() => EventResource)
-export class EventResolver implements ResolverInterface<EventResource> {
+export class EventResolver
+  implements
+    ResolverInterface<EventResource>,
+    ResolverListInterface<EventResource, ListEventsArgs>
+{
   @Query(() => GetEventByUuidResponse, { name: "getEventByUuid" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetEventByUuidResponse> {
     const row = await EventModel.findOne({ where: { uuid } });
@@ -90,6 +110,26 @@ export class EventResolver implements ResolverInterface<EventResource> {
 
     return GetEventByUuidResponse.newOk(
       new EventIntermediate(row).toResource()
+    );
+  }
+
+  @Query(() => ListEventsResponse, { name: "listEvents" })
+  async list(@Args() query: ListEventsArgs) {
+    const findOptions = query.toSequelizeFindOptions({
+      title: "title",
+      description: "description",
+      location: "location",
+      occurrence: "$occurrences.date$",
+      duration: "duration",
+    });
+
+    const { rows, count } = await EventModel.findAndCountAll(findOptions);
+
+    return ListEventsResponse.newPaginated(
+      rows.map((row) => new EventIntermediate(row).toResource()),
+      count,
+      query.page,
+      query.pageSize
     );
   }
 

@@ -241,6 +241,61 @@ enum DeviceResolverDateFilterKeys {
   lastLogin
 }
 
+input DeviceResolverKeyedDateFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: DeviceResolverDateFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+
+  """The value to filter by"""
+  value: DateTime!
+}
+
+input DeviceResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: DeviceResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+input DeviceResolverKeyedOneOfFilterItem {
+  """The field to filter on"""
+  field: DeviceResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+
+  """The value to filter by"""
+  value: [String!]!
+}
+
+input DeviceResolverKeyedStringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The field to filter on"""
+  field: DeviceResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+
+  """The value to filter by"""
+  value: String!
+}
+
 enum DeviceResolverStringFilterKeys {
   deviceId
   expoPushToken
@@ -255,6 +310,101 @@ type DeviceResource {
 
 """Luxon Duration custom scalar type"""
 scalar Duration
+
+enum EventResolverAllKeys {
+  description
+  duration
+  location
+  occurrence
+  summary
+  title
+}
+
+enum EventResolverDateFilterKeys {
+  occurrence
+}
+
+input EventResolverKeyedDateFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: EventResolverDateFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+
+  """The value to filter by"""
+  value: DateTime!
+}
+
+input EventResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: EventResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+input EventResolverKeyedNumericFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: EventResolverNumericFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+
+  """The value to filter by"""
+  value: Float!
+}
+
+input EventResolverKeyedOneOfFilterItem {
+  """The field to filter on"""
+  field: EventResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+
+  """The value to filter by"""
+  value: [String!]!
+}
+
+input EventResolverKeyedStringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The field to filter on"""
+  field: EventResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+
+  """The value to filter by"""
+  value: String!
+}
+
+enum EventResolverNumericFilterKeys {
+  duration
+}
+
+enum EventResolverStringFilterKeys {
+  description
+  location
+  summary
+  title
+}
 
 type EventResource {
   description: String
@@ -352,67 +502,30 @@ type ImageResource {
   width: Int!
 }
 
-input KeyedDateFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: DeviceResolverDateFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-
-  """The value to filter by"""
-  value: DateTime!
-}
-
-input KeyedIsNullFilterItem {
-  """The field to filter on"""
-  field: DeviceResolverAllKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-}
-
-input KeyedOneOfFilterItem {
-  """The field to filter on"""
-  field: DeviceResolverStringFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-
-  """The value to filter by"""
-  value: [String!]!
-}
-
-input KeyedStringFilterItem {
-  """The comparator to use for the filter"""
-  comparison: StringComparator!
-
-  """The field to filter on"""
-  field: DeviceResolverStringFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-
-  """The value to filter by"""
-  value: String!
-}
-
 type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
 
   """The payload of the response"""
   data: [DeviceResource!]!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+
+  """The current page number (1-indexed)"""
+  page: Float!
+
+  """The number of items per page"""
+  pageSize: Float!
+
+  """The total number of items"""
+  total: Float!
+}
+
+type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: [EventResource!]!
 
   """Whether the operation was successful"""
   ok: Boolean!
@@ -475,16 +588,16 @@ type Query {
     booleanFilters: Void
 
     """The date filters to apply to the query"""
-    dateFilters: [KeyedDateFilterItem!]
+    dateFilters: [DeviceResolverKeyedDateFilterItem!]
 
     """The is-null filters to apply to the query"""
-    isNullFilters: [KeyedIsNullFilterItem!]
+    isNullFilters: [DeviceResolverKeyedIsNullFilterItem!]
 
     """The numeric filters to apply to the query"""
     numericFilters: Void
 
     """The one-of filters to apply to the query"""
-    oneOfFilters: [KeyedOneOfFilterItem!]
+    oneOfFilters: [DeviceResolverKeyedOneOfFilterItem!]
 
     """The page number to return, defaults to 0"""
     page: Float
@@ -503,8 +616,43 @@ type Query {
     sortDirection: [SortDirection!]
 
     """The string filters to apply to the query"""
-    stringFilters: [KeyedStringFilterItem!]
+    stringFilters: [DeviceResolverKeyedStringFilterItem!]
   ): ListDevicesResponse!
+  listEvents(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: [EventResolverKeyedDateFilterItem!]
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [EventResolverKeyedIsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: [EventResolverKeyedNumericFilterItem!]
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: [EventResolverKeyedOneOfFilterItem!]
+
+    """The page number to return, defaults to 0"""
+    page: Float
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Float
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: [EventResolverKeyedStringFilterItem!]
+  ): ListEventsResponse!
 }
 
 type RoleResource {

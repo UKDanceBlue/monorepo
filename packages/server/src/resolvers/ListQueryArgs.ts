@@ -18,8 +18,10 @@ import {
   NumericComparator,
   SortDirection,
   StringComparator,
+  TypeMismatchError,
   VoidScalar,
 } from "@ukdanceblue/common";
+import { DateTime } from "luxon";
 import { ArgsType, Field, InputType, registerEnumType } from "type-graphql";
 
 registerEnumType(SortDirection, { name: "SortDirection" });
@@ -225,21 +227,21 @@ export function FilteredListQueryArgs<
     });
   }
 
-  @InputType()
+  @InputType(`${resolverName}KeyedStringFilterItem`)
   class KeyedStringFilterItem extends StringFilterItem(StringFilterKeysEnum) {}
-  @InputType()
+  @InputType(`${resolverName}KeyedNumericFilterItem`)
   class KeyedNumericFilterItem extends NumericFilterItem(
     NumericFilterKeysEnum
   ) {}
-  @InputType()
+  @InputType(`${resolverName}KeyedDateFilterItem`)
   class KeyedDateFilterItem extends DateFilterItem(DateFilterKeysEnum) {}
-  @InputType()
+  @InputType(`${resolverName}KeyedBooleanFilterItem`)
   class KeyedBooleanFilterItem extends BooleanFilterItem(
     BooleanFilterKeysEnum
   ) {}
-  @InputType()
+  @InputType(`${resolverName}KeyedOneOfFilterItem`)
   class KeyedOneOfFilterItem extends OneOfFilterItem(StringFilterKeysEnum) {}
-  @InputType()
+  @InputType(`${resolverName}KeyedIsNullFilterItem`)
   class KeyedIsNullFilterItem extends IsNullFilterItem(AllKeysEnum) {}
 
   @ArgsType()
@@ -305,51 +307,103 @@ export function FilteredListQueryArgs<
     oneOfFilters!: KeyedOneOfFilterItem[] | null;
 
     toSequelizeFindOptions(
-      sortByMap?: Partial<Record<AllKeys, Fn | Col | Literal | string>>
+      sortByMap?: Partial<Record<AllKeys, string>>
     ): FindOptions<Record<AllKeys, never>> {
       const options: FindOptions<Record<AllKeys, never>> =
         super.toSequelizeFindOptions(sortByMap);
 
-      const whereOptions: WhereAttributeHash<
-        Record<string, string | number | typeof DateTimeScalar | boolean>
+      const whereOptions: Partial<
+        WhereAttributeHash<
+          Record<string, string | number | typeof DateTimeScalar | boolean>
+        >
       > = {};
 
       for (const filter of this.stringFilters ?? []) {
         const { field, negate, value, comparison } = filter;
-        whereOptions[field] = {
+        const mappedField = sortByMap?.[field];
+        if (!mappedField) {
+          throw new Error(
+            `No mapping found for string filter field ${field} on ${resolverName}`
+          );
+        }
+        whereOptions[mappedField] = {
           [getSequelizeOpForComparator(comparison, negate)]: value,
         };
       }
       for (const filter of this.numericFilters ?? []) {
         const { field, value, comparison, negate } = filter;
-        whereOptions[field] = {
+        const mappedField = sortByMap?.[field];
+        if (!mappedField) {
+          throw new Error(
+            `No mapping found for numeric filter field ${field} on ${resolverName}`
+          );
+        }
+        whereOptions[mappedField] = {
           [getSequelizeOpForComparator(comparison, negate)]: value,
         };
       }
       for (const filter of this.dateFilters ?? []) {
-        const { field, negate, comparison, value } = filter;
-        whereOptions[field] = {
-          [getSequelizeOpForComparator(comparison, negate)]: value,
+        const { field, value, comparison, negate } = filter;
+        const mappedField = sortByMap?.[field];
+        if (!mappedField) {
+          throw new Error(
+            `No mapping found for numeric filter field ${field} on ${resolverName}`
+          );
+        }
+        const jsDate = DateTime.isDateTime(value)
+          ? value.toJSDate()
+          : new Date(value.toString());
+
+        if (jsDate.toString() === "Invalid Date") {
+          throw new TypeMismatchError(
+            "DateTime",
+            `'JSON.stringify(value)'`,
+            "Invalid Date"
+          );
+        }
+
+        whereOptions[mappedField] = {
+          [getSequelizeOpForComparator(comparison, negate)]: jsDate,
         };
       }
       for (const filter of this.booleanFilters ?? []) {
-        const { field, comparison, negate, value } = filter;
-        whereOptions[field] = {
+        const { field, value, comparison, negate } = filter;
+        const mappedField = sortByMap?.[field];
+        if (!mappedField) {
+          throw new Error(
+            `No mapping found for numeric filter field ${field} on ${resolverName}`
+          );
+        }
+        whereOptions[mappedField] = {
           [getSequelizeOpForComparator(comparison, negate)]: value,
         };
       }
       for (const filter of this.isNullFilters ?? []) {
         const { field, negate } = filter;
-        whereOptions[field] = {
+        const mappedField = sortByMap?.[field];
+        if (!mappedField) {
+          throw new Error(
+            `No mapping found for numeric filter field ${field} on ${resolverName}`
+          );
+        }
+        whereOptions[mappedField] = {
           [negate ? Op.not : Op.is]: null,
         };
       }
       for (const filter of this.oneOfFilters ?? []) {
-        const { field, negate, value } = filter;
-        whereOptions[field] = {
+        const { field, value, negate } = filter;
+        const mappedField = sortByMap?.[field];
+        if (!mappedField) {
+          throw new Error(
+            `No mapping found for numeric filter field ${field} on ${resolverName}`
+          );
+        }
+        whereOptions[mappedField] = {
           [negate ? Op.notIn : Op.in]: value,
         };
       }
+
+      options.where = whereOptions;
 
       return options;
     }
