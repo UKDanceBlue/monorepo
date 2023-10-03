@@ -22,7 +22,6 @@ import {
   AbstractGraphQLOkResponse,
   DetailedError,
 } from "./ApiResponse.js";
-import { FilteredListQueryArgs } from "./ListQueryArgs.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 
 @ObjectType("GetEventByUuidResponse", {

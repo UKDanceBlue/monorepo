@@ -1,14 +1,11 @@
-import {
+import type {
   Col,
   FindOptions,
   Fn,
   Literal,
-  Model,
-  Op,
-  Sequelize,
   WhereAttributeHash,
-  WhereOptions,
 } from "@sequelize/core";
+import { Op } from "@sequelize/core";
 import type {
   ListQueryType,
   OptionalToNullable,
@@ -45,30 +42,42 @@ export function getSequelizeOpForComparator(
   negated: boolean = false
 ): (typeof Op)[keyof typeof Op] {
   switch (comparator) {
-    case Comparator.EQUALS:
+    case Comparator.EQUALS: {
       return negated ? Op.ne : Op.eq;
-    case Comparator.GREATER_THAN:
+    }
+    case Comparator.GREATER_THAN: {
       return negated ? Op.lte : Op.gt;
-    case Comparator.GREATER_THAN_OR_EQUAL_TO:
+    }
+    case Comparator.GREATER_THAN_OR_EQUAL_TO: {
       return negated ? Op.lt : Op.gte;
-    case Comparator.LESS_THAN:
+    }
+    case Comparator.LESS_THAN: {
       return negated ? Op.gte : Op.lt;
-    case Comparator.LESS_THAN_OR_EQUAL_TO:
+    }
+    case Comparator.LESS_THAN_OR_EQUAL_TO: {
       return negated ? Op.gt : Op.lte;
-    case Comparator.SUBSTRING:
+    }
+    case Comparator.SUBSTRING: {
       return negated ? Op.notSubstring : Op.substring;
-    case Comparator.LIKE:
+    }
+    case Comparator.LIKE: {
       return negated ? Op.notLike : Op.like;
-    case Comparator.REGEX:
+    }
+    case Comparator.REGEX: {
       return negated ? Op.notRegexp : Op.regexp;
-    case Comparator.STARTS_WITH:
+    }
+    case Comparator.STARTS_WITH: {
       return negated ? Op.notLike : Op.startsWith;
-    case Comparator.ENDS_WITH:
+    }
+    case Comparator.ENDS_WITH: {
       return negated ? Op.notLike : Op.endsWith;
-    case Comparator.IS:
+    }
+    case Comparator.IS: {
       return negated ? Op.not : Op.is;
-    default:
-      throw new Error(`Unknown comparator: ${comparator}`);
+    }
+    default: {
+      throw new Error(`Unknown comparator: ${String(comparator)}`);
+    }
   }
 }
 
@@ -103,7 +112,7 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
   toSequelizeFindOptions(
     sortByMap?: Partial<Record<SortByKeys, Fn | Col | Literal | string>>
   ): FindOptions<Record<SortByKeys, never>> {
-    const options: FindOptions = {};
+    const options: FindOptions<Record<SortByKeys, never>> = {};
 
     if (this.pageSize != null) {
       options.limit = this.pageSize;
@@ -124,7 +133,7 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
             pair
           ): pair is [
             Exclude<(typeof pair)[0], undefined>,
-            Exclude<(typeof pair)[1], undefined>
+            Exclude<(typeof pair)[1], undefined>,
           ] => pair[0] != null && pair[1] != null
         );
     }
@@ -139,7 +148,7 @@ export class FilteredListQueryArgs<
   StringFilterKeys extends AllKeys,
   NumericFilterKeys extends AllKeys,
   DateFilterKeys extends AllKeys,
-  BooleanFilterKeys extends AllKeys
+  BooleanFilterKeys extends AllKeys,
 > extends UnfilteredListQueryArgs<AllKeys> {
   @Field(() => [StringFilterItem<StringFilterKeys>], {
     nullable: true,
@@ -188,43 +197,39 @@ export class FilteredListQueryArgs<
     > = {};
 
     for (const filter of this.stringFilters ?? []) {
-      const { field } = filter;
+      const { field, negate, value, comparison } = filter;
       whereOptions[field] = {
-        [getSequelizeOpForComparator(filter.comparison, filter.negate)]:
-          filter.value,
+        [getSequelizeOpForComparator(comparison, negate)]: value,
       };
     }
     for (const filter of this.numericFilters ?? []) {
-      const { field } = filter;
+      const { field, value, comparison, negate } = filter;
       whereOptions[field] = {
-        [getSequelizeOpForComparator(filter.comparison, filter.negate)]:
-          filter.value,
+        [getSequelizeOpForComparator(comparison, negate)]: value,
       };
     }
     for (const filter of this.dateFilters ?? []) {
-      const { field } = filter;
+      const { field, negate, comparison, value } = filter;
       whereOptions[field] = {
-        [getSequelizeOpForComparator(filter.comparison, filter.negate)]:
-          filter.value,
+        [getSequelizeOpForComparator(comparison, negate)]: value,
       };
     }
     for (const filter of this.booleanFilters ?? []) {
-      const { field } = filter;
+      const { field, comparison, negate, value } = filter;
       whereOptions[field] = {
-        [getSequelizeOpForComparator(filter.comparison, filter.negate)]:
-          filter.value,
+        [getSequelizeOpForComparator(comparison, negate)]: value,
       };
     }
     for (const filter of this.isNullFilters ?? []) {
-      const { field } = filter;
+      const { field, negate } = filter;
       whereOptions[field] = {
-        [filter.negate ? Op.not : Op.is]: null,
+        [negate ? Op.not : Op.is]: null,
       };
     }
     for (const filter of this.oneOfFilters ?? []) {
-      const { field } = filter;
+      const { field, negate, value } = filter;
       whereOptions[field] = {
-        [filter.negate ? Op.notIn : Op.in]: filter.value,
+        [negate ? Op.notIn : Op.in]: value,
       };
     }
 

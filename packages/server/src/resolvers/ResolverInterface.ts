@@ -19,22 +19,13 @@ export interface ResolverInterface<R extends Resource> {
   listAll?: <Q extends UnfilteredListQueryArgs>(
     query: Q
   ) => Promise<AbstractGraphQLPaginatedResponse<R>>;
-  list?: <
-    AllKeys extends string,
-    StringFilterKeys extends AllKeys,
-    NumericFilterKeys extends AllKeys,
-    DateFilterKeys extends AllKeys,
-    BooleanFilterKeys extends AllKeys,
-    Q extends FilteredListQueryArgs<
-      AllKeys,
-      StringFilterKeys,
-      NumericFilterKeys,
-      DateFilterKeys,
-      BooleanFilterKeys
-    >
-  >(
-    query: Q
-  ) => Promise<AbstractGraphQLPaginatedResponse<R>>;
   create?: (input: never) => Promise<AbstractGraphQLCreatedResponse<R>>;
   replace?: (uuid: string, input: R) => Promise<AbstractGraphQLOkResponse<R>>;
+}
+
+export interface ResolverListInterface<
+  R extends Resource,
+  Q extends FilteredListQueryArgs<string, string, string, string, string>,
+> {
+  list?: (query: Q) => Promise<AbstractGraphQLPaginatedResponse<R>>;
 }

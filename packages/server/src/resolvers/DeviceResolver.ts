@@ -20,13 +20,11 @@ import {
   AbstractGraphQLPaginatedResponse,
   DetailedError,
 } from "./ApiResponse.js";
-import {
-  DateFilterItem,
-  FilteredListQueryArgs,
-  StringFilterItem,
-  UnfilteredListQueryArgs,
-} from "./ListQueryArgs.js";
-import type { ResolverInterface } from "./ResolverInterface.js";
+import { FilteredListQueryArgs } from "./ListQueryArgs.js";
+import type {
+  ResolverInterface,
+  ResolverListInterface,
+} from "./ResolverInterface.js";
 
 @ObjectType("GetDeviceByUuidResponse", {
   implements: AbstractGraphQLOkResponse<DeviceResource>,
@@ -85,7 +83,11 @@ class ListDevicesArgs extends FilteredListQueryArgs<
 > {}
 
 @Resolver(() => DeviceResource)
-export class DeviceResolver implements ResolverInterface<DeviceResource> {
+export class DeviceResolver
+  implements
+    ResolverInterface<DeviceResource>,
+    ResolverListInterface<DeviceResource, ListDevicesArgs>
+{
   @Query(() => GetDeviceByUuidResponse, { name: "getDeviceByUuid" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetDeviceByUuidResponse> {
     const row = await DeviceModel.findOne({ where: { uuid } });
@@ -109,27 +111,6 @@ export class DeviceResolver implements ResolverInterface<DeviceResource> {
       lastUserId: "lastUserId",
       lastLogin: "lastLogin",
     });
-
-    // findOptions.where = {
-    //   ...(findOptions.where ?? {}),
-    //   ...(query.expoPushToken != null
-    //     ? {
-    //         expoPushToken: {
-    //           [query.expoPushToken.comparison]: query.expoPushToken.value,
-    //         },
-    //       }
-    //     : {}),
-    //   ...(query.lastUserId != null
-    //     ? {
-    //         lastUserId: {
-    //           [query.lastUserId.comparison]: query.lastUserId.value,
-    //         },
-    //       }
-    //     : {}),
-    //   ...(query.lastLogin != null
-    //     ? { lastLogin: { [query.lastLogin.comparison]: query.lastLogin.value } }
-    //     : {}),
-    // };
 
     const { rows, count } = await DeviceModel.findAndCountAll(findOptions);
 
