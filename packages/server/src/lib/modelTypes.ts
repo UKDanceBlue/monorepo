@@ -11,6 +11,9 @@ export abstract class IntermediateClass<
   R extends object,
   SubClass extends object & IntermediateClass<R, SubClass>,
 > {
+  createdAt?: Date;
+  updatedAt?: Date;
+
   toResource(): R {
     throw new Error(`toResource() not supported on ${this.constructor.name}`);
   }

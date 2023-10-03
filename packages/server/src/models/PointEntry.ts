@@ -131,6 +131,9 @@ export class PointEntryIntermediate extends IntermediateClass<
         ? null
         : new PersonIntermediate(model.personFrom);
     this.team = new TeamIntermediate(model.team);
+
+    this.createdAt = model.createdAt;
+    this.updatedAt = model.updatedAt;
   }
 
   public hasNonOptionalProperties(): this is Required<PointEntryIntermediate> {
@@ -160,6 +163,8 @@ export class PointEntryIntermediate extends IntermediateClass<
       personFrom:
         this.personFrom === null ? null : this.personFrom.toResource(),
       team: this.team.toResource(),
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     });
   }
 }

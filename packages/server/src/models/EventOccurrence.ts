@@ -87,6 +87,9 @@ export class EventOccurrenceIntermediate extends IntermediateClass<
     this.id = model.id;
     this.uuid = model.uuid;
     this.date = model.date;
+
+    this.createdAt = model.createdAt;
+    this.updatedAt = model.updatedAt;
   }
 
   public toResource(): DateTime {

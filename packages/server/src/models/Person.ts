@@ -183,42 +183,49 @@ export class PersonIntermediate extends IntermediateClass<
   public committeeName?: string | null;
   public memberships?: MembershipIntermediate[];
 
-  constructor(init: Partial<PersonModel>) {
+  constructor(model: Partial<PersonModel>) {
     super(["id", "uuid"], ["authIds", "dbRole", "email"]);
-    if (init.id !== undefined) {
-      this.id = init.id;
+    if (model.id !== undefined) {
+      this.id = model.id;
     }
-    if (init.uuid !== undefined) {
-      this.uuid = init.uuid;
+    if (model.uuid !== undefined) {
+      this.uuid = model.uuid;
     }
-    if (init.firstName !== undefined) {
-      this.firstName = init.firstName;
+    if (model.firstName !== undefined) {
+      this.firstName = model.firstName;
     }
-    if (init.lastName !== undefined) {
-      this.lastName = init.lastName;
+    if (model.lastName !== undefined) {
+      this.lastName = model.lastName;
     }
-    if (init.email !== undefined) {
-      this.email = init.email;
+    if (model.email !== undefined) {
+      this.email = model.email;
     }
-    if (init.linkblue !== undefined) {
-      this.linkblue = init.linkblue;
+    if (model.linkblue !== undefined) {
+      this.linkblue = model.linkblue;
     }
-    if (init.authIds !== undefined) {
-      this.authIds = init.authIds;
+    if (model.authIds !== undefined) {
+      this.authIds = model.authIds;
     }
-    if (init.dbRole !== undefined) {
-      this.dbRole = init.dbRole;
+    if (model.dbRole !== undefined) {
+      this.dbRole = model.dbRole;
     }
-    if (init.committeeRole !== undefined) {
-      this.committeeRole = init.committeeRole;
+    if (model.committeeRole !== undefined) {
+      this.committeeRole = model.committeeRole;
     }
-    if (init.committeeName !== undefined) {
-      this.committeeName = init.committeeName;
+    if (model.committeeName !== undefined) {
+      this.committeeName = model.committeeName;
     }
-    if (init.memberships !== undefined) {
-      this.memberships = init.memberships.map(
+    if (model.memberships !== undefined) {
+      this.memberships = model.memberships.map(
         (membership) => new MembershipIntermediate(membership)
       );
+    }
+
+    if (model.createdAt !== undefined) {
+      this.createdAt = model.createdAt;
+    }
+    if (model.updatedAt !== undefined) {
+      this.updatedAt = model.updatedAt;
     }
   }
 
@@ -301,6 +308,8 @@ export class PersonIntermediate extends IntermediateClass<
       captainOf: this.getCaptainOf().map((team) => team.toResource()),
       // pointEntries: [],
       role: this.role,
+      createdAt: this.createdAt == null ? null : this.createdAt,
+      updatedAt: this.updatedAt == null ? null : this.updatedAt,
     });
   }
 

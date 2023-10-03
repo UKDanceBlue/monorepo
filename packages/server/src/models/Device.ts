@@ -112,6 +112,9 @@ export class DeviceIntermediate extends IntermediateClass<
     this.lastUser =
       device.lastUser == null ? null : new PersonIntermediate(device.lastUser);
     this.lastLogin = device.lastLogin;
+
+    this.createdAt = device.createdAt;
+    this.updatedAt = device.updatedAt;
   }
 
   public toResource(): DeviceResource {
@@ -122,6 +125,8 @@ export class DeviceIntermediate extends IntermediateClass<
         lastUser: this.lastUser?.toResource() ?? null,
         lastLogin:
           this.lastLogin == null ? null : DateTime.fromJSDate(this.lastLogin),
+        createdAt: this.createdAt == null ? null : this.createdAt,
+        updatedAt: this.updatedAt == null ? null : this.updatedAt,
       });
     } else {
       throw new Error(

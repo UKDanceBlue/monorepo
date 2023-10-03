@@ -155,6 +155,13 @@ export class ImageIntermediate extends IntermediateClass<
     if (model.height) {
       this.height = model.height;
     }
+
+    if (model.createdAt) {
+      this.createdAt = model.createdAt;
+    }
+    if (model.updatedAt) {
+      this.updatedAt = model.updatedAt;
+    }
   }
 
   public toResource(): ImageResource {
@@ -167,6 +174,8 @@ export class ImageIntermediate extends IntermediateClass<
         alt: this.alt ?? null,
         width: this.width,
         height: this.height,
+        createdAt: this.createdAt == null ? null : this.createdAt,
+        updatedAt: this.updatedAt == null ? null : this.updatedAt,
       });
     } else {
       throw new Error("Image is not complete, cannot convert to resource");

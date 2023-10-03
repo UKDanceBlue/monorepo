@@ -223,6 +223,13 @@ export class EventIntermediate extends IntermediateClass<
     if (model.images !== undefined) {
       this.images = model.images.map((image) => new ImageIntermediate(image));
     }
+
+    if (model.createdAt !== undefined) {
+      this.createdAt = model.createdAt;
+    }
+    if (model.updatedAt !== undefined) {
+      this.updatedAt = model.updatedAt;
+    }
   }
 
   public toResource(): EventResource {
@@ -256,6 +263,8 @@ export class EventIntermediate extends IntermediateClass<
       duration: this.duration ?? null,
       images,
       eventId: this.uuid,
+      createdAt: this.createdAt == null ? null : this.createdAt,
+      updatedAt: this.updatedAt == null ? null : this.updatedAt,
     });
   }
 }

@@ -76,11 +76,20 @@ export class LoginFlowSessionIntermediate extends IntermediateClass<
   public codeVerifier?: ImportantProperty<string>;
   public redirectToAfterLogin?: ImportantProperty<string>;
 
-  constructor() {
+  constructor(model: LoginFlowSessionModel) {
     super(
       ["id", "uuid"],
       ["createdAt", "codeVerifier", "redirectToAfterLogin"]
     );
+
+    this.id = model.id;
+    this.uuid = model.uuid;
+    this.createdAt = model.createdAt;
+    this.codeVerifier = model.codeVerifier;
+    if (model.redirectToAfterLogin) {
+      this.redirectToAfterLogin = model.redirectToAfterLogin;
+    }
+    this.updatedAt = model.updatedAt;
   }
 
   toResource(): LoginFlowSessionResource {
@@ -95,6 +104,8 @@ export class LoginFlowSessionIntermediate extends IntermediateClass<
       creationDate: DateTime.fromJSDate(this.createdAt),
       codeVerifier: this.codeVerifier,
       redirectToAfterLogin: new URL(this.redirectToAfterLogin),
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt == null ? null : this.updatedAt,
     });
   }
 }

@@ -1,8 +1,13 @@
+import { Field, ObjectType } from "type-graphql";
 import type { Class } from "utility-types";
 
-import type { ExcludeValues } from "../../../util/TypeUtils.js";
-
+@ObjectType()
 export abstract class Resource {
+  @Field(() => Date, { nullable: true })
+  createdAt?: Date | null;
+  @Field(() => Date, { nullable: true })
+  updatedAt?: Date | null;
+
   /**
    * This method should return a unique identifier for the instance.
    * This is usually a UUID, but should never be the numeric ID of
@@ -12,7 +17,6 @@ export abstract class Resource {
    * need to use this method, make sure the resource you are using
    * implements it.
    */
-  // eslint-disable-next-line class-methods-use-this
   public getUniqueId(): string {
     throw new Error(`Method not implemented by subclass.`);
   }

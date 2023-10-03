@@ -16,13 +16,23 @@ import type {
 } from "@sequelize/core";
 import { DataTypes } from "@sequelize/core";
 import type { PointEntryResource } from "@ukdanceblue/common";
-import { DbRole, TeamResource, TeamType } from "@ukdanceblue/common";
+import {
+  DbRole,
+  TeamResource,
+  TeamType,
+  isNonNullable,
+} from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
 import { IntermediateClass } from "../lib/modelTypes.js";
 
 import { BaseModel } from "./BaseModel.js";
 import type { MembershipModel } from "./Membership.js";
+import {
+  MembershipIntermediate,
+  MembershipPositionType,
+} from "./Membership.js";
+import { PersonIntermediate } from "./Person.js";
 import type { PointEntryModel } from "./PointEntry.js";
 import { PointEntryIntermediate } from "./PointEntry.js";
 import type { CoreProperty, ImportantProperty } from "./intermediate.js";
@@ -162,17 +172,24 @@ export class TeamIntermediate extends IntermediateClass<
   public type?: ImportantProperty<TeamType>;
   public visibility?: ImportantProperty<DbRole>;
   public pointEntries?: ImportantProperty<PointEntryIntermediate[] | string[]>;
+  public memberships?: ImportantProperty<MembershipIntermediate[]>;
 
-  constructor(team: TeamModel) {
+  constructor(model: TeamModel) {
     super(["id", "uuid"], ["name", "type", "visibility", "pointEntries"]);
-    this.id = team.id;
-    this.uuid = team.uuid;
-    this.name = team.name;
-    this.type = team.type;
-    this.visibility = team.visibility;
-    this.pointEntries = team.pointEntries.map(
+    this.id = model.id;
+    this.uuid = model.uuid;
+    this.name = model.name;
+    this.type = model.type;
+    this.visibility = model.visibility;
+    this.pointEntries = model.pointEntries.map(
       (pe) => new PointEntryIntermediate(pe)
     );
+    this.memberships = model.memberships.map(
+      (m) => new MembershipIntermediate(m)
+    );
+
+    this.createdAt = model.createdAt;
+    this.updatedAt = model.updatedAt;
   }
 
   public toResource(): TeamResource {
@@ -193,14 +210,28 @@ export class TeamIntermediate extends IntermediateClass<
       }
     }
 
+    const members = this.memberships
+      .map((m) =>
+        m.person ? new PersonIntermediate(m.person).toResource() : null
+      )
+      .filter(isNonNullable);
+    const captains = this.memberships
+      .filter((m) => m.position === MembershipPositionType.Captain)
+      .map((m) =>
+        m.person ? new PersonIntermediate(m.person).toResource() : null
+      )
+      .filter(isNonNullable);
+
     return TeamResource.init({
       teamId: this.uuid,
       name: this.name,
       type: this.type,
       visibility: this.visibility,
       pointEntries,
-      members: [],
-      captains: [],
+      members,
+      captains,
+      createdAt: this.createdAt == null ? null : this.createdAt,
+      updatedAt: this.updatedAt == null ? null : this.updatedAt,
     });
   }
 }

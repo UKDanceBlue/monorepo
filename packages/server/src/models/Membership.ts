@@ -101,17 +101,20 @@ export class MembershipIntermediate extends IntermediateClass<
   public person?: PersonModel;
   public team?: TeamModel;
 
-  constructor(membership: MembershipModel) {
+  constructor(model: MembershipModel) {
     super(["id", "uuid", "position"], []);
-    this.id = membership.id;
-    this.uuid = membership.uuid;
-    if (membership.person) {
-      this.person = membership.person;
+    this.id = model.id;
+    this.uuid = model.uuid;
+    if (model.person) {
+      this.person = model.person;
     }
-    if (membership.team) {
-      this.team = membership.team;
+    if (model.team) {
+      this.team = model.team;
     }
-    this.position = membership.position;
+    this.position = model.position;
+
+    this.createdAt = model.createdAt;
+    this.updatedAt = model.updatedAt;
   }
 
   public toResource(): never {
