@@ -28,7 +28,7 @@ import {
 import { FilteredListQueryArgs } from "./ListQueryArgs.js";
 import type {
   ResolverInterface,
-  ResolverListInterface,
+  ResolverInterfaceWithFilteredList,
 } from "./ResolverInterface.js";
 
 @ObjectType("GetEventByUuidResponse", {
@@ -88,17 +88,19 @@ class ListEventsArgs extends FilteredListQueryArgs("EventResolver", {
     "location",
     "occurrence",
     "duration",
+    "createdAt",
+    "updatedAt",
   ],
   string: ["title", "summary", "description", "location"],
   numeric: ["duration"],
-  date: ["occurrence"],
+  date: ["occurrence", "createdAt", "updatedAt"],
 }) {}
 
 @Resolver(() => EventResource)
 export class EventResolver
   implements
     ResolverInterface<EventResource>,
-    ResolverListInterface<EventResource, ListEventsArgs>
+    ResolverInterfaceWithFilteredList<EventResource, ListEventsArgs>
 {
   @Query(() => GetEventByUuidResponse, { name: "getEventByUuid" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetEventByUuidResponse> {

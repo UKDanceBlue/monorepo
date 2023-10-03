@@ -16,14 +16,18 @@ export interface ResolverInterface<R extends Resource> {
   delete: (uuid: string) => Promise<AbstractGraphQLOkResponse<boolean>>;
 
   getAll?: () => Promise<AbstractGraphQLArrayOkResponse<R>>;
-  listAll?: <Q extends UnfilteredListQueryArgs>(
-    query: Q
-  ) => Promise<AbstractGraphQLPaginatedResponse<R>>;
   create?: (input: never) => Promise<AbstractGraphQLCreatedResponse<R>>;
   replace?: (uuid: string, input: R) => Promise<AbstractGraphQLOkResponse<R>>;
 }
 
-export interface ResolverListInterface<
+export interface ResolverInterfaceWithList<
+  R extends Resource,
+  Q extends UnfilteredListQueryArgs<string>,
+> {
+  list?: (query: Q) => Promise<AbstractGraphQLPaginatedResponse<R>>;
+}
+
+export interface ResolverInterfaceWithFilteredList<
   R extends Resource,
   Q extends AbstractFilteredListQueryArgs<
     string,
@@ -32,6 +36,6 @@ export interface ResolverListInterface<
     string,
     string
   >,
-> {
+> extends ResolverInterfaceWithList<R, Q> {
   list?: (query: Q) => Promise<AbstractGraphQLPaginatedResponse<R>>;
 }

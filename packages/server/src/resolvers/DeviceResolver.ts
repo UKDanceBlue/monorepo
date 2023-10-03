@@ -23,7 +23,7 @@ import {
 import { FilteredListQueryArgs } from "./ListQueryArgs.js";
 import type {
   ResolverInterface,
-  ResolverListInterface,
+  ResolverInterfaceWithFilteredList,
 } from "./ResolverInterface.js";
 
 @ObjectType("GetDeviceByUuidResponse", {
@@ -75,16 +75,16 @@ class CreateDeviceInput implements Partial<DeviceResource> {
 
 @ArgsType()
 class ListDevicesArgs extends FilteredListQueryArgs("DeviceResolver", {
-  all: ["deviceId", "expoPushToken", "lastLogin"],
+  all: ["deviceId", "expoPushToken", "lastLogin", "createdAt", "updatedAt"],
   string: ["deviceId", "expoPushToken"],
-  date: ["lastLogin"],
+  date: ["lastLogin", "createdAt", "updatedAt"],
 }) {}
 
 @Resolver(() => DeviceResource)
 export class DeviceResolver
   implements
     ResolverInterface<DeviceResource>,
-    ResolverListInterface<DeviceResource, ListDevicesArgs>
+    ResolverInterfaceWithFilteredList<DeviceResource, ListDevicesArgs>
 {
   @Query(() => GetDeviceByUuidResponse, { name: "getDeviceByUuid" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetDeviceByUuidResponse> {
