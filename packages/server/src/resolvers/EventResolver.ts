@@ -22,6 +22,7 @@ import {
   AbstractGraphQLOkResponse,
   DetailedError,
 } from "./ApiResponse.js";
+import { FilteredListQueryArgs } from "./ListQueryArgs.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 
 @ObjectType("GetEventByUuidResponse", {
@@ -63,6 +64,20 @@ class CreateEventInput {
   @Field(() => DurationScalar)
   duration!: Duration;
 }
+
+@InputType()
+class ListEvents extends FilteredListQueryArgs<
+  | "name"
+  | "description"
+  | "location"
+  | "firstOccurrence"
+  | "lastOccurrence"
+  | "duration",
+  "name" | "description" | "location",
+  "duration",
+  "firstOccurrence" | "lastOccurrence",
+  never
+> {}
 
 @Resolver(() => EventResource)
 export class EventResolver implements ResolverInterface<EventResource> {

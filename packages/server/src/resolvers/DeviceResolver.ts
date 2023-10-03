@@ -20,6 +20,7 @@ import {
 } from "./ApiResponse.js";
 import {
   DateFilterItem,
+  FilteredListQueryArgs,
   StringFilterItem,
   UnfilteredListQueryArgs,
 } from "./ListQueryArgs.js";
@@ -73,18 +74,13 @@ class CreateDeviceInput implements Partial<DeviceResource> {
 }
 
 @InputType()
-class ListQueryArgs extends UnfilteredListQueryArgs<
-  "deviceId" | "expoPushToken" | "lastUserId" | "lastLogin"
-> {
-  @Field(() => StringFilterItem, { nullable: true })
-  expoPushToken?: StringFilterItem;
-
-  @Field(() => StringFilterItem, { nullable: true })
-  lastUserId?: StringFilterItem;
-
-  @Field(() => DateFilterItem, { nullable: true })
-  lastLogin?: DateFilterItem;
-}
+class ListDevicesArgs extends FilteredListQueryArgs<
+  "deviceId" | "expoPushToken" | "lastUserId" | "lastLogin",
+  "expoPushToken" | "lastUserId",
+  never,
+  "lastLogin",
+  never
+> {}
 
 @Resolver(() => DeviceResource)
 export class DeviceResolver implements ResolverInterface<DeviceResource> {
@@ -103,7 +99,7 @@ export class DeviceResolver implements ResolverInterface<DeviceResource> {
 
   @Query(() => ListDevicesResponse, { name: "listDevices" })
   async list(
-    @Arg("query", () => ListQueryArgs) query: ListQueryArgs
+    @Arg("query", () => ListDevicesArgs) query: ListDevicesArgs
   ): Promise<ListDevicesResponse> {
     const findOptions = query.toSequelizeFindOptions({
       deviceId: "deviceId",

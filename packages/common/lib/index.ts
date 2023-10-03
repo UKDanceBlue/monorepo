@@ -2,7 +2,6 @@ import "reflect-metadata";
 
 export * from "./api/request/BodyTypes.js";
 export * from "./api/request/ListQueryTypes.js";
-export * from "./api/request/SearchTypes.js";
 
 export * from "./api/response/JsonResponse.js";
 

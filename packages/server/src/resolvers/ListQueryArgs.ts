@@ -1,4 +1,4 @@
-import type { FindOptions } from "@sequelize/core";
+import type { Col, FindOptions, Fn, Literal } from "@sequelize/core";
 import type {
   ListQueryType,
   OptionalToNullable,
@@ -12,7 +12,13 @@ import {
   SortDirection,
   StringComparator,
 } from "@ukdanceblue/common";
-import { ArgsType, Field, InputType, registerEnumType } from "type-graphql";
+import {
+  ArgsType,
+  Field,
+  InputType,
+  createUnionType,
+  registerEnumType,
+} from "type-graphql";
 
 registerEnumType(SortDirection, { name: "SortDirection" });
 
@@ -52,7 +58,9 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
   })
   sortDirection?: SortDirection[] | null;
 
-  toSequelizeFindOptions(sortByMap?: Record<SortByKeys, string>): FindOptions {
+  toSequelizeFindOptions(
+    sortByMap?: Partial<Record<SortByKeys, Fn | Col | Literal | string>>
+  ): FindOptions {
     const options: FindOptions = {};
 
     if (this.pageSize != null) {
@@ -68,13 +76,13 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
       const sortDirection = this.sortDirection ?? SortDirection.ASCENDING;
 
       options.order = sortBy
-        .map((key, index) => [key, sortDirection[index]])
+        .map((key, index) => [key, sortDirection[index]] as const)
         .filter(
           (
             pair
           ): pair is [
             Exclude<(typeof pair)[0], undefined>,
-            Exclude<(typeof pair)[1], undefined>
+            Exclude<(typeof pair)[1], undefined>,
           ] => pair[0] != null && pair[1] != null
         );
     }
@@ -83,15 +91,83 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
   }
 }
 
-export abstract class FilterItem<V> {
+@ArgsType()
+export class FilteredListQueryArgs<
+  SortByKeys extends string,
+  StringFilterKeys extends string,
+  NumericFilterKeys extends string,
+  DateFilterKeys extends string,
+  BooleanFilterKeys extends string,
+> extends UnfilteredListQueryArgs<SortByKeys> {
+  @Field(() => [FilterItemUnion], {
+    nullable: true,
+    description: "The filters to apply to the query",
+  })
+  filters!:
+    | (
+        | StringFilterItem<StringFilterKeys>
+        | NumericFilterItem<NumericFilterKeys>
+        | DateFilterItem<DateFilterKeys>
+        | OneOfFilterItem<StringFilterKeys>
+        | BooleanFilterItem<BooleanFilterKeys>
+      )[]
+    | null;
+
+  toSequelizeFindOptions(
+    sortByMap?: Partial<
+      Record<
+        | SortByKeys
+        | StringFilterKeys
+        | NumericFilterKeys
+        | DateFilterKeys
+        | BooleanFilterKeys,
+        Fn | Col | Literal | string
+      >
+    >
+  ): FindOptions<
+    | SortByKeys
+    | StringFilterKeys
+    | NumericFilterKeys
+    | DateFilterKeys
+    | BooleanFilterKeys
+  > {
+    const options = super.toSequelizeFindOptions(sortByMap);
+
+    if (this.filters) {
+      const whereOptions: FindOptions<
+        | SortByKeys
+        | StringFilterKeys
+        | NumericFilterKeys
+        | DateFilterKeys
+        | BooleanFilterKeys
+      >["where"] = {};
+      for (const filter of this.filters) {
+        const { field } = filter;
+        if (filter instanceof StringFilterItem) {
+          whereOptions[field] = {};
+        }
+      }
+      options.where = whereOptions;
+    }
+
+    return options;
+  }
+}
+
+export abstract class FilterItem<Field extends string, V> {
+  field!: Field;
   value!: V;
   comparison!: Comparator;
 }
 
 @InputType()
-export class StringFilterItem extends FilterItem<
+export class StringFilterItem<Field extends string> extends FilterItem<
+  Field,
   string | { toString: Pick<string, "toString"> }
 > {
+  @Field(() => String, { description: "The field to filter on" })
+  field!: Field;
+
   @Field(() => String, { description: "The value to filter by" })
   value!: string | { toString: Pick<string, "toString"> };
 
@@ -102,7 +178,13 @@ export class StringFilterItem extends FilterItem<
 }
 
 @InputType()
-export class NumericFilterItem extends FilterItem<number> {
+export class NumericFilterItem<Field extends string> extends FilterItem<
+  Field,
+  number
+> {
+  @Field(() => String, { description: "The field to filter on" })
+  field!: Field;
+
   @Field(() => Number, { description: "The value to filter by" })
   value!: number;
 
@@ -113,7 +195,13 @@ export class NumericFilterItem extends FilterItem<number> {
 }
 
 @InputType()
-export class DateFilterItem extends FilterItem<typeof DateTimeScalar> {
+export class DateFilterItem<Field extends string> extends FilterItem<
+  Field,
+  typeof DateTimeScalar
+> {
+  @Field(() => String, { description: "The field to filter on" })
+  field!: Field;
+
   @Field(() => DateTimeScalar, { description: "The value to filter by" })
   value!: typeof DateTimeScalar;
 
@@ -124,7 +212,13 @@ export class DateFilterItem extends FilterItem<typeof DateTimeScalar> {
 }
 
 @InputType()
-export class BooleanFilterItem extends FilterItem<boolean> {
+export class BooleanFilterItem<Field extends string> extends FilterItem<
+  Field,
+  boolean
+> {
+  @Field(() => String, { description: "The field to filter on" })
+  field!: Field;
+
   @Field(() => Boolean, { description: "The value to filter by" })
   value!: boolean;
 
@@ -133,3 +227,27 @@ export class BooleanFilterItem extends FilterItem<boolean> {
   })
   comparison!: EqualityComparator;
 }
+
+@InputType()
+export class OneOfFilterItem<Field extends string> extends FilterItem<
+  Field,
+  readonly string[]
+> {
+  @Field(() => String, { description: "The field to filter on" })
+  field!: Field;
+
+  @Field(() => [String], { description: "The value to filter by" })
+  value!: readonly string[];
+}
+
+export const FilterItemUnion = createUnionType({
+  name: "FilterItemUnion",
+  types: () =>
+    [
+      StringFilterItem,
+      NumericFilterItem,
+      DateFilterItem,
+      BooleanFilterItem,
+      OneOfFilterItem,
+    ] as const,
+});
