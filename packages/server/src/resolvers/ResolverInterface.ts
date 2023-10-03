@@ -7,7 +7,7 @@ import type {
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
 import type {
-  FilteredListQueryArgs,
+  AbstractFilteredListQueryArgs,
   UnfilteredListQueryArgs,
 } from "./ListQueryArgs.js";
 
@@ -25,7 +25,13 @@ export interface ResolverInterface<R extends Resource> {
 
 export interface ResolverListInterface<
   R extends Resource,
-  Q extends FilteredListQueryArgs<string, string, string, string, string>,
+  Q extends AbstractFilteredListQueryArgs<
+    string,
+    string,
+    string,
+    string,
+    string
+  >,
 > {
   list?: (query: Q) => Promise<AbstractGraphQLPaginatedResponse<R>>;
 }

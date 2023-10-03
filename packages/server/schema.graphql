@@ -57,22 +57,6 @@ enum AuthSource {
   UkyLinkblue
 }
 
-input BooleanFilterItem {
-  """The comparator to use for the filter"""
-  comparison: IsComparator!
-
-  """The field to filter on"""
-  field: String!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean! = false
-
-  """The value to filter by"""
-  value: Boolean!
-}
-
 """Actions that the client MUST take if specified"""
 enum ClientAction {
   LOGOUT
@@ -188,22 +172,6 @@ type CreatePersonResponse implements AbstractGraphQLCreatedResponse & AbstractGr
   uuid: String!
 }
 
-input DateFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: String!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean! = false
-
-  """The value to filter by"""
-  value: DateTime!
-}
-
 """Luxon DateTime custom scalar type"""
 scalar DateTime
 
@@ -261,6 +229,21 @@ type DeletePersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResp
 
   """Whether the operation was successful"""
   ok: Boolean!
+}
+
+enum DeviceResolverAllKeys {
+  deviceId
+  expoPushToken
+  lastLogin
+}
+
+enum DeviceResolverDateFilterKeys {
+  lastLogin
+}
+
+enum DeviceResolverStringFilterKeys {
+  deviceId
+  expoPushToken
 }
 
 type DeviceResource {
@@ -369,18 +352,59 @@ type ImageResource {
   width: Int!
 }
 
-enum IsComparator {
-  IS
-}
+input KeyedDateFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
 
-input IsNullFilterItem {
   """The field to filter on"""
-  field: String!
+  field: DeviceResolverDateFilterKeys!
 
   """
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
-  negate: Boolean! = false
+  negate: Boolean = false
+
+  """The value to filter by"""
+  value: DateTime!
+}
+
+input KeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: DeviceResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+input KeyedOneOfFilterItem {
+  """The field to filter on"""
+  field: DeviceResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+
+  """The value to filter by"""
+  value: [String!]!
+}
+
+input KeyedStringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The field to filter on"""
+  field: DeviceResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+
+  """The value to filter by"""
+  value: String!
 }
 
 type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
@@ -426,35 +450,6 @@ enum NumericComparator {
   LESS_THAN_OR_EQUAL_TO
 }
 
-input NumericFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: String!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean! = false
-
-  """The value to filter by"""
-  value: Float!
-}
-
-input OneOfFilterItem {
-  """The field to filter on"""
-  field: String!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean! = false
-
-  """The value to filter by"""
-  value: [String!]!
-}
-
 type PersonResource {
   authIds: AuthSource!
   captainOf: [TeamResource!]!
@@ -477,19 +472,19 @@ type Query {
   getThumbHashByUuid(uuid: String!): GetThumbHashByUuidResponse
   listDevices(
     """The boolean filters to apply to the query"""
-    booleanFilters: [BooleanFilterItem!]
+    booleanFilters: Void
 
     """The date filters to apply to the query"""
-    dateFilters: [DateFilterItem!]
+    dateFilters: [KeyedDateFilterItem!]
 
     """The is-null filters to apply to the query"""
-    isNullFilters: [IsNullFilterItem!]
+    isNullFilters: [KeyedIsNullFilterItem!]
 
     """The numeric filters to apply to the query"""
-    numericFilters: [NumericFilterItem!]
+    numericFilters: Void
 
     """The one-of filters to apply to the query"""
-    oneOfFilters: [OneOfFilterItem!]
+    oneOfFilters: [KeyedOneOfFilterItem!]
 
     """The page number to return, defaults to 0"""
     page: Float
@@ -508,7 +503,7 @@ type Query {
     sortDirection: [SortDirection!]
 
     """The string filters to apply to the query"""
-    stringFilters: [StringFilterItem!]
+    stringFilters: [KeyedStringFilterItem!]
   ): ListDevicesResponse!
 }
 
@@ -546,22 +541,6 @@ enum StringComparator {
   SUBSTRING
 }
 
-input StringFilterItem {
-  """The comparator to use for the filter"""
-  comparison: StringComparator!
-
-  """The field to filter on"""
-  field: String!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean! = false
-
-  """The value to filter by"""
-  value: String!
-}
-
 type TeamResource {
   captains: [String!]!
   members: [String!]!
@@ -580,3 +559,6 @@ enum TeamType {
 
 """URL custom scalar type"""
 scalar URL
+
+"""Void custom scalar type"""
+scalar Void

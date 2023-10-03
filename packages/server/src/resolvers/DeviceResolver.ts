@@ -74,13 +74,11 @@ class CreateDeviceInput implements Partial<DeviceResource> {
 }
 
 @ArgsType()
-class ListDevicesArgs extends FilteredListQueryArgs<
-  "deviceId" | "expoPushToken" | "lastUserId" | "lastLogin",
-  "expoPushToken" | "lastUserId",
-  never,
-  "lastLogin",
-  never
-> {}
+class ListDevicesArgs extends FilteredListQueryArgs("DeviceResolver", {
+  all: ["deviceId", "expoPushToken", "lastLogin"],
+  string: ["deviceId", "expoPushToken"],
+  date: ["lastLogin"],
+}) {}
 
 @Resolver(() => DeviceResource)
 export class DeviceResolver
@@ -108,7 +106,6 @@ export class DeviceResolver
     const findOptions = query.toSequelizeFindOptions({
       deviceId: "deviceId",
       expoPushToken: "expoPushToken",
-      lastUserId: "lastUserId",
       lastLogin: "lastLogin",
     });
 

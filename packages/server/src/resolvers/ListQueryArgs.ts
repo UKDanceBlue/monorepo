@@ -18,14 +18,9 @@ import {
   NumericComparator,
   SortDirection,
   StringComparator,
+  VoidScalar,
 } from "@ukdanceblue/common";
-import {
-  ArgsType,
-  Field,
-  InputType,
-  createUnionType,
-  registerEnumType,
-} from "type-graphql";
+import { ArgsType, Field, InputType, registerEnumType } from "type-graphql";
 
 registerEnumType(SortDirection, { name: "SortDirection" });
 
@@ -142,99 +137,225 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
   }
 }
 
-@ArgsType()
-export class FilteredListQueryArgs<
+export abstract class AbstractFilteredListQueryArgs<
   AllKeys extends string,
   StringFilterKeys extends AllKeys,
   NumericFilterKeys extends AllKeys,
   DateFilterKeys extends AllKeys,
   BooleanFilterKeys extends AllKeys,
 > extends UnfilteredListQueryArgs<AllKeys> {
-  @Field(() => [StringFilterItem<StringFilterKeys>], {
-    nullable: true,
-    description: "The string filters to apply to the query",
-  })
-  stringFilters!: StringFilterItem<StringFilterKeys>[] | null;
+  stringFilters!: AbstractStringFilterItem<StringFilterKeys>[] | null;
+  numericFilters!: AbstractNumericFilterItem<NumericFilterKeys>[] | null;
+  dateFilters!: AbstractDateFilterItem<DateFilterKeys>[] | null;
+  booleanFilters!: AbstractBooleanFilterItem<BooleanFilterKeys>[] | null;
+  isNullFilters!: AbstractIsNullFilterItem<AllKeys>[] | null;
+  oneOfFilters!: AbstractOneOfFilterItem<StringFilterKeys>[] | null;
+}
 
-  @Field(() => [NumericFilterItem<NumericFilterKeys>], {
-    nullable: true,
-    description: "The numeric filters to apply to the query",
-  })
-  numericFilters!: NumericFilterItem<NumericFilterKeys>[] | null;
-
-  @Field(() => [DateFilterItem<DateFilterKeys>], {
-    nullable: true,
-    description: "The date filters to apply to the query",
-  })
-  dateFilters!: DateFilterItem<DateFilterKeys>[] | null;
-
-  @Field(() => [BooleanFilterItem<BooleanFilterKeys>], {
-    nullable: true,
-    description: "The boolean filters to apply to the query",
-  })
-  booleanFilters!: BooleanFilterItem<BooleanFilterKeys>[] | null;
-
-  @Field(() => [IsNullFilterItem<AllKeys>], {
-    nullable: true,
-    description: "The is-null filters to apply to the query",
-  })
-  isNullFilters!: IsNullFilterItem<AllKeys>[] | null;
-
-  @Field(() => [OneOfFilterItem<StringFilterKeys>], {
-    nullable: true,
-    description: "The one-of filters to apply to the query",
-  })
-  oneOfFilters!: OneOfFilterItem<StringFilterKeys>[] | null;
-
-  toSequelizeFindOptions(
-    sortByMap?: Partial<Record<AllKeys, Fn | Col | Literal | string>>
-  ): FindOptions<Record<AllKeys, never>> {
-    const options: FindOptions<Record<AllKeys, never>> =
-      super.toSequelizeFindOptions(sortByMap);
-
-    const whereOptions: WhereAttributeHash<
-      Record<string, string | number | typeof DateTimeScalar | boolean>
-    > = {};
-
-    for (const filter of this.stringFilters ?? []) {
-      const { field, negate, value, comparison } = filter;
-      whereOptions[field] = {
-        [getSequelizeOpForComparator(comparison, negate)]: value,
-      };
-    }
-    for (const filter of this.numericFilters ?? []) {
-      const { field, value, comparison, negate } = filter;
-      whereOptions[field] = {
-        [getSequelizeOpForComparator(comparison, negate)]: value,
-      };
-    }
-    for (const filter of this.dateFilters ?? []) {
-      const { field, negate, comparison, value } = filter;
-      whereOptions[field] = {
-        [getSequelizeOpForComparator(comparison, negate)]: value,
-      };
-    }
-    for (const filter of this.booleanFilters ?? []) {
-      const { field, comparison, negate, value } = filter;
-      whereOptions[field] = {
-        [getSequelizeOpForComparator(comparison, negate)]: value,
-      };
-    }
-    for (const filter of this.isNullFilters ?? []) {
-      const { field, negate } = filter;
-      whereOptions[field] = {
-        [negate ? Op.not : Op.is]: null,
-      };
-    }
-    for (const filter of this.oneOfFilters ?? []) {
-      const { field, negate, value } = filter;
-      whereOptions[field] = {
-        [negate ? Op.notIn : Op.in]: value,
-      };
-    }
-
-    return options;
+export function FilteredListQueryArgs<
+  AllKeys extends string,
+  StringFilterKeys extends AllKeys,
+  NumericFilterKeys extends AllKeys,
+  DateFilterKeys extends AllKeys,
+  BooleanFilterKeys extends AllKeys,
+>(
+  resolverName: string,
+  {
+    all: allKeys = [],
+    string: stringFilterKeys = [],
+    numeric: numericFilterKeys = [],
+    date: dateFilterKeys = [],
+    boolean: booleanFilterKeys = [],
+  }: {
+    all?: AllKeys[];
+    string?: StringFilterKeys[];
+    numeric?: NumericFilterKeys[];
+    date?: DateFilterKeys[];
+    boolean?: BooleanFilterKeys[];
   }
+) {
+  const AllKeysEnum = Object.fromEntries(allKeys.map((key) => [key, key])) as {
+    [key in AllKeys]: key;
+  };
+  if (allKeys.length > 0) {
+    registerEnumType(AllKeysEnum, { name: `${resolverName}AllKeys` });
+  }
+
+  const StringFilterKeysEnum = Object.fromEntries(
+    stringFilterKeys.map((key) => [key, key])
+  ) as {
+    [key in StringFilterKeys]: key;
+  };
+  if (stringFilterKeys.length > 0) {
+    registerEnumType(StringFilterKeysEnum, {
+      name: `${resolverName}StringFilterKeys`,
+    });
+  }
+
+  const NumericFilterKeysEnum = Object.fromEntries(
+    numericFilterKeys.map((key) => [key, key])
+  ) as {
+    [key in NumericFilterKeys]: key;
+  };
+  if (numericFilterKeys.length > 0) {
+    registerEnumType(NumericFilterKeysEnum, {
+      name: `${resolverName}NumericFilterKeys`,
+    });
+  }
+
+  const DateFilterKeysEnum = Object.fromEntries(
+    dateFilterKeys.map((key) => [key, key])
+  ) as {
+    [key in DateFilterKeys]: key;
+  };
+  if (dateFilterKeys.length > 0) {
+    registerEnumType(DateFilterKeysEnum, {
+      name: `${resolverName}DateFilterKeys`,
+    });
+  }
+
+  const BooleanFilterKeysEnum = Object.fromEntries(
+    booleanFilterKeys.map((key) => [key, key])
+  ) as {
+    [key in BooleanFilterKeys]: key;
+  };
+  if (booleanFilterKeys.length > 0) {
+    registerEnumType(BooleanFilterKeysEnum, {
+      name: `${resolverName}BooleanFilterKeys`,
+    });
+  }
+
+  @InputType()
+  class KeyedStringFilterItem extends StringFilterItem(StringFilterKeysEnum) {}
+  @InputType()
+  class KeyedNumericFilterItem extends NumericFilterItem(
+    NumericFilterKeysEnum
+  ) {}
+  @InputType()
+  class KeyedDateFilterItem extends DateFilterItem(DateFilterKeysEnum) {}
+  @InputType()
+  class KeyedBooleanFilterItem extends BooleanFilterItem(
+    BooleanFilterKeysEnum
+  ) {}
+  @InputType()
+  class KeyedOneOfFilterItem extends OneOfFilterItem(StringFilterKeysEnum) {}
+  @InputType()
+  class KeyedIsNullFilterItem extends IsNullFilterItem(AllKeysEnum) {}
+
+  @ArgsType()
+  abstract class FilteredListQueryArgs extends AbstractFilteredListQueryArgs<
+    AllKeys,
+    StringFilterKeys,
+    NumericFilterKeys,
+    DateFilterKeys,
+    BooleanFilterKeys
+  > {
+    @Field(
+      () =>
+        stringFilterKeys.length > 0 ? [KeyedStringFilterItem] : VoidScalar,
+      {
+        nullable: true,
+        description: "The string filters to apply to the query",
+      }
+    )
+    stringFilters!: KeyedStringFilterItem[] | null;
+
+    @Field(
+      () =>
+        numericFilterKeys.length > 0 ? [KeyedNumericFilterItem] : VoidScalar,
+      {
+        nullable: true,
+        description: "The numeric filters to apply to the query",
+      }
+    )
+    numericFilters!: KeyedNumericFilterItem[] | null;
+
+    @Field(
+      () => (dateFilterKeys.length > 0 ? [KeyedDateFilterItem] : VoidScalar),
+      {
+        nullable: true,
+        description: "The date filters to apply to the query",
+      }
+    )
+    dateFilters!: KeyedDateFilterItem[] | null;
+
+    @Field(
+      () =>
+        booleanFilterKeys.length > 0 ? [KeyedBooleanFilterItem] : VoidScalar,
+      {
+        nullable: true,
+        description: "The boolean filters to apply to the query",
+      }
+    )
+    booleanFilters!: KeyedBooleanFilterItem[] | null;
+
+    @Field(() => (allKeys.length > 0 ? [KeyedIsNullFilterItem] : VoidScalar), {
+      nullable: true,
+      description: "The is-null filters to apply to the query",
+    })
+    isNullFilters!: KeyedIsNullFilterItem[] | null;
+
+    @Field(
+      () => (stringFilterKeys.length > 0 ? [KeyedOneOfFilterItem] : VoidScalar),
+      {
+        nullable: true,
+        description: "The one-of filters to apply to the query",
+      }
+    )
+    oneOfFilters!: KeyedOneOfFilterItem[] | null;
+
+    toSequelizeFindOptions(
+      sortByMap?: Partial<Record<AllKeys, Fn | Col | Literal | string>>
+    ): FindOptions<Record<AllKeys, never>> {
+      const options: FindOptions<Record<AllKeys, never>> =
+        super.toSequelizeFindOptions(sortByMap);
+
+      const whereOptions: WhereAttributeHash<
+        Record<string, string | number | typeof DateTimeScalar | boolean>
+      > = {};
+
+      for (const filter of this.stringFilters ?? []) {
+        const { field, negate, value, comparison } = filter;
+        whereOptions[field] = {
+          [getSequelizeOpForComparator(comparison, negate)]: value,
+        };
+      }
+      for (const filter of this.numericFilters ?? []) {
+        const { field, value, comparison, negate } = filter;
+        whereOptions[field] = {
+          [getSequelizeOpForComparator(comparison, negate)]: value,
+        };
+      }
+      for (const filter of this.dateFilters ?? []) {
+        const { field, negate, comparison, value } = filter;
+        whereOptions[field] = {
+          [getSequelizeOpForComparator(comparison, negate)]: value,
+        };
+      }
+      for (const filter of this.booleanFilters ?? []) {
+        const { field, comparison, negate, value } = filter;
+        whereOptions[field] = {
+          [getSequelizeOpForComparator(comparison, negate)]: value,
+        };
+      }
+      for (const filter of this.isNullFilters ?? []) {
+        const { field, negate } = filter;
+        whereOptions[field] = {
+          [negate ? Op.not : Op.is]: null,
+        };
+      }
+      for (const filter of this.oneOfFilters ?? []) {
+        const { field, negate, value } = filter;
+        whereOptions[field] = {
+          [negate ? Op.notIn : Op.in]: value,
+        };
+      }
+
+      return options;
+    }
+  }
+
+  return FilteredListQueryArgs;
 }
 
 @InputType()
@@ -255,15 +376,15 @@ export abstract class FilterItem<Field extends string, V> {
     description:
       "Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.",
     defaultValue: false,
+    nullable: true,
   })
   negate?: boolean;
 }
 
 @InputType()
-export class StringFilterItem<Field extends string> extends FilterItem<
-  Field,
-  string | { toString: Pick<string, "toString"> }
-> {
+export abstract class AbstractStringFilterItem<
+  Field extends string,
+> extends FilterItem<Field, string | { toString: Pick<string, "toString"> }> {
   @Field(() => String, { description: "The value to filter by" })
   value!: string | { toString: Pick<string, "toString"> };
 
@@ -273,11 +394,24 @@ export class StringFilterItem<Field extends string> extends FilterItem<
   comparison!: StringComparator;
 }
 
+export function StringFilterItem<Field extends string>(fieldEnum: {
+  [key in Field]: key;
+}) {
+  @InputType()
+  abstract class StringFilterItem extends AbstractStringFilterItem<Field> {
+    @Field(() => fieldEnum, {
+      description: "The field to filter on",
+    })
+    field!: Field;
+  }
+
+  return StringFilterItem;
+}
+
 @InputType()
-export class NumericFilterItem<Field extends string> extends FilterItem<
-  Field,
-  number
-> {
+export abstract class AbstractNumericFilterItem<
+  Field extends string,
+> extends FilterItem<Field, number> {
   @Field(() => Number, { description: "The value to filter by" })
   value!: number;
 
@@ -287,11 +421,24 @@ export class NumericFilterItem<Field extends string> extends FilterItem<
   comparison!: NumericComparator;
 }
 
+export function NumericFilterItem<Field extends string>(fieldEnum: {
+  [key in Field]: key;
+}) {
+  @InputType()
+  abstract class NumericFilterItem extends AbstractNumericFilterItem<Field> {
+    @Field(() => fieldEnum, {
+      description: "The field to filter on",
+    })
+    field!: Field;
+  }
+
+  return NumericFilterItem;
+}
+
 @InputType()
-export class DateFilterItem<Field extends string> extends FilterItem<
-  Field,
-  typeof DateTimeScalar
-> {
+export abstract class AbstractDateFilterItem<
+  Field extends string,
+> extends FilterItem<Field, typeof DateTimeScalar> {
   @Field(() => DateTimeScalar, { description: "The value to filter by" })
   value!: typeof DateTimeScalar;
 
@@ -301,11 +448,24 @@ export class DateFilterItem<Field extends string> extends FilterItem<
   comparison!: NumericComparator;
 }
 
+export function DateFilterItem<Field extends string>(fieldEnum: {
+  [key in Field]: key;
+}) {
+  @InputType()
+  abstract class DateFilterItem extends AbstractDateFilterItem<Field> {
+    @Field(() => fieldEnum, {
+      description: "The field to filter on",
+    })
+    field!: Field;
+  }
+
+  return DateFilterItem;
+}
+
 @InputType()
-export class BooleanFilterItem<Field extends string> extends FilterItem<
-  Field,
-  boolean
-> {
+export abstract class AbstractBooleanFilterItem<
+  Field extends string,
+> extends FilterItem<Field, boolean> {
   @Field(() => Boolean, { description: "The value to filter by" })
   value!: boolean;
 
@@ -315,35 +475,58 @@ export class BooleanFilterItem<Field extends string> extends FilterItem<
   comparison!: IsComparator;
 }
 
-@InputType()
-export class IsNullFilterItem<Field extends string> extends FilterItem<
-  Field,
-  null
-> {
-  value!: never;
-  comparison!: never;
+export function BooleanFilterItem<Field extends string>(fieldEnum: {
+  [key in Field]: key;
+}) {
+  @InputType()
+  abstract class BooleanFilterItem extends AbstractBooleanFilterItem<Field> {
+    @Field(() => fieldEnum, {
+      description: "The field to filter on",
+    })
+    field!: Field;
+  }
+
+  return BooleanFilterItem;
 }
 
 @InputType()
-export class OneOfFilterItem<Field extends string> extends FilterItem<
-  Field,
-  readonly string[]
-> {
+export abstract class AbstractOneOfFilterItem<
+  Field extends string,
+> extends FilterItem<Field, readonly string[]> {
   @Field(() => [String], { description: "The value to filter by" })
   value!: readonly string[];
 
   comparison!: never;
 }
 
-export const FilterItemUnion = createUnionType({
-  name: "FilterItemUnion",
-  types: () =>
-    [
-      StringFilterItem,
-      NumericFilterItem,
-      DateFilterItem,
-      BooleanFilterItem,
-      IsNullFilterItem,
-      OneOfFilterItem,
-    ] as const,
-});
+export function OneOfFilterItem<Field extends string>(fieldEnum: {
+  [key in Field]: key;
+}) {
+  @InputType()
+  abstract class OneOfFilterItem extends AbstractOneOfFilterItem<Field> {
+    @Field(() => fieldEnum, { description: "The field to filter on" })
+    field!: Field;
+  }
+
+  return OneOfFilterItem;
+}
+
+@InputType()
+export abstract class AbstractIsNullFilterItem<
+  Field extends string,
+> extends FilterItem<Field, null> {
+  value!: never;
+  comparison!: never;
+}
+
+export function IsNullFilterItem<Field extends string>(fieldEnum: {
+  [key in Field]: key;
+}) {
+  @InputType()
+  abstract class IsNullFilterItem extends AbstractIsNullFilterItem<Field> {
+    @Field(() => fieldEnum, { description: "The field to filter on" })
+    field!: Field;
+  }
+
+  return IsNullFilterItem;
+}
