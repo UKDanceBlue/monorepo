@@ -6,21 +6,23 @@ export const Comparator = {
   LESS_THAN: "lt",
   GREATER_THAN_OR_EQUAL_TO: "gte",
   LESS_THAN_OR_EQUAL_TO: "lte",
-  INCLUDES: "incl",
   LIKE: "like",
   REGEX: "regex",
+  SUBSTRING: "substring",
   STARTS_WITH: "sw",
   ENDS_WITH: "ew",
+  IS: "is",
 } as const;
 export type Comparator = (typeof Comparator)[keyof typeof Comparator];
 
 export const StringComparator = {
   EQUALS: "eq",
-  INCLUDES: "incl",
   LIKE: "like",
   REGEX: "regex",
+  SUBSTRING: "substring",
   STARTS_WITH: "sw",
   ENDS_WITH: "ew",
+  IS: "is",
 } as const;
 export type StringComparator =
   (typeof StringComparator)[keyof typeof StringComparator];
@@ -31,15 +33,15 @@ export const NumericComparator = {
   LESS_THAN: "lt",
   GREATER_THAN_OR_EQUAL_TO: "gte",
   LESS_THAN_OR_EQUAL_TO: "lte",
+  IS: "is",
 } as const;
 export type NumericComparator =
   (typeof NumericComparator)[keyof typeof NumericComparator];
 
-export const EqualityComparator = {
-  EQUALS: "eq",
+export const IsComparator = {
+  IS: "is",
 } as const;
-export type EqualityComparator =
-  (typeof EqualityComparator)[keyof typeof EqualityComparator];
+export type IsComparator = (typeof IsComparator)[keyof typeof IsComparator];
 
 () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -47,18 +49,15 @@ export type EqualityComparator =
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const numericComparator: Comparator = "" as NumericComparator;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const equalityComparator: Comparator = "" as EqualityComparator;
+  const equalityComparator: Comparator = "" as IsComparator;
 
   throw new Error("This function should never be exported");
 };
 
-/**
- * Date fields should be sent as ISO 8601 strings.
- */
 export interface FilterItem<
   Resource extends object,
   Key extends keyof Resource & string = keyof Resource & string,
-  ValueType extends Resource[Key] = Resource[Key],
+  ValueType extends Resource[Key] = Resource[Key]
 > {
   /**
    * The value to filter on.
@@ -76,7 +75,13 @@ export interface FilterItem<
     ? StringComparator // String uses StringComparators
     : ValueType extends number
     ? NumericComparator // Number uses NumericComparators
-    : EqualityComparator; // Default to Comparator.EQUALS
+    : IsComparator; // Default to Comparator.EQUALS
+  /**
+   * Should the comparator be negated?
+   * WARNING: This will throw if used on a comparator that does not support negation.
+   * @default false
+   */
+  negate?: boolean;
 }
 
 // type StringFilter<

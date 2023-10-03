@@ -65,19 +65,19 @@ class CreateEventInput {
   duration!: Duration;
 }
 
-@InputType()
-class ListEvents extends FilteredListQueryArgs<
-  | "name"
-  | "description"
-  | "location"
-  | "firstOccurrence"
-  | "lastOccurrence"
-  | "duration",
-  "name" | "description" | "location",
-  "duration",
-  "firstOccurrence" | "lastOccurrence",
-  never
-> {}
+// @InputType()
+// class ListEvents extends FilteredListQueryArgs<
+//   | "name"
+//   | "description"
+//   | "location"
+//   | "firstOccurrence"
+//   | "lastOccurrence"
+//   | "duration",
+//   "name" | "description" | "location",
+//   "duration",
+//   "firstOccurrence" | "lastOccurrence",
+//   never
+// > {}
 
 @Resolver(() => EventResource)
 export class EventResolver implements ResolverInterface<EventResource> {

@@ -1,6 +1,8 @@
 import { DeviceResource, ErrorCode } from "@ukdanceblue/common";
 import {
   Arg,
+  Args,
+  ArgsType,
   Field,
   InputType,
   Mutation,
@@ -73,7 +75,7 @@ class CreateDeviceInput implements Partial<DeviceResource> {
   lastUserId?: string | null;
 }
 
-@InputType()
+@ArgsType()
 class ListDevicesArgs extends FilteredListQueryArgs<
   "deviceId" | "expoPushToken" | "lastUserId" | "lastLogin",
   "expoPushToken" | "lastUserId",
@@ -99,7 +101,7 @@ export class DeviceResolver implements ResolverInterface<DeviceResource> {
 
   @Query(() => ListDevicesResponse, { name: "listDevices" })
   async list(
-    @Arg("query", () => ListDevicesArgs) query: ListDevicesArgs
+    @Args(() => ListDevicesArgs) query: ListDevicesArgs
   ): Promise<ListDevicesResponse> {
     const findOptions = query.toSequelizeFindOptions({
       deviceId: "deviceId",
@@ -108,26 +110,26 @@ export class DeviceResolver implements ResolverInterface<DeviceResource> {
       lastLogin: "lastLogin",
     });
 
-    findOptions.where = {
-      ...(findOptions.where ?? {}),
-      ...(query.expoPushToken != null
-        ? {
-            expoPushToken: {
-              [query.expoPushToken.comparison]: query.expoPushToken.value,
-            },
-          }
-        : {}),
-      ...(query.lastUserId != null
-        ? {
-            lastUserId: {
-              [query.lastUserId.comparison]: query.lastUserId.value,
-            },
-          }
-        : {}),
-      ...(query.lastLogin != null
-        ? { lastLogin: { [query.lastLogin.comparison]: query.lastLogin.value } }
-        : {}),
-    };
+    // findOptions.where = {
+    //   ...(findOptions.where ?? {}),
+    //   ...(query.expoPushToken != null
+    //     ? {
+    //         expoPushToken: {
+    //           [query.expoPushToken.comparison]: query.expoPushToken.value,
+    //         },
+    //       }
+    //     : {}),
+    //   ...(query.lastUserId != null
+    //     ? {
+    //         lastUserId: {
+    //           [query.lastUserId.comparison]: query.lastUserId.value,
+    //         },
+    //       }
+    //     : {}),
+    //   ...(query.lastLogin != null
+    //     ? { lastLogin: { [query.lastLogin.comparison]: query.lastLogin.value } }
+    //     : {}),
+    // };
 
     const { rows, count } = await DeviceModel.findAndCountAll(findOptions);
 

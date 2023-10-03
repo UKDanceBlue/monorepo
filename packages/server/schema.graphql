@@ -3,104 +3,82 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-"""
-API response
-"""
+"""API response"""
 interface AbstractGraphQLArrayOkResponse implements GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
-"""
-API response
-"""
+"""API response"""
 interface AbstractGraphQLCreatedResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 
-  """
-  The UUID of the created resource
-  """
+  """The UUID of the created resource"""
   uuid: String!
 }
 
-"""
-API response
-"""
+"""API response"""
 interface AbstractGraphQLOkResponse implements GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
-"""
-API response
-"""
+"""API response"""
 interface AbstractGraphQLPaginatedResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 
-  """
-  The current page number (1-indexed)
-  """
+  """The current page number (1-indexed)"""
   page: Float!
 
-  """
-  The number of items per page
-  """
+  """The number of items per page"""
   pageSize: Float!
 
-  """
-  The total number of items
-  """
+  """The total number of items"""
   total: Float!
 }
 
-"""
-The source of authentication
-"""
+"""The source of authentication"""
 enum AuthSource {
   Anonymous
   UkyLinkblue
 }
 
-"""
-Actions that the client MUST take if specified
-"""
+input BooleanFilterItem {
+  """The comparator to use for the filter"""
+  comparison: IsComparator!
+
+  """The field to filter on"""
+  field: String!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean! = false
+
+  """The value to filter by"""
+  value: Boolean!
+}
+
+"""Actions that the client MUST take if specified"""
 enum ClientAction {
   LOGOUT
 }
 
-"""
-Roles within a committee
-"""
+"""Roles within a committee"""
 enum CommitteeRole {
   Chair
   Coordinator
@@ -116,59 +94,39 @@ input CreateConfigurationInput {
 }
 
 type CreateConfigurationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
   data: ConfigurationResource!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 
-  """
-  The UUID of the created resource
-  """
+  """The UUID of the created resource"""
   uuid: String!
 }
 
 input CreateDeviceInput {
-  """
-  The UUID of the device
-  """
+  """The UUID of the device"""
   deviceId: String!
 
-  """
-  The Expo push token of the device
-  """
+  """The Expo push token of the device"""
   expoPushToken: String
 
-  """
-  The ID of the last user to log in on this device
-  """
+  """The ID of the last user to log in on this device"""
   lastUserId: String
 }
 
 type CreateDeviceResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
 
-  """
-  The payload of the response
-  """
+  """The payload of the response"""
   data: DeviceResource!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 
-  """
-  The UUID of the created resource
-  """
+  """The UUID of the created resource"""
   uuid: String!
 }
 
@@ -181,20 +139,14 @@ input CreateEventInput {
 }
 
 type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
   data: EventResource!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 
-  """
-  The UUID of the created resource
-  """
+  """The UUID of the created resource"""
   uuid: String!
 }
 
@@ -209,20 +161,14 @@ input CreateImageInput {
 }
 
 type CreateImageResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
   data: ImageResource!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 
-  """
-  The UUID of the created resource
-  """
+  """The UUID of the created resource"""
   uuid: String!
 }
 
@@ -231,43 +177,37 @@ input CreatePersonInput {
 }
 
 type CreatePersonResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
   data: PersonResource!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 
-  """
-  The UUID of the created resource
-  """
+  """The UUID of the created resource"""
   uuid: String!
 }
 
 input DateFilterItem {
-  """
-  The comparator to use for the filter
-  """
+  """The comparator to use for the filter"""
   comparison: NumericComparator!
 
+  """The field to filter on"""
+  field: String!
+
   """
-  The value to filter by
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
+  negate: Boolean! = false
+
+  """The value to filter by"""
   value: DateTime!
 }
 
-"""
-Luxon DateTime custom scalar type
-"""
+"""Luxon DateTime custom scalar type"""
 scalar DateTime
 
-"""
-DanceBlue roles
-"""
+"""DanceBlue roles"""
 enum DbRole {
   Committee
   None
@@ -277,71 +217,49 @@ enum DbRole {
 }
 
 type DeleteConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
   data: Boolean!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type DeleteDeviceResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
 
-  """
-  The payload of the response
-  """
+  """The payload of the response"""
   data: Boolean!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type DeleteEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
   data: Boolean!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type DeleteImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
   data: Boolean!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type DeletePersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
   data: Boolean!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
@@ -352,9 +270,7 @@ type DeviceResource {
   lastUser: PersonResource
 }
 
-"""
-Luxon Duration custom scalar type
-"""
+"""Luxon Duration custom scalar type"""
 scalar Duration
 
 type EventResource {
@@ -369,112 +285,76 @@ type EventResource {
 }
 
 type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
   data: ConfigurationResource!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetConfigurationByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
   data: ConfigurationResource!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetDeviceByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
 
-  """
-  The payload of the response
-  """
+  """The payload of the response"""
   data: DeviceResource!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetEventByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
   data: EventResource!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetImageByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
   data: ImageResource!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetPersonByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
   data: PersonResource!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetThumbHashByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
   data: String!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
-"""
-API response
-"""
+"""API response"""
 interface GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
@@ -489,48 +369,42 @@ type ImageResource {
   width: Int!
 }
 
+enum IsComparator {
+  IS
+}
+
+input IsNullFilterItem {
+  """The field to filter on"""
+  field: String!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean! = false
+}
+
 type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
 
-  """
-  The payload of the response
-  """
+  """The payload of the response"""
   data: [DeviceResource!]!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 
-  """
-  The current page number (1-indexed)
-  """
+  """The current page number (1-indexed)"""
   page: Float!
 
-  """
-  The number of items per page
-  """
+  """The number of items per page"""
   pageSize: Float!
 
-  """
-  The total number of items
-  """
+  """The total number of items"""
   total: Float!
 }
 
-input ListQueryArgs {
-  expoPushToken: StringFilterItem
-  lastLogin: DateFilterItem
-  lastUserId: StringFilterItem
-}
-
 type Mutation {
-  createConfiguration(
-    input: CreateConfigurationInput!
-  ): CreateConfigurationResponse!
+  createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
   createDevice(input: CreateDeviceInput!): CreateDeviceResponse!
   createEvent(input: CreateEventInput!): CreateEventResponse!
   createImage(input: CreateImageInput!): CreateImageResponse!
@@ -540,18 +414,45 @@ type Mutation {
   deleteEvent(id: String!): DeleteEventResponse!
   deleteImage(id: String!): DeleteImageResponse!
   deletePerson(id: String!): DeletePersonResponse!
-  setConfiguration(
-    id: String!
-    input: SetConfigurationInput!
-  ): SetConfigurationResponse!
+  setConfiguration(id: String!, input: SetConfigurationInput!): SetConfigurationResponse!
 }
 
 enum NumericComparator {
   EQUALS
   GREATER_THAN
   GREATER_THAN_OR_EQUAL_TO
+  IS
   LESS_THAN
   LESS_THAN_OR_EQUAL_TO
+}
+
+input NumericFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: String!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean! = false
+
+  """The value to filter by"""
+  value: Float!
+}
+
+input OneOfFilterItem {
+  """The field to filter on"""
+  field: String!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean! = false
+
+  """The value to filter by"""
+  value: [String!]!
 }
 
 type PersonResource {
@@ -574,7 +475,41 @@ type Query {
   getImageByUuid(uuid: String!): GetImageByUuidResponse!
   getPersonByUuid(uuid: String!): GetPersonByUuidResponse!
   getThumbHashByUuid(uuid: String!): GetThumbHashByUuidResponse
-  listDevices(query: ListQueryArgs!): ListDevicesResponse!
+  listDevices(
+    """The boolean filters to apply to the query"""
+    booleanFilters: [BooleanFilterItem!]
+
+    """The date filters to apply to the query"""
+    dateFilters: [DateFilterItem!]
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [IsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: [NumericFilterItem!]
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: [OneOfFilterItem!]
+
+    """The page number to return, defaults to 0"""
+    page: Float
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Float
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: [StringFilterItem!]
+  ): ListDevicesResponse!
 }
 
 type RoleResource {
@@ -588,32 +523,42 @@ input SetConfigurationInput {
 }
 
 type SetConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """
-  Client actions to perform
-  """
+  """Client actions to perform"""
   clientActions: [ClientAction!]
   data: ConfigurationResource!
 
-  """
-  Whether the operation was successful
-  """
+  """Whether the operation was successful"""
   ok: Boolean!
 }
 
+enum SortDirection {
+  ASCENDING
+  DESCENDING
+}
+
 enum StringComparator {
+  ENDS_WITH
   EQUALS
-  INCLUDES
+  IS
+  LIKE
+  REGEX
+  STARTS_WITH
+  SUBSTRING
 }
 
 input StringFilterItem {
-  """
-  The comparator to use for the filter
-  """
+  """The comparator to use for the filter"""
   comparison: StringComparator!
 
+  """The field to filter on"""
+  field: String!
+
   """
-  The value to filter by
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
+  negate: Boolean! = false
+
+  """The value to filter by"""
   value: String!
 }
 
@@ -627,15 +572,11 @@ type TeamResource {
   visibility: DbRole!
 }
 
-"""
-Types of teams
-"""
+"""Types of teams"""
 enum TeamType {
   Morale
   Spirit
 }
 
-"""
-URL custom scalar type
-"""
+"""URL custom scalar type"""
 scalar URL
