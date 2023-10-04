@@ -64,7 +64,6 @@
     "koa-bodyparser": "^4.4.1",
     "luxon": "^3.3.0",
     "multer": "1.4.5-lts.1",
-    "node": "^18.15.0",
     "node-fetch": "^3.3.1",
     "normalize-path": "^3.0.0",
     "openid-client": "^5.4.0",

@@ -2,9 +2,10 @@ import type { Primitive, PrimitiveObject } from "../../index.js";
 import { isPrimitive, isPrimitiveObject } from "../../index.js";
 import { ErrorCode } from "../graphql/error.js";
 
-export enum ClientAction {
-  LOGOUT = "logout",
-}
+export const ClientAction = {
+  LOGOUT: "logout",
+} as const;
+export type ClientAction = (typeof ClientAction)[keyof typeof ClientAction];
 
 export interface BaseResponse {
   /**

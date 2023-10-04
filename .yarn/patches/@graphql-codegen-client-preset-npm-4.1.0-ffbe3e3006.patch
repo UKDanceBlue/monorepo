@@ -1,0 +1,26 @@
+diff --git a/cjs/index.js b/cjs/index.js
+index 8424b6a11586092665872ab1e190b57602efe44b..9e6f342e1fe583a40863b029db887fdd95c1f360 100644
+--- a/cjs/index.js
++++ b/cjs/index.js
+@@ -182,7 +182,7 @@ exports.preset = {
+                 schema: options.schema,
+                 config: {
+                     inlineFragmentTypes: isMaskingFragments ? 'mask' : options.config['inlineFragmentTypes'],
+-                    ...forwardedConfig,
++                    ...options.config,
+                 },
+                 documents: sources,
+                 documentTransforms: options.documentTransforms,
+diff --git a/esm/index.js b/esm/index.js
+index be26a67a1b827896d16813b22b9a45aec5ac5586..c7cb26b337ef39b4270aff021cfe9ccb148e0848 100644
+--- a/esm/index.js
++++ b/esm/index.js
+@@ -177,7 +177,7 @@ export const preset = {
+                 schema: options.schema,
+                 config: {
+                     inlineFragmentTypes: isMaskingFragments ? 'mask' : options.config['inlineFragmentTypes'],
+-                    ...forwardedConfig,
++                    ...options.config,
+                 },
+                 documents: sources,
+                 documentTransforms: options.documentTransforms,
