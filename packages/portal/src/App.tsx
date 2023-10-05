@@ -1,7 +1,6 @@
 import { notificationProvider } from "@refinedev/antd";
 import { Refine, WelcomePage } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
-import dataProvider, { GraphQLClient } from "@refinedev/graphql";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import "@refinedev/antd/dist/reset.css";
 import routerBindings, {
@@ -12,9 +11,9 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { authProvider } from "./authProvider";
 import { ColorModeContextProvider } from "./contexts/color-mode";
+import { danceblueGraphQlDataProvider } from "./data-provider";
 const API_URL = "http://localhost:4000/";
-const client = new GraphQLClient(API_URL);
-const gqlDataProvider = dataProvider(client);
+const gqlDataProvider = danceblueGraphQlDataProvider(API_URL);
 
 function App() {
   return (
