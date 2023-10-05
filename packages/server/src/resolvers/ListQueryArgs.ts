@@ -22,7 +22,13 @@ import {
   VoidScalar,
 } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
-import { ArgsType, Field, InputType, registerEnumType } from "type-graphql";
+import {
+  ArgsType,
+  Field,
+  InputType,
+  Int,
+  registerEnumType,
+} from "type-graphql";
 
 registerEnumType(SortDirection, { name: "SortDirection" });
 
@@ -82,12 +88,12 @@ export function getSequelizeOpForComparator(
 export class UnfilteredListQueryArgs<SortByKeys extends string = never>
   implements OptionalToNullable<Partial<ListQueryType<Resource>>>
 {
-  @Field(() => Number, {
+  @Field(() => Int, {
     nullable: true,
     description: `The number of items to return per page, defaults to ${DEFAULT_PAGE_SIZE}`,
   })
   pageSize!: number | null;
-  @Field(() => Number, {
+  @Field(() => Int, {
     nullable: true,
     description: `The page number to return, defaults to ${DEFAULT_PAGE}`,
   })

@@ -623,10 +623,10 @@ type Query {
     oneOfFilters: [DeviceResolverKeyedOneOfFilterItem!]
 
     """The page number to return, defaults to 0"""
-    page: Float
+    page: Int
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Float
+    pageSize: Int
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -658,10 +658,10 @@ type Query {
     oneOfFilters: [EventResolverKeyedOneOfFilterItem!]
 
     """The page number to return, defaults to 0"""
-    page: Float
+    page: Int
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Float
+    pageSize: Int
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined

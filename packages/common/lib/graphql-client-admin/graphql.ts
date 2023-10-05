@@ -646,8 +646,8 @@ export type QueryListDevicesArgs = {
   isNullFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
   oneOfFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedOneOfFilterItem>>;
-  page?: InputMaybe<Scalars['Float']['input']>;
-  pageSize?: InputMaybe<Scalars['Float']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
   stringFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedStringFilterItem>>;
@@ -660,8 +660,8 @@ export type QueryListEventsArgs = {
   isNullFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedNumericFilterItem>>;
   oneOfFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedOneOfFilterItem>>;
-  page?: InputMaybe<Scalars['Float']['input']>;
-  pageSize?: InputMaybe<Scalars['Float']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
   stringFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedStringFilterItem>>;
@@ -708,12 +708,12 @@ export type TeamResource = {
 
 export { TeamType };
 
-export type GetPersonEmailQueryVariables = Exact<{
-  uuid: Scalars['String']['input'];
+export type ListEventsQueryVariables = Exact<{
+  page: Scalars['Int']['input'];
 }>;
 
 
-export type GetPersonEmailQuery = { readonly __typename?: 'Query', readonly getPersonByUuid: { readonly __typename?: 'GetPersonByUuidResponse', readonly ok: boolean, readonly clientActions?: ReadonlyArray<ClientAction> | null, readonly data: { readonly __typename?: 'PersonResource', readonly email: string } } };
+export type ListEventsQuery = { readonly __typename?: 'Query', readonly listEvents: { readonly __typename?: 'ListEventsResponse', readonly ok: boolean, readonly data: ReadonlyArray<{ readonly __typename?: 'EventResource', readonly title: string }> } };
 
 
-export const GetPersonEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getPersonEmail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getPersonByUuid"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}},{"kind":"Field","name":{"kind":"Name","value":"clientActions"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<GetPersonEmailQuery, GetPersonEmailQueryVariables>;
+export const ListEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ListEvents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listEvents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}}]}}]}}]}}]} as unknown as DocumentNode<ListEventsQuery, ListEventsQueryVariables>;

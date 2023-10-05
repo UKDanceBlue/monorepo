@@ -7,7 +7,6 @@ import type { AuthSource } from '../auth/index.js';
 import type { DbRole } from '../auth/index.js';
 import type { CommitteeRole } from '../auth/index.js';
 import type { ClientAction } from '../api/response/JsonResponse.js';
-import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -707,11 +706,3 @@ export type TeamResource = {
 };
 
 export { TeamType };
-
-export type CanListEventsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type CanListEventsQuery = { readonly __typename?: 'Query', readonly listEvents: { readonly __typename?: 'ListEventsResponse', readonly ok: boolean } };
-
-
-export const CanListEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"canListEvents"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listEvents"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<CanListEventsQuery, CanListEventsQueryVariables>;
