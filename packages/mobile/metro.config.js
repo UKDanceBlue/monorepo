@@ -1,6 +1,8 @@
 // Learn more https://docs.expo.io/guides/customizing-metro
 const path = require("path");
 
+// https://github.com/jsamr/yarnberry-expo-quickstarter?tab=readme-ov-file#customize-metroconfigjs
+
 const { getDefaultConfig } = require("expo/metro-config");
 
 // Find the project and workspace directories

@@ -1,12 +1,13 @@
 /* eslint-disable */
-import type { StringComparator } from '../lib/api/request/ListQueryTypes.js';
-import type { NumericComparator } from '../lib/api/request/ListQueryTypes.js';
-import type { SortDirection } from '../lib/api/request/ListQueryTypes.js';
-import type { TeamType } from '../lib/api/graphql/object-types/Team.js';
-import type { AuthSource } from '../lib/auth/index.js';
-import type { DbRole } from '../lib/auth/index.js';
-import type { CommitteeRole } from '../lib/auth/index.js';
-import type { ClientAction } from '../lib/api/response/JsonResponse.js';
+import type { StringComparator } from '../api/request/ListQueryTypes.js';
+import type { NumericComparator } from '../api/request/ListQueryTypes.js';
+import type { SortDirection } from '../api/request/ListQueryTypes.js';
+import type { TeamType } from '../api/graphql/object-types/Team.js';
+import type { AuthSource } from '../auth/index.js';
+import type { DbRole } from '../auth/index.js';
+import type { CommitteeRole } from '../auth/index.js';
+import type { ClientAction } from '../api/response/JsonResponse.js';
+import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -706,3 +707,13 @@ export type TeamResource = {
 };
 
 export { TeamType };
+
+export type GetPersonEmailQueryVariables = Exact<{
+  uuid: Scalars['String']['input'];
+}>;
+
+
+export type GetPersonEmailQuery = { readonly __typename?: 'Query', readonly getPersonByUuid: { readonly __typename?: 'GetPersonByUuidResponse', readonly ok: boolean, readonly clientActions?: ReadonlyArray<ClientAction> | null, readonly data: { readonly __typename?: 'PersonResource', readonly email: string } } };
+
+
+export const GetPersonEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getPersonEmail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getPersonByUuid"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}},{"kind":"Field","name":{"kind":"Name","value":"clientActions"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<GetPersonEmailQuery, GetPersonEmailQueryVariables>;

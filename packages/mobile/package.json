@@ -20,6 +20,7 @@
     "eas-build-pre-install": "bash -c \"[ ! -z \\\"$EAS_BUILD_NPM_CACHE_URL\\\" ] && sed -i -e \\\"s#https://registry.yarnpkg.com#$EAS_BUILD_NPM_CACHE_URL#g\\\" yarn.lock\" || true"
   },
   "dependencies": {
+    "@apollo/client": "3.8.4",
     "@expo/config-plugins": "^5.0.4",
     "@expo/vector-icons": "^13.0.0",
     "@jonasmerlin/react-native-markdown-display": "^1.1.0",
@@ -43,7 +44,7 @@
     "@react-navigation/native-stack": "6.9.2",
     "@react-navigation/stack": "6.2.1",
     "@shopify/react-native-skia": "0.1.141",
-    "@ukdanceblue/common": "2.0.0",
+    "@ukdanceblue/common": "workspace:^",
     "expo": "^46.0.0",
     "expo-application": "~4.2.2",
     "expo-asset": "~8.6.3",
@@ -120,8 +121,8 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   },
-  "resolutions": {
-    "@expo/config-plugins": "^5.0.0"
+  "installConfig": {
+    "hoistingLimits": "workspaces"
   },
   "private": true
 }

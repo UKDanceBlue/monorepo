@@ -17,19 +17,19 @@
     },
     "./react": {
       "node": null,
-      "browser": "./dist/react.js",
-      "react-native": "./dist/react.js",
-      "import": "./dist/react.js",
-      "require": "./dist/react.js",
-      "types": "./dist/react.d.ts"
+      "types": "./dist/react.d.ts",
+      "default": "./dist/react/index.js"
     },
-    "./graphql-client": {
+    "./graphql-client-admin": {
       "node": null,
-      "browser": "./dist/graphql-client/index.js",
+      "react-native": null,
+      "types": "./dist/graphql-client/index.d.ts",
+      "default": "./dist/graphql-client/index.js"
+    },
+    "./graphql-client-public": {
+      "node": null,
       "react-native": "./dist/graphql-client/index.js",
-      "import": "./dist/graphql-client/index.js",
-      "require": "./dist/graphql-client/index.js",
-      "types": "./dist/graphql-client/index.d.ts"
+      "default": "./dist/graphql-client/index.js"
     }
   },
   "main": "./dist/index.js",
@@ -40,18 +40,14 @@
     "build": "tsc",
     "test": "jest",
     "test-coverage": "jest --coverage",
-    "test-coverage-all": "jest --coverage --collectCoverageFrom=./lib/**/*"
+    "test-coverage-all": "jest --coverage --collectCoverageFrom=./lib/**/*",
+    "build-client": "graphql-codegen-esm --config codegen.ts -o"
   },
   "author": "UKDanceBlue",
   "license": "ISC",
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/client-preset": "^4.1.0",
-    "@graphql-codegen/typescript": "^4.0.1",
-    "@graphql-codegen/typescript-apollo-client-helpers": "^3.0.0",
-    "@graphql-codegen/typescript-operations": "^4.0.1",
-    "@graphql-codegen/typescript-resolvers": "^4.0.1",
-    "@graphql-typed-document-node/core": "^3.2.0",
     "@jest/globals": "^29.5.0",
     "@types/luxon": "^3.3.0",
     "@types/react": "^18.0.35",
@@ -72,6 +68,7 @@
     "validator": "^13.9.0"
   },
   "peerDependencies": {
+    "@apollo/client": "3.8.4",
     "class-validator": "0.14.0",
     "graphql": "^16.8.0",
     "graphql-scalars": "^1.22.2",
@@ -81,5 +78,10 @@
     "typedi": "^0.10.0",
     "utility-types": "^3.10.0",
     "validator": "^13.9.0"
+  },
+  "peerDependenciesMeta": {
+    "@apollo/client": {
+      "optional": true
+    }
   }
 }

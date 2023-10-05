@@ -1,0 +1,4 @@
+{
+  "schema": "packages/server/schema.graphql",
+  "documents": "packages/server/schema.graphql"
+}
