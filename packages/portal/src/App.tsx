@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import { NetworkStatus, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { useState } from "react";
+
+import "./App.css";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -14,7 +13,18 @@ function App() {
         listEvents(page: $page) {
           ok
           data {
+            eventId
             title
+            description
+            duration
+            occurrences
+            summary
+            images {
+              url
+              width
+              height
+              imageId
+            }
           }
         }
       }
@@ -27,16 +37,10 @@ function App() {
     }
   );
 
+  console.log(eventTitles);
+
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
       <h1>Vite + React</h1>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>

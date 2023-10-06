@@ -41,8 +41,7 @@
     "build-client": "graphql-codegen-esm --config codegen.ts -o",
     "build": "yarn run build-code && yarn run build-client",
     "watch-code": "tsc -w",
-    "watch-client": "graphql-codegen-esm --config codegen.ts -o -w",
-    "watch": "concurrently \"yarn run watch-code\" \"yarn run watch-client\"",
+    "watch-client": "graphql-codegen-esm --config codegen.ts -o -w ..",
     "test": "jest",
     "test-coverage": "jest --coverage",
     "test-coverage-all": "jest --coverage --collectCoverageFrom=./lib/**/*"
@@ -58,7 +57,6 @@
     "@types/react": "^18.0.35",
     "@types/validator": "^13.7.17",
     "class-validator": "0.14.0",
-    "concurrently": "^8.2.1",
     "graphql": "^16.8.0",
     "graphql-scalars": "^1.22.2",
     "jest": "^29.5.0",

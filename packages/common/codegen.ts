@@ -61,6 +61,13 @@ const codegenConfig: CodegenConfig = {
       documents: ["../portal/src/**/*.ts", "../portal/src/**/*.tsx"],
     },
   },
+  watch: [
+    "../server/schema.graphql",
+    "../portal/src/**/*.ts",
+    "../portal/src/**/*.tsx",
+    // "../mobile/src/**/*.ts",
+    // "../mobile/src/**/*.tsx",
+  ],
 };
 
 export default codegenConfig;

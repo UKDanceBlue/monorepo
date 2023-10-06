@@ -13,7 +13,7 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n      query ListEvents($page: Int!) {\n        listEvents(page: $page) {\n          ok\n          data {\n            title\n          }\n        }\n      }\n    ": types.ListEventsDocument,
+    "\n      query ListEvents($page: Int!) {\n        listEvents(page: $page) {\n          ok\n          data {\n            eventId\n            title\n            description\n            duration\n            occurrences\n            summary\n            images {\n              url\n              width\n              height\n              imageId\n            }\n          }\n        }\n      }\n    ": types.ListEventsDocument,
 };
 
 /**
@@ -33,7 +33,7 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n      query ListEvents($page: Int!) {\n        listEvents(page: $page) {\n          ok\n          data {\n            title\n          }\n        }\n      }\n    "): (typeof documents)["\n      query ListEvents($page: Int!) {\n        listEvents(page: $page) {\n          ok\n          data {\n            title\n          }\n        }\n      }\n    "];
+export function graphql(source: "\n      query ListEvents($page: Int!) {\n        listEvents(page: $page) {\n          ok\n          data {\n            eventId\n            title\n            description\n            duration\n            occurrences\n            summary\n            images {\n              url\n              width\n              height\n              imageId\n            }\n          }\n        }\n      }\n    "): (typeof documents)["\n      query ListEvents($page: Int!) {\n        listEvents(page: $page) {\n          ok\n          data {\n            eventId\n            title\n            description\n            duration\n            occurrences\n            summary\n            images {\n              url\n              width\n              height\n              imageId\n            }\n          }\n        }\n      }\n    "];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
