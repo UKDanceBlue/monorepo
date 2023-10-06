@@ -1,10 +1,9 @@
 import { CodegenConfig } from "@graphql-codegen/cli";
 
-import { dirname, join, normalize } from "path";
-import { fileURLToPath } from "url";
+// import { dirname, join, normalize } from "path";
+// import { fileURLToPath } from "url";
 
-// @ts-expect-error import.meta is actually allowed here
-const __dirname = dirname(fileURLToPath(import.meta.url));
+// const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const presetConfig = {
   fragmentMasking: {

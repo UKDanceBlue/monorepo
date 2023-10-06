@@ -7610,6 +7610,7 @@ __metadata:
     luxon: ^3.4.3
     react: ^18.2.0
     react-dom: ^18.2.0
+    react-hook-form: ^7.47.0
     typescript: ^5.0.2
     vite: ^4.4.5
   languageName: unknown
@@ -18942,6 +18943,15 @@ __metadata:
   peerDependencies:
     react: ">=17.0.0"
   checksum: 4258eabdbbf74aaebc38ad1fd7cfdc1984d2a844a2247b39a341c55c1beb02d5e855e6473ec5683205a52b2251d0f7dffa07cd8100f402dd2698af88b932d946
+  languageName: node
+  linkType: hard
+
+"react-hook-form@npm:^7.47.0":
+  version: 7.47.0
+  resolution: "react-hook-form@npm:7.47.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17 || ^18
+  checksum: dec192fec9c54e436f9e47008635dd7849b6b119ed477a9b0cd491367a0b2ced3427cd937febfb245e1cb7578c863917181d903eff4519c2787bf713ec7d3426
   languageName: node
   linkType: hard
 

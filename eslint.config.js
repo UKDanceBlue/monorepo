@@ -298,10 +298,10 @@ const eslintConfig = [
   },
   {
     files: [
-      normalize("packages/**/common/**/**/*.js"),
-      normalize("packages/**/common/**/**/*.ts"),
-      normalize("packages/**/common/**/**/*.jsx"),
-      normalize("packages/**/common/**/**/*.tsx"),
+      normalize("packages/**/common/lib/**/**/*.js"),
+      normalize("packages/**/common/lib/**/**/*.ts"),
+      normalize("packages/**/common/lib/**/**/*.jsx"),
+      normalize("packages/**/common/lib/**/**/*.tsx"),
     ],
     languageOptions: {
       globals: {
@@ -378,8 +378,8 @@ const eslintConfig = [
   },
   {
     files: [
-      normalize("packages/**/server/**/**/*.js"),
-      normalize("packages/**/server/**/**/*.ts"),
+      normalize("packages/**/server/src/**/*.js"),
+      normalize("packages/**/server/src/**/*.ts"),
     ],
     plugins: {
       node: eslintPluginNode,

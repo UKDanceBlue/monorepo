@@ -1,0 +1,33 @@
+{
+  "include": ["./**/*.ts", "./**/*.tsx", "./**/*.js", "./**/*.jsx"],
+  "exclude": [
+    "./**/.*",
+    "./**/node_modules/**/*",
+    "./**/dist/**/*",
+    "./**/build/**/*",
+    "./**/coverage/**/*"
+  ],
+  "compilerOptions": {
+    "lib": ["ES5"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": true,
+    "noEmit": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "useUnknownInCatchVariables": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "isolatedModules": true
+  }
+}
