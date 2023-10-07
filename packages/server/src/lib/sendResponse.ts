@@ -78,7 +78,7 @@ function htmlifyJson(
  */
 export function sendResponse(
   res: Response,
-  req: Request,
+  _: Request,
   content?: unknown,
   status = 200
 ) {

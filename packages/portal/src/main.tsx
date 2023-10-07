@@ -1,8 +1,10 @@
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { App as AntApp, ConfigProvider } from "antd";
 import React from "react";
 import ReactDOM from "react-dom/client";
+
 import App from "./App.tsx";
-import "./index.css";
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { antDesignTheme } from "./configs/ant.ts";
 
 const API_URL = "http://localhost:4000/graphql";
 const apiClient = new ApolloClient({
@@ -12,8 +14,12 @@ const apiClient = new ApolloClient({
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ApolloProvider client={apiClient}>
-      <App />
-    </ApolloProvider>
+    <ConfigProvider theme={antDesignTheme}>
+      <AntApp>
+        <ApolloProvider client={apiClient}>
+          <App />
+        </ApolloProvider>
+      </AntApp>
+    </ConfigProvider>
   </React.StrictMode>
 );

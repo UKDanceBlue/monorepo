@@ -1,12 +1,4 @@
 {
-  "include": ["./**/*.ts", "./**/*.tsx", "./**/*.js", "./**/*.jsx"],
-  "exclude": [
-    "./**/.*",
-    "./**/node_modules/**/*",
-    "./**/dist/**/*",
-    "./**/build/**/*",
-    "./**/coverage/**/*"
-  ],
   "compilerOptions": {
     "lib": ["ES5"],
     "module": "NodeNext",

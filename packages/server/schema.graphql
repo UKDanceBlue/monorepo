@@ -622,7 +622,7 @@ type Query {
     """The one-of filters to apply to the query"""
     oneOfFilters: [DeviceResolverKeyedOneOfFilterItem!]
 
-    """The page number to return, defaults to 0"""
+    """The page number to return, defaults to 1"""
     page: Int
 
     """The number of items to return per page, defaults to 10"""
@@ -657,7 +657,7 @@ type Query {
     """The one-of filters to apply to the query"""
     oneOfFilters: [EventResolverKeyedOneOfFilterItem!]
 
-    """The page number to return, defaults to 0"""
+    """The page number to return, defaults to 1"""
     page: Int
 
     """The number of items to return per page, defaults to 10"""

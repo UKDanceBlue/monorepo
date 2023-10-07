@@ -10,7 +10,7 @@ import { ClientAction, ErrorCode } from "@ukdanceblue/common";
 import type { ClassType } from "type-graphql";
 import { Field, InterfaceType, registerEnumType } from "type-graphql";
 
-import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "./ListQueryArgs.js";
+import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./ListQueryArgs.js";
 
 registerEnumType(ClientAction, {
   name: "ClientAction",
@@ -128,7 +128,7 @@ export abstract class AbstractGraphQLCreatedResponse<T>
   implements: AbstractGraphQLArrayOkResponse,
 })
 export abstract class AbstractGraphQLPaginatedResponse<
-  T
+  T,
 > extends AbstractGraphQLArrayOkResponse<T> {
   @Field(() => Number, { description: "The total number of items" })
   total!: number;
@@ -147,17 +147,24 @@ export abstract class AbstractGraphQLPaginatedResponse<
 
   static newPaginated<T, PRes extends AbstractGraphQLPaginatedResponse<T>>(
     this: ClassType<PRes>,
-    data: T[],
-    total: number,
-    pageSize?: number | null | undefined,
-    page?: number | null | undefined
+    {
+      data,
+      total,
+      page,
+      pageSize,
+    }: {
+      data: T[];
+      total: number;
+      page?: number | null | undefined;
+      pageSize?: number | null | undefined;
+    }
   ): PRes {
     const response = new this();
     response.ok = true;
     response.data = data;
     response.total = total;
+    response.page = page ?? FIRST_PAGE;
     response.pageSize = pageSize ?? DEFAULT_PAGE_SIZE;
-    response.page = page ?? DEFAULT_PAGE;
     return response;
   }
 

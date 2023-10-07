@@ -111,12 +111,12 @@ export class DeviceResolver
 
     const { rows, count } = await DeviceModel.findAndCountAll(findOptions);
 
-    return ListDevicesResponse.newPaginated(
-      rows.map((row) => new DeviceIntermediate(row).toResource()),
-      count,
-      query.page,
-      query.pageSize
-    );
+    return ListDevicesResponse.newPaginated({
+      data: rows.map((row) => new DeviceIntermediate(row).toResource()),
+      total: count,
+      page: query.page,
+      pageSize: query.pageSize,
+    });
   }
 
   @Mutation(() => CreateDeviceResponse, { name: "createDevice" })

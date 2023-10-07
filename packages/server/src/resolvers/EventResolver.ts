@@ -127,12 +127,12 @@ export class EventResolver
 
     const { rows, count } = await EventModel.findAndCountAll(findOptions);
 
-    return ListEventsResponse.newPaginated(
-      rows.map((row) => new EventIntermediate(row).toResource()),
-      count,
-      query.page,
-      query.pageSize
-    );
+    return ListEventsResponse.newPaginated({
+      data: rows.map((row) => new EventIntermediate(row).toResource()),
+      total: count,
+      page: query.page,
+      pageSize: query.pageSize,
+    });
   }
 
   @Mutation(() => CreateEventResponse, { name: "createEvent" })

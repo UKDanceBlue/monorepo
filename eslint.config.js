@@ -232,6 +232,9 @@ const eslintConfig = [
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
       parser: eslintParserTypescript,
+      parserOptions: {
+        project: normalize(join(__dirname, "tsconfig.json")),
+      },
     },
     plugins: {
       "@typescript-eslint": eslintPluginTypescript,
@@ -251,6 +254,13 @@ const eslintConfig = [
         "error",
         {
           prefer: "type-imports",
+        },
+      ],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          varsIgnorePattern: "^_",
+          argsIgnorePattern: "^_",
         },
       ],
       "@typescript-eslint/consistent-type-exports": [

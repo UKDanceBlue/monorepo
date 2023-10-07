@@ -66,6 +66,18 @@ export function formatError(
 
     if (error instanceof DetailedError) {
       formattedError.extensions.code = error.code;
+      if (error.details) {
+        formattedError.extensions.details = error.details;
+      }
+      if (error.explanation) {
+        formattedError.extensions.explanation = error.explanation;
+      }
+      if (error.cause) {
+        formattedError.extensions.cause = error.cause;
+      }
+      if (error.clientActions) {
+        formattedError.extensions.clientActions = error.clientActions;
+      }
     } else if (error instanceof GraphQLError) {
       Object.assign(formattedError.extensions, error.extensions);
       formattedError.extensions.code = isErrorCode(error.extensions.code)

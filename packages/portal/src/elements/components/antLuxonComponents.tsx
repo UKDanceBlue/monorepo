@@ -13,9 +13,11 @@ export interface TimePickerProps
   extends Omit<PickerTimeProps<DateTime>, "picker"> {}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const TimePicker = forwardRef<any, TimePickerProps>((props, ref) => (
-  <LuxonDatePicker {...props} picker="time" mode={undefined} ref={ref} />
-));
+const TimePicker = forwardRef<any, TimePickerProps>(
+  ({ mode: _, ...props }, ref) => (
+    <LuxonDatePicker {...props} picker="time" ref={ref} />
+  )
+);
 
 TimePicker.displayName = "TimePicker";
 

@@ -38,7 +38,7 @@ registerEnumType(StringComparator, { name: "StringComparator" });
 registerEnumType(NumericComparator, { name: "NumericComparator" });
 
 export const DEFAULT_PAGE_SIZE = 10;
-export const DEFAULT_PAGE = 0;
+export const FIRST_PAGE = 1;
 
 export function getSequelizeOpForComparator(
   comparator: Comparator,
@@ -93,9 +93,10 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
     description: `The number of items to return per page, defaults to ${DEFAULT_PAGE_SIZE}`,
   })
   pageSize!: number | null;
+
   @Field(() => Int, {
     nullable: true,
-    description: `The page number to return, defaults to ${DEFAULT_PAGE}`,
+    description: `The page number to return, defaults to ${FIRST_PAGE}`,
   })
   page!: number | null;
 
@@ -122,7 +123,7 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
     }
 
     if (this.page != null) {
-      options.offset = this.page * (this.pageSize ?? 10);
+      options.offset = (this.page - FIRST_PAGE) * (this.pageSize ?? 10);
     }
 
     if (this.sortBy != null && sortByMap != null) {

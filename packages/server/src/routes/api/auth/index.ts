@@ -24,7 +24,7 @@ if (!process.env.MS_CLIENT_SECRET) {
 
 authApiRouter.use(authMiddleware);
 
-authApiRouter.get("/logout", (req: Request, res: Response) => {
+authApiRouter.get("/logout", (_: Request, res: Response) => {
   // logout(req, res);
   res.redirect("/");
 });

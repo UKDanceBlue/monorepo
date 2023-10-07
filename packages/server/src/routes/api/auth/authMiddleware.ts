@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { Issuer } from "openid-client";
 
 export const authMiddleware = async (
-  req: Request,
+  _: Request,
   res: Response,
   next: NextFunction
 ) => {
