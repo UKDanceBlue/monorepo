@@ -1,4 +1,4 @@
-import type { ApolloError } from "@apollo/client";
+import { ApolloError } from "@apollo/client";
 import {
   type ApiError,
   ClientAction,
@@ -49,7 +49,115 @@ export function extractServerError(error: ApolloError): ExtendedApiError[] {
     }
   }
 
+  for (const clientError of error.clientErrors) {
+    const apiError: ExtendedApiError = {
+      message: clientError.message,
+      code: ErrorCode.Unknown,
+      cause: clientError,
+    };
+
+    if (clientError instanceof Error) {
+      apiError.cause = clientError;
+    }
+
+    apiErrors.push(apiError);
+  }
+
+  for (const protocolError of error.protocolErrors) {
+    const apiError: ExtendedApiError = {
+      message: protocolError.message,
+      code: ErrorCode.Unknown,
+      cause: protocolError,
+    };
+
+    if (protocolError instanceof Error) {
+      apiError.cause = protocolError;
+    }
+
+    apiErrors.push(apiError);
+  }
+
+  if (error.networkError) {
+    const apiError: ExtendedApiError = {
+      message: error.networkError.message,
+      code: ErrorCode.Unknown,
+      cause: error.networkError,
+    };
+
+    if ("bodyText" in error.networkError) {
+      // ServerParseError
+      apiError.explanation = `Status Code: ${error.networkError.statusCode}`;
+    } else if ("result" in error.networkError) {
+      // ServerError
+      apiError.explanation = `Status Code: ${error.networkError.statusCode}`;
+      if (
+        typeof error.networkError.result === "object" &&
+        "errors" in error.networkError.result
+      ) {
+        const maybeAnApiError = error.networkError.result?.errors?.[0];
+        if (maybeAnApiError?.message) {
+          apiError.message = maybeAnApiError.message;
+        }
+        if (maybeAnApiError?.extensions?.clientActions) {
+          apiError.clientActions = maybeAnApiError.extensions.clientActions;
+        }
+        if (maybeAnApiError?.extensions?.code) {
+          apiError.code = maybeAnApiError.code;
+        }
+        if (maybeAnApiError?.extensions?.details) {
+          apiError.details = maybeAnApiError.details;
+        }
+      }
+    }
+
+    apiErrors.push(apiError);
+  }
+
+  if (apiErrors.length === 0) {
+    apiErrors.push({
+      message: error.message,
+      code: ErrorCode.Unknown,
+      cause: error,
+    });
+  }
+
   return apiErrors;
+}
+
+export function handleUnknownError(
+  error: unknown,
+  options: {
+    message?: MessageInstance;
+    notification?: NotificationInstance;
+    modal?: useAppProps["modal"];
+    onClose?: () => void;
+  }
+) {
+  if (error instanceof ApolloError) {
+    const apiErrors = extractServerError(error);
+    for (const apiError of apiErrors) {
+      handleApiError(apiError, options);
+    }
+    return;
+  }
+
+  const apiError: ApiError = {
+    message: "An unknown error occurred.",
+    code: ErrorCode.Unknown,
+    cause: error,
+  };
+
+  if (typeof error === "string") {
+    apiError.message = error;
+  } else if (error instanceof Error) {
+    apiError.message = error.message;
+  } else if (typeof error === "object" && error !== null) {
+    apiError.message = JSON.stringify(error);
+  } else {
+    apiError.message = String(error);
+  }
+
+  handleApiError(apiError, options);
 }
 
 /**

@@ -7,12 +7,17 @@ import { useEffect, useState } from "react";
 import {
   extractServerError,
   handleApiError,
+  handleUnknownError,
 } from "../../tools/apolloErrorHandler";
+import { SortDirection } from "@ukdanceblue/common";
 
 export const EventsTable = () => {
   const antApp = App.useApp();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [sortOptions, setSortOptions] = useState<
+    { field: string; direction: SortDirection }[]
+  >([]);
 
   const {
     data: events,
@@ -21,8 +26,18 @@ export const EventsTable = () => {
     fetchMore,
   } = useQuery(
     graphql(/* GraphQL */ `
-      query ListEvents($page: Int, $pageSize: Int) {
-        listEvents(page: $page, pageSize: $pageSize) {
+      query ListEvents(
+        $page: Int
+        $pageSize: Int
+        $sortBy: [String!]
+        $sortDirection: [SortDirection!]
+      ) {
+        listEvents(
+          page: $page
+          pageSize: $pageSize
+          sortBy: $sortBy
+          sortDirection: $sortDirection
+        ) {
           ok
           data {
             eventId
@@ -48,6 +63,8 @@ export const EventsTable = () => {
       variables: {
         page,
         pageSize,
+        sortBy: sortOptions.map(({ field }) => field),
+        sortDirection: sortOptions.map(({ direction }) => direction),
       },
       notifyOnNetworkStatusChange: true,
     }
@@ -62,8 +79,17 @@ export const EventsTable = () => {
   }, [antApp.message, error]);
 
   useEffect(() => {
-    console.log("events", events);
-  }, [events]);
+    fetchMore({
+      variables: {
+        page,
+        pageSize,
+        sortBy: sortOptions.map(({ field }) => field),
+        sortDirection: sortOptions.map(({ direction }) => direction),
+      },
+    }).catch((err) => {
+      handleUnknownError(err, { message: antApp.message });
+    });
+  }, [page, pageSize, sortOptions]);
 
   return (
     <>
@@ -81,21 +107,30 @@ export const EventsTable = () => {
               }
             : false
         }
-        onChange={(pagination) => {
+        sortDirections={["ascend", "descend"]}
+        onChange={(pagination, filters, sorter, extra) => {
           setPage(pagination.current || 1);
           setPageSize(pagination.pageSize || 10);
-          fetchMore({
-            variables: {
-              page: pagination.current ?? 1,
-              pageSize: pagination.pageSize ?? 10,
-            },
-          });
+          const sortOptions: { field: string; direction: SortDirection }[] = [];
+          for (const sort of Array.isArray(sorter) ? sorter : [sorter]) {
+            if (sort.order && typeof sort.columnKey == "string") {
+              sortOptions.push({
+                field: sort.columnKey,
+                direction:
+                  sort.order === "ascend"
+                    ? SortDirection.ASCENDING
+                    : SortDirection.DESCENDING,
+              });
+            }
+          }
+          setSortOptions(sortOptions);
         }}
         columns={[
           {
             title: "Title",
             dataIndex: "title",
             key: "title",
+            sorter: true,
           },
           {
             title: "Description",

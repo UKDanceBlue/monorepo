@@ -1,45 +1,45 @@
 import type { DateTime } from "luxon";
 
 export const Comparator = {
-  EQUALS: "eq",
-  GREATER_THAN: "gt",
-  LESS_THAN: "lt",
-  GREATER_THAN_OR_EQUAL_TO: "gte",
-  LESS_THAN_OR_EQUAL_TO: "lte",
-  LIKE: "like",
-  REGEX: "regex",
-  SUBSTRING: "substring",
-  STARTS_WITH: "sw",
-  ENDS_WITH: "ew",
-  IS: "is",
+  EQUALS: "EQUALS",
+  GREATER_THAN: "GREATER_THAN",
+  LESS_THAN: "LESS_THAN",
+  GREATER_THAN_OR_EQUAL_TO: "GREATER_THAN_OR_EQUAL_TO",
+  LESS_THAN_OR_EQUAL_TO: "LESS_THAN_OR_EQUAL_TO",
+  LIKE: "LIKE",
+  REGEX: "REGEX",
+  SUBSTRING: "SUBSTRING",
+  STARTS_WITH: "STARTS_WITH",
+  ENDS_WITH: "ENDS_WITH",
+  IS: "IS",
 } as const;
 export type Comparator = (typeof Comparator)[keyof typeof Comparator];
 
 export const StringComparator = {
-  EQUALS: "eq",
-  LIKE: "like",
-  REGEX: "regex",
-  SUBSTRING: "substring",
-  STARTS_WITH: "sw",
-  ENDS_WITH: "ew",
-  IS: "is",
+  EQUALS: "EQUALS",
+  LIKE: "LIKE",
+  REGEX: "REGEX",
+  SUBSTRING: "SUBSTRING",
+  STARTS_WITH: "STARTS_WITH",
+  ENDS_WITH: "ENDS_WITH",
+  IS: "IS",
 } as const;
 export type StringComparator =
   (typeof StringComparator)[keyof typeof StringComparator];
 
 export const NumericComparator = {
-  EQUALS: "eq",
-  GREATER_THAN: "gt",
-  LESS_THAN: "lt",
-  GREATER_THAN_OR_EQUAL_TO: "gte",
-  LESS_THAN_OR_EQUAL_TO: "lte",
-  IS: "is",
+  EQUALS: "EQUALS",
+  GREATER_THAN: "GREATER_THAN",
+  LESS_THAN: "LESS_THAN",
+  GREATER_THAN_OR_EQUAL_TO: "GREATER_THAN_OR_EQUAL_TO",
+  LESS_THAN_OR_EQUAL_TO: "LESS_THAN_OR_EQUAL_TO",
+  IS: "IS",
 } as const;
 export type NumericComparator =
   (typeof NumericComparator)[keyof typeof NumericComparator];
 
 export const IsComparator = {
-  IS: "is",
+  IS: "IS",
 } as const;
 export type IsComparator = (typeof IsComparator)[keyof typeof IsComparator];
 
@@ -57,7 +57,7 @@ export type IsComparator = (typeof IsComparator)[keyof typeof IsComparator];
 export interface FilterItem<
   Resource extends object,
   Key extends keyof Resource & string = keyof Resource & string,
-  ValueType extends Resource[Key] = Resource[Key]
+  ValueType extends Resource[Key] = Resource[Key],
 > {
   /**
    * The value to filter on.
@@ -101,8 +101,8 @@ export interface PaginationOptions {
 }
 
 export const SortDirection = {
-  ASCENDING: "asc",
-  DESCENDING: "desc",
+  ASCENDING: "ASCENDING",
+  DESCENDING: "DESCENDING",
 } as const;
 
 export type SortDirection = (typeof SortDirection)[keyof typeof SortDirection];
