@@ -1,0 +1,9 @@
+{
+  "eslint.workingDirectories": [
+    "./packages/common",
+    "./packages/server",
+    "./packages/portal",
+    "./packages/mobile"
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
