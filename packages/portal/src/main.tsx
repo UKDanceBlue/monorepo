@@ -1,22 +1,17 @@
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client";
 import { App as AntApp, ConfigProvider } from "antd";
 import React from "react";
 import ReactDOM from "react-dom/client";
 
 import App from "./App.tsx";
 import { antDesignTheme } from "./configs/ant.ts";
-
-const API_URL = "http://localhost:4000/graphql";
-const apiClient = new ApolloClient({
-  uri: API_URL,
-  cache: new InMemoryCache(),
-});
+import { apolloClient } from "./configs/apollo.ts";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ConfigProvider theme={antDesignTheme}>
       <AntApp>
-        <ApolloProvider client={apiClient}>
+        <ApolloProvider client={apolloClient}>
           <App />
         </ApolloProvider>
       </AntApp>

@@ -117,13 +117,16 @@ export class EventResolver
 
   @Query(() => ListEventsResponse, { name: "listEvents" })
   async list(@Args() query: ListEventsArgs) {
-    const findOptions = query.toSequelizeFindOptions({
-      title: "title",
-      description: "description",
-      location: "location",
-      occurrence: "$occurrences.date$",
-      duration: "duration",
-    });
+    const findOptions = query.toSequelizeFindOptions(
+      {
+        title: "title",
+        description: "description",
+        location: "location",
+        occurrence: "$occurrences.date$",
+        duration: "duration",
+      },
+      EventModel
+    );
 
     const { rows, count } = await EventModel.findAndCountAll(findOptions);
 

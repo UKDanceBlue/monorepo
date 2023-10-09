@@ -18,6 +18,7 @@ export const EventsTable = () => {
     data: events,
     error,
     loading,
+    fetchMore,
   } = useQuery(
     graphql(/* GraphQL */ `
       query ListEvents($page: Int, $pageSize: Int) {
@@ -60,6 +61,10 @@ export const EventsTable = () => {
     }
   }, [antApp.message, error]);
 
+  useEffect(() => {
+    console.log("events", events);
+  }, [events]);
+
   return (
     <>
       <Table
@@ -79,6 +84,12 @@ export const EventsTable = () => {
         onChange={(pagination) => {
           setPage(pagination.current || 1);
           setPageSize(pagination.pageSize || 10);
+          fetchMore({
+            variables: {
+              page: pagination.current ?? 1,
+              pageSize: pagination.pageSize ?? 10,
+            },
+          });
         }}
         columns={[
           {

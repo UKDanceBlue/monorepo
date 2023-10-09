@@ -29,7 +29,14 @@
     "./graphql-client-public": {
       "node": null,
       "react-native": "./dist/graphql-client-public/index.js",
+      "types": "./dist/graphql-client-public/index.d.ts",
       "default": "./dist/graphql-client-public/index.js"
+    },
+    "./graphql-client-admin/raw-types": {
+      "types": "./dist/graphql-client-admin/graphql.d.ts"
+    },
+    "./graphql-client-public/raw-types": {
+      "types": "./dist/graphql-client-public/graphql.d.ts"
     }
   },
   "main": "./dist/index.js",
@@ -38,10 +45,10 @@
   ],
   "scripts": {
     "build-code": "tsc",
-    "build-client": "graphql-codegen-esm --config codegen.ts -o",
+    "build-client": "graphql-codegen-esm --config codegen.ts",
     "build": "yarn run build-code && yarn run build-client",
     "watch-code": "tsc -w",
-    "watch-client": "graphql-codegen-esm --config codegen.ts -o -w ..",
+    "watch-client": "graphql-codegen-esm --config codegen.ts -w ..",
     "test": "jest",
     "test-coverage": "jest --coverage",
     "test-coverage-all": "jest --coverage --collectCoverageFrom=./lib/**/*"

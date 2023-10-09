@@ -3,7 +3,6 @@ import { LuxonError } from "@ukdanceblue/common";
 import type { DurationLikeObject } from "luxon";
 import { Duration } from "luxon";
 
-import { sequelizeDb } from "../../data-source.js";
 type AcceptedTypes = Duration | DurationLikeObject | string | number;
 
 export class DurationDataType extends DataTypes.ABSTRACT<Duration> {
@@ -36,21 +35,27 @@ export class DurationDataType extends DataTypes.ABSTRACT<Duration> {
 
   escape(value: AcceptedTypes): string {
     if (typeof value === "string") {
-      return sequelizeDb.escape(value);
+      const duration = Duration.fromISO(value);
+      const parsed = duration.toISO();
+      if (!parsed) {
+        throw new LuxonError(duration);
+      } else {
+        return parsed;
+      }
     } else if (typeof value === "number") {
       const duration = Duration.fromMillis(value);
       if (!duration.isValid) {
         throw new LuxonError(duration);
       } else {
         // Null assertion is safe because we just checked for validity
-        return sequelizeDb.escape(duration.toISO()!);
+        return duration.toISO()!;
       }
     } else if (Duration.isDuration(value)) {
       if (!value.isValid) {
         throw new LuxonError(value);
       } else {
         // Null assertion is safe because we just checked for validity
-        return sequelizeDb.escape(value.toISO()!);
+        return value.toISO()!;
       }
     } else {
       const duration = Duration.fromDurationLike(value);
@@ -58,7 +63,7 @@ export class DurationDataType extends DataTypes.ABSTRACT<Duration> {
         throw new LuxonError(duration);
       } else {
         // Null assertion is safe because we just checked for validity
-        return sequelizeDb.escape(duration.toISO()!);
+        return duration.toISO()!;
       }
     }
   }

@@ -9,10 +9,10 @@ import { PersonResolver } from "../resolvers/PersonResolver.js";
 export default await buildSchema({
   resolvers: [
     ConfigurationResolver,
+    DeviceResolver,
     EventResolver,
     ImageResolver,
     PersonResolver,
-    DeviceResolver,
   ],
   emitSchemaFile: true,
 });

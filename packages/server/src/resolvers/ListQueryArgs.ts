@@ -1,8 +1,10 @@
 import type {
   Col,
-  FindOptions,
+  FindAndCountOptions,
   Fn,
   Literal,
+  Model,
+  ModelStatic,
   WhereAttributeHash,
 } from "@sequelize/core";
 import { Op } from "@sequelize/core";
@@ -115,8 +117,8 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
 
   toSequelizeFindOptions(
     sortByMap?: Partial<Record<SortByKeys, Fn | Col | Literal | string>>
-  ): FindOptions<Record<SortByKeys, never>> {
-    const options: FindOptions<Record<SortByKeys, never>> = {};
+  ): FindAndCountOptions<Record<SortByKeys, never>> {
+    const options: FindAndCountOptions<Record<SortByKeys, never>> = {};
 
     if (this.pageSize != null) {
       options.limit = this.pageSize;
@@ -314,10 +316,20 @@ export function FilteredListQueryArgs<
     oneOfFilters!: KeyedOneOfFilterItem[] | null;
 
     toSequelizeFindOptions(
-      sortByMap?: Partial<Record<AllKeys, string>>
-    ): FindOptions<Record<AllKeys, never>> {
-      const options: FindOptions<Record<AllKeys, never>> =
-        super.toSequelizeFindOptions(sortByMap);
+      sortByMap: Partial<Record<AllKeys, string>>,
+      modelStatic?: ModelStatic<Model<Record<string, unknown>>>
+    ): FindAndCountOptions<Record<AllKeys, never>> {
+      if (!modelStatic) {
+        throw new Error(
+          `No model static provided to ${resolverName} FilteredListQueryArgs`
+        );
+      }
+
+      const options: FindAndCountOptions<Record<AllKeys, never>> = {
+        ...super.toSequelizeFindOptions(sortByMap),
+        col: `${modelStatic?.name}.id`,
+        distinct: true,
+      };
 
       const whereOptions: Partial<
         WhereAttributeHash<

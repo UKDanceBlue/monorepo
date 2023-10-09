@@ -1,0 +1,12 @@
+diff --git a/package.json b/package.json
+index 44a727413ee61adfbcb273fcdb6b8674fe89cb8c..fdb2ee6c8b43d2dcabaf428c85a997725ae0eefa 100644
+--- a/package.json
++++ b/package.json
+@@ -35,6 +35,7 @@
+   "author": "Michał Lytek (https://github.com/MichalLytek)",
+   "exports": {
+     ".": {
++      "browser": "./build/cjs/browser-shim.js",
+       "require": "./build/cjs/index.js",
+       "import": "./build/esm/index.js",
+       "types": "./build/typings/index.d.ts"

@@ -1,6 +1,11 @@
 import http from "node:http";
 
-import { ApolloServer } from "@apollo/server";
+import {
+  ApolloServer,
+  // ApolloServerPlugin,
+  // BaseContext,
+  // GraphQLRequestListener,
+} from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { koaMiddleware } from "@as-integrations/koa";
 import cors from "@koa/cors";
@@ -10,6 +15,27 @@ import bodyParser from "koa-bodyparser";
 import { formatError } from "./lib/formatError.js";
 import graphqlSchema from "./lib/graphqlSchema.js";
 import { logDebug, logError, logInfo, logWarning } from "./logger.js";
+
+// const BASIC_LOGGING: ApolloServerPlugin<BaseContext> = {
+//   async requestDidStart(requestContext) {
+//     logDebug(`request started:\n${requestContext.request.query}`, {
+//       variables: requestContext.request.variables,
+//     });
+//     const listener: GraphQLRequestListener<BaseContext> = {
+//       async didEncounterErrors(requestContext) {
+//         logInfo(
+//           `an error happened in response to query: ${requestContext.request.query}`,
+//           { errors: requestContext.errors }
+//         );
+//       },
+//       async willSendResponse(requestContext) {
+//         logDebug("response sent", { response: requestContext.response });
+//       },
+//     };
+
+//     return listener;
+//   },
+// };
 
 /**
  * Create the Koa, HTTP, and Apollo servers
@@ -28,7 +54,9 @@ export function createServer() {
   // Set up Apollo Server
   const server = new ApolloServer({
     schema: graphqlSchema,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }) /*, BASIC_LOGGING*/,
+    ],
     logger: {
       debug: logDebug,
       info: logInfo,
