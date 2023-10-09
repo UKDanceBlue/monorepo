@@ -7,9 +7,15 @@ import { useEffect, useState } from "react";
 import {
   extractServerError,
   handleApiError,
-  handleUnknownError,
 } from "../../tools/apolloErrorHandler";
-import { SortDirection } from "@ukdanceblue/common";
+import { SortDirection, StringComparator } from "@ukdanceblue/common";
+import {
+  EventResolverKeyedDateFilterItem,
+  EventResolverKeyedIsNullFilterItem,
+  EventResolverKeyedNumericFilterItem,
+  EventResolverKeyedOneOfFilterItem,
+  EventResolverKeyedStringFilterItem,
+} from "@ukdanceblue/common/graphql-client-admin/raw-types";
 
 export const EventsTable = () => {
   const antApp = App.useApp();
@@ -17,6 +23,21 @@ export const EventsTable = () => {
   const [pageSize, setPageSize] = useState(10);
   const [sortOptions, setSortOptions] = useState<
     { field: string; direction: SortDirection }[]
+  >([]);
+  const [dateFilters, setDateFilters] = useState<
+    EventResolverKeyedDateFilterItem[]
+  >([]);
+  const [isNullFilters, setIsNullFilters] = useState<
+    EventResolverKeyedIsNullFilterItem[]
+  >([]);
+  const [numericFilters, setNumericFilters] = useState<
+    EventResolverKeyedNumericFilterItem[]
+  >([]);
+  const [oneOfFilters, setOneOfFilters] = useState<
+    EventResolverKeyedOneOfFilterItem[]
+  >([]);
+  const [stringFilters, setStringFilters] = useState<
+    EventResolverKeyedStringFilterItem[]
   >([]);
 
   const {
@@ -31,12 +52,22 @@ export const EventsTable = () => {
         $pageSize: Int
         $sortBy: [String!]
         $sortDirection: [SortDirection!]
+        $dateFilters: [EventResolverKeyedDateFilterItem!]
+        $isNullFilters: [EventResolverKeyedIsNullFilterItem!]
+        $numericFilters: [EventResolverKeyedNumericFilterItem!]
+        $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]
+        $stringFilters: [EventResolverKeyedStringFilterItem!]
       ) {
         listEvents(
           page: $page
           pageSize: $pageSize
           sortBy: $sortBy
           sortDirection: $sortDirection
+          dateFilters: $dateFilters
+          isNullFilters: $isNullFilters
+          numericFilters: $numericFilters
+          oneOfFilters: $oneOfFilters
+          stringFilters: $stringFilters
         ) {
           ok
           data {
@@ -65,6 +96,11 @@ export const EventsTable = () => {
         pageSize,
         sortBy: sortOptions.map(({ field }) => field),
         sortDirection: sortOptions.map(({ direction }) => direction),
+        dateFilters,
+        isNullFilters,
+        numericFilters,
+        oneOfFilters,
+        stringFilters,
       },
       notifyOnNetworkStatusChange: true,
     }
@@ -72,7 +108,7 @@ export const EventsTable = () => {
 
   useEffect(() => {
     if (error) {
-      extractServerError(error).map((err) =>
+      extractServerError(error).forEach((err) =>
         handleApiError(err, { message: antApp.message })
       );
     }
@@ -85,9 +121,12 @@ export const EventsTable = () => {
         pageSize,
         sortBy: sortOptions.map(({ field }) => field),
         sortDirection: sortOptions.map(({ direction }) => direction),
+        dateFilters,
+        isNullFilters,
+        numericFilters,
+        oneOfFilters,
+        stringFilters,
       },
-    }).catch((err) => {
-      handleUnknownError(err, { message: antApp.message });
     });
   }, [page, pageSize, sortOptions]);
 
