@@ -82,7 +82,7 @@ export async function findPersonForLogin(
       if (memberOf) {
         nonCaptainMemberships = memberOf.map(async (m) => {
           const team = await TeamModel.findByUuid(
-            typeof m === "string" ? m : m.teamId,
+            typeof m === "string" ? m : m.uuid,
             { rejectOnEmpty: true, transaction: t }
           );
 
@@ -105,7 +105,7 @@ export async function findPersonForLogin(
       if (captainOf) {
         captainOf.map(async (m) => {
           const team = await TeamModel.findByUuid(
-            typeof m === "string" ? m : m.teamId,
+            typeof m === "string" ? m : m.uuid,
             { rejectOnEmpty: true, transaction: t }
           );
 

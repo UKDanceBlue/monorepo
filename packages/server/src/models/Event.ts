@@ -262,7 +262,7 @@ export class EventIntermediate extends IntermediateClass<
       ),
       duration: this.duration ?? null,
       images,
-      eventId: this.uuid,
+      uuid: this.uuid,
       createdAt: this.createdAt == null ? null : this.createdAt,
       updatedAt: this.updatedAt == null ? null : this.updatedAt,
     });

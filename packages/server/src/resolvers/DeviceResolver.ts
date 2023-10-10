@@ -86,7 +86,7 @@ export class DeviceResolver
     ResolverInterface<DeviceResource>,
     ResolverInterfaceWithFilteredList<DeviceResource, ListDevicesArgs>
 {
-  @Query(() => GetDeviceByUuidResponse, { name: "getDeviceByUuid" })
+  @Query(() => GetDeviceByUuidResponse, { name: "device" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetDeviceByUuidResponse> {
     const row = await DeviceModel.findOne({ where: { uuid } });
 
@@ -99,7 +99,7 @@ export class DeviceResolver
     );
   }
 
-  @Query(() => ListDevicesResponse, { name: "listDevices" })
+  @Query(() => ListDevicesResponse, { name: "devices" })
   async list(
     @Args(() => ListDevicesArgs) query: ListDevicesArgs
   ): Promise<ListDevicesResponse> {

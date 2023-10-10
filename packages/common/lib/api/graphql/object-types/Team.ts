@@ -21,7 +21,7 @@ registerEnumType(TeamType, {
 @ObjectType()
 export class TeamResource extends Resource {
   @Field(() => ID)
-  teamId!: string;
+  uuid!: string;
   @Field(() => String)
   name!: string;
   @Field(() => TeamType)
@@ -36,7 +36,7 @@ export class TeamResource extends Resource {
   pointEntries!: (PointEntryResource | string)[];
 
   public getUniqueId(): string {
-    return this.teamId;
+    return this.uuid;
   }
 
   public static init(init: Partial<TeamResource>) {

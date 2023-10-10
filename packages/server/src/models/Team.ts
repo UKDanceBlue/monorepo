@@ -223,7 +223,7 @@ export class TeamIntermediate extends IntermediateClass<
       .filter(isNonNullable);
 
     return TeamResource.init({
-      teamId: this.uuid,
+      uuid: this.uuid,
       name: this.name,
       type: this.type,
       visibility: this.visibility,

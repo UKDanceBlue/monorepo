@@ -5,10 +5,10 @@ import { Resource } from "./Resource.js";
 @ObjectType()
 export class NotificationResource extends Resource {
   @Field(() => ID)
-  notificationId!: string;
+  uuid!: string;
 
   public getUniqueId(): string {
-    return this.notificationId;
+    return this.uuid;
   }
 
   public static init(init: Partial<NotificationResource>) {

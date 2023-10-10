@@ -289,11 +289,11 @@ export type DeviceResolverStringFilterKeys = typeof DeviceResolverStringFilterKe
 export type DeviceResource = {
   readonly __typename?: 'DeviceResource';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  readonly deviceId: Scalars['ID']['output'];
   readonly expoPushToken?: Maybe<Scalars['String']['output']>;
   readonly lastLogin?: Maybe<Scalars['DateTime']['output']>;
   readonly lastUser?: Maybe<PersonResource>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly uuid: Scalars['ID']['output'];
 };
 
 export const EventResolverAllKeys = {
@@ -382,13 +382,13 @@ export type EventResource = {
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly description?: Maybe<Scalars['String']['output']>;
   readonly duration?: Maybe<Scalars['Duration']['output']>;
-  readonly eventId: Scalars['ID']['output'];
   readonly images?: Maybe<ReadonlyArray<ImageResource>>;
   readonly location?: Maybe<Scalars['String']['output']>;
   readonly occurrences: ReadonlyArray<Scalars['DateTime']['output']>;
   readonly summary?: Maybe<Scalars['String']['output']>;
   readonly title: Scalars['String']['output'];
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly uuid: Scalars['ID']['output'];
 };
 
 export type GetAllConfigurationsResponse = AbstractGraphQlArrayOkResponse & GraphQlBaseResponse & {
@@ -469,11 +469,11 @@ export type ImageResource = {
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly height: Scalars['Int']['output'];
   readonly imageData?: Maybe<Scalars['String']['output']>;
-  readonly imageId: Scalars['ID']['output'];
   readonly mimeType: Scalars['String']['output'];
   readonly thumbHash?: Maybe<Scalars['String']['output']>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly url?: Maybe<Scalars['URL']['output']>;
+  readonly uuid: Scalars['ID']['output'];
   readonly width: Scalars['Int']['output'];
 };
 
@@ -591,56 +591,36 @@ export type PersonResource = {
   readonly lastName?: Maybe<Scalars['String']['output']>;
   readonly linkblue?: Maybe<Scalars['String']['output']>;
   readonly memberOf: ReadonlyArray<TeamResource>;
-  readonly personId: Scalars['ID']['output'];
   readonly role: RoleResource;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly uuid: Scalars['ID']['output'];
 };
 
 export type Query = {
   readonly __typename?: 'Query';
-  readonly getAllConfigurations: GetAllConfigurationsResponse;
-  readonly getConfigurationByUuid: GetConfigurationByUuidResponse;
-  readonly getDeviceByUuid: GetDeviceByUuidResponse;
-  readonly getEventByUuid: GetEventByUuidResponse;
-  readonly getImageByUuid: GetImageByUuidResponse;
-  readonly getPersonByUuid: GetPersonByUuidResponse;
-  readonly getThumbHashByUuid?: Maybe<GetThumbHashByUuidResponse>;
-  readonly listDevices: ListDevicesResponse;
-  readonly listEvents: ListEventsResponse;
+  readonly allConfigurations: GetAllConfigurationsResponse;
+  readonly configuration: GetConfigurationByUuidResponse;
+  readonly device: GetDeviceByUuidResponse;
+  readonly devices: ListDevicesResponse;
+  readonly event: GetEventByUuidResponse;
+  readonly events: ListEventsResponse;
+  readonly image: GetImageByUuidResponse;
+  readonly person: GetPersonByUuidResponse;
+  readonly thumbhash?: Maybe<GetThumbHashByUuidResponse>;
 };
 
 
-export type QueryGetConfigurationByUuidArgs = {
+export type QueryConfigurationArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type QueryGetDeviceByUuidArgs = {
+export type QueryDeviceArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type QueryGetEventByUuidArgs = {
-  uuid: Scalars['String']['input'];
-};
-
-
-export type QueryGetImageByUuidArgs = {
-  uuid: Scalars['String']['input'];
-};
-
-
-export type QueryGetPersonByUuidArgs = {
-  uuid: Scalars['String']['input'];
-};
-
-
-export type QueryGetThumbHashByUuidArgs = {
-  uuid: Scalars['String']['input'];
-};
-
-
-export type QueryListDevicesArgs = {
+export type QueryDevicesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
   dateFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedDateFilterItem>>;
   isNullFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedIsNullFilterItem>>;
@@ -654,7 +634,12 @@ export type QueryListDevicesArgs = {
 };
 
 
-export type QueryListEventsArgs = {
+export type QueryEventArgs = {
+  uuid: Scalars['String']['input'];
+};
+
+
+export type QueryEventsArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
   dateFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedDateFilterItem>>;
   isNullFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedIsNullFilterItem>>;
@@ -665,6 +650,21 @@ export type QueryListEventsArgs = {
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
   stringFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedStringFilterItem>>;
+};
+
+
+export type QueryImageArgs = {
+  uuid: Scalars['String']['input'];
+};
+
+
+export type QueryPersonArgs = {
+  uuid: Scalars['String']['input'];
+};
+
+
+export type QueryThumbhashArgs = {
+  uuid: Scalars['String']['input'];
 };
 
 export type RoleResource = {
@@ -700,9 +700,9 @@ export type TeamResource = {
   readonly members: ReadonlyArray<Scalars['String']['output']>;
   readonly name: Scalars['String']['output'];
   readonly pointEntries: ReadonlyArray<Scalars['String']['output']>;
-  readonly teamId: Scalars['ID']['output'];
   readonly type: TeamType;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly uuid: Scalars['ID']['output'];
   readonly visibility: DbRole;
 };
 
@@ -721,7 +721,7 @@ export type ListEventsQueryVariables = Exact<{
 }>;
 
 
-export type ListEventsQuery = { readonly __typename?: 'Query', readonly listEvents: { readonly __typename?: 'ListEventsResponse', readonly ok: boolean, readonly page: number, readonly pageSize: number, readonly total: number, readonly data: ReadonlyArray<{ readonly __typename?: 'EventResource', readonly eventId: string, readonly title: string, readonly description?: string | null, readonly duration?: string | null, readonly occurrences: ReadonlyArray<string>, readonly summary?: string | null, readonly images?: ReadonlyArray<{ readonly __typename?: 'ImageResource', readonly url?: string | null, readonly width: number, readonly height: number, readonly imageId: string }> | null }> } };
+export type ListEventsQuery = { readonly __typename?: 'Query', readonly events: { readonly __typename?: 'ListEventsResponse', readonly ok: boolean, readonly page: number, readonly pageSize: number, readonly total: number, readonly data: ReadonlyArray<{ readonly __typename?: 'EventResource', readonly uuid: string, readonly title: string, readonly description?: string | null, readonly duration?: string | null, readonly occurrences: ReadonlyArray<string>, readonly summary?: string | null, readonly images?: ReadonlyArray<{ readonly __typename?: 'ImageResource', readonly url?: string | null, readonly width: number, readonly height: number, readonly uuid: string }> | null }> } };
 
 
-export const ListEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ListEvents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedDateFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedIsNullFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"numericFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedNumericFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedOneOfFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedStringFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listEvents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"dateFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"numericFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"numericFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"oneOfFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"imageId"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]} as unknown as DocumentNode<ListEventsQuery, ListEventsQueryVariables>;
+export const ListEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ListEvents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedDateFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedIsNullFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"numericFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedNumericFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedOneOfFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedStringFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"events"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"dateFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"numericFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"numericFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"oneOfFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]} as unknown as DocumentNode<ListEventsQuery, ListEventsQueryVariables>;

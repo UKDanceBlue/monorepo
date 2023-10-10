@@ -9,7 +9,7 @@ import { Resource } from "./Resource.js";
 @ObjectType()
 export class LoginFlowSessionResource extends Resource {
   @Field(() => ID)
-  sessionId!: string;
+  uuid!: string;
   @Field(() => String)
   codeVerifier!: string;
   @Field(() => DateTimeScalar)
@@ -18,7 +18,7 @@ export class LoginFlowSessionResource extends Resource {
   redirectToAfterLogin!: URL | null;
 
   public getUniqueId(): string {
-    return this.sessionId;
+    return this.uuid;
   }
 
   public static init(init: Partial<LoginFlowSessionResource>) {

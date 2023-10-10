@@ -17,7 +17,7 @@ const cacheQueryFields: {
     | FieldPolicy<Query[fieldName], Query[fieldName], Query[fieldName]>
     | FieldReadFunction<Query[fieldName], Query[fieldName]>;
 } = {
-  listEvents: {
+  events: {
     // merge(
     //   existing,
     //   incoming,

@@ -102,7 +102,7 @@ export class EventResolver
     ResolverInterface<EventResource>,
     ResolverInterfaceWithFilteredList<EventResource, ListEventsArgs>
 {
-  @Query(() => GetEventByUuidResponse, { name: "getEventByUuid" })
+  @Query(() => GetEventByUuidResponse, { name: "event" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetEventByUuidResponse> {
     const row = await EventModel.findOne({ where: { uuid } });
 
@@ -115,7 +115,7 @@ export class EventResolver
     );
   }
 
-  @Query(() => ListEventsResponse, { name: "listEvents" })
+  @Query(() => ListEventsResponse, { name: "events" })
   async list(@Args() query: ListEventsArgs) {
     const findOptions = query.toSequelizeFindOptions(
       {

@@ -167,7 +167,7 @@ export class ImageIntermediate extends IntermediateClass<
   public toResource(): ImageResource {
     if (this.hasImportantProperties()) {
       return ImageResource.init({
-        imageId: this.uuid,
+        uuid: this.uuid,
         url: this.url ?? null,
         mimeType: this.mimeType,
         thumbHash: this.thumbHash?.toString("base64") ?? null,

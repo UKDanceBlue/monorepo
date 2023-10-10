@@ -10,7 +10,7 @@ import { Resource } from "./Resource.js";
 @ObjectType()
 export class EventResource extends Resource {
   @Field(() => ID)
-  eventId!: string;
+  uuid!: string;
   @Field(() => [ImageResource], { nullable: true })
   images!: ImageResource[] | string[] | null;
   @Field(() => [DateTimeScalar])
@@ -27,7 +27,7 @@ export class EventResource extends Resource {
   location!: string | null;
 
   public getUniqueId(): string {
-    return this.eventId;
+    return this.uuid;
   }
 
   public static init(init: Partial<EventResource>) {

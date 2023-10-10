@@ -47,7 +47,7 @@ class CreatePersonInput {
 
 @Resolver(() => PersonResource)
 export class PersonResolver implements ResolverInterface<PersonResource> {
-  @Query(() => GetPersonByUuidResponse, { name: "getPersonByUuid" })
+  @Query(() => GetPersonByUuidResponse, { name: "person" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetPersonByUuidResponse> {
     const row = await PersonModel.findOne({ where: { uuid } });
 

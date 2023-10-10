@@ -156,7 +156,7 @@ export class PointEntryIntermediate extends IntermediateClass<
     }
 
     return PointEntryResource.init({
-      entryId: this.uuid,
+      uuid: this.uuid,
       type: this.type,
       comment: this.comment,
       points: this.points,

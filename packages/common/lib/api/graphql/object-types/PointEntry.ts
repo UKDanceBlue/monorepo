@@ -7,7 +7,7 @@ import { TeamResource, TeamType } from "./Team.js";
 @ObjectType()
 export class PointEntryResource extends Resource {
   @Field(() => ID)
-  entryId!: string;
+  uuid!: string;
   @Field(() => TeamType)
   type!: TeamType;
   @Field(() => String, { nullable: true })
@@ -20,7 +20,7 @@ export class PointEntryResource extends Resource {
   team!: TeamResource;
 
   public getUniqueId(): string {
-    return this.entryId;
+    return this.uuid;
   }
 
   public static init(init: Partial<PointEntryResource>) {

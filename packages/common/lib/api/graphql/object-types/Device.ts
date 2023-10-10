@@ -9,7 +9,7 @@ import { Resource } from "./Resource.js";
 @ObjectType()
 export class DeviceResource extends Resource {
   @Field(() => ID)
-  deviceId!: string;
+  uuid!: string;
   @Field(() => String, { nullable: true })
   public expoPushToken!: string | null;
   @Field(() => PersonResource, { nullable: true })
@@ -18,7 +18,7 @@ export class DeviceResource extends Resource {
   public lastLogin!: DateTime | null;
 
   public getUniqueId(): string {
-    return this.deviceId;
+    return this.uuid;
   }
 
   public static init(init: Partial<DeviceResource>) {

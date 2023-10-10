@@ -100,7 +100,7 @@ export class LoginFlowSessionIntermediate extends IntermediateClass<
     }
 
     return LoginFlowSessionResource.init({
-      sessionId: this.uuid,
+      uuid: this.uuid,
       creationDate: DateTime.fromJSDate(this.createdAt),
       codeVerifier: this.codeVerifier,
       redirectToAfterLogin: new URL(this.redirectToAfterLogin),

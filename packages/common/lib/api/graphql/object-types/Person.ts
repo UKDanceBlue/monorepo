@@ -9,7 +9,7 @@ import { TeamResource } from "./Team.js";
 @ObjectType()
 export class PersonResource extends Resource {
   @Field(() => ID)
-  personId!: string;
+  uuid!: string;
   @Field(() => AuthSource)
   authIds!: Partial<Record<AuthSource, string>>;
   @Field(() => String, { nullable: true })
@@ -28,7 +28,7 @@ export class PersonResource extends Resource {
   captainOf!: TeamResource[] | string[];
 
   public getUniqueId(): string {
-    return this.personId;
+    return this.uuid;
   }
 
   public static init(init: Partial<PersonResource>) {

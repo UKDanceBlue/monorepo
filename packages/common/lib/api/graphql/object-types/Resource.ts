@@ -30,8 +30,7 @@ export abstract class Resource {
     return instance;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected static init<R extends Resource>(init: R): Resource {
+  protected static init<R extends Resource>(_init: R): Resource {
     throw new Error(`Method not implemented by subclass.`);
   }
 }

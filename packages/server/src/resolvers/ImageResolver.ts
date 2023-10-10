@@ -68,7 +68,7 @@ class CreateImageInput implements Partial<ImageResource> {
 
 @Resolver(() => ImageResource)
 export class ImageResolver implements ResolverInterface<ImageResource> {
-  @Query(() => GetImageByUuidResponse, { name: "getImageByUuid" })
+  @Query(() => GetImageByUuidResponse, { name: "image" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetImageByUuidResponse> {
     const row = await ImageModel.findOne({ where: { uuid } });
 
@@ -82,7 +82,7 @@ export class ImageResolver implements ResolverInterface<ImageResource> {
   }
 
   @Query(() => GetThumbHashByUuidResponse, {
-    name: "getThumbHashByUuid",
+    name: "thumbhash",
     nullable: true,
   })
   async getThumbHashByUuid(

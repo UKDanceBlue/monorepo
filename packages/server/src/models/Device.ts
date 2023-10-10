@@ -120,7 +120,7 @@ export class DeviceIntermediate extends IntermediateClass<
   public toResource(): DeviceResource {
     if (this.hasImportantProperties()) {
       return DeviceResource.init({
-        deviceId: this.uuid,
+        uuid: this.uuid,
         expoPushToken: this.expoPushToken ?? null,
         lastUser: this.lastUser?.toResource() ?? null,
         lastLogin:

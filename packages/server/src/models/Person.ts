@@ -298,7 +298,7 @@ export class PersonIntermediate extends IntermediateClass<
     }
 
     return PersonResource.init({
-      personId: this.uuid,
+      uuid: this.uuid,
       firstName: this.firstName ?? null,
       lastName: this.lastName ?? null,
       authIds: this.authIds,

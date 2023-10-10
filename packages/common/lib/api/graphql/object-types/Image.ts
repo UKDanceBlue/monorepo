@@ -7,7 +7,7 @@ import { Resource } from "./Resource.js";
 @ObjectType()
 export class ImageResource extends Resource {
   @Field(() => ID)
-  imageId!: string;
+  uuid!: string;
 
   @Field(() => UrlScalar, { nullable: true })
   url!: URL | null;
@@ -31,7 +31,7 @@ export class ImageResource extends Resource {
   height!: number;
 
   public getUniqueId(): string {
-    return this.imageId;
+    return this.uuid;
   }
 
   public static init(init: Partial<ImageResource>) {

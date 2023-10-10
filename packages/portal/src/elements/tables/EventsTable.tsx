@@ -52,7 +52,7 @@ export const EventsTable = () => {
         $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]
         $stringFilters: [EventResolverKeyedStringFilterItem!]
       ) {
-        listEvents(
+        events(
           page: $page
           pageSize: $pageSize
           sortBy: $sortBy
@@ -65,7 +65,7 @@ export const EventsTable = () => {
         ) {
           ok
           data {
-            eventId
+            uuid
             title
             description
             duration
@@ -75,7 +75,7 @@ export const EventsTable = () => {
               url
               width
               height
-              imageId
+              uuid
             }
           }
           page
@@ -105,15 +105,15 @@ export const EventsTable = () => {
   return (
     <>
       <Table
-        dataSource={events?.listEvents.data}
-        rowKey={({ eventId }) => eventId}
+        dataSource={events?.events.data}
+        rowKey={({ uuid }) => uuid}
         loading={loading}
         pagination={
           events
             ? {
-                current: events.listEvents.page,
-                pageSize: events.listEvents.pageSize,
-                total: events.listEvents.total,
+                current: events.events.page,
+                pageSize: events.events.pageSize,
+                total: events.events.total,
                 showSizeChanger: true,
               }
             : false
@@ -163,9 +163,7 @@ export const EventsTable = () => {
             key: "occurrences",
             render: (
               occurrences: string[],
-              {
-                duration,
-              }: NonNullable<typeof events>["listEvents"]["data"][number]
+              { duration }: NonNullable<typeof events>["events"]["data"][number]
             ) => {
               const parsedOccurrences = occurrences.map((occurrence) => {
                 if (!occurrence) {

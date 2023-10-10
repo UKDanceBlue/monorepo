@@ -74,7 +74,7 @@ export class ConfigurationResolver
   implements ResolverInterface<ConfigurationResource>
 {
   @Query(() => GetConfigurationByUuidResponse, {
-    name: "getConfigurationByUuid",
+    name: "configuration",
   })
   async getByUuid(
     @Arg("uuid") uuid: string
@@ -89,7 +89,7 @@ export class ConfigurationResolver
     );
   }
 
-  @Query(() => GetAllConfigurationsResponse, { name: "getAllConfigurations" })
+  @Query(() => GetAllConfigurationsResponse, { name: "allConfigurations" })
   async getAll(): Promise<GetAllConfigurationsResponse> {
     const resources = await ConfigurationModel.findAll();
 

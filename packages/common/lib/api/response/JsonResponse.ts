@@ -3,7 +3,7 @@ import { isPrimitive, isPrimitiveObject } from "../../index.js";
 import { ErrorCode } from "../graphql/error.js";
 
 export const ClientAction = {
-  LOGOUT: "logout",
+  LOGOUT: "LOGOUT",
 } as const;
 export type ClientAction = (typeof ClientAction)[keyof typeof ClientAction];
 

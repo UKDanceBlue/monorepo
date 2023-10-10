@@ -1,35 +1,35 @@
 import { registerEnumType } from "type-graphql";
 
 export const AuthSource = {
-  UkyLinkblue: "uky_linkblue",
-  Anonymous: "anonymous",
+  UkyLinkblue: "UkyLinkblue",
+  Anonymous: "Anonymous",
 } as const;
 export type AuthSource = (typeof AuthSource)[keyof typeof AuthSource];
 
-export const AccessLevel =  {
-  None:  -1,
-  Public:  0,
-  TeamMember:  1,
-  TeamCaptain:  2,
-  Committee:  3,
-  CommitteeChairOrCoordinator:  3.5,
-  Admin:  4, // Tech committee
+export const AccessLevel = {
+  None: -1,
+  Public: 0,
+  TeamMember: 1,
+  TeamCaptain: 2,
+  Committee: 3,
+  CommitteeChairOrCoordinator: 3.5,
+  Admin: 4, // Tech committee
 } as const;
 export type AccessLevel = (typeof AccessLevel)[keyof typeof AccessLevel];
 
 export const DbRole = {
-  None:  "none",
-  Public:  "public",
-  TeamMember:  "team_member",
-  TeamCaptain:  "team_captain",
-  Committee:  "committee",
+  None: "None",
+  Public: "Public",
+  TeamMember: "TeamMember",
+  TeamCaptain: "TeamCaptain",
+  Committee: "Committee",
 } as const;
 export type DbRole = (typeof DbRole)[keyof typeof DbRole];
 
 export const CommitteeRole = {
-  Chair:  "chair",
-  Coordinator:  "coordinator",
-  Member:  "member",
+  Chair: "Chair",
+  Coordinator: "Coordinator",
+  Member: "Member",
 } as const;
 export type CommitteeRole = (typeof CommitteeRole)[keyof typeof CommitteeRole];
 

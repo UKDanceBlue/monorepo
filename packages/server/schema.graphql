@@ -314,11 +314,11 @@ enum DeviceResolverStringFilterKeys {
 
 type DeviceResource {
   createdAt: DateTimeISO
-  deviceId: ID!
   expoPushToken: String
   lastLogin: DateTime
   lastUser: PersonResource
   updatedAt: DateTimeISO
+  uuid: ID!
 }
 
 """Luxon Duration custom scalar type"""
@@ -427,13 +427,13 @@ type EventResource {
   createdAt: DateTimeISO
   description: String
   duration: Duration
-  eventId: ID!
   images: [ImageResource!]
   location: String
   occurrences: [DateTime!]!
   summary: String
   title: String!
   updatedAt: DateTimeISO
+  uuid: ID!
 }
 
 type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
@@ -515,11 +515,11 @@ type ImageResource {
   createdAt: DateTimeISO
   height: Int!
   imageData: String
-  imageId: ID!
   mimeType: String!
   thumbHash: String
   updatedAt: DateTimeISO
   url: URL
+  uuid: ID!
   width: Int!
 }
 
@@ -593,20 +593,16 @@ type PersonResource {
   lastName: String
   linkblue: String
   memberOf: [TeamResource!]!
-  personId: ID!
   role: RoleResource!
   updatedAt: DateTimeISO
+  uuid: ID!
 }
 
 type Query {
-  getAllConfigurations: GetAllConfigurationsResponse!
-  getConfigurationByUuid(uuid: String!): GetConfigurationByUuidResponse!
-  getDeviceByUuid(uuid: String!): GetDeviceByUuidResponse!
-  getEventByUuid(uuid: String!): GetEventByUuidResponse!
-  getImageByUuid(uuid: String!): GetImageByUuidResponse!
-  getPersonByUuid(uuid: String!): GetPersonByUuidResponse!
-  getThumbHashByUuid(uuid: String!): GetThumbHashByUuidResponse
-  listDevices(
+  allConfigurations: GetAllConfigurationsResponse!
+  configuration(uuid: String!): GetConfigurationByUuidResponse!
+  device(uuid: String!): GetDeviceByUuidResponse!
+  devices(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
 
@@ -641,7 +637,8 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [DeviceResolverKeyedStringFilterItem!]
   ): ListDevicesResponse!
-  listEvents(
+  event(uuid: String!): GetEventByUuidResponse!
+  events(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
 
@@ -676,6 +673,9 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
+  image(uuid: String!): GetImageByUuidResponse!
+  person(uuid: String!): GetPersonByUuidResponse!
+  thumbhash(uuid: String!): GetThumbHashByUuidResponse
 }
 
 type RoleResource {
@@ -720,9 +720,9 @@ type TeamResource {
   members: [String!]!
   name: String!
   pointEntries: [String!]!
-  teamId: ID!
   type: TeamType!
   updatedAt: DateTimeISO
+  uuid: ID!
   visibility: DbRole!
 }
 

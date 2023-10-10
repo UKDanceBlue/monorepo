@@ -18,8 +18,8 @@ import type { TeamModel } from "./Team.js";
 import type { CoreProperty } from "./intermediate.js";
 
 export const MembershipPositionType = {
-  Member: "member",
-  Captain: "captain",
+  Member: "Member",
+  Captain: "Captain",
 } as const;
 
 export type MembershipPositionType =
