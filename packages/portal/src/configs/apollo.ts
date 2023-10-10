@@ -42,7 +42,6 @@ const cache = new InMemoryCache({
       fields: cacheQueryFields,
     },
   },
-  resultCaching: false,
 });
 
 export const apolloClient = new ApolloClient({

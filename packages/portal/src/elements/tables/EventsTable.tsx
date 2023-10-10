@@ -1,48 +1,42 @@
 import { useQuery } from "@apollo/client";
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
-import { App, Table } from "antd";
+import { Table } from "antd";
 import { DateTime, Duration, Interval } from "luxon";
-import { useEffect, useState } from "react";
-
-import {
-  extractServerError,
-  handleApiError,
-} from "../../tools/apolloErrorHandler";
-import { SortDirection, StringComparator } from "@ukdanceblue/common";
-import {
-  EventResolverKeyedDateFilterItem,
-  EventResolverKeyedIsNullFilterItem,
-  EventResolverKeyedNumericFilterItem,
-  EventResolverKeyedOneOfFilterItem,
-  EventResolverKeyedStringFilterItem,
-} from "@ukdanceblue/common/graphql-client-admin/raw-types";
+import { useEffect } from "react";
+import { SortDirection } from "@ukdanceblue/common";
+import { useListQuery } from "../../hooks/useListQuery";
+import { useApolloStatusWatcher } from "../../hooks/useApolloStatusWatcher";
 
 export const EventsTable = () => {
-  const antApp = App.useApp();
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [sortOptions, setSortOptions] = useState<
-    { field: string; direction: SortDirection }[]
-  >([]);
-  const [dateFilters, setDateFilters] = useState<
-    EventResolverKeyedDateFilterItem[]
-  >([]);
-  const [isNullFilters, setIsNullFilters] = useState<
-    EventResolverKeyedIsNullFilterItem[]
-  >([]);
-  const [numericFilters, setNumericFilters] = useState<
-    EventResolverKeyedNumericFilterItem[]
-  >([]);
-  const [oneOfFilters, setOneOfFilters] = useState<
-    EventResolverKeyedOneOfFilterItem[]
-  >([]);
-  const [stringFilters, setStringFilters] = useState<
-    EventResolverKeyedStringFilterItem[]
-  >([]);
+  const { queryOptions, updatePagination, clearSorting, pushSorting } =
+    useListQuery(
+      {
+        initPage: 1,
+        initPageSize: 10,
+        initSorting: [],
+      },
+      {
+        allFields: [
+          "eventId",
+          "title",
+          "description",
+          "duration",
+          "occurrences",
+          "summary",
+          "images",
+        ],
+        dateFields: [],
+        isNullFields: [],
+        numericFields: [],
+        oneOfFields: [],
+        stringFields: [],
+      }
+    );
 
   const {
     data: events,
     error,
+    networkStatus,
     loading,
     fetchMore,
   } = useQuery(
@@ -91,44 +85,22 @@ export const EventsTable = () => {
       }
     `),
     {
-      variables: {
-        page,
-        pageSize,
-        sortBy: sortOptions.map(({ field }) => field),
-        sortDirection: sortOptions.map(({ direction }) => direction),
-        dateFilters,
-        isNullFilters,
-        numericFilters,
-        oneOfFilters,
-        stringFilters,
-      },
+      variables: queryOptions,
       notifyOnNetworkStatusChange: true,
     }
   );
 
-  useEffect(() => {
-    if (error) {
-      extractServerError(error).forEach((err) =>
-        handleApiError(err, { message: antApp.message })
-      );
-    }
-  }, [antApp.message, error]);
+  useApolloStatusWatcher({
+    error,
+    networkStatus,
+    loadingMessage: loading ? "Loading events..." : undefined,
+  });
 
   useEffect(() => {
     fetchMore({
-      variables: {
-        page,
-        pageSize,
-        sortBy: sortOptions.map(({ field }) => field),
-        sortDirection: sortOptions.map(({ direction }) => direction),
-        dateFilters,
-        isNullFilters,
-        numericFilters,
-        oneOfFilters,
-        stringFilters,
-      },
-    });
-  }, [page, pageSize, sortOptions]);
+      variables: queryOptions,
+    }).catch(console.error);
+  }, [queryOptions]);
 
   return (
     <>
@@ -147,22 +119,31 @@ export const EventsTable = () => {
             : false
         }
         sortDirections={["ascend", "descend"]}
-        onChange={(pagination, filters, sorter, extra) => {
-          setPage(pagination.current || 1);
-          setPageSize(pagination.pageSize || 10);
-          const sortOptions: { field: string; direction: SortDirection }[] = [];
+        onChange={(pagination, _filters, sorter, _extra) => {
+          updatePagination({
+            page: pagination.current,
+            pageSize: pagination.pageSize,
+          });
+          clearSorting();
           for (const sort of Array.isArray(sorter) ? sorter : [sorter]) {
-            if (sort.order && typeof sort.columnKey == "string") {
-              sortOptions.push({
-                field: sort.columnKey,
-                direction:
-                  sort.order === "ascend"
-                    ? SortDirection.ASCENDING
-                    : SortDirection.DESCENDING,
-              });
+            if (!sort.order) {
+              continue;
             }
+            pushSorting({
+              field: sort.field as
+                | "eventId"
+                | "title"
+                | "description"
+                | "duration"
+                | "occurrences"
+                | "summary"
+                | "images",
+              direction:
+                sort.order === "ascend"
+                  ? SortDirection.ASCENDING
+                  : SortDirection.DESCENDING,
+            });
           }
-          setSortOptions(sortOptions);
         }}
         columns={[
           {

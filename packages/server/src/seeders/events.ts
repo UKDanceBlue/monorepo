@@ -16,7 +16,7 @@ const capitalize = (s: string) => s && s[0]!.toUpperCase()! + s.slice(1)!;
 export default async function () {
   const events: CreationAttributes<EventModel>[] = [];
   const eventOccurrences: CreationAttributes<EventOccurrenceModel>[][] = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 25; i++) {
     eventOccurrences[i] = [];
     for (let j = 0; j < faker.datatype.number({ min: 1, max: 3 }); j++) {
       eventOccurrences[i]!.push({

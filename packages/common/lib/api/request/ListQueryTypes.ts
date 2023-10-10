@@ -1,5 +1,3 @@
-import type { DateTime } from "luxon";
-
 export const Comparator = {
   EQUALS: "EQUALS",
   GREATER_THAN: "GREATER_THAN",
@@ -43,39 +41,12 @@ export const IsComparator = {
 } as const;
 export type IsComparator = (typeof IsComparator)[keyof typeof IsComparator];
 
-() => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const stringComparator: Comparator = "" as StringComparator;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const numericComparator: Comparator = "" as NumericComparator;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const equalityComparator: Comparator = "" as IsComparator;
+export interface FilterItem<Field extends string, ValueType> {
+  field: Field;
 
-  throw new Error("This function should never be exported");
-};
+  value: ValueType;
 
-export interface FilterItem<
-  Resource extends object,
-  Key extends keyof Resource & string = keyof Resource & string,
-  ValueType extends Resource[Key] = Resource[Key],
-> {
-  /**
-   * The value to filter on.
-   * If this is an array, the field will be filtered on any of the values.
-   */
-  value: ValueType extends DateTime
-    ? string // DateTime uses ISO 8601 strings
-    : ValueType;
-  /**
-   * The operator to use for the filter.
-   */
-  comparison: ValueType extends DateTime
-    ? NumericComparator // DateTime uses NumericComparators
-    : ValueType extends string
-    ? StringComparator // String uses StringComparators
-    : ValueType extends number
-    ? NumericComparator // Number uses NumericComparators
-    : IsComparator; // Default to Comparator.EQUALS
+  comparison: Comparator;
   /**
    * Should the comparator be negated?
    * WARNING: This will throw if used on a comparator that does not support negation.
@@ -118,7 +89,7 @@ export interface SortingOptions {
    * field would be ascending by default, while a date field
    * would be descending by default.
    */
-  sortDirection?: SortDirection[];
+  sortDirection: SortDirection[];
 }
 
 export interface FilterOptions<Resource extends object> {
@@ -129,7 +100,7 @@ export interface FilterOptions<Resource extends object> {
   filter?: Partial<
     Record<
       keyof Resource & string,
-      FilterItem<Resource, keyof Resource & string>[]
+      FilterItem<keyof Resource & string, Resource[keyof Resource]>
     >
   >;
 }

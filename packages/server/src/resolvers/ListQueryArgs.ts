@@ -12,6 +12,13 @@ import type {
   ListQueryType,
   OptionalToNullable,
   Resource,
+  FilterItem as FilterItemInterface,
+  IsNullFilterItemInterface,
+  OneOfFilterItemInterface,
+  BooleanFilterItemInterface,
+  DateFilterItemInterface,
+  NumericFilterItemInterface,
+  StringFilterItemInterface,
 } from "@ukdanceblue/common";
 import {
   Comparator,
@@ -130,7 +137,10 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
 
     if (this.sortBy != null && sortByMap != null) {
       const sortBy = this.sortBy.map((key) => sortByMap[key]);
-      const sortDirection = this.sortDirection ?? SortDirection.ASCENDING;
+      const sortDirection =
+        this.sortDirection?.map((v) =>
+          v === SortDirection.DESCENDING ? "DESC" : "ASC"
+        ) ?? this.sortBy.map(() => "ASC");
 
       options.order = sortBy
         .map((key, index) => [key, sortDirection[index]] as const)
@@ -432,7 +442,9 @@ export function FilteredListQueryArgs<
 }
 
 @InputType()
-export abstract class FilterItem<Field extends string, V> {
+export abstract class FilterItem<Field extends string, V>
+  implements FilterItemInterface<Field, V>
+{
   @Field(() => String, { description: "The field to filter on" })
   field!: Field;
 
@@ -455,11 +467,12 @@ export abstract class FilterItem<Field extends string, V> {
 }
 
 @InputType()
-export abstract class AbstractStringFilterItem<
-  Field extends string,
-> extends FilterItem<Field, string | { toString: Pick<string, "toString"> }> {
+export abstract class AbstractStringFilterItem<Field extends string>
+  extends FilterItem<Field, string>
+  implements StringFilterItemInterface<Field>
+{
   @Field(() => String, { description: "The value to filter by" })
-  value!: string | { toString: Pick<string, "toString"> };
+  value!: string;
 
   @Field(() => StringComparator, {
     description: "The comparator to use for the filter",
@@ -482,9 +495,10 @@ export function StringFilterItem<Field extends string>(fieldEnum: {
 }
 
 @InputType()
-export abstract class AbstractNumericFilterItem<
-  Field extends string,
-> extends FilterItem<Field, number> {
+export abstract class AbstractNumericFilterItem<Field extends string>
+  extends FilterItem<Field, number>
+  implements NumericFilterItemInterface<Field>
+{
   @Field(() => Number, { description: "The value to filter by" })
   value!: number;
 
@@ -509,11 +523,12 @@ export function NumericFilterItem<Field extends string>(fieldEnum: {
 }
 
 @InputType()
-export abstract class AbstractDateFilterItem<
-  Field extends string,
-> extends FilterItem<Field, typeof DateTimeScalar> {
+export abstract class AbstractDateFilterItem<Field extends string>
+  extends FilterItem<Field, string>
+  implements DateFilterItemInterface<Field>
+{
   @Field(() => DateTimeScalar, { description: "The value to filter by" })
-  value!: typeof DateTimeScalar;
+  value!: string;
 
   @Field(() => NumericComparator, {
     description: "The comparator to use for the filter",
@@ -536,9 +551,10 @@ export function DateFilterItem<Field extends string>(fieldEnum: {
 }
 
 @InputType()
-export abstract class AbstractBooleanFilterItem<
-  Field extends string,
-> extends FilterItem<Field, boolean> {
+export abstract class AbstractBooleanFilterItem<Field extends string>
+  extends FilterItem<Field, boolean>
+  implements BooleanFilterItemInterface<Field>
+{
   @Field(() => Boolean, { description: "The value to filter by" })
   value!: boolean;
 
@@ -563,9 +579,10 @@ export function BooleanFilterItem<Field extends string>(fieldEnum: {
 }
 
 @InputType()
-export abstract class AbstractOneOfFilterItem<
-  Field extends string,
-> extends FilterItem<Field, readonly string[]> {
+export abstract class AbstractOneOfFilterItem<Field extends string>
+  extends FilterItem<Field, readonly string[]>
+  implements OneOfFilterItemInterface<Field>
+{
   @Field(() => [String], { description: "The value to filter by" })
   value!: readonly string[];
 
@@ -585,9 +602,10 @@ export function OneOfFilterItem<Field extends string>(fieldEnum: {
 }
 
 @InputType()
-export abstract class AbstractIsNullFilterItem<
-  Field extends string,
-> extends FilterItem<Field, null> {
+export abstract class AbstractIsNullFilterItem<Field extends string>
+  extends FilterItem<Field, null>
+  implements IsNullFilterItemInterface<Field>
+{
   value!: never;
   comparison!: never;
 }
