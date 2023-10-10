@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "strict": true,
-    "moduleResolution": "Bundler"
+    "module": "es2015",
+    "moduleResolution": "bundler"
   },
   "extends": ["../../tsconfig.json", "expo/tsconfig.base"]
 }

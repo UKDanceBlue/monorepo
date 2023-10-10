@@ -1,4 +1,4 @@
-/** @deprecated Use types from @ukdanceblue/common instead */
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export interface SpiritTeamsRootDoc {
   basicInfo: {
     [teamId: string]: {

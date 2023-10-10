@@ -11,8 +11,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useFirebase, useUserData } from "../../../../context";
 import type { StandingType } from "../../../../types/StandingType";
-import Standings from "../@ukdanceblue/common/components/Standings";
-import { universalCatch } from "../@ukdanceblue/common/logging";
+import Standings from "../@ukdanceblue/db-app-common/components/Standings";
+import { universalCatch } from "../@ukdanceblue/db-app-common/logging";
 
 import { useFirestoreMoralePoints } from "./FirestoreMoralePoints";
 

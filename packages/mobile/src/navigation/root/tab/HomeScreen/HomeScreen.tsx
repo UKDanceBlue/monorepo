@@ -13,8 +13,8 @@ import {
 } from "react-native";
 
 import { useReactNavigationTheme } from "../../../../theme";
-import CountdownView from "../@ukdanceblue/common/components/CountdownView";
-import { universalCatch } from "../@ukdanceblue/common/logging";
+import CountdownView from "../@ukdanceblue/db-app-common/components/CountdownView";
+import { universalCatch } from "../@ukdanceblue/db-app-common/logging";
 
 import HeaderImage from "./HeaderImage";
 import SponsorCarousel from "./SponsorCarousel";

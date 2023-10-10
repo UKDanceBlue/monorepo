@@ -3,7 +3,7 @@ import { memo, useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 
 import DanceBlueRibbon from "../../../../../../../assets/svgs/DBRibbon";
-import { useThemeColors } from "../../../@ukdanceblue/common/customHooks";
+import { useThemeColors } from "../../../@ukdanceblue/db-app-common/customHooks";
 
 import FirstPlaceMedal from "./1stPlace";
 import SecondPlaceMedal from "./2ndPlace";

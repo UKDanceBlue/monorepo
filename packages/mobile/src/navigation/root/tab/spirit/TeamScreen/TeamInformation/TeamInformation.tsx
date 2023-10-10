@@ -4,8 +4,8 @@ import { useWindowDimensions } from "react-native";
 import CommitteeHoldingSign from "../../../../../../../assets/svgs/CommitteeHoldingSign";
 import DanceBlueRibbon from "../../../../../../../assets/svgs/DBRibbon";
 import type { StandingType } from "../../../../../../types/StandingType";
-import Breadcrumbs from "../../../@ukdanceblue/common/components/Breadcrumbs";
-import { useThemeFonts } from "../../../@ukdanceblue/common/customHooks";
+import Breadcrumbs from "../../../@ukdanceblue/db-app-common/components/Breadcrumbs";
+import { useThemeFonts } from "../../../@ukdanceblue/db-app-common/customHooks";
 import Scoreboard from "../../ScoreBoardScreen/Scoreboard";
 
 const TeamInformation = ({

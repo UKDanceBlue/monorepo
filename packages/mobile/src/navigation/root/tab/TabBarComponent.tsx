@@ -10,7 +10,7 @@ import type {
 import {
   useColorModeValue,
   useThemeColors,
-} from "@ukdanceblue/common/customHooks";
+} from "@ukdanceblue/db-app-common/customHooks";
 import { Box, VStack, View } from "native-base";
 import { ZStack } from "native-base/src/components/primitives";
 import { Text, TouchableOpacity, useWindowDimensions } from "react-native";

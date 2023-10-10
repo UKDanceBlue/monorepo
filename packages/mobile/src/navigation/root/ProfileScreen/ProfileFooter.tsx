@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useColorModeValue } from "@ukdanceblue/common/customHooks";
-import { universalCatch } from "@ukdanceblue/common/logging";
+import { useColorModeValue } from "@ukdanceblue/db-app-common/customHooks";
+import { universalCatch } from "@ukdanceblue/db-app-common/logging";
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import { openURL } from "expo-linking";
 import {

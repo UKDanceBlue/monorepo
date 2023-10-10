@@ -1,13 +1,13 @@
 import type { FirebaseStorageTypes } from "@react-native-firebase/storage";
 
-/** @deprecated Use types from @ukdanceblue/common instead */
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export interface FirestoreImage {
   uri: `gs://${string}` | `http${"s" | ""}://${string}`;
   width: number;
   height: number;
 }
 
-/** @deprecated Use types from @ukdanceblue/common instead */
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export function isFirestoreImage(image?: object): image is FirestoreImage {
   if (image == null) {
     return false;
@@ -45,14 +45,14 @@ export function isFirestoreImage(image?: object): image is FirestoreImage {
   return true;
 }
 
-/** @deprecated Use types from @ukdanceblue/common instead */
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export interface DownloadableImage {
   url?: string;
   width: number;
   height: number;
 }
 
-/** @deprecated Use types from @ukdanceblue/common instead */
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export const parseFirestoreImage = async (
   firestoreImage: FirestoreImage,
   fbStorage: FirebaseStorageTypes.Module

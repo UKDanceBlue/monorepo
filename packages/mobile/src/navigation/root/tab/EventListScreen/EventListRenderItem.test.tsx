@@ -1,5 +1,5 @@
 import { fireEvent } from "@testing-library/react-native";
-import { FirestoreEvent } from "@ukdanceblue/common";
+import { FirestoreEvent } from "@ukdanceblue/db-app-common";
 
 import { renderWithNativeBase } from "../../../../../test-helpers/NativeBase";
 

@@ -1,4 +1,4 @@
-import type { FirestoreEvent } from "@ukdanceblue/common";
+import type { FirestoreEvent } from "@ukdanceblue/db-app-common";
 import type { DateTime } from "luxon";
 
 const partition = (

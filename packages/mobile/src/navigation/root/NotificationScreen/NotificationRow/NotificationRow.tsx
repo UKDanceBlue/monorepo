@@ -12,7 +12,7 @@ import Animated, {
 
 import { useAuthData, useFirebase } from "../../../../context";
 import { useRefreshUserData } from "../../../../context/user";
-import { universalCatch } from "../@ukdanceblue/common/logging";
+import { universalCatch } from "../@ukdanceblue/db-app-common/logging";
 import type { NotificationListDataEntry } from "../NotificationScreen";
 
 import { NotificationRowContent } from "./NotificationRowContent";

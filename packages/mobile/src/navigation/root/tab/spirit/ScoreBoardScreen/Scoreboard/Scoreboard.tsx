@@ -2,7 +2,7 @@ import { Box, Text } from "native-base";
 import { FlatList, RefreshControl } from "react-native";
 
 import type { StandingType } from "../../../../../../types/StandingType";
-import { useThemeColors } from "../../../@ukdanceblue/common/customHooks";
+import { useThemeColors } from "../../../@ukdanceblue/db-app-common/customHooks";
 import ScoreboardItem from "../ScoreboardItem";
 
 const Scoreboard = ({

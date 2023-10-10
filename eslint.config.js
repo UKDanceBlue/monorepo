@@ -56,7 +56,6 @@ const eslintConfig = [
       },
     },
     rules: {
-      ...eslintConfigPrettier.rules,
       ...eslintPluginImport.configs.recommended.rules,
       "import/export": "off",
       // Possible Errors
@@ -418,6 +417,7 @@ const eslintConfig = [
     },
     settings: {},
   },
+  eslintConfigPrettier,
 ];
 
 export default eslintConfig;

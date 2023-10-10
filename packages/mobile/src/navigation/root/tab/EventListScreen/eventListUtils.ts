@@ -1,8 +1,8 @@
 import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import FirestoreModule from "@react-native-firebase/firestore";
-import type { FirestoreEventJson } from "@ukdanceblue/common";
-import { FirestoreEvent } from "@ukdanceblue/common";
-import type { MaybeWithFirestoreMetadata } from "@ukdanceblue/common/dist/firestore/internal";
+import type { FirestoreEventJson } from "@ukdanceblue/db-app-common";
+import { FirestoreEvent } from "@ukdanceblue/db-app-common";
+import type { MaybeWithFirestoreMetadata } from "@ukdanceblue/db-app-common/dist/firestore/internal";
 import { DateTime } from "luxon";
 import {
   useCallback,
@@ -16,8 +16,8 @@ import type { DateData } from "react-native-calendars";
 import type { MarkedDates } from "react-native-calendars/src/types";
 
 import { useFirebase } from "../../../../context";
-import { universalCatch } from "../@ukdanceblue/common/logging";
-import { timestampToDateTime } from "../@ukdanceblue/common/util/dateTools";
+import { universalCatch } from "../@ukdanceblue/db-app-common/logging";
+import { timestampToDateTime } from "../@ukdanceblue/db-app-common/util/dateTools";
 
 import {
   LOADED_MONTHS,
@@ -297,7 +297,7 @@ export const useEvents = ({
   markedDates: MarkedDates,
   eventsByMonth: Partial<Record<string, FirestoreEvent[]>>,
   refreshing: boolean,
-  refresh: () => Promise<void>
+  refresh: () => Promise<void>,
 ] => {
   const lastEarliestTimestamp = useRef<DateTime | null>(null);
 

@@ -1,12 +1,12 @@
 import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import type { FirestoreImageJsonV1 } from "@ukdanceblue/common";
-import { DownloadableImage, FirestoreImage } from "@ukdanceblue/common";
+import type { FirestoreImageJsonV1 } from "@ukdanceblue/db-app-common";
+import { DownloadableImage, FirestoreImage } from "@ukdanceblue/db-app-common";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useFirebase } from "../../../../context";
-import { universalCatch } from "../@ukdanceblue/common/logging";
-import { lookupHourByTime } from "../@ukdanceblue/common/marathonTime";
+import { universalCatch } from "../@ukdanceblue/db-app-common/logging";
+import { lookupHourByTime } from "../@ukdanceblue/db-app-common/marathonTime";
 
 // Found at /marathon/2023/hours/[HOUR NUMBER]
 export interface FirestoreHour {
@@ -34,7 +34,7 @@ export function useCurrentFirestoreHour(): [
   string | null,
   FirestoreHour | null,
   DownloadableImage | null,
-  () => Promise<void>
+  () => Promise<void>,
 ] {
   const { fbStorage, fbFirestore } = useFirebase();
 

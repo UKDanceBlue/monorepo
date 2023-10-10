@@ -1,4 +1,4 @@
-import { universalCatch } from "@ukdanceblue/common/logging";
+import { universalCatch } from "@ukdanceblue/db-app-common/logging";
 import { Text } from "native-base";
 import { Linking, useWindowDimensions } from "react-native";
 

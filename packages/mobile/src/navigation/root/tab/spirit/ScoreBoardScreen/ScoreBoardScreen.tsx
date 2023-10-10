@@ -1,7 +1,7 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import firebaseFirestore from "@react-native-firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
-import { SpiritTeamsRootDoc } from "@ukdanceblue/common";
+import { SpiritTeamsRootDoc } from "@ukdanceblue/db-app-common";
 import { View } from "native-base";
 import { Pressable } from "native-base/src/components/primitives";
 import { useCallback, useEffect, useState } from "react";
@@ -9,8 +9,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuthData, useUserData } from "../../../../../context";
 import type { StandingType } from "../../../../../types/StandingType";
 import type { SpiritStackScreenProps } from "../../../../../types/navigationTypes";
-import Jumbotron from "../../@ukdanceblue/common/components/Jumbotron";
-import { universalCatch } from "../../@ukdanceblue/common/logging";
+import Jumbotron from "../../@ukdanceblue/db-app-common/components/Jumbotron";
+import { universalCatch } from "../../@ukdanceblue/db-app-common/logging";
 
 import Scoreboard from "./Scoreboard/Scoreboard";
 

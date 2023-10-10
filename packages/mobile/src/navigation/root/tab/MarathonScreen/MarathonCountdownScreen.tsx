@@ -4,9 +4,9 @@ import type { ImageSourcePropType } from "react-native";
 import { ImageBackground, useWindowDimensions } from "react-native";
 
 import CommitteeHoldingSign from "../../../../../assets/svgs/CommitteeHoldingSign";
-import CountdownView from "../@ukdanceblue/common/components/CountdownView";
-import { useThemeColors } from "../@ukdanceblue/common/customHooks";
-import { marathonInterval } from "../@ukdanceblue/common/marathonTime";
+import CountdownView from "../@ukdanceblue/db-app-common/components/CountdownView";
+import { useThemeColors } from "../@ukdanceblue/db-app-common/customHooks";
+import { marathonInterval } from "../@ukdanceblue/db-app-common/marathonTime";
 
 export const MarathonCountdownScreen = () => {
   const { height: screenHeight, width: screenWidth } = useWindowDimensions();

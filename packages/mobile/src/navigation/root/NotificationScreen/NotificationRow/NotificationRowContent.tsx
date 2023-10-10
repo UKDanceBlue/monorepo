@@ -1,5 +1,5 @@
 import { Entypo } from "@expo/vector-icons";
-import type { FirestoreNotification } from "@ukdanceblue/common";
+import type { FirestoreNotification } from "@ukdanceblue/db-app-common";
 import { isEqual } from "lodash";
 import { DateTime } from "luxon";
 import {
@@ -17,7 +17,7 @@ import { useWindowDimensions } from "react-native";
 
 import DBLogoCondensed from "../../../../../assets/svgs/DBLogoCondensed";
 import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
-import { useThemeFonts } from "../@ukdanceblue/common/customHooks";
+import { useThemeFonts } from "../@ukdanceblue/db-app-common/customHooks";
 
 const NonMemoizedNotificationRowContent = ({
   loading,

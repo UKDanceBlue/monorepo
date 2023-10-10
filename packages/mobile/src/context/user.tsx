@@ -1,5 +1,5 @@
 import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import type { FirestoreNotification } from "@ukdanceblue/common";
+import type { FirestoreNotification } from "@ukdanceblue/db-app-common";
 import {
   createContext,
   useCallback,

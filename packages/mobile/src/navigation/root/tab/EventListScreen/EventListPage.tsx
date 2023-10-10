@@ -1,11 +1,11 @@
-import type { FirestoreEvent } from "@ukdanceblue/common";
+import type { FirestoreEvent } from "@ukdanceblue/db-app-common";
 import type { DateTime } from "luxon";
 import { Column, Divider, Spinner, Text } from "native-base";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FlatList } from "react-native";
 import type { DateData, MarkedDates } from "react-native-calendars/src/types";
 
-import { universalCatch } from "../@ukdanceblue/common/logging";
+import { universalCatch } from "../@ukdanceblue/db-app-common/logging";
 
 import Calendar from "./Calendar";
 import { EventListRenderItem } from "./EventListRenderItem";

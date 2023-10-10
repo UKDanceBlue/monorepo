@@ -47,7 +47,15 @@
           "color": "#ffffff"
         }
       ],
-      "./config-plugins/rnf-disable-ai-id-support.plugin"
+      "./config-plugins/rnf-disable-ai-id-support.plugin",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
     ],
     "updates": {
       "enabled": true,

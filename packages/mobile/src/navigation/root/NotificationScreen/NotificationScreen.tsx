@@ -1,7 +1,7 @@
 import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import type { FirestoreNotification } from "@ukdanceblue/common";
-import JumbotronGeometric from "@ukdanceblue/common/components/JumbotronGeometric";
-import { log, universalCatch } from "@ukdanceblue/common/logging";
+import type { FirestoreNotification } from "@ukdanceblue/db-app-common";
+import JumbotronGeometric from "@ukdanceblue/db-app-common/components/JumbotronGeometric";
+import { log, universalCatch } from "@ukdanceblue/db-app-common/logging";
 import { manufacturer as deviceManufacturer } from "expo-device";
 import { openSettings } from "expo-linking";
 import { setBadgeCountAsync } from "expo-notifications";

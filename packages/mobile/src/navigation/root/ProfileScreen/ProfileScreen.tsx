@@ -1,7 +1,7 @@
-import { useLinkBlueLogin } from "@ukdanceblue/common/auth";
-import JumbotronGeometric from "@ukdanceblue/common/components/JumbotronGeometric";
-import { useThemeFonts } from "@ukdanceblue/common/customHooks";
-import { showMessage } from "@ukdanceblue/common/util/alertUtils";
+import { useLinkBlueLogin } from "@ukdanceblue/db-app-common/auth";
+import JumbotronGeometric from "@ukdanceblue/db-app-common/components/JumbotronGeometric";
+import { useThemeFonts } from "@ukdanceblue/db-app-common/customHooks";
+import { showMessage } from "@ukdanceblue/db-app-common/util/alertUtils";
 import { startCase } from "lodash";
 import {
   Button,

@@ -1,10 +1,10 @@
 import { useRoute } from "@react-navigation/native";
-import { DownloadableImage } from "@ukdanceblue/common";
-import NativeBaseMarkdown from "@ukdanceblue/common/components/NativeBaseMarkdown";
-import { firestoreIntervalToLuxon } from "@ukdanceblue/common/firestoreUtils";
-import { log, universalCatch } from "@ukdanceblue/common/logging";
-import { showMessage } from "@ukdanceblue/common/util/alertUtils";
-import { discoverDefaultCalendar } from "@ukdanceblue/common/util/calendar";
+import { DownloadableImage } from "@ukdanceblue/db-app-common";
+import NativeBaseMarkdown from "@ukdanceblue/db-app-common/components/NativeBaseMarkdown";
+import { firestoreIntervalToLuxon } from "@ukdanceblue/db-app-common/firestoreUtils";
+import { log, universalCatch } from "@ukdanceblue/db-app-common/logging";
+import { showMessage } from "@ukdanceblue/db-app-common/util/alertUtils";
+import { discoverDefaultCalendar } from "@ukdanceblue/db-app-common/util/calendar";
 import {
   PermissionStatus,
   createEventAsync,

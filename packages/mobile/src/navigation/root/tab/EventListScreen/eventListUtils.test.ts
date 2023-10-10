@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import firestore from "@react-native-firebase/firestore";
-import { FirestoreEvent } from "@ukdanceblue/common";
+import { FirestoreEvent } from "@ukdanceblue/db-app-common";
 import { DateTime } from "luxon";
 
 import {
@@ -22,17 +22,17 @@ describe("Luxon <-> React Native Calendars date conversion (random data)", () =>
   const fakeTimestamp = fakeDate.getTime();
   const fakeLuxonDate = DateTime.fromJSDate(fakeDate, { zone: "utc" });
 
-  test("converts a luxon DateTime to a string in the format used by react-native-calendars", () => {
+  it("converts a luxon DateTime to a string in the format used by react-native-calendars", () => {
     expect(luxonDateTimeToDateString(fakeLuxonDate)).toBe(fakeDateString);
   });
 
-  test("converts a luxon DateTime to a month string in the format used by react-native-calendars", () => {
+  it("converts a luxon DateTime to a month string in the format used by react-native-calendars", () => {
     expect(luxonDateTimeToMonthString(fakeLuxonDate)).toBe(
       fakeDateString.split("-").slice(0, 2).join("-")
     );
   });
 
-  test("converts a luxon DateTime to a react-native-calendars date object", () => {
+  it("converts a luxon DateTime to a react-native-calendars date object", () => {
     expect(luxonDateTimeToDateData(fakeLuxonDate)).toEqual({
       dateString: fakeDateString,
       day: fakeLuxonDate.day,
@@ -42,7 +42,7 @@ describe("Luxon <-> React Native Calendars date conversion (random data)", () =>
     });
   });
 
-  test("converts a react-native-calendars date object to a luxon DateTime", () => {
+  it("converts a react-native-calendars date object to a luxon DateTime", () => {
     expect(
       dateDataToLuxonDateTime({
         dateString: fakeDateString,
@@ -54,13 +54,13 @@ describe("Luxon <-> React Native Calendars date conversion (random data)", () =>
     ).toEqual(fakeLuxonDate);
   });
 
-  test("is reversible with luxon input", () => {
+  it("is reversible with luxon input", () => {
     expect(
       dateDataToLuxonDateTime(luxonDateTimeToDateData(fakeLuxonDate))
     ).toEqual(fakeLuxonDate);
   });
 
-  test("is reversible with react-native-calendars input", () => {
+  it("is reversible with react-native-calendars input", () => {
     expect(
       luxonDateTimeToDateData(
         dateDataToLuxonDateTime({
@@ -96,17 +96,17 @@ describe("Luxon <-> React Native Calendars date conversion (fixed data)", () => 
   );
   const timestamp = luxonDate.toMillis();
 
-  test("converts a luxon DateTime to a string in the format used by react-native-calendars", () => {
+  it("converts a luxon DateTime to a string in the format used by react-native-calendars", () => {
     expect(luxonDateTimeToDateString(luxonDate)).toBe(dateString);
   });
 
-  test("converts a luxon DateTime to a month string in the format used by react-native-calendars", () => {
+  it("converts a luxon DateTime to a month string in the format used by react-native-calendars", () => {
     expect(luxonDateTimeToMonthString(luxonDate)).toBe(
       dateString.split("-").slice(0, 2).join("-")
     );
   });
 
-  test("converts a luxon DateTime to a react-native-calendars date object", () => {
+  it("converts a luxon DateTime to a react-native-calendars date object", () => {
     expect(luxonDateTimeToDateData(luxonDate)).toEqual({
       dateString,
       day: luxonDate.day,
@@ -116,7 +116,7 @@ describe("Luxon <-> React Native Calendars date conversion (fixed data)", () => 
     });
   });
 
-  test("converts a react-native-calendars date object to a luxon DateTime", () => {
+  it("converts a react-native-calendars date object to a luxon DateTime", () => {
     expect(
       dateDataToLuxonDateTime({
         dateString,
@@ -128,13 +128,13 @@ describe("Luxon <-> React Native Calendars date conversion (fixed data)", () => 
     ).toEqual(luxonDate);
   });
 
-  test("is reversible with luxon input", () => {
+  it("is reversible with luxon input", () => {
     expect(dateDataToLuxonDateTime(luxonDateTimeToDateData(luxonDate))).toEqual(
       luxonDate
     );
   });
 
-  test("is reversible with react-native-calendars input", () => {
+  it("is reversible with react-native-calendars input", () => {
     expect(
       luxonDateTimeToDateData(
         dateDataToLuxonDateTime({
@@ -156,7 +156,7 @@ describe("Luxon <-> React Native Calendars date conversion (fixed data)", () => 
 });
 
 describe("Refresh Function", () => {
-  test.todo("Correctly downloads events");
+  it.todo("Correctly downloads events");
 });
 
 describe("splitEvents", () => {
@@ -193,7 +193,7 @@ describe("splitEvents", () => {
     );
   }
 
-  test("Only generates keys that there was a startTime for", () => {
+  it("Only generates keys that there was a startTime for", () => {
     const keys = Object.keys(splitEvents(fakeEvents));
 
     for (const key of keys) {
@@ -201,7 +201,7 @@ describe("splitEvents", () => {
     }
   });
 
-  test("Includes no events that don't have a date", () => {
+  it("Includes no events that don't have a date", () => {
     const events = Object.values(splitEvents(fakeEvents));
 
     for (const event of events) {
@@ -211,7 +211,7 @@ describe("splitEvents", () => {
     }
   });
 
-  test("Outputs the correct month string for each event", () => {
+  it("Outputs the correct month string for each event", () => {
     const events = Object.entries(splitEvents(fakeEvents));
 
     for (const [monthString, event] of events) {
@@ -268,18 +268,18 @@ describe("markEvents", () => {
 
   DateTime.local = oldDateTimeLocal;
 
-  test("Marks the correct dates as having events", () => {
+  it("Marks the correct dates as having events", () => {
     for (const key of Object.keys(markedDates)) {
       expect(fakeMonthStrings).toContain(key);
     }
   });
 
-  test("Marks today when there are events today", () => {
+  it("Marks today when there are events today", () => {
     expect(markedDates[fakeMonthStrings[todyIndex]]).toBeDefined();
     expect(markedDates[fakeMonthStrings[todyIndex]].today).toBe(true);
   });
 
-  test("Only marks a single date as today", () => {
+  it("Only marks a single date as today", () => {
     const todayDates = Object.values(markedDates).filter((date) => date.today);
     expect(todayDates).toHaveLength(1);
   });

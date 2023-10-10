@@ -1,4 +1,4 @@
-/** @deprecated Use types from @ukdanceblue/common instead */
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export type RecursivePartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]
     ? RecursivePartial<U>[]

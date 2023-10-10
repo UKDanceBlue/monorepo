@@ -8,12 +8,12 @@ import { createRef, useEffect, useState } from "react";
 import { ActionSheetIOS, Platform } from "react-native";
 import { Button, Divider, Input, Text, View } from "native-base";
 
-import Standings from "../@ukdanceblue/common/components/Standings";
-import { showMessage } from "../@ukdanceblue/common/util/alertUtils";
-import generateUuid from "../@ukdanceblue/common/util/generateUuid";
+import Standings from "../@ukdanceblue/db-app-common/components/Standings";
+import { showMessage } from "../@ukdanceblue/db-app-common/util/alertUtils";
+import generateUuid from "../@ukdanceblue/db-app-common/util/generateUuid";
 
 import { StandingType } from "../../../../types/StandingType";
-import { universalCatch } from "../@ukdanceblue/common/logging";
+import { universalCatch } from "../@ukdanceblue/db-app-common/logging";
 
 const guessInput = createRef<typeof Input>();
 const dadInput = createRef<typeof Input>();
