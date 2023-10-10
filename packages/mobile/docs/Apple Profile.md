@@ -11,14 +11,15 @@ A broad overview of these concepts can be found on the
 ## Distribution Certificate
 
 The distribution certificate is used to sign the app when it is distributed to
-the app store. It can be created and managed by `eas credentials`. The
-certificate has an expiry date, and when it expires it must be renewed and
-updated in Expo.
+the app store. It can be created and managed with `eas credentials`. The
+certificate expires after a year and will need to be renewed.
 
 ## Production Provisioning Profile
 
 The production profile is used by the app store to verify that the app has been
-signed by a trusted source. It can be created and managed by `eas credentials`.
+signed by a trusted source. It can be created and managed with `eas credentials`
+or can be created on the apple developer portal and uploaded to Expo's web
+portal. The profile also expires after a year and will need to be recreated.
 
 ## Ad-Hoc Provisioning Profile
 
@@ -46,3 +47,7 @@ plus icon to add a new device. Copy the UDID from the output of
 `eas device:list` and paste it into the UDID field. Give the device a name in
 the form 'UKDB iPhone - DB[YEAR] [COMMITTEE TITLE] - [PERSON NAME]' such as
 'UKDB iPhone - DB24 App Coordinator - Tag Howard'.
+
+Finally you can create an ad-hoc profile on the developer portal and add all the
+devices you want to be able to install the dev client on. Once you have created
+the profile you can upload it to Expo's web portal.

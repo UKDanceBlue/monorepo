@@ -13,7 +13,8 @@
       },
       "env": {
         "APP_VARIANT": "development",
-        "FIREBASE_APP_CHECK_DEBUG_TOKEN": "3B7C4299-3FEA-47CA-80C5-953A6AC54D54"
+        "FIREBASE_APP_CHECK_DEBUG_TOKEN": "3B7C4299-3FEA-47CA-80C5-953A6AC54D54",
+        "YARN_ENABLE_IMMUTABLE_INSTALLS": "false"
       }
     },
     "development": {
@@ -26,7 +27,8 @@
         "key": "2"
       },
       "env": {
-        "APP_VARIANT": "development"
+        "APP_VARIANT": "development",
+        "YARN_ENABLE_IMMUTABLE_INSTALLS": "false"
       }
     },
     "preview": {
@@ -36,7 +38,8 @@
         "key": "2"
       },
       "env": {
-        "APP_VARIANT": "production"
+        "APP_VARIANT": "production",
+        "YARN_ENABLE_IMMUTABLE_INSTALLS": "false"
       }
     },
     "production": {
@@ -47,7 +50,8 @@
       },
       "env": {
         "APP_VARIANT": "production",
-        "CHECK_VERSION": "true"
+        "CHECK_VERSION": "true",
+        "YARN_ENABLE_IMMUTABLE_INSTALLS": "false"
       }
     }
   },
