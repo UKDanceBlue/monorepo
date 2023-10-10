@@ -10,8 +10,11 @@ const projectRoot = __dirname;
 const workspaces = fs.readdirSync(path.resolve(__dirname, "../"));
 const currentWorkspace = path.basename(__dirname);
 
-const config = (async () => {
+async function config() {
+  /** @type {import("expo/metro-config").DefaultConfigOptions} */
   const expoMetroConfig = await getDefaultConfig(projectRoot);
+
+  /** @type {import("expo/metro-config").MetroConfig}*/
   const config = {
     ...expoMetroConfig,
     projectRoot,
@@ -37,6 +40,6 @@ const config = (async () => {
   };
 
   return config;
-})();
+}
 
-module.exports = config;
+module.exports = config();
