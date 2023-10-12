@@ -564,6 +564,8 @@ type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
 type MembershipResource {
   createdAt: DateTimeISO
   marathonYear: String!
+  person: PersonResource!
+  team: TeamResource!
   updatedAt: DateTimeISO
   uuid: ID!
 }
@@ -719,6 +721,31 @@ enum StringComparator {
   REGEX
   STARTS_WITH
   SUBSTRING
+}
+
+"""New Team vs Returning Team"""
+enum TeamLegacyStatus {
+  NewTeam
+  ReturningTeam
+}
+
+type TeamResource {
+  createdAt: DateTimeISO
+  legacyStatus: TeamLegacyStatus!
+  marathonYear: String
+  name: String!
+  persistentIdentifier: String
+  type: TeamType!
+  updatedAt: DateTimeISO
+  uuid: ID!
+  visibility: DbRole!
+}
+
+"""Types of teams"""
+enum TeamType {
+  Committee
+  Morale
+  Spirit
 }
 
 """URL custom scalar type"""

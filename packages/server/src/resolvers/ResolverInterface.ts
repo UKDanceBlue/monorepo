@@ -12,8 +12,8 @@ import type {
 } from "./ListQueryArgs.js";
 
 export interface ResolverInterface<R extends Resource> {
-  getByUuid: (uuid: string) => Promise<AbstractGraphQLOkResponse<R>>;
-  delete: (uuid: string) => Promise<AbstractGraphQLOkResponse<boolean>>;
+  getByUuid?: (uuid: string) => Promise<AbstractGraphQLOkResponse<R>>;
+  delete?: (uuid: string) => Promise<AbstractGraphQLOkResponse<boolean>>;
 
   getAll?: () => Promise<AbstractGraphQLArrayOkResponse<R>>;
   create?: (input: never) => Promise<AbstractGraphQLCreatedResponse<R>>;
