@@ -1,14 +1,16 @@
-import { DeviceResource, ErrorCode } from "@ukdanceblue/common";
+import { DeviceResource, ErrorCode, PersonResource } from "@ukdanceblue/common";
 import {
   Arg,
   Args,
   ArgsType,
   Field,
+  FieldResolver,
   InputType,
   Mutation,
   ObjectType,
   Query,
   Resolver,
+  Root,
 } from "type-graphql";
 
 import { DeviceModel } from "../models/Device.js";
@@ -156,5 +158,21 @@ export class DeviceResolver
     await row.destroy();
 
     return DeleteDeviceResponse.newOk(true);
+  }
+
+  @FieldResolver(() => PersonResource, { nullable: true })
+  async lastLoggedInUser(
+    @Root() device: DeviceResource
+  ): Promise<PersonResource | null> {
+    const model = await DeviceModel.findByUuid(device.uuid, {
+      attributes: ["lastUserId"],
+      include: [PersonModel],
+    });
+
+    if (model == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Device not found");
+    }
+
+    return model.lastUser?.toResource() ?? null;
   }
 }

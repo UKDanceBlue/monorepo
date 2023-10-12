@@ -315,8 +315,8 @@ enum DeviceResolverStringFilterKeys {
 type DeviceResource {
   createdAt: DateTimeISO
   expoPushToken: String
+  lastLoggedInUser: PersonResource
   lastLogin: DateTime
-  lastUser: PersonResource
   updatedAt: DateTimeISO
   uuid: ID!
 }
@@ -427,7 +427,7 @@ type EventResource {
   createdAt: DateTimeISO
   description: String
   duration: Duration
-  images: [ImageResource!]
+  images: [ImageResource!]!
   location: String
   occurrences: [DateTime!]!
   summary: String
@@ -561,6 +561,13 @@ type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
   total: Float!
 }
 
+type MembershipResource {
+  createdAt: DateTimeISO
+  marathonYear: String!
+  updatedAt: DateTimeISO
+  uuid: ID!
+}
+
 type Mutation {
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
   createDevice(input: CreateDeviceInput!): CreateDeviceResponse!
@@ -586,14 +593,14 @@ enum NumericComparator {
 
 type PersonResource {
   authIds: AuthSource!
-  captainOf: [TeamResource!]!
+  captaincies: [MembershipResource!]!
   createdAt: DateTimeISO
   email: String!
   firstName: String
   lastName: String
   linkblue: String
-  memberOf: [TeamResource!]!
   role: RoleResource!
+  teams: [MembershipResource!]!
   updatedAt: DateTimeISO
   uuid: ID!
 }
@@ -679,7 +686,7 @@ type Query {
 }
 
 type RoleResource {
-  committee: String
+  committeeIdentifier: String
   committeeRole: CommitteeRole
   createdAt: DateTimeISO
   dbRole: DbRole!
@@ -712,24 +719,6 @@ enum StringComparator {
   REGEX
   STARTS_WITH
   SUBSTRING
-}
-
-type TeamResource {
-  captains: [String!]!
-  createdAt: DateTimeISO
-  members: [String!]!
-  name: String!
-  pointEntries: [String!]!
-  type: TeamType!
-  updatedAt: DateTimeISO
-  uuid: ID!
-  visibility: DbRole!
-}
-
-"""Types of teams"""
-enum TeamType {
-  Morale
-  Spirit
 }
 
 """URL custom scalar type"""

@@ -11,6 +11,7 @@ import { DataTypes } from "@sequelize/core";
 
 import { sequelizeDb } from "../data-source.js";
 
+import { MarathonYearString, MembershipResource } from "@ukdanceblue/common";
 import { BaseModel } from "./BaseModel.js";
 import type { PersonModel } from "./Person.js";
 import type { TeamModel } from "./Team.js";
@@ -48,6 +49,17 @@ export class MembershipModel extends BaseModel<
   public declare createTeam: BelongsToCreateAssociationMixin<TeamModel>;
 
   public declare position: MembershipPositionType;
+
+  public declare marathonYear: MarathonYearString;
+
+  public toResource(): MembershipResource {
+    return MembershipResource.init({
+      uuid: this.uuid,
+      marathonYear: this.marathonYear,
+      updatedAt: this.updatedAt,
+      createdAt: this.createdAt,
+    });
+  }
 }
 
 MembershipModel.init(
@@ -77,6 +89,13 @@ MembershipModel.init(
     position: {
       type: DataTypes.ENUM(...Object.values(MembershipPositionType)),
       allowNull: false,
+    },
+    marathonYear: {
+      type: DataTypes.STRING(4),
+      allowNull: false,
+      validate: {
+        is: /^DB\d{2}$/,
+      },
     },
   },
   {

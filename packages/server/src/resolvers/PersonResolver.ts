@@ -1,16 +1,23 @@
-import { ErrorCode, PersonResource } from "@ukdanceblue/common";
+import {
+  ErrorCode,
+  MembershipResource,
+  PersonResource,
+} from "@ukdanceblue/common";
 import {
   Arg,
   Field,
+  FieldResolver,
   InputType,
   Mutation,
   ObjectType,
   Query,
   Resolver,
+  Root,
 } from "type-graphql";
 
 import { PersonModel } from "../models/Person.js";
 
+import { MembershipModel } from "../models/Membership.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
@@ -84,5 +91,35 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     await row.destroy();
 
     return DeletePersonResponse.newOk(true);
+  }
+
+  @FieldResolver(() => [MembershipResource])
+  async teams(@Root() person: PersonResource): Promise<MembershipResource[]> {
+    const model = await PersonModel.findByUuid(person.uuid, {
+      attributes: ["id"],
+      include: [MembershipModel.withScope("withTeam")],
+    });
+
+    if (model == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Person not found");
+    }
+
+    return model.memberships.map((row) => row.toResource());
+  }
+
+  @FieldResolver(() => [MembershipResource])
+  async captaincies(
+    @Root() person: PersonResource
+  ): Promise<MembershipResource[]> {
+    const model = await PersonModel.findByUuid(person.uuid, {
+      attributes: ["id"],
+      include: [MembershipModel.withScope("withTeam").withScope("captains")],
+    });
+
+    if (model == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Person not found");
+    }
+
+    return model.memberships.map((row) => row.toResource());
   }
 }

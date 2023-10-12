@@ -3,6 +3,7 @@ import {
   DurationScalar,
   ErrorCode,
   EventResource,
+  ImageResource,
 } from "@ukdanceblue/common";
 import { DateTime, Duration } from "luxon";
 import {
@@ -10,15 +11,18 @@ import {
   Args,
   ArgsType,
   Field,
+  FieldResolver,
   InputType,
   Mutation,
   ObjectType,
   Query,
   Resolver,
+  Root,
 } from "type-graphql";
 
 import { EventModel } from "../models/Event.js";
 
+import { ImageModel } from "../models/Image.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
@@ -164,5 +168,19 @@ export class EventResolver
     await row.destroy();
 
     return DeleteEventResponse.newOk(true);
+  }
+
+  @FieldResolver(() => [ImageResource])
+  async images(@Root() event: EventResource): Promise<ImageResource[]> {
+    const row = await EventModel.findOne({
+      where: { uuid: event.uuid },
+      include: [{ model: ImageModel, as: "images" }],
+    });
+
+    if (row == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Event not found");
+    }
+
+    return row.images?.map((row) => row.toResource()) ?? [];
   }
 }
