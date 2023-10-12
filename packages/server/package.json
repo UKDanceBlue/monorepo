@@ -92,5 +92,6 @@
     "@types/pg": "^8.6.6",
     "nodemon": "^2.0.22",
     "sequelize-cli": "^6.6.0"
-  }
+  },
+  "packageManager": "yarn@3.6.4"
 }

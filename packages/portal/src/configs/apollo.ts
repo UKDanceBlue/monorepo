@@ -1,46 +1,34 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import {
-  FieldPolicy,
-  FieldReadFunction,
+  TypePolicy,
   // FieldFunctionOptions,
 } from "@apollo/client/cache/inmemory/policies";
-import type {
-  // ListEventsQueryVariables,
-  // QueryListEventsArgs,
-  Query,
-} from "@ukdanceblue/common/graphql-client-admin/raw-types";
 
 const API_URL = "http://localhost:4000/graphql";
 
-const cacheQueryFields: {
-  [fieldName in keyof Query]?:
-    | FieldPolicy<Query[fieldName], Query[fieldName], Query[fieldName]>
-    | FieldReadFunction<Query[fieldName], Query[fieldName]>;
-} = {
-  events: {
-    // merge(
-    //   existing,
-    //   incoming,
-    //   {
-    //     args,
-    //     toReference,
-    //   }: FieldFunctionOptions<QueryListEventsArgs, ListEventsQueryVariables>
-    // ) {
-    //   if (!existing) {
-    //     return incoming;
-    //   }
-    //   const merged = {
-    //   };
-    //   return merged;
-    // },
-  },
-};
+function listResponseTypePolicy(
+  __typename: string,
+  policy: Readonly<TypePolicy> = {}
+): TypePolicy {
+  return {
+    ...policy,
+    fields: {
+      ...policy.fields,
+      data: {
+        read(_, { args, toReference }) {
+          return toReference({
+            __typename,
+            uuid: args?.uuid,
+          });
+        },
+      },
+    },
+  };
+}
 
 const cache = new InMemoryCache({
   typePolicies: {
-    Query: {
-      fields: cacheQueryFields,
-    },
+    ListDevicesResponse: listResponseTypePolicy("ListDevicesResponse"),
   },
 });
 

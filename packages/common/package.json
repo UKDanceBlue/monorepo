@@ -94,5 +94,6 @@
     "@apollo/client": {
       "optional": true
     }
-  }
+  },
+  "packageManager": "yarn@3.6.4"
 }
