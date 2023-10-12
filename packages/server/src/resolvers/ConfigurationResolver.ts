@@ -9,10 +9,7 @@ import {
   Resolver,
 } from "type-graphql";
 
-import {
-  ConfigurationIntermediate,
-  ConfigurationModel,
-} from "../models/Configuration.js";
+import { ConfigurationModel } from "../models/Configuration.js";
 
 import {
   AbstractGraphQLArrayOkResponse,
@@ -84,9 +81,7 @@ export class ConfigurationResolver
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
     }
-    return GetConfigurationByUuidResponse.newOk(
-      new ConfigurationIntermediate(row).toResource()
-    );
+    return GetConfigurationByUuidResponse.newOk(row.toResource());
   }
 
   @Query(() => GetAllConfigurationsResponse, { name: "allConfigurations" })
@@ -94,7 +89,7 @@ export class ConfigurationResolver
     const resources = await ConfigurationModel.findAll();
 
     return GetAllConfigurationsResponse.newOk(
-      resources.map((r) => new ConfigurationIntermediate(r).toResource())
+      resources.map((r) => r.toResource())
     );
   }
 
@@ -104,9 +99,7 @@ export class ConfigurationResolver
   ): Promise<CreateConfigurationResponse> {
     const row = await ConfigurationModel.create(input);
 
-    return CreateConfigurationResponse.newOk(
-      new ConfigurationIntermediate(row).toResource()
-    );
+    return CreateConfigurationResponse.newOk(row.toResource());
   }
 
   @Mutation(() => SetConfigurationResponse, { name: "setConfiguration" })
@@ -121,9 +114,7 @@ export class ConfigurationResolver
     }
     await row.update(input);
 
-    return SetConfigurationResponse.newOk(
-      new ConfigurationIntermediate(row).toResource()
-    );
+    return SetConfigurationResponse.newOk(row.toResource());
   }
 
   @Mutation(() => DeleteConfigurationResponse, { name: "deleteConfiguration" })

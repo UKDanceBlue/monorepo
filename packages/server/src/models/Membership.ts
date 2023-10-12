@@ -10,12 +10,10 @@ import type {
 import { DataTypes } from "@sequelize/core";
 
 import { sequelizeDb } from "../data-source.js";
-import { IntermediateClass } from "../lib/modelTypes.js";
 
 import { BaseModel } from "./BaseModel.js";
 import type { PersonModel } from "./Person.js";
 import type { TeamModel } from "./Team.js";
-import type { CoreProperty } from "./intermediate.js";
 
 export const MembershipPositionType = {
   Member: "Member",
@@ -90,37 +88,6 @@ MembershipModel.init(
     modelName: "Membership",
   }
 );
-
-export class MembershipIntermediate extends IntermediateClass<
-  never,
-  MembershipIntermediate
-> {
-  public id: CoreProperty<number>;
-  public uuid: CoreProperty<string>;
-  public position: CoreProperty<MembershipPositionType>;
-  public person?: PersonModel;
-  public team?: TeamModel;
-
-  constructor(model: MembershipModel) {
-    super(["id", "uuid", "position"], []);
-    this.id = model.id;
-    this.uuid = model.uuid;
-    if (model.person) {
-      this.person = model.person;
-    }
-    if (model.team) {
-      this.team = model.team;
-    }
-    this.position = model.position;
-
-    this.createdAt = model.createdAt;
-    this.updatedAt = model.updatedAt;
-  }
-
-  public toResource(): never {
-    throw new Error("Method not implemented.");
-  }
-}
 
 MembershipModel.addScope("captains", {
   where: {

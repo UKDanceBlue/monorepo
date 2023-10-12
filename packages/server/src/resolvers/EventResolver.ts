@@ -17,7 +17,7 @@ import {
   Resolver,
 } from "type-graphql";
 
-import { EventIntermediate, EventModel } from "../models/Event.js";
+import { EventModel } from "../models/Event.js";
 
 import {
   AbstractGraphQLCreatedResponse,
@@ -110,9 +110,7 @@ export class EventResolver
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
 
-    return GetEventByUuidResponse.newOk(
-      new EventIntermediate(row).toResource()
-    );
+    return GetEventByUuidResponse.newOk(row.toResource());
   }
 
   @Query(() => ListEventsResponse, { name: "events" })
@@ -131,7 +129,7 @@ export class EventResolver
     const { rows, count } = await EventModel.findAndCountAll(findOptions);
 
     return ListEventsResponse.newPaginated({
-      data: rows.map((row) => new EventIntermediate(row).toResource()),
+      data: rows.map((row) => row.toResource()),
       total: count,
       page: query.page,
       pageSize: query.pageSize,
@@ -149,7 +147,7 @@ export class EventResolver
       duration: input.duration,
     });
 
-    return CreateEventResponse.newOk(new EventIntermediate(row).toResource());
+    return CreateEventResponse.newOk(row.toResource());
   }
 
   @Mutation(() => DeleteEventResponse, { name: "deleteEvent" })

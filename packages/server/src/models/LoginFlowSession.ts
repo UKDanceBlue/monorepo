@@ -9,10 +9,8 @@ import { DateTime } from "luxon";
 import { generators } from "openid-client";
 
 import { sequelizeDb } from "../data-source.js";
-import { IntermediateClass } from "../lib/modelTypes.js";
 
 import { BaseModel } from "./BaseModel.js";
-import type { CoreProperty, ImportantProperty } from "./intermediate.js";
 
 export class LoginFlowSessionModel extends BaseModel<
   InferAttributes<LoginFlowSessionModel>,
@@ -28,6 +26,19 @@ export class LoginFlowSessionModel extends BaseModel<
   codeVerifier!: CreationOptional<string>;
 
   redirectToAfterLogin!: string | null;
+
+  toResource(): LoginFlowSessionResource {
+    return LoginFlowSessionResource.init({
+      uuid: this.uuid,
+      creationDate: DateTime.fromJSDate(this.createdAt),
+      codeVerifier: this.codeVerifier,
+      redirectToAfterLogin: this.redirectToAfterLogin
+        ? new URL(this.redirectToAfterLogin)
+        : null,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt == null ? null : this.updatedAt,
+    });
+  }
 }
 
 LoginFlowSessionModel.init(
@@ -65,47 +76,3 @@ LoginFlowSessionModel.init(
     modelName: "LoginFlowSession",
   }
 );
-
-export class LoginFlowSessionIntermediate extends IntermediateClass<
-  LoginFlowSessionResource,
-  LoginFlowSessionIntermediate
-> {
-  public id?: CoreProperty<number>;
-  public uuid?: CoreProperty<string>;
-  public createdAt?: ImportantProperty<Date>;
-  public codeVerifier?: ImportantProperty<string>;
-  public redirectToAfterLogin?: ImportantProperty<string>;
-
-  constructor(model: LoginFlowSessionModel) {
-    super(
-      ["id", "uuid"],
-      ["createdAt", "codeVerifier", "redirectToAfterLogin"]
-    );
-
-    this.id = model.id;
-    this.uuid = model.uuid;
-    this.createdAt = model.createdAt;
-    this.codeVerifier = model.codeVerifier;
-    if (model.redirectToAfterLogin) {
-      this.redirectToAfterLogin = model.redirectToAfterLogin;
-    }
-    this.updatedAt = model.updatedAt;
-  }
-
-  toResource(): LoginFlowSessionResource {
-    if (!this.hasImportantProperties()) {
-      throw new Error(
-        "Cannot convert LoginFlowSessionIntermediate to LoginFlowSessionResource: missing properties"
-      );
-    }
-
-    return LoginFlowSessionResource.init({
-      uuid: this.uuid,
-      creationDate: DateTime.fromJSDate(this.createdAt),
-      codeVerifier: this.codeVerifier,
-      redirectToAfterLogin: new URL(this.redirectToAfterLogin),
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt == null ? null : this.updatedAt,
-    });
-  }
-}

@@ -7,10 +7,8 @@ import { DataTypes } from "@sequelize/core";
 import { ConfigurationResource } from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
-import { IntermediateClass } from "../lib/modelTypes.js";
 
 import { BaseModel } from "./BaseModel.js";
-import type { CoreProperty } from "./intermediate.js";
 
 export class ConfigurationModel extends BaseModel<
   InferAttributes<ConfigurationModel>,
@@ -19,6 +17,12 @@ export class ConfigurationModel extends BaseModel<
   public declare id: CreationOptional<number>;
 
   public declare key: string;
+
+  public toResource(): ConfigurationResource {
+    return ConfigurationResource.init({
+      key: this.key,
+    });
+  }
 }
 
 ConfigurationModel.init(
@@ -53,27 +57,3 @@ ConfigurationModel.init(
     modelName: "Configuration",
   }
 );
-
-export class ConfigurationIntermediate extends IntermediateClass<
-  ConfigurationResource,
-  ConfigurationIntermediate
-> {
-  public declare id: CoreProperty<number>;
-  public declare key: CoreProperty<string>;
-
-  constructor(configuration: ConfigurationModel) {
-    super(["id", "key"], []);
-    this.id = configuration.id!;
-    this.key = configuration.key;
-  }
-
-  public toResource(): ConfigurationResource {
-    if (this.hasCoreProperties()) {
-      return ConfigurationResource.init({
-        key: this.key,
-      });
-    } else {
-      throw new Error("Cannot convert to resource");
-    }
-  }
-}

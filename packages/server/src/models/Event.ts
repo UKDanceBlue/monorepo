@@ -27,20 +27,15 @@ import type {
 import { DataTypes } from "@sequelize/core";
 // import type { ImageResource } from "@ukdanceblue/common";
 // import { EventResource } from "@ukdanceblue/common";
-import type { ImageResource } from "@ukdanceblue/common";
 import { EventResource } from "@ukdanceblue/common";
 import type { Duration } from "luxon";
 
 import { sequelizeDb } from "../data-source.js";
-import { DurationDataType } from "../lib/customdatatypes/Duration.js";
-import { IntermediateClass } from "../lib/modelTypes.js";
+import { DurationDataType } from "../lib/custom-data-types/Duration.js";
 
 import { BaseModel } from "./BaseModel.js";
 import type { EventOccurrenceModel } from "./EventOccurrence.js";
-import { EventOccurrenceIntermediate } from "./EventOccurrence.js";
 import type { ImageModel } from "./Image.js";
-import { ImageIntermediate } from "./Image.js";
-import type { CoreProperty, ImportantProperty } from "./intermediate.js";
 
 export class EventModel extends BaseModel<
   InferAttributes<EventModel>,
@@ -128,6 +123,29 @@ export class EventModel extends BaseModel<
     ImageModel["id"]
   >;
   public declare countImages: BelongsToManyCountAssociationsMixin<ImageModel>;
+
+  public toResource(): EventResource {
+    if (!this.occurrences) {
+      throw new Error(
+        "EventModel.toResource() requires occurrences to be loaded"
+      );
+    }
+
+    return EventResource.init({
+      title: this.title,
+      summary: this.summary ?? null,
+      description: this.description ?? null,
+      location: this.location ?? null,
+      occurrences: this.occurrences.map((occurrence) =>
+        occurrence.toResource()
+      ),
+      duration: this.duration ?? null,
+      // images,
+      uuid: this.uuid,
+      createdAt: this.createdAt == null ? null : this.createdAt,
+      updatedAt: this.updatedAt == null ? null : this.updatedAt,
+    });
+  }
 }
 
 EventModel.init(
@@ -177,94 +195,3 @@ EventModel.init(
     modelName: "Event",
   }
 );
-
-export class EventIntermediate extends IntermediateClass<
-  EventResource,
-  EventIntermediate
-> {
-  public id?: CoreProperty<number>;
-  public uuid?: CoreProperty<string>;
-  public title?: ImportantProperty<string>;
-  public summary?: string | null;
-  public description?: string | null;
-  public location?: string | null;
-  public occurrences?: ImportantProperty<EventOccurrenceIntermediate[]>;
-  public duration?: Duration | null;
-  public images?: ImageIntermediate[] | string[];
-
-  constructor(model: Partial<EventModel>) {
-    super(["id", "uuid"], ["title", "occurrences"]);
-    if (model.id !== undefined) {
-      this.id = model.id;
-    }
-    if (model.uuid !== undefined) {
-      this.uuid = model.uuid;
-    }
-    if (model.title !== undefined) {
-      this.title = model.title;
-    }
-    if (model.summary !== undefined) {
-      this.summary = model.summary;
-    }
-    if (model.description !== undefined) {
-      this.description = model.description;
-    }
-    if (model.location !== undefined) {
-      this.location = model.location;
-    }
-    if (model.occurrences !== undefined) {
-      this.occurrences = model.occurrences.map(
-        (occurrence) => new EventOccurrenceIntermediate(occurrence)
-      );
-    }
-    if (model.duration !== undefined) {
-      this.duration = model.duration;
-    }
-    if (model.images !== undefined) {
-      this.images = model.images.map((image) => new ImageIntermediate(image));
-    }
-
-    if (model.createdAt !== undefined) {
-      this.createdAt = model.createdAt;
-    }
-    if (model.updatedAt !== undefined) {
-      this.updatedAt = model.updatedAt;
-    }
-  }
-
-  public toResource(): EventResource {
-    if (!this.hasImportantProperties()) {
-      throw new Error("Cannot convert incomplete Event to Resource");
-    }
-
-    let images: string[] | ImageResource[] | null = null;
-    if (this.images != null) {
-      if (typeof this.images[0] === "string") {
-        images = [] as string[];
-        for (const image of this.images as string[]) {
-          images.push(image);
-        }
-      } else {
-        for (const image of this.images as ImageIntermediate[]) {
-          images = [] as ImageResource[];
-          images.push(image.toResource());
-        }
-      }
-    }
-
-    return EventResource.init({
-      title: this.title,
-      summary: this.summary ?? null,
-      description: this.description ?? null,
-      location: this.location ?? null,
-      occurrences: this.occurrences.map((occurrence) =>
-        occurrence.toResource()
-      ),
-      duration: this.duration ?? null,
-      // images,
-      uuid: this.uuid,
-      createdAt: this.createdAt == null ? null : this.createdAt,
-      updatedAt: this.updatedAt == null ? null : this.updatedAt,
-    });
-  }
-}

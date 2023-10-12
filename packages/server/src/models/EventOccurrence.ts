@@ -10,11 +10,9 @@ import { DataTypes } from "@sequelize/core";
 import { DateTime } from "luxon";
 
 import { sequelizeDb } from "../data-source.js";
-import { IntermediateClass } from "../lib/modelTypes.js";
 
 import { BaseModel } from "./BaseModel.js";
 import type { EventModel } from "./Event.js";
-import type { CoreProperty, ImportantProperty } from "./intermediate.js";
 
 export class EventOccurrenceModel extends BaseModel<
   InferAttributes<EventOccurrenceModel>,
@@ -34,6 +32,15 @@ export class EventOccurrenceModel extends BaseModel<
   public declare event: NonAttribute<EventModel>;
   public declare getEvent: BelongsToGetAssociationMixin<EventModel>;
   public declare createEvent: BelongsToCreateAssociationMixin<EventModel>;
+
+  public toResource(): DateTime {
+    if (!this.date) {
+      throw new Error(
+        "EventOccurrenceIntermediate was not properly initialized"
+      );
+    }
+    return DateTime.fromJSDate(this.date);
+  }
 }
 
 EventOccurrenceModel.init(
@@ -73,31 +80,3 @@ EventOccurrenceModel.init(
     modelName: "EventOccurrence",
   }
 );
-
-export class EventOccurrenceIntermediate extends IntermediateClass<
-  DateTime,
-  EventOccurrenceIntermediate
-> {
-  public declare id?: CoreProperty<number>;
-  public declare uuid?: CoreProperty<string>;
-  public declare date?: ImportantProperty<Date>;
-
-  constructor(model: EventOccurrenceModel) {
-    super(["id", "uuid"], ["date"]);
-    this.id = model.id;
-    this.uuid = model.uuid;
-    this.date = model.date;
-
-    this.createdAt = model.createdAt;
-    this.updatedAt = model.updatedAt;
-  }
-
-  public toResource(): DateTime {
-    if (!this.date) {
-      throw new Error(
-        "EventOccurrenceIntermediate was not properly initialized"
-      );
-    }
-    return DateTime.fromJSDate(this.date);
-  }
-}

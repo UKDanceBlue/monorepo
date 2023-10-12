@@ -11,7 +11,7 @@ import {
   Resolver,
 } from "type-graphql";
 
-import { DeviceIntermediate, DeviceModel } from "../models/Device.js";
+import { DeviceModel } from "../models/Device.js";
 import { PersonModel } from "../models/Person.js";
 
 import {
@@ -94,9 +94,7 @@ export class DeviceResolver
       throw new DetailedError(ErrorCode.NotFound, "Device not found");
     }
 
-    return GetDeviceByUuidResponse.newOk(
-      new DeviceIntermediate(row).toResource()
-    );
+    return GetDeviceByUuidResponse.newOk(row.toResource());
   }
 
   @Query(() => ListDevicesResponse, { name: "devices" })
@@ -112,7 +110,7 @@ export class DeviceResolver
     const { rows, count } = await DeviceModel.findAndCountAll(findOptions);
 
     return ListDevicesResponse.newPaginated({
-      data: rows.map((row) => new DeviceIntermediate(row).toResource()),
+      data: rows.map((row) => row.toResource()),
       total: count,
       page: query.page,
       pageSize: query.pageSize,
@@ -141,7 +139,7 @@ export class DeviceResolver
       lastUserId,
     });
 
-    return CreateDeviceResponse.newOk(new DeviceIntermediate(row).toResource());
+    return CreateDeviceResponse.newOk(row.toResource());
   }
 
   @Mutation(() => DeleteDeviceResponse, { name: "deleteDevice" })

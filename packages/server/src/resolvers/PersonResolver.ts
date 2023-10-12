@@ -9,7 +9,7 @@ import {
   Resolver,
 } from "type-graphql";
 
-import { PersonIntermediate, PersonModel } from "../models/Person.js";
+import { PersonModel } from "../models/Person.js";
 
 import {
   AbstractGraphQLCreatedResponse,
@@ -55,9 +55,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
       throw new DetailedError(ErrorCode.NotFound, "Person not found");
     }
 
-    return GetPersonByUuidResponse.newOk(
-      new PersonIntermediate(row).toResource()
-    );
+    return GetPersonByUuidResponse.newOk(row.toResource());
   }
 
   @Mutation(() => CreatePersonResponse, { name: "createPerson" })
@@ -69,9 +67,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
       authIds: {},
     });
 
-    return CreatePersonResponse.newOk(
-      new PersonIntermediate(result).toResource()
-    );
+    return CreatePersonResponse.newOk(result.toResource());
   }
 
   @Mutation(() => DeletePersonResponse, { name: "deletePerson" })

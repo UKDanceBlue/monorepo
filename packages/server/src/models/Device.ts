@@ -14,11 +14,9 @@ import { DeviceResource } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 
 import { sequelizeDb } from "../data-source.js";
-import { IntermediateClass } from "../lib/modelTypes.js";
 
 import { BaseModel } from "./BaseModel.js";
-import { PersonIntermediate, PersonModel } from "./Person.js";
-import type { CoreProperty } from "./intermediate.js";
+import { PersonModel } from "./Person.js";
 
 export class DeviceModel extends BaseModel<
   InferAttributes<DeviceModel>,
@@ -43,6 +41,18 @@ export class DeviceModel extends BaseModel<
   declare static associations: {
     lastUser: Association<DeviceModel, PersonModel>;
   };
+
+  public toResource(): DeviceResource {
+    return DeviceResource.init({
+      uuid: this.uuid,
+      expoPushToken: this.expoPushToken ?? null,
+      // lastUser: this.lastUser?.toResource() ?? null,
+      lastLogin:
+        this.lastLogin == null ? null : DateTime.fromJSDate(this.lastLogin),
+      createdAt: this.createdAt == null ? null : this.createdAt,
+      updatedAt: this.updatedAt == null ? null : this.updatedAt,
+    });
+  }
 }
 
 DeviceModel.init(
@@ -90,48 +100,3 @@ DeviceModel.belongsTo(PersonModel, {
   as: "lastUser",
   foreignKey: "lastUserId",
 });
-
-export class DeviceIntermediate extends IntermediateClass<
-  DeviceResource,
-  DeviceIntermediate
-> {
-  public id?: CoreProperty<number>;
-  public uuid?: CoreProperty<string>;
-
-  public expoPushToken?: string | null;
-
-  public lastUser?: PersonIntermediate | null;
-
-  public lastLogin?: Date | null;
-
-  constructor(device: DeviceModel) {
-    super(["id", "uuid"], []);
-    this.id = device.id;
-    this.uuid = device.uuid;
-    this.expoPushToken = device.expoPushToken;
-    this.lastUser =
-      device.lastUser == null ? null : new PersonIntermediate(device.lastUser);
-    this.lastLogin = device.lastLogin;
-
-    this.createdAt = device.createdAt;
-    this.updatedAt = device.updatedAt;
-  }
-
-  public toResource(): DeviceResource {
-    if (this.hasImportantProperties()) {
-      return DeviceResource.init({
-        uuid: this.uuid,
-        expoPushToken: this.expoPushToken ?? null,
-        // lastUser: this.lastUser?.toResource() ?? null,
-        lastLogin:
-          this.lastLogin == null ? null : DateTime.fromJSDate(this.lastLogin),
-        createdAt: this.createdAt == null ? null : this.createdAt,
-        updatedAt: this.updatedAt == null ? null : this.updatedAt,
-      });
-    } else {
-      throw new Error(
-        "Cannot convert incomplete DeviceIntermediate to DeviceResource"
-      );
-    }
-  }
-}

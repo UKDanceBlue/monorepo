@@ -11,14 +11,10 @@ import { DataTypes } from "@sequelize/core";
 import { PointEntryResource, TeamType } from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
-import { IntermediateClass } from "../lib/modelTypes.js";
 
 import { BaseModel } from "./BaseModel.js";
 import type { PersonModel } from "./Person.js";
-import { PersonIntermediate } from "./Person.js";
 import type { TeamModel } from "./Team.js";
-import { TeamIntermediate } from "./Team.js";
-import type { CoreProperty, ImportantProperty } from "./intermediate.js";
 
 export class PointEntryModel extends BaseModel<
   InferAttributes<PointEntryModel>,
@@ -54,6 +50,20 @@ export class PointEntryModel extends BaseModel<
   >;
   public declare createTeam: BelongsToCreateAssociationMixin<TeamModel>;
   public declare readonly teamId: CreationOptional<number>;
+
+  public toResource(): PointEntryResource {
+    return PointEntryResource.init({
+      uuid: this.uuid,
+      type: this.type,
+      comment: this.comment,
+      points: this.points,
+      // personFrom:
+      //   this.personFrom === null ? null : this.personFrom.toResource(),
+      // team: this.team.toResource(),
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    });
+  }
 }
 
 PointEntryModel.init(
@@ -102,69 +112,3 @@ PointEntryModel.init(
     modelName: "PointEntry",
   }
 );
-
-export class PointEntryIntermediate extends IntermediateClass<
-  PointEntryResource,
-  PointEntryIntermediate
-> {
-  public id?: CoreProperty<number>;
-  public uuid?: CoreProperty<string>;
-  public type?: ImportantProperty<TeamType>;
-  public comment?: string | null;
-  public points?: ImportantProperty<number>;
-  public personFromId?: number | null;
-  public teamId?: ImportantProperty<number>;
-  public personFrom?: PersonIntermediate | null;
-  public team?: ImportantProperty<TeamIntermediate>;
-
-  constructor(model: PointEntryModel) {
-    super(["id", "uuid"], ["type", "team", "points", "teamId"]);
-    this.id = model.id;
-    this.uuid = model.uuid;
-    this.type = model.type;
-    this.comment = model.comment;
-    this.points = model.points;
-    this.personFromId = model.personFromId;
-    this.teamId = model.teamId;
-    this.personFrom =
-      model.personFrom === null
-        ? null
-        : new PersonIntermediate(model.personFrom);
-    this.team = new TeamIntermediate(model.team);
-
-    this.createdAt = model.createdAt;
-    this.updatedAt = model.updatedAt;
-  }
-
-  public hasNonOptionalProperties(): this is Required<PointEntryIntermediate> {
-    return (
-      this.id !== undefined &&
-      this.uuid !== undefined &&
-      this.type !== undefined &&
-      this.comment !== undefined &&
-      this.points !== undefined &&
-      this.personFromId !== undefined &&
-      this.teamId !== undefined &&
-      this.personFrom !== undefined &&
-      this.team !== undefined
-    );
-  }
-
-  public toResource(): PointEntryResource {
-    if (!this.hasNonOptionalProperties()) {
-      throw new Error("PointEntryIntermediate is not complete");
-    }
-
-    return PointEntryResource.init({
-      uuid: this.uuid,
-      type: this.type,
-      comment: this.comment,
-      points: this.points,
-      // personFrom:
-      //   this.personFrom === null ? null : this.personFrom.toResource(),
-      // team: this.team.toResource(),
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
-    });
-  }
-}

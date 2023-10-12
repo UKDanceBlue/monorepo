@@ -6,7 +6,6 @@ import jsonwebtoken from "jsonwebtoken";
 import { LoginFlowSessionModel } from "../../.././models/LoginFlowSession.js";
 import { findPersonForLogin } from "../../../controllers/PersonController.js";
 import { makeUserJwt } from "../../../lib/auth/index.js";
-import { PersonIntermediate } from "../../../models/Person.js";
 
 export const oidcCallback = async (
   req: Request,
@@ -105,7 +104,7 @@ export const oidcCallback = async (
     if (isPersonChanged) {
       await currentPerson.save();
     }
-    const userData = new PersonIntermediate(currentPerson).toUserData();
+    const userData = currentPerson.toUserData();
     res.locals = {
       ...res.locals,
       user: userData,

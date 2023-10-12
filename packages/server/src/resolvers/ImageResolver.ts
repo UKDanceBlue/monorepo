@@ -9,7 +9,7 @@ import {
   Resolver,
 } from "type-graphql";
 
-import { ImageIntermediate, ImageModel } from "../models/Image.js";
+import { ImageModel } from "../models/Image.js";
 
 import {
   AbstractGraphQLCreatedResponse,
@@ -76,9 +76,7 @@ export class ImageResolver implements ResolverInterface<ImageResource> {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");
     }
 
-    return GetImageByUuidResponse.newOk(
-      new ImageIntermediate(row).toResource()
-    );
+    return GetImageByUuidResponse.newOk(row.toResource());
   }
 
   @Query(() => GetThumbHashByUuidResponse, {
@@ -135,9 +133,7 @@ export class ImageResolver implements ResolverInterface<ImageResource> {
       );
     }
 
-    const response = CreateImageResponse.newOk(
-      new ImageIntermediate(result).toResource()
-    );
+    const response = CreateImageResponse.newOk(result.toResource());
     response.uuid = result.uuid;
     return response;
   }
