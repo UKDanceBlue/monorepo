@@ -29,7 +29,10 @@ export function isMinAuthSatisfied(
   if (minAuth.committeeRole && auth.committeeRole !== minAuth.committeeRole) {
     return false;
   }
-  if (minAuth.committee && auth.committee !== minAuth.committee) {
+  if (
+    minAuth.committeeIdentifier &&
+    auth.committeeIdentifier !== minAuth.committeeIdentifier
+  ) {
     return false;
   }
   return true;
@@ -162,8 +165,8 @@ export function makeUserJwt(user: UserData, source: AuthSource): string {
   if (user.auth.committeeRole) {
     payload.committee_role = user.auth.committeeRole;
   }
-  if (user.auth.committee) {
-    payload.committee = user.auth.committee;
+  if (user.auth.committeeIdentifier) {
+    payload.committee = user.auth.committeeIdentifier;
   }
   if (user.teamIds) {
     payload.team_ids = user.teamIds;
@@ -222,7 +225,7 @@ export function parseUserJwt(token: string): UserData {
     userData.auth.committeeRole = payload.committee_role;
   }
   if (payload.committee) {
-    userData.auth.committee = payload.committee;
+    userData.auth.committeeIdentifier = payload.committee;
   }
   if (payload.team_ids) {
     userData.teamIds = payload.team_ids;
@@ -286,7 +289,7 @@ export function checkTokenFromRequest(
   req: Request
 ): [
   code: undefined | "invalid_request" | "invalid_token" | "no_auth",
-  description: undefined | string
+  description: undefined | string,
 ] {
   const [token, error] = tokenFromRequest(req);
   if (error) {

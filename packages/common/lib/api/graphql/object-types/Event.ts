@@ -4,15 +4,12 @@ import { Field, ID, ObjectType } from "type-graphql";
 import { DateTimeScalar } from "../custom-scalars/DateTimeScalar.js";
 import { DurationScalar } from "../custom-scalars/DurationScalar.js";
 
-import { ImageResource } from "./Image.js";
 import { Resource } from "./Resource.js";
 
 @ObjectType()
 export class EventResource extends Resource {
   @Field(() => ID)
   uuid!: string;
-  @Field(() => [ImageResource], { nullable: true })
-  images!: ImageResource[] | string[] | null;
   @Field(() => [DateTimeScalar])
   occurrences!: DateTime[];
   @Field(() => DurationScalar, { nullable: true })

@@ -36,7 +36,7 @@ export type CommitteeRole = (typeof CommitteeRole)[keyof typeof CommitteeRole];
 export interface Authorization {
   dbRole: DbRole;
   committeeRole?: CommitteeRole;
-  committee?: string;
+  committeeIdentifier?: string;
   accessLevel: AccessLevel;
 }
 

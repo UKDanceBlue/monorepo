@@ -4,7 +4,6 @@ import { AuthSource } from "../../../auth/index.js";
 
 import { Resource } from "./Resource.js";
 import { RoleResource } from "./Role.js";
-import { TeamResource } from "./Team.js";
 
 @ObjectType()
 export class PersonResource extends Resource {
@@ -22,10 +21,6 @@ export class PersonResource extends Resource {
   linkblue!: string | null;
   @Field(() => RoleResource)
   role!: RoleResource;
-  @Field(() => [TeamResource])
-  memberOf!: TeamResource[] | string[];
-  @Field(() => [TeamResource])
-  captainOf!: TeamResource[] | string[];
 
   public getUniqueId(): string {
     return this.uuid;

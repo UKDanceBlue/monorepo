@@ -122,7 +122,7 @@ export class DeviceIntermediate extends IntermediateClass<
       return DeviceResource.init({
         uuid: this.uuid,
         expoPushToken: this.expoPushToken ?? null,
-        lastUser: this.lastUser?.toResource() ?? null,
+        // lastUser: this.lastUser?.toResource() ?? null,
         lastLogin:
           this.lastLogin == null ? null : DateTime.fromJSDate(this.lastLogin),
         createdAt: this.createdAt == null ? null : this.createdAt,

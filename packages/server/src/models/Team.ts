@@ -227,9 +227,9 @@ export class TeamIntermediate extends IntermediateClass<
       name: this.name,
       type: this.type,
       visibility: this.visibility,
-      pointEntries,
-      members,
-      captains,
+      // pointEntries,
+      // members,
+      // captains,
       createdAt: this.createdAt == null ? null : this.createdAt,
       updatedAt: this.updatedAt == null ? null : this.updatedAt,
     });

@@ -89,7 +89,7 @@ export function roleToAuthorization(role: RoleResource): Authorization {
   }
   if (
     role.committeeRole === CommitteeRole.Chair ||
-    role.committee === "tech-committee"
+    role.committeeIdentifier === "tech-committee"
   ) {
     accessLevel = AccessLevel.Admin;
   }
@@ -99,10 +99,10 @@ export function roleToAuthorization(role: RoleResource): Authorization {
     accessLevel,
   };
 
-  if (role.committeeRole && role.committee) {
+  if (role.committeeRole && role.committeeIdentifier) {
     auth.committeeRole = role.committeeRole;
-    auth.committee = role.committee;
-  } else if (role.committee || role.committeeRole) {
+    auth.committeeIdentifier = role.committeeIdentifier;
+  } else if (role.committeeIdentifier || role.committeeRole) {
     throw new Error(
       "Cannot have a committee role without a committee or vice versa"
     );

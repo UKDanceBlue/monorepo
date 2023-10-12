@@ -261,7 +261,7 @@ export class EventIntermediate extends IntermediateClass<
         occurrence.toResource()
       ),
       duration: this.duration ?? null,
-      images,
+      // images,
       uuid: this.uuid,
       createdAt: this.createdAt == null ? null : this.createdAt,
       updatedAt: this.updatedAt == null ? null : this.updatedAt,

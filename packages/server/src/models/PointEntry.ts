@@ -160,9 +160,9 @@ export class PointEntryIntermediate extends IntermediateClass<
       type: this.type,
       comment: this.comment,
       points: this.points,
-      personFrom:
-        this.personFrom === null ? null : this.personFrom.toResource(),
-      team: this.team.toResource(),
+      // personFrom:
+      //   this.personFrom === null ? null : this.personFrom.toResource(),
+      // team: this.team.toResource(),
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     });

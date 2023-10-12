@@ -2,17 +2,13 @@ import {
   type AuthSource,
   type OptionalNullOrUndefined,
   type PersonResource,
-  isNonNullable,
 } from "@ukdanceblue/common";
 
 import { PersonModel } from ".././models/Person.js";
 import { sequelizeDb } from "../data-source.js";
 import { logDebug, logInfo } from "../logger.js";
-import {
-  type MembershipModel,
-  MembershipPositionType,
-} from "../models/Membership.js";
-import { TeamModel } from "../models/Team.js";
+
+// TODO: rework this whole thing, it doesn't really make much sense anymore
 
 /**
  * Searches the database for a user with the given auth IDs or user data, or creates a new user if none is found
@@ -53,8 +49,7 @@ export async function findPersonForLogin(
         email: userData.email,
       });
 
-      const { firstName, lastName, linkblue, role, memberOf, captainOf } =
-        userData;
+      const { firstName, lastName, linkblue, role } = userData;
 
       if (firstName) {
         currentPerson.firstName = firstName;
@@ -68,7 +63,7 @@ export async function findPersonForLogin(
       if (role) {
         currentPerson.dbRole = role.dbRole;
         currentPerson.committeeRole = role.committeeRole;
-        currentPerson.committeeName = role.committee;
+        currentPerson.committeeName = role.committeeIdentifier;
       }
 
       const savedPerson = await currentPerson.save({
@@ -78,56 +73,56 @@ export async function findPersonForLogin(
 
       logDebug("Creating memberships for new person");
 
-      let nonCaptainMemberships: Promise<MembershipModel | null>[] = [];
-      if (memberOf) {
-        nonCaptainMemberships = memberOf.map(async (m) => {
-          const team = await TeamModel.findByUuid(
-            typeof m === "string" ? m : m.uuid,
-            { rejectOnEmpty: true, transaction: t }
-          );
+      // let nonCaptainMemberships: Promise<MembershipModel | null>[] = [];
+      // if (memberOf) {
+      //   nonCaptainMemberships = memberOf.map(async (m) => {
+      //     const team = await TeamModel.findByUuid(
+      //       typeof m === "string" ? m : m.uuid,
+      //       { rejectOnEmpty: true, transaction: t }
+      //     );
 
-          if (team) {
-            return savedPerson.createMembership(
-              {
-                personId: savedPerson.id,
-                teamId: team.id,
-                position: MembershipPositionType.Member,
-              },
-              { transaction: t }
-            );
-          }
+      //     if (team) {
+      //       return savedPerson.createMembership(
+      //         {
+      //           personId: savedPerson.id,
+      //           teamId: team.id,
+      //           position: MembershipPositionType.Member,
+      //         },
+      //         { transaction: t }
+      //       );
+      //     }
 
-          return null;
-        });
-      }
+      //     return null;
+      //   });
+      // }
 
-      const captainMemberships: Promise<MembershipModel | null>[] = [];
-      if (captainOf) {
-        captainOf.map(async (m) => {
-          const team = await TeamModel.findByUuid(
-            typeof m === "string" ? m : m.uuid,
-            { rejectOnEmpty: true, transaction: t }
-          );
+      // const captainMemberships: Promise<MembershipModel | null>[] = [];
+      // if (captainOf) {
+      //   captainOf.map(async (m) => {
+      //     const team = await TeamModel.findByUuid(
+      //       typeof m === "string" ? m : m.uuid,
+      //       { rejectOnEmpty: true, transaction: t }
+      //     );
 
-          if (team) {
-            return savedPerson.createMembership(
-              {
-                personId: savedPerson.id,
-                teamId: team.id,
-                position: MembershipPositionType.Captain,
-              },
-              { transaction: t }
-            );
-          }
+      //     if (team) {
+      //       return savedPerson.createMembership(
+      //         {
+      //           personId: savedPerson.id,
+      //           teamId: team.id,
+      //           position: MembershipPositionType.Captain,
+      //         },
+      //         { transaction: t }
+      //       );
+      //     }
 
-          return null;
-        });
-      }
+      //     return null;
+      //   });
+      // }
 
-      savedPerson.memberships = await Promise.all([
-        ...nonCaptainMemberships,
-        ...captainMemberships,
-      ]).then((results) => results.filter(isNonNullable));
+      // savedPerson.memberships = await Promise.all([
+      //   ...nonCaptainMemberships,
+      //   ...captainMemberships,
+      // ]).then((results) => results.filter(isNonNullable));
 
       const { uuid: finalPersonUuid } = await savedPerson.save({
         transaction: t,

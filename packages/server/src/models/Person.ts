@@ -241,7 +241,7 @@ export class PersonIntermediate extends IntermediateClass<
       roleInit.committeeRole = this.committeeRole;
     }
     if (this.committeeName !== undefined) {
-      roleInit.committee = this.committeeName;
+      roleInit.committeeIdentifier = this.committeeName;
     }
     return RoleResource.init(roleInit);
   }
@@ -304,8 +304,8 @@ export class PersonIntermediate extends IntermediateClass<
       authIds: this.authIds,
       email: this.email,
       linkblue: this.linkblue ?? null,
-      memberOf: this.getMemberOf().map((team) => team.toResource()),
-      captainOf: this.getCaptainOf().map((team) => team.toResource()),
+      // memberOf: this.getMemberOf().map((team) => team.toResource()),
+      // captainOf: this.getCaptainOf().map((team) => team.toResource()),
       // pointEntries: [],
       role: this.role,
       createdAt: this.createdAt == null ? null : this.createdAt,

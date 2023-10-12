@@ -18,7 +18,7 @@ DeviceModel.addScope("defaultScope", {
 });
 
 EventModel.addScope("defaultScope", {
-  include: [EventOccurrenceModel, ImageModel],
+  include: [EventOccurrenceModel],
 });
 
 EventOccurrenceModel.addScope("defaultScope", {
@@ -46,7 +46,7 @@ MembershipModel.addScope("withTeam", {
 });
 
 PersonModel.addScope("defaultScope", {
-  include: [MembershipModel.withScope("withTeam")],
+  include: [],
 });
 
 PointEntryModel.addScope("defaultScope", {
@@ -54,5 +54,5 @@ PointEntryModel.addScope("defaultScope", {
 });
 
 TeamModel.addScope("defaultScope", {
-  include: [PointEntryModel, MembershipModel.withScope("withPerson")],
+  include: [],
 });
