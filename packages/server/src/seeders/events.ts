@@ -50,9 +50,9 @@ export default async function () {
     })
   );
 
-  // Now add 15 random images to random events
+  // Now add 25 random images to random events
   const fifteenImages = await ImageModel.findAll({
-    limit: 15,
+    limit: 25,
     order: sequelizeDb.random(),
   });
 

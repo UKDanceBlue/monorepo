@@ -6,11 +6,20 @@ import { Resource } from "./Resource.js";
 import { RoleResource } from "./Role.js";
 
 @ObjectType()
+export class AuthIdList {
+  @Field(() => AuthSource)
+  source!: AuthSource;
+
+  @Field(() => String)
+  value!: string;
+}
+
+@ObjectType()
 export class PersonResource extends Resource {
   @Field(() => ID)
   uuid!: string;
-  @Field(() => AuthSource)
-  authIds!: Partial<Record<AuthSource, string>>;
+  @Field(() => [AuthIdList])
+  authIds!: AuthIdList[];
   @Field(() => String, { nullable: true })
   firstName!: string | null;
   @Field(() => String, { nullable: true })

@@ -120,9 +120,9 @@ export class TeamModel extends BaseModel<
       name: this.name,
       type: this.type,
       visibility: this.visibility,
-      // pointEntries,
-      // members,
-      // captains,
+      legacyStatus: this.legacyStatus,
+      marathonYear: this.marathonYear,
+      persistentIdentifier: this.persistentIdentifier,
       createdAt: this.createdAt == null ? null : this.createdAt,
       updatedAt: this.updatedAt == null ? null : this.updatedAt,
     });

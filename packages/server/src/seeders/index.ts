@@ -1,6 +1,8 @@
 import seedEvents from "./events.js";
 import seedImages from "./images.js";
+import seedMemberships from "./memberships.js";
 import seedPeople from "./people.js";
+import seedTeams from "./teams.js";
 
 /**
  * Seed the database with initial data
@@ -10,5 +12,7 @@ export default async function seedDatabase() {
   await seedImages();
   await seedPeople();
   await seedEvents();
+  await seedTeams();
+  await seedMemberships();
   console.log("Database seeded");
 }

@@ -101,7 +101,8 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     });
 
     if (model == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Person not found");
+      // I guess this is fine? May need more robust error handling
+      return [];
     }
 
     return model.memberships.map((row) => row.toResource());
@@ -117,7 +118,8 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     });
 
     if (model == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Person not found");
+      // I guess this is fine? May need more robust error handling
+      return [];
     }
 
     return model.memberships.map((row) => row.toResource());

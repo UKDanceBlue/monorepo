@@ -101,9 +101,12 @@ export class NotificationResolver
   async list(
     @Args(() => ListNotificationsArgs) query: ListNotificationsArgs
   ): Promise<ListNotificationsResponse> {
-    const findOptions = query.toSequelizeFindOptions({
-      uuid: "uuid",
-    });
+    const findOptions = query.toSequelizeFindOptions(
+      {
+        uuid: "uuid",
+      },
+      NotificationModel
+    );
 
     const { rows, count } =
       await NotificationModel.findAndCountAll(findOptions);

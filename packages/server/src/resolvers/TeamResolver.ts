@@ -130,20 +130,30 @@ export class TeamResolver
   async list(
     @Args(() => ListTeamsArgs) query: ListTeamsArgs
   ): Promise<ListTeamsResponse> {
-    const findOptions = query.toSequelizeFindOptions({
-      uuid: "uuid",
-    });
-
-    const { rows, count } = await TeamModel.findAndCountAll({
-      ...findOptions,
-      where: {
-        ...findOptions.where,
-        type: query.type ?? undefined,
-        legacyStatus: query.legacyStatus ?? undefined,
-        visibility: query.visibility ?? undefined,
-        marathonYear: query.marathonYear ?? undefined,
+    const findOptions = query.toSequelizeFindOptions(
+      {
+        uuid: "uuid",
       },
-    });
+      TeamModel
+    );
+
+    if (query.type != null) {
+      (findOptions.where as Record<string, string>)!.type = query.type;
+    }
+    if (query.legacyStatus != null) {
+      (findOptions.where as Record<string, string>)!.legacyStatus =
+        query.legacyStatus;
+    }
+    if (query.visibility != null) {
+      (findOptions.where as Record<string, string>)!.visibility =
+        query.visibility;
+    }
+    if (query.marathonYear != null) {
+      (findOptions.where as Record<string, string>)!.marathonYear =
+        query.marathonYear;
+    }
+
+    const { rows, count } = await TeamModel.findAndCountAll(findOptions);
 
     return ListTeamsResponse.newPaginated({
       data: rows.map((row) => row.toResource()),
@@ -187,28 +197,30 @@ export class TeamResolver
   }
 
   @FieldResolver(() => [MembershipResource])
-  async teams(@Root() team: TeamResource): Promise<MembershipResource[]> {
+  async members(@Root() team: TeamResource): Promise<MembershipResource[]> {
     const model = await TeamModel.findByUuid(team.uuid, {
-      attributes: ["id"],
+      attributes: ["id", "uuid"],
       include: [MembershipModel.withScope("withTeam")],
     });
 
     if (model == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+      // I guess this is fine? May need more robust error handling
+      return [];
     }
 
     return model.memberships.map((row) => row.toResource());
   }
 
   @FieldResolver(() => [MembershipResource])
-  async captaincies(@Root() team: TeamResource): Promise<MembershipResource[]> {
+  async captains(@Root() team: TeamResource): Promise<MembershipResource[]> {
     const model = await TeamModel.findByUuid(team.uuid, {
-      attributes: ["id"],
+      attributes: ["id", "uuid"],
       include: [MembershipModel.withScope("withTeam").withScope("captains")],
     });
 
     if (model == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+      // I guess this is fine? May need more robust error handling
+      return [];
     }
 
     return model.memberships.map((row) => row.toResource());

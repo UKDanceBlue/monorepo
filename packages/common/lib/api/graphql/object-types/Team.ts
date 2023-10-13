@@ -46,8 +46,8 @@ export class TeamResource extends Resource {
   @Field(() => String)
   marathonYear!: MarathonYearString;
 
-  @Field(() => String)
-  persistentIdentifier!: string; // TODO: Secure this field, committee only
+  @Field(() => String, { nullable: true })
+  persistentIdentifier!: string | null; // TODO: Secure this field, committee only
 
   public getUniqueId(): string {
     return this.uuid;

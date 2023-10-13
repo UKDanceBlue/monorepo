@@ -48,7 +48,6 @@ export type AbstractGraphQlCreatedResponse = {
   readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
-  /** The UUID of the created resource */
   readonly uuid: Scalars['String']['output'];
 };
 
@@ -72,6 +71,12 @@ export type AbstractGraphQlPaginatedResponse = {
   readonly pageSize: Scalars['Float']['output'];
   /** The total number of items */
   readonly total: Scalars['Float']['output'];
+};
+
+export type AuthIdList = {
+  readonly __typename?: 'AuthIdList';
+  readonly source: AuthSource;
+  readonly value: Scalars['String']['output'];
 };
 
 export { AuthSource };
@@ -98,12 +103,10 @@ export type CreateConfigurationResponse = AbstractGraphQlCreatedResponse & Abstr
   readonly data: ConfigurationResource;
   /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
-  /** The UUID of the created resource */
   readonly uuid: Scalars['String']['output'];
 };
 
 export type CreateDeviceInput = {
-  /** The UUID of the device */
   readonly deviceId: Scalars['String']['input'];
   /** The Expo push token of the device */
   readonly expoPushToken?: InputMaybe<Scalars['String']['input']>;
@@ -115,11 +118,9 @@ export type CreateDeviceResponse = AbstractGraphQlCreatedResponse & AbstractGrap
   readonly __typename?: 'CreateDeviceResponse';
   /** Client actions to perform */
   readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  /** The payload of the response */
   readonly data: DeviceResource;
   /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
-  /** The UUID of the created resource */
   readonly uuid: Scalars['String']['output'];
 };
 
@@ -138,7 +139,6 @@ export type CreateEventResponse = AbstractGraphQlCreatedResponse & AbstractGraph
   readonly data: EventResource;
   /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
-  /** The UUID of the created resource */
   readonly uuid: Scalars['String']['output'];
 };
 
@@ -159,7 +159,20 @@ export type CreateImageResponse = AbstractGraphQlCreatedResponse & AbstractGraph
   readonly data: ImageResource;
   /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
-  /** The UUID of the created resource */
+  readonly uuid: Scalars['String']['output'];
+};
+
+export type CreateNotificationInput = {
+  readonly uuid: Scalars['ID']['input'];
+};
+
+export type CreateNotificationResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'CreateNotificationResponse';
+  /** Client actions to perform */
+  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
+  readonly data: NotificationResource;
+  /** Whether the operation was successful */
+  readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
@@ -174,7 +187,26 @@ export type CreatePersonResponse = AbstractGraphQlCreatedResponse & AbstractGrap
   readonly data: PersonResource;
   /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
-  /** The UUID of the created resource */
+  readonly uuid: Scalars['String']['output'];
+};
+
+export type CreateTeamInput = {
+  readonly legacyStatus: TeamLegacyStatus;
+  readonly marathonYear: Scalars['String']['input'];
+  readonly name: Scalars['String']['input'];
+  readonly persistentIdentifier: Scalars['String']['input'];
+  readonly type: TeamType;
+  readonly uuid: Scalars['ID']['input'];
+  readonly visibility: Scalars['String']['input'];
+};
+
+export type CreateTeamResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'CreateTeamResponse';
+  /** Client actions to perform */
+  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
+  readonly data: TeamResource;
+  /** Whether the operation was successful */
+  readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
@@ -193,7 +225,6 @@ export type DeleteDeviceResponse = AbstractGraphQlOkResponse & GraphQlBaseRespon
   readonly __typename?: 'DeleteDeviceResponse';
   /** Client actions to perform */
   readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  /** The payload of the response */
   readonly data: Scalars['Boolean']['output'];
   /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
@@ -217,8 +248,26 @@ export type DeleteImageResponse = AbstractGraphQlOkResponse & GraphQlBaseRespons
   readonly ok: Scalars['Boolean']['output'];
 };
 
+export type DeleteNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'DeleteNotificationResponse';
+  /** Client actions to perform */
+  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
+  readonly data: Scalars['Boolean']['output'];
+  /** Whether the operation was successful */
+  readonly ok: Scalars['Boolean']['output'];
+};
+
 export type DeletePersonResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeletePersonResponse';
+  /** Client actions to perform */
+  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
+  readonly data: Scalars['Boolean']['output'];
+  /** Whether the operation was successful */
+  readonly ok: Scalars['Boolean']['output'];
+};
+
+export type DeleteTeamResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'DeleteTeamResponse';
   /** Client actions to perform */
   readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: Scalars['Boolean']['output'];
@@ -249,7 +298,6 @@ export type DeviceResolverKeyedDateFilterItem = {
   readonly field: DeviceResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The value to filter by */
   readonly value: Scalars['DateTime']['input'];
 };
 
@@ -265,7 +313,6 @@ export type DeviceResolverKeyedOneOfFilterItem = {
   readonly field: DeviceResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The value to filter by */
   readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
@@ -276,7 +323,6 @@ export type DeviceResolverKeyedStringFilterItem = {
   readonly field: DeviceResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The value to filter by */
   readonly value: Scalars['String']['input'];
 };
 
@@ -322,7 +368,6 @@ export type EventResolverKeyedDateFilterItem = {
   readonly field: EventResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The value to filter by */
   readonly value: Scalars['DateTime']['input'];
 };
 
@@ -340,7 +385,6 @@ export type EventResolverKeyedNumericFilterItem = {
   readonly field: EventResolverNumericFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The value to filter by */
   readonly value: Scalars['Float']['input'];
 };
 
@@ -349,7 +393,6 @@ export type EventResolverKeyedOneOfFilterItem = {
   readonly field: EventResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The value to filter by */
   readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
@@ -360,7 +403,6 @@ export type EventResolverKeyedStringFilterItem = {
   readonly field: EventResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The value to filter by */
   readonly value: Scalars['String']['input'];
 };
 
@@ -413,7 +455,6 @@ export type GetDeviceByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseRes
   readonly __typename?: 'GetDeviceByUuidResponse';
   /** Client actions to perform */
   readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  /** The payload of the response */
   readonly data: DeviceResource;
   /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
@@ -437,11 +478,29 @@ export type GetImageByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResp
   readonly ok: Scalars['Boolean']['output'];
 };
 
+export type GetNotificationByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'GetNotificationByUuidResponse';
+  /** Client actions to perform */
+  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
+  readonly data: NotificationResource;
+  /** Whether the operation was successful */
+  readonly ok: Scalars['Boolean']['output'];
+};
+
 export type GetPersonByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetPersonByUuidResponse';
   /** Client actions to perform */
   readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: PersonResource;
+  /** Whether the operation was successful */
+  readonly ok: Scalars['Boolean']['output'];
+};
+
+export type GetTeamByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'GetTeamByUuidResponse';
+  /** Client actions to perform */
+  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
+  readonly data: TeamResource;
   /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
@@ -481,7 +540,6 @@ export type ListDevicesResponse = AbstractGraphQlArrayOkResponse & AbstractGraph
   readonly __typename?: 'ListDevicesResponse';
   /** Client actions to perform */
   readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  /** The payload of the response */
   readonly data: ReadonlyArray<DeviceResource>;
   /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
@@ -508,10 +566,39 @@ export type ListEventsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQ
   readonly total: Scalars['Float']['output'];
 };
 
+export type ListNotificationsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'ListNotificationsResponse';
+  /** Client actions to perform */
+  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
+  readonly data: ReadonlyArray<NotificationResource>;
+  /** Whether the operation was successful */
+  readonly ok: Scalars['Boolean']['output'];
+  /** The current page number (1-indexed) */
+  readonly page: Scalars['Float']['output'];
+  /** The number of items per page */
+  readonly pageSize: Scalars['Float']['output'];
+  /** The total number of items */
+  readonly total: Scalars['Float']['output'];
+};
+
+export type ListTeamsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'ListTeamsResponse';
+  /** Client actions to perform */
+  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
+  readonly data: ReadonlyArray<TeamResource>;
+  /** Whether the operation was successful */
+  readonly ok: Scalars['Boolean']['output'];
+  /** The current page number (1-indexed) */
+  readonly page: Scalars['Float']['output'];
+  /** The number of items per page */
+  readonly pageSize: Scalars['Float']['output'];
+  /** The total number of items */
+  readonly total: Scalars['Float']['output'];
+};
+
 export type MembershipResource = {
   readonly __typename?: 'MembershipResource';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  readonly marathonYear: Scalars['String']['output'];
   readonly person: PersonResource;
   readonly team: TeamResource;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -524,12 +611,16 @@ export type Mutation = {
   readonly createDevice: CreateDeviceResponse;
   readonly createEvent: CreateEventResponse;
   readonly createImage: CreateImageResponse;
+  readonly createNotification: CreateNotificationResponse;
   readonly createPerson: CreatePersonResponse;
+  readonly createTeam: CreateTeamResponse;
   readonly deleteConfiguration: DeleteConfigurationResponse;
   readonly deleteDevice: DeleteDeviceResponse;
   readonly deleteEvent: DeleteEventResponse;
   readonly deleteImage: DeleteImageResponse;
+  readonly deleteNotification: DeleteNotificationResponse;
   readonly deletePerson: DeletePersonResponse;
+  readonly deleteTeam: DeleteTeamResponse;
   readonly setConfiguration: SetConfigurationResponse;
 };
 
@@ -554,8 +645,18 @@ export type MutationCreateImageArgs = {
 };
 
 
+export type MutationCreateNotificationArgs = {
+  input: CreateNotificationInput;
+};
+
+
 export type MutationCreatePersonArgs = {
   input: CreatePersonInput;
+};
+
+
+export type MutationCreateTeamArgs = {
+  input: CreateTeamInput;
 };
 
 
@@ -579,7 +680,17 @@ export type MutationDeleteImageArgs = {
 };
 
 
+export type MutationDeleteNotificationArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type MutationDeletePersonArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteTeamArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -589,11 +700,30 @@ export type MutationSetConfigurationArgs = {
   input: SetConfigurationInput;
 };
 
+export const NotificationResolverAllKeys = {
+  Uuid: 'uuid'
+} as const;
+
+export type NotificationResolverAllKeys = typeof NotificationResolverAllKeys[keyof typeof NotificationResolverAllKeys];
+export type NotificationResolverKeyedIsNullFilterItem = {
+  /** The field to filter on */
+  readonly field: NotificationResolverAllKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type NotificationResource = {
+  readonly __typename?: 'NotificationResource';
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly uuid: Scalars['ID']['output'];
+};
+
 export { NumericComparator };
 
 export type PersonResource = {
   readonly __typename?: 'PersonResource';
-  readonly authIds: AuthSource;
+  readonly authIds: ReadonlyArray<AuthIdList>;
   readonly captaincies: ReadonlyArray<MembershipResource>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly email: Scalars['String']['output'];
@@ -615,7 +745,11 @@ export type Query = {
   readonly event: GetEventByUuidResponse;
   readonly events: ListEventsResponse;
   readonly image: GetImageByUuidResponse;
+  readonly notification: GetNotificationByUuidResponse;
+  readonly notifications: ListNotificationsResponse;
   readonly person: GetPersonByUuidResponse;
+  readonly team: GetTeamByUuidResponse;
+  readonly teams: ListTeamsResponse;
   readonly thumbhash?: Maybe<GetThumbHashByUuidResponse>;
 };
 
@@ -668,8 +802,50 @@ export type QueryImageArgs = {
 };
 
 
+export type QueryNotificationArgs = {
+  uuid: Scalars['String']['input'];
+};
+
+
+export type QueryNotificationsArgs = {
+  booleanFilters?: InputMaybe<Scalars['Void']['input']>;
+  dateFilters?: InputMaybe<Scalars['Void']['input']>;
+  isNullFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedIsNullFilterItem>>;
+  numericFilters?: InputMaybe<Scalars['Void']['input']>;
+  oneOfFilters?: InputMaybe<Scalars['Void']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<Scalars['Void']['input']>;
+};
+
+
 export type QueryPersonArgs = {
   uuid: Scalars['String']['input'];
+};
+
+
+export type QueryTeamArgs = {
+  uuid: Scalars['String']['input'];
+};
+
+
+export type QueryTeamsArgs = {
+  booleanFilters?: InputMaybe<Scalars['Void']['input']>;
+  dateFilters?: InputMaybe<Scalars['Void']['input']>;
+  isNullFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedIsNullFilterItem>>;
+  legacyStatus?: InputMaybe<TeamLegacyStatus>;
+  marathonYear?: InputMaybe<Scalars['String']['input']>;
+  numericFilters?: InputMaybe<Scalars['Void']['input']>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedOneOfFilterItem>>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedStringFilterItem>>;
+  type?: InputMaybe<TeamType>;
+  visibility?: InputMaybe<DbRole>;
 };
 
 
@@ -710,13 +886,55 @@ export const TeamLegacyStatus = {
 } as const;
 
 export type TeamLegacyStatus = typeof TeamLegacyStatus[keyof typeof TeamLegacyStatus];
+export const TeamResolverAllKeys = {
+  LegacyStatus: 'legacyStatus',
+  MarathonYear: 'marathonYear',
+  Name: 'name',
+  Type: 'type',
+  Uuid: 'uuid',
+  Visibility: 'visibility'
+} as const;
+
+export type TeamResolverAllKeys = typeof TeamResolverAllKeys[keyof typeof TeamResolverAllKeys];
+export type TeamResolverKeyedIsNullFilterItem = {
+  /** The field to filter on */
+  readonly field: TeamResolverAllKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type TeamResolverKeyedOneOfFilterItem = {
+  /** The field to filter on */
+  readonly field: TeamResolverStringFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
+};
+
+export type TeamResolverKeyedStringFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: StringComparator;
+  /** The field to filter on */
+  readonly field: TeamResolverStringFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
+};
+
+export const TeamResolverStringFilterKeys = {
+  Name: 'name'
+} as const;
+
+export type TeamResolverStringFilterKeys = typeof TeamResolverStringFilterKeys[keyof typeof TeamResolverStringFilterKeys];
 export type TeamResource = {
   readonly __typename?: 'TeamResource';
+  readonly captains: ReadonlyArray<MembershipResource>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly legacyStatus: TeamLegacyStatus;
-  readonly marathonYear?: Maybe<Scalars['String']['output']>;
+  readonly marathonYear: Scalars['String']['output'];
+  readonly members: ReadonlyArray<MembershipResource>;
   readonly name: Scalars['String']['output'];
-  readonly persistentIdentifier?: Maybe<Scalars['String']['output']>;
+  readonly persistentIdentifier: Scalars['String']['output'];
   readonly type: TeamType;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];

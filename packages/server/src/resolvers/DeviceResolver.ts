@@ -103,11 +103,14 @@ export class DeviceResolver
   async list(
     @Args(() => ListDevicesArgs) query: ListDevicesArgs
   ): Promise<ListDevicesResponse> {
-    const findOptions = query.toSequelizeFindOptions({
-      deviceId: "deviceId",
-      expoPushToken: "expoPushToken",
-      lastLogin: "lastLogin",
-    });
+    const findOptions = query.toSequelizeFindOptions(
+      {
+        deviceId: "deviceId",
+        expoPushToken: "expoPushToken",
+        lastLogin: "lastLogin",
+      },
+      DeviceModel
+    );
 
     const { rows, count } = await DeviceModel.findAndCountAll(findOptions);
 

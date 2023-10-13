@@ -55,7 +55,7 @@ export class PersonModel extends BaseModel<
 
   public declare committeeRole: CommitteeRole | null;
 
-  public declare committeeName: string | null;
+  public declare committeeName: string | null; // TODO: consider removing, use relation to Team instead
 
   public declare memberships: NonAttribute<MembershipModel[]>;
   public declare getMemberships: HasManyGetAssociationsMixin<MembershipModel>;
@@ -112,7 +112,10 @@ export class PersonModel extends BaseModel<
       uuid: this.uuid,
       firstName: this.firstName ?? null,
       lastName: this.lastName ?? null,
-      authIds: this.authIds,
+      authIds: Object.entries(this.authIds).map(([source, value]) => ({
+        source: source as keyof typeof this.authIds,
+        value,
+      })),
       email: this.email,
       linkblue: this.linkblue ?? null,
       role: this.role,

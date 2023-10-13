@@ -49,6 +49,11 @@ interface AbstractGraphQLPaginatedResponse implements AbstractGraphQLArrayOkResp
   total: Float!
 }
 
+type AuthIdList {
+  source: AuthSource!
+  value: String!
+}
+
 """The source of authentication"""
 enum AuthSource {
   Anonymous
@@ -688,7 +693,7 @@ enum NumericComparator {
 }
 
 type PersonResource {
-  authIds: AuthSource!
+  authIds: [AuthIdList!]!
   captaincies: [MembershipResource!]!
   createdAt: DateTimeISO
   email: String!
@@ -824,6 +829,8 @@ type Query {
 
     """The is-null filters to apply to the query"""
     isNullFilters: [TeamResolverKeyedIsNullFilterItem!]
+    legacyStatus: TeamLegacyStatus
+    marathonYear: String
 
     """The numeric filters to apply to the query"""
     numericFilters: Void
@@ -849,6 +856,8 @@ type Query {
 
     """The string filters to apply to the query"""
     stringFilters: [TeamResolverKeyedStringFilterItem!]
+    type: TeamType
+    visibility: DbRole
   ): ListTeamsResponse!
   thumbhash(uuid: String!): GetThumbHashByUuidResponse
 }
@@ -940,19 +949,17 @@ input TeamResolverKeyedStringFilterItem {
 }
 
 enum TeamResolverStringFilterKeys {
-  marathonYear
   name
-  visibility
 }
 
 type TeamResource {
-  captaincies: [MembershipResource!]!
+  captains: [MembershipResource!]!
   createdAt: DateTimeISO
   legacyStatus: TeamLegacyStatus!
   marathonYear: String!
+  members: [MembershipResource!]!
   name: String!
-  persistentIdentifier: String!
-  teams: [MembershipResource!]!
+  persistentIdentifier: String
   type: TeamType!
   updatedAt: DateTimeISO
   uuid: ID!
