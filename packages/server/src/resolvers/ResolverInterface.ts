@@ -6,10 +6,8 @@ import type {
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
-import type {
-  AbstractFilteredListQueryArgs,
-  UnfilteredListQueryArgs,
-} from "./ListQueryArgs.js";
+import type { AbstractFilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
+import type { UnfilteredListQueryArgs } from "./list-query-args/UnfilteredListQueryArgs.js";
 
 export interface ResolverInterface<R extends Resource> {
   getByUuid?: (uuid: string) => Promise<AbstractGraphQLOkResponse<R>>;

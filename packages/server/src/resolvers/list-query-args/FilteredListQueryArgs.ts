@@ -1,162 +1,33 @@
 import type {
-  Col,
   FindAndCountOptions,
-  Fn,
-  Literal,
   Model,
   ModelStatic,
   WhereAttributeHash,
 } from "@sequelize/core";
 import { Op } from "@sequelize/core";
-import type {
-  BooleanFilterItemInterface,
-  DateFilterItemInterface,
-  FilterItem as FilterItemInterface,
-  IsNullFilterItemInterface,
-  ListQueryType,
-  NumericFilterItemInterface,
-  OneOfFilterItemInterface,
-  OptionalToNullable,
-  Resource,
-  StringFilterItemInterface,
-} from "@ukdanceblue/common";
 import {
-  Comparator,
   DateTimeScalar,
-  IsComparator,
-  NumericComparator,
-  SortDirection,
-  StringComparator,
   TypeMismatchError,
   VoidScalar,
 } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
+import { ArgsType, Field, InputType, registerEnumType } from "type-graphql";
 import {
-  ArgsType,
-  Field,
-  InputType,
-  Int,
-  registerEnumType,
-} from "type-graphql";
-
-registerEnumType(SortDirection, { name: "SortDirection" });
-
-registerEnumType(Comparator, { name: "Comparator" });
-registerEnumType(IsComparator, { name: "IsComparator" });
-registerEnumType(StringComparator, { name: "StringComparator" });
-registerEnumType(NumericComparator, { name: "NumericComparator" });
-
-export const DEFAULT_PAGE_SIZE = 10;
-export const FIRST_PAGE = 1;
-
-export function getSequelizeOpForComparator(
-  comparator: Comparator,
-  negated: boolean = false
-): (typeof Op)[keyof typeof Op] {
-  switch (comparator) {
-    case Comparator.EQUALS: {
-      return negated ? Op.ne : Op.eq;
-    }
-    case Comparator.GREATER_THAN: {
-      return negated ? Op.lte : Op.gt;
-    }
-    case Comparator.GREATER_THAN_OR_EQUAL_TO: {
-      return negated ? Op.lt : Op.gte;
-    }
-    case Comparator.LESS_THAN: {
-      return negated ? Op.gte : Op.lt;
-    }
-    case Comparator.LESS_THAN_OR_EQUAL_TO: {
-      return negated ? Op.gt : Op.lte;
-    }
-    case Comparator.SUBSTRING: {
-      return negated ? Op.notSubstring : Op.substring;
-    }
-    case Comparator.LIKE: {
-      return negated ? Op.notLike : Op.like;
-    }
-    case Comparator.REGEX: {
-      return negated ? Op.notRegexp : Op.regexp;
-    }
-    case Comparator.STARTS_WITH: {
-      return negated ? Op.notLike : Op.startsWith;
-    }
-    case Comparator.ENDS_WITH: {
-      return negated ? Op.notLike : Op.endsWith;
-    }
-    case Comparator.IS: {
-      return negated ? Op.not : Op.is;
-    }
-    default: {
-      throw new Error(`Unknown comparator: ${String(comparator)}`);
-    }
-  }
-}
-
-@ArgsType()
-export class UnfilteredListQueryArgs<SortByKeys extends string = never>
-  implements OptionalToNullable<Partial<ListQueryType<Resource>>>
-{
-  @Field(() => Int, {
-    nullable: true,
-    description: `The number of items to return per page, defaults to ${DEFAULT_PAGE_SIZE}`,
-  })
-  pageSize!: number | null;
-
-  @Field(() => Int, {
-    nullable: true,
-    description: `The page number to return, defaults to ${FIRST_PAGE}`,
-  })
-  page!: number | null;
-
-  @Field(() => [String], {
-    nullable: true,
-    description:
-      "The fields to sort by, in order of priority. If unspecified, the sort order is undefined",
-  })
-  sortBy!: SortByKeys[] | null;
-  @Field(() => [SortDirection], {
-    nullable: true,
-    description:
-      "The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match",
-  })
-  sortDirection?: SortDirection[] | null;
-
-  toSequelizeFindOptions(
-    sortByMap?: Partial<Record<SortByKeys, Fn | Col | Literal | string>>
-  ): FindAndCountOptions<Record<SortByKeys, never>> {
-    const options: FindAndCountOptions<Record<SortByKeys, never>> = {};
-
-    if (this.pageSize != null) {
-      options.limit = this.pageSize;
-    }
-
-    if (this.page != null) {
-      options.offset = (this.page - FIRST_PAGE) * (this.pageSize ?? 10);
-    }
-
-    if (this.sortBy != null && sortByMap != null) {
-      const sortBy = this.sortBy.map((key) => sortByMap[key]);
-      const sortDirection =
-        this.sortDirection?.map((v) =>
-          v === SortDirection.DESCENDING ? "DESC" : "ASC"
-        ) ?? this.sortBy.map(() => "ASC");
-
-      options.order = sortBy
-        .map((key, index) => [key, sortDirection[index]] as const)
-        .filter(
-          (
-            pair
-          ): pair is [
-            Exclude<(typeof pair)[0], undefined>,
-            Exclude<(typeof pair)[1], undefined>,
-          ] => pair[0] != null && pair[1] != null
-        );
-    }
-
-    return options;
-  }
-}
+  AbstractBooleanFilterItem,
+  AbstractDateFilterItem,
+  AbstractIsNullFilterItem,
+  AbstractNumericFilterItem,
+  AbstractOneOfFilterItem,
+  AbstractStringFilterItem,
+  BooleanFilterItem,
+  DateFilterItem,
+  IsNullFilterItem,
+  NumericFilterItem,
+  OneOfFilterItem,
+  StringFilterItem,
+} from "./FilterItem.js";
+import { UnfilteredListQueryArgs } from "./UnfilteredListQueryArgs.js";
+import { getSequelizeOpForComparator } from "./getSequelizeOpForComparator.js";
 
 export abstract class AbstractFilteredListQueryArgs<
   AllKeys extends string,
@@ -439,185 +310,4 @@ export function FilteredListQueryArgs<
   }
 
   return FilteredListQueryArgs;
-}
-
-@InputType()
-export abstract class FilterItem<Field extends string, V>
-  implements FilterItemInterface<Field, V>
-{
-  @Field(() => String, { description: "The field to filter on" })
-  field!: Field;
-
-  value!: V;
-
-  comparison!: Comparator;
-
-  /**
-   * Should the comparator be negated?
-   * WARNING: This will throw if used on a comparator that does not support negation.
-   * @default false
-   */
-  @Field(() => Boolean, {
-    description:
-      "Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.",
-    defaultValue: false,
-    nullable: true,
-  })
-  negate?: boolean;
-}
-
-@InputType()
-export abstract class AbstractStringFilterItem<Field extends string>
-  extends FilterItem<Field, string>
-  implements StringFilterItemInterface<Field>
-{
-  @Field(() => String)
-  value!: string;
-
-  @Field(() => StringComparator, {
-    description: "The comparator to use for the filter",
-  })
-  comparison!: StringComparator;
-}
-
-export function StringFilterItem<Field extends string>(fieldEnum: {
-  [key in Field]: key;
-}) {
-  @InputType()
-  abstract class StringFilterItem extends AbstractStringFilterItem<Field> {
-    @Field(() => fieldEnum, {
-      description: "The field to filter on",
-    })
-    field!: Field;
-  }
-
-  return StringFilterItem;
-}
-
-@InputType()
-export abstract class AbstractNumericFilterItem<Field extends string>
-  extends FilterItem<Field, number>
-  implements NumericFilterItemInterface<Field>
-{
-  @Field(() => Number)
-  value!: number;
-
-  @Field(() => NumericComparator, {
-    description: "The comparator to use for the filter",
-  })
-  comparison!: NumericComparator;
-}
-
-export function NumericFilterItem<Field extends string>(fieldEnum: {
-  [key in Field]: key;
-}) {
-  @InputType()
-  abstract class NumericFilterItem extends AbstractNumericFilterItem<Field> {
-    @Field(() => fieldEnum, {
-      description: "The field to filter on",
-    })
-    field!: Field;
-  }
-
-  return NumericFilterItem;
-}
-
-@InputType()
-export abstract class AbstractDateFilterItem<Field extends string>
-  extends FilterItem<Field, string>
-  implements DateFilterItemInterface<Field>
-{
-  @Field(() => DateTimeScalar)
-  value!: string;
-
-  @Field(() => NumericComparator, {
-    description: "The comparator to use for the filter",
-  })
-  comparison!: NumericComparator;
-}
-
-export function DateFilterItem<Field extends string>(fieldEnum: {
-  [key in Field]: key;
-}) {
-  @InputType()
-  abstract class DateFilterItem extends AbstractDateFilterItem<Field> {
-    @Field(() => fieldEnum, {
-      description: "The field to filter on",
-    })
-    field!: Field;
-  }
-
-  return DateFilterItem;
-}
-
-@InputType()
-export abstract class AbstractBooleanFilterItem<Field extends string>
-  extends FilterItem<Field, boolean>
-  implements BooleanFilterItemInterface<Field>
-{
-  @Field(() => Boolean)
-  value!: boolean;
-
-  @Field(() => IsComparator, {
-    description: "The comparator to use for the filter",
-  })
-  comparison!: IsComparator;
-}
-
-export function BooleanFilterItem<Field extends string>(fieldEnum: {
-  [key in Field]: key;
-}) {
-  @InputType()
-  abstract class BooleanFilterItem extends AbstractBooleanFilterItem<Field> {
-    @Field(() => fieldEnum, {
-      description: "The field to filter on",
-    })
-    field!: Field;
-  }
-
-  return BooleanFilterItem;
-}
-
-@InputType()
-export abstract class AbstractOneOfFilterItem<Field extends string>
-  extends FilterItem<Field, readonly string[]>
-  implements OneOfFilterItemInterface<Field>
-{
-  @Field(() => [String])
-  value!: readonly string[];
-
-  comparison!: never;
-}
-
-export function OneOfFilterItem<Field extends string>(fieldEnum: {
-  [key in Field]: key;
-}) {
-  @InputType()
-  abstract class OneOfFilterItem extends AbstractOneOfFilterItem<Field> {
-    @Field(() => fieldEnum, { description: "The field to filter on" })
-    field!: Field;
-  }
-
-  return OneOfFilterItem;
-}
-
-@InputType()
-export abstract class AbstractIsNullFilterItem<Field extends string>
-  extends FilterItem<Field, null>
-  implements IsNullFilterItemInterface<Field>
-{
-  value!: never;
-  comparison!: never;
-}
-
-export function IsNullFilterItem<Field extends string>(fieldEnum: {
-  [key in Field]: key;
-}) {
-  @InputType()
-  abstract class IsNullFilterItem extends AbstractIsNullFilterItem<Field> {
-    @Field(() => fieldEnum, { description: "The field to filter on" })
-    field!: Field;
-  }
-
-  return IsNullFilterItem;
 }

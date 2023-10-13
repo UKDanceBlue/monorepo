@@ -10,7 +10,7 @@ import { ClientAction, ErrorCode } from "@ukdanceblue/common";
 import type { ClassType } from "type-graphql";
 import { Field, InterfaceType, registerEnumType } from "type-graphql";
 
-import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./ListQueryArgs.js";
+import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./list-query-args/common.js";
 
 registerEnumType(ClientAction, {
   name: "ClientAction",

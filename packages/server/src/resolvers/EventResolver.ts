@@ -29,7 +29,7 @@ import {
   AbstractGraphQLPaginatedResponse,
   DetailedError,
 } from "./ApiResponse.js";
-import { FilteredListQueryArgs } from "./ListQueryArgs.js";
+import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 import type {
   ResolverInterface,
   ResolverInterfaceWithFilteredList,
