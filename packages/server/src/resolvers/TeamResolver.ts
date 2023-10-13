@@ -94,8 +94,20 @@ class CreateTeamInput implements OptionalToNullable<Partial<TeamResource>> {
 @ArgsType()
 class ListTeamsArgs extends FilteredListQueryArgs("TeamResolver", {
   all: ["uuid", "name", "type", "legacyStatus", "visibility", "marathonYear"],
-  string: ["name", "visibility", "marathonYear"],
-}) {}
+  string: ["name"],
+}) {
+  @Field(() => TeamType, { nullable: true })
+  type!: TeamType | null;
+
+  @Field(() => TeamLegacyStatus, { nullable: true })
+  legacyStatus!: TeamLegacyStatus | null;
+
+  @Field(() => DbRole, { nullable: true })
+  visibility!: DbRole | null;
+
+  @Field(() => String, { nullable: true })
+  marathonYear!: MarathonYearString | null;
+}
 
 @Resolver(() => TeamResource)
 export class TeamResolver
@@ -122,7 +134,16 @@ export class TeamResolver
       uuid: "uuid",
     });
 
-    const { rows, count } = await TeamModel.findAndCountAll(findOptions);
+    const { rows, count } = await TeamModel.findAndCountAll({
+      ...findOptions,
+      where: {
+        ...findOptions.where,
+        type: query.type ?? undefined,
+        legacyStatus: query.legacyStatus ?? undefined,
+        visibility: query.visibility ?? undefined,
+        marathonYear: query.marathonYear ?? undefined,
+      },
+    });
 
     return ListTeamsResponse.newPaginated({
       data: rows.map((row) => row.toResource()),
