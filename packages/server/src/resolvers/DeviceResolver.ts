@@ -32,34 +32,34 @@ import type {
   implements: AbstractGraphQLOkResponse<DeviceResource>,
 })
 class GetDeviceByUuidResponse extends AbstractGraphQLOkResponse<DeviceResource> {
-  @Field(() => DeviceResource, { description: "The payload of the response" })
+  @Field(() => DeviceResource)
   data!: DeviceResource;
 }
 @ObjectType("ListDevicesResponse", {
   implements: AbstractGraphQLPaginatedResponse<DeviceResource>,
 })
 class ListDevicesResponse extends AbstractGraphQLPaginatedResponse<DeviceResource> {
-  @Field(() => [DeviceResource], { description: "The payload of the response" })
+  @Field(() => [DeviceResource])
   data!: DeviceResource[];
 }
 @ObjectType("CreateDeviceResponse", {
   implements: AbstractGraphQLCreatedResponse<DeviceResource>,
 })
 class CreateDeviceResponse extends AbstractGraphQLCreatedResponse<DeviceResource> {
-  @Field(() => DeviceResource, { description: "The payload of the response" })
+  @Field(() => DeviceResource)
   data!: DeviceResource;
 }
 @ObjectType("DeleteDeviceResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
 class DeleteDeviceResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean, { description: "The payload of the response" })
+  @Field(() => Boolean)
   data!: boolean;
 }
 
 @InputType()
 class CreateDeviceInput implements Partial<DeviceResource> {
-  @Field(() => String, { description: "The UUID of the device" })
+  @Field(() => String)
   deviceId!: string;
 
   @Field(() => String, {

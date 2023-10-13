@@ -5,7 +5,9 @@ import { DeviceResolver } from "../resolvers/DeviceResolver.js";
 import { EventResolver } from "../resolvers/EventResolver.js";
 import { ImageResolver } from "../resolvers/ImageResolver.js";
 import { MembershipResolver } from "../resolvers/MembershipResolver.js";
+import { NotificationResolver } from "../resolvers/NotificationResolver.js";
 import { PersonResolver } from "../resolvers/PersonResolver.js";
+import { TeamResolver } from "../resolvers/TeamResolver.js";
 
 export default await buildSchema({
   resolvers: [
@@ -15,6 +17,8 @@ export default await buildSchema({
     ImageResolver,
     PersonResolver,
     MembershipResolver,
+    NotificationResolver,
+    TeamResolver,
   ],
   emitSchemaFile: true,
 });

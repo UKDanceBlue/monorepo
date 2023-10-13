@@ -28,8 +28,6 @@ export * from "./api/graphql/custom-scalars/IntervalScalar.js";
 export * from "./api/graphql/custom-scalars/UrlScalar.js";
 export * from "./api/graphql/custom-scalars/VoidScalar.js";
 
-export { TeamType } from "./api/graphql/object-types/Team.js";
-
 export * from "./style/color.js";
 
 // React specific code:

@@ -290,8 +290,8 @@ export type DeviceResource = {
   readonly __typename?: 'DeviceResource';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly expoPushToken?: Maybe<Scalars['String']['output']>;
+  readonly lastLoggedInUser?: Maybe<PersonResource>;
   readonly lastLogin?: Maybe<Scalars['DateTime']['output']>;
-  readonly lastUser?: Maybe<PersonResource>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
@@ -382,7 +382,7 @@ export type EventResource = {
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly description?: Maybe<Scalars['String']['output']>;
   readonly duration?: Maybe<Scalars['Duration']['output']>;
-  readonly images?: Maybe<ReadonlyArray<ImageResource>>;
+  readonly images: ReadonlyArray<ImageResource>;
   readonly location?: Maybe<Scalars['String']['output']>;
   readonly occurrences: ReadonlyArray<Scalars['DateTime']['output']>;
   readonly summary?: Maybe<Scalars['String']['output']>;
@@ -508,6 +508,16 @@ export type ListEventsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQ
   readonly total: Scalars['Float']['output'];
 };
 
+export type MembershipResource = {
+  readonly __typename?: 'MembershipResource';
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly marathonYear: Scalars['String']['output'];
+  readonly person: PersonResource;
+  readonly team: TeamResource;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly uuid: Scalars['ID']['output'];
+};
+
 export type Mutation = {
   readonly __typename?: 'Mutation';
   readonly createConfiguration: CreateConfigurationResponse;
@@ -584,14 +594,14 @@ export { NumericComparator };
 export type PersonResource = {
   readonly __typename?: 'PersonResource';
   readonly authIds: AuthSource;
-  readonly captainOf: ReadonlyArray<TeamResource>;
+  readonly captaincies: ReadonlyArray<MembershipResource>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly email: Scalars['String']['output'];
   readonly firstName?: Maybe<Scalars['String']['output']>;
   readonly lastName?: Maybe<Scalars['String']['output']>;
   readonly linkblue?: Maybe<Scalars['String']['output']>;
-  readonly memberOf: ReadonlyArray<TeamResource>;
   readonly role: RoleResource;
+  readonly teams: ReadonlyArray<MembershipResource>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
@@ -669,7 +679,7 @@ export type QueryThumbhashArgs = {
 
 export type RoleResource = {
   readonly __typename?: 'RoleResource';
-  readonly committee?: Maybe<Scalars['String']['output']>;
+  readonly committeeIdentifier?: Maybe<Scalars['String']['output']>;
   readonly committeeRole?: Maybe<CommitteeRole>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly dbRole: DbRole;
@@ -693,13 +703,20 @@ export { SortDirection };
 
 export { StringComparator };
 
+/** New Team vs Returning Team */
+export const TeamLegacyStatus = {
+  NewTeam: 'NewTeam',
+  ReturningTeam: 'ReturningTeam'
+} as const;
+
+export type TeamLegacyStatus = typeof TeamLegacyStatus[keyof typeof TeamLegacyStatus];
 export type TeamResource = {
   readonly __typename?: 'TeamResource';
-  readonly captains: ReadonlyArray<Scalars['String']['output']>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  readonly members: ReadonlyArray<Scalars['String']['output']>;
+  readonly legacyStatus: TeamLegacyStatus;
+  readonly marathonYear?: Maybe<Scalars['String']['output']>;
   readonly name: Scalars['String']['output'];
-  readonly pointEntries: ReadonlyArray<Scalars['String']['output']>;
+  readonly persistentIdentifier?: Maybe<Scalars['String']['output']>;
   readonly type: TeamType;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
@@ -721,14 +738,14 @@ export type ListEventsQueryVariables = Exact<{
 }>;
 
 
-export type ListEventsQuery = { readonly __typename?: 'Query', readonly events: { readonly __typename?: 'ListEventsResponse', readonly ok: boolean, readonly page: number, readonly pageSize: number, readonly total: number, readonly data: ReadonlyArray<{ readonly __typename?: 'EventResource', readonly uuid: string, readonly title: string, readonly description?: string | null, readonly duration?: string | null, readonly occurrences: ReadonlyArray<string>, readonly summary?: string | null, readonly images?: ReadonlyArray<{ readonly __typename?: 'ImageResource', readonly url?: string | null, readonly width: number, readonly height: number, readonly uuid: string }> | null }> } };
+export type ListEventsQuery = { readonly __typename?: 'Query', readonly events: { readonly __typename?: 'ListEventsResponse', readonly ok: boolean, readonly page: number, readonly pageSize: number, readonly total: number, readonly data: ReadonlyArray<{ readonly __typename?: 'EventResource', readonly uuid: string, readonly title: string, readonly description?: string | null, readonly duration?: string | null, readonly occurrences: ReadonlyArray<string>, readonly summary?: string | null, readonly images: ReadonlyArray<{ readonly __typename?: 'ImageResource', readonly url?: string | null, readonly width: number, readonly height: number, readonly uuid: string }> }> } };
 
 export type GetEventQueryVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type GetEventQuery = { readonly __typename?: 'Query', readonly event: { readonly __typename?: 'GetEventByUuidResponse', readonly ok: boolean, readonly clientActions?: ReadonlyArray<ClientAction> | null, readonly data: { readonly __typename?: 'EventResource', readonly title: string, readonly summary?: string | null, readonly description?: string | null, readonly location?: string | null, readonly occurrences: ReadonlyArray<string>, readonly duration?: string | null, readonly images?: ReadonlyArray<{ readonly __typename?: 'ImageResource', readonly uuid: string, readonly url?: string | null, readonly imageData?: string | null, readonly height: number, readonly width: number, readonly thumbHash?: string | null, readonly alt?: string | null }> | null } } };
+export type GetEventQuery = { readonly __typename?: 'Query', readonly event: { readonly __typename?: 'GetEventByUuidResponse', readonly ok: boolean, readonly clientActions?: ReadonlyArray<ClientAction> | null, readonly data: { readonly __typename?: 'EventResource', readonly title: string, readonly summary?: string | null, readonly description?: string | null, readonly location?: string | null, readonly occurrences: ReadonlyArray<string>, readonly duration?: string | null, readonly images: ReadonlyArray<{ readonly __typename?: 'ImageResource', readonly uuid: string, readonly url?: string | null, readonly imageData?: string | null, readonly height: number, readonly width: number, readonly thumbHash?: string | null, readonly alt?: string | null }> } } };
 
 
 export const ListEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ListEvents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedDateFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedIsNullFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"numericFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedNumericFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedOneOfFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedStringFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"events"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"dateFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"numericFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"numericFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"oneOfFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]} as unknown as DocumentNode<ListEventsQuery, ListEventsQueryVariables>;

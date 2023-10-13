@@ -43,11 +43,11 @@ export class TeamResource extends Resource {
   legacyStatus!: TeamLegacyStatus;
   @Field(() => DbRole)
   visibility!: DbRole;
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   marathonYear!: MarathonYearString;
 
-  @Field(() => String, { nullable: true })
-  persistentIdentifier!: string | null; // TODO: Secure this field, committee only
+  @Field(() => String)
+  persistentIdentifier!: string; // TODO: Secure this field, committee only
 
   public getUniqueId(): string {
     return this.uuid;

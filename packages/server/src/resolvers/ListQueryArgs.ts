@@ -9,15 +9,15 @@ import type {
 } from "@sequelize/core";
 import { Op } from "@sequelize/core";
 import type {
-  ListQueryType,
-  OptionalToNullable,
-  Resource,
-  FilterItem as FilterItemInterface,
-  IsNullFilterItemInterface,
-  OneOfFilterItemInterface,
   BooleanFilterItemInterface,
   DateFilterItemInterface,
+  FilterItem as FilterItemInterface,
+  IsNullFilterItemInterface,
+  ListQueryType,
   NumericFilterItemInterface,
+  OneOfFilterItemInterface,
+  OptionalToNullable,
+  Resource,
   StringFilterItemInterface,
 } from "@ukdanceblue/common";
 import {
@@ -471,7 +471,7 @@ export abstract class AbstractStringFilterItem<Field extends string>
   extends FilterItem<Field, string>
   implements StringFilterItemInterface<Field>
 {
-  @Field(() => String, { description: "The value to filter by" })
+  @Field(() => String)
   value!: string;
 
   @Field(() => StringComparator, {
@@ -499,7 +499,7 @@ export abstract class AbstractNumericFilterItem<Field extends string>
   extends FilterItem<Field, number>
   implements NumericFilterItemInterface<Field>
 {
-  @Field(() => Number, { description: "The value to filter by" })
+  @Field(() => Number)
   value!: number;
 
   @Field(() => NumericComparator, {
@@ -527,7 +527,7 @@ export abstract class AbstractDateFilterItem<Field extends string>
   extends FilterItem<Field, string>
   implements DateFilterItemInterface<Field>
 {
-  @Field(() => DateTimeScalar, { description: "The value to filter by" })
+  @Field(() => DateTimeScalar)
   value!: string;
 
   @Field(() => NumericComparator, {
@@ -555,7 +555,7 @@ export abstract class AbstractBooleanFilterItem<Field extends string>
   extends FilterItem<Field, boolean>
   implements BooleanFilterItemInterface<Field>
 {
-  @Field(() => Boolean, { description: "The value to filter by" })
+  @Field(() => Boolean)
   value!: boolean;
 
   @Field(() => IsComparator, {
@@ -583,7 +583,7 @@ export abstract class AbstractOneOfFilterItem<Field extends string>
   extends FilterItem<Field, readonly string[]>
   implements OneOfFilterItemInterface<Field>
 {
-  @Field(() => [String], { description: "The value to filter by" })
+  @Field(() => [String])
   value!: readonly string[];
 
   comparison!: never;

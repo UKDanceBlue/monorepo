@@ -105,7 +105,7 @@ export abstract class AbstractGraphQLCreatedResponse<T>
   extends AbstractGraphQLOkResponse<T>
   implements CreatedApiResponse<T>
 {
-  @Field(() => String, { description: "The UUID of the created resource" })
+  @Field(() => String)
   uuid!: string;
 
   toJson(): CreatedApiResponse<T> {

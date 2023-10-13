@@ -19,8 +19,6 @@ interface AbstractGraphQLCreatedResponse implements AbstractGraphQLOkResponse & 
 
   """Whether the operation was successful"""
   ok: Boolean!
-
-  """The UUID of the created resource"""
   uuid: String!
 }
 
@@ -86,13 +84,10 @@ type CreateConfigurationResponse implements AbstractGraphQLCreatedResponse & Abs
 
   """Whether the operation was successful"""
   ok: Boolean!
-
-  """The UUID of the created resource"""
   uuid: String!
 }
 
 input CreateDeviceInput {
-  """The UUID of the device"""
   deviceId: String!
 
   """The Expo push token of the device"""
@@ -105,14 +100,10 @@ input CreateDeviceInput {
 type CreateDeviceResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
-
-  """The payload of the response"""
   data: DeviceResource!
 
   """Whether the operation was successful"""
   ok: Boolean!
-
-  """The UUID of the created resource"""
   uuid: String!
 }
 
@@ -131,8 +122,6 @@ type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGra
 
   """Whether the operation was successful"""
   ok: Boolean!
-
-  """The UUID of the created resource"""
   uuid: String!
 }
 
@@ -153,8 +142,20 @@ type CreateImageResponse implements AbstractGraphQLCreatedResponse & AbstractGra
 
   """Whether the operation was successful"""
   ok: Boolean!
+  uuid: String!
+}
 
-  """The UUID of the created resource"""
+input CreateNotificationInput {
+  uuid: ID!
+}
+
+type CreateNotificationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: NotificationResource!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
   uuid: String!
 }
 
@@ -169,8 +170,26 @@ type CreatePersonResponse implements AbstractGraphQLCreatedResponse & AbstractGr
 
   """Whether the operation was successful"""
   ok: Boolean!
+  uuid: String!
+}
 
-  """The UUID of the created resource"""
+input CreateTeamInput {
+  legacyStatus: TeamLegacyStatus!
+  marathonYear: String!
+  name: String!
+  persistentIdentifier: String!
+  type: TeamType!
+  uuid: ID!
+  visibility: String!
+}
+
+type CreateTeamResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: TeamResource!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
   uuid: String!
 }
 
@@ -203,8 +222,6 @@ type DeleteConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLB
 type DeleteDeviceResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
-
-  """The payload of the response"""
   data: Boolean!
 
   """Whether the operation was successful"""
@@ -229,7 +246,25 @@ type DeleteImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseRespo
   ok: Boolean!
 }
 
+type DeleteNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: Boolean!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
 type DeletePersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: Boolean!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+type DeleteTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
   data: Boolean!
@@ -263,8 +298,6 @@ input DeviceResolverKeyedDateFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-
-  """The value to filter by"""
   value: DateTime!
 }
 
@@ -286,8 +319,6 @@ input DeviceResolverKeyedOneOfFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-
-  """The value to filter by"""
   value: [String!]!
 }
 
@@ -302,8 +333,6 @@ input DeviceResolverKeyedStringFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-
-  """The value to filter by"""
   value: String!
 }
 
@@ -352,8 +381,6 @@ input EventResolverKeyedDateFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-
-  """The value to filter by"""
   value: DateTime!
 }
 
@@ -378,8 +405,6 @@ input EventResolverKeyedNumericFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-
-  """The value to filter by"""
   value: Float!
 }
 
@@ -391,8 +416,6 @@ input EventResolverKeyedOneOfFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-
-  """The value to filter by"""
   value: [String!]!
 }
 
@@ -407,8 +430,6 @@ input EventResolverKeyedStringFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-
-  """The value to filter by"""
   value: String!
 }
 
@@ -457,8 +478,6 @@ type GetConfigurationByUuidResponse implements AbstractGraphQLOkResponse & Graph
 type GetDeviceByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
-
-  """The payload of the response"""
   data: DeviceResource!
 
   """Whether the operation was successful"""
@@ -483,10 +502,28 @@ type GetImageByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseRe
   ok: Boolean!
 }
 
+type GetNotificationByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: NotificationResource!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
 type GetPersonByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
   data: PersonResource!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+type GetTeamByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: TeamResource!
 
   """Whether the operation was successful"""
   ok: Boolean!
@@ -526,8 +563,6 @@ type ImageResource {
 type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
-
-  """The payload of the response"""
   data: [DeviceResource!]!
 
   """Whether the operation was successful"""
@@ -561,9 +596,44 @@ type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
   total: Float!
 }
 
+type ListNotificationsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: [NotificationResource!]!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+
+  """The current page number (1-indexed)"""
+  page: Float!
+
+  """The number of items per page"""
+  pageSize: Float!
+
+  """The total number of items"""
+  total: Float!
+}
+
+type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: [TeamResource!]!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+
+  """The current page number (1-indexed)"""
+  page: Float!
+
+  """The number of items per page"""
+  pageSize: Float!
+
+  """The total number of items"""
+  total: Float!
+}
+
 type MembershipResource {
   createdAt: DateTimeISO
-  marathonYear: String!
   person: PersonResource!
   team: TeamResource!
   updatedAt: DateTimeISO
@@ -575,13 +645,37 @@ type Mutation {
   createDevice(input: CreateDeviceInput!): CreateDeviceResponse!
   createEvent(input: CreateEventInput!): CreateEventResponse!
   createImage(input: CreateImageInput!): CreateImageResponse!
+  createNotification(input: CreateNotificationInput!): CreateNotificationResponse!
   createPerson(input: CreatePersonInput!): CreatePersonResponse!
+  createTeam(input: CreateTeamInput!): CreateTeamResponse!
   deleteConfiguration(id: String!): DeleteConfigurationResponse!
   deleteDevice(id: String!): DeleteDeviceResponse!
   deleteEvent(id: String!): DeleteEventResponse!
   deleteImage(id: String!): DeleteImageResponse!
+  deleteNotification(id: String!): DeleteNotificationResponse!
   deletePerson(id: String!): DeletePersonResponse!
+  deleteTeam(id: String!): DeleteTeamResponse!
   setConfiguration(id: String!, input: SetConfigurationInput!): SetConfigurationResponse!
+}
+
+enum NotificationResolverAllKeys {
+  uuid
+}
+
+input NotificationResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: NotificationResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+type NotificationResource {
+  createdAt: DateTimeISO
+  updatedAt: DateTimeISO
+  uuid: ID!
 }
 
 enum NumericComparator {
@@ -683,7 +777,79 @@ type Query {
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
   image(uuid: String!): GetImageByUuidResponse!
+  notification(uuid: String!): GetNotificationByUuidResponse!
+  notifications(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: Void
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [NotificationResolverKeyedIsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: Void
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: Void
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: Void
+  ): ListNotificationsResponse!
   person(uuid: String!): GetPersonByUuidResponse!
+  team(uuid: String!): GetTeamByUuidResponse!
+  teams(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: Void
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [TeamResolverKeyedIsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: Void
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: [TeamResolverKeyedStringFilterItem!]
+  ): ListTeamsResponse!
   thumbhash(uuid: String!): GetThumbHashByUuidResponse
 }
 
@@ -729,12 +895,64 @@ enum TeamLegacyStatus {
   ReturningTeam
 }
 
+enum TeamResolverAllKeys {
+  legacyStatus
+  marathonYear
+  name
+  type
+  uuid
+  visibility
+}
+
+input TeamResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: TeamResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+input TeamResolverKeyedOneOfFilterItem {
+  """The field to filter on"""
+  field: TeamResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: [String!]!
+}
+
+input TeamResolverKeyedStringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The field to filter on"""
+  field: TeamResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: String!
+}
+
+enum TeamResolverStringFilterKeys {
+  marathonYear
+  name
+  visibility
+}
+
 type TeamResource {
+  captaincies: [MembershipResource!]!
   createdAt: DateTimeISO
   legacyStatus: TeamLegacyStatus!
-  marathonYear: String
+  marathonYear: String!
   name: String!
-  persistentIdentifier: String
+  persistentIdentifier: String!
+  teams: [MembershipResource!]!
   type: TeamType!
   updatedAt: DateTimeISO
   uuid: ID!

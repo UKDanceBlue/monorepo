@@ -1,10 +1,195 @@
-// import { Arg, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
+import {
+  DbRole,
+  ErrorCode,
+  MembershipResource,
+  OptionalToNullable,
+  TeamLegacyStatus,
+  TeamResource,
+  TeamType,
+  type MarathonYearString,
+} from "@ukdanceblue/common";
+import {
+  Arg,
+  Args,
+  ArgsType,
+  Field,
+  FieldResolver,
+  ID,
+  InputType,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
 
-// import type { AbstractGraphQLArrayOkResponse } from "../object-types/ApiResponse.js";
-// import { DetailedError, defineGraphQLArrayOkResponse, AbstractGraphQLCreatedResponse, AbstractGraphQLOkResponse } from "../object-types/ApiResponse.js";
-// import { TeamResource } from "../object-types/Team.js";
-// import type { TeamServiceInterface } from "../service-declarations/TeamServiceInterface.js";
-// import { teamServiceToken } from "../service-declarations/TeamServiceInterface.js";
+import { TeamModel } from "../models/Team.js";
 
-// import { createBaseResolver } from "./BaseResolver.js";
-// import { resolverCreateHelper, resolverSetHelper } from "./helpers.js";
+import { MembershipModel } from "../models/Membership.js";
+import {
+  AbstractGraphQLCreatedResponse,
+  AbstractGraphQLOkResponse,
+  AbstractGraphQLPaginatedResponse,
+  DetailedError,
+} from "./ApiResponse.js";
+import { FilteredListQueryArgs } from "./ListQueryArgs.js";
+import type {
+  ResolverInterface,
+  ResolverInterfaceWithFilteredList,
+} from "./ResolverInterface.js";
+
+@ObjectType("GetTeamByUuidResponse", {
+  implements: AbstractGraphQLOkResponse<TeamResource>,
+})
+class GetTeamByUuidResponse extends AbstractGraphQLOkResponse<TeamResource> {
+  @Field(() => TeamResource)
+  data!: TeamResource;
+}
+@ObjectType("ListTeamsResponse", {
+  implements: AbstractGraphQLPaginatedResponse<TeamResource>,
+})
+class ListTeamsResponse extends AbstractGraphQLPaginatedResponse<TeamResource> {
+  @Field(() => [TeamResource])
+  data!: TeamResource[];
+}
+@ObjectType("CreateTeamResponse", {
+  implements: AbstractGraphQLCreatedResponse<TeamResource>,
+})
+class CreateTeamResponse extends AbstractGraphQLCreatedResponse<TeamResource> {
+  @Field(() => TeamResource)
+  data!: TeamResource;
+}
+@ObjectType("DeleteTeamResponse", {
+  implements: AbstractGraphQLOkResponse<boolean>,
+})
+class DeleteTeamResponse extends AbstractGraphQLOkResponse<boolean> {
+  @Field(() => Boolean)
+  data!: boolean;
+}
+
+@InputType()
+class CreateTeamInput implements OptionalToNullable<Partial<TeamResource>> {
+  @Field(() => ID)
+  uuid!: string;
+
+  @Field(() => String)
+  name!: string;
+
+  @Field(() => TeamType)
+  type!: TeamType;
+
+  @Field(() => TeamLegacyStatus)
+  legacyStatus!: TeamLegacyStatus;
+
+  @Field(() => String)
+  marathonYear!: MarathonYearString;
+
+  @Field(() => String)
+  visibility!: DbRole;
+
+  @Field(() => String)
+  persistentIdentifier!: string;
+}
+
+@ArgsType()
+class ListTeamsArgs extends FilteredListQueryArgs("TeamResolver", {
+  all: ["uuid", "name", "type", "legacyStatus", "visibility", "marathonYear"],
+  string: ["name", "visibility", "marathonYear"],
+}) {}
+
+@Resolver(() => TeamResource)
+export class TeamResolver
+  implements
+    ResolverInterface<TeamResource>,
+    ResolverInterfaceWithFilteredList<TeamResource, ListTeamsArgs>
+{
+  @Query(() => GetTeamByUuidResponse, { name: "team" })
+  async getByUuid(@Arg("uuid") uuid: string): Promise<GetTeamByUuidResponse> {
+    const row = await TeamModel.findOne({ where: { uuid } });
+
+    if (row == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+    }
+
+    return GetTeamByUuidResponse.newOk(row.toResource());
+  }
+
+  @Query(() => ListTeamsResponse, { name: "teams" })
+  async list(
+    @Args(() => ListTeamsArgs) query: ListTeamsArgs
+  ): Promise<ListTeamsResponse> {
+    const findOptions = query.toSequelizeFindOptions({
+      uuid: "uuid",
+    });
+
+    const { rows, count } = await TeamModel.findAndCountAll(findOptions);
+
+    return ListTeamsResponse.newPaginated({
+      data: rows.map((row) => row.toResource()),
+      total: count,
+      page: query.page,
+      pageSize: query.pageSize,
+    });
+  }
+
+  @Mutation(() => CreateTeamResponse, { name: "createTeam" })
+  async create(
+    @Arg("input") input: CreateTeamInput
+  ): Promise<CreateTeamResponse> {
+    const row = await TeamModel.create({
+      uuid: input.uuid,
+      name: input.name,
+      type: input.type,
+      legacyStatus: input.legacyStatus,
+      visibility: input.visibility ?? undefined,
+      marathonYear: input.marathonYear,
+      persistentIdentifier: input.persistentIdentifier,
+    });
+
+    return CreateTeamResponse.newOk(row.toResource());
+  }
+
+  @Mutation(() => DeleteTeamResponse, { name: "deleteTeam" })
+  async delete(@Arg("id") id: string): Promise<DeleteTeamResponse> {
+    const row = await TeamModel.findOne({
+      where: { uuid: id },
+      attributes: ["id"],
+    });
+
+    if (row == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+    }
+
+    await row.destroy();
+
+    return DeleteTeamResponse.newOk(true);
+  }
+
+  @FieldResolver(() => [MembershipResource])
+  async teams(@Root() team: TeamResource): Promise<MembershipResource[]> {
+    const model = await TeamModel.findByUuid(team.uuid, {
+      attributes: ["id"],
+      include: [MembershipModel.withScope("withTeam")],
+    });
+
+    if (model == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+    }
+
+    return model.memberships.map((row) => row.toResource());
+  }
+
+  @FieldResolver(() => [MembershipResource])
+  async captaincies(@Root() team: TeamResource): Promise<MembershipResource[]> {
+    const model = await TeamModel.findByUuid(team.uuid, {
+      attributes: ["id"],
+      include: [MembershipModel.withScope("withTeam").withScope("captains")],
+    });
+
+    if (model == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+    }
+
+    return model.memberships.map((row) => row.toResource());
+  }
+}

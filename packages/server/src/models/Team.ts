@@ -15,7 +15,13 @@ import type {
   NonAttribute,
 } from "@sequelize/core";
 import { DataTypes } from "@sequelize/core";
-import { DbRole, TeamResource, TeamType } from "@ukdanceblue/common";
+import {
+  DbRole,
+  MarathonYearString,
+  TeamLegacyStatus,
+  TeamResource,
+  TeamType,
+} from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
 
@@ -36,9 +42,10 @@ export class TeamModel extends BaseModel<
   declare readonly deletedAt: CreationOptional<Date | null>;
 
   public declare name: string;
-
   public declare type: TeamType;
-
+  public declare legacyStatus: TeamLegacyStatus;
+  public declare marathonYear: MarathonYearString;
+  public declare persistentIdentifier: CreationOptional<string>;
   public declare visibility: CreationOptional<DbRole>;
 
   public declare pointEntries: NonAttribute<PointEntryModel[]>;
@@ -145,6 +152,21 @@ TeamModel.init(
     type: {
       type: DataTypes.ENUM(Object.values(TeamType)),
       allowNull: false,
+    },
+    legacyStatus: {
+      type: DataTypes.ENUM(Object.values(TeamLegacyStatus)),
+      allowNull: false,
+    },
+    marathonYear: {
+      type: DataTypes.STRING(4),
+      allowNull: false,
+      validate: {
+        is: /^DB\d{2}$/,
+      },
+    },
+    persistentIdentifier: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     visibility: {
       type: DataTypes.ENUM(Object.values(DbRole)),
