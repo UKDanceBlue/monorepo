@@ -1,20 +1,23 @@
 import { ApolloProvider } from "@apollo/client";
+import { RouterProvider } from "@tanstack/react-router";
 import { App as AntApp, ConfigProvider } from "antd";
-import React from "react";
-import ReactDOM from "react-dom/client";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
-import App from "./App.tsx";
-import { antDesignTheme } from "./configs/ant.ts";
-import { apolloClient } from "./configs/apollo.ts";
+import { antDesignTheme } from "./config/ant.ts";
+import { apolloClient } from "./config/apollo.ts";
+import { router } from "./routing/router.ts";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+import "normalize.css";
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
     <ConfigProvider theme={antDesignTheme}>
       <AntApp>
         <ApolloProvider client={apolloClient}>
-          <App />
+          <RouterProvider router={router} />
         </ApolloProvider>
       </AntApp>
     </ConfigProvider>
-  </React.StrictMode>
+  </StrictMode>
 );

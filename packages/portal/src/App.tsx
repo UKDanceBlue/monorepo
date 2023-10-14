@@ -1,3 +1,4 @@
+import { RootRoute } from "@tanstack/react-router";
 import { EventsTable } from "./elements/tables/EventsTable";
 import { EventViewer } from "./elements/viewers/EventViewer";
 
@@ -11,4 +12,6 @@ function App() {
   );
 }
 
-export default App;
+export const rootRoute = new RootRoute({
+  component: App,
+});
