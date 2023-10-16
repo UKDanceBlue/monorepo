@@ -15,14 +15,16 @@
     "jsx": "react-jsx",
 
     "paths": {
-      "@config": ["./src/config"],
-      "@elements": ["./src/elements"],
-      "@hooks": ["./src/hooks"],
-      "@pages": ["./src/pages"],
-      "@queries": ["./src/queries"],
-      "@routing": ["./src/routing"],
-      "@tools": ["./src/tools"]
-    }
+      "@config/*": ["config/*"],
+      "@elements/*": ["elements/*"],
+      "@hooks/*": ["hooks/*"],
+      "@pages/*": ["pages/*"],
+      "@queries/*": ["queries/*"],
+      "@routing/*": ["routing/*"],
+      "@tools/*": ["tools/*"]
+    },
+
+    "baseUrl": "./src"
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }],

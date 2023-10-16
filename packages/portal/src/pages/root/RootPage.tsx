@@ -1,5 +1,6 @@
 import { Outlet } from "@tanstack/react-router";
 import { Layout, Typography } from "antd";
+
 import { NavigationMenu } from "../../elements/singletons/NavigationMenu";
 
 export const RootPage = () => {

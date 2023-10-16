@@ -934,7 +934,7 @@ export type TeamResource = {
   readonly marathonYear: Scalars['String']['output'];
   readonly members: ReadonlyArray<MembershipResource>;
   readonly name: Scalars['String']['output'];
-  readonly persistentIdentifier: Scalars['String']['output'];
+  readonly persistentIdentifier?: Maybe<Scalars['String']['output']>;
   readonly type: TeamType;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];

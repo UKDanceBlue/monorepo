@@ -5,5 +5,6 @@
     "./packages/portal",
     "./packages/mobile"
   ],
+  "eslint.experimental.useFlatConfig": true,
   "typescript.tsdk": "node_modules/typescript/lib"
 }

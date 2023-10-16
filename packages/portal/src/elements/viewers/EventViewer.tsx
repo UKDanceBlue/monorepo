@@ -1,11 +1,12 @@
 import { useQuery } from "@apollo/client";
-import { GET_EVENT } from "../../queries/eventQueries";
-import { useApolloStatusWatcher } from "../../hooks/useApolloStatusWatcher";
-import { Carousel, Image, List, Typography } from "antd";
-import { thumbHashToDataURL } from "thumbhash";
 import { base64StringToArray } from "@ukdanceblue/common";
+import { Image, List, Typography } from "antd";
 import { DateTime, Duration, Interval } from "luxon";
 import { useMemo } from "react";
+import { thumbHashToDataURL } from "thumbhash";
+
+import { useApolloStatusWatcher } from "../../hooks/useApolloStatusWatcher";
+import { GET_EVENT } from "../../queries/eventQueries";
 
 export function EventViewer({ uuid }: { uuid: string }) {
   const { data, loading, error, networkStatus } = useQuery(GET_EVENT, {
@@ -36,7 +37,7 @@ export function EventViewer({ uuid }: { uuid: string }) {
     <div>
       <Typography.Title level={2}>{event?.title}</Typography.Title>
       <Image.PreviewGroup>
-        {event?.images?.map((image) => {
+        {event?.images.map((image) => {
           const thumbHash =
             image.thumbHash &&
             thumbHashToDataURL(base64StringToArray(image.thumbHash));
