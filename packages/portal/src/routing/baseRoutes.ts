@@ -10,7 +10,7 @@ export const homeRoute = new Route({
 });
 
 export const eventsRoute = new Route({
-  path: "/events",
+  path: "events",
   getParentRoute: () => rootRoute,
   component: EventsPage,
 });
