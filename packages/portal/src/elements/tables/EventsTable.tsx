@@ -1,11 +1,13 @@
 import { useQuery } from "@apollo/client";
+import { Link } from "@tanstack/react-router";
+import { SortDirection } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 import { Table } from "antd";
 import { DateTime, Duration, Interval } from "luxon";
 import { useEffect } from "react";
-import { SortDirection } from "@ukdanceblue/common";
-import { useListQuery } from "../../hooks/useListQuery";
+
 import { useApolloStatusWatcher } from "../../hooks/useApolloStatusWatcher";
+import { useListQuery } from "../../hooks/useListQuery";
 
 export const EventsTable = () => {
   const { queryOptions, updatePagination, clearSorting, pushSorting } =
@@ -100,7 +102,7 @@ export const EventsTable = () => {
     fetchMore({
       variables: queryOptions,
     }).catch(console.error);
-  }, [queryOptions]);
+  }, [fetchMore, queryOptions]);
 
   return (
     <>
@@ -207,6 +209,16 @@ export const EventsTable = () => {
             title: "Summary",
             dataIndex: "summary",
             key: "summary",
+          },
+          {
+            title: "Open",
+            dataIndex: "uuid",
+            key: "uuid",
+            render: (uuid: string) => (
+              <Link to="/events/$eventId" params={{ eventId: uuid }}>
+                View
+              </Link>
+            ),
           },
         ]}
       />

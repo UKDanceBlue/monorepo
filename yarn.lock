@@ -6626,7 +6626,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-router@npm:beta":
+"@tanstack/react-router@npm:0.0.1-beta.194, @tanstack/react-router@npm:beta":
   version: 0.0.1-beta.194
   resolution: "@tanstack/react-router@npm:0.0.1-beta.194"
   dependencies:
@@ -6682,6 +6682,20 @@ __metadata:
     react: ">=16"
     react-dom: ">=16"
   checksum: ed3f150bedb80f22065b05897eb5e2313bd735ac48e8cd38c98175eed031508e477591833d8a4aa684dc4972e4c88a2a3cadebceb25292338adafd9adfd71338
+  languageName: node
+  linkType: hard
+
+"@tanstack/router-devtools@npm:beta":
+  version: 0.0.1-beta.194
+  resolution: "@tanstack/router-devtools@npm:0.0.1-beta.194"
+  dependencies:
+    "@babel/runtime": ^7.16.7
+    "@tanstack/react-router": 0.0.1-beta.194
+    date-fns: ^2.29.1
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: ff81e8aa2c3553b098196615330828af7c7d55ffbe71bc6eb59150ce6f9c63904e3dd917d5821c7b3c03f8392e01381d69f17535cc4d28310fca617c2a65d9cd
   languageName: node
   linkType: hard
 
@@ -7914,6 +7928,7 @@ __metadata:
     "@apollo/client": ^3.8.5
     "@tanstack/react-form": ^0.3.6
     "@tanstack/react-router": beta
+    "@tanstack/router-devtools": beta
     "@types/luxon": ^3.3.2
     "@types/react": ^18.2.15
     "@types/react-dom": ^18.2.7
@@ -10555,6 +10570,15 @@ __metadata:
   version: 2.2.2
   resolution: "dataloader@npm:2.2.2"
   checksum: 4dabd247089c29f194e94d5434d504f99156c5c214a03463c20f3f17f40398d7e179edee69a27c16e315519ac8739042a810090087ae26449a0e685156a02c65
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^2.29.1":
+  version: 2.30.0
+  resolution: "date-fns@npm:2.30.0"
+  dependencies:
+    "@babel/runtime": ^7.21.0
+  checksum: f7be01523282e9bb06c0cd2693d34f245247a29098527d4420628966a2d9aad154bd0e90a6b1cf66d37adcb769cd108cf8a7bd49d76db0fb119af5cdd13644f4
   languageName: node
   linkType: hard
 

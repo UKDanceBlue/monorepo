@@ -1,7 +1,12 @@
+import { EventViewer } from "@elements/viewers/EventViewer";
+import { useParams } from "@tanstack/react-router";
+
 export function ViewEventPage() {
+  const { eventId } = useParams({ from: "/events/$eventId" });
+
   return (
     <div>
-      <h2>View Event</h2>
+      <EventViewer uuid={eventId} />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { eventsRoute, homeRoute } from "./baseRoutes";
 import {
   createEventRoute,
   editEventRoute,
+  eventsTableRoute,
   singleEventRoute,
   viewEventRoute,
 } from "./eventRoutes";
@@ -12,6 +13,7 @@ import { rootRoute } from "./rootRoute";
 const routeTree = rootRoute.addChildren([
   homeRoute,
   eventsRoute.addChildren([
+    eventsTableRoute,
     createEventRoute,
     singleEventRoute.addChildren([editEventRoute, viewEventRoute]),
   ]),
@@ -20,6 +22,8 @@ const routeTree = rootRoute.addChildren([
 export const router = new Router({
   routeTree,
 });
+
+console.log(router.flatRoutes);
 
 declare module "@tanstack/react-router" {
   interface Register {

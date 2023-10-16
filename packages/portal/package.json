@@ -13,6 +13,7 @@
     "@apollo/client": "^3.8.5",
     "@tanstack/react-form": "^0.3.6",
     "@tanstack/react-router": "beta",
+    "@tanstack/router-devtools": "beta",
     "@ukdanceblue/common": "workspace:^",
     "@wysimark/react": "^3.0.20",
     "antd": "^5.9.4",
