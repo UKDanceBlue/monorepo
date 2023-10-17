@@ -11,14 +11,14 @@ export const RootPage = () => {
         <Layout.Header>
           <NavigationMenu />
         </Layout.Header>
-        <Layout.Content>
+        <Layout.Content style={{ padding: "0 5vw" }}>
           <Outlet />
         </Layout.Content>
         <Layout.Footer>
           <Typography.Text>Footer</Typography.Text>
         </Layout.Footer>
       </Layout>
-      <TanStackRouterDevtools />
+      <TanStackRouterDevtools position="bottom-right" />
     </>
   );
 };

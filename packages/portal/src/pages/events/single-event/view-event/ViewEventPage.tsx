@@ -1,4 +1,4 @@
-import { EventViewer } from "@elements/viewers/EventViewer";
+import { EventViewer } from "@elements/viewers/event/EventViewer";
 import { useParams } from "@tanstack/react-router";
 
 export function ViewEventPage() {

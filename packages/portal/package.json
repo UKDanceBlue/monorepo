@@ -16,7 +16,7 @@
     "@tanstack/router-devtools": "beta",
     "@ukdanceblue/common": "workspace:^",
     "@wysimark/react": "^3.0.20",
-    "antd": "^5.9.4",
+    "antd": "^5.10.1",
     "luxon": "^3.4.3",
     "normalize.css": "^8.0.1",
     "react": "^18.2.0",
