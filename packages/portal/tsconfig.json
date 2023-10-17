@@ -19,7 +19,9 @@
       "@elements/*": ["elements/*"],
       "@hooks/*": ["hooks/*"],
       "@pages/*": ["pages/*"],
-      "@queries/*": ["queries/*"],
+      "@queries/*": ["graphql/queries/*"],
+      "@mutations/*": ["graphql/mutations/*"],
+      "@fragments/*": ["graphql/fragments/*"],
       "@routing/*": ["routing/*"],
       "@tools/*": ["tools/*"]
     },

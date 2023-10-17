@@ -1,15 +1,14 @@
 import { useQuery } from "@apollo/client";
+import { useApolloStatusWatcher } from "@hooks/useApolloStatusWatcher";
 import { base64StringToArray } from "@ukdanceblue/common";
 import { Descriptions, Empty, Flex, Image, List, Typography } from "antd";
 import DescriptionsItem from "antd/es/descriptions/Item";
+import { GET_EVENT } from "graphql/queries/eventQueries";
 import { DateTime, Duration, Interval } from "luxon";
 import { useMemo } from "react";
 import { thumbHashToDataURL } from "thumbhash";
 
-import { GET_EVENT } from "../../../graphql/queries/eventQueries";
-import { useApolloStatusWatcher } from "../../../hooks/useApolloStatusWatcher";
-
-export function EventViewer({ uuid }: { uuid: string }) {
+export function EventEditor({ uuid }: { uuid: string }) {
   const { data, loading, error, networkStatus } = useQuery(GET_EVENT, {
     variables: { uuid },
   });

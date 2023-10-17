@@ -5,7 +5,8 @@ import {
   EventResource,
   ImageResource,
 } from "@ukdanceblue/common";
-import { DateTime, Duration } from "luxon";
+import type { DateTime } from "luxon";
+import { Duration } from "luxon";
 import {
   Arg,
   Args,
@@ -21,19 +22,19 @@ import {
 } from "type-graphql";
 
 import { EventModel } from "../models/Event.js";
-
 import { ImageModel } from "../models/Image.js";
+
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
   DetailedError,
 } from "./ApiResponse.js";
-import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 import type {
   ResolverInterface,
   ResolverInterfaceWithFilteredList,
 } from "./ResolverInterface.js";
+import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("GetEventByUuidResponse", {
   implements: AbstractGraphQLOkResponse<EventResource>,
@@ -68,19 +69,22 @@ class ListEventsResponse extends AbstractGraphQLPaginatedResponse<EventResource>
 @InputType()
 class CreateEventInput {
   @Field()
-  name!: string;
+  title!: string;
 
   @Field()
-  description!: string;
+  summary!: string;
 
   @Field()
   location!: string;
 
-  @Field(() => DateTimeScalar)
-  start!: DateTime;
+  @Field(() => [DateTimeScalar])
+  occurrences!: DateTime[];
 
   @Field(() => DurationScalar)
   duration!: Duration;
+
+  @Field()
+  description!: string;
 }
 
 @ArgsType()
@@ -145,7 +149,7 @@ export class EventResolver
     @Arg("input") input: CreateEventInput
   ): Promise<CreateEventResponse> {
     const row = await EventModel.create({
-      title: input.name,
+      title: input.title,
       description: input.description,
       location: input.location,
       duration: input.duration,

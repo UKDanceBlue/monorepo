@@ -116,8 +116,9 @@ input CreateEventInput {
   description: String!
   duration: Duration!
   location: String!
-  name: String!
-  start: DateTime!
+  occurrences: [DateTime!]!
+  summary: String!
+  title: String!
 }
 
 type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {

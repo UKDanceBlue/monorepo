@@ -1,13 +1,12 @@
 import { useQuery } from "@apollo/client";
+import { useApolloStatusWatcher } from "@hooks/useApolloStatusWatcher";
+import { useListQuery } from "@hooks/useListQuery";
+import { LIST_EVENTS } from "@queries/eventQueries";
 import { Link } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 import { Table } from "antd";
 import { DateTime, Duration, Interval } from "luxon";
 import { useEffect } from "react";
-
-import { useApolloStatusWatcher } from "../../hooks/useApolloStatusWatcher";
-import { useListQuery } from "../../hooks/useListQuery";
 
 export const EventsTable = () => {
   const { queryOptions, updatePagination, clearSorting, pushSorting } =
@@ -41,56 +40,10 @@ export const EventsTable = () => {
     networkStatus,
     loading,
     fetchMore,
-  } = useQuery(
-    graphql(/* GraphQL */ `
-      query ListEvents(
-        $page: Int
-        $pageSize: Int
-        $sortBy: [String!]
-        $sortDirection: [SortDirection!]
-        $dateFilters: [EventResolverKeyedDateFilterItem!]
-        $isNullFilters: [EventResolverKeyedIsNullFilterItem!]
-        $numericFilters: [EventResolverKeyedNumericFilterItem!]
-        $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]
-        $stringFilters: [EventResolverKeyedStringFilterItem!]
-      ) {
-        events(
-          page: $page
-          pageSize: $pageSize
-          sortBy: $sortBy
-          sortDirection: $sortDirection
-          dateFilters: $dateFilters
-          isNullFilters: $isNullFilters
-          numericFilters: $numericFilters
-          oneOfFilters: $oneOfFilters
-          stringFilters: $stringFilters
-        ) {
-          ok
-          data {
-            uuid
-            title
-            description
-            duration
-            occurrences
-            summary
-            images {
-              url
-              width
-              height
-              uuid
-            }
-          }
-          page
-          pageSize
-          total
-        }
-      }
-    `),
-    {
-      variables: queryOptions,
-      notifyOnNetworkStatusChange: true,
-    }
-  );
+  } = useQuery(LIST_EVENTS, {
+    variables: queryOptions,
+    notifyOnNetworkStatusChange: true,
+  });
 
   useApolloStatusWatcher({
     error,
