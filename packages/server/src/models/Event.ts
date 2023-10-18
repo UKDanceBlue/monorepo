@@ -28,10 +28,8 @@ import { DataTypes } from "@sequelize/core";
 // import type { ImageResource } from "@ukdanceblue/common";
 // import { EventResource } from "@ukdanceblue/common";
 import { EventResource } from "@ukdanceblue/common";
-import type { Duration } from "luxon";
 
 import { sequelizeDb } from "../data-source.js";
-import { DurationDataType } from "../lib/custom-data-types/Duration.js";
 
 import { BaseModel } from "./BaseModel.js";
 import type { EventOccurrenceModel } from "./EventOccurrence.js";
@@ -89,8 +87,6 @@ export class EventModel extends BaseModel<
     EventOccurrenceModel["id"]
   >;
 
-  public declare duration: Duration | null;
-
   public declare images?: NonAttribute<ImageModel[]>;
   public declare createImage: BelongsToManyCreateAssociationMixin<ImageModel>;
   public declare getImages: BelongsToManyGetAssociationsMixin<ImageModel>;
@@ -139,11 +135,16 @@ export class EventModel extends BaseModel<
       occurrences: this.occurrences.map((occurrence) =>
         occurrence.toResource()
       ),
-      duration: this.duration ?? null,
       // images,
       uuid: this.uuid,
-      createdAt: this.createdAt == null ? null : this.createdAt,
-      updatedAt: this.updatedAt == null ? null : this.updatedAt,
+      createdAt:
+        (this as Partial<typeof this>).createdAt == null
+          ? null
+          : this.createdAt,
+      updatedAt:
+        (this as Partial<typeof this>).updatedAt == null
+          ? null
+          : this.updatedAt,
     });
   }
 }
@@ -179,10 +180,6 @@ EventModel.init(
     },
     location: {
       type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    duration: {
-      type: DurationDataType,
       allowNull: true,
     },
   },

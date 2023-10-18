@@ -1,8 +1,8 @@
+import { URLResolver } from "graphql-scalars";
 import { DateTime } from "luxon";
 import { Field, ID, ObjectType } from "type-graphql";
 
 import { DateTimeScalar } from "../custom-scalars/DateTimeScalar.js";
-import { UrlScalar } from "../custom-scalars/UrlScalar.js";
 
 import { Resource } from "./Resource.js";
 
@@ -14,7 +14,7 @@ export class LoginFlowSessionResource extends Resource {
   codeVerifier!: string;
   @Field(() => DateTimeScalar)
   creationDate!: DateTime;
-  @Field(() => UrlScalar, { nullable: true })
+  @Field(() => URLResolver, { nullable: true })
   redirectToAfterLogin!: URL | null;
 
   public getUniqueId(): string {

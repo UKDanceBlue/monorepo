@@ -7,7 +7,7 @@ import type {
   NonAttribute,
 } from "@sequelize/core";
 import { DataTypes } from "@sequelize/core";
-import { DateTime } from "luxon";
+import { DateTime, Interval } from "luxon";
 
 import { sequelizeDb } from "../data-source.js";
 
@@ -25,7 +25,9 @@ export class EventOccurrenceModel extends BaseModel<
   declare readonly updatedAt: CreationOptional<Date>;
   declare readonly deletedAt: CreationOptional<Date | null>;
 
+  public declare fullDay: boolean;
   public declare date: Date;
+  public declare endDate: Date;
 
   public declare eventId: number;
 
@@ -33,13 +35,19 @@ export class EventOccurrenceModel extends BaseModel<
   public declare getEvent: BelongsToGetAssociationMixin<EventModel>;
   public declare createEvent: BelongsToCreateAssociationMixin<EventModel>;
 
-  public toResource(): DateTime {
-    if (!this.date) {
+  public toResource(): Interval {
+    if (
+      !(this as Partial<typeof this>).date ||
+      !(this as Partial<typeof this>).endDate
+    ) {
       throw new Error(
         "EventOccurrenceIntermediate was not properly initialized"
       );
     }
-    return DateTime.fromJSDate(this.date);
+    return Interval.fromDateTimes(
+      DateTime.fromJSDate(this.date),
+      DateTime.fromJSDate(this.endDate)
+    );
   }
 }
 
@@ -60,7 +68,15 @@ EventOccurrenceModel.init(
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
     deletedAt: DataTypes.DATE,
+    fullDay: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+    },
     date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    endDate: {
       type: DataTypes.DATE,
       allowNull: false,
     },

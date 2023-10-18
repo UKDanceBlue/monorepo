@@ -1,7 +1,7 @@
-import type { DateTime, Duration } from "luxon";
+import type { Duration, Interval } from "luxon";
 import { Field, ID, ObjectType } from "type-graphql";
 
-import { DateTimeScalar } from "../custom-scalars/DateTimeScalar.js";
+import { DateRangeScalar } from "../custom-scalars/DateRangeScalar.js";
 import { DurationScalar } from "../custom-scalars/DurationScalar.js";
 
 import { Resource } from "./Resource.js";
@@ -10,8 +10,8 @@ import { Resource } from "./Resource.js";
 export class EventResource extends Resource {
   @Field(() => ID)
   uuid!: string;
-  @Field(() => [DateTimeScalar])
-  occurrences!: DateTime[];
+  @Field(() => [DateRangeScalar])
+  occurrences!: Interval[];
   @Field(() => DurationScalar, { nullable: true })
   duration!: Duration | null;
   @Field(() => String)

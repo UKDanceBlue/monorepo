@@ -1,6 +1,5 @@
+import { URLResolver } from "graphql-scalars";
 import { Field, ID, Int, ObjectType } from "type-graphql";
-
-import { UrlScalar } from "../custom-scalars/UrlScalar.js";
 
 import { Resource } from "./Resource.js";
 
@@ -9,7 +8,7 @@ export class ImageResource extends Resource {
   @Field(() => ID)
   uuid!: string;
 
-  @Field(() => UrlScalar, { nullable: true })
+  @Field(() => URLResolver, { nullable: true })
   url!: URL | null;
 
   @Field(() => String, { nullable: true })
