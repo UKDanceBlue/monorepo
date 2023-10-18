@@ -7,6 +7,7 @@ import type {
   PaginatedApiResponse,
 } from "@ukdanceblue/common";
 import { ClientAction, ErrorCode } from "@ukdanceblue/common";
+import { NonNegativeIntMock, NonNegativeIntResolver } from "graphql-scalars";
 import type { ClassType } from "type-graphql";
 import { Field, InterfaceType, registerEnumType } from "type-graphql";
 
@@ -130,13 +131,19 @@ export abstract class AbstractGraphQLCreatedResponse<T>
 export abstract class AbstractGraphQLPaginatedResponse<
   T,
 > extends AbstractGraphQLArrayOkResponse<T> {
-  @Field(() => Number, { description: "The total number of items" })
+  @Field(() => NonNegativeIntResolver, {
+    description: "The total number of items",
+  })
   total!: number;
 
-  @Field(() => Number, { description: "The number of items per page" })
+  @Field(() => NonNegativeIntMock, {
+    description: "The number of items per page",
+  })
   pageSize!: number;
 
-  @Field(() => Number, { description: "The current page number (1-indexed)" })
+  @Field(() => NonNegativeIntMock, {
+    description: "The current page number (1-indexed)",
+  })
   page!: number;
 
   static newOk(): never {

@@ -1,6 +1,6 @@
 import {
   ErrorCode,
-  EventOccurrence,
+  EventOccurrenceResource,
   EventResource,
   ImageResource,
 } from "@ukdanceblue/common";
@@ -64,7 +64,7 @@ class ListEventsResponse extends AbstractGraphQLPaginatedResponse<EventResource>
 }
 
 @InputType()
-class CreateEventInput {
+class CreateEventInput implements Partial<EventResource> {
   @Field()
   title!: string;
 
@@ -74,8 +74,8 @@ class CreateEventInput {
   @Field()
   location!: string;
 
-  @Field(() => [EventOccurrence])
-  occurrences!: EventOccurrence[];
+  @Field(() => [EventOccurrenceResource])
+  occurrences!: EventOccurrenceResource[];
 
   @Field()
   description!: string;

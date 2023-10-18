@@ -25,8 +25,6 @@ import type {
   NonAttribute,
 } from "@sequelize/core";
 import { DataTypes } from "@sequelize/core";
-// import type { ImageResource } from "@ukdanceblue/common";
-// import { EventResource } from "@ukdanceblue/common";
 import { EventResource } from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";

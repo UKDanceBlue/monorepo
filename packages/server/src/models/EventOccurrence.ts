@@ -7,6 +7,7 @@ import type {
   NonAttribute,
 } from "@sequelize/core";
 import { DataTypes } from "@sequelize/core";
+import { EventOccurrenceResource, LuxonError } from "@ukdanceblue/common";
 import { DateTime, Interval } from "luxon";
 
 import { sequelizeDb } from "../data-source.js";
@@ -35,19 +36,39 @@ export class EventOccurrenceModel extends BaseModel<
   public declare getEvent: BelongsToGetAssociationMixin<EventModel>;
   public declare createEvent: BelongsToCreateAssociationMixin<EventModel>;
 
-  public toResource(): Interval {
+  public toResource(): EventOccurrenceResource {
     if (
       !(this as Partial<typeof this>).date ||
       !(this as Partial<typeof this>).endDate
     ) {
-      throw new Error(
-        "EventOccurrenceIntermediate was not properly initialized"
+      throw new Error("EventOccurrence was not properly initialized");
+    }
+
+    const startDateTime = DateTime.fromJSDate(this.date);
+    if (startDateTime.invalidReason) {
+      throw new TypeError(`EventOccurrence.date is invalid`, {
+        cause: new LuxonError(startDateTime),
+      });
+    }
+    const endDateTime = DateTime.fromJSDate(this.endDate);
+    if (endDateTime.invalidReason) {
+      throw new TypeError(`EventOccurrence.endDate is invalid`, {
+        cause: new LuxonError(endDateTime),
+      });
+    }
+    const occurrence = Interval.fromDateTimes(startDateTime, endDateTime);
+    if (occurrence.invalidReason) {
+      throw new TypeError(
+        `EventOccurrence.date and EventOccurrence.endDate do not form a valid interval`,
+        { cause: new LuxonError(occurrence) }
       );
     }
-    return Interval.fromDateTimes(
-      DateTime.fromJSDate(this.date),
-      DateTime.fromJSDate(this.endDate)
-    );
+
+    return EventOccurrenceResource.init({
+      uuid: this.uuid,
+      occurrence,
+      fullDay: this.fullDay,
+    });
   }
 }
 
