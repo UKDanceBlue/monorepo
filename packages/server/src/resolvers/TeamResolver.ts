@@ -2,11 +2,12 @@ import {
   DbRole,
   ErrorCode,
   MembershipResource,
-  OptionalToNullable,
   TeamLegacyStatus,
   TeamResource,
-  TeamType,
+  TeamType} from "@ukdanceblue/common";
+import type {
   type MarathonYearString,
+  OptionalToNullable,
 } from "@ukdanceblue/common";
 import {
   Arg,
@@ -23,20 +24,20 @@ import {
   Root,
 } from "type-graphql";
 
+import { MembershipModel } from "../models/Membership.js";
 import { TeamModel } from "../models/Team.js";
 
-import { MembershipModel } from "../models/Membership.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
   DetailedError,
 } from "./ApiResponse.js";
-import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 import type {
   ResolverInterface,
   ResolverInterfaceWithFilteredList,
 } from "./ResolverInterface.js";
+import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("GetTeamByUuidResponse", {
   implements: AbstractGraphQLOkResponse<TeamResource>,

@@ -94,7 +94,7 @@ export function extractServerError(error: ApolloError): ExtendedApiError[] {
         typeof error.networkError.result === "object" &&
         "errors" in error.networkError.result
       ) {
-        const maybeAnApiError = error.networkError.result?.errors?.[0];
+        const maybeAnApiError = error.networkError.result.errors?.[0];
         if (maybeAnApiError?.message) {
           apiError.message = maybeAnApiError.message;
         }

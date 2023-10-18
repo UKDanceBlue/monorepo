@@ -47,8 +47,14 @@ export class ImageModel extends BaseModel<
       alt: this.alt ?? null,
       width: this.width,
       height: this.height,
-      createdAt: this.createdAt == null ? null : this.createdAt,
-      updatedAt: this.updatedAt == null ? null : this.updatedAt,
+      createdAt:
+        (this as Partial<typeof this>).createdAt == null
+          ? null
+          : this.createdAt,
+      updatedAt:
+        (this as Partial<typeof this>).updatedAt == null
+          ? null
+          : this.updatedAt,
     });
   }
 }

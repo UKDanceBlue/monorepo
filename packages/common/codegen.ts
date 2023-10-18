@@ -1,4 +1,4 @@
-import { CodegenConfig } from "@graphql-codegen/cli";
+import type { CodegenConfig } from "@graphql-codegen/cli";
 
 // import { dirname, join, normalize } from "path";
 // import { fileURLToPath } from "url";
@@ -42,7 +42,7 @@ const codegenConfig: CodegenConfig = {
   schema: "../server/schema.graphql",
   hooks: {
     onError: (e) => {
-      console.error("Error generating GraphQL client: ", e);
+      console.error("Error generating GraphQL client:", e);
     },
   },
   emitLegacyCommonJSImports: false,

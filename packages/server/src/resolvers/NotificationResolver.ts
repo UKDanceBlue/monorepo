@@ -1,7 +1,8 @@
+import type {
+  OptionalToNullable} from "@ukdanceblue/common";
 import {
   ErrorCode,
-  NotificationResource,
-  OptionalToNullable,
+  NotificationResource
 } from "@ukdanceblue/common";
 import {
   Arg,
@@ -24,11 +25,11 @@ import {
   AbstractGraphQLPaginatedResponse,
   DetailedError,
 } from "./ApiResponse.js";
-import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 import type {
   ResolverInterface,
   ResolverInterfaceWithFilteredList,
 } from "./ResolverInterface.js";
+import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("GetNotificationByUuidResponse", {
   implements: AbstractGraphQLOkResponse<NotificationResource>,

@@ -6,6 +6,7 @@ import type {
 } from "@ukdanceblue/common";
 import { SortDirection } from "@ukdanceblue/common";
 import { ArgsType, Field, Int } from "type-graphql";
+
 import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./common.js";
 
 @ArgsType()

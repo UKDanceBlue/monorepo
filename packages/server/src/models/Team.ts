@@ -15,9 +15,9 @@ import type {
   NonAttribute,
 } from "@sequelize/core";
 import { DataTypes } from "@sequelize/core";
+import type { MarathonYearString } from "@ukdanceblue/common";
 import {
   DbRole,
-  MarathonYearString,
   TeamLegacyStatus,
   TeamResource,
   TeamType,
@@ -123,8 +123,14 @@ export class TeamModel extends BaseModel<
       legacyStatus: this.legacyStatus,
       marathonYear: this.marathonYear,
       persistentIdentifier: this.persistentIdentifier,
-      createdAt: this.createdAt == null ? null : this.createdAt,
-      updatedAt: this.updatedAt == null ? null : this.updatedAt,
+      createdAt:
+        (this as Partial<typeof this>).createdAt == null
+          ? null
+          : this.createdAt,
+      updatedAt:
+        (this as Partial<typeof this>).updatedAt == null
+          ? null
+          : this.updatedAt,
     });
   }
 }

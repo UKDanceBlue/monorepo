@@ -15,9 +15,9 @@ import {
   Root,
 } from "type-graphql";
 
+import { MembershipModel } from "../models/Membership.js";
 import { PersonModel } from "../models/Person.js";
 
-import { MembershipModel } from "../models/Membership.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,

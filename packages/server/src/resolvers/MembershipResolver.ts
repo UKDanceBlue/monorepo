@@ -8,8 +8,8 @@ import { FieldResolver, Resolver, Root } from "type-graphql";
 
 import { MembershipModel } from "../models/Membership.js";
 import { PersonModel } from "../models/Person.js";
-
 import { TeamModel } from "../models/Team.js";
+
 import { DetailedError } from "./ApiResponse.js";
 
 @Resolver(() => MembershipResource)

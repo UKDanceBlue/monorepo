@@ -1,14 +1,14 @@
 import type {
   BooleanFilterItemInterface,
+  Comparator,
   DateFilterItemInterface,
   FilterItem as FilterItemInterface,
   IsNullFilterItemInterface,
   NumericFilterItemInterface,
   OneOfFilterItemInterface,
-  StringFilterItemInterface,
-} from "@ukdanceblue/common";
+
+  StringFilterItemInterface} from "@ukdanceblue/common";
 import {
-  Comparator,
   DateTimeScalar,
   IsComparator,
   NumericComparator,

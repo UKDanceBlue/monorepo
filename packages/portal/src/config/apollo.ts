@@ -1,5 +1,5 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
-import {
+import type {
   TypePolicy,
   // FieldFunctionOptions,
 } from "@apollo/client/cache/inmemory/policies";
@@ -34,5 +34,5 @@ const cache = new InMemoryCache({
 
 export const apolloClient = new ApolloClient({
   uri: API_URL,
-  cache: cache,
+  cache,
 });

@@ -277,7 +277,7 @@ export async function loadEvents(
   for await (const doc of snapshot.docs) {
     let firestoreEvent: FirestoreEvent;
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+       
       firestoreEvent = FirestoreEvent.fromSnapshot(doc);
     } catch (error) {
       console.error(error);

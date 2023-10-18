@@ -91,17 +91,17 @@ export class PersonModel extends BaseModel<
   >;
 
   get role(): NonAttribute<RoleResource> {
-    if (this.dbRole === undefined) {
+    if ((this as Partial<typeof this>).dbRole === undefined) {
       throw new Error("PersonIntermediate was not initialized with DB role");
     }
 
     const roleInit: Partial<RoleResource> = {
       dbRole: this.dbRole,
     };
-    if (this.committeeRole !== undefined) {
+    if ((this as Partial<typeof this>).committeeRole !== undefined) {
       roleInit.committeeRole = this.committeeRole;
     }
-    if (this.committeeName !== undefined) {
+    if ((this as Partial<typeof this>).committeeName !== undefined) {
       roleInit.committeeIdentifier = this.committeeName;
     }
     return RoleResource.init(roleInit);
@@ -119,8 +119,14 @@ export class PersonModel extends BaseModel<
       email: this.email,
       linkblue: this.linkblue ?? null,
       role: this.role,
-      createdAt: this.createdAt == null ? null : this.createdAt,
-      updatedAt: this.updatedAt == null ? null : this.updatedAt,
+      createdAt:
+        (this as Partial<typeof this>).createdAt == null
+          ? null
+          : this.createdAt,
+      updatedAt:
+        (this as Partial<typeof this>).updatedAt == null
+          ? null
+          : this.updatedAt,
     });
   }
 

@@ -36,7 +36,10 @@ export class LoginFlowSessionModel extends BaseModel<
         ? new URL(this.redirectToAfterLogin)
         : null,
       createdAt: this.createdAt,
-      updatedAt: this.updatedAt == null ? null : this.updatedAt,
+      updatedAt:
+        (this as Partial<typeof this>).updatedAt == null
+          ? null
+          : this.updatedAt,
     });
   }
 }

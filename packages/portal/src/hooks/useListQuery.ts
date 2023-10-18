@@ -1,13 +1,4 @@
-import {
-  useState,
-  useCallback,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useMemo,
-} from "react";
-
-import {
+import type {
   DateFilterItemInterface,
   IsNullFilterItemInterface,
   NumericFilterItemInterface,
@@ -17,6 +8,15 @@ import {
   SortingOptions,
   StringFilterItemInterface,
 } from "@ukdanceblue/common";
+import type {
+  Dispatch,
+  SetStateAction} from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 type FilterObject<
   DateFields extends string,

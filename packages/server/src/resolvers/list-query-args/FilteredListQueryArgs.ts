@@ -4,15 +4,18 @@ import type {
   ModelStatic,
   WhereAttributeHash,
 } from "@sequelize/core";
-import { DateTimeScalar, VoidScalar } from "@ukdanceblue/common";
+import type { DateTimeScalar} from "@ukdanceblue/common";
+import { VoidScalar } from "@ukdanceblue/common";
 import { ArgsType, Field, InputType } from "type-graphql";
-import {
+
+import type {
   AbstractBooleanFilterItem,
   AbstractDateFilterItem,
   AbstractIsNullFilterItem,
   AbstractNumericFilterItem,
   AbstractOneOfFilterItem,
-  AbstractStringFilterItem,
+  AbstractStringFilterItem} from "./FilterItem.js";
+import {
   BooleanFilterItem,
   DateFilterItem,
   IsNullFilterItem,
@@ -173,7 +176,7 @@ export function FilteredListQueryArgs<
 
       const options: FindAndCountOptions<Record<AllKeys, never>> = {
         ...super.toSequelizeFindOptions(sortByMap),
-        col: `${modelStatic?.name}.id`,
+        col: `${modelStatic.name}.id`,
         distinct: true,
       };
 

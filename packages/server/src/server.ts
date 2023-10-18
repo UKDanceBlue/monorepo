@@ -55,7 +55,7 @@ export function createServer() {
   const server = new ApolloServer({
     schema: graphqlSchema,
     plugins: [
-      ApolloServerPluginDrainHttpServer({ httpServer }) /*, BASIC_LOGGING*/,
+      ApolloServerPluginDrainHttpServer({ httpServer }) /* , BASIC_LOGGING*/,
     ],
     logger: {
       debug: logDebug,

@@ -1,8 +1,8 @@
 import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
 
 import { DbRole } from "../../../index.js";
+import { MarathonYearString } from "../../SimpleTypes.js";
 
-import type { MarathonYearString } from "../../SimpleTypes.js";
 import { Resource } from "./Resource.js";
 
 export const TeamType = {

@@ -49,8 +49,14 @@ export class DeviceModel extends BaseModel<
       // lastUser: this.lastUser?.toResource() ?? null,
       lastLogin:
         this.lastLogin == null ? null : DateTime.fromJSDate(this.lastLogin),
-      createdAt: this.createdAt == null ? null : this.createdAt,
-      updatedAt: this.updatedAt == null ? null : this.updatedAt,
+      createdAt:
+        (this as Partial<typeof this>).createdAt == null
+          ? null
+          : this.createdAt,
+      updatedAt:
+        (this as Partial<typeof this>).updatedAt == null
+          ? null
+          : this.updatedAt,
     });
   }
 }

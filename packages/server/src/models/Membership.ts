@@ -8,10 +8,10 @@ import type {
   NonAttribute,
 } from "@sequelize/core";
 import { DataTypes } from "@sequelize/core";
+import { MembershipResource } from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
 
-import { MembershipResource } from "@ukdanceblue/common";
 import { BaseModel } from "./BaseModel.js";
 import type { PersonModel } from "./Person.js";
 import type { TeamModel } from "./Team.js";

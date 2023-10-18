@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import type { CreationAttributes } from "@sequelize/core";
-
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
+
 import { TeamModel } from "../models/Team.js";
 
 const greekLetters = [
@@ -31,11 +31,7 @@ export default async function () {
   for (let i = 0; i < 12; i++) {
     const isGreek = Math.random() > 0.4;
     let name;
-    if (isGreek) {
-      name = faker.helpers.arrayElements(greekLetters, 3).join(" ");
-    } else {
-      name = faker.company.name();
-    }
+    name = isGreek ? faker.helpers.arrayElements(greekLetters, 3).join(" ") : faker.company.name();
     teamData.push({
       name,
       marathonYear: "DB24",

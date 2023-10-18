@@ -1,7 +1,7 @@
-import type { CreationAttributes } from "@sequelize/core";
-
 import { faker } from "@faker-js/faker";
+import type { CreationAttributes } from "@sequelize/core";
 import { CommitteeRole, DbRole, TeamType } from "@ukdanceblue/common";
+
 import {
   MembershipModel,
   MembershipPositionType,
@@ -62,8 +62,8 @@ export default async function () {
     const members = membershipMap.get(team)!;
     for (const [person, isCaptain] of members) {
       membershipData.push({
-        personId: person.id!,
-        teamId: team.id!,
+        personId: person.id,
+        teamId: team.id,
         position: isCaptain
           ? MembershipPositionType.Captain
           : MembershipPositionType.Member,
