@@ -19,8 +19,17 @@ export default async function () {
   for (let i = 0; i < 25; i++) {
     eventOccurrences[i] = [];
     for (let j = 0; j < faker.datatype.number({ min: 1, max: 3 }); j++) {
+      const fullDay = faker.datatype.boolean();
+      const date = DateTime.fromJSDate(faker.date.soon(1)).toJSDate();
+      const endDate = faker.date.between(date, faker.date.soon(1, date));
+      if (fullDay) {
+        date.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+      }
       eventOccurrences[i]!.push({
-        date: DateTime.fromJSDate(faker.date.soon(1)).toJSDate(),
+        date,
+        endDate,
+        fullDay,
         eventId: undefined as unknown as number,
       });
     }
@@ -34,7 +43,6 @@ export default async function () {
       title: `${capitalize(
         faker.word.verb()
       )} ${aOrAn} ${adjective} ${capitalize(faker.word.noun())}`,
-      duration: DateTime.fromJSDate(faker.date.soon(1)).diffNow(),
       description: faker.lorem.paragraph(),
       summary: faker.lorem.sentence(),
       location: faker.address.streetAddress(),

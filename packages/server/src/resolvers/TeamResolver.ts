@@ -1,14 +1,5 @@
-import {
-  DbRole,
-  ErrorCode,
-  MembershipResource,
-  TeamLegacyStatus,
-  TeamResource,
-  TeamType} from "@ukdanceblue/common";
-import type {
-  type MarathonYearString,
-  OptionalToNullable,
-} from "@ukdanceblue/common";
+import type { OptionalToNullable } from "@ukdanceblue/common";
+import * as common from "@ukdanceblue/common";
 import {
   Arg,
   Args,
@@ -40,25 +31,25 @@ import type {
 import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("GetTeamByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<TeamResource>,
+  implements: AbstractGraphQLOkResponse<common.TeamResource>,
 })
-class GetTeamByUuidResponse extends AbstractGraphQLOkResponse<TeamResource> {
-  @Field(() => TeamResource)
-  data!: TeamResource;
+class GetTeamByUuidResponse extends AbstractGraphQLOkResponse<common.TeamResource> {
+  @Field(() => common.TeamResource)
+  data!: common.TeamResource;
 }
 @ObjectType("ListTeamsResponse", {
-  implements: AbstractGraphQLPaginatedResponse<TeamResource>,
+  implements: AbstractGraphQLPaginatedResponse<common.TeamResource>,
 })
-class ListTeamsResponse extends AbstractGraphQLPaginatedResponse<TeamResource> {
-  @Field(() => [TeamResource])
-  data!: TeamResource[];
+class ListTeamsResponse extends AbstractGraphQLPaginatedResponse<common.TeamResource> {
+  @Field(() => [common.TeamResource])
+  data!: common.TeamResource[];
 }
 @ObjectType("CreateTeamResponse", {
-  implements: AbstractGraphQLCreatedResponse<TeamResource>,
+  implements: AbstractGraphQLCreatedResponse<common.TeamResource>,
 })
-class CreateTeamResponse extends AbstractGraphQLCreatedResponse<TeamResource> {
-  @Field(() => TeamResource)
-  data!: TeamResource;
+class CreateTeamResponse extends AbstractGraphQLCreatedResponse<common.TeamResource> {
+  @Field(() => common.TeamResource)
+  data!: common.TeamResource;
 }
 @ObjectType("DeleteTeamResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
@@ -69,24 +60,26 @@ class DeleteTeamResponse extends AbstractGraphQLOkResponse<boolean> {
 }
 
 @InputType()
-class CreateTeamInput implements OptionalToNullable<Partial<TeamResource>> {
+class CreateTeamInput
+  implements OptionalToNullable<Partial<common.TeamResource>>
+{
   @Field(() => ID)
   uuid!: string;
 
   @Field(() => String)
   name!: string;
 
-  @Field(() => TeamType)
-  type!: TeamType;
+  @Field(() => common.TeamType)
+  type!: common.TeamType;
 
-  @Field(() => TeamLegacyStatus)
-  legacyStatus!: TeamLegacyStatus;
-
-  @Field(() => String)
-  marathonYear!: MarathonYearString;
+  @Field(() => common.TeamLegacyStatus)
+  legacyStatus!: common.TeamLegacyStatus;
 
   @Field(() => String)
-  visibility!: DbRole;
+  marathonYear!: common.MarathonYearString;
+
+  @Field(() => String)
+  visibility!: common.DbRole;
 
   @Field(() => String)
   persistentIdentifier!: string;
@@ -97,31 +90,31 @@ class ListTeamsArgs extends FilteredListQueryArgs("TeamResolver", {
   all: ["uuid", "name", "type", "legacyStatus", "visibility", "marathonYear"],
   string: ["name"],
 }) {
-  @Field(() => TeamType, { nullable: true })
-  type!: TeamType | null;
+  @Field(() => common.TeamType, { nullable: true })
+  type!: common.TeamType | null;
 
-  @Field(() => TeamLegacyStatus, { nullable: true })
-  legacyStatus!: TeamLegacyStatus | null;
+  @Field(() => common.TeamLegacyStatus, { nullable: true })
+  legacyStatus!: common.TeamLegacyStatus | null;
 
-  @Field(() => DbRole, { nullable: true })
-  visibility!: DbRole | null;
+  @Field(() => common.DbRole, { nullable: true })
+  visibility!: common.DbRole | null;
 
   @Field(() => String, { nullable: true })
-  marathonYear!: MarathonYearString | null;
+  marathonYear!: common.MarathonYearString | null;
 }
 
-@Resolver(() => TeamResource)
+@Resolver(() => common.TeamResource)
 export class TeamResolver
   implements
-    ResolverInterface<TeamResource>,
-    ResolverInterfaceWithFilteredList<TeamResource, ListTeamsArgs>
+    ResolverInterface<common.TeamResource>,
+    ResolverInterfaceWithFilteredList<common.TeamResource, ListTeamsArgs>
 {
   @Query(() => GetTeamByUuidResponse, { name: "team" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetTeamByUuidResponse> {
     const row = await TeamModel.findOne({ where: { uuid } });
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+      throw new DetailedError(common.ErrorCode.NotFound, "Team not found");
     }
 
     return GetTeamByUuidResponse.newOk(row.toResource());
@@ -173,7 +166,7 @@ export class TeamResolver
       name: input.name,
       type: input.type,
       legacyStatus: input.legacyStatus,
-      visibility: input.visibility ?? undefined,
+      visibility: input.visibility,
       marathonYear: input.marathonYear,
       persistentIdentifier: input.persistentIdentifier,
     });
@@ -189,7 +182,7 @@ export class TeamResolver
     });
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+      throw new DetailedError(common.ErrorCode.NotFound, "Team not found");
     }
 
     await row.destroy();
@@ -197,8 +190,10 @@ export class TeamResolver
     return DeleteTeamResponse.newOk(true);
   }
 
-  @FieldResolver(() => [MembershipResource])
-  async members(@Root() team: TeamResource): Promise<MembershipResource[]> {
+  @FieldResolver(() => [common.MembershipResource])
+  async members(
+    @Root() team: common.TeamResource
+  ): Promise<common.MembershipResource[]> {
     const model = await TeamModel.findByUuid(team.uuid, {
       attributes: ["id", "uuid"],
       include: [MembershipModel.withScope("withTeam")],
@@ -212,8 +207,10 @@ export class TeamResolver
     return model.memberships.map((row) => row.toResource());
   }
 
-  @FieldResolver(() => [MembershipResource])
-  async captains(@Root() team: TeamResource): Promise<MembershipResource[]> {
+  @FieldResolver(() => [common.MembershipResource])
+  async captains(
+    @Root() team: common.TeamResource
+  ): Promise<common.MembershipResource[]> {
     const model = await TeamModel.findByUuid(team.uuid, {
       attributes: ["id", "uuid"],
       include: [MembershipModel.withScope("withTeam").withScope("captains")],

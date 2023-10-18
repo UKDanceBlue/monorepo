@@ -1,6 +1,6 @@
 export { ConfigurationResource } from "./Configuration.js";
 export { DeviceResource } from "./Device.js";
-export { EventResource } from "./Event.js";
+export { EventOccurrence, EventResource } from "./Event.js";
 export { ImageResource } from "./Image.js";
 export { LoginFlowSessionResource } from "./LoginFlowSession.js";
 export { MembershipResource } from "./Membership.js";

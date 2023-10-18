@@ -30,8 +30,9 @@ export default async function () {
   const teamData: CreationAttributes<TeamModel>[] = [];
   for (let i = 0; i < 12; i++) {
     const isGreek = Math.random() > 0.4;
-    let name;
-    name = isGreek ? faker.helpers.arrayElements(greekLetters, 3).join(" ") : faker.company.name();
+    const name = isGreek
+      ? faker.helpers.arrayElements(greekLetters, 3).join(" ")
+      : faker.company.name();
     teamData.push({
       name,
       marathonYear: "DB24",

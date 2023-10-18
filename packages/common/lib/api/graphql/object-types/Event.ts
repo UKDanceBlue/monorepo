@@ -1,4 +1,5 @@
-import type { Duration, Interval } from "luxon";
+import type { Duration } from "luxon";
+import { Interval } from "luxon";
 import { Field, ID, ObjectType } from "type-graphql";
 
 import { DateRangeScalar } from "../custom-scalars/DateRangeScalar.js";
@@ -29,5 +30,23 @@ export class EventResource extends Resource {
 
   public static init(init: Partial<EventResource>) {
     return EventResource.doInit(init);
+  }
+}
+
+@ObjectType()
+export class EventOccurrence extends Resource {
+  @Field(() => ID)
+  uuid!: string;
+  @Field(() => DateRangeScalar)
+  occurrence!: Interval;
+  @Field(() => Boolean)
+  fullDay!: boolean;
+
+  public getUniqueId(): string {
+    return this.uuid;
+  }
+
+  public static init(init: Partial<EventOccurrence>) {
+    return EventOccurrence.doInit(init);
   }
 }

@@ -4,8 +4,8 @@ import type {
   ModelStatic,
   WhereAttributeHash,
 } from "@sequelize/core";
-import type { DateTimeScalar} from "@ukdanceblue/common";
-import { VoidScalar } from "@ukdanceblue/common";
+import type { DateTimeScalar } from "@ukdanceblue/common";
+import { VoidResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType } from "type-graphql";
 
 import type {
@@ -14,7 +14,8 @@ import type {
   AbstractIsNullFilterItem,
   AbstractNumericFilterItem,
   AbstractOneOfFilterItem,
-  AbstractStringFilterItem} from "./FilterItem.js";
+  AbstractStringFilterItem,
+} from "./FilterItem.js";
 import {
   BooleanFilterItem,
   DateFilterItem,
@@ -112,7 +113,7 @@ export function FilteredListQueryArgs<
   > {
     @Field(
       () =>
-        stringFilterKeys.length > 0 ? [KeyedStringFilterItem] : VoidScalar,
+        stringFilterKeys.length > 0 ? [KeyedStringFilterItem] : VoidResolver,
       {
         nullable: true,
         description: "The string filters to apply to the query",
@@ -122,7 +123,7 @@ export function FilteredListQueryArgs<
 
     @Field(
       () =>
-        numericFilterKeys.length > 0 ? [KeyedNumericFilterItem] : VoidScalar,
+        numericFilterKeys.length > 0 ? [KeyedNumericFilterItem] : VoidResolver,
       {
         nullable: true,
         description: "The numeric filters to apply to the query",
@@ -131,7 +132,7 @@ export function FilteredListQueryArgs<
     numericFilters!: KeyedNumericFilterItem[] | null;
 
     @Field(
-      () => (dateFilterKeys.length > 0 ? [KeyedDateFilterItem] : VoidScalar),
+      () => (dateFilterKeys.length > 0 ? [KeyedDateFilterItem] : VoidResolver),
       {
         nullable: true,
         description: "The date filters to apply to the query",
@@ -141,7 +142,7 @@ export function FilteredListQueryArgs<
 
     @Field(
       () =>
-        booleanFilterKeys.length > 0 ? [KeyedBooleanFilterItem] : VoidScalar,
+        booleanFilterKeys.length > 0 ? [KeyedBooleanFilterItem] : VoidResolver,
       {
         nullable: true,
         description: "The boolean filters to apply to the query",
@@ -149,14 +150,18 @@ export function FilteredListQueryArgs<
     )
     booleanFilters!: KeyedBooleanFilterItem[] | null;
 
-    @Field(() => (allKeys.length > 0 ? [KeyedIsNullFilterItem] : VoidScalar), {
-      nullable: true,
-      description: "The is-null filters to apply to the query",
-    })
+    @Field(
+      () => (allKeys.length > 0 ? [KeyedIsNullFilterItem] : VoidResolver),
+      {
+        nullable: true,
+        description: "The is-null filters to apply to the query",
+      }
+    )
     isNullFilters!: KeyedIsNullFilterItem[] | null;
 
     @Field(
-      () => (stringFilterKeys.length > 0 ? [KeyedOneOfFilterItem] : VoidScalar),
+      () =>
+        stringFilterKeys.length > 0 ? [KeyedOneOfFilterItem] : VoidResolver,
       {
         nullable: true,
         description: "The one-of filters to apply to the query",

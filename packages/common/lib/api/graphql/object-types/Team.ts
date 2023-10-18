@@ -1,7 +1,7 @@
 import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
 
 import { DbRole } from "../../../index.js";
-import { MarathonYearString } from "../../SimpleTypes.js";
+import * as SimpleTypes from "../../SimpleTypes.js";
 
 import { Resource } from "./Resource.js";
 
@@ -44,7 +44,7 @@ export class TeamResource extends Resource {
   @Field(() => DbRole)
   visibility!: DbRole;
   @Field(() => String)
-  marathonYear!: MarathonYearString;
+  marathonYear!: SimpleTypes.MarathonYearString;
 
   @Field(() => String, { nullable: true })
   persistentIdentifier!: string | null; // TODO: Secure this field, committee only

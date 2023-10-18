@@ -1,12 +1,9 @@
 import {
-  DateTimeScalar,
-  DurationScalar,
   ErrorCode,
+  EventOccurrence,
   EventResource,
   ImageResource,
 } from "@ukdanceblue/common";
-import type { DateTime } from "luxon";
-import { Duration } from "luxon";
 import {
   Arg,
   Args,
@@ -77,11 +74,8 @@ class CreateEventInput {
   @Field()
   location!: string;
 
-  @Field(() => [DateTimeScalar])
-  occurrences!: DateTime[];
-
-  @Field(() => DurationScalar)
-  duration!: Duration;
+  @Field(() => [EventOccurrence])
+  occurrences!: EventOccurrence[];
 
   @Field()
   description!: string;
@@ -152,7 +146,6 @@ export class EventResolver
       title: input.title,
       description: input.description,
       location: input.location,
-      duration: input.duration,
     });
 
     return CreateEventResponse.newOk(row.toResource());

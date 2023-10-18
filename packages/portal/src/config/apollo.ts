@@ -1,8 +1,5 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
-import type {
-  TypePolicy,
-  // FieldFunctionOptions,
-} from "@apollo/client/cache/inmemory/policies";
+import type { TypePolicy } from "@apollo/client/cache/inmemory/policies";
 
 const API_URL = "http://localhost:4000/graphql";
 
@@ -16,9 +13,12 @@ function listResponseTypePolicy(
       ...policy.fields,
       data: {
         read(_, { args, toReference }) {
+          if (typeof args?.uuid !== "string") {
+            return undefined;
+          }
           return toReference({
             __typename,
-            uuid: args?.uuid,
+            uuid: args.uuid,
           });
         },
       },
