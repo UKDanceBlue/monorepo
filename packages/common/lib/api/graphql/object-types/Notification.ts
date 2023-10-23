@@ -11,16 +11,16 @@ interface FirestoreNotification {
 }
 */
 
-const NotificationPayloadPresentationType = {
+export const NotificationPayloadPresentationType = {
   URL: "URL",
   IN_APP_VIEW: "IN_APP_VIEW",
   INFO_POPUP: "INFO_POPUP",
 } as const;
-type NotificationPayloadType =
+export type NotificationPayloadPresentationType =
   (typeof NotificationPayloadPresentationType)[keyof typeof NotificationPayloadPresentationType];
 
 registerEnumType(NotificationPayloadPresentationType, {
-  name: "NotificationPayloadType",
+  name: "NotificationPayloadPresentationType",
   description:
     "The type of presentation for the notification, URL skips the app and opens a URL directly, IN_APP_VIEW opens a webview, and INFO_POPUP shows a popup",
 });
@@ -28,7 +28,7 @@ registerEnumType(NotificationPayloadPresentationType, {
 @ObjectType()
 export class NotificationPayload {
   @Field(() => NotificationPayloadPresentationType)
-  presentation!: NotificationPayloadType;
+  presentation!: NotificationPayloadPresentationType;
 
   @Field({
     nullable: true,
@@ -58,16 +58,16 @@ export class NotificationResource extends Resource {
   uuid!: string;
 
   @Field()
+  title!: string;
+
+  @Field()
   body!: string;
 
-  @Field()
-  sendTime!: string;
+  @Field(() => Date)
+  sendTime!: Date;
 
   @Field({ nullable: true })
-  sound?: string;
-
-  @Field()
-  title!: string;
+  sound?: string | null;
 
   @Field(() => NotificationPayload, { nullable: true })
   payload?: NotificationPayload;

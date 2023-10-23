@@ -1,15 +1,10 @@
-import type {
-  OptionalToNullable} from "@ukdanceblue/common";
-import {
-  ErrorCode,
-  NotificationResource
-} from "@ukdanceblue/common";
+import type { OptionalToNullable } from "@ukdanceblue/common";
+import { ErrorCode, NotificationResource } from "@ukdanceblue/common";
 import {
   Arg,
   Args,
   ArgsType,
   Field,
-  ID,
   InputType,
   Mutation,
   ObjectType,
@@ -17,6 +12,8 @@ import {
   Resolver,
 } from "type-graphql";
 
+import { selectAudience } from "../lib/notification/selectAudience.js";
+import { sendNotification } from "../lib/notification/sendNotification.js";
 import { NotificationModel } from "../models/Notification.js";
 
 import {
@@ -45,10 +42,10 @@ class ListNotificationsResponse extends AbstractGraphQLPaginatedResponse<Notific
   @Field(() => [NotificationResource])
   data!: NotificationResource[];
 }
-@ObjectType("CreateNotificationResponse", {
+@ObjectType("SendNotificationResponse", {
   implements: AbstractGraphQLCreatedResponse<NotificationResource>,
 })
-class CreateNotificationResponse extends AbstractGraphQLCreatedResponse<NotificationResource> {
+class SendNotificationResponse extends AbstractGraphQLCreatedResponse<NotificationResource> {
   @Field(() => NotificationResource)
   data!: NotificationResource;
 }
@@ -61,11 +58,14 @@ class DeleteNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
 }
 
 @InputType()
-class CreateNotificationInput
+class SendNotificationInput
   implements OptionalToNullable<Partial<NotificationResource>>
 {
-  @Field(() => ID)
-  uuid!: string;
+  @Field(() => String)
+  title!: string;
+
+  @Field(() => String)
+  body!: string;
 }
 
 @ArgsType()
@@ -120,15 +120,20 @@ export class NotificationResolver
     });
   }
 
-  @Mutation(() => CreateNotificationResponse, { name: "createNotification" })
+  @Mutation(() => SendNotificationResponse, { name: "sendNotification" })
   async create(
-    @Arg("input") input: CreateNotificationInput
-  ): Promise<CreateNotificationResponse> {
+    @Arg("input") input: SendNotificationInput
+  ): Promise<SendNotificationResponse> {
     const row = await NotificationModel.create({
-      uuid: input.uuid,
+      title: input.title,
+      body: input.body,
+      sendTime: new Date(),
     });
 
-    return CreateNotificationResponse.newOk(row.toResource());
+    const audience = await selectAudience(row, {});
+    await sendNotification(row.toResource(), audience);
+
+    return SendNotificationResponse.newOk(row.toResource());
   }
 
   @Mutation(() => DeleteNotificationResponse, { name: "deleteNotification" })
