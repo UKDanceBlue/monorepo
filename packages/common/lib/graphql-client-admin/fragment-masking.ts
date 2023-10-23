@@ -1,6 +1,5 @@
-import type { DocumentTypeDecoration, ResultOf, TypedDocumentNode } from '@graphql-typed-document-node/core';
+import type { ResultOf, DocumentTypeDecoration, TypedDocumentNode } from '@graphql-typed-document-node/core';
 import type { FragmentDefinitionNode } from 'graphql';
-
 import type { Incremental } from './graphql.js';
 
 
@@ -60,7 +59,7 @@ export function isFragmentReady<TQuery, TFrag>(
   if (!deferredFields) return true;
 
   const fragDef = fragmentNode.definitions[0] as FragmentDefinitionNode | undefined;
-  const fragName = fragDef?.name.value;
+  const fragName = fragDef?.name?.value;
 
   const fields = (fragName && deferredFields[fragName]) || [];
   return fields.length > 0 && fields.every(field => data && field in data);
