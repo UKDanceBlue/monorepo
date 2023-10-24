@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { useEffect, useRef, useState } from "react";
 
-import { marathonInterval } from "../@ukdanceblue/db-app-common/marathonTime";
+import { marathonInterval } from "@common/marathonTime";
 
 import { HourScreenComponent } from "./HourScreenComponent";
 import { MarathonCountdownScreen } from "./MarathonCountdownScreen";

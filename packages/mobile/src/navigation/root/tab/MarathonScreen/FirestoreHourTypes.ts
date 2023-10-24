@@ -4,9 +4,9 @@ import { DownloadableImage, FirestoreImage } from "@ukdanceblue/db-app-common";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { universalCatch } from "@common/logging";
+import { lookupHourByTime } from "@common/marathonTime";
 import { useFirebase } from "../../../../context";
-import { universalCatch } from "../@ukdanceblue/db-app-common/logging";
-import { lookupHourByTime } from "../@ukdanceblue/db-app-common/marathonTime";
 
 // Found at /marathon/2023/hours/[HOUR NUMBER]
 export interface FirestoreHour {

@@ -9,10 +9,10 @@ import type {
 import { TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import Standings from "@common/components/Standings";
+import { universalCatch } from "@common/logging";
 import { useFirebase, useUserData } from "../../../../context";
 import type { StandingType } from "../../../../types/StandingType";
-import Standings from "../@ukdanceblue/db-app-common/components/Standings";
-import { universalCatch } from "../@ukdanceblue/db-app-common/logging";
 
 import { useFirestoreMoralePoints } from "./FirestoreMoralePoints";
 

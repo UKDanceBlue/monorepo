@@ -10,9 +10,9 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
+import { universalCatch } from "@common/logging";
 import { useAuthData, useFirebase } from "../../../../context";
 import { useRefreshUserData } from "../../../../context/user";
-import { universalCatch } from "../@ukdanceblue/db-app-common/logging";
 import type { NotificationListDataEntry } from "../NotificationScreen";
 
 import { NotificationRowContent } from "./NotificationRowContent";

@@ -1,3 +1,4 @@
+import { useColorModeValue, useThemeColors } from "@common/customHooks";
 import { FontAwesome5 } from "@expo/vector-icons";
 import type {
   BottomTabBarProps,
@@ -7,10 +8,6 @@ import type {
   ParamListBase,
   TabNavigationState,
 } from "@react-navigation/native";
-import {
-  useColorModeValue,
-  useThemeColors,
-} from "@ukdanceblue/db-app-common/customHooks";
 import { Box, VStack, View } from "native-base";
 import { ZStack } from "native-base/src/components/primitives";
 import { Text, TouchableOpacity, useWindowDimensions } from "react-native";

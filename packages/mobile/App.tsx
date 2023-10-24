@@ -1,7 +1,3 @@
-// Polyfill
-import "intl";
-import "intl/locale-data/jsonp/en";
-
 // Import third-party dependencies
 import NetInfo from "@react-native-community/netinfo";
 import { useFonts } from "expo-font";
@@ -30,9 +26,9 @@ import OpenSansCondensedBoldFont from "./assets/fonts/opensans-condensed/OpenSan
 import OpenSansCondensedLightItalicFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light-Italic.ttf";
 import OpenSansCondensedLightFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light.ttf";
 // Normal imports
-import ErrorBoundary from "./src/common/components/ErrorBoundary";
-import { log, logError, universalCatch } from "./src/common/logging";
-import { showMessage, showPrompt } from "./src/common/util/alertUtils";
+import ErrorBoundary from "@common/components/ErrorBoundary";
+import { log, logError, universalCatch } from "@common/logging";
+import { showMessage, showPrompt } from "@common/util/alertUtils";
 import { CombinedContext } from "./src/context";
 import { FilledNavigationContainer } from "./src/navigation/NavigationContainer";
 import { getCustomTheme } from "./src/theme";

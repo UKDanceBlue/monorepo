@@ -1,23 +1,17 @@
+import { universalCatch } from "@common/logging";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { openURL } from "expo-linking";
-import { DateTime } from "luxon";
 import { Box, Button, HStack, Text, VStack } from "native-base";
-import type { ImageSourcePropType } from "react-native";
 import {
-  ImageBackground,
   PixelRatio,
-  Share,
   StatusBar,
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
 
 import { useReactNavigationTheme } from "../../../../theme";
-import CountdownView from "../@ukdanceblue/db-app-common/components/CountdownView";
-import { universalCatch } from "../@ukdanceblue/db-app-common/logging";
 
 import HeaderImage from "./HeaderImage";
-import SponsorCarousel from "./SponsorCarousel";
 
 /**
  * Component for home screen in main navigation
@@ -39,46 +33,19 @@ const HomeScreen = () => {
         >
           <HeaderImage />
         </Box>
-        <ImageBackground
-          source={
-            require("../../../../../assets/bg-geometric/blue.png") as ImageSourcePropType
-          }
-          resizeMode="cover"
-          style={{
-            width: screenWidth,
-            borderBottomColor: "#FFC72C",
-            borderBottomWidth: 3,
-            flex: 1,
-          }}
+        {/* Placeholder "Welcome to DanceBlue 2024, we're getting things ready for you!\nPlease check back soon!" */}
+        <Box
+          flex={2}
+          justifyContent="center"
+          alignItems="center"
+          width={screenWidth}
         >
-          <Box height="23%">
-            {/* <PodcastPlayer />*/}
-            <Text
-              textAlign="center"
-              color="secondary.400"
-              fontFamily="headingBold"
-              fontSize={30 / fontScale}
-              shadow="1"
-              style={{
-                textShadowColor: "secondary.300",
-                textShadowOffset: { width: 2, height: 1.5 },
-                textShadowRadius: 1,
-              }}
-            >
-              {"Countdown 'til Marathon"}
-            </Text>
-            <CountdownView
-              endTime={DateTime.fromObject({
-                year: 2023,
-                month: 3,
-                day: 25,
-                hour: 20,
-              }).toMillis()}
-            />
-          </Box>
-        </ImageBackground>
-        <Box flex={1}>
-          <SponsorCarousel />
+          <Text fontSize={fontScale * 30} marginX={"1/6"} textAlign="center">
+            Welcome to DanceBlue 2024, we're getting things ready for you!
+          </Text>
+          <Text fontSize={fontScale * 30} marginX={"1/6"} textAlign="center">
+            Please check back soon!
+          </Text>
         </Box>
         <Box flex={1} justifyContent="center">
           <HStack justifyContent="center">
@@ -97,28 +64,15 @@ const HomeScreen = () => {
             </Button>
             <Button
               onPress={() => {
-                Share.share({
-                  url: "https://danceblue.org/marathon-livestream",
-                }).catch(universalCatch);
+                openURL("https://danceblue.org").catch(universalCatch);
               }}
               width="2/5"
               backgroundColor={"secondary.400"}
               _text={{ color: "primary.600" }}
               _pressed={{ opacity: 0.6 }}
             >
-              Share Zoom Link
-            </Button>
-            {/* <Button
-              onPress={() => {
-                openURL("https://danceblue.org").catch(universalCatch);
-              }}
-              width="2/5"
-              backgroundColor={"secondary.400"}
-              _text={{ color: "primary.600" }}
-              _pressed={{ opacity: 0.6 }}>
               Go to DanceBlue HQ
             </Button>
-            */}
           </HStack>
           <HStack justifyContent="center">
             <Button backgroundColor="transparent">

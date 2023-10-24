@@ -2,8 +2,8 @@ import type { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import type { FirebaseFunctionsTypes } from "@react-native-firebase/functions";
 import type { AuthError } from "expo-auth-session";
 import { useAuthRequest, useAutoDiscovery } from "expo-auth-session";
+import { getRandomBytes } from "expo-crypto";
 import { createURL } from "expo-linking";
-import { getRandomBytes } from "expo-random";
 import { useRef, useState } from "react";
 
 export const useLinkBlueLogin = (
@@ -13,7 +13,7 @@ export const useLinkBlueLogin = (
   boolean,
   () => void,
   FirebaseAuthTypes.UserCredential | null,
-  AuthError | Error | null
+  AuthError | Error | null,
 ] => {
   const discovery = useAutoDiscovery(
     "https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0"

@@ -8,9 +8,9 @@ import { Button, Image, Text, View, useTheme } from "native-base";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, useWindowDimensions } from "react-native";
 
-import { UseCachedFilesType, useCachedImages } from "../@ukdanceblue/db-app-common/cacheUtils";
-import { universalCatch } from "../@ukdanceblue/db-app-common/logging";
-import { showPrompt } from "../@ukdanceblue/db-app-common/util/alertUtils";
+import { UseCachedFilesType, useCachedImages } from "@common/cacheUtils";
+import { universalCatch } from "@common/logging";
+import { showPrompt } from "@common/util/alertUtils";
 import { HourInstructionsType } from "../../../../types/hourScreenTypes";
 import { RootStackParamList } from "../../../../types/navigationTypes";
 

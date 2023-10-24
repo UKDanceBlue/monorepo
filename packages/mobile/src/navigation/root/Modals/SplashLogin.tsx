@@ -1,6 +1,6 @@
-import { useLinkBlueLogin } from "@ukdanceblue/db-app-common/auth";
-import { universalCatch } from "@ukdanceblue/db-app-common/logging";
-import { showMessage } from "@ukdanceblue/db-app-common/util/alertUtils";
+import { useLinkBlueLogin } from "@common/auth";
+import { universalCatch } from "@common/logging";
+import { showMessage } from "@common/util/alertUtils";
 import { Button, Center, Image, Text, View, ZStack } from "native-base";
 import { useEffect, useState } from "react";
 import type { ImageSourcePropType } from "react-native";

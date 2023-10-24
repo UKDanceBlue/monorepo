@@ -2,8 +2,8 @@ import { Container, Flex, Text, View } from "native-base";
 import { memo, useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 
+import { useThemeColors } from "@common/customHooks";
 import DanceBlueRibbon from "../../../../../../../assets/svgs/DBRibbon";
-import { useThemeColors } from "../../../@ukdanceblue/db-app-common/customHooks";
 
 import FirstPlaceMedal from "./1stPlace";
 import SecondPlaceMedal from "./2ndPlace";

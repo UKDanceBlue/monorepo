@@ -1,12 +1,11 @@
-import { DateTime } from "luxon";
-import { Image, Text, View } from "native-base";
+import { Text, View } from "native-base";
 import type { ImageSourcePropType } from "react-native";
 import { ImageBackground, useWindowDimensions } from "react-native";
 
+import CountdownView from "@common/components/CountdownView";
+import { useThemeColors } from "@common/customHooks";
+import { marathonInterval } from "@common/marathonTime";
 import CommitteeHoldingSign from "../../../../../assets/svgs/CommitteeHoldingSign";
-import CountdownView from "../@ukdanceblue/db-app-common/components/CountdownView";
-import { useThemeColors } from "../@ukdanceblue/db-app-common/customHooks";
-import { marathonInterval } from "../@ukdanceblue/db-app-common/marathonTime";
 
 export const MarathonCountdownScreen = () => {
   const { height: screenHeight, width: screenWidth } = useWindowDimensions();

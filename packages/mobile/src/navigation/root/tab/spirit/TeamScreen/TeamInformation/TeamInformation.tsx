@@ -1,11 +1,11 @@
 import { Flex, HStack, Text, View } from "native-base";
 import { useWindowDimensions } from "react-native";
 
+import Breadcrumbs from "@common/components/Breadcrumbs";
+import { useThemeFonts } from "@common/customHooks";
 import CommitteeHoldingSign from "../../../../../../../assets/svgs/CommitteeHoldingSign";
 import DanceBlueRibbon from "../../../../../../../assets/svgs/DBRibbon";
 import type { StandingType } from "../../../../../../types/StandingType";
-import Breadcrumbs from "../../../@ukdanceblue/db-app-common/components/Breadcrumbs";
-import { useThemeFonts } from "../../../@ukdanceblue/db-app-common/customHooks";
 import Scoreboard from "../../ScoreBoardScreen/Scoreboard";
 
 const TeamInformation = ({

@@ -2,9 +2,9 @@ import firebaseFirestore from "@react-native-firebase/firestore";
 import { Box, ScrollView, Text, View } from "native-base";
 import { useEffect, useState } from "react";
 
+import SponsorCard from "@common/components/ImageCard";
+import { universalCatch } from "@common/logging";
 import type { LegacyFirestoreSponsor } from "../../../../types/FirestoreSponsor";
-import SponsorCard from "../@ukdanceblue/db-app-common/components/ImageCard";
-import { universalCatch } from "../@ukdanceblue/db-app-common/logging";
 
 /**
  * A horizontally scrolling carousel of SponsorCards

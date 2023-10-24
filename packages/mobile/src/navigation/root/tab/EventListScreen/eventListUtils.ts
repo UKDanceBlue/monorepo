@@ -1,8 +1,10 @@
+import type { MaybeWithFirestoreMetadata } from "@common/dist/firestore/internal";
+import { universalCatch } from "@common/logging";
+import { timestampToDateTime } from "@common/util/dateTools";
 import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import FirestoreModule from "@react-native-firebase/firestore";
 import type { FirestoreEventJson } from "@ukdanceblue/db-app-common";
 import { FirestoreEvent } from "@ukdanceblue/db-app-common";
-import type { MaybeWithFirestoreMetadata } from "@ukdanceblue/db-app-common/dist/firestore/internal";
 import { DateTime } from "luxon";
 import {
   useCallback,
@@ -16,8 +18,6 @@ import type { DateData } from "react-native-calendars";
 import type { MarkedDates } from "react-native-calendars/src/types";
 
 import { useFirebase } from "../../../../context";
-import { universalCatch } from "../@ukdanceblue/db-app-common/logging";
-import { timestampToDateTime } from "../@ukdanceblue/db-app-common/util/dateTools";
 
 import {
   LOADED_MONTHS,
@@ -277,7 +277,6 @@ export async function loadEvents(
   for await (const doc of snapshot.docs) {
     let firestoreEvent: FirestoreEvent;
     try {
-       
       firestoreEvent = FirestoreEvent.fromSnapshot(doc);
     } catch (error) {
       console.error(error);

@@ -2,7 +2,15 @@
   "compilerOptions": {
     "strict": true,
     "module": "es2015",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "paths": {
+      "@assets/*": ["./assets/*"],
+      "@common/*": ["./src/common/*"],
+      "@context/*": ["./src/context/*"],
+      "@navigation/*": ["./src/navigation/*"],
+      "@theme/*": ["./src/theme/*"],
+      "@types/*": ["./src/types/*"]
+    }
   },
   "extends": ["../../tsconfig.json", "expo/tsconfig.base"]
 }
