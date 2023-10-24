@@ -1,4 +1,5 @@
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "fs";
+import { join, normalize } from "path";
 
 import type { ConfigContext, ExpoConfig } from "@expo/config"; // WARNING - @expo/config types aren't versioned
 
@@ -61,12 +62,17 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   const qualifiedName = IS_DEV ? "org.danceblue.app.dev" : "org.danceblue.app";
 
   // Google Services Files
-  const androidGoogleServicesFile = IS_DEV
-    ? "./google-services.dev.json"
-    : "./google-services.json";
-  const iosGoogleServicesFile = IS_DEV
-    ? "./GoogleService-Info.dev.plist"
-    : "./GoogleService-Info.plist";
+  const androidGoogleServicesFile = normalize(
+    join(
+      __dirname,
+      IS_DEV ? "./google-services.dev.json" : "./google-services.json"
+    )
+  );
+  const iosGoogleServicesFile = normalize(
+    join(
+      IS_DEV ? "./GoogleService-Info.dev.plist" : "./GoogleService-Info.plist"
+    )
+  );
 
   // console.log(
   //   `Generating manifest for ${IS_DEV ? "development" : "production"} app`
@@ -108,8 +114,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       baseBuildCount,
       buildsThisVersion
     );
-    if (existsSync("./version.txt")) {
-      const lastVersionFile = readFileSync("./version.txt", "utf8");
+    const versionFilePath = normalize(join("./version.txt"));
+    if (existsSync(versionFilePath)) {
+      const lastVersionFile = readFileSync(versionFilePath, "utf8");
       const linesOfNewVersionFile = newVersionFile.split("\n").splice(1);
       for (const [index, line] of lastVersionFile
         .split("\n")
@@ -124,7 +131,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         }
       }
     }
-    writeFileSync("./version.txt", newVersionFile);
+    writeFileSync(versionFilePath, newVersionFile);
   }
 
   // Check that the Google services file exists
@@ -135,7 +142,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           throw new Error(err);
         };
   if (process.env.EAS_BUILD && !existsSync(androidGoogleServicesFile)) {
-    console.error("Detected files:", readdirSync(".").join(" --- "));
+    console.error("Detected files:", readdirSync(__dirname).join(" --- "));
     onNotExist(
       `GoogleService-Info file not found at ${androidGoogleServicesFile}`
     );
@@ -143,7 +150,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 
   // Check that the Google services file exists
   if (!existsSync(iosGoogleServicesFile)) {
-    console.error("Detected files:", readdirSync(".").join(" --- "));
+    console.error("Detected files:", readdirSync(__dirname).join(" --- "));
     onNotExist(`GoogleService-Info file not found at ${iosGoogleServicesFile}`);
   }
 
