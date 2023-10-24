@@ -260,7 +260,7 @@ describe("markEvents", () => {
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const oldDateTimeLocal = DateTime.local;
   DateTime.local = jest.fn(() =>
-    DateTime.fromJSDate(fakeEvents[todyIndex].interval!.start.toDate())
+    DateTime.fromJSDate(fakeEvents[todyIndex]!.interval!.start.toDate())
   );
 
   // Used for most tests
@@ -276,7 +276,7 @@ describe("markEvents", () => {
 
   test("Marks today when there are events today", () => {
     expect(markedDates[fakeMonthStrings[todyIndex]]).toBeDefined();
-    expect(markedDates[fakeMonthStrings[todyIndex]].today).toBe(true);
+    expect(markedDates[fakeMonthStrings[todyIndex]!]?.today).toBe(true);
   });
 
   test("Only marks a single date as today", () => {

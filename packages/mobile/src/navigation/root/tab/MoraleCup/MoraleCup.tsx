@@ -1,3 +1,5 @@
+import Standings from "@common/components/Standings";
+import { universalCatch } from "@common/logging";
 import { Entypo } from "@expo/vector-icons";
 import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 import { Heading, Row, ScrollView, Spinner, Text, VStack } from "native-base";
@@ -9,8 +11,6 @@ import type {
 import { TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import Standings from "@common/components/Standings";
-import { universalCatch } from "@common/logging";
 import { useFirebase, useUserData } from "../../../../context";
 import type { StandingType } from "../../../../types/StandingType";
 
@@ -77,7 +77,7 @@ export const MoraleCup = () => {
   const handleSetTeamId = useCallback(
     (teamId: string) => {
       const numericTeamId = Number.parseInt(teamId, 10);
-      if (isNaN(numericTeamId)) {
+      if (Number.isNaN(numericTeamId)) {
         alert("Invalid team ID");
       } else if (numericTeamId < 1 || numericTeamId > 24) {
         alert("Invalid team ID");
@@ -105,8 +105,8 @@ export const MoraleCup = () => {
   let moralePointComponent = null;
   if (teamPoints != null && teamNames != null) {
     const data: StandingType[] = Object.keys(teamPoints).map((teamNumber) => {
-      const teamName = teamNames[teamNumber];
-      const teamPoint = teamPoints[teamNumber];
+      const teamName = teamNames[teamNumber]!;
+      const teamPoint = teamPoints[teamNumber]!;
       return {
         id: teamNumber,
         name: `Team ${teamNumber}: ${teamName}`,

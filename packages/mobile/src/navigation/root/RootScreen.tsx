@@ -1,6 +1,6 @@
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Text, useTheme } from "native-base";
+import { useTheme } from "native-base";
 import { useWindowDimensions } from "react-native";
 
 import { useColorModeValue } from "../../common/customHooks";
@@ -38,7 +38,7 @@ const RootScreen = () => {
             headerStyle: { backgroundColor: headerBgColor },
             headerTitleStyle: { color: headerFgColor },
             headerRight: () => (
-              <HeaderIcons navigation={navigation} color={headerFgColor} />
+              <HeaderIcons navigation={navigation} /* color={headerFgColor}*/ />
             ),
             headerBackTitle: "Back",
           })}
@@ -53,12 +53,12 @@ const RootScreen = () => {
               <RootStack.Screen
                 name="Notifications"
                 component={NotificationScreen}
-                options={{ headerRight: undefined }}
+                options={{ headerRight: () => undefined }}
               />
               <RootStack.Screen
                 name="Profile"
                 component={ProfileScreen}
-                options={{ headerRight: undefined }}
+                options={{ headerRight: () => undefined }}
               />
               <RootStack.Screen
                 name="Event"

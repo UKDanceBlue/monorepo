@@ -10,7 +10,6 @@ const Corporate = ({
   color?: string;
 }) => (
   <Svg id="Layer_1" x={0} y={0} viewBox="0 0 248 343" {...svgProps}>
-    {/* @ts-expect-error This works */}
     <G style={{ enableBackground: "new" }}>
       <Path
         // @ts-expect-error This works

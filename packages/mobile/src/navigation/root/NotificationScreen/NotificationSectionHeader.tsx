@@ -1,4 +1,4 @@
-import { Heading, View, useTheme } from "native-base";
+import { Heading, View } from "native-base";
 import type { SectionListProps } from "react-native";
 
 import type { NotificationListDataEntry } from "./NotificationScreen";

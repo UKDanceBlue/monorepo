@@ -8,6 +8,7 @@ import type {
   ParamListBase,
   TabNavigationState,
 } from "@react-navigation/native";
+import { colors } from "@theme/colors";
 import { Box, VStack, View } from "native-base";
 import { ZStack } from "native-base/src/components/primitives";
 import { Text, TouchableOpacity, useWindowDimensions } from "react-native";
@@ -93,7 +94,7 @@ function TabBarIcon({
         width: sizeFactor,
         height: sizeFactor,
         borderRadius: sizeFactor,
-        backgroundColor: isMiddle ? "#0032A0" : undefined,
+        backgroundColor: isMiddle ? colors.primary?.[600] : undefined,
       }}
     >
       <VStack alignItems="center" justifyContent="center" flex={1}>
@@ -248,7 +249,7 @@ function TabBarComponent({
           }}
         >
           {state.routes.map((route, index) => {
-            const { options } = descriptors[route.key];
+            const { options } = descriptors[route.key]!;
             return (
               <TabBarEntry
                 key={route.key}

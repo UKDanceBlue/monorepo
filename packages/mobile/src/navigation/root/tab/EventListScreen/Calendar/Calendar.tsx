@@ -188,6 +188,7 @@ const Calendar = (props: CalendarProps) => {
           style={style.current.dayContainer}
           key={`week-container-${weekNumber}`}
         >
+          {/* @ts-expect-error Exact optional typings for `BasicDay` are not provided */}
           <BasicDay
             key={`week-${weekNumber}`}
             marking={weekNumberMarking.current}
@@ -279,6 +280,7 @@ const Calendar = (props: CalendarProps) => {
 
   const renderHeader = useCallback(() => {
     return (
+      /* @ts-expect-error Exact optional typings for `CalendarHeader` are not provided */
       <CalendarHeader
         {...headerProps}
         testID={`${testID ?? ""}.header`}

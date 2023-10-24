@@ -1,9 +1,9 @@
+import SponsorCard from "@common/components/ImageCard";
+import { universalCatch } from "@common/logging";
 import firebaseFirestore from "@react-native-firebase/firestore";
 import { Box, ScrollView, Text, View } from "native-base";
 import { useEffect, useState } from "react";
 
-import SponsorCard from "@common/components/ImageCard";
-import { universalCatch } from "@common/logging";
 import type { LegacyFirestoreSponsor } from "../../../../types/FirestoreSponsor";
 
 /**
@@ -17,7 +17,7 @@ const SponsorCarousel = () => {
     async function getSnapshot() {
       const dbSponsors: LegacyFirestoreSponsor[] = [];
       const snapshot = await firebaseFirestore().collection("sponsors").get();
-      for (const document of snapshot) {
+      for (const document of snapshot.docs) {
         dbSponsors.push(document.data());
       }
       if (shouldUpdateState) {
@@ -34,7 +34,7 @@ const SponsorCarousel = () => {
     <SponsorCard
       name={sponsor.name ?? ""}
       imagePath={sponsor.logo ?? ""}
-      sponsorLink={sponsor.link}
+      sponsorLink={sponsor.link ?? ""}
       key={i}
     />
   ));

@@ -21,7 +21,6 @@ const BackgroundCutoutBase = ({
     style={{ padding: 0, margin: 0, ...(svgProps?.style ?? {}) }}
     {...svgProps}
   >
-    {/* @ts-expect-error This is fine */}
     <G data-name="Layer 2">
       <Path
         d="M 0 0 H 700 C 700 0 700 280 960 280 C 1220 280 1220 0 1220 0 H 1920 V 440 H 0 Z"
@@ -41,7 +40,7 @@ const BackgroundCutout = ({
   color: string;
 }) => {
   const { width: screenWidth } = useWindowDimensions();
-  if (!svgProps?.height || isNaN(Number(svgProps.height))) {
+  if (!svgProps?.height || Number.isNaN(Number(svgProps.height))) {
     throw new Error(
       "BackgroundCutout requires a height to be passed in svgProps"
     );

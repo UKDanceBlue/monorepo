@@ -1,5 +1,6 @@
 import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import { isDevice, osName } from "expo-device";
+import type { PermissionStatus } from "expo-notifications";
 import {
   AndroidImportance,
   IosAuthorizationStatus,
@@ -14,7 +15,6 @@ import {
   setItemAsync,
 } from "expo-secure-store";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { V4Options } from "uuid";
 import { v4 } from "uuid";
 
 import { universalCatch } from "../common/logging";
@@ -50,7 +50,7 @@ const obtainUuid = async () => {
     return uuid;
   }
 
-  uuid = (v4 as (options?: V4Options | undefined) => string)();
+  uuid = v4();
 
   await setItemAsync(uuidStoreKey, uuid, {
     keychainAccessible: AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
@@ -68,7 +68,7 @@ const registerPushNotifications = async (
 
     // If the user hasn't set a preference yet, ask them.
     if (
-      settings.status === "undetermined" ||
+      settings.status === ("undetermined" as PermissionStatus.UNDETERMINED) ||
       settings.ios?.status === IosAuthorizationStatus.NOT_DETERMINED
     ) {
       settings = await requestPermissionsAsync({
@@ -101,7 +101,7 @@ const registerPushNotifications = async (
       }
 
       return getExpoPushTokenAsync({
-        experienceId: "@university-of-kentucky-danceblue/danceblue-mobile",
+        projectId: "86042d7a-cd35-415c-87ed-f53c008b3827",
       }).then(async (token) => {
         if (uuid) {
           // Store the push notification token in firebase

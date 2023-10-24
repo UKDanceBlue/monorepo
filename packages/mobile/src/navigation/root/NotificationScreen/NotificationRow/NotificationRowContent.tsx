@@ -1,3 +1,4 @@
+import { useThemeFonts } from "@common/customHooks";
 import type { FirestoreNotification } from "@ukdanceblue/db-app-common";
 import { isEqual } from "lodash";
 import { DateTime } from "luxon";
@@ -13,7 +14,6 @@ import {
 import { memo } from "react";
 import { useWindowDimensions } from "react-native";
 
-import { useThemeFonts } from "@common/customHooks";
 import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
 
 const NonMemoizedNotificationRowContent = ({
@@ -28,7 +28,7 @@ const NonMemoizedNotificationRowContent = ({
   const { width: screenWidth } = useWindowDimensions();
   const { sizes, fontSizes } = useTheme();
 
-  const { body, mono } = useThemeFonts();
+  const { mono } = useThemeFonts();
 
   return (
     <>

@@ -55,7 +55,10 @@ function NotificationScreen() {
   const [userNotifications, setNotifications] = useState<
     (NotificationListDataEntry | undefined)[]
   >([]);
-  const notifications = userNotifications.concat(fallbackNotifications ?? []);
+  const notifications = [
+    ...userNotifications,
+    ...(fallbackNotifications ?? []),
+  ];
 
   // Clear badge count when navigating to this screen
   useEffect(() => {

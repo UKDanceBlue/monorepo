@@ -24,5 +24,5 @@ export const lookupHourIntervalByTime = (time: DateTime): Interval | null => {
   const interval = marathonHourIntervals.find((interval) =>
     interval.contains(time)
   );
-  return !interval ? null : interval;
+  return interval ?? null;
 };

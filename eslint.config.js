@@ -151,7 +151,6 @@ const eslintConfig = [
       "unicorn/explicit-length-check": "error",
       // TODO: decide on a convention "unicorn/filename-case": "error",
       "unicorn/new-for-builtins": "error",
-      "unicorn/no-array-for-each": "error",
       "unicorn/no-array-method-this-argument": "error",
       "unicorn/no-array-push-push": "error",
       "unicorn/no-await-expression-member": "error",
@@ -346,6 +345,9 @@ const eslintConfig = [
       ...eslintPluginReact.configs["jsx-runtime"].rules,
       ...eslintPluginReactHooks.configs.recommended.rules,
       ...eslintPluginReactNative.configs.all.rules,
+      "react-native/no-inline-styles": "off", // TODO: tighten this up
+      "react-native/no-color-literals": "off", // TODO: tighten this up
+      "react-native/no-raw-text": "off",
     },
     settings: {
       react: {

@@ -10,7 +10,8 @@
       "@navigation/*": ["./src/navigation/*"],
       "@theme/*": ["./src/theme/*"],
       "@types/*": ["./src/types/*"]
-    }
+    },
+    "noUncheckedIndexedAccess": false
   },
   "extends": ["../../tsconfig.json", "expo/tsconfig.base"]
 }

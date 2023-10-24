@@ -4,13 +4,7 @@ import Svg, { ClipPath, Defs, G, Mask, Path } from "react-native-svg";
 /* SVGR has dropped some elements not supported by react-native-svg: filter */
 
 const BlueGeometric = (props: SvgProps) => (
-  <Svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={1080}
-    viewBox="0 0 810 1440"
-    height={1920}
-    {...props}
-  >
+  <Svg width={1080} viewBox="0 0 810 1440" height={1920} {...props}>
     <Defs>
       <ClipPath id="d">
         <Path d="M.832.645h23.066V23.71H.832Zm0 0" />

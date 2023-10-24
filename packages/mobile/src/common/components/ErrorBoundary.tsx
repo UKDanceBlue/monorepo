@@ -9,7 +9,7 @@ class ErrorBoundary extends Component<
   { children: ReactNode },
   {
     error?: Error | null;
-    untypedError?: unknown | null;
+    untypedError?: unknown;
     componentStack?: string | null;
     isComponentError?: boolean | null;
   }
@@ -103,14 +103,18 @@ Error Info: ${JSON.stringify(untypedError)}
                 ).catch(universalCatch);
               }}
             />
-            {error.cause && (
+            {error.cause ? (
               <>
                 <Text style={{ fontSize: 15, fontWeight: "bold" }}>
                   Error Cause:
                 </Text>
-                <Text style={{ marginBottom: 15 }}>{error.cause.message}</Text>
+                <Text style={{ marginBottom: 15 }}>
+                  {error.cause instanceof Error
+                    ? error.cause.message
+                    : String(error.cause)}
+                </Text>
               </>
-            )}
+            ) : null}
             <Text style={{ fontSize: 15, fontWeight: "bold" }}>JS stack:</Text>
             <Text style={{ marginBottom: 15 }}>{error.stack}</Text>
             {componentStack && (

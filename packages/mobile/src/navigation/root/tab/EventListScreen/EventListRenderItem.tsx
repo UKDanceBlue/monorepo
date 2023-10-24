@@ -1,3 +1,4 @@
+import { timestampToDateTime } from "@common/util/dateTools";
 import type { FirestoreEvent } from "@ukdanceblue/db-app-common";
 import { Platform } from "expo-modules-core";
 import { DateTime, Interval } from "luxon";
@@ -7,7 +8,6 @@ import { useCallback, useMemo } from "react";
 import type { ListRenderItem } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import { timestampToDateTime } from "@common/util/dateTools";
 
 import EventRow from "./EventRow";
 import { RNCAL_DATE_FORMAT } from "./constants";

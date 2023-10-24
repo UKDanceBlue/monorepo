@@ -31,7 +31,7 @@ const TeamScreen = () => {
       </Center>
     );
   } else {
-    const { name, memberNames, individualTotals, captains } = team;
+    const { name, memberNames, individualTotals, captains, totalPoints } = team;
 
     return (
       <TeamInformation
@@ -58,7 +58,7 @@ const TeamScreen = () => {
                 })
                 .sort((a, b) => b.points - a.points)
         }
-        teamTotal={team.totalPoints == null ? 0 : team.totalPoints}
+        teamTotal={totalPoints == null ? 0 : totalPoints}
       />
     );
   }

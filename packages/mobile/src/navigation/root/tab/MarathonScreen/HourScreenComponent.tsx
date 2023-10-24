@@ -1,8 +1,8 @@
+import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
 import { Image, ScrollView, Text, VStack } from "native-base";
 import { RefreshControl, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
 
 import { useCurrentFirestoreHour } from "./FirestoreHourTypes";
 

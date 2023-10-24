@@ -18,7 +18,7 @@ interface LoadedAuthData {
   isLoggedIn: boolean;
   isAnonymous: boolean;
   uid: string | null;
-  authClaims: { [key: string]: string | unknown } | null;
+  authClaims: { [key: string]: string | object } | null;
 }
 
 type AuthData = UnloadedAuthData | LoadedAuthData;

@@ -32,13 +32,12 @@ const EventRow = ({
         interval.end.toMillis() === interval.end.endOf("day").toMillis()
       ) {
         // All day some other day
-        if (interval.start.toISODate() === interval.end.toISODate()) {
-          // All day on the same day
-          whenString = `All Day ${interval.start.toFormat("L/d/yyyy")}`;
-        } else {
-          // All day on different days
-          whenString = `All Day ${interval.toFormat("L/d/yyyy")}`;
-        }
+        whenString =
+          interval.start.toISODate() === interval.end.toISODate()
+            ? // All day on the same day
+              (whenString = `All Day ${interval.start.toFormat("L/d/yyyy")}`)
+            : // All day on different days
+              (whenString = `All Day ${interval.toFormat("L/d/yyyy")}`);
       } else if (interval.hasSame("day")) {
         whenString = `${interval.start.toFormat(
           "L/d/yyyy h:mm a"

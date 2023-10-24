@@ -1,11 +1,12 @@
+import { universalCatch } from "@common/logging";
+import { lookupHourByTime } from "@common/marathonTime";
 import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import type { FirestoreImageJsonV1 } from "@ukdanceblue/db-app-common";
 import { DownloadableImage, FirestoreImage } from "@ukdanceblue/db-app-common";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { universalCatch } from "@common/logging";
-import { lookupHourByTime } from "@common/marathonTime";
+
 import { useFirebase } from "../../../../context";
 
 // Found at /marathon/2023/hours/[HOUR NUMBER]

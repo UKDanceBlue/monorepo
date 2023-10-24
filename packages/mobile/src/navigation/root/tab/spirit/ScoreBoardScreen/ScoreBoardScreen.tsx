@@ -1,3 +1,5 @@
+import Jumbotron from "@common/components/Jumbotron";
+import { universalCatch } from "@common/logging";
 import { FontAwesome5 } from "@expo/vector-icons";
 import firebaseFirestore from "@react-native-firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
@@ -6,8 +8,7 @@ import { View } from "native-base";
 import { Pressable } from "native-base/src/components/primitives";
 import { useCallback, useEffect, useState } from "react";
 
-import Jumbotron from "@common/components/Jumbotron";
-import { universalCatch } from "@common/logging";
+
 import { useAuthData, useUserData } from "../../../../../context";
 import type { StandingType } from "../../../../../types/StandingType";
 import type { SpiritStackScreenProps } from "../../../../../types/navigationTypes";

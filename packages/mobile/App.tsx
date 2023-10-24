@@ -1,4 +1,7 @@
 // Import third-party dependencies
+import ErrorBoundary from "@common/components/ErrorBoundary";
+import { log, logError, universalCatch } from "@common/logging";
+import { showMessage, showPrompt } from "@common/util/alertUtils";
 import NetInfo from "@react-native-community/netinfo";
 import { useFonts } from "expo-font";
 import { hideAsync } from "expo-splash-screen";
@@ -15,9 +18,6 @@ import { useEffect, useRef, useState } from "react";
 import type { EventSubscription } from "react-native";
 import { AppState } from "react-native";
 
-import "./src/common/util/AndroidTimerFix"; // https://github.com/firebase/firebase-js-sdk/issues/97#issuecomment-427512040
-
-// Fonts
 import BoldoniFlfBoldItalicFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold-Italic.ttf";
 import BoldoniFlfBoldFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold.ttf";
 import BoldoniFlfItalicFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Italic.ttf";
@@ -25,10 +25,7 @@ import BoldoniFlfRomanFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Roman
 import OpenSansCondensedBoldFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Bold.ttf";
 import OpenSansCondensedLightItalicFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light-Italic.ttf";
 import OpenSansCondensedLightFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light.ttf";
-// Normal imports
-import ErrorBoundary from "@common/components/ErrorBoundary";
-import { log, logError, universalCatch } from "@common/logging";
-import { showMessage, showPrompt } from "@common/util/alertUtils";
+import "./src/common/util/AndroidTimerFix"; // https://github.com/firebase/firebase-js-sdk/issues/97#issuecomment-427512040
 import { CombinedContext } from "./src/context";
 import { FilledNavigationContainer } from "./src/navigation/NavigationContainer";
 import { getCustomTheme } from "./src/theme";
@@ -102,9 +99,9 @@ const App = () => {
       const listener = AppState.addEventListener("change", (nextAppState) => {
         if (nextAppState === "active") {
           checkForUpdateAsync()
-            .then(({ isAvailable }) => {
+            .then(async ({ isAvailable }) => {
               if (isAvailable) {
-                return fetchUpdateAsync();
+                await fetchUpdateAsync();
               }
             })
             .catch(universalCatch);
@@ -115,11 +112,14 @@ const App = () => {
         updatesSubscription.remove();
         listener.remove();
       };
+    } else {
+      return () => undefined;
     }
   }, []);
 
   return (
-    fontsLoaded && (
+    fontsLoaded &&
+    theme && (
       <NativeBaseProvider
         config={{ strictMode: __DEV__ ? "error" : "off" }}
         theme={theme}

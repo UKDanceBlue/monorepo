@@ -1,3 +1,7 @@
+/* eslint-disable unicorn/consistent-destructuring */
+/* eslint-disable unicorn/no-await-expression-member */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck This file is currently unused
 import NetInfo from "@react-native-community/netinfo";
 import firebaseStorage from "@react-native-firebase/storage";
 import * as FileSystem from "expo-file-system";

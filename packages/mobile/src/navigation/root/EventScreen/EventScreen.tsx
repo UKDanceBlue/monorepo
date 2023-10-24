@@ -73,7 +73,9 @@ const EventScreen = () => {
   >(
     firestoreImages == null
       ? undefined
-      : Array.from({ length: firestoreImages.length }).fill(null)
+      : Array.from<null | DownloadableImage>({
+          length: firestoreImages.length,
+        }).fill(null)
   );
 
   const { colors } = useTheme();
@@ -263,8 +265,9 @@ const EventScreen = () => {
                 permissionStatus === PermissionStatus.UNDETERMINED ||
                 canAskAgain
               ) {
-                permissionStatus = (await requestCalendarPermissionsAsync())
-                  .status;
+                permissionStatus =
+                  // eslint-disable-next-line unicorn/no-await-expression-member
+                  (await requestCalendarPermissionsAsync()).status;
               }
 
               if (permissionStatus === PermissionStatus.GRANTED) {
@@ -276,9 +279,10 @@ const EventScreen = () => {
                     title: name,
                     allDay,
                     notes: description,
-                    startDate: interval?.start.toJSDate(),
-                    endDate: interval?.end.toJSDate(),
-                    location: address,
+                    // TODO: fix these start and end dates
+                    startDate: interval!.start.toJSDate(),
+                    endDate: interval!.end.toJSDate(),
+                    location: address ?? "",
                   });
                   showMessage(undefined, "Event created");
                 }

@@ -1,3 +1,4 @@
+import { universalCatch } from "@common/logging";
 import firestore from "@react-native-firebase/firestore";
 import { Box, Button, Row, useTheme } from "native-base";
 import type { SectionListRenderItem } from "react-native";
@@ -10,7 +11,6 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
-import { universalCatch } from "@common/logging";
 import { useAuthData, useFirebase } from "../../../../context";
 import { useRefreshUserData } from "../../../../context/user";
 import type { NotificationListDataEntry } from "../NotificationScreen";
@@ -39,12 +39,11 @@ export const AnimatedNotificationRow: SectionListRenderItem<
     },
     onActive: (event, ctx) => {
       const desiredTransition = ctx.startX + event.translationX;
-      if (desiredTransition < 0) {
-        x.value = desiredTransition;
-      } else {
-        // Try to move the view right
-        x.value = desiredTransition * 0.1;
-      }
+      x.value =
+        desiredTransition < 0
+          ? desiredTransition
+          : // Try to move the view right
+            desiredTransition * 0.1;
     },
     onEnd: () => {
       x.value =
@@ -75,7 +74,7 @@ export const AnimatedNotificationRow: SectionListRenderItem<
   const { isLoggedIn, isAnonymous } = useAuthData();
 
   // TODO: When Backend for Read/Unread Notifications are done, pls add compatibility
-  const unread = true;
+  const unread = true as boolean;
 
   const canDelete = !isAnonymous && isLoggedIn;
 

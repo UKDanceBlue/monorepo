@@ -4,6 +4,9 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Animated, SafeAreaView, View } from "react-native";
 import { LazyPagerView } from "react-native-pager-view";
 
+// https://github.com/callstack/react-native-pager-view/issues/673#issuecomment-1647351189
+// Otherwise: https://github.com/callstack/react-native-pager-view/releases/tag/v6.0.0-rc.0
+
 import { EventListPage } from "./EventListPage";
 import { LOADED_MONTHS_BEFORE_AFTER } from "./constants";
 import {
@@ -19,7 +22,7 @@ const monthCount = DateTime.now()
   .until(DateTime.now().plus({ months: 12 }))
   .count("months");
 
-const monthDates = (new Array(monthCount) as DateTime[])
+const monthDates = Array.from<DateTime>({ length: monthCount })
   .fill(DateTime.now(), 0, monthCount)
   .map((dateTime, i) => dateTime.plus({ months: i - monthCount / 2 }));
 

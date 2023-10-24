@@ -7,6 +7,7 @@ import { LogBox } from "react-native";
 
 import App from "./App";
 
+// eslint-disable-next-line unicorn/prefer-top-level-await
 preventAutoHideAsync().catch(console.error);
 
 LogBox.ignoreLogs([

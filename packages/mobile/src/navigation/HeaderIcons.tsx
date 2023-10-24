@@ -1,16 +1,12 @@
-import { Entypo, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import { useTheme as useNavigationTheme } from "@react-navigation/native";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { View } from "native-base";
 import {
-  Linking,
   PixelRatio,
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
 
-import DanceBlueRibbon from "../../assets/svgs/DBRibbon";
-import { universalCatch } from "../common/logging";
 import type { RootStackParamList } from "../types/navigationTypes";
 
 const HeaderIcons = ({

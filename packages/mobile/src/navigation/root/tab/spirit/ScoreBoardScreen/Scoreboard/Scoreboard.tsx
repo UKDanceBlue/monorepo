@@ -1,7 +1,8 @@
+import { useThemeColors } from "@common/customHooks";
+import { colors } from "@theme/colors";
 import { Box, Text } from "native-base";
 import { FlatList, RefreshControl } from "react-native";
 
-import { useThemeColors } from "@common/customHooks";
 import type { StandingType } from "../../../../../../types/StandingType";
 import ScoreboardItem from "../ScoreboardItem";
 
@@ -61,7 +62,10 @@ const Scoreboard = ({
           <Box
             marginLeft={3}
             marginRight={3}
-            style={{ borderBottomWidth: 1, borderBottomColor: "#0032A0" }}
+            style={{
+              borderBottomWidth: 1,
+              borderBottomColor: colors.primary?.[600],
+            }}
           />
         )}
         keyExtractor={(item) => item.id}

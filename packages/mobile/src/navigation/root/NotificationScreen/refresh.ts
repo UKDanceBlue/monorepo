@@ -19,7 +19,7 @@ export async function refreshNotificationScreen(
   // Get the notifications from references
   const promises: Promise<NotificationListDataEntry | undefined>[] = [];
 
-  let hasAlerted = false;
+  let hasAlerted = false as boolean;
 
   for (const pastNotificationRef of notificationReferences) {
     promises.push(

@@ -1,8 +1,9 @@
+import Breadcrumbs from "@common/components/Breadcrumbs";
+import { useThemeFonts } from "@common/customHooks";
 import { Flex, HStack, Text, View } from "native-base";
 import { useWindowDimensions } from "react-native";
 
-import Breadcrumbs from "@common/components/Breadcrumbs";
-import { useThemeFonts } from "@common/customHooks";
+
 import CommitteeHoldingSign from "../../../../../../../assets/svgs/CommitteeHoldingSign";
 import DanceBlueRibbon from "../../../../../../../assets/svgs/DBRibbon";
 import type { StandingType } from "../../../../../../types/StandingType";

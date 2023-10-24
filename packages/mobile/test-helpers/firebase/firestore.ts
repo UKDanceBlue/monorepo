@@ -14,7 +14,8 @@ interface MockedCollection extends MockedSubCollection<MockedCollection> {}
 type MockedFirestore = Partial<Record<string, MockedCollection>>;
 
 function extractDocDataByPath<
-  T extends FirebaseFirestoreTypes.DocumentData = FirebaseFirestoreTypes.DocumentData
+  T extends
+    FirebaseFirestoreTypes.DocumentData = FirebaseFirestoreTypes.DocumentData,
 >(
   path: string,
   mockedData: MockedFirestore,
@@ -23,24 +24,24 @@ function extractDocDataByPath<
   // id is the last part of the path, the rest is the parent path, if any
   const [id, ...rest] = path.split("/").reverse();
 
-  let current: MockedCollection | undefined = mockedData[rest[0]];
+  let current: MockedCollection | undefined = mockedData[rest[0]!];
   if (current == null) {
     throw new Error(`No collection found at path ${path}`);
   }
 
   for (let i = 1; i < rest.length; i++) {
-    current = current.collections[rest[i]];
+    current = current.collections[rest[i]!];
     if (current == null) {
       throw new Error(`No collection found at path ${path}`);
     }
   }
 
   return {
-    id,
-    data: () => current?.documents[id] as T | undefined,
-    exists: current.documents[id] != null,
+    id: id!,
+    data: () => current?.documents[id!] as T | undefined,
+    exists: current.documents[id!] != null,
     get: (fieldPath: FirebaseFirestoreTypes.FieldPath | keyof T) => {
-      const data = current?.documents[id];
+      const data = current?.documents[id!];
       if (data == null) {
         throw new Error(`No document found at path ${path}`);
       }
@@ -66,15 +67,17 @@ function extractDocDataByPath<
 }
 
 function extractCollectionRefByPath<
-  T extends FirebaseFirestoreTypes.DocumentData = FirebaseFirestoreTypes.DocumentData
+  T extends
+    FirebaseFirestoreTypes.DocumentData = FirebaseFirestoreTypes.DocumentData,
 >(
-  path: string,
-  mockedData: MockedFirestore
+  _path: string,
+  _mockedData: MockedFirestore
 ): FirebaseFirestoreTypes.CollectionReference<T> {
   throw new Error("Not implemented"); // TODO
 }
 function extractDocRefByPath<
-  T extends FirebaseFirestoreTypes.DocumentData = FirebaseFirestoreTypes.DocumentData
+  T extends
+    FirebaseFirestoreTypes.DocumentData = FirebaseFirestoreTypes.DocumentData,
 >(
   path: string,
   mockedData: MockedFirestore,
@@ -84,7 +87,7 @@ function extractDocRefByPath<
     collection: (collectionPath: string) =>
       extractCollectionRefByPath(`${path}/${collectionPath}`, mockedData),
     firestore: firestoreModuleGetter() as FirebaseFirestoreTypes.Module,
-    id: path.split("/").reverse()[0],
+    id: path.split("/").reverse()[0]!,
     onSnapshot: () => {
       throw new Error("Not implemented");
     }, // TODO
@@ -113,10 +116,11 @@ function extractDocRefByPath<
 }
 
 export function createMockedFirestoreCollection<
-  T extends FirebaseFirestoreTypes.DocumentData = FirebaseFirestoreTypes.DocumentData
+  T extends
+    FirebaseFirestoreTypes.DocumentData = FirebaseFirestoreTypes.DocumentData,
 >(
   mockedData: MockedFirestore,
-  collection: MockedCollection,
+  _collection: MockedCollection,
   collectionName: string,
   path: string,
   firestoreModuleGetter: () => LimitedFirestoreModule
@@ -143,6 +147,8 @@ export function createMockedFirestoreCollection<
     limit: jest.fn().mockRejectedValue(new Error("NYI (limit)")),
     isEqual: jest.fn().mockRejectedValue(new Error("NYI (isEqual)")),
     limitToLast: jest.fn().mockRejectedValue(new Error("NYI (limitToLast)")),
+    count: jest.fn().mockRejectedValue(new Error("NYI (count)")),
+    countFromServer: jest.fn().mockRejectedValue(new Error("NYI (count)")),
   };
   return collectionRef;
 }

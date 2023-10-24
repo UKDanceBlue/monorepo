@@ -52,8 +52,8 @@ const SponsorCard = ({
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  img: { borderRadius: 8 },
+  // container: { flex: 1 },
+  // img: { borderRadius: 8 },
   item: {
     alignItems: "center",
     alignSelf: "stretch",
