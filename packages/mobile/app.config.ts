@@ -68,9 +68,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ? "./GoogleService-Info.dev.plist"
     : "./GoogleService-Info.plist";
 
-  console.log(
-    `Generating manifest for ${IS_DEV ? "development" : "production"} app`
-  );
+  // console.log(
+  //   `Generating manifest for ${IS_DEV ? "development" : "production"} app`
+  // );
 
   // Check that the version is valid
   if (nativeVersion.major !== bundleVersion.major) {
