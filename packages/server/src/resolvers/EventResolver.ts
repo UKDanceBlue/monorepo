@@ -1,9 +1,10 @@
 import {
+  DateRangeScalar,
   ErrorCode,
-  EventOccurrenceResource,
   EventResource,
   ImageResource,
 } from "@ukdanceblue/common";
+import { Interval } from "luxon";
 import {
   Arg,
   Args,
@@ -64,7 +65,15 @@ class ListEventsResponse extends AbstractGraphQLPaginatedResponse<EventResource>
 }
 
 @InputType()
-class CreateEventInput implements Partial<EventResource> {
+export class EventOccurrenceInput {
+  @Field(() => DateRangeScalar)
+  occurrence!: Interval;
+  @Field(() => Boolean)
+  fullDay!: boolean;
+}
+
+@InputType()
+class CreateEventInput {
   @Field()
   title!: string;
 
@@ -74,8 +83,8 @@ class CreateEventInput implements Partial<EventResource> {
   @Field()
   location!: string;
 
-  @Field(() => [EventOccurrenceResource])
-  occurrences!: EventOccurrenceResource[];
+  @Field(() => [EventOccurrenceInput])
+  occurrences!: EventOccurrenceInput[];
 
   @Field()
   description!: string;

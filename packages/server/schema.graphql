@@ -40,13 +40,13 @@ interface AbstractGraphQLPaginatedResponse implements AbstractGraphQLArrayOkResp
   ok: Boolean!
 
   """The current page number (1-indexed)"""
-  page: Float!
+  page: PositiveInt!
 
   """The number of items per page"""
-  pageSize: Float!
+  pageSize: NonNegativeInt!
 
   """The total number of items"""
-  total: Float!
+  total: NonNegativeInt!
 }
 
 type AuthIdList {
@@ -114,9 +114,8 @@ type CreateDeviceResponse implements AbstractGraphQLCreatedResponse & AbstractGr
 
 input CreateEventInput {
   description: String!
-  duration: Duration!
   location: String!
-  occurrences: [DateTime!]!
+  occurrences: [EventOccurrenceInput!]!
   summary: String!
   title: String!
 }
@@ -133,32 +132,18 @@ type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGra
 
 input CreateImageInput {
   alt: String
-  height: Float!
+  height: NonNegativeInt!
   imageData: String
   mimeType: String!
   thumbHash: String
   url: String
-  width: Float!
+  width: NonNegativeInt!
 }
 
 type CreateImageResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
   data: ImageResource!
-
-  """Whether the operation was successful"""
-  ok: Boolean!
-  uuid: String!
-}
-
-input CreateNotificationInput {
-  uuid: ID!
-}
-
-type CreateNotificationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
-  data: NotificationResource!
 
   """Whether the operation was successful"""
   ok: Boolean!
@@ -198,6 +183,9 @@ type CreateTeamResponse implements AbstractGraphQLCreatedResponse & AbstractGrap
   ok: Boolean!
   uuid: String!
 }
+
+"""Date range custom scalar type (just an ISO 8601 interval)"""
+scalar DateRange @specifiedBy(url: "https://www.iso.org/iso-8601-date-and-time-format.html")
 
 """Luxon DateTime custom scalar type"""
 scalar DateTime
@@ -356,8 +344,18 @@ type DeviceResource {
   uuid: ID!
 }
 
-"""Luxon Duration custom scalar type"""
-scalar Duration
+input EventOccurrenceInput {
+  fullDay: Boolean!
+  occurrence: DateRange!
+}
+
+type EventOccurrenceResource {
+  createdAt: DateTimeISO
+  fullDay: Boolean!
+  occurrence: DateRange!
+  updatedAt: DateTimeISO
+  uuid: ID!
+}
 
 enum EventResolverAllKeys {
   createdAt
@@ -453,10 +451,9 @@ enum EventResolverStringFilterKeys {
 type EventResource {
   createdAt: DateTimeISO
   description: String
-  duration: Duration
   images: [ImageResource!]!
   location: String
-  occurrences: [DateTime!]!
+  occurrences: [EventOccurrenceResource!]!
   summary: String
   title: String!
   updatedAt: DateTimeISO
@@ -575,13 +572,13 @@ type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGra
   ok: Boolean!
 
   """The current page number (1-indexed)"""
-  page: Float!
+  page: PositiveInt!
 
   """The number of items per page"""
-  pageSize: Float!
+  pageSize: NonNegativeInt!
 
   """The total number of items"""
-  total: Float!
+  total: NonNegativeInt!
 }
 
 type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
@@ -593,13 +590,13 @@ type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
   ok: Boolean!
 
   """The current page number (1-indexed)"""
-  page: Float!
+  page: PositiveInt!
 
   """The number of items per page"""
-  pageSize: Float!
+  pageSize: NonNegativeInt!
 
   """The total number of items"""
-  total: Float!
+  total: NonNegativeInt!
 }
 
 type ListNotificationsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
@@ -611,13 +608,13 @@ type ListNotificationsResponse implements AbstractGraphQLArrayOkResponse & Abstr
   ok: Boolean!
 
   """The current page number (1-indexed)"""
-  page: Float!
+  page: PositiveInt!
 
   """The number of items per page"""
-  pageSize: Float!
+  pageSize: NonNegativeInt!
 
   """The total number of items"""
-  total: Float!
+  total: NonNegativeInt!
 }
 
 type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
@@ -629,13 +626,13 @@ type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraph
   ok: Boolean!
 
   """The current page number (1-indexed)"""
-  page: Float!
+  page: PositiveInt!
 
   """The number of items per page"""
-  pageSize: Float!
+  pageSize: NonNegativeInt!
 
   """The total number of items"""
-  total: Float!
+  total: NonNegativeInt!
 }
 
 type MembershipResource {
@@ -651,7 +648,6 @@ type Mutation {
   createDevice(input: CreateDeviceInput!): CreateDeviceResponse!
   createEvent(input: CreateEventInput!): CreateEventResponse!
   createImage(input: CreateImageInput!): CreateImageResponse!
-  createNotification(input: CreateNotificationInput!): CreateNotificationResponse!
   createPerson(input: CreatePersonInput!): CreatePersonResponse!
   createTeam(input: CreateTeamInput!): CreateTeamResponse!
   deleteConfiguration(id: String!): DeleteConfigurationResponse!
@@ -661,7 +657,38 @@ type Mutation {
   deleteNotification(id: String!): DeleteNotificationResponse!
   deletePerson(id: String!): DeletePersonResponse!
   deleteTeam(id: String!): DeleteTeamResponse!
+  sendNotification(input: SendNotificationInput!): SendNotificationResponse!
   setConfiguration(id: String!, input: SetConfigurationInput!): SetConfigurationResponse!
+}
+
+"""Integers that will have a value of 0 or more."""
+scalar NonNegativeInt
+
+type NotificationPayload {
+  """
+  Only shown for presentation type INFO_POPUP, shown at the bottom of the popup
+  """
+  message: String
+  presentation: NotificationPayloadPresentationType!
+
+  """
+  A title for the notification, ignored for presentation type URL, shown with the webview for presentation type IN_APP_VIEW, and shown at the top of the popup for presentation type INFO_POPUP
+  """
+  title: String
+
+  """
+  A URL related to the notification, opened immediately for presentation type URL, opened in a webview for presentation type IN_APP_VIEW, and shown as a button for presentation type INFO_POPUP
+  """
+  url: String
+}
+
+"""
+The type of presentation for the notification, URL skips the app and opens a URL directly, IN_APP_VIEW opens a webview, and INFO_POPUP shows a popup
+"""
+enum NotificationPayloadPresentationType {
+  INFO_POPUP
+  IN_APP_VIEW
+  URL
 }
 
 enum NotificationResolverAllKeys {
@@ -679,7 +706,12 @@ input NotificationResolverKeyedIsNullFilterItem {
 }
 
 type NotificationResource {
+  body: String!
   createdAt: DateTimeISO
+  payload: NotificationPayload
+  sendTime: DateTimeISO!
+  sound: String
+  title: String!
   updatedAt: DateTimeISO
   uuid: ID!
 }
@@ -706,6 +738,9 @@ type PersonResource {
   updatedAt: DateTimeISO
   uuid: ID!
 }
+
+"""Integers that will have a value greater than 0."""
+scalar PositiveInt
 
 type Query {
   allConfigurations: GetAllConfigurationsResponse!
@@ -871,6 +906,21 @@ type RoleResource {
   updatedAt: DateTimeISO
 }
 
+input SendNotificationInput {
+  body: String!
+  title: String!
+}
+
+type SendNotificationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: NotificationResource!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+  uuid: String!
+}
+
 input SetConfigurationInput {
   key: String!
 }
@@ -974,8 +1024,10 @@ enum TeamType {
   Spirit
 }
 
-"""URL custom scalar type"""
+"""
+A field whose value conforms to the standard URL format as specified in RFC3986: https://www.ietf.org/rfc/rfc3986.txt.
+"""
 scalar URL
 
-"""Void custom scalar type"""
+"""Represents NULL values"""
 scalar Void

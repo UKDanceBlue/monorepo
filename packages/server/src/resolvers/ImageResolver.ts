@@ -1,5 +1,5 @@
 import { ErrorCode, ImageResource } from "@ukdanceblue/common";
-import { NonNegativeIntMock } from "graphql-scalars";
+import { NonNegativeIntResolver } from "graphql-scalars";
 import {
   Arg,
   Field,
@@ -47,9 +47,9 @@ class DeleteImageResponse extends AbstractGraphQLOkResponse<boolean> {
 }
 @InputType()
 class CreateImageInput implements Partial<ImageResource> {
-  @Field(() => NonNegativeIntMock)
+  @Field(() => NonNegativeIntResolver)
   width!: number;
-  @Field(() => NonNegativeIntMock)
+  @Field(() => NonNegativeIntResolver)
   height!: number;
 
   @Field(() => String)

@@ -66,11 +66,11 @@ export class NotificationResource extends Resource {
   @Field(() => Date)
   sendTime!: Date;
 
-  @Field({ nullable: true })
-  sound?: string | null;
+  @Field(() => String, { nullable: true })
+  sound!: string | null;
 
   @Field(() => NotificationPayload, { nullable: true })
-  payload?: NotificationPayload;
+  payload!: NotificationPayload | null;
 
   public getUniqueId(): string {
     return this.uuid;
