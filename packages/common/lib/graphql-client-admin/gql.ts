@@ -13,7 +13,8 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  fragment FullEvent on EventResource {\n    title\n    summary\n    location\n    duration\n    occurrences\n    duration\n    description\n  }\n": types.FullEventFragmentDoc,
+    "\n  fragment FullEventOccurrence on EventOccurrenceResource {\n    uuid\n    occurrence\n    fullDay\n  }\n": types.FullEventOccurrenceFragmentDoc,
+    "\n  fragment FullEvent on EventResource {\n    title\n    summary\n    location\n    occurrences {\n      ...FullEventOccurrence\n    }\n    description\n  }\n": types.FullEventFragmentDoc,
     "\n  fragment EventImages on EventResource {\n    images {\n      ...FullImage\n    }\n  }\n": types.EventImagesFragmentDoc,
     "\n  fragment FullEventWithImages on EventResource {\n    ...FullEvent\n    ...EventImages\n  }\n": types.FullEventWithImagesFragmentDoc,
     "\n  fragment FullImage on ImageResource {\n    url\n    imageData\n    height\n    width\n    thumbHash\n    alt\n  }\n": types.FullImageFragmentDoc,
@@ -41,7 +42,11 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment FullEvent on EventResource {\n    title\n    summary\n    location\n    duration\n    occurrences\n    duration\n    description\n  }\n"): (typeof documents)["\n  fragment FullEvent on EventResource {\n    title\n    summary\n    location\n    duration\n    occurrences\n    duration\n    description\n  }\n"];
+export function graphql(source: "\n  fragment FullEventOccurrence on EventOccurrenceResource {\n    uuid\n    occurrence\n    fullDay\n  }\n"): (typeof documents)["\n  fragment FullEventOccurrence on EventOccurrenceResource {\n    uuid\n    occurrence\n    fullDay\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment FullEvent on EventResource {\n    title\n    summary\n    location\n    occurrences {\n      ...FullEventOccurrence\n    }\n    description\n  }\n"): (typeof documents)["\n  fragment FullEvent on EventResource {\n    title\n    summary\n    location\n    occurrences {\n      ...FullEventOccurrence\n    }\n    description\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

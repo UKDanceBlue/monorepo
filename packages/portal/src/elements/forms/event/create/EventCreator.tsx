@@ -7,6 +7,8 @@ import { useNavigate } from "@tanstack/react-router";
 import type { CreateEventInput } from "@ukdanceblue/common/graphql-client-admin/raw-types";
 import { Input } from "antd";
 
+import { EventOccurrencePicker } from "../components/EventOccurrencePicker";
+
 export function EventCreator() {
   const [createEvent, { loading, error }] = useMutation(CREATE_EVENT, {
     refetchQueries: [LIST_EVENTS],
@@ -21,7 +23,7 @@ export function EventCreator() {
   const navigate = useNavigate();
 
   const form = useForm<CreateEventInput>({
-    async onSubmit(values, formApi) {
+    async onSubmit(values, _formApi) {
       const createdEvent = await createEvent({
         variables: {
           input: values,
@@ -35,6 +37,13 @@ export function EventCreator() {
         });
       }
     },
+    defaultValues: {
+      title: "",
+      summary: "",
+      location: "",
+      description: "",
+      occurrences: [],
+    },
   });
 
   return (
@@ -42,7 +51,7 @@ export function EventCreator() {
       <form.Field
         name="title"
         children={(field) => (
-          <input
+          <Input
             name={field.name}
             value={field.state.value}
             onBlur={field.handleBlur}
@@ -62,15 +71,19 @@ export function EventCreator() {
         )}
       />
       <form.Field
-        name="duration"
-        children={(field) => (
-          <Input
-            name={field.name}
-            value={field.state.value}
-            onBlur={field.handleBlur}
-            onChange={(e) => field.handleChange(e.target.value)}
-          />
-        )}
+        name="occurrences"
+        children={(field) =>
+          field.state.value.map((occurrence, index) => (
+            <EventOccurrencePicker
+              defaultOccurrence={occurrence}
+              onChange={(occurrence) => {
+                const occurrences = [...field.state.value];
+                occurrences[index] = occurrence;
+                field.handleChange(occurrences);
+              }}
+            />
+          ))
+        }
       />
       <form.Field
         name="description"

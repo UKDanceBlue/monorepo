@@ -1,4 +1,5 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
+import { resolvers } from "graphql-scalars";
 
 // import { dirname, join, normalize } from "path";
 // import { fileURLToPath } from "url";
@@ -29,12 +30,8 @@ const config = {
     ClientAction: "../api/response/JsonResponse.js#ClientAction",
   },
   scalars: {
-    DateTime: "string",
-    DateTimeISO: "string",
-    Duration: "string",
-    Interval: "string",
-    URL: "string",
-    Void: "undefined",
+    DateRange: "string",
+    ...resolvers,
   },
   strictScalars: true,
 };

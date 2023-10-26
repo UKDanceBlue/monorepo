@@ -1,13 +1,21 @@
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 
+export const EVENT_OCCURRENCE_FRAGMENT = graphql(/* GraphQL */ `
+  fragment FullEventOccurrence on EventOccurrenceResource {
+    uuid
+    occurrence
+    fullDay
+  }
+`);
+
 export const EVENT_FRAGMENT = graphql(/* GraphQL */ `
   fragment FullEvent on EventResource {
     title
     summary
     location
-    duration
-    occurrences
-    duration
+    occurrences {
+      ...FullEventOccurrence
+    }
     description
   }
 `);

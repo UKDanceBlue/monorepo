@@ -1,5 +1,7 @@
 import { useQuery } from "@apollo/client";
+import { EVENT_WITH_IMAGES_FRAGMENT } from "@fragments/eventFragments";
 import { base64StringToArray } from "@ukdanceblue/common";
+import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
 import { Descriptions, Empty, Flex, Image, List, Typography } from "antd";
 import DescriptionsItem from "antd/es/descriptions/Item";
 import { DateTime, Duration, Interval } from "luxon";
@@ -15,6 +17,7 @@ export function EventViewer({ uuid }: { uuid: string }) {
   });
 
   const { data: event } = data?.event ?? {};
+  const fullEventData = getFragmentData(EVENT_WITH_IMAGES_FRAGMENT);
 
   useApolloStatusWatcher({
     error,
