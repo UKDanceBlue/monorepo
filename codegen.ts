@@ -36,7 +36,7 @@ const config = {
   strictScalars: true,
 };
 const codegenConfig: CodegenConfig = {
-  schema: "../server/schema.graphql",
+  schema: "./packages/server/schema.graphql",
   hooks: {
     onError: (e) => {
       console.error("Error generating GraphQL client:", e);
@@ -44,25 +44,28 @@ const codegenConfig: CodegenConfig = {
   },
   emitLegacyCommonJSImports: false,
   generates: {
-    // "./lib/graphql-client-public/": {
+    // "./packages/common/lib/graphql-client-public/": {
     //   preset: "client",
     //   presetConfig,
     //   config,
-    //   documents: ["../mobile/src/**/*.ts", "../mobile/src/**/*.tsx"],
+    //   documents: ["./packages/mobile/src/**/*.ts", "./packages/mobile/src/**/*.tsx"],
     // },
-    "./lib/graphql-client-admin/": {
+    "./packages/common/lib/graphql-client-admin/": {
       preset: "client",
       presetConfig,
       config,
-      documents: ["../portal/src/**/*.ts", "../portal/src/**/*.tsx"],
+      documents: [
+        "./packages/portal/src/**/*.ts",
+        "./packages/portal/src/**/*.tsx",
+      ],
     },
   },
   watch: [
-    "../server/schema.graphql",
-    "../portal/src/**/*.ts",
-    "../portal/src/**/*.tsx",
-    // "../mobile/src/**/*.ts",
-    // "../mobile/src/**/*.tsx",
+    "./packages/server/schema.graphql",
+    "./packages/portal/src/**/*.ts",
+    "./packages/portal/src/**/*.tsx",
+    // "./packages/mobile/src/**/*.ts",
+    // "./packages/mobile/src/**/*.tsx",
   ],
 };
 

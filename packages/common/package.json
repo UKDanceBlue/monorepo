@@ -45,10 +45,8 @@
   ],
   "scripts": {
     "build-code": "tsc",
-    "build-client": "graphql-codegen-esm --config codegen.ts",
     "build": "yarn run build-code && yarn run build-client",
     "watch-code": "tsc -w",
-    "watch-client": "graphql-codegen-esm --config codegen.ts -w ..",
     "test": "jest",
     "test-coverage": "jest --coverage",
     "test-coverage-all": "jest --coverage --collectCoverageFrom=./lib/**/*"
@@ -56,8 +54,6 @@
   "author": "UKDanceBlue",
   "license": "ISC",
   "devDependencies": {
-    "@graphql-codegen/cli": "^5.0.0",
-    "@graphql-codegen/client-preset": "^4.1.0",
     "@jest/globals": "^29.5.0",
     "@parcel/watcher": "^2.3.0",
     "@types/luxon": "^3.3.0",
