@@ -1,12 +1,36 @@
 import { EventViewer } from "@elements/viewers/event/EventViewer";
+import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useParams } from "@tanstack/react-router";
+import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { useQuery } from "urql";
+
+const viewEventPageDocument = graphql(/* GraphQL */ `
+  query ViewEventPage($uuid: String!) {
+    event(uuid: $uuid) {
+      data {
+        ...EventViewerFragment
+      }
+    }
+  }
+`);
 
 export function ViewEventPage() {
   const { eventId } = useParams({ from: "/events/$eventId" });
 
+  const [{ data, fetching, error }] = useQuery({
+    query: viewEventPageDocument,
+    variables: { uuid: eventId },
+  });
+
+  useQueryStatusWatcher({
+    error,
+    fetching,
+    loadingMessage: "Loading event...",
+  });
+
   return (
     <div>
-      <EventViewer uuid={eventId} />
+      <EventViewer eventFragment={data?.event.data} />
     </div>
   );
 }

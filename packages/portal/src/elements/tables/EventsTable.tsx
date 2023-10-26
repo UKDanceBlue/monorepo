@@ -1,11 +1,64 @@
-import { useApolloStatusWatcher } from "@hooks/useApolloStatusWatcher";
 import { useListQuery } from "@hooks/useListQuery";
-import { listEventsQueryDocument } from "@queries/eventQueries";
+import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { Link } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
+import {
+  parseEventOccurrence,
+  parsedEventOccurrenceToString,
+} from "@ukdanceblue/common/client-parsers";
+import {
+  getFragmentData,
+  graphql,
+} from "@ukdanceblue/common/graphql-client-admin";
 import { Table } from "antd";
-import { DateTime, Duration, Interval } from "luxon";
 import { useQuery } from "urql";
+
+const EventsTableFragment = graphql(/* GraphQL */ `
+  fragment EventsTableFragment on EventResource {
+    uuid
+    title
+    description
+    occurrences {
+      uuid
+      occurrence
+      fullDay
+    }
+    summary
+  }
+`);
+
+const eventsTableQueryDocument = graphql(/* GraphQL */ `
+  query EventsTable(
+    $page: Int
+    $pageSize: Int
+    $sortBy: [String!]
+    $sortDirection: [SortDirection!]
+    $dateFilters: [EventResolverKeyedDateFilterItem!]
+    $isNullFilters: [EventResolverKeyedIsNullFilterItem!]
+    $numericFilters: [EventResolverKeyedNumericFilterItem!]
+    $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]
+    $stringFilters: [EventResolverKeyedStringFilterItem!]
+  ) {
+    events(
+      page: $page
+      pageSize: $pageSize
+      sortBy: $sortBy
+      sortDirection: $sortDirection
+      dateFilters: $dateFilters
+      isNullFilters: $isNullFilters
+      numericFilters: $numericFilters
+      oneOfFilters: $oneOfFilters
+      stringFilters: $stringFilters
+    ) {
+      page
+      pageSize
+      total
+      data {
+        ...EventsTableFragment
+      }
+    }
+  }
+`);
 
 export const EventsTable = () => {
   const { queryOptions, updatePagination, clearSorting, pushSorting } =
@@ -16,15 +69,7 @@ export const EventsTable = () => {
         initSorting: [],
       },
       {
-        allFields: [
-          "eventId",
-          "title",
-          "description",
-          "duration",
-          "occurrences",
-          "summary",
-          "images",
-        ],
+        allFields: ["uuid", "title", "description", "occurrences", "summary"],
         dateFields: [],
         isNullFields: [],
         numericFields: [],
@@ -33,29 +78,34 @@ export const EventsTable = () => {
       }
     );
 
-  const [{ data: events, error, fetching }] = useQuery({
-    query: listEventsQueryDocument,
+  const [{ fetching, error, data: eventsDocument }] = useQuery({
+    query: eventsTableQueryDocument,
     variables: queryOptions,
   });
 
-  useApolloStatusWatcher({
+  useQueryStatusWatcher({
     error,
     fetching,
     loadingMessage: "Loading events...",
   });
 
+  const listEventsData = getFragmentData(
+    EventsTableFragment,
+    eventsDocument?.events.data
+  );
+
   return (
     <>
       <Table
-        dataSource={events?.events.data}
+        dataSource={listEventsData ?? undefined}
         rowKey={({ uuid }) => uuid}
         loading={fetching}
         pagination={
-          events
+          eventsDocument
             ? {
-                current: events.events.page,
-                pageSize: events.events.pageSize,
-                total: events.events.total,
+                current: eventsDocument.events.page,
+                pageSize: eventsDocument.events.pageSize,
+                total: eventsDocument.events.total,
                 showSizeChanger: true,
               }
             : false
@@ -73,13 +123,11 @@ export const EventsTable = () => {
             }
             pushSorting({
               field: sort.field as
-                | "eventId"
+                | "uuid"
                 | "title"
                 | "description"
-                | "duration"
                 | "occurrences"
-                | "summary"
-                | "images",
+                | "summary",
               direction:
                 sort.order === "ascend"
                   ? SortDirection.ASCENDING
@@ -103,43 +151,16 @@ export const EventsTable = () => {
             title: "Occurrences",
             dataIndex: "occurrences",
             key: "occurrences",
-            render: (
-              occurrences: string[],
-              { duration }: NonNullable<typeof events>["events"]["data"][number]
-            ) => {
-              const parsedOccurrences = occurrences.map((occurrence) => {
-                if (!occurrence) {
-                  return null;
-                }
-                const dateTime = DateTime.fromISO(occurrence);
-                if (!dateTime.isValid) {
-                  return null;
-                }
-                if (!duration) {
-                  return dateTime;
-                }
-                const durationObj = Duration.fromISO(duration);
-                if (durationObj.as("milliseconds") === 0) {
-                  return dateTime;
-                }
-                return Interval.fromDateTimes(
-                  dateTime,
-                  dateTime.plus(durationObj)
-                );
-              });
+            render: (_, record) => {
               return (
                 <ul style={{ padding: 0 }}>
-                  {parsedOccurrences.map(
-                    (occurrence, i) =>
-                      occurrence && (
-                        <li
-                          key={`${i}-${occurrence.toString()}`}
-                          style={{ listStyle: "none" }}
-                        >
-                          {occurrence.toLocaleString(DateTime.DATETIME_SHORT)}
-                        </li>
-                      )
-                  )}
+                  {record.occurrences.map((occurrence) => (
+                    <li key={occurrence.uuid} style={{ listStyle: "none" }}>
+                      {parsedEventOccurrenceToString(
+                        parseEventOccurrence(occurrence)
+                      )}
+                    </li>
+                  ))}
                 </ul>
               );
             },

@@ -1,4 +1,6 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
+import type { ClientPresetConfig } from "@graphql-codegen/client-preset";
+import type { TypeScriptPluginConfig } from "@graphql-codegen/typescript";
 import type { GraphQLScalarTypeExtensions } from "graphql";
 import { resolvers } from "graphql-scalars";
 
@@ -18,16 +20,16 @@ const graphqlScalarsClientDefs = Object.entries(resolvers).reduce<
   return acc;
 }, {});
 
-const presetConfig = {
+const presetConfig: ClientPresetConfig = {
   fragmentMasking: {
     unmaskFunctionName: "getFragmentData",
   },
 };
-const config = {
+
+const config: TypeScriptPluginConfig = {
   useTypeImports: true,
   enumsAsConst: true,
   immutableTypes: true,
-  useIndexSignature: true,
   enumValues: {
     // Comparator: '../api/request/ListQueryTypes.js#Comparator',
     StringComparator: "../api/request/ListQueryTypes.js#StringComparator",
@@ -74,13 +76,6 @@ const codegenConfig: CodegenConfig = {
       ],
     },
   },
-  watch: [
-    "./packages/server/schema.graphql",
-    "./packages/portal/src/**/*.ts",
-    "./packages/portal/src/**/*.tsx",
-    // "./packages/mobile/src/**/*.ts",
-    // "./packages/mobile/src/**/*.tsx",
-  ],
 };
 
 export default codegenConfig;

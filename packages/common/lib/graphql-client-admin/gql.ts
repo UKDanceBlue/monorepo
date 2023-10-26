@@ -13,16 +13,10 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  fragment FullEventOccurrence on EventOccurrenceResource {\n    uuid\n    occurrence\n    fullDay\n  }\n": types.FullEventOccurrenceFragmentDoc,
-    "\n  fragment FullEvent on EventResource {\n    title\n    summary\n    location\n    occurrences {\n      ...FullEventOccurrence\n    }\n    description\n  }\n": types.FullEventFragmentDoc,
-    "\n  fragment EventImages on EventResource {\n    images {\n      ...FullImage\n    }\n  }\n": types.EventImagesFragmentDoc,
-    "\n  fragment FullEventWithImages on EventResource {\n    ...FullEvent\n    ...EventImages\n  }\n": types.FullEventWithImagesFragmentDoc,
-    "\n  fragment FullImage on ImageResource {\n    url\n    imageData\n    height\n    width\n    thumbHash\n    alt\n  }\n": types.FullImageFragmentDoc,
-    "\n  fragment ImageMetadata on ImageResource {\n    height\n    width\n    mimeType\n    alt\n  }\n": types.ImageMetadataFragmentDoc,
-    "\n  fragment ImageThumbHash on ImageResource {\n    thumbHash\n    height\n    width\n    alt\n  }\n": types.ImageThumbHashFragmentDoc,
-    "\n  mutation CreateEvent($input: CreateEventInput!) {\n    createEvent(input: $input) {\n      ok\n      clientActions\n      data {\n        uuid\n      }\n    }\n  }\n": types.CreateEventDocument,
-    "\n  query GetEvent($uuid: String!) {\n    event(uuid: $uuid) {\n      ok\n      clientActions\n      data {\n        uuid\n        ...FullEventWithImages\n      }\n    }\n  }\n": types.GetEventDocument,
-    "\n  query ListEvents(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [EventResolverKeyedDateFilterItem!]\n    $isNullFilters: [EventResolverKeyedIsNullFilterItem!]\n    $numericFilters: [EventResolverKeyedNumericFilterItem!]\n    $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]\n    $stringFilters: [EventResolverKeyedStringFilterItem!]\n  ) {\n    events(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      isNullFilters: $isNullFilters\n      numericFilters: $numericFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      ok\n      data {\n        uuid\n        ...FullEvent\n        images {\n          uuid\n          ...ImageMetadata\n        }\n      }\n      page\n      pageSize\n      total\n    }\n  }\n": types.ListEventsDocument,
+    "\n  fragment EventsTableFragment on EventResource {\n    uuid\n    title\n    description\n    occurrences {\n      uuid\n      occurrence\n      fullDay\n    }\n    summary\n  }\n": types.EventsTableFragmentFragmentDoc,
+    "\n  query EventsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [EventResolverKeyedDateFilterItem!]\n    $isNullFilters: [EventResolverKeyedIsNullFilterItem!]\n    $numericFilters: [EventResolverKeyedNumericFilterItem!]\n    $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]\n    $stringFilters: [EventResolverKeyedStringFilterItem!]\n  ) {\n    events(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      isNullFilters: $isNullFilters\n      numericFilters: $numericFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...EventsTableFragment\n      }\n    }\n  }\n": types.EventsTableDocument,
+    "\n  fragment EventViewerFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      occurrence\n      fullDay\n    }\n    images {\n      url\n      imageData\n      width\n      height\n      thumbHash\n      alt\n    }\n  }\n": types.EventViewerFragmentFragmentDoc,
+    "\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n": types.ViewEventPageDocument,
 };
 
 /**
@@ -42,43 +36,19 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment FullEventOccurrence on EventOccurrenceResource {\n    uuid\n    occurrence\n    fullDay\n  }\n"): (typeof documents)["\n  fragment FullEventOccurrence on EventOccurrenceResource {\n    uuid\n    occurrence\n    fullDay\n  }\n"];
+export function graphql(source: "\n  fragment EventsTableFragment on EventResource {\n    uuid\n    title\n    description\n    occurrences {\n      uuid\n      occurrence\n      fullDay\n    }\n    summary\n  }\n"): (typeof documents)["\n  fragment EventsTableFragment on EventResource {\n    uuid\n    title\n    description\n    occurrences {\n      uuid\n      occurrence\n      fullDay\n    }\n    summary\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment FullEvent on EventResource {\n    title\n    summary\n    location\n    occurrences {\n      ...FullEventOccurrence\n    }\n    description\n  }\n"): (typeof documents)["\n  fragment FullEvent on EventResource {\n    title\n    summary\n    location\n    occurrences {\n      ...FullEventOccurrence\n    }\n    description\n  }\n"];
+export function graphql(source: "\n  query EventsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [EventResolverKeyedDateFilterItem!]\n    $isNullFilters: [EventResolverKeyedIsNullFilterItem!]\n    $numericFilters: [EventResolverKeyedNumericFilterItem!]\n    $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]\n    $stringFilters: [EventResolverKeyedStringFilterItem!]\n  ) {\n    events(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      isNullFilters: $isNullFilters\n      numericFilters: $numericFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...EventsTableFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query EventsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [EventResolverKeyedDateFilterItem!]\n    $isNullFilters: [EventResolverKeyedIsNullFilterItem!]\n    $numericFilters: [EventResolverKeyedNumericFilterItem!]\n    $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]\n    $stringFilters: [EventResolverKeyedStringFilterItem!]\n  ) {\n    events(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      isNullFilters: $isNullFilters\n      numericFilters: $numericFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...EventsTableFragment\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment EventImages on EventResource {\n    images {\n      ...FullImage\n    }\n  }\n"): (typeof documents)["\n  fragment EventImages on EventResource {\n    images {\n      ...FullImage\n    }\n  }\n"];
+export function graphql(source: "\n  fragment EventViewerFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      occurrence\n      fullDay\n    }\n    images {\n      url\n      imageData\n      width\n      height\n      thumbHash\n      alt\n    }\n  }\n"): (typeof documents)["\n  fragment EventViewerFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      occurrence\n      fullDay\n    }\n    images {\n      url\n      imageData\n      width\n      height\n      thumbHash\n      alt\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment FullEventWithImages on EventResource {\n    ...FullEvent\n    ...EventImages\n  }\n"): (typeof documents)["\n  fragment FullEventWithImages on EventResource {\n    ...FullEvent\n    ...EventImages\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  fragment FullImage on ImageResource {\n    url\n    imageData\n    height\n    width\n    thumbHash\n    alt\n  }\n"): (typeof documents)["\n  fragment FullImage on ImageResource {\n    url\n    imageData\n    height\n    width\n    thumbHash\n    alt\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  fragment ImageMetadata on ImageResource {\n    height\n    width\n    mimeType\n    alt\n  }\n"): (typeof documents)["\n  fragment ImageMetadata on ImageResource {\n    height\n    width\n    mimeType\n    alt\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  fragment ImageThumbHash on ImageResource {\n    thumbHash\n    height\n    width\n    alt\n  }\n"): (typeof documents)["\n  fragment ImageThumbHash on ImageResource {\n    thumbHash\n    height\n    width\n    alt\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation CreateEvent($input: CreateEventInput!) {\n    createEvent(input: $input) {\n      ok\n      clientActions\n      data {\n        uuid\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateEvent($input: CreateEventInput!) {\n    createEvent(input: $input) {\n      ok\n      clientActions\n      data {\n        uuid\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query GetEvent($uuid: String!) {\n    event(uuid: $uuid) {\n      ok\n      clientActions\n      data {\n        uuid\n        ...FullEventWithImages\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetEvent($uuid: String!) {\n    event(uuid: $uuid) {\n      ok\n      clientActions\n      data {\n        uuid\n        ...FullEventWithImages\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query ListEvents(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [EventResolverKeyedDateFilterItem!]\n    $isNullFilters: [EventResolverKeyedIsNullFilterItem!]\n    $numericFilters: [EventResolverKeyedNumericFilterItem!]\n    $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]\n    $stringFilters: [EventResolverKeyedStringFilterItem!]\n  ) {\n    events(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      isNullFilters: $isNullFilters\n      numericFilters: $numericFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      ok\n      data {\n        uuid\n        ...FullEvent\n        images {\n          uuid\n          ...ImageMetadata\n        }\n      }\n      page\n      pageSize\n      total\n    }\n  }\n"): (typeof documents)["\n  query ListEvents(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [EventResolverKeyedDateFilterItem!]\n    $isNullFilters: [EventResolverKeyedIsNullFilterItem!]\n    $numericFilters: [EventResolverKeyedNumericFilterItem!]\n    $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]\n    $stringFilters: [EventResolverKeyedStringFilterItem!]\n  ) {\n    events(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      isNullFilters: $isNullFilters\n      numericFilters: $numericFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      ok\n      data {\n        uuid\n        ...FullEvent\n        images {\n          uuid\n          ...ImageMetadata\n        }\n      }\n      page\n      pageSize\n      total\n    }\n  }\n"];
+export function graphql(source: "\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

@@ -1,68 +1,84 @@
-import { EVENT_WITH_IMAGES_FRAGMENT } from "@fragments/eventFragments";
 import { base64StringToArray } from "@ukdanceblue/common";
-import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
+import {
+  getFragmentData,
+  graphql,
+} from "@ukdanceblue/common/graphql-client-admin";
 import { Descriptions, Empty, Flex, Image, List, Typography } from "antd";
 import DescriptionsItem from "antd/es/descriptions/Item";
-import { DateTime, Duration, Interval } from "luxon";
+import { DateTime, Interval } from "luxon";
 import { useMemo } from "react";
 import { thumbHashToDataURL } from "thumbhash";
-import { useQuery } from "urql";
 
-import { getEventQueryDocument } from "../../../graphql/queries/eventQueries";
-import { useApolloStatusWatcher } from "../../../hooks/useApolloStatusWatcher";
+export const EventViewerFragment = graphql(/* GraphQL */ `
+  fragment EventViewerFragment on EventResource {
+    uuid
+    title
+    summary
+    description
+    location
+    occurrences {
+      occurrence
+      fullDay
+    }
+    images {
+      url
+      imageData
+      width
+      height
+      thumbHash
+      alt
+    }
+  }
+`);
 
-export function EventViewer({ uuid }: { uuid: string }) {
-  const [{ data, error, fetching }] = useQuery({
-    query: getEventQueryDocument,
-    variables: { uuid },
-  });
+export function EventViewer({
+  eventFragment,
+}: {
+  eventFragment?: FragmentType<typeof EventViewerFragment> | undefined;
+}) {
+  const eventData = getFragmentData(EventViewerFragment, eventFragment);
 
-  const { data: event } = data?.event ?? {};
-  const fullEventData = getFragmentData(
-    EVENT_WITH_IMAGES_FRAGMENT,
-    data?.event.data
-  );
-
-  useApolloStatusWatcher({
-    error,
-    loadingMessage: "Loading event...",
-    fetching,
-  });
-
-  const occurrences = useMemo(
+  const occurrences = useMemo<
+    { occurrence: Interval; fullDay: boolean }[] | undefined
+  >(
     () =>
-      (event?.occurrences ?? []).map((occurrence) => {
-        const dateTime = DateTime.fromISO(occurrence);
-        if (event?.duration) {
-          return Interval.after(dateTime, Duration.fromISO(event.duration));
-        }
-        return dateTime;
-      }),
-    [event]
+      eventData?.occurrences
+        ? eventData.occurrences.map((occurrence) => {
+            const interval = Interval.fromISO(occurrence.occurrence);
+            return {
+              occurrence: interval,
+              fullDay: occurrence.fullDay,
+            };
+          })
+        : undefined,
+    [eventData?.occurrences]
   );
 
-  if (!event) {
+  if (!eventData) {
     return <Empty description="Event not found" style={{ marginTop: "1em" }} />;
   }
 
   return (
     <Flex vertical gap="middle" align="center">
-      <Typography.Title level={2}>{event.title}</Typography.Title>
-      {event.images.length > 0 && (
+      <Typography.Title level={2}>{eventData.title}</Typography.Title>
+      {eventData.images.length > 0 && (
         <Flex
           gap="middle"
           align="center"
           style={{ maxHeight: "50vh", overflow: "auto" }}
         >
           <Image.PreviewGroup>
-            {event.images.map((image) => {
+            {eventData.images.map((image) => {
               const thumbHash =
                 image.thumbHash &&
                 thumbHashToDataURL(base64StringToArray(image.thumbHash));
 
               return (
                 <Image
-                  src={image.url ?? image.imageData ?? "about:blank"}
+                  src={
+                    image.url?.toString() ?? image.imageData ?? "about:blank"
+                  }
                   fallback={thumbHash ?? "about:blank"}
                   loading="lazy"
                   placeholder={
@@ -86,32 +102,36 @@ export function EventViewer({ uuid }: { uuid: string }) {
         </Flex>
       )}
       <Descriptions column={1} layout="vertical">
-        {event.summary && (
+        {eventData.summary && (
           <DescriptionsItem label="Summary">
-            <Typography.Paragraph>{event.summary}</Typography.Paragraph>
+            <Typography.Paragraph>{eventData.summary}</Typography.Paragraph>
           </DescriptionsItem>
         )}
-        {event.description && (
+        {eventData.description && (
           <Descriptions.Item label="Location">
-            <Typography.Text>{event.location}</Typography.Text>
+            <Typography.Text>{eventData.location}</Typography.Text>
           </Descriptions.Item>
         )}
-        {occurrences.length > 0 && (
+        {occurrences && occurrences.length > 0 && (
           <Descriptions.Item label="Occurrences">
             <List>
               {occurrences.map((occurrence) => (
                 <List.Item>
-                  {occurrence.toLocaleString(
-                    DateTime.DATETIME_MED_WITH_WEEKDAY
-                  )}
+                  {occurrence.fullDay
+                    ? occurrence.occurrence.start?.toLocaleString(
+                        DateTime.DATE_FULL
+                      )
+                    : occurrence.occurrence.start?.toLocaleString(
+                        DateTime.DATETIME_SHORT
+                      )}
                 </List.Item>
               ))}
             </List>
           </Descriptions.Item>
         )}
-        {event.description && (
+        {eventData.description && (
           <Descriptions.Item label="Description">
-            <Typography.Paragraph>{event.description}</Typography.Paragraph>
+            <Typography.Paragraph>{eventData.description}</Typography.Paragraph>
           </Descriptions.Item>
         )}
       </Descriptions>

@@ -1,8 +1,7 @@
-import { useApolloStatusWatcher } from "@hooks/useApolloStatusWatcher";
+import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { base64StringToArray } from "@ukdanceblue/common";
 import { Descriptions, Empty, Flex, Image, List, Typography } from "antd";
 import DescriptionsItem from "antd/es/descriptions/Item";
-import { getEventQueryDocument } from "graphql/queries/eventQueries";
 import { DateTime, Duration, Interval } from "luxon";
 import { useMemo } from "react";
 import { thumbHashToDataURL } from "thumbhash";
@@ -16,7 +15,7 @@ export function EventEditor({ uuid }: { uuid: string }) {
 
   const { data: event } = data?.event ?? {};
 
-  useApolloStatusWatcher({
+  useQueryStatusWatcher({
     error,
     loadingMessage: "Loading event...",
     fetching,

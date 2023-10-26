@@ -1,5 +1,4 @@
-import { useApolloStatusWatcher } from "@hooks/useApolloStatusWatcher";
-import { createEventMutationDocument } from "@mutations/eventMutations";
+import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import type { CreateEventInput } from "@ukdanceblue/common/graphql-client-admin/raw-types";
@@ -13,7 +12,7 @@ export function EventCreator() {
     createEventMutationDocument
   );
 
-  useApolloStatusWatcher({
+  useQueryStatusWatcher({
     error,
     loadingMessage: "Creating event...",
     fetching,

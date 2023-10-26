@@ -20,6 +20,10 @@
       "types": "./dist/react.d.ts",
       "default": "./dist/react/index.js"
     },
+    "./client-parsers": {
+      "node": null,
+      "default": "./dist/client-parsers/index.js"
+    },
     "./graphql-client-admin": {
       "node": null,
       "react-native": null,
