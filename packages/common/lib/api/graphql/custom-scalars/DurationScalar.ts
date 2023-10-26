@@ -2,7 +2,7 @@ import { GraphQLScalarType, Kind } from "graphql";
 import { Duration } from "luxon";
 
 export const DurationScalar = new GraphQLScalarType({
-  name: "Duration",
+  name: "LuxonDuration",
   description: "Luxon Duration custom scalar type",
   parseValue(value): Duration {
     if (typeof value === "string") {

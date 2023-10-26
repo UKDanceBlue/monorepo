@@ -22,20 +22,20 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  /** Date range custom scalar type (just an ISO 8601 interval) */
-  DateRange: { input: string; output: string; }
-  /** Luxon DateTime custom scalar type */
-  DateTime: { input: "DateTime"; output: "DateTime"; }
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format. */
-  DateTimeISO: { input: "DateTimeISO"; output: "DateTimeISO"; }
+  DateTimeISO: { input: Date | string; output: Date | string; }
+  /** Date range custom scalar type (just an ISO 8601 interval) */
+  LuxonDateRange: { input: string; output: string; }
+  /** Luxon DateTime custom scalar type */
+  LuxonDateTime: { input: string; output: string; }
   /** Integers that will have a value of 0 or more. */
-  NonNegativeInt: { input: "NonNegativeInt"; output: "NonNegativeInt"; }
+  NonNegativeInt: { input: number; output: number; }
   /** Integers that will have a value greater than 0. */
-  PositiveInt: { input: "PositiveInt"; output: "PositiveInt"; }
+  PositiveInt: { input: number; output: number; }
   /** A field whose value conforms to the standard URL format as specified in RFC3986: https://www.ietf.org/rfc/rfc3986.txt. */
-  URL: { input: "URL"; output: "URL"; }
+  URL: { input: URL | string; output: URL | string; }
   /** Represents NULL values */
-  Void: { input: "Void"; output: "Void"; }
+  Void: { input: void; output: void; }
 };
 
 /** API response */
@@ -288,7 +288,7 @@ export type DeviceResolverKeyedDateFilterItem = {
   readonly field: DeviceResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
-  readonly value: Scalars['DateTime']['input'];
+  readonly value: Scalars['LuxonDateTime']['input'];
 };
 
 export type DeviceResolverKeyedIsNullFilterItem = {
@@ -327,21 +327,21 @@ export type DeviceResource = {
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly expoPushToken?: Maybe<Scalars['String']['output']>;
   readonly lastLoggedInUser?: Maybe<PersonResource>;
-  readonly lastLogin?: Maybe<Scalars['DateTime']['output']>;
+  readonly lastLogin?: Maybe<Scalars['LuxonDateTime']['output']>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
 
 export type EventOccurrenceInput = {
   readonly fullDay: Scalars['Boolean']['input'];
-  readonly occurrence: Scalars['DateRange']['input'];
+  readonly occurrence: Scalars['LuxonDateRange']['input'];
 };
 
 export type EventOccurrenceResource = {
   readonly __typename?: 'EventOccurrenceResource';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly fullDay: Scalars['Boolean']['output'];
-  readonly occurrence: Scalars['DateRange']['output'];
+  readonly occurrence: Scalars['LuxonDateRange']['output'];
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
@@ -372,7 +372,7 @@ export type EventResolverKeyedDateFilterItem = {
   readonly field: EventResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
-  readonly value: Scalars['DateTime']['input'];
+  readonly value: Scalars['LuxonDateTime']['input'];
 };
 
 export type EventResolverKeyedIsNullFilterItem = {
@@ -1002,7 +1002,7 @@ export type FullEventWithImagesFragment = (
   & { ' $fragmentRefs'?: { 'FullEventFragment': FullEventFragment;'EventImagesFragment': EventImagesFragment } }
 ) & { ' $fragmentName'?: 'FullEventWithImagesFragment' };
 
-export type FullImageFragment = { readonly __typename?: 'ImageResource', readonly url?: "URL" | null, readonly imageData?: string | null, readonly height: number, readonly width: number, readonly thumbHash?: string | null, readonly alt?: string | null } & { ' $fragmentName'?: 'FullImageFragment' };
+export type FullImageFragment = { readonly __typename?: 'ImageResource', readonly url?: URL | string | null, readonly imageData?: string | null, readonly height: number, readonly width: number, readonly thumbHash?: string | null, readonly alt?: string | null } & { ' $fragmentName'?: 'FullImageFragment' };
 
 export type ImageMetadataFragment = { readonly __typename?: 'ImageResource', readonly height: number, readonly width: number, readonly mimeType: string, readonly alt?: string | null } & { ' $fragmentName'?: 'ImageMetadataFragment' };
 
@@ -1038,7 +1038,7 @@ export type ListEventsQueryVariables = Exact<{
 }>;
 
 
-export type ListEventsQuery = { readonly __typename?: 'Query', readonly events: { readonly __typename?: 'ListEventsResponse', readonly ok: boolean, readonly page: "PositiveInt", readonly pageSize: "NonNegativeInt", readonly total: "NonNegativeInt", readonly data: ReadonlyArray<(
+export type ListEventsQuery = { readonly __typename?: 'Query', readonly events: { readonly __typename?: 'ListEventsResponse', readonly ok: boolean, readonly page: number, readonly pageSize: number, readonly total: number, readonly data: ReadonlyArray<(
       { readonly __typename?: 'EventResource', readonly uuid: string, readonly images: ReadonlyArray<(
         { readonly __typename?: 'ImageResource', readonly uuid: string }
         & { ' $fragmentRefs'?: { 'ImageMetadataFragment': ImageMetadataFragment } }

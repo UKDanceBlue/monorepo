@@ -1,10 +1,22 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
+import type { GraphQLScalarTypeExtensions } from "graphql";
 import { resolvers } from "graphql-scalars";
 
 // import { dirname, join, normalize } from "path";
 // import { fileURLToPath } from "url";
 
 // const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const graphqlScalarsClientDefs = Object.entries(resolvers).reduce<
+  Record<string, GraphQLScalarTypeExtensions["codegenScalarType"]>
+>((acc, [key, value]) => {
+  const { extensions } = value.toConfig();
+  if (!("codegenScalarType" in extensions)) {
+    return acc;
+  }
+  acc[key] = extensions.codegenScalarType;
+  return acc;
+}, {});
 
 const presetConfig = {
   fragmentMasking: {
@@ -30,8 +42,10 @@ const config = {
     ClientAction: "../api/response/JsonResponse.js#ClientAction",
   },
   scalars: {
-    DateRange: "string",
-    ...resolvers,
+    LuxonDateRange: "string",
+    LuxonDateTime: "string",
+    LuxonDuration: "string",
+    ...graphqlScalarsClientDefs,
   },
   strictScalars: true,
 };

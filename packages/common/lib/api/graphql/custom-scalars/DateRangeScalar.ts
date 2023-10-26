@@ -4,7 +4,7 @@ import { DateTime, Duration, Interval } from "luxon";
 import { LuxonError } from "../../../index.js";
 
 export const DateRangeScalar = new GraphQLScalarType<Interval, string>({
-  name: "DateRange",
+  name: "LuxonDateRange",
   description: "Date range custom scalar type (just an ISO 8601 interval)",
   parseValue(value): Interval {
     if (value == null) {

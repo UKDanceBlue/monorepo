@@ -2,7 +2,7 @@ import { GraphQLScalarType, Kind } from "graphql";
 import { DateTime } from "luxon";
 
 export const DateTimeScalar = new GraphQLScalarType({
-  name: "DateTime",
+  name: "LuxonDateTime",
   description: "Luxon DateTime custom scalar type",
   parseValue(value): DateTime {
     if (typeof value === "string") {

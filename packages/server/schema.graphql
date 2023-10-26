@@ -184,12 +184,6 @@ type CreateTeamResponse implements AbstractGraphQLCreatedResponse & AbstractGrap
   uuid: String!
 }
 
-"""Date range custom scalar type (just an ISO 8601 interval)"""
-scalar DateRange @specifiedBy(url: "https://www.iso.org/iso-8601-date-and-time-format.html")
-
-"""Luxon DateTime custom scalar type"""
-scalar DateTime
-
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
 """
@@ -292,7 +286,7 @@ input DeviceResolverKeyedDateFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-  value: DateTime!
+  value: LuxonDateTime!
 }
 
 input DeviceResolverKeyedIsNullFilterItem {
@@ -339,20 +333,20 @@ type DeviceResource {
   createdAt: DateTimeISO
   expoPushToken: String
   lastLoggedInUser: PersonResource
-  lastLogin: DateTime
+  lastLogin: LuxonDateTime
   updatedAt: DateTimeISO
   uuid: ID!
 }
 
 input EventOccurrenceInput {
   fullDay: Boolean!
-  occurrence: DateRange!
+  occurrence: LuxonDateRange!
 }
 
 type EventOccurrenceResource {
   createdAt: DateTimeISO
   fullDay: Boolean!
-  occurrence: DateRange!
+  occurrence: LuxonDateRange!
   updatedAt: DateTimeISO
   uuid: ID!
 }
@@ -385,7 +379,7 @@ input EventResolverKeyedDateFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-  value: DateTime!
+  value: LuxonDateTime!
 }
 
 input EventResolverKeyedIsNullFilterItem {
@@ -634,6 +628,12 @@ type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraph
   """The total number of items"""
   total: NonNegativeInt!
 }
+
+"""Date range custom scalar type (just an ISO 8601 interval)"""
+scalar LuxonDateRange @specifiedBy(url: "https://www.iso.org/iso-8601-date-and-time-format.html")
+
+"""Luxon DateTime custom scalar type"""
+scalar LuxonDateTime
 
 type MembershipResource {
   createdAt: DateTimeISO

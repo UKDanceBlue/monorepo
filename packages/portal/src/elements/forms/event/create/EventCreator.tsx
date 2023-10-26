@@ -1,6 +1,5 @@
 import { useApolloStatusWatcher } from "@hooks/useApolloStatusWatcher";
 import { createEventMutationDocument } from "@mutations/eventMutations";
-import { listEventsQueryDocument } from "@queries/eventQueries";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import type { CreateEventInput } from "@ukdanceblue/common/graphql-client-admin/raw-types";
@@ -10,17 +9,14 @@ import { useMutation } from "urql";
 import { EventOccurrencePicker } from "../components/EventOccurrencePicker";
 
 export function EventCreator() {
-  const [createEvent, { loading, error }] = useMutation(
-    createEventMutationDocument,
-    {
-      refetchQueries: [listEventsQueryDocument],
-      notifyOnNetworkStatusChange: true,
-    }
+  const [{ fetching, error }, createEvent] = useMutation(
+    createEventMutationDocument
   );
 
   useApolloStatusWatcher({
     error,
-    loadingMessage: loading ? "Creating event..." : undefined,
+    loadingMessage: "Creating event...",
+    fetching,
   });
 
   const navigate = useNavigate();
@@ -28,9 +24,7 @@ export function EventCreator() {
   const form = useForm<CreateEventInput>({
     async onSubmit(values, _formApi) {
       const createdEvent = await createEvent({
-        variables: {
-          input: values,
-        },
+        input: values,
       });
 
       if (createdEvent.data?.createEvent.ok) {
