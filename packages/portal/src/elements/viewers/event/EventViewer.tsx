@@ -8,12 +8,12 @@ import { useMemo } from "react";
 import { thumbHashToDataURL } from "thumbhash";
 import { useQuery } from "urql";
 
-import { GET_EVENT } from "../../../graphql/queries/eventQueries";
+import { getEventQueryDocument } from "../../../graphql/queries/eventQueries";
 import { useApolloStatusWatcher } from "../../../hooks/useApolloStatusWatcher";
 
 export function EventViewer({ uuid }: { uuid: string }) {
   const [{ data, error, fetching }] = useQuery({
-    query: GET_EVENT,
+    query: getEventQueryDocument,
     variables: { uuid },
   });
 

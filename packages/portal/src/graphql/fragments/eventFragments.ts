@@ -1,6 +1,6 @@
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 
-export const EVENT_OCCURRENCE_FRAGMENT = graphql(/* GraphQL */ `
+export const EventOccurrenceFragment = graphql(/* GraphQL */ `
   fragment FullEventOccurrence on EventOccurrenceResource {
     uuid
     occurrence
@@ -8,7 +8,7 @@ export const EVENT_OCCURRENCE_FRAGMENT = graphql(/* GraphQL */ `
   }
 `);
 
-export const EVENT_FRAGMENT = graphql(/* GraphQL */ `
+export const EventFragment = graphql(/* GraphQL */ `
   fragment FullEvent on EventResource {
     title
     summary
@@ -20,7 +20,7 @@ export const EVENT_FRAGMENT = graphql(/* GraphQL */ `
   }
 `);
 
-export const EVENT_IMAGES_FRAGMENT = graphql(/* GraphQL */ `
+export const EventImagesFragment = graphql(/* GraphQL */ `
   fragment EventImages on EventResource {
     images {
       ...FullImage
@@ -28,7 +28,7 @@ export const EVENT_IMAGES_FRAGMENT = graphql(/* GraphQL */ `
   }
 `);
 
-export const EVENT_WITH_IMAGES_FRAGMENT = graphql(/* GraphQL */ `
+export const EventWithImagesFragment = graphql(/* GraphQL */ `
   fragment FullEventWithImages on EventResource {
     ...FullEvent
     ...EventImages

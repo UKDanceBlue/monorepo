@@ -1,6 +1,6 @@
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 
-export const GET_EVENT = graphql(/* GraphQL */ `
+export const getEventQueryDocument = graphql(/* GraphQL */ `
   query GetEvent($uuid: String!) {
     event(uuid: $uuid) {
       ok
@@ -13,7 +13,7 @@ export const GET_EVENT = graphql(/* GraphQL */ `
   }
 `);
 
-export const LIST_EVENTS = graphql(/* GraphQL */ `
+export const listEventsQueryDocument = graphql(/* GraphQL */ `
   query ListEvents(
     $page: Int
     $pageSize: Int

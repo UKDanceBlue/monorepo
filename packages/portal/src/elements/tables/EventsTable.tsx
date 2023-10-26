@@ -1,6 +1,6 @@
 import { useApolloStatusWatcher } from "@hooks/useApolloStatusWatcher";
 import { useListQuery } from "@hooks/useListQuery";
-import { LIST_EVENTS } from "@queries/eventQueries";
+import { listEventsQueryDocument } from "@queries/eventQueries";
 import { Link } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
 import { Table } from "antd";
@@ -34,7 +34,7 @@ export const EventsTable = () => {
     );
 
   const [{ data: events, error, fetching }] = useQuery({
-    query: LIST_EVENTS,
+    query: listEventsQueryDocument,
     variables: queryOptions,
   });
 

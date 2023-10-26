@@ -1,6 +1,6 @@
 import { useApolloStatusWatcher } from "@hooks/useApolloStatusWatcher";
-import { CREATE_EVENT } from "@mutations/eventMutations";
-import { LIST_EVENTS } from "@queries/eventQueries";
+import { createEventMutationDocument } from "@mutations/eventMutations";
+import { listEventsQueryDocument } from "@queries/eventQueries";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import type { CreateEventInput } from "@ukdanceblue/common/graphql-client-admin/raw-types";
@@ -10,10 +10,13 @@ import { useMutation } from "urql";
 import { EventOccurrencePicker } from "../components/EventOccurrencePicker";
 
 export function EventCreator() {
-  const [createEvent, { loading, error }] = useMutation(CREATE_EVENT, {
-    refetchQueries: [LIST_EVENTS],
-    notifyOnNetworkStatusChange: true,
-  });
+  const [createEvent, { loading, error }] = useMutation(
+    createEventMutationDocument,
+    {
+      refetchQueries: [listEventsQueryDocument],
+      notifyOnNetworkStatusChange: true,
+    }
+  );
 
   useApolloStatusWatcher({
     error,
