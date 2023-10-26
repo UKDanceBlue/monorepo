@@ -1,4 +1,3 @@
-import { useMutation } from "@apollo/client";
 import { useApolloStatusWatcher } from "@hooks/useApolloStatusWatcher";
 import { CREATE_EVENT } from "@mutations/eventMutations";
 import { LIST_EVENTS } from "@queries/eventQueries";
@@ -6,6 +5,7 @@ import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import type { CreateEventInput } from "@ukdanceblue/common/graphql-client-admin/raw-types";
 import { Input } from "antd";
+import { useMutation } from "urql";
 
 import { EventOccurrencePicker } from "../components/EventOccurrencePicker";
 

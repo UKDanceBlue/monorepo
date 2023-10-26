@@ -1,5 +1,3 @@
-// import type { ApolloError } from "@apollo/client";
-// import { NetworkStatus } from "@apollo/client";
 import { App } from "antd";
 import type { MessageType } from "antd/es/message/interface";
 import { useEffect, useRef } from "react";

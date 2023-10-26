@@ -1,4 +1,3 @@
-import { useQuery } from "@apollo/client";
 import { useApolloStatusWatcher } from "@hooks/useApolloStatusWatcher";
 import { base64StringToArray } from "@ukdanceblue/common";
 import { Descriptions, Empty, Flex, Image, List, Typography } from "antd";
@@ -7,9 +6,11 @@ import { GET_EVENT } from "graphql/queries/eventQueries";
 import { DateTime, Duration, Interval } from "luxon";
 import { useMemo } from "react";
 import { thumbHashToDataURL } from "thumbhash";
+import { useQuery } from "urql";
 
 export function EventEditor({ uuid }: { uuid: string }) {
-  const { data, loading, error, networkStatus } = useQuery(GET_EVENT, {
+  const [{ data, fetching, error }] = useQuery({
+    query: GET_EVENT,
     variables: { uuid },
   });
 
@@ -17,8 +18,8 @@ export function EventEditor({ uuid }: { uuid: string }) {
 
   useApolloStatusWatcher({
     error,
-    loadingMessage: loading ? "Loading event..." : undefined,
-    networkStatus,
+    loadingMessage: "Loading event...",
+    fetching,
   });
 
   const occurrences = useMemo(

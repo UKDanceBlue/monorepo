@@ -33,7 +33,7 @@ export const EventsTable = () => {
       }
     );
 
-  const [{ data: events, error, fetching }, fetchMore] = useQuery({
+  const [{ data: events, error, fetching }] = useQuery({
     query: LIST_EVENTS,
     variables: queryOptions,
   });
