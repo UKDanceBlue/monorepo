@@ -144,42 +144,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^3.8.5":
-  version: 3.8.5
-  resolution: "@apollo/client@npm:3.8.5"
-  dependencies:
-    "@graphql-typed-document-node/core": ^3.1.1
-    "@wry/context": ^0.7.3
-    "@wry/equality": ^0.5.6
-    "@wry/trie": ^0.4.3
-    graphql-tag: ^2.12.6
-    hoist-non-react-statics: ^3.3.2
-    optimism: ^0.17.5
-    prop-types: ^15.7.2
-    response-iterator: ^0.2.6
-    symbol-observable: ^4.0.0
-    ts-invariant: ^0.10.3
-    tslib: ^2.3.0
-    zen-observable-ts: ^1.2.5
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-    graphql-ws: ^5.5.5
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    subscriptions-transport-ws: ^0.9.0 || ^0.11.0
-  peerDependenciesMeta:
-    graphql-ws:
-      optional: true
-    react:
-      optional: true
-    react-dom:
-      optional: true
-    subscriptions-transport-ws:
-      optional: true
-  checksum: 242db8340d5f04ff8f2c9ad6a0dc6ab6d596fb5c763865b0d392f6e5771d55de28faa981dcadaea80ee8b21d4ff40bfa51152a10bcae4158ecf035e47b0d17c4
-  languageName: node
-  linkType: hard
-
 "@apollo/protobufjs@npm:1.2.7":
   version: 1.2.7
   resolution: "@apollo/protobufjs@npm:1.2.7"
@@ -8295,7 +8259,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@ukdanceblue/portal@workspace:packages/portal"
   dependencies:
-    "@apollo/client": ^3.8.5
     "@tanstack/react-form": ^0.3.6
     "@tanstack/react-router": beta
     "@tanstack/router-devtools": beta
@@ -8306,6 +8269,7 @@ __metadata:
     "@vitejs/plugin-react-swc": ^3.3.2
     "@wysimark/react": ^3.0.20
     antd: ^5.10.1
+    graphql: ^16.8.1
     luxon: ^3.4.3
     normalize.css: ^8.0.1
     react: ^18.2.0
@@ -8313,6 +8277,7 @@ __metadata:
     react-hook-form: ^7.47.0
     thumbhash: ^0.1.1
     typescript: ^5.0.2
+    urql: ^4.0.5
     vite: ^4.4.5
   languageName: unknown
   linkType: soft
@@ -8426,7 +8391,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@urql/core@npm:>=4.0.0":
+"@urql/core@npm:>=4.0.0, @urql/core@npm:^4.1.0":
   version: 4.1.4
   resolution: "@urql/core@npm:4.1.4"
   dependencies:
@@ -14278,7 +14243,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.8.0":
+"graphql@npm:^16.8.0, graphql@npm:^16.8.1":
   version: 16.8.1
   resolution: "graphql@npm:16.8.1"
   checksum: 8d304b7b6f708c8c5cc164b06e92467dfe36aff6d4f2cf31dd19c4c2905a0e7b89edac4b7e225871131fd24e21460836b369de0c06532644d15b461d55b1ccc0
@@ -24467,6 +24432,18 @@ __metadata:
   version: 9.0.0
   resolution: "urlpattern-polyfill@npm:9.0.0"
   checksum: d3658b78a10eaee514c464f5a4336c408c70cf01e9b915cb1df5892b3c49003d1ed4042dc72d1b18493b8b847883e84fbf2bf358abb5dff84b2725d5e8463bcb
+  languageName: node
+  linkType: hard
+
+"urql@npm:^4.0.5":
+  version: 4.0.5
+  resolution: "urql@npm:4.0.5"
+  dependencies:
+    "@urql/core": ^4.1.0
+    wonka: ^6.3.2
+  peerDependencies:
+    react: ">= 16.8.0"
+  checksum: e8fe5ee624970d289f5832d3f62bab980e26d2e1b141cc6f82d4c1d009f6481bf58ff5f27971fac55bc8f953dbed6d7aaf62f005782bfd9d130c5c3e4033188b
   languageName: node
   linkType: hard
 

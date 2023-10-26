@@ -1,4 +1,3 @@
-import { useQuery } from "@apollo/client";
 import { EVENT_WITH_IMAGES_FRAGMENT } from "@fragments/eventFragments";
 import { base64StringToArray } from "@ukdanceblue/common";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
@@ -7,22 +6,27 @@ import DescriptionsItem from "antd/es/descriptions/Item";
 import { DateTime, Duration, Interval } from "luxon";
 import { useMemo } from "react";
 import { thumbHashToDataURL } from "thumbhash";
+import { useQuery } from "urql";
 
 import { GET_EVENT } from "../../../graphql/queries/eventQueries";
 import { useApolloStatusWatcher } from "../../../hooks/useApolloStatusWatcher";
 
 export function EventViewer({ uuid }: { uuid: string }) {
-  const { data, loading, error, networkStatus } = useQuery(GET_EVENT, {
+  const [{ data, error, fetching }] = useQuery({
+    query: GET_EVENT,
     variables: { uuid },
   });
 
   const { data: event } = data?.event ?? {};
-  const fullEventData = getFragmentData(EVENT_WITH_IMAGES_FRAGMENT);
+  const fullEventData = getFragmentData(
+    EVENT_WITH_IMAGES_FRAGMENT,
+    data?.event.data
+  );
 
   useApolloStatusWatcher({
     error,
-    loadingMessage: loading ? "Loading event..." : undefined,
-    networkStatus,
+    loadingMessage: "Loading event...",
+    fetching,
   });
 
   const occurrences = useMemo(

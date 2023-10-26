@@ -1,17 +1,13 @@
-import { ApolloError } from "@apollo/client";
-import {
-  type ApiError,
-  ClientAction,
-  ErrorCode,
-  isErrorCode,
-} from "@ukdanceblue/common";
+import type { ApiError } from "@ukdanceblue/common";
+import { ClientAction, ErrorCode, isErrorCode } from "@ukdanceblue/common";
 import type { useAppProps } from "antd/es/app/context";
 import type { MessageInstance } from "antd/es/message/interface";
 import type { NotificationInstance } from "antd/es/notification/interface";
+import { CombinedError } from "urql";
 
 export type ExtendedApiError = ApiError & { clientActions?: ClientAction[] };
 
-export function extractServerError(error: ApolloError): ExtendedApiError[] {
+export function extractServerError(error: CombinedError): ExtendedApiError[] {
   const apiErrors: ExtendedApiError[] = [];
 
   for (const graphQLError of error.graphQLErrors) {
@@ -49,34 +45,6 @@ export function extractServerError(error: ApolloError): ExtendedApiError[] {
     }
   }
 
-  for (const clientError of error.clientErrors) {
-    const apiError: ExtendedApiError = {
-      message: clientError.message,
-      code: ErrorCode.Unknown,
-      cause: clientError,
-    };
-
-    if (clientError instanceof Error) {
-      apiError.cause = clientError;
-    }
-
-    apiErrors.push(apiError);
-  }
-
-  for (const protocolError of error.protocolErrors) {
-    const apiError: ExtendedApiError = {
-      message: protocolError.message,
-      code: ErrorCode.Unknown,
-      cause: protocolError,
-    };
-
-    if (protocolError instanceof Error) {
-      apiError.cause = protocolError;
-    }
-
-    apiErrors.push(apiError);
-  }
-
   if (error.networkError) {
     const apiError: ExtendedApiError = {
       message: error.networkError.message,
@@ -85,29 +53,27 @@ export function extractServerError(error: ApolloError): ExtendedApiError[] {
     };
 
     if ("bodyText" in error.networkError) {
-      // ServerParseError
-      apiError.explanation = `Status Code: ${error.networkError.statusCode}`;
+      apiError.explanation = `Error Name: ${error.networkError.name}`;
     } else if ("result" in error.networkError) {
-      // ServerError
-      apiError.explanation = `Status Code: ${error.networkError.statusCode}`;
+      apiError.explanation = `Error Name: ${error.networkError.name}`;
       if (
         typeof error.networkError.result === "object" &&
-        "errors" in error.networkError.result
+        error.networkError.result !== null &&
+        "errors" in error.networkError.result &&
+        Array.isArray(error.networkError.result.errors) &&
+        error.networkError.result.errors.every(
+          (e) => typeof e === "object" && e !== null
+        )
       ) {
-        const maybeAnApiError = error.networkError.result.errors?.[0];
-        if (maybeAnApiError?.message) {
-          apiError.message = maybeAnApiError.message;
+        const errors = error.networkError.result.errors as Array<object>;
+        for (const maybeAnApiError of errors) {
+          console.error("maybeAnApiError", maybeAnApiError);
         }
-        if (maybeAnApiError?.extensions?.clientActions) {
-          apiError.clientActions = maybeAnApiError.extensions.clientActions;
-        }
-        if (maybeAnApiError?.extensions?.code) {
-          apiError.code = maybeAnApiError.code;
-        }
-        if (maybeAnApiError?.extensions?.details) {
-          apiError.details = maybeAnApiError.details;
-        }
+      } else {
+        console.error("error.networkError.result", error.networkError.result);
       }
+    } else {
+      console.error("error.networkError", error.networkError);
     }
 
     apiErrors.push(apiError);
@@ -133,7 +99,7 @@ export function handleUnknownError(
     onClose?: () => void;
   }
 ) {
-  if (error instanceof ApolloError) {
+  if (error instanceof CombinedError) {
     const apiErrors = extractServerError(error);
     for (const apiError of apiErrors) {
       handleApiError(apiError, options);

@@ -1,4 +1,3 @@
-import { useQuery } from "@apollo/client";
 import { useApolloStatusWatcher } from "@hooks/useApolloStatusWatcher";
 import { useListQuery } from "@hooks/useListQuery";
 import { LIST_EVENTS } from "@queries/eventQueries";
@@ -6,7 +5,7 @@ import { Link } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
 import { Table } from "antd";
 import { DateTime, Duration, Interval } from "luxon";
-import { useEffect } from "react";
+import { useQuery } from "urql";
 
 export const EventsTable = () => {
   const { queryOptions, updatePagination, clearSorting, pushSorting } =
@@ -34,35 +33,23 @@ export const EventsTable = () => {
       }
     );
 
-  const {
-    data: events,
-    error,
-    networkStatus,
-    loading,
-    fetchMore,
-  } = useQuery(LIST_EVENTS, {
+  const [{ data: events, error, fetching }, fetchMore] = useQuery({
+    query: LIST_EVENTS,
     variables: queryOptions,
-    notifyOnNetworkStatusChange: true,
   });
 
   useApolloStatusWatcher({
     error,
-    networkStatus,
-    loadingMessage: loading ? "Loading events..." : undefined,
+    fetching,
+    loadingMessage: "Loading events...",
   });
-
-  useEffect(() => {
-    fetchMore({
-      variables: queryOptions,
-    }).catch(console.error);
-  }, [fetchMore, queryOptions]);
 
   return (
     <>
       <Table
         dataSource={events?.events.data}
         rowKey={({ uuid }) => uuid}
-        loading={loading}
+        loading={fetching}
         pagination={
           events
             ? {

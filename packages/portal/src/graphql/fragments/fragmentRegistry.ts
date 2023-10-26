@@ -1,18 +1,18 @@
-import { createFragmentRegistry } from "@apollo/client/cache";
+// import { createFragmentRegistry } from "@apollo/client/cache";
 
-import {
-  EVENT_FRAGMENT,
-  EVENT_IMAGES_FRAGMENT,
-  EVENT_OCCURRENCE_FRAGMENT,
-  EVENT_WITH_IMAGES_FRAGMENT,
-} from "./eventFragments";
-import { IMAGE_FRAGMENT, IMAGE_THUMBHASH_FRAGMENT } from "./imageFragments";
+// import {
+//   EVENT_FRAGMENT,
+//   EVENT_IMAGES_FRAGMENT,
+//   EVENT_OCCURRENCE_FRAGMENT,
+//   EVENT_WITH_IMAGES_FRAGMENT,
+// } from "./eventFragments";
+// import { IMAGE_FRAGMENT, IMAGE_THUMBHASH_FRAGMENT } from "./imageFragments";
 
-export const fragmentRegistry = createFragmentRegistry(
-  IMAGE_FRAGMENT,
-  IMAGE_THUMBHASH_FRAGMENT,
-  EVENT_OCCURRENCE_FRAGMENT,
-  EVENT_FRAGMENT,
-  EVENT_IMAGES_FRAGMENT,
-  EVENT_WITH_IMAGES_FRAGMENT
-);
+// export const fragmentRegistry = createFragmentRegistry(
+//   IMAGE_FRAGMENT,
+//   IMAGE_THUMBHASH_FRAGMENT,
+//   EVENT_OCCURRENCE_FRAGMENT,
+//   EVENT_FRAGMENT,
+//   EVENT_IMAGES_FRAGMENT,
+//   EVENT_WITH_IMAGES_FRAGMENT
+// );

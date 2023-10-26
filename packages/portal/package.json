@@ -10,19 +10,20 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@apollo/client": "^3.8.5",
     "@tanstack/react-form": "^0.3.6",
     "@tanstack/react-router": "beta",
     "@tanstack/router-devtools": "beta",
     "@ukdanceblue/common": "workspace:^",
     "@wysimark/react": "^3.0.20",
     "antd": "^5.10.1",
+    "graphql": "^16.8.1",
     "luxon": "^3.4.3",
     "normalize.css": "^8.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.47.0",
-    "thumbhash": "^0.1.1"
+    "thumbhash": "^0.1.1",
+    "urql": "^4.0.5"
   },
   "devDependencies": {
     "@types/luxon": "^3.3.2",
