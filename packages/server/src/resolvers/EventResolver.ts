@@ -19,7 +19,9 @@ import {
   Root,
 } from "type-graphql";
 
+import { sequelizeDb } from "../data-source.js";
 import { EventModel } from "../models/Event.js";
+import { EventOccurrenceModel } from "../models/EventOccurrence.js";
 import { ImageModel } from "../models/Image.js";
 
 import {
@@ -48,6 +50,13 @@ class CreateEventResponse extends AbstractGraphQLCreatedResponse<EventResource> 
   @Field(() => EventResource)
   data!: EventResource;
 }
+@ObjectType("SetEventResponse", {
+  implements: AbstractGraphQLOkResponse<EventResource>,
+})
+class SetEventResponse extends AbstractGraphQLOkResponse<EventResource> {
+  @Field(() => EventResource)
+  data!: EventResource;
+}
 @ObjectType("DeleteEventResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
@@ -65,7 +74,7 @@ class ListEventsResponse extends AbstractGraphQLPaginatedResponse<EventResource>
 }
 
 @InputType()
-export class EventOccurrenceInput {
+export class CreateEventOccurrenceInput {
   @Field(() => DateRangeScalar)
   occurrence!: Interval;
   @Field(() => Boolean)
@@ -77,17 +86,49 @@ class CreateEventInput {
   @Field()
   title!: string;
 
-  @Field()
-  summary!: string;
+  @Field(() => String, { nullable: true })
+  summary!: string | null;
 
-  @Field()
-  location!: string;
+  @Field(() => String, { nullable: true })
+  location!: string | null;
 
-  @Field(() => [EventOccurrenceInput])
-  occurrences!: EventOccurrenceInput[];
+  @Field(() => [CreateEventOccurrenceInput])
+  occurrences!: CreateEventOccurrenceInput[];
 
+  @Field(() => String, { nullable: true })
+  description!: string | null;
+}
+
+@InputType()
+export class SetEventOccurrenceInput {
+  @Field(() => String, {
+    nullable: true,
+    description:
+      "If updating an existing occurrence, the UUID of the occurrence to update",
+  })
+  uuid!: string | null;
+  @Field(() => DateRangeScalar)
+  occurrence!: Interval;
+  @Field(() => Boolean)
+  fullDay!: boolean;
+}
+
+@InputType()
+class SetEventInput {
   @Field()
-  description!: string;
+  title!: string;
+
+  @Field(() => String, { nullable: true })
+  summary!: string | null;
+
+  @Field(() => String, { nullable: true })
+  location!: string | null;
+
+  @Field(() => [SetEventOccurrenceInput])
+  occurrences!: SetEventOccurrenceInput[];
+
+  @Field(() => String, { nullable: true })
+  description!: string | null;
 }
 
 @ArgsType()
@@ -174,6 +215,118 @@ export class EventResolver
     await row.destroy();
 
     return DeleteEventResponse.newOk(true);
+  }
+
+  @Mutation(() => SetEventResponse, { name: "setEvent" })
+  async set(
+    @Arg("uuid") uuid: string,
+    @Arg("input") input: SetEventInput
+  ): Promise<SetEventResponse> {
+    const result = await sequelizeDb.transaction(async () => {
+      const basicEvent = await EventModel.findOne({
+        where: { uuid },
+        attributes: ["id"],
+      });
+
+      if (basicEvent == null) {
+        throw new DetailedError(ErrorCode.NotFound, "Event not found");
+      }
+
+      const rowId = basicEvent.id;
+
+      const row = await basicEvent.update({
+        title: input.title,
+        summary: input.summary,
+        description: input.description,
+        location: input.location,
+      });
+
+      const occurrencesToDelete: EventOccurrenceModel[] = [];
+      const occurrencesToUpdate: EventOccurrenceModel[] = [];
+      const occurrencesToCreate: CreateEventOccurrenceInput[] = [];
+
+      for (const occurrence of row.occurrences ?? []) {
+        const inputOccurrence = input.occurrences.find(
+          (inputOccurrence) => inputOccurrence.uuid === occurrence.uuid
+        );
+        if (inputOccurrence == null) {
+          occurrencesToDelete.push(occurrence);
+        } else {
+          occurrencesToUpdate.push(occurrence);
+        }
+      }
+      for (const inputOccurrence of input.occurrences) {
+        if (
+          !row.occurrences?.some(
+            (occurrence) => occurrence.uuid === inputOccurrence.uuid
+          )
+        ) {
+          occurrencesToCreate.push(inputOccurrence);
+        }
+      }
+
+      const promises = [
+        // Delete any occurrences that are no longer in the input
+        ...occurrencesToDelete.map(async (occurrence) => {
+          await occurrence.destroy();
+          return undefined;
+        }),
+
+        // Update any occurrences that are in the input
+        ...occurrencesToUpdate.map((occurrence) => {
+          const inputOccurrence = input.occurrences.find(
+            (inputOccurrence) => inputOccurrence.uuid === occurrence.uuid
+          );
+          if (inputOccurrence == null) {
+            throw new DetailedError(
+              ErrorCode.InvalidRequest,
+              "Invalid occurrence"
+            );
+          }
+          const {
+            occurrence: { start, end },
+            fullDay,
+          } = inputOccurrence;
+          if (start == null || end == null) {
+            throw new DetailedError(
+              ErrorCode.InvalidRequest,
+              "Invalid occurrence"
+            );
+          }
+          return occurrence.update({
+            date: start.toJSDate(),
+            endDate: end.toJSDate(),
+            fullDay,
+          });
+        }),
+
+        // Create any occurrences that are only in the input
+        ...occurrencesToCreate.map((inputOccurrence) => {
+          const {
+            occurrence: { start, end },
+            fullDay,
+          } = inputOccurrence;
+          if (start == null || end == null) {
+            throw new DetailedError(
+              ErrorCode.InvalidRequest,
+              "Invalid occurrence"
+            );
+          }
+          return EventOccurrenceModel.create({
+            eventId: rowId,
+            date: start.toJSDate(),
+            endDate: end.toJSDate(),
+            fullDay,
+          });
+        }),
+      ];
+
+      await Promise.all(promises);
+
+      return row;
+    });
+
+    return SetEventResponse.newOk(result.toResource());
   }
 
   @FieldResolver(() => [ImageResource])

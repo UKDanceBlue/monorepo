@@ -113,11 +113,16 @@ type CreateDeviceResponse implements AbstractGraphQLCreatedResponse & AbstractGr
 }
 
 input CreateEventInput {
-  description: String!
-  location: String!
-  occurrences: [EventOccurrenceInput!]!
-  summary: String!
+  description: String
+  location: String
+  occurrences: [CreateEventOccurrenceInput!]!
+  summary: String
   title: String!
+}
+
+input CreateEventOccurrenceInput {
+  fullDay: Boolean!
+  occurrence: LuxonDateRange!
 }
 
 type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -336,11 +341,6 @@ type DeviceResource {
   lastLogin: LuxonDateTime
   updatedAt: DateTimeISO
   uuid: ID!
-}
-
-input EventOccurrenceInput {
-  fullDay: Boolean!
-  occurrence: LuxonDateRange!
 }
 
 type EventOccurrenceResource {
@@ -659,6 +659,7 @@ type Mutation {
   deleteTeam(id: String!): DeleteTeamResponse!
   sendNotification(input: SendNotificationInput!): SendNotificationResponse!
   setConfiguration(id: String!, input: SetConfigurationInput!): SetConfigurationResponse!
+  setEvent(input: SetEventInput!, uuid: String!): SetEventResponse!
 }
 
 """Integers that will have a value of 0 or more."""
@@ -929,6 +930,33 @@ type SetConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLBase
   """Client actions to perform"""
   clientActions: [ClientAction!]
   data: ConfigurationResource!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+input SetEventInput {
+  description: String
+  location: String
+  occurrences: [SetEventOccurrenceInput!]!
+  summary: String
+  title: String!
+}
+
+input SetEventOccurrenceInput {
+  fullDay: Boolean!
+  occurrence: LuxonDateRange!
+
+  """
+  If updating an existing occurrence, the UUID of the occurrence to update
+  """
+  uuid: String
+}
+
+type SetEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: EventResource!
 
   """Whether the operation was successful"""
   ok: Boolean!
