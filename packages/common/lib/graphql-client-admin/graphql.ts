@@ -77,6 +77,25 @@ export type AbstractGraphQlPaginatedResponse = {
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
+export type AddEventImageInput = {
+  readonly alt?: InputMaybe<Scalars['String']['input']>;
+  readonly height: Scalars['Int']['input'];
+  readonly imageData?: InputMaybe<Scalars['String']['input']>;
+  readonly mimeType: Scalars['String']['input'];
+  readonly thumbHash?: InputMaybe<Scalars['String']['input']>;
+  readonly url?: InputMaybe<Scalars['String']['input']>;
+  readonly width: Scalars['Int']['input'];
+};
+
+export type AddEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'AddEventImageResponse';
+  /** Client actions to perform */
+  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
+  readonly data: ImageResource;
+  /** Whether the operation was successful */
+  readonly ok: Scalars['Boolean']['output'];
+};
+
 export type AuthIdList = {
   readonly __typename?: 'AuthIdList';
   readonly source: AuthSource;
@@ -610,6 +629,7 @@ export type MembershipResource = {
 
 export type Mutation = {
   readonly __typename?: 'Mutation';
+  readonly addImageToEvent: AddEventImageResponse;
   readonly createConfiguration: CreateConfigurationResponse;
   readonly createDevice: CreateDeviceResponse;
   readonly createEvent: CreateEventResponse;
@@ -623,9 +643,16 @@ export type Mutation = {
   readonly deleteNotification: DeleteNotificationResponse;
   readonly deletePerson: DeletePersonResponse;
   readonly deleteTeam: DeleteTeamResponse;
+  readonly removeImageFromEvent: RemoveEventImageResponse;
   readonly sendNotification: SendNotificationResponse;
   readonly setConfiguration: SetConfigurationResponse;
   readonly setEvent: SetEventResponse;
+};
+
+
+export type MutationAddImageToEventArgs = {
+  eventId: Scalars['String']['input'];
+  input: AddEventImageInput;
 };
 
 
@@ -694,6 +721,12 @@ export type MutationDeleteTeamArgs = {
 };
 
 
+export type MutationRemoveImageFromEventArgs = {
+  eventId: Scalars['String']['input'];
+  imageId: Scalars['String']['input'];
+};
+
+
 export type MutationSendNotificationArgs = {
   input: SendNotificationInput;
 };
@@ -725,7 +758,7 @@ export type NotificationPayload = {
 export const NotificationPayloadPresentationType = {
   InfoPopup: 'INFO_POPUP',
   InAppView: 'IN_APP_VIEW',
-  Url: 'URL'
+  OpenUrl: 'OPEN_URL'
 } as const;
 
 export type NotificationPayloadPresentationType = typeof NotificationPayloadPresentationType[keyof typeof NotificationPayloadPresentationType];
@@ -885,6 +918,15 @@ export type QueryTeamsArgs = {
 
 export type QueryThumbhashArgs = {
   uuid: Scalars['String']['input'];
+};
+
+export type RemoveEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'RemoveEventImageResponse';
+  /** Client actions to perform */
+  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
+  readonly data: Scalars['Boolean']['output'];
+  /** Whether the operation was successful */
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type RoleResource = {

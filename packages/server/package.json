@@ -11,6 +11,7 @@
     "start": "node .",
     "build": "tsc",
     "bs": "yarn run build && yarn run start",
+    "this-is-bullshit": "yarn run bs",
     "dev": "nodemon -w ./dist ./dist/index.js ../common/dist --",
     "test": "jest",
     "start-seed": "node . --seed-db --reset-db",

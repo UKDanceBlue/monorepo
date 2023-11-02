@@ -12,7 +12,7 @@ interface FirestoreNotification {
 */
 
 export const NotificationPayloadPresentationType = {
-  URL: "URL",
+  OPEN_URL: "OPEN_URL",
   IN_APP_VIEW: "IN_APP_VIEW",
   INFO_POPUP: "INFO_POPUP",
 } as const;

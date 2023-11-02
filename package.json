@@ -7,7 +7,7 @@
     "lint:fix": "eslint --fix .",
     "format": "prettier --write .",
     "build-client": "graphql-codegen-esm --config codegen.ts",
-    "watch-client": "graphql-codegen-esm --config codegen.ts -w"
+    "watch-client": "graphql-codegen-esm --config codegen.ts -w ./packages"
   },
   "devDependencies": {
     "@eslint/js": "^8.50.0",

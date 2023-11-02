@@ -12,6 +12,7 @@ import {
   Field,
   FieldResolver,
   InputType,
+  Int,
   Mutation,
   ObjectType,
   Query,
@@ -63,6 +64,22 @@ class SetEventResponse extends AbstractGraphQLOkResponse<EventResource> {
 class DeleteEventResponse extends AbstractGraphQLOkResponse<boolean> {
   @Field(() => Boolean)
   data!: boolean;
+}
+
+@ObjectType("RemoveEventImageResponse", {
+  implements: AbstractGraphQLOkResponse<boolean>,
+})
+class RemoveEventImageResponse extends AbstractGraphQLOkResponse<boolean> {
+  @Field(() => Boolean)
+  data!: boolean;
+}
+
+@ObjectType("AddEventImageResponse", {
+  implements: AbstractGraphQLOkResponse<ImageResource>,
+})
+class AddEventImageResponse extends AbstractGraphQLOkResponse<ImageResource> {
+  @Field(() => ImageResource)
+  data!: ImageResource;
 }
 
 @ObjectType("ListEventsResponse", {
@@ -129,6 +146,31 @@ class SetEventInput {
 
   @Field(() => String, { nullable: true })
   description!: string | null;
+}
+
+@InputType()
+class AddEventImageInput {
+  // TODO: Make this a URL scalar, for some reason was getting 'Error: Schema must contain uniquely named types but contains multiple types named "URL".'
+  @Field(() => String, { nullable: true })
+  url!: string | null;
+
+  @Field(() => String, { nullable: true })
+  imageData!: string | null;
+
+  @Field(() => String)
+  mimeType!: string;
+
+  @Field(() => String, { nullable: true })
+  thumbHash!: string | null;
+
+  @Field(() => String, { nullable: true })
+  alt!: string | null;
+
+  @Field(() => Int)
+  width!: number;
+
+  @Field(() => Int)
+  height!: number;
 }
 
 @ArgsType()
@@ -223,8 +265,7 @@ export class EventResolver
     @Arg("input") input: SetEventInput
   ): Promise<SetEventResponse> {
     const result = await sequelizeDb.transaction(async () => {
-      const basicEvent = await EventModel.findOne({
-        where: { uuid },
+      const basicEvent = await EventModel.findByUuid(uuid, {
         attributes: ["id"],
       });
 
@@ -329,10 +370,87 @@ export class EventResolver
     return SetEventResponse.newOk(result.toResource());
   }
 
+  @Mutation(() => RemoveEventImageResponse, { name: "removeImageFromEvent" })
+  async removeImage(
+    @Arg("eventId") eventId: string,
+    @Arg("imageId") imageId: string
+  ): Promise<RemoveEventImageResponse> {
+    return sequelizeDb.transaction(async () => {
+      const row = await EventModel.findByUuid(eventId, {
+        include: [{ model: ImageModel, as: "images" }],
+      });
+
+      if (row == null) {
+        throw new DetailedError(ErrorCode.NotFound, "Event not found");
+      }
+
+      const image = row.images?.find((image) => image.uuid === imageId);
+
+      if (image == null) {
+        throw new DetailedError(ErrorCode.NotFound, "Image not found");
+      }
+
+      await image.destroy();
+
+      return RemoveEventImageResponse.newOk(true);
+    });
+  }
+
+  @Mutation(() => AddEventImageResponse, { name: "addImageToEvent" })
+  async addImage(
+    @Arg("eventId") eventId: string,
+    @Arg("input") input: AddEventImageInput
+  ): Promise<AddEventImageResponse> {
+    return sequelizeDb.transaction(async () => {
+      const row = await EventModel.findByUuid(eventId);
+
+      if (row == null) {
+        throw new DetailedError(ErrorCode.NotFound, "Event not found");
+      }
+
+      const image = await ImageModel.create({
+        url: input.url ? new URL(input.url) : null,
+        imageData: input.imageData ? Buffer.from(input.imageData) : null,
+        mimeType: input.mimeType,
+        thumbHash: input.thumbHash ? Buffer.from(input.thumbHash) : null,
+        alt: input.alt,
+        width: input.width,
+        height: input.height,
+      });
+
+      await row.addImage(image);
+
+      return AddEventImageResponse.newOk(image.toResource());
+    });
+  }
+
+  @Mutation(() => AddEventImageResponse, { name: "addExistingImageToEvent" })
+  async addExistingImage(
+    @Arg("eventId") eventId: string,
+    @Arg("imageId") imageId: string
+  ): Promise<AddEventImageResponse> {
+    return sequelizeDb.transaction(async () => {
+      const event = await EventModel.findByUuid(eventId);
+
+      if (event == null) {
+        throw new DetailedError(ErrorCode.NotFound, "Event not found");
+      }
+
+      const image = await ImageModel.findByUuid(imageId);
+
+      if (image == null) {
+        throw new DetailedError(ErrorCode.NotFound, "Image not found");
+      }
+
+      await event.addImage(image);
+
+      return AddEventImageResponse.newOk(image.toResource());
+    });
+  }
+
   @FieldResolver(() => [ImageResource])
   async images(@Root() event: EventResource): Promise<ImageResource[]> {
-    const row = await EventModel.findOne({
-      where: { uuid: event.uuid },
+    const row = await EventModel.findByUuid(event.uuid, {
       include: [{ model: ImageModel, as: "images" }],
     });
 

@@ -49,6 +49,25 @@ interface AbstractGraphQLPaginatedResponse implements AbstractGraphQLArrayOkResp
   total: NonNegativeInt!
 }
 
+input AddEventImageInput {
+  alt: String
+  height: Int!
+  imageData: String
+  mimeType: String!
+  thumbHash: String
+  url: String
+  width: Int!
+}
+
+type AddEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: ImageResource!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
 type AuthIdList {
   source: AuthSource!
   value: String!
@@ -644,6 +663,7 @@ type MembershipResource {
 }
 
 type Mutation {
+  addImageToEvent(eventId: String!, input: AddEventImageInput!): AddEventImageResponse!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
   createDevice(input: CreateDeviceInput!): CreateDeviceResponse!
   createEvent(input: CreateEventInput!): CreateEventResponse!
@@ -657,6 +677,7 @@ type Mutation {
   deleteNotification(id: String!): DeleteNotificationResponse!
   deletePerson(id: String!): DeletePersonResponse!
   deleteTeam(id: String!): DeleteTeamResponse!
+  removeImageFromEvent(eventId: String!, imageId: String!): RemoveEventImageResponse!
   sendNotification(input: SendNotificationInput!): SendNotificationResponse!
   setConfiguration(id: String!, input: SetConfigurationInput!): SetConfigurationResponse!
   setEvent(input: SetEventInput!, uuid: String!): SetEventResponse!
@@ -689,7 +710,7 @@ The type of presentation for the notification, URL skips the app and opens a URL
 enum NotificationPayloadPresentationType {
   INFO_POPUP
   IN_APP_VIEW
-  URL
+  OPEN_URL
 }
 
 enum NotificationResolverAllKeys {
@@ -897,6 +918,15 @@ type Query {
     visibility: DbRole
   ): ListTeamsResponse!
   thumbhash(uuid: String!): GetThumbHashByUuidResponse
+}
+
+type RemoveEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: Boolean!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
 }
 
 type RoleResource {
