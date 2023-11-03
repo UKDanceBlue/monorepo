@@ -6,7 +6,7 @@ import type {
 import { Checkbox, Flex } from "antd";
 import type { DateTime } from "luxon";
 import { Interval } from "luxon";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export function EventOccurrencePicker<
   XEventOccurrenceInput extends
@@ -24,6 +24,34 @@ export function EventOccurrencePicker<
   const [end, setEnd] = useState<DateTime | null>(defaultInterval.end);
   const [fullDay, setFullDay] = useState<boolean>(defaultOccurrence.fullDay);
 
+  const oldDefaultOccurrence = useRef(defaultOccurrence);
+  const oldStart = useRef(start);
+  const oldEnd = useRef(end);
+  const oldFullDay = useRef(fullDay);
+
+  useEffect(() => {
+    if (oldDefaultOccurrence.current !== defaultOccurrence) {
+      console.log(
+        "defaultOccurrence changed",
+        oldDefaultOccurrence.current,
+        defaultOccurrence
+      );
+      oldDefaultOccurrence.current = defaultOccurrence;
+    }
+    if (oldStart.current !== start) {
+      console.log("start changed", oldStart.current, start);
+      oldStart.current = start;
+    }
+    if (oldEnd.current !== end) {
+      console.log("end changed", oldEnd.current, end);
+      oldEnd.current = end;
+    }
+    if (oldFullDay.current !== fullDay) {
+      console.log("fullDay changed", oldFullDay.current, fullDay);
+      oldFullDay.current = fullDay;
+    }
+  }, [defaultOccurrence, start, end, fullDay]);
+
   const uuid = useMemo(() => {
     if ("uuid" in defaultOccurrence) {
       return defaultOccurrence.uuid;
@@ -32,7 +60,12 @@ export function EventOccurrencePicker<
   }, [defaultOccurrence]);
 
   useEffect(() => {
-    if (start && end) {
+    if (
+      start &&
+      end &&
+      (!Interval.fromDateTimes(start, end).equals(defaultInterval) ||
+        fullDay !== defaultOccurrence.fullDay)
+    ) {
       if (uuid) {
         onChange({
           uuid,
@@ -46,7 +79,15 @@ export function EventOccurrencePicker<
         } as XEventOccurrenceInput);
       }
     }
-  }, [start, end, fullDay, onChange, uuid]);
+  }, [
+    start,
+    end,
+    fullDay,
+    onChange,
+    uuid,
+    defaultInterval,
+    defaultOccurrence.fullDay,
+  ]);
 
   useEffect(() => {
     if (fullDay) {

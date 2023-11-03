@@ -266,7 +266,7 @@ export class EventResolver
   ): Promise<SetEventResponse> {
     const result = await sequelizeDb.transaction(async () => {
       const basicEvent = await EventModel.findByUuid(uuid, {
-        attributes: ["id"],
+        include: [{ model: ImageModel, as: "images" }],
       });
 
       if (basicEvent == null) {
@@ -275,18 +275,11 @@ export class EventResolver
 
       const rowId = basicEvent.id;
 
-      const row = await basicEvent.update({
-        title: input.title,
-        summary: input.summary,
-        description: input.description,
-        location: input.location,
-      });
-
       const occurrencesToDelete: EventOccurrenceModel[] = [];
       const occurrencesToUpdate: EventOccurrenceModel[] = [];
       const occurrencesToCreate: CreateEventOccurrenceInput[] = [];
 
-      for (const occurrence of row.occurrences ?? []) {
+      for (const occurrence of basicEvent.occurrences ?? []) {
         const inputOccurrence = input.occurrences.find(
           (inputOccurrence) => inputOccurrence.uuid === occurrence.uuid
         );
@@ -298,7 +291,7 @@ export class EventResolver
       }
       for (const inputOccurrence of input.occurrences) {
         if (
-          !row.occurrences?.some(
+          !basicEvent.occurrences?.some(
             (occurrence) => occurrence.uuid === inputOccurrence.uuid
           )
         ) {
@@ -363,6 +356,16 @@ export class EventResolver
       ];
 
       await Promise.all(promises);
+
+      const row = await basicEvent.update(
+        {
+          title: input.title,
+          summary: input.summary,
+          description: input.description,
+          location: input.location,
+        },
+        { returning: true }
+      );
 
       return row;
     });

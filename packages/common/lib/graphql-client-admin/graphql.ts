@@ -629,6 +629,7 @@ export type MembershipResource = {
 
 export type Mutation = {
   readonly __typename?: 'Mutation';
+  readonly addExistingImageToEvent: AddEventImageResponse;
   readonly addImageToEvent: AddEventImageResponse;
   readonly createConfiguration: CreateConfigurationResponse;
   readonly createDevice: CreateDeviceResponse;
@@ -647,6 +648,12 @@ export type Mutation = {
   readonly sendNotification: SendNotificationResponse;
   readonly setConfiguration: SetConfigurationResponse;
   readonly setEvent: SetEventResponse;
+};
+
+
+export type MutationAddExistingImageToEventArgs = {
+  eventId: Scalars['String']['input'];
+  imageId: Scalars['String']['input'];
 };
 
 

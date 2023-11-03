@@ -1,21 +1,11 @@
 import { base64StringToArray } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
-import {
-  Descriptions,
-  Empty,
-  Flex,
-  Image,
-  Input,
-  List,
-  Tooltip,
-  Typography,
-} from "antd";
-import DescriptionsItem from "antd/es/descriptions/Item";
-import { DateTime, Interval } from "luxon";
-import { useMemo } from "react";
+import { Button, Empty, Flex, Form, Image, Input, List } from "antd";
 import { thumbHashToDataURL } from "thumbhash";
 import type { UseQueryExecute } from "urql";
+
+import { EventOccurrencePicker } from "../components/EventOccurrencePicker";
 
 import { EventEditorFragment } from "./EventEditorGQL";
 import { useEventEditorForm } from "./useEventEditorForm";
@@ -31,44 +21,34 @@ export function EventEditor({
 
   const eventData = getFragmentData(EventEditorFragment, eventFragment);
 
-  const occurrences = useMemo<
-    { occurrence: Interval; fullDay: boolean }[] | undefined
-  >(
-    () =>
-      eventData?.occurrences
-        ? eventData.occurrences.map((occurrence) => {
-            const interval = Interval.fromISO(occurrence.occurrence);
-            return {
-              occurrence: interval,
-              fullDay: occurrence.fullDay,
-            };
-          })
-        : undefined,
-    [eventData?.occurrences]
-  );
-
-  if (!eventFragment || !eventData) {
+  if (!eventData) {
     return <Empty description="Event not found" style={{ marginTop: "1em" }} />;
   }
 
   return (
     <Flex vertical gap="middle" align="center">
       <formApi.Provider>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
+        <Form
+          onFinish={() => {
             formApi.handleSubmit().catch(console.error);
           }}
+          labelCol={{ span: 8 }}
+          wrapperCol={{ span: 32 }}
         >
           <formApi.Field
             name="title"
             onChange={(value) => (!value ? "Title is required" : undefined)}
             children={(field) => (
-              <Tooltip
-                title={field.state.meta.errors.join("\n")}
-                color="volcano"
-                open={field.state.meta.errors.length > 0}
+              <Form.Item
+                label="Title"
+                validateStatus={
+                  field.state.meta.errors.length > 0 ? "error" : ""
+                }
+                help={
+                  field.state.meta.errors.length > 0
+                    ? field.state.meta.errors[0]
+                    : undefined
+                }
               >
                 <Input
                   status={field.state.meta.errors.length > 0 ? "error" : ""}
@@ -77,7 +57,7 @@ export function EventEditor({
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                 />
-              </Tooltip>
+              </Form.Item>
             )}
           />
           {eventData.images.length > 0 && (
@@ -121,43 +101,114 @@ export function EventEditor({
               </Image.PreviewGroup>
             </Flex>
           )}
-          <Descriptions column={1} layout="vertical">
-            {eventData.summary && (
-              <DescriptionsItem label="Summary">
-                <Typography.Paragraph>{eventData.summary}</Typography.Paragraph>
-              </DescriptionsItem>
+          <formApi.Field
+            name="summary"
+            children={(field) => (
+              <Form.Item
+                label="Summary"
+                validateStatus={
+                  field.state.meta.errors.length > 0 ? "error" : ""
+                }
+                help={
+                  field.state.meta.errors.length > 0
+                    ? field.state.meta.errors[0]
+                    : undefined
+                }
+              >
+                <Input.TextArea
+                  name={field.name}
+                  value={field.state.value ?? undefined}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+              </Form.Item>
             )}
-            {eventData.description && (
-              <Descriptions.Item label="Location">
-                <Typography.Text>{eventData.location}</Typography.Text>
-              </Descriptions.Item>
+          />
+          <formApi.Field
+            name="location"
+            children={(field) => (
+              <Form.Item
+                label="Location"
+                validateStatus={
+                  field.state.meta.errors.length > 0 ? "error" : ""
+                }
+                help={
+                  field.state.meta.errors.length > 0
+                    ? field.state.meta.errors[0]
+                    : undefined
+                }
+              >
+                <Input
+                  name={field.name}
+                  value={field.state.value ?? undefined}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+              </Form.Item>
             )}
-            {occurrences && occurrences.length > 0 && (
-              <Descriptions.Item label="Occurrences">
-                <List>
-                  {occurrences.map((occurrence) => (
-                    <List.Item>
-                      {occurrence.fullDay
-                        ? occurrence.occurrence.start?.toLocaleString(
-                            DateTime.DATE_FULL
-                          )
-                        : occurrence.occurrence.start?.toLocaleString(
-                            DateTime.DATETIME_SHORT
-                          )}
-                    </List.Item>
-                  ))}
-                </List>
-              </Descriptions.Item>
+          />
+
+          <List>
+            <formApi.Field
+              name="occurrences"
+              children={(field) => (
+                <Form.Item
+                  label="Occurrences"
+                  validateStatus={
+                    field.state.meta.errors.length > 0 ? "error" : ""
+                  }
+                  help={
+                    field.state.meta.errors.length > 0
+                      ? field.state.meta.errors[0]
+                      : undefined
+                  }
+                >
+                  <List>
+                    {field.state.value.map((occurrence, index) => (
+                      <List.Item key={occurrence.uuid ?? index}>
+                        <EventOccurrencePicker
+                          defaultOccurrence={occurrence}
+                          onChange={(value) => {
+                            field.state.value.splice(index, 1, value);
+                            field.handleChange(field.state.value);
+                          }}
+                        />
+                      </List.Item>
+                    ))}
+                  </List>
+                </Form.Item>
+              )}
+            />
+          </List>
+          <formApi.Field
+            name="description"
+            children={(field) => (
+              <Form.Item
+                label="Description"
+                validateStatus={
+                  field.state.meta.errors.length > 0 ? "error" : ""
+                }
+                help={
+                  field.state.meta.errors.length > 0
+                    ? field.state.meta.errors[0]
+                    : undefined
+                }
+              >
+                <Input.TextArea
+                  name={field.name}
+                  value={field.state.value ?? undefined}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+              </Form.Item>
             )}
-            {eventData.description && (
-              <Descriptions.Item label="Description">
-                <Typography.Paragraph>
-                  {eventData.description}
-                </Typography.Paragraph>
-              </Descriptions.Item>
-            )}
-          </Descriptions>
-        </form>
+          />
+          <Form.Item wrapperCol={{ span: 32, offset: 8 }}>
+            <Button type="primary" htmlType="submit">
+              Save
+            </Button>
+          </Form.Item>
+        </Form>
       </formApi.Provider>
     </Flex>
   );
