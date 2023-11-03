@@ -6,6 +6,7 @@ import type {
   SetEventInput,
   SetEventOccurrenceInput,
 } from "@ukdanceblue/common/graphql-client-admin/raw-types";
+import { Interval } from "luxon";
 import type { UseQueryExecute } from "urql";
 import { useMutation } from "urql";
 
@@ -27,8 +28,9 @@ export function useEventEditorForm(
 
   const Form = useForm<
     Omit<SetEventInput, "occurrences"> & {
-      occurrences: (Omit<SetEventOccurrenceInput, "uuid"> & {
+      occurrences: (Omit<SetEventOccurrenceInput, "uuid" | "occurrence"> & {
         uuid?: string;
+        occurrence: Interval;
       })[];
     }
   >({
@@ -41,7 +43,7 @@ export function useEventEditorForm(
       occurrences:
         eventData?.occurrences.map((occurrence) => ({
           uuid: occurrence.uuid,
-          occurrence: occurrence.occurrence,
+          occurrence: Interval.fromISO(occurrence.occurrence),
           fullDay: occurrence.fullDay,
         })) ?? [],
     },
@@ -57,7 +59,21 @@ export function useEventEditorForm(
           summary: values.summary ?? eventData.summary ?? null,
           location: values.location ?? eventData.location ?? null,
           description: values.description ?? eventData.description ?? null,
-          occurrences: values.occurrences,
+          occurrences: values.occurrences.map((occurrence) => {
+            let retVal: Parameters<
+              typeof setEvent
+            >[0]["input"]["occurrences"][number] = {
+              occurrence: occurrence.occurrence.toISO(),
+              fullDay: occurrence.fullDay,
+            };
+            if (occurrence.uuid) {
+              retVal = {
+                ...retVal,
+                uuid: occurrence.uuid,
+              };
+            }
+            return retVal;
+          }),
         },
       });
 

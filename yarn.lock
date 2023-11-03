@@ -8261,6 +8261,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@ukdanceblue/portal@workspace:packages/portal"
   dependencies:
+    "@ant-design/icons": ^5.2.6
     "@tanstack/react-form": ^0.3.6
     "@tanstack/react-router": beta
     "@tanstack/router-devtools": beta

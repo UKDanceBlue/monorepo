@@ -1,3 +1,5 @@
+import { EditOutlined } from "@ant-design/icons";
+import { Link } from "@tanstack/react-router";
 import { base64StringToArray } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import {
@@ -61,7 +63,16 @@ export function EventViewer({
 
   return (
     <Flex vertical gap="middle" align="center">
-      <Typography.Title level={2}>{eventData.title}</Typography.Title>
+      <Typography.Title level={2}>
+        {eventData.title}
+        <Link
+          to="/events/$eventId/edit"
+          params={{ eventId: eventData.uuid }}
+          color="#efefef"
+        >
+          <EditOutlined style={{ marginLeft: "1em" }} />
+        </Link>
+      </Typography.Title>
       {eventData.images.length > 0 && (
         <Flex
           gap="middle"

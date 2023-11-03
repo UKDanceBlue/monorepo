@@ -103,6 +103,9 @@ export function EventEditor({
           )}
           <formApi.Field
             name="summary"
+            onChange={(value) =>
+              (value?.length ?? 0) > 255 ? "Too long" : undefined
+            }
             children={(field) => (
               <Form.Item
                 label="Summary"
@@ -151,6 +154,17 @@ export function EventEditor({
           <List>
             <formApi.Field
               name="occurrences"
+              onChange={(value) => {
+                for (let i = 0; i < value.length; i++) {
+                  const occurrence = value[i]?.occurrence;
+                  if (occurrence && !occurrence.isValid) {
+                    return `Occurrence ${i + 1} is invalid: ${
+                      occurrence.invalidExplanation
+                    }`;
+                  }
+                }
+                return undefined;
+              }}
               children={(field) => (
                 <Form.Item
                   label="Occurrences"

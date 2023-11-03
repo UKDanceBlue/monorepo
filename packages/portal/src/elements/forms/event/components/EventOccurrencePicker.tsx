@@ -1,8 +1,4 @@
 import { LuxonDatePicker } from "@elements/components/antLuxonComponents";
-import type {
-  CreateEventOccurrenceInput,
-  SetEventOccurrenceInput,
-} from "@ukdanceblue/common/graphql-client-admin/raw-types";
 import { Checkbox, Flex } from "antd";
 import type { DateTime } from "luxon";
 import { Interval } from "luxon";
@@ -10,8 +6,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 export function EventOccurrencePicker<
   XEventOccurrenceInput extends
-    | SetEventOccurrenceInput
-    | CreateEventOccurrenceInput,
+    | { uuid: string; occurrence: Interval; fullDay: boolean }
+    | { occurrence: Interval; fullDay: boolean },
 >({
   defaultOccurrence,
   onChange,
@@ -19,9 +15,12 @@ export function EventOccurrencePicker<
   defaultOccurrence: XEventOccurrenceInput;
   onChange: (occurrence: XEventOccurrenceInput) => void;
 }) {
-  const defaultInterval = Interval.fromISO(defaultOccurrence.occurrence);
-  const [start, setStart] = useState<DateTime | null>(defaultInterval.start);
-  const [end, setEnd] = useState<DateTime | null>(defaultInterval.end);
+  const [start, setStart] = useState<DateTime | null>(
+    defaultOccurrence.occurrence.start
+  );
+  const [end, setEnd] = useState<DateTime | null>(
+    defaultOccurrence.occurrence.end
+  );
   const [fullDay, setFullDay] = useState<boolean>(defaultOccurrence.fullDay);
 
   const oldDefaultOccurrence = useRef(defaultOccurrence);
@@ -63,18 +62,20 @@ export function EventOccurrencePicker<
     if (
       start &&
       end &&
-      (!Interval.fromDateTimes(start, end).equals(defaultInterval) ||
+      (!Interval.fromDateTimes(start, end).equals(
+        defaultOccurrence.occurrence
+      ) ||
         fullDay !== defaultOccurrence.fullDay)
     ) {
       if (uuid) {
         onChange({
           uuid,
-          occurrence: Interval.fromDateTimes(start, end).toISO(),
+          occurrence: Interval.fromDateTimes(start, end),
           fullDay,
         } as XEventOccurrenceInput);
       } else {
         onChange({
-          occurrence: Interval.fromDateTimes(start, end).toISO(),
+          occurrence: Interval.fromDateTimes(start, end),
           fullDay,
         } as XEventOccurrenceInput);
       }
@@ -85,8 +86,8 @@ export function EventOccurrencePicker<
     fullDay,
     onChange,
     uuid,
-    defaultInterval,
     defaultOccurrence.fullDay,
+    defaultOccurrence.occurrence,
   ]);
 
   useEffect(() => {

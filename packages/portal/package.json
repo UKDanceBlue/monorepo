@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.2.6",
     "@tanstack/react-form": "^0.3.6",
     "@tanstack/react-router": "beta",
     "@tanstack/router-devtools": "beta",
