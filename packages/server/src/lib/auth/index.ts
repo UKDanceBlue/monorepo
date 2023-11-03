@@ -8,6 +8,8 @@ import {
 import type { Request } from "express";
 import jsonwebtoken from "jsonwebtoken";
 
+import { jwtSecret } from "../../environment.js";
+
 /**
  * Compares an authorization object to a minimum authorization object
  * and returns true if the authorization object satisfies the minimum
@@ -175,11 +177,7 @@ export function makeUserJwt(user: UserData, source: AuthSource): string {
     payload.captain_of_team_ids = user.captainOfTeamIds;
   }
 
-  if (!process.env.JWT_SECRET) {
-    throw new Error("JWT_SECRET is not set");
-  }
-
-  return jsonwebtoken.sign(payload, process.env.JWT_SECRET, {
+  return jsonwebtoken.sign(payload, jwtSecret, {
     issuer: jwtIssuer,
     expiresIn: "1d",
   });
@@ -192,11 +190,11 @@ export function makeUserJwt(user: UserData, source: AuthSource): string {
  * @return The user data contained in the JWT
  */
 export function parseUserJwt(token: string): UserData {
-  if (!process.env.JWT_SECRET) {
+  if (!jwtSecret) {
     throw new Error("JWT_SECRET is not set");
   }
 
-  const payload = jsonwebtoken.verify(token, process.env.JWT_SECRET, {
+  const payload = jsonwebtoken.verify(token, jwtSecret, {
     issuer: jwtIssuer,
   });
 

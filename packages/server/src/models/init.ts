@@ -3,6 +3,7 @@ import { argv } from "node:process";
 import type { SyncOptions } from "@sequelize/core";
 
 import { sequelizeDb } from "../data-source.js";
+import { isDevelopment } from "../environment.js";
 import { logDebug, sqlLogger } from "../logger.js";
 
 // Importing this module will import all the models in the models folder and initialize them and their relations.
@@ -36,8 +37,10 @@ logDebug("Syncing models");
 const syncOptions: SyncOptions = {
   // Force if passed --reset-db flag
   force: argv.includes("--reset-db"),
-  logging: (sql: string, timing?: number | undefined) =>
-    sqlLogger.log("sql", sql, { timing }),
+  logging:
+    isDevelopment &&
+    ((sql: string, timing?: number | undefined) =>
+      sqlLogger.log("sql", sql, { timing })),
 };
 await sequelizeDb.sync(syncOptions);
 logDebug("Models synced");

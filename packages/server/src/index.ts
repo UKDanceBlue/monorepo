@@ -1,16 +1,29 @@
 import { argv } from "node:process";
 
-import dotenv from "dotenv";
-
-import { logInfo } from "./logger.js";
+import { logFatal, logInfo } from "./logger.js";
 
 // No top level imports that cause side effects should be used in this file
 // We want to control the order of execution
 
 logInfo("DanceBlue Server Starting");
 
-dotenv.config();
+await import("./environment.js");
 logInfo("Loaded environment variables");
+
+if (argv.includes("--migrate-db")) {
+  try {
+    await import("./umzug.js");
+    logInfo("Database migrated");
+  } catch (error) {
+    logFatal(
+      `Failed to migrate database: ${
+        typeof error === "object" && error && "message" in error
+          ? String(error.message)
+          : String(error)
+      }`
+    );
+  }
+}
 
 await import("./models/init.js");
 logInfo("Initialized database models");

@@ -1,7 +1,9 @@
 import type { Primitive } from "utility-types";
-import { createLogger, format, transports } from "winston";
-import type { LeveledLogMethod, LoggerOptions } from "winston";
 import type winston from "winston";
+import type { LeveledLogMethod, LoggerOptions } from "winston";
+import { createLogger, format, transports } from "winston";
+
+import { isDevelopment, isProduction } from "./environment.js";
 
 const fileErrorLogTransport = new transports.File({
   filename: "error.log",
@@ -66,7 +68,7 @@ const consoleTransport = new transports.Console({
 
 // If we're not in production then log to the `console` with the format:
 // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-if (process.env.NODE_ENV !== "production") {
+if (!isProduction) {
   logger.add(consoleTransport);
 }
 
@@ -75,13 +77,27 @@ logger.info("Logger initialized");
 function logMessage(logLevel: string, content: unknown, ...data: unknown[]) {
   if (logger.isLevelEnabled(logLevel)) {
     const firstData = data.length === 1 ? data[0] : undefined;
+
+    let stringifiedContent: string;
+    if (!content) {
+      stringifiedContent = "[NO MESSAGE]";
+    } else if (typeof content === "string") {
+      stringifiedContent = content;
+    } else if (typeof content === "object") {
+      stringifiedContent =
+        content instanceof Error ? content.message : "[OBJECT]";
+      data = [...data, content];
+    } else {
+      stringifiedContent = String(content);
+    }
+
     return typeof firstData === "function"
       ? logger.log(
           logLevel,
-          String(content),
+          stringifiedContent,
           ...(firstData as () => (Primitive | object)[])()
         )
-      : logger.log(logLevel, String(content), ...data);
+      : logger.log(logLevel, stringifiedContent, ...data);
   } else {
     return logger;
   }
@@ -228,10 +244,16 @@ export const sqlLogger = createLogger({
     warning: 1,
     error: 0,
   },
-  transports: [databaseLogTransport],
+  transports: isDevelopment
+    ? [databaseLogTransport]
+    : [
+        /* In production this logger should never be used, but just in case someone tries to use it, we'll disable the transport */
+      ],
   format: format.combine(format.timestamp(), format.simple()),
 });
 
-sqlLogger.info("SQL Logger initialized");
+if (isDevelopment) {
+  sqlLogger.info("SQL Logger initialized");
+}
 
 export default logger;

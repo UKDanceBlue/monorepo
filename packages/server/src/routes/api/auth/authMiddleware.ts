@@ -1,6 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import { Issuer } from "openid-client";
 
+import { msClientId, msClientSecret, msOidcUrl } from "../../../environment.js";
+
 export const authMiddleware = async (
   _: Request,
   res: Response,
@@ -8,12 +10,10 @@ export const authMiddleware = async (
 ) => {
   try {
     if (!res.locals.oidcClient) {
-      const microsoftGateway = await Issuer.discover(
-        process.env.MS_OIDC_URL ?? ""
-      );
+      const microsoftGateway = await Issuer.discover(msOidcUrl);
       res.locals.oidcClient = new microsoftGateway.Client({
-        client_id: process.env.MS_CLIENT_ID ?? "",
-        client_secret: process.env.MS_CLIENT_SECRET ?? "",
+        client_id: msClientId,
+        client_secret: msClientSecret,
         redirect_uris: [
           new URL(
             "/api/auth/oidc-callback",
