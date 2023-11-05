@@ -12,6 +12,7 @@ import {
   fetchUpdateAsync,
   reloadAsync,
 } from "expo-updates";
+// TODO: Switch away from native-base https://nativebase.io/blogs/road-ahead-with-gluestack-ui
 import type { ICustomTheme } from "native-base";
 import { NativeBaseProvider } from "native-base";
 import { useEffect, useRef, useState } from "react";
@@ -78,6 +79,7 @@ const App = () => {
   );
 
   useEffect(() => {
+    // TODO: Switch to https://github.com/expo/custom-expo-updates-server
     if (!__DEV__) {
       const updatesSubscription = addUpdateListener(({ type, message }) => {
         if (type === UpdateEventType.UPDATE_AVAILABLE) {

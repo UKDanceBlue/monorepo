@@ -1,10 +1,10 @@
-import type { MaybeWithFirestoreMetadata } from "@common/dist/firestore/internal";
 import { universalCatch } from "@common/logging";
 import { timestampToDateTime } from "@common/util/dateTools";
 import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import FirestoreModule from "@react-native-firebase/firestore";
 import type { FirestoreEventJson } from "@ukdanceblue/db-app-common";
 import { FirestoreEvent } from "@ukdanceblue/db-app-common";
+import type { MaybeWithFirestoreMetadata } from "@ukdanceblue/db-app-common/dist/firestore/internal";
 import { DateTime } from "luxon";
 import {
   useCallback,
@@ -342,11 +342,24 @@ export const useEvents = ({
   }, [earliestTimestamp, refresh]);
 
   const eventsByMonth = useMemo(
-    () => splitEvents(Object.values(events)),
+    () =>
+      splitEvents(
+        Object.values(events).filter(
+          (event): event is NonNullable<typeof event> => event != null
+        )
+      ),
     [events]
   );
 
-  const marked = useMemo(() => markEvents(Object.values(events)), [events]);
+  const marked = useMemo(
+    () =>
+      markEvents(
+        Object.values(events).filter(
+          (event): event is NonNullable<typeof event> => event != null
+        )
+      ),
+    [events]
+  );
 
   return [
     marked,

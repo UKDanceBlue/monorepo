@@ -8216,7 +8216,7 @@ __metadata:
     metro-babel-register: ^0.71.1
     native-base: ^3.4.13
     react: 18.2.0
-    react-native: 0.72.5
+    react-native: 0.72.6
     react-native-bundle-visualizer: ^3.1.1
     react-native-calendars: ^1.1289.0
     react-native-elements: ^3.4.3
@@ -21035,9 +21035,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native@npm:0.72.5":
-  version: 0.72.5
-  resolution: "react-native@npm:0.72.5"
+"react-native@npm:0.72.6":
+  version: 0.72.6
+  resolution: "react-native@npm:0.72.6"
   dependencies:
     "@jest/create-cache-key-function": ^29.2.1
     "@react-native-community/cli": 11.3.7
@@ -21079,7 +21079,7 @@ __metadata:
     react: 18.2.0
   bin:
     react-native: cli.js
-  checksum: 28a8e41dffaa8102c699622a28a19f6640d9a95ee5157b92d67677d49191f4f8e0acdb65b0413e6636047382be47047af5d6fdd36c36def80f0460425d30cf25
+  checksum: 3cf0af092c0d6b9b6e67795664e324136f6d1a41c6a889737fb612e5ddb93d0537c890fe733e751fe3bbc139cbb4f9f6d9eff4467e8d8dc67194ac8b382fa168
   languageName: node
   linkType: hard
 

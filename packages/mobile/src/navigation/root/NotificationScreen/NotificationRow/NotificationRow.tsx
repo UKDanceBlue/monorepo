@@ -85,7 +85,7 @@ export const AnimatedNotificationRow: SectionListRenderItem<
       enabled={canDelete}
     >
       <Animated.View style={animatedViewStyle}>
-        <Row width={screenWidth + sideMenuWidth} collapsable={false} my="2">
+        <Row width={screenWidth + sideMenuWidth} collapsible={false} my="2">
           <Box
             mx="4"
             p="1.5"

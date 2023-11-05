@@ -114,9 +114,18 @@ const EventListScreen = () => {
         DummyView
       ) : (
         <AnimatedPager
-          ref={(ref?: LazyPagerView<DateTime>) => {
+          ref={(ref: LazyPagerView<DateTime> | null) => {
             if (ref != null) {
-              lazyPagerRef.current = ref;
+              if (typeof ref !== "object") {
+                throw new TypeError("Expected ref to be a ref object");
+              }
+              if (ref instanceof LazyPagerView) {
+                lazyPagerRef.current = ref;
+              } else {
+                throw new TypeError(
+                  "Expected ref to be a LazyPagerView ref object"
+                );
+              }
               setHasPagerRefBeenSet(true);
             }
           }}
@@ -153,7 +162,7 @@ const EventListScreen = () => {
             <View
               key={luxonDateTimeToMonthString(month)}
               style={{ height: "100%", width: "100%" }}
-              collapsable={false}
+              collapsible={false}
             >
               <EventListPage
                 eventsByMonth={eventsByMonth}

@@ -14,11 +14,11 @@ import { useRef, useState } from "react";
 import { StatusBar } from "react-native";
 import type { WebViewSource } from "react-native-webview/lib/WebViewTypes";
 
-import "../common/util/AndroidTimerFix"; // https://github.com/firebase/firebase-js-sdk/issues/97#issuecomment-427512040
 import NotificationInfoModal from "../common/components/NotificationInfoModal";
 import WebpageModal from "../common/components/WebpageModal";
 import { useColorModeValue } from "../common/customHooks";
 import { universalCatch } from "../common/logging";
+import "../common/util/AndroidTimerFix"; // https://github.com/firebase/firebase-js-sdk/issues/97#issuecomment-427512040
 import RootScreen from "../navigation/root/RootScreen";
 import { useReactNavigationTheme } from "../theme";
 import type { NotificationInfoPopup } from "../types/NotificationPayload";
@@ -126,9 +126,9 @@ export const FilledNavigationContainer = () => {
                     )
                   ) {
                     canOpenURL(decodedUrl)
-                      .then((canOpen) => {
+                      .then(async (canOpen) => {
                         if (canOpen) {
-                          return openURL(decodedUrl);
+                          await openURL(decodedUrl);
                         }
                       })
                       .catch(universalCatch);
@@ -152,8 +152,8 @@ export const FilledNavigationContainer = () => {
                 screens: {
                   Home: { path: "/" },
                   Events: { path: "/events" },
-                  Team: { path: "/my-team" },
-                  Scoreboard: { path: "/scoreboard" },
+                  Teams: { path: "/my-team" },
+                  Marathon: { path: "/scoreboard" },
                 },
               },
             },

@@ -20,6 +20,8 @@ const Breadcrumbs = ({
           >{`< ${previousPage}`}</Text>
         </View>
       );
+    } else {
+      return null;
     }
   }
 

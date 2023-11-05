@@ -30,8 +30,8 @@ describe("<TimeUnit />", () => {
       .mockImplementation(() => undefined);
 
     const invalidUnit = "an invalid unit";
-    // @ts-expect-error Testing an invalid unit
     expect(() =>
+      // @ts-expect-error Testing an invalid unit
       renderWithNativeBase(<TimeUnit value={1} unit={invalidUnit} />)
     ).toThrow(`Invalid unit: ${invalidUnit}`);
 
