@@ -7,7 +7,10 @@
     "lint:fix": "eslint --fix .",
     "format": "prettier --write .",
     "build-client": "graphql-codegen-esm --config codegen.ts",
-    "watch-client": "graphql-codegen-esm --config codegen.ts -w ./packages"
+    "watch-client": "graphql-codegen-esm --config codegen.ts -w ./packages",
+    "common:watch": "yarn workspace @ukdanceblue/common run watch",
+    "server:bs": "yarn workspace @ukdanceblue/server run bs",
+    "portal:dev": "yarn workspace @ukdanceblue/portal dev"
   },
   "devDependencies": {
     "@eslint/js": "^8.50.0",

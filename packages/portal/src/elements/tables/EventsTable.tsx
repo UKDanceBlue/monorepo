@@ -4,13 +4,13 @@ import { Link } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
 import {
   parseEventOccurrence,
-  parsedEventOccurrenceToString,
+  parsedEventOccurrenceToStrings,
 } from "@ukdanceblue/common/client-parsers";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
-import { Table } from "antd";
+import { Flex, Table } from "antd";
 import { useQuery } from "urql";
 
 const EventsTableFragment = graphql(/* GraphQL */ `
@@ -154,13 +154,17 @@ export const EventsTable = () => {
             render: (_, record) => {
               return (
                 <ul style={{ padding: 0 }}>
-                  {record.occurrences.map((occurrence) => (
-                    <li key={occurrence.uuid} style={{ listStyle: "none" }}>
-                      {parsedEventOccurrenceToString(
+                  {record.occurrences.map((occurrence) => {
+                    const [startString, endString] =
+                      parsedEventOccurrenceToStrings(
                         parseEventOccurrence(occurrence)
-                      )}
-                    </li>
-                  ))}
+                      );
+                    return (
+                      <li key={occurrence.uuid} style={{ listStyle: "none" }}>
+                        <i>{startString}</i> to <i>{endString}</i>
+                      </li>
+                    );
+                  })}
                 </ul>
               );
             },
@@ -176,9 +180,14 @@ export const EventsTable = () => {
             dataIndex: "uuid",
             key: "uuid",
             render: (uuid: string) => (
-              <Link to="/events/$eventId" params={{ eventId: uuid }}>
-                View
-              </Link>
+              <Flex vertical style={{ textAlign: "center" }}>
+                <Link to="/events/$eventId" params={{ eventId: uuid }}>
+                  View
+                </Link>
+                <Link to="/events/$eventId/edit" params={{ eventId: uuid }}>
+                  Edit
+                </Link>
+              </Flex>
             ),
           },
         ]}

@@ -1,4 +1,4 @@
-import { DateTime, Interval } from "luxon";
+import { Interval } from "luxon";
 
 interface EventOccurrence {
   fullDay: boolean;
@@ -19,10 +19,16 @@ export function parseEventOccurrence(
   };
 }
 
-export function parsedEventOccurrenceToString(
+export function parsedEventOccurrenceToStrings(
   occurrence: ParsedEventOccurrence
-): string {
+): [string, string] {
   return occurrence.fullDay
-    ? occurrence.occurrence.toLocaleString(DateTime.DATE_SHORT)
-    : occurrence.occurrence.toLocaleString(DateTime.DATETIME_SHORT);
+    ? [
+        occurrence.occurrence.start!.toFormat("yyyy-MM-dd"),
+        occurrence.occurrence.end!.toFormat("yyyy-MM-dd"),
+      ]
+    : [
+        occurrence.occurrence.start!.toFormat("yyyy-MM-dd' at 'HH:mm a"),
+        occurrence.occurrence.end!.toFormat("yyyy-MM-dd' at 'HH:mm a"),
+      ];
 }

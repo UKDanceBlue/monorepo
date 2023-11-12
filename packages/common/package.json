@@ -48,9 +48,8 @@
     "dist"
   ],
   "scripts": {
-    "build-code": "tsc",
-    "build": "yarn run build-code && yarn run build-client",
-    "watch-code": "tsc -w",
+    "build": "tsc",
+    "watch": "tsc -w",
     "test": "jest",
     "test-coverage": "jest --coverage",
     "test-coverage-all": "jest --coverage --collectCoverageFrom=./lib/**/*"
