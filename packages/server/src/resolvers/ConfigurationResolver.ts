@@ -104,10 +104,10 @@ export class ConfigurationResolver
 
   @Mutation(() => SetConfigurationResponse, { name: "setConfiguration" })
   async set(
-    @Arg("id") id: string,
+    @Arg("key") key: string,
     @Arg("input") input: SetConfigurationInput
   ): Promise<SetConfigurationResponse> {
-    const row = await ConfigurationModel.findOne({ where: { key: id } });
+    const row = await ConfigurationModel.findOne({ where: { key } });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
@@ -118,7 +118,7 @@ export class ConfigurationResolver
   }
 
   @Mutation(() => DeleteConfigurationResponse, { name: "deleteConfiguration" })
-  async delete(@Arg("id") id: string): Promise<DeleteConfigurationResponse> {
+  async delete(@Arg("uuid") id: string): Promise<DeleteConfigurationResponse> {
     const row = await ConfigurationModel.findOne({
       where: { key: id },
       attributes: ["id"],

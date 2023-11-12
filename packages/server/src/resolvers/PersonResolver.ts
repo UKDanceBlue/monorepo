@@ -78,7 +78,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
   }
 
   @Mutation(() => DeletePersonResponse, { name: "deletePerson" })
-  async delete(@Arg("id") id: string): Promise<DeletePersonResponse> {
+  async delete(@Arg("uuid") id: string): Promise<DeletePersonResponse> {
     const row = await PersonModel.findOne({
       where: { uuid: id },
       attributes: ["id"],

@@ -137,7 +137,7 @@ export class NotificationResolver
   }
 
   @Mutation(() => DeleteNotificationResponse, { name: "deleteNotification" })
-  async delete(@Arg("id") id: string): Promise<DeleteNotificationResponse> {
+  async delete(@Arg("uuid") id: string): Promise<DeleteNotificationResponse> {
     const row = await NotificationModel.findOne({
       where: { uuid: id },
       attributes: ["id"],

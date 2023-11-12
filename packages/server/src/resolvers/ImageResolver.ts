@@ -140,7 +140,7 @@ export class ImageResolver implements ResolverInterface<ImageResource> {
   }
 
   @Mutation(() => DeleteImageResponse, { name: "deleteImage" })
-  async delete(@Arg("id") id: string): Promise<DeleteImageResponse> {
+  async delete(@Arg("uuid") id: string): Promise<DeleteImageResponse> {
     const row = await ImageModel.findOne({
       where: { uuid: id },
       attributes: ["id"],

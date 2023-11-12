@@ -204,7 +204,7 @@ export class EventResolver
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
 
-    return GetEventByUuidResponse.newOk(row.toResource());
+    return GetEventByUuidResponse.newOk(await row.toResource());
   }
 
   @Query(() => ListEventsResponse, { name: "events" })
@@ -223,7 +223,7 @@ export class EventResolver
     const { rows, count } = await EventModel.findAndCountAll(findOptions);
 
     return ListEventsResponse.newPaginated({
-      data: rows.map((row) => row.toResource()),
+      data: await Promise.all(rows.map((row) => row.toResource())),
       total: count,
       page: query.page,
       pageSize: query.pageSize,
@@ -240,11 +240,31 @@ export class EventResolver
       location: input.location,
     });
 
-    return CreateEventResponse.newOk(row.toResource());
+    const promises: Promise<EventOccurrenceModel>[] = [];
+    for (const occurrence of input.occurrences) {
+      const {
+        occurrence: { start, end },
+        fullDay,
+      } = occurrence;
+      if (start == null || end == null) {
+        throw new DetailedError(ErrorCode.InvalidRequest, "Invalid occurrence");
+      }
+      promises.push(
+        row.createOccurrence({
+          date: start.toJSDate(),
+          endDate: end.toJSDate(),
+          fullDay,
+          eventId: row.id,
+        })
+      );
+    }
+    await Promise.all(promises);
+
+    return CreateEventResponse.newOk(await row.toResource());
   }
 
   @Mutation(() => DeleteEventResponse, { name: "deleteEvent" })
-  async delete(@Arg("id") id: string): Promise<DeleteEventResponse> {
+  async delete(@Arg("uuid") id: string): Promise<DeleteEventResponse> {
     const row = await EventModel.findOne({
       where: { uuid: id },
       attributes: ["id"],
@@ -370,7 +390,7 @@ export class EventResolver
       return row;
     });
 
-    return SetEventResponse.newOk(result.toResource());
+    return SetEventResponse.newOk(await result.toResource());
   }
 
   @Mutation(() => RemoveEventImageResponse, { name: "removeImageFromEvent" })

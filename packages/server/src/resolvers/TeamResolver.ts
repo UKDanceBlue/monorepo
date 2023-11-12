@@ -175,7 +175,7 @@ export class TeamResolver
   }
 
   @Mutation(() => DeleteTeamResponse, { name: "deleteTeam" })
-  async delete(@Arg("id") id: string): Promise<DeleteTeamResponse> {
+  async delete(@Arg("uuid") id: string): Promise<DeleteTeamResponse> {
     const row = await TeamModel.findOne({
       where: { uuid: id },
       attributes: ["id"],

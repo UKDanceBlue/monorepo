@@ -148,7 +148,7 @@ export class DeviceResolver
   }
 
   @Mutation(() => DeleteDeviceResponse, { name: "deleteDevice" })
-  async delete(@Arg("id") id: string): Promise<DeleteDeviceResponse> {
+  async delete(@Arg("uuid") id: string): Promise<DeleteDeviceResponse> {
     const row = await DeviceModel.findOne({
       where: { uuid: id },
       attributes: ["id"],
