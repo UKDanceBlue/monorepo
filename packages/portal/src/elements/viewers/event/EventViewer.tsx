@@ -1,16 +1,18 @@
-import { EditOutlined } from "@ant-design/icons";
-import { Link } from "@tanstack/react-router";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { base64StringToArray } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
-import { Descriptions, Empty, Flex, Image, List, Typography } from "antd";
+import { Button, Descriptions, Flex, Image, List, Typography } from "antd";
 import DescriptionsItem from "antd/es/descriptions/Item";
 import { DateTime, Interval } from "luxon";
 import { useMemo } from "react";
 import { thumbHashToDataURL } from "thumbhash";
+
+import { useEventDeletePopup } from "./EventDeletePopup";
 
 export const EventViewerFragment = graphql(/* GraphQL */ `
   fragment EventViewerFragment on EventResource {
@@ -31,6 +33,8 @@ export const EventViewerFragment = graphql(/* GraphQL */ `
       thumbHash
       alt
     }
+    createdAt
+    updatedAt
   }
 `);
 
@@ -57,8 +61,29 @@ export function EventViewer({
     [eventData?.occurrences]
   );
 
+  const navigate = useNavigate();
+  const { EventDeletePopup, showModal } = useEventDeletePopup({
+    uuid: eventData?.uuid ?? "",
+    onDelete: () => {
+      navigate({ to: "/events" }).catch(console.error);
+    },
+  });
+
   if (!eventData) {
-    return <Empty description="Event not found" style={{ marginTop: "1em" }} />;
+    return (
+      <>
+        <Typography.Title level={2}>
+          <Button
+            style={{ display: "inline", marginLeft: "1em" }}
+            onClick={showModal}
+            icon={<DeleteOutlined />}
+            danger
+            shape="circle"
+          />
+        </Typography.Title>
+        {EventDeletePopup}
+      </>
+    );
   }
 
   return (
@@ -72,7 +97,15 @@ export function EventViewer({
         >
           <EditOutlined style={{ marginLeft: "1em" }} />
         </Link>
+        <Button
+          style={{ display: "inline", marginLeft: "1em" }}
+          onClick={showModal}
+          icon={<DeleteOutlined />}
+          danger
+          shape="circle"
+        />
       </Typography.Title>
+      {EventDeletePopup}
       {eventData.images.length > 0 && (
         <Flex
           gap="middle"
@@ -145,6 +178,20 @@ export function EventViewer({
             <Typography.Paragraph>{eventData.description}</Typography.Paragraph>
           </Descriptions.Item>
         )}
+        <Descriptions.Item label="Created">
+          {eventData.createdAt
+            ? DateTime.fromJSDate(new Date(eventData.createdAt)).toLocaleString(
+                DateTime.DATETIME_SHORT
+              )
+            : "Unknown"}
+        </Descriptions.Item>
+        <Descriptions.Item label="Updated">
+          {eventData.updatedAt
+            ? DateTime.fromJSDate(new Date(eventData.updatedAt)).toLocaleString(
+                DateTime.DATETIME_SHORT
+              )
+            : "Unknown"}
+        </Descriptions.Item>
       </Descriptions>
     </Flex>
   );

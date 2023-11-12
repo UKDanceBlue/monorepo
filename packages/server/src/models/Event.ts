@@ -118,21 +118,15 @@ export class EventModel extends BaseModel<
   >;
   public declare countImages: BelongsToManyCountAssociationsMixin<ImageModel>;
 
-  public toResource(): EventResource {
-    if (!this.occurrences) {
-      throw new Error(
-        "EventModel.toResource() requires occurrences to be loaded"
-      );
-    }
+  public async toResource(): Promise<EventResource> {
+    const occurrences = await this.getOccurrences();
 
     return EventResource.init({
       title: this.title,
       summary: this.summary ?? null,
       description: this.description ?? null,
       location: this.location ?? null,
-      occurrences: this.occurrences.map((occurrence) =>
-        occurrence.toResource()
-      ),
+      occurrences: occurrences.map((occurrence) => occurrence.toResource()),
       // images,
       uuid: this.uuid,
       createdAt:
