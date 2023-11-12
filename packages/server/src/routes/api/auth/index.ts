@@ -1,19 +1,13 @@
-import type { Request, Response } from "express";
-import express from "express";
+import Router from "@koa/router";
 
-// import { logout } from "../../../actions/auth.js";
-
-import { authMiddleware } from "./authMiddleware.js";
 import { login } from "./login.js";
 import { oidcCallback } from "./oidcCallback.js";
 
-const authApiRouter = express.Router();
+const authApiRouter = new Router({ prefix: "/auth" });
 
-authApiRouter.use(authMiddleware);
-
-authApiRouter.get("/logout", (_: Request, res: Response) => {
+authApiRouter.get("/logout", (ctx) => {
   // logout(req, res);
-  res.redirect("/");
+  ctx.redirect("/");
 });
 
 authApiRouter.post("/oidc-callback", oidcCallback);

@@ -671,16 +671,16 @@ type Mutation {
   createImage(input: CreateImageInput!): CreateImageResponse!
   createPerson(input: CreatePersonInput!): CreatePersonResponse!
   createTeam(input: CreateTeamInput!): CreateTeamResponse!
-  deleteConfiguration(id: String!): DeleteConfigurationResponse!
-  deleteDevice(id: String!): DeleteDeviceResponse!
-  deleteEvent(id: String!): DeleteEventResponse!
-  deleteImage(id: String!): DeleteImageResponse!
-  deleteNotification(id: String!): DeleteNotificationResponse!
-  deletePerson(id: String!): DeletePersonResponse!
-  deleteTeam(id: String!): DeleteTeamResponse!
+  deleteConfiguration(uuid: String!): DeleteConfigurationResponse!
+  deleteDevice(uuid: String!): DeleteDeviceResponse!
+  deleteEvent(uuid: String!): DeleteEventResponse!
+  deleteImage(uuid: String!): DeleteImageResponse!
+  deleteNotification(uuid: String!): DeleteNotificationResponse!
+  deletePerson(uuid: String!): DeletePersonResponse!
+  deleteTeam(uuid: String!): DeleteTeamResponse!
   removeImageFromEvent(eventId: String!, imageId: String!): RemoveEventImageResponse!
   sendNotification(input: SendNotificationInput!): SendNotificationResponse!
-  setConfiguration(id: String!, input: SetConfigurationInput!): SetConfigurationResponse!
+  setConfiguration(input: SetConfigurationInput!, key: String!): SetConfigurationResponse!
   setEvent(input: SetEventInput!, uuid: String!): SetEventResponse!
 }
 

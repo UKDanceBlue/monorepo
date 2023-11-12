@@ -1,126 +1,124 @@
+import type { IncomingMessage } from "node:http";
+
 import { AuthSource } from "@ukdanceblue/common";
-import type { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import jsonwebtoken from "jsonwebtoken";
+import type { Context } from "koa";
 
 import { LoginFlowSessionModel } from "../../.././models/LoginFlowSession.js";
 import { findPersonForLogin } from "../../../controllers/PersonController.js";
+import { sequelizeDb } from "../../../data-source.js";
 import { makeUserJwt } from "../../../lib/auth/index.js";
 
-export const oidcCallback = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  if (!res.locals.oidcClient) {
-    throw new createHttpError.InternalServerError("Missing OIDC client");
-  }
+import { makeOidcClient } from "./oidcClient.js";
 
-  const parameters = res.locals.oidcClient.callbackParams(req);
+export const oidcCallback = async (ctx: Context) => {
+  const oidcClient = await makeOidcClient(ctx.request);
+
+  const parameters = oidcClient.callbackParams(
+    // This is alright because callbackParams only uses the body and method properties, if this changes, we'll need to do something else
+    ctx.request as unknown as IncomingMessage
+  );
   const flowSessionId = parameters.state;
 
-  if (flowSessionId == null) {
-    return next(createHttpError.BadRequest());
+  if (!flowSessionId) {
+    return ctx.throw("Missing state parameter", 400);
   }
 
-  let sessionDeleted = false;
+  let sessionDeleted: boolean = false;
 
   try {
-    const session = await LoginFlowSessionModel.findOne({
-      where: {
-        uuid: flowSessionId,
-      },
-    });
-    if (!session?.codeVerifier) {
-      throw new createHttpError.InternalServerError(
-        `No ${session == null ? "session" : "codeVerifier"} found`
+    await sequelizeDb.transaction(async () => {
+      const session = await LoginFlowSessionModel.findOne({
+        where: {
+          uuid: flowSessionId,
+        },
+      });
+      if (!session?.codeVerifier) {
+        throw new createHttpError.InternalServerError(
+          `No ${session == null ? "session" : "codeVerifier"} found`
+        );
+      }
+      // Perform OIDC validation
+      const tokenSet = await oidcClient.callback(
+        new URL("/api/auth/oidc-callback", ctx.request.URL).toString(),
+        parameters,
+        { code_verifier: session.codeVerifier, state: flowSessionId }
       );
-    }
-    // Perform OIDC validation
-    const tokenSet = await res.locals.oidcClient.callback(
-      new URL(
-        "/api/auth/oidc-callback",
-        res.locals.applicationUrl.toString()
-      ).toString(),
-      parameters,
-      { code_verifier: session.codeVerifier, state: flowSessionId }
-    );
-    // Destroy the session
-    await session.destroy();
-    sessionDeleted = true;
-    if (!tokenSet.access_token) {
-      throw new createHttpError.InternalServerError("Missing access token");
-    }
-    const { oid: objectId, email } = tokenSet.claims();
-    const decodedJwt = jsonwebtoken.decode(tokenSet.access_token, {
-      json: true,
+      // Destroy the session
+      await session.destroy();
+      sessionDeleted = true;
+      if (!tokenSet.access_token) {
+        throw new createHttpError.InternalServerError("Missing access token");
+      }
+      const { oid: objectId, email } = tokenSet.claims();
+      const decodedJwt = jsonwebtoken.decode(tokenSet.access_token, {
+        json: true,
+      });
+      if (!decodedJwt) {
+        throw new createHttpError.InternalServerError("Error decoding JWT");
+      }
+      const {
+        given_name: firstName,
+        family_name: lastName,
+        upn: userPrincipalName,
+      } = decodedJwt;
+      let linkblue = null;
+      if (
+        typeof userPrincipalName === "string" &&
+        userPrincipalName.endsWith("@uky.edu")
+      ) {
+        linkblue = userPrincipalName.replace(/@uky\.edu$/, "");
+      }
+      if (typeof objectId !== "string") {
+        return ctx.throw("Missing OID", 500);
+      }
+      const [currentPerson, didCreate] = await findPersonForLogin(
+        { [AuthSource.UkyLinkblue]: objectId },
+        { email, linkblue }
+      );
+      let isPersonChanged = didCreate;
+      if (currentPerson.authIds[AuthSource.UkyLinkblue] !== objectId) {
+        currentPerson.authIds[AuthSource.UkyLinkblue] = objectId;
+        isPersonChanged = true;
+      }
+      if (email && currentPerson.email !== email) {
+        currentPerson.email = email;
+        isPersonChanged = true;
+      }
+      if (
+        typeof firstName === "string" &&
+        currentPerson.firstName !== firstName
+      ) {
+        currentPerson.firstName = firstName;
+        isPersonChanged = true;
+      }
+      if (typeof lastName === "string" && currentPerson.lastName !== lastName) {
+        currentPerson.lastName = lastName;
+        isPersonChanged = true;
+      }
+      if (linkblue && currentPerson.linkblue !== linkblue) {
+        currentPerson.linkblue = linkblue;
+        isPersonChanged = true;
+      }
+      if (isPersonChanged) {
+        await currentPerson.save();
+      }
+      const userData = currentPerson.toUserData();
+      const jwt = makeUserJwt(userData, AuthSource.UkyLinkblue);
+      ctx.cookies.set("token", jwt, {
+        httpOnly: true,
+        sameSite: "lax",
+      });
+      return ctx.redirect(session.redirectToAfterLogin ?? "/");
     });
-    if (!decodedJwt) {
-      throw new createHttpError.InternalServerError("Error decoding JWT");
+  } finally {
+    if (!(sessionDeleted as true | typeof sessionDeleted)) {
+      await LoginFlowSessionModel.destroy({
+        where: {
+          uuid: flowSessionId,
+        },
+      });
     }
-    const {
-      given_name: firstName,
-      family_name: lastName,
-      upn: userPrincipalName,
-    } = decodedJwt;
-    let linkblue = null;
-    if (
-      typeof userPrincipalName === "string" &&
-      userPrincipalName.endsWith("@uky.edu")
-    ) {
-      linkblue = userPrincipalName.replace(/@uky\.edu$/, "");
-    }
-    if (typeof objectId !== "string") {
-      return next(createHttpError.InternalServerError("Missing OID"));
-    }
-    const [currentPerson, didCreate] = await findPersonForLogin(
-      { [AuthSource.UkyLinkblue]: objectId },
-      { email, linkblue }
-    );
-    let isPersonChanged = didCreate;
-    if (currentPerson.authIds[AuthSource.UkyLinkblue] !== objectId) {
-      currentPerson.authIds[AuthSource.UkyLinkblue] = objectId;
-      isPersonChanged = true;
-    }
-    if (email && currentPerson.email !== email) {
-      currentPerson.email = email;
-      isPersonChanged = true;
-    }
-    if (
-      typeof firstName === "string" &&
-      currentPerson.firstName !== firstName
-    ) {
-      currentPerson.firstName = firstName;
-      isPersonChanged = true;
-    }
-    if (typeof lastName === "string" && currentPerson.lastName !== lastName) {
-      currentPerson.lastName = lastName;
-      isPersonChanged = true;
-    }
-    if (linkblue && currentPerson.linkblue !== linkblue) {
-      currentPerson.linkblue = linkblue;
-      isPersonChanged = true;
-    }
-    if (isPersonChanged) {
-      await currentPerson.save();
-    }
-    const userData = currentPerson.toUserData();
-    res.locals = {
-      ...res.locals,
-      user: userData,
-    };
-    const jwt = makeUserJwt(userData, AuthSource.UkyLinkblue);
-    res.cookie("token", jwt, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-    });
-    return res.redirect(session.redirectToAfterLogin ?? "/");
-  } catch (error) {
-    if (!sessionDeleted) {
-      // const sessionRepository = appDataSource.getRepository(LoginFlowSession);
-      // sessionRepository.delete({ sessionId: flowSessionId }).catch(logCritical);
-    }
-    return next(error);
   }
 };

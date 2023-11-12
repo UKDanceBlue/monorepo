@@ -1,19 +1,13 @@
 import http from "node:http";
 
-import {
-  ApolloServer,
-  // ApolloServerPlugin,
-  // BaseContext,
-  // GraphQLRequestListener,
-} from "@apollo/server";
+import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { koaMiddleware } from "@as-integrations/koa";
 import cors from "@koa/cors";
+import Router from "@koa/router";
 import Koa from "koa";
 import bodyParser from "koa-bodyparser";
 
-import { formatError } from "./lib/formatError.js";
-import graphqlSchema from "./lib/graphqlSchema.js";
 import { logDebug, logError, logInfo, logWarning } from "./logger.js";
 
 // const BASIC_LOGGING: ApolloServerPlugin<BaseContext> = {
@@ -42,7 +36,10 @@ import { logDebug, logError, logInfo, logWarning } from "./logger.js";
  *
  * @return The Koa, HTTP, and Apollo servers
  */
-export function createServer() {
+export async function createServer() {
+  const { default: graphqlSchema } = await import("./lib/graphqlSchema.js");
+  const { formatError } = await import("./lib/formatError.js");
+
   const app = new Koa();
   app.silent = true;
   app.on("error", (err, ctx) => {
@@ -70,7 +67,11 @@ export function createServer() {
   });
 
   app.use(cors());
-  app.use(bodyParser());
+  app.use(
+    bodyParser({
+      enableTypes: ["form", "text"],
+    })
+  );
 
   return { app, httpServer, apolloServer: server };
 }
@@ -98,10 +99,22 @@ export async function startHttpServer(httpServer: http.Server) {
  */
 export async function startServer(apolloServer: ApolloServer, app: Koa) {
   await apolloServer.start();
-  app.use(
+
+  const { default: authApiRouter } = await import("./routes/api/auth/index.js");
+  const { parseUserJwt } = await import("./lib/auth/index.js");
+
+  const apiRouter = new Router();
+  apiRouter.use("/api", authApiRouter.routes(), authApiRouter.allowedMethods());
+  apiRouter.use(
+    "/graphql",
     // @ts-expect-error The context type is not correct
     koaMiddleware(apolloServer, {
-      context: ({ ctx }) => Promise.resolve({ token: ctx.headers.token }),
+      context: ({ ctx }) => {
+        const token = ctx.cookies.get("token");
+        return token ? { token: parseUserJwt(token) } : {};
+      },
     })
   );
+
+  app.use(apiRouter.routes());
 }

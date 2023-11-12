@@ -5,7 +5,7 @@ import type { Client } from "openid-client";
 import type { Logger } from "winston";
 
 declare global {
-  namespace Express {
+  namespace Koa {
     interface Locals {
       // Remember to make every property optional if it will ever be undefined
       userData: UserData;

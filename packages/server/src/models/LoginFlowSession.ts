@@ -61,7 +61,7 @@ LoginFlowSessionModel.init(
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
     codeVerifier: {
-      type: DataTypes.STRING(128),
+      type: DataTypes.TEXT,
       defaultValue: () => generators.codeVerifier(128),
     },
     redirectToAfterLogin: {

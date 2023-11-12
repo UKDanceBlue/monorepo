@@ -39,7 +39,7 @@ if (argv.includes("--seed-db")) {
 const { createServer, startHttpServer, startServer } = await import(
   "./server.js"
 );
-const { app, httpServer, apolloServer } = createServer();
+const { app, httpServer, apolloServer } = await createServer();
 logInfo("Created server");
 
 await startHttpServer(httpServer);
@@ -56,6 +56,6 @@ if (typeof httpServerAddress === "string") {
 logInfo(`HTTP server started at ${httpServerUrl}`);
 
 await startServer(apolloServer, app);
-logInfo("Apollo server started");
+logInfo("API started");
 
 logInfo("DanceBlue Server Started");
