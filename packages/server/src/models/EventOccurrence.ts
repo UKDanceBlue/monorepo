@@ -66,7 +66,7 @@ export class EventOccurrenceModel extends BaseModel<
 
     return EventOccurrenceResource.init({
       uuid: this.uuid,
-      occurrence,
+      interval: occurrence,
       fullDay: this.fullDay,
     });
   }

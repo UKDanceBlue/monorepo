@@ -9,7 +9,7 @@ export const EventEditorFragment = graphql(/* GraphQL */ `
     location
     occurrences {
       uuid
-      occurrence
+      interval
       fullDay
     }
     images {

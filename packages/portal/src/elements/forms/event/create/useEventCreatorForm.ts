@@ -22,9 +22,9 @@ export function useEventCreatorForm() {
 
   const Form = useForm<
     Omit<SetEventInput, "occurrences"> & {
-      occurrences: (Omit<SetEventOccurrenceInput, "uuid" | "occurrence"> & {
+      occurrences: (Omit<SetEventOccurrenceInput, "uuid" | "interval"> & {
         uuid?: string;
-        occurrence: Interval;
+        interval: Interval;
       })[];
     }
   >({
@@ -47,7 +47,7 @@ export function useEventCreatorForm() {
             const retVal: Parameters<
               typeof createEvent
             >[0]["input"]["occurrences"][number] = {
-              occurrence: occurrence.occurrence.toISO(),
+              interval: occurrence.interval.toISO(),
               fullDay: occurrence.fullDay,
             };
             return retVal;

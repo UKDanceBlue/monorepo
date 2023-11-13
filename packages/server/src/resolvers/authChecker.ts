@@ -2,6 +2,7 @@ import type { AuthorizationRuleOrAccessLevel } from "@ukdanceblue/common";
 import { CommitteeRole } from "@ukdanceblue/common";
 import type { AuthChecker } from "type-graphql";
 
+import { authorizationOverride } from "../environment.js";
 import { logDebug } from "../logger.js";
 
 import type { GraphQLContext } from "./context.js";
@@ -33,6 +34,13 @@ export const customAuthChecker: AuthChecker<
   AuthorizationRuleOrAccessLevel
 > = ({ context: { authorization }, info }, roles) => {
   logDebug("customAuthChecker", { authorization, roles });
+
+  // Auth override
+  if (authorizationOverride) {
+    logDebug("customAuthChecker Authorization override enabled");
+    return true;
+  }
+
   for (const role of roles) {
     if (typeof role === "number") {
       if (authorization.accessLevel >= role) {

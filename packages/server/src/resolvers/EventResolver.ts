@@ -95,7 +95,7 @@ class ListEventsResponse extends AbstractGraphQLPaginatedResponse<EventResource>
 @InputType()
 export class CreateEventOccurrenceInput {
   @Field(() => DateRangeScalar)
-  occurrence!: Interval;
+  interval!: Interval;
   @Field(() => Boolean)
   fullDay!: boolean;
 }
@@ -127,7 +127,7 @@ export class SetEventOccurrenceInput {
   })
   uuid!: string | null;
   @Field(() => DateRangeScalar)
-  occurrence!: Interval;
+  interval!: Interval;
   @Field(() => Boolean)
   fullDay!: boolean;
 }
@@ -246,7 +246,7 @@ export class EventResolver
     const promises: Promise<EventOccurrenceModel>[] = [];
     for (const occurrence of input.occurrences) {
       const {
-        occurrence: { start, end },
+        interval: { start, end },
         fullDay,
       } = occurrence;
       if (start == null || end == null) {
@@ -343,7 +343,7 @@ export class EventResolver
             );
           }
           const {
-            occurrence: { start, end },
+            interval: { start, end },
             fullDay,
           } = inputOccurrence;
           if (start == null || end == null) {
@@ -362,7 +362,7 @@ export class EventResolver
         // Create any occurrences that are only in the input
         ...occurrencesToCreate.map((inputOccurrence) => {
           const {
-            occurrence: { start, end },
+            interval: { start, end },
             fullDay,
           } = inputOccurrence;
           if (start == null || end == null) {

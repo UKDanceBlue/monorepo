@@ -156,10 +156,10 @@ export function EventEditor({
               name="occurrences"
               onChange={(value) => {
                 for (let i = 0; i < value.length; i++) {
-                  const occurrence = value[i]?.occurrence;
-                  if (occurrence && !occurrence.isValid) {
-                    return `Occurrence ${i + 1} is invalid: ${
-                      occurrence.invalidExplanation
+                  const interval = value[i]?.interval;
+                  if (interval && !interval.isValid) {
+                    return `Occurrence interval ${i + 1} is invalid: ${
+                      interval.invalidExplanation
                     }`;
                   }
                 }

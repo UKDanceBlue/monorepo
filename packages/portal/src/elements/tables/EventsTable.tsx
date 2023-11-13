@@ -20,7 +20,7 @@ const EventsTableFragment = graphql(/* GraphQL */ `
     description
     occurrences {
       uuid
-      occurrence
+      interval
       fullDay
     }
     summary

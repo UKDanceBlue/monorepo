@@ -93,7 +93,7 @@ export function EventCreator() {
             name="occurrences"
             onChange={(value) => {
               for (let i = 0; i < value.length; i++) {
-                const occurrence = value[i]?.occurrence;
+                const occurrence = value[i]?.interval;
                 if (occurrence && !occurrence.isValid) {
                   return `Occurrence ${i + 1} is invalid: ${
                     occurrence.invalidExplanation
@@ -132,7 +132,7 @@ export function EventCreator() {
                   onClick={() => {
                     field.state.value.push({
                       fullDay: false,
-                      occurrence: Interval.invalid("empty"),
+                      interval: Interval.invalid("empty"),
                     });
                     field.handleChange(field.state.value);
                   }}

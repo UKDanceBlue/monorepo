@@ -6,8 +6,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 export function EventOccurrencePicker<
   XEventOccurrenceInput extends
-    | { uuid: string; occurrence: Interval; fullDay: boolean }
-    | { occurrence: Interval; fullDay: boolean },
+    | { uuid: string; interval: Interval; fullDay: boolean }
+    | { interval: Interval; fullDay: boolean },
 >({
   defaultOccurrence,
   onChange,
@@ -16,10 +16,10 @@ export function EventOccurrencePicker<
   onChange: (occurrence: XEventOccurrenceInput) => void;
 }) {
   const [start, setStart] = useState<DateTime | null>(
-    defaultOccurrence.occurrence.start
+    defaultOccurrence.interval.start
   );
   const [end, setEnd] = useState<DateTime | null>(
-    defaultOccurrence.occurrence.end
+    defaultOccurrence.interval.end
   );
   const [fullDay, setFullDay] = useState<boolean>(defaultOccurrence.fullDay);
 
@@ -62,20 +62,18 @@ export function EventOccurrencePicker<
     if (
       start &&
       end &&
-      (!Interval.fromDateTimes(start, end).equals(
-        defaultOccurrence.occurrence
-      ) ||
+      (!Interval.fromDateTimes(start, end).equals(defaultOccurrence.interval) ||
         fullDay !== defaultOccurrence.fullDay)
     ) {
       if (uuid) {
         onChange({
           uuid,
-          occurrence: Interval.fromDateTimes(start, end),
+          interval: Interval.fromDateTimes(start, end),
           fullDay,
         } as XEventOccurrenceInput);
       } else {
         onChange({
-          occurrence: Interval.fromDateTimes(start, end),
+          interval: Interval.fromDateTimes(start, end),
           fullDay,
         } as XEventOccurrenceInput);
       }
@@ -87,7 +85,7 @@ export function EventOccurrencePicker<
     onChange,
     uuid,
     defaultOccurrence.fullDay,
-    defaultOccurrence.occurrence,
+    defaultOccurrence.interval,
   ]);
 
   useEffect(() => {

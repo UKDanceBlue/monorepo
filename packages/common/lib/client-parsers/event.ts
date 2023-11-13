@@ -2,12 +2,12 @@ import { Interval } from "luxon";
 
 interface EventOccurrence {
   fullDay: boolean;
-  occurrence: string;
+  interval: string;
 }
 
 interface ParsedEventOccurrence {
   fullDay: boolean;
-  occurrence: Interval;
+  interval: Interval;
 }
 
 export function parseEventOccurrence(
@@ -15,7 +15,7 @@ export function parseEventOccurrence(
 ): ParsedEventOccurrence {
   return {
     fullDay: occurrence.fullDay,
-    occurrence: Interval.fromISO(occurrence.occurrence),
+    interval: Interval.fromISO(occurrence.interval),
   };
 }
 
@@ -24,11 +24,11 @@ export function parsedEventOccurrenceToStrings(
 ): [string, string] {
   return occurrence.fullDay
     ? [
-        occurrence.occurrence.start!.toFormat("yyyy-MM-dd"),
-        occurrence.occurrence.end!.toFormat("yyyy-MM-dd"),
+        occurrence.interval.start!.toFormat("yyyy-MM-dd"),
+        occurrence.interval.end!.toFormat("yyyy-MM-dd"),
       ]
     : [
-        occurrence.occurrence.start!.toFormat("yyyy-MM-dd' at 'HH:mm a"),
-        occurrence.occurrence.end!.toFormat("yyyy-MM-dd' at 'HH:mm a"),
+        occurrence.interval.start!.toFormat("yyyy-MM-dd' at 'HH:mm a"),
+        occurrence.interval.end!.toFormat("yyyy-MM-dd' at 'HH:mm a"),
       ];
 }

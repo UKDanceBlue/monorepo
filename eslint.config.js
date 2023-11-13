@@ -96,7 +96,7 @@ const eslintConfig = [
       "no-constant-binary-expression": "error",
       "no-promise-executor-return": "error",
       "no-self-compare": "error",
-      "require-atomic-updates": "error",
+      "require-atomic-updates": ["error", { allowProperties: true }],
       "eqeqeq": ["error", "smart"],
       // jsdoc
       "jsdoc/no-types": "off",

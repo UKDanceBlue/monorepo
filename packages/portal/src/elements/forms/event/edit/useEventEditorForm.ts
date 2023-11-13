@@ -28,9 +28,9 @@ export function useEventEditorForm(
 
   const Form = useForm<
     Omit<SetEventInput, "occurrences"> & {
-      occurrences: (Omit<SetEventOccurrenceInput, "uuid" | "occurrence"> & {
+      occurrences: (Omit<SetEventOccurrenceInput, "uuid" | "interval"> & {
         uuid?: string;
-        occurrence: Interval;
+        interval: Interval;
       })[];
     }
   >({
@@ -43,7 +43,7 @@ export function useEventEditorForm(
       occurrences:
         eventData?.occurrences.map((occurrence) => ({
           uuid: occurrence.uuid,
-          occurrence: Interval.fromISO(occurrence.occurrence),
+          interval: Interval.fromISO(occurrence.interval),
           fullDay: occurrence.fullDay,
         })) ?? [],
     },
@@ -63,7 +63,7 @@ export function useEventEditorForm(
             let retVal: Parameters<
               typeof setEvent
             >[0]["input"]["occurrences"][number] = {
-              occurrence: occurrence.occurrence.toISO(),
+              interval: occurrence.interval.toISO(),
               fullDay: occurrence.fullDay,
             };
             if (occurrence.uuid) {

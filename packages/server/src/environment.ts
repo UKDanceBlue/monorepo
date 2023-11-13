@@ -68,4 +68,5 @@ export const msClientId = MS_CLIENT_ID;
 export const msClientSecret = MS_CLIENT_SECRET;
 
 // Disable all authorization checks
-export const authorizationOverride = env.parsed?.OVERIDE_AUTH === "true";
+export const authorizationOverride =
+  env.parsed?.OVERRIDE_AUTH === "THIS IS DANGEROUS";

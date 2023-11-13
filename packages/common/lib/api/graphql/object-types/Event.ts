@@ -34,7 +34,7 @@ export class EventOccurrenceResource extends Resource {
   @Field(() => ID)
   uuid!: string;
   @Field(() => DateRangeScalar)
-  occurrence!: Interval;
+  interval!: Interval;
   @Field(() => Boolean)
   fullDay!: boolean;
 

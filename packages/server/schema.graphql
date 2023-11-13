@@ -141,7 +141,7 @@ input CreateEventInput {
 
 input CreateEventOccurrenceInput {
   fullDay: Boolean!
-  occurrence: LuxonDateRange!
+  interval: LuxonDateRange!
 }
 
 type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -365,7 +365,7 @@ type DeviceResource {
 type EventOccurrenceResource {
   createdAt: DateTimeISO
   fullDay: Boolean!
-  occurrence: LuxonDateRange!
+  interval: LuxonDateRange!
   updatedAt: DateTimeISO
   uuid: ID!
 }
@@ -986,7 +986,7 @@ input SetEventInput {
 
 input SetEventOccurrenceInput {
   fullDay: Boolean!
-  occurrence: LuxonDateRange!
+  interval: LuxonDateRange!
 
   """
   If updating an existing occurrence, the UUID of the occurrence to update

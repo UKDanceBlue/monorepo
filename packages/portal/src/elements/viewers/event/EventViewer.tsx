@@ -22,7 +22,7 @@ export const EventViewerFragment = graphql(/* GraphQL */ `
     description
     location
     occurrences {
-      occurrence
+      interval
       fullDay
     }
     images {
@@ -46,14 +46,14 @@ export function EventViewer({
   const eventData = getFragmentData(EventViewerFragment, eventFragment);
 
   const occurrences = useMemo<
-    { occurrence: Interval; fullDay: boolean }[] | undefined
+    { interval: Interval; fullDay: boolean }[] | undefined
   >(
     () =>
       eventData?.occurrences
         ? eventData.occurrences.map((occurrence) => {
-            const interval = Interval.fromISO(occurrence.occurrence);
+            const interval = Interval.fromISO(occurrence.interval);
             return {
-              occurrence: interval,
+              interval,
               fullDay: occurrence.fullDay,
             };
           })
@@ -162,10 +162,10 @@ export function EventViewer({
               {occurrences.map((occurrence) => (
                 <List.Item>
                   {occurrence.fullDay
-                    ? occurrence.occurrence.start?.toLocaleString(
+                    ? occurrence.interval.start?.toLocaleString(
                         DateTime.DATE_FULL
                       )
-                    : occurrence.occurrence.start?.toLocaleString(
+                    : occurrence.interval.start?.toLocaleString(
                         DateTime.DATETIME_SHORT
                       )}
                 </List.Item>
