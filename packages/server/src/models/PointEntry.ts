@@ -8,7 +8,7 @@ import type {
   NonAttribute,
 } from "@sequelize/core";
 import { DataTypes } from "@sequelize/core";
-import { PointEntryResource, TeamType } from "@ukdanceblue/common";
+import { PointEntryResource } from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
 
@@ -27,9 +27,7 @@ export class PointEntryModel extends BaseModel<
   declare readonly updatedAt: CreationOptional<Date>;
   declare readonly deletedAt: CreationOptional<Date | null>;
 
-  public declare type: TeamType;
-
-  public declare comment: string;
+  public declare comment: CreationOptional<string | null>;
 
   public declare points: number;
 
@@ -54,7 +52,6 @@ export class PointEntryModel extends BaseModel<
   public toResource(): PointEntryResource {
     return PointEntryResource.init({
       uuid: this.uuid,
-      type: this.type,
       comment: this.comment,
       points: this.points,
       // personFrom:
@@ -82,12 +79,9 @@ PointEntryModel.init(
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
     deletedAt: DataTypes.DATE,
-    type: {
-      type: DataTypes.ENUM(Object.values(TeamType)),
-      allowNull: false,
-    },
     comment: {
       type: DataTypes.TEXT,
+      allowNull: true,
     },
     points: {
       type: DataTypes.INTEGER,

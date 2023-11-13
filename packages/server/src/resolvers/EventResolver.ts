@@ -199,7 +199,7 @@ export class EventResolver
     ResolverInterfaceWithFilteredList<EventResource, ListEventsArgs>
 {
   @Query(() => GetEventByUuidResponse, { name: "event" })
-  async getByKey(@Arg("uuid") uuid: string): Promise<GetEventByUuidResponse> {
+  async getByUuid(@Arg("uuid") uuid: string): Promise<GetEventByUuidResponse> {
     const row = await EventModel.findOne({ where: { uuid } });
 
     if (row == null) {

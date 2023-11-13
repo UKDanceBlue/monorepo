@@ -89,7 +89,7 @@ export class DeviceResolver
     ResolverInterfaceWithFilteredList<DeviceResource, ListDevicesArgs>
 {
   @Query(() => GetDeviceByUuidResponse, { name: "device" })
-  async getByKey(@Arg("uuid") uuid: string): Promise<GetDeviceByUuidResponse> {
+  async getByUuid(@Arg("uuid") uuid: string): Promise<GetDeviceByUuidResponse> {
     const row = await DeviceModel.findOne({ where: { uuid } });
 
     if (row == null) {

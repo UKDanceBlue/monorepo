@@ -75,7 +75,7 @@ class CreateImageInput implements Partial<ImageResource> {
 @Resolver(() => ImageResource)
 export class ImageResolver implements ResolverInterface<ImageResource> {
   @Query(() => GetImageByUuidResponse, { name: "image" })
-  async getByKey(@Arg("uuid") uuid: string): Promise<GetImageByUuidResponse> {
+  async getByUuid(@Arg("uuid") uuid: string): Promise<GetImageByUuidResponse> {
     const row = await ImageModel.findOne({ where: { uuid } });
 
     if (row == null) {

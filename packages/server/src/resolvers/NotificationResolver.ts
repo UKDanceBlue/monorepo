@@ -86,7 +86,7 @@ export class NotificationResolver
     >
 {
   @Query(() => GetNotificationByUuidResponse, { name: "notification" })
-  async getByKey(
+  async getByUuid(
     @Arg("uuid") uuid: string
   ): Promise<GetNotificationByUuidResponse> {
     const row = await NotificationModel.findOne({ where: { uuid } });

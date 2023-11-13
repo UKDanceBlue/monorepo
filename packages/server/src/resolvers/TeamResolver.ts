@@ -123,7 +123,7 @@ export class TeamResolver
     ResolverInterfaceWithFilteredList<TeamResource, ListTeamsArgs>
 {
   @Query(() => GetTeamByUuidResponse, { name: "team" })
-  async getByKey(@Arg("uuid") uuid: string): Promise<GetTeamByUuidResponse> {
+  async getByUuid(@Arg("uuid") uuid: string): Promise<GetTeamByUuidResponse> {
     const row = await TeamModel.findOne({ where: { uuid } });
 
     if (row == null) {
