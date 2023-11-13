@@ -1,23 +1,30 @@
 import { Op } from "@sequelize/core";
+import type { EventOccurrenceResource } from "@ukdanceblue/common";
 import type { Context } from "koa";
-import { DateTime } from "luxon";
 import type { NextFn } from "type-graphql";
 
 import { EventModel } from "../../../models/Event.js";
 import { EventOccurrenceModel } from "../../../models/EventOccurrence.js";
 
-const eventToHtml = async (eventModel: EventModel) => {
-  const event = await eventModel.toResource();
+const eventToHtml = (eventModel: EventModel) => {
+  const occurrences: EventOccurrenceResource[] =
+    eventModel.occurrences?.map((occurrence) => occurrence.toResource()) ?? [];
 
-  const occurrenceStrings = event.occurrences.map((occurrence) => {
-    return `<li>${occurrence.interval.start?.toLocaleString(
-      DateTime.DATE_FULL
-    )}</li>`;
+  const occurrenceStrings = occurrences.map((occurrence) => {
+    if (occurrence.fullDay) {
+      return occurrence.interval.hasSame("day")
+        ? `<li>${
+            occurrence.interval.start?.toFormat("EEEE, LLLL d") ?? ""
+          }</li>`
+        : `<li>${occurrence.interval.toFormat("EEEE, LLLL d")}</li>`;
+    } else {
+      return `<li>${occurrence.interval.toFormat("EEEE, LLLL d, h:mm a")}</li>`;
+    }
   });
 
   return `<div>
-    <p>${event.title}</p>
-    <p>${event.summary}</p>
+    <p>${eventModel.title}</p>
+    <p>${eventModel.summary}</p>
     <ul>${occurrenceStrings.join("\n")}</ul>
   </div>`;
 };
@@ -34,8 +41,7 @@ export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
     }
   }
 
-  const upcomingEvents = await EventModel.findAll({
-    // where: { "$occurrences.date$": { [Op.gte]: new Date() } },
+  const upcomingEvents = await EventModel.withoutScope().findAll({
     order: [[EventOccurrenceModel, "date", "ASC"]],
     limit: eventsToSend,
     include: [
@@ -52,7 +58,6 @@ export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
             },
           ],
         },
-        required: true,
       },
     ],
   });
