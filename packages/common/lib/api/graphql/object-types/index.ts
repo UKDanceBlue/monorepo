@@ -15,3 +15,4 @@ export { PointOpportunityResource } from "./PointOpportunity.js";
 export { Resource } from "./Resource.js";
 export { RoleResource } from "./Role.js";
 export { TeamLegacyStatus, TeamResource, TeamType } from "./Team.js";
+export * from "./authorization.js";

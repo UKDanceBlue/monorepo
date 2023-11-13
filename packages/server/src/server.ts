@@ -10,7 +10,7 @@ import Koa from "koa";
 import { koaBody } from "koa-body";
 
 import { logDebug, logError, logInfo, logWarning } from "./logger.js";
-import type { GraphQLContext } from "./resolvers/Context.js";
+import type { GraphQLContext } from "./resolvers/context.js";
 
 // const BASIC_LOGGING: ApolloServerPlugin<BaseContext> = {
 //   async requestDidStart(requestContext) {
@@ -101,7 +101,7 @@ export async function startServer(
   await apolloServer.start();
 
   const { default: authApiRouter } = await import("./routes/api/auth/index.js");
-  const { graphqlContextFunction } = await import("./resolvers/Context.js");
+  const { graphqlContextFunction } = await import("./resolvers/context.js");
 
   const apiRouter = new Router<DefaultState, GraphQLContext>();
   app.use(apiRouter.routes());

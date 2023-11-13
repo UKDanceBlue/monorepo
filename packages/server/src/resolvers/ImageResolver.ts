@@ -1,4 +1,9 @@
-import { ErrorCode, ImageResource } from "@ukdanceblue/common";
+import {
+  AccessLevel,
+  AccessLevelAuthorized,
+  ErrorCode,
+  ImageResource,
+} from "@ukdanceblue/common";
 import { NonNegativeIntResolver } from "graphql-scalars";
 import {
   Arg,
@@ -70,7 +75,7 @@ class CreateImageInput implements Partial<ImageResource> {
 @Resolver(() => ImageResource)
 export class ImageResolver implements ResolverInterface<ImageResource> {
   @Query(() => GetImageByUuidResponse, { name: "image" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<GetImageByUuidResponse> {
+  async getByKey(@Arg("uuid") uuid: string): Promise<GetImageByUuidResponse> {
     const row = await ImageModel.findOne({ where: { uuid } });
 
     if (row == null) {
@@ -101,6 +106,7 @@ export class ImageResolver implements ResolverInterface<ImageResource> {
     );
   }
 
+  @AccessLevelAuthorized(AccessLevel.CommitteeChairOrCoordinator)
   @Mutation(() => CreateImageResponse, { name: "createImage" })
   async create(
     @Arg("input") input: CreateImageInput
@@ -139,6 +145,7 @@ export class ImageResolver implements ResolverInterface<ImageResource> {
     return response;
   }
 
+  @AccessLevelAuthorized(AccessLevel.CommitteeChairOrCoordinator)
   @Mutation(() => DeleteImageResponse, { name: "deleteImage" })
   async delete(@Arg("uuid") id: string): Promise<DeleteImageResponse> {
     const row = await ImageModel.findOne({

@@ -8,6 +8,7 @@ import { MembershipResolver } from "../resolvers/MembershipResolver.js";
 import { NotificationResolver } from "../resolvers/NotificationResolver.js";
 import { PersonResolver } from "../resolvers/PersonResolver.js";
 import { TeamResolver } from "../resolvers/TeamResolver.js";
+import { customAuthChecker } from "../resolvers/authChecker.js";
 
 export default await buildSchema({
   resolvers: [
@@ -21,4 +22,6 @@ export default await buildSchema({
     TeamResolver,
   ],
   emitSchemaFile: true,
+  authChecker: customAuthChecker,
+  authMode: "error",
 });

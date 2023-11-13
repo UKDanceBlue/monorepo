@@ -24,8 +24,8 @@ import {
   AbstractGraphQLOkResponse,
   DetailedError,
 } from "./ApiResponse.js";
-import * as Context from "./Context.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
+import * as Context from "./context.js";
 
 @ObjectType("CreatePersonResponse", {
   implements: AbstractGraphQLCreatedResponse<PersonResource>,
@@ -64,7 +64,7 @@ class CreatePersonInput {
 @Resolver(() => PersonResource)
 export class PersonResolver implements ResolverInterface<PersonResource> {
   @Query(() => GetPersonByUuidResponse, { name: "person" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<GetPersonByUuidResponse> {
+  async getByKey(@Arg("uuid") uuid: string): Promise<GetPersonByUuidResponse> {
     const row = await PersonModel.findOne({ where: { uuid } });
 
     if (row == null) {

@@ -776,7 +776,7 @@ scalar PositiveInt
 
 type Query {
   allConfigurations: GetAllConfigurationsResponse!
-  configuration(uuid: String!): GetConfigurationByUuidResponse!
+  configuration(key: String!): GetConfigurationByUuidResponse!
   device(uuid: String!): GetDeviceByUuidResponse!
   devices(
     """The boolean filters to apply to the query"""

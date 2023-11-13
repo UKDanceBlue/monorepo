@@ -10,7 +10,7 @@ import type { AbstractFilteredListQueryArgs } from "./list-query-args/FilteredLi
 import type { UnfilteredListQueryArgs } from "./list-query-args/UnfilteredListQueryArgs.js";
 
 export interface ResolverInterface<R extends Resource> {
-  getByUuid?: (uuid: string) => Promise<AbstractGraphQLOkResponse<R>>;
+  getByKey?: (uuid: string) => Promise<AbstractGraphQLOkResponse<R>>;
   delete?: (uuid: string) => Promise<AbstractGraphQLOkResponse<boolean>>;
 
   getAll?: () => Promise<AbstractGraphQLArrayOkResponse<R>>;

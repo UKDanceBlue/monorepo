@@ -1,9 +1,10 @@
 import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
 
-import { DbRole } from "../../../index.js";
+import { AccessLevel, DbRole } from "../../../index.js";
 import * as SimpleTypes from "../../SimpleTypes.js";
 
 import { Resource } from "./Resource.js";
+import { AccessLevelAuthorized } from "./authorization.js";
 
 export const TeamType = {
   Spirit: "Spirit",
@@ -46,8 +47,9 @@ export class TeamResource extends Resource {
   @Field(() => String)
   marathonYear!: SimpleTypes.MarathonYearString;
 
+  @AccessLevelAuthorized(AccessLevel.Committee)
   @Field(() => String, { nullable: true })
-  persistentIdentifier!: string | null; // TODO: Secure this field, committee only
+  persistentIdentifier!: string | null;
 
   public getUniqueId(): string {
     return this.uuid;

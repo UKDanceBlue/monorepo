@@ -1,4 +1,9 @@
-import { ConfigurationResource, ErrorCode } from "@ukdanceblue/common";
+import {
+  AccessLevel,
+  AccessLevelAuthorized,
+  ConfigurationResource,
+  ErrorCode,
+} from "@ukdanceblue/common";
 import {
   Arg,
   Field,
@@ -22,7 +27,7 @@ import type { ResolverInterface } from "./ResolverInterface.js";
 @ObjectType("GetConfigurationByUuidResponse", {
   implements: AbstractGraphQLOkResponse<ConfigurationResource>,
 })
-class GetConfigurationByUuidResponse extends AbstractGraphQLOkResponse<ConfigurationResource> {
+class GetConfigurationByKeyResponse extends AbstractGraphQLOkResponse<ConfigurationResource> {
   @Field(() => ConfigurationResource)
   data!: ConfigurationResource;
 }
@@ -70,18 +75,18 @@ class SetConfigurationInput implements Partial<ConfigurationResource> {
 export class ConfigurationResolver
   implements ResolverInterface<ConfigurationResource>
 {
-  @Query(() => GetConfigurationByUuidResponse, {
+  @Query(() => GetConfigurationByKeyResponse, {
     name: "configuration",
   })
-  async getByUuid(
-    @Arg("uuid") uuid: string
-  ): Promise<GetConfigurationByUuidResponse> {
-    const row = await ConfigurationModel.findOne({ where: { key: uuid } });
+  async getByKey(
+    @Arg("key") key: string
+  ): Promise<GetConfigurationByKeyResponse> {
+    const row = await ConfigurationModel.findOne({ where: { key } });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
     }
-    return GetConfigurationByUuidResponse.newOk(row.toResource());
+    return GetConfigurationByKeyResponse.newOk(row.toResource());
   }
 
   @Query(() => GetAllConfigurationsResponse, { name: "allConfigurations" })
@@ -93,6 +98,7 @@ export class ConfigurationResolver
     );
   }
 
+  @AccessLevelAuthorized(AccessLevel.Admin)
   @Mutation(() => CreateConfigurationResponse, { name: "createConfiguration" })
   async create(
     @Arg("input") input: CreateConfigurationInput
@@ -102,6 +108,7 @@ export class ConfigurationResolver
     return CreateConfigurationResponse.newOk(row.toResource());
   }
 
+  @AccessLevelAuthorized(AccessLevel.Admin)
   @Mutation(() => SetConfigurationResponse, { name: "setConfiguration" })
   async set(
     @Arg("key") key: string,
@@ -117,6 +124,7 @@ export class ConfigurationResolver
     return SetConfigurationResponse.newOk(row.toResource());
   }
 
+  @AccessLevelAuthorized(AccessLevel.Admin)
   @Mutation(() => DeleteConfigurationResponse, { name: "deleteConfiguration" })
   async delete(@Arg("uuid") id: string): Promise<DeleteConfigurationResponse> {
     const row = await ConfigurationModel.findOne({

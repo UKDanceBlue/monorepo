@@ -19,7 +19,7 @@ export class PersonResource extends Resource {
   @Field(() => ID)
   uuid!: string;
   @Field(() => [AuthIdList])
-  authIds!: AuthIdList[];
+  authIds!: AuthIdList[]; // TODO: decide if this needs to be secured
   @Field(() => String, { nullable: true })
   firstName!: string | null;
   @Field(() => String, { nullable: true })

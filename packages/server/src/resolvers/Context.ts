@@ -4,6 +4,7 @@ import type { Authorization, PersonResource } from "@ukdanceblue/common";
 import type { DefaultContext, DefaultState } from "koa";
 
 import { defaultAuthorization, parseUserJwt } from "../lib/auth/index.js";
+import { logDebug } from "../logger.js";
 import { PersonModel } from "../models/Person.js";
 
 export interface GraphQLContext extends DefaultContext {
@@ -21,10 +22,14 @@ export const graphqlContextFunction: ContextFunction<
   if (!token) {
     const authorizationHeader = ctx.get("Authorization");
     if (authorizationHeader && authorizationHeader.startsWith("Bearer ")) {
+      logDebug("graphqlContextFunction Found Authorization header");
       token = authorizationHeader.substring("Bearer ".length);
     }
+  } else {
+    logDebug("graphqlContextFunction Found token cookie");
   }
   if (!token) {
+    logDebug("graphqlContextFunction No token found");
     return {
       authenticatedUser: null,
       authorization: defaultAuthorization,
@@ -33,18 +38,21 @@ export const graphqlContextFunction: ContextFunction<
   }
   const { userId, auth } = parseUserJwt(token);
   if (!userId) {
+    logDebug("graphqlContextFunction No userId found");
     return { authenticatedUser: null, authorization: auth, contextErrors: [] };
   }
 
   const person = await PersonModel.findByUuid(userId);
   if (person) {
     const personResource = person.toResource();
+    logDebug("graphqlContextFunction Found user", personResource);
     return {
       authenticatedUser: personResource,
       authorization: personResource.role.toAuthorization(),
       contextErrors: [],
     };
   } else {
+    logDebug("graphqlContextFunction User not found");
     return {
       authenticatedUser: null,
       authorization: defaultAuthorization,

@@ -6,6 +6,8 @@ import { DateTimeScalar } from "../custom-scalars/DateTimeScalar.js";
 
 import { Resource } from "./Resource.js";
 
+// TODO: Maybe remove
+
 @ObjectType()
 export class LoginFlowSessionResource extends Resource {
   @Field(() => ID)
