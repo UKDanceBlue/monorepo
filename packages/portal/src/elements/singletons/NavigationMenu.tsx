@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "@config/api";
+import { useLoginState } from "@hooks/useLoginState";
 import { Menu } from "antd";
 import type { ItemType } from "antd/es/menu/hooks/useItems";
 import { useMemo } from "react";
@@ -10,6 +12,7 @@ interface NavItemType {
 }
 
 export const NavigationMenu = () => {
+  const { loggedIn } = useLoginState();
   const navItems = useMemo((): NavItemType[] => {
     return [
       {
@@ -52,7 +55,33 @@ export const NavigationMenu = () => {
       theme="dark"
       mode="horizontal"
       defaultSelectedKeys={activeKeys}
-      items={menuItems}
+      items={[
+        ...menuItems,
+        {
+          type: "divider",
+        },
+        {
+          key: "login",
+          title: "Login",
+          label: loggedIn ? (
+            <a
+              href={`${API_BASE_URL}/api/auth/logout?redirectTo=${encodeURI(
+                window.location.href
+              )}`}
+            >
+              Logout
+            </a>
+          ) : (
+            <a
+              href={`${API_BASE_URL}/api/auth/login?redirectTo=${encodeURI(
+                window.location.href
+              )}`}
+            >
+              Login
+            </a>
+          ),
+        },
+      ]}
     />
   );
 };

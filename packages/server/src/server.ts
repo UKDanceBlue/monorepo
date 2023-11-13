@@ -69,7 +69,11 @@ export async function createServer() {
     },
   });
 
-  app.use(cors());
+  app.use(
+    cors({
+      credentials: true,
+    })
+  );
 
   return { app, httpServer, apolloServer: server };
 }

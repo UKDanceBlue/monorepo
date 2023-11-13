@@ -40,6 +40,16 @@ export interface Authorization {
   accessLevel: AccessLevel;
 }
 
+/**
+ * The default authorization object, this is always the assumed value
+ * if no valid authorization object is provided, and is also the one
+ * used for anonymous connections
+ */
+export const defaultAuthorization = {
+  dbRole: DbRole.None,
+  accessLevel: AccessLevel.None,
+} satisfies Authorization;
+
 export interface UserData {
   auth: Authorization;
   userId?: string;

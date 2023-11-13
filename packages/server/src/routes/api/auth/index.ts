@@ -7,8 +7,17 @@ import { oidcCallback } from "./oidcCallback.js";
 const authApiRouter = new Router({ prefix: "/auth" });
 
 authApiRouter.get("/logout", (ctx) => {
-  // logout(req, res);
-  ctx.redirect("/");
+  ctx.cookies.set("token", null);
+
+  let redirectTo = "/";
+  const queryRedirectTo = Array.isArray(ctx.query.redirectTo)
+    ? ctx.query.redirectTo[0]
+    : ctx.query.redirectTo;
+  if (queryRedirectTo && queryRedirectTo.length > 0) {
+    redirectTo = queryRedirectTo;
+  }
+
+  ctx.redirect(redirectTo);
 });
 
 authApiRouter.post(

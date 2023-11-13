@@ -1,7 +1,12 @@
 import { Client, cacheExchange, fetchExchange } from "urql";
-const API_URL = "http://localhost:4000/graphql";
+
+import { API_BASE_URL } from "./api";
+const API_URL = `${API_BASE_URL}/graphql`;
 
 export const urqlClient = new Client({
   url: API_URL,
   exchanges: [cacheExchange, fetchExchange],
+  fetchOptions: {
+    credentials: "include",
+  },
 });

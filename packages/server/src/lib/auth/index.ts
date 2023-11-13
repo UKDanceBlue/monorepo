@@ -4,6 +4,7 @@ import {
   AuthSource,
   CommitteeRole,
   DbRole,
+  defaultAuthorization,
 } from "@ukdanceblue/common";
 import type { Request } from "express";
 import jsonwebtoken from "jsonwebtoken";
@@ -40,16 +41,6 @@ export function isMinAuthSatisfied(
   return true;
 }
 
-/**
- * Returns a default authorization object with no authorization
- *
- * @return A default authorization object
- */
-export const defaultAuthorization = {
-  dbRole: DbRole.None,
-  accessLevel: AccessLevel.None,
-} satisfies Authorization;
-
 export const simpleAuthorizations: Record<AccessLevel, Authorization> = {
   [AccessLevel.None]: defaultAuthorization,
   [AccessLevel.Public]: {
@@ -77,13 +68,6 @@ export const simpleAuthorizations: Record<AccessLevel, Authorization> = {
     accessLevel: AccessLevel.Admin,
   },
 };
-
-/**
- * Returns a default user object with no authorization
- *
- * @return A default user object
- */
-export const defaultUserData = { auth: defaultAuthorization };
 
 const jwtIssuer = "https://app.danceblue.org";
 
@@ -329,3 +313,8 @@ export function checkTokenFromRequest(
 
   return [undefined, undefined];
 }
+
+/**
+ * @deprecated Use the export from @ukdanceblue/common instead
+ */
+export { defaultAuthorization } from "@ukdanceblue/common";

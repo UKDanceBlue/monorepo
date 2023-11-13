@@ -657,6 +657,11 @@ type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraph
   total: NonNegativeInt!
 }
 
+type LoginState {
+  loggedIn: Boolean!
+  role: RoleResource!
+}
+
 """Date range custom scalar type (just an ISO 8601 interval)"""
 scalar LuxonDateRange @specifiedBy(url: "https://www.iso.org/iso-8601-date-and-time-format.html")
 
@@ -850,6 +855,7 @@ type Query {
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
   image(uuid: String!): GetImageByUuidResponse!
+  loginState: LoginState!
   me: GetMeResponse!
   notification(uuid: String!): GetNotificationByUuidResponse!
   notifications(
