@@ -518,6 +518,15 @@ type GetImageByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseRe
   ok: Boolean!
 }
 
+type GetMeResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: PersonResource!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
 type GetNotificationByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
@@ -841,6 +850,7 @@ type Query {
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
   image(uuid: String!): GetImageByUuidResponse!
+  me: GetMeResponse!
   notification(uuid: String!): GetNotificationByUuidResponse!
   notifications(
     """The boolean filters to apply to the query"""

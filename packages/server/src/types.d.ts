@@ -1,22 +1,4 @@
-import type { URL } from "node:url";
-
-import type { UserData } from "@ukdanceblue/common";
-import type { Client } from "openid-client";
-import type { Logger } from "winston";
-
 declare global {
-  namespace Koa {
-    interface Locals {
-      // Remember to make every property optional if it will ever be undefined
-      userData: UserData;
-      shownPages?: { slug: string; title: string }[];
-      applicationUrl: URL;
-      logger: Logger;
-
-      // Auth flow
-      oidcClient?: Client;
-    }
-  }
   namespace NodeJS {
     type ProcessEnvironment = Readonly<{
       NODE_ENV?: "development" | "production";

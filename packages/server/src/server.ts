@@ -5,10 +5,12 @@ import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHt
 import { koaMiddleware } from "@as-integrations/koa";
 import cors from "@koa/cors";
 import Router from "@koa/router";
+import type { DefaultState } from "koa";
 import Koa from "koa";
-import bodyParser from "koa-bodyparser";
+import { koaBody } from "koa-body";
 
 import { logDebug, logError, logInfo, logWarning } from "./logger.js";
+import type { GraphQLContext } from "./resolvers/Context.js";
 
 // const BASIC_LOGGING: ApolloServerPlugin<BaseContext> = {
 //   async requestDidStart(requestContext) {
@@ -49,7 +51,7 @@ export async function createServer() {
   const httpServer = http.createServer(app.callback());
 
   // Set up Apollo Server
-  const server = new ApolloServer({
+  const server = new ApolloServer<GraphQLContext>({
     schema: graphqlSchema,
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }) /* , BASIC_LOGGING*/,
@@ -67,11 +69,6 @@ export async function createServer() {
   });
 
   app.use(cors());
-  app.use(
-    bodyParser({
-      enableTypes: ["form", "text"],
-    })
-  );
 
   return { app, httpServer, apolloServer: server };
 }
@@ -97,24 +94,32 @@ export async function startHttpServer(httpServer: http.Server) {
  * @param apolloServer The Apollo Server instance
  * @param app The Koa app instance
  */
-export async function startServer(apolloServer: ApolloServer, app: Koa) {
+export async function startServer(
+  apolloServer: ApolloServer<GraphQLContext>,
+  app: Koa
+) {
   await apolloServer.start();
 
   const { default: authApiRouter } = await import("./routes/api/auth/index.js");
-  const { parseUserJwt } = await import("./lib/auth/index.js");
+  const { graphqlContextFunction } = await import("./resolvers/Context.js");
 
-  const apiRouter = new Router();
-  apiRouter.use("/api", authApiRouter.routes(), authApiRouter.allowedMethods());
-  apiRouter.use(
-    "/graphql",
-    // @ts-expect-error The context type is not correct
-    koaMiddleware(apolloServer, {
-      context: ({ ctx }) => {
-        const token = ctx.cookies.get("token");
-        return token ? { token: parseUserJwt(token) } : {};
-      },
-    })
-  );
-
+  const apiRouter = new Router<DefaultState, GraphQLContext>();
   app.use(apiRouter.routes());
+
+  apiRouter.all(
+    "/graphql",
+    koaBody({
+      patchNode: true,
+      text: false,
+      urlencoded: false,
+    }),
+    koaMiddleware<DefaultState, GraphQLContext>(
+      // @ts-expect-error This is a bug in the type definitions
+      apolloServer,
+      {
+        context: graphqlContextFunction,
+      }
+    )
+  );
+  apiRouter.use("/api", authApiRouter.routes());
 }

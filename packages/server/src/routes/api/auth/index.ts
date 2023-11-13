@@ -1,4 +1,5 @@
 import Router from "@koa/router";
+import { koaBody } from "koa-body";
 
 import { login } from "./login.js";
 import { oidcCallback } from "./oidcCallback.js";
@@ -10,7 +11,16 @@ authApiRouter.get("/logout", (ctx) => {
   ctx.redirect("/");
 });
 
-authApiRouter.post("/oidc-callback", oidcCallback);
+authApiRouter.post(
+  "/oidc-callback",
+  koaBody({
+    text: false,
+    json: false,
+    urlencoded: true,
+    multipart: false,
+  }),
+  oidcCallback
+);
 
 authApiRouter.get("/login", login);
 

@@ -5,6 +5,7 @@ import {
 } from "@ukdanceblue/common";
 import {
   Arg,
+  Ctx,
   Field,
   FieldResolver,
   InputType,
@@ -23,6 +24,7 @@ import {
   AbstractGraphQLOkResponse,
   DetailedError,
 } from "./ApiResponse.js";
+import * as Context from "./Context.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 
 @ObjectType("CreatePersonResponse", {
@@ -36,6 +38,13 @@ class CreatePersonResponse extends AbstractGraphQLCreatedResponse<PersonResource
   implements: AbstractGraphQLOkResponse<PersonResource>,
 })
 class GetPersonByUuidResponse extends AbstractGraphQLOkResponse<PersonResource> {
+  @Field(() => PersonResource)
+  data!: PersonResource;
+}
+@ObjectType("GetMeResponse", {
+  implements: AbstractGraphQLOkResponse<PersonResource>,
+})
+class GetMeResponse extends AbstractGraphQLOkResponse<PersonResource> {
   @Field(() => PersonResource)
   data!: PersonResource;
 }
@@ -63,6 +72,11 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     }
 
     return GetPersonByUuidResponse.newOk(row.toResource());
+  }
+
+  @Query(() => GetMeResponse, { name: "me" })
+  me(@Ctx() ctx: Context.GraphQLContext): GetMeResponse {
+    return GetMeResponse.newOk(ctx.authenticatedUser);
   }
 
   @Mutation(() => CreatePersonResponse, { name: "createPerson" })
