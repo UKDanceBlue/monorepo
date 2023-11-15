@@ -188,6 +188,23 @@ type CreatePersonResponse implements AbstractGraphQLCreatedResponse & AbstractGr
   uuid: String!
 }
 
+input CreatePointEntryInput {
+  comment: String
+  personFromUuid: String
+  points: Float!
+  teamUuid: String!
+}
+
+type CreatePointEntryResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: PointEntryResource!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+  uuid: String!
+}
+
 input CreateTeamInput {
   legacyStatus: TeamLegacyStatus!
   marathonYear: String!
@@ -268,6 +285,15 @@ type DeleteNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBa
 }
 
 type DeletePersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: Boolean!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+type DeletePointEntryResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
   data: Boolean!
@@ -545,6 +571,15 @@ type GetPersonByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseR
   ok: Boolean!
 }
 
+type GetPointEntryByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: PointEntryResource!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
 type GetTeamByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
@@ -639,6 +674,24 @@ type ListNotificationsResponse implements AbstractGraphQLArrayOkResponse & Abstr
   total: NonNegativeInt!
 }
 
+type ListPointEntriesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: [PointEntryResource!]!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+
+  """The current page number (1-indexed)"""
+  page: PositiveInt!
+
+  """The number of items per page"""
+  pageSize: NonNegativeInt!
+
+  """The total number of items"""
+  total: NonNegativeInt!
+}
+
 type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
@@ -684,6 +737,7 @@ type Mutation {
   createEvent(input: CreateEventInput!): CreateEventResponse!
   createImage(input: CreateImageInput!): CreateImageResponse!
   createPerson(input: CreatePersonInput!): CreatePersonResponse!
+  createPointEntry(input: CreatePointEntryInput!): CreatePointEntryResponse!
   createTeam(input: CreateTeamInput!): CreateTeamResponse!
   deleteConfiguration(uuid: String!): DeleteConfigurationResponse!
   deleteDevice(uuid: String!): DeleteDeviceResponse!
@@ -691,6 +745,7 @@ type Mutation {
   deleteImage(uuid: String!): DeleteImageResponse!
   deleteNotification(uuid: String!): DeleteNotificationResponse!
   deletePerson(uuid: String!): DeletePersonResponse!
+  deletePointEntry(uuid: String!): DeletePointEntryResponse!
   deleteTeam(uuid: String!): DeleteTeamResponse!
   removeImageFromEvent(eventId: String!, imageId: String!): RemoveEventImageResponse!
   sendNotification(input: SendNotificationInput!): SendNotificationResponse!
@@ -772,6 +827,84 @@ type PersonResource {
   linkblue: String
   role: RoleResource!
   teams: [MembershipResource!]!
+  updatedAt: DateTimeISO
+  uuid: ID!
+}
+
+enum PointEntryResolverAllKeys {
+  createdAt
+  expoPushToken
+  lastLogin
+  pointEntryId
+  updatedAt
+}
+
+enum PointEntryResolverDateFilterKeys {
+  createdAt
+  lastLogin
+  updatedAt
+}
+
+input PointEntryResolverKeyedDateFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: PointEntryResolverDateFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: LuxonDateTime!
+}
+
+input PointEntryResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: PointEntryResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+input PointEntryResolverKeyedOneOfFilterItem {
+  """The field to filter on"""
+  field: PointEntryResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: [String!]!
+}
+
+input PointEntryResolverKeyedStringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The field to filter on"""
+  field: PointEntryResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: String!
+}
+
+enum PointEntryResolverStringFilterKeys {
+  expoPushToken
+  pointEntryId
+}
+
+type PointEntryResource {
+  comment: String
+  createdAt: DateTimeISO
+  personFrom: PersonResource
+  points: Int!
+  team: TeamResource!
   updatedAt: DateTimeISO
   uuid: ID!
 }
@@ -894,6 +1027,42 @@ type Query {
     stringFilters: Void
   ): ListNotificationsResponse!
   person(uuid: String!): GetPersonByUuidResponse!
+  pointEntries(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: [PointEntryResolverKeyedDateFilterItem!]
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [PointEntryResolverKeyedIsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: Void
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: [PointEntryResolverKeyedOneOfFilterItem!]
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: [PointEntryResolverKeyedStringFilterItem!]
+  ): ListPointEntriesResponse!
+  pointEntry(uuid: String!): GetPointEntryByUuidResponse!
   team(uuid: String!): GetTeamByUuidResponse!
   teams(
     """The boolean filters to apply to the query"""
