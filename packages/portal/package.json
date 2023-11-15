@@ -24,7 +24,8 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.47.0",
     "thumbhash": "^0.1.1",
-    "urql": "^4.0.5"
+    "urql": "^4.0.5",
+    "use-debounce": "^10.0.0"
   },
   "devDependencies": {
     "@types/luxon": "^3.3.2",

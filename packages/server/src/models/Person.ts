@@ -41,9 +41,7 @@ export class PersonModel extends BaseModel<
   declare readonly updatedAt: CreationOptional<Date>;
   declare readonly deletedAt: CreationOptional<Date | null>;
 
-  public declare firstName: string | null;
-
-  public declare lastName: string | null;
+  public declare name: string | null;
 
   public declare email: string;
 
@@ -110,8 +108,7 @@ export class PersonModel extends BaseModel<
   toResource(): PersonResource {
     return PersonResource.init({
       uuid: this.uuid,
-      firstName: this.firstName ?? null,
-      lastName: this.lastName ?? null,
+      name: this.name ?? null,
       authIds: Object.entries(this.authIds).map(([source, value]) => ({
         source: source as keyof typeof this.authIds,
         value,
@@ -158,11 +155,7 @@ PersonModel.init(
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
     deletedAt: DataTypes.DATE,
-    firstName: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    lastName: {
+    name: {
       type: DataTypes.TEXT,
       allowNull: true,
     },

@@ -6,7 +6,7 @@ import { useMutation } from "urql";
 
 import { createPointEntryDocument } from "./PointEntryCreatorGQL";
 
-export function useEventCreatorForm({ teamUuid }: { teamUuid: string }) {
+export function usePointEntryCreatorForm({ teamUuid }: { teamUuid: string }) {
   // Form
   const [{ fetching, error }, createPointEntry] = useMutation(
     createPointEntryDocument
@@ -15,7 +15,7 @@ export function useEventCreatorForm({ teamUuid }: { teamUuid: string }) {
   useQueryStatusWatcher({
     error,
     fetching,
-    loadingMessage: "Saving event...",
+    loadingMessage: "Saving point entry...",
   });
 
   const Form = useForm<Omit<CreatePointEntryInput, "teamUuid">>({

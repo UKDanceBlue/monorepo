@@ -1,13 +1,14 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, InputType, ObjectType } from "type-graphql";
 
 import type { Authorization } from "../../../auth/index.js";
 import { AccessLevel, CommitteeRole, DbRole } from "../../../auth/index.js";
 
 import { Resource } from "./Resource.js";
 
+@InputType("RoleResourceInput")
 @ObjectType()
 export class RoleResource extends Resource {
-  @Field(() => DbRole)
+  @Field(() => DbRole, { defaultValue: DbRole.None })
   dbRole!: DbRole;
   @Field(() => CommitteeRole, { nullable: true })
   committeeRole!: CommitteeRole | null;

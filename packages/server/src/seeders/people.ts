@@ -27,8 +27,9 @@ export default async function () {
     }
 
     personData.push({
-      firstName,
-      lastName,
+      name: faker.datatype.boolean()
+        ? `${firstName} ${middleName} ${lastName}`
+        : `${firstName} ${lastName}`,
       email,
       linkblue: linkblue ?? null,
       authIds: {},

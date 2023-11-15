@@ -49,13 +49,10 @@ export async function findPersonForLogin(
         email: userData.email,
       });
 
-      const { firstName, lastName, linkblue, role } = userData;
+      const { name, linkblue, role } = userData;
 
-      if (firstName) {
-        currentPerson.firstName = firstName;
-      }
-      if (lastName) {
-        currentPerson.lastName = lastName;
+      if (name) {
+        currentPerson.name = name;
       }
       if (linkblue) {
         currentPerson.linkblue = linkblue;

@@ -86,16 +86,12 @@ export const oidcCallback = async (ctx: Context) => {
         currentPerson.email = email;
         isPersonChanged = true;
       }
-      if (
-        typeof firstName === "string" &&
-        currentPerson.firstName !== firstName
-      ) {
-        currentPerson.firstName = firstName;
-        isPersonChanged = true;
-      }
-      if (typeof lastName === "string" && currentPerson.lastName !== lastName) {
-        currentPerson.lastName = lastName;
-        isPersonChanged = true;
+      if (typeof firstName === "string" && typeof lastName === "string") {
+        const name = `${firstName} ${lastName}`;
+        if (currentPerson.name !== name) {
+          currentPerson.name = name;
+          isPersonChanged = true;
+        }
       }
       if (linkblue && currentPerson.linkblue !== linkblue) {
         currentPerson.linkblue = linkblue;

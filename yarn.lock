@@ -8350,6 +8350,7 @@ __metadata:
     thumbhash: ^0.1.1
     typescript: ^5.0.2
     urql: ^4.0.5
+    use-debounce: ^10.0.0
     vite: ^4.4.5
   languageName: unknown
   linkType: soft
@@ -24349,6 +24350,15 @@ __metadata:
   peerDependencies:
     react: ">= 16.8.0"
   checksum: e8fe5ee624970d289f5832d3f62bab980e26d2e1b141cc6f82d4c1d009f6481bf58ff5f27971fac55bc8f953dbed6d7aaf62f005782bfd9d130c5c3e4033188b
+  languageName: node
+  linkType: hard
+
+"use-debounce@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "use-debounce@npm:10.0.0"
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: b296fedba916ca721eeb7117f29a13c252966d03411abccc5e5894ed4de0f32b9cb6f6b150555b8b4cb9b0acf53b84022ad4cd43b89253389e9cd13779eebca7
   languageName: node
   linkType: hard
 

@@ -2,6 +2,7 @@ import {
   ErrorCode,
   MembershipResource,
   PersonResource,
+  RoleResource,
 } from "@ukdanceblue/common";
 import {
   Arg,
@@ -19,7 +20,9 @@ import {
 import { MembershipModel } from "../models/Membership.js";
 import { PersonModel } from "../models/Person.js";
 
+import { Op } from "@sequelize/core";
 import {
+  AbstractGraphQLArrayOkResponse,
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   DetailedError,
@@ -34,19 +37,19 @@ class CreatePersonResponse extends AbstractGraphQLCreatedResponse<PersonResource
   @Field(() => PersonResource)
   data!: PersonResource;
 }
-@ObjectType("GetPersonByUuidResponse", {
+@ObjectType("GetPersonResponse", {
   implements: AbstractGraphQLOkResponse<PersonResource>,
 })
-class GetPersonByUuidResponse extends AbstractGraphQLOkResponse<PersonResource> {
+class GetPersonResponse extends AbstractGraphQLOkResponse<PersonResource> {
   @Field(() => PersonResource)
   data!: PersonResource;
 }
-@ObjectType("GetMeResponse", {
-  implements: AbstractGraphQLOkResponse<PersonResource>,
+@ObjectType("GetPeopleResponse", {
+  implements: AbstractGraphQLArrayOkResponse<PersonResource>,
 })
-class GetMeResponse extends AbstractGraphQLOkResponse<PersonResource> {
-  @Field(() => PersonResource)
-  data!: PersonResource;
+class GetPeopleResponse extends AbstractGraphQLArrayOkResponse<PersonResource> {
+  @Field(() => [PersonResource])
+  data!: PersonResource[];
 }
 @ObjectType("DeletePersonResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
@@ -57,34 +60,79 @@ class DeletePersonResponse extends AbstractGraphQLOkResponse<boolean> {
 }
 @InputType()
 class CreatePersonInput {
-  @Field()
+  @Field(() => String, { nullable: true })
+  name?: string;
+
+  @Field(() => String)
   email!: string;
+
+  @Field(() => String, { nullable: true })
+  linkblue?: string;
+
+  @Field(() => RoleResource, { nullable: true })
+  role?: RoleResource;
 }
 
 @Resolver(() => PersonResource)
 export class PersonResolver implements ResolverInterface<PersonResource> {
-  @Query(() => GetPersonByUuidResponse, { name: "person" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<GetPersonByUuidResponse> {
+  @Query(() => GetPersonResponse, { name: "person" })
+  async getByUuid(@Arg("uuid") uuid: string): Promise<GetPersonResponse> {
     const row = await PersonModel.findOne({ where: { uuid } });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Person not found");
     }
 
-    return GetPersonByUuidResponse.newOk(row.toResource());
+    return GetPersonResponse.newOk(row.toResource());
   }
 
-  @Query(() => GetMeResponse, { name: "me" })
-  me(@Ctx() ctx: Context.GraphQLContext): GetMeResponse {
-    return GetMeResponse.newOk(ctx.authenticatedUser);
+  @Query(() => GetPersonResponse, { name: "personByLinkBlue" })
+  async getByLinkBlueId(
+    @Arg("linkBlueId") linkBlueId: string
+  ): Promise<GetPersonResponse> {
+    const row = await PersonModel.findOne({ where: { linkblue: linkBlueId } });
+
+    if (row == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Person not found");
+    }
+
+    return GetPersonResponse.newOk(row.toResource());
+  }
+
+  @Query(() => GetPersonResponse, { name: "me" })
+  me(@Ctx() ctx: Context.GraphQLContext): GetPersonResponse {
+    return GetPersonResponse.newOk(ctx.authenticatedUser);
+  }
+
+  @Query(() => GetPeopleResponse, { name: "searchPeopleByName" })
+  async searchByName(@Arg("name") name: string): Promise<GetPeopleResponse> {
+    const rows = await PersonModel.findAll({
+      where: { name: { [Op.iLike]: `%${name}%` } },
+    });
+
+    return GetPeopleResponse.newOk(rows.map((row) => row.toResource()));
   }
 
   @Mutation(() => CreatePersonResponse, { name: "createPerson" })
   async create(
     @Arg("input") input: CreatePersonInput
   ): Promise<CreatePersonResponse> {
+    const creationAttributes: Partial<PersonModel> = {};
+    if (input.name) {
+      creationAttributes.name = input.name;
+    }
+    if (input.linkblue) {
+      creationAttributes.linkblue = input.linkblue;
+    }
+    if (input.role) {
+      creationAttributes.dbRole = input.role.dbRole;
+      creationAttributes.committeeRole = input.role.committeeRole;
+      creationAttributes.committeeName = input.role.committeeIdentifier;
+    }
+
     const result = await PersonModel.create({
       email: input.email,
+      ...creationAttributes,
       authIds: {},
     });
 

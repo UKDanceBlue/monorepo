@@ -176,6 +176,9 @@ type CreateImageResponse implements AbstractGraphQLCreatedResponse & AbstractGra
 
 input CreatePersonInput {
   email: String!
+  linkblue: String
+  name: String
+  role: RoleResourceInput
 }
 
 type CreatePersonResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -544,15 +547,6 @@ type GetImageByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseRe
   ok: Boolean!
 }
 
-type GetMeResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
-  data: PersonResource!
-
-  """Whether the operation was successful"""
-  ok: Boolean!
-}
-
 type GetNotificationByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
@@ -562,7 +556,16 @@ type GetNotificationByUuidResponse implements AbstractGraphQLOkResponse & GraphQ
   ok: Boolean!
 }
 
-type GetPersonByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+type GetPeopleResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
+  """Client actions to perform"""
+  clientActions: [ClientAction!]
+  data: [PersonResource!]!
+
+  """Whether the operation was successful"""
+  ok: Boolean!
+}
+
+type GetPersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   """Client actions to perform"""
   clientActions: [ClientAction!]
   data: PersonResource!
@@ -822,9 +825,8 @@ type PersonResource {
   captaincies: [MembershipResource!]!
   createdAt: DateTimeISO
   email: String!
-  firstName: String
-  lastName: String
   linkblue: String
+  name: String
   role: RoleResource!
   teams: [MembershipResource!]!
   updatedAt: DateTimeISO
@@ -989,7 +991,7 @@ type Query {
   ): ListEventsResponse!
   image(uuid: String!): GetImageByUuidResponse!
   loginState: LoginState!
-  me: GetMeResponse!
+  me: GetPersonResponse!
   notification(uuid: String!): GetNotificationByUuidResponse!
   notifications(
     """The boolean filters to apply to the query"""
@@ -1026,7 +1028,8 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: Void
   ): ListNotificationsResponse!
-  person(uuid: String!): GetPersonByUuidResponse!
+  person(uuid: String!): GetPersonResponse!
+  personByLinkBlue(linkBlueId: String!): GetPersonResponse!
   pointEntries(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -1063,6 +1066,7 @@ type Query {
     stringFilters: [PointEntryResolverKeyedStringFilterItem!]
   ): ListPointEntriesResponse!
   pointEntry(uuid: String!): GetPointEntryByUuidResponse!
+  searchPeopleByName(name: String!): GetPeopleResponse!
   team(uuid: String!): GetTeamByUuidResponse!
   teams(
     """The boolean filters to apply to the query"""
@@ -1121,6 +1125,12 @@ type RoleResource {
   createdAt: DateTimeISO
   dbRole: DbRole!
   updatedAt: DateTimeISO
+}
+
+input RoleResourceInput {
+  committeeIdentifier: String
+  committeeRole: CommitteeRole
+  dbRole: DbRole! = None
 }
 
 input SendNotificationInput {
