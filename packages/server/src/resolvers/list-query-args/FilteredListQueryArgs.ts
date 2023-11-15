@@ -3,6 +3,7 @@ import type {
   FindAndCountOptions,
   Model,
   ModelStatic,
+  OrderItemColumn,
   WhereAttributeHash,
 } from "@sequelize/core";
 import { VoidResolver } from "graphql-scalars";
@@ -170,7 +171,7 @@ export function FilteredListQueryArgs<
     oneOfFilters!: KeyedOneOfFilterItem[] | null;
 
     toSequelizeFindOptions<M extends Model<Record<string, unknown>>>(
-      sortByMap: Partial<Record<AllKeys, string>>,
+      sortByMap: Partial<Record<AllKeys, OrderItemColumn>>,
       modelStatic?: ModelStatic<M>
     ): FindAndCountOptions<Attributes<M>> & {
       where: Partial<WhereAttributeHash<Attributes<M>>>;

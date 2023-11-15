@@ -1,6 +1,6 @@
-import type { WhereAttributeHash } from "@sequelize/core";
+import type { OrderItemColumn, WhereAttributeHash } from "@sequelize/core";
 import { Op } from "@sequelize/core";
-import type { DateTimeScalar} from "@ukdanceblue/common";
+import type { DateTimeScalar } from "@ukdanceblue/common";
 import { TypeMismatchError } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 
@@ -21,7 +21,7 @@ export function filterToWhereOptions<
     DateFilterKeys,
     BooleanFilterKeys
   >,
-  sortByMap: Partial<Record<AllKeys, string>>,
+  sortByMap: Partial<Record<AllKeys, OrderItemColumn>>,
   resolverName: string
 ) {
   const whereOptions: Partial<
@@ -33,9 +33,9 @@ export function filterToWhereOptions<
   for (const filter of listQueryArgs.stringFilters ?? []) {
     const { field, negate, value, comparison } = filter;
     const mappedField = sortByMap[field];
-    if (!mappedField) {
+    if (!mappedField || typeof mappedField !== "string") {
       throw new Error(
-        `No mapping found for string filter field ${field} on ${resolverName}`
+        `No string mapping found for string filter field ${field} on ${resolverName}`
       );
     }
     whereOptions[mappedField] = {
@@ -45,9 +45,9 @@ export function filterToWhereOptions<
   for (const filter of listQueryArgs.numericFilters ?? []) {
     const { field, value, comparison, negate } = filter;
     const mappedField = sortByMap[field];
-    if (!mappedField) {
+    if (!mappedField || typeof mappedField !== "string") {
       throw new Error(
-        `No mapping found for numeric filter field ${field} on ${resolverName}`
+        `No string mapping found for numeric filter field ${field} on ${resolverName}`
       );
     }
     whereOptions[mappedField] = {
@@ -57,9 +57,9 @@ export function filterToWhereOptions<
   for (const filter of listQueryArgs.dateFilters ?? []) {
     const { field, value, comparison, negate } = filter;
     const mappedField = sortByMap[field];
-    if (!mappedField) {
+    if (!mappedField || typeof mappedField !== "string") {
       throw new Error(
-        `No mapping found for numeric filter field ${field} on ${resolverName}`
+        `No string mapping found for numeric filter field ${field} on ${resolverName}`
       );
     }
     const jsDate = DateTime.isDateTime(value)
@@ -81,9 +81,9 @@ export function filterToWhereOptions<
   for (const filter of listQueryArgs.booleanFilters ?? []) {
     const { field, value, comparison, negate } = filter;
     const mappedField = sortByMap[field];
-    if (!mappedField) {
+    if (!mappedField || typeof mappedField !== "string") {
       throw new Error(
-        `No mapping found for numeric filter field ${field} on ${resolverName}`
+        `No string mapping found for numeric filter field ${field} on ${resolverName}`
       );
     }
     whereOptions[mappedField] = {
@@ -93,9 +93,9 @@ export function filterToWhereOptions<
   for (const filter of listQueryArgs.isNullFilters ?? []) {
     const { field, negate } = filter;
     const mappedField = sortByMap[field];
-    if (!mappedField) {
+    if (!mappedField || typeof mappedField !== "string") {
       throw new Error(
-        `No mapping found for numeric filter field ${field} on ${resolverName}`
+        `No string mapping found for numeric filter field ${field} on ${resolverName}`
       );
     }
     whereOptions[mappedField] = {
@@ -105,9 +105,9 @@ export function filterToWhereOptions<
   for (const filter of listQueryArgs.oneOfFilters ?? []) {
     const { field, value, negate } = filter;
     const mappedField = sortByMap[field];
-    if (!mappedField) {
+    if (!mappedField || typeof mappedField !== "string") {
       throw new Error(
-        `No mapping found for numeric filter field ${field} on ${resolverName}`
+        `No string mapping found for numeric filter field ${field} on ${resolverName}`
       );
     }
     whereOptions[mappedField] = {

@@ -151,6 +151,7 @@ export class TeamResolver
     const findOptions = query.toSequelizeFindOptions(
       {
         uuid: "uuid",
+        name: "name",
       },
       TeamModel
     );

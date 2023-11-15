@@ -1,4 +1,4 @@
-import type { Col, FindAndCountOptions, Fn, Literal } from "@sequelize/core";
+import type { FindAndCountOptions, OrderItemColumn } from "@sequelize/core";
 import type {
   ListQueryType,
   OptionalToNullable,
@@ -39,7 +39,7 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
   sortDirection?: SortDirection[] | null;
 
   toSequelizeFindOptions(
-    sortByMap?: Partial<Record<SortByKeys, Fn | Col | Literal | string>>
+    sortByMap?: Partial<Record<SortByKeys, OrderItemColumn>>
   ): FindAndCountOptions<Record<SortByKeys, never>> {
     const options: FindAndCountOptions<Record<SortByKeys, never>> = {};
 
