@@ -1272,6 +1272,7 @@ type TeamResource {
   members: [MembershipResource!]!
   name: String!
   persistentIdentifier: String
+  pointEntries: [PointEntryResource!]!
   type: TeamType!
   updatedAt: DateTimeISO
   uuid: ID!

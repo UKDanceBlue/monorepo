@@ -10,6 +10,7 @@ import {
   DbRole,
   ErrorCode,
   MembershipResource,
+  PointEntryResource,
   TeamLegacyStatus,
   TeamResource,
   TeamType,
@@ -238,5 +239,23 @@ export class TeamResolver
     }
 
     return model.memberships.map((row) => row.toResource());
+  }
+
+  @FieldResolver(() => [PointEntryResource])
+  async pointEntries(
+    @Root() team: TeamResource
+  ): Promise<PointEntryResource[]> {
+    const model = await TeamModel.findByUuid(team.uuid, {
+      attributes: ["id", "uuid"],
+    });
+
+    if (!model) {
+      // I guess this is fine? May need more robust error handling
+      return [];
+    }
+
+    const pointEntries = await model.getPointEntries();
+
+    return pointEntries.map((row) => row.toResource());
   }
 }
