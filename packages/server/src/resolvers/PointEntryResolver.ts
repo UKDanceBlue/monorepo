@@ -20,8 +20,8 @@ import {
 
 import { PersonModel } from "../models/Person.js";
 import { PointEntryModel } from "../models/PointEntry.js";
-
 import { TeamModel } from "../models/Team.js";
+
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
@@ -80,9 +80,9 @@ class CreatePointEntryInput implements Partial<PointEntryResource> {
 
 @ArgsType()
 class ListPointEntriesArgs extends FilteredListQueryArgs("PointEntryResolver", {
-  all: ["pointEntryId", "expoPushToken", "lastLogin", "createdAt", "updatedAt"],
-  string: ["pointEntryId", "expoPushToken"],
-  date: ["lastLogin", "createdAt", "updatedAt"],
+  all: ["createdAt", "updatedAt"],
+  string: [],
+  date: ["createdAt", "updatedAt"],
 }) {}
 
 @Resolver(() => PointEntryResource)
@@ -108,14 +108,7 @@ export class PointEntryResolver
   async list(
     @Args(() => ListPointEntriesArgs) query: ListPointEntriesArgs
   ): Promise<ListPointEntriesResponse> {
-    const findOptions = query.toSequelizeFindOptions(
-      {
-        pointEntryId: "pointEntryId",
-        expoPushToken: "expoPushToken",
-        lastLogin: "lastLogin",
-      },
-      PointEntryModel
-    );
+    const findOptions = query.toSequelizeFindOptions({}, PointEntryModel);
 
     const { rows, count } = await PointEntryModel.findAndCountAll(findOptions);
 

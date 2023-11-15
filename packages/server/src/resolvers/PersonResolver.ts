@@ -1,9 +1,11 @@
+import { Op } from "@sequelize/core";
 import {
   ErrorCode,
   MembershipResource,
   PersonResource,
   RoleResource,
 } from "@ukdanceblue/common";
+import { EmailAddressResolver } from "graphql-scalars";
 import {
   Arg,
   Ctx,
@@ -17,12 +19,11 @@ import {
   Root,
 } from "type-graphql";
 
+import { sequelizeDb } from "../data-source.js";
 import { MembershipModel } from "../models/Membership.js";
 import { PersonModel } from "../models/Person.js";
-
-import { Op } from "@sequelize/core";
-import { sequelizeDb } from "../data-source.js";
 import { TeamModel } from "../models/Team.js";
+
 import {
   AbstractGraphQLArrayOkResponse,
   AbstractGraphQLCreatedResponse,
@@ -31,8 +32,6 @@ import {
 } from "./ApiResponse.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 import * as Context from "./context.js";
-
-import { EmailAddressResolver } from "graphql-scalars";
 
 @ObjectType("CreatePersonResponse", {
   implements: AbstractGraphQLCreatedResponse<PersonResource>,
@@ -127,7 +126,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
   async create(
     @Arg("input") input: CreatePersonInput
   ): Promise<CreatePersonResponse> {
-    return await sequelizeDb.transaction(async () => {
+    return sequelizeDb.transaction(async () => {
       const creationAttributes: Partial<PersonModel> = {};
       if (input.name) {
         creationAttributes.name = input.name;
@@ -157,7 +156,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
                 )
               : void result.createMembership({
                   personId: result.id,
-                  teamId: team?.id,
+                  teamId: team.id,
                   position: "Member",
                 })
           )
@@ -172,7 +171,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
                 )
               : void result.createMembership({
                   personId: result.id,
-                  teamId: team?.id,
+                  teamId: team.id,
                   position: "Captain",
                 })
           )

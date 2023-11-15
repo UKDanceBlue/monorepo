@@ -1,10 +1,10 @@
 import type {
+  Attributes,
   FindAndCountOptions,
   Model,
   ModelStatic,
   WhereAttributeHash,
 } from "@sequelize/core";
-import type { DateTimeScalar } from "@ukdanceblue/common";
 import { VoidResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType } from "type-graphql";
 
@@ -169,10 +169,12 @@ export function FilteredListQueryArgs<
     )
     oneOfFilters!: KeyedOneOfFilterItem[] | null;
 
-    toSequelizeFindOptions(
+    toSequelizeFindOptions<M extends Model<Record<string, unknown>>>(
       sortByMap: Partial<Record<AllKeys, string>>,
-      modelStatic?: ModelStatic<Model<Record<string, unknown>>>
-    ): FindAndCountOptions<Record<AllKeys, never>> {
+      modelStatic?: ModelStatic<M>
+    ): FindAndCountOptions<Attributes<M>> & {
+      where: Partial<WhereAttributeHash<Attributes<M>>>;
+    } {
       if (!modelStatic) {
         throw new Error(
           `No model static provided to ${resolverName} FilteredListQueryArgs`
@@ -185,21 +187,19 @@ export function FilteredListQueryArgs<
         distinct: true,
       };
 
-      const whereOptions: Partial<
-        WhereAttributeHash<
-          Record<string, string | number | typeof DateTimeScalar | boolean>
-        >
-      > = filterToWhereOptions<
-        AllKeys,
-        StringFilterKeys,
-        NumericFilterKeys,
-        DateFilterKeys,
-        BooleanFilterKeys
-      >(this, sortByMap, resolverName);
+      const whereOptions: Partial<WhereAttributeHash<Attributes<M>>> =
+        filterToWhereOptions<
+          AllKeys,
+          StringFilterKeys,
+          NumericFilterKeys,
+          DateFilterKeys,
+          BooleanFilterKeys
+        >(this, sortByMap, resolverName);
 
-      options.where = whereOptions;
-
-      return options;
+      return {
+        ...options,
+        where: whereOptions,
+      };
     }
   }
 

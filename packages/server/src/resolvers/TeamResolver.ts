@@ -1,3 +1,4 @@
+import { Op } from "@sequelize/core";
 import type {
   AuthorizationRuleOrAccessLevel,
   MarathonYearString,
@@ -101,20 +102,29 @@ class CreateTeamInput implements OptionalToNullable<Partial<TeamResource>> {
 
 @ArgsType()
 class ListTeamsArgs extends FilteredListQueryArgs("TeamResolver", {
-  all: ["uuid", "name", "type", "legacyStatus", "visibility", "marathonYear"],
+  all: [
+    "uuid",
+    "name",
+    "type",
+    "legacyStatus",
+    "visibility",
+    "marathonYear",
+    "totalPoints",
+  ],
   string: ["name"],
+  numeric: ["totalPoints"],
 }) {
-  @Field(() => TeamType, { nullable: true })
-  type!: TeamType | null;
+  @Field(() => [TeamType], { nullable: true })
+  type!: [TeamType] | null;
 
-  @Field(() => TeamLegacyStatus, { nullable: true })
-  legacyStatus!: TeamLegacyStatus | null;
+  @Field(() => [TeamLegacyStatus], { nullable: true })
+  legacyStatus!: [TeamLegacyStatus] | null;
 
-  @Field(() => DbRole, { nullable: true })
-  visibility!: DbRole | null;
+  @Field(() => [DbRole], { nullable: true })
+  visibility!: [DbRole] | null;
 
-  @Field(() => String, { nullable: true })
-  marathonYear!: MarathonYearString | null;
+  @Field(() => [String], { nullable: true })
+  marathonYear!: [MarathonYearString] | null;
 }
 
 @Resolver(() => TeamResource)
@@ -146,19 +156,16 @@ export class TeamResolver
     );
 
     if (query.type != null) {
-      (findOptions.where as Record<string, string>)!.type = query.type;
+      findOptions.where.type = { [Op.in]: query.type };
     }
     if (query.legacyStatus != null) {
-      (findOptions.where as Record<string, string>)!.legacyStatus =
-        query.legacyStatus;
+      findOptions.where.legacyStatus = { [Op.in]: query.legacyStatus };
     }
     if (query.visibility != null) {
-      (findOptions.where as Record<string, string>)!.visibility =
-        query.visibility;
+      findOptions.where.visibility = { [Op.in]: query.visibility };
     }
     if (query.marathonYear != null) {
-      (findOptions.where as Record<string, string>)!.marathonYear =
-        query.marathonYear;
+      findOptions.where.marathonYear = { [Op.in]: query.marathonYear };
     }
 
     const { rows, count } = await TeamModel.findAndCountAll(findOptions);
@@ -219,8 +226,7 @@ export class TeamResolver
     });
 
     if (model == null) {
-      // I guess this is fine? May need more robust error handling
-      return [];
+      throw new DetailedError(ErrorCode.NotFound, "Team not found");
     }
 
     return model.memberships.map((row) => row.toResource());
@@ -234,8 +240,7 @@ export class TeamResolver
     });
 
     if (model == null) {
-      // I guess this is fine? May need more robust error handling
-      return [];
+      throw new DetailedError(ErrorCode.NotFound, "Team not found");
     }
 
     return model.memberships.map((row) => row.toResource());
@@ -250,12 +255,26 @@ export class TeamResolver
     });
 
     if (!model) {
-      // I guess this is fine? May need more robust error handling
-      return [];
+      throw new DetailedError(ErrorCode.NotFound, "Team not found");
     }
 
     const pointEntries = await model.getPointEntries();
 
     return pointEntries.map((row) => row.toResource());
+  }
+
+  @FieldResolver(() => Number)
+  async totalPoints(@Root() team: TeamResource): Promise<number> {
+    const model = await TeamModel.findByUuid(team.uuid, {
+      attributes: ["id", "uuid"],
+    });
+
+    if (!model) {
+      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+    }
+
+    const pointEntries = await model.getPointEntries();
+
+    return pointEntries.reduce((acc, row) => acc + row.points, 0);
   }
 }
