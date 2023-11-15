@@ -105,7 +105,7 @@ export class ConfigurationResolver
   ): Promise<CreateConfigurationResponse> {
     const row = await ConfigurationModel.create(input);
 
-    return CreateConfigurationResponse.newOk(row.toResource());
+    return CreateConfigurationResponse.newCreated(row.toResource(), row.uuid);
   }
 
   @AccessLevelAuthorized(AccessLevel.Admin)

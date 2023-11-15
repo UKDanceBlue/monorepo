@@ -136,7 +136,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
       authIds: {},
     });
 
-    return CreatePersonResponse.newOk(result.toResource());
+    return CreatePersonResponse.newCreated(result.toResource(), result.uuid);
   }
 
   @Mutation(() => DeletePersonResponse, { name: "deletePerson" })

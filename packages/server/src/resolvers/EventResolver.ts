@@ -263,7 +263,7 @@ export class EventResolver
     }
     await Promise.all(promises);
 
-    return CreateEventResponse.newOk(await row.toResource());
+    return CreateEventResponse.newCreated(await row.toResource(), row.uuid);
   }
 
   @AccessLevelAuthorized(AccessLevel.CommitteeChairOrCoordinator)

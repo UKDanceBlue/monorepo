@@ -150,7 +150,7 @@ export class PointEntryResolver
       teamId: team?.id,
     });
 
-    return CreatePointEntryResponse.newOk(row.toResource());
+    return CreatePointEntryResponse.newCreated(row.toResource(), row.uuid);
   }
 
   @Mutation(() => DeletePointEntryResponse, { name: "deletePointEntry" })

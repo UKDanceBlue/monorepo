@@ -122,6 +122,22 @@ export abstract class AbstractGraphQLCreatedResponse<T>
     }
     return baseResponse;
   }
+
+  static newCreated<T, OkRes extends AbstractGraphQLCreatedResponse<T>>(
+    this: ClassType<OkRes>,
+    data: T,
+    uuid: string
+  ): OkRes {
+    const response = new this();
+    response.ok = true;
+    if (data != null) {
+      response.data = data;
+    }
+    if (uuid != null) {
+      response.uuid = uuid;
+    }
+    return response;
+  }
 }
 
 @InterfaceType({

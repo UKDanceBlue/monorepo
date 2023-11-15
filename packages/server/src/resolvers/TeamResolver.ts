@@ -191,7 +191,7 @@ export class TeamResolver
       persistentIdentifier: input.persistentIdentifier,
     });
 
-    return CreateTeamResponse.newOk(row.toResource());
+    return CreateTeamResponse.newCreated(row.toResource(), row.uuid);
   }
 
   @Mutation(() => DeleteTeamResponse, { name: "deleteTeam" })

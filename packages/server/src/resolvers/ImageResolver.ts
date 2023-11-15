@@ -140,8 +140,10 @@ export class ImageResolver implements ResolverInterface<ImageResource> {
       );
     }
 
-    const response = CreateImageResponse.newOk(result.toResource());
-    response.uuid = result.uuid;
+    const response = CreateImageResponse.newCreated(
+      result.toResource(),
+      result.uuid
+    );
     return response;
   }
 

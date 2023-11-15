@@ -22,14 +22,10 @@ export const graphqlContextFunction: ContextFunction<
   if (!token) {
     const authorizationHeader = ctx.get("Authorization");
     if (authorizationHeader && authorizationHeader.startsWith("Bearer ")) {
-      logDebug("graphqlContextFunction Found Authorization header");
       token = authorizationHeader.substring("Bearer ".length);
     }
-  } else {
-    logDebug("graphqlContextFunction Found token cookie");
   }
   if (!token) {
-    logDebug("graphqlContextFunction No token found");
     return {
       authenticatedUser: null,
       authorization: defaultAuthorization,

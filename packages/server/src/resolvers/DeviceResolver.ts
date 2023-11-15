@@ -144,7 +144,7 @@ export class DeviceResolver
       lastUserId,
     });
 
-    return CreateDeviceResponse.newOk(row.toResource());
+    return CreateDeviceResponse.newCreated(row.toResource(), row.uuid);
   }
 
   @Mutation(() => DeleteDeviceResponse, { name: "deleteDevice" })
