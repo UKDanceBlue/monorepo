@@ -1,5 +1,6 @@
 import { EventsPage } from "@pages/events/EventsPage";
 import { HomePage } from "@pages/home/HomePage";
+import { TeamsPage } from "@pages/teams/TeamsPage";
 import { rootRoute } from "@routing/rootRoute";
 import { Route } from "@tanstack/react-router";
 
@@ -13,4 +14,10 @@ export const eventsRoute = new Route({
   path: "events",
   getParentRoute: () => rootRoute,
   component: EventsPage,
+});
+
+export const teamsRoute = new Route({
+  path: "teams",
+  getParentRoute: () => rootRoute,
+  component: TeamsPage,
 });

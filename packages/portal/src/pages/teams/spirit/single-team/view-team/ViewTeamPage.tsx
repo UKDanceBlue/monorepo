@@ -1,4 +1,4 @@
-export function CreateTeamPage() {
+export function ViewTeamPage() {
   return (
     <div>
       <h1>View Team</h1>

@@ -1,6 +1,6 @@
 import { Router } from "@tanstack/react-router";
 
-import { eventsRoute, homeRoute } from "./baseRoutes";
+import { eventsRoute, homeRoute, teamsRoute } from "./baseRoutes";
 import {
   createEventRoute,
   editEventRoute,
@@ -9,6 +9,13 @@ import {
   viewEventRoute,
 } from "./eventRoutes";
 import { rootRoute } from "./rootRoute";
+import {
+  createTeamRoute,
+  editTeamRoute,
+  singleTeamRoute,
+  teamsTableRoute,
+  viewTeamRoute,
+} from "./teamRoutes";
 
 const routeTree = rootRoute.addChildren([
   homeRoute,
@@ -16,6 +23,11 @@ const routeTree = rootRoute.addChildren([
     eventsTableRoute,
     createEventRoute,
     singleEventRoute.addChildren([editEventRoute, viewEventRoute]),
+  ]),
+  teamsRoute.addChildren([
+    teamsTableRoute,
+    createTeamRoute,
+    singleTeamRoute.addChildren([editTeamRoute, viewTeamRoute]),
   ]),
 ]);
 
