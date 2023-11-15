@@ -1,9 +1,9 @@
-import { Form, Input, InputNumber } from "antd";
+import { Button, Form, Input, InputNumber } from "antd";
 
 import { PointEntryPersonLookup } from "./PointEntryPersonLookup";
 import { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
 
-export function EventCreator({ teamUuid }: { teamUuid: string }) {
+export function PointEntryCreator({ teamUuid }: { teamUuid: string }) {
   const { formApi } = usePointEntryCreatorForm({ teamUuid });
 
   return (
@@ -63,8 +63,10 @@ export function EventCreator({ teamUuid }: { teamUuid: string }) {
             </Form.Item>
           )}
         />
-
-        <PointEntryPersonLookup formApi={formApi} />
+        <PointEntryPersonLookup formApi={formApi} teamUuid={teamUuid} />
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
       </Form>
     </formApi.Provider>
   );

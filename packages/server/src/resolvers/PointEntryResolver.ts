@@ -21,6 +21,7 @@ import {
 import { PersonModel } from "../models/Person.js";
 import { PointEntryModel } from "../models/PointEntry.js";
 
+import { TeamModel } from "../models/Team.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
@@ -136,18 +137,23 @@ export class PointEntryResolver
         where: { uuid: input.personFromUuid },
         attributes: ["id"],
       });
-      personFromId = personFrom?.id;
+      if (!personFrom) {
+        throw new DetailedError(ErrorCode.NotFound, "Person not found");
+      }
+      personFromId = personFrom.id;
     }
 
-    const team = await PersonModel.findOne({
-      where: { uuid: input.teamUuid },
-    });
+    const team = await TeamModel.findByUuid(input.teamUuid);
+
+    if (!team) {
+      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+    }
 
     const row = await PointEntryModel.create({
       comment: input.comment,
       points: input.points,
       personFromId,
-      teamId: team?.id,
+      teamId: team.id,
     });
 
     return CreatePointEntryResponse.newCreated(row.toResource(), row.uuid);

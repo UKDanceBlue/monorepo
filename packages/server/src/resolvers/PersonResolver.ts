@@ -21,6 +21,8 @@ import { MembershipModel } from "../models/Membership.js";
 import { PersonModel } from "../models/Person.js";
 
 import { Op } from "@sequelize/core";
+import { sequelizeDb } from "../data-source.js";
+import { TeamModel } from "../models/Team.js";
 import {
   AbstractGraphQLArrayOkResponse,
   AbstractGraphQLCreatedResponse,
@@ -29,6 +31,8 @@ import {
 } from "./ApiResponse.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 import * as Context from "./context.js";
+
+import { EmailAddressResolver } from "graphql-scalars";
 
 @ObjectType("CreatePersonResponse", {
   implements: AbstractGraphQLCreatedResponse<PersonResource>,
@@ -63,7 +67,7 @@ class CreatePersonInput {
   @Field(() => String, { nullable: true })
   name?: string;
 
-  @Field(() => String)
+  @Field(() => EmailAddressResolver)
   email!: string;
 
   @Field(() => String, { nullable: true })
@@ -71,6 +75,12 @@ class CreatePersonInput {
 
   @Field(() => RoleResource, { nullable: true })
   role?: RoleResource;
+
+  @Field(() => [String], { defaultValue: [] })
+  memberOf?: string[];
+
+  @Field(() => [String], { defaultValue: [] })
+  captainOf?: string[];
 }
 
 @Resolver(() => PersonResource)
@@ -117,26 +127,62 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
   async create(
     @Arg("input") input: CreatePersonInput
   ): Promise<CreatePersonResponse> {
-    const creationAttributes: Partial<PersonModel> = {};
-    if (input.name) {
-      creationAttributes.name = input.name;
-    }
-    if (input.linkblue) {
-      creationAttributes.linkblue = input.linkblue;
-    }
-    if (input.role) {
-      creationAttributes.dbRole = input.role.dbRole;
-      creationAttributes.committeeRole = input.role.committeeRole;
-      creationAttributes.committeeName = input.role.committeeIdentifier;
-    }
+    return await sequelizeDb.transaction(async () => {
+      const creationAttributes: Partial<PersonModel> = {};
+      if (input.name) {
+        creationAttributes.name = input.name;
+      }
+      if (input.linkblue) {
+        creationAttributes.linkblue = input.linkblue.toLowerCase();
+      }
+      if (input.role) {
+        creationAttributes.dbRole = input.role.dbRole;
+        creationAttributes.committeeRole = input.role.committeeRole;
+        creationAttributes.committeeName = input.role.committeeIdentifier;
+      }
 
-    const result = await PersonModel.create({
-      email: input.email,
-      ...creationAttributes,
-      authIds: {},
+      const result = await PersonModel.create({
+        email: input.email,
+        ...creationAttributes,
+        authIds: {},
+      });
+
+      const promises: Promise<void>[] = [];
+      for (const memberOfTeam of input.memberOf ?? []) {
+        promises.push(
+          TeamModel.findByUuid(memberOfTeam).then((team) =>
+            team == null
+              ? Promise.reject(
+                  new DetailedError(ErrorCode.NotFound, "Team not found")
+                )
+              : void result.createMembership({
+                  personId: result.id,
+                  teamId: team?.id,
+                  position: "Member",
+                })
+          )
+        );
+      }
+      for (const captainOfTeam of input.captainOf ?? []) {
+        promises.push(
+          TeamModel.findByUuid(captainOfTeam).then((team) =>
+            team == null
+              ? Promise.reject(
+                  new DetailedError(ErrorCode.NotFound, "Team not found")
+                )
+              : void result.createMembership({
+                  personId: result.id,
+                  teamId: team?.id,
+                  position: "Captain",
+                })
+          )
+        );
+      }
+
+      await Promise.all(promises);
+
+      return CreatePersonResponse.newCreated(result.toResource(), result.uuid);
     });
-
-    return CreatePersonResponse.newCreated(result.toResource(), result.uuid);
   }
 
   @Mutation(() => DeletePersonResponse, { name: "deletePerson" })

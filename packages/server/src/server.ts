@@ -53,6 +53,7 @@ export async function createServer() {
 
   // Set up Apollo Server
   const server = new ApolloServer<GraphQLContext>({
+    introspection: true,
     schema: graphqlSchema,
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }) /* , BASIC_LOGGING*/,

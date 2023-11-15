@@ -1,63 +1,24 @@
-import { ClearOutlined } from "@ant-design/icons";
+import { ClearOutlined, PlusOutlined } from "@ant-design/icons";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 import { AutoComplete, Button, Descriptions, Form } from "antd";
 import Search from "antd/es/input/Search";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
+import { useDebouncedCallback } from "use-debounce";
+import {
+  createPersonByLinkBlue,
+  getPersonByLinkBlueDocument,
+  getPersonByUuidDocument,
+  searchPersonByNameDocument,
+} from "./PointEntryCreatorGQL";
 import { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
-
-const getPersonByUuidDocument = graphql(/* GraphQL */ `
-  query GetPersonByUuid($uuid: String!) {
-    person(uuid: $uuid) {
-      data {
-        uuid
-        name
-        linkblue
-      }
-    }
-  }
-`);
-
-const getPersonByLinkBlueDocument = graphql(/* GraphQL */ `
-  query GetPersonByLinkBlue($linkBlue: String!) {
-    personByLinkBlue(linkBlueId: $linkBlue) {
-      data {
-        uuid
-        name
-        linkblue
-      }
-    }
-  }
-`);
-
-const searchPersonByNameDocument = graphql(/* GraphQL */ `
-  query SearchPersonByName($name: String!) {
-    searchPeopleByName(name: $name) {
-      data {
-        uuid
-        name
-        linkblue
-      }
-    }
-  }
-`);
-
-const createPersonByLinkBlue = graphql(/* GraphQL */ `
-  mutation CreatePersonByLinkBlue($linkBlue: String!, $email: String!) {
-    createPerson(input: { email: $email, linkblue: $linkBlue }) {
-      data {
-        uuid
-        linkblue
-      }
-    }
-  }
-`);
 
 export function PointEntryPersonLookup({
   formApi,
+  teamUuid,
 }: {
   formApi: ReturnType<typeof usePointEntryCreatorForm>["formApi"];
+  teamUuid: string;
 }) {
   // Form state (shared with parent)
   const { getValue, setValue: setPersonFromUuid } = formApi.useField({
@@ -68,7 +29,7 @@ export function PointEntryPersonLookup({
   const [selectedPersonQuery, updateSelectedPerson] = useQuery({
     query: getPersonByUuidDocument,
     pause: true,
-    variables: { uuid: "" },
+    variables: { uuid: personFromUuid ?? "" },
   });
   useQueryStatusWatcher({
     fetching: selectedPersonQuery.fetching,
@@ -83,10 +44,14 @@ export function PointEntryPersonLookup({
   }, [personFromUuid]);
 
   // Linkblue lookup
+  const [linkblueFieldValue, setLinkblueFieldValue] = useState<
+    string | undefined
+  >(undefined);
+
   const [getPersonByLinkBlueQuery, getPersonByLinkBlue] = useQuery({
     query: getPersonByLinkBlueDocument,
     pause: true,
-    variables: { linkBlue: "" },
+    variables: { linkBlue: linkblueFieldValue ?? "" },
   });
   useQueryStatusWatcher({
     fetching: getPersonByLinkBlueQuery.fetching,
@@ -103,16 +68,47 @@ export function PointEntryPersonLookup({
   }, [getPersonByLinkBlueQuery.data?.personByLinkBlue.data.uuid]);
 
   // Name lookup
+  const [searchByNameField, setSearchByNameField] = useState<
+    string | undefined
+  >(undefined);
   const [searchByNameQuery, searchByName] = useQuery({
     query: searchPersonByNameDocument,
     pause: true,
-    variables: { name: "" },
+    variables: { name: searchByNameField ?? "" },
   });
   useQueryStatusWatcher({
     fetching: searchByNameQuery.fetching,
     loadingMessage: "Searching",
     error: searchByNameQuery.error,
   });
+
+  const [nameAutocomplete, setNameAutocomplete] = useState<
+    { value: string; label: string }[]
+  >([]);
+  useEffect(() => {
+    if (searchByNameQuery.data?.searchPeopleByName.data) {
+      const newNameAutocomplete: typeof nameAutocomplete = [];
+      for (const person of searchByNameQuery.data.searchPeopleByName.data) {
+        if (person.name) {
+          newNameAutocomplete.push({
+            value: person.uuid,
+            label: person.name,
+          });
+        }
+      }
+      setNameAutocomplete(newNameAutocomplete);
+    }
+  }, [searchByNameQuery.data?.searchPeopleByName.data]);
+
+  const updateAutocomplete = useDebouncedCallback(
+    (name: string) => {
+      searchByName({ name });
+    },
+    200,
+    {
+      trailing: true,
+    }
+  );
 
   const [createPersonQuery, createPerson] = useMutation(createPersonByLinkBlue);
   useQueryStatusWatcher({
@@ -121,19 +117,13 @@ export function PointEntryPersonLookup({
     error: createPersonQuery.error,
   });
 
-  useEffect(() => {
-    if (selectedPersonQuery.data?.person.data) {
-      setPersonFromUuid(selectedPersonQuery.data.person.data.uuid);
-    }
-  }, [selectedPersonQuery.data?.person.data]);
-
   return (
     <formApi.Field
       name="personFromUuid"
       children={(field) => (
         <>
           <Form.Item
-            label="Person"
+            label="Person (enter name or linkblue)"
             validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
             help={
               field.state.meta.errors.length > 0
@@ -141,61 +131,78 @@ export function PointEntryPersonLookup({
                 : undefined
             }
           >
-            {/* Three options to choose a person, autocomplete name, autocomplete linkblue, or manual entry */}
-            <AutoComplete
-              value={field.state.value ?? undefined}
-              onBlur={field.handleBlur}
-              disabled={!!field.state.value}
-              onChange={(value) => {
-                field.handleChange(value);
-                updateSelectedPerson({ uuid: value });
-              }}
-              onSearch={(value) => {
-                searchByName({ name: value });
-              }}
-              onSelect={(value) => {
-                field.handleChange(value);
-                updateSelectedPerson({ uuid: value });
-              }}
-              options={
-                searchByNameQuery.data?.searchPeopleByName.data.map(
-                  (person) => ({
-                    label: person.name,
-                    value: person.uuid,
-                  })
-                ) ?? []
-              }
-            />
-            <Search
-              name={`${field.name}-linkblue-lookup`}
-              onBlur={field.handleBlur}
-              disabled={!!field.state.value}
-              onSearch={(value) => {
-                getPersonByLinkBlue({ linkBlue: value });
-              }}
-              placeholder="LinkBlue"
-              enterButton="Lookup"
-              loading={getPersonByLinkBlueQuery.fetching}
-            />
-            <Search
-              name={`${field.name}-linkblue-create`}
-              onBlur={field.handleBlur}
-              disabled={!!field.state.value}
-              onSearch={(value) => {
-                createPerson({
-                  linkBlue: value,
-                  email: `${value}@uky.edu`,
-                }).then((result) => {
-                  if (result.data?.createPerson.data) {
-                    setPersonFromUuid(result.data.createPerson.data.uuid);
+            <Descriptions column={1}>
+              <Descriptions.Item label="Name">
+                {/* Three options to choose a person, autocomplete name, autocomplete linkblue, or manual entry */}
+                <AutoComplete
+                  placeholder="Search by Name"
+                  value={
+                    (personFromUuid &&
+                      selectedPersonQuery.data?.person?.data?.name) ||
+                    searchByNameField
                   }
-                });
-              }}
-              placeholder="LinkBlue"
-              enterButton="Create"
-              color="green"
-              loading={createPersonQuery.fetching}
-            />
+                  onBlur={field.handleBlur}
+                  disabled={!!field.state.value}
+                  onChange={(value) => {
+                    setSearchByNameField(value);
+                    if (value) {
+                      updateAutocomplete(value);
+                    } else {
+                      setNameAutocomplete([]);
+                    }
+                  }}
+                  onSelect={(value) => {
+                    field.handleChange(value);
+                    updateSelectedPerson();
+                  }}
+                  options={nameAutocomplete}
+                />
+              </Descriptions.Item>
+              <Descriptions.Item label="LinkBlue">
+                <Search
+                  name={`${field.name}-linkblue-lookup`}
+                  value={
+                    (personFromUuid &&
+                      selectedPersonQuery.data?.person?.data?.linkblue) ||
+                    linkblueFieldValue
+                  }
+                  onChange={(e) => {
+                    setLinkblueFieldValue(e.target.value);
+                  }}
+                  onBlur={field.handleBlur}
+                  disabled={!!field.state.value}
+                  onSearch={() => {
+                    getPersonByLinkBlue();
+                  }}
+                  placeholder="Lookup Existing LinkBlue"
+                  enterButton="Lookup"
+                  loading={getPersonByLinkBlueQuery.fetching}
+                />
+                <Button
+                  name={`${field.name}-linkblue-create`}
+                  onBlur={field.handleBlur}
+                  disabled={!!field.state.value || !linkblueFieldValue}
+                  onClick={() => {
+                    if (linkblueFieldValue) {
+                      createPerson({
+                        linkBlue: linkblueFieldValue,
+                        email: `${linkblueFieldValue}@uky.edu`,
+                        teamUuid,
+                      }).then((result) => {
+                        if (result.data?.createPerson.uuid) {
+                          setPersonFromUuid(result.data.createPerson.uuid);
+                        }
+                      });
+                    }
+                  }}
+                  loading={createPersonQuery.fetching}
+                  icon={<PlusOutlined />}
+                  color="green"
+                >
+                  Create
+                </Button>
+              </Descriptions.Item>
+            </Descriptions>
             <Button
               color="grey"
               onClick={() => {
@@ -206,15 +213,6 @@ export function PointEntryPersonLookup({
             >
               Clear
             </Button>
-            <Descriptions>
-              <Descriptions.Item label="Name">
-                {selectedPersonQuery.data?.person?.data?.name ??
-                  "Never Logged In"}
-              </Descriptions.Item>
-              <Descriptions.Item label="LinkBlue">
-                {selectedPersonQuery.data?.person?.data?.linkblue}
-              </Descriptions.Item>
-            </Descriptions>
           </Form.Item>
         </>
       )}

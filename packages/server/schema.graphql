@@ -175,8 +175,10 @@ type CreateImageResponse implements AbstractGraphQLCreatedResponse & AbstractGra
 }
 
 input CreatePersonInput {
-  email: String!
+  captainOf: [String!]! = []
+  email: EmailAddress!
   linkblue: String
+  memberOf: [String!]! = []
   name: String
   role: RoleResourceInput
 }
@@ -390,6 +392,11 @@ type DeviceResource {
   updatedAt: DateTimeISO
   uuid: ID!
 }
+
+"""
+A field whose value conforms to the standard internet email address format as specified in HTML Spec: https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address.
+"""
+scalar EmailAddress @specifiedBy(url: "https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address")
 
 type EventOccurrenceResource {
   createdAt: DateTimeISO
