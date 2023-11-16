@@ -842,15 +842,11 @@ type PersonResource {
 
 enum PointEntryResolverAllKeys {
   createdAt
-  expoPushToken
-  lastLogin
-  pointEntryId
   updatedAt
 }
 
 enum PointEntryResolverDateFilterKeys {
   createdAt
-  lastLogin
   updatedAt
 }
 
@@ -876,36 +872,6 @@ input PointEntryResolverKeyedIsNullFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-}
-
-input PointEntryResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
-  field: PointEntryResolverStringFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: [String!]!
-}
-
-input PointEntryResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
-  comparison: StringComparator!
-
-  """The field to filter on"""
-  field: PointEntryResolverStringFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: String!
-}
-
-enum PointEntryResolverStringFilterKeys {
-  expoPushToken
-  pointEntryId
 }
 
 type PointEntryResource {
@@ -1051,7 +1017,7 @@ type Query {
     numericFilters: Void
 
     """The one-of filters to apply to the query"""
-    oneOfFilters: [PointEntryResolverKeyedOneOfFilterItem!]
+    oneOfFilters: Void
 
     """The page number to return, defaults to 1"""
     page: Int
@@ -1070,7 +1036,7 @@ type Query {
     sortDirection: [SortDirection!]
 
     """The string filters to apply to the query"""
-    stringFilters: [PointEntryResolverKeyedStringFilterItem!]
+    stringFilters: Void
   ): ListPointEntriesResponse!
   pointEntry(uuid: String!): GetPointEntryByUuidResponse!
   searchPeopleByName(name: String!): GetPeopleResponse!
@@ -1084,11 +1050,11 @@ type Query {
 
     """The is-null filters to apply to the query"""
     isNullFilters: [TeamResolverKeyedIsNullFilterItem!]
-    legacyStatus: TeamLegacyStatus
-    marathonYear: String
+    legacyStatus: [TeamLegacyStatus!]
+    marathonYear: [String!]
 
     """The numeric filters to apply to the query"""
-    numericFilters: Void
+    numericFilters: [TeamResolverKeyedNumericFilterItem!]
 
     """The one-of filters to apply to the query"""
     oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]
@@ -1111,8 +1077,8 @@ type Query {
 
     """The string filters to apply to the query"""
     stringFilters: [TeamResolverKeyedStringFilterItem!]
-    type: TeamType
-    visibility: DbRole
+    type: [TeamType!]
+    visibility: [DbRole!]
   ): ListTeamsResponse!
   thumbhash(uuid: String!): GetThumbHashByUuidResponse
 }
@@ -1220,8 +1186,8 @@ enum TeamResolverAllKeys {
   legacyStatus
   marathonYear
   name
+  totalPoints
   type
-  uuid
   visibility
 }
 
@@ -1233,6 +1199,20 @@ input TeamResolverKeyedIsNullFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
+}
+
+input TeamResolverKeyedNumericFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: TeamResolverNumericFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: Float!
 }
 
 input TeamResolverKeyedOneOfFilterItem {
@@ -1258,6 +1238,10 @@ input TeamResolverKeyedStringFilterItem {
   """
   negate: Boolean = false
   value: String!
+}
+
+enum TeamResolverNumericFilterKeys {
+  totalPoints
 }
 
 enum TeamResolverStringFilterKeys {

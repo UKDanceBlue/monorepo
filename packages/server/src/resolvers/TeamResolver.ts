@@ -1,4 +1,4 @@
-import { Op } from "@sequelize/core";
+import { Op, QueryTypes, literal } from "@sequelize/core";
 import type {
   AuthorizationRuleOrAccessLevel,
   MarathonYearString,
@@ -32,6 +32,7 @@ import {
   Root,
 } from "type-graphql";
 
+import { sequelizeDb } from "../data-source.js";
 import { MembershipModel } from "../models/Membership.js";
 import { TeamModel } from "../models/Team.js";
 
@@ -103,7 +104,6 @@ class CreateTeamInput implements OptionalToNullable<Partial<TeamResource>> {
 @ArgsType()
 class ListTeamsArgs extends FilteredListQueryArgs("TeamResolver", {
   all: [
-    "uuid",
     "name",
     "type",
     "legacyStatus",
@@ -150,8 +150,14 @@ export class TeamResolver
   ): Promise<ListTeamsResponse> {
     const findOptions = query.toSequelizeFindOptions(
       {
-        uuid: "uuid",
         name: "name",
+        legacyStatus: "legacyStatus",
+        visibility: "visibility",
+        marathonYear: "marathonYear",
+        type: "type",
+        totalPoints: literal(
+          "(SELECT SUM(`pointEntries`.`points`) FROM `pointEntries` WHERE `pointEntries`.`teamId` = `Team`.`id`)"
+        ),
       },
       TeamModel
     );
@@ -266,16 +272,28 @@ export class TeamResolver
 
   @FieldResolver(() => Number)
   async totalPoints(@Root() team: TeamResource): Promise<number> {
-    const model = await TeamModel.findByUuid(team.uuid, {
-      attributes: ["id", "uuid"],
-    });
+    const teamModel = await TeamModel.findByUuid(team.uuid, {});
 
-    if (!model) {
+    if (!teamModel) {
       throw new DetailedError(ErrorCode.NotFound, "Team not found");
     }
 
-    const pointEntries = await model.getPointEntries();
+    const count = await sequelizeDb.query(
+      `SELECT SUM(points) AS totalPoints FROM danceblue.point_entries WHERE team_id = ?`,
+      {
+        type: QueryTypes.SELECT,
+        replacements: [teamModel.id],
+      }
+    );
 
-    return pointEntries.reduce((acc, row) => acc + row.points, 0);
+    if (count.length === 0) {
+      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+    }
+
+    if (count.length > 1) {
+      throw new Error("More than one row returned");
+    }
+
+    return Number((count[0] as Record<string, unknown>).totalPoints ?? 0);
   }
 }
