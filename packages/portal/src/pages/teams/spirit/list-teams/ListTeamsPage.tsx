@@ -1,7 +1,10 @@
+import { TeamsTable } from "@elements/tables/TeamsTable";
+
 export function ListTeamsPage() {
   return (
     <div>
-      <h1>List Teams</h1>
+      <h1>Teams</h1>
+      <TeamsTable />
     </div>
   );
 }
