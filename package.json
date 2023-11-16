@@ -6,11 +6,15 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "format": "prettier --write .",
-    "build-client": "graphql-codegen-esm --config codegen.ts",
-    "watch-client": "graphql-codegen-esm --config codegen.ts -w ./packages",
+    "gql:build": "graphql-codegen-esm --config codegen.ts",
+    "gql:watch": "graphql-codegen-esm --config codegen.ts -w ./packages",
     "common:watch": "yarn workspace @ukdanceblue/common run watch",
+    "common:build": "yarn workspace @ukdanceblue/common run build",
     "server:bs": "yarn workspace @ukdanceblue/server run bs",
-    "portal:dev": "yarn workspace @ukdanceblue/portal dev"
+    "server:buid": "yarn workspace @ukdanceblue/server run build",
+    "server:start": "yarn workspace @ukdanceblue/server run start",
+    "portal:dev": "yarn workspace @ukdanceblue/portal dev",
+    "portal:build": "yarn workspace @ukdanceblue/portal build"
   },
   "devDependencies": {
     "@eslint/js": "^8.50.0",
