@@ -1,5 +1,6 @@
 import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
+import { Link } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 import { Table } from "antd";
@@ -113,6 +114,15 @@ export const TeamsTable = () => {
           dataIndex: "totalPoints",
           sorter: true,
           defaultSortOrder: "descend",
+        },
+        {
+          title: "Actions",
+          key: "actions",
+          render: (_text, record) => (
+            <Link to="/teams/$teamId/" params={{ teamId: record.uuid }}>
+              View
+            </Link>
+          ),
         },
       ]}
       dataSource={data?.teams.data}

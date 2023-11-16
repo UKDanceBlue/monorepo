@@ -6,10 +6,12 @@ PersonModel.hasMany(PointEntryModel, {
     name: "personFromId",
     allowNull: true,
   },
+  as: "pointEntries",
 });
 PointEntryModel.belongsTo(PersonModel, {
   foreignKey: {
     name: "personFromId",
     allowNull: true,
   },
+  as: "personFrom",
 });

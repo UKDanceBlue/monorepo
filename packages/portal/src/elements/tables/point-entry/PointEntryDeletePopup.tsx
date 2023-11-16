@@ -16,7 +16,7 @@ export const usePointEntryDeletePopup = ({
   onDelete,
 }: {
   onDelete?: () => void;
-}) => {
+} = {}) => {
   const [{ info: showInfoMessage, error: showErrorMessage }, contextHolder] =
     useNotification();
   const [{ fetching, data }, deletePointEntry] = useMutation(
@@ -72,7 +72,7 @@ export const usePointEntryDeletePopup = ({
         onCancel={handleCancel}
         cancelButtonProps={{ disabled: fetching }}
       >
-        <p>Are you sure you want to delete this pointentry?</p>
+        <p>Are you sure you want to delete this point entry?</p>
       </Modal>
     </>
   );

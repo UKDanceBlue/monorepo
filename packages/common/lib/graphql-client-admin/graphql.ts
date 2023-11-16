@@ -1237,7 +1237,7 @@ export type TeamResource = {
   readonly name: Scalars['String']['output'];
   readonly persistentIdentifier?: Maybe<Scalars['String']['output']>;
   readonly pointEntries: ReadonlyArray<PointEntryResource>;
-  readonly totalPoints: Scalars['Float']['output'];
+  readonly totalPoints: Scalars['Int']['output'];
   readonly type: TeamType;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];

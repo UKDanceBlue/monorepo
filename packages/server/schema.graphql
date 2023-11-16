@@ -1257,7 +1257,7 @@ type TeamResource {
   name: String!
   persistentIdentifier: String
   pointEntries: [PointEntryResource!]!
-  totalPoints: Float!
+  totalPoints: Int!
   type: TeamType!
   updatedAt: DateTimeISO
   uuid: ID!

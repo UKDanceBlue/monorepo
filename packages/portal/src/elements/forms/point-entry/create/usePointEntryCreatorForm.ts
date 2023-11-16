@@ -1,6 +1,5 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
-import { useNavigate } from "@tanstack/react-router";
 import type { CreatePointEntryInput } from "@ukdanceblue/common/graphql-client-admin/raw-types";
 import { useMutation } from "urql";
 
@@ -11,7 +10,6 @@ export function usePointEntryCreatorForm({ teamUuid }: { teamUuid: string }) {
   const [{ fetching, error }, createPointEntry] = useMutation(
     createPointEntryDocument
   );
-  const navigate = useNavigate();
   useQueryStatusWatcher({
     error,
     fetching,
@@ -30,9 +28,6 @@ export function usePointEntryCreatorForm({ teamUuid }: { teamUuid: string }) {
           comment: values.comment ?? null,
           personFromUuid: values.personFromUuid ?? null,
         },
-      });
-      await navigate({
-        to: "/", // TODO: Navigate to the team page
       });
     },
   });

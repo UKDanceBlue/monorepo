@@ -25,6 +25,7 @@ import {
   FieldResolver,
   ID,
   InputType,
+  Int,
   Mutation,
   ObjectType,
   Query,
@@ -156,7 +157,11 @@ export class TeamResolver
         marathonYear: "marathonYear",
         type: "type",
         totalPoints: literal(
-          "(SELECT SUM(`pointEntries`.`points`) FROM `pointEntries` WHERE `pointEntries`.`teamId` = `Team`.`id`)"
+          `(
+            SELECT SUM(points) AS totalPoints
+            FROM danceblue.point_entries
+            WHERE team_id = "Team"."id"
+          )`
         ),
       },
       TeamModel
@@ -270,7 +275,7 @@ export class TeamResolver
     return pointEntries.map((row) => row.toResource());
   }
 
-  @FieldResolver(() => Number)
+  @FieldResolver(() => Int)
   async totalPoints(@Root() team: TeamResource): Promise<number> {
     const teamModel = await TeamModel.findByUuid(team.uuid, {});
 
@@ -278,22 +283,28 @@ export class TeamResolver
       throw new DetailedError(ErrorCode.NotFound, "Team not found");
     }
 
-    const count = await sequelizeDb.query(
-      `SELECT SUM(points) AS totalPoints FROM danceblue.point_entries WHERE team_id = ?`,
+    const val = await sequelizeDb.query(
+      `SELECT SUM(points) AS "totalPoints" FROM danceblue.point_entries WHERE team_id = ?`,
       {
         type: QueryTypes.SELECT,
         replacements: [teamModel.id],
       }
     );
 
-    if (count.length === 0) {
+    if (val.length === 0) {
       throw new DetailedError(ErrorCode.NotFound, "Team not found");
     }
 
-    if (count.length > 1) {
+    if (val.length > 1) {
       throw new Error("More than one row returned");
     }
 
-    return Number((count[0] as Record<string, unknown>).totalPoints ?? 0);
+    const { totalPoints: totalPointsString } = val[0] as Record<
+      string,
+      unknown
+    >;
+    return typeof totalPointsString === "string"
+      ? Number.parseInt(totalPointsString, 10)
+      : Number(totalPointsString);
   }
 }
