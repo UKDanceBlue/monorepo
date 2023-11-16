@@ -1,5 +1,7 @@
 import { API_BASE_URL } from "@config/api";
 import { useLoginState } from "@hooks/useLoginState";
+import type { AuthorizationRule } from "@ukdanceblue/common";
+import { CommitteeRole } from "@ukdanceblue/common";
 import { Menu } from "antd";
 import type { ItemType } from "antd/es/menu/hooks/useItems";
 import { useMemo } from "react";
@@ -9,6 +11,7 @@ interface NavItemType {
   title: string;
   url?: string;
   element?: React.ReactNode;
+  authorizationRule?: AuthorizationRule;
 }
 
 export const NavigationMenu = () => {
@@ -23,6 +26,16 @@ export const NavigationMenu = () => {
       {
         slug: "events",
         title: "Events",
+        authorizationRule: {
+          minCommitteeRole: CommitteeRole.Coordinator,
+        },
+      },
+      {
+        slug: "teams",
+        title: "Teams",
+        authorizationRule: {
+          minCommitteeRole: CommitteeRole.Coordinator,
+        },
       },
     ];
   }, []);
