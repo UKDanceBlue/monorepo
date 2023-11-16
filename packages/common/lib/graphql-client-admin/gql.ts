@@ -16,7 +16,6 @@ const documents = {
     "\n  mutation CreateEvent($input: CreateEventInput!) {\n    createEvent(input: $input) {\n      data {\n        uuid\n      }\n    }\n  }\n": types.CreateEventDocument,
     "\n  fragment EventEditorFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      url\n      imageData\n      width\n      height\n      thumbHash\n      alt\n    }\n  }\n": types.EventEditorFragmentFragmentDoc,
     "\n  mutation SaveEvent($uuid: String!, $input: SetEventInput!) {\n    setEvent(uuid: $uuid, input: $input) {\n      data {\n        ...EventEditorFragment\n      }\n    }\n  }\n": types.SaveEventDocument,
-    "\n  fragment PersonEditorFragment on PersonResource {\n    uuid\n    name\n    linkblue\n    email\n    role {\n      dbRole\n      committeeRole\n      committeeIdentifier\n    }\n    teams {\n      position\n      team {\n        uuid\n        name\n      }\n    }\n  }\n": types.PersonEditorFragmentFragmentDoc,
     "\n  mutation CreatePointEntry($input: CreatePointEntryInput!) {\n    createPointEntry(input: $input) {\n      data {\n        uuid\n      }\n    }\n  }\n": types.CreatePointEntryDocument,
     "\n  query GetPersonByUuid($uuid: String!) {\n    person(uuid: $uuid) {\n      data {\n        uuid\n        name\n        linkblue\n      }\n    }\n  }\n": types.GetPersonByUuidDocument,
     "\n  query GetPersonByLinkBlue($linkBlue: String!) {\n    personByLinkBlue(linkBlueId: $linkBlue) {\n      data {\n        uuid\n        name\n      }\n    }\n  }\n": types.GetPersonByLinkBlueDocument,
@@ -65,10 +64,6 @@ export function graphql(source: "\n  fragment EventEditorFragment on EventResour
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation SaveEvent($uuid: String!, $input: SetEventInput!) {\n    setEvent(uuid: $uuid, input: $input) {\n      data {\n        ...EventEditorFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation SaveEvent($uuid: String!, $input: SetEventInput!) {\n    setEvent(uuid: $uuid, input: $input) {\n      data {\n        ...EventEditorFragment\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  fragment PersonEditorFragment on PersonResource {\n    uuid\n    name\n    linkblue\n    email\n    role {\n      dbRole\n      committeeRole\n      committeeIdentifier\n    }\n    teams {\n      position\n      team {\n        uuid\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  fragment PersonEditorFragment on PersonResource {\n    uuid\n    name\n    linkblue\n    email\n    role {\n      dbRole\n      committeeRole\n      committeeIdentifier\n    }\n    teams {\n      position\n      team {\n        uuid\n        name\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

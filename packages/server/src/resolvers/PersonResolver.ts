@@ -80,6 +80,26 @@ class CreatePersonInput {
   @Field(() => [String], { defaultValue: [] })
   captainOf?: string[];
 }
+@InputType()
+class SetPersonInput {
+  @Field(() => String, { nullable: true })
+  name?: string;
+
+  @Field(() => EmailAddressResolver, { nullable: true })
+  email?: string;
+
+  @Field(() => String, { nullable: true })
+  linkblue?: string;
+
+  @Field(() => RoleResource, { nullable: true })
+  role?: RoleResource;
+
+  @Field(() => [String], { nullable: true })
+  memberOf?: string[];
+
+  @Field(() => [String], { nullable: true })
+  captainOf?: string[];
+}
 
 @Resolver(() => PersonResource)
 export class PersonResolver implements ResolverInterface<PersonResource> {
@@ -184,6 +204,124 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
       await Promise.all(promises);
 
       return CreatePersonResponse.newCreated(result.toResource(), result.uuid);
+    });
+  }
+
+  @AccessLevelAuthorized(AccessLevel.Committee)
+  @Mutation(() => GetPersonResponse, { name: "setPerson" })
+  async set(
+    @Arg("uuid") id: string,
+    @Arg("input") input: SetPersonInput
+  ): Promise<GetPersonResponse> {
+    const row = await PersonModel.findOne({
+      where: { uuid: id },
+      attributes: ["id"],
+    });
+
+    if (row == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Person not found");
+    }
+
+    return sequelizeDb.transaction(async () => {
+      const updateAttributes: Partial<PersonModel> = {};
+      if (input.name) {
+        updateAttributes.name = input.name;
+      }
+      if (input.linkblue) {
+        updateAttributes.linkblue = input.linkblue.toLowerCase();
+      }
+      if (input.role) {
+        updateAttributes.dbRole = input.role.dbRole;
+        updateAttributes.committeeRole = input.role.committeeRole;
+        updateAttributes.committeeName = input.role.committeeIdentifier;
+      }
+
+      await row.update(updateAttributes);
+
+      const promises: Promise<void>[] = [];
+      if (input.memberOf != null) {
+        promises.push(
+          row
+            .getMemberships({
+              where: { position: "Member" },
+              scope: "withTeam",
+            })
+            .then(async (memberships) => {
+              const promises: Promise<void>[] = [];
+              for (const membership of memberships) {
+                if (!membership.team) {
+                  throw new DetailedError(
+                    ErrorCode.InternalFailure,
+                    "Membership has no accessible team"
+                  );
+                }
+                if (!input.memberOf?.includes(membership.team.uuid)) {
+                  promises.push(membership.destroy());
+                }
+              }
+              await Promise.all(promises);
+            })
+        );
+        for (const memberOfTeam of input.memberOf) {
+          promises.push(
+            TeamModel.findByUuid(memberOfTeam).then((team) =>
+              team == null
+                ? Promise.reject(
+                    new DetailedError(ErrorCode.NotFound, "Team not found")
+                  )
+                : void row.createMembership({
+                    personId: row.id,
+                    teamId: team.id,
+                    position: "Member",
+                  })
+            )
+          );
+        }
+      }
+
+      if (input.captainOf != null) {
+        promises.push(
+          row
+            .getMemberships({
+              where: { position: "Captain" },
+              scope: "withTeam",
+            })
+            .then(async (memberships) => {
+              const promises: Promise<void>[] = [];
+              for (const membership of memberships) {
+                if (!membership.team) {
+                  throw new DetailedError(
+                    ErrorCode.InternalFailure,
+                    "Membership has no accessible team"
+                  );
+                }
+                if (!input.captainOf?.includes(membership.team.uuid)) {
+                  promises.push(membership.destroy());
+                }
+              }
+              await Promise.all(promises);
+            })
+        );
+        for (const captainOfTeam of input.captainOf) {
+          promises.push(
+            TeamModel.findByUuid(captainOfTeam).then((team) =>
+              team == null
+                ? Promise.reject(
+                    new DetailedError(ErrorCode.NotFound, "Team not found")
+                  )
+                : void row.createMembership({
+                    personId: row.id,
+                    teamId: team.id,
+                    position: "Captain",
+                  })
+            )
+          );
+        }
+      }
+
+      await Promise.all(promises);
+
+      return GetPersonResponse.newOk(row.toResource());
     });
   }
 

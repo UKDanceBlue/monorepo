@@ -607,6 +607,7 @@ type Mutation {
   sendNotification(input: SendNotificationInput!): SendNotificationResponse!
   setConfiguration(input: SetConfigurationInput!, key: String!): SetConfigurationResponse!
   setEvent(input: SetEventInput!, uuid: String!): SetEventResponse!
+  setPerson(input: SetPersonInput!, uuid: String!): GetPersonResponse!
 }
 
 """Integers that will have a value of 0 or more."""
@@ -989,6 +990,15 @@ input SetEventOccurrenceInput {
 type SetEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: EventResource!
   ok: Boolean!
+}
+
+input SetPersonInput {
+  captainOf: [String!]
+  email: EmailAddress
+  linkblue: String
+  memberOf: [String!]
+  name: String
+  role: RoleResourceInput
 }
 
 enum SortDirection {
