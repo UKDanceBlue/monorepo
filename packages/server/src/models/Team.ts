@@ -173,6 +173,7 @@ TeamModel.init(
     persistentIdentifier: {
       type: DataTypes.TEXT,
       allowNull: true,
+      unique: true,
     },
     visibility: {
       type: DataTypes.ENUM(Object.values(DbRole)),

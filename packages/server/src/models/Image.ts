@@ -94,10 +94,12 @@ ImageModel.init(
         }
       },
       allowNull: true,
+      unique: true,
     },
     imageData: {
       type: DataTypes.BLOB,
       allowNull: true,
+      unique: true,
     },
     mimeType: {
       type: DataTypes.STRING(255), // The RFC guarantees a max of 127 characters on each side of the slash, making 255 the max length

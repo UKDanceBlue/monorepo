@@ -165,10 +165,12 @@ PersonModel.init(
       validate: {
         isEmail: true,
       },
+      unique: true,
     },
     linkblue: {
       type: DataTypes.TEXT,
       allowNull: true,
+      unique: true,
     },
     authIds: {
       type: DataTypes.JSONB,
