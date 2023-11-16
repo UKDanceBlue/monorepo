@@ -1,7 +1,8 @@
+import { LoadingOutlined } from "@ant-design/icons";
 import { API_BASE_URL } from "@config/api";
 import { useLoginState } from "@hooks/useLoginState";
 import type { AuthorizationRule } from "@ukdanceblue/common";
-import { CommitteeRole } from "@ukdanceblue/common";
+import { CommitteeRole, checkAuthorization } from "@ukdanceblue/common";
 import { Menu } from "antd";
 import type { ItemType } from "antd/es/menu/hooks/useItems";
 import { useMemo } from "react";
@@ -15,7 +16,7 @@ interface NavItemType {
 }
 
 export const NavigationMenu = () => {
-  const { loggedIn } = useLoginState();
+  const { loggedIn, authorization } = useLoginState();
   const navItems = useMemo((): NavItemType[] => {
     return [
       {
@@ -41,14 +42,21 @@ export const NavigationMenu = () => {
   }, []);
 
   const menuItems = useMemo<ItemType[]>((): ItemType[] => {
-    return navItems.map((item) => ({
-      key: item.slug,
-      title: item.title,
-      label: (
-        <a href={item.url ?? `/${item.slug}`}>{item.element ?? item.title}</a>
-      ),
-    }));
-  }, [navItems]);
+    return navItems
+      .filter(
+        ({ authorizationRule }) =>
+          !authorizationRule ||
+          (authorization &&
+            checkAuthorization(authorizationRule, authorization))
+      )
+      .map((item) => ({
+        key: item.slug,
+        title: item.title,
+        label: (
+          <a href={item.url ?? `/${item.slug}`}>{item.element ?? item.title}</a>
+        ),
+      }));
+  }, [authorization, navItems]);
 
   const activeKeys = useMemo<string[]>((): string[] => {
     const { pathname } = window.location;
@@ -76,6 +84,8 @@ export const NavigationMenu = () => {
         {
           key: "login",
           title: "Login",
+          icon: loggedIn == null ? <LoadingOutlined /> : undefined,
+          disabled: loggedIn == null,
           label: loggedIn ? (
             <a
               href={`${API_BASE_URL}/api/auth/logout?redirectTo=${encodeURI(
