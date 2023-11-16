@@ -570,9 +570,16 @@ scalar LuxonDateRange @specifiedBy(url: "https://www.iso.org/iso-8601-date-and-t
 """Luxon DateTime custom scalar type"""
 scalar LuxonDateTime
 
+"""The position of a member on a team"""
+enum MembershipPositionType {
+  Captain
+  Member
+}
+
 type MembershipResource {
   createdAt: DateTimeISO
   person: PersonResource!
+  position: MembershipPositionType!
   team: TeamResource!
   updatedAt: DateTimeISO
   uuid: ID!

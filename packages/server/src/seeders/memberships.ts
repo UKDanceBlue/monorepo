@@ -1,11 +1,13 @@
 import { faker } from "@faker-js/faker";
 import type { CreationAttributes } from "@sequelize/core";
-import { CommitteeRole, DbRole, TeamType } from "@ukdanceblue/common";
-
 import {
-  MembershipModel,
+  CommitteeRole,
+  DbRole,
   MembershipPositionType,
-} from "../models/Membership.js";
+  TeamType,
+} from "@ukdanceblue/common";
+
+import { MembershipModel } from "../models/Membership.js";
 import { PersonModel } from "../models/Person.js";
 import { TeamModel } from "../models/Team.js";
 

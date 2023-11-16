@@ -3,7 +3,7 @@ export { DeviceResource } from "./Device.js";
 export { EventOccurrenceResource, EventResource } from "./Event.js";
 export { ImageResource } from "./Image.js";
 export { LoginFlowSessionResource } from "./LoginFlowSession.js";
-export { MembershipResource } from "./Membership.js";
+export { MembershipPositionType, MembershipResource } from "./Membership.js";
 export {
   NotificationPayload,
   NotificationPayloadPresentationType,

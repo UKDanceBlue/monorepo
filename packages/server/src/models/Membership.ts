@@ -8,21 +8,16 @@ import type {
   NonAttribute,
 } from "@sequelize/core";
 import { DataTypes } from "@sequelize/core";
-import { MembershipResource } from "@ukdanceblue/common";
+import {
+  MembershipPositionType,
+  MembershipResource,
+} from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
 
 import { BaseModel } from "./BaseModel.js";
 import type { PersonModel } from "./Person.js";
 import type { TeamModel } from "./Team.js";
-
-export const MembershipPositionType = {
-  Member: "Member",
-  Captain: "Captain",
-} as const;
-
-export type MembershipPositionType =
-  (typeof MembershipPositionType)[keyof typeof MembershipPositionType];
 
 export class MembershipModel extends BaseModel<
   InferAttributes<MembershipModel>,
@@ -53,6 +48,7 @@ export class MembershipModel extends BaseModel<
   public toResource(): MembershipResource {
     return MembershipResource.init({
       uuid: this.uuid,
+      position: this.position,
       updatedAt: this.updatedAt,
       createdAt: this.createdAt,
     });
