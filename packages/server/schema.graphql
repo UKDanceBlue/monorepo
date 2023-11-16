@@ -992,6 +992,8 @@ enum SortDirection {
 enum StringComparator {
   ENDS_WITH
   EQUALS
+  ILIKE
+  IREGEX
   IS
   LIKE
   REGEX

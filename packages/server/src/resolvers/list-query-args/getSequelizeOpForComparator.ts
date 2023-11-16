@@ -27,8 +27,14 @@ export function getSequelizeOpForComparator(
     case Comparator.LIKE: {
       return negated ? Op.notLike : Op.like;
     }
+    case Comparator.ILIKE: {
+      return negated ? Op.notLike : Op.like;
+    }
     case Comparator.REGEX: {
       return negated ? Op.notRegexp : Op.regexp;
+    }
+    case Comparator.IREGEX: {
+      return negated ? Op.notIRegexp : Op.iRegexp;
     }
     case Comparator.STARTS_WITH: {
       return negated ? Op.notLike : Op.startsWith;
