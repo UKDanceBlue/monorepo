@@ -10,6 +10,8 @@ import {
 import { EmailAddressResolver } from "graphql-scalars";
 import {
   Arg,
+  Args,
+  ArgsType,
   Ctx,
   Field,
   FieldResolver,
@@ -30,10 +32,12 @@ import {
   AbstractGraphQLArrayOkResponse,
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
+  AbstractGraphQLPaginatedResponse,
   DetailedError,
 } from "./ApiResponse.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 import * as Context from "./context.js";
+import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("CreatePersonResponse", {
   implements: AbstractGraphQLCreatedResponse<PersonResource>,
@@ -56,10 +60,30 @@ class GetPeopleResponse extends AbstractGraphQLArrayOkResponse<PersonResource> {
   @Field(() => [PersonResource])
   data!: PersonResource[];
 }
+@ObjectType("ListPeopleResponse", {
+  implements: AbstractGraphQLPaginatedResponse<PersonResource>,
+})
+class ListPeopleResponse extends AbstractGraphQLPaginatedResponse<PersonResource> {
+  @Field(() => [PersonResource])
+  data!: PersonResource[];
+}
 @ObjectType("DeletePersonResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
 class DeletePersonResponse extends AbstractGraphQLOkResponse<never> {}
+
+@ArgsType()
+class ListPeopleArgs extends FilteredListQueryArgs("PersonResolver", {
+  all: [
+    "name",
+    "email",
+    "linkblue",
+    "dbRole",
+    "committeeRole",
+    "committeeName",
+  ],
+  string: ["name", "email", "dbRole", "committeeRole", "committeeName"],
+}) {}
 @InputType()
 class CreatePersonInput {
   @Field(() => String, { nullable: true })
@@ -126,6 +150,33 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     }
 
     return GetPersonResponse.newOk(row.toResource());
+  }
+
+  @AccessLevelAuthorized(AccessLevel.Committee)
+  @Query(() => ListPeopleResponse, { name: "listPeople" })
+  async list(
+    @Args(() => ListPeopleArgs) args: ListPeopleArgs
+  ): Promise<ListPeopleResponse> {
+    const { rows, count } = await PersonModel.findAndCountAll({
+      ...args.toSequelizeFindOptions(
+        {
+          committeeName: "committeeName",
+          committeeRole: "committeeRole",
+          dbRole: "dbRole",
+          email: "email",
+          linkblue: "linkblue",
+          name: "name",
+        },
+        PersonModel
+      ),
+    });
+
+    return ListPeopleResponse.newPaginated({
+      data: rows.map((row) => row.toResource()),
+      total: count,
+      page: args.page,
+      pageSize: args.pageSize,
+    });
   }
 
   @Query(() => GetPersonResponse, { name: "me", nullable: true })

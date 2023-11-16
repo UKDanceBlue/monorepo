@@ -24,7 +24,9 @@ export const PersonEditorFragment = graphql(/* GraphQL */ `
 export const personEditorDocument = graphql(/* GraphQL */ `
   mutation PersonEditor($uuid: String!, $input: SetPersonInput!) {
     setPerson(uuid: $uuid, input: $input) {
-      ...PersonEditorFragment
+      data {
+        ...PersonEditorFragment
+      }
     }
   }
 `);

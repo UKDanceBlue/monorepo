@@ -38,6 +38,13 @@ export const NavigationMenu = () => {
           minCommitteeRole: CommitteeRole.Coordinator,
         },
       },
+      {
+        slug: "people",
+        title: "People",
+        authorizationRule: {
+          minCommitteeRole: CommitteeRole.Coordinator,
+        },
+      },
     ];
   }, []);
 

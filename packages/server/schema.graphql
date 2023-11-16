@@ -531,6 +531,20 @@ type ListNotificationsResponse implements AbstractGraphQLArrayOkResponse & Abstr
   total: NonNegativeInt!
 }
 
+type ListPeopleResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+  data: [PersonResource!]!
+  ok: Boolean!
+
+  """The current page number (1-indexed)"""
+  page: PositiveInt!
+
+  """The number of items per page"""
+  pageSize: NonNegativeInt!
+
+  """The total number of items"""
+  total: NonNegativeInt!
+}
+
 type ListPointEntriesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
   data: [PointEntryResource!]!
   ok: Boolean!
@@ -674,6 +688,58 @@ enum NumericComparator {
   LESS_THAN_OR_EQUAL_TO
 }
 
+enum PersonResolverAllKeys {
+  committeeName
+  committeeRole
+  dbRole
+  email
+  linkblue
+  name
+}
+
+input PersonResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: PersonResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+input PersonResolverKeyedOneOfFilterItem {
+  """The field to filter on"""
+  field: PersonResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: [String!]!
+}
+
+input PersonResolverKeyedStringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The field to filter on"""
+  field: PersonResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: String!
+}
+
+enum PersonResolverStringFilterKeys {
+  committeeName
+  committeeRole
+  dbRole
+  email
+  name
+}
+
 type PersonResource {
   authIds: [AuthIdList!]!
   captaincies: [MembershipResource!]!
@@ -810,6 +876,41 @@ type Query {
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
   image(uuid: String!): GetImageByUuidResponse!
+  listPeople(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: Void
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [PersonResolverKeyedIsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: Void
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: [PersonResolverKeyedOneOfFilterItem!]
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: [PersonResolverKeyedStringFilterItem!]
+  ): ListPeopleResponse!
   loginState: LoginState!
   me: GetPersonResponse
   notification(uuid: String!): GetNotificationByUuidResponse!
