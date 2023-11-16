@@ -5,38 +5,22 @@
 
 """API response"""
 interface AbstractGraphQLArrayOkResponse implements GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 """API response"""
 interface AbstractGraphQLCreatedResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
-
-  """Whether the operation was successful"""
   ok: Boolean!
   uuid: String!
 }
 
 """API response"""
 interface AbstractGraphQLOkResponse implements GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 """API response"""
 interface AbstractGraphQLPaginatedResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
-
-  """Whether the operation was successful"""
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -60,11 +44,7 @@ input AddEventImageInput {
 }
 
 type AddEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: ImageResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
@@ -77,11 +57,6 @@ type AuthIdList {
 enum AuthSource {
   Anonymous
   UkyLinkblue
-}
-
-"""Actions that the client MUST take if specified"""
-enum ClientAction {
-  LOGOUT
 }
 
 """Roles within a committee"""
@@ -102,11 +77,7 @@ input CreateConfigurationInput {
 }
 
 type CreateConfigurationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: ConfigurationResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
   uuid: String!
 }
@@ -122,11 +93,7 @@ input CreateDeviceInput {
 }
 
 type CreateDeviceResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: DeviceResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
   uuid: String!
 }
@@ -145,11 +112,7 @@ input CreateEventOccurrenceInput {
 }
 
 type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: EventResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
   uuid: String!
 }
@@ -165,11 +128,7 @@ input CreateImageInput {
 }
 
 type CreateImageResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: ImageResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
   uuid: String!
 }
@@ -184,11 +143,7 @@ input CreatePersonInput {
 }
 
 type CreatePersonResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: PersonResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
   uuid: String!
 }
@@ -201,11 +156,7 @@ input CreatePointEntryInput {
 }
 
 type CreatePointEntryResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: PointEntryResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
   uuid: String!
 }
@@ -221,11 +172,7 @@ input CreateTeamInput {
 }
 
 type CreateTeamResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: TeamResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
   uuid: String!
 }
@@ -245,74 +192,42 @@ enum DbRole {
 }
 
 type DeleteConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: Boolean!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type DeleteDeviceResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: Boolean!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type DeleteEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: Boolean!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type DeleteImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: Boolean!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type DeleteNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: Boolean!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type DeletePersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: Boolean!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type DeletePointEntryResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: Boolean!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type DeleteTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: Boolean!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
@@ -510,110 +425,62 @@ type EventResource {
 }
 
 type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: ConfigurationResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetConfigurationByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: ConfigurationResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetDeviceByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: DeviceResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetEventByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: EventResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetImageByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: ImageResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetNotificationByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: NotificationResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetPeopleResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: [PersonResource!]!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetPersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: PersonResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetPointEntryByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: PointEntryResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetTeamByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: TeamResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 type GetThumbHashByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: String!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
 """API response"""
 interface GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
@@ -631,11 +498,7 @@ type ImageResource {
 }
 
 type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: [DeviceResource!]!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -649,11 +512,7 @@ type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGra
 }
 
 type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: [EventResource!]!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -667,11 +526,7 @@ type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
 }
 
 type ListNotificationsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: [NotificationResource!]!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -685,11 +540,7 @@ type ListNotificationsResponse implements AbstractGraphQLArrayOkResponse & Abstr
 }
 
 type ListPointEntriesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: [PointEntryResource!]!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -703,11 +554,7 @@ type ListPointEntriesResponse implements AbstractGraphQLArrayOkResponse & Abstra
 }
 
 type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: [TeamResource!]!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -964,7 +811,7 @@ type Query {
   ): ListEventsResponse!
   image(uuid: String!): GetImageByUuidResponse!
   loginState: LoginState!
-  me: GetPersonResponse!
+  me: GetPersonResponse
   notification(uuid: String!): GetNotificationByUuidResponse!
   notifications(
     """The boolean filters to apply to the query"""
@@ -1084,11 +931,7 @@ type Query {
 }
 
 type RemoveEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: Boolean!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
@@ -1112,11 +955,7 @@ input SendNotificationInput {
 }
 
 type SendNotificationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: NotificationResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
   uuid: String!
 }
@@ -1126,11 +965,7 @@ input SetConfigurationInput {
 }
 
 type SetConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: ConfigurationResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 
@@ -1153,11 +988,7 @@ input SetEventOccurrenceInput {
 }
 
 type SetEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  """Client actions to perform"""
-  clientActions: [ClientAction!]
   data: EventResource!
-
-  """Whether the operation was successful"""
   ok: Boolean!
 }
 

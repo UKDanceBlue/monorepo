@@ -8,8 +8,13 @@ import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./list-query-args/common.js";
 
 @InterfaceType({ description: "API response" })
 export class GraphQLBaseResponse {
+  @Field(() => Boolean)
+  ok!: boolean;
+
   toJson() {
-    return {};
+    return {
+      ok: true,
+    };
   }
 }
 
@@ -19,6 +24,7 @@ export abstract class AbstractGraphQLOkResponse<T> extends GraphQLBaseResponse {
 
   toJson() {
     return {
+      ...super.toJson(),
       data: this.data,
     };
   }
@@ -28,6 +34,7 @@ export abstract class AbstractGraphQLOkResponse<T> extends GraphQLBaseResponse {
     data?: T
   ): OkRes {
     const response = new this();
+    response.ok = true;
     if (data != null) {
       response.data = data;
     }
@@ -69,6 +76,7 @@ export abstract class AbstractGraphQLCreatedResponse<
     uuid: string
   ): OkRes {
     const response = new this();
+    response.ok = true;
     if (data != null) {
       response.data = data;
     }
@@ -120,6 +128,7 @@ export abstract class AbstractGraphQLPaginatedResponse<
     }
   ): PRes {
     const response = new this();
+    response.ok = true;
     response.data = data;
     response.total = total;
     response.page = page ?? FIRST_PAGE;
@@ -143,7 +152,6 @@ export abstract class AbstractGraphQLPaginatedResponse<
 registerEnumType(ErrorCode, { name: "ErrorCode", description: "Error codes" });
 
 export class DetailedError extends Error {
-  ok = false as const;
   code: ErrorCode;
   details?: string;
   explanation?: string;
