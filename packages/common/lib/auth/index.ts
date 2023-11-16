@@ -33,6 +33,34 @@ export const CommitteeRole = {
 } as const;
 export type CommitteeRole = (typeof CommitteeRole)[keyof typeof CommitteeRole];
 
+export const committeeNames: Record<CommitteeIdentifier, string> = {
+  "programming-committee": "Programming Committee",
+  "fundraising-committee": "Fundraising Committee",
+  "community-development-committee": "Community Development Committee",
+  "dancer-relations-committee": "Dancer Relations Committee",
+  "family-relations-committee": "Family Relations Committee",
+  "tech-committee": "Tech Committee",
+  "operations-committee": "Operations Committee",
+  "marketing-committee": "Marketing Committee",
+  "corporate-committee": "Corporate Committee",
+  "mini-marathons-committee": "Mini Marathons Committee",
+};
+
+export const CommitteeIdentifier = {
+  "programming-committee": "programming-committee",
+  "fundraising-committee": "fundraising-committee",
+  "community-development-committee": "community-development-committee",
+  "dancer-relations-committee": "dancer-relations-committee",
+  "family-relations-committee": "family-relations-committee",
+  "tech-committee": "tech-committee",
+  "operations-committee": "operations-committee",
+  "marketing-committee": "marketing-committee",
+  "corporate-committee": "corporate-committee",
+  "mini-marathons-committee": "mini-marathons-committee",
+} as const;
+export type CommitteeIdentifier =
+  (typeof CommitteeIdentifier)[keyof typeof CommitteeIdentifier];
+
 export interface Authorization {
   dbRole: DbRole;
   committeeRole?: CommitteeRole;
