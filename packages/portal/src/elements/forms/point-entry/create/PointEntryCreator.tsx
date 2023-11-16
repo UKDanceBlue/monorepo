@@ -4,14 +4,26 @@ import { useReducer } from "react";
 import { PointEntryPersonLookup } from "./PointEntryPersonLookup";
 import { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
 
-export function PointEntryCreator({ teamUuid }: { teamUuid: string }) {
+export function PointEntryCreator({
+  teamUuid,
+  refetch,
+}: {
+  teamUuid: string;
+  refetch: () => void;
+}) {
   const [personLookupKey, resetLookup] = useReducer(
     (prev: number) => prev + 1,
     0
   );
   const { formApi } = usePointEntryCreatorForm({
     teamUuid,
-    onReset: () => resetLookup(),
+    onReset: () => {
+      resetLookup();
+      // Delay refetching a bit to allow the form to reset
+      setTimeout(() => {
+        refetch();
+      }, 75);
+    },
   });
 
   return (

@@ -1,51 +1,49 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
+import {
+  getFragmentData,
+  graphql,
+} from "@ukdanceblue/common/graphql-client-admin";
 import { Button, Table } from "antd";
-import { useQuery } from "urql";
 
 import { usePointEntryDeletePopup } from "./PointEntryDeletePopup";
 
-// TODO - switch to fragments
-const pointEntryTableDocument = graphql(/* GraphQL */ `
-  query PointEntryTable($teamUuid: String!) {
-    team(uuid: $teamUuid) {
-      data {
-        pointEntries {
-          uuid
-          personFrom {
-            name
-            linkblue
-          }
-          points
-          comment
-        }
-      }
+export const PointEntryTableFragment = graphql(/* GraphQL */ `
+  fragment PointEntryTableFragment on PointEntryResource {
+    uuid
+    personFrom {
+      name
+      linkblue
     }
+    points
+    comment
   }
 `);
 
-export function PointEntryTable({ teamUuid }: { teamUuid: string }) {
-  const [{ fetching, data: pointEntries, error }, refetch] = useQuery({
-    query: pointEntryTableDocument,
-    variables: { teamUuid },
-  });
-  useQueryStatusWatcher({
-    fetching,
-    error,
-    loadingMessage: "Loading point entries...",
-  });
-
+export function PointEntryTable({
+  teamFragment,
+  loading,
+  refetch,
+}: {
+  teamFragment:
+    | readonly FragmentType<typeof PointEntryTableFragment>[]
+    | undefined;
+  loading: boolean;
+  refetch: () => void;
+}) {
   const { PointEntryDeletePopup, showModal: openDeletePopup } =
     usePointEntryDeletePopup({ onDelete: () => refetch() });
+
+  const teamData =
+    getFragmentData(PointEntryTableFragment, teamFragment) ?? undefined;
 
   return (
     <>
       {PointEntryDeletePopup}
       <Table
-        dataSource={pointEntries?.team.data.pointEntries}
+        dataSource={teamData}
         rowKey="uuid"
-        loading={fetching}
+        loading={loading}
         pagination={false}
         columns={[
           {

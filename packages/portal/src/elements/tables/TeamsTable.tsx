@@ -2,7 +2,10 @@ import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { Link } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import {
+  getFragmentData,
+  graphql,
+} from "@ukdanceblue/common/graphql-client-admin";
 import { Table } from "antd";
 import { useQuery } from "urql";
 
@@ -29,14 +32,20 @@ const teamsTableQueryDocument = graphql(/* GraphQL */ `
       pageSize
       total
       data {
-        name
-        uuid
-        visibility
-        legacyStatus
-        marathonYear
-        totalPoints
+        ...TeamsTableFragment
       }
     }
+  }
+`);
+
+export const TeamsTableFragment = graphql(/* GraphQL */ `
+  fragment TeamsTableFragment on TeamResource {
+    uuid
+    name
+    visibility
+    legacyStatus
+    marathonYear
+    totalPoints
   }
 `);
 
@@ -125,7 +134,9 @@ export const TeamsTable = () => {
           ),
         },
       ]}
-      dataSource={data?.teams.data}
+      dataSource={
+        getFragmentData(TeamsTableFragment, data?.teams.data) ?? undefined
+      }
       loading={fetching}
       rowKey={({ uuid }) => uuid}
       pagination={
