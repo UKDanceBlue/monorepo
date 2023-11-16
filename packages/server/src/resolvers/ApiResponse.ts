@@ -1,69 +1,26 @@
-import type {
-  ApiError,
-  BaseResponse,
-  CreatedApiResponse,
-  ErrorApiResponse,
-  OkApiResponse,
-  PaginatedApiResponse,
-} from "@ukdanceblue/common";
-import { ClientAction, ErrorCode } from "@ukdanceblue/common";
+import type { ApiError } from "@ukdanceblue/common";
+import { ErrorCode } from "@ukdanceblue/common";
 import { NonNegativeIntResolver, PositiveIntResolver } from "graphql-scalars";
 import type { ClassType } from "type-graphql";
 import { Field, InterfaceType, registerEnumType } from "type-graphql";
 
 import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./list-query-args/common.js";
 
-registerEnumType(ClientAction, {
-  name: "ClientAction",
-  description: "Actions that the client MUST take if specified",
-});
-
 @InterfaceType({ description: "API response" })
-export class GraphQLBaseResponse implements BaseResponse {
-  @Field(() => Boolean, { description: "Whether the operation was successful" })
-  ok!: boolean;
-
-  @Field(() => [ClientAction], {
-    nullable: true,
-    description: "Client actions to perform",
-  })
-  clientActions?: ClientAction[];
-
-  toJson(): BaseResponse {
-    const baseResponse: BaseResponse = {
-      ok: this.ok,
-    };
-    if (this.clientActions != null) {
-      baseResponse.clientActions = this.clientActions;
-    }
-    return baseResponse;
+export class GraphQLBaseResponse {
+  toJson() {
+    return {};
   }
 }
 
 @InterfaceType({ description: "API response", implements: GraphQLBaseResponse })
-export abstract class AbstractGraphQLOkResponse<T>
-  extends GraphQLBaseResponse
-  implements OkApiResponse<T>
-{
-  @Field(() => Boolean, {
-    description: "Whether the operation was successful",
-    defaultValue: true,
-  })
-  ok!: true;
-
+export abstract class AbstractGraphQLOkResponse<T> extends GraphQLBaseResponse {
   data?: T;
 
-  toJson(): OkApiResponse<T> {
-    const baseResponse: OkApiResponse<T> = {
-      ok: this.ok,
+  toJson() {
+    return {
+      data: this.data,
     };
-    if (this.clientActions != null) {
-      baseResponse.clientActions = this.clientActions;
-    }
-    if (this.data != null) {
-      baseResponse.data = this.data;
-    }
-    return baseResponse;
   }
 
   static newOk<T, OkRes extends AbstractGraphQLOkResponse<T>>(
@@ -71,7 +28,6 @@ export abstract class AbstractGraphQLOkResponse<T>
     data?: T
   ): OkRes {
     const response = new this();
-    response.ok = true;
     if (data != null) {
       response.data = data;
     }
@@ -80,21 +36,13 @@ export abstract class AbstractGraphQLOkResponse<T>
 }
 
 @InterfaceType({ description: "API response", implements: GraphQLBaseResponse })
-export abstract class AbstractGraphQLArrayOkResponse<T>
-  extends AbstractGraphQLOkResponse<T[]>
-  implements OkApiResponse<T[]>
-{
-  toJson(): OkApiResponse<T[]> {
-    const baseResponse: OkApiResponse<T[]> = {
-      ok: this.ok,
+export abstract class AbstractGraphQLArrayOkResponse<
+  T,
+> extends AbstractGraphQLOkResponse<T[]> {
+  toJson() {
+    return {
+      ...super.toJson(),
     };
-    if (this.clientActions != null) {
-      baseResponse.clientActions = this.clientActions;
-    }
-    if (this.data != null) {
-      baseResponse.data = this.data;
-    }
-    return baseResponse;
   }
 }
 
@@ -102,25 +50,17 @@ export abstract class AbstractGraphQLArrayOkResponse<T>
   description: "API response",
   implements: AbstractGraphQLOkResponse,
 })
-export abstract class AbstractGraphQLCreatedResponse<T>
-  extends AbstractGraphQLOkResponse<T>
-  implements CreatedApiResponse<T>
-{
+export abstract class AbstractGraphQLCreatedResponse<
+  T,
+> extends AbstractGraphQLOkResponse<T> {
   @Field(() => String)
   uuid!: string;
 
-  toJson(): CreatedApiResponse<T> {
-    const baseResponse: CreatedApiResponse<T> = {
-      ok: this.ok,
+  toJson() {
+    return {
+      ...super.toJson(),
       uuid: this.uuid,
     };
-    if (this.clientActions != null) {
-      baseResponse.clientActions = this.clientActions;
-    }
-    if (this.data != null) {
-      baseResponse.data = this.data;
-    }
-    return baseResponse;
   }
 
   static newCreated<T, OkRes extends AbstractGraphQLCreatedResponse<T>>(
@@ -129,13 +69,10 @@ export abstract class AbstractGraphQLCreatedResponse<T>
     uuid: string
   ): OkRes {
     const response = new this();
-    response.ok = true;
     if (data != null) {
       response.data = data;
     }
-    if (uuid != null) {
-      response.uuid = uuid;
-    }
+    response.uuid = uuid;
     return response;
   }
 }
@@ -183,7 +120,6 @@ export abstract class AbstractGraphQLPaginatedResponse<
     }
   ): PRes {
     const response = new this();
-    response.ok = true;
     response.data = data;
     response.total = total;
     response.page = page ?? FIRST_PAGE;
@@ -191,34 +127,26 @@ export abstract class AbstractGraphQLPaginatedResponse<
     return response;
   }
 
-  toJson(): PaginatedApiResponse<T> {
-    const baseResponse: PaginatedApiResponse<T> = {
-      ok: this.ok,
+  toJson() {
+    const baseResponse = {
+      ...super.toJson(),
       pagination: {
         total: this.total,
         pageSize: this.pageSize,
         page: this.page,
       },
     };
-    if (this.clientActions != null) {
-      baseResponse.clientActions = this.clientActions;
-    }
-    if (this.data != null) {
-      baseResponse.data = this.data;
-    }
     return baseResponse;
   }
 }
 
 registerEnumType(ErrorCode, { name: "ErrorCode", description: "Error codes" });
 
-export class DetailedError extends Error implements ErrorApiResponse {
+export class DetailedError extends Error {
   ok = false as const;
   code: ErrorCode;
   details?: string;
   explanation?: string;
-
-  clientActions?: ClientAction[];
 
   constructor(code: ErrorCode = ErrorCode.Unknown, message?: string) {
     super(message ?? code);

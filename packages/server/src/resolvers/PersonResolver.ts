@@ -1,5 +1,7 @@
 import { Op } from "@sequelize/core";
 import {
+  AccessLevel,
+  AccessLevelAuthorized,
   ErrorCode,
   MembershipResource,
   PersonResource,
@@ -95,6 +97,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     return GetPersonResponse.newOk(row.toResource());
   }
 
+  @AccessLevelAuthorized(AccessLevel.Committee)
   @Query(() => GetPersonResponse, { name: "personByLinkBlue" })
   async getByLinkBlueId(
     @Arg("linkBlueId") linkBlueId: string
@@ -108,9 +111,11 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     return GetPersonResponse.newOk(row.toResource());
   }
 
-  @Query(() => GetPersonResponse, { name: "me" })
-  me(@Ctx() ctx: Context.GraphQLContext): GetPersonResponse {
-    return GetPersonResponse.newOk(ctx.authenticatedUser);
+  @Query(() => GetPersonResponse, { name: "me", nullable: true })
+  me(@Ctx() ctx: Context.GraphQLContext): GetPersonResponse | null {
+    return ctx.authenticatedUser == null
+      ? null
+      : GetPersonResponse.newOk(ctx.authenticatedUser);
   }
 
   @Query(() => GetPeopleResponse, { name: "searchPeopleByName" })
@@ -122,6 +127,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     return GetPeopleResponse.newOk(rows.map((row) => row.toResource()));
   }
 
+  @AccessLevelAuthorized(AccessLevel.Committee)
   @Mutation(() => CreatePersonResponse, { name: "createPerson" })
   async create(
     @Arg("input") input: CreatePersonInput
@@ -184,6 +190,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     });
   }
 
+  @AccessLevelAuthorized(AccessLevel.Committee)
   @Mutation(() => DeletePersonResponse, { name: "deletePerson" })
   async delete(@Arg("uuid") id: string): Promise<DeletePersonResponse> {
     const row = await PersonModel.findOne({
@@ -200,6 +207,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     return DeletePersonResponse.newOk(true);
   }
 
+  @AccessLevelAuthorized(AccessLevel.Committee)
   @FieldResolver(() => [MembershipResource])
   async teams(@Root() person: PersonResource): Promise<MembershipResource[]> {
     const model = await PersonModel.findByUuid(person.uuid, {
@@ -215,6 +223,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     return model.memberships.map((row) => row.toResource());
   }
 
+  @AccessLevelAuthorized(AccessLevel.Committee)
   @FieldResolver(() => [MembershipResource])
   async captaincies(
     @Root() person: PersonResource

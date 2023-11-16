@@ -2,7 +2,6 @@ import { unwrapResolverError } from "@apollo/server/errors";
 import { BaseError, DatabaseError, QueryError } from "@sequelize/core";
 import type { ApiError } from "@ukdanceblue/common";
 import {
-  ClientAction,
   ValidationError as DbValidationError,
   ErrorCode,
   LuxonError,
@@ -20,7 +19,6 @@ import { DetailedError } from "../resolvers/ApiResponse.js";
 
 export interface DbGraphQLFormattedErrorExtensions
   extends Omit<ApiError, "cause" | "message"> {
-  clientActions: ClientAction[];
   internalDetails?: Record<string, string>;
   stacktrace?: string[];
 }
@@ -75,9 +73,6 @@ export function formatError(
       if (error.cause) {
         formattedError.extensions.cause = error.cause;
       }
-      if (error.clientActions) {
-        formattedError.extensions.clientActions = error.clientActions;
-      }
     } else if (error instanceof GraphQLError) {
       Object.assign(formattedError.extensions, error.extensions);
       formattedError.extensions.code = isErrorCode(error.extensions.code)
@@ -99,7 +94,6 @@ export function formatError(
       error instanceof jwt.TokenExpiredError
     ) {
       formattedError.extensions.code = ErrorCode.NotLoggedIn;
-      formattedError.extensions.clientActions.push(ClientAction.LOGOUT);
     } else if (error instanceof QueryError) {
       formattedError.extensions.code = ErrorCode.InternalFailure;
     } else if (error instanceof DatabaseError) {
@@ -160,11 +154,6 @@ export function formatError(
       formattedError.extensions.stacktrace?.length === 0
     ) {
       formattedError.extensions.stacktrace = error.stacktrace.map(String);
-    }
-    if ("clientActions" in error && Array.isArray(error.clientActions)) {
-      formattedError.extensions.clientActions = error.clientActions.map(
-        String
-      ) as ClientAction[];
     }
   }
 

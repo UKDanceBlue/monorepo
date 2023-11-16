@@ -1,11 +1,11 @@
 import type { ApiError } from "@ukdanceblue/common";
-import { ClientAction, ErrorCode, isErrorCode } from "@ukdanceblue/common";
+import { ErrorCode, isErrorCode } from "@ukdanceblue/common";
 import type { useAppProps } from "antd/es/app/context";
 import type { MessageInstance } from "antd/es/message/interface";
 import type { NotificationInstance } from "antd/es/notification/interface";
 import { CombinedError } from "urql";
 
-export type ExtendedApiError = ApiError & { clientActions?: ClientAction[] };
+export type ExtendedApiError = ApiError;
 
 export function extractServerError(error: CombinedError): ExtendedApiError[] {
   const apiErrors: ExtendedApiError[] = [];
@@ -22,14 +22,6 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
 
     if (Array.isArray(graphQLError.extensions.stacktrace)) {
       apiError.cause = graphQLError.extensions.stacktrace.map(String);
-    }
-
-    if (Array.isArray(graphQLError.extensions.clientActions)) {
-      apiError.clientActions = graphQLError.extensions.clientActions.filter(
-        (action): action is ClientAction => {
-          return Object.values<string>(ClientAction).includes(String(action));
-        }
-      );
     }
 
     if (typeof graphQLError.extensions.details === "string") {
