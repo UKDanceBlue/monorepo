@@ -41,7 +41,6 @@ const config: TypeScriptPluginConfig = {
     // AccessLevel: '../auth/index.js#AccessLevel',
     DbRole: "../auth/index.js#DbRole",
     CommitteeRole: "../auth/index.js#CommitteeRole",
-    ClientAction: "../api/response/JsonResponse.js#ClientAction",
   },
   scalars: {
     LuxonDateRange: "string",

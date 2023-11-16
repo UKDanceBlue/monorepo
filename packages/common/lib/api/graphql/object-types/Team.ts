@@ -1,6 +1,6 @@
 import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
 
-import { AccessLevel, DbRole } from "../../../index.js";
+import { AccessLevel } from "../../../index.js";
 import * as SimpleTypes from "../../SimpleTypes.js";
 
 import { Resource } from "./Resource.js";
@@ -42,8 +42,6 @@ export class TeamResource extends Resource {
   type!: TeamType;
   @Field(() => TeamLegacyStatus)
   legacyStatus!: TeamLegacyStatus;
-  @Field(() => DbRole)
-  visibility!: DbRole;
   @Field(() => String)
   marathonYear!: SimpleTypes.MarathonYearString;
 

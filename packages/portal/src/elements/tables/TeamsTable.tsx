@@ -41,8 +41,8 @@ const teamsTableQueryDocument = graphql(/* GraphQL */ `
 export const TeamsTableFragment = graphql(/* GraphQL */ `
   fragment TeamsTableFragment on TeamResource {
     uuid
+    type
     name
-    visibility
     legacyStatus
     marathonYear
     totalPoints
@@ -50,34 +50,40 @@ export const TeamsTableFragment = graphql(/* GraphQL */ `
 `);
 
 export const TeamsTable = () => {
-  const { queryOptions, updatePagination, clearSorting, pushSorting } =
-    useListQuery(
-      {
-        initPage: 1,
-        initPageSize: 10,
-        initSorting: [
-          { field: "totalPoints", direction: SortDirection.DESCENDING },
-        ],
-      },
-      {
-        allFields: [
-          "name",
-          "type",
-          "legacyStatus",
-          "visibility",
-          "marathonYear",
-          "totalPoints",
-        ],
-        dateFields: [],
-        isNullFields: [],
-        numericFields: [],
-        oneOfFields: [],
-        stringFields: [],
-      }
-    );
+  const {
+    queryOptions,
+    updatePagination,
+    clearSorting,
+    pushSorting,
+    clearFilters,
+    updateFilter,
+  } = useListQuery(
+    {
+      initPage: 1,
+      initPageSize: 10,
+      initSorting: [
+        { field: "totalPoints", direction: SortDirection.DESCENDING },
+      ],
+    },
+    {
+      allFields: [
+        "name",
+        "type",
+        "legacyStatus",
+        "marathonYear",
+        "totalPoints",
+      ],
+      dateFields: [],
+      isNullFields: [],
+      numericFields: [],
+      oneOfFields: ["type", "marathonYear", "legacyStatus"],
+      stringFields: [],
+    }
+  );
   const [{ fetching, error, data }] = useQuery({
     query: teamsTableQueryDocument,
     variables: queryOptions,
+    requestPolicy: "network-only",
   });
   useQueryStatusWatcher({
     fetching,
@@ -92,37 +98,65 @@ export const TeamsTable = () => {
           title: "Name",
           dataIndex: "name",
           sorter: true,
-          defaultSortOrder: "descend",
         },
         {
           title: "Type",
           dataIndex: "type",
           sorter: true,
-          defaultSortOrder: "descend",
+          filters: [
+            {
+              text: "Committee",
+              value: "Committee",
+            },
+            {
+              text: "Spirit",
+              value: "Spirit",
+            },
+          ],
         },
         {
           title: "Legacy Status",
           dataIndex: "legacyStatus",
           sorter: true,
-          defaultSortOrder: "descend",
-        },
-        {
-          title: "Visibility",
-          dataIndex: "visibility",
-          sorter: true,
-          defaultSortOrder: "descend",
+          filters: [
+            {
+              text: "New Team",
+              value: "NewTeam",
+            },
+            {
+              text: "Returning Team",
+              value: "ReturningTeam",
+            },
+          ],
+          render: (value) => {
+            switch (value) {
+              case "NewTeam": {
+                return "New Team";
+              }
+              case "ReturningTeam": {
+                return "Returning Team";
+              }
+              default: {
+                return String(value);
+              }
+            }
+          },
         },
         {
           title: "Marathon Year",
           dataIndex: "marathonYear",
           sorter: true,
-          defaultSortOrder: "descend",
+          filters: [
+            {
+              text: "DanceBlue 2024",
+              value: "DB24",
+            },
+          ],
         },
         {
           title: "Total Points",
           dataIndex: "totalPoints",
           sorter: true,
-          defaultSortOrder: "descend",
         },
         {
           title: "Actions",
@@ -150,7 +184,7 @@ export const TeamsTable = () => {
           : false
       }
       sortDirections={["ascend", "descend"]}
-      onChange={(pagination, _filters, sorter, _extra) => {
+      onChange={(pagination, filters, sorter, _extra) => {
         updatePagination({
           page: pagination.current,
           pageSize: pagination.pageSize,
@@ -166,13 +200,46 @@ export const TeamsTable = () => {
               | "name"
               | "type"
               | "legacyStatus"
-              | "visibility"
               | "marathonYear",
             direction:
               sort.order === "ascend"
                 ? SortDirection.ASCENDING
                 : SortDirection.DESCENDING,
           });
+        }
+        clearFilters();
+        for (const key of Object.keys(filters)) {
+          const value = filters[key];
+          if (!value) {
+            continue;
+          }
+          switch (key) {
+            case "type": {
+              updateFilter("type", {
+                field: "type",
+                value: value.map((v) => v.toString()),
+              });
+              break;
+            }
+            case "legacyStatus": {
+              updateFilter("legacyStatus", {
+                field: "legacyStatus",
+                value: value.map((v) => v.toString()),
+              });
+              break;
+            }
+            case "marathonYear": {
+              updateFilter("marathonYear", {
+                field: "marathonYear",
+                value: value.map((v) => v.toString()),
+              });
+              break;
+            }
+            default: {
+              console.error("Unhandled filter key", key);
+              break;
+            }
+          }
         }
       }}
     />

@@ -102,15 +102,8 @@ class CreateTeamInput implements OptionalToNullable<Partial<TeamResource>> {
 
 @ArgsType()
 class ListTeamsArgs extends FilteredListQueryArgs("TeamResolver", {
-  all: [
-    "name",
-    "type",
-    "legacyStatus",
-    "visibility",
-    "marathonYear",
-    "totalPoints",
-  ],
-  string: ["name"],
+  all: ["name", "type", "legacyStatus", "marathonYear", "totalPoints"],
+  string: ["name", "type", "marathonYear", "legacyStatus"],
   numeric: ["totalPoints"],
 }) {
   @Field(() => [TeamType], { nullable: true })
@@ -153,16 +146,10 @@ export class TeamResolver
       {
         name: "name",
         legacyStatus: "legacyStatus",
-        visibility: "visibility",
         marathonYear: "marathonYear",
         type: "type",
         totalPoints: literal(
-          `(
-            SELECT SUM(points) AS totalPoints
-            FROM danceblue.point_entries
-            WHERE team_id = "Team"."id"
-            AND deleted_at IS NULL
-          )`
+          `(SELECT COALESCE(SUM(points), 0) AS totalPoints FROM danceblue.point_entries WHERE team_id = "Team"."id" AND deleted_at IS NULL)`
         ),
       },
       TeamModel
@@ -173,9 +160,6 @@ export class TeamResolver
     }
     if (query.legacyStatus != null) {
       findOptions.where.legacyStatus = { [Op.in]: query.legacyStatus };
-    }
-    if (query.visibility != null) {
-      findOptions.where.visibility = { [Op.in]: query.visibility };
     }
     if (query.marathonYear != null) {
       findOptions.where.marathonYear = { [Op.in]: query.marathonYear };
@@ -207,7 +191,6 @@ export class TeamResolver
       name: input.name,
       type: input.type,
       legacyStatus: input.legacyStatus,
-      visibility: input.visibility,
       marathonYear: input.marathonYear,
       persistentIdentifier: input.persistentIdentifier,
     });
@@ -296,7 +279,7 @@ export class TeamResolver
     }
 
     const val = await sequelizeDb.query(
-      `SELECT SUM(points) AS "totalPoints" FROM danceblue.point_entries WHERE team_id = ? AND deleted_at IS NULL`,
+      `SELECT COALESCE(SUM(points), 0) AS "totalPoints" FROM danceblue.point_entries WHERE team_id = ? AND deleted_at IS NULL`,
       {
         type: QueryTypes.SELECT,
         replacements: [teamModel.id],

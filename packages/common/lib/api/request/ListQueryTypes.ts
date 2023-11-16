@@ -44,9 +44,9 @@ export type IsComparator = (typeof IsComparator)[keyof typeof IsComparator];
 export interface FilterItem<Field extends string, ValueType> {
   field: Field;
 
-  value: ValueType;
+  value?: ValueType;
 
-  comparison: Comparator;
+  comparison?: Comparator;
   /**
    * Should the comparator be negated?
    * WARNING: This will throw if used on a comparator that does not support negation.

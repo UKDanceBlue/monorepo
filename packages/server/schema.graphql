@@ -192,42 +192,34 @@ enum DbRole {
 }
 
 type DeleteConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: Boolean!
   ok: Boolean!
 }
 
 type DeleteDeviceResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: Boolean!
   ok: Boolean!
 }
 
 type DeleteEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: Boolean!
   ok: Boolean!
 }
 
 type DeleteImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: Boolean!
   ok: Boolean!
 }
 
 type DeleteNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: Boolean!
   ok: Boolean!
 }
 
 type DeletePersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: Boolean!
   ok: Boolean!
 }
 
 type DeletePointEntryResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: Boolean!
   ok: Boolean!
 }
 
 type DeleteTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: Boolean!
   ok: Boolean!
 }
 
@@ -1019,7 +1011,6 @@ enum TeamResolverAllKeys {
   name
   totalPoints
   type
-  visibility
 }
 
 input TeamResolverKeyedIsNullFilterItem {
@@ -1076,7 +1067,10 @@ enum TeamResolverNumericFilterKeys {
 }
 
 enum TeamResolverStringFilterKeys {
+  legacyStatus
+  marathonYear
   name
+  type
 }
 
 type TeamResource {
@@ -1092,7 +1086,6 @@ type TeamResource {
   type: TeamType!
   updatedAt: DateTimeISO
   uuid: ID!
-  visibility: DbRole!
 }
 
 """Types of teams"""

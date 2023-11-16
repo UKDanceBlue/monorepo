@@ -32,11 +32,11 @@ export interface StringFilterItemInterface<Field extends string>
 export interface OneOfFilterItemInterface<Field extends string>
   extends FilterItem<Field, readonly string[]> {
   value: readonly string[];
-  comparison: never;
+  comparison?: never;
 }
 
 export interface IsNullFilterItemInterface<Field extends string>
   extends FilterItem<Field, null> {
-  value: never;
-  comparison: never;
+  value?: never;
+  comparison?: never;
 }

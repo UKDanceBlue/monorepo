@@ -16,12 +16,7 @@ import type {
 } from "@sequelize/core";
 import { DataTypes } from "@sequelize/core";
 import type { MarathonYearString } from "@ukdanceblue/common";
-import {
-  DbRole,
-  TeamLegacyStatus,
-  TeamResource,
-  TeamType,
-} from "@ukdanceblue/common";
+import { TeamLegacyStatus, TeamResource, TeamType } from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
 
@@ -46,7 +41,6 @@ export class TeamModel extends BaseModel<
   public declare legacyStatus: TeamLegacyStatus;
   public declare marathonYear: MarathonYearString;
   public declare persistentIdentifier: CreationOptional<string>;
-  public declare visibility: CreationOptional<DbRole>;
 
   public declare pointEntries: NonAttribute<PointEntryModel[]>;
   public declare addPointEntry: HasManyAddAssociationMixin<
@@ -119,7 +113,6 @@ export class TeamModel extends BaseModel<
       uuid: this.uuid,
       name: this.name,
       type: this.type,
-      visibility: this.visibility,
       legacyStatus: this.legacyStatus,
       marathonYear: this.marathonYear,
       persistentIdentifier: this.persistentIdentifier,
@@ -174,11 +167,6 @@ TeamModel.init(
       type: DataTypes.TEXT,
       allowNull: true,
       unique: true,
-    },
-    visibility: {
-      type: DataTypes.ENUM(Object.values(DbRole)),
-      defaultValue: DbRole.None,
-      allowNull: false,
     },
   },
   {

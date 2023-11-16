@@ -6,7 +6,6 @@ import type { TeamType } from '../api/graphql/object-types/Team.js';
 import type { AuthSource } from '../auth/index.js';
 import type { DbRole } from '../auth/index.js';
 import type { CommitteeRole } from '../auth/index.js';
-import type { ClientAction } from '../api/response/JsonResponse.js';
 import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -42,34 +41,22 @@ export type Scalars = {
 
 /** API response */
 export type AbstractGraphQlArrayOkResponse = {
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 /** API response */
 export type AbstractGraphQlCreatedResponse = {
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
 /** API response */
 export type AbstractGraphQlOkResponse = {
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 /** API response */
 export type AbstractGraphQlPaginatedResponse = {
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -91,10 +78,7 @@ export type AddEventImageInput = {
 
 export type AddEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'AddEventImageResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: ImageResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
@@ -105,8 +89,6 @@ export type AuthIdList = {
 };
 
 export { AuthSource };
-
-export { ClientAction };
 
 export { CommitteeRole };
 
@@ -123,10 +105,7 @@ export type CreateConfigurationInput = {
 
 export type CreateConfigurationResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'CreateConfigurationResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: ConfigurationResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
@@ -141,10 +120,7 @@ export type CreateDeviceInput = {
 
 export type CreateDeviceResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'CreateDeviceResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: DeviceResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
@@ -164,10 +140,7 @@ export type CreateEventOccurrenceInput = {
 
 export type CreateEventResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'CreateEventResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: EventResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
@@ -184,10 +157,7 @@ export type CreateImageInput = {
 
 export type CreateImageResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'CreateImageResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: ImageResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
@@ -203,10 +173,7 @@ export type CreatePersonInput = {
 
 export type CreatePersonResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'CreatePersonResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: PersonResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
@@ -220,10 +187,7 @@ export type CreatePointEntryInput = {
 
 export type CreatePointEntryResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'CreatePointEntryResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: PointEntryResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
@@ -240,10 +204,7 @@ export type CreateTeamInput = {
 
 export type CreateTeamResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'CreateTeamResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: TeamResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
@@ -252,73 +213,41 @@ export { DbRole };
 
 export type DeleteConfigurationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeleteConfigurationResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  readonly data: Scalars['Boolean']['output'];
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type DeleteDeviceResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeleteDeviceResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  readonly data: Scalars['Boolean']['output'];
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type DeleteEventResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeleteEventResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  readonly data: Scalars['Boolean']['output'];
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type DeleteImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeleteImageResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  readonly data: Scalars['Boolean']['output'];
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type DeleteNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeleteNotificationResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  readonly data: Scalars['Boolean']['output'];
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type DeletePersonResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeletePersonResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  readonly data: Scalars['Boolean']['output'];
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type DeletePointEntryResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeletePointEntryResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  readonly data: Scalars['Boolean']['output'];
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type DeleteTeamResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeleteTeamResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  readonly data: Scalars['Boolean']['output'];
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
@@ -490,108 +419,72 @@ export type EventResource = {
 
 export type GetAllConfigurationsResponse = AbstractGraphQlArrayOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetAllConfigurationsResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: ConfigurationResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetConfigurationByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetConfigurationByUuidResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: ConfigurationResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetDeviceByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetDeviceByUuidResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: DeviceResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetEventByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetEventByUuidResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: EventResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetImageByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetImageByUuidResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: ImageResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetNotificationByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetNotificationByUuidResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: NotificationResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetPeopleResponse = AbstractGraphQlArrayOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetPeopleResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: ReadonlyArray<PersonResource>;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetPersonResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetPersonResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: PersonResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetPointEntryByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetPointEntryByUuidResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: PointEntryResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetTeamByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetTeamByUuidResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: TeamResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetThumbHashByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetThumbHashByUuidResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: Scalars['String']['output'];
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
 /** API response */
 export type GraphQlBaseResponse = {
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
@@ -611,10 +504,7 @@ export type ImageResource = {
 
 export type ListDevicesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListDevicesResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: ReadonlyArray<DeviceResource>;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -626,10 +516,7 @@ export type ListDevicesResponse = AbstractGraphQlArrayOkResponse & AbstractGraph
 
 export type ListEventsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListEventsResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: ReadonlyArray<EventResource>;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -641,10 +528,7 @@ export type ListEventsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQ
 
 export type ListNotificationsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListNotificationsResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: ReadonlyArray<NotificationResource>;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -656,10 +540,7 @@ export type ListNotificationsResponse = AbstractGraphQlArrayOkResponse & Abstrac
 
 export type ListPointEntriesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListPointEntriesResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: ReadonlyArray<PointEntryResource>;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -671,10 +552,7 @@ export type ListPointEntriesResponse = AbstractGraphQlArrayOkResponse & Abstract
 
 export type ListTeamsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListTeamsResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: ReadonlyArray<TeamResource>;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -943,7 +821,7 @@ export type Query = {
   readonly events: ListEventsResponse;
   readonly image: GetImageByUuidResponse;
   readonly loginState: LoginState;
-  readonly me: GetPersonResponse;
+  readonly me?: Maybe<GetPersonResponse>;
   readonly notification: GetNotificationByUuidResponse;
   readonly notifications: ListNotificationsResponse;
   readonly person: GetPersonResponse;
@@ -1087,10 +965,7 @@ export type QueryThumbhashArgs = {
 
 export type RemoveEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'RemoveEventImageResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: Scalars['Boolean']['output'];
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
@@ -1116,10 +991,7 @@ export type SendNotificationInput = {
 
 export type SendNotificationResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'SendNotificationResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: NotificationResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
@@ -1130,10 +1002,7 @@ export type SetConfigurationInput = {
 
 export type SetConfigurationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'SetConfigurationResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: ConfigurationResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
@@ -1154,10 +1023,7 @@ export type SetEventOccurrenceInput = {
 
 export type SetEventResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'SetEventResponse';
-  /** Client actions to perform */
-  readonly clientActions?: Maybe<ReadonlyArray<ClientAction>>;
   readonly data: EventResource;
-  /** Whether the operation was successful */
   readonly ok: Scalars['Boolean']['output'];
 };
 
@@ -1177,8 +1043,7 @@ export const TeamResolverAllKeys = {
   MarathonYear: 'marathonYear',
   Name: 'name',
   TotalPoints: 'totalPoints',
-  Type: 'type',
-  Visibility: 'visibility'
+  Type: 'type'
 } as const;
 
 export type TeamResolverAllKeys = typeof TeamResolverAllKeys[keyof typeof TeamResolverAllKeys];
@@ -1223,7 +1088,10 @@ export const TeamResolverNumericFilterKeys = {
 
 export type TeamResolverNumericFilterKeys = typeof TeamResolverNumericFilterKeys[keyof typeof TeamResolverNumericFilterKeys];
 export const TeamResolverStringFilterKeys = {
-  Name: 'name'
+  LegacyStatus: 'legacyStatus',
+  MarathonYear: 'marathonYear',
+  Name: 'name',
+  Type: 'type'
 } as const;
 
 export type TeamResolverStringFilterKeys = typeof TeamResolverStringFilterKeys[keyof typeof TeamResolverStringFilterKeys];
@@ -1241,7 +1109,6 @@ export type TeamResource = {
   readonly type: TeamType;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
-  readonly visibility: DbRole;
 };
 
 export { TeamType };
@@ -1339,7 +1206,7 @@ export type TeamsTableQuery = { readonly __typename?: 'Query', readonly teams: {
       & { ' $fragmentRefs'?: { 'TeamsTableFragmentFragment': TeamsTableFragmentFragment } }
     )> } };
 
-export type TeamsTableFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string, readonly visibility: DbRole, readonly legacyStatus: TeamLegacyStatus, readonly marathonYear: string, readonly totalPoints: number } & { ' $fragmentName'?: 'TeamsTableFragmentFragment' };
+export type TeamsTableFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly type: TeamType, readonly name: string, readonly legacyStatus: TeamLegacyStatus, readonly marathonYear: string, readonly totalPoints: number } & { ' $fragmentName'?: 'TeamsTableFragmentFragment' };
 
 export type DeletePointEntryMutationVariables = Exact<{
   uuid: Scalars['String']['input'];
@@ -1401,7 +1268,7 @@ export type ViewTeamPageQuery = { readonly __typename?: 'Query', readonly team: 
 
 export const EventEditorFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}}]}}]}}]} as unknown as DocumentNode<EventEditorFragmentFragment, unknown>;
 export const EventsTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"summary"}}]}}]} as unknown as DocumentNode<EventsTableFragmentFragment, unknown>;
-export const TeamsTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"visibility"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}}]}}]} as unknown as DocumentNode<TeamsTableFragmentFragment, unknown>;
+export const TeamsTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}}]}}]} as unknown as DocumentNode<TeamsTableFragmentFragment, unknown>;
 export const PointEntryTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PointEntryTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PointEntryResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"personFrom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"points"}},{"kind":"Field","name":{"kind":"Name","value":"comment"}}]}}]} as unknown as DocumentNode<PointEntryTableFragmentFragment, unknown>;
 export const EventViewerFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventViewerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<EventViewerFragmentFragment, unknown>;
 export const TeamViewerFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamViewerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"captains"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}}]}}]}}]} as unknown as DocumentNode<TeamViewerFragmentFragment, unknown>;
@@ -1413,7 +1280,7 @@ export const GetPersonByLinkBlueDocument = {"kind":"Document","definitions":[{"k
 export const SearchPersonByNameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SearchPersonByName"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"searchPeopleByName"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<SearchPersonByNameQuery, SearchPersonByNameQueryVariables>;
 export const CreatePersonByLinkBlueDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePersonByLinkBlue"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"linkBlue"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EmailAddress"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"teamUuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPerson"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"linkblue"},"value":{"kind":"Variable","name":{"kind":"Name","value":"linkBlue"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"memberOf"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"teamUuid"}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]} as unknown as DocumentNode<CreatePersonByLinkBlueMutation, CreatePersonByLinkBlueMutationVariables>;
 export const EventsTableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"EventsTable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedDateFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedIsNullFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"numericFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedNumericFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedOneOfFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedStringFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"events"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"dateFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"numericFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"numericFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"oneOfFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventsTableFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"summary"}}]}}]} as unknown as DocumentNode<EventsTableQuery, EventsTableQueryVariables>;
-export const TeamsTableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TeamsTable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResolverKeyedIsNullFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResolverKeyedOneOfFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResolverKeyedStringFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"teams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"oneOfFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamsTableFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"visibility"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}}]}}]} as unknown as DocumentNode<TeamsTableQuery, TeamsTableQueryVariables>;
+export const TeamsTableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TeamsTable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResolverKeyedIsNullFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResolverKeyedOneOfFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResolverKeyedStringFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"teams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"oneOfFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamsTableFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}}]}}]} as unknown as DocumentNode<TeamsTableQuery, TeamsTableQueryVariables>;
 export const DeletePointEntryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeletePointEntry"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePointEntry"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<DeletePointEntryMutation, DeletePointEntryMutationVariables>;
 export const DeleteEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<DeleteEventMutation, DeleteEventMutationVariables>;
 export const LoginStateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"LoginState"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginState"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loggedIn"}},{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}}]}}]}}]}}]} as unknown as DocumentNode<LoginStateQuery, LoginStateQueryVariables>;
