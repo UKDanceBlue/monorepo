@@ -46,10 +46,7 @@ class CreateImageResponse extends AbstractGraphQLCreatedResponse<ImageResource> 
 @ObjectType("DeleteImageResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
-class DeleteImageResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
+class DeleteImageResponse extends AbstractGraphQLOkResponse<never> {}
 @InputType()
 class CreateImageInput implements Partial<ImageResource> {
   @Field(() => NonNegativeIntResolver)

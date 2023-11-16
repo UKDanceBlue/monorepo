@@ -55,10 +55,7 @@ class SetConfigurationResponse extends AbstractGraphQLOkResponse<ConfigurationRe
 @ObjectType("DeleteConfigurationResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
-class DeleteConfigurationResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
+class DeleteConfigurationResponse extends AbstractGraphQLOkResponse<never> {}
 @InputType()
 class CreateConfigurationInput implements Partial<ConfigurationResource> {
   @Field()

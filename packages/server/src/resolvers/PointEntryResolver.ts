@@ -58,10 +58,7 @@ class CreatePointEntryResponse extends AbstractGraphQLCreatedResponse<PointEntry
 @ObjectType("DeletePointEntryResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
-class DeletePointEntryResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
+class DeletePointEntryResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
 class CreatePointEntryInput implements Partial<PointEntryResource> {

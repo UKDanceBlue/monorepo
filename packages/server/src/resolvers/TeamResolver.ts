@@ -74,10 +74,7 @@ class CreateTeamResponse extends AbstractGraphQLCreatedResponse<TeamResource> {
 @ObjectType("DeleteTeamResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
-class DeleteTeamResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
+class DeleteTeamResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
 class CreateTeamInput implements OptionalToNullable<Partial<TeamResource>> {

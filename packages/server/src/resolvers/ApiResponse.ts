@@ -12,9 +12,7 @@ export class GraphQLBaseResponse {
   ok!: boolean;
 
   toJson() {
-    return {
-      ok: true,
-    };
+    return {};
   }
 }
 
@@ -25,6 +23,7 @@ export abstract class AbstractGraphQLOkResponse<T> extends GraphQLBaseResponse {
   toJson() {
     return {
       ...super.toJson(),
+      ok: true,
       data: this.data,
     };
   }

@@ -59,10 +59,7 @@ class GetPeopleResponse extends AbstractGraphQLArrayOkResponse<PersonResource> {
 @ObjectType("DeletePersonResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
-class DeletePersonResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
+class DeletePersonResponse extends AbstractGraphQLOkResponse<never> {}
 @InputType()
 class CreatePersonInput {
   @Field(() => String, { nullable: true })

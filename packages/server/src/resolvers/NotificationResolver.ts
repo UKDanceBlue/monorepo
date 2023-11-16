@@ -52,10 +52,7 @@ class SendNotificationResponse extends AbstractGraphQLCreatedResponse<Notificati
 @ObjectType("DeleteNotificationResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
-class DeleteNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
+class DeleteNotificationResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
 class SendNotificationInput

@@ -52,10 +52,7 @@ class CreateDeviceResponse extends AbstractGraphQLCreatedResponse<DeviceResource
 @ObjectType("DeleteDeviceResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
-class DeleteDeviceResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
+class DeleteDeviceResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
 class CreateDeviceInput implements Partial<DeviceResource> {

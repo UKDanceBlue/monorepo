@@ -63,10 +63,7 @@ class SetEventResponse extends AbstractGraphQLOkResponse<EventResource> {
 @ObjectType("DeleteEventResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
-class DeleteEventResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
+class DeleteEventResponse extends AbstractGraphQLOkResponse<never> {}
 
 @ObjectType("RemoveEventImageResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
