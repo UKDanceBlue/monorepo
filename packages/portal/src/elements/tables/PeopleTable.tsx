@@ -1,11 +1,13 @@
+import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
+import { useNavigate } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
-import { Table } from "antd";
+import { Button, Table } from "antd";
 import { useQuery } from "urql";
 
 const PeopleTableFragment = graphql(/* GraphQL */ `
@@ -52,6 +54,7 @@ const peopleTableDocument = graphql(/* GraphQL */ `
 `);
 
 export const PeopleTable = () => {
+  const navigate = useNavigate();
   const { queryOptions, updatePagination, clearSorting, pushSorting } =
     useListQuery(
       {
@@ -184,6 +187,34 @@ export const PeopleTable = () => {
             },
             sorter: true,
             sortDirections: ["ascend", "descend"],
+          },
+          {
+            title: "Actions",
+            dataIndex: "actions",
+            render: (_, record) => {
+              return (
+                <>
+                  <Button
+                    onClick={() =>
+                      navigate({
+                        to: "/people/$personId/",
+                        params: { personId: record.uuid },
+                      }).catch(console.error)
+                    }
+                    icon={<EyeOutlined />}
+                  />
+                  <Button
+                    onClick={() =>
+                      navigate({
+                        to: "/people/$personId/edit",
+                        params: { personId: record.uuid },
+                      }).catch(console.error)
+                    }
+                    icon={<EditOutlined />}
+                  />
+                </>
+              );
+            },
           },
         ]}
       />

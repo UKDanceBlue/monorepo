@@ -8,7 +8,12 @@ import {
   singleEventRoute,
   viewEventRoute,
 } from "./eventRoutes";
-import { peopleTableRoute } from "./personRouter";
+import {
+  editPersonRoute,
+  peopleTableRoute,
+  singlePersonRoute,
+  viewPersonRoute,
+} from "./personRouter";
 import { rootRoute } from "./rootRoute";
 import {
   createTeamRoute,
@@ -30,7 +35,10 @@ const routeTree = rootRoute.addChildren([
     createTeamRoute,
     singleTeamRoute.addChildren([editTeamRoute, viewTeamRoute]),
   ]),
-  peopleRoute.addChildren([peopleTableRoute]),
+  peopleRoute.addChildren([
+    peopleTableRoute,
+    singlePersonRoute.addChildren([editPersonRoute, viewPersonRoute]),
+  ]),
 ]);
 
 export const router = new Router({
