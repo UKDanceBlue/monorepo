@@ -5,13 +5,14 @@ import Search from "antd/es/input/Search";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 import { useDebouncedCallback } from "use-debounce";
+
 import {
   createPersonByLinkBlue,
   getPersonByLinkBlueDocument,
   getPersonByUuidDocument,
   searchPersonByNameDocument,
 } from "./PointEntryCreatorGQL";
-import { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
+import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
 
 export function PointEntryPersonLookup({
   formApi,
@@ -138,7 +139,7 @@ export function PointEntryPersonLookup({
                   placeholder="Search by Name"
                   value={
                     (personFromUuid &&
-                      selectedPersonQuery.data?.person?.data?.name) ||
+                      selectedPersonQuery.data?.person.data.name) ||
                     searchByNameField
                   }
                   onBlur={field.handleBlur}
@@ -163,7 +164,7 @@ export function PointEntryPersonLookup({
                   name={`${field.name}-linkblue-lookup`}
                   value={
                     (personFromUuid &&
-                      selectedPersonQuery.data?.person?.data?.linkblue) ||
+                      selectedPersonQuery.data?.person.data.linkblue) ||
                     linkblueFieldValue
                   }
                   onChange={(e) => {

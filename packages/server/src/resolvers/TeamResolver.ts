@@ -161,6 +161,7 @@ export class TeamResolver
             SELECT SUM(points) AS totalPoints
             FROM danceblue.point_entries
             WHERE team_id = "Team"."id"
+            AND deleted_at IS NULL
           )`
         ),
       },
@@ -284,7 +285,7 @@ export class TeamResolver
     }
 
     const val = await sequelizeDb.query(
-      `SELECT SUM(points) AS "totalPoints" FROM danceblue.point_entries WHERE team_id = ?`,
+      `SELECT SUM(points) AS "totalPoints" FROM danceblue.point_entries WHERE team_id = ? AND deleted_at IS NULL`,
       {
         type: QueryTypes.SELECT,
         replacements: [teamModel.id],

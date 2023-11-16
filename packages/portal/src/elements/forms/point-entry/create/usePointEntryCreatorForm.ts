@@ -5,7 +5,13 @@ import { useMutation } from "urql";
 
 import { createPointEntryDocument } from "./PointEntryCreatorGQL";
 
-export function usePointEntryCreatorForm({ teamUuid }: { teamUuid: string }) {
+export function usePointEntryCreatorForm({
+  teamUuid,
+  onReset,
+}: {
+  teamUuid: string;
+  onReset: () => void;
+}) {
   // Form
   const [{ fetching, error }, createPointEntry] = useMutation(
     createPointEntryDocument
@@ -29,6 +35,8 @@ export function usePointEntryCreatorForm({ teamUuid }: { teamUuid: string }) {
           personFromUuid: values.personFromUuid ?? null,
         },
       });
+      onReset();
+      Form.reset();
     },
   });
 

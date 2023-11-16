@@ -1,10 +1,18 @@
 import { Button, Form, Input, InputNumber } from "antd";
+import { useReducer } from "react";
 
 import { PointEntryPersonLookup } from "./PointEntryPersonLookup";
 import { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
 
 export function PointEntryCreator({ teamUuid }: { teamUuid: string }) {
-  const { formApi } = usePointEntryCreatorForm({ teamUuid });
+  const [personLookupKey, resetLookup] = useReducer(
+    (prev: number) => prev + 1,
+    0
+  );
+  const { formApi } = usePointEntryCreatorForm({
+    teamUuid,
+    onReset: () => resetLookup(),
+  });
 
   return (
     <formApi.Provider>
@@ -63,7 +71,11 @@ export function PointEntryCreator({ teamUuid }: { teamUuid: string }) {
             </Form.Item>
           )}
         />
-        <PointEntryPersonLookup formApi={formApi} teamUuid={teamUuid} />
+        <PointEntryPersonLookup
+          formApi={formApi}
+          teamUuid={teamUuid}
+          key={personLookupKey}
+        />
         <Button type="primary" htmlType="submit">
           Submit
         </Button>
