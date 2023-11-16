@@ -50,20 +50,22 @@ export const usePointEntryDeletePopup = ({
         open={open}
         onOk={() => {
           if (uuid) {
-            deletePointEntry({ uuid }).then((value) => {
-              if (value.data?.deletePointEntry.ok) {
-                showInfoMessage({
-                  message: "Point entry successfully deleted",
-                });
-                onDelete?.();
-              }
-              if (value.error) {
-                showErrorMessage({
-                  message: "Error deleting point entry",
-                  description: value.error.message,
-                });
-              }
-            });
+            deletePointEntry({ uuid })
+              .then((value) => {
+                if (value.data?.deletePointEntry.ok) {
+                  showInfoMessage({
+                    message: "Point entry successfully deleted",
+                  });
+                  onDelete?.();
+                }
+                if (value.error) {
+                  showErrorMessage({
+                    message: "Error deleting point entry",
+                    description: value.error.message,
+                  });
+                }
+              })
+              .catch(console.error);
           }
         }}
         confirmLoading={fetching}

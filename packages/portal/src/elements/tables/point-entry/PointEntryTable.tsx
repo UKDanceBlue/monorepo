@@ -3,6 +3,7 @@ import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 import { Table } from "antd";
 import { useQuery } from "urql";
 
+// TODO - switch to fragments
 const pointEntryTableDocument = graphql(/* GraphQL */ `
   query PointEntryTable($teamUuid: String!) {
     team(uuid: $teamUuid) {
@@ -34,7 +35,7 @@ export function PointEntryTable({ teamUuid }: { teamUuid: string }) {
 
   return (
     <Table
-      dataSource={pointEntries?.team?.data?.pointEntries}
+      dataSource={pointEntries?.team.data.pointEntries}
       rowKey="uuid"
       loading={fetching}
       pagination={false}
