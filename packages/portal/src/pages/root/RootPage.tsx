@@ -15,7 +15,7 @@ export const RootPage = () => {
           <Outlet />
         </Layout.Content>
         <Layout.Footer>
-          <Typography.Text>Footer</Typography.Text>
+
         </Layout.Footer>
       </Layout>
       <TanStackRouterDevtools position="bottom-right" />
