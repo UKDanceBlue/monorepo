@@ -1,6 +1,6 @@
 import http from "node:http";
 
-import { ApolloServer } from "@apollo/server";
+import {ApolloServer} from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { koaMiddleware } from "@as-integrations/koa";
 import cors from "@koa/cors";
@@ -13,12 +13,12 @@ import { logDebug, logError, logInfo, logWarning } from "./logger.js";
 import type { GraphQLContext } from "./resolvers/context.js";
 import eventsApiRouter from "./routes/api/events/index.js";
 
-// const BASIC_LOGGING: ApolloServerPlugin<BaseContext> = {
+// const BASIC_LOGGING: ApolloServerPlugin = {
 //   async requestDidStart(requestContext) {
 //     logDebug(`request started:\n${requestContext.request.query}`, {
 //       variables: requestContext.request.variables,
 //     });
-//     const listener: GraphQLRequestListener<BaseContext> = {
+//     const listener: GraphQLRequestListener<GraphQLContext> = {
 //       async didEncounterErrors(requestContext) {
 //         logInfo(
 //           `an error happened in response to query: ${requestContext.request.query}`,
@@ -29,7 +29,7 @@ import eventsApiRouter from "./routes/api/events/index.js";
 //         logDebug("response sent", { response: requestContext.response });
 //       },
 //     };
-
+//
 //     return listener;
 //   },
 // };
@@ -56,7 +56,7 @@ export async function createServer() {
     introspection: true,
     schema: graphqlSchema,
     plugins: [
-      ApolloServerPluginDrainHttpServer({ httpServer }) /* , BASIC_LOGGING*/,
+      ApolloServerPluginDrainHttpServer({ httpServer }) , /* BASIC_LOGGING, */
     ],
     logger: {
       debug: logDebug,
@@ -87,7 +87,7 @@ export async function createServer() {
 export async function startHttpServer(httpServer: http.Server) {
   await new Promise<void>((resolve, reject) => {
     httpServer.on("error", reject);
-    httpServer.listen({ port: 4000 }, () => {
+    httpServer.listen({ port: 8000 }, () => {
       httpServer.off("error", reject);
       resolve();
     });
