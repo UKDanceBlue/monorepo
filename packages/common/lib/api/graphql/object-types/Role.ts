@@ -1,7 +1,12 @@
 import { Field, InputType, ObjectType } from "type-graphql";
 
 import type { Authorization } from "../../../auth/index.js";
-import { AccessLevel, CommitteeRole, DbRole } from "../../../auth/index.js";
+import {
+  AccessLevel,
+  CommitteeIdentifier,
+  CommitteeRole,
+  DbRole,
+} from "../../../auth/index.js";
 
 import { Resource } from "./Resource.js";
 
@@ -12,8 +17,8 @@ export class RoleResource extends Resource {
   dbRole!: DbRole;
   @Field(() => CommitteeRole, { nullable: true })
   committeeRole!: CommitteeRole | null;
-  @Field(() => String, { nullable: true })
-  committeeIdentifier!: string | null;
+  @Field(() => CommitteeIdentifier, { nullable: true })
+  committeeIdentifier!: CommitteeIdentifier | null;
 
   public static init(init: Partial<RoleResource>) {
     return RoleResource.doInit(init);

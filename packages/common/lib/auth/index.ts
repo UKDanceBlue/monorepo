@@ -17,6 +17,59 @@ export const AccessLevel = {
 } as const;
 export type AccessLevel = (typeof AccessLevel)[keyof typeof AccessLevel];
 
+export function stringifyAccessLevel(val: unknown): string {
+  let accessLevel: AccessLevel | undefined = undefined;
+  if (typeof val === "number") {
+    const accessLevels = Object.values(AccessLevel);
+    for (const value of accessLevels) {
+      if (value === val) {
+        accessLevel = value;
+        break;
+      }
+    }
+  } else if (typeof val === "string") {
+    const accessLevelKeys = Object.keys(
+      AccessLevel
+    ) as (keyof typeof AccessLevel)[];
+    for (const key of accessLevelKeys) {
+      if (key === val) {
+        accessLevel = AccessLevel[key];
+        break;
+      }
+    }
+  } else {
+    return "Unknown";
+  }
+
+  if (accessLevel == null) {
+    return "Unknown";
+  }
+
+  switch (accessLevel) {
+    case AccessLevel.None: {
+      return "None";
+    }
+    case AccessLevel.Public: {
+      return "Public";
+    }
+    case AccessLevel.TeamMember: {
+      return "Team Member";
+    }
+    case AccessLevel.TeamCaptain: {
+      return "Team Captain";
+    }
+    case AccessLevel.Committee: {
+      return "Committee Member";
+    }
+    case AccessLevel.CommitteeChairOrCoordinator: {
+      return "Committee Chair/Coordinator";
+    }
+    case AccessLevel.Admin: {
+      return "Admin";
+    }
+  }
+}
+
 export const DbRole = {
   None: "None",
   Public: "Public",
@@ -26,25 +79,49 @@ export const DbRole = {
 } as const;
 export type DbRole = (typeof DbRole)[keyof typeof DbRole];
 
+export function stringifyDbRole(val: unknown): string {
+  let dbRole: DbRole | undefined = undefined;
+  if (typeof val === "string") {
+    const dbRoleKeys = Object.keys(DbRole) as (keyof typeof DbRole)[];
+    for (const key of dbRoleKeys) {
+      if (key === val) {
+        dbRole = DbRole[key];
+        break;
+      }
+    }
+  } else {
+    return "Unknown";
+  }
+
+  if (dbRole == null) {
+    return "Unknown";
+  }
+
+  switch (dbRole) {
+    case DbRole.None: {
+      return "None";
+    }
+    case DbRole.Public: {
+      return "Public";
+    }
+    case DbRole.TeamMember: {
+      return "Team Member";
+    }
+    case DbRole.TeamCaptain: {
+      return "Team Captain";
+    }
+    case DbRole.Committee: {
+      return "Committee Member";
+    }
+  }
+}
+
 export const CommitteeRole = {
   Chair: "Chair",
   Coordinator: "Coordinator",
   Member: "Member",
 } as const;
 export type CommitteeRole = (typeof CommitteeRole)[keyof typeof CommitteeRole];
-
-export const committeeNames: Record<CommitteeIdentifier, string> = {
-  "programming-committee": "Programming Committee",
-  "fundraising-committee": "Fundraising Committee",
-  "community-development-committee": "Community Development Committee",
-  "dancer-relations-committee": "Dancer Relations Committee",
-  "family-relations-committee": "Family Relations Committee",
-  "tech-committee": "Tech Committee",
-  "operations-committee": "Operations Committee",
-  "marketing-committee": "Marketing Committee",
-  "corporate-committee": "Corporate Committee",
-  "mini-marathons-committee": "Mini Marathons Committee",
-};
 
 export const CommitteeIdentifier = {
   "programming-committee": "programming-committee",
@@ -60,6 +137,19 @@ export const CommitteeIdentifier = {
 } as const;
 export type CommitteeIdentifier =
   (typeof CommitteeIdentifier)[keyof typeof CommitteeIdentifier];
+
+export const committeeNames: Record<CommitteeIdentifier, string> = {
+  "programming-committee": "Programming Committee",
+  "fundraising-committee": "Fundraising Committee",
+  "community-development-committee": "Community Development Committee",
+  "dancer-relations-committee": "Dancer Relations Committee",
+  "family-relations-committee": "Family Relations Committee",
+  "tech-committee": "Tech Committee",
+  "operations-committee": "Operations Committee",
+  "marketing-committee": "Marketing Committee",
+  "corporate-committee": "Corporate Committee",
+  "mini-marathons-committee": "Mini Marathons Committee",
+};
 
 export interface Authorization {
   dbRole: DbRole;
@@ -117,4 +207,9 @@ registerEnumType(DbRole, {
 registerEnumType(CommitteeRole, {
   name: "CommitteeRole",
   description: "Roles within a committee",
+});
+
+registerEnumType(CommitteeIdentifier, {
+  name: "CommitteeIdentifier",
+  description: "The identifier for a committee",
 });
