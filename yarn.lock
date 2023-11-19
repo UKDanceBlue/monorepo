@@ -7556,6 +7556,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash.isequal@npm:^4.5.8":
+  version: 4.5.8
+  resolution: "@types/lodash.isequal@npm:4.5.8"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: f3180c2d2925514fff1908a1303c11468c9f39b47fd7b053416aad3f1447f8e4a9894dd0460187ac9ac19387e25aec8dd8214d13a50a0967e0dc9cca8e4c5353
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:*":
+  version: 4.14.201
+  resolution: "@types/lodash@npm:4.14.201"
+  checksum: 484be655298e9b2dc2d218ea934071b2ea31e4a531c561dd220dbda65237e8d08c20dc2d457ac24f29be7fe167415bf7bb9360ea0d80bdb8b0f0ec8d8db92fae
+  languageName: node
+  linkType: hard
+
 "@types/lodash@npm:^4.14.149, @types/lodash@npm:^4.14.182    ":
   version: 4.14.199
   resolution: "@types/lodash@npm:4.14.199"
@@ -8334,6 +8350,7 @@ __metadata:
     "@tanstack/react-form": ^0.3.6
     "@tanstack/react-router": beta
     "@tanstack/router-devtools": beta
+    "@types/lodash.isequal": ^4.5.8
     "@types/luxon": ^3.3.2
     "@types/react": ^18.2.15
     "@types/react-dom": ^18.2.7
@@ -8342,6 +8359,7 @@ __metadata:
     "@wysimark/react": ^3.0.20
     antd: ^5.10.1
     graphql: ^16.8.1
+    lodash.isequal: ^4.5.0
     luxon: ^3.4.3
     normalize.css: ^8.0.1
     react: ^18.2.0

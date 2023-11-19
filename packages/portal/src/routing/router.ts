@@ -45,8 +45,6 @@ export const router = new Router({
   routeTree,
 });
 
-console.log(router.flatRoutes);
-
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;

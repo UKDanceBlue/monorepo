@@ -109,7 +109,7 @@ export class PersonModel extends BaseModel<
     return PersonResource.init({
       uuid: this.uuid,
       name: this.name ?? null,
-      authIds: Object.entries(this.authIds).map(([source, value]) => ({
+      authIds: Object.entries(this.authIds ?? {}).map(([source, value]) => ({
         source: source as keyof typeof this.authIds,
         value,
       })),

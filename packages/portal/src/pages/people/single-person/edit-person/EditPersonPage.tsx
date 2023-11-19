@@ -11,6 +11,11 @@ const viewPersonPageDocument = graphql(/* GraphQL */ `
         ...PersonEditorFragment
       }
     }
+    teams(sendAll: true, sortBy: ["name"], sortDirection: [ASCENDING]) {
+      data {
+        ...TeamNameFragment
+      }
+    }
   }
 `);
 
@@ -32,6 +37,7 @@ export function EditPersonPage() {
     <div>
       <PersonEditor
         personFragment={data?.person.data}
+        teamNamesFragment={data?.teams.data}
         refetchPerson={refetchPerson}
       />
     </div>

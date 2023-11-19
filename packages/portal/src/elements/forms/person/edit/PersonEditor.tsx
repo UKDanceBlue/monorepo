@@ -4,23 +4,41 @@ import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
 import { Button, Empty, Flex, Form, Input, Select } from "antd";
 import type { UseQueryExecute } from "urql";
 
+import type { TeamNameFragment } from "../PersonFormsGQL";
+
 import { PersonEditorFragment } from "./PersonEditorGQL";
 import { usePersonEditorForm } from "./usePersonEditorForm";
 
 export function PersonEditor({
   personFragment,
+  teamNamesFragment,
   refetchPerson,
 }: {
   personFragment?: FragmentType<typeof PersonEditorFragment> | undefined;
+  teamNamesFragment?:
+    | readonly FragmentType<typeof TeamNameFragment>[]
+    | undefined;
   refetchPerson?: UseQueryExecute | undefined;
 }) {
-  const { formApi } = usePersonEditorForm(personFragment, refetchPerson);
+  const { formApi, captaincyOptions, membershipOptions } = usePersonEditorForm(
+    personFragment,
+    teamNamesFragment,
+    refetchPerson
+  );
 
   const personData = getFragmentData(PersonEditorFragment, personFragment);
 
   if (!personData) {
     return (
       <Empty description="Person not found" style={{ marginTop: "1em" }} />
+    );
+  }
+  if (!teamNamesFragment) {
+    return (
+      <Empty
+        description="Could not load the list of teams"
+        style={{ marginTop: "1em" }}
+      />
     );
   }
 
@@ -169,7 +187,60 @@ export function PersonEditor({
               </Form.Item>
             )}
           />
-          {/* TODO: Teams */}
+          <p>
+            Note: If someone is captain of a team that also means they are a
+            member of that team, so you don't need to select both.
+          </p>
+          <formApi.Field
+            name="captainOf"
+            children={(field) => (
+              <Form.Item
+                label="Captain Of"
+                validateStatus={
+                  field.state.meta.errors.length > 0 ? "error" : ""
+                }
+                help={
+                  field.state.meta.errors.length > 0
+                    ? field.state.meta.errors[0]
+                    : undefined
+                }
+              >
+                <Select
+                  mode="multiple"
+                  status={field.state.meta.errors.length > 0 ? "error" : ""}
+                  value={field.state.value ?? null}
+                  onBlur={field.handleBlur}
+                  onChange={(value) => field.handleChange(value)}
+                  options={captaincyOptions}
+                />
+              </Form.Item>
+            )}
+          />
+          <formApi.Field
+            name="memberOf"
+            children={(field) => (
+              <Form.Item
+                label="Member Of"
+                validateStatus={
+                  field.state.meta.errors.length > 0 ? "error" : ""
+                }
+                help={
+                  field.state.meta.errors.length > 0
+                    ? field.state.meta.errors[0]
+                    : undefined
+                }
+              >
+                <Select
+                  mode="multiple"
+                  status={field.state.meta.errors.length > 0 ? "error" : ""}
+                  value={field.state.value ?? null}
+                  onBlur={field.handleBlur}
+                  onChange={(value) => field.handleChange(value)}
+                  options={membershipOptions}
+                />
+              </Form.Item>
+            )}
+          />
           <Form.Item wrapperCol={{ span: 32, offset: 8 }}>
             <Button type="primary" htmlType="submit">
               Save
