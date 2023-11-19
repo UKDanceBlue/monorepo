@@ -1,4 +1,4 @@
-import { Button, Form, Input, InputNumber } from "antd";
+import { App, Button, Form, Input, InputNumber } from "antd";
 import { useReducer } from "react";
 
 import { PointEntryPersonLookup } from "./PointEntryPersonLookup";
@@ -11,6 +11,8 @@ export function PointEntryCreator({
   teamUuid: string;
   refetch: () => void;
 }) {
+  const { message } = App.useApp();
+
   const [personLookupKey, resetLookup] = useReducer(
     (prev: number) => prev + 1,
     0
@@ -30,7 +32,13 @@ export function PointEntryCreator({
     <formApi.Provider>
       <Form
         onFinish={() => {
-          formApi.handleSubmit().catch(console.error);
+          formApi.handleSubmit().catch((error) => {
+            if (error instanceof Error) {
+              void message.error(error.message);
+            } else {
+              void message.error("An unknown error occurred");
+            }
+          });
         }}
         wrapperCol={{ flex: 1 }}
         layout="vertical"

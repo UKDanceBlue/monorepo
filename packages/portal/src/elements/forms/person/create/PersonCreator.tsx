@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { CommitteeRole, committeeNames } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
-import { Button, Empty, Flex, Form, Input, Select } from "antd";
+import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
 
 import type { TeamNameFragment } from "../PersonFormsGQL";
 
@@ -15,6 +15,8 @@ export function PersonCreator({
     | undefined;
 }) {
   const navigate = useNavigate();
+
+  const { message } = App.useApp();
 
   const { formApi, captaincyOptions, membershipOptions } = usePersonCreatorForm(
     teamNamesFragment,
@@ -42,7 +44,13 @@ export function PersonCreator({
       <formApi.Provider>
         <Form
           onFinish={() => {
-            formApi.handleSubmit().catch(console.error);
+            formApi.handleSubmit().catch((error) => {
+              if (error instanceof Error) {
+                void message.error(error.message);
+              } else {
+                void message.error("An unknown error occurred");
+              }
+            });
           }}
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 32 }}

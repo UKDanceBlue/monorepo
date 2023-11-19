@@ -40,6 +40,7 @@ const documents = {
     "\n  query LoginState {\n    loginState {\n      loggedIn\n      role {\n        dbRole\n        committeeRole\n        committeeIdentifier\n      }\n    }\n  }\n": types.LoginStateDocument,
     "\n  query EditEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventEditorFragment\n      }\n    }\n  }\n": types.EditEventPageDocument,
     "\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n": types.ViewEventPageDocument,
+    "\n  query CreatePersonPage {\n    teams(sendAll: true, sortBy: [\"name\"], sortDirection: [ASCENDING]) {\n      data {\n        ...TeamNameFragment\n      }\n    }\n  }\n": types.CreatePersonPageDocument,
     "\n  query EditPersonPage($uuid: String!) {\n    person(uuid: $uuid) {\n      data {\n        ...PersonEditorFragment\n      }\n    }\n    teams(sendAll: true, sortBy: [\"name\"], sortDirection: [ASCENDING]) {\n      data {\n        ...TeamNameFragment\n      }\n    }\n  }\n": types.EditPersonPageDocument,
     "\n  query ViewTeamPage($teamUuid: String!) {\n    team(uuid: $teamUuid) {\n      data {\n        ...TeamViewerFragment\n        pointEntries {\n          ...PointEntryTableFragment\n        }\n      }\n    }\n  }\n": types.ViewTeamPageDocument,
 };
@@ -166,6 +167,10 @@ export function graphql(source: "\n  query EditEventPage($uuid: String!) {\n    
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query CreatePersonPage {\n    teams(sendAll: true, sortBy: [\"name\"], sortDirection: [ASCENDING]) {\n      data {\n        ...TeamNameFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query CreatePersonPage {\n    teams(sendAll: true, sortBy: [\"name\"], sortDirection: [ASCENDING]) {\n      data {\n        ...TeamNameFragment\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

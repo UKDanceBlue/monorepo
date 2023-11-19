@@ -1,5 +1,5 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { Button, Form, Input, List } from "antd";
+import { App, Button, Form, Input, List } from "antd";
 import { Interval } from "luxon";
 
 import { EventOccurrencePicker } from "../components/EventOccurrencePicker";
@@ -7,13 +7,21 @@ import { EventOccurrencePicker } from "../components/EventOccurrencePicker";
 import { useEventCreatorForm } from "./useEventCreatorForm";
 
 export function EventCreator() {
+  const { message } = App.useApp();
+
   const { formApi } = useEventCreatorForm();
 
   return (
     <formApi.Provider>
       <Form
         onFinish={() => {
-          formApi.handleSubmit().catch(console.error);
+          formApi.handleSubmit().catch((error) => {
+            if (error instanceof Error) {
+              void message.error(error.message);
+            } else {
+              void message.error("An unknown error occurred");
+            }
+          });
         }}
         wrapperCol={{ flex: 1 }}
         layout="vertical"

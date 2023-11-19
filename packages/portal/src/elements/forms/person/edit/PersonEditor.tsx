@@ -1,7 +1,7 @@
 import { CommitteeRole, committeeNames } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
-import { Button, Empty, Flex, Form, Input, Select } from "antd";
+import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
 import type { UseQueryExecute } from "urql";
 
 import type { TeamNameFragment } from "../PersonFormsGQL";
@@ -20,6 +20,8 @@ export function PersonEditor({
     | undefined;
   refetchPerson?: UseQueryExecute | undefined;
 }) {
+  const { message } = App.useApp();
+
   const { formApi, captaincyOptions, membershipOptions } = usePersonEditorForm(
     personFragment,
     teamNamesFragment,
@@ -47,7 +49,13 @@ export function PersonEditor({
       <formApi.Provider>
         <Form
           onFinish={() => {
-            formApi.handleSubmit().catch(console.error);
+            formApi.handleSubmit().catch((error) => {
+              if (error instanceof Error) {
+                void message.error(error.message);
+              } else {
+                void message.error("An unknown error occurred");
+              }
+            });
           }}
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 32 }}

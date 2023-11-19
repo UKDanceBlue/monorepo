@@ -1,7 +1,7 @@
 import { base64StringToArray } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
-import { Button, Empty, Flex, Form, Image, Input, List } from "antd";
+import { App, Button, Empty, Flex, Form, Image, Input, List } from "antd";
 import { thumbHashToDataURL } from "thumbhash";
 import type { UseQueryExecute } from "urql";
 
@@ -17,6 +17,8 @@ export function EventEditor({
   eventFragment?: FragmentType<typeof EventEditorFragment> | undefined;
   refetchEvent?: UseQueryExecute | undefined;
 }) {
+  const { message } = App.useApp();
+
   const { formApi } = useEventEditorForm(eventFragment, refetchEvent);
 
   const eventData = getFragmentData(EventEditorFragment, eventFragment);
@@ -30,7 +32,13 @@ export function EventEditor({
       <formApi.Provider>
         <Form
           onFinish={() => {
-            formApi.handleSubmit().catch(console.error);
+            formApi.handleSubmit().catch((error) => {
+              if (error instanceof Error) {
+                void message.error(error.message);
+              } else {
+                void message.error("An unknown error occurred");
+              }
+            });
           }}
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 32 }}
