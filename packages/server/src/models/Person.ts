@@ -17,6 +17,7 @@ import type {
 import { DataTypes } from "@sequelize/core";
 import type { AuthSource, UserData } from "@ukdanceblue/common";
 import {
+  CommitteeIdentifier,
   CommitteeRole,
   DbRole,
   PersonResource,
@@ -47,13 +48,13 @@ export class PersonModel extends BaseModel<
 
   public declare linkblue: string | null;
 
-  public declare authIds: Partial<Record<AuthSource, string>>;
+  public declare authIds: Partial<Record<AuthSource, string>> | null;
 
   public declare dbRole: CreationOptional<DbRole>;
 
   public declare committeeRole: CommitteeRole | null;
 
-  public declare committeeName: string | null; // TODO: consider removing, use relation to Team instead
+  public declare committeeName: CommitteeIdentifier | null; // TODO: consider removing, use relation to Team instead
 
   public declare memberships: NonAttribute<MembershipModel[]>;
   public declare getMemberships: HasManyGetAssociationsMixin<MembershipModel>;
@@ -187,7 +188,7 @@ PersonModel.init(
       allowNull: true,
     },
     committeeName: {
-      type: DataTypes.TEXT,
+      type: DataTypes.ENUM(Object.values(CommitteeIdentifier)),
       allowNull: true,
     },
   },

@@ -78,8 +78,8 @@ export const oidcCallback = async (ctx: Context) => {
         { email, linkblue }
       );
       let isPersonChanged = didCreate;
-      if (currentPerson.authIds[AuthSource.UkyLinkblue] !== objectId) {
-        currentPerson.authIds[AuthSource.UkyLinkblue] = objectId;
+      if (currentPerson.authIds?.[AuthSource.UkyLinkblue] !== objectId) {
+        currentPerson.authIds![AuthSource.UkyLinkblue] = objectId;
         isPersonChanged = true;
       }
       if (email && currentPerson.email !== email) {

@@ -1,6 +1,10 @@
 import { faker } from "@faker-js/faker";
 import type { CreationAttributes } from "@sequelize/core";
-import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
+import {
+  TeamLegacyStatus,
+  TeamType,
+  committeeNames,
+} from "@ukdanceblue/common";
 
 import { TeamModel } from "../../models/Team.js";
 
@@ -45,19 +49,6 @@ export default async function () {
   await TeamModel.bulkCreate(teamData);
 
   const committeeData: CreationAttributes<TeamModel>[] = [];
-  const committeeNames = {
-    "morale-committee": "Morale Committee",
-    "programming-committee": "Programming Committee",
-    "fundraising-committee": "Fundraising Committee",
-    "community-development-committee": "Community Development Committee",
-    "dancer-relations-committee": "Dancer Relations Committee",
-    "family-relations-committee": "Family Relations Committee",
-    "tech-committee": "Tech Committee",
-    "operations-committee": "Operations Committee",
-    "marketing-committee": "Marketing Committee",
-    "corporate-committee": "Corporate Committee",
-    "mini-marathons-committee": "Mini Marathons Committee",
-  };
 
   for (const [identifier, name] of Object.entries(committeeNames)) {
     committeeData.push({

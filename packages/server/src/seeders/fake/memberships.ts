@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker";
 import type { CreationAttributes } from "@sequelize/core";
+import type { CommitteeIdentifier } from "@ukdanceblue/common";
 import {
   CommitteeRole,
   DbRole,
@@ -43,7 +44,7 @@ export default async function () {
         await person.update({
           dbRole: DbRole.Committee,
           committeeRole: isCaptain ? CommitteeRole.Chair : CommitteeRole.Member,
-          committeeName: committee.persistentIdentifier,
+          committeeName: committee.persistentIdentifier as CommitteeIdentifier,
         });
       } else {
         const team = faker.helpers.arrayElement(teams);
