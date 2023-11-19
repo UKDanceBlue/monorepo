@@ -1,6 +1,6 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { stringifyDbRole } from "@ukdanceblue/common";
+import { committeeNames, stringifyDbRole } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import {
   getFragmentData,
@@ -99,23 +99,36 @@ export function PersonViewer({
             label: "Role",
             children: stringifyDbRole(personData.role.dbRole),
           },
-          {
-            label: "Committee identifier",
-            children: personData.role.committeeIdentifier ?? "Unknown",
-          },
+          ...(personData.role.committeeRole
+            ? [
+                {
+                  label: "Committee",
+                  children: personData.role.committeeIdentifier
+                    ? committeeNames[personData.role.committeeIdentifier]
+                    : "N/A",
+                },
+                {
+                  label: "Committee Position",
+                  children: personData.role.committeeRole,
+                },
+              ]
+            : []),
           {
             label: "Teams",
-            children: (
-              <Descriptions
-                column={2}
-                bordered
-                size="small"
-                items={personData.teams.map((team) => ({
-                  label: team.team.name,
-                  children: team.position,
-                }))}
-              />
-            ),
+            children:
+              personData.teams.length === 0 ? (
+                "Not a member of any teams"
+              ) : (
+                <Descriptions
+                  column={2}
+                  bordered
+                  size="small"
+                  items={personData.teams.map((team) => ({
+                    label: team.team.name,
+                    children: team.position,
+                  }))}
+                />
+              ),
           },
         ]}
       />

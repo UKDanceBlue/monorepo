@@ -5,6 +5,7 @@ import {
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
 import { Button, Table } from "antd";
+import type { UseQueryExecute } from "urql";
 
 import { usePointEntryDeletePopup } from "./PointEntryDeletePopup";
 
@@ -29,10 +30,12 @@ export function PointEntryTable({
     | readonly FragmentType<typeof PointEntryTableFragment>[]
     | undefined;
   loading: boolean;
-  refetch: () => void;
+  refetch: UseQueryExecute;
 }) {
   const { PointEntryDeletePopup, showModal: openDeletePopup } =
-    usePointEntryDeletePopup({ onDelete: () => refetch() });
+    usePointEntryDeletePopup({
+      onDelete: () => refetch({ requestPolicy: "network-only" }),
+    });
 
   const teamData =
     getFragmentData(PointEntryTableFragment, teamFragment) ?? undefined;

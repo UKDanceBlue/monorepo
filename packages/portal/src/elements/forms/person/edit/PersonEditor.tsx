@@ -180,9 +180,11 @@ export function PersonEditor({
               >
                 <Select
                   status={field.state.meta.errors.length > 0 ? "error" : ""}
-                  value={field.state.value ?? ""}
+                  value={field.state.value ?? ("" as const)}
                   onBlur={field.handleBlur}
-                  onChange={(value) => field.handleChange(value)}
+                  onChange={(value) =>
+                    field.handleChange(value === "" ? null : value)
+                  }
                   options={[
                     {
                       label: "None",
