@@ -72,11 +72,31 @@
     {
       "name": "Start Portal",
       "request": "launch",
-      "runtimeArgs": ["workspace", "@ukdanceblue/portal", "dev"],
+      "runtimeArgs": [
+        "workspace",
+        "@ukdanceblue/portal",
+        "dev",
+        "--port",
+        "5173",
+        "--strictPort"
+      ],
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**"],
       "type": "node",
       "console": "integratedTerminal"
+    },
+    {
+      "name": "Debug Portal",
+      "request": "launch",
+      "type": "firefox",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/packages/portal/src",
+      "pathMappings": [
+        {
+          "url": "http://localhost:5173/src",
+          "path": "${workspaceFolder}/packages/portal/src"
+        }
+      ]
     },
     {
       "name": "Build Portal",
