@@ -11,6 +11,12 @@ export const peopleTableRoute = new Route({
   component: ListPeoplePage,
 });
 
+export const createPersonRoute = new Route({
+  path: "/create",
+  getParentRoute: () => peopleRoute,
+  component: () => null,
+});
+
 export const singlePersonRoute = new Route({
   path: "/$personId",
   getParentRoute: () => peopleRoute,

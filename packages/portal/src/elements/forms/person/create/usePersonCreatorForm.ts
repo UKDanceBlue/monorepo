@@ -1,6 +1,6 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
-import { DbRole, MembershipPositionType } from "@ukdanceblue/common";
+import { DbRole } from "@ukdanceblue/common";
 import type {
   DocumentType,
   FragmentType,
@@ -14,24 +14,26 @@ import { useMutation } from "urql";
 
 import { TeamNameFragment } from "../PersonFormsGQL";
 
-import { PersonEditorFragment, personEditorDocument } from "./PersonEditorGQL";
+import { personCreatorDocument } from "./PersonCreatorGQL";
 
-export function usePersonEditorForm(
-  personFragment: FragmentType<typeof PersonEditorFragment> | undefined,
+export function usePersonCreatorForm(
   teamNamesFragment:
     | readonly FragmentType<typeof TeamNameFragment>[]
     | undefined,
   afterSubmit:
     | ((
-        ret: DocumentType<typeof personEditorDocument>["setPerson"] | undefined
+        ret:
+          | DocumentType<typeof personCreatorDocument>["createPerson"]
+          | undefined
       ) => void | Promise<void>)
     | undefined
 ) {
-  const personData = getFragmentData(PersonEditorFragment, personFragment);
   const teamNamesData = getFragmentData(TeamNameFragment, teamNamesFragment);
 
   // Form
-  const [{ fetching, error }, setPerson] = useMutation(personEditorDocument);
+  const [{ fetching, error }, createPerson] = useMutation(
+    personCreatorDocument
+  );
   useQueryStatusWatcher({
     error,
     fetching,
@@ -40,40 +42,23 @@ export function usePersonEditorForm(
 
   const Form = useForm<SetPersonInput>({
     defaultValues: {
-      name: personData?.name ?? "",
-      linkblue: personData?.linkblue ?? "",
-      email: personData?.email ?? "",
+      name: "",
+      linkblue: "",
+      email: "",
       role: {
-        dbRole: personData?.role.dbRole ?? DbRole.None,
-        committeeRole: personData?.role.committeeRole ?? null,
-        committeeIdentifier: personData?.role.committeeIdentifier ?? null,
+        dbRole: DbRole.None,
+        committeeRole: null,
+        committeeIdentifier: null,
       },
-      captainOf:
-        personData?.teams
-          .filter(
-            (membership) =>
-              membership.position === MembershipPositionType.Captain
-          )
-          .map((membership) => membership.team.uuid) ?? [],
-      memberOf:
-        personData?.teams
-          .filter(
-            (membership) =>
-              membership.position === MembershipPositionType.Member
-          )
-          .map((membership) => membership.team.uuid) ?? [],
+      captainOf: [],
+      memberOf: [],
     },
     onSubmit: async (values) => {
-      if (!personData) {
-        return;
-      }
-
       if (!values.email) {
         throw new Error("Email is required");
       }
 
-      const { data } = await setPerson({
-        uuid: personData.uuid,
+      const { data } = await createPerson({
         input: {
           name: values.name || null,
           linkblue: values.linkblue || null,
@@ -88,7 +73,7 @@ export function usePersonEditorForm(
         },
       });
 
-      return afterSubmit?.(data?.setPerson);
+      return afterSubmit?.(data?.createPerson);
     },
   });
 

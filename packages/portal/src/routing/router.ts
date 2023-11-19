@@ -9,6 +9,7 @@ import {
   viewEventRoute,
 } from "./eventRoutes";
 import {
+  createPersonRoute,
   editPersonRoute,
   peopleTableRoute,
   singlePersonRoute,
@@ -37,6 +38,7 @@ const routeTree = rootRoute.addChildren([
   ]),
   peopleRoute.addChildren([
     peopleTableRoute,
+    createPersonRoute,
     singlePersonRoute.addChildren([editPersonRoute, viewPersonRoute]),
   ]),
 ]);

@@ -142,14 +142,16 @@ export function PersonEditor({
                 <Select
                   status={field.state.meta.errors.length > 0 ? "error" : ""}
                   options={[
-                    { label: "None", value: null },
+                    { label: "None", value: "" },
                     { label: "Chair", value: CommitteeRole.Chair },
                     { label: "Coordinator", value: CommitteeRole.Coordinator },
                     { label: "Member", value: CommitteeRole.Member },
                   ]}
-                  value={field.state.value ?? null}
+                  value={field.state.value ?? ("" as const)}
                   onBlur={field.handleBlur}
-                  onChange={(value) => field.handleChange(value)}
+                  onChange={(value) =>
+                    field.handleChange(value === "" ? null : value)
+                  }
                 />
               </Form.Item>
             )}
@@ -170,13 +172,13 @@ export function PersonEditor({
               >
                 <Select
                   status={field.state.meta.errors.length > 0 ? "error" : ""}
-                  value={field.state.value ?? null}
+                  value={field.state.value ?? ""}
                   onBlur={field.handleBlur}
                   onChange={(value) => field.handleChange(value)}
                   options={[
                     {
                       label: "None",
-                      value: null,
+                      value: "",
                     },
                     ...Object.entries(committeeNames).map(([value, label]) => ({
                       label,

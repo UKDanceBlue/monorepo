@@ -17,6 +17,7 @@ const documents = {
     "\n  fragment EventEditorFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      url\n      imageData\n      width\n      height\n      thumbHash\n      alt\n    }\n  }\n": types.EventEditorFragmentFragmentDoc,
     "\n  mutation SaveEvent($uuid: String!, $input: SetEventInput!) {\n    setEvent(uuid: $uuid, input: $input) {\n      data {\n        ...EventEditorFragment\n      }\n    }\n  }\n": types.SaveEventDocument,
     "\n  fragment TeamNameFragment on TeamResource {\n    uuid\n    name\n  }\n": types.TeamNameFragmentFragmentDoc,
+    "\n  mutation PersonCreator($input: CreatePersonInput!) {\n    createPerson(input: $input) {\n      ok\n      uuid\n    }\n  }\n": types.PersonCreatorDocument,
     "\n  fragment PersonEditorFragment on PersonResource {\n    uuid\n    name\n    linkblue\n    email\n    role {\n      dbRole\n      committeeRole\n      committeeIdentifier\n    }\n    teams {\n      position\n      team {\n        uuid\n        name\n      }\n    }\n  }\n": types.PersonEditorFragmentFragmentDoc,
     "\n  mutation PersonEditor($uuid: String!, $input: SetPersonInput!) {\n    setPerson(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n": types.PersonEditorDocument,
     "\n  mutation CreatePointEntry($input: CreatePointEntryInput!) {\n    createPointEntry(input: $input) {\n      data {\n        uuid\n      }\n    }\n  }\n": types.CreatePointEntryDocument,
@@ -73,6 +74,10 @@ export function graphql(source: "\n  mutation SaveEvent($uuid: String!, $input: 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  fragment TeamNameFragment on TeamResource {\n    uuid\n    name\n  }\n"): (typeof documents)["\n  fragment TeamNameFragment on TeamResource {\n    uuid\n    name\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation PersonCreator($input: CreatePersonInput!) {\n    createPerson(input: $input) {\n      ok\n      uuid\n    }\n  }\n"): (typeof documents)["\n  mutation PersonCreator($input: CreatePersonInput!) {\n    createPerson(input: $input) {\n      ok\n      uuid\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

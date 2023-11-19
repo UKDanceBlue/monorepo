@@ -1,9 +1,10 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { PeopleTable } from "@elements/tables/PeopleTable";
+import { useNavigate } from "@tanstack/react-router";
 import { Button, Flex, Typography } from "antd";
 
 export function ListPeoplePage() {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   return (
     <>
       <Flex justify="space-between" align="center">
@@ -11,7 +12,7 @@ export function ListPeoplePage() {
         <Button
           type="link"
           icon={<PlusOutlined />}
-          // onClick={() => void navigate({ to: "/events/create" })}
+          onClick={() => void navigate({ to: "/people/create" })}
           size="large"
         >
           Add Person
