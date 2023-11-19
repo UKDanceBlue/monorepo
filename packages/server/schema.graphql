@@ -811,6 +811,9 @@ type Query {
     """The date filters to apply to the query"""
     dateFilters: [DeviceResolverKeyedDateFilterItem!]
 
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean
+
     """The is-null filters to apply to the query"""
     isNullFilters: [DeviceResolverKeyedIsNullFilterItem!]
 
@@ -825,6 +828,11 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -847,6 +855,9 @@ type Query {
     """The date filters to apply to the query"""
     dateFilters: [EventResolverKeyedDateFilterItem!]
 
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean
+
     """The is-null filters to apply to the query"""
     isNullFilters: [EventResolverKeyedIsNullFilterItem!]
 
@@ -861,6 +872,11 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -883,6 +899,9 @@ type Query {
     """The date filters to apply to the query"""
     dateFilters: Void
 
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean
+
     """The is-null filters to apply to the query"""
     isNullFilters: [PersonResolverKeyedIsNullFilterItem!]
 
@@ -897,6 +916,11 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -921,6 +945,9 @@ type Query {
     """The date filters to apply to the query"""
     dateFilters: Void
 
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean
+
     """The is-null filters to apply to the query"""
     isNullFilters: [NotificationResolverKeyedIsNullFilterItem!]
 
@@ -935,6 +962,11 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -958,6 +990,9 @@ type Query {
     """The date filters to apply to the query"""
     dateFilters: [PointEntryResolverKeyedDateFilterItem!]
 
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean
+
     """The is-null filters to apply to the query"""
     isNullFilters: [PointEntryResolverKeyedIsNullFilterItem!]
 
@@ -972,6 +1007,11 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -996,6 +1036,9 @@ type Query {
     """The date filters to apply to the query"""
     dateFilters: Void
 
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean
+
     """The is-null filters to apply to the query"""
     isNullFilters: [TeamResolverKeyedIsNullFilterItem!]
     legacyStatus: [TeamLegacyStatus!]
@@ -1012,6 +1055,11 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined

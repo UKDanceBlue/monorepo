@@ -13,6 +13,19 @@ import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./common.js";
 export class UnfilteredListQueryArgs<SortByKeys extends string = never>
   implements OptionalToNullable<Partial<ListQueryType<Resource>>>
 {
+  @Field(() => Boolean, {
+    nullable: true,
+    description: "Whether to include deleted items in the results",
+  })
+  includeDeleted!: boolean | null;
+
+  @Field(() => Boolean, {
+    nullable: true,
+    description:
+      "Whether to send all results in a single page, defaults to false (should generally be avoided)",
+  })
+  sendAll!: boolean | null;
+
   @Field(() => Int, {
     nullable: true,
     description: `The number of items to return per page, defaults to ${DEFAULT_PAGE_SIZE}`,
@@ -41,14 +54,18 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
   toSequelizeFindOptions(
     sortByMap?: Partial<Record<SortByKeys, OrderItemColumn>>
   ): FindAndCountOptions<Record<SortByKeys, never>> {
-    const options: FindAndCountOptions<Record<SortByKeys, never>> = {};
+    const options: FindAndCountOptions<Record<SortByKeys, never>> = {
+      paranoid: this.includeDeleted === true ? false : true,
+    };
 
-    if (this.pageSize != null) {
-      options.limit = this.pageSize;
-    }
+    if (this.sendAll !== true) {
+      if (this.pageSize != null) {
+        options.limit = this.pageSize;
+      }
 
-    if (this.page != null) {
-      options.offset = (this.page - FIRST_PAGE) * (this.pageSize ?? 10);
+      if (this.page != null) {
+        options.offset = (this.page - FIRST_PAGE) * (this.pageSize ?? 10);
+      }
     }
 
     if (this.sortBy != null && sortByMap != null) {
