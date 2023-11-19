@@ -2,8 +2,8 @@ import { faker } from "@faker-js/faker";
 import type { CreationAttributes } from "@sequelize/core";
 import fetch from "node-fetch";
 
-import { generateThumbHash } from "../lib/thumbHash.js";
-import { ImageModel } from "../models/Image.js";
+import { generateThumbHash } from "../../lib/thumbHash.js";
+import { ImageModel } from "../../models/Image.js";
 
 /**
  *

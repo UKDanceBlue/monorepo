@@ -1,7 +1,8 @@
 import { faker } from "@faker-js/faker";
 import type { CreationAttributes } from "@sequelize/core";
+import { CommitteeRole, DbRole } from "@ukdanceblue/common";
 
-import { PersonModel } from "../models/Person.js";
+import { PersonModel } from "../../models/Person.js";
 
 /**
  *
@@ -35,5 +36,15 @@ export default async function () {
       authIds: {},
     });
   }
+  personData.push({
+    name: "Tag Howard",
+    email: "jtho264@uky.edu",
+    linkblue: "jtho264",
+    authIds: {},
+    committeeName: "tech-committee",
+    committeeRole: CommitteeRole.Coordinator,
+    dbRole: DbRole.Committee,
+  });
+
   await PersonModel.bulkCreate(personData);
 }

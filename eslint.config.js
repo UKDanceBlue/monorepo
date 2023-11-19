@@ -31,6 +31,8 @@ const eslintConfig = [
       "**/build/**",
       "**/.next/**",
       "**/*.json",
+      "packages/common/lib/graphql-client-*/**",
+      ".yarn/**",
     ],
   },
   eslintJs.configs.recommended,
@@ -357,10 +359,10 @@ const eslintConfig = [
   },
   {
     files: [
-      normalize("packages/**/portal/**/**/*.js"),
-      normalize("packages/**/portal/**/**/*.ts"),
-      normalize("packages/**/portal/**/**/*.jsx"),
-      normalize("packages/**/portal/**/**/*.tsx"),
+      normalize("packages/**/portal/src/**/**/*.js"),
+      normalize("packages/**/portal/src/**/**/*.ts"),
+      normalize("packages/**/portal/src/**/**/*.jsx"),
+      normalize("packages/**/portal/src/**/**/*.tsx"),
     ],
     plugins: {
       "react": eslintPluginReact,

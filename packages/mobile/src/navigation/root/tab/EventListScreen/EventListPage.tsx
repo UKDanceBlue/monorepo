@@ -6,7 +6,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { FlatList } from "react-native";
 import type { DateData, MarkedDates } from "react-native-calendars/src/types";
 
-
 import Calendar from "./Calendar";
 import { EventListRenderItem } from "./EventListRenderItem";
 import {
@@ -97,7 +96,7 @@ export const EventListPage = ({
     const returnVal = { ...marked };
     if (selectedDay?.dateString) {
       returnVal[selectedDay.dateString] = {
-        ...(returnVal[selectedDay.dateString] ?? {}),
+        ...returnVal[selectedDay.dateString],
         selected: true,
       };
     }

@@ -4,6 +4,7 @@ import { SingleTeamPage } from "@pages/teams/spirit/single-team/SingleTeamPage";
 import { EditTeamPage } from "@pages/teams/spirit/single-team/edit-team/EditTeamPage";
 import { ViewTeamPage } from "@pages/teams/spirit/single-team/view-team/ViewTeamPage";
 import { Route } from "@tanstack/react-router";
+
 import { teamsRoute } from "./baseRoutes";
 
 export const teamsTableRoute = new Route({

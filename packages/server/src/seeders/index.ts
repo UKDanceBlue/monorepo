@@ -1,18 +1,18 @@
-import seedEvents from "./events.js";
-import seedImages from "./images.js";
-import seedMemberships from "./memberships.js";
-import seedPeople from "./people.js";
-import seedTeams from "./teams.js";
+import seedEventsFake from "./fake/events.js";
+import seedImagesFake from "./fake/images.js";
+import seedMembershipsFake from "./fake/memberships.js";
+import seedPeopleFake from "./fake/people.js";
+import seedTeamsFake from "./fake/teams.js";
 
 /**
  * Seed the database with initial data
  */
 export default async function seedDatabase() {
   console.log("Seeding database...");
-  await seedImages();
-  await seedPeople();
-  await seedEvents();
-  await seedTeams();
-  await seedMemberships();
+  await seedImagesFake();
+  await seedPeopleFake();
+  await seedEventsFake();
+  await seedTeamsFake();
+  await seedMembershipsFake();
   console.log("Database seeded");
 }

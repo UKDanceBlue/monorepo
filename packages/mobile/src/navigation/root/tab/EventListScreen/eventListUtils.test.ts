@@ -276,7 +276,7 @@ describe("markEvents", () => {
 
   test("Marks today when there are events today", () => {
     expect(markedDates[fakeMonthStrings[todyIndex]]).toBeDefined();
-    expect(markedDates[fakeMonthStrings[todyIndex]!]?.today).toBe(true);
+    expect(markedDates[fakeMonthStrings[todyIndex]!].today).toBe(true);
   });
 
   test("Only marks a single date as today", () => {

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "@jest/globals";
 import { DateTime, Interval } from "luxon";
 
-import { validateInterval } from "../../lib/util/intervalTools";
+import { validateInterval } from "../../lib/util/intervalTools.js";
 
 describe("validateInterval", () => {
   const firstDateTime = DateTime.fromObject({ year: 2020 });

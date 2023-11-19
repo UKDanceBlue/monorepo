@@ -37,11 +37,11 @@ function extractDocDataByPath<
   }
 
   return {
-    id: id!,
-    data: () => current?.documents[id!] as T | undefined,
-    exists: current.documents[id!] != null,
+    id,
+    data: () => current?.documents[id] as T | undefined,
+    exists: current.documents[id] != null,
     get: (fieldPath: FirebaseFirestoreTypes.FieldPath | keyof T) => {
-      const data = current?.documents[id!];
+      const data = current?.documents[id];
       if (data == null) {
         throw new Error(`No document found at path ${path}`);
       }

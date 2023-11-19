@@ -7,9 +7,9 @@ import {
   TeamType,
 } from "@ukdanceblue/common";
 
-import { MembershipModel } from "../models/Membership.js";
-import { PersonModel } from "../models/Person.js";
-import { TeamModel } from "../models/Team.js";
+import { MembershipModel } from "../../models/Membership.js";
+import { PersonModel } from "../../models/Person.js";
+import { TeamModel } from "../../models/Team.js";
 
 export default async function () {
   const membershipData: CreationAttributes<MembershipModel>[] = [];

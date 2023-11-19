@@ -3,10 +3,10 @@ import { faker } from "@faker-js/faker";
 import type { CreationAttributes } from "@sequelize/core";
 import { DateTime } from "luxon";
 
-import { sequelizeDb } from "../data-source.js";
-import { EventModel } from "../models/Event.js";
-import type { EventOccurrenceModel } from "../models/EventOccurrence.js";
-import { ImageModel } from "../models/Image.js";
+import { sequelizeDb } from "../../data-source.js";
+import { EventModel } from "../../models/Event.js";
+import type { EventOccurrenceModel } from "../../models/EventOccurrence.js";
+import { ImageModel } from "../../models/Image.js";
 
 const capitalize = (s: string) => s && s[0]!.toUpperCase()! + s.slice(1)!;
 

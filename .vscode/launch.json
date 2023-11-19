@@ -7,10 +7,95 @@
     {
       "name": "Build and Start Server",
       "request": "launch",
-      "runtimeArgs": ["run", "server:bs"],
+      "runtimeArgs": ["run", "bs"],
+      "cwd": "${workspaceFolder}/packages/server",
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Build GraphQL",
+      "request": "launch",
+      "runtimeArgs": ["run", "gql:build"],
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**"],
       "type": "node"
+    },
+    {
+      "name": "Watch GraphQL",
+      "request": "launch",
+      "runtimeArgs": ["run", "gql:watch"],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Watch Common",
+      "request": "launch",
+      "runtimeArgs": ["run", "watch"],
+      "cwd": "${workspaceFolder}/packages/common",
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Build Common",
+      "request": "launch",
+      "runtimeArgs": ["run", "build"],
+      "cwd": "${workspaceFolder}/packages/common",
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    },
+    {
+      "name": "Build Server",
+      "request": "launch",
+      "runtimeArgs": ["run", "build"],
+      "cwd": "${workspaceFolder}/packages/server",
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    },
+    {
+      "name": "Start Server",
+      "request": "launch",
+      "runtimeArgs": ["run", "start"],
+      "cwd": "${workspaceFolder}/packages/server",
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Start Portal",
+      "request": "launch",
+      "runtimeArgs": ["workspace", "@ukdanceblue/portal", "dev"],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Build Portal",
+      "request": "launch",
+      "runtimeArgs": ["workspace", "@ukdanceblue/portal", "build"],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Portal Dev Environment",
+      "configurations": [
+        "Build and Start Server",
+        "Watch Common",
+        "Watch GraphQL",
+        "Start Portal"
+      ]
     }
   ]
 }

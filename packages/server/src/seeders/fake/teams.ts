@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 import type { CreationAttributes } from "@sequelize/core";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 
-import { TeamModel } from "../models/Team.js";
+import { TeamModel } from "../../models/Team.js";
 
 const greekLetters = [
   "Alpha",

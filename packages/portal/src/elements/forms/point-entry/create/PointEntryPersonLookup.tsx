@@ -42,7 +42,7 @@ export function PointEntryPersonLookup({
     if (personFromUuid) {
       updateSelectedPerson({ uuid: personFromUuid });
     }
-  }, [personFromUuid]);
+  }, [personFromUuid, updateSelectedPerson]);
 
   // Linkblue lookup
   const [linkblueFieldValue, setLinkblueFieldValue] = useState<
@@ -66,7 +66,11 @@ export function PointEntryPersonLookup({
         getPersonByLinkBlueQuery.data.personByLinkBlue.data.uuid
       );
     }
-  }, [getPersonByLinkBlueQuery.data?.personByLinkBlue.data.uuid]);
+  }, [
+    getPersonByLinkBlueQuery.data?.personByLinkBlue.data,
+    getPersonByLinkBlueQuery.data?.personByLinkBlue.data.uuid,
+    setPersonFromUuid,
+  ]);
 
   // Name lookup
   const [searchByNameField, setSearchByNameField] = useState<
@@ -189,11 +193,15 @@ export function PointEntryPersonLookup({
                         linkBlue: linkblueFieldValue,
                         email: `${linkblueFieldValue}@uky.edu`,
                         teamUuid,
-                      }).then((result) => {
-                        if (result.data?.createPerson.uuid) {
-                          setPersonFromUuid(result.data.createPerson.uuid);
-                        }
-                      });
+                      })
+                        .then((result) => {
+                          if (result.data?.createPerson.uuid) {
+                            setPersonFromUuid(result.data.createPerson.uuid);
+                          }
+                        })
+                        .catch((error) => {
+                          console.error(error);
+                        });
                     }
                   }}
                   loading={createPersonQuery.fetching}
