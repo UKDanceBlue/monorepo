@@ -7,5 +7,7 @@
   ],
   "eslint.experimental.useFlatConfig": true,
   "typescript.tsdk": "node_modules/typescript/lib",
-  "cSpell.words": ["RNCAL"]
+  "cSpell.words": ["RNCAL"],
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true
 }
