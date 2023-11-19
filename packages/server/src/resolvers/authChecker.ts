@@ -21,8 +21,8 @@ import type { GraphQLContext } from "./context.js";
  * ```ts
  * // Accepts any coordinator on fundraising or dancer relations
  * @Authorized([
- *   {committeeIdentifier: "fundraising-committee", committeeRole: CommitteeRole.Coordinator},
- *   {committeeIdentifier: "dancer-relations-committee", committeeRole: CommitteeRole.Coordinator}
+ *   {committeeIdentifier: "fundraisingCommittee", committeeRole: CommitteeRole.Coordinator},
+ *   {committeeIdentifier: "dancerRelationsCommittee", committeeRole: CommitteeRole.Coordinator}
  * ])
  * ```
  *

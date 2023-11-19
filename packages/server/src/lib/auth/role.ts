@@ -1,5 +1,10 @@
 import type { Authorization, RoleResource } from "@ukdanceblue/common";
-import { AccessLevel, CommitteeRole, DbRole } from "@ukdanceblue/common";
+import {
+  AccessLevel,
+  CommitteeIdentifier,
+  CommitteeRole,
+  DbRole,
+} from "@ukdanceblue/common";
 
 import { logError } from "../../logger.js";
 
@@ -89,7 +94,7 @@ export function roleToAuthorization(role: RoleResource): Authorization {
   }
   if (
     role.committeeRole === CommitteeRole.Chair ||
-    role.committeeIdentifier === "tech-committee"
+    role.committeeIdentifier === CommitteeIdentifier["techCommittee"]
   ) {
     accessLevel = AccessLevel.Admin;
   }

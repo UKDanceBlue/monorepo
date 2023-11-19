@@ -59,6 +59,20 @@ enum AuthSource {
   UkyLinkblue
 }
 
+"""The identifier for a committee"""
+enum CommitteeIdentifier {
+  communityDevelopmentCommittee
+  corporateCommittee
+  dancerRelationsCommittee
+  familyRelationsCommittee
+  fundraisingCommittee
+  marketingCommittee
+  miniMarathonsCommittee
+  operationsCommittee
+  programmingCommittee
+  techCommittee
+}
+
 """Roles within a committee"""
 enum CommitteeRole {
   Chair
@@ -1085,7 +1099,7 @@ type RemoveEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBase
 }
 
 type RoleResource {
-  committeeIdentifier: String
+  committeeIdentifier: CommitteeIdentifier
   committeeRole: CommitteeRole
   createdAt: DateTimeISO
   dbRole: DbRole!
@@ -1093,7 +1107,7 @@ type RoleResource {
 }
 
 input RoleResourceInput {
-  committeeIdentifier: String
+  committeeIdentifier: CommitteeIdentifier
   committeeRole: CommitteeRole
   dbRole: DbRole! = None
 }

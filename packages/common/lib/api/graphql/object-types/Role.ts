@@ -57,7 +57,7 @@ export class RoleResource extends Resource {
           case CommitteeRole.Chair:
           case CommitteeRole.Coordinator: {
             authorization.accessLevel =
-              this.committeeIdentifier === "tech-committee"
+              this.committeeIdentifier === CommitteeIdentifier["techCommittee"]
                 ? AccessLevel.Admin
                 : AccessLevel.CommitteeChairOrCoordinator;
             break;

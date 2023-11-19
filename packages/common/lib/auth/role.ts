@@ -1,7 +1,12 @@
 import type { RoleResource } from "../api/graphql/object-types/Role.js";
 
 import type { Authorization } from "./index.js";
-import { AccessLevel, CommitteeRole, DbRole } from "./index.js";
+import {
+  AccessLevel,
+  CommitteeIdentifier,
+  CommitteeRole,
+  DbRole,
+} from "./index.js";
 
 /**
  * Converts a DbRole to an AccessLevel
@@ -86,7 +91,7 @@ export function roleToAuthorization(role: RoleResource): Authorization {
   }
   if (
     role.committeeRole === CommitteeRole.Chair ||
-    role.committeeIdentifier === "tech-committee"
+    role.committeeIdentifier === CommitteeIdentifier["techCommittee"]
   ) {
     accessLevel = AccessLevel.Admin;
   }

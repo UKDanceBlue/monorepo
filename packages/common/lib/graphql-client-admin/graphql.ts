@@ -90,6 +90,21 @@ export type AuthIdList = {
 
 export { AuthSource };
 
+/** The identifier for a committee */
+export const CommitteeIdentifier = {
+  CommunityDevelopmentCommittee: 'communityDevelopmentCommittee',
+  CorporateCommittee: 'corporateCommittee',
+  DancerRelationsCommittee: 'dancerRelationsCommittee',
+  FamilyRelationsCommittee: 'familyRelationsCommittee',
+  FundraisingCommittee: 'fundraisingCommittee',
+  MarketingCommittee: 'marketingCommittee',
+  MiniMarathonsCommittee: 'miniMarathonsCommittee',
+  OperationsCommittee: 'operationsCommittee',
+  ProgrammingCommittee: 'programmingCommittee',
+  TechCommittee: 'techCommittee'
+} as const;
+
+export type CommitteeIdentifier = typeof CommitteeIdentifier[keyof typeof CommitteeIdentifier];
 export { CommitteeRole };
 
 export type ConfigurationResource = {
@@ -1069,7 +1084,7 @@ export type RemoveEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseRe
 
 export type RoleResource = {
   readonly __typename?: 'RoleResource';
-  readonly committeeIdentifier?: Maybe<Scalars['String']['output']>;
+  readonly committeeIdentifier?: Maybe<CommitteeIdentifier>;
   readonly committeeRole?: Maybe<CommitteeRole>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly dbRole: DbRole;
@@ -1077,7 +1092,7 @@ export type RoleResource = {
 };
 
 export type RoleResourceInput = {
-  readonly committeeIdentifier?: InputMaybe<Scalars['String']['input']>;
+  readonly committeeIdentifier?: InputMaybe<CommitteeIdentifier>;
   readonly committeeRole?: InputMaybe<CommitteeRole>;
   readonly dbRole?: DbRole;
 };
@@ -1249,7 +1264,7 @@ export type PersonCreatorMutationVariables = Exact<{
 
 export type PersonCreatorMutation = { readonly __typename?: 'Mutation', readonly createPerson: { readonly __typename?: 'CreatePersonResponse', readonly ok: boolean, readonly uuid: string } };
 
-export type PersonEditorFragmentFragment = { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null, readonly email: string, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: DbRole, readonly committeeRole?: CommitteeRole | null, readonly committeeIdentifier?: string | null }, readonly teams: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly position: MembershipPositionType, readonly team: { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string } }> } & { ' $fragmentName'?: 'PersonEditorFragmentFragment' };
+export type PersonEditorFragmentFragment = { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null, readonly email: string, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: DbRole, readonly committeeRole?: CommitteeRole | null, readonly committeeIdentifier?: CommitteeIdentifier | null }, readonly teams: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly position: MembershipPositionType, readonly team: { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string } }> } & { ' $fragmentName'?: 'PersonEditorFragmentFragment' };
 
 export type PersonEditorMutationVariables = Exact<{
   uuid: Scalars['String']['input'];
@@ -1316,7 +1331,7 @@ export type EventsTableQuery = { readonly __typename?: 'Query', readonly events:
       & { ' $fragmentRefs'?: { 'EventsTableFragmentFragment': EventsTableFragmentFragment } }
     )> } };
 
-export type PeopleTableFragmentFragment = { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null, readonly email: string, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: DbRole, readonly committeeRole?: CommitteeRole | null, readonly committeeIdentifier?: string | null } } & { ' $fragmentName'?: 'PeopleTableFragmentFragment' };
+export type PeopleTableFragmentFragment = { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null, readonly email: string, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: DbRole, readonly committeeRole?: CommitteeRole | null, readonly committeeIdentifier?: CommitteeIdentifier | null } } & { ' $fragmentName'?: 'PeopleTableFragmentFragment' };
 
 export type PeopleTableQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -1377,14 +1392,14 @@ export type DeletePersonMutationVariables = Exact<{
 
 export type DeletePersonMutation = { readonly __typename?: 'Mutation', readonly deletePerson: { readonly __typename?: 'DeletePersonResponse', readonly ok: boolean } };
 
-export type PersonViewerFragmentFragment = { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null, readonly email: string, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: DbRole, readonly committeeRole?: CommitteeRole | null, readonly committeeIdentifier?: string | null }, readonly teams: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly position: MembershipPositionType, readonly team: { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string } }> } & { ' $fragmentName'?: 'PersonViewerFragmentFragment' };
+export type PersonViewerFragmentFragment = { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null, readonly email: string, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: DbRole, readonly committeeRole?: CommitteeRole | null, readonly committeeIdentifier?: CommitteeIdentifier | null }, readonly teams: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly position: MembershipPositionType, readonly team: { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string } }> } & { ' $fragmentName'?: 'PersonViewerFragmentFragment' };
 
 export type TeamViewerFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string, readonly marathonYear: string, readonly legacyStatus: TeamLegacyStatus, readonly totalPoints: number, readonly type: TeamType, readonly members: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly person: { readonly __typename?: 'PersonResource', readonly name?: string | null, readonly linkblue?: string | null } }>, readonly captains: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly person: { readonly __typename?: 'PersonResource', readonly name?: string | null, readonly linkblue?: string | null } }> } & { ' $fragmentName'?: 'TeamViewerFragmentFragment' };
 
 export type LoginStateQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type LoginStateQuery = { readonly __typename?: 'Query', readonly loginState: { readonly __typename?: 'LoginState', readonly loggedIn: boolean, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: DbRole, readonly committeeRole?: CommitteeRole | null, readonly committeeIdentifier?: string | null } } };
+export type LoginStateQuery = { readonly __typename?: 'Query', readonly loginState: { readonly __typename?: 'LoginState', readonly loggedIn: boolean, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: DbRole, readonly committeeRole?: CommitteeRole | null, readonly committeeIdentifier?: CommitteeIdentifier | null } } };
 
 export type EditEventPageQueryVariables = Exact<{
   uuid: Scalars['String']['input'];

@@ -1,6 +1,10 @@
 import { faker } from "@faker-js/faker";
 import type { CreationAttributes } from "@sequelize/core";
-import { CommitteeRole, DbRole } from "@ukdanceblue/common";
+import {
+  CommitteeIdentifier,
+  CommitteeRole,
+  DbRole,
+} from "@ukdanceblue/common";
 
 import { PersonModel } from "../../models/Person.js";
 
@@ -41,7 +45,7 @@ export default async function () {
     email: "jtho264@uky.edu",
     linkblue: "jtho264",
     authIds: {},
-    committeeName: "tech-committee",
+    committeeName: CommitteeIdentifier["techCommittee"],
     committeeRole: CommitteeRole.Coordinator,
     dbRole: DbRole.Committee,
   });

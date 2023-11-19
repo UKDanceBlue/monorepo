@@ -178,7 +178,8 @@ export class TeamResolver
   @Authorized<AuthorizationRuleOrAccessLevel>([
     AccessLevel.Admin,
     {
-      committeeIdentifier: "dancer-relations-committee",
+      committeeIdentifier:
+        Common.CommitteeIdentifier["dancerRelationsCommittee"],
       minCommitteeRole: CommitteeRole.Coordinator,
     },
   ])
@@ -201,7 +202,8 @@ export class TeamResolver
   @Authorized<AuthorizationRuleOrAccessLevel>([
     AccessLevel.Admin,
     {
-      committeeIdentifier: "dancer-relations-committee",
+      committeeIdentifier:
+        Common.CommitteeIdentifier["dancerRelationsCommittee"],
       minCommitteeRole: CommitteeRole.Coordinator,
     },
   ])
