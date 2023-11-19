@@ -22,20 +22,6 @@ export function usePersonEditorForm(
 ) {
   const personData = getFragmentData(PersonEditorFragment, personFragment);
   const teamNamesData = getFragmentData(TeamNameFragment, teamNamesFragment);
-  // const [hasTeamNamesChanged, setHasTeamNamesChanged] = useState(true);
-  // useEffect(() => {
-  //   if (oldTeamNamesData.current !== teamNamesData) {
-  //     oldTeamNamesData.current = teamNamesData;
-  //     setHasTeamNamesChanged(true);
-  //   }
-  // }, [teamNamesData]);
-
-  // const [captaincyOptions, setCaptaincyOptions] = useState<BaseOptionType[]>(
-  //   []
-  // );
-  // const [membershipOptions, setMembershipOptions] = useState<BaseOptionType[]>(
-  //   []
-  // );
 
   // Form
   const [{ fetching, error }, setPerson] = useMutation(personEditorDocument);
@@ -44,30 +30,6 @@ export function usePersonEditorForm(
     fetching,
     loadingMessage: "Saving person...",
   });
-
-  // function updateTeamSelectOptions(values: SetPersonInput) {
-  //   if (hasTeamNamesChanged) {
-  //     const captaincyOptions: BaseOptionType[] = [];
-  //     const membershipOptions: BaseOptionType[] = [];
-  //     const memberOfArray = values.memberOf ?? [];
-  //     const captainOfArray = values.captainOf ?? [];
-  //     for (const team of teamNamesData ?? []) {
-  //       captaincyOptions.push({
-  //         label: team.name,
-  //         value: team.uuid,
-  //         disabled: memberOfArray.includes(team.uuid),
-  //       });
-  //       membershipOptions.push({
-  //         label: team.name,
-  //         value: team.uuid,
-  //         disabled: captainOfArray.includes(team.uuid),
-  //       });
-  //     }
-  //     setCaptaincyOptions(captaincyOptions);
-  //     setMembershipOptions(membershipOptions);
-  //     setHasTeamNamesChanged(false);
-  //   }
-  // }
 
   const Form = useForm<SetPersonInput>({
     defaultValues: {
@@ -93,10 +55,6 @@ export function usePersonEditorForm(
               membership.position === MembershipPositionType.Member
           )
           .map((membership) => membership.team.uuid) ?? [],
-    },
-    onChange: (values) => {
-      console.log("onChange");
-      return undefined;
     },
     onSubmit: async (values) => {
       if (!personData) {
