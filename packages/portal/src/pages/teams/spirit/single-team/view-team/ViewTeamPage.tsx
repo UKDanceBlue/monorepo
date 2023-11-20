@@ -50,7 +50,10 @@ export function ViewTeamPage() {
           </div>
           <div style={{ flex: 1 }}>
             <h2>Create Point Entry</h2>
-            <PointEntryCreator teamUuid={teamUuid} refetch={refetch} />
+            <PointEntryCreator
+              teamUuid={teamUuid}
+              refetch={() => refetch({ requestPolicy: "network-only" })}
+            />
           </div>
         </Flex>
       </Flex>
