@@ -160,6 +160,10 @@ export function PersonEditor({
                   onChange={(value) =>
                     field.handleChange(value === "" ? null : value)
                   }
+                  filterOption={(input, option) =>
+                    option?.label.toLowerCase().includes(input.toLowerCase()) ??
+                    false
+                  }
                 />
               </Form.Item>
             )}
@@ -195,6 +199,10 @@ export function PersonEditor({
                       value,
                     })),
                   ]}
+                  filterOption={(input, option) =>
+                    option?.label.toLowerCase().includes(input.toLowerCase()) ??
+                    false
+                  }
                 />
               </Form.Item>
             )}
@@ -224,6 +232,10 @@ export function PersonEditor({
                   onBlur={field.handleBlur}
                   onChange={(value) => field.handleChange(value)}
                   options={captaincyOptions}
+                  filterOption={(input, option) =>
+                    option?.label.toLowerCase().includes(input.toLowerCase()) ??
+                    false
+                  }
                 />
               </Form.Item>
             )}
@@ -249,6 +261,10 @@ export function PersonEditor({
                   onBlur={field.handleBlur}
                   onChange={(value) => field.handleChange(value)}
                   options={membershipOptions}
+                  filterOption={(input, option) =>
+                    option?.label.toLowerCase().includes(input.toLowerCase()) ??
+                    false
+                  }
                 />
               </Form.Item>
             )}

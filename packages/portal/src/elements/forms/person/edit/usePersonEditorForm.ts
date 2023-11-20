@@ -44,7 +44,7 @@ export function usePersonEditorForm(
       linkblue: personData?.linkblue ?? "",
       email: personData?.email ?? "",
       role: {
-        dbRole: personData?.role.dbRole ?? DbRole.None,
+        dbRole: personData?.role.dbRole ?? DbRole.Public,
         committeeRole: personData?.role.committeeRole ?? null,
         committeeIdentifier: personData?.role.committeeIdentifier ?? null,
       },
@@ -72,6 +72,15 @@ export function usePersonEditorForm(
         throw new Error("Email is required");
       }
 
+      let dbRole: DbRole = values.role?.dbRole ?? DbRole.Public;
+      if (values.role?.committeeRole != null) {
+        dbRole = DbRole.Committee;
+      } else if ((values.captainOf?.length ?? 0) > 0) {
+        dbRole = DbRole.TeamCaptain;
+      } else if ((values.memberOf?.length ?? 0) > 0) {
+        dbRole = DbRole.TeamMember;
+      }
+
       const { data } = await setPerson({
         uuid: personData.uuid,
         input: {
@@ -79,7 +88,7 @@ export function usePersonEditorForm(
           linkblue: values.linkblue || null,
           email: values.email,
           role: {
-            dbRole: values.role?.dbRole ?? DbRole.None,
+            dbRole,
             committeeRole: values.role?.committeeRole ?? null,
             committeeIdentifier: values.role?.committeeIdentifier ?? null,
           },
@@ -92,16 +101,17 @@ export function usePersonEditorForm(
     },
   });
 
+  type OptionType = BaseOptionType & { label: string; value: string };
   const formMemberOf = Form.getFieldValue("memberOf");
   const formCaptainOf = Form.getFieldValue("captainOf");
   const oldTeamNamesData = useRef(teamNamesData);
   const oldFormMemberOf = useRef(formMemberOf);
   const oldFormCaptainOf = useRef(formCaptainOf);
-  const oldMembershipOptions = useRef<BaseOptionType[]>([]);
-  const oldCaptaincyOptions = useRef<BaseOptionType[]>([]);
+  const oldMembershipOptions = useRef<OptionType[]>([]);
+  const oldCaptaincyOptions = useRef<OptionType[]>([]);
   const { membershipOptions, captaincyOptions } = useMemo<{
-    membershipOptions: BaseOptionType[];
-    captaincyOptions: BaseOptionType[];
+    membershipOptions: OptionType[];
+    captaincyOptions: OptionType[];
   }>(() => {
     if (
       !isEqual(oldFormMemberOf.current, formMemberOf) ||
@@ -110,8 +120,8 @@ export function usePersonEditorForm(
     ) {
       const memberOfArray = formMemberOf ?? [];
       const captainOfArray = formCaptainOf ?? [];
-      const captaincyOptions: BaseOptionType[] = [];
-      const membershipOptions: BaseOptionType[] = [];
+      const captaincyOptions: OptionType[] = [];
+      const membershipOptions: OptionType[] = [];
       for (const team of teamNamesData ?? []) {
         captaincyOptions.push({
           label: team.name,
