@@ -1,4 +1,4 @@
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "@tanstack/react-router";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import {
@@ -70,15 +70,30 @@ export function TeamViewer({
           </Descriptions.Item>
           <Descriptions.Item label="Type">{teamData.type}</Descriptions.Item>
         </Descriptions>
-        <Button
-          style={{ width: "18ch" }}
-          onClick={showModal}
-          icon={<DeleteOutlined />}
-          danger
-          shape="round"
-        >
-          Delete Team
-        </Button>
+        <Flex justify="space-between">
+          <Button
+            style={{ width: "18ch" }}
+            onClick={showModal}
+            icon={<DeleteOutlined />}
+            danger
+            shape="round"
+          >
+            Delete Team
+          </Button>
+          <Button
+            style={{ width: "18ch" }}
+            onClick={() => {
+              navigate({
+                to: "/teams/$teamId/edit",
+                params: { teamId: teamData.uuid },
+              }).catch(console.error);
+            }}
+            icon={<EditOutlined />}
+            shape="round"
+          >
+            Edit Team
+          </Button>
+        </Flex>
       </Flex>
       <Descriptions
         bordered
@@ -97,7 +112,8 @@ export function TeamViewer({
                     personId: captain.person.uuid,
                   }}
                 >
-                  {captain.person.name} ({captain.person.linkblue})
+                  {captain.person.name ?? "Never logged in"} (
+                  {captain.person.linkblue ?? "No linkblue"})
                 </Link>
               </li>
             ))}

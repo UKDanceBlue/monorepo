@@ -1,6 +1,7 @@
+import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
 import {
   parseEventOccurrence,
@@ -10,7 +11,7 @@ import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
-import { Flex, Table } from "antd";
+import { Button, Table } from "antd";
 import { useQuery } from "urql";
 
 const EventsTableFragment = graphql(/* GraphQL */ `
@@ -61,6 +62,8 @@ const eventsTableQueryDocument = graphql(/* GraphQL */ `
 `);
 
 export const EventsTable = () => {
+  const navigate = useNavigate();
+
   const { queryOptions, updatePagination, clearSorting, pushSorting } =
     useListQuery(
       {
@@ -180,14 +183,26 @@ export const EventsTable = () => {
             dataIndex: "uuid",
             key: "uuid",
             render: (uuid: string) => (
-              <Flex vertical style={{ textAlign: "center" }}>
-                <Link to="/events/$eventId" params={{ eventId: uuid }}>
-                  View
-                </Link>
-                <Link to="/events/$eventId/edit" params={{ eventId: uuid }}>
-                  Edit
-                </Link>
-              </Flex>
+              <>
+                <Button
+                  onClick={() =>
+                    navigate({
+                      to: "/events/$eventId/",
+                      params: { eventId: uuid },
+                    }).catch(console.error)
+                  }
+                  icon={<EyeOutlined />}
+                />
+                <Button
+                  onClick={() =>
+                    navigate({
+                      to: "/events/$eventId/edit",
+                      params: { eventId: uuid },
+                    }).catch(console.error)
+                  }
+                  icon={<EditOutlined />}
+                />
+              </>
             ),
           },
         ]}

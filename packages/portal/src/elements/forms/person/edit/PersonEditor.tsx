@@ -92,6 +92,7 @@ export function PersonEditor({
           }}
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 32 }}
+          style={{ minWidth: "25%" }}
         >
           <formApi.Subscribe selector={(state) => state.values.captainOf}>
             {(captainOf) => {

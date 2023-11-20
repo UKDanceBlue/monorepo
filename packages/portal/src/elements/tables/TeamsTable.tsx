@@ -1,13 +1,13 @@
-import { SearchOutlined } from "@ant-design/icons";
+import { EditOutlined, EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { SortDirection, StringComparator } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
-import { Table } from "antd";
+import { Button, Table } from "antd";
 import Search from "antd/es/input/Search";
 import { useQuery } from "urql";
 
@@ -52,6 +52,8 @@ export const TeamsTableFragment = graphql(/* GraphQL */ `
 `);
 
 export const TeamsTable = () => {
+  const navigate = useNavigate();
+
   const {
     queryOptions,
     updatePagination,
@@ -186,9 +188,26 @@ export const TeamsTable = () => {
           title: "Actions",
           key: "actions",
           render: (_text, record) => (
-            <Link to="/teams/$teamId/" params={{ teamId: record.uuid }}>
-              View
-            </Link>
+            <>
+              <Button
+                onClick={() =>
+                  navigate({
+                    to: "/teams/$teamId/",
+                    params: { teamId: record.uuid },
+                  }).catch(console.error)
+                }
+                icon={<EyeOutlined />}
+              />
+              <Button
+                onClick={() =>
+                  navigate({
+                    to: "/teams/$teamId/edit",
+                    params: { teamId: record.uuid },
+                  }).catch(console.error)
+                }
+                icon={<EditOutlined />}
+              />
+            </>
           ),
         },
       ]}

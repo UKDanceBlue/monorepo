@@ -43,6 +43,7 @@ export function TeamEditor({
           }}
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 32 }}
+          style={{ minWidth: "25%" }}
         >
           <formApi.Field
             name="name"

@@ -10,7 +10,7 @@ export const RootPage = () => {
         <Layout.Header>
           <NavigationMenu />
         </Layout.Header>
-        <Layout.Content style={{ padding: "0 5vw" }}>
+        <Layout.Content style={{ padding: "1vh 15vw" }}>
           <Outlet />
         </Layout.Content>
         <Layout.Footer></Layout.Footer>
