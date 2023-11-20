@@ -199,5 +199,15 @@ PersonModel.init(
       plural: "people",
     },
     modelName: "Person",
+    hooks: {
+      async afterDestroy(instance, options) {
+        const memberships = await instance.getMemberships({
+          transaction: options.transaction,
+        });
+        await Promise.all(
+          memberships.map((membership) => membership.destroy(options))
+        );
+      },
+    },
   }
 );

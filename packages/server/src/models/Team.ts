@@ -176,5 +176,13 @@ TeamModel.init(
       plural: "teams",
     },
     modelName: "Team",
+    hooks: {
+      async beforeDestroy(instance, options) {
+        const memberships = await instance.getMemberships(options);
+        await Promise.all(memberships.map((m) => m.destroy(options)));
+        const pointEntries = await instance.getPointEntries(options);
+        await Promise.all(pointEntries.map((p) => p.destroy(options)));
+      },
+    },
   }
 );
