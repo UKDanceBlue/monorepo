@@ -3,7 +3,6 @@ import { cert, initializeApp } from "firebase-admin/app";
 import { Timestamp, getFirestore } from "firebase-admin/firestore";
 
 import { sequelizeDb } from "./data-source.js";
-import { json } from "./dbPoints.js";
 import { MembershipModel } from "./models/Membership.js";
 import { PersonModel } from "./models/Person.js";
 import { PointOpportunityModel } from "./models/PointOpportunity.js";
@@ -196,28 +195,6 @@ pointEntries.forEach((entry) => {
     person: entry.linkblue,
   });
 });
-
-const sortedByPoints = Object.entries(pointEntries).sort(
-  ([, a], [, b]) => b.points - a.points
-);
-for (let i = 0; i < json.length; i++) {
-  const entry = sortedByPoints[i];
-  if (entry === undefined) {
-    console.error(`Could not find entry ${i}`);
-    throw new Error(`Could not find entry ${i}`);
-  }
-  const matchingPoint = json[i]?.points;
-  if (matchingPoint === undefined) {
-    console.error(`Could not find matchingPoint ${i}`);
-    throw new Error(`Could not find matchingPoint ${i}`);
-  }
-
-  if (entry[1].points !== matchingPoint) {
-    throw new Error(
-      `Points do not match for entry ${i} - ${json[i]?.team_id}: ${entry[1].points} !== ${matchingPoint}`
-    );
-  }
-}
 
 // Write to postgres
 
