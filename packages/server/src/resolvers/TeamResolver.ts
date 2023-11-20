@@ -228,11 +228,19 @@ export class TeamResolver
   async members(@Root() team: TeamResource): Promise<MembershipResource[]> {
     const model = await TeamModel.findByUuid(team.uuid, {
       attributes: ["id", "uuid"],
-      include: [MembershipModel.withScope("withTeam")],
+      include: [
+        {
+          model: MembershipModel,
+          required: false,
+        },
+      ],
     });
 
     if (model == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+      throw new DetailedError(
+        ErrorCode.NotFound,
+        "Failed to load team for members"
+      );
     }
 
     return model.memberships.map((row) => row.toResource());
@@ -243,14 +251,22 @@ export class TeamResolver
   async captains(@Root() team: TeamResource): Promise<MembershipResource[]> {
     const model = await TeamModel.findByUuid(team.uuid, {
       attributes: ["id", "uuid"],
-      include: [MembershipModel.withScope("withTeam").withScope("captains")],
+      include: [
+        {
+          model: MembershipModel.withScope("captains"),
+          required: false,
+        },
+      ],
     });
 
     if (model == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+      throw new DetailedError(
+        ErrorCode.NotFound,
+        "Failed to load team for captains"
+      );
     }
 
-    return model.memberships.map((row) => row.toResource());
+    return (model.memberships ?? []).map((row) => row.toResource());
   }
 
   @AccessLevelAuthorized(AccessLevel.Committee)
@@ -263,7 +279,10 @@ export class TeamResolver
     });
 
     if (!model) {
-      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+      throw new DetailedError(
+        ErrorCode.NotFound,
+        "Failed to load team for point entries"
+      );
     }
 
     const pointEntries = await model.getPointEntries();
