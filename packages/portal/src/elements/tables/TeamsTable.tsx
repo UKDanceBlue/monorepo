@@ -7,7 +7,7 @@ import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
-import { Button, Table } from "antd";
+import { Button, Flex, Table } from "antd";
 import Search from "antd/es/input/Search";
 import { useQuery } from "urql";
 
@@ -188,7 +188,7 @@ export const TeamsTable = () => {
           title: "Actions",
           key: "actions",
           render: (_text, record) => (
-            <>
+            <Flex gap="small" align="center">
               <Button
                 onClick={() =>
                   navigate({
@@ -207,7 +207,7 @@ export const TeamsTable = () => {
                 }
                 icon={<EditOutlined />}
               />
-            </>
+            </Flex>
           ),
         },
       ]}

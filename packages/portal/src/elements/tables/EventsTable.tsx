@@ -11,7 +11,7 @@ import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
-import { Button, Table } from "antd";
+import { Button, Flex, Table } from "antd";
 import { useQuery } from "urql";
 
 const EventsTableFragment = graphql(/* GraphQL */ `
@@ -179,11 +179,10 @@ export const EventsTable = () => {
             key: "summary",
           },
           {
-            title: "Open",
+            title: "Actions",
             dataIndex: "uuid",
-            key: "uuid",
             render: (uuid: string) => (
-              <>
+              <Flex gap="small" align="center">
                 <Button
                   onClick={() =>
                     navigate({
@@ -202,7 +201,7 @@ export const EventsTable = () => {
                   }
                   icon={<EditOutlined />}
                 />
-              </>
+              </Flex>
             ),
           },
         ]}

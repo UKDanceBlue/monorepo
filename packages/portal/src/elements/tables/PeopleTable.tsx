@@ -11,7 +11,7 @@ import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
-import { Button, Table } from "antd";
+import { Button, Flex, Table } from "antd";
 import { useQuery } from "urql";
 
 const PeopleTableFragment = graphql(/* GraphQL */ `
@@ -199,7 +199,7 @@ export const PeopleTable = () => {
             dataIndex: "actions",
             render: (_, record) => {
               return (
-                <>
+                <Flex gap="small" align="center">
                   <Button
                     onClick={() =>
                       navigate({
@@ -218,7 +218,7 @@ export const PeopleTable = () => {
                     }
                     icon={<EditOutlined />}
                   />
-                </>
+                </Flex>
               );
             },
           },
