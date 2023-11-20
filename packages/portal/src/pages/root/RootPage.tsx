@@ -1,5 +1,4 @@
 import { Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { Layout } from "antd";
 
 import { NavigationMenu } from "../../elements/singletons/NavigationMenu";
@@ -16,7 +15,6 @@ export const RootPage = () => {
         </Layout.Content>
         <Layout.Footer></Layout.Footer>
       </Layout>
-      <TanStackRouterDevtools position="bottom-right" />
     </>
   );
 };
