@@ -183,6 +183,18 @@ TeamModel.init(
         const pointEntries = await instance.getPointEntries(options);
         await Promise.all(pointEntries.map((p) => p.destroy(options)));
       },
+      async beforeRestore(instance, options) {
+        const memberships = await instance.getMemberships({
+          ...options,
+          paranoid: false,
+        });
+        await Promise.all(memberships.map((m) => m.restore(options)));
+        const pointEntries = await instance.getPointEntries({
+          ...options,
+          paranoid: false,
+        });
+        await Promise.all(pointEntries.map((p) => p.restore(options)));
+      },
     },
   }
 );

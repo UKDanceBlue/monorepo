@@ -200,12 +200,21 @@ PersonModel.init(
     },
     modelName: "Person",
     hooks: {
-      async afterDestroy(instance, options) {
+      async beforeDestroy(instance, options) {
         const memberships = await instance.getMemberships({
           transaction: options.transaction,
         });
         await Promise.all(
           memberships.map((membership) => membership.destroy(options))
+        );
+      },
+      async beforeRestore(instance, options) {
+        const memberships = await instance.getMemberships({
+          ...options,
+          paranoid: false,
+        });
+        await Promise.all(
+          memberships.map((membership) => membership.restore(options))
         );
       },
     },
