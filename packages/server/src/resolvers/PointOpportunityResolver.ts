@@ -247,6 +247,14 @@ export class PointOpportunityResolver
         );
       }
 
+      const pointEntryCount = await row.countPointEntries();
+      if (pointEntryCount > 0) {
+        throw new DetailedError(
+          ErrorCode.PreconditionsFailed,
+          "Point Opportunities cannot be deleted if they have Point Entries"
+        );
+      }
+
       await row.destroy();
 
       return DeletePointOpportunityResponse.newOk(true);

@@ -10,6 +10,7 @@ export const ErrorCode = {
   Unauthorized: "Unauthorized",
   InternalFailure: "InternalFailure",
   DatabaseFailure: "DatabaseFailure",
+  PreconditionsFailed: "PreconditionsFailed",
 
   // GraphQL codes
   GQLGraphqlParseFailed: "GQLGraphqlParseFailed",

@@ -2,6 +2,16 @@ import type {
   BelongsToCreateAssociationMixin,
   BelongsToGetAssociationMixin,
   CreationOptional,
+  HasManyAddAssociationMixin,
+  HasManyAddAssociationsMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  HasManyHasAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   NonAttribute,
@@ -14,6 +24,7 @@ import { sequelizeDb } from "../data-source.js";
 
 import { BaseModel } from "./BaseModel.js";
 import type { EventModel } from "./Event.js";
+import { PointEntryModel } from "./PointEntry.js";
 
 export class PointOpportunityModel extends BaseModel<
   InferAttributes<PointOpportunityModel>,
@@ -35,6 +46,39 @@ export class PointOpportunityModel extends BaseModel<
   public declare event: NonAttribute<EventModel | null>;
   public declare getEvent: BelongsToGetAssociationMixin<EventModel>;
   public declare createEvent: BelongsToCreateAssociationMixin<EventModel>;
+
+  public declare pointEntries: NonAttribute<PointEntryModel[]>;
+  public declare getPointEntries: HasManyGetAssociationsMixin<PointEntryModel>;
+  public declare setPointEntries: HasManySetAssociationsMixin<
+    PointEntryModel,
+    PointEntryModel["id"]
+  >;
+  public declare addPointEntry: HasManyAddAssociationMixin<
+    PointEntryModel,
+    PointEntryModel["id"]
+  >;
+  public declare addPointEntries: HasManyAddAssociationsMixin<
+    PointEntryModel,
+    PointEntryModel["id"]
+  >;
+  public declare createPointEntry: HasManyCreateAssociationMixin<PointEntryModel>;
+  public declare removePointEntry: HasManyRemoveAssociationMixin<
+    PointEntryModel,
+    PointEntryModel["id"]
+  >;
+  public declare removePointEntries: HasManyRemoveAssociationsMixin<
+    PointEntryModel,
+    PointEntryModel["id"]
+  >;
+  public declare hasPointEntry: HasManyHasAssociationMixin<
+    PointEntryModel,
+    PointEntryModel["id"]
+  >;
+  public declare hasPointEntries: HasManyHasAssociationsMixin<
+    PointEntryModel,
+    PointEntryModel["id"]
+  >;
+  public declare countPointEntries: HasManyCountAssociationsMixin<PointEntryModel>;
 
   public toResource(): PointOpportunityResource {
     return PointOpportunityResource.init({
