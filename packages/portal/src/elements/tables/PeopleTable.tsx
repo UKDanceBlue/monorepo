@@ -2,7 +2,11 @@ import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useNavigate } from "@tanstack/react-router";
-import { SortDirection } from "@ukdanceblue/common";
+import {
+  SortDirection,
+  committeeNames,
+  stringifyDbRole,
+} from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
@@ -165,7 +169,7 @@ export const PeopleTable = () => {
             title: "Role",
             dataIndex: "dbRole",
             render: (_, record) => {
-              return record.role.dbRole;
+              return stringifyDbRole(record.role.dbRole);
             },
             sorter: true,
             sortDirections: ["ascend", "descend"],
@@ -183,7 +187,9 @@ export const PeopleTable = () => {
             title: "Committee Name",
             dataIndex: "committeeName",
             render: (_, record) => {
-              return record.role.committeeIdentifier ?? "None";
+              return record.role.committeeIdentifier
+                ? committeeNames[record.role.committeeIdentifier]
+                : "None";
             },
             sorter: true,
             sortDirections: ["ascend", "descend"],
