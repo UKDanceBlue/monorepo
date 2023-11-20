@@ -1,10 +1,15 @@
 import { useNavigate } from "@tanstack/react-router";
 import { CommitteeRole, committeeNames } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
+import {
+  getFragmentData,
+  type FragmentType,
+} from "@ukdanceblue/common/graphql-client-admin";
 import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
 
-import type { TeamNameFragment } from "../PersonFormsGQL";
+import { TeamNameFragment } from "../PersonFormsGQL";
 
+import { BaseOptionType } from "antd/es/select";
+import { useMemo, useState } from "react";
 import { usePersonCreatorForm } from "./usePersonCreatorForm";
 
 export function PersonCreator({
@@ -18,17 +23,45 @@ export function PersonCreator({
 
   const { message } = App.useApp();
 
-  const { formApi, captaincyOptions, membershipOptions } = usePersonCreatorForm(
-    teamNamesFragment,
-    (ret) => {
-      if (ret?.uuid) {
-        navigate({
-          to: "/people/$personId/",
-          params: { personId: ret.uuid },
-        }).catch(console.error);
-      }
+  const { formApi } = usePersonCreatorForm((ret) => {
+    if (ret?.uuid) {
+      navigate({
+        to: "/people/$personId/",
+        params: { personId: ret.uuid },
+      }).catch(console.error);
     }
+  });
+
+  const teamNamesData = getFragmentData(TeamNameFragment, teamNamesFragment);
+
+  const [formMemberOf, setFormMemberOf] = useState<readonly string[]>(
+    formApi.getFieldValue("memberOf") ?? []
   );
+  const [formCaptainOf, setFormCaptainOf] = useState<readonly string[]>(
+    formApi.getFieldValue("captainOf") ?? []
+  );
+  type OptionType = BaseOptionType & { label: string; value: string };
+
+  const { membershipOptions, captaincyOptions } = useMemo<{
+    membershipOptions: OptionType[];
+    captaincyOptions: OptionType[];
+  }>(() => {
+    const captaincyOptions: OptionType[] = [];
+    const membershipOptions: OptionType[] = [];
+    for (const team of teamNamesData ?? []) {
+      captaincyOptions.push({
+        label: team.name,
+        value: team.uuid,
+        disabled: formMemberOf.includes(team.uuid),
+      });
+      membershipOptions.push({
+        label: team.name,
+        value: team.uuid,
+        disabled: formCaptainOf.includes(team.uuid),
+      });
+    }
+    return { captaincyOptions, membershipOptions };
+  }, [formCaptainOf, formMemberOf, teamNamesData]);
 
   if (!teamNamesFragment) {
     return (
@@ -55,6 +88,18 @@ export function PersonCreator({
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 32 }}
         >
+          <formApi.Subscribe selector={(state) => state.values.captainOf}>
+            {(captainOf) => {
+              setFormCaptainOf(captainOf ?? []);
+              return null;
+            }}
+          </formApi.Subscribe>
+          <formApi.Subscribe selector={(state) => state.values.memberOf}>
+            {(memberOf) => {
+              setFormMemberOf(memberOf ?? []);
+              return null;
+            }}
+          </formApi.Subscribe>
           <formApi.Field
             name="name"
             children={(field) => (
