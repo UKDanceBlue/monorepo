@@ -125,7 +125,15 @@ export function PersonViewer({
                   size="small"
                   items={personData.teams.map((team) => ({
                     label: team.team.name,
-                    children: team.position,
+                    key: team.team.uuid,
+                    children: (
+                      <Link
+                        to="/teams/$teamId"
+                        params={{ teamId: team.team.uuid }}
+                      >
+                        {team.position}
+                      </Link>
+                    ),
                   }))}
                 />
               ),
