@@ -15,3 +15,4 @@ tsconfig.tsbuildinfo
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+react-danceblue-firebase-adminsdk-*.json
