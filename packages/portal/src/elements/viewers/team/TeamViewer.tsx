@@ -1,10 +1,12 @@
-import { Link } from "@tanstack/react-router";
+import { DeleteOutlined } from "@ant-design/icons";
+import { Link, useNavigate } from "@tanstack/react-router";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
-import { Descriptions, Empty, Flex } from "antd";
+import { Button, Descriptions, Empty, Flex } from "antd";
+import { useTeamDeletePopup } from "./TeamDeletePopup";
 
 export const TeamViewerFragment = graphql(/* GraphQL */ `
   fragment TeamViewerFragment on TeamResource {
@@ -39,36 +41,50 @@ export function TeamViewer({
   const teamData =
     getFragmentData(TeamViewerFragment, teamFragment) ?? undefined;
 
+  const navigate = useNavigate();
+  const { TeamDeletePopup, showModal } = useTeamDeletePopup({
+    uuid: teamData?.uuid ?? "",
+    onDelete: () => {
+      navigate({ to: "/teams/" }).catch(console.error);
+    },
+  });
+
   if (!teamData) {
     return <Empty description="Team not found" />;
   }
 
   return (
-    <Flex gap="1em">
+    <Flex gap="1em" wrap="wrap">
+      {TeamDeletePopup}
+      <Flex gap="1em" vertical flex={1} style={{ minWidth: "15em" }}>
+        <Descriptions bordered column={1} size="small" title="Team Overview">
+          <Descriptions.Item label="Name">{teamData.name}</Descriptions.Item>
+          <Descriptions.Item label="Marathon Year">
+            {teamData.marathonYear}
+          </Descriptions.Item>
+          <Descriptions.Item label="Legacy Status">
+            {teamData.legacyStatus}
+          </Descriptions.Item>
+          <Descriptions.Item label="Total Points">
+            {teamData.totalPoints}
+          </Descriptions.Item>
+          <Descriptions.Item label="Type">{teamData.type}</Descriptions.Item>
+        </Descriptions>
+        <Button
+          style={{ width: "18ch" }}
+          onClick={showModal}
+          icon={<DeleteOutlined />}
+          danger
+          shape="round"
+        >
+          Delete Team
+        </Button>
+      </Flex>
       <Descriptions
         bordered
         column={1}
         size="small"
-        style={{ flex: 1 }}
-        title="Team Overview"
-      >
-        <Descriptions.Item label="Name">{teamData.name}</Descriptions.Item>
-        <Descriptions.Item label="Marathon Year">
-          {teamData.marathonYear}
-        </Descriptions.Item>
-        <Descriptions.Item label="Legacy Status">
-          {teamData.legacyStatus}
-        </Descriptions.Item>
-        <Descriptions.Item label="Total Points">
-          {teamData.totalPoints}
-        </Descriptions.Item>
-        <Descriptions.Item label="Type">{teamData.type}</Descriptions.Item>
-      </Descriptions>
-      <Descriptions
-        bordered
-        column={1}
-        size="small"
-        style={{ flex: 1 }}
+        style={{ flex: 1, minWidth: "15em" }}
         title="Team Members"
       >
         <Descriptions.Item label="Captains">
