@@ -63,7 +63,7 @@ export const PeopleTable = () => {
     useListQuery(
       {
         initPage: 1,
-        initPageSize: 10,
+        initPageSize: 20,
         initSorting: [],
       },
       {

@@ -63,7 +63,7 @@ export const TeamsTable = () => {
   } = useListQuery(
     {
       initPage: 1,
-      initPageSize: 10,
+      initPageSize: 20,
       initSorting: [
         { field: "totalPoints", direction: SortDirection.DESCENDING },
       ],
