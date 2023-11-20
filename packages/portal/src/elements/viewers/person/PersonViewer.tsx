@@ -6,7 +6,7 @@ import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
-import { Button, Descriptions, Flex, Typography } from "antd";
+import { Button, Descriptions, Empty, Flex, Typography } from "antd";
 
 import { usePersonDeletePopup } from "./PersonDeletePopup";
 
@@ -48,18 +48,7 @@ export function PersonViewer({
 
   if (!personData) {
     return (
-      <>
-        <Typography.Title level={2}>
-          <Button
-            style={{ display: "inline", marginLeft: "1em" }}
-            onClick={showModal}
-            icon={<DeleteOutlined />}
-            danger
-            shape="circle"
-          />
-        </Typography.Title>
-        {PersonDeletePopup}
-      </>
+      <Empty description="Person not found" style={{ marginTop: "1em" }} />
     );
   }
 
