@@ -28,6 +28,7 @@ await import("./TeamPointEntries.js");
 await import("./Memberships.js");
 await import("./PointEntryPersonFrom.js");
 await import("./PointOpportunityEvents.js");
+await import("./PointOpportunityEntries.js");
 await import("./EventOccurrences.js");
 logDebug("Initialized model relations");
 

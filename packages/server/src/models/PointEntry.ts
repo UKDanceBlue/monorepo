@@ -14,6 +14,7 @@ import { sequelizeDb } from "../data-source.js";
 
 import { BaseModel } from "./BaseModel.js";
 import type { PersonModel } from "./Person.js";
+import { PointOpportunityModel } from "./PointOpportunity.js";
 import type { TeamModel } from "./Team.js";
 
 export class PointEntryModel extends BaseModel<
@@ -48,6 +49,15 @@ export class PointEntryModel extends BaseModel<
   >;
   public declare createTeam: BelongsToCreateAssociationMixin<TeamModel>;
   public declare readonly teamId: CreationOptional<number>;
+
+  public declare pointOpportunity: NonAttribute<PointOpportunityModel | null>;
+  public declare getPointOpportunity: BelongsToGetAssociationMixin<PointOpportunityModel>;
+  public declare setPointOpportunity: BelongsToSetAssociationMixin<
+    PointOpportunityModel,
+    PointOpportunityModel["id"]
+  >;
+  public declare createPointOpportunity: BelongsToCreateAssociationMixin<PointOpportunityModel>;
+  public declare readonly pointOpportunityId: CreationOptional<number | null>;
 
   public toResource(): PointEntryResource {
     return PointEntryResource.init({
@@ -94,6 +104,10 @@ PointEntryModel.init(
     teamId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    pointOpportunityId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
   },
   {

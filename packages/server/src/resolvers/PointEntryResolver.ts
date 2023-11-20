@@ -2,6 +2,7 @@ import {
   ErrorCode,
   PersonResource,
   PointEntryResource,
+  PointOpportunityResource,
   TeamResource,
 } from "@ukdanceblue/common";
 import {
@@ -22,6 +23,7 @@ import { PersonModel } from "../models/Person.js";
 import { PointEntryModel } from "../models/PointEntry.js";
 import { TeamModel } from "../models/Team.js";
 
+import { PointOpportunityModel } from "../models/PointOpportunity.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
@@ -191,5 +193,20 @@ export class PointEntryResolver
     }
 
     return model.team.toResource();
+  }
+
+  @FieldResolver(() => PointOpportunityResource, { nullable: true })
+  async pointOpportunity(
+    @Root() pointEntry: PointEntryResource
+  ): Promise<PointOpportunityResource | null> {
+    const model = await PointEntryModel.findByUuid(pointEntry.uuid, {
+      include: { model: PointOpportunityModel, as: "pointOpportunity" },
+    });
+
+    if (model == null) {
+      throw new DetailedError(ErrorCode.NotFound, "PointEntry not found");
+    }
+
+    return model.pointOpportunity?.toResource() ?? null;
   }
 }
