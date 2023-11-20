@@ -175,6 +175,19 @@ type CreatePointEntryResponse implements AbstractGraphQLCreatedResponse & Abstra
   uuid: String!
 }
 
+input CreatePointOpportunityInput {
+  eventUuid: ID
+  name: String!
+  opportunityDate: LuxonDateTime
+  type: TeamType!
+}
+
+type CreatePointOpportunityResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: PointOpportunityResource!
+  ok: Boolean!
+  uuid: String!
+}
+
 input CreateTeamInput {
   legacyStatus: TeamLegacyStatus!
   marathonYear: String!
@@ -228,6 +241,10 @@ type DeletePersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResp
 }
 
 type DeletePointEntryResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  ok: Boolean!
+}
+
+type DeletePointOpportunityResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   ok: Boolean!
 }
 
@@ -566,6 +583,20 @@ type ListPointEntriesResponse implements AbstractGraphQLArrayOkResponse & Abstra
   total: NonNegativeInt!
 }
 
+type ListPointOpportunitiesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+  data: [PointOpportunityResource!]!
+  ok: Boolean!
+
+  """The current page number (1-indexed)"""
+  page: PositiveInt!
+
+  """The number of items per page"""
+  pageSize: NonNegativeInt!
+
+  """The total number of items"""
+  total: NonNegativeInt!
+}
+
 type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
   data: [TeamResource!]!
   ok: Boolean!
@@ -615,6 +646,7 @@ type Mutation {
   createImage(input: CreateImageInput!): CreateImageResponse!
   createPerson(input: CreatePersonInput!): CreatePersonResponse!
   createPointEntry(input: CreatePointEntryInput!): CreatePointEntryResponse!
+  createPointOpportunity(input: CreatePointOpportunityInput!): CreatePointOpportunityResponse!
   createTeam(input: CreateTeamInput!): CreateTeamResponse!
   deleteConfiguration(uuid: String!): DeleteConfigurationResponse!
   deleteDevice(uuid: String!): DeleteDeviceResponse!
@@ -623,12 +655,14 @@ type Mutation {
   deleteNotification(uuid: String!): DeleteNotificationResponse!
   deletePerson(uuid: String!): DeletePersonResponse!
   deletePointEntry(uuid: String!): DeletePointEntryResponse!
+  deletePointOpportunity(uuid: String!): DeletePointOpportunityResponse!
   deleteTeam(uuid: String!): DeleteTeamResponse!
   removeImageFromEvent(eventId: String!, imageId: String!): RemoveEventImageResponse!
   sendNotification(input: SendNotificationInput!): SendNotificationResponse!
   setConfiguration(input: SetConfigurationInput!, key: String!): SetConfigurationResponse!
   setEvent(input: SetEventInput!, uuid: String!): SetEventResponse!
   setPerson(input: SetPersonInput!, uuid: String!): GetPersonResponse!
+  setPointOpportunity(input: SetPointOpportunityInput!, uuid: String!): SinglePointOpportunityResponse!
   setTeam(input: SetTeamInput!, uuid: String!): SingleTeamResponse!
 }
 
@@ -801,6 +835,84 @@ type PointEntryResource {
   personFrom: PersonResource
   points: Int!
   team: TeamResource!
+  updatedAt: DateTimeISO
+  uuid: ID!
+}
+
+enum PointOpportunityResolverAllKeys {
+  createdAt
+  name
+  opportunityDate
+  type
+  updatedAt
+}
+
+enum PointOpportunityResolverDateFilterKeys {
+  createdAt
+  opportunityDate
+  updatedAt
+}
+
+input PointOpportunityResolverKeyedDateFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: PointOpportunityResolverDateFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: LuxonDateTime!
+}
+
+input PointOpportunityResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: PointOpportunityResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+input PointOpportunityResolverKeyedOneOfFilterItem {
+  """The field to filter on"""
+  field: PointOpportunityResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: [String!]!
+}
+
+input PointOpportunityResolverKeyedStringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The field to filter on"""
+  field: PointOpportunityResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: String!
+}
+
+enum PointOpportunityResolverStringFilterKeys {
+  name
+  type
+}
+
+type PointOpportunityResource {
+  createdAt: DateTimeISO
+  event: EventResource
+  name: String!
+  opportunityDate: LuxonDateTime
+  type: TeamType!
   updatedAt: DateTimeISO
   uuid: ID!
 }
@@ -1035,6 +1147,50 @@ type Query {
     stringFilters: Void
   ): ListPointEntriesResponse!
   pointEntry(uuid: String!): GetPointEntryByUuidResponse!
+  pointOpportunities(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: [PointOpportunityResolverKeyedDateFilterItem!]
+
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [PointOpportunityResolverKeyedIsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: Void
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: [PointOpportunityResolverKeyedOneOfFilterItem!]
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: [PointOpportunityResolverKeyedStringFilterItem!]
+  ): ListPointOpportunitiesResponse!
+  pointOpportunity(uuid: String!): SinglePointOpportunityResponse!
   searchPeopleByName(name: String!): GetPeopleResponse!
   team(uuid: String!): SingleTeamResponse!
   teams(
@@ -1158,12 +1314,24 @@ input SetPersonInput {
   role: RoleResourceInput
 }
 
+input SetPointOpportunityInput {
+  eventUuid: ID
+  name: String
+  opportunityDate: LuxonDateTime
+  type: TeamType
+}
+
 input SetTeamInput {
   legacyStatus: TeamLegacyStatus
   marathonYear: String
   name: String
   persistentIdentifier: String
   type: TeamType
+}
+
+type SinglePointOpportunityResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: PointOpportunityResource!
+  ok: Boolean!
 }
 
 type SingleTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {

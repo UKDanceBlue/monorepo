@@ -207,6 +207,20 @@ export type CreatePointEntryResponse = AbstractGraphQlCreatedResponse & Abstract
   readonly uuid: Scalars['String']['output'];
 };
 
+export type CreatePointOpportunityInput = {
+  readonly eventUuid?: InputMaybe<Scalars['ID']['input']>;
+  readonly name: Scalars['String']['input'];
+  readonly opportunityDate?: InputMaybe<Scalars['LuxonDateTime']['input']>;
+  readonly type: TeamType;
+};
+
+export type CreatePointOpportunityResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'CreatePointOpportunityResponse';
+  readonly data: PointOpportunityResource;
+  readonly ok: Scalars['Boolean']['output'];
+  readonly uuid: Scalars['String']['output'];
+};
+
 export type CreateTeamInput = {
   readonly legacyStatus: TeamLegacyStatus;
   readonly marathonYear: Scalars['String']['input'];
@@ -256,6 +270,11 @@ export type DeletePersonResponse = AbstractGraphQlOkResponse & GraphQlBaseRespon
 
 export type DeletePointEntryResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeletePointEntryResponse';
+  readonly ok: Scalars['Boolean']['output'];
+};
+
+export type DeletePointOpportunityResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'DeletePointOpportunityResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
@@ -569,6 +588,18 @@ export type ListPointEntriesResponse = AbstractGraphQlArrayOkResponse & Abstract
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
+export type ListPointOpportunitiesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'ListPointOpportunitiesResponse';
+  readonly data: ReadonlyArray<PointOpportunityResource>;
+  readonly ok: Scalars['Boolean']['output'];
+  /** The current page number (1-indexed) */
+  readonly page: Scalars['PositiveInt']['output'];
+  /** The number of items per page */
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
+  /** The total number of items */
+  readonly total: Scalars['NonNegativeInt']['output'];
+};
+
 export type ListTeamsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListTeamsResponse';
   readonly data: ReadonlyArray<TeamResource>;
@@ -614,6 +645,7 @@ export type Mutation = {
   readonly createImage: CreateImageResponse;
   readonly createPerson: CreatePersonResponse;
   readonly createPointEntry: CreatePointEntryResponse;
+  readonly createPointOpportunity: CreatePointOpportunityResponse;
   readonly createTeam: CreateTeamResponse;
   readonly deleteConfiguration: DeleteConfigurationResponse;
   readonly deleteDevice: DeleteDeviceResponse;
@@ -622,12 +654,14 @@ export type Mutation = {
   readonly deleteNotification: DeleteNotificationResponse;
   readonly deletePerson: DeletePersonResponse;
   readonly deletePointEntry: DeletePointEntryResponse;
+  readonly deletePointOpportunity: DeletePointOpportunityResponse;
   readonly deleteTeam: DeleteTeamResponse;
   readonly removeImageFromEvent: RemoveEventImageResponse;
   readonly sendNotification: SendNotificationResponse;
   readonly setConfiguration: SetConfigurationResponse;
   readonly setEvent: SetEventResponse;
   readonly setPerson: GetPersonResponse;
+  readonly setPointOpportunity: SinglePointOpportunityResponse;
   readonly setTeam: SingleTeamResponse;
 };
 
@@ -674,6 +708,11 @@ export type MutationCreatePointEntryArgs = {
 };
 
 
+export type MutationCreatePointOpportunityArgs = {
+  input: CreatePointOpportunityInput;
+};
+
+
 export type MutationCreateTeamArgs = {
   input: CreateTeamInput;
 };
@@ -714,6 +753,11 @@ export type MutationDeletePointEntryArgs = {
 };
 
 
+export type MutationDeletePointOpportunityArgs = {
+  uuid: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteTeamArgs = {
   uuid: Scalars['String']['input'];
 };
@@ -744,6 +788,12 @@ export type MutationSetEventArgs = {
 
 export type MutationSetPersonArgs = {
   input: SetPersonInput;
+  uuid: Scalars['String']['input'];
+};
+
+
+export type MutationSetPointOpportunityArgs = {
+  input: SetPointOpportunityInput;
   uuid: Scalars['String']['input'];
 };
 
@@ -896,6 +946,74 @@ export type PointEntryResource = {
   readonly uuid: Scalars['ID']['output'];
 };
 
+export const PointOpportunityResolverAllKeys = {
+  CreatedAt: 'createdAt',
+  Name: 'name',
+  OpportunityDate: 'opportunityDate',
+  Type: 'type',
+  UpdatedAt: 'updatedAt'
+} as const;
+
+export type PointOpportunityResolverAllKeys = typeof PointOpportunityResolverAllKeys[keyof typeof PointOpportunityResolverAllKeys];
+export const PointOpportunityResolverDateFilterKeys = {
+  CreatedAt: 'createdAt',
+  OpportunityDate: 'opportunityDate',
+  UpdatedAt: 'updatedAt'
+} as const;
+
+export type PointOpportunityResolverDateFilterKeys = typeof PointOpportunityResolverDateFilterKeys[keyof typeof PointOpportunityResolverDateFilterKeys];
+export type PointOpportunityResolverKeyedDateFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: NumericComparator;
+  /** The field to filter on */
+  readonly field: PointOpportunityResolverDateFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['LuxonDateTime']['input'];
+};
+
+export type PointOpportunityResolverKeyedIsNullFilterItem = {
+  /** The field to filter on */
+  readonly field: PointOpportunityResolverAllKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type PointOpportunityResolverKeyedOneOfFilterItem = {
+  /** The field to filter on */
+  readonly field: PointOpportunityResolverStringFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
+};
+
+export type PointOpportunityResolverKeyedStringFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: StringComparator;
+  /** The field to filter on */
+  readonly field: PointOpportunityResolverStringFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
+};
+
+export const PointOpportunityResolverStringFilterKeys = {
+  Name: 'name',
+  Type: 'type'
+} as const;
+
+export type PointOpportunityResolverStringFilterKeys = typeof PointOpportunityResolverStringFilterKeys[keyof typeof PointOpportunityResolverStringFilterKeys];
+export type PointOpportunityResource = {
+  readonly __typename?: 'PointOpportunityResource';
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly event?: Maybe<EventResource>;
+  readonly name: Scalars['String']['output'];
+  readonly opportunityDate?: Maybe<Scalars['LuxonDateTime']['output']>;
+  readonly type: TeamType;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly uuid: Scalars['ID']['output'];
+};
+
 export type Query = {
   readonly __typename?: 'Query';
   readonly allConfigurations: GetAllConfigurationsResponse;
@@ -914,6 +1032,8 @@ export type Query = {
   readonly personByLinkBlue: GetPersonResponse;
   readonly pointEntries: ListPointEntriesResponse;
   readonly pointEntry: GetPointEntryByUuidResponse;
+  readonly pointOpportunities: ListPointOpportunitiesResponse;
+  readonly pointOpportunity: SinglePointOpportunityResponse;
   readonly searchPeopleByName: GetPeopleResponse;
   readonly team: SingleTeamResponse;
   readonly teams: ListTeamsResponse;
@@ -1041,6 +1161,27 @@ export type QueryPointEntryArgs = {
 };
 
 
+export type QueryPointOpportunitiesArgs = {
+  booleanFilters?: InputMaybe<Scalars['Void']['input']>;
+  dateFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedDateFilterItem>>;
+  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  isNullFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedIsNullFilterItem>>;
+  numericFilters?: InputMaybe<Scalars['Void']['input']>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedOneOfFilterItem>>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sendAll?: InputMaybe<Scalars['Boolean']['input']>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedStringFilterItem>>;
+};
+
+
+export type QueryPointOpportunityArgs = {
+  uuid: Scalars['String']['input'];
+};
+
+
 export type QuerySearchPeopleByNameArgs = {
   name: Scalars['String']['input'];
 };
@@ -1148,12 +1289,25 @@ export type SetPersonInput = {
   readonly role?: InputMaybe<RoleResourceInput>;
 };
 
+export type SetPointOpportunityInput = {
+  readonly eventUuid?: InputMaybe<Scalars['ID']['input']>;
+  readonly name?: InputMaybe<Scalars['String']['input']>;
+  readonly opportunityDate?: InputMaybe<Scalars['LuxonDateTime']['input']>;
+  readonly type?: InputMaybe<TeamType>;
+};
+
 export type SetTeamInput = {
   readonly legacyStatus?: InputMaybe<TeamLegacyStatus>;
   readonly marathonYear?: InputMaybe<Scalars['String']['input']>;
   readonly name?: InputMaybe<Scalars['String']['input']>;
   readonly persistentIdentifier?: InputMaybe<Scalars['String']['input']>;
   readonly type?: InputMaybe<TeamType>;
+};
+
+export type SinglePointOpportunityResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'SinglePointOpportunityResponse';
+  readonly data: PointOpportunityResource;
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type SingleTeamResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {

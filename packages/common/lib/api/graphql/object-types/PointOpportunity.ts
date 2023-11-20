@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { Field, ID, ObjectType } from "type-graphql";
 
+import { DateTimeScalar } from "../custom-scalars/DateTimeScalar.js";
 import { Resource } from "./Resource.js";
 import { TeamType } from "./Team.js";
 
@@ -12,7 +13,7 @@ export class PointOpportunityResource extends Resource {
   name!: string;
   @Field(() => TeamType)
   type!: TeamType;
-  @Field(() => DateTime, { nullable: true })
+  @Field(() => DateTimeScalar, { nullable: true })
   opportunityDate!: DateTime | null;
 
   public getUniqueId(): string {

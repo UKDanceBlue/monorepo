@@ -10,6 +10,7 @@ import { MembershipResolver } from "../resolvers/MembershipResolver.js";
 import { NotificationResolver } from "../resolvers/NotificationResolver.js";
 import { PersonResolver } from "../resolvers/PersonResolver.js";
 import { PointEntryResolver } from "../resolvers/PointEntryResolver.js";
+import { PointOpportunityResolver } from "../resolvers/PointOpportunityResolver.js";
 import { TeamResolver } from "../resolvers/TeamResolver.js";
 import { customAuthChecker } from "../resolvers/authChecker.js";
 
@@ -34,6 +35,7 @@ export default await buildSchema({
     TeamResolver,
     LoginStateResolver,
     PointEntryResolver,
+    PointOpportunityResolver,
   ],
   emitSchemaFile: true,
   authChecker: customAuthChecker,

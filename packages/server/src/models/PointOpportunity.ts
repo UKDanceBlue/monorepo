@@ -44,6 +44,8 @@ export class PointOpportunityModel extends BaseModel<
         ? DateTime.fromJSDate(this.opportunityDate)
         : null,
       type: this.type,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     });
   }
 }
@@ -84,8 +86,6 @@ PointOpportunityModel.init(
   },
   {
     sequelize: sequelizeDb,
-    timestamps: false,
-    paranoid: false,
     name: {
       singular: "pointOpportunity",
       plural: "pointOpportunities",

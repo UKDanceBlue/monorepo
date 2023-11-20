@@ -23,6 +23,7 @@ import {
 import { PointOpportunityModel } from "../models/PointOpportunity.js";
 
 import { DateTime } from "luxon";
+import { sequelizeDb } from "../data-source.js";
 import { EventModel } from "../models/Event.js";
 import {
   AbstractGraphQLCreatedResponse,
@@ -156,27 +157,29 @@ export class PointOpportunityResolver
   async create(
     @Arg("input") input: CreatePointOpportunityInput
   ): Promise<CreatePointOpportunityResponse> {
-    let eventId: number | null = null;
-    if (input.eventUuid != null) {
-      const event = await EventModel.findByUuid(input.eventUuid, {
-        attributes: ["id"],
-      });
-      if (!event) {
-        throw new DetailedError(ErrorCode.NotFound, "Event not found");
+    return sequelizeDb.transaction(async () => {
+      let eventId: number | null = null;
+      if (input.eventUuid != null) {
+        const event = await EventModel.findByUuid(input.eventUuid, {
+          attributes: ["id"],
+        });
+        if (!event) {
+          throw new DetailedError(ErrorCode.NotFound, "Event not found");
+        }
+        eventId = event.id;
       }
-      eventId = event.id;
-    }
-    const row = await PointOpportunityModel.create({
-      name: input.name,
-      opportunityDate: input.opportunityDate?.toJSDate() ?? null,
-      type: input.type,
-      eventId,
-    });
+      const row = await PointOpportunityModel.create({
+        name: input.name,
+        opportunityDate: input.opportunityDate?.toJSDate() ?? null,
+        type: input.type,
+        eventId,
+      });
 
-    return CreatePointOpportunityResponse.newCreated(
-      row.toResource(),
-      row.uuid
-    );
+      return CreatePointOpportunityResponse.newCreated(
+        row.toResource(),
+        row.uuid
+      );
+    });
   }
 
   @Mutation(() => SinglePointOpportunityResponse, {
@@ -186,42 +189,43 @@ export class PointOpportunityResolver
     @Arg("uuid") uuid: string,
     @Arg("input") input: SetPointOpportunityInput
   ): Promise<SinglePointOpportunityResponse> {
-    const row = await PointOpportunityModel.findByUuid(uuid, {
-      attributes: ["id"],
-    });
-
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "PointOpportunity not found");
-    }
-
-    let eventId: number | null = null;
-    if (input.eventUuid != null) {
-      const event = await EventModel.findByUuid(input.eventUuid, {
+    return sequelizeDb.transaction(async () => {
+      let row = await PointOpportunityModel.findByUuid(uuid, {
         attributes: ["id"],
       });
-      if (!event) {
-        throw new DetailedError(ErrorCode.NotFound, "Event not found");
+
+      if (row == null) {
+        throw new DetailedError(
+          ErrorCode.NotFound,
+          "PointOpportunity not found"
+        );
       }
-      eventId = event.id;
-    }
 
-    let rowParam: Partial<PointOpportunityModel> = {};
-    if (input.name != null) {
-      rowParam.name = input.name;
-    }
-    if (input.opportunityDate != null) {
-      rowParam.opportunityDate = input.opportunityDate.toJSDate();
-    }
-    if (input.type != null) {
-      rowParam.type = input.type;
-    }
-    if (eventId != null) {
+      let eventId: number | null = null;
+      if (input.eventUuid != null) {
+        const event = await EventModel.findByUuid(input.eventUuid, {
+          attributes: ["id"],
+        });
+        if (!event) {
+          throw new DetailedError(ErrorCode.NotFound, "Event not found");
+        }
+        eventId = event.id;
+      }
+
+      let rowParam: Partial<PointOpportunityModel> = {};
+      if (input.name != null) {
+        rowParam.name = input.name;
+      }
+      if (input.type != null) {
+        rowParam.type = input.type;
+      }
+      rowParam.opportunityDate = input.opportunityDate?.toJSDate() ?? null;
       rowParam.eventId = eventId;
-    }
 
-    await row.update(rowParam);
+      row = await row.update(rowParam, { returning: true });
 
-    return SinglePointOpportunityResponse.newOk(row.toResource());
+      return SinglePointOpportunityResponse.newOk(row.toResource());
+    });
   }
 
   @Mutation(() => DeletePointOpportunityResponse, {
@@ -230,18 +234,23 @@ export class PointOpportunityResolver
   async delete(
     @Arg("uuid") id: string
   ): Promise<DeletePointOpportunityResponse> {
-    const row = await PointOpportunityModel.findOne({
-      where: { uuid: id },
-      attributes: ["id"],
+    return sequelizeDb.transaction(async () => {
+      const row = await PointOpportunityModel.findOne({
+        where: { uuid: id },
+        attributes: ["id"],
+      });
+
+      if (row == null) {
+        throw new DetailedError(
+          ErrorCode.NotFound,
+          "PointOpportunity not found"
+        );
+      }
+
+      await row.destroy();
+
+      return DeletePointOpportunityResponse.newOk(true);
     });
-
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "PointOpportunity not found");
-    }
-
-    await row.destroy();
-
-    return DeletePointOpportunityResponse.newOk(true);
   }
 
   @FieldResolver(() => EventResource, { nullable: true })
