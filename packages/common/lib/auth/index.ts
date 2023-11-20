@@ -70,6 +70,14 @@ export function stringifyAccessLevel(val: unknown): string {
   }
 }
 
+/**
+ * DbRole is a shorthand for someone's general role within DanceBlue
+ *
+ * Someone with a DbRole of "None" has no account, and is just a random person
+ * Public however means anyone with LinkBlue or other authentication
+ * Team member and captain refer to someone's place on a spirit team
+ * Committee means someone is a member of the DanceBlue Committee
+ */
 export const DbRole = {
   None: "None",
   Public: "Public",
