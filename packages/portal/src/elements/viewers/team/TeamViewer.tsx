@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import {
   getFragmentData,
@@ -15,12 +16,14 @@ export const TeamViewerFragment = graphql(/* GraphQL */ `
     type
     members {
       person {
+        uuid
         name
         linkblue
       }
     }
     captains {
       person {
+        uuid
         name
         linkblue
       }
@@ -71,8 +74,15 @@ export function TeamViewer({
         <Descriptions.Item label="Captains">
           <ul>
             {teamData.captains.map((captain) => (
-              <li>
-                {captain.person.name} ({captain.person.linkblue})
+              <li key={captain.person.uuid}>
+                <Link
+                  to="/people/$personId/"
+                  params={{
+                    personId: captain.person.uuid,
+                  }}
+                >
+                  {captain.person.name} ({captain.person.linkblue})
+                </Link>
               </li>
             ))}
           </ul>
@@ -80,9 +90,16 @@ export function TeamViewer({
         <Descriptions.Item label="Members">
           <ul>
             {teamData.members.map((member) => (
-              <li>
-                {member.person.name ?? "Never logged in"} (
-                {member.person.linkblue ?? "No linkblue"})
+              <li key={member.person.uuid}>
+                <Link
+                  to="/people/$personId/"
+                  params={{
+                    personId: member.person.uuid,
+                  }}
+                >
+                  {member.person.name ?? "Never logged in"} (
+                  {member.person.linkblue ?? "No linkblue"})
+                </Link>
               </li>
             ))}
           </ul>
