@@ -128,7 +128,14 @@ export function PersonEditor({
               </Form.Item>
             )}
           </formApi.Field>
-          <formApi.Field name="linkblue">
+          <formApi.Field
+            name="linkblue"
+            onChange={(linkblue) =>
+              (linkblue ?? "").endsWith("@uky.edu")
+                ? "A LinkBlue looks like 'abcd123', not 'abcd123@uky.edu'"
+                : undefined
+            }
+          >
             {(field) => (
               <Form.Item
                 label="Linkblue"
