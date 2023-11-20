@@ -1,6 +1,7 @@
-import { App, Button, Form, Input, InputNumber } from "antd";
+import { App, Button, Flex, Form, Input, InputNumber } from "antd";
 import { useReducer } from "react";
 
+import { PointEntryOpportunityLookup } from "./PointEntryOpportunityLookup";
 import { PointEntryPersonLookup } from "./PointEntryPersonLookup";
 import { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
 
@@ -66,31 +67,36 @@ export function PointEntryCreator({
             </Form.Item>
           )}
         />
-        <formApi.Field
-          name="points"
-          onChange={(value) =>
-            !value ? "A point value is required" : undefined
-          }
-          children={(field) => (
-            <Form.Item
-              label="Points*"
-              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
-              help={
-                field.state.meta.errors.length > 0
-                  ? field.state.meta.errors[0]
-                  : undefined
-              }
-            >
-              <InputNumber
-                status={field.state.meta.errors.length > 0 ? "error" : ""}
-                name={field.name}
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(num) => field.handleChange(num ?? 0)}
-              />
-            </Form.Item>
-          )}
-        />
+        <Flex wrap="wrap" gap="10px">
+          <formApi.Field
+            name="points"
+            onChange={(value) =>
+              !value ? "A point value is required" : undefined
+            }
+            children={(field) => (
+              <Form.Item
+                label="Points*"
+                validateStatus={
+                  field.state.meta.errors.length > 0 ? "error" : ""
+                }
+                help={
+                  field.state.meta.errors.length > 0
+                    ? field.state.meta.errors[0]
+                    : undefined
+                }
+              >
+                <InputNumber
+                  status={field.state.meta.errors.length > 0 ? "error" : ""}
+                  name={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(num) => field.handleChange(num ?? 0)}
+                />
+              </Form.Item>
+            )}
+          />
+          <PointEntryOpportunityLookup formApi={formApi} />
+        </Flex>
         <PointEntryPersonLookup
           formApi={formApi}
           teamUuid={teamUuid}

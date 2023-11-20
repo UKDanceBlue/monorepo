@@ -25,6 +25,8 @@ const documents = {
     "\n  query GetPersonByLinkBlue($linkBlue: String!) {\n    personByLinkBlue(linkBlueId: $linkBlue) {\n      data {\n        uuid\n        name\n      }\n    }\n  }\n": types.GetPersonByLinkBlueDocument,
     "\n  query SearchPersonByName($name: String!) {\n    searchPeopleByName(name: $name) {\n      data {\n        uuid\n        name\n      }\n    }\n  }\n": types.SearchPersonByNameDocument,
     "\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: String!\n    $email: EmailAddress!\n    $teamUuid: String!\n  ) {\n    createPerson(\n      input: { email: $email, linkblue: $linkBlue, memberOf: [$teamUuid] }\n    ) {\n      uuid\n    }\n  }\n": types.CreatePersonByLinkBlueDocument,
+    "\n  query PointEntryOpportunityLookup($name: String!) {\n    pointOpportunities(\n      stringFilters: { field: name, comparison: ILIKE, value: $name }\n      sendAll: true\n    ) {\n      data {\n        name\n        uuid\n      }\n    }\n  }\n": types.PointEntryOpportunityLookupDocument,
+    "\n  mutation CreatePointOpportunity($input: CreatePointOpportunityInput!) {\n    createPointOpportunity(input: $input) {\n      uuid\n    }\n  }\n": types.CreatePointOpportunityDocument,
     "\n  mutation TeamCreator($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      ok\n      uuid\n    }\n  }\n": types.TeamCreatorDocument,
     "\n  fragment TeamEditorFragment on TeamResource {\n    uuid\n    name\n    marathonYear\n    legacyStatus\n    persistentIdentifier\n    type\n  }\n": types.TeamEditorFragmentFragmentDoc,
     "\n  mutation TeamEditor($uuid: String!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n": types.TeamEditorDocument,
@@ -35,7 +37,7 @@ const documents = {
     "\n  query TeamsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [TeamResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]\n    $stringFilters: [TeamResolverKeyedStringFilterItem!]\n  ) {\n    teams(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...TeamsTableFragment\n      }\n    }\n  }\n": types.TeamsTableDocument,
     "\n  fragment TeamsTableFragment on TeamResource {\n    uuid\n    type\n    name\n    legacyStatus\n    marathonYear\n    totalPoints\n  }\n": types.TeamsTableFragmentFragmentDoc,
     "\n  mutation DeletePointEntry($uuid: String!) {\n    deletePointEntry(uuid: $uuid) {\n      ok\n    }\n  }\n": types.DeletePointEntryDocument,
-    "\n  fragment PointEntryTableFragment on PointEntryResource {\n    uuid\n    personFrom {\n      name\n      linkblue\n    }\n    points\n    comment\n  }\n": types.PointEntryTableFragmentFragmentDoc,
+    "\n  fragment PointEntryTableFragment on PointEntryResource {\n    uuid\n    personFrom {\n      name\n      linkblue\n    }\n    points\n    pointOpportunity {\n      name\n      opportunityDate\n    }\n    comment\n  }\n": types.PointEntryTableFragmentFragmentDoc,
     "\n  mutation DeleteEvent($uuid: String!) {\n    deleteEvent(uuid: $uuid) {\n      ok\n    }\n  }\n": types.DeleteEventDocument,
     "\n  fragment EventViewerFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      interval\n      fullDay\n    }\n    images {\n      url\n      imageData\n      width\n      height\n      thumbHash\n      alt\n    }\n    createdAt\n    updatedAt\n  }\n": types.EventViewerFragmentFragmentDoc,
     "\n  mutation DeletePerson($uuid: String!) {\n    deletePerson(uuid: $uuid) {\n      ok\n    }\n  }\n": types.DeletePersonDocument,
@@ -117,6 +119,14 @@ export function graphql(source: "\n  mutation CreatePersonByLinkBlue(\n    $link
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  query PointEntryOpportunityLookup($name: String!) {\n    pointOpportunities(\n      stringFilters: { field: name, comparison: ILIKE, value: $name }\n      sendAll: true\n    ) {\n      data {\n        name\n        uuid\n      }\n    }\n  }\n"): (typeof documents)["\n  query PointEntryOpportunityLookup($name: String!) {\n    pointOpportunities(\n      stringFilters: { field: name, comparison: ILIKE, value: $name }\n      sendAll: true\n    ) {\n      data {\n        name\n        uuid\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreatePointOpportunity($input: CreatePointOpportunityInput!) {\n    createPointOpportunity(input: $input) {\n      uuid\n    }\n  }\n"): (typeof documents)["\n  mutation CreatePointOpportunity($input: CreatePointOpportunityInput!) {\n    createPointOpportunity(input: $input) {\n      uuid\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  mutation TeamCreator($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      ok\n      uuid\n    }\n  }\n"): (typeof documents)["\n  mutation TeamCreator($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      ok\n      uuid\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -157,7 +167,7 @@ export function graphql(source: "\n  mutation DeletePointEntry($uuid: String!) {
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment PointEntryTableFragment on PointEntryResource {\n    uuid\n    personFrom {\n      name\n      linkblue\n    }\n    points\n    comment\n  }\n"): (typeof documents)["\n  fragment PointEntryTableFragment on PointEntryResource {\n    uuid\n    personFrom {\n      name\n      linkblue\n    }\n    points\n    comment\n  }\n"];
+export function graphql(source: "\n  fragment PointEntryTableFragment on PointEntryResource {\n    uuid\n    personFrom {\n      name\n      linkblue\n    }\n    points\n    pointOpportunity {\n      name\n      opportunityDate\n    }\n    comment\n  }\n"): (typeof documents)["\n  fragment PointEntryTableFragment on PointEntryResource {\n    uuid\n    personFrom {\n      name\n      linkblue\n    }\n    points\n    pointOpportunity {\n      name\n      opportunityDate\n    }\n    comment\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -164,6 +164,7 @@ type CreatePersonResponse implements AbstractGraphQLCreatedResponse & AbstractGr
 
 input CreatePointEntryInput {
   comment: String
+  opportunityUuid: String
   personFromUuid: String
   points: Float!
   teamUuid: String!
@@ -833,6 +834,7 @@ type PointEntryResource {
   comment: String
   createdAt: DateTimeISO
   personFrom: PersonResource
+  pointOpportunity: PointOpportunityResource
   points: Int!
   team: TeamResource!
   updatedAt: DateTimeISO

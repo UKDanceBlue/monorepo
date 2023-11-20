@@ -73,6 +73,9 @@ class CreatePointEntryInput implements Partial<PointEntryResource> {
   @Field(() => String, { nullable: true })
   personFromUuid!: string | null;
 
+  @Field(() => String, { nullable: true })
+  opportunityUuid!: string | null;
+
   @Field(() => String)
   teamUuid!: string;
 }
@@ -135,6 +138,21 @@ export class PointEntryResolver
       personFromId = personFrom.id;
     }
 
+    let pointOpportunityId: number | null = null;
+    if (input.opportunityUuid != null) {
+      const pointOpportunity = await PointOpportunityModel.findOne({
+        where: { uuid: input.opportunityUuid },
+        attributes: ["id"],
+      });
+      if (!pointOpportunity) {
+        throw new DetailedError(
+          ErrorCode.NotFound,
+          "PointOpportunity not found"
+        );
+      }
+      pointOpportunityId = pointOpportunity.id;
+    }
+
     const team = await TeamModel.findByUuid(input.teamUuid);
 
     if (!team) {
@@ -145,6 +163,7 @@ export class PointEntryResolver
       comment: input.comment,
       points: input.points,
       personFromId,
+      pointOpportunityId,
       teamId: team.id,
     });
 

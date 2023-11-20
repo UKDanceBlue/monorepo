@@ -5,6 +5,7 @@ import {
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
 import { Button, Table } from "antd";
+import { DateTime } from "luxon";
 import type { UseQueryExecute } from "urql";
 
 import { usePointEntryDeletePopup } from "./PointEntryDeletePopup";
@@ -17,6 +18,10 @@ export const PointEntryTableFragment = graphql(/* GraphQL */ `
       linkblue
     }
     points
+    pointOpportunity {
+      name
+      opportunityDate
+    }
     comment
   }
 `);
@@ -69,6 +74,24 @@ export function PointEntryTable({
             title: "Comment",
             dataIndex: "comment",
             key: "comment",
+          },
+          {
+            title: "Opportunity",
+            dataIndex: "pointOpportunity",
+            key: "pointOpportunity",
+            render: (_, record) => {
+              if (!record.pointOpportunity?.name) {
+                return undefined;
+              }
+              const { name, opportunityDate } = record.pointOpportunity;
+              let str = name;
+              if (opportunityDate) {
+                str += ` (${DateTime.fromISO(opportunityDate).toFormat(
+                  "yyyy-MM-dd"
+                )})`;
+              }
+              return str;
+            },
           },
           {
             title: "Actions",

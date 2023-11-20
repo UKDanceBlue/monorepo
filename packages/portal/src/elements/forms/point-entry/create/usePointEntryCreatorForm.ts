@@ -33,6 +33,7 @@ export function usePointEntryCreatorForm({
           teamUuid,
           comment: values.comment ?? null,
           personFromUuid: values.personFromUuid ?? null,
+          opportunityUuid: values.opportunityUuid ?? null,
         },
       });
       onReset();

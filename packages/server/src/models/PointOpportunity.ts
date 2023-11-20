@@ -24,7 +24,7 @@ import { sequelizeDb } from "../data-source.js";
 
 import { BaseModel } from "./BaseModel.js";
 import type { EventModel } from "./Event.js";
-import { PointEntryModel } from "./PointEntry.js";
+import type { PointEntryModel } from "./PointEntry.js";
 
 export class PointOpportunityModel extends BaseModel<
   InferAttributes<PointOpportunityModel>,
@@ -125,7 +125,7 @@ PointOpportunityModel.init(
     },
     eventId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {
