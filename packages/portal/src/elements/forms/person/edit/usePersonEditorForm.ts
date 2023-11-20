@@ -7,20 +7,12 @@ import type {
 } from "@ukdanceblue/common/graphql-client-admin";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
 import { type SetPersonInput } from "@ukdanceblue/common/graphql-client-admin/raw-types";
-import type { BaseOptionType } from "antd/es/select";
-import isEqual from "lodash.isequal";
-import { useMemo, useRef } from "react";
 import { useMutation } from "urql";
-
-import { TeamNameFragment } from "../PersonFormsGQL";
 
 import { PersonEditorFragment, personEditorDocument } from "./PersonEditorGQL";
 
 export function usePersonEditorForm(
   personFragment: FragmentType<typeof PersonEditorFragment> | undefined,
-  teamNamesFragment:
-    | readonly FragmentType<typeof TeamNameFragment>[]
-    | undefined,
   afterSubmit:
     | ((
         ret: DocumentType<typeof personEditorDocument>["setPerson"] | undefined
@@ -28,7 +20,6 @@ export function usePersonEditorForm(
     | undefined
 ) {
   const personData = getFragmentData(PersonEditorFragment, personFragment);
-  const teamNamesData = getFragmentData(TeamNameFragment, teamNamesFragment);
 
   // Form
   const [{ fetching, error }, setPerson] = useMutation(personEditorDocument);
@@ -62,6 +53,35 @@ export function usePersonEditorForm(
               membership.position === MembershipPositionType.Member
           )
           .map((membership) => membership.team.uuid) ?? [],
+    },
+    onChange: (values) => {
+      const memberOfCount: Record<string, number> = {};
+      for (const uuid of values.memberOf ?? []) {
+        memberOfCount[uuid] = (memberOfCount[uuid] ?? 0) + 1;
+      }
+      const captainOfCount: Record<string, number> = {};
+      for (const uuid of values.captainOf ?? []) {
+        captainOfCount[uuid] = (captainOfCount[uuid] ?? 0) + 1;
+      }
+
+      for (const uuid of Object.keys(memberOfCount)) {
+        if ((memberOfCount[uuid] ?? 0) > 1) {
+          return "Cannot be a member of a team more than once";
+        }
+      }
+      for (const uuid of Object.keys(captainOfCount)) {
+        if ((captainOfCount[uuid] ?? 0) > 1) {
+          return "Cannot be a captain of a team more than once";
+        }
+      }
+
+      for (const uuid of values.memberOf ?? []) {
+        if (values.captainOf?.includes(uuid)) {
+          return "Cannot be a captain and member of a team";
+        }
+      }
+
+      return undefined;
     },
     onSubmit: async (values) => {
       if (!personData) {
@@ -101,56 +121,7 @@ export function usePersonEditorForm(
     },
   });
 
-  type OptionType = BaseOptionType & { label: string; value: string };
-  const formMemberOf = Form.getFieldValue("memberOf");
-  const formCaptainOf = Form.getFieldValue("captainOf");
-  const oldTeamNamesData = useRef(teamNamesData);
-  const oldFormMemberOf = useRef(formMemberOf);
-  const oldFormCaptainOf = useRef(formCaptainOf);
-  const oldMembershipOptions = useRef<OptionType[]>([]);
-  const oldCaptaincyOptions = useRef<OptionType[]>([]);
-  const { membershipOptions, captaincyOptions } = useMemo<{
-    membershipOptions: OptionType[];
-    captaincyOptions: OptionType[];
-  }>(() => {
-    if (
-      !isEqual(oldFormMemberOf.current, formMemberOf) ||
-      !isEqual(oldFormCaptainOf.current, formCaptainOf) ||
-      teamNamesData !== oldTeamNamesData.current
-    ) {
-      const memberOfArray = formMemberOf ?? [];
-      const captainOfArray = formCaptainOf ?? [];
-      const captaincyOptions: OptionType[] = [];
-      const membershipOptions: OptionType[] = [];
-      for (const team of teamNamesData ?? []) {
-        captaincyOptions.push({
-          label: team.name,
-          value: team.uuid,
-          disabled: memberOfArray.includes(team.uuid),
-        });
-        membershipOptions.push({
-          label: team.name,
-          value: team.uuid,
-          disabled: captainOfArray.includes(team.uuid),
-        });
-      }
-      oldFormMemberOf.current = formMemberOf;
-      oldFormCaptainOf.current = formCaptainOf;
-      oldTeamNamesData.current = teamNamesData;
-      oldCaptaincyOptions.current = captaincyOptions;
-      oldMembershipOptions.current = membershipOptions;
-      return { captaincyOptions, membershipOptions };
-    } else {
-      return {
-        captaincyOptions: oldCaptaincyOptions.current,
-        membershipOptions: oldMembershipOptions.current,
-      };
-    }
-  }, [formCaptainOf, formMemberOf, teamNamesData]);
-
   return {
     formApi: Form,
-    captaincyOptions,
-    membershipOptions,
   };
 }

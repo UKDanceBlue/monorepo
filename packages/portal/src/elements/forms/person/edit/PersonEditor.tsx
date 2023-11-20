@@ -4,8 +4,10 @@ import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
 import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
 import type { UseQueryExecute } from "urql";
 
-import type { TeamNameFragment } from "../PersonFormsGQL";
+import { TeamNameFragment } from "../PersonFormsGQL";
 
+import { BaseOptionType } from "antd/es/select";
+import { useMemo, useState } from "react";
 import { PersonEditorFragment } from "./PersonEditorGQL";
 import { usePersonEditorForm } from "./usePersonEditorForm";
 
@@ -22,11 +24,42 @@ export function PersonEditor({
 }) {
   const { message } = App.useApp();
 
-  const { formApi, captaincyOptions, membershipOptions } = usePersonEditorForm(
-    personFragment,
-    teamNamesFragment,
-    refetchPerson
+  const { formApi } = usePersonEditorForm(personFragment, () => {
+    if (refetchPerson) {
+      refetchPerson({ requestPolicy: "network-only" });
+    }
+  });
+
+  const teamNamesData = getFragmentData(TeamNameFragment, teamNamesFragment);
+
+  const [formMemberOf, setFormMemberOf] = useState<readonly string[]>(
+    formApi.getFieldValue("memberOf") ?? []
   );
+  const [formCaptainOf, setFormCaptainOf] = useState<readonly string[]>(
+    formApi.getFieldValue("captainOf") ?? []
+  );
+  type OptionType = BaseOptionType & { label: string; value: string };
+
+  const { membershipOptions, captaincyOptions } = useMemo<{
+    membershipOptions: OptionType[];
+    captaincyOptions: OptionType[];
+  }>(() => {
+    const captaincyOptions: OptionType[] = [];
+    const membershipOptions: OptionType[] = [];
+    for (const team of teamNamesData ?? []) {
+      captaincyOptions.push({
+        label: team.name,
+        value: team.uuid,
+        disabled: formMemberOf.includes(team.uuid),
+      });
+      membershipOptions.push({
+        label: team.name,
+        value: team.uuid,
+        disabled: formCaptainOf.includes(team.uuid),
+      });
+    }
+    return { captaincyOptions, membershipOptions };
+  }, [formCaptainOf, formMemberOf, teamNamesData]);
 
   const personData = getFragmentData(PersonEditorFragment, personFragment);
 
@@ -60,9 +93,20 @@ export function PersonEditor({
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 32 }}
         >
-          <formApi.Field
-            name="name"
-            children={(field) => (
+          <formApi.Subscribe selector={(state) => state.values.captainOf}>
+            {(captainOf) => {
+              setFormCaptainOf(captainOf ?? []);
+              return null;
+            }}
+          </formApi.Subscribe>
+          <formApi.Subscribe selector={(state) => state.values.memberOf}>
+            {(memberOf) => {
+              setFormMemberOf(memberOf ?? []);
+              return null;
+            }}
+          </formApi.Subscribe>
+          <formApi.Field name="name">
+            {(field) => (
               <Form.Item
                 label="Name"
                 validateStatus={
@@ -83,10 +127,9 @@ export function PersonEditor({
                 />
               </Form.Item>
             )}
-          />
-          <formApi.Field
-            name="linkblue"
-            children={(field) => (
+          </formApi.Field>
+          <formApi.Field name="linkblue">
+            {(field) => (
               <Form.Item
                 label="Linkblue"
                 validateStatus={
@@ -107,7 +150,7 @@ export function PersonEditor({
                 />
               </Form.Item>
             )}
-          />
+          </formApi.Field>
           <formApi.Field
             name="email"
             onChange={(value) => (!value ? "Email is required" : undefined)}
