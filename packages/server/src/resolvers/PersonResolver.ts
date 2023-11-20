@@ -229,11 +229,13 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
               ? Promise.reject(
                   new DetailedError(ErrorCode.NotFound, "Team not found")
                 )
-              : void result.createMembership({
-                  personId: result.id,
-                  teamId: team.id,
-                  position: "Member",
-                })
+              : result
+                  .createMembership({
+                    personId: result.id,
+                    teamId: team.id,
+                    position: "Member",
+                  })
+                  .then()
           )
         );
       }
@@ -244,11 +246,13 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
               ? Promise.reject(
                   new DetailedError(ErrorCode.NotFound, "Team not found")
                 )
-              : void result.createMembership({
-                  personId: result.id,
-                  teamId: team.id,
-                  position: "Captain",
-                })
+              : result
+                  .createMembership({
+                    personId: result.id,
+                    teamId: team.id,
+                    position: "Captain",
+                  })
+                  .then()
           )
         );
       }
