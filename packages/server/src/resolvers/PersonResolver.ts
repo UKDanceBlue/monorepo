@@ -292,7 +292,6 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
 
       const promises: Promise<void>[] = [];
       const memberships = await row.getMemberships({
-        where: { position: "Captain" },
         scope: "withTeam",
       });
 
@@ -337,7 +336,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
                       .createMembership({
                         personId: row.id,
                         teamId: team.id,
-                        position: "Captain",
+                        position: MembershipPositionType.Captain,
                       })
                       .then()
               )
@@ -365,7 +364,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
                       .createMembership({
                         personId: row.id,
                         teamId: team.id,
-                        position: "Member",
+                        position: MembershipPositionType.Member,
                       })
                       .then()
               )
