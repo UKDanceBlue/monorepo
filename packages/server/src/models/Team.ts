@@ -40,7 +40,7 @@ export class TeamModel extends BaseModel<
   public declare type: TeamType;
   public declare legacyStatus: TeamLegacyStatus;
   public declare marathonYear: MarathonYearString;
-  public declare persistentIdentifier: CreationOptional<string>;
+  public declare persistentIdentifier: CreationOptional<string | null>;
 
   public declare pointEntries: NonAttribute<PointEntryModel[]>;
   public declare addPointEntry: HasManyAddAssociationMixin<

@@ -25,6 +25,9 @@ const documents = {
     "\n  query GetPersonByLinkBlue($linkBlue: String!) {\n    personByLinkBlue(linkBlueId: $linkBlue) {\n      data {\n        uuid\n        name\n      }\n    }\n  }\n": types.GetPersonByLinkBlueDocument,
     "\n  query SearchPersonByName($name: String!) {\n    searchPeopleByName(name: $name) {\n      data {\n        uuid\n        name\n      }\n    }\n  }\n": types.SearchPersonByNameDocument,
     "\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: String!\n    $email: EmailAddress!\n    $teamUuid: String!\n  ) {\n    createPerson(\n      input: { email: $email, linkblue: $linkBlue, memberOf: [$teamUuid] }\n    ) {\n      uuid\n    }\n  }\n": types.CreatePersonByLinkBlueDocument,
+    "\n  mutation TeamCreator($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      ok\n      uuid\n    }\n  }\n": types.TeamCreatorDocument,
+    "\n  fragment TeamEditorFragment on TeamResource {\n    uuid\n    name\n    marathonYear\n    legacyStatus\n    type\n  }\n": types.TeamEditorFragmentFragmentDoc,
+    "\n  mutation TeamEditor($uuid: String!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n": types.TeamEditorDocument,
     "\n  fragment EventsTableFragment on EventResource {\n    uuid\n    title\n    description\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    summary\n  }\n": types.EventsTableFragmentFragmentDoc,
     "\n  query EventsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [EventResolverKeyedDateFilterItem!]\n    $isNullFilters: [EventResolverKeyedIsNullFilterItem!]\n    $numericFilters: [EventResolverKeyedNumericFilterItem!]\n    $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]\n    $stringFilters: [EventResolverKeyedStringFilterItem!]\n  ) {\n    events(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      isNullFilters: $isNullFilters\n      numericFilters: $numericFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...EventsTableFragment\n      }\n    }\n  }\n": types.EventsTableDocument,
     "\n  fragment PeopleTableFragment on PersonResource {\n    uuid\n    name\n    linkblue\n    email\n    role {\n      dbRole\n      committeeRole\n      committeeIdentifier\n    }\n  }\n": types.PeopleTableFragmentFragmentDoc,
@@ -109,6 +112,18 @@ export function graphql(source: "\n  query SearchPersonByName($name: String!) {\
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: String!\n    $email: EmailAddress!\n    $teamUuid: String!\n  ) {\n    createPerson(\n      input: { email: $email, linkblue: $linkBlue, memberOf: [$teamUuid] }\n    ) {\n      uuid\n    }\n  }\n"): (typeof documents)["\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: String!\n    $email: EmailAddress!\n    $teamUuid: String!\n  ) {\n    createPerson(\n      input: { email: $email, linkblue: $linkBlue, memberOf: [$teamUuid] }\n    ) {\n      uuid\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation TeamCreator($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      ok\n      uuid\n    }\n  }\n"): (typeof documents)["\n  mutation TeamCreator($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      ok\n      uuid\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment TeamEditorFragment on TeamResource {\n    uuid\n    name\n    marathonYear\n    legacyStatus\n    type\n  }\n"): (typeof documents)["\n  fragment TeamEditorFragment on TeamResource {\n    uuid\n    name\n    marathonYear\n    legacyStatus\n    type\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation TeamEditor($uuid: String!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n"): (typeof documents)["\n  mutation TeamEditor($uuid: String!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

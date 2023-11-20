@@ -179,10 +179,8 @@ input CreateTeamInput {
   legacyStatus: TeamLegacyStatus!
   marathonYear: String!
   name: String!
-  persistentIdentifier: String!
+  persistentIdentifier: String
   type: TeamType!
-  uuid: ID!
-  visibility: String!
 }
 
 type CreateTeamResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -475,11 +473,6 @@ type GetPointEntryByUuidResponse implements AbstractGraphQLOkResponse & GraphQLB
   ok: Boolean!
 }
 
-type GetTeamByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: TeamResource!
-  ok: Boolean!
-}
-
 type GetThumbHashByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: String!
   ok: Boolean!
@@ -636,6 +629,7 @@ type Mutation {
   setConfiguration(input: SetConfigurationInput!, key: String!): SetConfigurationResponse!
   setEvent(input: SetEventInput!, uuid: String!): SetEventResponse!
   setPerson(input: SetPersonInput!, uuid: String!): GetPersonResponse!
+  setTeam(input: SetTeamInput!, uuid: String!): SingleTeamResponse!
 }
 
 """Integers that will have a value of 0 or more."""
@@ -1042,7 +1036,7 @@ type Query {
   ): ListPointEntriesResponse!
   pointEntry(uuid: String!): GetPointEntryByUuidResponse!
   searchPeopleByName(name: String!): GetPeopleResponse!
-  team(uuid: String!): GetTeamByUuidResponse!
+  team(uuid: String!): SingleTeamResponse!
   teams(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -1162,6 +1156,19 @@ input SetPersonInput {
   memberOf: [String!]
   name: String
   role: RoleResourceInput
+}
+
+input SetTeamInput {
+  legacyStatus: TeamLegacyStatus
+  marathonYear: String
+  name: String
+  persistentIdentifier: String
+  type: TeamType
+}
+
+type SingleTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: TeamResource!
+  ok: Boolean!
 }
 
 enum SortDirection {

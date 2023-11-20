@@ -24,7 +24,6 @@ import {
   Authorized,
   Field,
   FieldResolver,
-  ID,
   InputType,
   Int,
   Mutation,
@@ -50,10 +49,10 @@ import type {
 } from "./ResolverInterface.js";
 import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 
-@ObjectType("GetTeamByUuidResponse", {
+@ObjectType("SingleTeamResponse", {
   implements: AbstractGraphQLOkResponse<TeamResource>,
 })
-class GetTeamByUuidResponse extends AbstractGraphQLOkResponse<TeamResource> {
+class SingleTeamResponse extends AbstractGraphQLOkResponse<TeamResource> {
   @Field(() => TeamResource)
   data!: TeamResource;
 }
@@ -78,9 +77,6 @@ class DeleteTeamResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
 class CreateTeamInput implements OptionalToNullable<Partial<TeamResource>> {
-  @Field(() => ID)
-  uuid!: string;
-
   @Field(() => String)
   name!: string;
 
@@ -93,11 +89,26 @@ class CreateTeamInput implements OptionalToNullable<Partial<TeamResource>> {
   @Field(() => String)
   marathonYear!: Common.MarathonYearString;
 
-  @Field(() => String)
-  visibility!: DbRole;
+  @Field(() => String, { nullable: true })
+  persistentIdentifier!: string | null;
+}
 
-  @Field(() => String)
-  persistentIdentifier!: string;
+@InputType()
+class SetTeamInput implements OptionalToNullable<Partial<TeamResource>> {
+  @Field(() => String, { nullable: true })
+  name!: string | null;
+
+  @Field(() => TeamType, { nullable: true })
+  type!: TeamType | null;
+
+  @Field(() => TeamLegacyStatus, { nullable: true })
+  legacyStatus!: TeamLegacyStatus | null;
+
+  @Field(() => String, { nullable: true })
+  marathonYear!: Common.MarathonYearString | null;
+
+  @Field(() => String, { nullable: true })
+  persistentIdentifier!: string | null;
 }
 
 @ArgsType()
@@ -126,15 +137,15 @@ export class TeamResolver
     ResolverInterfaceWithFilteredList<TeamResource, ListTeamsArgs>
 {
   @AccessLevelAuthorized(AccessLevel.Committee)
-  @Query(() => GetTeamByUuidResponse, { name: "team" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<GetTeamByUuidResponse> {
+  @Query(() => SingleTeamResponse, { name: "team" })
+  async getByUuid(@Arg("uuid") uuid: string): Promise<SingleTeamResponse> {
     const row = await TeamModel.findOne({ where: { uuid } });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Team not found");
     }
 
-    return GetTeamByUuidResponse.newOk(row.toResource());
+    return SingleTeamResponse.newOk(row.toResource());
   }
 
   @AccessLevelAuthorized(AccessLevel.Committee)
@@ -188,7 +199,6 @@ export class TeamResolver
     @Arg("input") input: CreateTeamInput
   ): Promise<CreateTeamResponse> {
     const row = await TeamModel.create({
-      uuid: input.uuid,
       name: input.name,
       type: input.type,
       legacyStatus: input.legacyStatus,
@@ -197,6 +207,46 @@ export class TeamResolver
     });
 
     return CreateTeamResponse.newCreated(row.toResource(), row.uuid);
+  }
+
+  @Authorized<AuthorizationRuleOrAccessLevel>([
+    AccessLevel.Admin,
+    {
+      committeeIdentifier:
+        Common.CommitteeIdentifier["dancerRelationsCommittee"],
+      minCommitteeRole: CommitteeRole.Coordinator,
+    },
+  ])
+  @Mutation(() => SingleTeamResponse, { name: "setTeam" })
+  async set(
+    @Arg("uuid") uuid: string,
+    @Arg("input") input: SetTeamInput
+  ): Promise<SingleTeamResponse> {
+    const row = await TeamModel.findByUuid(uuid);
+
+    if (row == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+    }
+
+    if (input.name != null) {
+      row.name = input.name;
+    }
+    if (input.type != null) {
+      row.type = input.type;
+    }
+    if (input.legacyStatus != null) {
+      row.legacyStatus = input.legacyStatus;
+    }
+    if (input.marathonYear != null) {
+      row.marathonYear = input.marathonYear;
+    }
+    if (input.persistentIdentifier != null) {
+      row.persistentIdentifier = input.persistentIdentifier;
+    }
+
+    await row.save();
+
+    return SingleTeamResponse.newOk(row.toResource());
   }
 
   @Authorized<AuthorizationRuleOrAccessLevel>([
