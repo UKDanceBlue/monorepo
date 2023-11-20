@@ -8,14 +8,12 @@ import { TeamType } from "./Team.js";
 export class PointOpportunityResource extends Resource {
   @Field(() => ID)
   uuid!: string;
-  @Field(() => TeamType)
-  type!: TeamType;
   @Field(() => String)
   name!: string;
+  @Field(() => TeamType)
+  type!: TeamType;
   @Field(() => DateTime, { nullable: true })
   opportunityDate!: DateTime | null;
-  @Field(() => String)
-  teamUuid!: string;
 
   public getUniqueId(): string {
     return this.uuid;
