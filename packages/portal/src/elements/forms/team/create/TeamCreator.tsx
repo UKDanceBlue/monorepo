@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { CommitteeRole } from "@ukdanceblue/common";
+import { TeamLegacyStatus } from "@ukdanceblue/common";
 import { App, Button, Flex, Form, Input, Select } from "antd";
 
 import { useTeamCreatorForm } from "./useTeamCreatorForm";
@@ -34,9 +34,8 @@ export function TeamCreator({}: {}) {
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 32 }}
         >
-          <formApi.Field
-            name="name"
-            children={(field) => (
+          <formApi.Field name="name">
+            {(field) => (
               <Form.Item
                 label="Name"
                 validateStatus={
@@ -57,12 +56,19 @@ export function TeamCreator({}: {}) {
                 />
               </Form.Item>
             )}
-          />
-          <formApi.Field
-            name="role.committeeRole"
-            children={(field) => (
+          </formApi.Field>
+          <p>Marathon Year: DB24</p>
+          <p>Team Type: Spirit</p>
+          {formApi.getFieldValue("persistentIdentifier") ? (
+            <p>
+              Special Identifier:{" "}
+              {formApi.getFieldValue("persistentIdentifier")}
+            </p>
+          ) : null}
+          <formApi.Field name="legacyStatus">
+            {(field) => (
               <Form.Item
-                label="Committee Role"
+                label="Legacy Status"
                 validateStatus={
                   field.state.meta.errors.length > 0 ? "error" : ""
                 }
@@ -75,20 +81,19 @@ export function TeamCreator({}: {}) {
                 <Select
                   status={field.state.meta.errors.length > 0 ? "error" : ""}
                   options={[
-                    { label: "None", value: "" },
-                    { label: "Chair", value: CommitteeRole.Chair },
-                    { label: "Coordinator", value: CommitteeRole.Coordinator },
-                    { label: "Member", value: CommitteeRole.Member },
+                    {
+                      label: "Returning Team",
+                      value: TeamLegacyStatus.ReturningTeam,
+                    },
+                    { label: "New Team", value: TeamLegacyStatus.NewTeam },
                   ]}
-                  value={field.state.value ?? ("" as const)}
+                  value={field.state.value}
                   onBlur={field.handleBlur}
-                  onChange={(value) =>
-                    field.handleChange(value === "" ? null : value)
-                  }
+                  onChange={(value) => field.handleChange(value)}
                 />
               </Form.Item>
             )}
-          />
+          </formApi.Field>
           <Form.Item wrapperCol={{ span: 32, offset: 8 }}>
             <Button type="primary" htmlType="submit">
               Save
