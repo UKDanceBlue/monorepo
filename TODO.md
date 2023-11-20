@@ -6,3 +6,6 @@
 - Use transactions throughout GraphQL resolvers
 - Add some more try/catch blocks around
 - Remove persistent identifier from teams
+- Implement
+  https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#vite-react
+- Set up CI/CD
