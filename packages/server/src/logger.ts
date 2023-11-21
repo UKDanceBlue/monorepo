@@ -38,24 +38,6 @@ const syslogColors = {
   debug: "blue",
 } satisfies winston.config.AbstractConfigSetColors;
 
-const loggerOptions = {
-  level: "debug",
-  levels: syslogLevels,
-  format: format.combine(
-    format.splat(),
-    format.colorize({ level: true, message: false }),
-    format.json()
-  ),
-  transports: [
-    fileErrorLogTransport,
-    fileLogTransport,
-    // TODO: Add a transport for errors that are sent to the database for display in the admin panel
-  ],
-  exitOnError: false,
-} satisfies LoggerOptions;
-
-const logger = createLogger(loggerOptions);
-
 const consoleTransport = new transports.Console({
   format: format.combine(
     format.splat(),
@@ -66,10 +48,27 @@ const consoleTransport = new transports.Console({
   ),
 });
 
-// If we're not in production then log to the `console` with the format:
-// `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
+const loggerOptions = {
+  level: "debug",
+  levels: syslogLevels,
+  format: format.combine(
+    format.splat(),
+    format.colorize({ level: true, message: false }),
+    format.json()
+  ),
+  transports: [
+    fileErrorLogTransport,
+    consoleTransport,
+    // TODO: Add a transport for errors that are sent to the database for display in the admin panel
+  ],
+  exitOnError: false,
+} satisfies LoggerOptions;
+
+const logger = createLogger(loggerOptions);
+
+// If we're not in production then log to the `combined.log` file as well
 if (!isProduction) {
-  logger.add(consoleTransport);
+  logger.add(fileLogTransport);
 }
 
 logger.info("Logger initialized");
