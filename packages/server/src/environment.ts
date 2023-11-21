@@ -1,18 +1,18 @@
 import dotenv from "dotenv";
 
-const env = dotenv.config();
+dotenv.config();
 
 // Core env
-export const isDevelopment = env.parsed?.NODE_ENV === "development";
-export const isProduction = env.parsed?.NODE_ENV === "production";
-export const nodeEnvirnoment = env.parsed?.NODE_ENV || "development";
+export const isDevelopment = process.env.NODE_ENV === "development";
+export const isProduction = process.env.NODE_ENV === "production";
+export const nodeEnvirnoment = process.env.NODE_ENV || "development";
 
 // Port and Host
-export const applicationPort = env.parsed?.APPLICATION_PORT || 3001;
-export const applicationHost = env.parsed?.APPLICATION_HOST || "localhost";
+export const applicationPort = process.env.APPLICATION_PORT || 3001;
+export const applicationHost = process.env.APPLICATION_HOST || "localhost";
 
 // Secrets
-const { COOKIE_SECRET, JWT_SECRET } = env.parsed ?? {};
+const { COOKIE_SECRET, JWT_SECRET, ASSET_PATH } = process.env;
 if (!JWT_SECRET) {
   throw new Error("JWT_SECRET is not set");
 }
@@ -23,10 +23,10 @@ export const cookieSecret = COOKIE_SECRET;
 export const jwtSecret = JWT_SECRET;
 
 // System Paths
-export const assetPath = env.parsed?.ASSET_PATH;
+export const assetPath = ASSET_PATH;
 
 // Database
-const { DB_HOST, DB_PORT, DB_UNAME, DB_PWD, DB_NAME } = env.parsed ?? {};
+const { DB_HOST, DB_PORT, DB_UNAME, DB_PWD, DB_NAME } = process.env;
 if (!DB_HOST) {
   throw new Error("DB_HOST is not set");
 }
@@ -53,7 +53,7 @@ export const databaseName = DB_NAME;
 export const isDatabaseLocal = databaseHost === "localhost" && isDevelopment;
 
 // MS Auth
-const { MS_OIDC_URL, MS_CLIENT_ID, MS_CLIENT_SECRET } = env.parsed ?? {};
+const { MS_OIDC_URL, MS_CLIENT_ID, MS_CLIENT_SECRET } = process.env;
 if (!MS_OIDC_URL) {
   throw new Error("MS_OIDC_URL is not set");
 }
@@ -68,5 +68,5 @@ export const msClientId = MS_CLIENT_ID;
 export const msClientSecret = MS_CLIENT_SECRET;
 
 // Disable all authorization checks
-export const authorizationOverride =
-  env.parsed?.OVERRIDE_AUTH === "THIS IS DANGEROUS";
+const { OVERRIDE_AUTH } = process.env;
+export const authorizationOverride = OVERRIDE_AUTH === "THIS IS DANGEROUS";
