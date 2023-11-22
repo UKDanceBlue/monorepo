@@ -14,7 +14,7 @@ import { sequelizeDb } from "../data-source.js";
 
 import { BaseModel } from "./BaseModel.js";
 import type { PersonModel } from "./Person.js";
-import { PointOpportunityModel } from "./PointOpportunity.js";
+import type { PointOpportunityModel } from "./PointOpportunity.js";
 import type { TeamModel } from "./Team.js";
 
 export class PointEntryModel extends BaseModel<

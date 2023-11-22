@@ -5,6 +5,7 @@ import {
   PointOpportunityResource,
   TeamType,
 } from "@ukdanceblue/common";
+import type { DateTime } from "luxon";
 import {
   Arg,
   Args,
@@ -20,11 +21,10 @@ import {
   Root,
 } from "type-graphql";
 
-import { PointOpportunityModel } from "../models/PointOpportunity.js";
-
-import { DateTime } from "luxon";
 import { sequelizeDb } from "../data-source.js";
 import { EventModel } from "../models/Event.js";
+import { PointOpportunityModel } from "../models/PointOpportunity.js";
+
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
@@ -212,7 +212,7 @@ export class PointOpportunityResolver
         eventId = event.id;
       }
 
-      let rowParam: Partial<PointOpportunityModel> = {};
+      const rowParam: Partial<PointOpportunityModel> = {};
       if (input.name != null) {
         rowParam.name = input.name;
       }

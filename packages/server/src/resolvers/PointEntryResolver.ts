@@ -21,9 +21,9 @@ import {
 
 import { PersonModel } from "../models/Person.js";
 import { PointEntryModel } from "../models/PointEntry.js";
+import { PointOpportunityModel } from "../models/PointOpportunity.js";
 import { TeamModel } from "../models/Team.js";
 
-import { PointOpportunityModel } from "../models/PointOpportunity.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,

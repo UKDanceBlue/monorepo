@@ -316,7 +316,7 @@ export class TeamResolver
       );
     }
 
-    return (model.memberships ?? []).map((row) => row.toResource());
+    return model.memberships.map((row) => row.toResource());
   }
 
   @AccessLevelAuthorized(AccessLevel.Committee)
