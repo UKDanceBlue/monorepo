@@ -8,7 +8,20 @@ export const isProduction = process.env.NODE_ENV === "production";
 export const nodeEnvirnoment = process.env.NODE_ENV || "development";
 
 // Port and Host
-export const applicationPort = process.env.APPLICATION_PORT || 3001;
+let applicationPort: number = 8000;
+if (process.env.APPLICATION_PORT) {
+  const envApplicationPort = Number.parseInt(process.env.APPLICATION_PORT, 10);
+  if (Number.isNaN(envApplicationPort)) {
+    throw new TypeError("Env variable 'APPLICATION_PORT' is not a number");
+  }
+  if (envApplicationPort < 0 || envApplicationPort > 65_535) {
+    throw new RangeError(
+      "Env variable 'APPLICATION_PORT' is not a valid port number"
+    );
+  }
+  applicationPort = envApplicationPort;
+}
+export { applicationPort };
 export const applicationHost = process.env.APPLICATION_HOST || "localhost";
 
 // Secrets
