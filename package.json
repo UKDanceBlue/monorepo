@@ -5,7 +5,8 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "format": "prettier --write .",
+    "format": "prettier .",
+    "format:fix": "prettier --write .",
     "gql:build": "graphql-codegen-esm --config codegen.ts",
     "gql:watch": "graphql-codegen-esm --config codegen.ts -w ./packages",
     "common:watch": "yarn workspace @ukdanceblue/common run watch",
