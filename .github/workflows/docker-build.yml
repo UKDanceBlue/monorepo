@@ -9,9 +9,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  # The name of the image is the name of the repository, with the "-portal" or "-server" suffix (under the UKDanceBlue organization)
-  PORTAL_IMAGE_NAME: ${{ github.repository }}-portal
-  SERVER_IMAGE_NAME: ${{ github.repository }}-server
+  PORTAL_IMAGE_NAME: app-portal
+  SERVER_IMAGE_NAME: app-server
 
 jobs:
   build-and-push-portal-image:
