@@ -1,5 +1,6 @@
 import type { StringFilterItemInterface } from "@ukdanceblue/common";
 import { StringComparator } from "@ukdanceblue/common";
+import type { InputRef } from "antd";
 import Search from "antd/es/input/Search";
 
 export function FilterSearchDropdown<Field extends string>({
@@ -7,6 +8,7 @@ export function FilterSearchDropdown<Field extends string>({
   clearFilter,
   field,
   placeholderText = `Search ${field}`,
+  inputRef,
 }: {
   updateFilter: (
     field: Field,
@@ -14,7 +16,8 @@ export function FilterSearchDropdown<Field extends string>({
   ) => void;
   clearFilter: (field: Field) => void;
   field: Field;
-  placeholderText?: string | false;
+  placeholderText?: string | undefined | false;
+  inputRef?: (ref: InputRef) => void;
 }) {
   return (
     <Search
@@ -30,6 +33,7 @@ export function FilterSearchDropdown<Field extends string>({
           clearFilter(field);
         }
       }}
+      ref={inputRef}
     />
   );
 }
