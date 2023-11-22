@@ -187,7 +187,7 @@ function TabBarEntry({
       </View>
       <View
         style={{ width: screenWidth * 0.2 }}
-        collapsible={false}
+        collapsable={false}
         pointerEvents="none"
       />
     </>

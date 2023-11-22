@@ -162,7 +162,7 @@ const EventListScreen = () => {
             <View
               key={luxonDateTimeToMonthString(month)}
               style={{ height: "100%", width: "100%" }}
-              collapsible={false}
+              collapsable={false}
             >
               <EventListPage
                 eventsByMonth={eventsByMonth}
