@@ -60,3 +60,13 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      - name: Trigger container recreate
+        shell: bash
+        run: |
+          curl --insecure -X POST ${{ secrets.DANCEBLUE_APP_SERVER_RECREATE_WEBHOOK }}
+        if: github.ref == 'refs/heads/release'
+      - name: Trigger container recreate
+        shell: bash
+        run: |
+          curl --insecure -X POST ${{ secrets.DANCEBLUE_APP_DEV_SERVER_RECREATE_WEBHOOK }}
+        if: github.ref == 'refs/heads/main'
