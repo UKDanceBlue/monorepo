@@ -30,6 +30,9 @@ jobs:
       - name: Install dependencies
         working-directory: ./packages/portal
         run: yarn install
+      - name: Build GraphQL
+        run: yarn run gql:build
+        working-directory: .
       - name: Build common
         run: yarn run build
         working-directory: ./packages/common
