@@ -83,7 +83,14 @@ class ListPeopleArgs extends FilteredListQueryArgs("PersonResolver", {
     "committeeRole",
     "committeeName",
   ],
-  string: ["name", "email", "dbRole", "committeeRole", "committeeName"],
+  string: [
+    "name",
+    "email",
+    "linkblue",
+    "dbRole",
+    "committeeRole",
+    "committeeName",
+  ],
 }) {}
 @InputType()
 class CreatePersonInput {

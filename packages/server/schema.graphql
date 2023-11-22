@@ -780,6 +780,7 @@ enum PersonResolverStringFilterKeys {
   committeeRole
   dbRole
   email
+  linkblue
   name
 }
 
