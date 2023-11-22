@@ -33,6 +33,7 @@ const eslintConfig = [
       "**/*.json",
       "packages/common/lib/graphql-client-*/**",
       ".yarn/**",
+      "compose-volumes/**",
     ],
   },
   eslintJs.configs.recommended,
