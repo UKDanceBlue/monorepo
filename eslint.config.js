@@ -1,4 +1,5 @@
-import { normalize } from "node:path";
+import { dirname, join, normalize } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import eslintJs from "@eslint/js";
 import eslintPluginTypescript from "@typescript-eslint/eslint-plugin";
@@ -14,6 +15,8 @@ import eslintPluginReactNative from "eslint-plugin-react-native";
 import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import globals from "globals";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /**
  * @type {import('@types/eslint').Linter.FlatConfig[]}
@@ -231,7 +234,7 @@ const eslintConfig = [
     languageOptions: {
       parser: eslintParserTypescript,
       parserOptions: {
-        project: ["./tsconfig.json", "./packages/*/tsconfig.json"],
+        project: normalize(join(__dirname, "tsconfig.json")),
       },
     },
     plugins: {
@@ -316,6 +319,9 @@ const eslintConfig = [
         ...globals["shared-node-browser"],
         ...globals.es2015,
       },
+      parserOptions: {
+        project: normalize(join(__dirname, "packages/common/tsconfig.json")),
+      },
     },
   },
   {
@@ -335,7 +341,7 @@ const eslintConfig = [
         ...eslintPluginReactNative.environments["react-native"].globals,
       },
       parserOptions: {
-        project: ["./tsconfig.json", "./packages/mobile/tsconfig.eslint.json"],
+        project: normalize(join(__dirname, "packages/mobile/tsconfig.json")),
       },
     },
     rules: {
@@ -369,6 +375,9 @@ const eslintConfig = [
         ...globals.es2017,
         ...globals.browser,
       },
+      parserOptions: {
+        project: normalize(join(__dirname, "packages/portal/tsconfig.json")),
+      },
     },
     rules: {
       ...eslintPluginReact.configs["jsx-runtime"].rules,
@@ -390,6 +399,9 @@ const eslintConfig = [
       node: eslintPluginNode,
     },
     languageOptions: {
+      parserOptions: {
+        project: normalize(join(__dirname, "packages/server/tsconfig.json")),
+      },
       globals: {
         ...globals.nodeBuiltin,
         ...eslintPluginNode.configs["recommended-module"].globals,
