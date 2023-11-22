@@ -1,14 +1,14 @@
-import { EditOutlined, EyeOutlined, SearchOutlined } from "@ant-design/icons";
+import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useListQuery } from "@hooks/useListQuery";
+import { useMakeSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useNavigate } from "@tanstack/react-router";
-import { SortDirection, StringComparator } from "@ukdanceblue/common";
+import { SortDirection } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
 import { Button, Flex, Table } from "antd";
-import Search from "antd/es/input/Search";
 import { useQuery } from "urql";
 
 const teamsTableQueryDocument = graphql(/* GraphQL */ `
@@ -103,27 +103,7 @@ export const TeamsTable = () => {
           title: "Name",
           dataIndex: "name",
           sorter: true,
-          filterDropdown: () => (
-            <Search
-              placeholder="Search name"
-              onSearch={(value) => {
-                if (value) {
-                  updateFilter("name", {
-                    comparison: StringComparator.ILIKE,
-                    field: "name",
-                    value: `%${value}%`,
-                  });
-                } else {
-                  clearFilter("name");
-                }
-              }}
-            />
-          ),
-          filterIcon: (filtered) => (
-            <SearchOutlined
-              style={{ color: filtered ? "#1890ff" : undefined }}
-            />
-          ),
+          ...useMakeSearchFilterProps("name", updateFilter, clearFilter),
         },
         {
           title: "Type",
