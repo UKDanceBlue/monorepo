@@ -24,12 +24,14 @@ jobs:
           cache: yarn
 
       - name: Install dependencies
-        working-directory: ./packages/portal
         run: yarn install
 
       - name: Build GraphQL
         run: yarn run gql:build
-        working-directory: .
+
+      - name: Build common
+        working-directory: ./packages/common
+        run: yarn build
 
       - name: Run ESLint
         run: npm run lint:report
