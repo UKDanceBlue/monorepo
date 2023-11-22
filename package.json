@@ -5,6 +5,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
+    "lint:report": "eslint --output-file eslint_report.json --format json .",
     "format": "prettier .",
     "format:fix": "prettier --write .",
     "gql:build": "graphql-codegen-esm --config codegen.ts",
