@@ -1,11 +1,12 @@
 # Needs to be run with the context set to project root, i.e. docker build -t app-server ../.. -f Dockerfile
 
 FROM node:18
-EXPOSE ${APPLICATION_PORT}
 
 ENV NODE_ENV="production"
 ENV APPLICATION_PORT="8000"
 ENV APPLICATION_HOST="0.0.0.0"
+
+EXPOSE ${APPLICATION_PORT}
 
 # ENV COOKIE_SECRET=""
 # ENV JWT_SECRET=""
