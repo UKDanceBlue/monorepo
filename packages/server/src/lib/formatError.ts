@@ -1,5 +1,10 @@
 import { unwrapResolverError } from "@apollo/server/errors";
-import { BaseError, DatabaseError, QueryError } from "@sequelize/core";
+import {
+  BaseError,
+  DatabaseError,
+  QueryError,
+  UniqueConstraintError,
+} from "@sequelize/core";
 import type { ApiError } from "@ukdanceblue/common";
 import {
   ValidationError as DbValidationError,
@@ -94,6 +99,20 @@ export function formatError(
       error instanceof jwt.TokenExpiredError
     ) {
       formattedError.extensions.code = ErrorCode.NotLoggedIn;
+    } else if (error instanceof UniqueConstraintError) {
+      formattedError.extensions.code = ErrorCode.InvalidRequest;
+      formattedError.extensions.details = `Unique constraint error: ${error.errors
+        .map((e) => e.message)
+        .join(", ")}`;
+      formattedError.extensions.explanation = `You attempted to create a new record that conflicts with an existing record, does the record already exist? The conflicting fields are: '${error.errors
+        .map((e) => e.path)
+        .join("', '")}'.`;
+      if (shouldIncludeSensitiveInfo) {
+        formattedError.extensions.internalDetails!.sql = error.sql;
+        formattedError.extensions.internalDetails!.fields = JSON.stringify(
+          error.fields
+        );
+      }
     } else if (error instanceof QueryError) {
       formattedError.extensions.code = ErrorCode.InternalFailure;
     } else if (error instanceof DatabaseError) {
