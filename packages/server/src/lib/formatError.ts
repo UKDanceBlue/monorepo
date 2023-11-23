@@ -113,6 +113,14 @@ export function formatError(
           error.fields
         );
       }
+    } else if (error instanceof SequelizeValidationError) {
+      formattedError.extensions.code = ErrorCode.InvalidRequest;
+      formattedError.extensions.details = error.toString(
+        false,
+        undefined,
+        undefined,
+        !shouldIncludeSensitiveInfo
+      );
     } else if (error instanceof QueryError) {
       formattedError.extensions.code = ErrorCode.InternalFailure;
     } else if (error instanceof DatabaseError) {
@@ -123,14 +131,6 @@ export function formatError(
           error.parameters
         );
       }
-    } else if (error instanceof SequelizeValidationError) {
-      formattedError.extensions.code = ErrorCode.InvalidRequest;
-      formattedError.extensions.details = error.toString(
-        false,
-        undefined,
-        undefined,
-        shouldIncludeSensitiveInfo
-      );
     } else if (error instanceof BaseError) {
       formattedError.extensions.code = ErrorCode.DatabaseFailure;
     } else if (error instanceof DbValidationError) {
