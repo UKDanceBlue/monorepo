@@ -1,11 +1,12 @@
 # Needs to be run with the context set to project root, i.e. docker build -t app-server ../.. -f Dockerfile
 
 FROM node:18
-EXPOSE ${APPLICATION_PORT}
 
 ENV NODE_ENV="production"
 ENV APPLICATION_PORT="8000"
 ENV APPLICATION_HOST="0.0.0.0"
+
+EXPOSE ${APPLICATION_PORT}
 
 # ENV COOKIE_SECRET=""
 # ENV JWT_SECRET=""
@@ -40,5 +41,8 @@ COPY node_modules/ /usr/src/app/node_modules
 COPY .yarn/ /usr/src/app/.yarn
 
 WORKDIR /usr/src/app/packages/server
+
+HEALTHCHECK --interval=5m --timeout=3s \
+  CMD curl --fail-with-body http://localhost:${APPLICATION_PORT}/api/healthcheck
 
 CMD ["node", "dist/index.js"]
