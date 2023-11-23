@@ -9,8 +9,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  PORTAL_IMAGE_NAME: app-portal
-  SERVER_IMAGE_NAME: app-server
+  PORTAL_IMAGE_NAME: ukdanceblue/app-portal
+  SERVER_IMAGE_NAME: ukdanceblue/app-server
 
 jobs:
   build-and-push-portal-image:

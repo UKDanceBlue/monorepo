@@ -889,6 +889,7 @@ export const PersonResolverStringFilterKeys = {
   CommitteeRole: 'committeeRole',
   DbRole: 'dbRole',
   Email: 'email',
+  Linkblue: 'linkblue',
   Name: 'name'
 } as const;
 
