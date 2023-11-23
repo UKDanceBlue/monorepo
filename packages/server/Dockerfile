@@ -42,7 +42,4 @@ COPY .yarn/ /usr/src/app/.yarn
 
 WORKDIR /usr/src/app/packages/server
 
-HEALTHCHECK --interval=5m --timeout=3s \
-  CMD curl --fail-with-body http://localhost:${APPLICATION_PORT}/api/healthcheck
-
 CMD ["node", "dist/index.js"]
