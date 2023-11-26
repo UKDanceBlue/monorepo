@@ -8,9 +8,11 @@ import { CombinedError } from "urql";
 export type ExtendedApiError = ApiError;
 
 export function extractServerError(error: CombinedError): ExtendedApiError[] {
+  console.log("IN", error);
   const apiErrors: ExtendedApiError[] = [];
 
   for (const graphQLError of error.graphQLErrors) {
+    console.log("in", graphQLError);
     const apiError: ExtendedApiError = {
       message: graphQLError.message,
       code: ErrorCode.Unknown,
@@ -20,9 +22,9 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
       apiError.code = graphQLError.extensions.code;
     }
 
-    if (Array.isArray(graphQLError.extensions.stacktrace)) {
-      apiError.cause = graphQLError.extensions.stacktrace.map(String);
-    }
+    // if (Array.isArray(graphQLError.extensions.stacktrace)) {
+    //   apiError.cause = graphQLError.extensions.stacktrace.map(String);
+    // }
 
     if (typeof graphQLError.extensions.details === "string") {
       apiError.details = graphQLError.extensions.details;
@@ -35,6 +37,9 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
     if (graphQLError.extensions.cause) {
       apiError.cause = JSON.stringify(graphQLError.extensions.cause);
     }
+
+    console.log("out", apiError);
+    apiErrors.push(apiError);
   }
 
   if (error.networkError) {
@@ -78,6 +83,8 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
       cause: error,
     });
   }
+
+  console.log("OUT", apiErrors);
 
   return apiErrors;
 }
@@ -139,7 +146,9 @@ export function handleApiError(
   console.error(error);
 
   if (options.message) {
-    void options.message.error(error.message).then(options.onClose);
+    void options.message
+      .error(error.explanation ?? error.message)
+      .then(options.onClose);
   }
 
   if (options.modal) {

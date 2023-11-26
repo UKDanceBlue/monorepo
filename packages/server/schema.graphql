@@ -482,7 +482,7 @@ type GetPeopleResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseRe
 }
 
 type GetPersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: PersonResource!
+  data: PersonResource
   ok: Boolean!
 }
 
@@ -1059,7 +1059,7 @@ type Query {
     stringFilters: [PersonResolverKeyedStringFilterItem!]
   ): ListPeopleResponse!
   loginState: LoginState!
-  me: GetPersonResponse
+  me: GetPersonResponse!
   notification(uuid: String!): GetNotificationByUuidResponse!
   notifications(
     """The boolean filters to apply to the query"""

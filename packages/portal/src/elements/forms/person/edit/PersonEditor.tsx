@@ -8,7 +8,6 @@ import type { UseQueryExecute } from "urql";
 
 import { TeamNameFragment } from "../PersonFormsGQL";
 
-
 import { PersonEditorFragment } from "./PersonEditorGQL";
 import { usePersonEditorForm } from "./usePersonEditorForm";
 
@@ -17,7 +16,7 @@ export function PersonEditor({
   teamNamesFragment,
   refetchPerson,
 }: {
-  personFragment?: FragmentType<typeof PersonEditorFragment> | undefined;
+  personFragment?: FragmentType<typeof PersonEditorFragment> | undefined | null;
   teamNamesFragment?:
     | readonly FragmentType<typeof TeamNameFragment>[]
     | undefined;
