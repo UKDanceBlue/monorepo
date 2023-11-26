@@ -1,7 +1,11 @@
 import { Authorized } from "type-graphql";
 
-import type { AccessLevel, Authorization, DbRole } from "../../../index.js";
-import { CommitteeRole } from "../../../index.js";
+import type {
+  AccessLevel,
+  Authorization,
+  DbRole,
+} from "../../../auth/index.js";
+import { CommitteeRole } from "../../../auth/index.js";
 
 export interface AuthorizationRule extends Partial<Authorization> {
   /**

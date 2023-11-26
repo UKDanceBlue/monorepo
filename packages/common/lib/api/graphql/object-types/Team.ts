@@ -1,6 +1,6 @@
 import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
 
-import { AccessLevel } from "../../../index.js";
+import { AccessLevel } from "../../../auth/index.js";
 import * as SimpleTypes from "../../SimpleTypes.js";
 
 import { Resource } from "./Resource.js";
