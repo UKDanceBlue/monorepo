@@ -1,5 +1,6 @@
 import { argv } from "node:process";
 
+import { isDatabaseLocal } from "./environment.js";
 import { logFatal, logInfo } from "./logger.js";
 
 // No top level imports that cause side effects should be used in this file
@@ -29,7 +30,7 @@ await import("./models/init.js");
 logInfo("Initialized database models");
 
 // Seed the database if passed the --seed flag
-if (argv.includes("--seed-db")) {
+if (argv.includes("--seed-db") && isDatabaseLocal) {
   logInfo("'--seed-db' flag detected, seeding database");
   const { default: seedDatabase } = await import("./seeders/index.js");
   await seedDatabase();
