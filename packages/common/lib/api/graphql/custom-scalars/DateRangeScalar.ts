@@ -1,7 +1,7 @@
 import { GraphQLScalarType, Kind } from "graphql";
 import { DateTime, Duration, Interval } from "luxon";
 
-import { LuxonError } from "../../../index.js";
+import { LuxonError } from "../../../util/validation.js";
 
 export const DateRangeScalar = new GraphQLScalarType<Interval, string>({
   name: "LuxonDateRange",
