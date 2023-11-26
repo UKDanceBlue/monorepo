@@ -31,7 +31,7 @@ export function useQueryStatusWatcher({
   useEffect(() => {
     if (error) {
       for (const err of extractServerError(error))
-        handleApiError(err, { message: antApp.message });
+        handleApiError(err, { message: antApp.message.error });
     }
   }, [antApp.message, error]);
 

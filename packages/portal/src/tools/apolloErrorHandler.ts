@@ -1,7 +1,7 @@
 import type { ApiError } from "@ukdanceblue/common";
 import { ErrorCode, isErrorCode } from "@ukdanceblue/common";
-import type { useAppProps } from "antd/es/app/context";
-import type { MessageInstance } from "antd/es/message/interface";
+import type { TypeOpen } from "antd/es/message/interface";
+import type { ModalFunc } from "antd/es/modal/confirm";
 import type { NotificationInstance } from "antd/es/notification/interface";
 import { CombinedError } from "urql";
 
@@ -92,9 +92,9 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
 export function handleUnknownError(
   error: unknown,
   options: {
-    message?: MessageInstance;
-    notification?: NotificationInstance;
-    modal?: useAppProps["modal"];
+    message?: TypeOpen;
+    notification?: NotificationInstance["error"];
+    modal?: ModalFunc;
     onClose?: () => void;
   }
 ) {
@@ -137,22 +137,22 @@ export function handleUnknownError(
 export function handleApiError(
   error: ApiError,
   options: {
-    message?: MessageInstance;
-    notification?: NotificationInstance;
-    modal?: useAppProps["modal"];
+    message?: TypeOpen;
+    notification?: NotificationInstance["error"];
+    modal?: ModalFunc;
     onClose?: () => void;
   }
 ) {
   console.error(error);
 
   if (options.message) {
-    void options.message
-      .error(error.explanation ?? error.message)
+    void options
+      .message(error.explanation ?? error.message)
       .then(options.onClose);
   }
 
   if (options.modal) {
-    options.modal.error({
+    options.modal({
       title: error.message,
       content: error.explanation,
       afterClose() {
@@ -162,7 +162,7 @@ export function handleApiError(
   }
 
   if (options.notification) {
-    options.notification.error({
+    options.notification({
       message: error.message,
       description: error.explanation,
       onClose() {
