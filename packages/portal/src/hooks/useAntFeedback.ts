@@ -1,3 +1,4 @@
+import { handleUnknownError } from "@tools/apolloErrorHandler";
 import { App } from "antd";
 import type { ModalFunc } from "antd/es/modal/confirm";
 import type { ReactNode } from "react";
@@ -43,7 +44,7 @@ export const useAskConfirm = ({
   cancelText?: string;
   danger?: boolean;
 }): {
-  openConfirmModal: () => void;
+  openConfirmModal: () => Promise<void>;
   closeConfirmModal: () => void;
 } => {
   const { showConfirmModal } = useAntFeedback();
@@ -52,26 +53,38 @@ export const useAskConfirm = ({
   >(undefined);
 
   const openConfirmModal = useCallback(() => {
-    setActiveModal(
-      showConfirmModal({
-        title: modalTitle,
-        content: modalContent,
-        onOk: () => {
-          onOk?.();
-        },
-        onCancel: () => {
-          onCancel?.();
-        },
-        afterClose: () => {
-          setActiveModal(undefined);
-        },
-        okText,
-        cancelText,
-        okButtonProps: {
-          danger: true,
-        },
-      })
-    );
+    return new Promise<void>((resolve, reject) => {
+      setActiveModal(
+        showConfirmModal({
+          title: modalTitle,
+          content: modalContent,
+          onOk: () => {
+            try {
+              onOk?.();
+            } catch (error) {
+              reject(error);
+            }
+            resolve();
+          },
+          onCancel: () => {
+            try {
+              onCancel?.();
+            } catch (error) {
+              reject(error);
+            }
+            reject("cancel");
+          },
+          afterClose: () => {
+            setActiveModal(undefined);
+          },
+          okText,
+          cancelText,
+          okButtonProps: {
+            danger: true,
+          },
+        })
+      );
+    });
   }, [
     showConfirmModal,
     modalTitle,
@@ -83,4 +96,30 @@ export const useAskConfirm = ({
   ]);
 
   return { openConfirmModal, closeConfirmModal: () => activeModal?.destroy() };
+};
+
+export const useUnknownErrorHandler = (): {
+  showErrorMessage: (error: unknown) => void;
+  showErrorNotification: (error: unknown) => void;
+  showErrorModal: (error: unknown) => void;
+} => {
+  const { showErrorMessage, showErrorNotification, showErrorModal } =
+    useAntFeedback();
+
+  return {
+    showErrorMessage: useCallback(
+      (error: unknown) =>
+        handleUnknownError(error, { message: showErrorMessage }),
+      [showErrorMessage]
+    ),
+    showErrorNotification: useCallback(
+      (error: unknown) =>
+        handleUnknownError(error, { notification: showErrorNotification }),
+      [showErrorNotification]
+    ),
+    showErrorModal: useCallback(
+      (error: unknown) => handleUnknownError(error, { modal: showErrorModal }),
+      [showErrorModal]
+    ),
+  };
 };
