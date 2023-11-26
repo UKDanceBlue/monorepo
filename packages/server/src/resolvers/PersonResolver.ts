@@ -50,9 +50,9 @@ class CreatePersonResponse extends AbstractGraphQLCreatedResponse<PersonResource
 @ObjectType("GetPersonResponse", {
   implements: AbstractGraphQLOkResponse<PersonResource>,
 })
-class GetPersonResponse extends AbstractGraphQLOkResponse<PersonResource> {
-  @Field(() => PersonResource)
-  data!: PersonResource;
+class GetPersonResponse extends AbstractGraphQLOkResponse<PersonResource | null> {
+  @Field(() => PersonResource, { nullable: true })
+  data!: PersonResource | null;
 }
 @ObjectType("GetPeopleResponse", {
   implements: AbstractGraphQLArrayOkResponse<PersonResource>,
@@ -140,10 +140,14 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     const row = await PersonModel.findOne({ where: { uuid } });
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Person not found");
+      return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+        null
+      );
     }
 
-    return GetPersonResponse.newOk(row.toResource());
+    return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+      row.toResource()
+    );
   }
 
   @AccessLevelAuthorized(AccessLevel.Committee)
@@ -154,10 +158,14 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     const row = await PersonModel.findOne({ where: { linkblue: linkBlueId } });
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Person not found");
+      return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+        null
+      );
     }
 
-    return GetPersonResponse.newOk(row.toResource());
+    return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+      row.toResource()
+    );
   }
 
   @AccessLevelAuthorized(AccessLevel.Committee)
@@ -187,11 +195,11 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     });
   }
 
-  @Query(() => GetPersonResponse, { name: "me", nullable: true })
+  @Query(() => GetPersonResponse, { name: "me" })
   me(@Ctx() ctx: Context.GraphQLContext): GetPersonResponse | null {
-    return ctx.authenticatedUser == null
-      ? null
-      : GetPersonResponse.newOk(ctx.authenticatedUser);
+    return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+      ctx.authenticatedUser
+    );
   }
 
   @Query(() => GetPeopleResponse, { name: "searchPeopleByName" })
@@ -386,7 +394,9 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
 
       await Promise.all(promises);
 
-      return GetPersonResponse.newOk(row.toResource());
+      return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+        row.toResource()
+      );
     });
   }
 
