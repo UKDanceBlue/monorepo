@@ -12,7 +12,7 @@ import { useMutation } from "urql";
 import { PersonEditorFragment, personEditorDocument } from "./PersonEditorGQL";
 
 export function usePersonEditorForm(
-  personFragment: FragmentType<typeof PersonEditorFragment> | undefined,
+  personFragment: FragmentType<typeof PersonEditorFragment> | undefined | null,
   afterSubmit:
     | ((
         ret: DocumentType<typeof personEditorDocument>["setPerson"] | undefined
