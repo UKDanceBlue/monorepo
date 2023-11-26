@@ -4,7 +4,7 @@ import type { SyncOptions } from "@sequelize/core";
 
 import { sequelizeDb } from "../data-source.js";
 import { isDatabaseLocal, isDevelopment } from "../environment.js";
-import { logDebug, sqlLogger } from "../logger.js";
+import { logDebug, logInfo, sqlLogger } from "../logger.js";
 
 // Importing this module will import all the models in the models folder and initialize them and their relations.
 
@@ -36,8 +36,8 @@ logDebug("Initializing model default scopes");
 await import("./defaultScopes.js");
 logDebug("Initialized model default scopes");
 
-logDebug("Syncing models");
 if (isDatabaseLocal && argv.includes("--seed-db")) {
+  logInfo("Syncing models");
   const syncOptions: SyncOptions = {
     // Force if passed --reset-db flag
     logging:
@@ -46,5 +46,5 @@ if (isDatabaseLocal && argv.includes("--seed-db")) {
         sqlLogger.log("sql", sql, { timing })),
   };
   await sequelizeDb.sync(syncOptions);
+  logInfo("Models synced");
 }
-logDebug("Models synced");
