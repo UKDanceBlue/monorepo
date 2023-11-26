@@ -26,7 +26,8 @@
       "normalize-path",
       "qs",
       "ws"
-    ]
+    ],
+    "importHelpers": true
   },
   "include": ["src"],
   "extends": "../../tsconfig.json"

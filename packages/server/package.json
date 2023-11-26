@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node .",
-    "build": "tsc",
+    "build": "yarn run rollup --config ./rollup.js",
     "bs": "yarn run build && yarn run start",
     "this-is-bullshit": "yarn run bs",
     "dev": "nodemon -w ./dist ./dist/index.js ../common/dist --",
@@ -80,6 +80,7 @@
     "thumbhash": "^0.1.1",
     "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",
+    "tslib": "^2.6.2",
     "type-graphql": "^2.0.0-beta.3",
     "typedi": "^0.10.0",
     "typescript": "^5.2.2",
@@ -90,12 +91,17 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-json": "^6.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.5",
     "@types/koa": "^2.13.6",
     "@types/koa-bodyparser": "^4.3.10",
     "@types/koa__cors": "^4.0.0",
     "@types/koa__router": "^12.0.4",
     "@types/pg": "^8.6.6",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "rollup": "^4.5.2"
   },
   "packageManager": "yarn@3.6.4"
 }

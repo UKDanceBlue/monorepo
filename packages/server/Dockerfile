@@ -27,12 +27,6 @@ RUN mkdir -p /usr/src/app/packages/common
 COPY packages/server/package.json /usr/src/app/packages/server
 COPY packages/server/.yarnrc.yml /usr/src/app/packages/server
 COPY packages/server/dist/ /usr/src/app/packages/server/dist
-COPY packages/server/node_modules/ /usr/src/app/packages/server/node_modules
-
-COPY packages/common/package.json /usr/src/app/packages/common
-COPY packages/common/.yarnrc.yml /usr/src/app/packages/common
-COPY packages/common/dist/ /usr/src/app/packages/common/dist
-COPY packages/common/node_modules/ /usr/src/app/packages/common/node_modules
 
 COPY package.json /usr/src/app
 COPY yarn.lock /usr/src/app
