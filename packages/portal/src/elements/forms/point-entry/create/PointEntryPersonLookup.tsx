@@ -1,7 +1,7 @@
-import { ClearOutlined, PlusOutlined } from "@ant-design/icons";
+import { ClearOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { useAskConfirm, useUnknownErrorHandler } from "@hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { AutoComplete, Button, Descriptions, Flex, Form } from "antd";
-import Search from "antd/es/input/Search";
+import { AutoComplete, Button, Descriptions, Flex, Form, Input } from "antd";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 import { useDebouncedCallback } from "use-debounce";
@@ -14,6 +14,7 @@ import {
 } from "./PointEntryCreatorGQL";
 import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
 
+const generalLinkblueRegex = new RegExp(/^[A-Za-z]{3,4}\d{3}$/);
 export function PointEntryPersonLookup({
   formApi,
   teamUuid,
@@ -21,6 +22,7 @@ export function PointEntryPersonLookup({
   formApi: ReturnType<typeof usePointEntryCreatorForm>["formApi"];
   teamUuid: string;
 }) {
+  const { showErrorMessage } = useUnknownErrorHandler();
   // Form state (shared with parent)
   const { getValue, setValue: setPersonFromUuid } = formApi.useField({
     name: "personFromUuid",
@@ -43,10 +45,6 @@ export function PointEntryPersonLookup({
       updateSelectedPerson({ uuid: personFromUuid });
     }
   }, [personFromUuid, updateSelectedPerson]);
-
-  const [linkblueKnownDoesNotExist, setLinkblueKnownDoesNotExist] = useState<
-    string | undefined
-  >(undefined);
 
   // Linkblue lookup
   const [linkblueFieldValue, setLinkblueFieldValue] = useState<
@@ -79,19 +77,27 @@ export function PointEntryPersonLookup({
   // When someone searches for a linkblue and it does not exist, we want to
   // set linkblueKnownDoesNotExist to the linkblue that was searched for.
   // When the linkblue field changes, we want to clear that message.
+  const [searchedForLinkblue, setSearchedForLinkblue] = useState<
+    string | undefined
+  >(undefined);
+  const [linkblueKnownDoesNotExist, setLinkblueKnownDoesNotExist] = useState<
+    string | undefined
+  >(undefined);
   useEffect(() => {
-    setLinkblueKnownDoesNotExist(undefined);
-  }, [linkblueFieldValue]);
-  useEffect(() => {
-    if (
-      getPersonByLinkBlueQuery.data?.personByLinkBlue.data === null &&
-      linkblueFieldValue
-    ) {
-      setLinkblueKnownDoesNotExist(linkblueFieldValue);
+    if (linkblueFieldValue) {
+      if (
+        linkblueFieldValue === searchedForLinkblue &&
+        !getPersonByLinkBlueQuery.data?.personByLinkBlue.data
+      ) {
+        setLinkblueKnownDoesNotExist(linkblueFieldValue);
+      } else {
+        setLinkblueKnownDoesNotExist(undefined);
+      }
     }
   }, [
     getPersonByLinkBlueQuery.data?.personByLinkBlue.data,
     linkblueFieldValue,
+    searchedForLinkblue,
   ]);
 
   // Name lookup
@@ -144,6 +150,19 @@ export function PointEntryPersonLookup({
     error: createPersonQuery.error,
   });
 
+  const { openConfirmModal } = useAskConfirm({
+    modalTitle: "Are you sure this is a valid LinkBlue?",
+    modalContent: (
+      <>
+        A LinkBlue ID is usually 3-4 letters followed by 3 numbers, for example:{" "}
+        <i>abcd123</i>. There are some exceptions, but most will follow that
+        format.
+      </>
+    ),
+    okText: "Yes",
+    cancelText: "No",
+  });
+
   return (
     <formApi.Field
       name="personFromUuid"
@@ -186,69 +205,90 @@ export function PointEntryPersonLookup({
                 />
               </Descriptions.Item>
               <Descriptions.Item label="LinkBlue">
+                <Input
+                  name={`${field.name}-linkblue-field`}
+                  value={
+                    (personFromUuid &&
+                      selectedPersonQuery.data?.person.data?.linkblue) ||
+                    linkblueFieldValue
+                  }
+                  onChange={(e) => {
+                    setLinkblueFieldValue(e.target.value);
+                  }}
+                  disabled={!!field.state.value}
+                  onBlur={field.handleBlur}
+                  placeholder="Lookup Existing LinkBlue"
+                />
                 {!linkblueKnownDoesNotExist ? (
-                  <Search
+                  <Button
                     name={`${field.name}-linkblue-lookup`}
-                    value={
-                      (personFromUuid &&
-                        selectedPersonQuery.data?.person.data?.linkblue) ||
-                      linkblueFieldValue
-                    }
-                    onChange={(e) => {
-                      setLinkblueFieldValue(e.target.value);
-                    }}
                     onBlur={field.handleBlur}
-                    disabled={!!field.state.value}
-                    onSearch={() => {
-                      getPersonByLinkBlue();
+                    disabled={!!field.state.value || !linkblueFieldValue}
+                    onClick={() => {
+                      if (linkblueFieldValue) {
+                        setSearchedForLinkblue(linkblueFieldValue);
+                        getPersonByLinkBlue();
+                      }
                     }}
-                    placeholder="Lookup Existing LinkBlue"
-                    enterButton="Lookup"
                     loading={getPersonByLinkBlueQuery.fetching}
-                  />
+                    icon={<SearchOutlined />}
+                  >
+                    Lookup
+                  </Button>
                 ) : (
-                  <>
-                    <Search
-                      value={linkblueKnownDoesNotExist}
-                      disabled
-                      enterButton="Lookup"
-                    />
-                    <Button
-                      name={`${field.name}-linkblue-create`}
-                      onBlur={field.handleBlur}
-                      disabled={!!field.state.value || !linkblueFieldValue}
-                      onClick={() => {
-                        if (linkblueFieldValue) {
-                          createPerson({
+                  <Button
+                    name={`${field.name}-linkblue-create`}
+                    onBlur={field.handleBlur}
+                    disabled={!!field.state.value || !linkblueFieldValue}
+                    onClick={async () => {
+                      if (linkblueFieldValue) {
+                        try {
+                          if (!generalLinkblueRegex.test(linkblueFieldValue)) {
+                            try {
+                              await openConfirmModal();
+                            } catch (error) {
+                              if (error === "cancel") {
+                                return;
+                              } else {
+                                throw error;
+                              }
+                            }
+                          }
+                          const result = await createPerson({
                             linkBlue: linkblueFieldValue,
                             email: `${linkblueFieldValue}@uky.edu`,
                             teamUuid,
-                          })
-                            .then((result) => {
-                              if (result.data?.createPerson.uuid) {
-                                setPersonFromUuid(
-                                  result.data.createPerson.uuid
-                                );
-                              }
-                            })
-                            .catch((error) => {
-                              console.error(error);
-                            });
+                          });
+                          if (result.data?.createPerson.uuid) {
+                            setPersonFromUuid(result.data.createPerson.uuid);
+                          }
+                        } catch (error) {
+                          showErrorMessage(error);
                         }
-                      }}
-                      loading={createPersonQuery.fetching}
-                      icon={<PlusOutlined />}
-                      color="green"
-                    >
-                      Create
-                    </Button>
-                  </>
+                      }
+                    }}
+                    loading={createPersonQuery.fetching}
+                    icon={<PlusOutlined />}
+                    color="green"
+                  >
+                    Create
+                  </Button>
                 )}
               </Descriptions.Item>
             </Descriptions>
             <Flex justify="space-between" wrap="wrap">
               {field.state.value ? (
-                <span>Selected Person: {personFromUuid}</span>
+                <span>
+                  Selected Person:{" "}
+                  {selectedPersonQuery.data?.person.data ? (
+                    <i>
+                      {selectedPersonQuery.data.person.data.name ??
+                        selectedPersonQuery.data.person.data.linkblue}
+                    </i>
+                  ) : (
+                    "No name or linkblue found"
+                  )}
+                </span>
               ) : (
                 <span>Nobody selected</span>
               )}
