@@ -1,6 +1,6 @@
 import { ClearOutlined, PlusOutlined } from "@ant-design/icons";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { AutoComplete, Button, Descriptions, Form } from "antd";
+import { AutoComplete, Button, Descriptions, Flex, Form } from "antd";
 import Search from "antd/es/input/Search";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
@@ -44,6 +44,10 @@ export function PointEntryPersonLookup({
     }
   }, [personFromUuid, updateSelectedPerson]);
 
+  const [linkblueKnownDoesNotExist, setLinkblueKnownDoesNotExist] = useState<
+    string | undefined
+  >(undefined);
+
   // Linkblue lookup
   const [linkblueFieldValue, setLinkblueFieldValue] = useState<
     string | undefined
@@ -68,8 +72,26 @@ export function PointEntryPersonLookup({
     }
   }, [
     getPersonByLinkBlueQuery.data?.personByLinkBlue.data,
-    getPersonByLinkBlueQuery.data?.personByLinkBlue.data.uuid,
+    getPersonByLinkBlueQuery.data?.personByLinkBlue.data?.uuid,
     setPersonFromUuid,
+  ]);
+
+  // When someone searches for a linkblue and it does not exist, we want to
+  // set linkblueKnownDoesNotExist to the linkblue that was searched for.
+  // When the linkblue field changes, we want to clear that message.
+  useEffect(() => {
+    setLinkblueKnownDoesNotExist(undefined);
+  }, [linkblueFieldValue]);
+  useEffect(() => {
+    if (
+      getPersonByLinkBlueQuery.data?.personByLinkBlue.data === null &&
+      linkblueFieldValue
+    ) {
+      setLinkblueKnownDoesNotExist(linkblueFieldValue);
+    }
+  }, [
+    getPersonByLinkBlueQuery.data?.personByLinkBlue.data,
+    linkblueFieldValue,
   ]);
 
   // Name lookup
@@ -143,7 +165,7 @@ export function PointEntryPersonLookup({
                   placeholder="Search by Name"
                   value={
                     (personFromUuid &&
-                      selectedPersonQuery.data?.person.data.name) ||
+                      selectedPersonQuery.data?.person.data?.name) ||
                     searchByNameField
                   }
                   onBlur={field.handleBlur}
@@ -164,64 +186,84 @@ export function PointEntryPersonLookup({
                 />
               </Descriptions.Item>
               <Descriptions.Item label="LinkBlue">
-                <Search
-                  name={`${field.name}-linkblue-lookup`}
-                  value={
-                    (personFromUuid &&
-                      selectedPersonQuery.data?.person.data.linkblue) ||
-                    linkblueFieldValue
-                  }
-                  onChange={(e) => {
-                    setLinkblueFieldValue(e.target.value);
-                  }}
-                  onBlur={field.handleBlur}
-                  disabled={!!field.state.value}
-                  onSearch={() => {
-                    getPersonByLinkBlue();
-                  }}
-                  placeholder="Lookup Existing LinkBlue"
-                  enterButton="Lookup"
-                  loading={getPersonByLinkBlueQuery.fetching}
-                />
-                <Button
-                  name={`${field.name}-linkblue-create`}
-                  onBlur={field.handleBlur}
-                  disabled={!!field.state.value || !linkblueFieldValue}
-                  onClick={() => {
-                    if (linkblueFieldValue) {
-                      createPerson({
-                        linkBlue: linkblueFieldValue,
-                        email: `${linkblueFieldValue}@uky.edu`,
-                        teamUuid,
-                      })
-                        .then((result) => {
-                          if (result.data?.createPerson.uuid) {
-                            setPersonFromUuid(result.data.createPerson.uuid);
-                          }
-                        })
-                        .catch((error) => {
-                          console.error(error);
-                        });
+                {!linkblueKnownDoesNotExist ? (
+                  <Search
+                    name={`${field.name}-linkblue-lookup`}
+                    value={
+                      (personFromUuid &&
+                        selectedPersonQuery.data?.person.data?.linkblue) ||
+                      linkblueFieldValue
                     }
-                  }}
-                  loading={createPersonQuery.fetching}
-                  icon={<PlusOutlined />}
-                  color="green"
-                >
-                  Create
-                </Button>
+                    onChange={(e) => {
+                      setLinkblueFieldValue(e.target.value);
+                    }}
+                    onBlur={field.handleBlur}
+                    disabled={!!field.state.value}
+                    onSearch={() => {
+                      getPersonByLinkBlue();
+                    }}
+                    placeholder="Lookup Existing LinkBlue"
+                    enterButton="Lookup"
+                    loading={getPersonByLinkBlueQuery.fetching}
+                  />
+                ) : (
+                  <>
+                    <Search
+                      value={linkblueKnownDoesNotExist}
+                      disabled
+                      enterButton="Lookup"
+                    />
+                    <Button
+                      name={`${field.name}-linkblue-create`}
+                      onBlur={field.handleBlur}
+                      disabled={!!field.state.value || !linkblueFieldValue}
+                      onClick={() => {
+                        if (linkblueFieldValue) {
+                          createPerson({
+                            linkBlue: linkblueFieldValue,
+                            email: `${linkblueFieldValue}@uky.edu`,
+                            teamUuid,
+                          })
+                            .then((result) => {
+                              if (result.data?.createPerson.uuid) {
+                                setPersonFromUuid(
+                                  result.data.createPerson.uuid
+                                );
+                              }
+                            })
+                            .catch((error) => {
+                              console.error(error);
+                            });
+                        }
+                      }}
+                      loading={createPersonQuery.fetching}
+                      icon={<PlusOutlined />}
+                      color="green"
+                    >
+                      Create
+                    </Button>
+                  </>
+                )}
               </Descriptions.Item>
             </Descriptions>
-            <Button
-              color="grey"
-              onClick={() => {
-                field.handleChange("");
-                setPersonFromUuid("");
-              }}
-              icon={<ClearOutlined />}
-            >
-              Clear
-            </Button>
+            <Flex justify="space-between" wrap="wrap">
+              {field.state.value ? (
+                <span>Selected Person: {personFromUuid}</span>
+              ) : (
+                <span>Nobody selected</span>
+              )}
+              <Button
+                color="grey"
+                onClick={() => {
+                  field.handleChange("");
+                  setPersonFromUuid("");
+                }}
+                icon={<ClearOutlined />}
+                disabled={!field.state.value}
+              >
+                Clear
+              </Button>
+            </Flex>
           </Form.Item>
         </>
       )}
