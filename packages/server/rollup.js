@@ -43,24 +43,22 @@ export default {
   output: {
     dir: "dist",
     format: "esm",
-    generatedCode: "es2015",
     sourcemap: true,
-    dynamicImportInCjs: true,
     manualChunks,
   },
   plugins: [
-    nodeResolve({
-      preferBuiltins: true,
-    }),
     typescript({
       tsconfig: resolve(__dirname, "tsconfig.json"),
       sourceMap: true,
       outputToFilesystem: true,
     }),
     commonjs(),
+    nodeResolve({
+      preferBuiltins: true,
+    }),
     json(),
   ],
-  treeshake: "recommended",
+  treeshake: "safest",
   onLog(level, message, defaultLogger) {
     // Ignore invalid annotations from graphql-scalars
     if (
