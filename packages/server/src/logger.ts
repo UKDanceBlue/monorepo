@@ -224,6 +224,7 @@ export const logEmergency = (content: unknown, ...data: unknown[]) =>
  */
 export function logFatal(content: unknown) {
   // Logs the error and then crashes the server
+  console.error("Fatal Error! (see 'emerg' log");
   // eslint-disable-next-line no-process-exit -- This needs to bypass any try/catch blocks
   logger.emerg(String(content), () => process.exit(1));
 }
