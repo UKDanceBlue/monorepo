@@ -2,6 +2,7 @@ import { ClearOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { useAskConfirm, useUnknownErrorHandler } from "@hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { AutoComplete, Button, Descriptions, Flex, Form, Input } from "antd";
+import type { LegacyRef } from "react";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 import { useDebouncedCallback } from "use-debounce";
@@ -18,9 +19,17 @@ const generalLinkblueRegex = new RegExp(/^[A-Za-z]{3,4}\d{3}$/);
 export function PointEntryPersonLookup({
   formApi,
   teamUuid,
+  nameFieldRef,
+  linkblueFieldRef,
+  selectedPersonRef,
+  clearButtonRef,
 }: {
   formApi: ReturnType<typeof usePointEntryCreatorForm>["formApi"];
   teamUuid: string;
+  nameFieldRef: LegacyRef<HTMLDivElement>;
+  linkblueFieldRef: Parameters<typeof Input>[0]["ref"];
+  selectedPersonRef: LegacyRef<HTMLSpanElement>;
+  clearButtonRef: Parameters<typeof Button>[0]["ref"];
 }) {
   const { showErrorMessage } = useUnknownErrorHandler();
   // Form state (shared with parent)
@@ -179,30 +188,32 @@ export function PointEntryPersonLookup({
           >
             <Descriptions column={1}>
               <Descriptions.Item label="Name">
-                {/* Three options to choose a person, autocomplete name, autocomplete linkblue, or manual entry */}
-                <AutoComplete
-                  placeholder="Search by Name"
-                  value={
-                    (personFromUuid &&
-                      selectedPersonQuery.data?.person.data?.name) ||
-                    searchByNameField
-                  }
-                  onBlur={field.handleBlur}
-                  disabled={!!field.state.value}
-                  onChange={(value) => {
-                    setSearchByNameField(value);
-                    if (value) {
-                      updateAutocomplete(value);
-                    } else {
-                      setNameAutocomplete([]);
+                <div ref={nameFieldRef} style={{ width: "100%" }}>
+                  {/* Three options to choose a person, autocomplete name, autocomplete linkblue, or manual entry */}
+                  <AutoComplete
+                    placeholder="Search by Name"
+                    value={
+                      (personFromUuid &&
+                        selectedPersonQuery.data?.person.data?.name) ||
+                      searchByNameField
                     }
-                  }}
-                  onSelect={(value) => {
-                    field.handleChange(value);
-                    updateSelectedPerson();
-                  }}
-                  options={nameAutocomplete}
-                />
+                    onBlur={field.handleBlur}
+                    disabled={!!field.state.value}
+                    onChange={(value) => {
+                      setSearchByNameField(value);
+                      if (value) {
+                        updateAutocomplete(value);
+                      } else {
+                        setNameAutocomplete([]);
+                      }
+                    }}
+                    onSelect={(value) => {
+                      field.handleChange(value);
+                      updateSelectedPerson();
+                    }}
+                    options={nameAutocomplete}
+                  />
+                </div>
               </Descriptions.Item>
               <Descriptions.Item label="LinkBlue">
                 <Input
@@ -218,6 +229,7 @@ export function PointEntryPersonLookup({
                   disabled={!!field.state.value}
                   onBlur={field.handleBlur}
                   placeholder="Lookup Existing LinkBlue"
+                  ref={linkblueFieldRef}
                 />
                 {!linkblueKnownDoesNotExist ? (
                   <Button
@@ -277,21 +289,23 @@ export function PointEntryPersonLookup({
               </Descriptions.Item>
             </Descriptions>
             <Flex justify="space-between" wrap="wrap">
-              {field.state.value ? (
-                <span>
-                  Selected Person:{" "}
-                  {selectedPersonQuery.data?.person.data ? (
-                    <i>
-                      {selectedPersonQuery.data.person.data.name ??
-                        selectedPersonQuery.data.person.data.linkblue}
-                    </i>
-                  ) : (
-                    "No name or linkblue found"
-                  )}
-                </span>
-              ) : (
-                <span>Nobody selected</span>
-              )}
+              <span ref={selectedPersonRef}>
+                {field.state.value ? (
+                  <>
+                    <span>Selected Person:</span>{" "}
+                    {selectedPersonQuery.data?.person.data ? (
+                      <i>
+                        {selectedPersonQuery.data.person.data.name ??
+                          selectedPersonQuery.data.person.data.linkblue}
+                      </i>
+                    ) : (
+                      "No name or linkblue found"
+                    )}
+                  </>
+                ) : (
+                  "Nobody selected"
+                )}
+              </span>
               <Button
                 color="grey"
                 onClick={() => {
@@ -300,6 +314,7 @@ export function PointEntryPersonLookup({
                 }}
                 icon={<ClearOutlined />}
                 disabled={!field.state.value}
+                ref={clearButtonRef}
               >
                 Clear
               </Button>
