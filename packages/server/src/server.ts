@@ -13,6 +13,7 @@ import { applicationHost, applicationPort } from "./environment.js";
 import { logDebug, logError, logInfo, logWarning } from "./logger.js";
 import type { GraphQLContext } from "./resolvers/context.js";
 import eventsApiRouter from "./routes/api/events/index.js";
+import healthCheckRouter from "./routes/api/healthcheck/index.js";
 
 // const BASIC_LOGGING: ApolloServerPlugin = {
 //   async requestDidStart(requestContext) {
@@ -128,5 +129,10 @@ export async function startServer(
       }
     )
   );
-  apiRouter.use("/api", authApiRouter.routes(), eventsApiRouter.routes());
+  apiRouter.use(
+    "/api",
+    authApiRouter.routes(),
+    eventsApiRouter.routes(),
+    healthCheckRouter.routes()
+  );
 }

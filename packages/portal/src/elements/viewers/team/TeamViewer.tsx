@@ -6,6 +6,7 @@ import {
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
 import { Button, Descriptions, Empty, Flex } from "antd";
+
 import { useTeamDeletePopup } from "./TeamDeletePopup";
 
 export const TeamViewerFragment = graphql(/* GraphQL */ `

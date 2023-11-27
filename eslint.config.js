@@ -1,4 +1,4 @@
-import { dirname, join, normalize } from "node:path";
+import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import eslintJs from "@eslint/js";
@@ -33,6 +33,7 @@ const eslintConfig = [
       "**/*.json",
       "packages/common/lib/graphql-client-*/**",
       ".yarn/**",
+      "compose-volumes/**",
     ],
   },
   eslintJs.configs.recommended,
@@ -233,7 +234,8 @@ const eslintConfig = [
     languageOptions: {
       parser: eslintParserTypescript,
       parserOptions: {
-        project: normalize(join(__dirname, "tsconfig.json")),
+        project: "./tsconfig.json",
+        tsconfigRootDir: __dirname,
       },
     },
     plugins: {
@@ -308,10 +310,10 @@ const eslintConfig = [
   },
   {
     files: [
-      normalize("packages/**/common/lib/**/**/*.js"),
-      normalize("packages/**/common/lib/**/**/*.ts"),
-      normalize("packages/**/common/lib/**/**/*.jsx"),
-      normalize("packages/**/common/lib/**/**/*.tsx"),
+      "packages/**/common/lib/**/**/*.js",
+      "packages/**/common/lib/**/**/*.ts",
+      "packages/**/common/lib/**/**/*.jsx",
+      "packages/**/common/lib/**/**/*.tsx",
     ],
     languageOptions: {
       globals: {
@@ -319,16 +321,16 @@ const eslintConfig = [
         ...globals.es2015,
       },
       parserOptions: {
-        project: normalize(join(__dirname, "packages/common/tsconfig.json")),
+        project: "./packages/common/tsconfig.json",
       },
     },
   },
   {
     files: [
-      normalize("packages/**/mobile/**/**/*.js"),
-      normalize("packages/**/mobile/**/**/*.ts"),
-      normalize("packages/**/mobile/**/**/*.jsx"),
-      normalize("packages/**/mobile/**/**/*.tsx"),
+      "packages/**/mobile/**/**/*.js",
+      "packages/**/mobile/**/**/*.ts",
+      "packages/**/mobile/**/**/*.jsx",
+      "packages/**/mobile/**/**/*.tsx",
     ],
     plugins: {
       "react": eslintPluginReact,
@@ -340,7 +342,7 @@ const eslintConfig = [
         ...eslintPluginReactNative.environments["react-native"].globals,
       },
       parserOptions: {
-        project: normalize(join(__dirname, "packages/mobile/tsconfig.json")),
+        project: "./packages/mobile/tsconfig.eslint.json",
       },
     },
     rules: {
@@ -359,10 +361,10 @@ const eslintConfig = [
   },
   {
     files: [
-      normalize("packages/**/portal/src/**/**/*.js"),
-      normalize("packages/**/portal/src/**/**/*.ts"),
-      normalize("packages/**/portal/src/**/**/*.jsx"),
-      normalize("packages/**/portal/src/**/**/*.tsx"),
+      "packages/**/portal/src/**/**/*.js",
+      "packages/**/portal/src/**/**/*.ts",
+      "packages/**/portal/src/**/**/*.jsx",
+      "packages/**/portal/src/**/**/*.tsx",
     ],
     plugins: {
       "react": eslintPluginReact,
@@ -375,7 +377,7 @@ const eslintConfig = [
         ...globals.browser,
       },
       parserOptions: {
-        project: normalize(join(__dirname, "packages/portal/tsconfig.json")),
+        project: "./packages/portal/tsconfig.json",
       },
     },
     rules: {
@@ -390,16 +392,13 @@ const eslintConfig = [
     },
   },
   {
-    files: [
-      normalize("packages/**/server/src/**/*.js"),
-      normalize("packages/**/server/src/**/*.ts"),
-    ],
+    files: ["packages/**/server/src/**/*.js", "packages/**/server/src/**/*.ts"],
     plugins: {
       node: eslintPluginNode,
     },
     languageOptions: {
       parserOptions: {
-        project: normalize(join(__dirname, "packages/server/tsconfig.json")),
+        project: "./packages/server/tsconfig.json",
       },
       globals: {
         ...globals.nodeBuiltin,

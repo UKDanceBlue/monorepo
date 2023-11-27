@@ -124,7 +124,7 @@ export function PointEntryOpportunityLookup({
                   },
                 })
                   .then((result) => {
-                    if (result.data?.createPointOpportunity?.uuid) {
+                    if (result.data?.createPointOpportunity.uuid) {
                       updateAutocomplete();
                       field.handleChange(
                         result.data.createPointOpportunity.uuid

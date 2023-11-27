@@ -5,7 +5,9 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "format": "prettier --write .",
+    "lint:report": "eslint --output-file eslint_report.json --format json .",
+    "format": "prettier .",
+    "format:fix": "prettier --write .",
     "gql:build": "graphql-codegen-esm --config codegen.ts",
     "gql:watch": "graphql-codegen-esm --config codegen.ts -w ./packages",
     "common:watch": "yarn workspace @ukdanceblue/common run watch",
@@ -14,7 +16,9 @@
     "server:build": "yarn workspace @ukdanceblue/server run build",
     "server:start": "yarn workspace @ukdanceblue/server run start",
     "portal:dev": "yarn workspace @ukdanceblue/portal dev",
-    "portal:build": "yarn workspace @ukdanceblue/portal build"
+    "portal:build": "yarn workspace @ukdanceblue/portal build",
+    "docker:server:start": "docker-compose up -d --build",
+    "docker:server:stop": "docker-compose down"
   },
   "devDependencies": {
     "@eslint/js": "^8.50.0",

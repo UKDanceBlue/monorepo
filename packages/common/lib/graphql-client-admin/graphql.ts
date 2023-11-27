@@ -494,7 +494,7 @@ export type GetPeopleResponse = AbstractGraphQlArrayOkResponse & GraphQlBaseResp
 
 export type GetPersonResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetPersonResponse';
-  readonly data: PersonResource;
+  readonly data?: Maybe<PersonResource>;
   readonly ok: Scalars['Boolean']['output'];
 };
 
@@ -889,6 +889,7 @@ export const PersonResolverStringFilterKeys = {
   CommitteeRole: 'committeeRole',
   DbRole: 'dbRole',
   Email: 'email',
+  Linkblue: 'linkblue',
   Name: 'name'
 } as const;
 
@@ -1027,7 +1028,7 @@ export type Query = {
   readonly image: GetImageByUuidResponse;
   readonly listPeople: ListPeopleResponse;
   readonly loginState: LoginState;
-  readonly me?: Maybe<GetPersonResponse>;
+  readonly me: GetPersonResponse;
   readonly notification: GetNotificationByUuidResponse;
   readonly notifications: ListNotificationsResponse;
   readonly person: GetPersonResponse;
@@ -1455,14 +1456,14 @@ export type GetPersonByUuidQueryVariables = Exact<{
 }>;
 
 
-export type GetPersonByUuidQuery = { readonly __typename?: 'Query', readonly person: { readonly __typename?: 'GetPersonResponse', readonly data: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null } } };
+export type GetPersonByUuidQuery = { readonly __typename?: 'Query', readonly person: { readonly __typename?: 'GetPersonResponse', readonly data?: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null } | null } };
 
 export type GetPersonByLinkBlueQueryVariables = Exact<{
   linkBlue: Scalars['String']['input'];
 }>;
 
 
-export type GetPersonByLinkBlueQuery = { readonly __typename?: 'Query', readonly personByLinkBlue: { readonly __typename?: 'GetPersonResponse', readonly data: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null } } };
+export type GetPersonByLinkBlueQuery = { readonly __typename?: 'Query', readonly personByLinkBlue: { readonly __typename?: 'GetPersonResponse', readonly data?: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null } | null } };
 
 export type SearchPersonByNameQueryVariables = Exact<{
   name: Scalars['String']['input'];
@@ -1641,10 +1642,10 @@ export type EditPersonPageQueryVariables = Exact<{
 }>;
 
 
-export type EditPersonPageQuery = { readonly __typename?: 'Query', readonly person: { readonly __typename?: 'GetPersonResponse', readonly data: (
+export type EditPersonPageQuery = { readonly __typename?: 'Query', readonly person: { readonly __typename?: 'GetPersonResponse', readonly data?: (
       { readonly __typename?: 'PersonResource' }
       & { ' $fragmentRefs'?: { 'PersonEditorFragmentFragment': PersonEditorFragmentFragment } }
-    ) }, readonly teams: { readonly __typename?: 'ListTeamsResponse', readonly data: ReadonlyArray<(
+    ) | null }, readonly teams: { readonly __typename?: 'ListTeamsResponse', readonly data: ReadonlyArray<(
       { readonly __typename?: 'TeamResource' }
       & { ' $fragmentRefs'?: { 'TeamNameFragmentFragment': TeamNameFragmentFragment } }
     )> } };
@@ -1654,10 +1655,10 @@ export type ViewPersonPageQueryVariables = Exact<{
 }>;
 
 
-export type ViewPersonPageQuery = { readonly __typename?: 'Query', readonly person: { readonly __typename?: 'GetPersonResponse', readonly data: (
+export type ViewPersonPageQuery = { readonly __typename?: 'Query', readonly person: { readonly __typename?: 'GetPersonResponse', readonly data?: (
       { readonly __typename?: 'PersonResource' }
       & { ' $fragmentRefs'?: { 'PersonViewerFragmentFragment': PersonViewerFragmentFragment } }
-    ) } };
+    ) | null } };
 
 export type EditTeamPageQueryVariables = Exact<{
   uuid: Scalars['String']['input'];

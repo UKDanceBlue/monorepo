@@ -5,12 +5,15 @@
   },
   "extends": "./tsconfig.json",
   "include": [
-    ".eslintrc.js",
-    "./src/**/*.ts",
-    "./src/**/*.tsx",
-    "./src/**/*.js",
-    "./app.tsx",
-    "./index.ts",
-    "./app.config.ts"
+    "assets",
+    "config-plugins",
+    "test-helpers",
+    "src",
+    "App.tsx",
+    "index.ts",
+    "app.config.ts",
+    "jest.setup.ts",
+    "jest.config.ts",
+    "global.d.ts"
   ]
 }

@@ -1,4 +1,5 @@
-import { MiddlewareFn, buildSchema } from "type-graphql";
+import type { MiddlewareFn } from "type-graphql";
+import { buildSchema } from "type-graphql";
 
 import { logError } from "../logger.js";
 import { ConfigurationResolver } from "../resolvers/ConfigurationResolver.js";
@@ -16,10 +17,10 @@ import { customAuthChecker } from "../resolvers/authChecker.js";
 
 const errorHandlingMiddleware: MiddlewareFn = async (_, next) => {
   try {
-    return await next();
-  } catch (err) {
-    logError("An error occurred in a resolver", err);
-    throw err;
+    return void (await next());
+  } catch (error) {
+    logError("An error occurred in a resolver", error);
+    throw error;
   }
 };
 

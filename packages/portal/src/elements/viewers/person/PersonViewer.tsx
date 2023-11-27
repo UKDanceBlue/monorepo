@@ -34,7 +34,7 @@ export const PersonViewerFragment = graphql(/* GraphQL */ `
 export function PersonViewer({
   personFragment: PersonFragment,
 }: {
-  personFragment?: FragmentType<typeof PersonViewerFragment> | undefined;
+  personFragment?: FragmentType<typeof PersonViewerFragment> | undefined | null;
 }) {
   const personData = getFragmentData(PersonViewerFragment, PersonFragment);
 

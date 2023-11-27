@@ -1,15 +1,15 @@
 import { useNavigate } from "@tanstack/react-router";
 import { CommitteeRole, committeeNames } from "@ukdanceblue/common";
 import {
-  getFragmentData,
   type FragmentType,
+  getFragmentData,
 } from "@ukdanceblue/common/graphql-client-admin";
 import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
+import type { BaseOptionType } from "antd/es/select";
+import { useMemo, useState } from "react";
 
 import { TeamNameFragment } from "../PersonFormsGQL";
 
-import { BaseOptionType } from "antd/es/select";
-import { useMemo, useState } from "react";
 import { usePersonCreatorForm } from "./usePersonCreatorForm";
 
 export function PersonCreator({
@@ -166,7 +166,7 @@ export function PersonCreator({
                 <Input
                   status={field.state.meta.errors.length > 0 ? "error" : ""}
                   name={field.name}
-                  value={field.state.value ?? ""}
+                  value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                 />

@@ -1,16 +1,18 @@
 import type { ApiError } from "@ukdanceblue/common";
 import { ErrorCode, isErrorCode } from "@ukdanceblue/common";
-import type { useAppProps } from "antd/es/app/context";
-import type { MessageInstance } from "antd/es/message/interface";
+import type { TypeOpen } from "antd/es/message/interface";
+import type { ModalFunc } from "antd/es/modal/confirm";
 import type { NotificationInstance } from "antd/es/notification/interface";
 import { CombinedError } from "urql";
 
 export type ExtendedApiError = ApiError;
 
 export function extractServerError(error: CombinedError): ExtendedApiError[] {
+  console.log("IN", error);
   const apiErrors: ExtendedApiError[] = [];
 
   for (const graphQLError of error.graphQLErrors) {
+    console.log("in", graphQLError);
     const apiError: ExtendedApiError = {
       message: graphQLError.message,
       code: ErrorCode.Unknown,
@@ -20,9 +22,9 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
       apiError.code = graphQLError.extensions.code;
     }
 
-    if (Array.isArray(graphQLError.extensions.stacktrace)) {
-      apiError.cause = graphQLError.extensions.stacktrace.map(String);
-    }
+    // if (Array.isArray(graphQLError.extensions.stacktrace)) {
+    //   apiError.cause = graphQLError.extensions.stacktrace.map(String);
+    // }
 
     if (typeof graphQLError.extensions.details === "string") {
       apiError.details = graphQLError.extensions.details;
@@ -35,6 +37,9 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
     if (graphQLError.extensions.cause) {
       apiError.cause = JSON.stringify(graphQLError.extensions.cause);
     }
+
+    console.log("out", apiError);
+    apiErrors.push(apiError);
   }
 
   if (error.networkError) {
@@ -79,15 +84,17 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
     });
   }
 
+  console.log("OUT", apiErrors);
+
   return apiErrors;
 }
 
 export function handleUnknownError(
   error: unknown,
   options: {
-    message?: MessageInstance;
-    notification?: NotificationInstance;
-    modal?: useAppProps["modal"];
+    message?: TypeOpen;
+    notification?: NotificationInstance["error"];
+    modal?: ModalFunc;
     onClose?: () => void;
   }
 ) {
@@ -130,20 +137,22 @@ export function handleUnknownError(
 export function handleApiError(
   error: ApiError,
   options: {
-    message?: MessageInstance;
-    notification?: NotificationInstance;
-    modal?: useAppProps["modal"];
+    message?: TypeOpen;
+    notification?: NotificationInstance["error"];
+    modal?: ModalFunc;
     onClose?: () => void;
   }
 ) {
   console.error(error);
 
   if (options.message) {
-    void options.message.error(error.message).then(options.onClose);
+    void options
+      .message(error.explanation ?? error.message)
+      .then(options.onClose);
   }
 
   if (options.modal) {
-    options.modal.error({
+    options.modal({
       title: error.message,
       content: error.explanation,
       afterClose() {
@@ -153,7 +162,7 @@ export function handleApiError(
   }
 
   if (options.notification) {
-    options.notification.error({
+    options.notification({
       message: error.message,
       description: error.explanation,
       onClose() {

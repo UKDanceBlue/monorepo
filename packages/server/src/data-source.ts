@@ -89,4 +89,14 @@ try {
   logFatal("Shutting down due to database connection failure");
 }
 
-await sequelizeDb.createSchema("danceblue");
+const schemas = await sequelizeDb.showAllSchemas();
+let schemaExists = false;
+for (const schema of schemas) {
+  if ((schema as unknown as string | undefined) === "danceblue") {
+    schemaExists = true;
+    break;
+  }
+}
+if (!schemaExists) {
+  logFatal("Database schema does not exist");
+}

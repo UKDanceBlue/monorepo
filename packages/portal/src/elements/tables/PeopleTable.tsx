@@ -1,8 +1,12 @@
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useListQuery } from "@hooks/useListQuery";
+import { useMakeSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useNavigate } from "@tanstack/react-router";
+import type { CommitteeIdentifier } from "@ukdanceblue/common";
 import {
+  CommitteeRole,
+  DbRole,
   SortDirection,
   committeeNames,
   stringifyDbRole,
@@ -59,35 +63,36 @@ const peopleTableDocument = graphql(/* GraphQL */ `
 
 export const PeopleTable = () => {
   const navigate = useNavigate();
-  const { queryOptions, updatePagination, clearSorting, pushSorting } =
-    useListQuery(
-      {
-        initPage: 1,
-        initPageSize: 20,
-        initSorting: [],
-      },
-      {
-        allFields: [
-          "name",
-          "email",
-          "linkblue",
-          "dbRole",
-          "committeeRole",
-          "committeeName",
-        ],
-        dateFields: [],
-        isNullFields: [],
-        numericFields: [],
-        oneOfFields: [],
-        stringFields: [
-          "name",
-          "email",
-          "dbRole",
-          "committeeRole",
-          "committeeName",
-        ],
-      }
-    );
+  const {
+    queryOptions,
+    updatePagination,
+    clearSorting,
+    pushSorting,
+    clearFilters,
+    updateFilter,
+    clearFilter,
+  } = useListQuery(
+    {
+      initPage: 1,
+      initPageSize: 20,
+      initSorting: [],
+    },
+    {
+      allFields: [
+        "name",
+        "email",
+        "linkblue",
+        "dbRole",
+        "committeeRole",
+        "committeeName",
+      ],
+      dateFields: [],
+      isNullFields: [],
+      numericFields: [],
+      oneOfFields: ["dbRole", "committeeRole", "committeeName"],
+      stringFields: ["name", "email", "linkblue"],
+    }
+  );
 
   const [{ fetching, error, data: peopleDocument }] = useQuery({
     query: peopleTableDocument,
@@ -109,7 +114,7 @@ export const PeopleTable = () => {
       <Table
         dataSource={listPeopleData ?? undefined}
         loading={fetching}
-        onChange={(pagination, _filters, sorter, _extra) => {
+        onChange={(pagination, filters, sorter, _extra) => {
           updatePagination({
             page: pagination.current,
             pageSize: pagination.pageSize,
@@ -133,6 +138,36 @@ export const PeopleTable = () => {
                   : SortDirection.DESCENDING,
             });
           }
+          clearFilters();
+          for (const key of Object.keys(filters)) {
+            const value = filters[key];
+            if (!value) {
+              continue;
+            }
+            switch (key) {
+              case "dbRole": {
+                updateFilter("dbRole", {
+                  field: "dbRole",
+                  value: value.map((v) => v.toString()),
+                });
+                break;
+              }
+              case "committeeRole": {
+                updateFilter("committeeRole", {
+                  field: "committeeRole",
+                  value: value.map((v) => v.toString()),
+                });
+                break;
+              }
+              case "committeeName": {
+                updateFilter("committeeName", {
+                  field: "committeeName",
+                  value: value.map((v) => v.toString()),
+                });
+                break;
+              }
+            }
+          }
         }}
         pagination={
           peopleDocument
@@ -152,18 +187,21 @@ export const PeopleTable = () => {
             dataIndex: "name",
             sorter: true,
             sortDirections: ["ascend", "descend"],
+            ...useMakeSearchFilterProps("name", updateFilter, clearFilter),
           },
           {
             title: "Email",
             dataIndex: "email",
             sorter: true,
             sortDirections: ["ascend", "descend"],
+            ...useMakeSearchFilterProps("email", updateFilter, clearFilter),
           },
           {
             title: "Linkblue",
             dataIndex: "linkblue",
             sorter: true,
             sortDirections: ["ascend", "descend"],
+            ...useMakeSearchFilterProps("linkblue", updateFilter, clearFilter),
           },
           {
             title: "Role",
@@ -173,6 +211,10 @@ export const PeopleTable = () => {
             },
             sorter: true,
             sortDirections: ["ascend", "descend"],
+            filters: Object.values(DbRole).map((role) => ({
+              text: stringifyDbRole(role),
+              value: role,
+            })),
           },
           {
             title: "Committee Role",
@@ -182,6 +224,10 @@ export const PeopleTable = () => {
             },
             sorter: true,
             sortDirections: ["ascend", "descend"],
+            filters: Object.values(CommitteeRole).map((role) => ({
+              text: role,
+              value: role,
+            })),
           },
           {
             title: "Committee Name",
@@ -193,6 +239,10 @@ export const PeopleTable = () => {
             },
             sorter: true,
             sortDirections: ["ascend", "descend"],
+            filters: Object.keys(committeeNames).map((committeeIdentifier) => ({
+              text: committeeNames[committeeIdentifier as CommitteeIdentifier],
+              value: committeeIdentifier,
+            })),
           },
           {
             title: "Actions",

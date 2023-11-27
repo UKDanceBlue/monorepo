@@ -4,7 +4,7 @@ import { App, Button, Flex, Form, Input, Select } from "antd";
 
 import { useTeamCreatorForm } from "./useTeamCreatorForm";
 
-export function TeamCreator({}: {}) {
+export function TeamCreator() {
   const navigate = useNavigate();
 
   const { message } = App.useApp();
@@ -50,7 +50,7 @@ export function TeamCreator({}: {}) {
                 <Input
                   status={field.state.meta.errors.length > 0 ? "error" : ""}
                   name={field.name}
-                  value={field.state.value ?? ""}
+                  value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                 />
