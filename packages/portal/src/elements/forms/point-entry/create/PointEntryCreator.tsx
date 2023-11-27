@@ -1,5 +1,7 @@
-import { App, Button, Flex, Form, Input, InputNumber } from "antd";
-import { useReducer } from "react";
+import { QuestionOutlined } from "@ant-design/icons";
+import type { InputRef, TourProps } from "antd";
+import { App, Button, Flex, Form, Input, InputNumber, Tour } from "antd";
+import { useReducer, useRef, useState } from "react";
 
 import { PointEntryOpportunityLookup } from "./PointEntryOpportunityLookup";
 import { PointEntryPersonLookup } from "./PointEntryPersonLookup";
@@ -13,6 +15,59 @@ export function PointEntryCreator({
   refetch: () => void;
 }) {
   const { message } = App.useApp();
+
+  const [tourVisible, setTourVisible] = useState(false);
+
+  const commentFieldRef = useRef<InputRef>(null);
+  const pointsFieldRef = useRef<HTMLInputElement>(null);
+  const nameFieldRef = useRef<HTMLDivElement>(null);
+  const linkblueFieldRef = useRef<InputRef>(null);
+  const selectedPersonRef = useRef<HTMLSpanElement>(null);
+  const clearButtonRef = useRef<HTMLButtonElement>(null);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+  const steps: TourProps["steps"] = [
+    {
+      title: "Comment",
+      description:
+        "Enter a comment for the point entry, the comment is not shown anywhere outside of this page and is just for your reference.",
+      target: commentFieldRef.current?.input ?? null,
+    },
+    {
+      title: "Points",
+      description: "Enter the number of points to give for the point entry.",
+      target: pointsFieldRef.current ?? null,
+    },
+    {
+      title: "Name",
+      description:
+        "If you know the name of the person that the point entry is for, you can search for them here. If they have signed in before their name will appear in the list. Click on their name to select them.",
+      target: nameFieldRef.current,
+    },
+    {
+      title: "Linkblue",
+      description:
+        "If you know the linkblue of the person that the point entry is for, you can enter it here. Click lookup to check for the person. If they have already been added to the system they will be selected automatically. Otherwise, a create button will appear that will allow you to create a new person with that linkblue.",
+      target: linkblueFieldRef.current?.input ?? null,
+    },
+    {
+      title: "Clear",
+      description: "Click the clear button to clear the person selection.",
+      target: clearButtonRef.current ?? null,
+    },
+    {
+      title: "Selected person",
+      description:
+        "Once you have selected a person, their info will appear here.",
+      target: selectedPersonRef.current ?? null,
+    },
+    {
+      title: "Submit",
+      description:
+        "Once you have filled out the form, click the submit button to create the point entry.",
+      target: submitButtonRef.current ?? null,
+    },
+  ];
 
   const [personLookupKey, resetLookup] = useReducer(
     (prev: number) => prev + 1,
@@ -31,6 +86,13 @@ export function PointEntryCreator({
 
   return (
     <formApi.Provider>
+      <Tour
+        steps={steps}
+        placement="top"
+        mask
+        open={tourVisible}
+        onClose={() => setTourVisible(false)}
+      />
       <Form
         onFinish={() => {
           formApi.handleSubmit().catch((error) => {
@@ -63,6 +125,7 @@ export function PointEntryCreator({
                 value={field.state.value ?? undefined}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
+                ref={commentFieldRef}
               />
             </Form.Item>
           )}
@@ -91,6 +154,7 @@ export function PointEntryCreator({
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(num) => field.handleChange(num ?? 0)}
+                  ref={pointsFieldRef}
                 />
               </Form.Item>
             )}
@@ -101,10 +165,22 @@ export function PointEntryCreator({
           formApi={formApi}
           teamUuid={teamUuid}
           key={personLookupKey}
+          nameFieldRef={nameFieldRef}
+          linkblueFieldRef={linkblueFieldRef}
+          selectedPersonRef={selectedPersonRef}
+          clearButtonRef={clearButtonRef}
         />
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
+        <Flex justify="space-between" align="center" wrap="wrap">
+          <Button type="primary" htmlType="submit" ref={submitButtonRef}>
+            Submit
+          </Button>
+          <Button
+            icon={<QuestionOutlined />}
+            onClick={() => setTourVisible(true)}
+          >
+            Help
+          </Button>
+        </Flex>
       </Form>
     </formApi.Provider>
   );
