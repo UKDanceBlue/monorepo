@@ -8292,6 +8292,7 @@ __metadata:
     "@types/xdate": ^0.8.32
     "@ukdanceblue/common": "workspace:^"
     "@ukdanceblue/db-app-common": latest
+    "@urql/exchange-auth": ^2.1.6
     babel-jest: ^29.3.1
     babel-plugin-module-resolver: ^5.0.0
     eas-cli: ^5.4.0
@@ -8351,6 +8352,7 @@ __metadata:
     ts-jest: ^29.0.3
     ts-node: ^10.9.1
     typescript: ^5.1.3
+    urql: ^4.0.6
     uuid: 3.4.0
   languageName: unknown
   linkType: soft
@@ -8533,6 +8535,26 @@ __metadata:
     "@0no-co/graphql.web": ^1.0.1
     wonka: ^6.3.2
   checksum: ca08793835ace77054be5e20d3b48403ed145fa8da47ebecc430fe097e856ad28a74dc50e67373b2a1219378c973232d52ca8725c2e5d711c178f11a331dc68a
+  languageName: node
+  linkType: hard
+
+"@urql/core@npm:>=4.1.0, @urql/core@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "@urql/core@npm:4.2.0"
+  dependencies:
+    "@0no-co/graphql.web": ^1.0.1
+    wonka: ^6.3.2
+  checksum: 5d2cf88877333a8e29e459f34fc778d08e476b13624c29e86e6f54fc538f57b4084e0ca8c8a6b8e3400c5089910e3d55c66b7d0e4fcf74c25db055153c99fae4
+  languageName: node
+  linkType: hard
+
+"@urql/exchange-auth@npm:^2.1.6":
+  version: 2.1.6
+  resolution: "@urql/exchange-auth@npm:2.1.6"
+  dependencies:
+    "@urql/core": ">=4.1.0"
+    wonka: ^6.3.2
+  checksum: 180694184d36c32ad8d408a508886f338aca34117c57874e509e6a20e8f4b4fba7aa8770b63722873e634b69e85b6e7ddab9605187da2dda65f160d18e4e1959
   languageName: node
   linkType: hard
 
@@ -24410,6 +24432,18 @@ __metadata:
   peerDependencies:
     react: ">= 16.8.0"
   checksum: e8fe5ee624970d289f5832d3f62bab980e26d2e1b141cc6f82d4c1d009f6481bf58ff5f27971fac55bc8f953dbed6d7aaf62f005782bfd9d130c5c3e4033188b
+  languageName: node
+  linkType: hard
+
+"urql@npm:^4.0.6":
+  version: 4.0.6
+  resolution: "urql@npm:4.0.6"
+  dependencies:
+    "@urql/core": ^4.2.0
+    wonka: ^6.3.2
+  peerDependencies:
+    react: ">= 16.8.0"
+  checksum: 1af8471991be3ddd897e8268bc359e605f6a65bae8ff0b624764fb9fb2c555f678ad4f119220d84c279e3bb08418b4e7f0b256b73e766824cb55b07e3a8736a2
   languageName: node
   linkType: hard
 

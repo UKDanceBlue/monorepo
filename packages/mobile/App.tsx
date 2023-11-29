@@ -2,6 +2,7 @@
 import ErrorBoundary from "@common/components/ErrorBoundary";
 import { log, logError, universalCatch } from "@common/logging";
 import { showMessage, showPrompt } from "@common/util/alertUtils";
+import { UrqlContext } from "@context/urql";
 import NetInfo from "@react-native-community/netinfo";
 import { useFonts } from "expo-font";
 import { hideAsync } from "expo-splash-screen";
@@ -36,6 +37,8 @@ import { getCustomTheme } from "./src/theme";
  */
 const App = () => {
   const isOfflineInternal = useRef(false);
+  const tokenRef = useRef<string | undefined>(undefined);
+  const refreshAuthRef = useRef<() => Promise<void>>(() => Promise.resolve());
   const [theme, setTheme] = useState<ICustomTheme | undefined>(undefined);
 
   const [fontsLoaded, error] = useFonts({
@@ -127,9 +130,11 @@ const App = () => {
         theme={theme}
       >
         <ErrorBoundary>
-          <CombinedContext>
-            <FilledNavigationContainer />
-          </CombinedContext>
+          <UrqlContext refreshAuthRef={refreshAuthRef} tokenRef={tokenRef}>
+            <CombinedContext>
+              <FilledNavigationContainer />
+            </CombinedContext>
+          </UrqlContext>
         </ErrorBoundary>
       </NativeBaseProvider>
     )
