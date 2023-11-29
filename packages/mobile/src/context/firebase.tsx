@@ -19,6 +19,7 @@ import { createContext, useContext, useEffect } from "react";
 
 import { universalCatch } from "../common/logging";
 
+/** @deprecated */
 export const FirebaseContext = createContext<{
   fbAnalytics: FirebaseAnalyticsTypes.Module;
   fbAppCheck: FirebaseAppCheckTypes.Module;
@@ -57,6 +58,7 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+/** @deprecated */
 export function useFirebase() {
   return useContext(FirebaseContext);
 }
