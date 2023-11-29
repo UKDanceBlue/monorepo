@@ -1,33 +1,9 @@
 import { Op } from "@sequelize/core";
-import type { EventOccurrenceResource } from "@ukdanceblue/common";
 import type { Context } from "koa";
 import type { NextFn } from "type-graphql";
 
 import { EventModel } from "../../../models/Event.js";
 import { EventOccurrenceModel } from "../../../models/EventOccurrence.js";
-
-const eventToHtml = (eventModel: EventModel) => {
-  const occurrences: EventOccurrenceResource[] =
-    eventModel.occurrences?.map((occurrence) => occurrence.toResource()) ?? [];
-
-  const occurrenceStrings = occurrences.map((occurrence) => {
-    if (occurrence.fullDay) {
-      return occurrence.interval.hasSame("day")
-        ? `<li>${
-            occurrence.interval.start?.toFormat("EEEE, LLLL d") ?? ""
-          }</li>`
-        : `<li>${occurrence.interval.toFormat("EEEE, LLLL d")}</li>`;
-    } else {
-      return `<li>${occurrence.interval.toFormat("EEEE, LLLL d, h:mm a")}</li>`;
-    }
-  });
-
-  return `<div>
-    <p>${eventModel.title}</p>
-    <p>${eventModel.summary}</p>
-    <ul>${occurrenceStrings.join("\n")}</ul>
-  </div>`;
-};
 
 export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
   let eventsToSend = 10;
@@ -62,10 +38,33 @@ export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
     ],
   });
 
-  const eventsHtml = await Promise.all(upcomingEvents.map(eventToHtml));
+  const eventsJson = await Promise.all(
+    upcomingEvents.map(async (event) => {
+      const occurrences = await event.getOccurrences();
+      const images = await event.getImages();
+      return {
+        title: event.title,
+        summary: event.summary,
+        description: event.description,
+        location: event.location,
+        occurrences: occurrences.map((occurrence) =>
+          occurrence.date.toISOString()
+        ),
+        images: images.map((image) => ({
+          url: image.url ?? null,
+          alt: image.alt ?? null,
+          mimeType: image.mimeType,
+          thumbHash: image.thumbHash?.toString("base64") ?? null,
+          width: image.width,
+          height: image.height,
+          imageData: image.imageData?.toString("base64") ?? null,
+        })),
+      };
+    })
+  );
 
-  ctx.body = `<div>${eventsHtml.join("\n")}</div>`;
-  ctx.type = "text/html";
+  ctx.body = eventsJson;
+  ctx.type = "application/json";
 
   await next();
 };
