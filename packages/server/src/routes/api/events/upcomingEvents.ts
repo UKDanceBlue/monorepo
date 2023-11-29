@@ -1,5 +1,6 @@
 import { Op } from "@sequelize/core";
 import type { Context } from "koa";
+import { DateTime } from "luxon";
 import type { NextFn } from "type-graphql";
 
 import { EventModel } from "../../../models/Event.js";
@@ -16,6 +17,16 @@ export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
       eventsToSend = parsedCountParam;
     }
   }
+  let until = DateTime.now().plus({ years: 1 }).toJSDate();
+  if (ctx.query.until) {
+    const parsedUntilParam =
+      typeof ctx.query.until === "string"
+        ? DateTime.fromISO(ctx.query.until)
+        : DateTime.fromISO(String(ctx.query.until[0]));
+    if (parsedUntilParam.isValid) {
+      until = parsedUntilParam.toJSDate();
+    }
+  }
 
   const upcomingEvents = await EventModel.withoutScope().findAll({
     order: [[EventOccurrenceModel, "date", "ASC"]],
@@ -24,15 +35,18 @@ export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
       {
         model: EventOccurrenceModel,
         where: {
-          [Op.or]: [
-            { date: { [Op.gte]: new Date() } },
-            {
-              [Op.and]: [
-                { date: { [Op.lte]: new Date() } },
-                { endDate: { [Op.gte]: new Date() } },
-              ],
-            },
-          ],
+          [Op.and]: {
+            [Op.or]: [
+              { date: { [Op.gte]: new Date() } },
+              {
+                [Op.and]: [
+                  { date: { [Op.lte]: new Date() } },
+                  { endDate: { [Op.gte]: new Date() } },
+                ],
+              },
+            ],
+            endDate: { [Op.lte]: until },
+          },
         },
       },
     ],
@@ -47,9 +61,10 @@ export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
         summary: event.summary,
         description: event.description,
         location: event.location,
-        occurrences: occurrences.map((occurrence) =>
-          occurrence.date.toISOString()
-        ),
+        occurrences: occurrences.map((occurrence) => ({
+          start: occurrence.date,
+          end: occurrence.endDate,
+        })),
         images: images.map((image) => ({
           url: image.url ?? null,
           alt: image.alt ?? null,
