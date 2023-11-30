@@ -17,10 +17,10 @@ import {
 
 import { ImageModel } from "../models/Image.js";
 
+import { DetailedError } from "@ukdanceblue/common";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
-  DetailedError,
 } from "./ApiResponse.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 

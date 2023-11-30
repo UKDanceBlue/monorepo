@@ -24,11 +24,11 @@ import { PointEntryModel } from "../models/PointEntry.js";
 import { PointOpportunityModel } from "../models/PointOpportunity.js";
 import { TeamModel } from "../models/Team.js";
 
+import { DetailedError } from "@ukdanceblue/common";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-  DetailedError,
 } from "./ApiResponse.js";
 import type {
   ResolverInterface,

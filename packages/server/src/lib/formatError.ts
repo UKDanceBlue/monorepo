@@ -8,6 +8,7 @@ import {
 import type { ApiError } from "@ukdanceblue/common";
 import {
   ValidationError as DbValidationError,
+  DetailedError,
   ErrorCode,
   LuxonError,
   TypeMismatchError,
@@ -19,8 +20,6 @@ import type { GraphQLFormattedError } from "graphql";
 import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
 import type { Writable } from "utility-types";
-
-import { DetailedError } from "../resolvers/ApiResponse.js";
 
 export interface DbGraphQLFormattedErrorExtensions
   extends Omit<ApiError, "cause" | "message"> {

@@ -27,11 +27,11 @@ import { EventModel } from "../models/Event.js";
 import { EventOccurrenceModel } from "../models/EventOccurrence.js";
 import { ImageModel } from "../models/Image.js";
 
+import { DetailedError } from "@ukdanceblue/common";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-  DetailedError,
 } from "./ApiResponse.js";
 import type {
   ResolverInterface,

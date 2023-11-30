@@ -10,7 +10,7 @@ import { MembershipModel } from "../models/Membership.js";
 import { PersonModel } from "../models/Person.js";
 import { TeamModel } from "../models/Team.js";
 
-import { DetailedError } from "./ApiResponse.js";
+import { DetailedError } from "@ukdanceblue/common";
 
 @Resolver(() => MembershipResource)
 export class MembershipResolver {

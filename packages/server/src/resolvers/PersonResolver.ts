@@ -2,6 +2,7 @@ import { Op } from "@sequelize/core";
 import {
   AccessLevel,
   AccessLevelAuthorized,
+  DetailedError,
   ErrorCode,
   MembershipPositionType,
   MembershipResource,
@@ -34,7 +35,6 @@ import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-  DetailedError,
 } from "./ApiResponse.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 import * as Context from "./context.js";

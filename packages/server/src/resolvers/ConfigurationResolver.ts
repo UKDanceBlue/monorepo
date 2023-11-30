@@ -16,11 +16,11 @@ import {
 
 import { ConfigurationModel } from "../models/Configuration.js";
 
+import { DetailedError } from "@ukdanceblue/common";
 import {
   AbstractGraphQLArrayOkResponse,
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
-  DetailedError,
 } from "./ApiResponse.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 

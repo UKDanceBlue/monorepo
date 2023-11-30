@@ -16,11 +16,11 @@ import {
 import { DeviceModel } from "../models/Device.js";
 import { PersonModel } from "../models/Person.js";
 
+import { DetailedError } from "@ukdanceblue/common";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-  DetailedError,
 } from "./ApiResponse.js";
 import type {
   ResolverInterface,

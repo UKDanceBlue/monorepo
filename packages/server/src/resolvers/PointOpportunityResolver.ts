@@ -25,11 +25,11 @@ import { sequelizeDb } from "../data-source.js";
 import { EventModel } from "../models/Event.js";
 import { PointOpportunityModel } from "../models/PointOpportunity.js";
 
+import { DetailedError } from "@ukdanceblue/common";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-  DetailedError,
 } from "./ApiResponse.js";
 import type {
   ResolverInterface,

@@ -1,16 +1,13 @@
 import type { ContextFunction } from "@apollo/server";
 import type { KoaContextFunctionArgument } from "@as-integrations/koa";
-import type { Authorization, PersonResource } from "@ukdanceblue/common";
+import type { AuthorizationContext } from "@ukdanceblue/common";
 import type { DefaultContext, DefaultState } from "koa";
 
 import { defaultAuthorization, parseUserJwt } from "../lib/auth/index.js";
 import { logDebug } from "../logger.js";
 import { PersonModel } from "../models/Person.js";
 
-export interface GraphQLContext extends DefaultContext {
-  authenticatedUser: PersonResource | null;
-  authorization: Authorization;
-
+export interface GraphQLContext extends DefaultContext, AuthorizationContext {
   contextErrors: string[];
 }
 

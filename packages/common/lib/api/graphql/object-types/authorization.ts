@@ -1,7 +1,13 @@
-import { Authorized } from "type-graphql";
+import type { ArgsDictionary } from "type-graphql";
+import { createMethodDecorator, createParamDecorator } from "type-graphql";
 
-import type { AccessLevel, Authorization, DbRole } from "../../../index.js";
-import { CommitteeRole } from "../../../index.js";
+import type { Authorization, DbRole, PersonResource } from "../../../index.js";
+import {
+  AccessLevel,
+  CommitteeRole,
+  DetailedError,
+  ErrorCode,
+} from "../../../index.js";
 
 export interface AuthorizationRule extends Partial<Authorization> {
   /**
@@ -110,12 +116,115 @@ export function checkAuthorization(
   return matches;
 }
 
-export type AuthorizationRuleOrAccessLevel = AuthorizationRule | AccessLevel;
+export interface AuthorizationContext {
+  authenticatedUser: PersonResource | null;
+  authorization: Authorization;
+}
 
-export const AccessLevelAuthorized = Authorized as (
-  roles: AccessLevel
-) => MethodDecorator & PropertyDecorator;
+function throwAccessLevel() {
+  throw new DetailedError(
+    ErrorCode.Unauthorized,
+    "Your access level is insufficient to access this resource."
+  );
+}
 
-export const AuthorizationAuthorized = Authorized as (
-  roles: readonly AuthorizationRule[]
-) => MethodDecorator & PropertyDecorator;
+export function AccessLevelAuthorized(
+  requiredAccessLevel: AccessLevel = AccessLevel.Public
+) {
+  return createMethodDecorator<AuthorizationContext>(({ context }, next) => {
+    if (requiredAccessLevel > context.authorization.accessLevel) {
+      throwAccessLevel();
+    }
+    return next();
+  });
+}
+
+export function AccessLevelParameterAuthorized(
+  requiredAccessLevel: AccessLevel = AccessLevel.Public,
+  tryToNullify = false
+) {
+  return createParamDecorator<AuthorizationContext>(
+    ({ context, root, info }) => {
+      if (requiredAccessLevel > context.authorization.accessLevel) {
+        if (tryToNullify) {
+          return null;
+        }
+        throwAccessLevel();
+      }
+      return (root as Record<string, unknown>)[info.fieldName];
+    }
+  );
+}
+
+function throwNoAuthRules() {
+  throw new DetailedError(
+    ErrorCode.InternalFailure,
+    "Resource has no allowed authorization rules."
+  );
+}
+
+function throwUnauthorized() {
+  throw new DetailedError(
+    ErrorCode.Unauthorized,
+    "You are not authorized to access this resource."
+  );
+}
+
+export function AuthorizationAuthorized(
+  rules: readonly AuthorizationRule[] = []
+) {
+  return createMethodDecorator<AuthorizationContext>(({ context }, next) => {
+    if (rules.length === 0) {
+      throwNoAuthRules();
+    }
+    const matches = rules.some((rule) =>
+      checkAuthorization(rule, context.authorization)
+    );
+    if (!matches) {
+      throwUnauthorized();
+    }
+    return next();
+  });
+}
+
+/**
+ * Checks if the named argument is strictly equal to the value returned by the extractor function
+ *
+ * @param argument The name of the argument to compare against (or an extractor function)
+ * @param extractor A function that takes the resource and authorization and returns the value to compare against
+ */
+export function ArgumentMatchAuthorized(
+  argument: string | ((args: ArgsDictionary) => unknown),
+  extractor: (
+    authorization: Authorization,
+    person: PersonResource | null
+  ) => unknown
+) {
+  return createMethodDecorator<AuthorizationContext>(
+    ({ context, args }, next) => {
+      const argValue =
+        typeof argument === "string"
+          ? (args[argument] as unknown)
+          : argument(args);
+      if (argValue == null) {
+        throw new DetailedError(
+          ErrorCode.InternalFailure,
+          "FieldMatchAuthorized argument is null or undefined."
+        );
+      }
+      const expectedValue = extractor(
+        context.authorization,
+        context.authenticatedUser
+      );
+
+      if (argValue !== expectedValue) {
+        throw new DetailedError(
+          ErrorCode.Unauthorized,
+          `You are not authorized to access this resource.`
+        );
+      }
+
+      return next();
+    }
+  );
+}

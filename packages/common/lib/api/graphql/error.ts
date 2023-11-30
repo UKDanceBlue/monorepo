@@ -42,3 +42,47 @@ export function lookupErrorCode(error: Error | string | ApiError): ErrorCode {
     return error.code;
   }
 }
+
+export class DetailedError extends Error {
+  code: ErrorCode;
+  details?: string;
+  explanation?: string;
+
+  constructor(code: ErrorCode = ErrorCode.Unknown, message?: string) {
+    super(message ?? code);
+    this.code = code;
+  }
+
+  static from(
+    val: Error | string | ApiError,
+    code: ErrorCode = ErrorCode.Unknown
+  ): DetailedError {
+    const response = new DetailedError(code);
+
+    if (typeof val === "string") {
+      response.message = val;
+    } else if (val instanceof Error) {
+      response.message = val.message;
+      if (val.stack) {
+        response.stack = val.stack;
+      }
+      if (val.cause) {
+        response.cause = val.cause;
+      }
+    } else {
+      response.message = val.message;
+      response.code = code;
+      if (val.details) {
+        response.details = val.details;
+      }
+      if (val.explanation) {
+        response.explanation = val.explanation;
+      }
+      if (val.cause) {
+        response.cause = val.cause;
+      }
+    }
+
+    return response;
+  }
+}

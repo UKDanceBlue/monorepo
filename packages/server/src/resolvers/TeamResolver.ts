@@ -37,11 +37,11 @@ import { sequelizeDb } from "../data-source.js";
 import { MembershipModel } from "../models/Membership.js";
 import { TeamModel } from "../models/Team.js";
 
+import { DetailedError } from "@ukdanceblue/common";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-  DetailedError,
 } from "./ApiResponse.js";
 import type {
   ResolverInterface,

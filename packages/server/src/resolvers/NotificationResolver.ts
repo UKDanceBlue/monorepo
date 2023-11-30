@@ -16,11 +16,11 @@ import { selectAudience } from "../lib/notification/selectAudience.js";
 import { sendNotification } from "../lib/notification/sendNotification.js";
 import { NotificationModel } from "../models/Notification.js";
 
+import { DetailedError } from "@ukdanceblue/common";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-  DetailedError,
 } from "./ApiResponse.js";
 import type {
   ResolverInterface,
