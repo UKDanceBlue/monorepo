@@ -1,6 +1,10 @@
+import { useLogOut } from "@common/auth";
 import { useColorModeValue } from "@common/customHooks";
 import { universalCatch } from "@common/logging";
 import { Ionicons } from "@expo/vector-icons";
+import { AuthSource } from "@ukdanceblue/common/dist/auth";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import { openURL } from "expo-linking";
 import {
@@ -15,22 +19,32 @@ import {
 import { useState } from "react";
 import { TextInput } from "react-native";
 
-import {
-  useAuthData,
-  useFirebase,
-  useTryToSetDemoMode,
-} from "../../../context";
+import { useTryToSetDemoMode } from "../../../context";
 
-export const ProfileFooter = () => {
+import { ProfileScreenAuthFragment } from ".";
+
+export const ProfileFooter = ({
+  profileScreenAuthFragment,
+}: {
+  profileScreenAuthFragment: FragmentType<
+    typeof ProfileScreenAuthFragment
+  > | null;
+}) => {
+  const authData = getFragmentData(
+    ProfileScreenAuthFragment,
+    profileScreenAuthFragment
+  );
+
   const tryToEnterDemoMode = useTryToSetDemoMode();
-  const { fbAuth } = useFirebase();
   const [reportLongPressed, setReportLongPressed] = useState(false);
   const [suggestLongPressed, setSuggestLongPressed] = useState(false);
+
+  const [loading, logOut] = useLogOut();
 
   const { toggleColorMode } = useColorMode();
   const colorModeIcon = useColorModeValue("moon", "md-sunny");
 
-  const { isAnonymous } = useAuthData();
+  const isAnonymous = authData?.authSource === AuthSource.Anonymous;
 
   return (
     <>
@@ -63,9 +77,8 @@ export const ProfileFooter = () => {
           Donate #FTK!
         </Button>
         <Button
-          onPress={() => {
-            fbAuth.signOut().catch(universalCatch);
-          }}
+          onPress={logOut}
+          isLoading={loading}
           width="2/5"
           backgroundColor={isAnonymous ? "secondary.400" : "danger.600"}
           _text={{ color: isAnonymous ? "primary.600" : "white" }}

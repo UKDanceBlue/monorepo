@@ -1,7 +1,11 @@
-import { useLinkBlueLogin } from "@common/auth";
+import { useLogin } from "@common/auth";
 import JumbotronGeometric from "@common/components/JumbotronGeometric";
 import { useThemeFonts } from "@common/customHooks";
-import { DbRole, committeeNames } from "@ukdanceblue/common/dist/auth";
+import {
+  AuthSource,
+  DbRole,
+  committeeNames,
+} from "@ukdanceblue/common/dist/auth";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import {
   getFragmentData,
@@ -21,7 +25,6 @@ import { ProfileFooter } from "./ProfileFooter";
 
 export const ProfileScreenAuthFragment = graphql(/* GraphQL */ `
   fragment ProfileScreenAuthFragment on LoginState {
-    loggedIn
     role {
       committeeIdentifier
       committeeRole
@@ -68,7 +71,7 @@ const ProfileScreen = ({
 
   const { body, mono } = useThemeFonts();
 
-  const [loading, trigger] = useLinkBlueLogin();
+  const [loading, trigger] = useLogin();
 
   function jumboText() {
     let welcomeString = "Welcome to DanceBlue!";
@@ -89,7 +92,7 @@ const ProfileScreen = ({
         <Spinner />
       </Center>
     );
-  } else if (authData?.loggedIn) {
+  } else if (authData?.role.dbRole !== DbRole.None) {
     return (
       <>
         <JumbotronGeometric title={jumboText()} />
@@ -111,7 +114,7 @@ const ProfileScreen = ({
             >
               {nameString()}
             </Text>
-            {authData.role.dbRole === DbRole.Committee && (
+            {authData?.role.dbRole === DbRole.Committee && (
               <Text
                 width="full"
                 italic
@@ -152,7 +155,9 @@ const ProfileScreen = ({
               </Container>
             )} */}
           <Container maxWidth="full" alignItems="center">
-            <ProfileFooter />
+            <ProfileFooter
+              profileScreenAuthFragment={profileScreenAuthFragment}
+            />
           </Container>
         </VStack>
       </>
@@ -165,7 +170,7 @@ const ProfileScreen = ({
           <Text>You are not logged in.</Text>
           <Button
             onPress={() => {
-              trigger();
+              trigger(AuthSource.UkyLinkblue);
             }}
             style={{ marginTop: 10 }}
           >
@@ -173,7 +178,7 @@ const ProfileScreen = ({
           </Button>
           <Button
             onPress={() => {
-              //  TODO: re-implement anonymous login
+              trigger(AuthSource.Anonymous);
             }}
           >
             Login anonymously
