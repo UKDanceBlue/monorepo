@@ -365,18 +365,18 @@ export function AccessControl<
 
           if (Array.isArray(expectedValue)) {
             if (Array.isArray(rootValue)) {
-              if (rootValue.some((v) => expectedValue.includes(v))) {
+              if (!rootValue.some((v) => expectedValue.includes(v))) {
                 continue;
               }
-            } else if (expectedValue.includes(rootValue)) {
+            } else if (!expectedValue.includes(rootValue)) {
+              continue;
+            }
+          } else if (Array.isArray(rootValue)) {
+            if (!rootValue.includes(expectedValue)) {
               continue;
             }
           } else if (rootValue !== expectedValue) {
-            if (Array.isArray(rootValue)) {
-              if (rootValue.includes(expectedValue)) {
-                continue;
-              }
-            }
+            continue;
           }
         }
       }
