@@ -289,7 +289,18 @@ export class TeamResolver
     return DeleteTeamResponse.newOk(true);
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControl(
+    { accessLevel: AccessLevel.Committee },
+    {
+      accessLevel: AccessLevel.TeamMember,
+      rootMatch: [
+        {
+          root: "uuid",
+          extractor: ({ teamIds }) => teamIds,
+        },
+      ],
+    }
+  )
   @FieldResolver(() => [MembershipResource])
   async members(@Root() team: TeamResource): Promise<MembershipResource[]> {
     const model = await TeamModel.findByUuid(team.uuid, {
@@ -313,7 +324,9 @@ export class TeamResolver
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
-  @FieldResolver(() => [MembershipResource])
+  @FieldResolver(() => [MembershipResource], {
+    deprecationReason: "Just query the members field and filter by role",
+  })
   async captains(@Root() team: TeamResource): Promise<MembershipResource[]> {
     const model = await TeamModel.findByUuid(team.uuid, {
       attributes: ["id", "uuid"],

@@ -417,7 +417,17 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     return DeletePersonResponse.newOk(true);
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControl(
+    { accessLevel: AccessLevel.Committee },
+    {
+      rootMatch: [
+        {
+          root: "uuid",
+          extractor: (userData) => userData.userId,
+        },
+      ],
+    }
+  )
   @FieldResolver(() => [MembershipResource])
   async teams(@Root() person: PersonResource): Promise<MembershipResource[]> {
     const model = await PersonModel.findByUuid(person.uuid, {
@@ -434,7 +444,9 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
-  @FieldResolver(() => [MembershipResource])
+  @FieldResolver(() => [MembershipResource], {
+    deprecationReason: "Use teams instead and filter by position",
+  })
   async captaincies(
     @Root() person: PersonResource
   ): Promise<MembershipResource[]> {
