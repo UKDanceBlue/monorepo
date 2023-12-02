@@ -1,27 +1,18 @@
-import { useLinkBlueLogin } from "@common/auth";
-import { universalCatch } from "@common/logging";
-import { showMessage } from "@common/util/alertUtils";
+import { useLogin } from "@common/auth";
+import { AuthSource } from "@ukdanceblue/common/dist/auth";
 import { Button, Center, Image, Text, View, ZStack } from "native-base";
 import { useEffect, useState } from "react";
 import type { ImageSourcePropType } from "react-native";
 import { ActivityIndicator, Dimensions, StatusBar } from "react-native";
 
-import { useAppConfig, useFirebase } from "../../../context";
+import { useAppConfig } from "../../../context";
 
 import { getRandomSplashLoginBackground } from "./SplashLoginBackgrounds";
 
 const SplashLoginScreen = () => {
   const { allowedLoginTypes } = useAppConfig();
 
-  const { fbAuth, fbFunctions } = useFirebase();
-
-  const [loading, trigger, , error] = useLinkBlueLogin(fbAuth, fbFunctions);
-
-  useEffect(() => {
-    if (error) {
-      showMessage(error.message, "Error logging in");
-    }
-  }, [error]);
+  const [loading, trigger] = useLogin();
 
   const heightOfBackground = Dimensions.get("window").height * 0.6;
   const heightOfContent = Dimensions.get("window").height * 0.4;
@@ -70,7 +61,7 @@ const SplashLoginScreen = () => {
             {allowedLoginTypes.includes("ms-oath-linkblue") && (
               <View>
                 <Button
-                  onPress={() => trigger()}
+                  onPress={() => trigger(AuthSource.UkyLinkblue)}
                   width={Dimensions.get("window").width - 50}
                   backgroundColor="secondary.400"
                   _pressed={{ backgroundColor: "primary.600" }}
@@ -92,9 +83,7 @@ const SplashLoginScreen = () => {
             {allowedLoginTypes.includes("anonymous") && (
               <View>
                 <Button
-                  onPress={() =>
-                    fbAuth.signInAnonymously().catch(universalCatch)
-                  }
+                  onPress={() => trigger(AuthSource.Anonymous)}
                   width={Dimensions.get("window").width - 50}
                   backgroundColor="primary.600"
                   _pressed={{ backgroundColor: "secondary.400" }}
