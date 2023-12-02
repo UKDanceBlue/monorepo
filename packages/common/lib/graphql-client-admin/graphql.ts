@@ -898,6 +898,7 @@ export type PersonResolverStringFilterKeys = typeof PersonResolverStringFilterKe
 export type PersonResource = {
   readonly __typename?: 'PersonResource';
   readonly authIds: ReadonlyArray<AuthIdList>;
+  /** @deprecated Use teams instead and filter by position */
   readonly captaincies: ReadonlyArray<MembershipResource>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly email: Scalars['String']['output'];
@@ -1390,6 +1391,7 @@ export const TeamResolverStringFilterKeys = {
 export type TeamResolverStringFilterKeys = typeof TeamResolverStringFilterKeys[keyof typeof TeamResolverStringFilterKeys];
 export type TeamResource = {
   readonly __typename?: 'TeamResource';
+  /** @deprecated Just query the members field and filter by role */
   readonly captains: ReadonlyArray<MembershipResource>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly legacyStatus: TeamLegacyStatus;
