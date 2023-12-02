@@ -37,7 +37,6 @@ import { getCustomTheme } from "./src/theme";
  */
 const App = () => {
   const isOfflineInternal = useRef(false);
-  const refreshAuthRef = useRef<() => Promise<void>>(() => Promise.resolve());
   const [theme, setTheme] = useState<ICustomTheme | undefined>(undefined);
 
   const [fontsLoaded, error] = useFonts({
@@ -129,7 +128,7 @@ const App = () => {
         theme={theme}
       >
         <ErrorBoundary>
-          <UrqlContext refreshAuthRef={refreshAuthRef}>
+          <UrqlContext>
             <CombinedContext>
               <FilledNavigationContainer />
             </CombinedContext>
