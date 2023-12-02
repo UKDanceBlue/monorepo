@@ -1,91 +1,58 @@
-import type { FirebaseAuthTypes } from "@react-native-firebase/auth";
-import type { AuthError } from "expo-auth-session";
-import { useAuthRequest, useAutoDiscovery } from "expo-auth-session";
-import { getRandomBytes } from "expo-crypto";
+import { useLoading } from "@context/loading";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createURL } from "expo-linking";
-import { useRef, useState } from "react";
+import { dismissAuthSession, openAuthSessionAsync } from "expo-web-browser";
 
-export const useLinkBlueLogin = (): [
-  boolean,
-  () => void,
-  FirebaseAuthTypes.UserCredential | null,
-  AuthError | Error | null,
-] => {
-  const discovery = useAutoDiscovery(
-    "https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0"
-  );
+import { API_BASE_URL } from "./apiUrl";
 
-  const nonce = useRef(getRandomBytes(10).join(""));
+export const DANCEBLUE_TOKEN_KEY = "danceblue-auth-token";
 
-  const [, , promptAsync] = useAuthRequest(
-    {
-      clientId: "71e79019-a381-4be1-8625-a1978edc8d04",
-      redirectUri: createURL("auth"),
-      scopes: ["openid", "profile", "email", "offline_access", "User.read"],
-      responseType: "token",
-      extraParams: { nonce: nonce.current },
-    },
-    discovery
-  );
+function getLoginUrl(): string {
+  return `${API_BASE_URL}/api/auth/login?returning=token&redirectTo=${encodeURIComponent(
+    createURL("/auth/login")
+  )}`;
+}
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<AuthError | Error | null>(null);
-  const [userCredential, setUserCredential] =
-    useState<FirebaseAuthTypes.UserCredential | null>(null);
+export const useLinkBlueLogin = (): [boolean, () => void] => {
+  const [loading, setLoading] = useLoading("useLinkBlueLogin");
 
-  const trigger = () => {
+  const trigger = async () => {
+    if (loading) {
+      dismissAuthSession();
+    }
     setLoading(true);
-    promptAsync({})
-      .then(async (result) => {
-        // Try {
-        switch (result.type) {
-          case "success": {
-            if (result.authentication?.accessToken == null) {
-              setError(
-                new Error(
-                  "Authentication popup reported success but no returned authentication data"
-                )
-              );
-              break;
-            } else {
-              const generateCustomToken = fbFunctions.httpsCallable(
-                "generateCustomToken"
-              );
-              const customToken = (await generateCustomToken({
-                accessToken: result.authentication.accessToken,
-                // Nonce: nonce.current
-              })) as { data: string };
-
-              setUserCredential(
-                await fbAuth.signInWithCustomToken(customToken.data)
-              );
-            }
-            break;
-          }
-
-          case "error": {
-            setError(result.error ?? null);
-            break;
-          }
-
-          case "cancel":
-          case "locked": {
-            break;
-          }
-
-          default: {
-            setError(new Error(`Unexpected result type: ${result.type}`));
-            break;
-          }
+    try {
+      const result = await openAuthSessionAsync(getLoginUrl());
+      if (result.type === "success") {
+        const url = new URL(result.url);
+        const token = url.searchParams.get("token");
+        if (token) {
+          await AsyncStorage.setItem(DANCEBLUE_TOKEN_KEY, token);
         }
-        // } catch (error) {
-        //   SetError(error as Error);
-        // } finally {
-        setLoading(false);
-        // }
-      })
-      .catch(console.error);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return [loading, trigger, userCredential, error];
+  return [loading, trigger];
+};
+
+export const useLogOut = (): [boolean, () => void] => {
+  const [loading, setLoading] = useLoading("useLogOut");
+
+  const trigger = async () => {
+    setLoading(true);
+    try {
+      await AsyncStorage.removeItem(DANCEBLUE_TOKEN_KEY);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return [loading, trigger];
 };
