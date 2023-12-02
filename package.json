@@ -17,6 +17,7 @@
     "server:start": "yarn workspace @ukdanceblue/server run start",
     "portal:dev": "yarn workspace @ukdanceblue/portal dev",
     "portal:build": "yarn workspace @ukdanceblue/portal build",
+    "mobile:start": "yarn workspace @ukdanceblue/mobile start",
     "docker:server:start": "docker-compose up -d --build",
     "docker:server:stop": "docker-compose down"
   },

@@ -4,25 +4,38 @@
     "module": "es2015",
     "moduleResolution": "bundler",
     "paths": {
-      "@assets/*": ["./assets/*"],
-      "@common/*": ["./src/common/*"],
-      "@context/*": ["./src/context/*"],
-      "@navigation/*": ["./src/navigation/*"],
-      "@theme/*": ["./src/theme/*"],
-      "@types/*": ["./src/types/*"]
+      "@assets/*": [
+        "./assets/*"
+      ],
+      "@common/*": [
+        "./src/common/*"
+      ],
+      "@context/*": [
+        "./src/context/*"
+      ],
+      "@navigation/*": [
+        "./src/navigation/*"
+      ],
+      "@theme/*": [
+        "./src/theme/*"
+      ],
+      "@types/*": [
+        "./src/types/*"
+      ]
     },
     "noUncheckedIndexedAccess": false,
     "exactOptionalPropertyTypes": false
   },
-  "extends": ["../../tsconfig.json", "expo/tsconfig.base"],
+  "extends": [
+    "../../tsconfig.json",
+    "expo/tsconfig.base"
+  ],
   "include": [
     "*.ts",
     "*.tsx",
     "src",
     "assets",
     "config-plugins",
-    "test-helpers",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "test-helpers"
   ]
 }
