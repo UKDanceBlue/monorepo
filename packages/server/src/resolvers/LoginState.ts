@@ -18,7 +18,7 @@ export class LoginStateResolver {
   loginState(@Ctx() ctx: Context.GraphQLContext): LoginState {
     return {
       loggedIn: ctx.authenticatedUser != null,
-      role: ctx.authorization,
+      role: RoleResource.fromAuthorization(ctx.authorization),
     };
   }
 }
