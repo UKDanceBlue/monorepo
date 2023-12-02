@@ -17,6 +17,8 @@ const documents = {
     "\n  fragment ProfileScreenUserFragment on PersonResource {\n    name\n    linkblue\n    teams {\n      position\n      team {\n        name\n      }\n    }\n  }\n": types.ProfileScreenUserFragmentFragmentDoc,
     "\n  query RootScreenDocument {\n    loginState {\n      ...ProfileScreenAuthFragment\n      ...RootScreenAuthFragment\n    }\n    me {\n      data {\n        ...ProfileScreenUserFragment\n      }\n    }\n  }\n": types.RootScreenDocumentDocument,
     "\n  fragment RootScreenAuthFragment on LoginState {\n    role {\n      dbRole\n    }\n  }\n": types.RootScreenAuthFragmentFragmentDoc,
+    "\n  fragment ScoreBoardFragment on TeamResource {\n    uuid\n    name\n    totalPoints\n  }\n": types.ScoreBoardFragmentFragmentDoc,
+    "\n  query ScoreBoardDocument {\n    me {\n      data {\n        teams {\n          team {\n            name\n            uuid\n          }\n        }\n      }\n    }\n    teams(\n      sendAll: true\n      sortBy: [\"totalPoints\", \"name\"]\n      sortDirection: [DESCENDING, ASCENDING]\n    ) {\n      data {\n        ...ScoreBoardFragment\n      }\n    }\n  }\n": types.ScoreBoardDocumentDocument,
 };
 
 /**
@@ -49,6 +51,14 @@ export function graphql(source: "\n  query RootScreenDocument {\n    loginState 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  fragment RootScreenAuthFragment on LoginState {\n    role {\n      dbRole\n    }\n  }\n"): (typeof documents)["\n  fragment RootScreenAuthFragment on LoginState {\n    role {\n      dbRole\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment ScoreBoardFragment on TeamResource {\n    uuid\n    name\n    totalPoints\n  }\n"): (typeof documents)["\n  fragment ScoreBoardFragment on TeamResource {\n    uuid\n    name\n    totalPoints\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ScoreBoardDocument {\n    me {\n      data {\n        teams {\n          team {\n            name\n            uuid\n          }\n        }\n      }\n    }\n    teams(\n      sendAll: true\n      sortBy: [\"totalPoints\", \"name\"]\n      sortDirection: [DESCENDING, ASCENDING]\n    ) {\n      data {\n        ...ScoreBoardFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query ScoreBoardDocument {\n    me {\n      data {\n        teams {\n          team {\n            name\n            uuid\n          }\n        }\n      }\n    }\n    teams(\n      sendAll: true\n      sortBy: [\"totalPoints\", \"name\"]\n      sortDirection: [DESCENDING, ASCENDING]\n    ) {\n      data {\n        ...ScoreBoardFragment\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
