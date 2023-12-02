@@ -26,6 +26,8 @@ export class LoginFlowSessionModel extends BaseModel<
   codeVerifier!: CreationOptional<string>;
 
   redirectToAfterLogin!: string | null;
+  setCookie!: CreationOptional<boolean>;
+  sendToken!: CreationOptional<boolean>;
 
   toResource(): LoginFlowSessionResource {
     return LoginFlowSessionResource.init({
@@ -57,6 +59,14 @@ LoginFlowSessionModel.init(
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
       unique: true,
+    },
+    setCookie: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    sendToken: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
