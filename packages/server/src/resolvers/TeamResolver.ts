@@ -348,7 +348,18 @@ export class TeamResolver
     return model.memberships.map((row) => row.toResource());
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControl(
+    { accessLevel: AccessLevel.Committee },
+    {
+      accessLevel: AccessLevel.TeamMember,
+      rootMatch: [
+        {
+          root: "uuid",
+          extractor: ({ teamIds }) => teamIds,
+        },
+      ],
+    }
+  )
   @FieldResolver(() => [PointEntryResource])
   async pointEntries(
     @Root() team: TeamResource
