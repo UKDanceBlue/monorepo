@@ -30,6 +30,7 @@ export const ProfileScreenAuthFragment = graphql(/* GraphQL */ `
       committeeRole
       dbRole
     }
+    authSource
   }
 `);
 
