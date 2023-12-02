@@ -21,6 +21,7 @@ registerEnumType(TeamType, {
 export const TeamLegacyStatus = {
   NewTeam: "NewTeam",
   ReturningTeam: "ReturningTeam",
+  DemoTeam: "DemoTeam",
 } as const;
 export type TeamLegacyStatus =
   (typeof TeamLegacyStatus)[keyof typeof TeamLegacyStatus];

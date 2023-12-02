@@ -7,6 +7,7 @@ import * as Common from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessLevel,
+  AuthSource,
   CommitteeRole,
   DbRole,
   DetailedError,
@@ -21,6 +22,7 @@ import {
   Arg,
   Args,
   ArgsType,
+  Ctx,
   Field,
   FieldResolver,
   InputType,
@@ -45,6 +47,7 @@ import type {
   ResolverInterface,
   ResolverInterfaceWithFilteredList,
 } from "./ResolverInterface.js";
+import * as Context from "./context.js";
 import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("SingleTeamResponse", {
@@ -149,7 +152,8 @@ export class TeamResolver
   @AccessControl({ accessLevel: AccessLevel.Public })
   @Query(() => ListTeamsResponse, { name: "teams" })
   async list(
-    @Args(() => ListTeamsArgs) query: ListTeamsArgs
+    @Args(() => ListTeamsArgs) query: ListTeamsArgs,
+    @Ctx() ctx: Context.GraphQLContext
   ): Promise<ListTeamsResponse> {
     const findOptions = query.toSequelizeFindOptions(
       {
@@ -169,10 +173,10 @@ export class TeamResolver
     }
     if (query.legacyStatus != null) {
       findOptions.where.legacyStatus = { [Op.in]: query.legacyStatus };
-    }
-    if (query.marathonYear != null) {
-      findOptions.where.marathonYear = { [Op.in]: query.marathonYear };
-    }
+    } else if (ctx.userData.authSource !== AuthSource.Demo)
+      if (query.marathonYear != null) {
+        findOptions.where.marathonYear = { [Op.in]: query.marathonYear };
+      }
 
     const { rows, count } = await TeamModel.findAndCountAll(findOptions);
 
