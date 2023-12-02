@@ -42,4 +42,4 @@ COPY .yarn/ /usr/src/app/.yarn
 
 WORKDIR /usr/src/app/packages/server
 
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/index.js", "--migrate-db"]
