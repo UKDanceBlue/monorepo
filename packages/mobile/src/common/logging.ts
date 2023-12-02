@@ -17,7 +17,11 @@ export function log(
       }
     } else {
       if (typeof message === "object") {
-        message = JSON.stringify(message, null, 2);
+        try {
+          message = JSON.stringify(message, null, 2);
+        } catch (error) {
+          console.error(error);
+        }
       }
       crashlytics().log(message.toString());
     }
