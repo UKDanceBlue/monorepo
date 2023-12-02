@@ -1,6 +1,7 @@
 import Jumbotron from "@common/components/Jumbotron";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import {
   getFragmentData,
   graphql,
@@ -8,7 +9,6 @@ import {
 import { View } from "native-base";
 import { Pressable } from "native-base/src/components/primitives";
 import { useEffect, useState } from "react";
-import { useQuery } from "urql";
 
 import type { StandingType } from "../../../../../types/StandingType";
 import type { SpiritStackScreenProps } from "../../../../../types/navigationTypes";
@@ -38,34 +38,27 @@ const ScoreBoardFragment = graphql(/* GraphQL */ `
   }
 `);
 
-const scoreBoardDocument = graphql(/* GraphQL */ `
-  query ScoreBoardDocument {
-    me {
-      data {
-        teams {
-          team {
-            name
-            uuid
-          }
-        }
-      }
-    }
-    teams(
-      sendAll: true
-      sortBy: ["totalPoints", "name"]
-      sortDirection: [DESCENDING, ASCENDING]
-    ) {
-      data {
-        ...ScoreBoardFragment
-      }
-    }
+const HighlightedTeamFragment = graphql(/* GraphQL */ `
+  fragment HighlightedTeamFragment on TeamResource {
+    uuid
+    name
   }
 `);
 
 /**
  * Wrapper for a Standings component
  */
-const ScoreBoardScreen = () => {
+const ScoreBoardScreen = ({
+  highlightedTeamFragment,
+  scoreBoardFragment,
+  loading,
+  refresh,
+}: {
+  highlightedTeamFragment: FragmentType<typeof HighlightedTeamFragment> | null;
+  scoreBoardFragment: readonly FragmentType<typeof ScoreBoardFragment>[] | null;
+  loading: boolean;
+  refresh: () => void;
+}) => {
   const [userTeamRank, setUserTeamRank] = useState<number | undefined>(
     undefined
   );
@@ -74,44 +67,33 @@ const ScoreBoardScreen = () => {
   const { navigate } =
     useNavigation<SpiritStackScreenProps<"Scoreboard">["navigation"]>();
 
-  const [{ data: scoreBoardData, fetching: loading, error }, refresh] =
-    useQuery({
-      query: scoreBoardDocument,
-    });
-  const teamFragmentData = getFragmentData(
-    ScoreBoardFragment,
-    scoreBoardData?.teams.data ?? null
+  const teamsData = getFragmentData(ScoreBoardFragment, scoreBoardFragment);
+  const userTeamData = getFragmentData(
+    HighlightedTeamFragment,
+    highlightedTeamFragment
   );
-  const userTeamName = scoreBoardData?.me.data?.teams[0]?.team.name;
-  const userTeamUuid = scoreBoardData?.me.data?.teams[0]?.team.uuid;
 
   useEffect(() => {
     const newStandingData: StandingType[] = [];
-    if (teamFragmentData) {
-      for (const team of teamFragmentData) {
+    if (teamsData) {
+      for (const team of teamsData) {
         newStandingData.push({
           name: team.name,
           id: team.uuid,
           points: team.totalPoints,
-          highlighted: team.uuid === userTeamUuid,
+          highlighted: team.uuid === userTeamData?.uuid,
         });
-        if (team.uuid === userTeamUuid) {
+        if (team.uuid === userTeamData?.uuid) {
           setUserTeamRank(newStandingData.length);
         }
       }
     }
     setStandingData(newStandingData);
-  }, [userTeamUuid, teamFragmentData]);
-
-  useEffect(() => {
-    if (error != null) {
-      console.error(error);
-    }
-  }, [error]);
+  }, [teamsData, userTeamData]);
 
   return (
     <View flex={1}>
-      {userTeamUuid == null ? (
+      {userTeamData?.uuid == null ? (
         <Jumbotron
           title="You are not part of a team"
           subTitle=""
@@ -129,7 +111,7 @@ const ScoreBoardScreen = () => {
           _pressed={{ opacity: 0.5 }}
         >
           <Jumbotron
-            title={userTeamName}
+            title={userTeamData.name}
             subTitle={
               userTeamRank == null
                 ? undefined

@@ -20,7 +20,7 @@ const documents = {
     "\n  fragment ScoreBoardFragment on TeamResource {\n    uuid\n    name\n    totalPoints\n  }\n": types.ScoreBoardFragmentFragmentDoc,
     "\n  fragment HighlightedTeamFragment on TeamResource {\n    uuid\n    name\n  }\n": types.HighlightedTeamFragmentFragmentDoc,
     "\n  query ScoreBoardDocument {\n    me {\n      data {\n        uuid\n        teams {\n          team {\n            ...HighlightedTeamFragment\n            ...MyTeamFragment\n          }\n        }\n      }\n    }\n    teams(\n      sendAll: true\n      sortBy: [\"totalPoints\", \"name\"]\n      sortDirection: [DESCENDING, ASCENDING]\n    ) {\n      data {\n        ...ScoreBoardFragment\n      }\n    }\n  }\n": types.ScoreBoardDocumentDocument,
-    "\n  fragment MyTeamFragment on TeamResource {\n    uuid\n    name\n    totalPoints\n    pointEntries {\n      personFrom {\n        uuid\n        name\n        linkblue\n      }\n      points\n    }\n    members {\n      person {\n        linkblue\n        name\n      }\n    }\n  }\n": types.MyTeamFragmentFragmentDoc,
+    "\n  fragment MyTeamFragment on TeamResource {\n    uuid\n    name\n    totalPoints\n    pointEntries {\n      personFrom {\n        uuid\n        name\n        linkblue\n      }\n      points\n    }\n    members {\n      position\n      person {\n        linkblue\n        name\n      }\n    }\n  }\n": types.MyTeamFragmentFragmentDoc,
 };
 
 /**
@@ -68,7 +68,7 @@ export function graphql(source: "\n  query ScoreBoardDocument {\n    me {\n     
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment MyTeamFragment on TeamResource {\n    uuid\n    name\n    totalPoints\n    pointEntries {\n      personFrom {\n        uuid\n        name\n        linkblue\n      }\n      points\n    }\n    members {\n      person {\n        linkblue\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  fragment MyTeamFragment on TeamResource {\n    uuid\n    name\n    totalPoints\n    pointEntries {\n      personFrom {\n        uuid\n        name\n        linkblue\n      }\n      points\n    }\n    members {\n      person {\n        linkblue\n        name\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  fragment MyTeamFragment on TeamResource {\n    uuid\n    name\n    totalPoints\n    pointEntries {\n      personFrom {\n        uuid\n        name\n        linkblue\n      }\n      points\n    }\n    members {\n      position\n      person {\n        linkblue\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  fragment MyTeamFragment on TeamResource {\n    uuid\n    name\n    totalPoints\n    pointEntries {\n      personFrom {\n        uuid\n        name\n        linkblue\n      }\n      points\n    }\n    members {\n      position\n      person {\n        linkblue\n        name\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
