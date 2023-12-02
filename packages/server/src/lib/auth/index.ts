@@ -137,17 +137,15 @@ export function isValidJwtPayload(payload: unknown): payload is JwtPayload {
  * @return The JWT, containing the user's authorization data
  */
 export function makeUserJwt(user: UserData, source: AuthSource): string {
-  if (!user.userId) {
-    throw new Error("Cannot make a JWT for a user with no ID");
-  }
-
   const payload: JwtPayload = {
-    sub: user.userId,
     auth_source: source,
     dbRole: user.auth.dbRole,
     access_level: user.auth.accessLevel,
   };
 
+  if (user.userId) {
+    payload.sub = user.userId;
+  }
   if (user.auth.committeeRole) {
     payload.committee_role = user.auth.committeeRole;
   }
@@ -200,9 +198,11 @@ export function parseUserJwt(token: string): UserData {
       accessLevel: payload.access_level,
       dbRole: payload.dbRole,
     },
-    userId: payload.sub,
   };
 
+  if (payload.sub) {
+    userData.userId = payload.sub;
+  }
   if (payload.committee_role) {
     userData.auth.committeeRole = payload.committee_role;
   }
