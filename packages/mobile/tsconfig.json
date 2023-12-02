@@ -9,7 +9,7 @@
       "@context/*": ["./src/context/*"],
       "@navigation/*": ["./src/navigation/*"],
       "@theme/*": ["./src/theme/*"],
-      "@types/*": ["./src/types/*"]
+      "@common-types/*": ["./src/types/*"]
     },
     "noUncheckedIndexedAccess": false,
     "exactOptionalPropertyTypes": false,
