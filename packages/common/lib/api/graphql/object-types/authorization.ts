@@ -1,5 +1,6 @@
 import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
 import { UseMiddleware } from "type-graphql";
+import type { Primitive } from "utility-types";
 
 import type {
   AccessLevel,
@@ -124,15 +125,24 @@ export function checkAuthorization(
  * 2. The user's role matches one of the specified authorization rules
  * 3. The resolver arguments match ALL of the specified argument matchers
  */
-export interface AccessControlParam {
+export interface AccessControlParam<
+  RootType extends Record<string, unknown> = Record<string, unknown>,
+> {
   authRules?: readonly AuthorizationRule[];
   accessLevel?: AccessLevel;
   argumentMatch?: {
-    argument: string | ((args: ArgsDictionary) => unknown);
+    argument: string | ((args: ArgsDictionary) => Primitive | Primitive[]);
     extractor: (
-      authorization: UserData,
+      userData: UserData,
       person: PersonResource | null
-    ) => unknown;
+    ) => Primitive | Primitive[];
+  }[];
+  rootMatch?: {
+    root: string | ((root: RootType) => Primitive | Primitive[]);
+    extractor: (
+      userData: UserData,
+      person: PersonResource | null
+    ) => Primitive | Primitive[];
   }[];
 }
 
@@ -270,13 +280,17 @@ export interface AuthorizationContext {
 //   return UseMiddleware(middleware);
 // }
 
-export function AccessControl(
-  ...params: AccessControlParam[]
+export function AccessControl<
+  RootType extends Record<string, unknown> = Record<string, unknown>,
+>(
+  ...params: AccessControlParam<RootType>[]
 ): MethodDecorator & PropertyDecorator {
   const middleware: MiddlewareFn<AuthorizationContext> = (
-    { context, args },
+    resolverData,
     next
   ) => {
+    const { context, args } = resolverData;
+    const root = resolverData.root as RootType;
     const { userData, authenticatedUser } = context;
 
     let ok = false;
@@ -307,7 +321,7 @@ export function AccessControl(
         for (const match of rule.argumentMatch) {
           const argValue =
             typeof match.argument === "string"
-              ? (args[match.argument] as unknown)
+              ? (args[match.argument] as Primitive | Primitive[])
               : match.argument(args);
           if (argValue == null) {
             throw new DetailedError(
@@ -317,8 +331,52 @@ export function AccessControl(
           }
           const expectedValue = match.extractor(userData, authenticatedUser);
 
-          if (argValue !== expectedValue) {
-            continue;
+          if (Array.isArray(expectedValue)) {
+            if (Array.isArray(argValue)) {
+              if (argValue.some((v) => expectedValue.includes(v))) {
+                continue;
+              }
+            } else if (expectedValue.includes(argValue)) {
+              continue;
+            }
+          } else if (argValue !== expectedValue) {
+            if (Array.isArray(argValue)) {
+              if (argValue.includes(expectedValue)) {
+                continue;
+              }
+            }
+          }
+        }
+      }
+
+      if (rule.rootMatch != null) {
+        for (const match of rule.rootMatch) {
+          const rootValue =
+            typeof match.root === "string"
+              ? (root as Record<string, Primitive | Primitive[]>)[match.root]
+              : match.root(root);
+          if (rootValue == null) {
+            throw new DetailedError(
+              ErrorCode.InternalFailure,
+              "FieldMatchAuthorized root is null or undefined."
+            );
+          }
+          const expectedValue = match.extractor(userData, authenticatedUser);
+
+          if (Array.isArray(expectedValue)) {
+            if (Array.isArray(rootValue)) {
+              if (rootValue.some((v) => expectedValue.includes(v))) {
+                continue;
+              }
+            } else if (expectedValue.includes(rootValue)) {
+              continue;
+            }
+          } else if (rootValue !== expectedValue) {
+            if (Array.isArray(rootValue)) {
+              if (rootValue.includes(expectedValue)) {
+                continue;
+              }
+            }
           }
         }
       }
