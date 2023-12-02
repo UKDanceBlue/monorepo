@@ -173,10 +173,12 @@ export class TeamResolver
     }
     if (query.legacyStatus != null) {
       findOptions.where.legacyStatus = { [Op.in]: query.legacyStatus };
-    } else if (ctx.userData.authSource !== AuthSource.Demo)
-      if (query.marathonYear != null) {
-        findOptions.where.marathonYear = { [Op.in]: query.marathonYear };
-      }
+    } else if (ctx.userData.authSource !== AuthSource.Demo) {
+      findOptions.where.legacyStatus = { [Op.ne]: TeamLegacyStatus.DemoTeam };
+    }
+    if (query.marathonYear != null) {
+      findOptions.where.marathonYear = { [Op.in]: query.marathonYear };
+    }
 
     const { rows, count } = await TeamModel.findAndCountAll(findOptions);
 
