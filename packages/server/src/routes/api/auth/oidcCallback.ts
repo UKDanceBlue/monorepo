@@ -102,11 +102,17 @@ export const oidcCallback = async (ctx: Context) => {
       }
       const userData = currentPerson.toUserData();
       const jwt = makeUserJwt(userData, AuthSource.UkyLinkblue);
-      ctx.cookies.set("token", jwt, {
-        httpOnly: true,
-        sameSite: "lax",
-      });
-      return ctx.redirect(session.redirectToAfterLogin ?? "/");
+      if (session.setCookie) {
+        ctx.cookies.set("token", jwt, {
+          httpOnly: true,
+          sameSite: "lax",
+        });
+      }
+      let redirectTo = session.redirectToAfterLogin ?? "/";
+      if (session.sendToken) {
+        redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;
+      }
+      return ctx.redirect(redirectTo);
     });
   } finally {
     if (!(sessionDeleted as true | typeof sessionDeleted)) {
