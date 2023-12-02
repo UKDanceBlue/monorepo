@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authExchange } from "@urql/exchange-auth";
 import Constants from "expo-constants";
 import type { ReactNode, RefObject } from "react";
@@ -17,25 +18,30 @@ if (process.env.NODE_ENV === "development") {
 export function UrqlContext({
   children,
   refreshAuthRef,
-  tokenRef,
 }: {
   children: ReactNode;
   refreshAuthRef: RefObject<() => Promise<void>>;
-  tokenRef: RefObject<string | undefined>;
 }) {
   const client = useMemo(
     () =>
       new Client({
         url,
+        fetch: (...params) => {
+          console.log("Fetching", params);
+          return fetch(...params);
+        },
         exchanges: [
           cacheExchange,
-          fetchExchange,
-          authExchange(({ appendHeaders }) => {
-            return Promise.resolve({
+          authExchange(async ({ appendHeaders }) => {
+            const token = await AsyncStorage.getItem("danceblue-auth-token");
+
+            return {
               addAuthToOperation: (operation) => {
-                if (tokenRef.current) {
+                console.log(token);
+                if (token) {
+                  console.log("Adding auth to operation");
                   return appendHeaders(operation, {
-                    Authorization: `Bearer ${tokenRef.current}`,
+                    Authorization: `Bearer ${token}`,
                   });
                 }
                 return operation;
@@ -49,11 +55,12 @@ export function UrqlContext({
                   "Access denied! You don't have permission for this action!"
                 );
               },
-            });
+            };
           }),
+          fetchExchange,
         ],
       }),
-    [refreshAuthRef, tokenRef]
+    [refreshAuthRef]
   );
   client;
   return <Provider value={client}>{children}</Provider>;
