@@ -615,6 +615,7 @@ export type ListTeamsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQl
 
 export type LoginState = {
   readonly __typename?: 'LoginState';
+  readonly authSource: AuthSource;
   readonly loggedIn: Scalars['Boolean']['output'];
   readonly role: RoleResource;
 };
