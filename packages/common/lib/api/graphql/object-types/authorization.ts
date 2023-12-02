@@ -3,10 +3,10 @@ import { UseMiddleware } from "type-graphql";
 
 import type {
   AccessLevel,
-  AuthSource,
   Authorization,
   DbRole,
   PersonResource,
+  UserData,
 } from "../../../index.js";
 import { CommitteeRole, DetailedError, ErrorCode } from "../../../index.js";
 
@@ -130,7 +130,7 @@ export interface AccessControlParam {
   argumentMatch?: {
     argument: string | ((args: ArgsDictionary) => unknown);
     extractor: (
-      authorization: Authorization,
+      authorization: UserData,
       person: PersonResource | null
     ) => unknown;
   }[];
@@ -138,8 +138,7 @@ export interface AccessControlParam {
 
 export interface AuthorizationContext {
   authenticatedUser: PersonResource | null;
-  authorization: Authorization;
-  authSource: AuthSource;
+  userData: UserData;
 }
 
 // function throwAccessLevel() {
@@ -278,13 +277,13 @@ export function AccessControl(
     { context, args },
     next
   ) => {
-    const { authorization, authenticatedUser } = context;
+    const { userData, authenticatedUser } = context;
 
     let ok = false;
 
     for (const rule of params) {
       if (rule.accessLevel != null) {
-        if (rule.accessLevel > authorization.accessLevel) {
+        if (rule.accessLevel > userData.auth.accessLevel) {
           continue;
         }
       }
@@ -297,7 +296,7 @@ export function AccessControl(
           );
         }
         const matches = rule.authRules.some((rule) =>
-          checkAuthorization(rule, authorization)
+          checkAuthorization(rule, userData.auth)
         );
         if (!matches) {
           continue;
@@ -316,10 +315,7 @@ export function AccessControl(
               "FieldMatchAuthorized argument is null or undefined."
             );
           }
-          const expectedValue = match.extractor(
-            authorization,
-            authenticatedUser
-          );
+          const expectedValue = match.extractor(userData, authenticatedUser);
 
           if (argValue !== expectedValue) {
             continue;

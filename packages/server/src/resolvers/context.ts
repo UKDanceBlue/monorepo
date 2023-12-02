@@ -1,13 +1,15 @@
 import type { ContextFunction } from "@apollo/server";
 import type { KoaContextFunctionArgument } from "@as-integrations/koa";
-import { AuthSource, type AuthorizationContext } from "@ukdanceblue/common";
-import type { DefaultContext, DefaultState } from "koa";
+import type { AuthorizationContext } from "@ukdanceblue/common";
+import { AuthSource, MembershipPositionType } from "@ukdanceblue/common";
+import type { DefaultState } from "koa";
 
 import { defaultAuthorization, parseUserJwt } from "../lib/auth/index.js";
 import { logDebug } from "../logger.js";
+import { MembershipModel } from "../models/Membership.js";
 import { PersonModel } from "../models/Person.js";
 
-export interface GraphQLContext extends DefaultContext, AuthorizationContext {
+export interface GraphQLContext extends AuthorizationContext {
   contextErrors: string[];
 }
 
@@ -25,9 +27,11 @@ export const graphqlContextFunction: ContextFunction<
   if (!token) {
     return {
       authenticatedUser: null,
-      authorization: defaultAuthorization,
+      userData: {
+        auth: defaultAuthorization,
+        authSource: AuthSource.None,
+      },
       contextErrors: [],
-      authSource: AuthSource.None,
     };
   }
   const { userId, auth, authSource } = parseUserJwt(token);
@@ -35,29 +39,52 @@ export const graphqlContextFunction: ContextFunction<
     logDebug("graphqlContextFunction No userId found");
     return {
       authenticatedUser: null,
-      authorization: auth,
+      userData: {
+        auth,
+        authSource,
+      },
       contextErrors: [],
-      authSource,
     };
   }
 
-  const person = await PersonModel.findByUuid(userId);
+  const person = await PersonModel.findByUuid(userId, {
+    include: [MembershipModel.withScope("withTeam")],
+  });
   if (person) {
     const personResource = person.toResource();
     logDebug("graphqlContextFunction Found user", personResource);
     return {
       authenticatedUser: personResource,
-      authorization: personResource.role.toAuthorization(),
+      userData: {
+        auth: personResource.role.toAuthorization(),
+        userId,
+        teamIds: person.memberships.map((m) => {
+          if (!m.team) {
+            throw new Error("Membership has no team");
+          }
+          return m.team.uuid;
+        }),
+        captainOfTeamIds: person.memberships
+          .filter((m) => m.position === MembershipPositionType.Captain)
+          .map((m) => {
+            if (!m.team) {
+              throw new Error("Membership has no team");
+            }
+            return m.team.uuid;
+          }),
+        authSource,
+      },
       contextErrors: [],
-      authSource,
     };
   } else {
     logDebug("graphqlContextFunction User not found");
     return {
       authenticatedUser: null,
-      authorization: defaultAuthorization,
+      userData: {
+        auth: defaultAuthorization,
+        authSource: AuthSource.None,
+      },
       contextErrors: ["User not found"],
-      authSource,
     };
   }
 };
