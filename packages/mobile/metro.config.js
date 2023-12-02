@@ -30,6 +30,17 @@ async function config() {
           get: (target, name) => path.join(projectRoot, `node_modules/${name}`),
         }
       ),
+      // Alias type-graphql to the browser shim
+      resolveRequest: (context, moduleName, platform) => {
+        if (moduleName === "type-graphql") {
+          return {
+            filePath:
+              "../common/node_modules/type-graphql/build/cjs/browser-shim.js",
+            type: "sourceFile",
+          };
+        }
+        return context.resolveRequest(context, moduleName, platform);
+      },
     },
     transformer: {
       getTransformOptions: async () => ({

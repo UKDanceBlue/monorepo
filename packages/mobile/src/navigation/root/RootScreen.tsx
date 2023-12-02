@@ -1,11 +1,14 @@
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
 import { useTheme } from "native-base";
+import { useEffect } from "react";
 import { useWindowDimensions } from "react-native";
+import { useQuery } from "urql";
 
 import { useColorModeValue } from "../../common/customHooks";
 import { log } from "../../common/logging";
-import { useAuthData } from "../../context";
+import { useAuthData, useLoading } from "../../context";
 import type { RootStackParamList } from "../../types/navigationTypes";
 import HeaderIcons from "../HeaderIcons";
 
@@ -13,14 +16,51 @@ import EventScreen from "./EventScreen";
 import SplashLogin from "./Modals/SplashLogin";
 import NotificationScreen from "./NotificationScreen";
 import ProfileScreen from "./ProfileScreen";
-// import HourScreen from "./tab/HoursScreen/HourScreen";
 import TabBar from "./tab/TabBar";
+
+// import HourScreen from "./tab/HoursScreen/HourScreen";
+
+const rootScreenDocument = graphql(/* GraphQL */ `
+  query RootScreenDocument {
+    loginState {
+      ...ProfileScreenAuthFragment
+    }
+    me {
+      data {
+        ...ProfileScreenUserFragment
+      }
+    }
+  }
+`);
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 const RootScreen = () => {
   const { fontScale } = useWindowDimensions();
-  const { isAuthLoaded, isLoggedIn } = useAuthData();
+
+  const [{ data: rootScreenData, fetching, error }] = useQuery({
+    query: rootScreenDocument,
+  });
+
+  const [rootScreenLoading, setRootScreenLoading] = useLoading(
+    "rootScreen-rootScreenDocument"
+  );
+  useEffect(() => {
+    if (fetching) {
+      setRootScreenLoading(true);
+    } else {
+      setRootScreenLoading(false);
+    }
+  }, [fetching, setRootScreenLoading]);
+  const { isLoggedIn } = useAuthData();
+  const isAuthLoaded = !rootScreenLoading && error == null;
+
+  useEffect(() => {
+    if (error != null) {
+      // TODO: Handle better
+      throw error;
+    }
+  }, [error]);
 
   const { colors } = useTheme();
   const headerBgColor = useColorModeValue(colors.white, colors.gray[800]);
@@ -57,9 +97,17 @@ const RootScreen = () => {
               />
               <RootStack.Screen
                 name="Profile"
-                component={ProfileScreen}
                 options={{ headerRight: () => undefined }}
-              />
+              >
+                {() => (
+                  <ProfileScreen
+                    profileScreenAuthFragment={
+                      rootScreenData?.loginState ?? null
+                    }
+                    profileScreenUserFragment={rootScreenData?.me.data ?? null}
+                  />
+                )}
+              </RootStack.Screen>
               <RootStack.Screen
                 name="Event"
                 component={EventScreen}

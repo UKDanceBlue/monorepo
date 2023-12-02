@@ -1,15 +1,11 @@
 import type { FirebaseAuthTypes } from "@react-native-firebase/auth";
-import type { FirebaseFunctionsTypes } from "@react-native-firebase/functions";
 import type { AuthError } from "expo-auth-session";
 import { useAuthRequest, useAutoDiscovery } from "expo-auth-session";
 import { getRandomBytes } from "expo-crypto";
 import { createURL } from "expo-linking";
 import { useRef, useState } from "react";
 
-export const useLinkBlueLogin = (
-  fbAuth: FirebaseAuthTypes.Module,
-  fbFunctions: FirebaseFunctionsTypes.Module
-): [
+export const useLinkBlueLogin = (): [
   boolean,
   () => void,
   FirebaseAuthTypes.UserCredential | null,

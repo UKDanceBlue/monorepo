@@ -74,6 +74,8 @@
     "expo-status-bar": "~1.6.0",
     "expo-updates": "~0.18.16",
     "expo-web-browser": "~12.3.2",
+    "graphql": "^16.8.1",
+    "graphql-scalars": "^1.22.4",
     "lodash": "^4.17.21",
     "luxon": "^3.0.3",
     "lz-string": "^1.4.4",

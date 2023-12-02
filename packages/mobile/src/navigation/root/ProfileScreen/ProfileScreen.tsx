@@ -1,8 +1,12 @@
 import { useLinkBlueLogin } from "@common/auth";
 import JumbotronGeometric from "@common/components/JumbotronGeometric";
 import { useThemeFonts } from "@common/customHooks";
-import { showMessage } from "@common/util/alertUtils";
-import { startCase } from "lodash";
+import { DbRole, committeeNames } from "@ukdanceblue/common/dist/auth";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import {
+  getFragmentData,
+  graphql,
+} from "@ukdanceblue/common/dist/graphql-client-public";
 import {
   Button,
   Center,
@@ -13,42 +17,70 @@ import {
   theme,
 } from "native-base";
 
-import { useAuthData, useFirebase, useUserData } from "../../../context";
-
 import { ProfileFooter } from "./ProfileFooter";
+
+export const ProfileScreenAuthFragment = graphql(/* GraphQL */ `
+  fragment ProfileScreenAuthFragment on LoginState {
+    loggedIn
+    role {
+      committeeIdentifier
+      committeeRole
+      dbRole
+    }
+  }
+`);
+
+export const ProfileScreenUserFragment = graphql(/* GraphQL */ `
+  fragment ProfileScreenUserFragment on PersonResource {
+    name
+    linkblue
+    teams {
+      position
+      team {
+        name
+      }
+    }
+  }
+`);
 
 /**
  * Component for "Profile" screen in main navigation
  */
-const ProfileScreen = () => {
-  const authData = useAuthData();
-  const userData = useUserData();
-  const { fbAuth, fbFunctions } = useFirebase();
+const ProfileScreen = ({
+  profileScreenAuthFragment,
+  profileScreenUserFragment,
+}: {
+  profileScreenAuthFragment: FragmentType<
+    typeof ProfileScreenAuthFragment
+  > | null;
+  profileScreenUserFragment: FragmentType<
+    typeof ProfileScreenUserFragment
+  > | null;
+}) => {
+  const authData = getFragmentData(
+    ProfileScreenAuthFragment,
+    profileScreenAuthFragment
+  );
+  const userData = getFragmentData(
+    ProfileScreenUserFragment,
+    profileScreenUserFragment
+  );
 
-  const { headingBold, body, mono } = useThemeFonts();
+  const { body, mono } = useThemeFonts();
 
-  const [loading, trigger] = useLinkBlueLogin(fbAuth, fbFunctions);
+  const [loading, trigger] = useLinkBlueLogin();
 
   function jumboText() {
     let welcomeString = "Welcome to DanceBlue!";
-    if (userData.firstName != null && !authData.isAnonymous) {
-      welcomeString = `Hey ${userData.firstName}!`;
+    if (userData?.name) {
+      welcomeString = `Hey ${userData.name}!`;
     }
 
     return welcomeString;
   }
 
   function nameString() {
-    let userName = "Anonymous :)";
-    if (
-      userData.firstName != null &&
-      userData.lastName != null &&
-      !authData.isAnonymous
-    ) {
-      userName = `${userData.firstName} ${userData.lastName}`;
-    }
-
-    return userName;
+    return userData?.name ?? "Anonymous :)";
   }
 
   if (loading) {
@@ -57,7 +89,7 @@ const ProfileScreen = () => {
         <Spinner />
       </Center>
     );
-  } else if (authData.isLoggedIn) {
+  } else if (authData?.loggedIn) {
     return (
       <>
         <JumbotronGeometric title={jumboText()} />
@@ -79,7 +111,7 @@ const ProfileScreen = () => {
             >
               {nameString()}
             </Text>
-            {authData.authClaims?.dbRole === "committee" && (
+            {authData.role.dbRole === DbRole.Committee && (
               <Text
                 width="full"
                 italic
@@ -88,22 +120,18 @@ const ProfileScreen = () => {
                 fontSize={theme.fontSizes.lg}
                 fontFamily={mono}
               >
-                {[
-                  typeof authData.authClaims.committee === "string"
-                    ? startCase(authData.authClaims.committee)
-                    : undefined,
-                  typeof authData.authClaims.committeeRank === "string"
-                    ? startCase(authData.authClaims.committeeRank)
-                    : undefined,
-                ]
-                  .filter((s) => s != null)
-                  .join(" - ")}
+                {`Committee:\n${
+                  authData.role.committeeIdentifier
+                    ? committeeNames[authData.role.committeeIdentifier]
+                    : "Unknown"
+                } ${authData.role.committeeRole}`}
               </Text>
             )}
           </Container>
-          {userData.team &&
+          {/* TODO: Implement server-side support for individual totals */}
+          {/* {userData.teams.length > 0 &&
             userData.linkblue &&
-            userData.team.individualTotals && (
+            firstCommittee.individualTotals && (
               <Container maxWidth="full">
                 <Text
                   width="full"
@@ -122,7 +150,7 @@ const ProfileScreen = () => {
                   {userData.team.individualTotals[userData.linkblue]} points
                 </Text>
               </Container>
-            )}
+            )} */}
           <Container maxWidth="full" alignItems="center">
             <ProfileFooter />
           </Container>
@@ -145,9 +173,7 @@ const ProfileScreen = () => {
           </Button>
           <Button
             onPress={() => {
-              fbAuth.signInAnonymously().catch((error) => {
-                showMessage(error);
-              });
+              //  TODO: re-implement anonymous login
             }}
           >
             Login anonymously
