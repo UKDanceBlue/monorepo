@@ -8,6 +8,7 @@ import {
   DbRole,
   isCommitteeIdentifier,
 } from "../../../auth/index.js";
+import { roleToAccessLevel } from "../../../index.js";
 
 import { Resource } from "./Resource.js";
 
@@ -93,5 +94,9 @@ export class RoleResource extends Resource {
       }
     }
     return authorization;
+  }
+
+  toAccessLevel(): AccessLevel {
+    return roleToAccessLevel(this);
   }
 }
