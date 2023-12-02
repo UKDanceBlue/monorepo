@@ -85,6 +85,7 @@ const TeamScreen = ({
           }
         }
       }
+      setTeamStandings([...entriesRecord.values()]);
     }
   }, [team?.pointEntries, userUuid]);
 
@@ -115,7 +116,6 @@ const TeamScreen = ({
 
     return (
       <TeamInformation
-        // TODO ADD CAPTAINS
         captains={members
           .filter(
             (member) =>
