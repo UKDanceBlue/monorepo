@@ -1,13 +1,13 @@
-import type { ArgsDictionary } from "type-graphql";
-import { createMethodDecorator, createParamDecorator } from "type-graphql";
+import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
+import { UseMiddleware } from "type-graphql";
 
-import type { Authorization, DbRole, PersonResource } from "../../../index.js";
-import {
+import type {
   AccessLevel,
-  CommitteeRole,
-  DetailedError,
-  ErrorCode,
+  Authorization,
+  DbRole,
+  PersonResource,
 } from "../../../index.js";
+import { CommitteeRole, DetailedError, ErrorCode } from "../../../index.js";
 
 export interface AuthorizationRule extends Partial<Authorization> {
   /**
@@ -116,115 +116,228 @@ export function checkAuthorization(
   return matches;
 }
 
+/**
+ * An AccessControlParam accepts a user if:
+ *
+ * 1. The user's access level is greater than or equal to the access level specified (AccessLevel.None by default)
+ * 2. The user's role matches one of the specified authorization rules
+ * 3. The resolver arguments match ALL of the specified argument matchers
+ */
+export interface AccessControlParam {
+  authRules?: readonly AuthorizationRule[];
+  accessLevel?: AccessLevel;
+  argumentMatch?: {
+    argument: string | ((args: ArgsDictionary) => unknown);
+    extractor: (
+      authorization: Authorization,
+      person: PersonResource | null
+    ) => unknown;
+  }[];
+}
+
 export interface AuthorizationContext {
   authenticatedUser: PersonResource | null;
   authorization: Authorization;
 }
 
-function throwAccessLevel() {
-  throw new DetailedError(
-    ErrorCode.Unauthorized,
-    "Your access level is insufficient to access this resource."
-  );
-}
+// function throwAccessLevel() {
+//   throw new DetailedError(
+//     ErrorCode.Unauthorized,
+//     "Your access level is insufficient to access this resource."
+//   );
+// }
 
-export function AccessLevelAuthorized(
-  requiredAccessLevel: AccessLevel = AccessLevel.Public
-) {
-  return createMethodDecorator<AuthorizationContext>(({ context }, next) => {
-    if (requiredAccessLevel > context.authorization.accessLevel) {
-      throwAccessLevel();
-    }
-    return next();
-  });
-}
+// export function AccessLevelAuthorized(
+//   requiredAccessLevel: AccessLevel = AccessLevel.Public
+// ): MethodDecorator & PropertyDecorator {
+//   const middleware: MiddlewareFn<AuthorizationContext> = (
+//     { context },
+//     next
+//   ) => {
+//     if (requiredAccessLevel > context.authorization.accessLevel) {
+//       throwAccessLevel();
+//     }
+//     return next();
+//   };
 
-export function AccessLevelParameterAuthorized(
-  requiredAccessLevel: AccessLevel = AccessLevel.Public,
-  tryToNullify = false
-) {
-  return createParamDecorator<AuthorizationContext>(
-    ({ context, root, info }) => {
-      if (requiredAccessLevel > context.authorization.accessLevel) {
-        if (tryToNullify) {
-          return null;
+//   return UseMiddleware(middleware);
+// }
+
+// function throwNoAuthRules() {
+//   throw new DetailedError(
+//     ErrorCode.InternalFailure,
+//     "Resource has no allowed authorization rules."
+//   );
+// }
+
+// function throwUnauthorized() {
+//   throw new DetailedError(
+//     ErrorCode.Unauthorized,
+//     "You are not authorized to access this resource."
+//   );
+// }
+
+// export function AuthorizationAuthorized(
+//   rules: readonly AuthorizationRule[] = []
+// ): MethodDecorator & PropertyDecorator {
+//   const middleware: MiddlewareFn<AuthorizationContext> = (
+//     { context },
+//     next
+//   ) => {
+//     if (rules.length === 0) {
+//       throwNoAuthRules();
+//     }
+//     const matches = rules.some((rule) =>
+//       checkAuthorization(rule, context.authorization)
+//     );
+//     if (!matches) {
+//       throwUnauthorized();
+//     }
+//     return next();
+//   };
+
+//   return UseMiddleware(middleware);
+// }
+
+// function throwNullArgument() {
+//   throw new DetailedError(
+//     ErrorCode.InternalFailure,
+//     "FieldMatchAuthorized argument is null or undefined."
+//   );
+// }
+
+// export function AuthorizationOrAccessLevelAuthorized(
+//   rules: readonly (AuthorizationRule | AccessLevel)[] = []
+// ): MethodDecorator & PropertyDecorator {
+//   const middleware: MiddlewareFn<AuthorizationContext> = (
+//     { context },
+//     next
+//   ) => {
+//     if (rules.length === 0) {
+//       throwNoAuthRules();
+//     }
+//     const matches = rules.some((rule) => {
+//       return typeof rule === "number"
+//         ? rule <= context.authorization.accessLevel
+//         : checkAuthorization(rule, context.authorization);
+//     });
+//     if (!matches) {
+//       throwUnauthorized();
+//     }
+//     return next();
+//   };
+
+//   return UseMiddleware(middleware);
+// }
+
+// /**
+//  * Checks if the named argument is strictly equal to the value returned by the extractor function
+//  *
+//  * @param argument The name of the argument to compare against (or an extractor function)
+//  * @param extractor A function that takes the resource and authorization and returns the value to compare against
+//  */
+// export function ArgumentMatchAuthorized(
+//   argument: string | ((args: ArgsDictionary) => unknown),
+//   extractor: (
+//     authorization: Authorization,
+//     person: PersonResource | null
+//   ) => unknown
+// ): MethodDecorator & PropertyDecorator {
+//   const middleware: MiddlewareFn<AuthorizationContext> = (
+//     { context, args },
+//     next
+//   ) => {
+//     const argValue =
+//       typeof argument === "string"
+//         ? (args[argument] as unknown)
+//         : argument(args);
+//     if (argValue == null) {
+//       throwNullArgument();
+//     }
+//     const expectedValue = extractor(
+//       context.authorization,
+//       context.authenticatedUser
+//     );
+
+//     if (argValue !== expectedValue) {
+//       throwUnauthorized();
+//     }
+
+//     return next();
+//   };
+
+//   return UseMiddleware(middleware);
+// }
+
+export function AccessControl(
+  ...params: AccessControlParam[]
+): MethodDecorator & PropertyDecorator {
+  const middleware: MiddlewareFn<AuthorizationContext> = (
+    { context, args },
+    next
+  ) => {
+    const { authorization, authenticatedUser } = context;
+
+    let ok = false;
+
+    for (const rule of params) {
+      if (rule.accessLevel != null) {
+        if (rule.accessLevel > authorization.accessLevel) {
+          continue;
         }
-        throwAccessLevel();
       }
-      return (root as Record<string, unknown>)[info.fieldName];
-    }
-  );
-}
 
-function throwNoAuthRules() {
-  throw new DetailedError(
-    ErrorCode.InternalFailure,
-    "Resource has no allowed authorization rules."
-  );
-}
-
-function throwUnauthorized() {
-  throw new DetailedError(
-    ErrorCode.Unauthorized,
-    "You are not authorized to access this resource."
-  );
-}
-
-export function AuthorizationAuthorized(
-  rules: readonly AuthorizationRule[] = []
-) {
-  return createMethodDecorator<AuthorizationContext>(({ context }, next) => {
-    if (rules.length === 0) {
-      throwNoAuthRules();
-    }
-    const matches = rules.some((rule) =>
-      checkAuthorization(rule, context.authorization)
-    );
-    if (!matches) {
-      throwUnauthorized();
-    }
-    return next();
-  });
-}
-
-/**
- * Checks if the named argument is strictly equal to the value returned by the extractor function
- *
- * @param argument The name of the argument to compare against (or an extractor function)
- * @param extractor A function that takes the resource and authorization and returns the value to compare against
- */
-export function ArgumentMatchAuthorized(
-  argument: string | ((args: ArgsDictionary) => unknown),
-  extractor: (
-    authorization: Authorization,
-    person: PersonResource | null
-  ) => unknown
-) {
-  return createMethodDecorator<AuthorizationContext>(
-    ({ context, args }, next) => {
-      const argValue =
-        typeof argument === "string"
-          ? (args[argument] as unknown)
-          : argument(args);
-      if (argValue == null) {
-        throw new DetailedError(
-          ErrorCode.InternalFailure,
-          "FieldMatchAuthorized argument is null or undefined."
+      if (rule.authRules != null) {
+        if (rule.authRules.length === 0) {
+          throw new DetailedError(
+            ErrorCode.InternalFailure,
+            "Resource has no allowed authorization rules."
+          );
+        }
+        const matches = rule.authRules.some((rule) =>
+          checkAuthorization(rule, authorization)
         );
+        if (!matches) {
+          continue;
+        }
       }
-      const expectedValue = extractor(
-        context.authorization,
-        context.authenticatedUser
+
+      if (rule.argumentMatch != null) {
+        for (const match of rule.argumentMatch) {
+          const argValue =
+            typeof match.argument === "string"
+              ? (args[match.argument] as unknown)
+              : match.argument(args);
+          if (argValue == null) {
+            throw new DetailedError(
+              ErrorCode.InternalFailure,
+              "FieldMatchAuthorized argument is null or undefined."
+            );
+          }
+          const expectedValue = match.extractor(
+            authorization,
+            authenticatedUser
+          );
+
+          if (argValue !== expectedValue) {
+            continue;
+          }
+        }
+      }
+
+      ok = true;
+      break;
+    }
+
+    if (!ok) {
+      throw new DetailedError(
+        ErrorCode.Unauthorized,
+        "You are not authorized to access this resource."
       );
-
-      if (argValue !== expectedValue) {
-        throw new DetailedError(
-          ErrorCode.Unauthorized,
-          `You are not authorized to access this resource.`
-        );
-      }
-
+    } else {
       return next();
     }
-  );
+  };
+
+  return UseMiddleware(middleware);
 }

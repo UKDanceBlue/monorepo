@@ -1,7 +1,8 @@
 import {
+  AccessControl,
   AccessLevel,
-  AccessLevelAuthorized,
   ConfigurationResource,
+  DetailedError,
   ErrorCode,
 } from "@ukdanceblue/common";
 import {
@@ -16,7 +17,6 @@ import {
 
 import { ConfigurationModel } from "../models/Configuration.js";
 
-import { DetailedError } from "@ukdanceblue/common";
 import {
   AbstractGraphQLArrayOkResponse,
   AbstractGraphQLCreatedResponse,
@@ -95,7 +95,7 @@ export class ConfigurationResolver
     );
   }
 
-  @AccessLevelAuthorized(AccessLevel.Admin)
+  @AccessControl({ accessLevel: AccessLevel.Admin })
   @Mutation(() => CreateConfigurationResponse, { name: "createConfiguration" })
   async create(
     @Arg("input") input: CreateConfigurationInput
@@ -105,7 +105,7 @@ export class ConfigurationResolver
     return CreateConfigurationResponse.newCreated(row.toResource(), row.uuid);
   }
 
-  @AccessLevelAuthorized(AccessLevel.Admin)
+  @AccessControl({ accessLevel: AccessLevel.Admin })
   @Mutation(() => SetConfigurationResponse, { name: "setConfiguration" })
   async set(
     @Arg("key") key: string,
@@ -121,7 +121,7 @@ export class ConfigurationResolver
     return SetConfigurationResponse.newOk(row.toResource());
   }
 
-  @AccessLevelAuthorized(AccessLevel.Admin)
+  @AccessControl({ accessLevel: AccessLevel.Admin })
   @Mutation(() => DeleteConfigurationResponse, { name: "deleteConfiguration" })
   async delete(@Arg("uuid") id: string): Promise<DeleteConfigurationResponse> {
     const row = await ConfigurationModel.findOne({

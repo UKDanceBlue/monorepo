@@ -1,6 +1,7 @@
 import {
+  AccessControl,
   AccessLevel,
-  AccessLevelAuthorized,
+  DetailedError,
   ErrorCode,
   ImageResource,
 } from "@ukdanceblue/common";
@@ -17,7 +18,6 @@ import {
 
 import { ImageModel } from "../models/Image.js";
 
-import { DetailedError } from "@ukdanceblue/common";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
@@ -103,7 +103,7 @@ export class ImageResolver implements ResolverInterface<ImageResource> {
     );
   }
 
-  @AccessLevelAuthorized(AccessLevel.CommitteeChairOrCoordinator)
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => CreateImageResponse, { name: "createImage" })
   async create(
     @Arg("input") input: CreateImageInput
@@ -144,7 +144,7 @@ export class ImageResolver implements ResolverInterface<ImageResource> {
     return response;
   }
 
-  @AccessLevelAuthorized(AccessLevel.CommitteeChairOrCoordinator)
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => DeleteImageResponse, { name: "deleteImage" })
   async delete(@Arg("uuid") id: string): Promise<DeleteImageResponse> {
     const row = await ImageModel.findOne({

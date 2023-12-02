@@ -1,15 +1,15 @@
 import { Op, QueryTypes, literal } from "@sequelize/core";
 import type {
-  AuthorizationRuleOrAccessLevel,
   MarathonYearString,
   OptionalToNullable,
 } from "@ukdanceblue/common";
 import * as Common from "@ukdanceblue/common";
 import {
+  AccessControl,
   AccessLevel,
-  AccessLevelAuthorized,
   CommitteeRole,
   DbRole,
+  DetailedError,
   ErrorCode,
   MembershipResource,
   PointEntryResource,
@@ -21,7 +21,6 @@ import {
   Arg,
   Args,
   ArgsType,
-  Authorized,
   Field,
   FieldResolver,
   InputType,
@@ -37,7 +36,6 @@ import { sequelizeDb } from "../data-source.js";
 import { MembershipModel } from "../models/Membership.js";
 import { TeamModel } from "../models/Team.js";
 
-import { DetailedError } from "@ukdanceblue/common";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
@@ -136,7 +134,7 @@ export class TeamResolver
     ResolverInterface<TeamResource>,
     ResolverInterfaceWithFilteredList<TeamResource, ListTeamsArgs>
 {
-  @AccessLevelAuthorized(AccessLevel.Committee)
+  @AccessControl({ accessLevel: AccessLevel.Committee })
   @Query(() => SingleTeamResponse, { name: "team" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<SingleTeamResponse> {
     const row = await TeamModel.findOne({ where: { uuid } });
@@ -148,7 +146,7 @@ export class TeamResolver
     return SingleTeamResponse.newOk(row.toResource());
   }
 
-  @AccessLevelAuthorized(AccessLevel.Committee)
+  @AccessControl({ accessLevel: AccessLevel.Committee })
   @Query(() => ListTeamsResponse, { name: "teams" })
   async list(
     @Args(() => ListTeamsArgs) query: ListTeamsArgs
@@ -186,14 +184,20 @@ export class TeamResolver
     });
   }
 
-  @Authorized<AuthorizationRuleOrAccessLevel>([
-    AccessLevel.Admin,
+  @AccessControl(
     {
-      committeeIdentifier:
-        Common.CommitteeIdentifier["dancerRelationsCommittee"],
-      minCommitteeRole: CommitteeRole.Coordinator,
+      accessLevel: AccessLevel.Admin,
     },
-  ])
+    {
+      authRules: [
+        {
+          committeeIdentifier:
+            Common.CommitteeIdentifier["dancerRelationsCommittee"],
+          minCommitteeRole: CommitteeRole.Coordinator,
+        },
+      ],
+    }
+  )
   @Mutation(() => CreateTeamResponse, { name: "createTeam" })
   async create(
     @Arg("input") input: CreateTeamInput
@@ -209,14 +213,20 @@ export class TeamResolver
     return CreateTeamResponse.newCreated(row.toResource(), row.uuid);
   }
 
-  @Authorized<AuthorizationRuleOrAccessLevel>([
-    AccessLevel.Admin,
+  @AccessControl(
     {
-      committeeIdentifier:
-        Common.CommitteeIdentifier["dancerRelationsCommittee"],
-      minCommitteeRole: CommitteeRole.Coordinator,
+      accessLevel: AccessLevel.Admin,
     },
-  ])
+    {
+      authRules: [
+        {
+          committeeIdentifier:
+            Common.CommitteeIdentifier["dancerRelationsCommittee"],
+          minCommitteeRole: CommitteeRole.Coordinator,
+        },
+      ],
+    }
+  )
   @Mutation(() => SingleTeamResponse, { name: "setTeam" })
   async set(
     @Arg("uuid") uuid: string,
@@ -249,14 +259,20 @@ export class TeamResolver
     return SingleTeamResponse.newOk(row.toResource());
   }
 
-  @Authorized<AuthorizationRuleOrAccessLevel>([
-    AccessLevel.Admin,
+  @AccessControl(
     {
-      committeeIdentifier:
-        Common.CommitteeIdentifier["dancerRelationsCommittee"],
-      minCommitteeRole: CommitteeRole.Coordinator,
+      accessLevel: AccessLevel.Admin,
     },
-  ])
+    {
+      authRules: [
+        {
+          committeeIdentifier:
+            Common.CommitteeIdentifier["dancerRelationsCommittee"],
+          minCommitteeRole: CommitteeRole.Coordinator,
+        },
+      ],
+    }
+  )
   @Mutation(() => DeleteTeamResponse, { name: "deleteTeam" })
   async delete(@Arg("uuid") id: string): Promise<DeleteTeamResponse> {
     const row = await TeamModel.findOne({
@@ -273,7 +289,7 @@ export class TeamResolver
     return DeleteTeamResponse.newOk(true);
   }
 
-  @AccessLevelAuthorized(AccessLevel.Committee)
+  @AccessControl({ accessLevel: AccessLevel.Committee })
   @FieldResolver(() => [MembershipResource])
   async members(@Root() team: TeamResource): Promise<MembershipResource[]> {
     const model = await TeamModel.findByUuid(team.uuid, {
@@ -296,7 +312,7 @@ export class TeamResolver
     return model.memberships.map((row) => row.toResource());
   }
 
-  @AccessLevelAuthorized(AccessLevel.Committee)
+  @AccessControl({ accessLevel: AccessLevel.Committee })
   @FieldResolver(() => [MembershipResource])
   async captains(@Root() team: TeamResource): Promise<MembershipResource[]> {
     const model = await TeamModel.findByUuid(team.uuid, {
@@ -319,7 +335,7 @@ export class TeamResolver
     return model.memberships.map((row) => row.toResource());
   }
 
-  @AccessLevelAuthorized(AccessLevel.Committee)
+  @AccessControl({ accessLevel: AccessLevel.Committee })
   @FieldResolver(() => [PointEntryResource])
   async pointEntries(
     @Root() team: TeamResource
@@ -340,7 +356,7 @@ export class TeamResolver
     return pointEntries.map((row) => row.toResource());
   }
 
-  @AccessLevelAuthorized(AccessLevel.Committee)
+  @AccessControl({ accessLevel: AccessLevel.Committee })
   @FieldResolver(() => Int)
   async totalPoints(@Root() team: TeamResource): Promise<number> {
     const teamModel = await TeamModel.findByUuid(team.uuid, {});

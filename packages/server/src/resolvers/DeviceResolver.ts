@@ -1,4 +1,4 @@
-import { DeviceResource, ErrorCode, PersonResource } from "@ukdanceblue/common";
+import { DetailedError, DeviceResource, ErrorCode , PersonResource } from "@ukdanceblue/common";
 import {
   Arg,
   Args,
@@ -16,7 +16,6 @@ import {
 import { DeviceModel } from "../models/Device.js";
 import { PersonModel } from "../models/Person.js";
 
-import { DetailedError } from "@ukdanceblue/common";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,

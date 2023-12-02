@@ -1,16 +1,15 @@
 import {
+  DetailedError,
   ErrorCode,
   MembershipResource,
   PersonResource,
-  TeamResource,
-} from "@ukdanceblue/common";
+ TeamResource } from "@ukdanceblue/common";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 
 import { MembershipModel } from "../models/Membership.js";
 import { PersonModel } from "../models/Person.js";
 import { TeamModel } from "../models/Team.js";
 
-import { DetailedError } from "@ukdanceblue/common";
 
 @Resolver(() => MembershipResource)
 export class MembershipResolver {

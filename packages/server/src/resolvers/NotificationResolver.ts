@@ -1,5 +1,5 @@
 import type { OptionalToNullable } from "@ukdanceblue/common";
-import { ErrorCode, NotificationResource } from "@ukdanceblue/common";
+import { DetailedError, ErrorCode , NotificationResource } from "@ukdanceblue/common";
 import {
   Arg,
   Args,
@@ -16,7 +16,6 @@ import { selectAudience } from "../lib/notification/selectAudience.js";
 import { sendNotification } from "../lib/notification/sendNotification.js";
 import { NotificationModel } from "../models/Notification.js";
 
-import { DetailedError } from "@ukdanceblue/common";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,

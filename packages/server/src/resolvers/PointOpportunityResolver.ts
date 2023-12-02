@@ -1,10 +1,10 @@
 import {
   DateTimeScalar,
+  DetailedError,
   ErrorCode,
   EventResource,
   PointOpportunityResource,
-  TeamType,
-} from "@ukdanceblue/common";
+ TeamType } from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
 import {
   Arg,
@@ -25,7 +25,6 @@ import { sequelizeDb } from "../data-source.js";
 import { EventModel } from "../models/Event.js";
 import { PointOpportunityModel } from "../models/PointOpportunity.js";
 
-import { DetailedError } from "@ukdanceblue/common";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,

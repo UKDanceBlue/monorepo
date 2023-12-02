@@ -1,10 +1,10 @@
 import {
+  DetailedError,
   ErrorCode,
   PersonResource,
   PointEntryResource,
   PointOpportunityResource,
-  TeamResource,
-} from "@ukdanceblue/common";
+ TeamResource } from "@ukdanceblue/common";
 import {
   Arg,
   Args,
@@ -24,7 +24,6 @@ import { PointEntryModel } from "../models/PointEntry.js";
 import { PointOpportunityModel } from "../models/PointOpportunity.js";
 import { TeamModel } from "../models/Team.js";
 
-import { DetailedError } from "@ukdanceblue/common";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
