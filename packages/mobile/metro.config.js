@@ -23,6 +23,7 @@ async function config() {
       .filter((f) => f !== currentWorkspace)
       .map((f) => path.join(projectRoot, "../", f)),
     resolver: {
+      ...expoMetroConfig.resolver,
       extraNodeModules: new Proxy(
         {},
         {
