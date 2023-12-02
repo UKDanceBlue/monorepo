@@ -1,4 +1,4 @@
-import { RoleResource } from "@ukdanceblue/common";
+import { AuthSource, RoleResource } from "@ukdanceblue/common";
 import { Ctx, Field, ObjectType, Query, Resolver } from "type-graphql";
 
 import * as Context from "./context.js";
@@ -10,6 +10,9 @@ export class LoginState {
 
   @Field(() => RoleResource)
   role!: RoleResource;
+
+  @Field(() => AuthSource)
+  authSource!: AuthSource;
 }
 
 @Resolver(() => LoginState)
@@ -19,6 +22,7 @@ export class LoginStateResolver {
     return {
       loggedIn: ctx.authenticatedUser != null,
       role: RoleResource.fromAuthorization(ctx.authorization),
+      authSource: ctx.authSource,
     };
   }
 }

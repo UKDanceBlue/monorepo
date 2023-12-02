@@ -56,6 +56,7 @@ type AuthIdList {
 """The source of authentication"""
 enum AuthSource {
   Anonymous
+  None
   UkyLinkblue
 }
 
@@ -613,6 +614,7 @@ type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraph
 }
 
 type LoginState {
+  authSource: AuthSource!
   loggedIn: Boolean!
   role: RoleResource!
 }
