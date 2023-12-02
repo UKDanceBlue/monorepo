@@ -352,6 +352,7 @@ const eslintConfig = [
       "react-native/no-inline-styles": "off", // TODO: tighten this up
       "react-native/no-color-literals": "off", // TODO: tighten this up
       "react-native/no-raw-text": "off",
+      "unicorn/prefer-top-level-await": "off",
     },
     settings: {
       react: {
