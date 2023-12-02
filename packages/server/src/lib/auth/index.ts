@@ -89,7 +89,7 @@ export function isValidJwtPayload(payload: unknown): payload is JwtPayload {
     team_ids,
     captain_of_team_ids,
   } = payload as Record<keyof JwtPayload, unknown>;
-  if (typeof sub !== "string") {
+  if (sub !== undefined && typeof sub !== "string") {
     return false;
   }
   if (!Object.values(AuthSource).includes(auth_source as AuthSource)) {
@@ -136,18 +136,16 @@ export function isValidJwtPayload(payload: unknown): payload is JwtPayload {
  * @param source The source of the user's authorization
  * @return The JWT, containing the user's authorization data
  */
-export function makeUserJwt(user: UserData, source: AuthSource): string {
-  if (!user.userId) {
-    throw new Error("Cannot make a JWT for a user with no ID");
-  }
-
+export function makeUserJwt(user: UserData): string {
   const payload: JwtPayload = {
-    sub: user.userId,
-    auth_source: source,
+    auth_source: user.authSource,
     dbRole: user.auth.dbRole,
     access_level: user.auth.accessLevel,
   };
 
+  if (user.userId) {
+    payload.sub = user.userId;
+  }
   if (user.auth.committeeRole) {
     payload.committee_role = user.auth.committeeRole;
   }
@@ -200,9 +198,12 @@ export function parseUserJwt(token: string): UserData {
       accessLevel: payload.access_level,
       dbRole: payload.dbRole,
     },
-    userId: payload.sub,
+    authSource: payload.auth_source,
   };
 
+  if (payload.sub) {
+    userData.userId = payload.sub;
+  }
   if (payload.committee_role) {
     userData.auth.committeeRole = payload.committee_role;
   }

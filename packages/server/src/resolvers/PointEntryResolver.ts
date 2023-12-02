@@ -1,10 +1,10 @@
 import {
+  DetailedError,
   ErrorCode,
   PersonResource,
   PointEntryResource,
   PointOpportunityResource,
-  TeamResource,
-} from "@ukdanceblue/common";
+ TeamResource } from "@ukdanceblue/common";
 import {
   Arg,
   Args,
@@ -28,7 +28,6 @@ import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-  DetailedError,
 } from "./ApiResponse.js";
 import type {
   ResolverInterface,

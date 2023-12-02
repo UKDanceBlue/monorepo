@@ -9,10 +9,11 @@
       "@context/*": ["./src/context/*"],
       "@navigation/*": ["./src/navigation/*"],
       "@theme/*": ["./src/theme/*"],
-      "@types/*": ["./src/types/*"]
+      "@common-types/*": ["./src/types/*"]
     },
     "noUncheckedIndexedAccess": false,
-    "exactOptionalPropertyTypes": false
+    "exactOptionalPropertyTypes": false,
+    "resolvePackageJsonExports": false
   },
   "extends": ["../../tsconfig.json", "expo/tsconfig.base"],
   "include": [
@@ -21,8 +22,6 @@
     "src",
     "assets",
     "config-plugins",
-    "test-helpers",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "test-helpers"
   ]
 }

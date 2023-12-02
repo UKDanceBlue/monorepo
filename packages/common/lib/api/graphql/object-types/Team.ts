@@ -1,10 +1,9 @@
 import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
 
-import { AccessLevel } from "../../../index.js";
+import { AccessControl, AccessLevel } from "../../../index.js";
 import * as SimpleTypes from "../../SimpleTypes.js";
 
 import { Resource } from "./Resource.js";
-import { AccessLevelAuthorized } from "./authorization.js";
 
 export const TeamType = {
   Spirit: "Spirit",
@@ -22,6 +21,7 @@ registerEnumType(TeamType, {
 export const TeamLegacyStatus = {
   NewTeam: "NewTeam",
   ReturningTeam: "ReturningTeam",
+  DemoTeam: "DemoTeam",
 } as const;
 export type TeamLegacyStatus =
   (typeof TeamLegacyStatus)[keyof typeof TeamLegacyStatus];
@@ -45,7 +45,7 @@ export class TeamResource extends Resource {
   @Field(() => String)
   marathonYear!: SimpleTypes.MarathonYearString;
 
-  @AccessLevelAuthorized(AccessLevel.Committee)
+  @AccessControl({ accessLevel: AccessLevel.Committee })
   @Field(() => String, { nullable: true })
   persistentIdentifier!: string | null;
 

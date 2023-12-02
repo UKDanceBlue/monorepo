@@ -105,6 +105,12 @@
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**"],
       "type": "node"
+    },
+    {
+      "name": "Debug Expo",
+      "request": "attach",
+      "type": "expo",
+      "projectRoot": "${workspaceFolder}/packages/mobile"
     }
   ],
   "compounds": [

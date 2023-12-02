@@ -1,4 +1,3 @@
-import { log } from "@common/logging";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import type { RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -50,7 +49,7 @@ const TabBar = () => {
 
   useEffect(() => {
     if (isConfigLoaded) {
-      let tempCurrentTabs = [];
+      let tempCurrentTabs = [possibleTabs["Teams"]];
 
       const enabledScreens = allEnabledScreens.filter(
         (screen) => screen !== fancyTab
@@ -75,11 +74,11 @@ const TabBar = () => {
       }
 
       setCurrentTabs(tempCurrentTabs);
-      log(
-        `Config loaded, setting current tabs to ${JSON.stringify({
-          currentTabs: tempCurrentTabs,
-        })}`
-      );
+      // log(
+      //   `Config loaded, setting current tabs to ${JSON.stringify({
+      //     currentTabs: tempCurrentTabs,
+      //   })}`
+      // );
     }
   }, [allEnabledScreens, fancyTab, isConfigLoaded]);
 

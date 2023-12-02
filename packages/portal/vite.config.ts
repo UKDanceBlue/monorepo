@@ -13,10 +13,8 @@ function resolveRelative(...relativePath: string[]) {
 // https://vitejs.dev/config/
 export default defineConfig({
   resolve: {
-    // alias: {
-    //   "type-graphql": "type-graphql/dist/browser-shim.js",
-    // },
     alias: {
+      "type-graphql": "type-graphql/browser-shim.js",
       "@config": resolveRelative("src", "config"),
       "@elements": resolveRelative("src", "elements"),
       "@hooks": resolveRelative("src", "hooks"),

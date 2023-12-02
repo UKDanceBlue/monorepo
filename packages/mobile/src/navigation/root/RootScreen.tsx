@@ -1,11 +1,18 @@
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useTheme } from "native-base";
+import { DbRole } from "@ukdanceblue/common/dist/auth";
+import {
+  getFragmentData,
+  graphql,
+} from "@ukdanceblue/common/dist/graphql-client-public";
+import { Center, Text, useTheme } from "native-base";
+import { useEffect, useMemo } from "react";
 import { useWindowDimensions } from "react-native";
+import { useQuery } from "urql";
 
 import { useColorModeValue } from "../../common/customHooks";
 import { log } from "../../common/logging";
-import { useAuthData } from "../../context";
+import { useLoading } from "../../context";
 import type { RootStackParamList } from "../../types/navigationTypes";
 import HeaderIcons from "../HeaderIcons";
 
@@ -13,14 +20,59 @@ import EventScreen from "./EventScreen";
 import SplashLogin from "./Modals/SplashLogin";
 import NotificationScreen from "./NotificationScreen";
 import ProfileScreen from "./ProfileScreen";
-// import HourScreen from "./tab/HoursScreen/HourScreen";
 import TabBar from "./tab/TabBar";
+
+// import HourScreen from "./tab/HoursScreen/HourScreen";
+
+const rootScreenDocument = graphql(/* GraphQL */ `
+  query RootScreenDocument {
+    loginState {
+      ...ProfileScreenAuthFragment
+      ...RootScreenAuthFragment
+    }
+    me {
+      data {
+        ...ProfileScreenUserFragment
+      }
+    }
+  }
+`);
+
+const RootScreenAuthFragment = graphql(/* GraphQL */ `
+  fragment RootScreenAuthFragment on LoginState {
+    role {
+      dbRole
+    }
+  }
+`);
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 const RootScreen = () => {
   const { fontScale } = useWindowDimensions();
-  const { isAuthLoaded, isLoggedIn } = useAuthData();
+
+  const [{ data: rootScreenData, fetching, error }] = useQuery({
+    query: rootScreenDocument,
+  });
+
+  const [rootScreenLoading, setRootScreenLoading] = useLoading(
+    "rootScreen-rootScreenDocument"
+  );
+  useEffect(() => {
+    if (fetching) {
+      setRootScreenLoading(true);
+    } else {
+      setRootScreenLoading(false);
+    }
+  }, [fetching, setRootScreenLoading]);
+
+  const authData = getFragmentData(
+    RootScreenAuthFragment,
+    rootScreenData?.loginState ?? null
+  );
+  const isLoggedIn = useMemo(() => {
+    return authData?.role.dbRole !== DbRole.None;
+  }, [authData]);
 
   const { colors } = useTheme();
   const headerBgColor = useColorModeValue(colors.white, colors.gray[800]);
@@ -28,7 +80,13 @@ const RootScreen = () => {
 
   return (
     <>
-      {isAuthLoaded && (
+      {error != null && (
+        <Center>
+          {console.error(error)}
+          <Text>Error: {error.message}</Text>
+        </Center>
+      )}
+      {!rootScreenLoading && (
         <RootStack.Navigator
           screenOptions={({
             navigation,
@@ -57,9 +115,17 @@ const RootScreen = () => {
               />
               <RootStack.Screen
                 name="Profile"
-                component={ProfileScreen}
                 options={{ headerRight: () => undefined }}
-              />
+              >
+                {() => (
+                  <ProfileScreen
+                    profileScreenAuthFragment={
+                      rootScreenData?.loginState ?? null
+                    }
+                    profileScreenUserFragment={rootScreenData?.me.data ?? null}
+                  />
+                )}
+              </RootStack.Screen>
               <RootStack.Screen
                 name="Event"
                 component={EventScreen}

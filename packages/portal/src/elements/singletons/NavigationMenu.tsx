@@ -103,7 +103,7 @@ export const NavigationMenu = () => {
             </a>
           ) : (
             <a
-              href={`${API_BASE_URL}/api/auth/login?redirectTo=${encodeURI(
+              href={`${API_BASE_URL}/api/auth/login?returning=cookie&redirectTo=${encodeURI(
                 window.location.href
               )}`}
             >

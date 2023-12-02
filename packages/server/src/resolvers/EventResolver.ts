@@ -1,7 +1,8 @@
 import {
+  AccessControl,
   AccessLevel,
-  AccessLevelAuthorized,
   DateRangeScalar,
+  DetailedError,
   ErrorCode,
   EventResource,
   ImageResource,
@@ -31,7 +32,6 @@ import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-  DetailedError,
 } from "./ApiResponse.js";
 import type {
   ResolverInterface,
@@ -229,7 +229,7 @@ export class EventResolver
     });
   }
 
-  @AccessLevelAuthorized(AccessLevel.CommitteeChairOrCoordinator)
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => CreateEventResponse, { name: "createEvent" })
   async create(
     @Arg("input") input: CreateEventInput
@@ -263,7 +263,7 @@ export class EventResolver
     return CreateEventResponse.newCreated(await row.toResource(), row.uuid);
   }
 
-  @AccessLevelAuthorized(AccessLevel.CommitteeChairOrCoordinator)
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => DeleteEventResponse, { name: "deleteEvent" })
   async delete(@Arg("uuid") id: string): Promise<DeleteEventResponse> {
     const row = await EventModel.findOne({
@@ -280,7 +280,7 @@ export class EventResolver
     return DeleteEventResponse.newOk(true);
   }
 
-  @AccessLevelAuthorized(AccessLevel.CommitteeChairOrCoordinator)
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => SetEventResponse, { name: "setEvent" })
   async set(
     @Arg("uuid") uuid: string,
@@ -395,7 +395,7 @@ export class EventResolver
     return SetEventResponse.newOk(await result.toResource());
   }
 
-  @AccessLevelAuthorized(AccessLevel.CommitteeChairOrCoordinator)
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => RemoveEventImageResponse, { name: "removeImageFromEvent" })
   async removeImage(
     @Arg("eventId") eventId: string,
@@ -422,7 +422,7 @@ export class EventResolver
     });
   }
 
-  @AccessLevelAuthorized(AccessLevel.CommitteeChairOrCoordinator)
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => AddEventImageResponse, { name: "addImageToEvent" })
   async addImage(
     @Arg("eventId") eventId: string,
@@ -451,7 +451,7 @@ export class EventResolver
     });
   }
 
-  @AccessLevelAuthorized(AccessLevel.CommitteeChairOrCoordinator)
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => AddEventImageResponse, { name: "addExistingImageToEvent" })
   async addExistingImage(
     @Arg("eventId") eventId: string,

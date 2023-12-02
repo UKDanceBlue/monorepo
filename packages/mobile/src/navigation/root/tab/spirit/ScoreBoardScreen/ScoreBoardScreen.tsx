@@ -1,15 +1,15 @@
 import Jumbotron from "@common/components/Jumbotron";
-import { universalCatch } from "@common/logging";
 import { FontAwesome5 } from "@expo/vector-icons";
-import firebaseFirestore from "@react-native-firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
-import { SpiritTeamsRootDoc } from "@ukdanceblue/db-app-common";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import {
+  getFragmentData,
+  graphql,
+} from "@ukdanceblue/common/dist/graphql-client-public";
 import { View } from "native-base";
 import { Pressable } from "native-base/src/components/primitives";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-
-import { useAuthData, useUserData } from "../../../../../context";
 import type { StandingType } from "../../../../../types/StandingType";
 import type { SpiritStackScreenProps } from "../../../../../types/navigationTypes";
 
@@ -30,96 +30,70 @@ function addOrdinal(num: number) {
   return `${num}th`;
 }
 
+const ScoreBoardFragment = graphql(/* GraphQL */ `
+  fragment ScoreBoardFragment on TeamResource {
+    uuid
+    name
+    totalPoints
+  }
+`);
+
+const HighlightedTeamFragment = graphql(/* GraphQL */ `
+  fragment HighlightedTeamFragment on TeamResource {
+    uuid
+    name
+  }
+`);
+
 /**
  * Wrapper for a Standings component
  */
-const ScoreBoardScreen = () => {
-  const { teamId: userTeamId, team } = useUserData();
+const ScoreBoardScreen = ({
+  highlightedTeamFragment,
+  scoreBoardFragment,
+  loading,
+  refresh,
+}: {
+  highlightedTeamFragment: FragmentType<typeof HighlightedTeamFragment> | null;
+  scoreBoardFragment: readonly FragmentType<typeof ScoreBoardFragment>[] | null;
+  loading: boolean;
+  refresh: () => void;
+}) => {
   const [userTeamRank, setUserTeamRank] = useState<number | undefined>(
     undefined
   );
-  const dbRole = useAuthData().authClaims?.dbRole ?? "public";
   // const moraleTeamName = useAppSelector((state) => state);
   const [standingData, setStandingData] = useState<StandingType[]>([]);
-  const [loading, setLoading] = useState(true);
   const { navigate } =
     useNavigation<SpiritStackScreenProps<"Scoreboard">["navigation"]>();
 
-  const refresh = useCallback(() => {
-    setLoading(true);
-    // switch (pointType) {
-    // case "spirit":
-    firebaseFirestore()
-      .doc("spirit/teams")
-      .get()
-      .then((querySnapshot) => {
-        const rootTeamDataJson = querySnapshot.data() as unknown;
-        if (!SpiritTeamsRootDoc.isSpiritTeamsRootDocJson(rootTeamDataJson)) {
-          throw new Error("Invalid data type");
-        } else {
-          const rootTeamData = SpiritTeamsRootDoc.fromJson(rootTeamDataJson);
-          const tmpStandingData: StandingType[] = Object.entries(
-            rootTeamData.basicInfo
-          )
-            .filter(([, { teamClass }]) =>
-              teamClass === "committee" ? dbRole === "committee" : true
-            )
-            .map(([teamId, teamData]) => {
-              return {
-                id: teamId,
-                highlighted: teamId === userTeamId,
-                name: teamData.name,
-                points: teamData.totalPoints ?? 0,
-              };
-            })
-            .sort((a, b) => b.points - a.points);
-          setUserTeamRank(
-            tmpStandingData.findIndex((team) => team.id === userTeamId) + 1
-          );
-          setStandingData(tmpStandingData);
-        }
-      })
-      .catch(universalCatch)
-      .finally(() => setLoading(false));
-    // break;
-
-    // case "morale":
-    //   firebaseFirestore().collection("marathon/2022/morale-teams").get()
-    //     .then(
-    //       (querySnapshot) => {
-    //         const tempStandingData: StandingType[] = [];
-    //         querySnapshot.forEach((document) => {
-    //           const teamData = document.data() as FirestoreMoraleTeam;
-    //           tempStandingData.push({
-    //             id: document.id,
-    //             name: `Team #${teamData.teamNumber}:\n${teamData.leaders}`,
-    //             points: teamData.points,
-    //             highlighted: false // moraleTeamId === teamData.teamNumber,
-    //           });
-    //         });
-    //         setStandingData(tempStandingData);
-    //       }
-    //     )
-    //     .catch(universalCatch);
-    //   break;
-
-    // case undefined:
-    //   setStandingData([]);
-    //   break;
-
-    // default:
-    //   showMessage("Failed to load valid point type configuration");
-    //   break;
-    // }
-  }, [dbRole, userTeamId]);
+  const teamsData = getFragmentData(ScoreBoardFragment, scoreBoardFragment);
+  const userTeamData = getFragmentData(
+    HighlightedTeamFragment,
+    highlightedTeamFragment
+  );
 
   useEffect(() => {
-    refresh();
-  }, [refresh]);
+    const newStandingData: StandingType[] = [];
+    if (teamsData) {
+      for (const team of teamsData) {
+        newStandingData.push({
+          name: team.name,
+          id: team.uuid,
+          points: team.totalPoints,
+          highlighted: team.uuid === userTeamData?.uuid,
+        });
+        if (team.uuid === userTeamData?.uuid) {
+          setUserTeamRank(newStandingData.length);
+        }
+      }
+    }
+    setStandingData(newStandingData);
+  }, [teamsData, userTeamData]);
 
   return (
     <View flex={1}>
-      {team == null ? (
+      {userTeamData?.uuid == null ? (
         <Jumbotron
           title="You are not part of a team"
           subTitle=""
@@ -137,7 +111,7 @@ const ScoreBoardScreen = () => {
           _pressed={{ opacity: 0.5 }}
         >
           <Jumbotron
-            title={team.name}
+            title={userTeamData.name}
             subTitle={
               userTeamRank == null
                 ? undefined

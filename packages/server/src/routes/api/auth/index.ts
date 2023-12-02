@@ -1,6 +1,8 @@
 import Router from "@koa/router";
 import { koaBody } from "koa-body";
 
+import { anonymousLogin } from "./anonymous.js";
+import { demoLogin } from "./demo.js";
 import { login } from "./login.js";
 import { oidcCallback } from "./oidcCallback.js";
 
@@ -32,5 +34,9 @@ authApiRouter.post(
 );
 
 authApiRouter.get("/login", login);
+
+authApiRouter.get("/anonymous", anonymousLogin);
+
+authApiRouter.get("/demo", demoLogin);
 
 export default authApiRouter;

@@ -3,6 +3,22 @@ import { registerEnumType } from "type-graphql";
 export const AuthSource = {
   UkyLinkblue: "UkyLinkblue",
   Anonymous: "Anonymous",
+  /**
+   * This is a special auth source that is used to indicate that the user
+   * is a demo user (i.e. Apple app review team)
+   *
+   * This is used to allow the app to be reviewed without having to
+   * create a special account for the review team
+   */
+  Demo: "Demo",
+  /**
+   * This is a special auth source that is used to indicate that the user
+   * does not have any login credentials or that there is no user associated
+   * with the authorization state
+   * Generally this should never actually be on a user's JWT or in the database
+   * and is instead used as a default value in the application
+   */
+  None: "None",
 } as const;
 export type AuthSource = (typeof AuthSource)[keyof typeof AuthSource];
 
@@ -87,6 +103,13 @@ export const DbRole = {
 } as const;
 export type DbRole = (typeof DbRole)[keyof typeof DbRole];
 
+export function isDbRole(val: unknown): val is DbRole {
+  if (typeof val !== "string") {
+    return false;
+  }
+  return Object.values(DbRole).includes(val as DbRole);
+}
+
 export function stringifyDbRole(val: unknown): string {
   let dbRole: DbRole | undefined = undefined;
   if (typeof val === "string") {
@@ -131,6 +154,13 @@ export const CommitteeRole = {
 } as const;
 export type CommitteeRole = (typeof CommitteeRole)[keyof typeof CommitteeRole];
 
+export function isCommitteeRole(val: unknown): val is CommitteeRole {
+  if (typeof val !== "string") {
+    return false;
+  }
+  return Object.values(CommitteeRole).includes(val as CommitteeRole);
+}
+
 export const CommitteeIdentifier = {
   programmingCommittee: "programmingCommittee",
   fundraisingCommittee: "fundraisingCommittee",
@@ -145,6 +175,17 @@ export const CommitteeIdentifier = {
 } as const;
 export type CommitteeIdentifier =
   (typeof CommitteeIdentifier)[keyof typeof CommitteeIdentifier];
+
+export function isCommitteeIdentifier(
+  val: unknown
+): val is CommitteeIdentifier {
+  if (typeof val !== "string") {
+    return false;
+  }
+  return Object.values(CommitteeIdentifier).includes(
+    val as CommitteeIdentifier
+  );
+}
 
 export const committeeNames: Record<CommitteeIdentifier, string> = {
   programmingCommittee: "Programming Committee",
@@ -181,10 +222,11 @@ export interface UserData {
   userId?: string;
   teamIds?: string[];
   captainOfTeamIds?: string[];
+  authSource: AuthSource;
 }
 
 export interface JwtPayload {
-  sub: string;
+  sub?: string;
   // The type of authentication used to log in (e.g. "uky-linkblue" or "anonymous")
   auth_source: AuthSource;
   // TODO: Replace these fields with either "roles" or "groups" (these are specified in the RFC 7643 Section 4.1.2)

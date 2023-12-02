@@ -15,11 +15,13 @@ import type {
   NonAttribute,
 } from "@sequelize/core";
 import { DataTypes } from "@sequelize/core";
-import type { AuthSource, UserData } from "@ukdanceblue/common";
+import type { UserData } from "@ukdanceblue/common";
 import {
+  AuthSource,
   CommitteeIdentifier,
   CommitteeRole,
   DbRole,
+  MembershipPositionType,
   PersonResource,
   RoleResource,
 } from "@ukdanceblue/common";
@@ -128,12 +130,41 @@ export class PersonModel extends BaseModel<
     });
   }
 
-  toUserData(): UserData {
+  async toUserData(authSourceOverride?: AuthSource): Promise<UserData> {
+    let authSource: AuthSource = AuthSource.None;
+    if (authSourceOverride) {
+      authSource = authSourceOverride;
+    } else {
+      const authSources = Object.keys(this.authIds ?? {}) as AuthSource[];
+      if (authSources[0]) {
+        authSource = authSources[0];
+      } else if (authSources.length > 1) {
+        for (const source of authSources) {
+          if (source === AuthSource.UkyLinkblue) {
+            authSource = source;
+            break;
+          } else if (
+            source === AuthSource.Anonymous &&
+            (authSource as AuthSource | undefined) !== AuthSource.UkyLinkblue
+          ) {
+            authSource = source;
+          }
+        }
+      }
+    }
+
+    const memberships = await this.getMemberships({ scope: "withTeam" });
+
     const userData: UserData = {
       userId: this.uuid,
       auth: roleToAuthorization(this.role),
-      // captainOfTeamIds: this.getCaptainOf().map((team) => team.uuid), TODO: reimplement
-      // teamIds: this.getMemberOf().map((team) => team.uuid),
+      captainOfTeamIds: memberships
+        .filter(
+          (membership) => membership.position === MembershipPositionType.Captain
+        )
+        .map((membership) => membership.team!.uuid),
+      teamIds: memberships.map((membership) => membership.team!.uuid),
+      authSource,
     };
     return userData;
   }

@@ -6,7 +6,9 @@ import {
   CommitteeIdentifier,
   CommitteeRole,
   DbRole,
+  isCommitteeIdentifier,
 } from "../../../auth/index.js";
+import { roleToAccessLevel } from "../../../index.js";
 
 import { Resource } from "./Resource.js";
 
@@ -22,6 +24,19 @@ export class RoleResource extends Resource {
 
   public static init(init: Partial<RoleResource>) {
     return RoleResource.doInit(init);
+  }
+
+  static fromAuthorization(
+    authorization: Readonly<Authorization>
+  ): RoleResource {
+    const partial: Partial<RoleResource> = {};
+    partial.dbRole = authorization.dbRole;
+    partial.committeeRole = authorization.committeeRole ?? null;
+    if (isCommitteeIdentifier(authorization.committeeIdentifier)) {
+      partial.committeeIdentifier = authorization.committeeIdentifier;
+    }
+
+    return this.init(partial);
   }
 
   toAuthorization(): Authorization {
@@ -79,5 +94,9 @@ export class RoleResource extends Resource {
       }
     }
     return authorization;
+  }
+
+  toAccessLevel(): AccessLevel {
+    return roleToAccessLevel(this);
   }
 }
