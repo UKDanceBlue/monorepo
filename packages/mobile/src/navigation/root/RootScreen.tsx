@@ -5,7 +5,7 @@ import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
-import { useTheme } from "native-base";
+import { Center, Text, useTheme } from "native-base";
 import { useEffect, useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 import { useQuery } from "urql";
@@ -73,14 +73,6 @@ const RootScreen = () => {
   const isLoggedIn = useMemo(() => {
     return authData?.role.dbRole !== DbRole.None;
   }, [authData]);
-  const isAuthLoaded = !rootScreenLoading && error == null;
-
-  useEffect(() => {
-    if (error != null) {
-      // TODO: Handle better
-      throw error;
-    }
-  }, [error]);
 
   const { colors } = useTheme();
   const headerBgColor = useColorModeValue(colors.white, colors.gray[800]);
@@ -88,7 +80,13 @@ const RootScreen = () => {
 
   return (
     <>
-      {isAuthLoaded && (
+      {error != null && (
+        <Center>
+          {console.error(error)}
+          <Text>Error: {error.message}</Text>
+        </Center>
+      )}
+      {!rootScreenLoading && (
         <RootStack.Navigator
           screenOptions={({
             navigation,
