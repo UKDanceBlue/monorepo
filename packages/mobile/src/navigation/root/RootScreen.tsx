@@ -1,14 +1,18 @@
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
+import { DbRole } from "@ukdanceblue/common/dist/auth";
+import {
+  getFragmentData,
+  graphql,
+} from "@ukdanceblue/common/dist/graphql-client-public";
 import { useTheme } from "native-base";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 import { useQuery } from "urql";
 
 import { useColorModeValue } from "../../common/customHooks";
 import { log } from "../../common/logging";
-import { useAuthData, useLoading } from "../../context";
+import { useLoading } from "../../context";
 import type { RootStackParamList } from "../../types/navigationTypes";
 import HeaderIcons from "../HeaderIcons";
 
@@ -24,11 +28,20 @@ const rootScreenDocument = graphql(/* GraphQL */ `
   query RootScreenDocument {
     loginState {
       ...ProfileScreenAuthFragment
+      ...RootScreenAuthFragment
     }
     me {
       data {
         ...ProfileScreenUserFragment
       }
+    }
+  }
+`);
+
+const RootScreenAuthFragment = graphql(/* GraphQL */ `
+  fragment RootScreenAuthFragment on LoginState {
+    role {
+      dbRole
     }
   }
 `);
@@ -52,7 +65,14 @@ const RootScreen = () => {
       setRootScreenLoading(false);
     }
   }, [fetching, setRootScreenLoading]);
-  const { isLoggedIn } = useAuthData();
+
+  const authData = getFragmentData(
+    RootScreenAuthFragment,
+    rootScreenData?.loginState ?? null
+  );
+  const isLoggedIn = useMemo(() => {
+    return authData?.role.dbRole !== DbRole.None;
+  }, [authData]);
   const isAuthLoaded = !rootScreenLoading && error == null;
 
   useEffect(() => {
