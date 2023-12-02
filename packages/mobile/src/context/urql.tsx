@@ -26,10 +26,6 @@ export function UrqlContext({
     () =>
       new Client({
         url,
-        fetch: (...params) => {
-          console.log("Fetching", params);
-          return fetch(...params);
-        },
         exchanges: [
           cacheExchange,
           authExchange(async ({ appendHeaders }) => {
