@@ -55,5 +55,4 @@ async function config() {
   return config;
 }
 
-// eslint-disable-next-line unicorn/prefer-top-level-await
 module.exports = config();

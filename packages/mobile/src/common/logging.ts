@@ -23,7 +23,7 @@ export function log(
           console.error(error);
         }
       }
-      crashlytics().log(message.toString());
+      crashlytics().log(String(message));
     }
   } catch (error) {
     console.error(error);
