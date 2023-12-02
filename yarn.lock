@@ -23933,7 +23933,7 @@ __metadata:
 
 "type-graphql@patch:type-graphql@npm%3A2.0.0-beta.3#./.yarn/patches/type-graphql-npm-2.0.0-beta.3-3be2585c9a.patch::locator=%40ukdanceblue%2Fmonorepo%40workspace%3A.":
   version: 2.0.0-beta.3
-  resolution: "type-graphql@patch:type-graphql@npm%3A2.0.0-beta.3#./.yarn/patches/type-graphql-npm-2.0.0-beta.3-3be2585c9a.patch::version=2.0.0-beta.3&hash=0465d9&locator=%40ukdanceblue%2Fmonorepo%40workspace%3A."
+  resolution: "type-graphql@patch:type-graphql@npm%3A2.0.0-beta.3#./.yarn/patches/type-graphql-npm-2.0.0-beta.3-3be2585c9a.patch::version=2.0.0-beta.3&hash=fab9b2&locator=%40ukdanceblue%2Fmonorepo%40workspace%3A."
   dependencies:
     "@types/node": "*"
     "@types/semver": ^7.5.0
@@ -23948,7 +23948,7 @@ __metadata:
   peerDependenciesMeta:
     class-validator:
       optional: true
-  checksum: ae592359e60ea24d822a2ef3c5116d5c46cef8f463d4c2f63ec2a18848dd60c6be8e8c0fca287097e840f0ef8ee9f47cbb6144e162f5e3e24710ab2cce39fb61
+  checksum: fc6957e8dd4f1a00b93778fa6b9060fe2cdb39289b77e15d0e144377a37f5fe5cd37fad31a0d6602e8b50b1ed58d5586a2677797b61254bccf251465e46d72d5
   languageName: node
   linkType: hard
 
