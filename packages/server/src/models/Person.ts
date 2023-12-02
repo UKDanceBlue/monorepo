@@ -21,6 +21,7 @@ import {
   CommitteeIdentifier,
   CommitteeRole,
   DbRole,
+  MembershipPositionType,
   PersonResource,
   RoleResource,
 } from "@ukdanceblue/common";
@@ -129,7 +130,7 @@ export class PersonModel extends BaseModel<
     });
   }
 
-  toUserData(authSourceOverride?: AuthSource): UserData {
+  async toUserData(authSourceOverride?: AuthSource): Promise<UserData> {
     let authSource: AuthSource = AuthSource.None;
     if (authSourceOverride) {
       authSource = authSourceOverride;
@@ -152,11 +153,17 @@ export class PersonModel extends BaseModel<
       }
     }
 
+    const memberships = await this.getMemberships({ scope: "withTeam" });
+
     const userData: UserData = {
       userId: this.uuid,
       auth: roleToAuthorization(this.role),
-      // captainOfTeamIds: this.getCaptainOf().map((team) => team.uuid), TODO: reimplement
-      // teamIds: this.getMemberOf().map((team) => team.uuid),
+      captainOfTeamIds: memberships
+        .filter(
+          (membership) => membership.position === MembershipPositionType.Captain
+        )
+        .map((membership) => membership.team!.uuid),
+      teamIds: memberships.map((membership) => membership.team!.uuid),
       authSource,
     };
     return userData;

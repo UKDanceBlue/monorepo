@@ -100,7 +100,7 @@ export const oidcCallback = async (ctx: Context) => {
       if (isPersonChanged) {
         await currentPerson.save();
       }
-      const userData = currentPerson.toUserData(AuthSource.UkyLinkblue);
+      const userData = await currentPerson.toUserData(AuthSource.UkyLinkblue);
       const jwt = makeUserJwt(userData);
       if (session.setCookie) {
         ctx.cookies.set("token", jwt, {
