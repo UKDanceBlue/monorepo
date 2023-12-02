@@ -12,22 +12,22 @@ import type { UnfilteredListQueryArgs } from "./list-query-args/UnfilteredListQu
 export interface ResolverInterface<R extends Resource> {
   getByUuid?: (
     uuid: string,
-    ...params: unknown[]
+    ...params: never[]
   ) => Promise<AbstractGraphQLOkResponse<R | null>>;
   delete?: (
     uuid: string,
-    ...params: unknown[]
+    ...params: never[]
   ) => Promise<AbstractGraphQLOkResponse<boolean>>;
 
-  getAll?: (...params: unknown[]) => Promise<AbstractGraphQLArrayOkResponse<R>>;
+  getAll?: (...params: never[]) => Promise<AbstractGraphQLArrayOkResponse<R>>;
   create?: (
     input: never,
-    ...params: unknown[]
+    ...params: never[]
   ) => Promise<AbstractGraphQLCreatedResponse<R>>;
   replace?: (
     uuid: string,
     input: R,
-    ...params: unknown[]
+    ...params: never[]
   ) => Promise<AbstractGraphQLOkResponse<R>>;
 }
 
@@ -37,7 +37,7 @@ export interface ResolverInterfaceWithList<
 > {
   list?: (
     query: Q,
-    ...params: unknown[]
+    ...params: never[]
   ) => Promise<AbstractGraphQLPaginatedResponse<R>>;
 }
 
@@ -53,6 +53,6 @@ export interface ResolverInterfaceWithFilteredList<
 > extends ResolverInterfaceWithList<R, Q> {
   list?: (
     query: Q,
-    ...params: unknown[]
+    ...params: never[]
   ) => Promise<AbstractGraphQLPaginatedResponse<R>>;
 }
