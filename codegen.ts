@@ -59,12 +59,15 @@ const codegenConfig: CodegenConfig = {
   },
   emitLegacyCommonJSImports: false,
   generates: {
-    // "./packages/common/lib/graphql-client-public/": {
-    //   preset: "client",
-    //   presetConfig,
-    //   config,
-    //   documents: ["./packages/mobile/src/**/*.ts", "./packages/mobile/src/**/*.tsx"],
-    // },
+    "./packages/common/lib/graphql-client-public/": {
+      preset: "client",
+      presetConfig,
+      config,
+      documents: [
+        "./packages/mobile/src/**/*.ts",
+        "./packages/mobile/src/**/*.tsx",
+      ],
+    },
     "./packages/common/lib/graphql-client-admin/": {
       preset: "client",
       presetConfig,
