@@ -1,4 +1,4 @@
-import { useLogOut } from "@common/auth";
+import { useLogOut, useLogin } from "@common/auth";
 import { useColorModeValue } from "@common/customHooks";
 import { universalCatch } from "@common/logging";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,8 +19,6 @@ import {
 import { useState } from "react";
 import { TextInput } from "react-native";
 
-import { useTryToSetDemoMode } from "../../../context";
-
 import { ProfileScreenAuthFragment } from ".";
 
 export const ProfileFooter = ({
@@ -35,11 +33,12 @@ export const ProfileFooter = ({
     profileScreenAuthFragment
   );
 
-  const tryToEnterDemoMode = useTryToSetDemoMode();
   const [reportLongPressed, setReportLongPressed] = useState(false);
   const [suggestLongPressed, setSuggestLongPressed] = useState(false);
 
-  const [loading, logOut] = useLogOut();
+  const [loginLoading, logIn] = useLogin();
+  const [logOutLoading, logOut] = useLogOut();
+  const loading = loginLoading || logOutLoading;
 
   const { toggleColorMode } = useColorMode();
   const colorModeIcon = useColorModeValue("moon", "md-sunny");
@@ -54,9 +53,9 @@ export const ProfileFooter = ({
           returnKeyType="go"
           secureTextEntry
           onSubmitEditing={(event) => {
-            if (tryToEnterDemoMode(event.nativeEvent.text)) {
-              setReportLongPressed(false);
-              setSuggestLongPressed(false);
+            console.log(event.nativeEvent.text);
+            if (event.nativeEvent.text === "demo-password") {
+              logIn(AuthSource.Demo);
             }
           }}
         />

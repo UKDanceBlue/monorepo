@@ -56,6 +56,7 @@ type AuthIdList {
 """The source of authentication"""
 enum AuthSource {
   Anonymous
+  Demo
   None
   UkyLinkblue
 }
@@ -1363,6 +1364,7 @@ enum StringComparator {
 
 """New Team vs Returning Team"""
 enum TeamLegacyStatus {
+  DemoTeam
   NewTeam
   ReturningTeam
 }

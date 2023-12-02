@@ -20,6 +20,10 @@ function getLoginUrl(source: AuthSource): string {
       urlComponent = "anonymous";
       break;
     }
+    case AuthSource.Demo: {
+      urlComponent = "demo";
+      break;
+    }
     default: {
       throw new Error(`Unknown auth source: ${source}`);
     }

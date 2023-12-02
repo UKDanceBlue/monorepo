@@ -14,3 +14,10 @@ export async function up({
     defaultValue: false,
   });
 }
+
+export async function down({
+  context: { queryInterface },
+}: MigrationParams<MigrationContext>) {
+  await queryInterface.removeColumn("login_flow_sessions", "set_cookie");
+  await queryInterface.removeColumn("login_flow_sessions", "send_token");
+}

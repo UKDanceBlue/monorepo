@@ -1327,6 +1327,7 @@ export { StringComparator };
 
 /** New Team vs Returning Team */
 export const TeamLegacyStatus = {
+  DemoTeam: 'DemoTeam',
   NewTeam: 'NewTeam',
   ReturningTeam: 'ReturningTeam'
 } as const;
