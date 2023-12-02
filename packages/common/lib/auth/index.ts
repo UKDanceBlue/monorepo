@@ -87,6 +87,13 @@ export const DbRole = {
 } as const;
 export type DbRole = (typeof DbRole)[keyof typeof DbRole];
 
+export function isDbRole(val: unknown): val is DbRole {
+  if (typeof val !== "string") {
+    return false;
+  }
+  return Object.values(DbRole).includes(val as DbRole);
+}
+
 export function stringifyDbRole(val: unknown): string {
   let dbRole: DbRole | undefined = undefined;
   if (typeof val === "string") {
@@ -131,6 +138,13 @@ export const CommitteeRole = {
 } as const;
 export type CommitteeRole = (typeof CommitteeRole)[keyof typeof CommitteeRole];
 
+export function isCommitteeRole(val: unknown): val is CommitteeRole {
+  if (typeof val !== "string") {
+    return false;
+  }
+  return Object.values(CommitteeRole).includes(val as CommitteeRole);
+}
+
 export const CommitteeIdentifier = {
   programmingCommittee: "programmingCommittee",
   fundraisingCommittee: "fundraisingCommittee",
@@ -145,6 +159,17 @@ export const CommitteeIdentifier = {
 } as const;
 export type CommitteeIdentifier =
   (typeof CommitteeIdentifier)[keyof typeof CommitteeIdentifier];
+
+export function isCommitteeIdentifier(
+  val: unknown
+): val is CommitteeIdentifier {
+  if (typeof val !== "string") {
+    return false;
+  }
+  return Object.values(CommitteeIdentifier).includes(
+    val as CommitteeIdentifier
+  );
+}
 
 export const committeeNames: Record<CommitteeIdentifier, string> = {
   programmingCommittee: "Programming Committee",

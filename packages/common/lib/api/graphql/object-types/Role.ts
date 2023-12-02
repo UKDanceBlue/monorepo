@@ -24,6 +24,14 @@ export class RoleResource extends Resource {
     return RoleResource.doInit(init);
   }
 
+  fromAuthorization(authorization: Authorization): RoleResource {
+    this.dbRole = authorization.dbRole;
+    this.committeeRole = authorization.committeeRole ?? null;
+    if (Object.values(CommitteeIdentifier).includes(authorization.committeeIdentifier as CommitteeIdentifier)) {
+
+    return this;
+  }
+
   toAuthorization(): Authorization {
     const authorization: Authorization = {
       dbRole: this.dbRole,

@@ -150,5 +150,7 @@ export const UserDataProvider = ({
   );
 };
 
+/** @deprecated */
 export const useUserData = (): UserData => useContext(UserDataContext)[0];
+/** @deprecated */
 export const useRefreshUserData = () => useContext(UserDataContext)[1];

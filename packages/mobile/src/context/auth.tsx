@@ -127,10 +127,12 @@ export const AuthDataProvider = ({
   );
 };
 
+/** @deprecated */
 export const useAuthData = () => {
   return useContext(AuthDataContext)[0];
 };
 
+/** @deprecated */
 export const useEnterDemoMode = () => {
   return useContext(AuthDataContext)[1];
 };
