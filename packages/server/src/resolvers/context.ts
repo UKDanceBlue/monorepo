@@ -1,6 +1,6 @@
 import type { ContextFunction } from "@apollo/server";
 import type { KoaContextFunctionArgument } from "@as-integrations/koa";
-import type { AuthorizationContext } from "@ukdanceblue/common";
+import { AuthSource, type AuthorizationContext } from "@ukdanceblue/common";
 import type { DefaultContext, DefaultState } from "koa";
 
 import { defaultAuthorization, parseUserJwt } from "../lib/auth/index.js";
@@ -14,7 +14,7 @@ export interface GraphQLContext extends DefaultContext, AuthorizationContext {
 export const graphqlContextFunction: ContextFunction<
   [KoaContextFunctionArgument<DefaultState, GraphQLContext>],
   GraphQLContext
-> = async ({ ctx }) => {
+> = async ({ ctx }): Promise<GraphQLContext> => {
   let token = ctx.cookies.get("token");
   if (!token) {
     const authorizationHeader = ctx.get("Authorization");
@@ -27,12 +27,18 @@ export const graphqlContextFunction: ContextFunction<
       authenticatedUser: null,
       authorization: defaultAuthorization,
       contextErrors: [],
+      authSource: AuthSource.None,
     };
   }
-  const { userId, auth } = parseUserJwt(token);
+  const { userId, auth, authSource } = parseUserJwt(token);
   if (!userId) {
     logDebug("graphqlContextFunction No userId found");
-    return { authenticatedUser: null, authorization: auth, contextErrors: [] };
+    return {
+      authenticatedUser: null,
+      authorization: auth,
+      contextErrors: [],
+      authSource,
+    };
   }
 
   const person = await PersonModel.findByUuid(userId);
@@ -43,6 +49,7 @@ export const graphqlContextFunction: ContextFunction<
       authenticatedUser: personResource,
       authorization: personResource.role.toAuthorization(),
       contextErrors: [],
+      authSource,
     };
   } else {
     logDebug("graphqlContextFunction User not found");
@@ -50,6 +57,7 @@ export const graphqlContextFunction: ContextFunction<
       authenticatedUser: null,
       authorization: defaultAuthorization,
       contextErrors: ["User not found"],
+      authSource,
     };
   }
 };

@@ -3,6 +3,7 @@ import { UseMiddleware } from "type-graphql";
 
 import type {
   AccessLevel,
+  AuthSource,
   Authorization,
   DbRole,
   PersonResource,
@@ -138,6 +139,7 @@ export interface AccessControlParam {
 export interface AuthorizationContext {
   authenticatedUser: PersonResource | null;
   authorization: Authorization;
+  authSource: AuthSource;
 }
 
 // function throwAccessLevel() {

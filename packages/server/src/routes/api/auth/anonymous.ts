@@ -26,15 +26,13 @@ export const anonymousLogin = (ctx: Context) => {
     sendToken = true;
   }
 
-  const jwt = makeUserJwt(
-    {
-      auth: {
-        accessLevel: AccessLevel.Public,
-        dbRole: DbRole.Public,
-      },
+  const jwt = makeUserJwt({
+    auth: {
+      accessLevel: AccessLevel.Public,
+      dbRole: DbRole.Public,
     },
-    AuthSource.Anonymous
-  );
+    authSource: AuthSource.Anonymous,
+  });
   if (setCookie) {
     ctx.cookies.set("token", jwt, {
       httpOnly: true,

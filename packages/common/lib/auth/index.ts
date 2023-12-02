@@ -3,6 +3,14 @@ import { registerEnumType } from "type-graphql";
 export const AuthSource = {
   UkyLinkblue: "UkyLinkblue",
   Anonymous: "Anonymous",
+  /**
+   * This is a special auth source that is used to indicate that the user
+   * does not have any login credentials or that there is no user associated
+   * with the authorization state
+   * Generally this should never actually be on a user's JWT or in the database
+   * and is instead used as a default value in the application
+   */
+  None: "None",
 } as const;
 export type AuthSource = (typeof AuthSource)[keyof typeof AuthSource];
 
@@ -206,10 +214,11 @@ export interface UserData {
   userId?: string;
   teamIds?: string[];
   captainOfTeamIds?: string[];
+  authSource: AuthSource;
 }
 
 export interface JwtPayload {
-  sub: string;
+  sub?: string;
   // The type of authentication used to log in (e.g. "uky-linkblue" or "anonymous")
   auth_source: AuthSource;
   // TODO: Replace these fields with either "roles" or "groups" (these are specified in the RFC 7643 Section 4.1.2)

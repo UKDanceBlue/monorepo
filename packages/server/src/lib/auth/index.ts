@@ -136,9 +136,9 @@ export function isValidJwtPayload(payload: unknown): payload is JwtPayload {
  * @param source The source of the user's authorization
  * @return The JWT, containing the user's authorization data
  */
-export function makeUserJwt(user: UserData, source: AuthSource): string {
+export function makeUserJwt(user: UserData): string {
   const payload: JwtPayload = {
-    auth_source: source,
+    auth_source: user.authSource,
     dbRole: user.auth.dbRole,
     access_level: user.auth.accessLevel,
   };
@@ -198,6 +198,7 @@ export function parseUserJwt(token: string): UserData {
       accessLevel: payload.access_level,
       dbRole: payload.dbRole,
     },
+    authSource: payload.auth_source,
   };
 
   if (payload.sub) {

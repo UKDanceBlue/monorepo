@@ -15,8 +15,9 @@ import type {
   NonAttribute,
 } from "@sequelize/core";
 import { DataTypes } from "@sequelize/core";
-import type { AuthSource, UserData } from "@ukdanceblue/common";
+import type { UserData } from "@ukdanceblue/common";
 import {
+  AuthSource,
   CommitteeIdentifier,
   CommitteeRole,
   DbRole,
@@ -128,12 +129,35 @@ export class PersonModel extends BaseModel<
     });
   }
 
-  toUserData(): UserData {
+  toUserData(authSourceOverride?: AuthSource): UserData {
+    let authSource: AuthSource = AuthSource.None;
+    if (authSourceOverride) {
+      authSource = authSourceOverride;
+    } else {
+      const authSources = Object.keys(this.authIds ?? {}) as AuthSource[];
+      if (authSources[0]) {
+        authSource = authSources[0];
+      } else if (authSources.length > 1) {
+        for (const source of authSources) {
+          if (source === AuthSource.UkyLinkblue) {
+            authSource = source;
+            break;
+          } else if (
+            source === AuthSource.Anonymous &&
+            (authSource as AuthSource | undefined) !== AuthSource.UkyLinkblue
+          ) {
+            authSource = source;
+          }
+        }
+      }
+    }
+
     const userData: UserData = {
       userId: this.uuid,
       auth: roleToAuthorization(this.role),
       // captainOfTeamIds: this.getCaptainOf().map((team) => team.uuid), TODO: reimplement
       // teamIds: this.getMemberOf().map((team) => team.uuid),
+      authSource,
     };
     return userData;
   }
