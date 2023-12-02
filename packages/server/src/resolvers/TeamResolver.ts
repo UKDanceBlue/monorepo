@@ -146,7 +146,7 @@ export class TeamResolver
     return SingleTeamResponse.newOk(row.toResource());
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControl({ accessLevel: AccessLevel.Public })
   @Query(() => ListTeamsResponse, { name: "teams" })
   async list(
     @Args(() => ListTeamsArgs) query: ListTeamsArgs
@@ -356,7 +356,7 @@ export class TeamResolver
     return pointEntries.map((row) => row.toResource());
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControl({ accessLevel: AccessLevel.Public })
   @FieldResolver(() => Int)
   async totalPoints(@Root() team: TeamResource): Promise<number> {
     const teamModel = await TeamModel.findByUuid(team.uuid, {});
