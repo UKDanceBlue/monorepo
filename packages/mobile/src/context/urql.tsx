@@ -1,19 +1,9 @@
+import { API_BASE_URL } from "@common/apiUrl";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authExchange } from "@urql/exchange-auth";
-import Constants from "expo-constants";
 import type { ReactNode, RefObject } from "react";
 import { useMemo } from "react";
 import { Client, Provider, cacheExchange, fetchExchange } from "urql";
-
-let url = "https://app.danceblue.org/graphql";
-if (process.env.NODE_ENV === "development") {
-  const developmentUrl = Constants.expoGoConfig?.debuggerHost
-    ?.split(":")
-    .shift();
-  url = developmentUrl
-    ? `http://${developmentUrl}:8000/graphql`
-    : "http://localhost:8000/graphql";
-}
 
 export function UrqlContext({
   children,
@@ -25,7 +15,7 @@ export function UrqlContext({
   const client = useMemo(
     () =>
       new Client({
-        url,
+        url: `${API_BASE_URL}/graphql`,
         exchanges: [
           cacheExchange,
           authExchange(async ({ appendHeaders }) => {
