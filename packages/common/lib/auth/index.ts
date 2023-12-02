@@ -5,6 +5,14 @@ export const AuthSource = {
   Anonymous: "Anonymous",
   /**
    * This is a special auth source that is used to indicate that the user
+   * is a demo user (i.e. Apple app review team)
+   *
+   * This is used to allow the app to be reviewed without having to
+   * create a special account for the review team
+   */
+  Demo: "Demo",
+  /**
+   * This is a special auth source that is used to indicate that the user
    * does not have any login credentials or that there is no user associated
    * with the authorization state
    * Generally this should never actually be on a user's JWT or in the database
