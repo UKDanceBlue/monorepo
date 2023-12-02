@@ -89,7 +89,7 @@ export function isValidJwtPayload(payload: unknown): payload is JwtPayload {
     team_ids,
     captain_of_team_ids,
   } = payload as Record<keyof JwtPayload, unknown>;
-  if (typeof sub !== "string") {
+  if (sub !== undefined && typeof sub !== "string") {
     return false;
   }
   if (!Object.values(AuthSource).includes(auth_source as AuthSource)) {
