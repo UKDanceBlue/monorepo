@@ -788,7 +788,7 @@ enum PersonResolverStringFilterKeys {
 
 type PersonResource {
   authIds: [AuthIdList!]!
-  captaincies: [MembershipResource!]!
+  captaincies: [MembershipResource!]! @deprecated(reason: "Use teams instead and filter by position")
   createdAt: DateTimeISO
   email: String!
   linkblue: String
@@ -1436,7 +1436,7 @@ enum TeamResolverStringFilterKeys {
 }
 
 type TeamResource {
-  captains: [MembershipResource!]!
+  captains: [MembershipResource!]! @deprecated(reason: "Just query the members field and filter by role")
   createdAt: DateTimeISO
   legacyStatus: TeamLegacyStatus!
   marathonYear: String!
