@@ -10,19 +10,35 @@ import type { AbstractFilteredListQueryArgs } from "./list-query-args/FilteredLi
 import type { UnfilteredListQueryArgs } from "./list-query-args/UnfilteredListQueryArgs.js";
 
 export interface ResolverInterface<R extends Resource> {
-  getByUuid?: (uuid: string) => Promise<AbstractGraphQLOkResponse<R | null>>;
-  delete?: (uuid: string) => Promise<AbstractGraphQLOkResponse<boolean>>;
+  getByUuid?: (
+    uuid: string,
+    ...params: unknown[]
+  ) => Promise<AbstractGraphQLOkResponse<R | null>>;
+  delete?: (
+    uuid: string,
+    ...params: unknown[]
+  ) => Promise<AbstractGraphQLOkResponse<boolean>>;
 
-  getAll?: () => Promise<AbstractGraphQLArrayOkResponse<R>>;
-  create?: (input: never) => Promise<AbstractGraphQLCreatedResponse<R>>;
-  replace?: (uuid: string, input: R) => Promise<AbstractGraphQLOkResponse<R>>;
+  getAll?: (...params: unknown[]) => Promise<AbstractGraphQLArrayOkResponse<R>>;
+  create?: (
+    input: never,
+    ...params: unknown[]
+  ) => Promise<AbstractGraphQLCreatedResponse<R>>;
+  replace?: (
+    uuid: string,
+    input: R,
+    ...params: unknown[]
+  ) => Promise<AbstractGraphQLOkResponse<R>>;
 }
 
 export interface ResolverInterfaceWithList<
   R extends Resource,
   Q extends UnfilteredListQueryArgs<string>,
 > {
-  list?: (query: Q) => Promise<AbstractGraphQLPaginatedResponse<R>>;
+  list?: (
+    query: Q,
+    ...params: unknown[]
+  ) => Promise<AbstractGraphQLPaginatedResponse<R>>;
 }
 
 export interface ResolverInterfaceWithFilteredList<
@@ -35,5 +51,8 @@ export interface ResolverInterfaceWithFilteredList<
     string
   >,
 > extends ResolverInterfaceWithList<R, Q> {
-  list?: (query: Q) => Promise<AbstractGraphQLPaginatedResponse<R>>;
+  list?: (
+    query: Q,
+    ...params: unknown[]
+  ) => Promise<AbstractGraphQLPaginatedResponse<R>>;
 }
