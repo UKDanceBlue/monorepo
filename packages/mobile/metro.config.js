@@ -43,6 +43,7 @@ async function config() {
       },
     },
     transformer: {
+      ...expoMetroConfig.transformer,
       getTransformOptions: async () => ({
         transform: {
           experimentalImportSupport: false,
