@@ -39,7 +39,6 @@
       ],
       "expo-splash-screen",
       "expo-dev-client",
-      "expo-updates",
       [
         "expo-notifications",
         {
@@ -57,11 +56,6 @@
         }
       ]
     ],
-    "updates": {
-      "enabled": true,
-      "checkAutomatically": "ON_LOAD",
-      "useClassicUpdates": true
-    },
     "assetBundlePatterns": ["assets/**"],
     "ios": {
       "supportsTablet": true,
