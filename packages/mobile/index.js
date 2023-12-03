@@ -9,9 +9,9 @@ import "react-native-url-polyfill/auto";
 import App from "./App";
 import { log } from "./src/common/logging";
 
-preventAutoHideAsync().catch(console.error);
+log("Starting app");
 
-AsyncStorageq.clear();
+preventAutoHideAsync().catch(console.error);
 
 LogBox.ignoreLogs([
   "'SplashScreen.show' has already been called for given view controller.",
