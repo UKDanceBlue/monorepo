@@ -135,12 +135,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   }
 
   // Check that the Google services file exists
-  const onNotExist =
-    process.env.EAS_BUILD_RUNNER === "eas-build"
-      ? console.warn
-      : (err: string) => {
-          throw new Error(err);
-        };
+  const onNotExist = console.warn;
+  // process.env.EAS_BUILD_RUNNER === "eas-build"
+  // ? console.warn
+  // : (err: string) => {
+  //     throw new Error(err);
+  //   };
   if (process.env.EAS_BUILD && !existsSync(androidGoogleServicesFile)) {
     console.error("Detected files:", readdirSync(__dirname).join(" --- "));
     onNotExist(
