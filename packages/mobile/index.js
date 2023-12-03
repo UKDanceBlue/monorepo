@@ -11,6 +11,8 @@ import { log } from "./src/common/logging";
 
 preventAutoHideAsync().catch(console.error);
 
+AsyncStorageq.clear();
+
 LogBox.ignoreLogs([
   "'SplashScreen.show' has already been called for given view controller.",
 ]);

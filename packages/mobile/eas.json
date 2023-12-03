@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">=2.9.0",
+    "version": ">=5.9.1",
     "requireCommit": true
   },
   "build": {
@@ -9,7 +9,7 @@
       "releaseChannel": "development",
       "developmentClient": true,
       "cache": {
-        "key": "3"
+        "key": "4"
       },
       "env": {
         "APP_VARIANT": "development",
@@ -42,11 +42,17 @@
         "YARN_ENABLE_IMMUTABLE_INSTALLS": "false"
       }
     },
+    "simulator": {
+      "extends": "production",
+      "ios": {
+        "simulator": true
+      }
+    },
     "production": {
       "distribution": "store",
       "releaseChannel": "prod-v2",
       "cache": {
-        "key": "2"
+        "key": "3"
       },
       "env": {
         "APP_VARIANT": "production",

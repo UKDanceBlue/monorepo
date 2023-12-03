@@ -6,7 +6,6 @@
     "google_analytics_ssaid_collection_enabled": false,
     "analytics_default_allow_ad_personalization_signals": false,
     "google_analytics_registration_with_ad_network_enabled": false,
-    "crashlytics_debug_enabled": true,
-    "tokenAutoRefreshEnabled": true
+    "crashlytics_debug_enabled": true
   }
 }
