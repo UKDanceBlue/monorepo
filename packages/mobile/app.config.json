@@ -59,7 +59,8 @@
     ],
     "updates": {
       "enabled": true,
-      "checkAutomatically": "ON_LOAD"
+      "checkAutomatically": "ON_LOAD",
+      "useClassicUpdates": true
     },
     "assetBundlePatterns": ["assets/**"],
     "ios": {
