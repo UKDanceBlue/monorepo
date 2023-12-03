@@ -5848,7 +5848,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native/assets-registry@npm:^0.72.0, @react-native/assets-registry@npm:~0.72.0":
+"@react-native/assets-registry@npm:^0.72.0":
   version: 0.72.0
   resolution: "@react-native/assets-registry@npm:0.72.0"
   checksum: 94c2b842f9fcc6e2817463dd5f26a40b69a5ff10d8d10a2af95b677f88c6645e833f985db9d85c9c3d8e66fb882b2065921ad8890fe6ac7b5eb3f9d04f6e17fa
@@ -8240,7 +8240,7 @@ __metadata:
     expo-document-picker: ~11.5.4
     expo-file-system: ~15.4.5
     expo-font: ~11.4.0
-    expo-image: ^1.5.1
+    expo-image: ~1.3.5
     expo-image-picker: ~14.3.2
     expo-linking: ~5.0.2
     expo-notifications: ~0.20.1
@@ -12926,14 +12926,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-image@npm:^1.5.1":
-  version: 1.9.0
-  resolution: "expo-image@npm:1.9.0"
-  dependencies:
-    "@react-native/assets-registry": ~0.72.0
+"expo-image@npm:~1.3.5":
+  version: 1.3.5
+  resolution: "expo-image@npm:1.3.5"
   peerDependencies:
     expo: "*"
-  checksum: f3bd3dea5f4260fcd2ea4117d5eae11f4646df9760fcbeb23d80faeaa34cd659d4a9157807487929f3195c87abc16a223087e2f3744ed57a3014df0139351afe
+  checksum: 54949e3c92f55e91531d593c35cfc462f4bd320b8aa5860e63825b85a46872fe0f4d82f31c2a82f04b999ec7e1edc1bb89c8163ff73cc520df8940254c390ede
   languageName: node
   linkType: hard
 
