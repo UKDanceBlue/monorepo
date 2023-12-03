@@ -4,10 +4,11 @@ import { DevMenu, isDevelopmentBuild } from "expo-dev-client";
 import { setNotificationHandler } from "expo-notifications";
 import { preventAutoHideAsync } from "expo-splash-screen";
 import { LogBox } from "react-native";
+import "react-native-url-polyfill/auto";
 
 import App from "./App";
+import { log } from "./src/common/logging";
 
-// eslint-disable-next-line unicorn/prefer-top-level-await
 preventAutoHideAsync().catch(console.error);
 
 LogBox.ignoreLogs([
@@ -22,15 +23,17 @@ if (isDevelopmentBuild()) {
     {
       name: "Clear AsyncStorage",
       action: async () => {
-        await AsyncStorage.clear().catch(console.error);
+        log("Clearing AsyncStorage");
+        await AsyncStorage.clear();
         alert("AsyncStorage cleared successfully");
       },
     },
     {
       name: "Print AsyncStorage",
       action: async () => {
-        const keys = await AsyncStorage.getAllKeys().catch(console.error);
-        const values = await AsyncStorage.multiGet(keys).catch(console.error);
+        log("Printing AsyncStorage");
+        const keys = await AsyncStorage.getAllKeys();
+        const values = await AsyncStorage.multiGet(keys);
         if (console.table) {
           console.table(values);
         } else {
@@ -38,7 +41,7 @@ if (isDevelopmentBuild()) {
         }
       },
     },
-  ]);
+  ]).catch(console.error);
 }
 
 // Configure the notifications handler to decide what to do when a notification is received if the app is open

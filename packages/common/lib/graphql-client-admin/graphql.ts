@@ -615,6 +615,7 @@ export type ListTeamsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQl
 
 export type LoginState = {
   readonly __typename?: 'LoginState';
+  readonly authSource: AuthSource;
   readonly loggedIn: Scalars['Boolean']['output'];
   readonly role: RoleResource;
 };
@@ -897,6 +898,7 @@ export type PersonResolverStringFilterKeys = typeof PersonResolverStringFilterKe
 export type PersonResource = {
   readonly __typename?: 'PersonResource';
   readonly authIds: ReadonlyArray<AuthIdList>;
+  /** @deprecated Use teams instead and filter by position */
   readonly captaincies: ReadonlyArray<MembershipResource>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly email: Scalars['String']['output'];
@@ -1325,6 +1327,7 @@ export { StringComparator };
 
 /** New Team vs Returning Team */
 export const TeamLegacyStatus = {
+  DemoTeam: 'DemoTeam',
   NewTeam: 'NewTeam',
   ReturningTeam: 'ReturningTeam'
 } as const;
@@ -1389,6 +1392,7 @@ export const TeamResolverStringFilterKeys = {
 export type TeamResolverStringFilterKeys = typeof TeamResolverStringFilterKeys[keyof typeof TeamResolverStringFilterKeys];
 export type TeamResource = {
   readonly __typename?: 'TeamResource';
+  /** @deprecated Just query the members field and filter by role */
   readonly captains: ReadonlyArray<MembershipResource>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly legacyStatus: TeamLegacyStatus;

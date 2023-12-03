@@ -2,6 +2,7 @@
 import ErrorBoundary from "@common/components/ErrorBoundary";
 import { log, logError, universalCatch } from "@common/logging";
 import { showMessage, showPrompt } from "@common/util/alertUtils";
+import { UrqlContext } from "@context/urql";
 import NetInfo from "@react-native-community/netinfo";
 import { useFonts } from "expo-font";
 import { hideAsync } from "expo-splash-screen";
@@ -127,9 +128,11 @@ const App = () => {
         theme={theme}
       >
         <ErrorBoundary>
-          <CombinedContext>
-            <FilledNavigationContainer />
-          </CombinedContext>
+          <UrqlContext>
+            <CombinedContext>
+              <FilledNavigationContainer />
+            </CombinedContext>
+          </UrqlContext>
         </ErrorBoundary>
       </NativeBaseProvider>
     )

@@ -1,10 +1,10 @@
 import {
   DateTimeScalar,
+  DetailedError,
   ErrorCode,
   EventResource,
   PointOpportunityResource,
-  TeamType,
-} from "@ukdanceblue/common";
+ TeamType } from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
 import {
   Arg,
@@ -29,7 +29,6 @@ import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-  DetailedError,
 } from "./ApiResponse.js";
 import type {
   ResolverInterface,

@@ -1,4 +1,4 @@
-import { DeviceResource, ErrorCode, PersonResource } from "@ukdanceblue/common";
+import { DetailedError, DeviceResource, ErrorCode , PersonResource } from "@ukdanceblue/common";
 import {
   Arg,
   Args,
@@ -20,7 +20,6 @@ import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-  DetailedError,
 } from "./ApiResponse.js";
 import type {
   ResolverInterface,

@@ -74,6 +74,13 @@ class ErrorBoundary extends Component<
     const { error, untypedError, componentStack, isComponentError } =
       this.state;
 
+    let stringifiedError = "";
+    try {
+      stringifiedError = JSON.stringify(untypedError, null, 2);
+    } catch (error_) {
+      stringifiedError = String(untypedError);
+    }
+
     if (error) {
       return (
         <SafeAreaView>
@@ -97,7 +104,7 @@ Error: ${error.name} - ${error.message} (${error.stack ?? ""})
 --------------------
 Component Stack: ${componentStack ?? ""}
 --------------------
-Error Info: ${JSON.stringify(untypedError)}
+Error Info: ${stringifiedError}
 `
                   )}`
                 ).catch(universalCatch);
@@ -139,9 +146,7 @@ Error Info: ${JSON.stringify(untypedError)}
               An error occurred in the app. This is likely a bug in the app.
             </Text>
             <Text style={{ marginBottom: 15 }}>{String(untypedError)}</Text>
-            <Text style={{ marginBottom: 15 }}>
-              {JSON.stringify(untypedError, null, 2)}
-            </Text>
+            <Text style={{ marginBottom: 15 }}>{stringifiedError}</Text>
             <Text style={{ marginBottom: 15 }}>{componentStack}</Text>
           </View>
         </SafeAreaView>

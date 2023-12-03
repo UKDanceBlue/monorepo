@@ -1,5 +1,5 @@
 import type { OptionalToNullable } from "@ukdanceblue/common";
-import { ErrorCode, NotificationResource } from "@ukdanceblue/common";
+import { DetailedError, ErrorCode , NotificationResource } from "@ukdanceblue/common";
 import {
   Arg,
   Args,
@@ -20,7 +20,6 @@ import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-  DetailedError,
 } from "./ApiResponse.js";
 import type {
   ResolverInterface,

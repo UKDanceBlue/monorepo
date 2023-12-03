@@ -25,6 +25,7 @@ module.exports = function (api) {
             "@navigation": "./src/navigation",
             "@theme": "./src/theme",
             "@types": "./src/types",
+            "type-graphql": "type-graphql/build/cjs/browser-shim.js",
           },
         },
       ],

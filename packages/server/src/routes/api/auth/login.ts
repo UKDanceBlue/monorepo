@@ -6,6 +6,7 @@ import { LoginFlowSessionModel } from "../../.././models/LoginFlowSession.js";
 
 import { makeOidcClient } from "./oidcClient.js";
 
+// TODO: convert to OAuth2
 export const login = async (ctx: Context) => {
   const oidcClient = await makeOidcClient(ctx.request);
 
@@ -21,6 +22,15 @@ export const login = async (ctx: Context) => {
     loginFlowSessionInitializer.redirectToAfterLogin = queryRedirectTo;
   } else {
     return ctx.throw("Missing redirectTo query parameter", 400);
+  }
+  const returning = Array.isArray(ctx.query.returning)
+    ? ctx.query.returning
+    : [ctx.query.returning];
+  if (returning.includes("cookie")) {
+    loginFlowSessionInitializer.setCookie = true;
+  }
+  if (returning.includes("token")) {
+    loginFlowSessionInitializer.sendToken = true;
   }
 
   const session = await LoginFlowSessionModel.create(
