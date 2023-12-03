@@ -139,4 +139,12 @@ const App = () => {
   );
 };
 
-export default App;
+function AppWrapper() {
+  return (
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  );
+}
+
+export default AppWrapper;

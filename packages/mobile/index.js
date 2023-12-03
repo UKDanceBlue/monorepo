@@ -53,4 +53,9 @@ setNotificationHandler({
   }),
 });
 
-registerRootComponent(App);
+try {
+  registerRootComponent(App);
+} catch (error) {
+  log(error);
+  throw error;
+}
