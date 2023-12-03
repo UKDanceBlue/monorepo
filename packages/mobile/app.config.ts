@@ -31,7 +31,7 @@ const nativeVersion: Version = {
 
 // Both the sum of version.patch + buildsThisVersion and the sum of baseBuildCount + buildsThisVersion must increase each time a native build is submitted.
 const baseBuildCount = 34;
-const buildsThisVersion = 4;
+const buildsThisVersion = 5;
 
 /*
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

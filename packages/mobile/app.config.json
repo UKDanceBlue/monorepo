@@ -39,12 +39,7 @@
       ],
       "expo-splash-screen",
       "expo-dev-client",
-      [
-        "expo-updates",
-        {
-          "username": "university-of-kentucky-danceblue"
-        }
-      ],
+      "expo-updates",
       [
         "expo-notifications",
         {
@@ -65,7 +60,7 @@
     "updates": {
       "enabled": true,
       "checkAutomatically": "ON_LOAD",
-      "url": "https://u.expo.dev/86042d7a-cd35-415c-87ed-f53c008b3827"
+      "useClassicUpdates": true
     },
     "assetBundlePatterns": ["assets/**"],
     "ios": {
