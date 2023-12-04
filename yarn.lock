@@ -6915,6 +6915,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/history@npm:0.0.1-beta.225":
+  version: 0.0.1-beta.225
+  resolution: "@tanstack/history@npm:0.0.1-beta.225"
+  checksum: 3cade38a3bcdc971d07303738c9de61844f44da88ba45d98a735877c2da8c40f29faa7dff93a1ef82a401a56d92f8e6990ae7c140ffc31ef06abdc1066b57bd5
+  languageName: node
+  linkType: hard
+
 "@tanstack/react-form@npm:^0.3.6":
   version: 0.3.6
   resolution: "@tanstack/react-form@npm:0.3.6"
@@ -6936,7 +6943,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-router@npm:0.0.1-beta.194, @tanstack/react-router@npm:beta":
+"@tanstack/react-router@npm:0.0.1-beta.194":
   version: 0.0.1-beta.194
   resolution: "@tanstack/react-router@npm:0.0.1-beta.194"
   dependencies:
@@ -6950,6 +6957,21 @@ __metadata:
     react: ">=16"
     react-dom: ">=16"
   checksum: f9da4dd18cd2b5969b65b1d95ed63be175a955bf0026fe3b78bbbf53690750c69e2e64aeed6a087455788d0296311c358ae0b17d3b4ced85825055283a6aaa57
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-router@npm:beta":
+  version: 0.0.1-beta.225
+  resolution: "@tanstack/react-router@npm:0.0.1-beta.225"
+  dependencies:
+    "@babel/runtime": ^7.16.7
+    "@tanstack/history": 0.0.1-beta.225
+    tiny-invariant: ^1.3.1
+    tiny-warning: ^1.0.3
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: b6065c823f2bc9840383ad91c2c7eb462b631634010f57a06b10e0828d2931d0a73ad20bc2d2982d818a07bbdbc8c356d854df2519e2e1e21c7e35f085fed423
   languageName: node
   linkType: hard
 
