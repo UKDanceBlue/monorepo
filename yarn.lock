@@ -6915,6 +6915,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/history@npm:0.0.1-beta.225":
+  version: 0.0.1-beta.225
+  resolution: "@tanstack/history@npm:0.0.1-beta.225"
+  checksum: 3cade38a3bcdc971d07303738c9de61844f44da88ba45d98a735877c2da8c40f29faa7dff93a1ef82a401a56d92f8e6990ae7c140ffc31ef06abdc1066b57bd5
+  languageName: node
+  linkType: hard
+
 "@tanstack/react-form@npm:^0.3.6":
   version: 0.3.6
   resolution: "@tanstack/react-form@npm:0.3.6"
@@ -6936,7 +6943,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-router@npm:0.0.1-beta.194, @tanstack/react-router@npm:beta":
+"@tanstack/react-router@npm:0.0.1-beta.225":
+  version: 0.0.1-beta.225
+  resolution: "@tanstack/react-router@npm:0.0.1-beta.225"
+  dependencies:
+    "@babel/runtime": ^7.16.7
+    "@tanstack/history": 0.0.1-beta.225
+    tiny-invariant: ^1.3.1
+    tiny-warning: ^1.0.3
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: b6065c823f2bc9840383ad91c2c7eb462b631634010f57a06b10e0828d2931d0a73ad20bc2d2982d818a07bbdbc8c356d854df2519e2e1e21c7e35f085fed423
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-router@npm:beta":
   version: 0.0.1-beta.194
   resolution: "@tanstack/react-router@npm:0.0.1-beta.194"
   dependencies:
@@ -6996,16 +7018,16 @@ __metadata:
   linkType: hard
 
 "@tanstack/router-devtools@npm:beta":
-  version: 0.0.1-beta.194
-  resolution: "@tanstack/router-devtools@npm:0.0.1-beta.194"
+  version: 0.0.1-beta.225
+  resolution: "@tanstack/router-devtools@npm:0.0.1-beta.225"
   dependencies:
     "@babel/runtime": ^7.16.7
-    "@tanstack/react-router": 0.0.1-beta.194
+    "@tanstack/react-router": 0.0.1-beta.225
     date-fns: ^2.29.1
   peerDependencies:
     react: ">=16"
     react-dom: ">=16"
-  checksum: ff81e8aa2c3553b098196615330828af7c7d55ffbe71bc6eb59150ce6f9c63904e3dd917d5821c7b3c03f8392e01381d69f17535cc4d28310fca617c2a65d9cd
+  checksum: 6520c4cd7a43949b8e1409f519540c6bc24fdf1cafd301a1e4d4f8e41434037d4a94f102e534add23d01e606042913358bad751adc4bd6d750f53901aa0d24e3
   languageName: node
   linkType: hard
 
