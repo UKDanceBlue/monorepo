@@ -3,7 +3,6 @@ import type {
   OptionalNullOrUndefined,
   PersonResource,
 } from "@ukdanceblue/common";
-import { DbRole } from "@ukdanceblue/common";
 
 import { PersonModel } from ".././models/Person.js";
 import { sequelizeDb } from "../data-source.js";
@@ -59,11 +58,8 @@ export async function findPersonForLogin(
         currentPerson.linkblue = linkblue;
       }
       if (role) {
-        currentPerson.dbRole = role.dbRole;
         currentPerson.committeeRole = role.committeeRole;
         currentPerson.committeeName = role.committeeIdentifier;
-      } else {
-        currentPerson.dbRole = DbRole.Public;
       }
 
       const savedPerson = await currentPerson.save({

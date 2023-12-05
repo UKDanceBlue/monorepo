@@ -1,10 +1,6 @@
 import { faker } from "@faker-js/faker";
 import type { CreationAttributes } from "@sequelize/core";
-import {
-  CommitteeIdentifier,
-  CommitteeRole,
-  DbRole,
-} from "@ukdanceblue/common";
+import { CommitteeIdentifier, CommitteeRole } from "@ukdanceblue/common";
 
 import { PersonModel } from "../../models/Person.js";
 
@@ -47,7 +43,6 @@ export default async function () {
     authIds: {},
     committeeName: CommitteeIdentifier["techCommittee"],
     committeeRole: CommitteeRole.Coordinator,
-    dbRole: DbRole.Committee,
   });
 
   await PersonModel.bulkCreate(personData);

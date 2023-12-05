@@ -51,7 +51,7 @@ export const graphqlContextFunction: ContextFunction<
     include: [MembershipModel.withScope("withTeam")],
   });
   if (person) {
-    const personResource = person.toResource();
+    const personResource = await person.toResource();
     logDebug("graphqlContextFunction Found user", personResource);
     return {
       authenticatedUser: personResource,
