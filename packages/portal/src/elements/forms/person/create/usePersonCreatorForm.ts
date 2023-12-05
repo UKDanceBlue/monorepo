@@ -39,6 +39,39 @@ export function usePersonCreatorForm(
       captainOf: [],
       memberOf: [],
     },
+    onChange: (values) => {
+      const memberOfCount: Record<string, number> = {};
+      for (const uuid of values.memberOf ?? []) {
+        memberOfCount[uuid] = (memberOfCount[uuid] ?? 0) + 1;
+      }
+      const captainOfCount: Record<string, number> = {};
+      for (const uuid of values.captainOf ?? []) {
+        captainOfCount[uuid] = (captainOfCount[uuid] ?? 0) + 1;
+      }
+
+      for (const uuid of Object.keys(memberOfCount)) {
+        if ((memberOfCount[uuid] ?? 0) > 1) {
+          return "Cannot be a member of a team more than once";
+        }
+      }
+      for (const uuid of Object.keys(captainOfCount)) {
+        if ((captainOfCount[uuid] ?? 0) > 1) {
+          return "Cannot be a captain of a team more than once";
+        }
+      }
+
+      for (const uuid of values.memberOf ?? []) {
+        if (values.captainOf?.includes(uuid)) {
+          return "Cannot be a captain and member of a team";
+        }
+      }
+
+      if (values.role?.committeeIdentifier && !values.role.committeeRole) {
+        return "Committee role is required if a committee is selected";
+      }
+
+      return undefined;
+    },
     onSubmit: async (values) => {
       if (!values.email) {
         throw new Error("Email is required");
