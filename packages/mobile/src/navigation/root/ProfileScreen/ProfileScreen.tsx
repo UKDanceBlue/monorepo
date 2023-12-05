@@ -1,11 +1,7 @@
 import { useLogin } from "@common/auth";
 import JumbotronGeometric from "@common/components/JumbotronGeometric";
 import { useThemeFonts } from "@common/customHooks";
-import {
-  AuthSource,
-  DbRole,
-  committeeNames,
-} from "@ukdanceblue/common/dist/auth";
+import { AuthSource, DbRole, committeeNames } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import {
   getFragmentData,

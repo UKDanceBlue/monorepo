@@ -1,6 +1,6 @@
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { DbRole } from "@ukdanceblue/common/dist/auth";
+import { DbRole } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,

@@ -1,7 +1,7 @@
 import { useLoading } from "@context/loading";
 import { useInvalidateCache } from "@context/urql";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AuthSource } from "@ukdanceblue/common/dist/auth";
+import { AuthSource } from "@ukdanceblue/common";
 import { createURL } from "expo-linking";
 import { dismissAuthSession, openAuthSessionAsync } from "expo-web-browser";
 
