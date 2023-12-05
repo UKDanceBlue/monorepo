@@ -28,9 +28,10 @@ import {
 
 import { sequelizeDb } from "../data-source.js";
 import { roleToAuthorization } from "../lib/auth/role.js";
+import { logError } from "../logger.js";
 
 import { BaseModel } from "./BaseModel.js";
-import type { MembershipModel } from "./Membership.js";
+import { MembershipModel } from "./Membership.js";
 
 export class PersonModel extends BaseModel<
   InferAttributes<PersonModel>,
@@ -52,11 +53,49 @@ export class PersonModel extends BaseModel<
 
   public declare authIds: Partial<Record<AuthSource, string>> | null;
 
-  public declare dbRole: CreationOptional<DbRole>;
-
   public declare committeeRole: CommitteeRole | null;
 
-  public declare committeeName: CommitteeIdentifier | null; // TODO: consider removing, use relation to Team instead
+  public declare committeeName: CommitteeIdentifier | null;
+
+  public async getDbRole(): Promise<DbRole> {
+    if (this.authIds?.[AuthSource.None]) {
+      return DbRole.None;
+    } else if (this.authIds?.[AuthSource.Anonymous]) {
+      return DbRole.Public;
+    } else if (this.committeeName && this.committeeRole) {
+      return DbRole.Committee;
+    } else if (this.committeeName || this.committeeRole) {
+      logError(
+        "PersonModel.getDbRole() found only one of committeeName or committeeRole set"
+      );
+    } else if (
+      this.authIds?.[AuthSource.UkyLinkblue] ||
+      this.authIds?.[AuthSource.Demo]
+    ) {
+      const membershipCounts = await MembershipModel.count({
+        attributes: ["position"],
+        group: ["position"],
+      });
+      let captainCount = 0;
+      let memberCount = 0;
+      for (const { position, count } of membershipCounts) {
+        if (position === MembershipPositionType.Captain) {
+          captainCount = count;
+        } else if (position === MembershipPositionType.Member) {
+          memberCount = count;
+        }
+      }
+      if (captainCount === 0 && memberCount === 0) {
+        return DbRole.Public;
+      } else if (captainCount > 0) {
+        return DbRole.TeamCaptain;
+      } else {
+        return DbRole.TeamMember;
+      }
+    }
+
+    return DbRole.Public;
+  }
 
   public declare memberships: NonAttribute<MembershipModel[]>;
   public declare getMemberships: HasManyGetAssociationsMixin<MembershipModel>;
@@ -91,13 +130,9 @@ export class PersonModel extends BaseModel<
     MembershipModel["id"]
   >;
 
-  get role(): NonAttribute<RoleResource> {
-    if ((this as Partial<typeof this>).dbRole === undefined) {
-      throw new Error("PersonIntermediate was not initialized with DB role");
-    }
-
+  async getRole(): Promise<RoleResource> {
     const roleInit: Partial<RoleResource> = {
-      dbRole: this.dbRole,
+      dbRole: await this.getDbRole(),
     };
     if ((this as Partial<typeof this>).committeeRole !== undefined) {
       roleInit.committeeRole = this.committeeRole;
@@ -108,7 +143,7 @@ export class PersonModel extends BaseModel<
     return RoleResource.init(roleInit);
   }
 
-  toResource(): PersonResource {
+  async toResource(): Promise<PersonResource> {
     return PersonResource.init({
       uuid: this.uuid,
       name: this.name ?? null,
@@ -118,7 +153,7 @@ export class PersonModel extends BaseModel<
       })),
       email: this.email,
       linkblue: this.linkblue ?? null,
-      role: this.role,
+      role: await this.getRole(),
       createdAt:
         (this as Partial<typeof this>).createdAt == null
           ? null
@@ -157,7 +192,7 @@ export class PersonModel extends BaseModel<
 
     const userData: UserData = {
       userId: this.uuid,
-      auth: roleToAuthorization(this.role),
+      auth: roleToAuthorization(await this.getRole()),
       captainOfTeamIds: memberships
         .filter(
           (membership) => membership.position === MembershipPositionType.Captain
@@ -208,11 +243,6 @@ PersonModel.init(
       type: DataTypes.JSONB,
       allowNull: false,
       defaultValue: {},
-    },
-    dbRole: {
-      type: DataTypes.ENUM(Object.values(DbRole)),
-      allowNull: false,
-      defaultValue: DbRole.None,
     },
     committeeRole: {
       type: DataTypes.ENUM(Object.values(CommitteeRole)),

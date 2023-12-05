@@ -1,5 +1,5 @@
 import { useLogin } from "@common/auth";
-import { AuthSource } from "@ukdanceblue/common/dist/auth";
+import { AuthSource } from "@ukdanceblue/common";
 import { Button, Center, Image, Text, View, ZStack } from "native-base";
 import { useEffect, useState } from "react";
 import type { ImageSourcePropType } from "react-native";

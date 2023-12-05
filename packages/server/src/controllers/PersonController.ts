@@ -1,7 +1,7 @@
-import {
-  type AuthSource,
-  type OptionalNullOrUndefined,
-  type PersonResource,
+import type {
+  AuthSource,
+  OptionalNullOrUndefined,
+  PersonResource,
 } from "@ukdanceblue/common";
 
 import { PersonModel } from ".././models/Person.js";
@@ -58,7 +58,6 @@ export async function findPersonForLogin(
         currentPerson.linkblue = linkblue;
       }
       if (role) {
-        currentPerson.dbRole = role.dbRole;
         currentPerson.committeeRole = role.committeeRole;
         currentPerson.committeeName = role.committeeIdentifier;
       }

@@ -81,6 +81,10 @@ export function usePersonEditorForm(
         }
       }
 
+      if (values.role?.committeeIdentifier && !values.role.committeeRole) {
+        return "Committee role is required if a committee is selected";
+      }
+
       return undefined;
     },
     onSubmit: async (values) => {

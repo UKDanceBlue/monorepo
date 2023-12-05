@@ -3,14 +3,14 @@ import type { MigrationParams } from "umzug";
 import type { MigrationContext } from "./migrationContext.js";
 
 /**
- * Add DemoTeam to enum_teams_legacy_status
+ * Add viceCommittee to enum_people_committee_name
  */
 
 export async function up({
   context: { queryInterface },
 }: MigrationParams<MigrationContext>) {
   await queryInterface.sequelize.query(
-    `ALTER TYPE enum_teams_legacy_status ADD VALUE 'DemoTeam'`
+    `ALTER TYPE danceblue.enum_people_committee_name ADD VALUE 'viceCommittee'`
   );
 }
 

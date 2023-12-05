@@ -73,6 +73,7 @@ enum CommitteeIdentifier {
   operationsCommittee
   programmingCommittee
   techCommittee
+  viceCommittee
 }
 
 """Roles within a committee"""
