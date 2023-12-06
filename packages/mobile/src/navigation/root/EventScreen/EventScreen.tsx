@@ -1,10 +1,12 @@
 import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
-import { firestoreIntervalToLuxon } from "@common/firestoreUtils";
 import { log, universalCatch } from "@common/logging";
 import { showMessage } from "@common/util/alertUtils";
 import { discoverDefaultCalendar } from "@common/util/calendar";
 import { useRoute } from "@react-navigation/native";
-import { DownloadableImage } from "@ukdanceblue/db-app-common";
+import {
+  getFragmentData,
+  graphql,
+} from "@ukdanceblue/common/dist/graphql-client-public";
 import {
   PermissionStatus,
   createEventAsync,
@@ -12,8 +14,7 @@ import {
   requestCalendarPermissionsAsync,
 } from "expo-calendar";
 import { setStringAsync } from "expo-clipboard";
-import { openBrowserAsync } from "expo-web-browser";
-import { DateTime } from "luxon";
+import { DateTime, Interval } from "luxon";
 import {
   Badge,
   Box,
@@ -28,37 +29,84 @@ import {
   ZStack,
   useTheme,
 } from "native-base";
-import { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, useWindowDimensions } from "react-native";
+import { useMemo } from "react";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  useWindowDimensions,
+} from "react-native";
 import openMaps from "react-native-open-maps";
 import { WebView } from "react-native-webview";
+import { useQuery } from "urql";
 
-import { useFirebase } from "../../../context";
 import type { RootStackScreenProps } from "../../../types/navigationTypes";
+
+const EventScreenFragment = graphql(/* GraphQL */ `
+  fragment EventScreenFragment on EventResource {
+    title
+    summary
+    description
+    location
+    occurrences {
+      uuid
+      interval
+      fullDay
+    }
+    images {
+      imageData
+      thumbHash
+      url
+      height
+      width
+      alt
+      mimeType
+    }
+  }
+`);
+
+const eventScreenDocument = graphql(/* GraphQL */ `
+  query EventScreenQuery($eventId: String!) {
+    event(uuid: $eventId) {
+      data {
+        ...EventScreenFragment
+      }
+    }
+  }
+`);
+
+function extractUrl(
+  url: URL | string | undefined | null,
+  imageData: string | undefined | null,
+  mimeType: string | undefined | null
+): string | undefined {
+  if (url) {
+    return url.toString();
+  } else if (imageData && mimeType) {
+    return `data:${mimeType};base64,${imageData}`;
+  } else {
+    return undefined;
+  }
+}
 
 const EventScreen = () => {
   const {
-    params: {
-      event: {
-        name,
-        description,
-        address,
-        images: firestoreImages,
-        interval: firestoreInterval,
-        highlightedLinks,
-      },
-    },
+    params: { eventId, occurrenceId },
   } = useRoute<RootStackScreenProps<"Event">["route"]>();
 
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
-  const totalWidth = useMemo(
-    () => firestoreImages?.reduce((acc, image) => acc + image.width, 0) ?? 0,
-    [firestoreImages]
+  const [eventQuery, reloadEvent] = useQuery({
+    query: eventScreenDocument,
+    variables: { eventId },
+  });
+  const eventData = getFragmentData(
+    EventScreenFragment,
+    eventQuery.data?.event.data
   );
+
   const maxHeight = useMemo(
     () =>
-      firestoreImages?.reduce(
+      eventData?.images.reduce(
         (acc, image) =>
           Math.max(
             acc,
@@ -66,42 +114,23 @@ const EventScreen = () => {
           ),
         0
       ) ?? 0,
-    [firestoreImages, screenWidth]
-  );
-  const [images, setImages] = useState<
-    (DownloadableImage | null)[] | undefined
-  >(
-    firestoreImages == null
-      ? undefined
-      : Array.from<null | DownloadableImage>({
-          length: firestoreImages.length,
-        }).fill(null)
+    [eventData?.images, screenWidth]
   );
 
   const { colors } = useTheme();
-  const { fbStorage } = useFirebase();
 
-  useEffect(() => {
-    if (firestoreImages == null) {
-      return;
-    } else {
-      Promise.all(
-        firestoreImages.map((image) => {
-          return DownloadableImage.fromFirestoreImage(image, (uri: string) => {
-            return uri.startsWith("gs://")
-              ? fbStorage.refFromURL(uri).getDownloadURL()
-              : Promise.resolve(uri);
-          });
-        })
-      )
-        .then(setImages)
-        .catch(universalCatch);
-    }
-  }, [fbStorage, firestoreImages]);
-
-  const interval = firestoreInterval
-    ? firestoreIntervalToLuxon(firestoreInterval)
-    : undefined;
+  const occurrence = useMemo(
+    () =>
+      eventData?.occurrences.find(
+        (occurrence) => occurrence.uuid === occurrenceId
+      ) ?? eventData?.occurrences[0],
+    [eventData?.occurrences, occurrenceId]
+  );
+  const interval = useMemo(
+    () =>
+      occurrence != null ? Interval.fromISO(occurrence.interval) : undefined,
+    [occurrence]
+  );
 
   let whenString = "";
   let allDay = false;
@@ -140,13 +169,21 @@ const EventScreen = () => {
     }
   }
 
-  const imageCount = images?.length ?? 0;
+  const imageCount = eventData?.images.length ?? 0;
 
   return (
     <VStack h="full">
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={eventQuery.fetching}
+            onRefresh={reloadEvent}
+          />
+        }
+        flex={1}
+      >
         {imageCount > 0 &&
-          images != null &&
+          eventData?.images != null &&
           (imageCount > 1 ? (
             <ScrollView
               showsVerticalScrollIndicator={false}
@@ -154,72 +191,70 @@ const EventScreen = () => {
               horizontal
               style={{ height: maxHeight }}
             >
-              {images.map((pageImage, index) =>
-                pageImage ? (
-                  <ZStack
-                    key={index}
-                    style={{
-                      width: Math.min(pageImage.width, screenWidth),
-                      height: Math.min(
-                        pageImage.height,
-                        screenWidth * (pageImage.height / pageImage.width)
+              {eventData.images.map((pageImage, index) => (
+                <ZStack
+                  key={index}
+                  style={{
+                    width: Math.min(pageImage.width, screenWidth),
+                    height: Math.min(
+                      pageImage.height,
+                      screenWidth * (pageImage.height / pageImage.width)
+                    ),
+                    marginRight: index < imageCount - 1 ? 6 : 0,
+                  }}
+                >
+                  {eventData.images.length > 1 && (
+                    <Badge
+                      position="relative"
+                      rounded="full"
+                      bottom={2}
+                      right={2}
+                      zIndex={1}
+                      variant="solid"
+                    >
+                      <Text color="white">
+                        {index + 1}/{eventData.images.length}
+                      </Text>
+                    </Badge>
+                  )}
+                  <Image
+                    source={{
+                      uri: extractUrl(
+                        pageImage.url,
+                        pageImage.imageData,
+                        pageImage.mimeType
                       ),
-                      marginRight: index < imageCount - 1 ? 6 : 0,
+                      width: pageImage.width,
+                      height: pageImage.height,
                     }}
-                  >
-                    {images.length > 1 && (
-                      <Badge
-                        position="relative"
-                        rounded="full"
-                        bottom={2}
-                        right={2}
-                        zIndex={1}
-                        variant="solid"
-                      >
-                        <Text color="white">
-                          {index + 1}/{images.length}
-                        </Text>
-                      </Badge>
-                    )}
-                    <Image
-                      source={{
-                        uri: pageImage.url,
-                        width: pageImage.width,
-                        height: pageImage.height,
-                      }}
-                      alt={name}
-                      style={{ width: "100%", height: "100%" }}
-                      resizeMode="contain"
-                    />
-                  </ZStack>
-                ) : (
-                  <Center
-                    key={index}
-                    style={{
-                      width: Math.min(screenWidth, totalWidth),
-                      height: maxHeight,
-                      marginRight: index < imageCount - 1 ? 6 : 0,
-                    }}
-                  >
-                    <ActivityIndicator color={colors.primary[500]} />
-                  </Center>
-                )
-              )}
+                    alt={pageImage.alt ?? ""}
+                    style={{ width: "100%", height: "100%" }}
+                    resizeMode="contain"
+                  />
+                </ZStack>
+              ))}
             </ScrollView>
           ) : (
-            !!images[0] && (
+            !!eventData.images[0] && (
               <Image
                 source={{
-                  uri: images[0].url,
-                  width: images[0].width,
-                  height: images[0].height,
+                  uri:
+                    eventData.images[0].url?.toString() ??
+                    `data:image/png;base64,${eventData.images[0].imageData}`,
+                  width: eventData.images[0].width,
+                  height: eventData.images[0].height,
                 }}
-                alt={name}
+                alt={
+                  eventData.images[0].alt ??
+                  eventData.images[0].url?.toString() ??
+                  ""
+                }
                 style={{
                   width: "100%",
                   height: Math.min(
-                    images[0].height,
-                    screenWidth * (images[0].height / images[0].width)
+                    eventData.images[0].height,
+                    screenWidth *
+                      (eventData.images[0].height / eventData.images[0].width)
                   ),
                 }}
                 resizeMode="contain"
@@ -227,12 +262,12 @@ const EventScreen = () => {
             )
           ))}
         <Heading my={1} mx={2} textAlign="center">
-          {name}
+          {eventData?.title}
         </Heading>
-        {address != null && (
+        {eventData?.location != null && (
           <Pressable
             onPress={() => {
-              setStringAsync(address)
+              setStringAsync(eventData.location ?? "")
                 .then(() => {
                   showMessage(undefined, "Address copied to clipboard");
                 })
@@ -241,7 +276,7 @@ const EventScreen = () => {
             _pressed={{ opacity: 0.6 }}
           >
             <Text mx={2} textAlign="center" color="darkBlue.700">
-              {address}
+              {eventData.location}
             </Text>
           </Pressable>
         )}
@@ -276,13 +311,15 @@ const EventScreen = () => {
                   showMessage(undefined, "No calendar found");
                 } else {
                   await createEventAsync(defaultCalendar.id, {
-                    title: name,
+                    title: eventData?.title,
                     allDay,
-                    notes: description,
+                    notes: `${eventData?.summary ?? ""}\n\n${
+                      eventData?.description ?? ""
+                    }`,
                     // TODO: fix these start and end dates
                     startDate: interval!.start.toJSDate(),
                     endDate: interval!.end.toJSDate(),
-                    location: address ?? "",
+                    location: eventData?.location ?? undefined,
                   });
                   showMessage(undefined, "Event created");
                 }
@@ -296,40 +333,19 @@ const EventScreen = () => {
         </Button>
 
         <Box mx={2}>
-          <NativeBaseMarkdown>{description}</NativeBaseMarkdown>
+          <NativeBaseMarkdown>{eventData?.description}</NativeBaseMarkdown>
         </Box>
-        {/* Maybe consider removing the link option in favor of just using markdown links? Or keep it so centered links are a thing?? */}
-        {highlightedLinks && (
-          <>
-            {highlightedLinks.map((pageLink, index) => (
-              <Pressable
-                _pressed={{ opacity: 0.6 }}
-                width="full"
-                mx={2}
-                mb={2}
-                onPress={() =>
-                  openBrowserAsync(pageLink.url).catch(universalCatch)
-                }
-                key={index}
-              >
-                <Text textAlign="center" color="blue.600" underline>
-                  {pageLink.text}
-                </Text>
-              </Pressable>
-            ))}
-          </>
-        )}
 
-        {address && (
+        {eventData?.location && (
           <Box height={screenHeight * 0.4} p={3}>
             <Pressable
               _pressed={{ opacity: 0.5 }}
               onPress={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                log(`Opening ${address} in os-default maps app`);
+                log(`Opening ${eventData.location} in os-default maps app`);
                 openMaps({
-                  query: address,
+                  query: eventData.location ?? undefined,
                   mapType: "standard",
                 });
               }}
@@ -358,7 +374,7 @@ const EventScreen = () => {
                       height="98%"
                       frameborder="0" style="border:0"
                       referrerpolicy="no-referrer-when-downgrade"
-                      src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDGsPvQP-A9jgYnY5yxl3J9hRYJelsle9w&q=${address}&zoom=17&region=us"
+                      src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDGsPvQP-A9jgYnY5yxl3J9hRYJelsle9w&q=${eventData.location}&zoom=17&region=us"
                       >
                     </iframe>`,
                 }}

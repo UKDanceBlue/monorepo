@@ -4,7 +4,6 @@ import type {
   NavigatorScreenParams,
 } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { FirestoreEvent } from "@ukdanceblue/db-app-common";
 
 import type { FirestoreHour } from "./firebaseTypes";
 
@@ -38,7 +37,8 @@ export type RootStackParamList = {
   "Notifications": undefined;
   "Profile": undefined;
   "Event": {
-    event: FirestoreEvent;
+    eventId: string;
+    occurrenceId: string;
   };
   "Hour Details": { firestoreHour: FirestoreHour };
 };

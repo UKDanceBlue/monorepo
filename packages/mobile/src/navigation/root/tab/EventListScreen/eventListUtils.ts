@@ -2,22 +2,15 @@ import { universalCatch } from "@common/logging";
 import { timestampToDateTime } from "@common/util/dateTools";
 import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import FirestoreModule from "@react-native-firebase/firestore";
+import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
 import type { FirestoreEventJson } from "@ukdanceblue/db-app-common";
 import { FirestoreEvent } from "@ukdanceblue/db-app-common";
 import type { MaybeWithFirestoreMetadata } from "@ukdanceblue/db-app-common/dist/firestore/internal";
 import { DateTime } from "luxon";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useMemo, useReducer, useRef, useState } from "react";
 import type { DateData } from "react-native-calendars";
 import type { MarkedDates } from "react-native-calendars/src/types";
-
-import { useFirebase } from "../../../../context";
+import { useQuery } from "urql";
 
 import {
   LOADED_MONTHS,
@@ -300,26 +293,23 @@ export const useEvents = ({
 ] => {
   const lastEarliestTimestamp = useRef<DateTime | null>(null);
 
-  const { fbFirestore } = useFirebase();
   const [refreshing, setRefreshing] = useState(false);
   const disableRefresh = useRef(false);
 
-  const [events, updateEvents] = useEventsStateInternal();
-
-  const refresh = useCallback(
-    async (earliestTimestamp: DateTime) => {
-      setRefreshing(true);
-      disableRefresh.current = true;
-
-      const { eventsToSet } = await loadEvents(earliestTimestamp, fbFirestore);
-
-      updateEvents({
-        action: "setEvents",
-        payload: eventsToSet,
-      });
-    },
-    [fbFirestore, updateEvents]
-  );
+  const [eventsQueryResult, refresh] = useQuery({
+    query: graphql(/* GraphQL */ `
+      query Events($earliestTimestamp: Timestamp!) {
+        events(
+          dateFilters: [{
+            comparison: GREATER_THAN_OR_EQUAL_TO
+            field:
+          }]
+        ) {
+          ...FirestoreEvent
+        }
+      }
+    `),
+  });
 
   useEffect(() => {
     if (
