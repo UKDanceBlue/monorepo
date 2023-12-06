@@ -2,7 +2,11 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { API_BASE_URL } from "@config/api";
 import { useLoginState } from "@hooks/useLoginState";
 import type { AuthorizationRule } from "@ukdanceblue/common";
-import { CommitteeRole, checkAuthorization } from "@ukdanceblue/common";
+import {
+  AccessLevel,
+  CommitteeRole,
+  checkAuthorization,
+} from "@ukdanceblue/common";
 import { Menu } from "antd";
 import type { ItemType } from "antd/es/menu/hooks/useItems";
 import { useMemo } from "react";
@@ -43,6 +47,13 @@ export const NavigationMenu = () => {
         title: "People",
         authorizationRule: {
           minCommitteeRole: CommitteeRole.Coordinator,
+        },
+      },
+      {
+        slug: "logs",
+        title: "Logs",
+        authorizationRule: {
+          accessLevel: AccessLevel.Admin,
         },
       },
     ];
