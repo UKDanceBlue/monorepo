@@ -1,7 +1,13 @@
 import { useLogin } from "@common/auth";
 import JumbotronGeometric from "@common/components/JumbotronGeometric";
 import { useThemeFonts } from "@common/customHooks";
-import { AuthSource, CommitteeIdentifier, CommitteeRole, DbRole, committeeNames } from "@ukdanceblue/common";
+import {
+  AuthSource,
+  CommitteeIdentifier,
+  CommitteeRole,
+  DbRole,
+  committeeNames,
+} from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import {
   getFragmentData,
@@ -67,7 +73,7 @@ const ProfileScreen = ({
     profileScreenUserFragment
   );
 
-  const { body } = useThemeFonts();
+  const { body, mono } = useThemeFonts();
 
   const [loading, trigger] = useLogin();
 
@@ -86,7 +92,11 @@ const ProfileScreen = ({
 
   const committeeString = useMemo(() => {
     if (authData?.role.dbRole === DbRole.Committee) {
-      if (authData.role.committeeIdentifier === CommitteeIdentifier.viceCommittee && authData.role.committeeRole === CommitteeRole.Chair) {
+      if (
+        authData.role.committeeIdentifier ===
+          CommitteeIdentifier.viceCommittee &&
+        authData.role.committeeRole === CommitteeRole.Chair
+      ) {
         return "✨ Overall Chair ✨";
       }
       return `Committee: ${
@@ -127,7 +137,18 @@ const ProfileScreen = ({
             >
               {nameString()}
             </Text>
-            {committeeString}
+            {committeeString && (
+              <Text
+                width="full"
+                italic
+                textAlign="center"
+                color="primary.600"
+                fontSize={theme.fontSizes.lg}
+                fontFamily={mono}
+              >
+                {committeeString}
+              </Text>
+            )}
           </Container>
           {/* TODO: Implement server-side support for individual totals */}
           {/* {userData.teams.length > 0 &&
