@@ -1,7 +1,7 @@
 import type { MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
 
-import { logError } from "../logger.js";
+import { logger } from "../logger.js";
 import { ConfigurationResolver } from "../resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "../resolvers/DeviceResolver.js";
 import { EventResolver } from "../resolvers/EventResolver.js";
@@ -18,7 +18,7 @@ const errorHandlingMiddleware: MiddlewareFn = async (_, next) => {
   try {
     return void (await next());
   } catch (error) {
-    logError("An error occurred in a resolver", error);
+    logger.error("An error occurred in a resolver", error);
     throw error;
   }
 };

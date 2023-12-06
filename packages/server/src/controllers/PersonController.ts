@@ -6,7 +6,7 @@ import type {
 
 import { PersonModel } from ".././models/Person.js";
 import { sequelizeDb } from "../data-source.js";
-import { logDebug, logInfo } from "../logger.js";
+import { logger } from "../logger.js";
 
 // TODO: rework this whole thing, it doesn't really make much sense anymore
 
@@ -20,7 +20,7 @@ export async function findPersonForLogin(
   authIds: Partial<Record<AuthSource, string>>,
   userData: OptionalNullOrUndefined<PersonResource>
 ): Promise<[PersonModel, boolean]> {
-  logDebug(`Looking for person with auth IDs: ${JSON.stringify(authIds)}`);
+  logger.debug(`Looking for person with auth IDs: ${JSON.stringify(authIds)}`);
   return sequelizeDb.transaction(async (t) => {
     // TODO: explore using auth IDs to find a person instead of user data
     let currentPerson = await PersonModel.findOne({ where: { authIds } });
@@ -30,17 +30,17 @@ export async function findPersonForLogin(
         where: { linkblue: userData.linkblue },
         transaction: t,
       });
-      logDebug(`Found person by linkblue: ${currentPerson?.uuid ?? "ERR"}`);
+      logger.debug(`Found person by linkblue: ${currentPerson?.uuid ?? "ERR"}`);
     }
     if (!currentPerson && userData.email) {
       currentPerson = await PersonModel.findOne({
         where: { email: userData.email },
         transaction: t,
       });
-      logDebug(`Found person by email: ${currentPerson?.uuid ?? "ERR"}`);
+      logger.debug(`Found person by email: ${currentPerson?.uuid ?? "ERR"}`);
     }
     if (!currentPerson) {
-      logDebug("No person found, creating new person");
+      logger.debug("No person found, creating new person");
       if (!userData.email) {
         throw new Error("No email provided for new user");
       }
@@ -67,7 +67,7 @@ export async function findPersonForLogin(
         returning: ["id"],
       });
 
-      logDebug("Creating memberships for new person");
+      logger.debug("Creating memberships for new person");
 
       // let nonCaptainMemberships: Promise<MembershipModel | null>[] = [];
       // if (memberOf) {
@@ -125,7 +125,7 @@ export async function findPersonForLogin(
         returning: ["uuid"],
       });
 
-      logInfo(`Created new person: ${finalPersonUuid}`);
+      logger.info(`Created new person: ${finalPersonUuid}`);
 
       created = true;
     }

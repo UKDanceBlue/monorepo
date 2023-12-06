@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { DataTypes } from "@sequelize/core";
 import type { RunnableMigration } from "umzug";
 
-import { logDebug, logError, logInfo, logWarning } from "./logger.js";
+import { logger } from "./logger.js";
 import type { MigrationContext } from "./migrations/migrationContext.js";
 const { sequelizeDb } = await import("./data-source.js");
 const { Umzug, SequelizeStorage } = await import("umzug");
@@ -81,10 +81,10 @@ export const migrator = new Umzug({
     schema: "danceblue",
   }),
   logger: {
-    debug: logDebug,
-    error: logError,
-    info: logInfo,
-    warn: logWarning,
+    debug: logger.debug,
+    error: logger.error,
+    info: logger.info,
+    warn: logger.warning,
   },
 });
 
