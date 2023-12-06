@@ -9,6 +9,8 @@ import "react-native-url-polyfill/auto";
 import App from "./App";
 import { log } from "./src/common/logging";
 
+log("Starting app");
+
 preventAutoHideAsync().catch(console.error);
 
 LogBox.ignoreLogs([
@@ -53,4 +55,9 @@ setNotificationHandler({
   }),
 });
 
-registerRootComponent(App);
+try {
+  registerRootComponent(App);
+} catch (error) {
+  log(error);
+  throw error;
+}

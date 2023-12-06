@@ -101,7 +101,8 @@ export const CommitteeIdentifier = {
   MiniMarathonsCommittee: 'miniMarathonsCommittee',
   OperationsCommittee: 'operationsCommittee',
   ProgrammingCommittee: 'programmingCommittee',
-  TechCommittee: 'techCommittee'
+  TechCommittee: 'techCommittee',
+  ViceCommittee: 'viceCommittee'
 } as const;
 
 export type CommitteeIdentifier = typeof CommitteeIdentifier[keyof typeof CommitteeIdentifier];

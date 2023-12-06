@@ -13,6 +13,12 @@
 
 <h3 align="center">DanceBlue App Monorepo</h3>
 
+Release:
+[![Docker release build](https://github.com/UKDanceBlue/monorepo/actions/workflows/docker-build.yml/badge.svg?branch=release&event=push)](https://github.com/UKDanceBlue/monorepo/actions/workflows/docker-build.yml)
+Main:
+[![Docker main build](https://github.com/UKDanceBlue/monorepo/actions/workflows/docker-build.yml/badge.svg?branch=main&event=push)](https://github.com/UKDanceBlue/monorepo/actions/workflows/docker-build.yml)
+[![Lint](https://github.com/UKDanceBlue/monorepo/actions/workflows/eslint.yml/badge.svg?branch=main&event=push)](https://github.com/UKDanceBlue/monorepo/actions/workflows/eslint.yml)
+
   <p align="center">
     DanceBlue's mobile app is a great way to interact with DanceBlue year round from the comfort of your phone
     <br />

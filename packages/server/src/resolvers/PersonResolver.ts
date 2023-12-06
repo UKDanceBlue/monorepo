@@ -146,7 +146,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     }
 
     return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-      row.toResource()
+      await row.toResource()
     );
   }
 
@@ -164,7 +164,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     }
 
     return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-      row.toResource()
+      await row.toResource()
     );
   }
 
@@ -188,7 +188,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     });
 
     return ListPeopleResponse.newPaginated({
-      data: rows.map((row) => row.toResource()),
+      data: await Promise.all(rows.map((row) => row.toResource())),
       total: count,
       page: args.page,
       pageSize: args.pageSize,
@@ -208,7 +208,9 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
       where: { name: { [Op.iLike]: `%${name}%` } },
     });
 
-    return GetPeopleResponse.newOk(rows.map((row) => row.toResource()));
+    return GetPeopleResponse.newOk(
+      await Promise.all(rows.map((row) => row.toResource()))
+    );
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
@@ -225,7 +227,6 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
         creationAttributes.linkblue = input.linkblue.toLowerCase();
       }
       if (input.role) {
-        creationAttributes.dbRole = input.role.dbRole;
         creationAttributes.committeeRole = input.role.committeeRole;
         creationAttributes.committeeName = input.role.committeeIdentifier;
       }
@@ -274,7 +275,10 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
 
       await Promise.all(promises);
 
-      return CreatePersonResponse.newCreated(result.toResource(), result.uuid);
+      return CreatePersonResponse.newCreated(
+        await result.toResource(),
+        result.uuid
+      );
     });
   }
 
@@ -302,7 +306,6 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
         updateAttributes.linkblue = input.linkblue.toLowerCase();
       }
       if (input.role) {
-        updateAttributes.dbRole = input.role.dbRole;
         updateAttributes.committeeRole = input.role.committeeRole;
         updateAttributes.committeeName = input.role.committeeIdentifier;
       }
@@ -395,7 +398,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
       await Promise.all(promises);
 
       return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-        row.toResource()
+        await row.toResource()
       );
     });
   }

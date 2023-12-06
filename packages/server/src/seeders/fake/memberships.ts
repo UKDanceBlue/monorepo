@@ -3,7 +3,6 @@ import type { CreationAttributes } from "@sequelize/core";
 import type { CommitteeIdentifier } from "@ukdanceblue/common";
 import {
   CommitteeRole,
-  DbRole,
   MembershipPositionType,
   TeamType,
 } from "@ukdanceblue/common";
@@ -42,7 +41,6 @@ export default async function () {
         membershipMap.get(committee)!.add([person, isCaptain]);
         hasCaptainMap.set(committee, isCaptain);
         await person.update({
-          dbRole: DbRole.Committee,
           committeeRole: isCaptain ? CommitteeRole.Chair : CommitteeRole.Member,
           committeeName: committee.persistentIdentifier as CommitteeIdentifier,
         });
@@ -56,9 +54,6 @@ export default async function () {
           isCaptain = true;
         }
         membershipMap.get(team)!.add([person, isCaptain]);
-        await person.update({
-          dbRole: isCaptain ? DbRole.TeamCaptain : DbRole.TeamMember,
-        });
       }
     })
   );

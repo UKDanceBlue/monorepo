@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">=2.9.0",
+    "version": ">=5.9.1",
     "requireCommit": true
   },
   "build": {
@@ -9,49 +9,39 @@
       "releaseChannel": "development",
       "developmentClient": true,
       "cache": {
-        "key": "3"
+        "key": "4"
       },
       "env": {
         "APP_VARIANT": "development",
-        "FIREBASE_APP_CHECK_DEBUG_TOKEN": "3B7C4299-3FEA-47CA-80C5-953A6AC54D54",
         "YARN_ENABLE_IMMUTABLE_INSTALLS": "false"
       }
     },
-    "development": {
+    "dev-client-simulator": {
+      "extends": "dev-client",
+      "developmentClient": true,
       "distribution": "internal",
-      "releaseChannel": "development",
       "ios": {
         "simulator": true
-      },
-      "cache": {
-        "key": "2"
-      },
-      "env": {
-        "APP_VARIANT": "development",
-        "YARN_ENABLE_IMMUTABLE_INSTALLS": "false"
-      }
-    },
-    "preview": {
-      "distribution": "internal",
-      "releaseChannel": "preview",
-      "cache": {
-        "key": "2"
-      },
-      "env": {
-        "APP_VARIANT": "production",
-        "YARN_ENABLE_IMMUTABLE_INSTALLS": "false"
       }
     },
     "production": {
       "distribution": "store",
       "releaseChannel": "prod-v2",
       "cache": {
-        "key": "2"
+        "key": "3"
       },
       "env": {
         "APP_VARIANT": "production",
         "CHECK_VERSION": "true",
         "YARN_ENABLE_IMMUTABLE_INSTALLS": "false"
+      }
+    },
+    "simulator": {
+      "extends": "production",
+      "releaseChannel": "prod-v2",
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
       }
     }
   },

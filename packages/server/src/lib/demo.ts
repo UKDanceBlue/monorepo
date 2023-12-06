@@ -1,6 +1,5 @@
 import {
   AuthSource,
-  DbRole,
   MembershipPositionType,
   TeamLegacyStatus,
   TeamType,
@@ -24,7 +23,6 @@ export async function getOrMakeDemoUser() {
         email: "demo-user@dancblue.org",
         name: "Demo User",
         linkblue: "demo-user",
-        dbRole: DbRole.TeamCaptain,
         authIds: {
           [AuthSource.Demo]: "demo-user",
         },

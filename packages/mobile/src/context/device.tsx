@@ -1,4 +1,5 @@
 import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
+import { randomUUID } from "expo-crypto";
 import { isDevice, osName } from "expo-device";
 import type { PermissionStatus } from "expo-notifications";
 import {
@@ -15,7 +16,6 @@ import {
   setItemAsync,
 } from "expo-secure-store";
 import { createContext, useContext, useEffect, useState } from "react";
-import { v4 } from "uuid";
 
 import { universalCatch } from "../common/logging";
 import { showMessage } from "../common/util/alertUtils";
@@ -50,7 +50,7 @@ const obtainUuid = async () => {
     return uuid;
   }
 
-  uuid = v4();
+  uuid = randomUUID();
 
   await setItemAsync(uuidStoreKey, uuid, {
     keychainAccessible: AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
