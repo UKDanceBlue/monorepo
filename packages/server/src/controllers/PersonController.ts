@@ -22,7 +22,7 @@ export async function findPersonForLogin(
 ): Promise<[PersonModel, boolean]> {
   logger.debug(`Looking for person with auth IDs: ${JSON.stringify(authIds)}`);
   return sequelizeDb.transaction(async (t) => {
-    // TODO: explore using auth IDs to find a person instead of user data
+    // TODO: pick specific values of authIds to search for, instead of all of them at once
     let currentPerson = await PersonModel.findOne({ where: { authIds } });
     let created = false;
     if (!currentPerson && userData.linkblue) {
