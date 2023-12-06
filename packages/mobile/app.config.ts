@@ -21,7 +21,7 @@ To bump the app's version:
 const bundleVersion: Version = {
   major: 2,
   minor: 3,
-  patch: 0,
+  patch: 1,
 } as const;
 const nativeVersion: Version = {
   major: 2,
