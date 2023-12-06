@@ -10,25 +10,25 @@ import Koa from "koa";
 import { koaBody } from "koa-body";
 
 import { applicationHost, applicationPort } from "./environment.js";
-import { logDebug, logError, logInfo, logWarning } from "./logger.js";
+import { logger } from "./logger.js";
 import type { GraphQLContext } from "./resolvers/context.js";
 import eventsApiRouter from "./routes/api/events/index.js";
 import healthCheckRouter from "./routes/api/healthcheck/index.js";
 
 // const BASIC_LOGGING: ApolloServerPlugin = {
 //   async requestDidStart(requestContext) {
-//     logDebug(`request started:\n${requestContext.request.query}`, {
+//     logger.debug(`request started:\n${requestContext.request.query}`, {
 //       variables: requestContext.request.variables,
 //     });
 //     const listener: GraphQLRequestListener<GraphQLContext> = {
 //       async didEncounterErrors(requestContext) {
-//         logInfo(
+//         logger.info(
 //           `an error happened in response to query: ${requestContext.request.query}`,
 //           { errors: requestContext.errors }
 //         );
 //       },
 //       async willSendResponse(requestContext) {
-//         logDebug("response sent", { response: requestContext.response });
+//         logger.debug("response sent", { response: requestContext.response });
 //       },
 //     };
 //
@@ -48,7 +48,7 @@ export async function createServer() {
   const app = new Koa();
   app.silent = true;
   app.on("error", (err, ctx) => {
-    logError("Koa app error", err, ctx);
+    logger.error("Koa app error", err, ctx);
   });
 
   const httpServer = http.createServer(app.callback());
@@ -61,10 +61,10 @@ export async function createServer() {
       ApolloServerPluginDrainHttpServer({ httpServer }) /* BASIC_LOGGING, */,
     ],
     logger: {
-      debug: logDebug,
-      info: logInfo,
-      warn: logWarning,
-      error: logError,
+      debug: logger.debug,
+      info: logger.info,
+      warn: logger.warning,
+      error: logger.error,
     },
     status400ForVariableCoercionErrors: true,
     formatError(formatted, error) {

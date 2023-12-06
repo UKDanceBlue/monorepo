@@ -28,7 +28,7 @@ import {
 
 import { sequelizeDb } from "../data-source.js";
 import { roleToAuthorization } from "../lib/auth/role.js";
-import { logError } from "../logger.js";
+import { logger } from "../logger.js";
 
 import { BaseModel } from "./BaseModel.js";
 import { MembershipModel } from "./Membership.js";
@@ -65,7 +65,7 @@ export class PersonModel extends BaseModel<
     } else if (this.committeeName && this.committeeRole) {
       return DbRole.Committee;
     } else if (this.committeeName || this.committeeRole) {
-      logError(
+      logger.error(
         "PersonModel.getDbRole() found only one of committeeName or committeeRole set"
       );
     } else if (

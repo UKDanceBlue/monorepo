@@ -5,7 +5,7 @@ import { AuthSource, MembershipPositionType } from "@ukdanceblue/common";
 import type { DefaultState } from "koa";
 
 import { defaultAuthorization, parseUserJwt } from "../lib/auth/index.js";
-import { logDebug } from "../logger.js";
+import { logger } from "../logger.js";
 import { MembershipModel } from "../models/Membership.js";
 import { PersonModel } from "../models/Person.js";
 
@@ -36,7 +36,7 @@ export const graphqlContextFunction: ContextFunction<
   }
   const { userId, auth, authSource } = parseUserJwt(token);
   if (!userId) {
-    logDebug("graphqlContextFunction No userId found");
+    logger.debug("graphqlContextFunction No userId found");
     return {
       authenticatedUser: null,
       userData: {
@@ -52,7 +52,7 @@ export const graphqlContextFunction: ContextFunction<
   });
   if (person) {
     const personResource = await person.toResource();
-    logDebug("graphqlContextFunction Found user", personResource);
+    logger.debug("graphqlContextFunction Found user", personResource);
     return {
       authenticatedUser: personResource,
       userData: {
@@ -77,7 +77,7 @@ export const graphqlContextFunction: ContextFunction<
       contextErrors: [],
     };
   } else {
-    logDebug("graphqlContextFunction User not found");
+    logger.debug("graphqlContextFunction User not found");
     return {
       authenticatedUser: null,
       userData: {

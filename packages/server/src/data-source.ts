@@ -12,7 +12,7 @@ import {
   databaseUsername,
   isDevelopment,
 } from "./environment.js";
-import { logError, logFatal, logInfo, sqlLogger } from "./logger.js";
+import { logFatal, logger, sqlLogger } from "./logger.js";
 
 if (isDevelopment) {
   Sequelize.hooks.addListeners({
@@ -83,9 +83,9 @@ if (isDevelopment) {
 
 try {
   await sequelizeDb.authenticate();
-  logInfo("Database connection tested successfully.");
+  logger.info("Database connection tested successfully.");
 } catch (error) {
-  logError("Unable to connect to the database:", error);
+  logger.error("Unable to connect to the database:", error);
   logFatal("Shutting down due to database connection failure");
 }
 

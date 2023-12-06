@@ -1,10 +1,10 @@
-import { logError } from "../logger.js";
+import { logger } from "../logger.js";
 
 export class InvariantError extends Error {
   readonly name: string = "InvariantError";
 
   constructor(message: string) {
     super(message);
-    logError("Invariant Violation", message);
+    logger.error("Invariant Violation", message);
   }
 }

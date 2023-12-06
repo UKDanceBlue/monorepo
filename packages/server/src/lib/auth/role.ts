@@ -6,7 +6,7 @@ import {
   DbRole,
 } from "@ukdanceblue/common";
 
-import { logError } from "../../logger.js";
+import { logger } from "../../logger.js";
 
 /**
  * Converts a DbRole to an AccessLevel
@@ -43,7 +43,7 @@ export function roleToAccessLevel(role: RoleResource): AccessLevel {
       try {
         throw new Error(`Illegal DbRole: ${JSON.stringify(role.dbRole)}`);
       } catch (error) {
-        logError(error);
+        logger.error(error);
         throw new Error(
           `Illegal DbRole: [Parsing of '${String(role.dbRole)}' failed]`
         );
@@ -83,7 +83,7 @@ export function roleToAuthorization(role: RoleResource): Authorization {
       break;
     }
     default: {
-      logError(
+      logger.error(
         `Illegal DbRole: ${JSON.stringify(
           role.dbRole
         )}, using None. This is a bug.`

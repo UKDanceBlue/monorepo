@@ -73,33 +73,32 @@ export const oidcCallback = async (ctx: Context) => {
       if (typeof objectId !== "string") {
         return ctx.throw("Missing OID", 500);
       }
-      const [currentPerson, didCreate] = await findPersonForLogin(
+      let [currentPerson] = await findPersonForLogin(
         { [AuthSource.UkyLinkblue]: objectId },
         { email, linkblue }
       );
-      let isPersonChanged = didCreate;
+
       if (currentPerson.authIds?.[AuthSource.UkyLinkblue] !== objectId) {
-        currentPerson.authIds![AuthSource.UkyLinkblue] = objectId;
-        isPersonChanged = true;
+        currentPerson.authIds = {
+          ...currentPerson.authIds,
+          [AuthSource.UkyLinkblue]: objectId,
+        };
       }
       if (email && currentPerson.email !== email) {
         currentPerson.email = email;
-        isPersonChanged = true;
       }
       if (typeof firstName === "string" && typeof lastName === "string") {
         const name = `${firstName} ${lastName}`;
         if (currentPerson.name !== name) {
           currentPerson.name = name;
-          isPersonChanged = true;
         }
       }
       if (linkblue && currentPerson.linkblue !== linkblue) {
         currentPerson.linkblue = linkblue;
-        isPersonChanged = true;
       }
-      if (isPersonChanged) {
-        await currentPerson.save();
-      }
+
+      currentPerson = await currentPerson.save({ returning: true });
+
       const userData = await currentPerson.toUserData(AuthSource.UkyLinkblue);
       const jwt = makeUserJwt(userData);
       if (session.setCookie) {
