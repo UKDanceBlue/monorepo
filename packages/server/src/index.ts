@@ -51,8 +51,8 @@ if (typeof httpServerAddress === "string") {
 } else if (httpServerAddress) {
   httpServerUrl =
     httpServerAddress.address === "::" || httpServerAddress.address === ""
-      ? `http://localhost:${httpServerAddress.port}`
-      : `http://${httpServerAddress.address}:${httpServerAddress.port}`;
+      ? `https://localhost:${httpServerAddress.port}`
+      : `https://${httpServerAddress.address}:${httpServerAddress.port}`;
 }
 logger.info(`HTTP server started at ${httpServerUrl}`);
 

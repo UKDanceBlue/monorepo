@@ -11,7 +11,7 @@ import type {
 } from "../../../index.js";
 import { CommitteeRole, DetailedError, ErrorCode } from "../../../index.js";
 
-export interface AuthorizationRule extends Partial<Authorization> {
+export interface AuthorizationRule {
   /**
    * Exact DanceBlue role, cannot be used with minDbRole
    */
@@ -43,6 +43,12 @@ export interface AuthorizationRule extends Partial<Authorization> {
    */
   committeeIdentifiers?: readonly string[];
   /**
+   * The minimum access level required to access this resource
+   *
+   * Defaults to AccessLevel.Public
+   */
+  accessLevel?: AccessLevel;
+  /**
    * Custom authorization rule
    *
    * Should usually be avoided, but can be used for more complex authorization rules
@@ -73,6 +79,11 @@ export function checkAuthorization(
   // DB role
   if (role.dbRole != null) {
     matches &&= authorization.dbRole === role.dbRole;
+  }
+
+  // Access level
+  if (role.accessLevel != null) {
+    matches &&= authorization.accessLevel >= role.accessLevel;
   }
 
   // Committee role

@@ -8328,6 +8328,7 @@ __metadata:
     "@types/react": ^18.2.15
     "@types/react-dom": ^18.2.7
     "@ukdanceblue/common": "workspace:^"
+    "@vitejs/plugin-basic-ssl": ^1.0.2
     "@vitejs/plugin-react-swc": ^3.3.2
     "@wysimark/react": ^3.0.20
     antd: ^5.10.1
@@ -8506,6 +8507,15 @@ __metadata:
     "@urql/core": ">=4.0.0"
     wonka: ^6.3.2
   checksum: 5bb30c1de9fc6c1cd25224da4c2445567dc3d6bacac43a15dcca07bbd87c2c30c765dc522a3150dc119dc76230b2da27328a4ccd4e9cfb02039d87a9beaf97b4
+  languageName: node
+  linkType: hard
+
+"@vitejs/plugin-basic-ssl@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@vitejs/plugin-basic-ssl@npm:1.0.2"
+  peerDependencies:
+    vite: ^3.0.0 || ^4.0.0 || ^5.0.0
+  checksum: aa6df5037c2b4cdfa3d2eb44f1a2402dab112a1ba9de32edf3cbd132894fed46f49a6cdd1006efce4e521decd66777ce18711f44c77129d616042d5539860cc3
   languageName: node
   linkType: hard
 

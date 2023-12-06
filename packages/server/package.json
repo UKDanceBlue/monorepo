@@ -16,7 +16,8 @@
     "test": "jest",
     "start-seed": "node . --seed-db --reset-db",
     "start-reset": "node . --reset-db",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "generate-ssl-keys": "openssl req -x509 -newkey rsa:4096 -keyout certs/key.pem -out certs/cert.pem -sha256 -nodes -days 365 -subj '/CN=localhost'"
   },
   "keywords": [],
   "author": "",

@@ -2,15 +2,58 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const {
+  DB_HOST,
+  DB_PORT,
+  DB_UNAME,
+  DB_PWD,
+  DB_NAME,
+  APPLICATION_HOST,
+  NODE_ENV,
+  APPLICATION_PORT,
+  MS_OIDC_URL,
+  MS_CLIENT_ID,
+  MS_CLIENT_SECRET,
+  OVERRIDE_AUTH,
+  COOKIE_SECRET,
+  JWT_SECRET,
+  ASSET_PATH,
+  LOG_LEVEL,
+} = process.env;
+
 // Core env
-export const isDevelopment = process.env.NODE_ENV === "development";
-export const isProduction = process.env.NODE_ENV === "production";
-export const nodeEnvirnoment = process.env.NODE_ENV || "development";
+export const isDevelopment = NODE_ENV === "development";
+export const isProduction = NODE_ENV === "production";
+export const nodeEnvirnoment = NODE_ENV || "development";
+
+// Logging
+const allowedLogLevels = [
+  "emerg",
+  "alert",
+  "crit",
+  "error",
+  "warning",
+  "notice",
+  "info",
+  "debug",
+  "trace",
+] as const;
+export type LogLevel = (typeof allowedLogLevels)[number];
+
+export const logLevel: LogLevel =
+  (LOG_LEVEL as LogLevel | undefined) ?? (isDevelopment ? "debug" : "info");
+if (!allowedLogLevels.includes(logLevel)) {
+  throw new Error(
+    `LOG_LEVEL is set to an invalid value: ${logLevel}. Allowed values are: ${allowedLogLevels.join(
+      ", "
+    )}`
+  );
+}
 
 // Port and Host
 let applicationPort: number = 8000;
-if (process.env.APPLICATION_PORT) {
-  const envApplicationPort = Number.parseInt(process.env.APPLICATION_PORT, 10);
+if (APPLICATION_PORT) {
+  const envApplicationPort = Number.parseInt(APPLICATION_PORT, 10);
   if (Number.isNaN(envApplicationPort)) {
     throw new TypeError("Env variable 'APPLICATION_PORT' is not a number");
   }
@@ -22,10 +65,9 @@ if (process.env.APPLICATION_PORT) {
   applicationPort = envApplicationPort;
 }
 export { applicationPort };
-export const applicationHost = process.env.APPLICATION_HOST || "localhost";
+export const applicationHost = APPLICATION_HOST || "localhost";
 
 // Secrets
-const { COOKIE_SECRET, JWT_SECRET, ASSET_PATH } = process.env;
 if (!JWT_SECRET) {
   throw new Error("JWT_SECRET is not set");
 }
@@ -39,7 +81,6 @@ export const jwtSecret = JWT_SECRET;
 export const assetPath = ASSET_PATH;
 
 // Database
-const { DB_HOST, DB_PORT, DB_UNAME, DB_PWD, DB_NAME } = process.env;
 if (!DB_HOST) {
   throw new Error("DB_HOST is not set");
 }
@@ -66,7 +107,6 @@ export const databaseName = DB_NAME;
 export const isDatabaseLocal = databaseHost === "localhost" && isDevelopment;
 
 // MS Auth
-const { MS_OIDC_URL, MS_CLIENT_ID, MS_CLIENT_SECRET } = process.env;
 if (!MS_OIDC_URL) {
   throw new Error("MS_OIDC_URL is not set");
 }
@@ -81,5 +121,4 @@ export const msClientId = MS_CLIENT_ID;
 export const msClientSecret = MS_CLIENT_SECRET;
 
 // Disable all authorization checks
-const { OVERRIDE_AUTH } = process.env;
 export const authorizationOverride = OVERRIDE_AUTH === "THIS IS DANGEROUS";

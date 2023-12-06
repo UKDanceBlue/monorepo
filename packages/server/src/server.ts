@@ -1,7 +1,6 @@
-import http from "node:http";
+import http2 from "node:http2";
 
 import { ApolloServer } from "@apollo/server";
-import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { koaMiddleware } from "@as-integrations/koa";
 import cors from "@koa/cors";
 import Router from "@koa/router";
@@ -14,6 +13,8 @@ import { logger } from "./logger.js";
 import type { GraphQLContext } from "./resolvers/context.js";
 import eventsApiRouter from "./routes/api/events/index.js";
 import healthCheckRouter from "./routes/api/healthcheck/index.js";
+import logsApiRouter from "./routes/api/logs/index.js";
+import { getKeyPair } from "./ssl.js";
 
 // const BASIC_LOGGING: ApolloServerPlugin = {
 //   async requestDidStart(requestContext) {
@@ -51,14 +52,22 @@ export async function createServer() {
     logger.error("Koa app error", err, ctx);
   });
 
-  const httpServer = http.createServer(app.callback());
+  const { key, cert } = getKeyPair();
+  const httpServer = http2.createSecureServer(
+    {
+      // allowHTTP1: true,
+      key,
+      cert,
+    },
+    app.callback()
+  );
 
   // Set up Apollo Server
   const server = new ApolloServer<GraphQLContext>({
     introspection: true,
     schema: graphqlSchema,
     plugins: [
-      ApolloServerPluginDrainHttpServer({ httpServer }) /* BASIC_LOGGING, */,
+      // ApolloServerPluginDrainHttpServer({ httpServer }) /* BASIC_LOGGING, */,
     ],
     logger: {
       debug: logger.debug,
@@ -86,7 +95,7 @@ export async function createServer() {
  *
  * @param httpServer The HTTP server to start
  */
-export async function startHttpServer(httpServer: http.Server) {
+export async function startHttpServer(httpServer: http2.Http2Server) {
   await new Promise<void>((resolve, reject) => {
     httpServer.on("error", reject);
     httpServer.listen({ port: applicationPort, host: applicationHost }, () => {
@@ -133,6 +142,7 @@ export async function startServer(
     "/api",
     authApiRouter.routes(),
     eventsApiRouter.routes(),
-    healthCheckRouter.routes()
+    healthCheckRouter.routes(),
+    logsApiRouter.routes()
   );
 }

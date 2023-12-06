@@ -1,19 +1,11 @@
+import { Readable, Writable } from "stream";
+
 import type winston from "winston";
 import type { LoggerOptions } from "winston";
 import { createLogger, format, transports } from "winston";
 
-import { isDevelopment, isProduction } from "./environment.js";
-
-const fileErrorLogTransport = new transports.File({
-  filename: "error.log",
-  level: "error",
-});
-
-const fileLogTransport = new transports.File({
-  filename: "combined.log",
-  maxsize: 1_000_000,
-  maxFiles: 3,
-});
+import type { LogLevel } from "./environment.js";
+import { isDevelopment, isProduction, logLevel } from "./environment.js";
 
 const syslogLevels = {
   emerg: 0,
@@ -25,7 +17,7 @@ const syslogLevels = {
   info: 6,
   debug: 7,
   trace: 8,
-} satisfies winston.config.AbstractConfigSetLevels;
+} satisfies winston.config.AbstractConfigSetLevels & Record<LogLevel, number>;
 
 const syslogColors = {
   emerg: "red",
@@ -39,6 +31,18 @@ const syslogColors = {
   trace: "gray",
 } satisfies winston.config.AbstractConfigSetColors;
 
+const fileErrorLogTransport = new transports.File({
+  filename: "error.log",
+  level: "error",
+});
+
+const fileLogTransport = new transports.File({
+  filename: "combined.log",
+  maxsize: 1_000_000,
+  maxFiles: 3,
+  level: syslogLevels[logLevel] < syslogLevels.debug ? logLevel : "debug",
+});
+
 const consoleTransport = new transports.Console({
   format: format.combine(
     format.splat(),
@@ -47,10 +51,67 @@ const consoleTransport = new transports.Console({
       colors: syslogColors,
     })
   ),
+  level: logLevel,
 });
 
+// A stream to send logs to that can be subscribed to by Koa
+const logStream = new Writable({
+  objectMode: true,
+  write(_chunk, _encoding, callback) {
+    callback();
+  },
+});
+
+export function subscribeToLogs(onEnd: () => void): Readable {
+  const readable = new Readable({
+    objectMode: true,
+    read() {
+      // Do nothing
+    },
+  });
+
+  readable
+    .on("close", () => {
+      logger.debug("Log stream closed");
+    })
+    .on("error", (error) => {
+      logger.error("Log stream error", error);
+      onEnd();
+    })
+    .on("end", () => {
+      logger.debug("Log stream ended");
+      onEnd();
+    })
+    .on("finish", () => {
+      logger.debug("Log stream finished");
+      onEnd();
+    });
+
+  logStream
+    .on("close", () => {
+      logger.debug("Log stream closed");
+      readable.destroy();
+    })
+    .on("error", (error) => {
+      logger.error("Log stream error", error);
+      readable.destroy();
+    })
+    .on("end", () => {
+      logger.debug("Log stream ended");
+      readable.destroy();
+    })
+    .on("finish", () => {
+      logger.debug("Log stream finished");
+      readable.destroy();
+    })
+    .on("data", (data) => {
+      readable.push(data);
+    });
+
+  return readable;
+}
+
 const loggerOptions = {
-  level: "debug",
   levels: syslogLevels,
   format: format.combine(
     format.splat(),
@@ -60,7 +121,10 @@ const loggerOptions = {
   transports: [
     fileErrorLogTransport,
     consoleTransport,
-    // TODO: Add a transport for errors that are sent to the database for display in the admin panel
+    new transports.Stream({
+      stream: logStream,
+      level: syslogLevels[logLevel] < syslogLevels.info ? logLevel : "info",
+    }),
   ],
   exitOnError: false,
 } satisfies LoggerOptions;
