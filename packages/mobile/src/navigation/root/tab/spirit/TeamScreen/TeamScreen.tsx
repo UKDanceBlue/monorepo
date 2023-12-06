@@ -85,7 +85,9 @@ const TeamScreen = ({
           }
         }
       }
-      setTeamStandings([...entriesRecord.values()]);
+      setTeamStandings(
+        [...entriesRecord.values()].sort((a, b) => b.points - a.points)
+      );
     }
   }, [team?.pointEntries, userUuid]);
 
