@@ -1,7 +1,7 @@
 import { useLogin } from "@common/auth";
 import JumbotronGeometric from "@common/components/JumbotronGeometric";
 import { useThemeFonts } from "@common/customHooks";
-import { AuthSource, DbRole, committeeNames } from "@ukdanceblue/common";
+import { AuthSource, CommitteeIdentifier, CommitteeRole, DbRole, committeeNames } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import {
   getFragmentData,
@@ -16,6 +16,7 @@ import {
   VStack,
   theme,
 } from "native-base";
+import { useMemo } from "react";
 
 import { ProfileFooter } from "./ProfileFooter";
 
@@ -66,7 +67,7 @@ const ProfileScreen = ({
     profileScreenUserFragment
   );
 
-  const { body, mono } = useThemeFonts();
+  const { body } = useThemeFonts();
 
   const [loading, trigger] = useLogin();
 
@@ -82,6 +83,21 @@ const ProfileScreen = ({
   function nameString() {
     return userData?.name ?? "Anonymous :)";
   }
+
+  const committeeString = useMemo(() => {
+    if (authData?.role.dbRole === DbRole.Committee) {
+      if (authData.role.committeeIdentifier === CommitteeIdentifier.viceCommittee && authData.role.committeeRole === CommitteeRole.Chair) {
+        return "✨ Overall Chair ✨";
+      }
+      return `Committee: ${
+        authData.role.committeeIdentifier
+          ? committeeNames[authData.role.committeeIdentifier]
+          : "Unknown"
+      } ${authData.role.committeeRole}`;
+    } else {
+      return null;
+    }
+  }, [authData]);
 
   if (loading) {
     return (
@@ -111,22 +127,7 @@ const ProfileScreen = ({
             >
               {nameString()}
             </Text>
-            {authData?.role.dbRole === DbRole.Committee && (
-              <Text
-                width="full"
-                italic
-                textAlign="center"
-                color="primary.600"
-                fontSize={theme.fontSizes.lg}
-                fontFamily={mono}
-              >
-                {`Committee:\n${
-                  authData.role.committeeIdentifier
-                    ? committeeNames[authData.role.committeeIdentifier]
-                    : "Unknown"
-                } ${authData.role.committeeRole}`}
-              </Text>
-            )}
+            {committeeString}
           </Container>
           {/* TODO: Implement server-side support for individual totals */}
           {/* {userData.teams.length > 0 &&
