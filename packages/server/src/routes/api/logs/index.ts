@@ -2,12 +2,11 @@ import Router from "@koa/router";
 import { AccessLevel } from "@ukdanceblue/common";
 
 import { parseUserJwt } from "../../../lib/auth/index.js";
-import { logStream, logger } from "../../../logger.js";
+import { logStream } from "../../../logger.js";
 
 const logsApiRouter = new Router({ prefix: "/logs" });
 
 logsApiRouter.get("/", (ctx) => {
-  logger.info("GET /logs");
   let token = ctx.cookies.get("token");
   if (!token) {
     const authorizationHeader = ctx.get("Authorization");
@@ -36,6 +35,10 @@ logsApiRouter.get("/", (ctx) => {
     ctx.type = "text/event-stream";
     ctx.status = 200;
 
+    const keepAliveInterval = setInterval(() => {
+      ctx.res.write(":keepalive\n\n");
+    }, 15_000);
+
     logStream.on("data", (chunk) => {
       console.log(chunk);
     });
@@ -43,9 +46,11 @@ logsApiRouter.get("/", (ctx) => {
     logStream.addWriteable(ctx.res);
     ctx.res.on("error", (error) => {
       reject(error);
+      clearInterval(keepAliveInterval);
     });
     ctx.res.on("close", () => {
       resolve();
+      clearInterval(keepAliveInterval);
     });
   });
 });

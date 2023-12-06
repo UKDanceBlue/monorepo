@@ -1,6 +1,12 @@
 import { Router } from "@tanstack/react-router";
 
-import { eventsRoute, homeRoute, peopleRoute, teamsRoute } from "./baseRoutes";
+import {
+  eventsRoute,
+  homeRoute,
+  logsRoute,
+  peopleRoute,
+  teamsRoute,
+} from "./baseRoutes";
 import {
   createEventRoute,
   editEventRoute,
@@ -41,6 +47,7 @@ const routeTree = rootRoute.addChildren([
     createPersonRoute,
     singlePersonRoute.addChildren([editPersonRoute, viewPersonRoute]),
   ]),
+  logsRoute,
 ]);
 
 export const router = new Router({

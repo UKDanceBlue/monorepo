@@ -1,3 +1,4 @@
+import { stringify } from "safe-stable-stringify";
 import type winston from "winston";
 import type { LoggerOptions } from "winston";
 import { createLogger, format, transports } from "winston";
@@ -50,6 +51,7 @@ const consoleTransport = new transports.Console({
     format.simple(),
     format.colorize({
       colors: syslogColors,
+      all: true,
     })
   ),
   level: logLevel,
@@ -57,18 +59,21 @@ const consoleTransport = new transports.Console({
 
 // A stream to send logs to that can be subscribed to by Koa
 export const logStream = new LogStream();
+const streamTransport = new transports.Stream({
+  stream: logStream,
+  format: format.combine(
+    format.timestamp(),
+    format.printf(({ level, ...meta }) => {
+      return `event: ${level}\ndata: ${stringify(meta)}`;
+    })
+  ),
+  eol: "\n\n",
+  level: syslogLevels[logLevel] < syslogLevels.debug ? logLevel : "debug",
+});
 
 const loggerOptions = {
   levels: syslogLevels,
-  transports: [
-    fileErrorLogTransport,
-    consoleTransport,
-    new transports.Stream({
-      stream: logStream,
-      format: format.json(),
-      level: syslogLevels[logLevel] < syslogLevels.info ? logLevel : "info",
-    }),
-  ],
+  transports: [fileErrorLogTransport, consoleTransport, streamTransport],
   exitOnError: false,
 } satisfies LoggerOptions;
 
