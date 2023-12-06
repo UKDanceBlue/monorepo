@@ -1,11 +1,10 @@
-import { Readable, Writable } from "stream";
-
 import type winston from "winston";
 import type { LoggerOptions } from "winston";
 import { createLogger, format, transports } from "winston";
 
 import type { LogLevel } from "./environment.js";
 import { isDevelopment, isProduction, logLevel } from "./environment.js";
+import { LogStream } from "./lib/LogStream.js";
 
 const syslogLevels = {
   emerg: 0,
@@ -34,6 +33,7 @@ const syslogColors = {
 const fileErrorLogTransport = new transports.File({
   filename: "error.log",
   level: "error",
+  format: format.combine(format.splat(), format.json()),
 });
 
 const fileLogTransport = new transports.File({
@@ -41,6 +41,7 @@ const fileLogTransport = new transports.File({
   maxsize: 1_000_000,
   maxFiles: 3,
   level: syslogLevels[logLevel] < syslogLevels.debug ? logLevel : "debug",
+  format: format.combine(format.splat(), format.json()),
 });
 
 const consoleTransport = new transports.Console({
@@ -55,74 +56,16 @@ const consoleTransport = new transports.Console({
 });
 
 // A stream to send logs to that can be subscribed to by Koa
-const logStream = new Writable({
-  objectMode: true,
-  write(_chunk, _encoding, callback) {
-    callback();
-  },
-});
-
-export function subscribeToLogs(onEnd: () => void): Readable {
-  const readable = new Readable({
-    objectMode: true,
-    read() {
-      // Do nothing
-    },
-  });
-
-  readable
-    .on("close", () => {
-      logger.debug("Log stream closed");
-    })
-    .on("error", (error) => {
-      logger.error("Log stream error", error);
-      onEnd();
-    })
-    .on("end", () => {
-      logger.debug("Log stream ended");
-      onEnd();
-    })
-    .on("finish", () => {
-      logger.debug("Log stream finished");
-      onEnd();
-    });
-
-  logStream
-    .on("close", () => {
-      logger.debug("Log stream closed");
-      readable.destroy();
-    })
-    .on("error", (error) => {
-      logger.error("Log stream error", error);
-      readable.destroy();
-    })
-    .on("end", () => {
-      logger.debug("Log stream ended");
-      readable.destroy();
-    })
-    .on("finish", () => {
-      logger.debug("Log stream finished");
-      readable.destroy();
-    })
-    .on("data", (data) => {
-      readable.push(data);
-    });
-
-  return readable;
-}
+export const logStream = new LogStream();
 
 const loggerOptions = {
   levels: syslogLevels,
-  format: format.combine(
-    format.splat(),
-    format.colorize({ level: true, message: false }),
-    format.json()
-  ),
   transports: [
     fileErrorLogTransport,
     consoleTransport,
     new transports.Stream({
       stream: logStream,
+      format: format.json(),
       level: syslogLevels[logLevel] < syslogLevels.info ? logLevel : "info",
     }),
   ],
