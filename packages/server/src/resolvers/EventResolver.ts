@@ -180,13 +180,21 @@ class ListEventsArgs extends FilteredListQueryArgs("EventResolver", {
     "summary",
     "location",
     "occurrence",
+    "occurrence.start",
+    "occurrence.end",
     "duration",
     "createdAt",
     "updatedAt",
   ],
   string: ["title", "summary", "description", "location"],
   numeric: ["duration"],
-  date: ["occurrence", "createdAt", "updatedAt"],
+  date: [
+    "occurrence",
+    "createdAt",
+    "updatedAt",
+    "occurrence.start",
+    "occurrence.end",
+  ],
 }) {}
 
 @Resolver(() => EventResource)
@@ -210,11 +218,13 @@ export class EventResolver
   async list(@Args() query: ListEventsArgs) {
     const findOptions = query.toSequelizeFindOptions(
       {
-        title: "title",
-        description: "description",
-        location: "location",
-        occurrence: "$occurrences.date$",
-        duration: "duration",
+        "title": "title",
+        "description": "description",
+        "location": "location",
+        "occurrence": "$occurrences.date$",
+        "duration": "duration",
+        "occurrence.start": "$occurrences.date$",
+        "occurrence.end": "$occurrences.endDate$",
       },
       EventModel
     );

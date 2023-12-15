@@ -298,47 +298,57 @@ export const useEvents = ({
 
   const [eventsQueryResult, refresh] = useQuery({
     query: graphql(/* GraphQL */ `
-      query Events($earliestTimestamp: Timestamp!) {
+      query Events(
+        $earliestTimestamp: LuxonDateTime!
+        $lastTimestamp: LuxonDateTime!
+      ) {
         events(
-          dateFilters: [{
-            comparison: GREATER_THAN_OR_EQUAL_TO
-            field:
-          }]
+          dateFilters: [
+            {
+              comparison: GREATER_THAN_OR_EQUAL_TO
+              field: occurrence
+              value: $earliestTimestamp
+            }
+            {
+              comparison: LESS_THAN_OR_EQUAL_TO
+              field: occurrence
+              value: $lastTimestamp
+            }
+          ]
         ) {
-          ...FirestoreEvent
+          data {
+            uuid
+            title
+            summary
+            images {
+              height
+              width
+              url
+              imageData
+              mimeType
+              thumbHash
+            }
+            occurrences {
+              uuid
+              interval
+              fullDay
+            }
+          }
         }
       }
     `),
+    variables: {
+      earliestTimestamp: earliestTimestamp.toISO(),
+      lastTimestamp: earliestTimestamp
+        .plus({ months: LOADED_MONTHS - 1 })
+        .endOf("month")
+        .toISO(),
+    },
   });
 
-  useEffect(() => {
-    if (
-      !disableRefresh.current &&
-      (lastEarliestTimestamp.current == null ||
-        Math.abs(
-          earliestTimestamp
-            .diff(lastEarliestTimestamp.current, "months")
-            .get("months")
-        ) >= 2.5)
-    ) {
-      refresh(earliestTimestamp)
-        .catch(universalCatch)
-        .finally(() => {
-          setRefreshing(false);
-          disableRefresh.current = false;
-          lastEarliestTimestamp.current = earliestTimestamp;
-        });
-    }
-  }, [earliestTimestamp, refresh]);
-
   const eventsByMonth = useMemo(
-    () =>
-      splitEvents(
-        Object.values(events).filter(
-          (event): event is NonNullable<typeof event> => event != null
-        )
-      ),
-    [events]
+    () => splitEvents(eventsQueryResult.data?.events.data ?? []),
+    [eventsQueryResult.data]
   );
 
   const marked = useMemo(
