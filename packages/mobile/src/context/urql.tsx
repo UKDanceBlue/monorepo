@@ -49,7 +49,9 @@ export function UrqlContext({ children }: { children: ReactNode }) {
                   "Access denied! You don't have permission for this action!" ||
                 message === "Context creation failed: Invalid JWT payload" ||
                 message ===
-                  "[GraphQL] Context creation failed: invalid signature"
+                  "[GraphQL] Context creation failed: invalid signature" ||
+                message === "Context creation failed: jwt expired" ||
+                message === "Context creation failed: jwt malformed"
               );
             },
           };
