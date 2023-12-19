@@ -4,6 +4,9 @@ import type {
   NavigatorScreenParams,
 } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+
+import type { EventScreenFragment } from "../navigation/root/EventScreen/EventScreenFragment";
 
 import type { FirestoreHour } from "./firebaseTypes";
 
@@ -37,7 +40,7 @@ export type RootStackParamList = {
   "Notifications": undefined;
   "Profile": undefined;
   "Event": {
-    eventId: string;
+    event: FragmentType<typeof EventScreenFragment>;
     occurrenceId: string;
   };
   "Hour Details": { firestoreHour: FirestoreHour };

@@ -13,8 +13,7 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  fragment EventScreenFragment on EventResource {\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      imageData\n      thumbHash\n      url\n      height\n      width\n      alt\n      mimeType\n    }\n  }\n": types.EventScreenFragmentFragmentDoc,
-    "\n  query EventScreenQuery($eventId: String!) {\n    event(uuid: $eventId) {\n      data {\n        ...EventScreenFragment\n      }\n    }\n  }\n": types.EventScreenQueryDocument,
+    "\n  fragment EventScreenFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      imageData\n      thumbHash\n      url\n      height\n      width\n      alt\n      mimeType\n    }\n  }\n": types.EventScreenFragmentFragmentDoc,
     "\n  fragment ProfileScreenAuthFragment on LoginState {\n    role {\n      committeeIdentifier\n      committeeRole\n      dbRole\n    }\n    authSource\n  }\n": types.ProfileScreenAuthFragmentFragmentDoc,
     "\n  fragment ProfileScreenUserFragment on PersonResource {\n    name\n    linkblue\n    teams {\n      position\n      team {\n        name\n      }\n    }\n  }\n": types.ProfileScreenUserFragmentFragmentDoc,
     "\n  query RootScreenDocument {\n    loginState {\n      ...ProfileScreenAuthFragment\n      ...RootScreenAuthFragment\n    }\n    me {\n      data {\n        ...ProfileScreenUserFragment\n      }\n    }\n  }\n": types.RootScreenDocumentDocument,
@@ -43,11 +42,7 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment EventScreenFragment on EventResource {\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      imageData\n      thumbHash\n      url\n      height\n      width\n      alt\n      mimeType\n    }\n  }\n"): (typeof documents)["\n  fragment EventScreenFragment on EventResource {\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      imageData\n      thumbHash\n      url\n      height\n      width\n      alt\n      mimeType\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query EventScreenQuery($eventId: String!) {\n    event(uuid: $eventId) {\n      data {\n        ...EventScreenFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query EventScreenQuery($eventId: String!) {\n    event(uuid: $eventId) {\n      data {\n        ...EventScreenFragment\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  fragment EventScreenFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      imageData\n      thumbHash\n      url\n      height\n      width\n      alt\n      mimeType\n    }\n  }\n"): (typeof documents)["\n  fragment EventScreenFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      imageData\n      thumbHash\n      url\n      height\n      width\n      alt\n      mimeType\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

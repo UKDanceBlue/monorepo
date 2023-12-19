@@ -1,18 +1,8 @@
 import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
-import { log, universalCatch } from "@common/logging";
+import { log } from "@common/logging";
 import { showMessage } from "@common/util/alertUtils";
-import { discoverDefaultCalendar } from "@common/util/calendar";
 import { useRoute } from "@react-navigation/native";
-import {
-  getFragmentData,
-  graphql,
-} from "@ukdanceblue/common/dist/graphql-client-public";
-import {
-  PermissionStatus,
-  createEventAsync,
-  getCalendarPermissionsAsync,
-  requestCalendarPermissionsAsync,
-} from "expo-calendar";
+import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
 import { setStringAsync } from "expo-clipboard";
 import { DateTime, Interval } from "luxon";
 import {
@@ -30,49 +20,14 @@ import {
   useTheme,
 } from "native-base";
 import { useMemo } from "react";
-import {
-  ActivityIndicator,
-  RefreshControl,
-  useWindowDimensions,
-} from "react-native";
+import { ActivityIndicator, useWindowDimensions } from "react-native";
 import openMaps from "react-native-open-maps";
 import { WebView } from "react-native-webview";
-import { useQuery } from "urql";
 
 import type { RootStackScreenProps } from "../../../types/navigationTypes";
 
-const EventScreenFragment = graphql(/* GraphQL */ `
-  fragment EventScreenFragment on EventResource {
-    title
-    summary
-    description
-    location
-    occurrences {
-      uuid
-      interval
-      fullDay
-    }
-    images {
-      imageData
-      thumbHash
-      url
-      height
-      width
-      alt
-      mimeType
-    }
-  }
-`);
-
-const eventScreenDocument = graphql(/* GraphQL */ `
-  query EventScreenQuery($eventId: String!) {
-    event(uuid: $eventId) {
-      data {
-        ...EventScreenFragment
-      }
-    }
-  }
-`);
+import { EventScreenFragment } from "./EventScreenFragment";
+import { onAddToCalendar } from "./addToCalendar";
 
 function extractUrl(
   url: URL | string | undefined | null,
@@ -90,101 +45,33 @@ function extractUrl(
 
 const EventScreen = () => {
   const {
-    params: { eventId, occurrenceId },
+    params: { event, occurrenceId },
   } = useRoute<RootStackScreenProps<"Event">["route"]>();
 
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
-  const [eventQuery, reloadEvent] = useQuery({
-    query: eventScreenDocument,
-    variables: { eventId },
-  });
-  const eventData = getFragmentData(
-    EventScreenFragment,
-    eventQuery.data?.event.data
-  );
+  const eventData = getFragmentData(EventScreenFragment, event);
 
   const maxHeight = useMemo(
     () =>
-      eventData?.images.reduce(
+      eventData.images.reduce(
         (acc, image) =>
           Math.max(
             acc,
             Math.min(image.height, screenWidth * (image.height / image.width))
           ),
         0
-      ) ?? 0,
-    [eventData?.images, screenWidth]
+      ),
+    [eventData.images, screenWidth]
   );
 
   const { colors } = useTheme();
 
-  const occurrence = useMemo(
-    () =>
-      eventData?.occurrences.find(
-        (occurrence) => occurrence.uuid === occurrenceId
-      ) ?? eventData?.occurrences[0],
-    [eventData?.occurrences, occurrenceId]
-  );
-  const interval = useMemo(
-    () =>
-      occurrence != null ? Interval.fromISO(occurrence.interval) : undefined,
-    [occurrence]
-  );
-
-  let whenString = "";
-  let allDay = false;
-  if (interval != null) {
-    if (
-      interval.start.toMillis() === DateTime.now().startOf("day").toMillis() &&
-      interval.end.toMillis() === DateTime.now().endOf("day").toMillis()
-    ) {
-      // All day today
-      whenString = interval.start.toFormat("All Day Today");
-      allDay = true;
-    } else if (
-      interval.start.toMillis() === interval.start.startOf("day").toMillis() &&
-      interval.end.toMillis() === interval.end.endOf("day").toMillis()
-    ) {
-      // All day some other day
-      if (interval.start.toISODate() === interval.end.toISODate()) {
-        // All day on the same day
-        whenString = `All Day ${interval.start.toFormat("L/d/yyyy")}`;
-        allDay = true;
-      } else {
-        // All day on different days
-        whenString = interval.start.toFormat(
-          `All Day ${interval.start.toFormat(
-            "L/d/yyyy"
-          )} - ${interval.end.toFormat("L/d/yyyy")}`
-        );
-        allDay = true;
-      }
-    } else if (interval.hasSame("day")) {
-      whenString = `${interval.start.toFormat(
-        "L/d/yyyy h:mm a"
-      )} - ${interval.end.toFormat("h:mm a")}`;
-    } else {
-      whenString = interval.toFormat("L/d/yyyy h:mm a");
-    }
-  }
-
-  const imageCount = eventData?.images.length ?? 0;
-
   return (
     <VStack h="full">
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={eventQuery.fetching}
-            onRefresh={reloadEvent}
-          />
-        }
-        flex={1}
-      >
-        {imageCount > 0 &&
-          eventData?.images != null &&
-          (imageCount > 1 ? (
+      <ScrollView flex={1}>
+        {eventData.images.length > 0 &&
+          (eventData.images.length > 1 ? (
             <ScrollView
               showsVerticalScrollIndicator={false}
               showsHorizontalScrollIndicator={true}
@@ -200,7 +87,7 @@ const EventScreen = () => {
                       pageImage.height,
                       screenWidth * (pageImage.height / pageImage.width)
                     ),
-                    marginRight: index < imageCount - 1 ? 6 : 0,
+                    marginRight: index < eventData.images.length - 1 ? 6 : 0,
                   }}
                 >
                   {eventData.images.length > 1 && (
@@ -262,9 +149,9 @@ const EventScreen = () => {
             )
           ))}
         <Heading my={1} mx={2} textAlign="center">
-          {eventData?.title}
+          {eventData.title}
         </Heading>
-        {eventData?.location != null && (
+        {eventData.location != null && (
           <Pressable
             onPress={() => {
               setStringAsync(eventData.location ?? "")
@@ -281,62 +168,35 @@ const EventScreen = () => {
           </Pressable>
         )}
         <Text textAlign="center" mx={2} mb={2}>
-          {whenString}
+          {eventData.occurrences.map((occurrence) => {
+            const highlighted = occurrence.uuid === occurrenceId;
+
+            const interval = Interval.fromISO(occurrence.interval);
+            const { whenString, allDay } = stringifyInterval(interval);
+
+            return (
+              <Text
+                key={occurrence.uuid}
+                color={highlighted ? "darkBlue.700" : "darkBlue.500"}
+                fontWeight={highlighted ? "bold" : "normal"}
+              >
+                {whenString}
+                {allDay && " (All Day)"}
+                {"\n"}
+              </Text>
+            );
+          })}
         </Text>
 
-        <Button
-          onPress={async () => {
-            try {
-              const permissionResponse = await getCalendarPermissionsAsync();
-              let permissionStatus = permissionResponse.status;
-              const { canAskAgain } = permissionResponse;
-
-              if (permissionStatus === PermissionStatus.DENIED) {
-                showMessage(
-                  "Go to your device settings to enable calendar access",
-                  "Calendar access denied"
-                );
-              } else if (
-                permissionStatus === PermissionStatus.UNDETERMINED ||
-                canAskAgain
-              ) {
-                permissionStatus =
-                  // eslint-disable-next-line unicorn/no-await-expression-member
-                  (await requestCalendarPermissionsAsync()).status;
-              }
-
-              if (permissionStatus === PermissionStatus.GRANTED) {
-                const defaultCalendar = await discoverDefaultCalendar();
-                if (defaultCalendar == null) {
-                  showMessage(undefined, "No calendar found");
-                } else {
-                  await createEventAsync(defaultCalendar.id, {
-                    title: eventData?.title,
-                    allDay,
-                    notes: `${eventData?.summary ?? ""}\n\n${
-                      eventData?.description ?? ""
-                    }`,
-                    // TODO: fix these start and end dates
-                    startDate: interval!.start.toJSDate(),
-                    endDate: interval!.end.toJSDate(),
-                    location: eventData?.location ?? undefined,
-                  });
-                  showMessage(undefined, "Event created");
-                }
-              }
-            } catch (error) {
-              universalCatch(error);
-            }
-          }}
-        >
+        <Button onPress={() => onAddToCalendar(event, occurrenceId)}>
           Add to my calendar
         </Button>
 
         <Box mx={2}>
-          <NativeBaseMarkdown>{eventData?.description}</NativeBaseMarkdown>
+          <NativeBaseMarkdown>{eventData.description}</NativeBaseMarkdown>
         </Box>
 
-        {eventData?.location && (
+        {eventData.location && (
           <Box height={screenHeight * 0.4} p={3}>
             <Pressable
               _pressed={{ opacity: 0.5 }}
@@ -388,3 +248,42 @@ const EventScreen = () => {
 };
 
 export default EventScreen;
+function stringifyInterval(interval: Interval | undefined) {
+  let whenString = "";
+  let allDay = false;
+  if (interval != null) {
+    if (
+      interval.start.toMillis() === DateTime.now().startOf("day").toMillis() &&
+      interval.end.toMillis() === DateTime.now().endOf("day").toMillis()
+    ) {
+      // All day today
+      whenString = interval.start.toFormat("All Day Today");
+      allDay = true;
+    } else if (
+      interval.start.toMillis() === interval.start.startOf("day").toMillis() &&
+      interval.end.toMillis() === interval.end.endOf("day").toMillis()
+    ) {
+      // All day some other day
+      if (interval.start.toISODate() === interval.end.toISODate()) {
+        // All day on the same day
+        whenString = `All Day ${interval.start.toFormat("L/d/yyyy")}`;
+        allDay = true;
+      } else {
+        // All day on different days
+        whenString = interval.start.toFormat(
+          `All Day ${interval.start.toFormat(
+            "L/d/yyyy"
+          )} - ${interval.end.toFormat("L/d/yyyy")}`
+        );
+        allDay = true;
+      }
+    } else if (interval.hasSame("day")) {
+      whenString = `${interval.start.toFormat(
+        "L/d/yyyy h:mm a"
+      )} - ${interval.end.toFormat("h:mm a")}`;
+    } else {
+      whenString = interval.toFormat("L/d/yyyy h:mm a");
+    }
+  }
+  return { whenString, allDay };
+}
