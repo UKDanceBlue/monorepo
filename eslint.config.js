@@ -421,6 +421,38 @@ const eslintConfig = [
     },
     settings: {},
   },
+  {
+    files: [
+      "packages/**/scripts/src/**/*.js",
+      "packages/**/scripts/src/**/*.ts",
+    ],
+    plugins: {
+      node: eslintPluginNode,
+    },
+    languageOptions: {
+      parserOptions: {
+        project: "./packages/scripts/tsconfig.json",
+      },
+      globals: {
+        ...globals.nodeBuiltin,
+        ...eslintPluginNode.configs["recommended-module"].globals,
+      },
+    },
+    rules: {
+      "no-process-exit": "error",
+      "node/no-deprecated-api": "error",
+      "node/no-extraneous-import": "error",
+      "node/no-extraneous-require": "error",
+      "node/no-exports-assign": "error",
+      "node/no-missing-require": "error",
+      "node/no-unpublished-bin": "error",
+      "node/no-unpublished-import": "error",
+      "node/no-unpublished-require": "error",
+      "node/process-exit-as-throw": "error",
+      "node/shebang": "error",
+    },
+    settings: {},
+  },
   eslintConfigPrettier,
 ];
 
