@@ -1,13 +1,13 @@
 import { universalCatch } from "@common/logging";
-import { timestampToDateTime } from "@common/util/dateTools";
-import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import FirestoreModule from "@react-native-firebase/firestore";
-import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
-import type { FirestoreEventJson } from "@ukdanceblue/db-app-common";
-import { FirestoreEvent } from "@ukdanceblue/db-app-common";
-import type { MaybeWithFirestoreMetadata } from "@ukdanceblue/db-app-common/dist/firestore/internal";
-import { DateTime } from "luxon";
-import { useCallback, useMemo, useReducer, useRef, useState } from "react";
+import { showMessage } from "@common/util/alertUtils";
+import { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import {
+  getFragmentData,
+  graphql,
+} from "@ukdanceblue/common/dist/graphql-client-public";
+import { DateTime, Interval } from "luxon";
+import { useEffect, useMemo } from "react";
 import type { DateData } from "react-native-calendars";
 import type { MarkedDates } from "react-native-calendars/src/types";
 import { useQuery } from "urql";
@@ -135,19 +135,29 @@ export function dateDataToLuxonDateTime(
  * @param events The events to split
  * @returns An object keyed by month string, with the values being the events in that month
  */
-export const splitEvents = (events: FirestoreEvent[]) => {
-  const newEvents: Partial<Record<string, FirestoreEvent[]>> = {};
+export const splitEvents = (
+  events: readonly FragmentType<typeof EventScreenFragment>[]
+) => {
+  const newEvents: Partial<
+    Record<string, FragmentType<typeof EventScreenFragment>[]>
+  > = {};
 
   for (const event of events) {
-    if (event.interval != null) {
-      const eventDate: DateTime = timestampToDateTime(event.interval.start);
-      const eventMonthDateString = eventDate.toFormat(RNCAL_DATE_FORMAT_NO_DAY);
+    const eventData = getFragmentData(EventScreenFragment, event);
 
+    const eventMonths = eventData.occurrences
+      .map((occurrence) => Interval.fromISO(occurrence.interval))
+      .reduce((acc, curr) => acc.union(curr));
+
+    let eventMonth = eventMonths.start;
+    while (eventMonth.month <= eventMonths.end.month) {
+      const eventMonthDateString = luxonDateTimeToMonthString(eventMonth);
       if (newEvents[eventMonthDateString] == null) {
         newEvents[eventMonthDateString] = [event];
       } else {
         newEvents[eventMonthDateString]?.push(event);
       }
+      eventMonth = eventMonth.plus({ months: 1 });
     }
   }
 
@@ -160,7 +170,9 @@ export const splitEvents = (events: FirestoreEvent[]) => {
  * @param events The full list of events
  * @returns A MarkedDates object for react-native-calendars
  */
-export const markEvents = (events: FirestoreEvent[]) => {
+export const markEvents = (
+  events: FragmentType<typeof EventScreenFragment>[]
+) => {
   const todayDateString = getTodayDateString();
 
   const marked: MarkedDates = {};
@@ -168,10 +180,15 @@ export const markEvents = (events: FirestoreEvent[]) => {
   let hasAddedToday = false;
 
   for (const event of events) {
-    if (event.interval != null) {
-      const eventDate: DateTime = timestampToDateTime(event.interval.start);
-      const formattedDate = eventDate.toFormat(RNCAL_DATE_FORMAT);
+    const eventData = getFragmentData(EventScreenFragment, event);
 
+    const eventDays = eventData.occurrences
+      .map((occurrence) => Interval.fromISO(occurrence.interval))
+      .reduce((acc, curr) => acc.union(curr));
+
+    let eventDay = eventDays.start;
+    while (eventDay.month <= eventDays.end.month) {
+      const formattedDate = luxonDateTimeToDateString(eventDay);
       marked[formattedDate] = {
         marked: true,
         today: formattedDate === todayDateString,
@@ -179,6 +196,7 @@ export const markEvents = (events: FirestoreEvent[]) => {
       if (formattedDate === todayDateString) {
         hasAddedToday = true;
       }
+      eventDay = eventDay.plus({ days: 1 });
     }
   }
 
@@ -190,96 +208,9 @@ export const markEvents = (events: FirestoreEvent[]) => {
   return marked;
 };
 
-export type UseEventsStateInternalReducerPayloads =
-  | {
-      action: "reset";
-      payload?: never;
-    }
-  | {
-      action: "setEvents";
-      payload: FirestoreEvent[];
-    };
-
-export const useEventsStateInternal = () =>
-  useReducer(
-    (
-      prevState: Partial<Record<string, FirestoreEvent>>,
-      { action, payload }: UseEventsStateInternalReducerPayloads
-    ): Partial<Record<string, FirestoreEvent>> => {
-      try {
-        switch (action) {
-          case "reset": {
-            return {};
-          }
-          case "setEvents": {
-            return Object.fromEntries(
-              payload.map((event) => {
-                const documentId = event.documentMetadata?.documentId;
-                if (documentId) {
-                  return [documentId, event];
-                } else {
-                  throw new Error("Event has no document metadata");
-                }
-              })
-            ) as Partial<Record<string, FirestoreEvent>>;
-          }
-          default: {
-            throw new Error("Invalid action");
-          }
-        }
-      } catch (error) {
-        console.error(error);
-        return prevState;
-      }
-    },
-    {}
-  );
-
 export const getToday = () =>
   DateTime.local().set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
 export const getTodayDateString = () => luxonDateTimeToDateString(getToday());
-
-export async function loadEvents(
-  earliestTimestamp: DateTime,
-  fbFirestore: FirebaseFirestoreTypes.Module
-): Promise<{ eventsToSet: FirestoreEvent[] }> {
-  const snapshot = await fbFirestore
-    .collection<MaybeWithFirestoreMetadata<FirestoreEventJson>>("events")
-    .where(
-      new FirestoreModule.FieldPath("interval", "start"),
-      ">=",
-      FirestoreModule.Timestamp.fromMillis(
-        earliestTimestamp.startOf("month").toMillis()
-      )
-    ) // For example, if earliestTimestamp is 2021-03-01, then we only load events from 2021-03-01 onwards
-    .where(
-      new FirestoreModule.FieldPath("interval", "start"),
-      "<=",
-      FirestoreModule.Timestamp.fromMillis(
-        earliestTimestamp
-          .plus({ months: LOADED_MONTHS - 1 })
-          .endOf("month")
-          .toMillis()
-      )
-    ) // and before 2021-7-01, making the middle of the calendar 2021-05-01
-    .orderBy(new FirestoreModule.FieldPath("interval", "start"), "asc")
-    .get();
-
-  const eventsToSet = [];
-
-  for await (const doc of snapshot.docs) {
-    let firestoreEvent: FirestoreEvent;
-    try {
-      firestoreEvent = FirestoreEvent.fromSnapshot(doc);
-    } catch (error) {
-      console.error(error);
-      continue;
-    }
-    eventsToSet.push(firestoreEvent);
-  }
-
-  return { eventsToSet };
-}
 
 export const useEvents = ({
   earliestTimestamp,
@@ -287,15 +218,10 @@ export const useEvents = ({
   earliestTimestamp: DateTime;
 }): [
   markedDates: MarkedDates,
-  eventsByMonth: Partial<Record<string, FirestoreEvent[]>>,
+  eventsByMonth: ReturnType<typeof splitEvents>,
   refreshing: boolean,
-  refresh: () => Promise<void>,
+  refresh: () => void,
 ] => {
-  const lastEarliestTimestamp = useRef<DateTime | null>(null);
-
-  const [refreshing, setRefreshing] = useState(false);
-  const disableRefresh = useRef(false);
-
   const [eventsQueryResult, refresh] = useQuery({
     query: graphql(/* GraphQL */ `
       query Events(
@@ -317,22 +243,7 @@ export const useEvents = ({
           ]
         ) {
           data {
-            uuid
-            title
-            summary
-            images {
-              height
-              width
-              url
-              imageData
-              mimeType
-              thumbHash
-            }
-            occurrences {
-              uuid
-              interval
-              fullDay
-            }
+            ...EventScreenFragment
           }
         }
       }
@@ -346,6 +257,16 @@ export const useEvents = ({
     },
   });
 
+  useEffect(() => {
+    if (!eventsQueryResult.fetching && eventsQueryResult.error != null) {
+      universalCatch(eventsQueryResult.error);
+      showMessage(
+        eventsQueryResult.error.message,
+        eventsQueryResult.error.name
+      );
+    }
+  });
+
   const eventsByMonth = useMemo(
     () => splitEvents(eventsQueryResult.data?.events.data ?? []),
     [eventsQueryResult.data]
@@ -354,27 +275,15 @@ export const useEvents = ({
   const marked = useMemo(
     () =>
       markEvents(
-        Object.values(events).filter(
-          (event): event is NonNullable<typeof event> => event != null
-        )
+        eventsQueryResult.data?.events.data.filter((event) =>
+          getFragmentData(EventScreenFragment, event).occurrences.some(
+            (occurrence) =>
+              Interval.fromISO(occurrence.interval).contains(earliestTimestamp)
+          )
+        ) ?? []
       ),
-    [events]
+    [earliestTimestamp, eventsQueryResult.data?.events.data]
   );
 
-  return [
-    marked,
-    eventsByMonth,
-    refreshing,
-    useCallback(
-      () =>
-        refresh(earliestTimestamp)
-          .catch(universalCatch)
-          .finally(() => {
-            setRefreshing(false);
-            disableRefresh.current = false;
-            lastEarliestTimestamp.current = earliestTimestamp;
-          }),
-      [earliestTimestamp, refresh]
-    ),
-  ];
+  return [marked, eventsByMonth, eventsQueryResult.fetching, refresh];
 };
