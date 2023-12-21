@@ -170,8 +170,11 @@ const EventListScreen = () => {
                 refreshing={refreshing}
                 refresh={refresh}
                 month={month}
-                tryToNavigate={(eventToNavigateTo) =>
-                  navigate("Event", { event: eventToNavigateTo })
+                tryToNavigate={(eventToNavigateTo, occurrenceUuid) =>
+                  navigate("Event", {
+                    event: eventToNavigateTo,
+                    occurrenceId: occurrenceUuid,
+                  })
                 }
               />
             </View>

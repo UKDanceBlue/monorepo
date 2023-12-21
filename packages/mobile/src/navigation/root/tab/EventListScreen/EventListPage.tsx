@@ -1,5 +1,5 @@
-import { universalCatch } from "@common/logging";
-import type { FirestoreEvent } from "@ukdanceblue/db-app-common";
+import type { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import type { DateTime } from "luxon";
 import { Column, Divider, Spinner, Text } from "native-base";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -24,18 +24,31 @@ export const EventListPage = ({
   disabled = false,
 }: {
   month: DateTime;
-  eventsByMonth: Partial<Record<string, FirestoreEvent[]>>;
+  eventsByMonth: Partial<
+    Record<
+      string,
+      [
+        event: FragmentType<typeof EventScreenFragment>,
+        occurrenceUuid: string,
+      ][]
+    >
+  >;
   marked: MarkedDates;
-  refresh: () => Promise<void>;
+  refresh: () => void;
   refreshing: boolean;
-  tryToNavigate: (event: FirestoreEvent) => void;
+  tryToNavigate: (
+    event: FragmentType<typeof EventScreenFragment>,
+    occurrenceUuid: string
+  ) => void;
   disabled?: boolean;
 }) => {
   const monthString = luxonDateTimeToMonthString(month);
 
   const [selectedDay, setSelectedDay] = useState<DateData>();
   // Scroll-to-day functionality
-  const eventsListRef = useRef<FlatList<FirestoreEvent> | null>(null);
+  const eventsListRef = useRef<FlatList<
+    [FragmentType<typeof EventScreenFragment>, string]
+  > | null>(null);
   const dayIndexes = useRef<Partial<Record<string, number>>>({});
   dayIndexes.current = {};
 
@@ -157,9 +170,7 @@ export const EventListPage = ({
         refreshing={refreshingManually}
         onRefresh={() => {
           setRefreshingManually(true);
-          refresh()
-            .catch(universalCatch)
-            .finally(() => setRefreshingManually(false));
+          refresh();
         }}
         onScrollToIndexFailed={console.error}
       />
