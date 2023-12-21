@@ -139,25 +139,27 @@ export const splitEvents = (
   events: readonly FragmentType<typeof EventScreenFragment>[]
 ) => {
   const newEvents: Partial<
-    Record<string, FragmentType<typeof EventScreenFragment>[]>
+    Record<
+      string,
+      [
+        event: FragmentType<typeof EventScreenFragment>,
+        occurrenceUuid: string,
+      ][]
+    >
   > = {};
 
   for (const event of events) {
     const eventData = getFragmentData(EventScreenFragment, event);
 
-    const eventMonths = eventData.occurrences
-      .map((occurrence) => Interval.fromISO(occurrence.interval))
-      .reduce((acc, curr) => acc.union(curr));
+    for (const occurrence of eventData.occurrences) {
+      const occurrenceInterval = Interval.fromISO(occurrence.interval);
+      const monthString = luxonDateTimeToMonthString(occurrenceInterval.start);
 
-    let eventMonth = eventMonths.start;
-    while (eventMonth.month <= eventMonths.end.month) {
-      const eventMonthDateString = luxonDateTimeToMonthString(eventMonth);
-      if (newEvents[eventMonthDateString] == null) {
-        newEvents[eventMonthDateString] = [event];
+      if (newEvents[monthString] == null) {
+        newEvents[monthString] = [[event, occurrence.uuid]];
       } else {
-        newEvents[eventMonthDateString]?.push(event);
+        newEvents[monthString]!.push([event, occurrence.uuid]);
       }
-      eventMonth = eventMonth.plus({ months: 1 });
     }
   }
 
