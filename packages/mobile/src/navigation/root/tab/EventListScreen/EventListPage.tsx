@@ -117,63 +117,65 @@ export const EventListPage = ({
   }, [marked, selectedDay?.dateString]);
 
   return (
-    <Column width="full" height="full">
-      <Calendar
-        initialDate={monthString}
-        markedDates={markedWithSelected}
-        hideExtraDays
-        hideArrows
-        theme={useMemo(
-          () => ({
-            arrowColor: "#0032A0",
-            textMonthFontWeight: "bold",
-            textMonthFontSize: 20,
-            textDayFontWeight: "bold",
-            textDayHeaderFontWeight: "500",
-          }),
-          []
-        )}
-        displayLoadingIndicator={refreshing}
-        onDayPress={setSelectedDay}
-        style={{ width: "100%" }}
-        disableAllTouchEventsForDisabledDays
-        disabledByDefault={disabled}
-      />
-      <Divider height={"1"} backgroundColor="gray.400" />
-      <FlatList
-        ref={(list) => (eventsListRef.current = list)}
-        data={eventsByMonth[monthString] ?? []}
-        ListEmptyComponent={
-          refreshing ? (
-            <Spinner size="lg" mt={20} />
-          ) : (
-            <Text style={{ textAlign: "center", marginTop: 20 }}>
-              No events this month
-            </Text>
-          )
-        }
-        initialScrollIndex={
-          selectedDay?.dateString
-            ? dayIndexes.current[selectedDay.dateString] ?? 0
-            : 0
-        }
-        extraData={selectedDay}
-        style={{ backgroundColor: "white", width: "100%" }}
-        renderItem={({ item, index }) => (
-          <EventListRenderItem
-            item={item}
-            index={index}
-            dayIndexesRef={dayIndexes}
-            tryToNavigate={tryToNavigate}
-          />
-        )}
-        refreshing={refreshingManually}
-        onRefresh={() => {
-          setRefreshingManually(true);
-          refresh();
-        }}
-        onScrollToIndexFailed={console.error}
-      />
-    </Column>
+    <>
+      <Column width="full" height="full">
+        <Calendar
+          initialDate={monthString}
+          markedDates={markedWithSelected}
+          hideExtraDays
+          hideArrows
+          theme={useMemo(
+            () => ({
+              arrowColor: "#0032A0",
+              textMonthFontWeight: "bold",
+              textMonthFontSize: 20,
+              textDayFontWeight: "bold",
+              textDayHeaderFontWeight: "500",
+            }),
+            []
+          )}
+          displayLoadingIndicator={refreshing}
+          onDayPress={setSelectedDay}
+          style={{ width: "100%" }}
+          disableAllTouchEventsForDisabledDays
+          disabledByDefault={disabled}
+        />
+        <Divider height={"1"} backgroundColor="gray.400" />
+        <FlatList
+          ref={(list) => (eventsListRef.current = list)}
+          data={eventsByMonth[monthString] ?? []}
+          ListEmptyComponent={
+            refreshing ? (
+              <Spinner size="lg" mt={20} />
+            ) : (
+              <Text style={{ textAlign: "center", marginTop: 20 }}>
+                No events this month
+              </Text>
+            )
+          }
+          initialScrollIndex={
+            selectedDay?.dateString
+              ? dayIndexes.current[selectedDay.dateString] ?? 0
+              : 0
+          }
+          extraData={selectedDay}
+          style={{ backgroundColor: "white", width: "100%" }}
+          renderItem={({ item, index }) => (
+            <EventListRenderItem
+              item={item}
+              index={index}
+              dayIndexesRef={dayIndexes}
+              tryToNavigate={tryToNavigate}
+            />
+          )}
+          refreshing={refreshingManually}
+          onRefresh={() => {
+            setRefreshingManually(true);
+            refresh();
+          }}
+          onScrollToIndexFailed={console.error}
+        />
+      </Column>
+    </>
   );
 };
