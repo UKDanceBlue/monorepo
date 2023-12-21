@@ -1,30 +1,12 @@
 import { useNavigation } from "@react-navigation/native";
 import { DateTime } from "luxon";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Animated, SafeAreaView, View } from "react-native";
-import { LazyPagerView } from "react-native-pager-view";
-
-// https://github.com/callstack/react-native-pager-view/issues/673#issuecomment-1647351189
-// Otherwise: https://github.com/callstack/react-native-pager-view/releases/tag/v6.0.0-rc.0
+import { useEffect, useMemo, useRef, useState } from "react";
+import { SafeAreaView, View } from "react-native";
+import InfinitePager from "react-native-infinite-pager";
 
 import { EventListPage } from "./EventListPage";
 import { LOADED_MONTHS_BEFORE_AFTER } from "./constants";
-import {
-  getToday,
-  luxonDateTimeToMonthString,
-  useEvents,
-} from "./eventListUtils";
-
-const AnimatedPager = Animated.createAnimatedComponent(LazyPagerView<DateTime>);
-
-const monthCount = DateTime.now()
-  .minus({ months: 12 })
-  .until(DateTime.now().plus({ months: 12 }))
-  .count("months");
-
-const monthDates = Array.from<DateTime>({ length: monthCount })
-  .fill(DateTime.now(), 0, monthCount)
-  .map((dateTime, i) => dateTime.plus({ months: i - monthCount / 2 }));
+import { getToday, useEvents } from "./eventListUtils";
 
 const DummyView = (
   <View
@@ -46,7 +28,6 @@ const DummyView = (
 );
 
 const EventListScreen = () => {
-  const lazyPagerRef = useRef<LazyPagerView<DateTime> | null>(null);
   const [isFirstRender, setIsFirstRender] = useState(true);
   useEffect(() => {
     if (isFirstRender) {
@@ -55,9 +36,6 @@ const EventListScreen = () => {
       }, 0);
     }
   }, [isFirstRender]);
-  const [hasPagerRefBeenSet, setHasPagerRefBeenSet] = useState(false);
-  const [hasSetPage, setHasSetPage] = useState(false);
-  const lastIndex = useRef<number | null>(null);
   // Calendar selection
   /*
   Assuming LOADED_MONTHS is 5:
@@ -91,13 +69,6 @@ const EventListScreen = () => {
     earliestTimestamp,
   });
 
-  useLayoutEffect(() => {
-    if (!hasSetPage && hasPagerRefBeenSet && lazyPagerRef.current != null) {
-      lazyPagerRef.current.setPageWithoutAnimation(Math.ceil(monthCount / 2));
-      setHasSetPage(true);
-    }
-  }, [hasPagerRefBeenSet, hasSetPage]);
-
   /*
    * Called by React Native when rendering the screen
    */
@@ -114,56 +85,16 @@ const EventListScreen = () => {
         DummyView
       ) : (
         <>
-          <AnimatedPager
-            ref={(ref: LazyPagerView<DateTime> | null) => {
-              if (ref != null) {
-                if (typeof ref !== "object") {
-                  throw new TypeError("Expected ref to be a ref object");
-                }
-                if (ref instanceof LazyPagerView) {
-                  lazyPagerRef.current = ref;
-                } else {
-                  throw new TypeError(
-                    "Expected ref to be a LazyPagerView ref object"
-                  );
-                }
-                setHasPagerRefBeenSet(true);
-              }
-            }}
-            buffer={1}
-            maxRenderWindow={7}
-            // Lib does not support dynamically orientation change
-            orientation="horizontal"
-            // Lib does not support dynamically transitionStyle change
-            transitionStyle="scroll"
-            data={monthDates}
-            keyExtractor={(dateTime) => luxonDateTimeToMonthString(dateTime)}
-            onPageScroll={({ nativeEvent: { offset, position } }) => {
-              const index = Math.round(position + offset);
-              if (index !== lastIndex.current && position + offset !== 0) {
-                lastIndex.current = index;
-                if (monthDates[index]) {
-                  const month = monthDates[index];
-                  if (
-                    !month
-                      .startOf("month")
-                      .equals(selectedMonth.startOf("month"))
-                  ) {
-                    setSelectedMonth(month);
-                  }
-                } else {
-                  console.warn("Index", index, "is out of bounds");
-                  const month = monthDates[Math.floor(monthDates.length / 2)];
-                  if (month as (typeof monthDates)[number] | undefined) {
-                    setSelectedMonth(month);
-                  }
-                }
-              }
+          <InfinitePager
+            pageBuffer={7}
+            onPageChange={(offset) => {
+              setSelectedMonth(DateTime.now().plus({ months: offset }));
             }}
             style={{ height: "100%", width: "100%" }}
-            renderItem={({ item: month }) => (
+            initialIndex={0}
+            renderPage={({ index }) => (
               <View
-                key={luxonDateTimeToMonthString(month)}
+                key={index}
                 style={{ height: "100%", width: "100%" }}
                 collapsable={false}
               >
@@ -172,7 +103,7 @@ const EventListScreen = () => {
                   marked={markedDates}
                   refreshing={refreshing}
                   refresh={refresh}
-                  month={month}
+                  month={DateTime.now().plus({ months: index })}
                   tryToNavigate={(eventToNavigateTo, occurrenceUuid) =>
                     navigate("Event", {
                       event: eventToNavigateTo,
