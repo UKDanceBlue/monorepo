@@ -81,7 +81,7 @@
     "native-base": "^3.4.13",
     "react": "18.2.0",
     "react-native": "0.72.6",
-    "react-native-calendars": "^1.1289.0",
+    "react-native-calendars": "^1.1303.0",
     "react-native-elements": "^3.4.3",
     "react-native-fit-image": "^1.5.5",
     "react-native-gesture-handler": "~2.12.0",

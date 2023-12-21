@@ -8263,7 +8263,7 @@ __metadata:
     react: 18.2.0
     react-native: 0.72.6
     react-native-bundle-visualizer: ^3.1.1
-    react-native-calendars: ^1.1289.0
+    react-native-calendars: ^1.1303.0
     react-native-elements: ^3.4.3
     react-native-fit-image: ^1.5.5
     react-native-gesture-handler: ~2.12.0
@@ -20931,9 +20931,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-calendars@npm:^1.1289.0":
-  version: 1.1301.0
-  resolution: "react-native-calendars@npm:1.1301.0"
+"react-native-calendars@npm:^1.1303.0":
+  version: 1.1303.0
+  resolution: "react-native-calendars@npm:1.1303.0"
   dependencies:
     hoist-non-react-statics: ^3.3.1
     lodash: ^4.17.15
@@ -20946,7 +20946,7 @@ __metadata:
   dependenciesMeta:
     moment:
       optional: true
-  checksum: ca5d7426a99e60380911bc2118f3856aa2a5563d469fde0c6e85341a5cedf895ac3c042e43cb6497ee8e95ad69fba390e25795f0d3dd5da696fc5516b2e9308f
+  checksum: b001eb886d44dbba37a2cf5fa7593a3dd24dd781cf8b4dbdb9cb044c57b58c9b7e1e82608fdfe29d7476619d8c9326a44280af5e1d288b53069d744f2f505e1d
   languageName: node
   linkType: hard
 

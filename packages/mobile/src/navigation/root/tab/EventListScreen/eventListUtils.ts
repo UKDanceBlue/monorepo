@@ -173,46 +173,40 @@ export const splitEvents = (
  * @returns A MarkedDates object for react-native-calendars
  */
 export const markEvents = (
-  events: FragmentType<typeof EventScreenFragment>[]
+  events: readonly FragmentType<typeof EventScreenFragment>[]
 ) => {
-  const todayDateString = getTodayDateString();
-
   const marked: MarkedDates = {};
-
-  let hasAddedToday = false;
 
   for (const event of events) {
     const eventData = getFragmentData(EventScreenFragment, event);
 
-    const eventDays = eventData.occurrences
-      .map((occurrence) => Interval.fromISO(occurrence.interval))
-      .reduce((acc, curr) => acc.union(curr));
+    for (const occurrence of eventData.occurrences) {
+      const interval = Interval.fromISO(occurrence.interval);
 
-    let eventDay = eventDays.start;
-    while (eventDay.month <= eventDays.end.month) {
-      const formattedDate = luxonDateTimeToDateString(eventDay);
-      marked[formattedDate] = {
-        marked: true,
-        today: formattedDate === todayDateString,
-      };
-      if (formattedDate === todayDateString) {
-        hasAddedToday = true;
+      interval.set({
+        start: interval.start.startOf("day"),
+        end: interval.end.endOf("day"),
+      });
+
+      let date = interval.start.plus({ hour: 1 });
+
+      while (interval.contains(date)) {
+        const dateString = luxonDateTimeToDateString(date);
+
+        marked[dateString] = { marked: true };
+
+        date = date.plus({ days: 1 });
       }
-      eventDay = eventDay.plus({ days: 1 });
     }
   }
 
-  // If we didn't add today or selected day already, we need to add them manually
-  if (!hasAddedToday) {
-    marked[todayDateString] = { today: true };
-  }
+  marked[getTodayDateString()] = { today: true };
 
   return marked;
 };
 
-export const getToday = () =>
-  DateTime.local().set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-export const getTodayDateString = () => luxonDateTimeToDateString(getToday());
+export const getTodayDateString = () =>
+  luxonDateTimeToDateString(DateTime.now());
 
 export const useEvents = ({
   earliestTimestamp,
@@ -275,16 +269,8 @@ export const useEvents = ({
   );
 
   const marked = useMemo(
-    () =>
-      markEvents(
-        eventsQueryResult.data?.events.data.filter((event) =>
-          getFragmentData(EventScreenFragment, event).occurrences.some(
-            (occurrence) =>
-              Interval.fromISO(occurrence.interval).contains(earliestTimestamp)
-          )
-        ) ?? []
-      ),
-    [earliestTimestamp, eventsQueryResult.data?.events.data]
+    () => markEvents(eventsQueryResult.data?.events.data ?? []),
+    [eventsQueryResult.data?.events.data]
   );
 
   return [marked, eventsByMonth, eventsQueryResult.fetching, refresh];

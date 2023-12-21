@@ -6,7 +6,7 @@ import InfinitePager from "react-native-infinite-pager";
 
 import { EventListPage } from "./EventListPage";
 import { LOADED_MONTHS_BEFORE_AFTER } from "./constants";
-import { getToday, useEvents } from "./eventListUtils";
+import { useEvents } from "./eventListUtils";
 
 const DummyView = (
   <View
@@ -43,7 +43,7 @@ const EventListScreen = () => {
   1,2,3,4,5, - Calendar pages
   6 - Static loading screen
   */
-  const [selectedMonth, setSelectedMonth] = useState<DateTime>(getToday());
+  const [selectedMonth, setSelectedMonth] = useState<DateTime>(DateTime.now());
 
   // Earliest date to load (so we don't waste reads on events from 3 years ago)
   const lastEarliestTimestamp = useRef<DateTime>();
