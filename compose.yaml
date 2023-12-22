@@ -2,7 +2,7 @@
 
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:16-alpine
     environment:
       POSTGRES_USER: danceblue
       POSTGRES_PASSWORD: danceblue
@@ -11,7 +11,9 @@ services:
       - danceblue
     attach: false
     volumes:
-      - ./compose-volumes/postgres:/var/lib/postgresql/data
+      - danceblue-server-postgres-data:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
   server:
     container_name: server
     build:
@@ -31,7 +33,20 @@ services:
       DB_PWD: danceblue
       NODE_ENV: development
       APPLICATION_HOST: server
+    command: ["node", "dist/index.js", "--migrate-db"]
+  portal:
+    container_name: portal
+    build:
+      context: .
+      dockerfile: ./packages/portal/Dockerfile
+      args:
+        - VITE_APP_API_BASE_URL=http://localhost:8000
+    ports:
+      - 3000:80
 
 networks:
   danceblue:
     driver: bridge
+
+volumes:
+  danceblue-server-postgres-data:

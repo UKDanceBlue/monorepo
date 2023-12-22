@@ -85,18 +85,37 @@ try {
   await sequelizeDb.authenticate();
   logger.info("Database connection tested successfully.");
 } catch (error) {
-  logger.error("Unable to connect to the database:", error);
-  logFatal("Shutting down due to database connection failure");
+  try {
+    logger.info("Initial database connection failed. Retrying in 1 second.");
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1000);
+    });
+    await sequelizeDb.authenticate();
+    logger.info("Database connection tested successfully.");
+  } catch (error) {
+    logger.error("Unable to connect to the database:", error);
+    logFatal("Shutting down due to database connection failure");
+  }
 }
 
-const schemas = await sequelizeDb.showAllSchemas();
 let schemaExists = false;
-for (const schema of schemas) {
+for (const schema of await sequelizeDb.showAllSchemas()) {
   if ((schema as unknown as string | undefined) === "danceblue") {
     schemaExists = true;
     break;
   }
 }
 if (!schemaExists) {
-  logFatal("Database schema does not exist");
+  logger.info("Creating schema danceblue");
+  await sequelizeDb.createSchema("danceblue");
+
+  for (const schema of await sequelizeDb.showAllSchemas()) {
+    if ((schema as unknown as string | undefined) === "danceblue") {
+      schemaExists = true;
+      break;
+    }
+  }
+  if (!schemaExists) {
+    logFatal("Unable to create schema danceblue");
+  }
 }

@@ -1,4 +1,17 @@
-# Needs to be run with the context set to project root, i.e. docker build -t app-server ../.. -f Dockerfile
+# Context needs to be the root of the repository
+
+# Stage 1: Build the app in image 'builder'
+FROM node:18-alpine as builder
+
+WORKDIR /app
+
+COPY . .
+
+RUN yarn install --immutable
+
+RUN yarn run server:build
+
+# Stage 2: Copy the app from 'builder' to 'node'
 
 FROM node:18
 
@@ -24,21 +37,21 @@ ENV MS_OIDC_URL="https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb
 RUN mkdir -p /usr/src/app/packages/server
 RUN mkdir -p /usr/src/app/packages/common
 
-COPY packages/server/package.json /usr/src/app/packages/server
-COPY packages/server/.yarnrc.yml /usr/src/app/packages/server
-COPY packages/server/dist/ /usr/src/app/packages/server/dist
-COPY packages/server/node_modules/ /usr/src/app/packages/server/node_modules
+COPY  --from=builder /app/packages/server/package.json /usr/src/app/packages/server
+COPY  --from=builder /app/packages/server/.yarnrc.yml /usr/src/app/packages/server
+COPY  --from=builder /app/packages/server/dist/ /usr/src/app/packages/server/dist
+COPY  --from=builder /app/packages/server/node_modules/ /usr/src/app/packages/server/node_modules
 
-COPY packages/common/package.json /usr/src/app/packages/common
-COPY packages/common/.yarnrc.yml /usr/src/app/packages/common
-COPY packages/common/dist/ /usr/src/app/packages/common/dist
-COPY packages/common/node_modules/ /usr/src/app/packages/common/node_modules
+COPY  --from=builder /app/packages/common/package.json /usr/src/app/packages/common
+COPY  --from=builder /app/packages/common/.yarnrc.yml /usr/src/app/packages/common
+COPY  --from=builder /app/packages/common/dist/ /usr/src/app/packages/common/dist
+COPY  --from=builder /app/packages/common/node_modules/ /usr/src/app/packages/common/node_modules
 
-COPY package.json /usr/src/app
-COPY yarn.lock /usr/src/app
-COPY .yarnrc.yml /usr/src/app
-COPY node_modules/ /usr/src/app/node_modules
-COPY .yarn/ /usr/src/app/.yarn
+COPY  --from=builder /app/package.json /usr/src/app
+COPY  --from=builder /app/yarn.lock /usr/src/app
+COPY  --from=builder /app/.yarnrc.yml /usr/src/app
+COPY  --from=builder /app/node_modules/ /usr/src/app/node_modules
+COPY  --from=builder /app/.yarn/ /usr/src/app/.yarn
 
 WORKDIR /usr/src/app/packages/server
 
