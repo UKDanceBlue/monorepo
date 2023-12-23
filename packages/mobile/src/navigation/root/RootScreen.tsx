@@ -17,6 +17,7 @@ import type { RootStackParamList } from "../../types/navigationTypes";
 import HeaderIcons from "../HeaderIcons";
 
 import EventScreen from "./EventScreen";
+import { EventScreenFragment } from "./EventScreen/EventScreenFragment";
 import SplashLogin from "./Modals/SplashLogin";
 import NotificationScreen from "./NotificationScreen";
 import ProfileScreen from "./ProfileScreen";
@@ -130,17 +131,21 @@ const RootScreen = () => {
                 name="Event"
                 component={EventScreen}
                 options={({ route }) => {
-                  let title = "Event";
+                  let eventTitle = "Event";
                   let spacesInTitle = 0;
-                  if (route.params.event.name) {
-                    title = route.params.event.name;
-                    for (let i = 0; i < title.length; i++) {
-                      if (title[i] === " ") {
+                  const eventData = getFragmentData(
+                    EventScreenFragment,
+                    route.params.event
+                  );
+                  if (eventData.title) {
+                    eventTitle = eventData.title;
+                    for (let i = 0; i < eventTitle.length; i++) {
+                      if (eventTitle[i] === " ") {
                         spacesInTitle++;
                       }
                     }
                   }
-                  let titleWidth = title.length * fontScale;
+                  let titleWidth = eventTitle.length * fontScale;
 
                   // Safety precaution:
                   let loopCount = 0;
@@ -149,13 +154,16 @@ const RootScreen = () => {
                   if (titleWidth > 18) {
                     while (titleWidth > 18) {
                       if (spacesInTitle > 0) {
-                        title = title.split(" ").slice(0, -1).join(" ");
+                        eventTitle = eventTitle
+                          .split(" ")
+                          .slice(0, -1)
+                          .join(" ");
                         spacesInTitle--;
                       } else {
-                        title = title.slice(0, -1);
+                        eventTitle = eventTitle.slice(0, -1);
                         hadToBreakWord = true;
                       }
-                      titleWidth = title.length * fontScale;
+                      titleWidth = eventTitle.length * fontScale;
 
                       if (++loopCount > 100) {
                         log(
@@ -166,12 +174,12 @@ const RootScreen = () => {
                     }
 
                     if (hadToBreakWord) {
-                      title = `${title}...`;
+                      eventTitle = `${eventTitle}...`;
                     }
                   }
 
                   return {
-                    title,
+                    title: eventTitle,
                     headerMode: "screen",
                     // headerRight: undefined,
                   };

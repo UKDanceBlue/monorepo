@@ -2,16 +2,17 @@
 name: Docker build
 
 on:
-  push:
-  # Release is a special branch that is kept in sync with the production environment
-  # We also want to keep the dev environment in sync with the main branch
-    branches: ['release', 'main']
-    paths:
-      - 'packages/common/**'
-      - 'packages/portal/**'
-      - 'packages/server/**'
-      - 'yarn.lock'
-      - '.yarnrc.yml'
+  # push:
+  # # Release is a special branch that is kept in sync with the production environment
+  # # We also want to keep the dev environment in sync with the main branch
+  #   branches: ['release', 'main']
+  #   paths:
+  #     - 'packages/common/**'
+  #     - 'packages/portal/**'
+  #     - 'packages/server/**'
+  #     - 'yarn.lock'
+  #     - '.yarnrc.yml'
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io

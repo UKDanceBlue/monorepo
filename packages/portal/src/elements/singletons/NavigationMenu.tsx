@@ -78,6 +78,15 @@ export const NavigationMenu = () => {
     return activeKeys;
   }, [navItems]);
 
+  const logoutUrl = new URL(API_BASE_URL);
+  logoutUrl.pathname = "/api/auth/logout";
+  logoutUrl.searchParams.set("redirectTo", window.location.href);
+
+  const loginUrl = new URL(API_BASE_URL);
+  loginUrl.pathname = "/api/auth/login";
+  loginUrl.searchParams.set("returning", "cookie");
+  loginUrl.searchParams.set("redirectTo", window.location.href);
+
   return (
     <Menu
       theme="dark"
@@ -94,21 +103,9 @@ export const NavigationMenu = () => {
           icon: loggedIn == null ? <LoadingOutlined /> : undefined,
           disabled: loggedIn == null,
           label: loggedIn ? (
-            <a
-              href={`${API_BASE_URL}/api/auth/logout?redirectTo=${encodeURI(
-                window.location.href
-              )}`}
-            >
-              Logout
-            </a>
+            <a href={logoutUrl.toString()}>Logout</a>
           ) : (
-            <a
-              href={`${API_BASE_URL}/api/auth/login?returning=cookie&redirectTo=${encodeURI(
-                window.location.href
-              )}`}
-            >
-              Login
-            </a>
+            <a href={loginUrl.toString()}>Login</a>
           ),
         },
       ]}

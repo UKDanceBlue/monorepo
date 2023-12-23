@@ -49,7 +49,7 @@ const TabBar = () => {
 
   useEffect(() => {
     if (isConfigLoaded) {
-      let tempCurrentTabs = [possibleTabs["Teams"]];
+      let tempCurrentTabs = [possibleTabs["Teams"], possibleTabs["Events"]];
 
       const enabledScreens = allEnabledScreens.filter(
         (screen) => screen !== fancyTab

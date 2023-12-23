@@ -1,42 +1,19 @@
-import { useCallback } from "react";
 import { View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import {
-  AuthDataProvider,
-  useEnterDemoMode as useEnterAuthDemoMode,
-} from "./auth";
-import {
-  AppConfigProvider,
-  useEnterDemoMode as useEnterConfigDemoMode,
-} from "./config";
+import { AuthDataProvider } from "./auth";
+import { AppConfigProvider } from "./config";
 import { DeviceDataProvider } from "./device";
 import { FirebaseProvider } from "./firebase";
 import { LoadingWrapper } from "./loading";
 import { UserDataProvider } from "./user";
 
-export { useLoading } from "./loading";
-export { useAppConfig } from "./config";
 export { useAuthData } from "./auth";
-export { useUserData } from "./user";
+export { useAppConfig } from "./config";
 export { useDeviceData } from "./device";
 export { useFirebase } from "./firebase";
-
-export const useTryToSetDemoMode = (): ((key: string) => boolean) => {
-  const tryToSetConfigDemoMode = useEnterConfigDemoMode();
-  const setAuthDemoMode = useEnterAuthDemoMode();
-
-  return useCallback(
-    (key: string): boolean => {
-      if (tryToSetConfigDemoMode(key)) {
-        setAuthDemoMode();
-        return true;
-      } else {
-        return false;
-      }
-    },
-    [tryToSetConfigDemoMode, setAuthDemoMode]
-  );
-};
+export { useLoading } from "./loading";
+export { useUserData } from "./user";
 
 export const CombinedContext = ({
   children,
@@ -49,9 +26,11 @@ export const CombinedContext = ({
         <AppConfigProvider>
           <AuthDataProvider>
             <UserDataProvider>
-              <View style={{ minHeight: "100%", minWidth: "100%" }}>
-                {children}
-              </View>
+              <GestureHandlerRootView>
+                <View style={{ minHeight: "100%", minWidth: "100%" }}>
+                  {children}
+                </View>
+              </GestureHandlerRootView>
             </UserDataProvider>
           </AuthDataProvider>
         </AppConfigProvider>

@@ -17,5 +17,4 @@ tsconfig.tsbuildinfo
 !.yarn/sdks
 !.yarn/versions
 react-danceblue-firebase-adminsdk-*.json
-compose-volumes/
 %programdata%/

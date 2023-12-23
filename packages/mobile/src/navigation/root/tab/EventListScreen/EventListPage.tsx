@@ -1,5 +1,5 @@
-import { universalCatch } from "@common/logging";
-import type { FirestoreEvent } from "@ukdanceblue/db-app-common";
+import type { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import type { DateTime } from "luxon";
 import { Column, Divider, Spinner, Text } from "native-base";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -24,18 +24,31 @@ export const EventListPage = ({
   disabled = false,
 }: {
   month: DateTime;
-  eventsByMonth: Partial<Record<string, FirestoreEvent[]>>;
+  eventsByMonth: Partial<
+    Record<
+      string,
+      [
+        event: FragmentType<typeof EventScreenFragment>,
+        occurrenceUuid: string,
+      ][]
+    >
+  >;
   marked: MarkedDates;
-  refresh: () => Promise<void>;
+  refresh: () => void;
   refreshing: boolean;
-  tryToNavigate: (event: FirestoreEvent) => void;
+  tryToNavigate: (
+    event: FragmentType<typeof EventScreenFragment>,
+    occurrenceUuid: string
+  ) => void;
   disabled?: boolean;
 }) => {
   const monthString = luxonDateTimeToMonthString(month);
 
   const [selectedDay, setSelectedDay] = useState<DateData>();
   // Scroll-to-day functionality
-  const eventsListRef = useRef<FlatList<FirestoreEvent> | null>(null);
+  const eventsListRef = useRef<FlatList<
+    [FragmentType<typeof EventScreenFragment>, string]
+  > | null>(null);
   const dayIndexes = useRef<Partial<Record<string, number>>>({});
   dayIndexes.current = {};
 
@@ -104,65 +117,65 @@ export const EventListPage = ({
   }, [marked, selectedDay?.dateString]);
 
   return (
-    <Column width="full" height="full">
-      <Calendar
-        initialDate={monthString}
-        markedDates={markedWithSelected}
-        hideExtraDays
-        hideArrows
-        theme={useMemo(
-          () => ({
-            arrowColor: "#0032A0",
-            textMonthFontWeight: "bold",
-            textMonthFontSize: 20,
-            textDayFontWeight: "bold",
-            textDayHeaderFontWeight: "500",
-          }),
-          []
-        )}
-        displayLoadingIndicator={refreshing}
-        onDayPress={setSelectedDay}
-        style={{ width: "100%" }}
-        disableAllTouchEventsForDisabledDays
-        disabledByDefault={disabled}
-      />
-      <Divider height={"1"} backgroundColor="gray.400" />
-      <FlatList
-        ref={(list) => (eventsListRef.current = list)}
-        data={eventsByMonth[monthString] ?? []}
-        ListEmptyComponent={
-          refreshing ? (
-            <Spinner size="lg" mt={20} />
-          ) : (
-            <Text style={{ textAlign: "center", marginTop: 20 }}>
-              No events this month
-            </Text>
-          )
-        }
-        initialScrollIndex={
-          selectedDay?.dateString
-            ? dayIndexes.current[selectedDay.dateString] ?? 0
-            : 0
-        }
-        extraData={selectedDay}
-        style={{ backgroundColor: "white", width: "100%" }}
-        renderItem={({ item, index }) => (
-          <EventListRenderItem
-            item={item}
-            index={index}
-            dayIndexesRef={dayIndexes}
-            tryToNavigate={tryToNavigate}
-          />
-        )}
-        refreshing={refreshingManually}
-        onRefresh={() => {
-          setRefreshingManually(true);
-          refresh()
-            .catch(universalCatch)
-            .finally(() => setRefreshingManually(false));
-        }}
-        onScrollToIndexFailed={console.error}
-      />
-    </Column>
+    <>
+      <Column width="full" height="full">
+        <Calendar
+          initialDate={monthString}
+          markedDates={markedWithSelected}
+          hideExtraDays
+          hideArrows
+          theme={useMemo(
+            () => ({
+              arrowColor: "#0032A0",
+              textMonthFontWeight: "bold",
+              textMonthFontSize: 20,
+              textDayFontWeight: "bold",
+              textDayHeaderFontWeight: "500",
+            }),
+            []
+          )}
+          displayLoadingIndicator={refreshing}
+          onDayPress={setSelectedDay}
+          style={{ width: "100%" }}
+          disableAllTouchEventsForDisabledDays
+          disabledByDefault={disabled}
+        />
+        <Divider height={"1"} backgroundColor="gray.400" />
+        <FlatList
+          ref={(list) => (eventsListRef.current = list)}
+          data={eventsByMonth[monthString] ?? []}
+          ListEmptyComponent={
+            refreshing ? (
+              <Spinner size="lg" mt={20} />
+            ) : (
+              <Text style={{ textAlign: "center", marginTop: 20 }}>
+                No events this month
+              </Text>
+            )
+          }
+          initialScrollIndex={
+            selectedDay?.dateString
+              ? dayIndexes.current[selectedDay.dateString] ?? 0
+              : 0
+          }
+          extraData={selectedDay}
+          style={{ backgroundColor: "white", width: "100%" }}
+          renderItem={({ item, index }) => (
+            <EventListRenderItem
+              item={item}
+              index={index}
+              dayIndexesRef={dayIndexes}
+              tryToNavigate={tryToNavigate}
+            />
+          )}
+          refreshing={refreshingManually}
+          onRefresh={() => {
+            setRefreshingManually(true);
+            refresh();
+          }}
+          onScrollToIndexFailed={console.error}
+        />
+      </Column>
+    </>
   );
 };

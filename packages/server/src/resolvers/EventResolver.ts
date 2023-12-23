@@ -180,13 +180,21 @@ class ListEventsArgs extends FilteredListQueryArgs("EventResolver", {
     "summary",
     "location",
     "occurrence",
+    "occurrence_start",
+    "occurrence_end",
     "duration",
     "createdAt",
     "updatedAt",
   ],
   string: ["title", "summary", "description", "location"],
   numeric: ["duration"],
-  date: ["occurrence", "createdAt", "updatedAt"],
+  date: [
+    "occurrence",
+    "createdAt",
+    "updatedAt",
+    "occurrence_start",
+    "occurrence_end",
+  ],
 }) {}
 
 @Resolver(() => EventResource)
@@ -215,6 +223,8 @@ export class EventResolver
         location: "location",
         occurrence: "$occurrences.date$",
         duration: "duration",
+        occurrence_start: "$occurrences.date$",
+        occurrence_end: "$occurrences.endDate$",
       },
       EventModel
     );

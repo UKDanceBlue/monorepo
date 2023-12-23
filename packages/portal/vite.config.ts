@@ -23,5 +23,12 @@ export default defineConfig({
       "@tools": resolveRelative("src", "tools"),
     },
   },
-  plugins: [react()],
+  plugins: [
+    react({
+      devTarget: "es2022",
+    }),
+  ],
+  build: {
+    target: ["es2022", "edge93", "firefox91", "chrome93", "safari15"],
+  },
 });

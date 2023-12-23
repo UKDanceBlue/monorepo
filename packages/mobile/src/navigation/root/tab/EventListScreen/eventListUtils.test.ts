@@ -1,6 +1,4 @@
 import { faker } from "@faker-js/faker";
-import firestore from "@react-native-firebase/firestore";
-import { FirestoreEvent } from "@ukdanceblue/db-app-common";
 import { DateTime } from "luxon";
 
 import {
@@ -8,8 +6,6 @@ import {
   luxonDateTimeToDateData,
   luxonDateTimeToDateString,
   luxonDateTimeToMonthString,
-  markEvents,
-  splitEvents,
 } from "./eventListUtils";
 
 describe("Luxon <-> React Native Calendars date conversion (random data)", () => {
@@ -157,130 +153,4 @@ describe("Luxon <-> React Native Calendars date conversion (fixed data)", () => 
 
 describe("Refresh Function", () => {
   test.todo("Correctly downloads events");
-});
-
-describe("splitEvents", () => {
-  const fakeEvents: FirestoreEvent[] = [];
-  const fakeMonthStrings: string[] = [];
-
-  // Use faker to generate between 10 and 20 events
-  const numEvents = faker.datatype.number({ min: 10, max: 20 });
-  for (let i = 0; i < numEvents; i++) {
-    const name = faker.random.words();
-    const shortDescription = faker.random.words();
-    const longDescription = faker.random.words();
-
-    // Only every fourth event will have no date
-    const shouldHaveDate = i % 4 !== 0;
-    const startDate = faker.date.soon();
-    fakeMonthStrings.push(
-      luxonDateTimeToMonthString(DateTime.fromJSDate(startDate))
-    );
-    const endDate = faker.date.soon(2, startDate);
-
-    fakeEvents.push(
-      new FirestoreEvent(
-        name,
-        shortDescription,
-        longDescription,
-        shouldHaveDate
-          ? {
-              start: firestore.Timestamp.fromDate(startDate),
-              end: firestore.Timestamp.fromDate(endDate),
-            }
-          : undefined
-      )
-    );
-  }
-
-  test("Only generates keys that there was a startTime for", () => {
-    const keys = Object.keys(splitEvents(fakeEvents));
-
-    for (const key of keys) {
-      expect(fakeMonthStrings).toContain(key);
-    }
-  });
-
-  test("Includes no events that don't have a date", () => {
-    const events = Object.values(splitEvents(fakeEvents));
-
-    for (const event of events) {
-      for (const e of event ?? []) {
-        expect(e.interval).toBeDefined();
-      }
-    }
-  });
-
-  test("Outputs the correct month string for each event", () => {
-    const events = Object.entries(splitEvents(fakeEvents));
-
-    for (const [monthString, event] of events) {
-      for (const e of event ?? []) {
-        expect(e.interval).toBeDefined();
-        expect(
-          luxonDateTimeToMonthString(
-            DateTime.fromJSDate(e.interval!.start.toDate())
-          )
-        ).toBe(monthString);
-      }
-    }
-  });
-});
-
-describe("markEvents", () => {
-  const fakeEvents: FirestoreEvent[] = [];
-  const fakeMonthStrings: string[] = [];
-
-  // Use faker to generate between 10 and 20 events
-  const numEvents = faker.datatype.number({ min: 10, max: 20 });
-  for (let i = 0; i < numEvents; i++) {
-    const name = faker.random.words();
-    const shortDescription = faker.random.words();
-    const longDescription = faker.random.words();
-    const startDate = faker.date.soon();
-    fakeMonthStrings.push(
-      luxonDateTimeToDateString(DateTime.fromJSDate(startDate))
-    );
-    const endDate = faker.date.soon(2, startDate);
-
-    fakeEvents.push(
-      new FirestoreEvent(name, shortDescription, longDescription, {
-        start: firestore.Timestamp.fromDate(startDate),
-        end: firestore.Timestamp.fromDate(endDate),
-      })
-    );
-  }
-
-  // Randomly choose a fakeStartTimes to be today
-  const todyIndex = faker.datatype.number({
-    min: 0,
-    max: fakeMonthStrings.length - 1,
-  });
-
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const oldDateTimeLocal = DateTime.local;
-  DateTime.local = jest.fn(() =>
-    DateTime.fromJSDate(fakeEvents[todyIndex]!.interval!.start.toDate())
-  );
-
-  // Used for most tests
-  const markedDates = markEvents(fakeEvents);
-
-  DateTime.local = oldDateTimeLocal;
-
-  test("Marks the correct dates as having events", () => {
-    for (const key of Object.keys(markedDates)) {
-      expect(fakeMonthStrings).toContain(key);
-    }
-  });
-
-  test("Marks today when there are events today", () => {
-    expect(markedDates[fakeMonthStrings[todyIndex]]).toBeDefined();
-    expect(markedDates[fakeMonthStrings[todyIndex]!].today).toBe(true);
-  });
-
-  test("Only marks a single date as today", () => {
-    const todayDates = Object.values(markedDates).filter((date) => date.today);
-    expect(todayDates).toHaveLength(1);
-  });
 });
