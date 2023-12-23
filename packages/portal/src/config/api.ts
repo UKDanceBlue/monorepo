@@ -40,5 +40,6 @@ async function discoverApiBaseUrl() {
   return new URL("https://app.danceblue.org");
 }
 
-export const API_BASE_URL =
-  import.meta.env.VITE_APP_API_BASE_URL || (await discoverApiBaseUrl());
+export const API_BASE_URL = import.meta.env.VITE_APP_API_BASE_URL
+  ? new URL(import.meta.env.VITE_APP_API_BASE_URL)
+  : await discoverApiBaseUrl();
