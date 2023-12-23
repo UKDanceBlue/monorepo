@@ -7,7 +7,8 @@ import { isDatabaseLocal } from "./environment.js";
 import { logFatal, logger } from "./logger.js";
 
 // No top level imports that cause side effects should be used in this file
-// We want to control the order of execution
+// We want to control the order of execution to ensure that the database is
+// initialized at the proper time
 
 logger.info("DanceBlue Server Starting");
 
