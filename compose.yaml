@@ -25,14 +25,25 @@ services:
       - danceblue
     depends_on:
       - postgres
-    env_file: ./packages/server/.env
     environment:
+      ## Static env
+      # Database
       DB_HOST: postgres
       DB_NAME: danceblue
       DB_UNAME: danceblue
       DB_PWD: danceblue
+      # Application
       NODE_ENV: development
       APPLICATION_HOST: server
+
+      ## Replaced env
+      # Secrets
+      COOKIE_SECRET: ${COOKIE_SECRET}
+      JWT_SECRET: ${JWT_SECRET}
+      # MS Auth
+      MS_OIDC_URL: ${MS_OIDC_URL}
+      MS_CLIENT_ID: ${MS_CLIENT_ID}
+      MS_CLIENT_SECRET: ${MS_CLIENT_SECRET}
     command: ["node", "dist/index.js", "--migrate-db"]
   portal:
     container_name: portal
@@ -40,7 +51,7 @@ services:
       context: .
       dockerfile: ./packages/portal/Dockerfile
       args:
-        - VITE_APP_API_BASE_URL=http://localhost:8000
+        - VITE_APP_API_BASE_URL=${BASE_URL}
     ports:
       - 3000:80
 
