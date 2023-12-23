@@ -3,15 +3,21 @@ name: Docker build
 
 on:
   push:
-  # Release is a special branch that is kept in sync with the production environment
-  # We also want to keep the dev environment in sync with the main branch
-    branches: ['release', 'main']
+    # Release is a special branch that is kept in sync with the production environment
+    # We also want to keep the dev environment in sync with the main branch
+    branches: ["release", "main"]
     paths:
-      - 'packages/common/**'
-      - 'packages/portal/**'
-      - 'packages/server/**'
-      - 'yarn.lock'
-      - '.yarnrc.yml'
+      - "packages/common/**"
+      - "packages/portal/**"
+      - "packages/server/**"
+      - "yarn.lock"
+      - ".yarnrc.yml"
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to build"
+        required: true
+        default: ""
 
 env:
   REGISTRY: ghcr.io
@@ -27,6 +33,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
       - name: Set up node 18.x
         uses: actions/setup-node@v4.0.0
         with:
@@ -76,6 +84,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
       - name: Set up node 18.x
         uses: actions/setup-node@v4.0.0
         with:
