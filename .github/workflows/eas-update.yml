@@ -8,8 +8,16 @@ on:
     # We also want to keep the development build in sync with the main branch
     branches: ["release", "main"]
     paths:
-      - "packages/common/**"
-      - "packages/mobile/**"
+      - "packages/common/lib/**"
+      - "packages/common/tsconfig.json"
+      - "packages/mobile/src/**"
+      - "packages/mobile/App.tsx"
+      - "packages/mobile/index.js"
+      - "packages/mobile/app.json"
+      - "packages/mobile/app.config.ts"
+      - "packages/mobile/app.config.json"
+      - "packages/mobile/metro.config.js"
+      - "packages/mobile/tsconfig.json"
       - "yarn.lock"
       - ".yarnrc.yml"
 
