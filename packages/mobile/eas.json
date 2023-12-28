@@ -6,7 +6,7 @@
   "build": {
     "dev-client": {
       "distribution": "internal",
-      "releaseChannel": "development",
+      "channel": "dev-client",
       "developmentClient": true,
       "cache": {
         "key": "4"
@@ -22,11 +22,12 @@
       "distribution": "internal",
       "ios": {
         "simulator": true
-      }
+      },
+      "channel": "dev-client-simulator"
     },
     "production": {
       "distribution": "store",
-      "releaseChannel": "prod-v2",
+      "channel": "production",
       "cache": {
         "key": "3"
       },
@@ -38,7 +39,7 @@
     },
     "simulator": {
       "extends": "production",
-      "releaseChannel": "prod-v2",
+      "channel": "simulator",
       "distribution": "internal",
       "ios": {
         "simulator": true
