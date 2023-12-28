@@ -1,0 +1,52 @@
+# This workflow follows EAS's Persistent staging flow - https://docs.expo.dev/eas-update/deployment-patterns/#persistent-staging-flow
+
+name: EAS Update
+
+on:
+  push:
+    # Release is a special branch that is kept in sync with the production app
+    # We also want to keep the development build in sync with the main branch
+    branches: ["release", "main"]
+    paths:
+      - "packages/common/**"
+      - "packages/mobile/**"
+      - "yarn.lock"
+      - ".yarnrc.yml"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up node 18.x
+        uses: actions/setup-node@v4.0.0
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: 🏗 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies (commmon)
+        working-directory: ./packages/commmon
+        run: yarn install
+
+      - name: Install dependencies (mobile)
+        working-directory: ./packages/mobile
+        run: yarn install
+
+      - name: Build GraphQL
+        run: yarn run gql:build
+        working-directory: .
+
+      - name: Build common
+        run: yarn run build
+        working-directory: ./packages/common
+
+      - name: Create update
+        run: eas update --auto --non-interactive
