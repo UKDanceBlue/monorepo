@@ -352,6 +352,8 @@ enum EventResolverAllKeys {
   duration
   location
   occurrence
+  occurrenceEnd
+  occurrenceStart
   summary
   title
   updatedAt
@@ -360,6 +362,8 @@ enum EventResolverAllKeys {
 enum EventResolverDateFilterKeys {
   createdAt
   occurrence
+  occurrenceEnd
+  occurrenceStart
   updatedAt
 }
 
