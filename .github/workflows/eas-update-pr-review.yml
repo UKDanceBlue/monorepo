@@ -1,4 +1,4 @@
-name: EAS Update
+name: EAS Update Preview
 
 on:
   pull_request:
