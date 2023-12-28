@@ -9,7 +9,7 @@ import "react-native-url-polyfill/auto";
 import App from "./App";
 import { log } from "./src/common/logging";
 
-log("Starting app");
+log("Starting app", "debug");
 
 preventAutoHideAsync().catch(console.error);
 
