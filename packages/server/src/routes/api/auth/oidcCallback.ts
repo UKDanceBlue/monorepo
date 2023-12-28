@@ -4,6 +4,7 @@ import { AuthSource } from "@ukdanceblue/common";
 import createHttpError from "http-errors";
 import jsonwebtoken from "jsonwebtoken";
 import type { Context } from "koa";
+import { DateTime } from "luxon";
 
 import { LoginFlowSessionModel } from "../../.././models/LoginFlowSession.js";
 import { findPersonForLogin } from "../../../controllers/PersonController.js";
@@ -101,15 +102,18 @@ export const oidcCallback = async (ctx: Context) => {
 
       const userData = await currentPerson.toUserData(AuthSource.UkyLinkblue);
       const jwt = makeUserJwt(userData);
-      if (session.setCookie) {
-        ctx.cookies.set("token", jwt, {
-          httpOnly: true,
-          sameSite: "lax",
-        });
-      }
       let redirectTo = session.redirectToAfterLogin ?? "/";
       if (session.sendToken) {
         redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;
+      }
+      if (session.setCookie) {
+        const cookieDomain = new URL(redirectTo, ctx.request.origin).hostname;
+        ctx.cookies.set("token", jwt, {
+          httpOnly: true,
+          sameSite: "lax",
+          domain: cookieDomain,
+          expires: DateTime.now().plus({ days: 7 }).toJSDate(),
+        });
       }
       return ctx.redirect(redirectTo);
     });
