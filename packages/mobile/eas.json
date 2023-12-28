@@ -6,7 +6,6 @@
   "build": {
     "dev-client": {
       "distribution": "internal",
-      "channel": "dev-client",
       "developmentClient": true,
       "cache": {
         "key": "4"
@@ -22,8 +21,7 @@
       "distribution": "internal",
       "ios": {
         "simulator": true
-      },
-      "channel": "dev-client-simulator"
+      }
     },
     "development": {
       "distribution": "internal",
