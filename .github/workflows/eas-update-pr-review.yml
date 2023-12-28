@@ -28,24 +28,19 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Install dependencies (commmon)
-        working-directory: ./packages/commmon
-        run: yarn install
-
-      - name: Install dependencies (mobile)
-        working-directory: ./packages/mobile
+      - name: Install dependencies
         run: yarn install
 
       - name: Build GraphQL
         run: yarn run gql:build
-        working-directory: .
 
       - name: Build common
-        run: yarn run build
-        working-directory: ./packages/common
+        run: yarn workspace @ukdanceblue/common run build
 
       - name: Create preview
         uses: expo/expo-github-action/preview@v8
         with:
           command:
             eas update --auto --branch ${{ github.event.pull_request.head.ref }}
+          working-directory: packages/mobile
+          qr-target: dev-build
