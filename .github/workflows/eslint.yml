@@ -4,9 +4,31 @@ on:
   push:
     branches:
       - main
+    paths:
+      [
+        "packages/**",
+        "eslint.config.js",
+        "graphql.config.json",
+        "package.json",
+        "yarn.lock",
+        ".yarnrc.yml",
+        "codegen.ts",
+        "tsconfig.json",
+      ]
   pull_request:
     branches:
       - main
+    paths:
+      [
+        "packages/**",
+        "eslint.config.js",
+        "graphql.config.json",
+        "package.json",
+        "yarn.lock",
+        ".yarnrc.yml",
+        "codegen.ts",
+        "tsconfig.json",
+      ]
 
 jobs:
   run-eslint:
