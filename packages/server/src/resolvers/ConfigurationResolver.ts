@@ -48,6 +48,13 @@ class CreateConfigurationResponse extends AbstractGraphQLCreatedResponse<Configu
   @Field(() => ConfigurationResource)
   data!: ConfigurationResource;
 }
+@ObjectType("CreateConfigurationsResponse", {
+  implements: AbstractGraphQLCreatedResponse<ConfigurationResource>,
+})
+class CreateConfigurationsResponse extends AbstractGraphQLArrayOkResponse<ConfigurationResource> {
+  @Field(() => [ConfigurationResource])
+  data!: ConfigurationResource[];
+}
 @ObjectType("SetConfigurationResponse", {
   implements: AbstractGraphQLOkResponse<ConfigurationResource>,
 })
@@ -128,7 +135,9 @@ export class ConfigurationResolver
 
   @Query(() => GetAllConfigurationsResponse, { name: "allConfigurations" })
   async getAll(): Promise<GetAllConfigurationsResponse> {
-    const resources = await ConfigurationModel.findAll();
+    const resources = await ConfigurationModel.findAll({
+      order: [["createdAt", "DESC"]],
+    });
 
     return GetAllConfigurationsResponse.newOk(
       resources.map((r) => r.toResource())
@@ -148,6 +157,24 @@ export class ConfigurationResolver
     });
 
     return CreateConfigurationResponse.newCreated(row.toResource(), row.uuid);
+  }
+
+  @AccessControl({ accessLevel: AccessLevel.Admin })
+  @Mutation(() => CreateConfigurationResponse, { name: "createConfigurations" })
+  async batchCreate(
+    @Arg("input", () => [CreateConfigurationInput])
+    input: CreateConfigurationInput[]
+  ): Promise<CreateConfigurationsResponse> {
+    const rows = await ConfigurationModel.bulkCreate(
+      input.map((i) => ({
+        key: i.key,
+        value: i.value,
+        validAfter: i.validAfter ? i.validAfter.toJSDate() : null,
+        validUntil: i.validUntil ? i.validUntil.toJSDate() : null,
+      }))
+    );
+
+    return CreateConfigurationsResponse.newOk(rows.map((r) => r.toResource()));
   }
 
   @AccessControl({ accessLevel: AccessLevel.Admin })

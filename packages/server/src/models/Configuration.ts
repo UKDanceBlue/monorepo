@@ -61,7 +61,6 @@ ConfigurationModel.init(
     key: {
       type: DataTypes.TEXT,
       allowNull: false,
-      unique: true,
     },
     value: {
       type: DataTypes.TEXT,

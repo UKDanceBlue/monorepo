@@ -657,6 +657,7 @@ type Mutation {
   addExistingImageToEvent(eventId: String!, imageId: String!): AddEventImageResponse!
   addImageToEvent(eventId: String!, input: AddEventImageInput!): AddEventImageResponse!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
+  createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
   createDevice(input: CreateDeviceInput!): CreateDeviceResponse!
   createEvent(input: CreateEventInput!): CreateEventResponse!
   createImage(input: CreateImageInput!): CreateImageResponse!

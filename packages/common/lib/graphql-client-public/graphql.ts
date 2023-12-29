@@ -654,6 +654,7 @@ export type Mutation = {
   readonly addExistingImageToEvent: AddEventImageResponse;
   readonly addImageToEvent: AddEventImageResponse;
   readonly createConfiguration: CreateConfigurationResponse;
+  readonly createConfigurations: CreateConfigurationResponse;
   readonly createDevice: CreateDeviceResponse;
   readonly createEvent: CreateEventResponse;
   readonly createImage: CreateImageResponse;
@@ -694,6 +695,11 @@ export type MutationAddImageToEventArgs = {
 
 export type MutationCreateConfigurationArgs = {
   input: CreateConfigurationInput;
+};
+
+
+export type MutationCreateConfigurationsArgs = {
+  input: ReadonlyArray<CreateConfigurationInput>;
 };
 
 
