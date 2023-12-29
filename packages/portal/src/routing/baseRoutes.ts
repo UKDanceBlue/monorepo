@@ -1,3 +1,4 @@
+import { ConfigPage } from "@pages/config/ConfigPage";
 import { EventsPage } from "@pages/events/EventsPage";
 import { HomePage } from "@pages/home/HomePage";
 import { PeoplePage } from "@pages/people/PeoplePage";
@@ -32,5 +33,5 @@ export const peopleRoute = new Route({
 export const configRoute = new Route({
   path: "config",
   getParentRoute: () => rootRoute,
-  component: () => null,
+  component: ConfigPage,
 });
