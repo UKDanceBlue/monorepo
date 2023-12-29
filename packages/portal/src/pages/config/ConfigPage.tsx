@@ -1,4 +1,4 @@
-import { Button, Flex, Form, Input, Space } from "antd";
+import { Button, Collapse, Flex, Form, Input, Space } from "antd";
 import { useState } from "react";
 
 import { ConfigItem } from "./ConfigItem";
@@ -14,27 +14,55 @@ export function ConfigPage() {
 
   return (
     <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+      <h1>Config</h1>
       <formApi.Provider>
-        <Form onFinish={(values) => console.log(values)}>
+        <Form onFinish={() => formApi.handleSubmit().catch(console.error)}>
           <formApi.Subscribe selector={(state) => Object.keys(state.values)}>
             {(keys) =>
               keys.map((key) => (
-                <formApi.Field
-                  name={`${key}.new`}
-                  defaultValue={activeValues[key] ?? { value: "" }}
-                >
-                  {(field) => (
-                    <ConfigItem
-                      configKey={key}
-                      configValueUuid="new"
-                      fieldApi={field}
-                    />
-                  )}
-                </formApi.Field>
+                <Flex vertical gap="small" key={key}>
+                  <formApi.Field
+                    name={`${key}.new`}
+                    defaultValue={activeValues[key] ?? { value: "" }}
+                  >
+                    {(field) => (
+                      <ConfigItem
+                        editable
+                        configKey={key}
+                        configValueUuid="new"
+                        configValue={field.state.value ?? { value: "" }}
+                        errors={field.state.meta.errors}
+                        onChange={field.handleChange}
+                      />
+                    )}
+                  </formApi.Field>
+                  <formApi.Subscribe
+                    selector={(state) => state.values[key]!.old}
+                  >
+                    {(oldConfigs) =>
+                      oldConfigs.length > 0 && (
+                        <Collapse>
+                          <Collapse.Panel header="Old Values" key="old">
+                            {oldConfigs.map(([uuid, config]) => (
+                              <ConfigItem
+                                editable={false}
+                                configKey={key}
+                                configValueUuid={uuid}
+                                configValue={
+                                  config ?? { value: "ERR: No value" }
+                                }
+                              />
+                            ))}
+                          </Collapse.Panel>
+                        </Collapse>
+                      )
+                    }
+                  </formApi.Subscribe>
+                </Flex>
               ))
             }
           </formApi.Subscribe>
-          <Flex justify="space-between" align="end" gap="small">
+          <Flex justify="space-between" align="end" gap="small" wrap="wrap">
             <Form.Item
               label="New Key"
               validateStatus={
@@ -51,6 +79,11 @@ export function ConfigPage() {
                 <Input
                   value={newKey}
                   onChange={(e) => setNewKey(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                    }
+                  }}
                 />
                 <Button
                   onClick={() => {

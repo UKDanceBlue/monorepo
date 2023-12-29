@@ -1,43 +1,54 @@
-import type { FieldApi } from "@tanstack/react-form";
+import type { Updater, ValidationError } from "@tanstack/react-form";
 import { Form, Input } from "antd";
 
 import type { ConfigValue } from "./useConfig";
 
-export function ConfigItem<
-  Key extends string,
-  Editable extends boolean,
-  Uuid extends Editable extends true ? "new" : string,
->({
+export function ConfigItem<Key extends string, Editable extends boolean>({
+  editable,
   configKey,
   configValueUuid,
-  fieldApi,
+  errors = [],
+  configValue,
+  onChange,
 }: {
+  editable: Editable;
   configKey: Key;
-  configValueUuid: Uuid;
-  fieldApi: FieldApi<
-    Record<string, Record<string, ConfigValue | undefined>>,
-    `${Key}.${Uuid}`
-  >;
-}) {
+  configValue: ConfigValue;
+} & (Editable extends true
+  ? {
+      configValueUuid: "new";
+      errors: ValidationError[];
+      onChange: (updater: Updater<ConfigValue | undefined>) => void;
+    }
+  : {
+      configValueUuid: string;
+      errors?: [];
+      onChange?: never;
+    })) {
   return (
     <Form.Item
       label={configKey}
       name={`${configKey}.${configValueUuid}`}
-      validateStatus={fieldApi.state.meta.errors.length > 0 ? "error" : ""}
-      help={
-        fieldApi.state.meta.errors.length > 0
-          ? fieldApi.state.meta.errors[0]
-          : undefined
-      }
+      validateStatus={errors.length > 0 ? "error" : ""}
+      help={errors.length > 0 ? errors[0] : undefined}
     >
       <Input
-        value={fieldApi.getValue()?.value ?? ""}
-        onChange={(e) =>
-          fieldApi.handleChange((old) => ({
-            ...old,
-            value: e.target.value,
-          }))
+        value={configValue.value}
+        onChange={
+          editable
+            ? (e) =>
+                onChange?.((old) => ({
+                  ...old,
+                  value: e.target.value,
+                }))
+            : undefined
         }
+        disabled={!editable}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
+        }}
       />
     </Form.Item>
   );

@@ -4,7 +4,6 @@ import { useCallback, useEffect } from "react";
 import type { ConfigValue } from "./useConfig";
 import { useConfig } from "./useConfig";
 
-const NEW_CONFIG_VALUE_SENTINEL = "new";
 export function useConfigForm() {
   const {
     configs: existingConfig,
@@ -12,25 +11,32 @@ export function useConfigForm() {
     activeValues,
   } = useConfig();
 
-  // Form holds { [key: string]: { [uuid: string]: ConfigValue } }
-  const formApi =
-    useForm<Record<string, Record<string, ConfigValue | undefined>>>();
+  // Form holds [key, [uuid, value][]][]
+  const formApi = useForm<
+    Record<
+      string,
+      {
+        new?: ConfigValue | undefined;
+        old: [string, ConfigValue | undefined][];
+      }
+    >
+  >({
+    onSubmit: (values) => {
+      console.log(values);
+    },
+  });
 
   const addConfigKey = useCallback(
     (key: string) => {
-      formApi.setFieldValue(key, {});
+      formApi.setFieldValue(key, { old: [] });
     },
     [formApi]
   );
   [];
 
   const setConfigValue = useCallback(
-    (
-      key: string,
-      value: ConfigValue,
-      uuid: string = NEW_CONFIG_VALUE_SENTINEL
-    ) => {
-      formApi.setFieldValue(`${key}.${uuid}`, value);
+    (key: string, value: ConfigValue) => {
+      formApi.setFieldValue(`${key}.new`, value);
     },
     [formApi]
   );
@@ -45,7 +51,7 @@ export function useConfigForm() {
       existingConfig.forEach(({ key, values }) => {
         addConfigKey(key);
         Object.entries(values).forEach(([uuid, value]) => {
-          setConfigValue(key, value, uuid);
+          formApi.pushFieldValue(`${key}.old`, [uuid, value]);
         });
       });
     }
