@@ -1,4 +1,4 @@
-import { Button, Collapse, Flex, Form, Input, Space } from "antd";
+import { Button, Collapse, Divider, Flex, Form, Input, Space } from "antd";
 import { useState } from "react";
 
 import { ConfigItem } from "./ConfigItem";
@@ -41,20 +41,25 @@ export function ConfigPage() {
                   >
                     {(oldConfigs) =>
                       oldConfigs.length > 0 && (
-                        <Collapse>
-                          <Collapse.Panel header="Old Values" key="old">
-                            {oldConfigs.map(([uuid, config]) => (
-                              <ConfigItem
-                                editable={false}
-                                configKey={key}
-                                configValueUuid={uuid}
-                                configValue={
-                                  config ?? { value: "ERR: No value" }
-                                }
-                              />
-                            ))}
-                          </Collapse.Panel>
-                        </Collapse>
+                        <Collapse
+                          items={[
+                            {
+                              label: "Inactive Values",
+                              key: "inactive",
+                              children: oldConfigs.map(([uuid, config]) => (
+                                <ConfigItem
+                                  key={`${key}.${uuid}`}
+                                  editable={false}
+                                  configKey={key}
+                                  configValueUuid={uuid}
+                                  configValue={
+                                    config ?? { value: "ERR: No value" }
+                                  }
+                                />
+                              )),
+                            },
+                          ]}
+                        />
                       )
                     }
                   </formApi.Subscribe>
@@ -62,6 +67,7 @@ export function ConfigPage() {
               ))
             }
           </formApi.Subscribe>
+          <Divider />
           <Flex justify="space-between" align="end" gap="small" wrap="wrap">
             <Form.Item
               label="New Key"

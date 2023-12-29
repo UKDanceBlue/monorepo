@@ -1,5 +1,8 @@
+import { LuxonDatePicker } from "@elements/components/antLuxonComponents";
 import type { Updater, ValidationError } from "@tanstack/react-form";
-import { Form, Input } from "antd";
+import { Form, Input, Space } from "antd";
+import { DateTime } from "luxon";
+import { useMemo } from "react";
 
 import type { ConfigValue } from "./useConfig";
 
@@ -25,31 +28,96 @@ export function ConfigItem<Key extends string, Editable extends boolean>({
       errors?: [];
       onChange?: never;
     })) {
+  const validityCondition = useMemo(() => {
+    let validityString =
+      "This config is active when it is the most recent valid value";
+
+    if (configValue.validAfter) {
+      validityString += ` after ${configValue.validAfter.toLocaleString(
+        DateTime.DATETIME_SHORT
+      )}`;
+    }
+
+    if (configValue.validUntil) {
+      if (configValue.validUntil < DateTime.now()) {
+        // Short circuit as this config is no longer valid
+        return "This config will never be active";
+      }
+      if (configValue.validAfter) {
+        validityString += " and";
+      }
+      validityString += ` until ${configValue.validUntil.toLocaleString(
+        DateTime.DATETIME_SHORT
+      )}`;
+    }
+
+    return validityString;
+  }, [configValue]);
+
   return (
-    <Form.Item
-      label={configKey}
-      name={`${configKey}.${configValueUuid}`}
-      validateStatus={errors.length > 0 ? "error" : ""}
-      help={errors.length > 0 ? errors[0] : undefined}
-    >
-      <Input
-        value={configValue.value}
-        onChange={
-          editable
-            ? (e) =>
-                onChange?.((old) => ({
-                  ...old,
-                  value: e.target.value,
-                }))
-            : undefined
-        }
-        disabled={!editable}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-          }
-        }}
-      />
-    </Form.Item>
+    <>
+      <Form.Item
+        label={configKey}
+        name={`${configKey}.${configValueUuid}`}
+        validateStatus={errors.length > 0 ? "error" : ""}
+        help={errors.length > 0 ? errors[0] : undefined}
+      >
+        <Space direction="vertical">
+          <Input
+            value={editable ? configValue.value : undefined}
+            placeholder={editable ? "Value" : configValue.value}
+            onChange={
+              editable
+                ? (e) =>
+                    onChange?.((old) => ({
+                      ...old,
+                      value: e.target.value,
+                    }))
+                : undefined
+            }
+            disabled={!editable}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+              }
+            }}
+          />
+          <Space direction="horizontal">
+            <LuxonDatePicker
+              showTime
+              value={configValue.validAfter ?? null}
+              placeholder="Valid after"
+              onChange={(value) =>
+                editable
+                  ? onChange?.((old) => ({
+                      value: "",
+                      ...old,
+                      validAfter: value,
+                    }))
+                  : undefined
+              }
+              disabled={!editable}
+            />
+            -
+            <LuxonDatePicker
+              showTime
+              value={configValue.validUntil ?? null}
+              placeholder="Valid until"
+              onChange={(value) =>
+                editable
+                  ? onChange?.((old) => ({
+                      value: "",
+                      ...old,
+                      validUntil: value,
+                    }))
+                  : undefined
+              }
+              disabled={!editable}
+            />
+          </Space>
+        </Space>
+        <p>{validityCondition}</p>
+      </Form.Item>
+    </>
   );
 }

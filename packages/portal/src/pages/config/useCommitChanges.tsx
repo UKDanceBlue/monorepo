@@ -1,15 +1,36 @@
 import { useAntFeedback } from "@hooks/useAntFeedback";
+import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
+import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 import { List } from "antd";
 import { useCallback } from "react";
+import { useMutation } from "urql";
 
 import { ConfigChangeView } from "./ConfigChangeView";
 import type { ConfigValue } from "./useConfig";
+
+const commitConfigChangesMutation = graphql(/* GraphQL */ `
+  mutation CommitConfigChanges($changes: [CreateConfigurationInput!]!) {
+    createConfigurations(input: $changes) {
+      ok
+    }
+  }
+`);
 
 export function useCommitChanges(): (
   newValues: Record<string, ConfigValue>,
   activeValues: Record<string, ConfigValue>
 ) => Promise<void> {
   const { showConfirmModal, showInfoMessage } = useAntFeedback();
+
+  const [{ fetching, error }, doMutation] = useMutation(
+    commitConfigChangesMutation
+  );
+
+  useQueryStatusWatcher({
+    fetching,
+    error,
+    loadingMessage: "Committing changes",
+  });
 
   return useCallback(
     async (newValues, activeValues) => {
@@ -53,19 +74,24 @@ export function useCommitChanges(): (
             onCancel: () => resolve(false),
             okText: "Yes",
             cancelText: "No",
+            width: "80%",
           });
         });
         if (result) {
-          await showInfoMessage("Changes committed");
-          return;
-        } else {
-          return;
+          const changesArray: Parameters<typeof doMutation>[0]["changes"] =
+            Object.entries(changes).map(([key, { new: value }]) => ({
+              key,
+              value: value.value,
+              validAfter: value.validAfter?.toISO() ?? null,
+              validUntil: value.validUntil?.toISO() ?? null,
+            }));
+
+          await doMutation({ changes: changesArray });
         }
       } else {
         await showInfoMessage("No changes to commit");
-        return;
       }
     },
-    [showConfirmModal, showInfoMessage]
+    [doMutation, showConfirmModal, showInfoMessage]
   );
 }

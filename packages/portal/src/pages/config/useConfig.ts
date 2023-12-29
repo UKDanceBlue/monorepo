@@ -36,8 +36,9 @@ export function useConfig(): {
   loading: boolean;
   configs: ConfigValueCollection[];
   activeValues: Record<string, ConfigValue>;
+  refetch: () => void;
 } {
-  const [{ data: response, fetching, error }] = useQuery({
+  const [{ data: response, fetching, error }, refetch] = useQuery({
     query: graphql(/* GraphQL */ `
       query ConfigQuery {
         allConfigurations {
@@ -144,5 +145,6 @@ export function useConfig(): {
     loading: fetching,
     configs,
     activeValues,
+    refetch,
   };
 }
