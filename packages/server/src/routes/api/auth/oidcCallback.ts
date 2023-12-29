@@ -107,11 +107,10 @@ export const oidcCallback = async (ctx: Context) => {
         redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;
       }
       if (session.setCookie) {
-        const cookieDomain = new URL(redirectTo, ctx.request.origin).hostname;
         ctx.cookies.set("token", jwt, {
           httpOnly: true,
-          sameSite: "lax",
-          domain: cookieDomain,
+          sameSite: ctx.secure ? "none" : "lax",
+          secure: ctx.secure,
           expires: DateTime.now().plus({ days: 7 }).toJSDate(),
         });
       }
