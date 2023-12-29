@@ -45,7 +45,9 @@ export async function createServer() {
   const { default: graphqlSchema } = await import("./lib/graphqlSchema.js");
   const { formatError } = await import("./lib/formatError.js");
 
-  const app = new Koa();
+  const app = new Koa({
+    proxy: true,
+  });
   app.silent = true;
   app.on("error", (err, ctx) => {
     logger.error("Koa app error", err, ctx);
