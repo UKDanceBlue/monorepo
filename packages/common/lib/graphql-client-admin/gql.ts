@@ -45,6 +45,7 @@ const documents = {
     "\n  mutation DeleteTeam($uuid: String!) {\n    deleteTeam(uuid: $uuid) {\n      ok\n    }\n  }\n": types.DeleteTeamDocument,
     "\n  fragment TeamViewerFragment on TeamResource {\n    uuid\n    name\n    marathonYear\n    legacyStatus\n    totalPoints\n    type\n    members {\n      person {\n        uuid\n        name\n        linkblue\n      }\n    }\n    captains {\n      person {\n        uuid\n        name\n        linkblue\n      }\n    }\n  }\n": types.TeamViewerFragmentFragmentDoc,
     "\n  query LoginState {\n    loginState {\n      loggedIn\n      role {\n        dbRole\n        committeeRole\n        committeeIdentifier\n      }\n    }\n  }\n": types.LoginStateDocument,
+    "\n  fragment ConfigFragment on ConfigurationResource {\n    key\n    updatedAt\n    createdAt\n  }\n": types.ConfigFragmentFragmentDoc,
     "\n  query EditEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventEditorFragment\n      }\n    }\n  }\n": types.EditEventPageDocument,
     "\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n": types.ViewEventPageDocument,
     "\n  query CreatePersonPage {\n    teams(sendAll: true, sortBy: [\"name\"], sortDirection: [ASCENDING]) {\n      data {\n        ...TeamNameFragment\n      }\n    }\n  }\n": types.CreatePersonPageDocument,
@@ -196,6 +197,10 @@ export function graphql(source: "\n  fragment TeamViewerFragment on TeamResource
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query LoginState {\n    loginState {\n      loggedIn\n      role {\n        dbRole\n        committeeRole\n        committeeIdentifier\n      }\n    }\n  }\n"): (typeof documents)["\n  query LoginState {\n    loginState {\n      loggedIn\n      role {\n        dbRole\n        committeeRole\n        committeeIdentifier\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment ConfigFragment on ConfigurationResource {\n    key\n    updatedAt\n    createdAt\n  }\n"): (typeof documents)["\n  fragment ConfigFragment on ConfigurationResource {\n    key\n    updatedAt\n    createdAt\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

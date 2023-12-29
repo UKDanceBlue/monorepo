@@ -113,10 +113,17 @@ export type ConfigurationResource = {
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly key: Scalars['String']['output'];
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly uuid: Scalars['ID']['output'];
+  readonly validAfter?: Maybe<Scalars['LuxonDateTime']['output']>;
+  readonly validUntil?: Maybe<Scalars['LuxonDateTime']['output']>;
+  readonly value: Scalars['String']['output'];
 };
 
 export type CreateConfigurationInput = {
   readonly key: Scalars['String']['input'];
+  readonly validAfter?: InputMaybe<Scalars['LuxonDateTime']['input']>;
+  readonly validUntil?: InputMaybe<Scalars['LuxonDateTime']['input']>;
+  readonly value: Scalars['String']['input'];
 };
 
 export type CreateConfigurationResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
@@ -367,6 +374,8 @@ export const EventResolverAllKeys = {
   Duration: 'duration',
   Location: 'location',
   Occurrence: 'occurrence',
+  OccurrenceEnd: 'occurrenceEnd',
+  OccurrenceStart: 'occurrenceStart',
   Summary: 'summary',
   Title: 'title',
   UpdatedAt: 'updatedAt'
@@ -376,6 +385,8 @@ export type EventResolverAllKeys = typeof EventResolverAllKeys[keyof typeof Even
 export const EventResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
   Occurrence: 'occurrence',
+  OccurrenceEnd: 'occurrenceEnd',
+  OccurrenceStart: 'occurrenceStart',
   UpdatedAt: 'updatedAt'
 } as const;
 

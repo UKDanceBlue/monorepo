@@ -87,10 +87,17 @@ type ConfigurationResource {
   createdAt: DateTimeISO
   key: String!
   updatedAt: DateTimeISO
+  uuid: ID!
+  validAfter: LuxonDateTime
+  validUntil: LuxonDateTime
+  value: String!
 }
 
 input CreateConfigurationInput {
   key: String!
+  validAfter: LuxonDateTime
+  validUntil: LuxonDateTime
+  value: String!
 }
 
 type CreateConfigurationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
