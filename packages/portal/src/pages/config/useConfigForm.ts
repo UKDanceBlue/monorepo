@@ -1,6 +1,7 @@
 import { useForm } from "@tanstack/react-form";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
+import { useCommitChanges } from "./useCommitChanges";
 import type { ConfigValue } from "./useConfig";
 import { useConfig } from "./useConfig";
 
@@ -10,6 +11,26 @@ export function useConfigForm() {
     loading: existingConfigLoading,
     activeValues,
   } = useConfig();
+
+  const defaultValues = useMemo(() => {
+    const values: Record<
+      string,
+      {
+        new?: ConfigValue | undefined;
+        old: [string, ConfigValue | undefined][];
+      }
+    > = {};
+    existingConfig.forEach(({ key, values: existingValues }) => {
+      Object.entries(existingValues).forEach(([uuid, value]) => {
+        values[key] = {
+          old: [...(values[key]?.old ?? []), [uuid, value]],
+        };
+      });
+    });
+    return values;
+  }, [existingConfig]);
+
+  const commitChanges = useCommitChanges();
 
   // Form holds [key, [uuid, value][]][]
   const formApi = useForm<
@@ -22,9 +43,22 @@ export function useConfigForm() {
     >
   >({
     onSubmit: (values) => {
-      console.log(values);
+      const newValues: Record<string, ConfigValue> = {};
+      Object.entries(values).forEach(([key, { new: value }]) => {
+        if (value !== undefined) {
+          newValues[key] = value;
+        }
+      });
+      return commitChanges(newValues, activeValues);
     },
+    defaultValues,
   });
+
+  useEffect(() => {
+    if (!existingConfigLoading) {
+      formApi.reset();
+    }
+  }, [existingConfigLoading, formApi]);
 
   const addConfigKey = useCallback(
     (key: string) => {
@@ -40,28 +74,6 @@ export function useConfigForm() {
     },
     [formApi]
   );
-
-  useEffect(() => {
-    if (
-      !existingConfigLoading &&
-      existingConfig.length > 0 &&
-      Object.keys(formApi.state.values).length === 0
-    ) {
-      formApi.reset();
-      existingConfig.forEach(({ key, values }) => {
-        addConfigKey(key);
-        Object.entries(values).forEach(([uuid, value]) => {
-          formApi.pushFieldValue(`${key}.old`, [uuid, value]);
-        });
-      });
-    }
-  }, [
-    addConfigKey,
-    setConfigValue,
-    existingConfig,
-    existingConfigLoading,
-    formApi,
-  ]);
 
   return {
     formApi,
