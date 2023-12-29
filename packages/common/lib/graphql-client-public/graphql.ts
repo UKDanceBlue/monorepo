@@ -464,7 +464,7 @@ export type EventResource = {
 
 export type GetAllConfigurationsResponse = AbstractGraphQlArrayOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetAllConfigurationsResponse';
-  readonly data: ConfigurationResource;
+  readonly data: ReadonlyArray<ConfigurationResource>;
   readonly ok: Scalars['Boolean']['output'];
 };
 
@@ -1033,6 +1033,7 @@ export type PointOpportunityResource = {
 
 export type Query = {
   readonly __typename?: 'Query';
+  readonly activeConfiguration: GetConfigurationByUuidResponse;
   readonly allConfigurations: GetAllConfigurationsResponse;
   readonly configuration: GetConfigurationByUuidResponse;
   readonly device: GetDeviceByUuidResponse;
@@ -1058,8 +1059,13 @@ export type Query = {
 };
 
 
-export type QueryConfigurationArgs = {
+export type QueryActiveConfigurationArgs = {
   key: Scalars['String']['input'];
+};
+
+
+export type QueryConfigurationArgs = {
+  uuid: Scalars['String']['input'];
 };
 
 

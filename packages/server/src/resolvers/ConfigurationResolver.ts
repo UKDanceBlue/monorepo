@@ -38,7 +38,7 @@ class GetConfigurationByKeyResponse extends AbstractGraphQLOkResponse<Configurat
   implements: AbstractGraphQLArrayOkResponse<ConfigurationResource>,
 })
 class GetAllConfigurationsResponse extends AbstractGraphQLArrayOkResponse<ConfigurationResource> {
-  @Field(() => ConfigurationResource)
+  @Field(() => [ConfigurationResource])
   data!: ConfigurationResource[];
 }
 @ObjectType("CreateConfigurationResponse", {
@@ -99,7 +99,7 @@ export class ConfigurationResolver
   }
 
   @Query(() => GetConfigurationByKeyResponse, {
-    name: "configuration",
+    name: "activeConfiguration",
   })
   async getByKey(
     @Arg("key") key: string
