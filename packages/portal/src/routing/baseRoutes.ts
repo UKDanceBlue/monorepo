@@ -28,3 +28,9 @@ export const peopleRoute = new Route({
   getParentRoute: () => rootRoute,
   component: PeoplePage,
 });
+
+export const configRoute = new Route({
+  path: "config",
+  getParentRoute: () => rootRoute,
+  component: () => null,
+});
