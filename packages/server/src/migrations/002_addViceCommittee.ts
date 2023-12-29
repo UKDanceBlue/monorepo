@@ -10,10 +10,14 @@ export async function up({
   context: { queryInterface },
 }: MigrationParams<MigrationContext>) {
   const [committeeNameValues] = await queryInterface.sequelize.query(
-    "SELECT unnest(enum_range(NULL::people_committee_name))"
+    "SELECT unnest(enum_range(NULL::enum_people_committee_name))"
   );
 
-  if (!committeeNameValues.includes("viceCommittee")) {
+  if (
+    !committeeNameValues
+      .map((v) => (v as { unnest: string }).unnest)
+      .includes("viceCommittee")
+  ) {
     await queryInterface.sequelize.query(
       `ALTER TYPE danceblue.enum_people_committee_name ADD VALUE 'viceCommittee'`
     );

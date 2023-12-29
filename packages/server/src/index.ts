@@ -24,7 +24,7 @@ if (argv.includes("--migrate-db")) {
     "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'danceblue' AND table_name = 'people')",
     { type: QueryTypes.SELECT }
   );
-  console.log(doesPeopleTableExist);
+
   if ((doesPeopleTableExist[0] as { exists: boolean }).exists) {
     logger.info("Database exists, running migration");
     try {

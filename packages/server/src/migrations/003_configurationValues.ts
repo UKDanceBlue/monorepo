@@ -32,44 +32,53 @@ import type { MigrationContext } from "./migrationContext.js";
 export async function up({
   context: { queryInterface, DataTypes },
 }: MigrationParams<MigrationContext>) {
-  const configurationTable =
-    await queryInterface.describeTable("configuration");
+  await queryInterface.addColumn(
+    "configurations",
+    "value",
+    {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    { ifNotExists: true }
+  );
 
-  if ("value" in configurationTable) {
-    return;
-  }
-  await queryInterface.addColumn("configuration", "value", {
-    type: DataTypes.TEXT,
-    allowNull: false,
-  });
+  await queryInterface.addColumn(
+    "configurations",
+    "valid_after",
+    {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    { ifNotExists: true }
+  );
 
-  await queryInterface.addColumn("configuration", "validAfter", {
-    type: DataTypes.DATE,
-    allowNull: true,
-  });
+  await queryInterface.addColumn(
+    "configurations",
+    "valid_until",
+    {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    { ifNotExists: true }
+  );
 
-  await queryInterface.addColumn("configuration", "validUntil", {
-    type: DataTypes.DATE,
-    allowNull: true,
-  });
+  await queryInterface.addColumn(
+    "configurations",
+    "created_at",
+    {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    { ifNotExists: true }
+  );
 
-  await queryInterface.addColumn("configuration", "createdAt", {
-    type: DataTypes.DATE,
-    allowNull: false,
-  });
-
-  await queryInterface.addColumn("configuration", "updatedAt", {
-    type: DataTypes.DATE,
-    allowNull: false,
-  });
-
-  await queryInterface.sequelize.query(`
-    UPDATE configuration
-    SET
-      value = '[]',
-      validAfter = NULL,
-      validUntil = NULL,
-      createdAt = NOW(),
-      updatedAt = NOW()
-  `);
+  await queryInterface.addColumn(
+    "configurations",
+    "updated_at",
+    {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    { ifNotExists: true }
+  );
 }
