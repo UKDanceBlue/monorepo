@@ -9,13 +9,13 @@ import type { MigrationContext } from "./migrationContext.js";
 export async function up({
   context: { queryInterface },
 }: MigrationParams<MigrationContext>) {
-  await queryInterface.sequelize.query(
-    `ALTER TYPE danceblue.enum_people_committee_name ADD VALUE 'viceCommittee'`
+  const [committeeNameValues] = await queryInterface.sequelize.query(
+    "SELECT unnest(enum_range(NULL::people_committee_name))"
   );
-}
 
-export function down() {
-  throw new Error(
-    "This migration cannot be undone - Postgres does not support removing enum values"
-  );
+  if (!committeeNameValues.includes("viceCommittee")) {
+    await queryInterface.sequelize.query(
+      `ALTER TYPE danceblue.enum_people_committee_name ADD VALUE 'viceCommittee'`
+    );
+  }
 }
