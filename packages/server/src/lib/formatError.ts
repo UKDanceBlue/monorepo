@@ -50,7 +50,7 @@ export function formatError(
       stacktrace:
         shouldIncludeSensitiveInfo &&
         Array.isArray(originalFormattedError.extensions?.stacktrace)
-          ? originalFormattedError.extensions!.stacktrace.map(String)
+          ? originalFormattedError.extensions.stacktrace.map(String)
           : [],
       clientActions: [],
       internalDetails: {},

@@ -342,7 +342,7 @@ const eslintConfig = [
         ...eslintPluginReactNative.environments["react-native"].globals,
       },
       parserOptions: {
-        project: "./packages/mobile/tsconfig.eslint.json",
+        project: "./packages/mobile/tsconfig.json",
       },
     },
     rules: {
