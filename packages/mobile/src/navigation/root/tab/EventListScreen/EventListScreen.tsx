@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
-import { SafeAreaView, View } from "react-native";
+import { View } from "react-native";
 import type { InfinitePagerPageComponent } from "react-native-infinite-pager";
 import InfinitePager from "react-native-infinite-pager";
 
@@ -41,22 +41,11 @@ const EventListScreen = () => {
    * Called by React Native when rendering the screen
    */
   return (
-    <SafeAreaView
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        width: "100%",
-      }}
-    >
-      <InfinitePager
-        pageBuffer={1}
-        style={{ height: "100%", width: "100%" }}
-        initialIndex={0}
-        PageComponent={EventListScreenPage}
-        debugTag="EventListScreen"
-      />
-    </SafeAreaView>
+    <InfinitePager
+      pageBuffer={2}
+      initialIndex={0}
+      PageComponent={EventListScreenPage}
+    />
   );
 };
 

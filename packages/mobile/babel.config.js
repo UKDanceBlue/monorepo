@@ -19,12 +19,6 @@ module.exports = function (api) {
             ".ttf",
           ],
           alias: {
-            "@assets": "./assets",
-            "@common": "./src/common",
-            "@context": "./src/context",
-            "@navigation": "./src/navigation",
-            "@theme": "./src/theme",
-            "@types": "./src/types",
             "type-graphql": "type-graphql/build/cjs/browser-shim.js",
           },
         },

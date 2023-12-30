@@ -1,0 +1,147 @@
+diff --git a/lib/commonjs/index.js b/lib/commonjs/index.js
+index 538c55ddd0a406ba1e3d1ed1e9ba9b5d55566609..32bdfcfad20c235e2f0b47a17663510b44791b6a 100644
+--- a/lib/commonjs/index.js
++++ b/lib/commonjs/index.js
+@@ -185,8 +185,6 @@ function InfinitePager(_ref, ref) {
+     return activePagers.value.length && !isDeepestInOrientation;
+   }, [activePagers, orientation]);
+   panGesture.onBegin(evt => {
+-    "worklet";
+-
+     if (!isAtEdge) {
+       const updated = activePagers.value.slice();
+       updated.push(pagerId);
+@@ -199,8 +197,6 @@ function InfinitePager(_ref, ref) {
+       console.log(`${debugTag} onBegin`, evt);
+     }
+   }).onTouchesMove((evt, mgr) => {
+-    "worklet";
+-
+     const mainTouch = evt.changedTouches[0];
+     const evtVal = mainTouch[vertical ? "y" : "x"];
+     const initTouch = vertical ? initTouchY.value : initTouchX.value;
+@@ -224,8 +220,6 @@ function InfinitePager(_ref, ref) {
+       }
+     }
+   }).onUpdate(evt => {
+-    "worklet";
+-
+     const evtTranslate = vertical ? evt.translationY : evt.translationX;
+     const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
+     const isSwipingCrossAxis = Math.abs(crossAxisTranslate) > 10 && Math.abs(crossAxisTranslate) > Math.abs(evtTranslate);
+@@ -247,8 +241,6 @@ function InfinitePager(_ref, ref) {
+       translate.value = clampedVal + bounceTrans;
+     }
+   }).onEnd(evt => {
+-    "worklet";
+-
+     const evtVelocity = vertical ? evt.velocityY : evt.velocityX;
+     const evtTranslate = vertical ? evt.translationY : evt.translationX;
+     const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
+@@ -265,8 +257,6 @@ function InfinitePager(_ref, ref) {
+       console.log(`${debugTag}: onEnd (${isGestureLocked.value ? "locked" : "unlocked"})`, evt);
+     }
+   }).onFinalize(evt => {
+-    "worklet";
+-
+     const updatedPagerIds = activePagers.value.slice().filter(id => id !== pagerId);
+     activePagers.value = updatedPagerIds;
+     if (debugTag) {
+diff --git a/lib/module/index.js b/lib/module/index.js
+index d3ba2c433d6dcd34e7c7060ac7ce2d8e607b82a1..3f4ef0085c9e52005e3999e4195a92b7704d2bbd 100644
+--- a/lib/module/index.js
++++ b/lib/module/index.js
+@@ -177,8 +177,6 @@ function InfinitePager(_ref, ref) {
+     return activePagers.value.length && !isDeepestInOrientation;
+   }, [activePagers, orientation]);
+   panGesture.onBegin(evt => {
+-    "worklet";
+-
+     if (!isAtEdge) {
+       const updated = activePagers.value.slice();
+       updated.push(pagerId);
+@@ -191,8 +189,6 @@ function InfinitePager(_ref, ref) {
+       console.log(`${debugTag} onBegin`, evt);
+     }
+   }).onTouchesMove((evt, mgr) => {
+-    "worklet";
+-
+     const mainTouch = evt.changedTouches[0];
+     const evtVal = mainTouch[vertical ? "y" : "x"];
+     const initTouch = vertical ? initTouchY.value : initTouchX.value;
+@@ -216,8 +212,6 @@ function InfinitePager(_ref, ref) {
+       }
+     }
+   }).onUpdate(evt => {
+-    "worklet";
+-
+     const evtTranslate = vertical ? evt.translationY : evt.translationX;
+     const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
+     const isSwipingCrossAxis = Math.abs(crossAxisTranslate) > 10 && Math.abs(crossAxisTranslate) > Math.abs(evtTranslate);
+@@ -239,8 +233,6 @@ function InfinitePager(_ref, ref) {
+       translate.value = clampedVal + bounceTrans;
+     }
+   }).onEnd(evt => {
+-    "worklet";
+-
+     const evtVelocity = vertical ? evt.velocityY : evt.velocityX;
+     const evtTranslate = vertical ? evt.translationY : evt.translationX;
+     const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
+@@ -257,8 +249,6 @@ function InfinitePager(_ref, ref) {
+       console.log(`${debugTag}: onEnd (${isGestureLocked.value ? "locked" : "unlocked"})`, evt);
+     }
+   }).onFinalize(evt => {
+-    "worklet";
+-
+     const updatedPagerIds = activePagers.value.slice().filter(id => id !== pagerId);
+     activePagers.value = updatedPagerIds;
+     if (debugTag) {
+diff --git a/src/index.tsx b/src/index.tsx
+index 4d3338c65a8d49cf11abcd8f3a33fc8c85c29ae1..8af3813db9b0f1c4ff063788706c02f261fa1eb0 100644
+--- a/src/index.tsx
++++ b/src/index.tsx
+@@ -303,7 +303,7 @@ function InfinitePager(
+
+   panGesture
+     .onBegin((evt) => {
+-      "worklet";
++
+       if (!isAtEdge) {
+         const updated = activePagers.value.slice();
+         updated.push(pagerId);
+@@ -317,7 +317,7 @@ function InfinitePager(
+       }
+     })
+     .onTouchesMove((evt, mgr) => {
+-      "worklet";
++
+       const mainTouch = evt.changedTouches[0];
+
+       const evtVal = mainTouch[vertical ? "y" : "x"];
+@@ -355,7 +355,7 @@ function InfinitePager(
+       }
+     })
+     .onUpdate((evt) => {
+-      "worklet";
++
+       const evtTranslate = vertical ? evt.translationY : evt.translationX;
+       const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
+
+@@ -388,7 +388,7 @@ function InfinitePager(
+       }
+     })
+     .onEnd((evt) => {
+-      "worklet";
++
+       const evtVelocity = vertical ? evt.velocityY : evt.velocityX;
+       const evtTranslate = vertical ? evt.translationY : evt.translationX;
+       const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
+@@ -426,7 +426,7 @@ function InfinitePager(
+       }
+     })
+     .onFinalize((evt) => {
+-      "worklet";
++
+       const updatedPagerIds = activePagers.value
+         .slice()
+         .filter((id) => id !== pagerId);
