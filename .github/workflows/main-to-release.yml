@@ -21,6 +21,6 @@ jobs:
       - name: Open pull request
         if: steps.get_prs.outputs.prs == '[]'
         run: |
-          gh pr create --title "Update Release Branch" --body "This pull request was automatically opened by a GitHub Action." --base release --head main -R ukdanceblue/monorepo
+          gh pr create --title "Update Release Branch" --body "This pull request was automatically opened by a GitHub Action." --base release --head main --draft -R ukdanceblue/monorepo
         env:
           GH_TOKEN: ${{ github.token }}
