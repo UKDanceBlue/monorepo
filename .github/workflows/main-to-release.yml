@@ -15,8 +15,12 @@ jobs:
         run: |
           gh pr list --state open --base release --json number,title -R ukdanceblue/monorepo > prs.json
           echo "::set-output name=prs::$(cat prs.json)"
+        env:
+          GH_TOKEN: ${{ github.token }}
       # If the array is empty, there are no open pull requests, so we can open one
       - name: Open pull request
         if: steps.get_prs.outputs.prs == '[]'
         run: |
           gh pr create --title "Update Release Branch" --body "This pull request was automatically opened by a GitHub Action." --base release --head main -R ukdanceblue/monorepo
+        env:
+          GH_TOKEN: ${{ github.token }}
