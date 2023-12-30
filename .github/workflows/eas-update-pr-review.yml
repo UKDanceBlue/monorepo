@@ -43,4 +43,3 @@ jobs:
           command:
             eas update --auto --branch ${{ github.event.pull_request.head.ref }}
           working-directory: packages/mobile
-          qr-target: dev-build
