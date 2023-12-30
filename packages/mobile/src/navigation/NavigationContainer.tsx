@@ -18,7 +18,6 @@ import NotificationInfoModal from "../common/components/NotificationInfoModal";
 import WebpageModal from "../common/components/WebpageModal";
 import { useColorModeValue } from "../common/customHooks";
 import { universalCatch } from "../common/logging";
-import "../common/util/AndroidTimerFix"; // https://github.com/firebase/firebase-js-sdk/issues/97#issuecomment-427512040
 import RootScreen from "../navigation/root/RootScreen";
 import { useReactNavigationTheme } from "../theme";
 import type { NotificationInfoPopup } from "../types/NotificationPayload";
