@@ -5809,16 +5809,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/remote-config@npm:18.5.0":
-  version: 18.5.0
-  resolution: "@react-native-firebase/remote-config@npm:18.5.0"
-  peerDependencies:
-    "@react-native-firebase/analytics": 18.5.0
-    "@react-native-firebase/app": 18.5.0
-  checksum: 1a6cd6ab7c6513d018e02c927d6e0e7dbf6ff775d64a80bf753a22b3553d5880b0da485e153e0696913fe505e3782e90d33199c72904d6a001dfb74de75017e3
-  languageName: node
-  linkType: hard
-
 "@react-native-firebase/storage@npm:18.5.0":
   version: 18.5.0
   resolution: "@react-native-firebase/storage@npm:18.5.0"
@@ -8195,7 +8185,6 @@ __metadata:
     "@react-native-firebase/app": 18.5.0
     "@react-native-firebase/crashlytics": 18.5.0
     "@react-native-firebase/firestore": 18.5.0
-    "@react-native-firebase/remote-config": 18.5.0
     "@react-native-firebase/storage": 18.5.0
     "@react-native-masked-view/masked-view": 0.2.9
     "@react-native-picker/picker": 2.4.10
