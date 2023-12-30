@@ -42,6 +42,7 @@ export function ConfigPage() {
                     {(oldConfigs) =>
                       oldConfigs.length > 0 && (
                         <Collapse
+                          style={{ marginBottom: "1rem" }}
                           items={[
                             {
                               label: "Inactive Values",
@@ -67,7 +68,7 @@ export function ConfigPage() {
               ))
             }
           </formApi.Subscribe>
-          <Divider />
+          <Divider style={{ marginTop: "0.5rem" }} />
           <Flex justify="space-between" align="end" gap="small" wrap="wrap">
             <Form.Item
               label="New Key"
