@@ -20,6 +20,7 @@ async function config() {
     path.resolve(projectRoot, "node_modules"),
     path.resolve(workspaceRoot, "node_modules"),
   ];
+
   config.resolver.resolveRequest = (context, moduleName, platform) => {
     if (moduleName === "type-graphql") {
       return {
@@ -28,7 +29,7 @@ async function config() {
         type: "sourceFile",
       };
     }
-    return config.resolver.resolveRequest(context, moduleName, platform);
+    return context.resolveRequest(context, moduleName, platform);
   };
   config.transformer.getTransformOptions = async () => ({
     transform: {
