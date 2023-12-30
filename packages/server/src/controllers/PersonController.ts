@@ -23,8 +23,24 @@ export async function findPersonForLogin(
   logger.debug(`Looking for person with auth IDs: ${JSON.stringify(authIds)}`);
   return sequelizeDb.transaction(async (t) => {
     // TODO: pick specific values of authIds to search for, instead of all of them at once
-    let currentPerson = await PersonModel.findOne({ where: { authIds } });
+    let currentPerson: PersonModel | null = null;
     let created = false;
+    for (const [source, id] of Object.entries(authIds)) {
+      if (!id) {
+        continue;
+      }
+      // eslint-disable-next-line no-await-in-loop
+      currentPerson = await PersonModel.findOne({
+        where: { authIds: { [source]: id } },
+        transaction: t,
+      });
+      logger.debug(
+        `Found person by ${source}: ${currentPerson?.uuid ?? "ERR"}`
+      );
+      if (currentPerson) {
+        break;
+      }
+    }
     if (!currentPerson && userData.linkblue) {
       currentPerson = await PersonModel.findOne({
         where: { linkblue: userData.linkblue },

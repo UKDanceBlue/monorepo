@@ -4,8 +4,6 @@ import type { FirebaseCrashlyticsTypes } from "@react-native-firebase/crashlytic
 import crashlytics from "@react-native-firebase/crashlytics";
 import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import firestore from "@react-native-firebase/firestore";
-import type { FirebaseRemoteConfigTypes } from "@react-native-firebase/remote-config";
-import remoteConfig from "@react-native-firebase/remote-config";
 import type { FirebaseStorageTypes } from "@react-native-firebase/storage";
 import storage from "@react-native-firebase/storage";
 import type { ReactNode } from "react";
@@ -16,7 +14,6 @@ export const FirebaseContext = createContext<{
   fbAnalytics: FirebaseAnalyticsTypes.Module;
   fbCrashlytics: FirebaseCrashlyticsTypes.Module;
   fbFirestore: FirebaseFirestoreTypes.Module;
-  fbRemoteConfig: FirebaseRemoteConfigTypes.Module;
   fbStorage: FirebaseStorageTypes.Module;
 }>({} as never);
 
@@ -25,7 +22,6 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
     fbAnalytics: analytics(),
     fbCrashlytics: crashlytics(),
     fbFirestore: firestore(),
-    fbRemoteConfig: remoteConfig(),
     fbStorage: storage(),
   };
 

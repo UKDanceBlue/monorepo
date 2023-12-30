@@ -1,5 +1,6 @@
-import { timestampToDateTime } from "@common/util/dateTools";
-import type { FirestoreEvent } from "@ukdanceblue/db-app-common";
+import { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
 import { Platform } from "expo-modules-core";
 import { DateTime, Interval } from "luxon";
 import { Box, Column, Heading, Row } from "native-base";
@@ -8,28 +9,46 @@ import { useCallback, useMemo } from "react";
 import type { ListRenderItem } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-
 import EventRow from "./EventRow";
 import { RNCAL_DATE_FORMAT } from "./constants";
 
 export const EventListRenderItem = ({
-  item: thisEvent,
+  item: [event, occurrenceUuid],
   index,
   dayIndexesRef,
   tryToNavigate,
-}: Omit<Parameters<ListRenderItem<FirestoreEvent>>[0], "separators"> & {
+}: Omit<
+  Parameters<
+    ListRenderItem<
+      [event: FragmentType<typeof EventScreenFragment>, occurrenceUuid: string]
+    >
+  >[0],
+  "separators"
+> & {
   dayIndexesRef: MutableRefObject<Partial<Record<string, number>>>;
-  tryToNavigate: (event: FirestoreEvent) => void;
+  tryToNavigate: (
+    event: FragmentType<typeof EventScreenFragment>,
+    occurrenceUuid: string
+  ) => void;
 }) => {
-  const eventDate = useMemo(() => {
-    if (thisEvent.interval?.start == null) {
+  const eventData = getFragmentData(EventScreenFragment, event);
+
+  const occurrence = useMemo(() => {
+    const occurrence = eventData.occurrences.find(
+      (occurrence) => occurrence.uuid === occurrenceUuid
+    );
+    if (!occurrence) {
       return undefined;
-    } else {
-      return timestampToDateTime(thisEvent.interval.start).toFormat(
-        RNCAL_DATE_FORMAT
-      );
     }
-  }, [thisEvent.interval?.start]);
+    return {
+      ...occurrence,
+      interval: Interval.fromISO(occurrence.interval),
+    };
+  }, [occurrenceUuid, eventData.occurrences]);
+
+  const eventDate = useMemo(() => {
+    return occurrence?.interval.start.toFormat(RNCAL_DATE_FORMAT);
+  }, [occurrence]);
 
   if (eventDate != null) {
     if (!((dayIndexesRef.current[eventDate] ?? Number.NaN) < index)) {
@@ -38,18 +57,8 @@ export const EventListRenderItem = ({
   }
 
   const onPress = useCallback(() => {
-    tryToNavigate(thisEvent);
-  }, [thisEvent, tryToNavigate]);
-
-  const interval = useMemo(() => {
-    if (thisEvent.interval != null) {
-      return Interval.fromDateTimes(
-        timestampToDateTime(thisEvent.interval.start),
-        timestampToDateTime(thisEvent.interval.end)
-      );
-    }
-    return undefined;
-  }, [thisEvent.interval]);
+    tryToNavigate(event, occurrenceUuid);
+  }, [event, occurrenceUuid, tryToNavigate]);
 
   return useMemo(
     () => (
@@ -79,7 +88,7 @@ export const EventListRenderItem = ({
                   noOfLines={2}
                   textAlign="center"
                 >
-                  {interval?.start.toFormat("EEE.\nd")}
+                  {occurrence?.interval.start.toFormat("EEE.\nd")}
                 </Heading>
               )}
           </Column>
@@ -90,13 +99,16 @@ export const EventListRenderItem = ({
             borderLeftColor="primary.600"
             borderLeftWidth="4"
             backgroundColor={
-              interval?.contains(DateTime.local()) ? "blue.100" : "white"
+              occurrence?.interval.contains(DateTime.local())
+                ? "blue.100"
+                : "white"
             }
           >
             <EventRow
-              title={thisEvent.name}
-              interval={interval}
-              location={thisEvent.address}
+              key={`${eventData.uuid}:${occurrenceUuid}`}
+              title={eventData.title}
+              interval={occurrence?.interval}
+              location={eventData.location ?? undefined}
             />
           </Box>
         </Row>
@@ -104,12 +116,14 @@ export const EventListRenderItem = ({
     ),
     [
       dayIndexesRef,
+      eventData.location,
+      eventData.title,
+      eventData.uuid,
       eventDate,
       index,
-      interval,
+      occurrence?.interval,
+      occurrenceUuid,
       onPress,
-      thisEvent.address,
-      thisEvent.name,
     ]
   );
 };

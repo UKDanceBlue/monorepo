@@ -161,7 +161,7 @@ export function makeUserJwt(user: UserData): string {
 
   return jsonwebtoken.sign(payload, jwtSecret, {
     issuer: jwtIssuer,
-    expiresIn: "1d",
+    expiresIn: "7d",
   });
 }
 
