@@ -87,10 +87,17 @@ type ConfigurationResource {
   createdAt: DateTimeISO
   key: String!
   updatedAt: DateTimeISO
+  uuid: ID!
+  validAfter: LuxonDateTime
+  validUntil: LuxonDateTime
+  value: String!
 }
 
 input CreateConfigurationInput {
   key: String!
+  validAfter: LuxonDateTime
+  validUntil: LuxonDateTime
+  value: String!
 }
 
 type CreateConfigurationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -352,6 +359,8 @@ enum EventResolverAllKeys {
   duration
   location
   occurrence
+  occurrenceEnd
+  occurrenceStart
   summary
   title
   updatedAt
@@ -360,6 +369,8 @@ enum EventResolverAllKeys {
 enum EventResolverDateFilterKeys {
   createdAt
   occurrence
+  occurrenceEnd
+  occurrenceStart
   updatedAt
 }
 
@@ -450,7 +461,7 @@ type EventResource {
 }
 
 type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
-  data: ConfigurationResource!
+  data: [ConfigurationResource!]!
   ok: Boolean!
 }
 
@@ -646,6 +657,7 @@ type Mutation {
   addExistingImageToEvent(eventId: String!, imageId: String!): AddEventImageResponse!
   addImageToEvent(eventId: String!, input: AddEventImageInput!): AddEventImageResponse!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
+  createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
   createDevice(input: CreateDeviceInput!): CreateDeviceResponse!
   createEvent(input: CreateEventInput!): CreateEventResponse!
   createImage(input: CreateImageInput!): CreateImageResponse!
@@ -928,8 +940,9 @@ type PointOpportunityResource {
 scalar PositiveInt
 
 type Query {
+  activeConfiguration(key: String!): GetConfigurationByUuidResponse!
   allConfigurations: GetAllConfigurationsResponse!
-  configuration(key: String!): GetConfigurationByUuidResponse!
+  configuration(uuid: String!): GetConfigurationByUuidResponse!
   device(uuid: String!): GetDeviceByUuidResponse!
   devices(
     """The boolean filters to apply to the query"""
