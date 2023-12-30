@@ -1,18 +1,20 @@
 import { useLogin } from "@common/auth";
+import { useAllowedLoginTypes } from "@common/hooks/useAllowedLoginTypes";
 import { AuthSource } from "@ukdanceblue/common";
 import { Button, Center, Image, Text, View, ZStack } from "native-base";
 import { useEffect, useState } from "react";
 import type { ImageSourcePropType } from "react-native";
 import { ActivityIndicator, Dimensions, StatusBar } from "react-native";
 
-import { useAppConfig } from "../../../context";
-
 import { getRandomSplashLoginBackground } from "./SplashLoginBackgrounds";
 
 const SplashLoginScreen = () => {
-  const { allowedLoginTypes } = useAppConfig();
+  const { allowedLoginTypes, allowedLoginTypesLoading } =
+    useAllowedLoginTypes();
 
-  const [loading, trigger] = useLogin();
+  const [loginLoading, trigger] = useLogin();
+
+  const loading = allowedLoginTypesLoading || loginLoading;
 
   const heightOfBackground = Dimensions.get("window").height * 0.6;
   const heightOfContent = Dimensions.get("window").height * 0.4;

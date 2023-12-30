@@ -19,8 +19,8 @@ const useAllowedLoginTypesQuery = graphql(/* GraphQL */ `
 `);
 
 export function useAllowedLoginTypes(): {
-  loading: boolean;
-  data: UserLoginType[];
+  allowedLoginTypesLoading: boolean;
+  allowedLoginTypes: UserLoginType[];
 } {
   const [{ data, fetching, error }] = useQuery({
     query: useAllowedLoginTypesQuery,
@@ -69,5 +69,8 @@ export function useAllowedLoginTypes(): {
     return allowedTypes;
   }, [configValue]);
 
-  return { loading: fetching, data: allowedTypes };
+  return {
+    allowedLoginTypesLoading: fetching,
+    allowedLoginTypes: allowedTypes,
+  };
 }
