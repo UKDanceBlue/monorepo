@@ -6,8 +6,3 @@ export interface NotificationInfoPopup {
   message: string;
   image?: FirestoreImage;
 }
-
-/** @deprecated Use types from @ukdanceblue/db-app-common instead */
-export interface NotificationPayload {
-  url: string;
-}

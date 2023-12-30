@@ -61,31 +61,6 @@ export interface FirestoreHour {
   textBlock?: string | string[];
 }
 
-export interface FirestoreMoraleTeam {
-  members: Record<string, string>;
-  leaders: string;
-  teamNumber: number;
-  points: number;
-}
-
-export const isCollectionReference = (
-  firestoreReference?: unknown
-): firestoreReference is FirebaseFirestoreTypes.CollectionReference => {
-  if (typeof firestoreReference !== "object" || firestoreReference == null) {
-    return false;
-  }
-  if (
-    typeof (firestoreReference as FirebaseFirestoreTypes.CollectionReference)
-      .id !== "string"
-  ) {
-    return false;
-  }
-  return (
-    typeof (firestoreReference as FirebaseFirestoreTypes.CollectionReference)
-      .path === "string"
-  );
-};
-
 export const isDocumentReference = (
   firestoreReference?: unknown
 ): firestoreReference is FirebaseFirestoreTypes.DocumentReference => {

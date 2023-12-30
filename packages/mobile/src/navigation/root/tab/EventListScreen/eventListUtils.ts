@@ -12,11 +12,7 @@ import type { DateData } from "react-native-calendars";
 import type { MarkedDates } from "react-native-calendars/src/types";
 import { useQuery } from "urql";
 
-import {
-  LOADED_MONTHS,
-  RNCAL_DATE_FORMAT,
-  RNCAL_DATE_FORMAT_NO_DAY,
-} from "./constants";
+import { RNCAL_DATE_FORMAT, RNCAL_DATE_FORMAT_NO_DAY } from "./constants";
 
 /**
  * Converts a luxon DateTime to a string in the format used by react-native-calendars
@@ -209,9 +205,9 @@ export const getTodayDateString = () =>
   luxonDateTimeToDateString(DateTime.now());
 
 export const useEvents = ({
-  earliestTimestamp,
+  month,
 }: {
-  earliestTimestamp: DateTime;
+  month: DateTime;
 }): [
   markedDates: MarkedDates,
   eventsByMonth: ReturnType<typeof splitEvents>,
@@ -245,11 +241,8 @@ export const useEvents = ({
       }
     `),
     variables: {
-      earliestTimestamp: earliestTimestamp.toISO(),
-      lastTimestamp: earliestTimestamp
-        .plus({ months: LOADED_MONTHS - 1 })
-        .endOf("month")
-        .toISO(),
+      earliestTimestamp: month.startOf("month").toISO(),
+      lastTimestamp: month.endOf("month").toISO(),
     },
   });
 

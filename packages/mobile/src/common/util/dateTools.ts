@@ -2,18 +2,21 @@ import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import firestore from "@react-native-firebase/firestore";
 import { DateTime, Interval } from "luxon";
 
+/** @deprecated */
 export function timestampToDateTime(
   timestamp: FirebaseFirestoreTypes.Timestamp
 ): DateTime {
   return DateTime.fromMillis(timestamp.toMillis());
 }
 
+/** @deprecated */
 export function dateTimeToTimestamp(
   dateTime: DateTime
 ): FirebaseFirestoreTypes.Timestamp {
   return firestore.Timestamp.fromMillis(dateTime.toMillis());
 }
 
+/** @deprecated */
 export function timestampsToInterval({
   start,
   end,
@@ -27,6 +30,7 @@ export function timestampsToInterval({
   );
 }
 
+/** @deprecated */
 export function intervalToTimestamps(interval: Interval): {
   start: FirebaseFirestoreTypes.Timestamp;
   end: FirebaseFirestoreTypes.Timestamp;

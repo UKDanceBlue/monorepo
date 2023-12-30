@@ -4,14 +4,13 @@ import type {
 } from "@react-native-community/netinfo";
 import NetInfo, { NetInfoStateType } from "@react-native-community/netinfo";
 import firebaseStorage from "@react-native-firebase/storage";
-import { isEqual } from "lodash";
 import {
   useColorModeValue as useColorModeValueNativeBase,
   useTheme,
 } from "native-base";
-import type { DependencyList } from "react";
-import { useDebugValue, useEffect, useRef, useState } from "react";
+import { useDebugValue, useEffect, useState } from "react";
 
+/** @deprecated */
 export function useFirebaseStorageUrl(googleUri?: string) {
   useDebugValue(`Storage for ${googleUri ?? "undefined"}`);
 
@@ -37,24 +36,6 @@ export function useFirebaseStorageUrl(googleUri?: string) {
   return state;
 }
 
-export function useDeepEffect(effectFunc: () => unknown, deps: DependencyList) {
-  const isFirst = useRef(true);
-  const prevDeps = useRef(deps);
-
-  useEffect(() => {
-    const isSame = prevDeps.current.every((obj, index) =>
-      isEqual(obj, deps[index])
-    );
-
-    if (isFirst.current || !isSame) {
-      effectFunc();
-    }
-
-    isFirst.current = false;
-    prevDeps.current = deps;
-  }, [deps, effectFunc]);
-}
-
 export function useNetworkStatus() {
   const [connectionInfo, setConnectionInfo] = useState<NetInfoState>({
     isConnected: null,
@@ -72,24 +53,6 @@ export function useNetworkStatus() {
   );
 
   return [connectionInfo, isLoaded] as const;
-}
-
-export function useCurrentDate(refreshInterval?: number) {
-  const [state, setState] = useState(new Date());
-
-  useEffect(() => {
-    // Set a *refreshInterval* second timer
-    const timer = setInterval(() => {
-      // Get time components
-      setState(new Date());
-    }, (refreshInterval ?? 60) * 10);
-
-    return () => {
-      clearInterval(timer);
-    };
-  }, [refreshInterval]);
-
-  return state;
 }
 
 export const useColorModeValue = <A, B>(lightValue: A, darkValue: B): A | B =>
