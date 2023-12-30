@@ -97,6 +97,7 @@
     "react-native-vector-icons": "^9.2.0",
     "react-native-webview": "13.6.3",
     "reflect-metadata": "^0.1.13",
+    "typescript": "^5.3.3",
     "urql": "^4.0.6"
   },
   "devDependencies": {

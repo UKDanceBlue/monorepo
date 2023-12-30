@@ -69,11 +69,10 @@
     "luxon": "^3.3.0",
     "reflect-metadata": "^0.1.13",
     "ts-jest": "^29.1.0",
-    "ts-json-schema-generator": "^1.2.0",
     "ts-node": "^10.9.1",
     "type-graphql": "^2.0.0-beta.3",
     "typedi": "^0.10.0",
-    "typescript": "^5.2.2",
+    "typescript": "^5.3.3",
     "utility-types": "^3.10.0",
     "validator": "^13.9.0"
   },
