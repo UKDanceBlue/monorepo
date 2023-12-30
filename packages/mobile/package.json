@@ -32,7 +32,6 @@
     "@react-native-firebase/app": "18.5.0",
     "@react-native-firebase/crashlytics": "18.5.0",
     "@react-native-firebase/firestore": "18.5.0",
-    "@react-native-firebase/remote-config": "18.5.0",
     "@react-native-firebase/storage": "18.5.0",
     "@react-native-masked-view/masked-view": "0.2.9",
     "@react-native-picker/picker": "2.4.10",
