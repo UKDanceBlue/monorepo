@@ -29,6 +29,8 @@
       ],
       "expo-camera",
       "expo-av",
+      "expo-font",
+      "expo-secure-store",
       "expo-file-system",
       [
         "expo-image-picker",

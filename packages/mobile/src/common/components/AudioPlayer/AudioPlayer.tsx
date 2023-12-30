@@ -101,11 +101,11 @@ const AudioPlayer = ({
         .toString()
         .padStart(2, "0")}`;
     } else {
-      currentTimeString = `${Math.floor(
+      currentTimeString = Math.floor(
         (seeking.current ? seekTime : currentTime) / 1000
       )
         .toString()
-        .padStart(2, "0")}`;
+        .padStart(2, "0");
     }
   } else {
     currentTimeString = "--:--";
@@ -119,9 +119,9 @@ const AudioPlayer = ({
         .toString()
         .padStart(2, "0")}`;
     } else {
-      durationString = `${Math.floor(duration / 1000)
+      durationString = Math.floor(duration / 1000)
         .toString()
-        .padStart(2, "0")}`;
+        .padStart(2, "0");
     }
   } else {
     durationString = "--:--";

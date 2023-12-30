@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "strict": true,
     "module": "es2015",
+    "target": "es2015",
     "moduleResolution": "bundler",
     "paths": {
       "@assets/*": ["./assets/*"],
@@ -15,7 +15,7 @@
     "exactOptionalPropertyTypes": false,
     "resolvePackageJsonExports": false
   },
-  "extends": ["../../tsconfig.json", "expo/tsconfig.base"],
+  "extends": ["../../tsconfig.json", "../../node_modules/expo/tsconfig.base"],
   "include": [
     "*.ts",
     "*.tsx",

@@ -1,57 +1,42 @@
 // Learn more https://docs.expo.io/guides/customizing-metro
-const fs = require("node:fs");
 const path = require("node:path");
 
 const { getDefaultConfig } = require("expo/metro-config");
 
 // Find the project and workspace directories
 const projectRoot = __dirname;
-
-const workspaces = fs.readdirSync(path.resolve(__dirname, "../"));
-const currentWorkspace = path.basename(__dirname);
+// This can be replaced with `find-yarn-workspace-root`
+const workspaceRoot = path.resolve(projectRoot, "../..");
 
 /** @return {import("expo/metro-config").MetroConfig} */
 async function config() {
-  /** @type {import("expo/metro-config").DefaultConfigOptions} */
-  const expoMetroConfig = await getDefaultConfig(projectRoot);
-
   /** @type {import("expo/metro-config").MetroConfig}*/
-  const config = {
-    ...expoMetroConfig,
-    projectRoot,
-    watchFolders: workspaces
-      .filter((f) => f !== currentWorkspace)
-      .map((f) => path.join(projectRoot, "../", f)),
-    resolver: {
-      ...expoMetroConfig.resolver,
-      extraNodeModules: new Proxy(
-        {},
-        {
-          get: (target, name) => path.join(projectRoot, `node_modules/${name}`),
-        }
-      ),
-      // Alias type-graphql to the browser shim
-      resolveRequest: (context, moduleName, platform) => {
-        if (moduleName === "type-graphql") {
-          return {
-            filePath:
-              "../common/node_modules/type-graphql/build/cjs/browser-shim.js",
-            type: "sourceFile",
-          };
-        }
-        return context.resolveRequest(context, moduleName, platform);
-      },
-    },
-    transformer: {
-      ...expoMetroConfig.transformer,
-      getTransformOptions: async () => ({
-        transform: {
-          experimentalImportSupport: false,
-          inlineRequires: true,
-        },
-      }),
-    },
+  const config = await getDefaultConfig(projectRoot);
+
+  // 1. Watch all files within the monorepo
+  config.watchFolders = [workspaceRoot];
+  // 2. Let Metro know where to resolve packages and in what order
+  config.resolver.nodeModulesPaths = [
+    path.resolve(projectRoot, "node_modules"),
+    path.resolve(workspaceRoot, "node_modules"),
+  ];
+
+  config.resolver.resolveRequest = (context, moduleName, platform) => {
+    if (moduleName === "type-graphql") {
+      return {
+        filePath:
+          "../common/node_modules/type-graphql/build/cjs/browser-shim.js",
+        type: "sourceFile",
+      };
+    }
+    return context.resolveRequest(context, moduleName, platform);
   };
+  config.transformer.getTransformOptions = async () => ({
+    transform: {
+      experimentalImportSupport: false,
+      inlineRequires: true,
+    },
+  });
 
   return config;
 }
