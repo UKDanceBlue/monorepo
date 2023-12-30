@@ -14,7 +14,7 @@ jobs:
         id: get_prs
         run: |
           gh pr list --state open --base release --json number,title -R ukdanceblue/monorepo > prs.json
-          echo "::set-output name=prs::$(cat prs.json)"
+          echo "prs=$(cat prs.json)" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ github.token }}
       # If the array is empty, there are no open pull requests, so we can open one
