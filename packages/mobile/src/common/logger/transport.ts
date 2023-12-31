@@ -30,10 +30,12 @@ export const logLevelToString = (level: LogLevel) => {
   }
 };
 
+export type LoggerTags = "graphql" | "navigation" | "global" | "critical";
+
 export interface ExtraLogArgs {
   error?: Error;
   context?: object;
-  tags?: string[];
+  tags?: LoggerTags[];
 }
 
 export abstract class LoggerTransport {
