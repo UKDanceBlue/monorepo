@@ -81,6 +81,7 @@ export function ConfigItem<Key extends string, Editable extends boolean>({
                 e.preventDefault();
               }
             }}
+            style={{ fontFamily: "monospace" }}
           />
           <Space direction="horizontal">
             <LuxonDatePicker
