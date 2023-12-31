@@ -1,4 +1,4 @@
-import { universalCatch } from "@common/logging";
+import { Logger } from "@common/logger/Logger";
 import { showMessage } from "@common/util/alertUtils";
 import { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
@@ -20,19 +20,8 @@ import { RNCAL_DATE_FORMAT, RNCAL_DATE_FORMAT_NO_DAY } from "./constants";
  * @param dateTime The DateTime to convert
  * @returns dateTime.toFormat(RNCAL_DATE_FORMAT)
  */
-export function luxonDateTimeToDateString(dateTime: DateTime): string;
-export function luxonDateTimeToDateString(dateTime: undefined): undefined;
-export function luxonDateTimeToDateString(dateTime: null): null;
-export function luxonDateTimeToDateString(
-  dateTime: DateTime | undefined
-): string | undefined;
-export function luxonDateTimeToDateString(
-  dateTime: DateTime | null
-): string | null;
-export function luxonDateTimeToDateString(
-  dateTime: DateTime | undefined | null
-): string | undefined | null {
-  return dateTime == null ? dateTime : dateTime.toFormat(RNCAL_DATE_FORMAT);
+export function luxonDateTimeToDateString(dateTime: DateTime): string {
+  return dateTime.toFormat(RNCAL_DATE_FORMAT);
 }
 
 /**
@@ -41,21 +30,8 @@ export function luxonDateTimeToDateString(
  * @param dateTime The DateTime to convert
  * @returns dateTime.toFormat(RNCAL_DATE_FORMAT_NO_DAY)
  */
-export function luxonDateTimeToMonthString(dateTime: DateTime): string;
-export function luxonDateTimeToMonthString(dateTime: undefined): undefined;
-export function luxonDateTimeToMonthString(dateTime: null): null;
-export function luxonDateTimeToMonthString(
-  dateTime: DateTime | undefined
-): string | undefined;
-export function luxonDateTimeToMonthString(
-  dateTime: DateTime | null
-): string | null;
-export function luxonDateTimeToMonthString(
-  dateTime: DateTime | undefined | null
-): string | undefined | null {
-  return dateTime == null
-    ? dateTime
-    : dateTime.toFormat(RNCAL_DATE_FORMAT_NO_DAY);
+export function luxonDateTimeToMonthString(dateTime: DateTime): string {
+  return dateTime.toFormat(RNCAL_DATE_FORMAT_NO_DAY);
 }
 
 /**
@@ -66,29 +42,14 @@ export function luxonDateTimeToMonthString(
  * @param dateTime The DateTime to convert
  * @returns A date object corresponding to dateTime
  */
-export function luxonDateTimeToDateData(dateTime: DateTime): DateData;
-export function luxonDateTimeToDateData(dateTime: undefined): undefined;
-export function luxonDateTimeToDateData(dateTime: null): null;
-export function luxonDateTimeToDateData(
-  dateTime: DateTime | undefined
-): DateData | undefined;
-export function luxonDateTimeToDateData(
-  dateTime: DateTime | null
-): DateData | null;
-export function luxonDateTimeToDateData(
-  dateTime: DateTime | undefined | null
-): DateData | undefined | null {
-  if (dateTime == null) {
-    return dateTime;
-  } else {
-    return {
-      dateString: luxonDateTimeToDateString(dateTime),
-      day: dateTime.day,
-      month: dateTime.month,
-      year: dateTime.year,
-      timestamp: dateTime.toMillis(),
-    };
-  }
+export function luxonDateTimeToDateData(dateTime: DateTime): DateData {
+  return {
+    dateString: luxonDateTimeToDateString(dateTime),
+    day: dateTime.day,
+    month: dateTime.month,
+    year: dateTime.year,
+    timestamp: dateTime.toMillis(),
+  };
 }
 
 /**
@@ -149,12 +110,27 @@ export const splitEvents = (
 
     for (const occurrence of eventData.occurrences) {
       const occurrenceInterval = Interval.fromISO(occurrence.interval);
-      const monthString = luxonDateTimeToMonthString(occurrenceInterval.start);
 
-      if (newEvents[monthString] == null) {
-        newEvents[monthString] = [[event, occurrence.uuid]];
+      const startMonthString = luxonDateTimeToMonthString(
+        occurrenceInterval.start
+      );
+
+      if (newEvents[startMonthString] == null) {
+        newEvents[startMonthString] = [[event, occurrence.uuid]];
       } else {
-        newEvents[monthString]!.push([event, occurrence.uuid]);
+        newEvents[startMonthString]!.push([event, occurrence.uuid]);
+      }
+
+      if (!occurrenceInterval.start.hasSame(occurrenceInterval.end, "month")) {
+        const endMonthString = luxonDateTimeToMonthString(
+          occurrenceInterval.end
+        );
+
+        if (newEvents[endMonthString] == null) {
+          newEvents[endMonthString] = [[event, occurrence.uuid]];
+        } else {
+          newEvents[endMonthString]!.push([event, occurrence.uuid]);
+        }
       }
     }
   }
@@ -162,8 +138,25 @@ export const splitEvents = (
   return newEvents;
 };
 
+const ONE_DAY_EVENT_COLOR = "#33B";
+const MULTI_DAY_EVENT_COLOR = "#3d3d80";
+
 /**
- * Gets the events for the given month and produces a MarkedDates object for react-native-calendars
+ * Gets the events for the given month and produces a MarkedDates
+ * object for react-native-calendars
+ *
+ * Our logic for marking a date is:
+ *
+ * 1. Always mark the start date of an event
+ * 2. Always mark today
+ * 3. If the end date of an event is the same as the start
+ *    date, do nothing else
+ * 4. If the end date of an event is different from the
+ *    start date AND is more than 24 hours after the start
+ *    date, mark every day the event is on
+ * 5. If the end date of an event is different from the
+ *    start date but is less than 24 hours after the start
+ *    do nothing else
  *
  * @param events The full list of events
  * @returns A MarkedDates object for react-native-calendars
@@ -171,7 +164,7 @@ export const splitEvents = (
 export const markEvents = (
   events: readonly FragmentType<typeof EventScreenFragment>[]
 ) => {
-  const marked: MarkedDates = {};
+  const marked: Partial<MarkedDates> = {};
 
   for (const event of events) {
     const eventData = getFragmentData(EventScreenFragment, event);
@@ -179,26 +172,43 @@ export const markEvents = (
     for (const occurrence of eventData.occurrences) {
       const interval = Interval.fromISO(occurrence.interval);
 
-      interval.set({
-        start: interval.start.startOf("day"),
-        end: interval.end.endOf("day"),
-      });
-
-      let date = interval.start.plus({ hour: 1 });
-
-      while (interval.contains(date)) {
-        const dateString = luxonDateTimeToDateString(date);
-
-        marked[dateString] = { marked: true };
-
-        date = date.plus({ days: 1 });
+      if (interval.start.diff(interval.end).as("hours") < 24) {
+        const dateString = luxonDateTimeToDateString(interval.start);
+        const existingDots = marked[dateString]?.dots ?? [];
+        marked[dateString] = {
+          dots:
+            existingDots.length < 3
+              ? [
+                  ...existingDots,
+                  {
+                    color: ONE_DAY_EVENT_COLOR,
+                  },
+                ]
+              : existingDots,
+        };
+      } else {
+        for (const day of interval.splitBy({ day: 1 })) {
+          const dateString = luxonDateTimeToDateString(day.start);
+          const existingDots = marked[dateString]?.dots ?? [];
+          marked[dateString] = {
+            dots:
+              existingDots.length < 3
+                ? [
+                    ...existingDots,
+                    {
+                      color: MULTI_DAY_EVENT_COLOR,
+                    },
+                  ]
+                : existingDots,
+          };
+        }
       }
     }
   }
 
   marked[getTodayDateString()] = { today: true };
 
-  return marked;
+  return marked as MarkedDates;
 };
 
 export const getTodayDateString = () =>
@@ -233,6 +243,8 @@ export const useEvents = ({
               value: $lastTimestamp
             }
           ]
+          sortDirection: ASCENDING
+          sortBy: "occurrence"
         ) {
           data {
             ...EventScreenFragment
@@ -248,7 +260,10 @@ export const useEvents = ({
 
   useEffect(() => {
     if (!eventsQueryResult.fetching && eventsQueryResult.error != null) {
-      universalCatch(eventsQueryResult.error);
+      Logger.error(
+        `useEvents failed to fetch events for ${month.toFormat("yyyy-LL")}`,
+        { error: eventsQueryResult.error, tags: ["graphql"] }
+      );
       showMessage(
         eventsQueryResult.error.message,
         eventsQueryResult.error.name
