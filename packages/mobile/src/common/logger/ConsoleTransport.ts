@@ -1,7 +1,20 @@
-import { LogLevel, type LoggerTransport } from "./transport";
+import type { ExtraLogArgs } from "./transport";
+import { LogLevel, LoggerTransport } from "./transport";
 
-export const ConsoleTransport: LoggerTransport = {
-  log({ level, message, extra }) {
+export class ConsoleTransport extends LoggerTransport {
+  constructor(level: LogLevel) {
+    super("Console", level);
+  }
+
+  protected writeLog({
+    level,
+    message,
+    extra,
+  }: {
+    level: LogLevel;
+    message: string | boolean | bigint | number | object;
+    extra: ExtraLogArgs;
+  }) {
     switch (level) {
       case LogLevel.debug: {
         console.debug(message, extra);
@@ -24,5 +37,5 @@ export const ConsoleTransport: LoggerTransport = {
         break;
       }
     }
-  },
-};
+  }
+}

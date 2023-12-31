@@ -1,8 +1,9 @@
 import { ConsoleTransport } from "./ConsoleTransport";
-import type { ExtraLogArgs, LogLevel, LoggerTransport } from "./transport";
+import type { ExtraLogArgs, LoggerTransport } from "./transport";
+import { LogLevel } from "./transport";
 
 export class Logger {
-  static instance: Logger = new Logger([ConsoleTransport]);
+  static #instance: Logger = new Logger([new ConsoleTransport(LogLevel.debug)]);
 
   #transports: LoggerTransport[];
 
@@ -46,7 +47,52 @@ export class Logger {
     }
 
     for (const transport of this.#transports) {
-      transport.log({ level, message, messageString, extra });
+      try {
+        transport.log({ level, message, messageString, extra });
+      } catch (error) {
+        console.error(
+          `Error writing log to ${transport.name}Transport: ${String(error)}`
+        );
+      }
     }
+  }
+
+  static get instance(): Logger {
+    return Logger.#instance;
+  }
+
+  static debug(
+    message: string | boolean | bigint | number | object,
+    extra: ExtraLogArgs = {}
+  ) {
+    Logger.instance.log(LogLevel.debug, message, extra);
+  }
+
+  static log(
+    message: string | boolean | bigint | number | object,
+    extra: ExtraLogArgs = {}
+  ) {
+    Logger.instance.log(LogLevel.log, message, extra);
+  }
+
+  static info(
+    message: string | boolean | bigint | number | object,
+    extra: ExtraLogArgs = {}
+  ) {
+    Logger.instance.log(LogLevel.info, message, extra);
+  }
+
+  static warn(
+    message: string | boolean | bigint | number | object,
+    extra: ExtraLogArgs = {}
+  ) {
+    Logger.instance.log(LogLevel.warn, message, extra);
+  }
+
+  static error(
+    message: string | boolean | bigint | number | object,
+    extra: ExtraLogArgs = {}
+  ) {
+    Logger.instance.log(LogLevel.error, message, extra);
   }
 }
