@@ -53,7 +53,9 @@ const dbOptions = {
   },
   dialectOptions: {
     application_name: "db-server",
+    schema: "danceblue",
   },
+  schema: "danceblue",
 } satisfies SequelizeOptions;
 
 export const sequelizeDb = new Sequelize(
