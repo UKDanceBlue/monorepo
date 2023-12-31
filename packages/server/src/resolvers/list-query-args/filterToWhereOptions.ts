@@ -59,7 +59,7 @@ export function filterToWhereOptions<
     const mappedField = sortByMap[field];
     if (!mappedField || typeof mappedField !== "string") {
       throw new Error(
-        `No string mapping found for numeric filter field ${field} on ${resolverName}`
+        `No string mapping found for date filter field ${field} on ${resolverName}`
       );
     }
     const jsDate = DateTime.isDateTime(value)
@@ -83,7 +83,7 @@ export function filterToWhereOptions<
     const mappedField = sortByMap[field];
     if (!mappedField || typeof mappedField !== "string") {
       throw new Error(
-        `No string mapping found for numeric filter field ${field} on ${resolverName}`
+        `No string mapping found for boolean filter field ${field} on ${resolverName}`
       );
     }
     whereOptions[mappedField] = {
@@ -95,7 +95,7 @@ export function filterToWhereOptions<
     const mappedField = sortByMap[field];
     if (!mappedField || typeof mappedField !== "string") {
       throw new Error(
-        `No string mapping found for numeric filter field ${field} on ${resolverName}`
+        `No string mapping found for is-null filter field ${field} on ${resolverName}`
       );
     }
     whereOptions[mappedField] = {
@@ -107,7 +107,7 @@ export function filterToWhereOptions<
     const mappedField = sortByMap[field];
     if (!mappedField || typeof mappedField !== "string") {
       throw new Error(
-        `No string mapping found for numeric filter field ${field} on ${resolverName}`
+        `No string mapping found for one-of filter field ${field} on ${resolverName}`
       );
     }
     whereOptions[mappedField] = {
