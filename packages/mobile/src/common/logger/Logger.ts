@@ -1,13 +1,19 @@
+import crashlytics from "@react-native-firebase/crashlytics";
+
 import { ConsoleTransport } from "./ConsoleTransport";
+import { CrashlyticsTransport } from "./CrashlyticsTransport";
 import type { ExtraLogArgs, LoggerTransport } from "./transport";
 import { LogLevel } from "./transport";
 
 export class Logger {
-  static #instance: Logger = new Logger([new ConsoleTransport(LogLevel.debug)]);
+  static #instance: Logger = new Logger(
+    new ConsoleTransport(LogLevel.debug),
+    new CrashlyticsTransport(LogLevel.log, crashlytics())
+  );
 
   #transports: LoggerTransport[];
 
-  constructor(transports: LoggerTransport[]) {
+  constructor(...transports: LoggerTransport[]) {
     this.#transports = transports;
   }
 
