@@ -25,6 +25,7 @@ import {
   OneOfFilterItem,
   StringFilterItem,
 } from "./FilterItem.js";
+import type { UnorderedOrderItemArray } from "./UnfilteredListQueryArgs.js";
 import { UnfilteredListQueryArgs } from "./UnfilteredListQueryArgs.js";
 import { filterToWhereOptions } from "./filterToWhereOptions.js";
 import { registerFilterKeyEnums } from "./registerFilterKeyEnums.js";
@@ -171,7 +172,8 @@ export function FilteredListQueryArgs<
     oneOfFilters!: KeyedOneOfFilterItem[] | null;
 
     toSequelizeFindOptions<M extends Model<Record<string, unknown>>>(
-      sortByMap: Partial<Record<AllKeys, OrderItemColumn>>,
+      columnMap: Partial<Record<AllKeys, OrderItemColumn>>,
+      orderOverrideMap: Partial<Record<AllKeys, UnorderedOrderItemArray>>,
       modelStatic?: ModelStatic<M>
     ): FindAndCountOptions<Attributes<M>> & {
       where: Partial<WhereAttributeHash<Attributes<M>>>;
@@ -183,7 +185,7 @@ export function FilteredListQueryArgs<
       }
 
       const options: FindAndCountOptions<Record<AllKeys, never>> = {
-        ...super.toSequelizeFindOptions(sortByMap),
+        ...super.toSequelizeFindOptions(columnMap, orderOverrideMap),
         col: `${modelStatic.name}.id`,
         distinct: true,
       };
@@ -195,7 +197,7 @@ export function FilteredListQueryArgs<
           NumericFilterKeys,
           DateFilterKeys,
           BooleanFilterKeys
-        >(this, sortByMap, resolverName);
+        >(this, columnMap, resolverName);
 
       return {
         ...options,

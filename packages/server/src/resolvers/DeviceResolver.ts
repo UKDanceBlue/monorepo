@@ -1,4 +1,9 @@
-import { DetailedError, DeviceResource, ErrorCode , PersonResource } from "@ukdanceblue/common";
+import {
+  DetailedError,
+  DeviceResource,
+  ErrorCode,
+  PersonResource,
+} from "@ukdanceblue/common";
 import {
   Arg,
   Args,
@@ -105,6 +110,7 @@ export class DeviceResolver
         expoPushToken: "expoPushToken",
         lastLogin: "lastLogin",
       },
+      {},
       DeviceModel
     );
 

@@ -4,7 +4,8 @@ import {
   PersonResource,
   PointEntryResource,
   PointOpportunityResource,
- TeamResource } from "@ukdanceblue/common";
+  TeamResource,
+} from "@ukdanceblue/common";
 import {
   Arg,
   Args,
@@ -109,7 +110,7 @@ export class PointEntryResolver
   async list(
     @Args(() => ListPointEntriesArgs) query: ListPointEntriesArgs
   ): Promise<ListPointEntriesResponse> {
-    const findOptions = query.toSequelizeFindOptions({}, PointEntryModel);
+    const findOptions = query.toSequelizeFindOptions({}, {}, PointEntryModel);
 
     const { rows, count } = await PointEntryModel.findAndCountAll(findOptions);
 

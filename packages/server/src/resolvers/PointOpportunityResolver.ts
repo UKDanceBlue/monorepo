@@ -4,7 +4,8 @@ import {
   ErrorCode,
   EventResource,
   PointOpportunityResource,
- TeamType } from "@ukdanceblue/common";
+  TeamType,
+} from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
 import {
   Arg,
@@ -136,6 +137,7 @@ export class PointOpportunityResolver
         createdAt: "createdAt",
         updatedAt: "updatedAt",
       },
+      {},
       PointOpportunityModel
     );
 

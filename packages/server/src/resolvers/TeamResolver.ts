@@ -165,6 +165,7 @@ export class TeamResolver
           `(SELECT COALESCE(SUM(points), 0) AS totalPoints FROM danceblue.point_entries WHERE team_id = "Team"."id" AND deleted_at IS NULL)`
         ),
       },
+      {},
       TeamModel
     );
 

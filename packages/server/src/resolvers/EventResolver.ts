@@ -226,6 +226,11 @@ export class EventResolver
         occurrenceStart: "$occurrences.date$",
         occurrenceEnd: "$occurrences.endDate$",
       },
+      {
+        occurrence: [EventOccurrenceModel, "date"] as const,
+        occurrenceStart: [EventOccurrenceModel, "date"] as const,
+        occurrenceEnd: [EventOccurrenceModel, "endDate"] as const,
+      },
       EventModel
     );
 

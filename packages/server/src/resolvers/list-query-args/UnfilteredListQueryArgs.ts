@@ -1,4 +1,9 @@
-import type { FindAndCountOptions, OrderItemColumn } from "@sequelize/core";
+import type {
+  FindAndCountOptions,
+  OrderItem,
+  OrderItemAssociation,
+  OrderItemColumn,
+} from "@sequelize/core";
 import type {
   ListQueryType,
   OptionalToNullable,
@@ -8,6 +13,24 @@ import { SortDirection } from "@ukdanceblue/common";
 import { ArgsType, Field, Int } from "type-graphql";
 
 import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./common.js";
+
+export type UnorderedOrderItemArray =
+  | [OrderItemAssociation, OrderItemColumn]
+  | [OrderItemAssociation, OrderItemAssociation, OrderItemColumn]
+  | [
+      OrderItemAssociation,
+      OrderItemAssociation,
+      OrderItemAssociation,
+      OrderItemColumn,
+    ]
+  | [
+      OrderItemAssociation,
+      OrderItemAssociation,
+      OrderItemAssociation,
+      OrderItemAssociation,
+      OrderItemColumn,
+    ];
+undefined as unknown as UnorderedOrderItemArray satisfies OrderItem;
 
 @ArgsType()
 export class UnfilteredListQueryArgs<SortByKeys extends string = never>
@@ -52,7 +75,8 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
   sortDirection?: SortDirection[] | null;
 
   toSequelizeFindOptions(
-    sortByMap?: Partial<Record<SortByKeys, OrderItemColumn>>
+    columnMap?: Partial<Record<SortByKeys, OrderItemColumn>>,
+    orderOverrideMap?: Partial<Record<SortByKeys, UnorderedOrderItemArray>>
   ): FindAndCountOptions<Record<SortByKeys, never>> {
     const options: FindAndCountOptions<Record<SortByKeys, never>> = {
       paranoid: this.includeDeleted === true ? false : true,
@@ -68,22 +92,21 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
       }
     }
 
-    if (this.sortBy != null && sortByMap != null) {
-      const sortBy = this.sortBy.map((key) => sortByMap[key]);
+    if (this.sortBy != null && columnMap != null) {
+      const sortBy = this.sortBy.map(
+        (key) => orderOverrideMap?.[key] ?? columnMap[key]
+      );
       const sortDirection =
         this.sortDirection?.map((v) =>
           v === SortDirection.DESCENDING ? "DESC" : "ASC"
         ) ?? this.sortBy.map(() => "ASC");
 
       options.order = sortBy
-        .map((key, index) => [key, sortDirection[index]] as const)
-        .filter(
-          (
-            pair
-          ): pair is [
-            Exclude<(typeof pair)[0], undefined>,
-            Exclude<(typeof pair)[1], undefined>,
-          ] => pair[0] != null && pair[1] != null
+        .filter((key, index) => key != null && sortDirection[index] != null)
+        .map((key, index) =>
+          Array.isArray(key)
+            ? [...(key as UnorderedOrderItemArray), sortDirection[index]!]
+            : ([key!, sortDirection[index]!] as const)
         );
     }
 

@@ -183,6 +183,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
           linkblue: "linkblue",
           name: "name",
         },
+        {},
         PersonModel
       ),
     });
