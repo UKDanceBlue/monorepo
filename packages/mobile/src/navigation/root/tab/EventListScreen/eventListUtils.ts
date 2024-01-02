@@ -275,19 +275,19 @@ export const useEvents = ({
 
   useEffect(() => {
     if (eventsQueryResult.fetching) {
-      Logger.debug(
-        `useEvents is fetching events for ${month.toFormat("yyyy-LL")}`,
-        { tags: ["graphql"] }
-      );
+      Logger.debug(`fetching events for ${month.toFormat("yyyy-LL")}`, {
+        tags: ["graphql"],
+        source: "useEvents",
+      });
     }
   }, [eventsQueryResult.fetching, month]);
 
   useEffect(() => {
     if (!eventsQueryResult.fetching && eventsQueryResult.error == null) {
       Logger.debug(
-        `useEvents successfully fetched ${eventsQueryResult.data?.events.data
+        `successfully fetched ${eventsQueryResult.data?.events.data
           .length} events for ${month.toFormat("yyyy-LL")}`,
-        { tags: ["graphql"] }
+        { tags: ["graphql"], source: "useEvents" }
       );
     }
   }, [
@@ -299,10 +299,11 @@ export const useEvents = ({
 
   useEffect(() => {
     if (!eventsQueryResult.fetching && eventsQueryResult.error != null) {
-      Logger.error(
-        `useEvents failed to fetch events for ${month.toFormat("yyyy-LL")}`,
-        { error: eventsQueryResult.error, tags: ["graphql"] }
-      );
+      Logger.error(`failed to fetch events for ${month.toFormat("yyyy-LL")}`, {
+        error: eventsQueryResult.error,
+        tags: ["graphql"],
+        source: "useEvents",
+      });
       showMessage(
         eventsQueryResult.error.message,
         eventsQueryResult.error.name
