@@ -33,6 +33,8 @@ export const EventListRenderItem = ({
 }) => {
   const eventData = getFragmentData(EventScreenFragment, event);
 
+  const now = useMemo(() => DateTime.now(), []);
+
   const occurrence = useMemo(() => {
     const occurrence = eventData.occurrences.find(
       (occurrence) => occurrence.uuid === occurrenceUuid
@@ -88,7 +90,10 @@ export const EventListRenderItem = ({
                   noOfLines={2}
                   textAlign="center"
                 >
-                  {occurrence?.interval.start.toFormat("EEE.\nd")}
+                  {occurrence?.interval.start &&
+                    (now.hasSame(occurrence.interval.start, "month")
+                      ? occurrence.interval.start.toFormat("EEE.\nd")
+                      : occurrence.interval.start.toFormat("LLL\nd"))}
                 </Heading>
               )}
           </Column>
@@ -121,6 +126,7 @@ export const EventListRenderItem = ({
       eventData.uuid,
       eventDate,
       index,
+      now,
       occurrence?.interval,
       occurrenceUuid,
       onPress,

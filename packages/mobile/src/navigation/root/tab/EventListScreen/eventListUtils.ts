@@ -105,11 +105,26 @@ export const splitEvents = (
     >
   > = {};
 
+  const now = DateTime.now();
+  const thisMonth = Interval.fromDateTimes(
+    now.startOf("month"),
+    now.endOf("month")
+  );
+
   for (const event of events) {
     const eventData = getFragmentData(EventScreenFragment, event);
 
     for (const occurrence of eventData.occurrences) {
       const occurrenceInterval = Interval.fromISO(occurrence.interval);
+
+      if (!occurrenceInterval.start.hasSame(occurrenceInterval.end, "month")) {
+        if (
+          (occurrenceInterval.intersection(thisMonth)?.length("hours") ?? 0) <
+          24
+        ) {
+          continue;
+        }
+      }
 
       const startMonthString = luxonDateTimeToMonthString(
         occurrenceInterval.start
@@ -259,6 +274,30 @@ export const useEvents = ({
   });
 
   useEffect(() => {
+    if (eventsQueryResult.fetching) {
+      Logger.debug(
+        `useEvents is fetching events for ${month.toFormat("yyyy-LL")}`,
+        { tags: ["graphql"] }
+      );
+    }
+  }, [eventsQueryResult.fetching, month]);
+
+  useEffect(() => {
+    if (!eventsQueryResult.fetching && eventsQueryResult.error == null) {
+      Logger.debug(
+        `useEvents successfully fetched ${eventsQueryResult.data?.events.data
+          .length} events for ${month.toFormat("yyyy-LL")}`,
+        { tags: ["graphql"] }
+      );
+    }
+  }, [
+    eventsQueryResult.data,
+    eventsQueryResult.error,
+    eventsQueryResult.fetching,
+    month,
+  ]);
+
+  useEffect(() => {
     if (!eventsQueryResult.fetching && eventsQueryResult.error != null) {
       Logger.error(
         `useEvents failed to fetch events for ${month.toFormat("yyyy-LL")}`,
@@ -281,5 +320,10 @@ export const useEvents = ({
     [eventsQueryResult.data?.events.data]
   );
 
-  return [marked, eventsByMonth, eventsQueryResult.fetching, refresh];
+  return [
+    marked,
+    eventsByMonth,
+    eventsQueryResult.fetching,
+    () => refresh({ requestPolicy: "network-only" }),
+  ];
 };
