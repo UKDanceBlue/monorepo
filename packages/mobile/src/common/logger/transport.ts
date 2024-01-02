@@ -36,6 +36,7 @@ export interface ExtraLogArgs {
   error?: Error;
   context?: object;
   tags?: LoggerTags[];
+  source?: string;
 }
 
 export abstract class LoggerTransport {
