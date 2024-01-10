@@ -1,147 +1,195 @@
-diff --git a/lib/commonjs/index.js b/lib/commonjs/index.js
-index 538c55ddd0a406ba1e3d1ed1e9ba9b5d55566609..32bdfcfad20c235e2f0b47a17663510b44791b6a 100644
---- a/lib/commonjs/index.js
-+++ b/lib/commonjs/index.js
-@@ -185,8 +185,6 @@ function InfinitePager(_ref, ref) {
-     return activePagers.value.length && !isDeepestInOrientation;
-   }, [activePagers, orientation]);
-   panGesture.onBegin(evt => {
--    "worklet";
--
-     if (!isAtEdge) {
-       const updated = activePagers.value.slice();
-       updated.push(pagerId);
-@@ -199,8 +197,6 @@ function InfinitePager(_ref, ref) {
-       console.log(`${debugTag} onBegin`, evt);
-     }
-   }).onTouchesMove((evt, mgr) => {
--    "worklet";
--
-     const mainTouch = evt.changedTouches[0];
-     const evtVal = mainTouch[vertical ? "y" : "x"];
-     const initTouch = vertical ? initTouchY.value : initTouchX.value;
-@@ -224,8 +220,6 @@ function InfinitePager(_ref, ref) {
-       }
-     }
-   }).onUpdate(evt => {
--    "worklet";
--
-     const evtTranslate = vertical ? evt.translationY : evt.translationX;
-     const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
-     const isSwipingCrossAxis = Math.abs(crossAxisTranslate) > 10 && Math.abs(crossAxisTranslate) > Math.abs(evtTranslate);
-@@ -247,8 +241,6 @@ function InfinitePager(_ref, ref) {
-       translate.value = clampedVal + bounceTrans;
-     }
-   }).onEnd(evt => {
--    "worklet";
--
-     const evtVelocity = vertical ? evt.velocityY : evt.velocityX;
-     const evtTranslate = vertical ? evt.translationY : evt.translationX;
-     const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
-@@ -265,8 +257,6 @@ function InfinitePager(_ref, ref) {
-       console.log(`${debugTag}: onEnd (${isGestureLocked.value ? "locked" : "unlocked"})`, evt);
-     }
-   }).onFinalize(evt => {
--    "worklet";
--
-     const updatedPagerIds = activePagers.value.slice().filter(id => id !== pagerId);
-     activePagers.value = updatedPagerIds;
-     if (debugTag) {
-diff --git a/lib/module/index.js b/lib/module/index.js
-index d3ba2c433d6dcd34e7c7060ac7ce2d8e607b82a1..3f4ef0085c9e52005e3999e4195a92b7704d2bbd 100644
---- a/lib/module/index.js
-+++ b/lib/module/index.js
-@@ -177,8 +177,6 @@ function InfinitePager(_ref, ref) {
-     return activePagers.value.length && !isDeepestInOrientation;
-   }, [activePagers, orientation]);
-   panGesture.onBegin(evt => {
--    "worklet";
--
-     if (!isAtEdge) {
-       const updated = activePagers.value.slice();
-       updated.push(pagerId);
-@@ -191,8 +189,6 @@ function InfinitePager(_ref, ref) {
-       console.log(`${debugTag} onBegin`, evt);
-     }
-   }).onTouchesMove((evt, mgr) => {
--    "worklet";
--
-     const mainTouch = evt.changedTouches[0];
-     const evtVal = mainTouch[vertical ? "y" : "x"];
-     const initTouch = vertical ? initTouchY.value : initTouchX.value;
-@@ -216,8 +212,6 @@ function InfinitePager(_ref, ref) {
-       }
-     }
-   }).onUpdate(evt => {
--    "worklet";
--
-     const evtTranslate = vertical ? evt.translationY : evt.translationX;
-     const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
-     const isSwipingCrossAxis = Math.abs(crossAxisTranslate) > 10 && Math.abs(crossAxisTranslate) > Math.abs(evtTranslate);
-@@ -239,8 +233,6 @@ function InfinitePager(_ref, ref) {
-       translate.value = clampedVal + bounceTrans;
-     }
-   }).onEnd(evt => {
--    "worklet";
--
-     const evtVelocity = vertical ? evt.velocityY : evt.velocityX;
-     const evtTranslate = vertical ? evt.translationY : evt.translationX;
-     const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
-@@ -257,8 +249,6 @@ function InfinitePager(_ref, ref) {
-       console.log(`${debugTag}: onEnd (${isGestureLocked.value ? "locked" : "unlocked"})`, evt);
-     }
-   }).onFinalize(evt => {
--    "worklet";
--
-     const updatedPagerIds = activePagers.value.slice().filter(id => id !== pagerId);
-     activePagers.value = updatedPagerIds;
-     if (debugTag) {
 diff --git a/src/index.tsx b/src/index.tsx
-index 4d3338c65a8d49cf11abcd8f3a33fc8c85c29ae1..8af3813db9b0f1c4ff063788706c02f261fa1eb0 100644
+index 4d3338c65a8d49cf11abcd8f3a33fc8c85c29ae1..c2c4ba870aac9b7d0fd8fe58131fbe165598cf3c 100644
 --- a/src/index.tsx
 +++ b/src/index.tsx
-@@ -303,7 +303,7 @@ function InfinitePager(
-
+@@ -1,30 +1,31 @@
+ import React, {
+-  useState,
+-  useImperativeHandle,
+-  useRef,
+   useContext,
+-  useMemo,
+   useEffect,
++  useImperativeHandle,
++  useMemo,
++  useRef,
++  useState,
+ } from "react";
+ import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+-import Animated, {
+-  useAnimatedStyle,
+-  useSharedValue,
+-  withSpring,
+-  useDerivedValue,
+-  useAnimatedReaction,
+-  runOnJS,
+-  WithSpringConfig,
+-  makeMutable,
+-  SharedValue,
+-  DerivedValue,
+-} from "react-native-reanimated";
+ import {
+   ComposedGesture,
+   Gesture,
+   GestureDetector,
+   GestureType,
+ } from "react-native-gesture-handler";
++import Animated, {
++  DerivedValue,
++  SharedValue,
++  WithSpringConfig,
++  makeMutable,
++  runOnJS,
++  runOnUI,
++  useAnimatedReaction,
++  useAnimatedStyle,
++  useDerivedValue,
++  useSharedValue,
++  withSpring,
++} from "react-native-reanimated";
+ import {
+   defaultPageInterpolator,
+   pageInterpolatorCube,
+@@ -303,21 +304,21 @@ function InfinitePager(
+ 
    panGesture
      .onBegin((evt) => {
 -      "worklet";
-+
++      runOnUI(() => {
        if (!isAtEdge) {
-         const updated = activePagers.value.slice();
-         updated.push(pagerId);
-@@ -317,7 +317,7 @@ function InfinitePager(
+-        const updated = activePagers.value.slice();
+-        updated.push(pagerId);
+-        activePagers.value = updated;
+-      }
+-      startTranslate.value = translate.value;
+-      initTouchX.value = evt.x;
+-      initTouchY.value = evt.y;
++          const updated = activePagers.value.slice();
++          updated.push(pagerId);
++          activePagers.value = updated;
++        }
++        startTranslate.value = translate.value;
++        initTouchX.value = evt.x;
++        initTouchY.value = evt.y;
++      })();
+       if (debugTag) {
+         console.log(`${debugTag} onBegin`, evt);
        }
      })
      .onTouchesMove((evt, mgr) => {
 -      "worklet";
-+
        const mainTouch = evt.changedTouches[0];
-
+ 
        const evtVal = mainTouch[vertical ? "y" : "x"];
-@@ -355,7 +355,7 @@ function InfinitePager(
+@@ -355,7 +356,6 @@ function InfinitePager(
        }
      })
      .onUpdate((evt) => {
 -      "worklet";
-+
        const evtTranslate = vertical ? evt.translationY : evt.translationX;
        const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
-
-@@ -388,7 +388,7 @@ function InfinitePager(
+ 
+@@ -372,50 +372,54 @@ function InfinitePager(
+         );
        }
+ 
+-      const rawVal = startTranslate.value + evtTranslate;
+-      const page = initialIndex + -rawVal / pageSize.value;
+-      if (page >= minIndexAnim.value && page <= maxIndexAnim.value) {
+-        translate.value = rawVal;
+-      } else {
+-        const referenceVal =
+-          page < minIndexAnim.value ? minIndexAnim.value : maxIndexAnim.value;
+-        const pageOverflowPct = referenceVal - page;
+-        const overflowTrans = pageOverflowPct * pageSize.value;
+-        const maxBounceTrans = bouncePct * pageSize.value;
+-        const bounceTrans = pageOverflowPct * maxBounceTrans;
+-        const clampedVal = rawVal - overflowTrans;
+-        translate.value = clampedVal + bounceTrans;
+-      }
++      runOnUI(() => {
++        const rawVal = startTranslate.value + evtTranslate;
++        const page = initialIndex + -rawVal / pageSize.value;
++        if (page >= minIndexAnim.value && page <= maxIndexAnim.value) {
++          translate.value = rawVal;
++        } else {
++          const referenceVal =
++            page < minIndexAnim.value ? minIndexAnim.value : maxIndexAnim.value;
++          const pageOverflowPct = referenceVal - page;
++          const overflowTrans = pageOverflowPct * pageSize.value;
++          const maxBounceTrans = bouncePct * pageSize.value;
++          const bounceTrans = pageOverflowPct * maxBounceTrans;
++          const clampedVal = rawVal - overflowTrans;
++          translate.value = clampedVal + bounceTrans;
++        }
++      })();
      })
      .onEnd((evt) => {
 -      "worklet";
+-      const evtVelocity = vertical ? evt.velocityY : evt.velocityX;
+-      const evtTranslate = vertical ? evt.translationY : evt.translationX;
+-      const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
+-      const isSwipingCrossAxis =
+-        Math.abs(crossAxisTranslate) > Math.abs(evtTranslate);
++      runOnUI(() => {
++        const evtVelocity = vertical ? evt.velocityY : evt.velocityX;
++        const evtTranslate = vertical ? evt.translationY : evt.translationX;
++        const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
++        const isSwipingCrossAxis =
++          Math.abs(crossAxisTranslate) > Math.abs(evtTranslate);
 +
-       const evtVelocity = vertical ? evt.velocityY : evt.velocityX;
-       const evtTranslate = vertical ? evt.translationY : evt.translationX;
-       const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
-@@ -426,7 +426,7 @@ function InfinitePager(
++        const isFling =
++          isGestureLocked.value || isSwipingCrossAxis
++            ? false
++            : Math.abs(evtVelocity) > flingVelocity;
++        let velocityModifier = isFling ? pageSize.value / 2 : 0;
++        if (evtVelocity < 0) velocityModifier *= -1;
++        let page =
++          initialIndex +
++          -1 * Math.round((translate.value + velocityModifier) / pageSize.value);
++        if (page < minIndexAnim.value) page = minIndexAnim.value;
++        if (page > maxIndexAnim.value) page = maxIndexAnim.value;
++
++        const animCfg = Object.assign(
++          {},
++          DEFAULT_ANIMATION_CONFIG,
++          animCfgRef.current
++        );
++        translate.value = withSpring(
++          -(page - initialIndex) * pageSize.value,
++          animCfg
++        );
++      })();
+ 
+-      const isFling =
+-        isGestureLocked.value || isSwipingCrossAxis
+-          ? false
+-          : Math.abs(evtVelocity) > flingVelocity;
+-      let velocityModifier = isFling ? pageSize.value / 2 : 0;
+-      if (evtVelocity < 0) velocityModifier *= -1;
+-      let page =
+-        initialIndex +
+-        -1 * Math.round((translate.value + velocityModifier) / pageSize.value);
+-      if (page < minIndexAnim.value) page = minIndexAnim.value;
+-      if (page > maxIndexAnim.value) page = maxIndexAnim.value;
+-
+-      const animCfg = Object.assign(
+-        {},
+-        DEFAULT_ANIMATION_CONFIG,
+-        animCfgRef.current
+-      );
+-      translate.value = withSpring(
+-        -(page - initialIndex) * pageSize.value,
+-        animCfg
+-      );
+       if (debugTag) {
+         console.log(
+           `${debugTag}: onEnd (${
+@@ -426,7 +430,6 @@ function InfinitePager(
        }
      })
      .onFinalize((evt) => {
 -      "worklet";
-+
        const updatedPagerIds = activePagers.value
          .slice()
          .filter((id) => id !== pagerId);

@@ -22597,12 +22597,12 @@ __metadata:
 
 "react-native-infinite-pager@patch:react-native-infinite-pager@npm%3A0.3.13#./.yarn/patches/react-native-infinite-pager-npm-0.3.13-59b67e2e46.patch::locator=%40ukdanceblue%2Fmonorepo%40workspace%3A.":
   version: 0.3.13
-  resolution: "react-native-infinite-pager@patch:react-native-infinite-pager@npm%3A0.3.13#./.yarn/patches/react-native-infinite-pager-npm-0.3.13-59b67e2e46.patch::version=0.3.13&hash=dc5fc0&locator=%40ukdanceblue%2Fmonorepo%40workspace%3A."
+  resolution: "react-native-infinite-pager@patch:react-native-infinite-pager@npm%3A0.3.13#./.yarn/patches/react-native-infinite-pager-npm-0.3.13-59b67e2e46.patch::version=0.3.13&hash=3bb6db&locator=%40ukdanceblue%2Fmonorepo%40workspace%3A."
   peerDependencies:
     react-native: ">=0.62.0"
     react-native-gesture-handler: ">=2.0.0"
     react-native-reanimated: ">=2.8.0"
-  checksum: 342a09d0dccbcb7957017066794641cd8f993ec8588942442924f40235a95968704a0724331a48bbc23ec9f37589161825da7fde6ec5bfd939f7dcd80cc2f94e
+  checksum: 7e3056e5969f95a59fd703df374968283c22bc7b7d3b115403dc61561c8f3702f5ccdd6a6da83471f5c3d9bbf0da261a5848db7c0853955ab694c247ce990c36
   languageName: node
   linkType: hard
 
