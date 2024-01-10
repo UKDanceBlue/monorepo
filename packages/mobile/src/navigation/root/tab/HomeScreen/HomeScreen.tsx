@@ -1,6 +1,7 @@
 import { universalCatch } from "@common/logging";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { openURL } from "expo-linking";
+import { openBrowserAsync } from "expo-web-browser";
 import { Box, Button, HStack, Text, VStack } from "native-base";
 import {
   PixelRatio,
@@ -61,14 +62,16 @@ const HomeScreen = () => {
             </Button>
             <Button
               onPress={() => {
-                openURL("https://danceblue.org").catch(universalCatch);
+                openBrowserAsync(
+                  "https://danceblue.org/spirit-point-form/"
+                ).catch(universalCatch);
               }}
               width="2/5"
               backgroundColor={"secondary.400"}
               _text={{ color: "primary.600" }}
               _pressed={{ opacity: 0.6 }}
             >
-              Go to DanceBlue HQ
+              Submit Spirit Points
             </Button>
           </HStack>
           <HStack justifyContent="center">
@@ -136,6 +139,22 @@ const HomeScreen = () => {
               >
                 <FontAwesome5
                   name="youtube"
+                  color="#0032A0"
+                  style={{
+                    textAlignVertical: "center",
+                    fontSize: PixelRatio.get() * 8,
+                  }}
+                />
+              </TouchableOpacity>
+            </Button>
+            <Button backgroundColor="transparent">
+              <TouchableOpacity
+                onPress={() => {
+                  openURL("https://danceblue.org").catch(universalCatch);
+                }}
+              >
+                <FontAwesome5
+                  name="globe"
                   color="#0032A0"
                   style={{
                     textAlignVertical: "center",

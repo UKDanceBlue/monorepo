@@ -1,8 +1,11 @@
 import Breadcrumbs from "@common/components/Breadcrumbs";
 import { useThemeFonts } from "@common/customHooks";
+import { universalCatch } from "@common/logging";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { openBrowserAsync } from "expo-web-browser";
 import { Flex, HStack, Text, View } from "native-base";
 import { useWindowDimensions } from "react-native";
-
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 import CommitteeHoldingSign from "../../../../../../../assets/svgs/CommitteeHoldingSign";
 import DanceBlueRibbon from "../../../../../../../assets/svgs/DBRibbon";
@@ -93,7 +96,27 @@ const TeamInformation = ({
         </HStack>
       </View>
       <View borderColor="primary.600" flex={1}>
-        <Scoreboard title="Team Standings" data={scoreboardData} />
+        <Scoreboard
+          title="Team Standings"
+          data={scoreboardData}
+          titleButton={
+            <TouchableOpacity
+              onPress={() => {
+                openBrowserAsync(
+                  "https://danceblue.org/spirit-point-form/"
+                ).catch(universalCatch);
+              }}
+              style={{ marginLeft: 20 }}
+            >
+              <FontAwesome5
+                name="plus-circle"
+                size={25}
+                color={"#0032A0"}
+                style={{ textAlignVertical: "center", paddingRight: 0 }}
+              />
+            </TouchableOpacity>
+          }
+        />
       </View>
     </View>
   );
