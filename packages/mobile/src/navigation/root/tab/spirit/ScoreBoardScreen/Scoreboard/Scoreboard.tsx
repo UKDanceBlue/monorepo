@@ -1,6 +1,6 @@
 import { useThemeColors } from "@common/customHooks";
 import { colors } from "@theme/colors";
-import { Box, Text } from "native-base";
+import { Box, Flex, Text } from "native-base";
 import { FlatList, RefreshControl } from "react-native";
 
 import type { StandingType } from "../../../../../../types/StandingType";
@@ -11,32 +11,37 @@ const Scoreboard = ({
   data,
   onRefresh,
   refreshing,
+  titleButton,
 }: {
   title: string;
   data: StandingType[];
   onRefresh?: () => void;
   refreshing?: boolean;
+  titleButton?: React.ReactNode;
 }) => {
   const textShadowColor = useThemeColors().secondary[300];
 
   return (
     <Box flex={1}>
-      <Text
-        justifyContent="center"
-        alignContent="center"
-        textAlign="center"
-        color="secondary.400"
-        fontFamily="heading"
-        fontSize="4xl"
-        flex={0}
-        style={{
-          textShadowColor,
-          textShadowOffset: { width: 2, height: 1.5 },
-          textShadowRadius: 1,
-        }}
-      >
-        {title}
-      </Text>
+      <Flex direction="row" justifyContent="center" alignItems="center">
+        <Text
+          justifyContent="center"
+          alignContent="center"
+          textAlign="center"
+          color="secondary.400"
+          fontFamily="heading"
+          fontSize="4xl"
+          flex={0}
+          style={{
+            textShadowColor,
+            textShadowOffset: { width: 2, height: 1.5 },
+            textShadowRadius: 1,
+          }}
+        >
+          {title}
+        </Text>
+        {titleButton}
+      </Flex>
       <FlatList
         data={data}
         onRefresh={onRefresh}
