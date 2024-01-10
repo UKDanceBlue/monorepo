@@ -249,12 +249,12 @@ export const useEvents = ({
           dateFilters: [
             {
               comparison: GREATER_THAN_OR_EQUAL_TO
-              field: occurrence
+              field: occurrenceStart
               value: $earliestTimestamp
             }
             {
               comparison: LESS_THAN_OR_EQUAL_TO
-              field: occurrence
+              field: occurrenceStart
               value: $lastTimestamp
             }
           ]
@@ -309,7 +309,7 @@ export const useEvents = ({
         eventsQueryResult.error.name
       );
     }
-  });
+  }, [eventsQueryResult.error, eventsQueryResult.fetching, month]);
 
   const eventsByMonth = useMemo(
     () => splitEvents(eventsQueryResult.data?.events.data ?? []),
