@@ -195,7 +195,7 @@ class ListEventsArgs extends FilteredListQueryArgs("EventResolver", {
     "occurrenceStart",
     "occurrenceEnd",
   ],
-}) {}
+})<EventModel> {}
 
 @Resolver(() => EventResource)
 export class EventResolver

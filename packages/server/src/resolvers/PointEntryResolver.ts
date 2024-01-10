@@ -85,7 +85,7 @@ class ListPointEntriesArgs extends FilteredListQueryArgs("PointEntryResolver", {
   all: ["createdAt", "updatedAt"],
   string: [],
   date: ["createdAt", "updatedAt"],
-}) {}
+})<PointEntryModel> {}
 
 @Resolver(() => PointEntryResource)
 export class PointEntryResolver

@@ -91,7 +91,7 @@ class ListPeopleArgs extends FilteredListQueryArgs("PersonResolver", {
     "committeeRole",
     "committeeName",
   ],
-}) {}
+})<PersonModel> {}
 @InputType()
 class CreatePersonInput {
   @Field(() => String, { nullable: true })

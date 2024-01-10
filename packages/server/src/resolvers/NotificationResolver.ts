@@ -74,7 +74,7 @@ class ListNotificationsArgs extends FilteredListQueryArgs(
   {
     all: ["uuid"],
   }
-) {}
+)<NotificationModel> {}
 
 @Resolver(() => NotificationResource)
 export class NotificationResolver

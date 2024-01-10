@@ -43,6 +43,24 @@ export abstract class AbstractFilteredListQueryArgs<
   booleanFilters!: AbstractBooleanFilterItem<BooleanFilterKeys>[] | null;
   isNullFilters!: AbstractIsNullFilterItem<AllKeys>[] | null;
   oneOfFilters!: AbstractOneOfFilterItem<StringFilterKeys>[] | null;
+
+  get filters(): (
+    | AbstractStringFilterItem<StringFilterKeys>
+    | AbstractNumericFilterItem<NumericFilterKeys>
+    | AbstractDateFilterItem<DateFilterKeys>
+    | AbstractBooleanFilterItem<BooleanFilterKeys>
+    | AbstractIsNullFilterItem<AllKeys>
+    | AbstractOneOfFilterItem<StringFilterKeys>
+  )[] {
+    return [
+      ...(this.stringFilters ?? []),
+      ...(this.numericFilters ?? []),
+      ...(this.dateFilters ?? []),
+      ...(this.booleanFilters ?? []),
+      ...(this.isNullFilters ?? []),
+      ...(this.oneOfFilters ?? []),
+    ];
+  }
 }
 
 export function FilteredListQueryArgs<
@@ -106,7 +124,9 @@ export function FilteredListQueryArgs<
   class KeyedIsNullFilterItem extends IsNullFilterItem(AllKeysEnum) {}
 
   @ArgsType()
-  abstract class FilteredListQueryArgs extends AbstractFilteredListQueryArgs<
+  abstract class FilteredListQueryArgs<
+    DbModel extends Model,
+  > extends AbstractFilteredListQueryArgs<
     AllKeys,
     StringFilterKeys,
     NumericFilterKeys,
@@ -192,6 +212,7 @@ export function FilteredListQueryArgs<
 
       const whereOptions: Partial<WhereAttributeHash<Attributes<M>>> =
         filterToWhereOptions<
+          DbModel,
           AllKeys,
           StringFilterKeys,
           NumericFilterKeys,

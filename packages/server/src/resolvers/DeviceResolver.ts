@@ -81,7 +81,7 @@ class ListDevicesArgs extends FilteredListQueryArgs("DeviceResolver", {
   all: ["deviceId", "expoPushToken", "lastLogin", "createdAt", "updatedAt"],
   string: ["deviceId", "expoPushToken"],
   date: ["lastLogin", "createdAt", "updatedAt"],
-}) {}
+})<DeviceModel> {}
 
 @Resolver(() => DeviceResource)
 export class DeviceResolver

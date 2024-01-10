@@ -101,7 +101,7 @@ class ListPointOpportunitiesArgs extends FilteredListQueryArgs(
     string: ["name", "type"],
     date: ["opportunityDate", "createdAt", "updatedAt"],
   }
-) {}
+)<PointOpportunityModel> {}
 
 @Resolver(() => PointOpportunityResource)
 export class PointOpportunityResolver

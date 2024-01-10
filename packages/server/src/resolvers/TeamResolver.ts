@@ -117,7 +117,7 @@ class ListTeamsArgs extends FilteredListQueryArgs("TeamResolver", {
   all: ["name", "type", "legacyStatus", "marathonYear", "totalPoints"],
   string: ["name", "type", "marathonYear", "legacyStatus"],
   numeric: ["totalPoints"],
-}) {
+})<TeamModel> {
   @Field(() => [TeamType], { nullable: true })
   type!: [TeamType] | null;
 
