@@ -1,6 +1,6 @@
+import { ConfigPage } from "@pages/config/ConfigPage";
 import { EventsPage } from "@pages/events/EventsPage";
 import { HomePage } from "@pages/home/HomePage";
-import { LogsPage } from "@pages/logging/LogsPage";
 import { PeoplePage } from "@pages/people/PeoplePage";
 import { TeamsPage } from "@pages/teams/TeamsPage";
 import { rootRoute } from "@routing/rootRoute";
@@ -30,8 +30,8 @@ export const peopleRoute = new Route({
   component: PeoplePage,
 });
 
-export const logsRoute = new Route({
-  path: "logs",
+export const configRoute = new Route({
+  path: "config",
   getParentRoute: () => rootRoute,
-  component: LogsPage,
+  component: ConfigPage,
 });

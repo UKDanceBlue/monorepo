@@ -1,10 +1,10 @@
+import { useTabBarConfig } from "@common/hooks/useTabBarConfig";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import type { RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { ReactElement } from "react";
 import { useEffect, useState } from "react";
 
-import { useAppConfig } from "../../../context";
 import type {
   RootStackParamList,
   TabNavigatorParamList,
@@ -40,16 +40,16 @@ export const possibleTabs = {
 
 const TabBar = () => {
   const {
-    isConfigLoaded,
-    enabledScreens: allEnabledScreens,
+    tabConfigLoading,
+    shownTabs: allEnabledScreens,
     fancyTab,
-  } = useAppConfig();
+  } = useTabBarConfig();
 
   const [currentTabs, setCurrentTabs] = useState<ReactElement[]>([]);
 
   useEffect(() => {
-    if (isConfigLoaded) {
-      let tempCurrentTabs = [possibleTabs["Teams"]];
+    if (!tabConfigLoading) {
+      let tempCurrentTabs = [];
 
       const enabledScreens = allEnabledScreens.filter(
         (screen) => screen !== fancyTab
@@ -80,7 +80,7 @@ const TabBar = () => {
       //   })}`
       // );
     }
-  }, [allEnabledScreens, fancyTab, isConfigLoaded]);
+  }, [allEnabledScreens, fancyTab, tabConfigLoading]);
 
   return (
     <Tabs.Navigator
@@ -119,7 +119,7 @@ const TabBar = () => {
       tabBar={(props) => <TabBarComponent {...props} fancyTab={fancyTab} />}
     >
       <Tabs.Screen name="Home" component={HomeScreen} />
-      {isConfigLoaded && currentTabs}
+      {!tabConfigLoading && currentTabs}
     </Tabs.Navigator>
   );
 };

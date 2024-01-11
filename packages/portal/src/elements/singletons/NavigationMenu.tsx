@@ -2,11 +2,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { API_BASE_URL } from "@config/api";
 import { useLoginState } from "@hooks/useLoginState";
 import type { AuthorizationRule } from "@ukdanceblue/common";
-import {
-  AccessLevel,
-  CommitteeRole,
-  checkAuthorization,
-} from "@ukdanceblue/common";
+import { AccessLevel, checkAuthorization } from "@ukdanceblue/common";
 import { Menu } from "antd";
 import type { ItemType } from "antd/es/menu/hooks/useItems";
 import { useMemo } from "react";
@@ -16,7 +12,7 @@ interface NavItemType {
   title: string;
   url?: string;
   element?: React.ReactNode;
-  authorizationRule?: AuthorizationRule;
+  authorizationRules?: AuthorizationRule[];
 }
 
 export const NavigationMenu = () => {
@@ -31,30 +27,38 @@ export const NavigationMenu = () => {
       {
         slug: "events",
         title: "Events",
-        authorizationRule: {
-          minCommitteeRole: CommitteeRole.Coordinator,
-        },
+        authorizationRules: [
+          {
+            accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+          },
+        ],
       },
       {
         slug: "teams",
         title: "Teams",
-        authorizationRule: {
-          minCommitteeRole: CommitteeRole.Coordinator,
-        },
+        authorizationRules: [
+          {
+            accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+          },
+        ],
       },
       {
         slug: "people",
         title: "People",
-        authorizationRule: {
-          minCommitteeRole: CommitteeRole.Coordinator,
-        },
+        authorizationRules: [
+          {
+            accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+          },
+        ],
       },
       {
-        slug: "logs",
-        title: "Logs",
-        authorizationRule: {
-          accessLevel: AccessLevel.Admin,
-        },
+        slug: "config",
+        title: "Config",
+        authorizationRules: [
+          {
+            accessLevel: AccessLevel.Admin,
+          },
+        ],
       },
     ];
   }, []);
@@ -62,10 +66,12 @@ export const NavigationMenu = () => {
   const menuItems = useMemo<ItemType[]>((): ItemType[] => {
     return navItems
       .filter(
-        ({ authorizationRule }) =>
-          !authorizationRule ||
+        ({ authorizationRules }) =>
+          !authorizationRules ||
           (authorization &&
-            checkAuthorization(authorizationRule, authorization))
+            authorizationRules.some((authorizationRule) =>
+              checkAuthorization(authorizationRule, authorization)
+            ))
       )
       .map((item) => ({
         key: item.slug,

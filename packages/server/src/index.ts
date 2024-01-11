@@ -1,5 +1,8 @@
 import { argv } from "node:process";
 
+import { QueryTypes } from "@sequelize/core";
+
+import { sequelizeDb } from "./data-source.js";
 import { isDatabaseLocal } from "./environment.js";
 import { logFatal, logger } from "./logger.js";
 
@@ -11,23 +14,40 @@ logger.info("DanceBlue Server Starting");
 await import("./environment.js");
 logger.info("Loaded environment variables");
 
-if (argv.includes("--migrate-db")) {
-  try {
-    await import("./umzug.js");
-    logger.info("Database migrated");
-  } catch (error) {
-    logFatal(
-      `Failed to migrate database: ${
-        typeof error === "object" && error && "message" in error
-          ? String(error.message)
-          : String(error)
-      }`
-    );
-  }
-}
-
 await import("./models/init.js");
 logger.info("Initialized database models");
+
+if (argv.includes("--migrate-db")) {
+  const { default: doMigration } = await import("./umzug.js");
+
+  const doesPeopleTableExist = await sequelizeDb.query(
+    "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'danceblue' AND table_name = 'people')",
+    { type: QueryTypes.SELECT }
+  );
+
+  if ((doesPeopleTableExist[0] as { exists: boolean }).exists) {
+    logger.info("Database exists, running migration");
+    try {
+      await doMigration(false);
+      logger.info("Database migrated");
+    } catch (error) {
+      logFatal(
+        `Failed to migrate database: ${
+          typeof error === "object" && error && "message" in error
+            ? String(error.message)
+            : String(error)
+        }`
+      );
+    }
+  } else {
+    logger.info(
+      "Database does not exist, skipping migration and syncing instead"
+    );
+    await sequelizeDb.sync();
+    logger.info("Database synced");
+    await doMigration(true);
+  }
+}
 
 // Seed the database if passed the --seed flag
 if (argv.includes("--seed-db") && isDatabaseLocal) {

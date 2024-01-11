@@ -6,7 +6,6 @@
   "build": {
     "dev-client": {
       "distribution": "internal",
-      "releaseChannel": "development",
       "developmentClient": true,
       "cache": {
         "key": "4"
@@ -24,9 +23,21 @@
         "simulator": true
       }
     },
+    "development": {
+      "distribution": "internal",
+      "channel": "development",
+      "cache": {
+        "key": "1"
+      },
+      "env": {
+        "APP_VARIANT": "production",
+        "CHECK_VERSION": "false",
+        "YARN_ENABLE_IMMUTABLE_INSTALLS": "false"
+      }
+    },
     "production": {
       "distribution": "store",
-      "releaseChannel": "prod-v2",
+      "channel": "production",
       "cache": {
         "key": "3"
       },
@@ -38,7 +49,7 @@
     },
     "simulator": {
       "extends": "production",
-      "releaseChannel": "prod-v2",
+      "channel": "simulator",
       "distribution": "internal",
       "ios": {
         "simulator": true
