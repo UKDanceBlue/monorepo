@@ -15,25 +15,35 @@ export class ConsoleTransport extends LoggerTransport {
     message: string | boolean | bigint | number | object;
     extra: ExtraLogArgs;
   }) {
+    let extraString: string | undefined;
+    if (Object.keys(extra).length > 0) {
+      try {
+        extraString = JSON.stringify(extra);
+      } catch (error) {
+        extraString = `[extra: '${String(
+          extra
+        )}' - could not be stringified due to ${String(error)}]`;
+      }
+    }
     switch (level) {
       case LogLevel.debug: {
-        console.debug(message, extra);
+        console.debug(message, extraString);
         break;
       }
       case LogLevel.log: {
-        console.log(message, extra);
+        console.log(message, extraString);
         break;
       }
       case LogLevel.info: {
-        console.info(message, extra);
+        console.info(message, extraString);
         break;
       }
       case LogLevel.warn: {
-        console.warn(message, extra);
+        console.warn(message, extraString);
         break;
       }
       case LogLevel.error: {
-        console.error(message, extra);
+        console.error(message, extraString);
         break;
       }
     }
