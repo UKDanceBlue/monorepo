@@ -7,7 +7,7 @@ import {
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
 import { DateTime, Interval } from "luxon";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { DateData } from "react-native-calendars";
 import type { MarkedDates } from "react-native-calendars/src/types";
 import { useQuery } from "urql";
@@ -273,27 +273,28 @@ export const useEvents = ({
     },
   });
 
+  const lastFetchKey = useRef<number | null>(null);
   useEffect(() => {
-    if (eventsQueryResult.fetching) {
-      Logger.debug(`fetching events for ${month.toFormat("yyyy-LL")}`, {
-        tags: ["graphql"],
-        source: "useEvents",
-      });
-    }
-  }, [eventsQueryResult.fetching, month]);
-
-  useEffect(() => {
-    if (!eventsQueryResult.fetching && eventsQueryResult.error == null) {
-      Logger.debug(
-        `successfully fetched ${eventsQueryResult.data?.events.data
-          .length} events for ${month.toFormat("yyyy-LL")}`,
-        { tags: ["graphql"], source: "useEvents" }
-      );
+    if (lastFetchKey.current !== eventsQueryResult.operation?.key) {
+      if (!eventsQueryResult.fetching && eventsQueryResult.error == null) {
+        Logger.debug(
+          `successfully fetched ${eventsQueryResult.data?.events.data
+            .length} events for ${month.toFormat("yyyy-LL")} from ${
+            eventsQueryResult.operation?.context.meta?.cacheOutcome === "hit"
+              ? "cache"
+              : "network"
+          }`,
+          { tags: ["graphql"], source: "useEvents" }
+        );
+      }
+      lastFetchKey.current = eventsQueryResult.operation?.key ?? null;
     }
   }, [
     eventsQueryResult.data,
     eventsQueryResult.error,
     eventsQueryResult.fetching,
+    eventsQueryResult.operation?.context.meta?.cacheOutcome,
+    eventsQueryResult.operation?.key,
     month,
   ]);
 
