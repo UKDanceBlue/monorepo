@@ -13,6 +13,6 @@ export { PersonResource } from "./Person.js";
 export { PointEntryResource } from "./PointEntry.js";
 export { PointOpportunityResource } from "./PointOpportunity.js";
 export { Resource } from "./Resource.js";
-export { RoleResource } from "./Role.js";
+export { RoleResource, defaultRole } from "./Role.js";
 export { TeamLegacyStatus, TeamResource, TeamType } from "./Team.js";
 export * from "./authorization.js";

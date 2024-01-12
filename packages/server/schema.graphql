@@ -106,22 +106,6 @@ type CreateConfigurationResponse implements AbstractGraphQLCreatedResponse & Abs
   uuid: String!
 }
 
-input CreateDeviceInput {
-  deviceId: String!
-
-  """The Expo push token of the device"""
-  expoPushToken: String
-
-  """The ID of the last user to log in on this device"""
-  lastUserId: String
-}
-
-type CreateDeviceResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: DeviceResource!
-  ok: Boolean!
-  uuid: String!
-}
-
 input CreateEventInput {
   description: String
   location: String
@@ -658,7 +642,6 @@ type Mutation {
   addImageToEvent(eventId: String!, input: AddEventImageInput!): AddEventImageResponse!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
   createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
-  createDevice(input: CreateDeviceInput!): CreateDeviceResponse!
   createEvent(input: CreateEventInput!): CreateEventResponse!
   createImage(input: CreateImageInput!): CreateImageResponse!
   createPerson(input: CreatePersonInput!): CreatePersonResponse!
@@ -674,6 +657,7 @@ type Mutation {
   deletePointEntry(uuid: String!): DeletePointEntryResponse!
   deletePointOpportunity(uuid: String!): DeletePointOpportunityResponse!
   deleteTeam(uuid: String!): DeleteTeamResponse!
+  registerDevice(input: RegisterDeviceInput!): RegisterDeviceResponse!
   removeImageFromEvent(eventId: String!, imageId: String!): RemoveEventImageResponse!
   sendNotification(input: SendNotificationInput!): SendNotificationResponse!
   setConfiguration(input: SetConfigurationInput!, key: String!): SetConfigurationResponse!
@@ -1261,6 +1245,21 @@ type Query {
     visibility: [DbRole!]
   ): ListTeamsResponse!
   thumbhash(uuid: String!): GetThumbHashByUuidResponse
+}
+
+input RegisterDeviceInput {
+  deviceId: String!
+
+  """The Expo push token of the device"""
+  expoPushToken: String
+
+  """The ID of the last user to log in on this device"""
+  lastUserId: String
+}
+
+type RegisterDeviceResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: DeviceResource!
+  ok: Boolean!
 }
 
 type RemoveEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {

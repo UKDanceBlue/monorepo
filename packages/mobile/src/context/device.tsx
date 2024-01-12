@@ -1,4 +1,4 @@
-import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
+import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
 import { randomUUID } from "expo-crypto";
 import { isDevice, osName } from "expo-device";
 import type { PermissionStatus } from "expo-notifications";
@@ -16,12 +16,20 @@ import {
   setItemAsync,
 } from "expo-secure-store";
 import { createContext, useContext, useEffect, useState } from "react";
+import { useMutation } from "urql";
 
 import { universalCatch } from "../common/logging";
 import { showMessage } from "../common/util/alertUtils";
 
-import { useFirebase } from "./firebase";
 import { useLoading } from "./loading";
+
+const setDeviceQuery = graphql(/* GraphQL */ `
+  mutation SetDevice($input: RegisterDeviceInput!) {
+    registerDevice(input: $input) {
+      ok
+    }
+  }
+`);
 
 const uuidStoreKey = __DEV__
   ? "danceblue.device-uuid.dev"
@@ -39,7 +47,7 @@ const initialDeviceDataState: DeviceData = {
   getsNotifications: false,
 };
 
-const obtainUuid = async () => {
+async function obtainUuid() {
   // Get UUID from async storage
   let uuid = await getItemAsync(uuidStoreKey, {
     keychainAccessible: AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
@@ -56,12 +64,9 @@ const obtainUuid = async () => {
     keychainAccessible: AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
   });
   return uuid;
-};
+}
 
-const registerPushNotifications = async (
-  firestore: FirebaseFirestoreTypes.Module,
-  uuid?: string
-) => {
+async function registerPushNotifications() {
   if (isDevice) {
     // Get the user's current preference
     let settings = await getPermissionsAsync();
@@ -100,24 +105,19 @@ const registerPushNotifications = async (
         }).catch(universalCatch);
       }
 
-      return getExpoPushTokenAsync({
-        projectId: "86042d7a-cd35-415c-87ed-f53c008b3827",
-      }).then(async (token) => {
-        if (uuid) {
-          // Store the push notification token in firebase
-          await firestore
-            .doc(`devices/${uuid}`)
-            .set({ expoPushToken: token.data || null }, { merge: true });
-        }
-        return { token, notificationPermissionsGranted: true };
-      });
+      return {
+        token: await getExpoPushTokenAsync({
+          projectId: "86042d7a-cd35-415c-87ed-f53c008b3827",
+        }),
+        notificationPermissionsGranted: true,
+      };
     } else {
       return { token: null, notificationPermissionsGranted: false };
     }
   } else {
     throw new Error("DEVICE_IS_EMULATOR");
   }
-};
+}
 
 const DeviceDataContext = createContext<DeviceData>(initialDeviceDataState);
 
@@ -132,7 +132,7 @@ export const DeviceDataProvider = ({
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [getsNotifications, setGetsNotifications] = useState<boolean>(false);
 
-  const { fbFirestore } = useFirebase();
+  const [, setDevice] = useMutation(setDeviceQuery);
 
   useEffect(() => {
     setLoading(true);
@@ -142,7 +142,13 @@ export const DeviceDataProvider = ({
         setDeviceId(uuid);
         try {
           const { token, notificationPermissionsGranted } =
-            await registerPushNotifications(fbFirestore, uuid);
+            await registerPushNotifications();
+          await setDevice({
+            input: {
+              deviceId: uuid,
+              expoPushToken: token?.data ?? null,
+            },
+          });
           setPushToken(token?.data ?? null);
           setGetsNotifications(notificationPermissionsGranted);
         } catch (error) {
@@ -158,7 +164,7 @@ export const DeviceDataProvider = ({
       })
       .catch(universalCatch)
       .finally(() => setLoading(false));
-  }, [fbFirestore, setLoading]);
+  }, [setDevice, setLoading]);
 
   return (
     <DeviceDataContext.Provider

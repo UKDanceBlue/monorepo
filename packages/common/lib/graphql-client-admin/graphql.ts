@@ -133,21 +133,6 @@ export type CreateConfigurationResponse = AbstractGraphQlCreatedResponse & Abstr
   readonly uuid: Scalars['String']['output'];
 };
 
-export type CreateDeviceInput = {
-  readonly deviceId: Scalars['String']['input'];
-  /** The Expo push token of the device */
-  readonly expoPushToken?: InputMaybe<Scalars['String']['input']>;
-  /** The ID of the last user to log in on this device */
-  readonly lastUserId?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type CreateDeviceResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  readonly __typename?: 'CreateDeviceResponse';
-  readonly data: DeviceResource;
-  readonly ok: Scalars['Boolean']['output'];
-  readonly uuid: Scalars['String']['output'];
-};
-
 export type CreateEventInput = {
   readonly description?: InputMaybe<Scalars['String']['input']>;
   readonly location?: InputMaybe<Scalars['String']['input']>;
@@ -655,7 +640,6 @@ export type Mutation = {
   readonly addImageToEvent: AddEventImageResponse;
   readonly createConfiguration: CreateConfigurationResponse;
   readonly createConfigurations: CreateConfigurationResponse;
-  readonly createDevice: CreateDeviceResponse;
   readonly createEvent: CreateEventResponse;
   readonly createImage: CreateImageResponse;
   readonly createPerson: CreatePersonResponse;
@@ -671,6 +655,7 @@ export type Mutation = {
   readonly deletePointEntry: DeletePointEntryResponse;
   readonly deletePointOpportunity: DeletePointOpportunityResponse;
   readonly deleteTeam: DeleteTeamResponse;
+  readonly registerDevice: RegisterDeviceResponse;
   readonly removeImageFromEvent: RemoveEventImageResponse;
   readonly sendNotification: SendNotificationResponse;
   readonly setConfiguration: SetConfigurationResponse;
@@ -700,11 +685,6 @@ export type MutationCreateConfigurationArgs = {
 
 export type MutationCreateConfigurationsArgs = {
   input: ReadonlyArray<CreateConfigurationInput>;
-};
-
-
-export type MutationCreateDeviceArgs = {
-  input: CreateDeviceInput;
 };
 
 
@@ -780,6 +760,11 @@ export type MutationDeletePointOpportunityArgs = {
 
 export type MutationDeleteTeamArgs = {
   uuid: Scalars['String']['input'];
+};
+
+
+export type MutationRegisterDeviceArgs = {
+  input: RegisterDeviceInput;
 };
 
 
@@ -1243,6 +1228,20 @@ export type QueryTeamsArgs = {
 
 export type QueryThumbhashArgs = {
   uuid: Scalars['String']['input'];
+};
+
+export type RegisterDeviceInput = {
+  readonly deviceId: Scalars['String']['input'];
+  /** The Expo push token of the device */
+  readonly expoPushToken?: InputMaybe<Scalars['String']['input']>;
+  /** The ID of the last user to log in on this device */
+  readonly lastUserId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type RegisterDeviceResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'RegisterDeviceResponse';
+  readonly data: DeviceResource;
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type RemoveEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {

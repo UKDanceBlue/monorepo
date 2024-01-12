@@ -5,7 +5,7 @@ import { DeviceDataProvider } from "./device";
 import { FirebaseProvider } from "./firebase";
 import { LoadingWrapper } from "./loading";
 
-export { useAuthData } from "./auth";
+export { useAuthData } from "./auth.old";
 export { useDeviceData } from "./device";
 export { useFirebase } from "./firebase";
 export { useLoading } from "./loading";

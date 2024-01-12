@@ -22,7 +22,6 @@ import { DeviceModel } from "../models/Device.js";
 import { PersonModel } from "../models/Person.js";
 
 import {
-  AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
@@ -46,10 +45,10 @@ class ListDevicesResponse extends AbstractGraphQLPaginatedResponse<DeviceResourc
   @Field(() => [DeviceResource])
   data!: DeviceResource[];
 }
-@ObjectType("CreateDeviceResponse", {
-  implements: AbstractGraphQLCreatedResponse<DeviceResource>,
+@ObjectType("RegisterDeviceResponse", {
+  implements: AbstractGraphQLOkResponse<DeviceResource>,
 })
-class CreateDeviceResponse extends AbstractGraphQLCreatedResponse<DeviceResource> {
+class RegisterDeviceResponse extends AbstractGraphQLOkResponse<DeviceResource> {
   @Field(() => DeviceResource)
   data!: DeviceResource;
 }
@@ -59,7 +58,7 @@ class CreateDeviceResponse extends AbstractGraphQLCreatedResponse<DeviceResource
 class DeleteDeviceResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
-class CreateDeviceInput implements Partial<DeviceResource> {
+class RegisterDeviceInput implements Partial<DeviceResource> {
   @Field(() => String)
   deviceId!: string;
 
@@ -124,10 +123,10 @@ export class DeviceResolver
     });
   }
 
-  @Mutation(() => CreateDeviceResponse, { name: "createDevice" })
-  async create(
-    @Arg("input") input: CreateDeviceInput
-  ): Promise<CreateDeviceResponse> {
+  @Mutation(() => RegisterDeviceResponse, { name: "registerDevice" })
+  async register(
+    @Arg("input") input: RegisterDeviceInput
+  ): Promise<RegisterDeviceResponse> {
     let lastUserId: number | null = null;
 
     if (input.lastUserId != null) {
@@ -140,13 +139,16 @@ export class DeviceResolver
       lastUserId = lastUser.id;
     }
 
-    const row = await DeviceModel.create({
-      uuid: input.deviceId,
-      expoPushToken: input.expoPushToken ?? null,
-      lastUserId,
-    });
+    const [row] = await DeviceModel.upsert(
+      {
+        uuid: input.deviceId,
+        expoPushToken: input.expoPushToken ?? null,
+        lastUserId,
+      },
+      { fields: ["expoPushToken", "lastUserId"] }
+    );
 
-    return CreateDeviceResponse.newCreated(row.toResource(), row.uuid);
+    return RegisterDeviceResponse.newOk(row.toResource());
   }
 
   @Mutation(() => DeleteDeviceResponse, { name: "deleteDevice" })
