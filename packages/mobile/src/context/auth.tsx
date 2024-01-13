@@ -1,28 +1,76 @@
-interface UnloadedAuthData {
-  isAuthLoaded: false;
-  isLoggedIn: false;
-  isAnonymous: false;
-  uid: null;
-  authClaims: null;
+import { Logger } from "@common/logger/Logger";
+import { AuthSource, RoleResource, defaultRole } from "@ukdanceblue/common";
+import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
+import type { ReactNode } from "react";
+import { createContext, useContext, useEffect } from "react";
+import { useQuery } from "urql";
+
+export interface AuthState {
+  personUuid: string | null;
+  loggedIn: boolean;
+  role: RoleResource;
+  authSource: AuthSource;
+
+  ready: boolean;
 }
 
-interface LoadedAuthData {
-  isAuthLoaded: true;
-  isLoggedIn: boolean;
-  isAnonymous: boolean;
-  uid: string | null;
-  authClaims: { [key: string]: string | object } | null;
+const authStateContext = createContext<AuthState>({
+  personUuid: null,
+  loggedIn: false,
+  role: defaultRole,
+  authSource: AuthSource.None,
+
+  ready: false,
+});
+
+const authStateDocument = graphql(/* GraphQL */ `
+  query AuthState {
+    me {
+      data {
+        uuid
+      }
+    }
+    loginState {
+      role {
+        dbRole
+        committeeIdentifier
+        committeeRole
+      }
+      loggedIn
+      authSource
+    }
+  }
+`);
+
+export function AuthStateProvider({ children }: { children: ReactNode }) {
+  const [{ fetching, error, data }] = useQuery({
+    query: authStateDocument,
+  });
+
+  useEffect(() => {
+    if (error) {
+      Logger.error("Error fetching auth state", { error });
+    }
+  }, [error]);
+
+  return (
+    <authStateContext.Provider
+      value={{
+        personUuid: data?.me.data?.uuid ?? null,
+        loggedIn: data?.loginState.loggedIn ?? false,
+        role: data?.loginState.role
+          ? RoleResource.init(data.loginState.role)
+          : defaultRole,
+        authSource: data?.loginState.authSource ?? AuthSource.None,
+
+        ready: !fetching && !error,
+      }}
+    >
+      {children}
+    </authStateContext.Provider>
+  );
 }
 
-type AuthData = UnloadedAuthData | LoadedAuthData;
-
-/** @deprecated */
-export const useAuthData = (): AuthData => {
-  return {
-    authClaims: null,
-    isAnonymous: false,
-    isAuthLoaded: true,
-    isLoggedIn: false,
-    uid: null,
-  };
-};
+export function useAuthState() {
+  return useContext(authStateContext);
+}

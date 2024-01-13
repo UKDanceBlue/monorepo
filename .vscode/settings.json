@@ -9,5 +9,6 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "cSpell.words": ["emerg", "healthcheck", "maxsize", "RNCAL", "umzug"],
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "typescript.tsserver.experimental.enableProjectDiagnostics": true
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+  "npm.packageManager": "yarn"
 }

@@ -83,7 +83,7 @@ DeviceModel.init(
       type: DataTypes.TEXT,
       allowNull: true,
       validate: {
-        is: /^Expo(nent)?PushToken\[.{23}]$/,
+        is: /^Expo(nent)?PushToken\[.+]$/,
       },
     },
     lastLogin: {

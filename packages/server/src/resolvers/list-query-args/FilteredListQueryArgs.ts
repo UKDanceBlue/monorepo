@@ -25,6 +25,7 @@ import {
   OneOfFilterItem,
   StringFilterItem,
 } from "./FilterItem.js";
+import type { UnorderedOrderItemArray } from "./UnfilteredListQueryArgs.js";
 import { UnfilteredListQueryArgs } from "./UnfilteredListQueryArgs.js";
 import { filterToWhereOptions } from "./filterToWhereOptions.js";
 import { registerFilterKeyEnums } from "./registerFilterKeyEnums.js";
@@ -42,6 +43,24 @@ export abstract class AbstractFilteredListQueryArgs<
   booleanFilters!: AbstractBooleanFilterItem<BooleanFilterKeys>[] | null;
   isNullFilters!: AbstractIsNullFilterItem<AllKeys>[] | null;
   oneOfFilters!: AbstractOneOfFilterItem<StringFilterKeys>[] | null;
+
+  get filters(): (
+    | AbstractStringFilterItem<StringFilterKeys>
+    | AbstractNumericFilterItem<NumericFilterKeys>
+    | AbstractDateFilterItem<DateFilterKeys>
+    | AbstractBooleanFilterItem<BooleanFilterKeys>
+    | AbstractIsNullFilterItem<AllKeys>
+    | AbstractOneOfFilterItem<StringFilterKeys>
+  )[] {
+    return [
+      ...(this.stringFilters ?? []),
+      ...(this.numericFilters ?? []),
+      ...(this.dateFilters ?? []),
+      ...(this.booleanFilters ?? []),
+      ...(this.isNullFilters ?? []),
+      ...(this.oneOfFilters ?? []),
+    ];
+  }
 }
 
 export function FilteredListQueryArgs<
@@ -105,7 +124,9 @@ export function FilteredListQueryArgs<
   class KeyedIsNullFilterItem extends IsNullFilterItem(AllKeysEnum) {}
 
   @ArgsType()
-  abstract class FilteredListQueryArgs extends AbstractFilteredListQueryArgs<
+  abstract class FilteredListQueryArgs<
+    DbModel extends Model,
+  > extends AbstractFilteredListQueryArgs<
     AllKeys,
     StringFilterKeys,
     NumericFilterKeys,
@@ -171,7 +192,8 @@ export function FilteredListQueryArgs<
     oneOfFilters!: KeyedOneOfFilterItem[] | null;
 
     toSequelizeFindOptions<M extends Model<Record<string, unknown>>>(
-      sortByMap: Partial<Record<AllKeys, OrderItemColumn>>,
+      columnMap: Partial<Record<AllKeys, OrderItemColumn>>,
+      orderOverrideMap: Partial<Record<AllKeys, UnorderedOrderItemArray>>,
       modelStatic?: ModelStatic<M>
     ): FindAndCountOptions<Attributes<M>> & {
       where: Partial<WhereAttributeHash<Attributes<M>>>;
@@ -183,19 +205,20 @@ export function FilteredListQueryArgs<
       }
 
       const options: FindAndCountOptions<Record<AllKeys, never>> = {
-        ...super.toSequelizeFindOptions(sortByMap),
+        ...super.toSequelizeFindOptions(columnMap, orderOverrideMap),
         col: `${modelStatic.name}.id`,
         distinct: true,
       };
 
       const whereOptions: Partial<WhereAttributeHash<Attributes<M>>> =
         filterToWhereOptions<
+          DbModel,
           AllKeys,
           StringFilterKeys,
           NumericFilterKeys,
           DateFilterKeys,
           BooleanFilterKeys
-        >(this, sortByMap, resolverName);
+        >(this, columnMap, resolverName);
 
       return {
         ...options,

@@ -10,7 +10,7 @@ export async function up({
   context: { queryInterface },
 }: MigrationParams<MigrationContext>) {
   const [committeeNameValues] = await queryInterface.sequelize.query(
-    "SELECT unnest(enum_range(NULL::enum_people_committee_name))"
+    "SELECT unnest(enum_range(NULL::danceblue.enum_people_committee_name))"
   );
 
   if (

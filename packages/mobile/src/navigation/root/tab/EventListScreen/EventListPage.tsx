@@ -4,9 +4,9 @@ import type { DateTime } from "luxon";
 import { Column, Divider, Spinner, Text } from "native-base";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FlatList } from "react-native";
+import { Calendar } from "react-native-calendars";
 import type { DateData, MarkedDates } from "react-native-calendars/src/types";
 
-import Calendar from "./Calendar";
 import { EventListRenderItem } from "./EventListRenderItem";
 import {
   dateDataToLuxonDateTime,
@@ -123,6 +123,7 @@ export const EventListPage = ({
           initialDate={monthString}
           markedDates={markedWithSelected}
           hideExtraDays
+          markingType="multi-dot"
           hideArrows
           theme={useMemo(
             () => ({

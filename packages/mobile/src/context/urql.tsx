@@ -58,7 +58,7 @@ export function UrqlContext({ children }: { children: ReactNode }) {
       ],
     });
   }, [cacheInvalidation]);
-  client;
+
   return (
     <invalidateCacheContext.Provider value={invalidateCache}>
       <Provider value={client}>{children}</Provider>
