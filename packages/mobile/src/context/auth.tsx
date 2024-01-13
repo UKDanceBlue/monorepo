@@ -1,14 +1,11 @@
-import { API_BASE_URL } from "@common/apiUrl";
-import { DANCEBLUE_TOKEN_KEY } from "@common/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { RoleResource } from "@ukdanceblue/common";
-import { AuthSource, ErrorCode, defaultRole } from "@ukdanceblue/common";
-import { authExchange } from "@urql/exchange-auth";
+import { Logger } from "@common/logger/Logger";
+import { AuthSource, RoleResource, defaultRole } from "@ukdanceblue/common";
+import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
 import type { ReactNode } from "react";
-import { createContext, useContext, useMemo, useReducer } from "react";
-import { Client, Provider, cacheExchange, fetchExchange } from "urql";
+import { createContext, useContext, useEffect } from "react";
+import { useQuery } from "urql";
 
-export interface AuthData {
+export interface AuthState {
   personUuid: string | null;
   loggedIn: boolean;
   role: RoleResource;
@@ -17,7 +14,7 @@ export interface AuthData {
   ready: boolean;
 }
 
-const authContext = createContext<AuthData>({
+const authStateContext = createContext<AuthState>({
   personUuid: null,
   loggedIn: false,
   role: defaultRole,
@@ -26,63 +23,54 @@ const authContext = createContext<AuthData>({
   ready: false,
 });
 
-export function UrqlContext({ children }: { children: ReactNode }) {
-  const [cacheInvalidation, invalidateCache] = useReducer(
-    (state: number) => state + 1,
-    1
-  );
+const authStateDocument = graphql(/* GraphQL */ `
+  query AuthState {
+    me {
+      data {
+        uuid
+      }
+    }
+    loginState {
+      role {
+        dbRole
+        committeeIdentifier
+        committeeRole
+      }
+      loggedIn
+      authSource
+    }
+  }
+`);
 
-  const client = useMemo(() => {
-    cacheInvalidation;
-    return new Client({
-      url: `${API_BASE_URL}/graphql`,
-      exchanges: [
-        cacheExchange,
-        authExchange(async ({ appendHeaders }) => {
-          const token = await AsyncStorage.getItem(DANCEBLUE_TOKEN_KEY);
+export function AuthStateProvider({ children }: { children: ReactNode }) {
+  const [{ fetching, error, data }] = useQuery({
+    query: authStateDocument,
+  });
 
-          return {
-            addAuthToOperation: (operation) => {
-              if (token) {
-                return appendHeaders(operation, {
-                  Authorization: `Bearer ${token}`,
-                });
-              }
-              return operation;
-            },
-            refreshAuth: async () => {
-              await AsyncStorage.removeItem(DANCEBLUE_TOKEN_KEY);
-              invalidateCache();
-            },
-            didAuthError: ({ message, graphQLErrors }) => {
-              for (const err of graphQLErrors) {
-                if (err.extensions.code === ErrorCode.NotLoggedIn) {
-                  return true;
-                }
-              }
-
-              return (
-                message ===
-                  "Access denied! You don't have permission for this action!" ||
-                message === "Context creation failed: Invalid JWT payload" ||
-                message ===
-                  "[GraphQL] Context creation failed: invalid signature"
-              );
-            },
-          };
-        }),
-        fetchExchange,
-      ],
-    });
-  }, [cacheInvalidation]);
+  useEffect(() => {
+    if (error) {
+      Logger.error("Error fetching auth state", { error });
+    }
+  }, [error]);
 
   return (
-    <authContext.Provider value={invalidateCache}>
-      <Provider value={client}>{children}</Provider>
-    </authContext.Provider>
+    <authStateContext.Provider
+      value={{
+        personUuid: data?.me.data?.uuid ?? null,
+        loggedIn: data?.loginState.loggedIn ?? false,
+        role: data?.loginState.role
+          ? RoleResource.init(data.loginState.role)
+          : defaultRole,
+        authSource: data?.loginState.authSource ?? AuthSource.None,
+
+        ready: !fetching && !error,
+      }}
+    >
+      {children}
+    </authStateContext.Provider>
   );
 }
 
-export function useInvalidateCache() {
-  return useContext(authContext);
+export function useAuthState() {
+  return useContext(authStateContext);
 }

@@ -1,3 +1,4 @@
+import { Logger } from "@common/logger/Logger";
 import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
 import { randomUUID } from "expo-crypto";
 import { isDevice, osName } from "expo-device";
@@ -21,6 +22,7 @@ import { useMutation } from "urql";
 import { universalCatch } from "../common/logging";
 import { showMessage } from "../common/util/alertUtils";
 
+import { useAuthState } from "./auth";
 import { useLoading } from "./loading";
 
 const setDeviceQuery = graphql(/* GraphQL */ `
@@ -132,9 +134,14 @@ export const DeviceDataProvider = ({
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [getsNotifications, setGetsNotifications] = useState<boolean>(false);
 
+  const { ready, personUuid } = useAuthState();
+
   const [, setDevice] = useMutation(setDeviceQuery);
 
   useEffect(() => {
+    if (!ready) {
+      return;
+    }
     setLoading(true);
 
     obtainUuid()
@@ -147,6 +154,7 @@ export const DeviceDataProvider = ({
             input: {
               deviceId: uuid,
               expoPushToken: token?.data ?? null,
+              lastUserId: personUuid,
             },
           });
           setPushToken(token?.data ?? null);
@@ -158,13 +166,18 @@ export const DeviceDataProvider = ({
 
             showMessage("Notifications are not supported on emulators.");
           } else {
-            universalCatch(error);
+            Logger.error(
+              "Error registering push notifications",
+              error instanceof Error
+                ? { error }
+                : { error: new Error("Unknown error", { cause: error }) }
+            );
           }
         }
       })
       .catch(universalCatch)
       .finally(() => setLoading(false));
-  }, [setDevice, setLoading]);
+  }, [ready, setDevice, setLoading, personUuid]);
 
   return (
     <DeviceDataContext.Provider

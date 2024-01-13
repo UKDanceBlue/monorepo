@@ -1,6 +1,7 @@
 import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
+import { AuthStateProvider } from "./auth";
 import { DeviceDataProvider } from "./device";
 import { FirebaseProvider } from "./firebase";
 import { LoadingWrapper } from "./loading";
@@ -18,13 +19,15 @@ export const CombinedContext = ({
 }) => (
   <LoadingWrapper>
     <FirebaseProvider>
-      <DeviceDataProvider>
-        <GestureHandlerRootView>
-          <View style={{ minHeight: "100%", minWidth: "100%" }}>
-            {children}
-          </View>
-        </GestureHandlerRootView>
-      </DeviceDataProvider>
+      <AuthStateProvider>
+        <DeviceDataProvider>
+          <GestureHandlerRootView>
+            <View style={{ minHeight: "100%", minWidth: "100%" }}>
+              {children}
+            </View>
+          </GestureHandlerRootView>
+        </DeviceDataProvider>
+      </AuthStateProvider>
     </FirebaseProvider>
   </LoadingWrapper>
 );
