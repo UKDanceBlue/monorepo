@@ -105,49 +105,30 @@ export const splitEvents = (
     >
   > = {};
 
-  const now = DateTime.now();
-  const thisMonth = Interval.fromDateTimes(
-    now.startOf("month"),
-    now.endOf("month")
-  );
-
-  for (const event of events) {
-    const eventData = getFragmentData(EventScreenFragment, event);
-
-    for (const occurrence of eventData.occurrences) {
-      const occurrenceInterval = Interval.fromISO(occurrence.interval);
-
-      if (!occurrenceInterval.start.hasSame(occurrenceInterval.end, "month")) {
-        if (
-          (occurrenceInterval.intersection(thisMonth)?.length("hours") ?? 0) <
-          24
-        ) {
-          continue;
-        }
-      }
-
-      const startMonthString = luxonDateTimeToMonthString(
-        occurrenceInterval.start
+  const calendarEvents = events
+    .flatMap((event) => {
+      const eventData = getFragmentData(EventScreenFragment, event);
+      return eventData.occurrences.map(
+        (occurrence) =>
+          [
+            event,
+            {
+              ...occurrence,
+              interval: Interval.fromISO(occurrence.interval),
+            },
+          ] as const
       );
+    })
+    .sort((a, b) => (a[1].interval.start > b[1].interval.start ? 1 : -1));
 
-      if (newEvents[startMonthString] == null) {
-        newEvents[startMonthString] = [[event, occurrence.uuid]];
-      } else {
-        newEvents[startMonthString]!.push([event, occurrence.uuid]);
-      }
-
-      if (!occurrenceInterval.start.hasSame(occurrenceInterval.end, "month")) {
-        const endMonthString = luxonDateTimeToMonthString(
-          occurrenceInterval.end
-        );
-
-        if (newEvents[endMonthString] == null) {
-          newEvents[endMonthString] = [[event, occurrence.uuid]];
-        } else {
-          newEvents[endMonthString]!.push([event, occurrence.uuid]);
-        }
-      }
-    }
+  for (const [event, occurrence] of calendarEvents) {
+    console.log(
+      getFragmentData(EventScreenFragment, event).title,
+      occurrence.interval.start.toISO()
+    );
+    const monthString = luxonDateTimeToMonthString(occurrence.interval.start);
+    const existingEvents = newEvents[monthString] ?? [];
+    newEvents[monthString] = [...existingEvents, [event, occurrence.uuid]];
   }
 
   return newEvents;
