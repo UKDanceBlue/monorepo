@@ -18,7 +18,7 @@ export class CrashlyticsTransport extends LoggerTransport {
   }: {
     level: LogLevel;
     messageString: string;
-    extra: ExtraLogArgs;
+    extra: ExtraLogArgs<true>;
   }) {
     let logString = `[${logLevelToString(level)}]`;
     if (extra.source) {

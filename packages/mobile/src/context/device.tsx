@@ -166,12 +166,7 @@ export const DeviceDataProvider = ({
 
             showMessage("Notifications are not supported on emulators.");
           } else {
-            Logger.error(
-              "Error registering push notifications",
-              error instanceof Error
-                ? { error }
-                : { error: new Error("Unknown error", { cause: error }) }
-            );
+            Logger.error("Error registering push notifications", { error });
           }
         }
       })

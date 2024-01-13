@@ -13,7 +13,7 @@ export class ConsoleTransport extends LoggerTransport {
   }: {
     level: LogLevel;
     message: string | boolean | bigint | number | object;
-    extra: ExtraLogArgs;
+    extra: ExtraLogArgs<true>;
   }) {
     let extraString: string | undefined;
     if (Object.keys(extra).length > 0) {

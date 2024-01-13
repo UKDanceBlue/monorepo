@@ -32,8 +32,8 @@ export const logLevelToString = (level: LogLevel) => {
 
 export type LoggerTags = "graphql" | "navigation" | "global" | "critical";
 
-export interface ExtraLogArgs {
-  error?: Error;
+export interface ExtraLogArgs<Strict extends boolean = boolean> {
+  error?: Strict extends true ? Error : unknown;
   context?: object;
   tags?: LoggerTags[];
   source?: string;
@@ -56,7 +56,7 @@ export abstract class LoggerTransport {
     level: LogLevel;
     message: string | boolean | bigint | number | object;
     messageString: string;
-    extra: ExtraLogArgs;
+    extra: ExtraLogArgs<true>;
   }): void;
 
   public log({
@@ -71,7 +71,21 @@ export abstract class LoggerTransport {
     extra: ExtraLogArgs;
   }) {
     if (level >= this.#level) {
-      this.writeLog({ level, message, messageString, extra });
+      this.writeLog({
+        level,
+        message,
+        messageString,
+        extra:
+          extra.error != null
+            ? {
+                ...extra,
+                error:
+                  extra.error instanceof Error
+                    ? extra.error
+                    : new Error("Nonstandard error", { cause: extra.error }),
+              }
+            : (extra as Omit<typeof extra, "error">),
+      });
     }
   }
 }
