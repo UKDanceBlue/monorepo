@@ -18,6 +18,7 @@ import {
   Root,
 } from "type-graphql";
 
+import { sequelizeDb } from "../data-source.js";
 import { DeviceModel } from "../models/Device.js";
 import { PersonModel } from "../models/Person.js";
 
@@ -139,14 +140,28 @@ export class DeviceResolver
       lastUserId = lastUser.id;
     }
 
-    const [row] = await DeviceModel.upsert(
-      {
-        uuid: input.deviceId,
-        expoPushToken: input.expoPushToken ?? null,
-        lastUserId,
-      },
-      { fields: ["expoPushToken", "lastUserId"] }
-    );
+    const row = await sequelizeDb.transaction(async () => {
+      const [row, created] = await DeviceModel.findOrCreate({
+        where: { uuid: input.deviceId },
+        defaults: {
+          uuid: input.deviceId,
+          expoPushToken: input.expoPushToken ?? null,
+          lastUserId: lastUserId ?? null,
+        },
+      });
+      if (
+        !created &&
+        (row.expoPushToken !== (input.expoPushToken ?? null) ||
+          row.lastUserId !== lastUserId)
+      ) {
+        return row.update({
+          expoPushToken: input.expoPushToken ?? null,
+          lastUserId: lastUserId ?? null,
+        });
+      } else {
+        return row;
+      }
+    });
 
     return RegisterDeviceResponse.newOk(row.toResource());
   }
