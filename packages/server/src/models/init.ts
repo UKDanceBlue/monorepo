@@ -19,6 +19,7 @@ await import("./Person.js");
 await import("./PointEntry.js");
 await import("./PointOpportunity.js");
 await import("./Membership.js");
+await import("./Notification.js");
 await import("./Team.js");
 logger.debug("Initialized models");
 
@@ -30,13 +31,14 @@ await import("./PointEntryPersonFrom.js");
 await import("./PointOpportunityEvents.js");
 await import("./PointOpportunityEntries.js");
 await import("./EventOccurrences.js");
+await import("./PersonNotifications.js");
 logger.debug("Initialized model relations");
 
 logger.debug("Initializing model default scopes");
 await import("./defaultScopes.js");
 logger.debug("Initialized model default scopes");
 
-if (isDatabaseLocal && argv.includes("--seed-db")) {
+if (isDatabaseLocal && argv.includes("--sync-db")) {
   logger.info("Syncing models");
   const syncOptions: SyncOptions = {
     // Force if passed --reset-db flag

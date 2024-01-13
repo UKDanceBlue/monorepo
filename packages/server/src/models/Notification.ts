@@ -88,7 +88,7 @@ NotificationModel.init(
       index: true,
     },
     title: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     body: {
@@ -100,7 +100,7 @@ NotificationModel.init(
       allowNull: false,
     },
     sound: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     payloadPresentation: {
@@ -108,11 +108,11 @@ NotificationModel.init(
       allowNull: true,
     },
     payloadUrl: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     payloadTitle: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     payloadMessage: {

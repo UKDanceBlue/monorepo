@@ -2,6 +2,8 @@ import type { Options as SequelizeOptions } from "@sequelize/core";
 import { Sequelize } from "@sequelize/core";
 import dotenv from "dotenv";
 
+// Sigh, maybe Prisma is better after all - https://www.prisma.io/docs/orm/more/migrating-to-prisma/migrate-from-sequelize
+
 dotenv.config();
 
 import {
