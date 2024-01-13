@@ -1,3 +1,4 @@
+import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
 import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
 import { randomUUID } from "expo-crypto";
@@ -117,6 +118,7 @@ async function registerPushNotifications() {
       return { token: null, notificationPermissionsGranted: false };
     }
   } else {
+    // TODO: This is a dumb way to pass back the device being an emulator, use an enum or something in a return type
     throw new Error("DEVICE_IS_EMULATOR");
   }
 }
@@ -130,6 +132,8 @@ export const DeviceDataProvider = ({
 }) => {
   const [, setLoading] = useLoading();
 
+  const [{ isConnected }, isNetStatusLoaded] = useNetworkStatus();
+
   const [deviceId, setDeviceId] = useState<string | null>(null);
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [getsNotifications, setGetsNotifications] = useState<boolean>(false);
@@ -139,6 +143,9 @@ export const DeviceDataProvider = ({
   const [, setDevice] = useMutation(setDeviceQuery);
 
   useEffect(() => {
+    if (!isNetStatusLoaded || !isConnected) {
+      return;
+    }
     if (!ready) {
       return;
     }
@@ -146,19 +153,25 @@ export const DeviceDataProvider = ({
 
     obtainUuid()
       .then(async (uuid) => {
+        console.log("uuid", uuid);
         setDeviceId(uuid);
         try {
           const { token, notificationPermissionsGranted } =
             await registerPushNotifications();
-          await setDevice({
+          console.log("token", token);
+          const { error } = await setDevice({
             input: {
               deviceId: uuid,
               expoPushToken: token?.data ?? null,
               lastUserId: personUuid,
             },
           });
-          setPushToken(token?.data ?? null);
-          setGetsNotifications(notificationPermissionsGranted);
+          if (error) {
+            Logger.error("Error registering push notifications", { error });
+          } else {
+            setPushToken(token?.data ?? null);
+            setGetsNotifications(notificationPermissionsGranted);
+          }
         } catch (error) {
           if ((error as Error | undefined)?.message === "DEVICE_IS_EMULATOR") {
             setPushToken(null);
@@ -172,7 +185,14 @@ export const DeviceDataProvider = ({
       })
       .catch(universalCatch)
       .finally(() => setLoading(false));
-  }, [ready, setDevice, setLoading, personUuid]);
+  }, [
+    ready,
+    setDevice,
+    setLoading,
+    personUuid,
+    isNetStatusLoaded,
+    isConnected,
+  ]);
 
   return (
     <DeviceDataContext.Provider
