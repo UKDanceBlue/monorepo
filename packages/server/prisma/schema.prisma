@@ -1,0 +1,263 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Configuration {
+  id         Int       @id @default(autoincrement())
+  uuid       String    @unique(map: "configurations_uuid_unique") @db.Uuid
+  key        String
+  value      String
+  validAfter DateTime? @map("valid_after") @db.Timestamptz(6)
+  validUntil DateTime? @map("valid_until") @db.Timestamptz(6)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([uuid], map: "configurations_uuid")
+  @@map(name: "configurations")
+}
+
+model Device {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @unique(map: "devices_uuid_unique") @db.Uuid
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  expoPushToken String?   @map("expo_push_token")
+  lastLogin     DateTime? @map("last_login") @db.Timestamptz(6)
+  lastUserId    Int?      @map("last_user_id")
+  people        Person?   @relation(fields: [lastUserId], references: [id])
+
+  @@index([uuid], map: "devices_uuid")
+  @@map(name: "devices")
+}
+
+model EventImage {
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  eventId   Int      @map("event_id")
+  imageId   Int      @map("image_id")
+  events    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  images    Image    @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, imageId])
+  @@map(name: "event_images")
+}
+
+model EventOccurrence {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique(map: "event_occurrences_uuid_unique") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  fullDay   Boolean  @default(false) @map("full_day")
+  date      DateTime @db.Timestamptz(6)
+  endDate   DateTime @map("end_date") @db.Timestamptz(6)
+  eventId   Int      @map("event_id")
+  events    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([uuid], map: "event_occurrences_uuid")
+  @@map(name: "event_occurrences")
+}
+
+model Event {
+  id                 Int                @id @default(autoincrement())
+  uuid               String             @unique(map: "events_uuid_unique") @db.Uuid
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  title              String
+  summary            String?
+  description        String?
+  location           String?
+  eventImages        EventImage[]
+  eventOccurrences   EventOccurrence[]
+  pointOpportunities PointOpportunity[]
+
+  @@index([uuid], map: "events_uuid")
+  @@map(name: "events")
+}
+
+model Image {
+  id          Int          @id @default(autoincrement())
+  uuid        String       @unique(map: "images_uuid_unique") @db.Uuid
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  url         String?      @unique(map: "images_url_unique")
+  imageData   Bytes?       @map("image_data")
+  mimeType    String?      @map("mime_type") @db.VarChar(255)
+  thumbHash   Bytes?       @map("thumb_hash")
+  alt         String?
+  width       BigInt
+  height      BigInt
+  eventImages EventImage[]
+
+  @@index([uuid], map: "images_uuid")
+  @@map(name: "images")
+}
+
+model LoginFlowSession {
+  id                   Int      @id @default(autoincrement())
+  uuid                 String   @unique(map: "login_flow_sessions_uuid_unique") @db.Uuid
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  codeVerifier         String?  @map("code_verifier")
+  redirectToAfterLogin String   @map("redirect_to_after_login")
+  setCookie            Boolean? @default(false) @map("set_cookie")
+  sendToken            Boolean? @default(false) @map("send_token")
+
+  @@index([uuid], map: "login_flow_sessions_uuid")
+  @@map(name: "login_flow_sessions")
+}
+
+model Membership {
+  id        Int                @id @default(autoincrement())
+  uuid      String             @db.Uuid
+  createdAt DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  personId  Int                @map("person_id")
+  teamId    Int                @map("team_id")
+  position  MembershipPosition
+  people    Person             @relation(fields: [personId], references: [id], onDelete: Cascade)
+  teams     Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([uuid], map: "memberships_uuid")
+  @@map(name: "memberships")
+}
+
+model Person {
+  id            Int            @id @default(autoincrement())
+  uuid          String         @unique(map: "people_uuid_unique") @db.Uuid
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  name          String?
+  email         String         @unique(map: "people_email_unique")
+  linkblue      String?        @unique(map: "people_linkblue_unique")
+  authIds       Json           @default("{}") @map("auth_ids")
+  dbRole        DbRole         @default(None) @map("db_role")
+  committeeRole CommitteeRole? @map("committee_role")
+  committeeName CommitteeName? @map("committee_name")
+  devices       Device[]
+  memberships   Membership[]
+  pointEntries  PointEntry[]
+
+  @@index([uuid], map: "people_uuid")
+  @@map(name: "people")
+}
+
+model PointEntry {
+  id                 Int               @id @default(autoincrement())
+  uuid               String            @db.Uuid
+  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  comment            String?
+  points             Int
+  personFromId       Int?              @map("person_from_id")
+  teamId             Int               @map("team_id")
+  pointOpportunityId Int?              @map("point_opportunity_id")
+  people             Person?           @relation(fields: [personFromId], references: [id])
+  pointOpportunities PointOpportunity? @relation(fields: [pointOpportunityId], references: [id])
+  teams              Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([uuid], map: "point_entries_uuid")
+  @@map(name: "point_entries")
+}
+
+model PointOpportunity {
+  id              Int                  @id @default(autoincrement())
+  uuid            String               @unique(map: "point_opportunities_uuid_unique") @db.Uuid
+  createdAt       DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  name            String
+  opportunityDate DateTime?            @map("opportunity_date") @db.Timestamptz(6)
+  type            PointOpportunityType
+  eventId         Int?                 @map("event_id")
+  pointEntries    PointEntry[]
+  events          Event?               @relation(fields: [eventId], references: [id])
+
+  @@index([uuid], map: "point_opportunities_uuid")
+  @@map(name: "point_opportunities")
+}
+
+model Team {
+  id                   Int              @id @default(autoincrement())
+  uuid                 String           @db.Uuid
+  createdAt            DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  name                 String
+  type                 TeamType
+  legacyStatus         TeamLegacyStatus @map("legacy_status")
+  marathonYear         String           @map("marathon_year") @db.VarChar(4)
+  persistentIdentifier String?          @unique(map: "teams_persistent_identifier_unique") @map("persistent_identifier")
+  memberships          Membership[]
+  pointEntries         PointEntry[]
+
+  @@index([uuid], map: "teams_uuid")
+  @@map(name: "teams")
+}
+
+enum MembershipPosition {
+  Member
+  Captain
+
+  @@map(name: "enum_memberships_position")
+}
+
+enum CommitteeName {
+  programmingCommittee
+  fundraisingCommittee
+  communityDevelopmentCommittee
+  dancerRelationsCommittee
+  familyRelationsCommittee
+  techCommittee
+  operationsCommittee
+  marketingCommittee
+  corporateCommittee
+  miniMarathonsCommittee
+  viceCommittee
+
+  @@map(name: "enum_people_committee_name")
+}
+
+enum CommitteeRole {
+  Chair
+  Coordinator
+  Member
+
+  @@map(name: "enum_people_committee_role")
+}
+
+enum DbRole {
+  None
+  Public
+  TeamMember
+  TeamCaptain
+  Committee
+
+  @@map(name: "enum_people_db_role")
+}
+
+enum PointOpportunityType {
+  Spirit
+  Morale
+  Committee
+
+  @@map(name: "enum_point_opportunities_type")
+}
+
+enum TeamLegacyStatus {
+  NewTeam
+  ReturningTeam
+  DemoTeam
+
+  @@map(name: "enum_teams_legacy_status")
+}
+
+enum TeamType {
+  Spirit
+  Morale
+  Committee
+
+  @@map(name: "enum_teams_type")
+}
