@@ -53,6 +53,7 @@ const dbOptions = {
   },
   dialectOptions: {
     application_name: "db-server",
+    schema: "danceblue",
   },
 } satisfies SequelizeOptions;
 

@@ -117,7 +117,7 @@ class ListTeamsArgs extends FilteredListQueryArgs("TeamResolver", {
   all: ["name", "type", "legacyStatus", "marathonYear", "totalPoints"],
   string: ["name", "type", "marathonYear", "legacyStatus"],
   numeric: ["totalPoints"],
-}) {
+})<TeamModel> {
   @Field(() => [TeamType], { nullable: true })
   type!: [TeamType] | null;
 
@@ -165,6 +165,7 @@ export class TeamResolver
           `(SELECT COALESCE(SUM(points), 0) AS totalPoints FROM danceblue.point_entries WHERE team_id = "Team"."id" AND deleted_at IS NULL)`
         ),
       },
+      {},
       TeamModel
     );
 

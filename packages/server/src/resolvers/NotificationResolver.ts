@@ -1,5 +1,9 @@
 import type { OptionalToNullable } from "@ukdanceblue/common";
-import { DetailedError, ErrorCode , NotificationResource } from "@ukdanceblue/common";
+import {
+  DetailedError,
+  ErrorCode,
+  NotificationResource,
+} from "@ukdanceblue/common";
 import {
   Arg,
   Args,
@@ -70,7 +74,7 @@ class ListNotificationsArgs extends FilteredListQueryArgs(
   {
     all: ["uuid"],
   }
-) {}
+)<NotificationModel> {}
 
 @Resolver(() => NotificationResource)
 export class NotificationResolver
@@ -102,6 +106,7 @@ export class NotificationResolver
       {
         uuid: "uuid",
       },
+      {},
       NotificationModel
     );
 

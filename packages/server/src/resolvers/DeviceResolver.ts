@@ -1,4 +1,9 @@
-import { DetailedError, DeviceResource, ErrorCode , PersonResource } from "@ukdanceblue/common";
+import {
+  DetailedError,
+  DeviceResource,
+  ErrorCode,
+  PersonResource,
+} from "@ukdanceblue/common";
 import {
   Arg,
   Args,
@@ -13,11 +18,11 @@ import {
   Root,
 } from "type-graphql";
 
+import { sequelizeDb } from "../data-source.js";
 import { DeviceModel } from "../models/Device.js";
 import { PersonModel } from "../models/Person.js";
 
 import {
-  AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
@@ -41,10 +46,10 @@ class ListDevicesResponse extends AbstractGraphQLPaginatedResponse<DeviceResourc
   @Field(() => [DeviceResource])
   data!: DeviceResource[];
 }
-@ObjectType("CreateDeviceResponse", {
-  implements: AbstractGraphQLCreatedResponse<DeviceResource>,
+@ObjectType("RegisterDeviceResponse", {
+  implements: AbstractGraphQLOkResponse<DeviceResource>,
 })
-class CreateDeviceResponse extends AbstractGraphQLCreatedResponse<DeviceResource> {
+class RegisterDeviceResponse extends AbstractGraphQLOkResponse<DeviceResource> {
   @Field(() => DeviceResource)
   data!: DeviceResource;
 }
@@ -54,7 +59,7 @@ class CreateDeviceResponse extends AbstractGraphQLCreatedResponse<DeviceResource
 class DeleteDeviceResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
-class CreateDeviceInput implements Partial<DeviceResource> {
+class RegisterDeviceInput implements Partial<DeviceResource> {
   @Field(() => String)
   deviceId!: string;
 
@@ -76,7 +81,7 @@ class ListDevicesArgs extends FilteredListQueryArgs("DeviceResolver", {
   all: ["deviceId", "expoPushToken", "lastLogin", "createdAt", "updatedAt"],
   string: ["deviceId", "expoPushToken"],
   date: ["lastLogin", "createdAt", "updatedAt"],
-}) {}
+})<DeviceModel> {}
 
 @Resolver(() => DeviceResource)
 export class DeviceResolver
@@ -105,6 +110,7 @@ export class DeviceResolver
         expoPushToken: "expoPushToken",
         lastLogin: "lastLogin",
       },
+      {},
       DeviceModel
     );
 
@@ -118,10 +124,10 @@ export class DeviceResolver
     });
   }
 
-  @Mutation(() => CreateDeviceResponse, { name: "createDevice" })
-  async create(
-    @Arg("input") input: CreateDeviceInput
-  ): Promise<CreateDeviceResponse> {
+  @Mutation(() => RegisterDeviceResponse, { name: "registerDevice" })
+  async register(
+    @Arg("input") input: RegisterDeviceInput
+  ): Promise<RegisterDeviceResponse> {
     let lastUserId: number | null = null;
 
     if (input.lastUserId != null) {
@@ -134,13 +140,30 @@ export class DeviceResolver
       lastUserId = lastUser.id;
     }
 
-    const row = await DeviceModel.create({
-      uuid: input.deviceId,
-      expoPushToken: input.expoPushToken ?? null,
-      lastUserId,
+    const row = await sequelizeDb.transaction(async () => {
+      const [row, created] = await DeviceModel.findOrCreate({
+        where: { uuid: input.deviceId },
+        defaults: {
+          uuid: input.deviceId,
+          expoPushToken: input.expoPushToken ?? null,
+          lastUserId: lastUserId ?? null,
+        },
+      });
+      if (
+        !created &&
+        (row.expoPushToken !== (input.expoPushToken ?? null) ||
+          row.lastUserId !== lastUserId)
+      ) {
+        return row.update({
+          expoPushToken: input.expoPushToken ?? null,
+          lastUserId: lastUserId ?? null,
+        });
+      } else {
+        return row;
+      }
     });
 
-    return CreateDeviceResponse.newCreated(row.toResource(), row.uuid);
+    return RegisterDeviceResponse.newOk(row.toResource());
   }
 
   @Mutation(() => DeleteDeviceResponse, { name: "deleteDevice" })

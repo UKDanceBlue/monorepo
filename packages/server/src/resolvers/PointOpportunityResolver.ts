@@ -4,7 +4,8 @@ import {
   ErrorCode,
   EventResource,
   PointOpportunityResource,
- TeamType } from "@ukdanceblue/common";
+  TeamType,
+} from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
 import {
   Arg,
@@ -100,7 +101,7 @@ class ListPointOpportunitiesArgs extends FilteredListQueryArgs(
     string: ["name", "type"],
     date: ["opportunityDate", "createdAt", "updatedAt"],
   }
-) {}
+)<PointOpportunityModel> {}
 
 @Resolver(() => PointOpportunityResource)
 export class PointOpportunityResolver
@@ -136,6 +137,7 @@ export class PointOpportunityResolver
         createdAt: "createdAt",
         updatedAt: "updatedAt",
       },
+      {},
       PointOpportunityModel
     );
 

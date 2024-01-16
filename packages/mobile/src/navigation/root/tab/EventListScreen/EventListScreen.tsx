@@ -42,7 +42,7 @@ const EventListScreen = () => {
    */
   return (
     <InfinitePager
-      pageBuffer={2}
+      pageBuffer={1}
       initialIndex={0}
       PageComponent={EventListScreenPage}
     />

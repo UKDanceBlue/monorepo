@@ -75,6 +75,9 @@ export class PersonModel extends BaseModel<
       const membershipCounts = await MembershipModel.count({
         attributes: ["position"],
         group: ["position"],
+        where: {
+          personId: this.id,
+        },
       });
       let captainCount = 0;
       let memberCount = 0;

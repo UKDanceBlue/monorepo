@@ -1,54 +1,46 @@
-import crashlytics from "@react-native-firebase/crashlytics";
 import { isError } from "lodash";
 
-import { isFirebaseError } from "../types/firebaseTypes";
+import { Logger } from "./logger/Logger";
 
+/** @deprecated Use the Logger class directly */
 export function log(
   message: string | boolean | number | object,
   level: "trace" | "debug" | "log" | "info" | "warn" | "error" = "log"
 ) {
-  try {
-    if (__DEV__) {
-      const consoleMethod = console[level];
-      if (typeof consoleMethod === "function") {
-        consoleMethod(message);
-      } else {
-        console.log(message);
-      }
-    } else {
-      if (typeof message === "object") {
-        try {
-          message = JSON.stringify(message, null, 2);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-      crashlytics().log(String(message));
+  switch (level) {
+    case "trace":
+    case "debug": {
+      Logger.debug(message);
+      break;
     }
-  } catch (error) {
-    console.error(error);
+    case "log": {
+      Logger.log(message);
+      break;
+    }
+    case "info": {
+      Logger.info(message);
+      break;
+    }
+    case "warn": {
+      Logger.warn(message);
+      break;
+    }
+    case "error": {
+      Logger.error(message);
+      break;
+    }
   }
 }
 
+/** @deprecated Use the Logger class directly */
 export function logError(error: Error) {
-  try {
-    log("JavaScript Error:", "error");
-    log(error, "error");
-
-    if (!__DEV__) {
-      crashlytics().recordError(error);
-    }
-  } catch (error) {
-    console.error(error);
-  }
+  Logger.error(error.message, { error });
 }
 
+/** @deprecated I want to switch to using a more user-friendly error handler than this */
 export function universalCatch(error: unknown) {
   try {
-    if (isFirebaseError(error)) {
-      log(`Error ${error.name}: ${error.code}\n${error.message}`, "error");
-      logError(error);
-    } else if (isError(error)) {
+    if (isError(error)) {
       logError(error);
     } else if (
       typeof error === "string" ||

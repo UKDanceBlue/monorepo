@@ -10,7 +10,7 @@ export async function up({
   context: { queryInterface },
 }: MigrationParams<MigrationContext>) {
   const [teamLegacyStatusValues] = await queryInterface.sequelize.query(
-    "SELECT unnest(enum_range(NULL::enum_teams_legacy_status))"
+    "SELECT unnest(enum_range(NULL::danceblue.enum_teams_legacy_status))"
   );
   if (
     !teamLegacyStatusValues
