@@ -124,14 +124,14 @@ const ProfileScreen = ({
             <Text
               width="full"
               textAlign="center"
-              fontSize={theme.fontSizes["2xl"]}
+              fontSize="2xl"
             >
               You&apos;re currently logged in as:
             </Text>
             <Text
               width="full"
               textAlign="center"
-              fontSize={theme.fontSizes["2xl"]}
+              fontSize="2xl"
               fontFamily={body}
               color="primary.600"
             >
@@ -143,7 +143,7 @@ const ProfileScreen = ({
                 italic
                 textAlign="center"
                 color="primary.600"
-                fontSize={theme.fontSizes.lg}
+                fontSize="lg"
                 fontFamily={mono}
               >
                 {committeeString}
@@ -158,7 +158,7 @@ const ProfileScreen = ({
                 <Text
                   width="full"
                   textAlign="center"
-                  fontSize={theme.fontSizes["2xl"]}
+                  fontSize="2xl"
                 >
                   Spirit Point Count:
                 </Text>
@@ -167,7 +167,7 @@ const ProfileScreen = ({
                   textAlign="center"
                   fontFamily={headingBold}
                   color="primary.600"
-                  fontSize={theme.fontSizes["2xl"]}
+                  fontSize="2xl"
                 >
                   {userData.team.individualTotals[userData.linkblue]} points
                 </Text>
