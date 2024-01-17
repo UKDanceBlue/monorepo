@@ -2414,6 +2414,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dev-plugins/async-storage@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "@dev-plugins/async-storage@npm:0.0.1"
+  peerDependencies:
+    "@react-native-async-storage/async-storage": ^1.0.0
+    expo: "*"
+  checksum: b63f35308946dcad6d388f1c1945d7b1a114a1db68fa219d29fb802c874194ac0dc2a9ce3198795ae56b7695eb93ff65fceabf1c0d95b1131e760920599c6941
+  languageName: node
+  linkType: hard
+
 "@egjs/hammerjs@npm:^2.0.17":
   version: 2.0.17
   resolution: "@egjs/hammerjs@npm:2.0.17"
@@ -9135,6 +9145,7 @@ __metadata:
     "@apollo/client": 3.8.4
     "@babel/core": ^7.20.0
     "@babel/plugin-proposal-export-namespace-from": ^7.18.9
+    "@dev-plugins/async-storage": ^0.0.1
     "@expo/config": ~8.5.0
     "@expo/config-plugins": ~7.8.0
     "@expo/vector-icons": ^14.0.0
