@@ -1,6 +1,6 @@
 import { useColorModeValue, useThemeColors } from "@common/customHooks";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { Box, VStack, View } from "@gluestack-ui/themed-native-base";
+import { Box, VStack, View, ZStack } from "@gluestack-ui/themed-native-base";
 import type {
   BottomTabBarProps,
   BottomTabNavigationOptions,
@@ -10,7 +10,6 @@ import type {
   TabNavigationState,
 } from "@react-navigation/native";
 import { colors } from "@theme/colors";
-import { ZStack } from "native-base/src/components/primitives";
 import { Text, TouchableOpacity, useWindowDimensions } from "react-native";
 
 import BackgroundCutout from "../../../../assets/screens/navigation/background-cutout";

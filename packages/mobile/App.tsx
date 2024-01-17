@@ -3,6 +3,7 @@ import ErrorBoundary from "@common/components/ErrorBoundary";
 import { log, logError, universalCatch } from "@common/logging";
 import { showMessage, showPrompt } from "@common/util/alertUtils";
 import { UrqlContext } from "@context/urql";
+import { NativeBaseProvider } from "@gluestack-ui/themed-native-base";
 import NetInfo from "@react-native-community/netinfo";
 import { useFonts } from "expo-font";
 import { hideAsync } from "expo-splash-screen";
@@ -13,9 +14,8 @@ import {
   fetchUpdateAsync,
   reloadAsync,
 } from "expo-updates";
-// TODO: Switch away from native-base https://nativebase.io/blogs/road-ahead-with-gluestack-ui
 import type { ICustomTheme } from "native-base";
-import { NativeBaseProvider } from "native-base";
+// TODO: Switch away from native-base https://nativebase.io/blogs/road-ahead-with-gluestack-ui
 import { useEffect, useRef, useState } from "react";
 import type { EventSubscription } from "react-native";
 import { AppState } from "react-native";
