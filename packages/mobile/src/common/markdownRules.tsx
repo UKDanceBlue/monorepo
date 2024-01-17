@@ -1,12 +1,3 @@
-import type {
-  ASTNode,
-  RenderRules,
-} from "@jonasmerlin/react-native-markdown-display";
-import {
-  hasParents,
-  renderRules,
-} from "@jonasmerlin/react-native-markdown-display";
-// @ts-expect-error - this is a private type
 import {
   Box,
   Divider,
@@ -16,6 +7,15 @@ import {
   Text,
   VStack,
 } from "@gluestack-ui/themed-native-base";
+import type {
+  ASTNode,
+  RenderRules,
+} from "@jonasmerlin/react-native-markdown-display";
+import {
+  hasParents,
+  renderRules,
+} from "@jonasmerlin/react-native-markdown-display";
+// @ts-expect-error - this is a private type
 import { openUrl } from "@jonasmerlin/react-native-markdown-display/src/lib/util/openUrl";
 import { Platform } from "expo-modules-core";
 import React, { useEffect, useState } from "react";

@@ -53,7 +53,7 @@ export function useCommitChanges(): (
 
       if (Object.keys(changes).length > 0) {
         const result = await new Promise<boolean>((resolve) => {
-          showConfirmModal({
+          void showConfirmModal({
             title: "Confirm changes",
             content: (
               <List

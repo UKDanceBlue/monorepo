@@ -44,7 +44,7 @@ export class DurationDataType extends DataTypes.ABSTRACT<Duration> {
       }
     } else if (typeof value === "number") {
       const duration = Duration.fromMillis(value);
-      if (!duration.isValid) {
+      if (!(duration.isValid as boolean)) {
         throw new LuxonError(duration);
       } else {
         // Null assertion is safe because we just checked for validity
@@ -59,7 +59,7 @@ export class DurationDataType extends DataTypes.ABSTRACT<Duration> {
       }
     } else {
       const duration = Duration.fromDurationLike(value);
-      if (!duration.isValid) {
+      if (!(duration.isValid as boolean)) {
         throw new LuxonError(duration);
       } else {
         // Null assertion is safe because we just checked for validity
