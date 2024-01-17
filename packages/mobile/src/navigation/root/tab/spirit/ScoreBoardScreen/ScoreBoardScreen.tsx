@@ -1,13 +1,12 @@
 import Jumbotron from "@common/components/Jumbotron";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { View } from "@gluestack-ui/themed-native-base";
+import { Pressable, View } from "@gluestack-ui/themed-native-base";
 import { useNavigation } from "@react-navigation/native";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
-import { Pressable } from "native-base/src/components/primitives";
 import { useEffect, useState } from "react";
 
 import type { StandingType } from "../../../../../types/StandingType";
