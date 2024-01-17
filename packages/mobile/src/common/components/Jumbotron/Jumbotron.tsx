@@ -1,6 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import type { Icon as IconType } from "@expo/vector-icons/build/createIconSet";
-import { Icon, Text, View } from "native-base";
+import { Icon, Text, View } from "@gluestack-ui/themed-native-base";
 import type { ThemeComponentSizeType } from "native-base/src/components/types";
 
 import { useThemeColors } from "../../customHooks";
@@ -8,7 +8,7 @@ import { useThemeColors } from "../../customHooks";
 const JumbotronIcon = <
   PossibleIconNames extends string,
   IconFontName extends string,
-  IconName extends PossibleIconNames
+  IconName extends PossibleIconNames,
 >({
   icon,
   iconColor,
@@ -40,7 +40,7 @@ const JumbotronIcon = <
 const Jumbotron = <
   PossibleIconNames extends string,
   IconFontName extends string,
-  IconName extends PossibleIconNames
+  IconName extends PossibleIconNames,
 >({
   icon,
   iconColor,

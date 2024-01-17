@@ -1,13 +1,13 @@
+import {
+  useColorModeValue as useColorModeValueNativeBase,
+  useTheme,
+} from "@gluestack-ui/themed-native-base";
 import type {
   NetInfoState,
   NetInfoUnknownState,
 } from "@react-native-community/netinfo";
 import NetInfo, { NetInfoStateType } from "@react-native-community/netinfo";
 import firebaseStorage from "@react-native-firebase/storage";
-import {
-  useColorModeValue as useColorModeValueNativeBase,
-  useTheme,
-} from "native-base";
 import { useDebugValue, useEffect, useState } from "react";
 
 /** @deprecated */

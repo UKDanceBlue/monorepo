@@ -1,3 +1,4 @@
+import { Center, Text, useTheme } from "@gluestack-ui/themed-native-base";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DbRole } from "@ukdanceblue/common";
@@ -5,7 +6,6 @@ import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
-import { Center, Text, useTheme } from "native-base";
 import { useEffect, useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 import { useQuery } from "urql";

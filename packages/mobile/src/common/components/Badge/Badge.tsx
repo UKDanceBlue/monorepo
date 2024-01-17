@@ -1,4 +1,4 @@
-import { Image, Text, View } from "native-base";
+import { Image, Text, View } from "@gluestack-ui/themed-native-base";
 import { StyleSheet } from "react-native";
 
 /**

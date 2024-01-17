@@ -1,6 +1,6 @@
 // import { Icon as IconType } from "@expo/vector-icons/build/createIconSet";
 // import * as WebBrowser from "expo-web-browser";
-// import { Icon } from "native-base";
+// import { Icon } from "@gluestack-ui/themed-native-base";
 // import { ListItem } from "react-native-elements";
 
 // import { useThemeColors, useThemeFonts } from "../../customHooks";

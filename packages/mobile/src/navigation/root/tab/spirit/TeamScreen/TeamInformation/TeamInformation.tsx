@@ -2,8 +2,8 @@ import Breadcrumbs from "@common/components/Breadcrumbs";
 import { useThemeFonts } from "@common/customHooks";
 import { universalCatch } from "@common/logging";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { Flex, HStack, Text, View } from "@gluestack-ui/themed-native-base";
 import { openBrowserAsync } from "expo-web-browser";
-import { Flex, HStack, Text, View } from "native-base";
 import { useWindowDimensions } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 

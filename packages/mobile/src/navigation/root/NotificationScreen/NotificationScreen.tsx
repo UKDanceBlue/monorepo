@@ -1,12 +1,18 @@
 import JumbotronGeometric from "@common/components/JumbotronGeometric";
 import { log, universalCatch } from "@common/logging";
+import {
+  Button,
+  SectionList,
+  Text,
+  View,
+  useTheme,
+} from "@gluestack-ui/themed-native-base";
 import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import type { FirestoreNotification } from "@ukdanceblue/db-app-common";
 import { manufacturer as deviceManufacturer } from "expo-device";
 import { openSettings } from "expo-linking";
 import { setBadgeCountAsync } from "expo-notifications";
 import { DateTime } from "luxon";
-import { Button, SectionList, Text, View, useTheme } from "native-base";
 import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import type Animated from "react-native-reanimated";

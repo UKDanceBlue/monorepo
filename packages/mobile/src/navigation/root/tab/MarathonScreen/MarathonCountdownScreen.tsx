@@ -1,10 +1,9 @@
 import CountdownView from "@common/components/CountdownView";
 import { useThemeColors } from "@common/customHooks";
 import { marathonInterval } from "@common/marathonTime";
-import { Text, View } from "native-base";
+import { Text, View } from "@gluestack-ui/themed-native-base";
 import type { ImageSourcePropType } from "react-native";
 import { ImageBackground, useWindowDimensions } from "react-native";
-
 
 import CommitteeHoldingSign from "../../../../../assets/svgs/CommitteeHoldingSign";
 

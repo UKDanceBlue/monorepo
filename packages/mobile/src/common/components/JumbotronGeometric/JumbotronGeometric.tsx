@@ -1,5 +1,5 @@
 import type { Icon as IconType } from "@expo/vector-icons/build/createIconSet";
-import { Box, Icon, Text } from "native-base";
+import { Box, Icon, Text } from "@gluestack-ui/themed-native-base";
 import type { ImageSourcePropType } from "react-native";
 import { ImageBackground } from "react-native";
 
@@ -9,7 +9,7 @@ import { useThemeColors } from "../../customHooks";
 const JumbotronGeometric = <
   PossibleIconNames extends string,
   IconFontName extends string,
-  IconName extends PossibleIconNames
+  IconName extends PossibleIconNames,
 >({
   icon,
   iconType,

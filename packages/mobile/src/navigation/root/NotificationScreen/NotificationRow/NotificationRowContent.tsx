@@ -1,7 +1,4 @@
 import { useThemeFonts } from "@common/customHooks";
-import type { FirestoreNotification } from "@ukdanceblue/db-app-common";
-import { isEqual } from "lodash";
-import { DateTime } from "luxon";
 import {
   HStack,
   Heading,
@@ -10,7 +7,10 @@ import {
   VStack,
   View,
   useTheme,
-} from "native-base";
+} from "@gluestack-ui/themed-native-base";
+import type { FirestoreNotification } from "@ukdanceblue/db-app-common";
+import { isEqual } from "lodash";
+import { DateTime } from "luxon";
 import { memo } from "react";
 import { useWindowDimensions } from "react-native";
 

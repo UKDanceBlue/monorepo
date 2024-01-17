@@ -1,8 +1,14 @@
 import { universalCatch } from "@common/logging";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import {
+  Box,
+  Button,
+  HStack,
+  Text,
+  VStack,
+} from "@gluestack-ui/themed-native-base";
 import { openURL } from "expo-linking";
 import { openBrowserAsync } from "expo-web-browser";
-import { Box, Button, HStack, Text, VStack } from "native-base";
 import {
   PixelRatio,
   StatusBar,

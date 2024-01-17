@@ -1,7 +1,14 @@
 import { useLogin } from "@common/auth";
 import { useAllowedLoginTypes } from "@common/hooks/useAllowedLoginTypes";
+import {
+  Button,
+  Center,
+  Image,
+  Text,
+  View,
+  ZStack,
+} from "@gluestack-ui/themed-native-base";
 import { AuthSource } from "@ukdanceblue/common";
-import { Button, Center, Image, Text, View, ZStack } from "native-base";
 import { useEffect, useState } from "react";
 import type { ImageSourcePropType } from "react-native";
 import { ActivityIndicator, Dimensions, StatusBar } from "react-native";

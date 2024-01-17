@@ -6,7 +6,7 @@ import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import { createRef, useEffect, useState } from "react";
 import { ActionSheetIOS, Platform } from "react-native";
-import { Button, Divider, Input, Text, View } from "native-base";
+import { Button, Divider, Input, Text, View } from "@gluestack-ui/themed-native-base";
 
 import Standings from "@common/components/Standings";
 import { showMessage } from "@common/util/alertUtils";

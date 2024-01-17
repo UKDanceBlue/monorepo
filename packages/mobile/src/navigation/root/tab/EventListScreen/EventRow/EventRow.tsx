@@ -1,7 +1,7 @@
 import { FontAwesome } from "@expo/vector-icons";
+import { Heading, Icon, Row, Text } from "@gluestack-ui/themed-native-base";
 import type { Interval } from "luxon";
 import { DateTime } from "luxon";
-import { Heading, Icon, Row, Text } from "native-base";
 import { useMemo } from "react";
 
 /**

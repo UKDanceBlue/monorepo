@@ -1,10 +1,6 @@
 import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
 import { log } from "@common/logging";
 import { showMessage } from "@common/util/alertUtils";
-import { useRoute } from "@react-navigation/native";
-import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
-import { setStringAsync } from "expo-clipboard";
-import { DateTime, Interval } from "luxon";
 import {
   Badge,
   Box,
@@ -18,7 +14,11 @@ import {
   VStack,
   ZStack,
   useTheme,
-} from "native-base";
+} from "@gluestack-ui/themed-native-base";
+import { useRoute } from "@react-navigation/native";
+import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
+import { setStringAsync } from "expo-clipboard";
+import { DateTime, Interval } from "luxon";
 import { useMemo } from "react";
 import { ActivityIndicator, useWindowDimensions } from "react-native";
 import openMaps from "react-native-open-maps";

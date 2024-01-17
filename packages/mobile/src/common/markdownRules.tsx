@@ -7,9 +7,17 @@ import {
   renderRules,
 } from "@jonasmerlin/react-native-markdown-display";
 // @ts-expect-error - this is a private type
+import {
+  Box,
+  Divider,
+  Heading,
+  Link,
+  Row,
+  Text,
+  VStack,
+} from "@gluestack-ui/themed-native-base";
 import { openUrl } from "@jonasmerlin/react-native-markdown-display/src/lib/util/openUrl";
 import { Platform } from "expo-modules-core";
-import { Box, Divider, Heading, Link, Row, Text, VStack } from "native-base";
 import React, { useEffect, useState } from "react";
 import type { FlexAlignType, TextStyle } from "react-native";
 import { StyleSheet } from "react-native";

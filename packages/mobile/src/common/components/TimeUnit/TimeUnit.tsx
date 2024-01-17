@@ -1,4 +1,4 @@
-import { Text, View } from "native-base";
+import { Text, View } from "@gluestack-ui/themed-native-base";
 import { useWindowDimensions } from "react-native";
 
 import { useThemeColors, useThemeFonts } from "../../customHooks";

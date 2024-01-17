@@ -1,9 +1,9 @@
+import { Box, Column, Heading, Row } from "@gluestack-ui/themed-native-base";
 import { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
 import { Platform } from "expo-modules-core";
 import { DateTime, Interval } from "luxon";
-import { Box, Column, Heading, Row } from "native-base";
 import type { MutableRefObject } from "react";
 import { useCallback, useMemo } from "react";
 import type { ListRenderItem } from "react-native";

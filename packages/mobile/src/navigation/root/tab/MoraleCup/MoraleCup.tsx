@@ -1,8 +1,15 @@
 import Standings from "@common/components/Standings";
 import { universalCatch } from "@common/logging";
 import { Entypo } from "@expo/vector-icons";
+import {
+  Heading,
+  Row,
+  ScrollView,
+  Spinner,
+  Text,
+  VStack,
+} from "@gluestack-ui/themed-native-base";
 import { useAsyncStorage } from "@react-native-async-storage/async-storage";
-import { Heading, Row, ScrollView, Spinner, Text, VStack } from "native-base";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type {
   NativeSyntheticEvent,

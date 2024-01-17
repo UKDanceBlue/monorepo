@@ -1,7 +1,7 @@
 /*
 import { useNavigation } from "@react-navigation/native";
 import { DateTime, Interval } from "luxon";
-import { Button, Divider, Image, Text, View } from "native-base";
+import { Button, Divider, Image, Text, View } from "@gluestack-ui/themed-native-base";
 import { useEffect, useState } from "react";
 import { FlatList, useWindowDimensions } from "react-native";
 

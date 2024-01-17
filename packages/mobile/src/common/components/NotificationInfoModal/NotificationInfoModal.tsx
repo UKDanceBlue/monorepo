@@ -1,4 +1,4 @@
-import { Center, Column, Modal, Text } from "native-base";
+import { Center, Column, Modal, Text } from "@gluestack-ui/themed-native-base";
 
 import type { NotificationInfoPopup } from "../../../types/NotificationPayload";
 import { FirestoreImageView } from "../FirestoreImageView/FirestoreImageView";

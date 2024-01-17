@@ -1,4 +1,4 @@
-import { Box, HStack } from "native-base";
+import { Box, HStack } from "@gluestack-ui/themed-native-base";
 import { useWindowDimensions } from "react-native";
 import type { SvgProps } from "react-native-svg";
 import Svg, { G, Path } from "react-native-svg";

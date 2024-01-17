@@ -1,12 +1,12 @@
 import type { StandingType } from "@common-types/StandingType";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { Center, Text } from "@gluestack-ui/themed-native-base";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
 import { MembershipPositionType } from "@ukdanceblue/common/dist/graphql-client-public/graphql";
-import { Center, Text } from "native-base";
 import { useEffect, useState } from "react";
 import { useWindowDimensions } from "react-native";
 

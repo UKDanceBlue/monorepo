@@ -1,3 +1,4 @@
+import { useDisclose } from "@gluestack-ui/themed-native-base";
 import analytics from "@react-native-firebase/analytics";
 import type { NavigationContainerRef } from "@react-navigation/native";
 import { NavigationContainer } from "@react-navigation/native";
@@ -9,7 +10,6 @@ import {
   openURL,
 } from "expo-linking";
 import { addNotificationResponseReceivedListener } from "expo-notifications";
-import { useDisclose } from "native-base";
 import { useRef, useState } from "react";
 import { StatusBar } from "react-native";
 import type { WebViewSource } from "react-native-webview/lib/WebViewTypes";

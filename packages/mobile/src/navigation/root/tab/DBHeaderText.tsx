@@ -1,5 +1,5 @@
 import { universalCatch } from "@common/logging";
-import { Text } from "native-base";
+import { Text } from "@gluestack-ui/themed-native-base";
 import { Linking, useWindowDimensions } from "react-native";
 
 export function DBHeaderText() {

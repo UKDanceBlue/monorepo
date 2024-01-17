@@ -1,4 +1,4 @@
-import type { Theme } from "native-base";
+import type { Theme } from "@gluestack-ui/themed-native-base";
 import type { IColorHues } from "native-base/src/theme/base/colors";
 
 export const colors: Partial<Record<keyof Theme["colors"], IColorHues>> = {

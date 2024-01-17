@@ -1,5 +1,5 @@
+import { Box, View } from "@gluestack-ui/themed-native-base";
 import firebaseFirestore from "@react-native-firebase/firestore";
-import { Box, View } from "native-base";
 import { useEffect, useState } from "react";
 
 import type { LegacyFirestoreSponsor } from "../../../types/FirestoreSponsor";

@@ -1,5 +1,5 @@
+import { Image, Text, View } from "@gluestack-ui/themed-native-base";
 import * as WebBrowser from "expo-web-browser";
-import { Image, Text, View } from "native-base";
 import { PixelRatio, StyleSheet, TouchableHighlight } from "react-native";
 
 import { useFirebaseStorageUrl } from "../../customHooks";

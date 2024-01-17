@@ -1,6 +1,6 @@
 import { universalCatch } from "@common/logging";
+import { Box, Button, Row, useTheme } from "@gluestack-ui/themed-native-base";
 import firestore from "@react-native-firebase/firestore";
-import { Box, Button, Row, useTheme } from "native-base";
 import type { SectionListRenderItem } from "react-native";
 import { Alert, useWindowDimensions } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";

@@ -1,4 +1,4 @@
-import type { Theme } from "native-base";
+import type { Theme } from "@gluestack-ui/themed-native-base";
 
 export const letterSpacings: Partial<Theme["letterSpacings"]> = {
   "xs": "-0.05em",

@@ -1,7 +1,12 @@
+import {
+  Column,
+  Divider,
+  Spinner,
+  Text,
+} from "@gluestack-ui/themed-native-base";
 import type { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import type { DateTime } from "luxon";
-import { Column, Divider, Spinner, Text } from "native-base";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FlatList } from "react-native";
 import { Calendar } from "react-native-calendars";

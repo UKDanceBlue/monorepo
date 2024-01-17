@@ -1,4 +1,4 @@
-import { Text, View } from "native-base";
+import { Text, View } from "@gluestack-ui/themed-native-base";
 import type { ReactElement } from "react";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";

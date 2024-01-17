@@ -2,11 +2,6 @@ import { useLogOut, useLogin } from "@common/auth";
 import { useColorModeValue } from "@common/customHooks";
 import { universalCatch } from "@common/logging";
 import { Ionicons } from "@expo/vector-icons";
-import { AuthSource } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
-import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
-import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
-import { openURL } from "expo-linking";
 import {
   Button,
   HStack,
@@ -15,7 +10,12 @@ import {
   Text,
   View,
   useColorMode,
-} from "native-base";
+} from "@gluestack-ui/themed-native-base";
+import { AuthSource } from "@ukdanceblue/common";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
+import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
+import { openURL } from "expo-linking";
 import { useState } from "react";
 import { TextInput } from "react-native";
 

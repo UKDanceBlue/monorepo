@@ -1,4 +1,4 @@
-import { Center, Spinner, ZStack } from "native-base";
+import { Center, Spinner, ZStack } from "@gluestack-ui/themed-native-base";
 import type { ReactNode } from "react";
 import {
   createContext,

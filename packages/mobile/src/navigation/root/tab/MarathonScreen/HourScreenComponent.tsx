@@ -1,8 +1,12 @@
 import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
-import { Image, ScrollView, Text, VStack } from "native-base";
+import {
+  Image,
+  ScrollView,
+  Text,
+  VStack,
+} from "@gluestack-ui/themed-native-base";
 import { RefreshControl, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 
 import { useCurrentFirestoreHour } from "./FirestoreHourTypes";
 

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck This file is currently unused
-import { Text, View, useTheme } from "native-base";
+import { Text, View, useTheme } from "@gluestack-ui/themed-native-base";
 
 import { useThemeColors, useThemeFonts } from "../../customHooks";
 

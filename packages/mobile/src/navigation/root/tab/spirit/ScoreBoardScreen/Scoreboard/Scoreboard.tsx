@@ -1,6 +1,6 @@
 import { useThemeColors } from "@common/customHooks";
+import { Box, Flex, Text } from "@gluestack-ui/themed-native-base";
 import { colors } from "@theme/colors";
-import { Box, Flex, Text } from "native-base";
 import { FlatList, RefreshControl } from "react-native";
 
 import type { StandingType } from "../../../../../../types/StandingType";

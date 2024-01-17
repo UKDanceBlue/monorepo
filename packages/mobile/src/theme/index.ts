@@ -1,5 +1,9 @@
+import {
+  extendTheme,
+  useColorMode,
+  useTheme,
+} from "@gluestack-ui/themed-native-base";
 import type { Theme as ReactNavigationTheme } from "@react-navigation/native";
-import { extendTheme, useColorMode, useTheme } from "native-base";
 import { useMemo } from "react";
 
 import { colors } from "./colors";

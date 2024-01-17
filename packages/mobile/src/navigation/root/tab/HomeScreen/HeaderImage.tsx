@@ -1,4 +1,4 @@
-import { Image, ZStack } from "native-base";
+import { Image, ZStack } from "@gluestack-ui/themed-native-base";
 
 // import dbLogo from "../../../../../assets/logo/big-words.png";
 // import ribbon from "../../../../../assets/screens/home/2020-ribbon.jpg";

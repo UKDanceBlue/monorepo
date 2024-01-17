@@ -1,4 +1,4 @@
-import { Text, View } from "native-base";
+import { Text, View } from "@gluestack-ui/themed-native-base";
 
 const Breadcrumbs = ({
   pageName,

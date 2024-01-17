@@ -1,4 +1,4 @@
-import { Text } from "native-base";
+import { Text } from "@gluestack-ui/themed-native-base";
 import { FlatGrid } from "react-native-super-grid";
 
 import Badge from "../Badge";

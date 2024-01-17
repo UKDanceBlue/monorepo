@@ -1,7 +1,5 @@
 // Import third-party dependencies
 import { FontAwesome5 } from "@expo/vector-icons";
-import type { Audio } from "expo-av";
-import { canOpenURL, openURL } from "expo-linking";
 import {
   AspectRatio,
   Box,
@@ -13,7 +11,9 @@ import {
   Text,
   VStack,
   useTheme,
-} from "native-base";
+} from "@gluestack-ui/themed-native-base";
+import type { Audio } from "expo-av";
+import { canOpenURL, openURL } from "expo-linking";
 import { useEffect, useRef, useState } from "react";
 
 import { universalCatch } from "../../logging";

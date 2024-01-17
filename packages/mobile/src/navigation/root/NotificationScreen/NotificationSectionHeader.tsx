@@ -1,4 +1,4 @@
-import { Heading, View } from "native-base";
+import { Heading, View } from "@gluestack-ui/themed-native-base";
 import type { SectionListProps } from "react-native";
 
 import type { NotificationListDataEntry } from "./NotificationScreen";

@@ -4,7 +4,7 @@ import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-vi
 import type { StackScreenProps } from "@react-navigation/stack";
 import { setStringAsync as setClipboardStringAsync } from "expo-clipboard";
 import { openBrowserAsync } from "expo-web-browser";
-import { Button, Image, Text, View, useTheme } from "native-base";
+import { Button, Image, Text, View, useTheme } from "@gluestack-ui/themed-native-base";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, useWindowDimensions } from "react-native";
 

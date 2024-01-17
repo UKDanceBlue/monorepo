@@ -2,6 +2,15 @@ import { useLogin } from "@common/auth";
 import JumbotronGeometric from "@common/components/JumbotronGeometric";
 import { useThemeFonts } from "@common/customHooks";
 import {
+  Button,
+  Center,
+  Container,
+  Spinner,
+  Text,
+  VStack,
+  theme,
+} from "@gluestack-ui/themed-native-base";
+import {
   AuthSource,
   CommitteeIdentifier,
   CommitteeRole,
@@ -13,15 +22,6 @@ import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
-import {
-  Button,
-  Center,
-  Container,
-  Spinner,
-  Text,
-  VStack,
-  theme,
-} from "native-base";
 import { useMemo } from "react";
 
 import { ProfileFooter } from "./ProfileFooter";

@@ -1,4 +1,4 @@
-import { Text, VStack, View } from "native-base";
+import { Text, VStack, View } from "@gluestack-ui/themed-native-base";
 
 const FAQItem = ({
   question,

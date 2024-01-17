@@ -1,5 +1,5 @@
 import { useThemeColors } from "@common/customHooks";
-import { Container, Flex, Text, View } from "native-base";
+import { Container, Flex, Text, View } from "@gluestack-ui/themed-native-base";
 import { memo, useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 

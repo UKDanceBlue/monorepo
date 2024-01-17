@@ -1,4 +1,4 @@
-import { Center, Image, Spinner } from "native-base";
+import { Center, Image, Spinner } from "@gluestack-ui/themed-native-base";
 import { useEffect, useState } from "react";
 
 import { useFirebase } from "../../../context";

@@ -1,6 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
+import { View } from "@gluestack-ui/themed-native-base";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { View } from "native-base";
 import {
   PixelRatio,
   TouchableOpacity,
