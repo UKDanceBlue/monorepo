@@ -1,6 +1,7 @@
 import Jumbotron from "@common/components/Jumbotron";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { Pressable, View } from "@gluestack-ui/themed-native-base";
+import {Box, CheckIcon, HStack, Pressable, View, Select, Text} from "@gluestack-ui/themed-native-base";
+import {SelectItem} from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import {
@@ -33,6 +34,7 @@ const ScoreBoardFragment = graphql(/* GraphQL */ `
   fragment ScoreBoardFragment on TeamResource {
     uuid
     name
+    legacyStatus
     totalPoints
   }
 `);
@@ -41,6 +43,7 @@ const HighlightedTeamFragment = graphql(/* GraphQL */ `
   fragment HighlightedTeamFragment on TeamResource {
     uuid
     name
+    legacyStatus
   }
 `);
 
@@ -61,6 +64,7 @@ const ScoreBoardScreen = ({
   const [userTeamRank, setUserTeamRank] = useState<number | undefined>(
     undefined
   );
+
   // const moraleTeamName = useAppSelector((state) => state);
   const [standingData, setStandingData] = useState<StandingType[]>([]);
   const { navigate } =
@@ -71,6 +75,8 @@ const ScoreBoardScreen = ({
     HighlightedTeamFragment,
     highlightedTeamFragment
   );
+
+  const [filter, setFilter] = useState("");
 
   useEffect(() => {
     const newStandingData: StandingType[] = [];
@@ -125,6 +131,24 @@ const ScoreBoardScreen = ({
           />
         </Pressable>
       )}
+
+      <HStack space={2} justifyContent="center" justifyItems="center">
+        <Box>
+          <Text fontSize="xl">Filter Scoreboard:</Text>
+        </Box>
+        <Box>
+          <Select selectedValue={filter} minWidth="200" accessibilityLabel="Filter" placeholder="Filter" _selectedItem={{
+            endIcon: <CheckIcon size="5" />
+          }} mt={1} onValueChange={itemValue => setFilter(itemValue)}>
+            <Select.Item label="All" value="all"/>
+            <Select.Item label="Dancer Teams" value="dancers"/>
+            <Select.Item label="New Teams Only" value="new"/>
+            <Select.Item label="Returning Teams Only" value="returning"/>
+            <Select.Item label="Committee" value="committee"/>
+          </Select>
+        </Box>
+      </HStack>
+
       <Scoreboard
         title="Spirit Points"
         data={standingData}

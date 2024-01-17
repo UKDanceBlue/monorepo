@@ -7,8 +7,7 @@ import {
   Container,
   Spinner,
   Text,
-  VStack,
-  theme,
+  VStack
 } from "@gluestack-ui/themed-native-base";
 import {
   AuthSource,
