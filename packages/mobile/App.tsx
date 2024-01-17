@@ -3,7 +3,9 @@ import ErrorBoundary from "@common/components/ErrorBoundary";
 import { log, logError, universalCatch } from "@common/logging";
 import { showMessage, showPrompt } from "@common/util/alertUtils";
 import { UrqlContext } from "@context/urql";
+import { GluestackUIProvider } from "@gluestack-ui/themed";
 import NetInfo from "@react-native-community/netinfo";
+import { config } from "@theme/gluestack-ui.config";
 import { useFonts } from "expo-font";
 import { hideAsync } from "expo-splash-screen";
 import {
@@ -15,7 +17,6 @@ import {
 } from "expo-updates";
 // TODO: Switch away from native-base https://nativebase.io/blogs/road-ahead-with-gluestack-ui
 import type { ICustomTheme } from "native-base";
-import { NativeBaseProvider } from "native-base";
 import { useEffect, useRef, useState } from "react";
 import type { EventSubscription } from "react-native";
 import { AppState } from "react-native";
@@ -30,15 +31,13 @@ import OpenSansCondensedLightFont from "./assets/fonts/opensans-condensed/OpenSa
 import { CombinedContext } from "./src/context";
 import { FilledNavigationContainer } from "./src/navigation/NavigationContainer";
 import { getCustomTheme } from "./src/theme";
-import { GluestackUIProvider } from "@gluestack-ui/themed"
-import {config} from "@theme/gluestack-ui.config";
 
 /**
  * Main app container
  */
 const App = () => {
   const isOfflineInternal = useRef(false);
-  const [theme, setTheme] = useState<ICustomTheme | undefined>(undefined);
+  const [_, setTheme] = useState<ICustomTheme | undefined>(undefined);
 
   const [fontsLoaded, error] = useFonts({
     "bodoni-flf-bold": BoldoniFlfBoldFont,
