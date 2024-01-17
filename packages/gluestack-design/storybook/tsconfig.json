@@ -3,8 +3,6 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@custom-ui/themed": ["../../packages/themed/src"],
-      "@custom-ui/config": ["../../packages/config/src/gluestack-ui.config"],
       "react-native": ["./node_modules/react-native-web"]
     },
     "emitDeclarationOnly": true,

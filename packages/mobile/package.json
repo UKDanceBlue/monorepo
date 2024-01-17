@@ -98,7 +98,10 @@
     "react-native-webview": "13.6.4",
     "reflect-metadata": "^0.1.13",
     "typescript": "^5.3.3",
-    "urql": "^4.0.6"
+    "urql": "^4.0.6",
+    "@gluestack-style/react": "^1.0.41",
+    "@gluestack-ui/themed": "^1.0.36",
+    "babel-cli": "^6.26.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
