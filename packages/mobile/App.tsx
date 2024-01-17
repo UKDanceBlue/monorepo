@@ -30,6 +30,8 @@ import OpenSansCondensedLightFont from "./assets/fonts/opensans-condensed/OpenSa
 import { CombinedContext } from "./src/context";
 import { FilledNavigationContainer } from "./src/navigation/NavigationContainer";
 import { getCustomTheme } from "./src/theme";
+import { GluestackUIProvider } from "@gluestack-ui/themed"
+import {config} from "@theme/gluestack-ui.config";
 
 /**
  * Main app container
@@ -120,22 +122,36 @@ const App = () => {
   }, []);
 
   return (
-    fontsLoaded &&
-    theme && (
-      <NativeBaseProvider
-        config={{ strictMode: __DEV__ ? "error" : "off" }}
-        theme={theme}
-      >
-        <ErrorBoundary>
-          <UrqlContext>
-            <CombinedContext>
-              <FilledNavigationContainer />
-            </CombinedContext>
-          </UrqlContext>
-        </ErrorBoundary>
-      </NativeBaseProvider>
-    )
+    <GluestackUIProvider config={config}>
+      <ErrorBoundary>
+        <UrqlContext>
+          <CombinedContext>
+            <FilledNavigationContainer />
+          </CombinedContext>
+        </UrqlContext>
+      </ErrorBoundary>
+    </GluestackUIProvider>
   );
+
+  // NATIVE BASE INSTALLATION
+  //
+  // return (
+  //   fontsLoaded &&
+  //   theme && (
+  //     <NativeBaseProvider
+  //       config={{ strictMode: __DEV__ ? "error" : "off" }}
+  //       theme={theme}
+  //     >
+  //       <ErrorBoundary>
+  //         <UrqlContext>
+  //           <CombinedContext>
+  //             <FilledNavigationContainer />
+  //           </CombinedContext>
+  //         </UrqlContext>
+  //       </ErrorBoundary>
+  //     </NativeBaseProvider>
+  //   )
+  // );
 };
 
 function AppWrapper() {

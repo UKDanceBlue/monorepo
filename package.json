@@ -55,6 +55,9 @@
     "react-native-infinite-pager@^0.3.13": "patch:react-native-infinite-pager@npm%3A0.3.13#./.yarn/patches/react-native-infinite-pager-npm-0.3.13-59b67e2e46.patch"
   },
   "dependencies": {
-    "babel-cli": "^6.26.0"
+    "@gluestack-style/react": "^1.0.41",
+    "@gluestack-ui/themed": "^1.0.36",
+    "babel-cli": "^6.26.0",
+    "react-native-svg": "13.4.0"
   }
 }
