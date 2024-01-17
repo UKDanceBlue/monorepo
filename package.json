@@ -46,7 +46,13 @@
     "typescript": "^5.3.3"
   },
   "workspaces": [
-    "packages/*"
+    "packages/common",
+    "packages/server",
+    "packages/portal",
+    "packages/mobile",
+    "packages/gluestack-design/storybook",
+    "packages/gluestack-design/config",
+    "packages/gluestack-design/themed"
   ],
   "packageManager": "yarn@3.6.4",
   "resolutions": {
