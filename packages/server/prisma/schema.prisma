@@ -9,7 +9,7 @@ datasource db {
 
 model Configuration {
   id         Int       @id @default(autoincrement())
-  uuid       String    @unique(map: "configurations_uuid_unique") @db.Uuid
+  uuid       String    @unique(map: "configurations_uuid_unique") @default(uuid()) @db.Uuid
   key        String
   value      String
   validAfter DateTime? @map("valid_after") @db.Timestamptz(6)
@@ -23,7 +23,7 @@ model Configuration {
 
 model Device {
   id            Int       @id @default(autoincrement())
-  uuid          String    @unique(map: "devices_uuid_unique") @db.Uuid
+  uuid          String    @unique(map: "devices_uuid_unique") @default(uuid()) @db.Uuid
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
   expoPushToken String?   @map("expo_push_token")
@@ -49,7 +49,7 @@ model EventImage {
 
 model EventOccurrence {
   id        Int      @id @default(autoincrement())
-  uuid      String   @unique(map: "event_occurrences_uuid_unique") @db.Uuid
+  uuid      String   @unique(map: "event_occurrences_uuid_unique") @default(uuid()) @db.Uuid
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
   fullDay   Boolean  @default(false) @map("full_day")
@@ -64,7 +64,7 @@ model EventOccurrence {
 
 model Event {
   id                 Int                @id @default(autoincrement())
-  uuid               String             @unique(map: "events_uuid_unique") @db.Uuid
+  uuid               String             @unique(map: "events_uuid_unique") @default(uuid()) @db.Uuid
   createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
   title              String
@@ -81,7 +81,7 @@ model Event {
 
 model Image {
   id          Int          @id @default(autoincrement())
-  uuid        String       @unique(map: "images_uuid_unique") @db.Uuid
+  uuid        String       @unique(map: "images_uuid_unique") @default(uuid()) @db.Uuid
   createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
   url         String?      @unique(map: "images_url_unique")
@@ -99,7 +99,7 @@ model Image {
 
 model LoginFlowSession {
   id                   Int      @id @default(autoincrement())
-  uuid                 String   @unique(map: "login_flow_sessions_uuid_unique") @db.Uuid
+  uuid                 String   @unique(map: "login_flow_sessions_uuid_unique") @default(uuid()) @db.Uuid
   createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
   codeVerifier         String?  @map("code_verifier")
@@ -113,7 +113,7 @@ model LoginFlowSession {
 
 model Membership {
   id        Int                @id @default(autoincrement())
-  uuid      String             @db.Uuid
+  uuid      String             @unique(map: "memberships_uuid_unique") @default(uuid()) @db.Uuid
   createdAt DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
   personId  Int                @map("person_id")
@@ -128,7 +128,7 @@ model Membership {
 
 model Person {
   id            Int            @id @default(autoincrement())
-  uuid          String         @unique(map: "people_uuid_unique") @db.Uuid
+  uuid          String         @unique(map: "people_uuid_unique") @default(uuid()) @db.Uuid
   createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
   name          String?
@@ -148,7 +148,7 @@ model Person {
 
 model PointEntry {
   id                 Int               @id @default(autoincrement())
-  uuid               String            @db.Uuid
+  uuid               String            @unique(map: "point_entries_uuid_unique") @default(uuid()) @db.Uuid
   createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt          DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
   comment            String?
@@ -166,7 +166,7 @@ model PointEntry {
 
 model PointOpportunity {
   id              Int                  @id @default(autoincrement())
-  uuid            String               @unique(map: "point_opportunities_uuid_unique") @db.Uuid
+  uuid            String               @unique(map: "point_opportunities_uuid_unique") @default(uuid()) @db.Uuid
   createdAt       DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
   name            String
@@ -182,7 +182,7 @@ model PointOpportunity {
 
 model Team {
   id                   Int              @id @default(autoincrement())
-  uuid                 String           @db.Uuid
+  uuid                 String           @unique(map: "teams_uuid_unique") @default(uuid()) @db.Uuid
   createdAt            DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt            DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
   name                 String
