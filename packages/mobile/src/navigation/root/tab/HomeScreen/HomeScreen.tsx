@@ -1,5 +1,4 @@
 import { universalCatch } from "@common/logging";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import {
   Box,
   Button,
@@ -9,16 +8,12 @@ import {
 } from "@gluestack-ui/themed-native-base";
 import { openURL } from "expo-linking";
 import { openBrowserAsync } from "expo-web-browser";
-import {
-  PixelRatio,
-  StatusBar,
-  TouchableOpacity,
-  useWindowDimensions,
-} from "react-native";
+import { StatusBar, useWindowDimensions } from "react-native";
 
 import { useReactNavigationTheme } from "../../../../theme";
 
 import HeaderImage from "./HeaderImage";
+import { SocialIconView, socialIcons } from "./socialIcons";
 
 /**
  * Component for home screen in main navigation
@@ -52,7 +47,7 @@ const HomeScreen = () => {
           </Text>
         </Box>
         <Box flex={1} justifyContent="center">
-          <HStack justifyContent="center">
+          <HStack justifyContent="center" space="4" margin="2">
             <Button
               onPress={() => {
                 openURL("https://danceblue.networkforgood.com").catch(
@@ -80,95 +75,10 @@ const HomeScreen = () => {
               Submit Spirit Points
             </Button>
           </HStack>
-          <HStack justifyContent="center">
-            <Button backgroundColor="transparent">
-              <TouchableOpacity
-                onPress={() => {
-                  openURL("https://www.facebook.com/danceblue/").catch(
-                    universalCatch
-                  );
-                }}
-              >
-                <FontAwesome
-                  name="facebook"
-                  color="#0032A0"
-                  style={{
-                    textAlignVertical: "center",
-                    fontSize: PixelRatio.get() * 8,
-                  }}
-                />
-              </TouchableOpacity>
-            </Button>
-            <Button backgroundColor="transparent">
-              <TouchableOpacity
-                onPress={() => {
-                  openURL("https://www.instagram.com/uk_danceblue/").catch(
-                    universalCatch
-                  );
-                }}
-              >
-                <FontAwesome5
-                  name="instagram"
-                  color="#0032A0"
-                  style={{
-                    textAlignVertical: "center",
-                    fontSize: PixelRatio.get() * 8,
-                  }}
-                />
-              </TouchableOpacity>
-            </Button>
-            <Button backgroundColor="transparent">
-              <TouchableOpacity
-                onPress={() => {
-                  openURL("https://www.tiktok.com/@uk_danceblue").catch(
-                    universalCatch
-                  );
-                }}
-              >
-                <FontAwesome5
-                  name="tiktok"
-                  color="#0032A0"
-                  style={{
-                    textAlignVertical: "center",
-                    fontSize: PixelRatio.get() * 8,
-                  }}
-                />
-              </TouchableOpacity>
-            </Button>
-            <Button backgroundColor="transparent">
-              <TouchableOpacity
-                onPress={() => {
-                  openURL(
-                    "https://www.youtube.com/channel/UCcF8V41xkzYkZ0B1IOXntjg"
-                  ).catch(universalCatch);
-                }}
-              >
-                <FontAwesome5
-                  name="youtube"
-                  color="#0032A0"
-                  style={{
-                    textAlignVertical: "center",
-                    fontSize: PixelRatio.get() * 8,
-                  }}
-                />
-              </TouchableOpacity>
-            </Button>
-            <Button backgroundColor="transparent">
-              <TouchableOpacity
-                onPress={() => {
-                  openURL("https://danceblue.org").catch(universalCatch);
-                }}
-              >
-                <FontAwesome5
-                  name="globe"
-                  color="#0032A0"
-                  style={{
-                    textAlignVertical: "center",
-                    fontSize: PixelRatio.get() * 8,
-                  }}
-                />
-              </TouchableOpacity>
-            </Button>
+          <HStack justifyContent="center" space="4" margin="2">
+            {socialIcons.map((icon) => (
+              <SocialIconView key={icon.name} color="#0032A0" {...icon} />
+            ))}
           </HStack>
         </Box>
         {/* <Box height="8%">
