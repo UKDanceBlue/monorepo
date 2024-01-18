@@ -1,7 +1,15 @@
 import Jumbotron from "@common/components/Jumbotron";
 import { FontAwesome5 } from "@expo/vector-icons";
-import {Box, CheckIcon, HStack, Pressable, View, Select, Text} from "@gluestack-ui/themed-native-base";
-import {SelectItem} from "@gluestack-ui/themed";
+import {Box, CheckIcon, HStack, Pressable, View, Text} from "@gluestack-ui/themed-native-base";
+import {
+  ChevronDownIcon,
+  Icon,
+  Select,
+  SelectBackdrop, SelectContent, SelectDragIndicator,
+  SelectDragIndicatorWrapper, SelectIcon, SelectInput,
+  SelectItem,
+  SelectPortal, SelectTrigger
+} from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import {
@@ -132,6 +140,41 @@ const ScoreBoardScreen = ({
         </Pressable>
       )}
 
+
+      <Select>
+        <SelectTrigger variant="outline" size="md" >
+          <SelectInput placeholder="Select option" />
+          <SelectIcon mr="$3">
+            <Icon as={ChevronDownIcon} />
+          </SelectIcon>
+        </SelectTrigger>
+        <SelectPortal>
+          <SelectBackdrop/>
+          <SelectContent>
+            <SelectDragIndicatorWrapper>
+              <SelectDragIndicator />
+            </SelectDragIndicatorWrapper>
+            <SelectItem label="UX Research" value="ux" />
+            <SelectItem label="Web Development" value="web" />
+            <SelectItem
+              label="Cross Platform Development Process"
+              value="Cross Platform Development Process"
+            />
+            <SelectItem
+              label="UI Designing"
+              value="ui"
+              isDisabled={true}
+            />
+            <SelectItem
+              label="Backend Development"
+              value="backend"
+            />
+          </SelectContent>
+        </SelectPortal>
+      </Select>
+
+
+      {/*
       <HStack space={2} justifyContent="center" justifyItems="center">
         <Box>
           <Text fontSize="xl">Filter Scoreboard:</Text>
@@ -148,6 +191,8 @@ const ScoreBoardScreen = ({
           </Select>
         </Box>
       </HStack>
+
+      */}
 
       <Scoreboard
         title="Spirit Points"

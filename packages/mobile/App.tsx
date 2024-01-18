@@ -14,6 +14,10 @@ import {
   fetchUpdateAsync,
   reloadAsync,
 } from "expo-updates";
+
+import { GluestackUIProvider } from "@gluestack-ui/themed"
+import { config } from "@gluestack-ui/config" // Optional if you want to use default theme
+
 import type { ICustomTheme } from "native-base";
 // TODO: Switch away from native-base https://nativebase.io/blogs/road-ahead-with-gluestack-ui
 import { useEffect, useRef, useState } from "react";
@@ -118,24 +122,46 @@ const App = () => {
       return () => undefined;
     }
   }, []);
-
   return (
     fontsLoaded &&
     theme && (
-      <NativeBaseProvider
-        config={{ strictMode: __DEV__ ? "error" : "off" }}
-        theme={theme}
-      >
-        <ErrorBoundary>
-          <UrqlContext>
-            <CombinedContext>
-              <FilledNavigationContainer />
-            </CombinedContext>
-          </UrqlContext>
-        </ErrorBoundary>
-      </NativeBaseProvider>
+    <GluestackUIProvider config={config}>
+           <NativeBaseProvider
+             config={{ strictMode: __DEV__ ? "error" : "off" }}
+             theme={theme}
+           >
+      <ErrorBoundary>
+        <UrqlContext>
+          <CombinedContext>
+            <FilledNavigationContainer />
+          </CombinedContext>
+        </UrqlContext>
+      </ErrorBoundary>
+    </NativeBaseProvider>
+    </GluestackUIProvider>
     )
   );
+
+  // NATIVE BASE INSTALLATION
+  //
+  // return (
+  //   fontsLoaded &&
+  //   theme && (
+  //     <NativeBaseProvider
+  //       config={{ strictMode: __DEV__ ? "error" : "off" }}
+  //       theme={theme}
+  //     >
+  //       <ErrorBoundary>
+  //         <UrqlContext>
+  //           <CombinedContext>
+  //             <FilledNavigationContainer />
+  //           </CombinedContext>
+  //         </UrqlContext>
+  //       </ErrorBoundary>
+  //     </NativeBaseProvider>
+  //   )
+  // );
+
 };
 
 function AppWrapper() {
