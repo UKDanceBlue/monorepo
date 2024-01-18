@@ -3,7 +3,7 @@ import { Field, ID, ObjectType } from "type-graphql";
 
 import { DateTimeScalar } from "../custom-scalars/DateTimeScalar.js";
 
-import { Resource } from "./Resource.js";
+import { TimestampedResource } from "./Resource.js";
 
 /*
 The way configurations work is that there can be n number of configurations,
@@ -17,7 +17,7 @@ to have additional validation logic in the future.
 */
 
 @ObjectType()
-export class ConfigurationResource extends Resource {
+export class ConfigurationResource extends TimestampedResource {
   @Field(() => ID)
   uuid!: string;
 

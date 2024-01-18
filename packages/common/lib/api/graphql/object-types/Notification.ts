@@ -1,6 +1,6 @@
 import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
 
-import { Resource } from "./Resource.js";
+import { TimestampedResource } from "./Resource.js";
 /*
 interface FirestoreNotification {
   body: string;
@@ -53,7 +53,7 @@ export class NotificationPayload {
 }
 
 @ObjectType()
-export class NotificationResource extends Resource {
+export class NotificationResource extends TimestampedResource {
   @Field(() => ID)
   uuid!: string;
 

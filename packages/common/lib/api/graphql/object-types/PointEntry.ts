@@ -1,9 +1,9 @@
 import { Field, ID, Int, ObjectType } from "type-graphql";
 
-import { Resource } from "./Resource.js";
+import { TimestampedResource } from "./Resource.js";
 
 @ObjectType()
-export class PointEntryResource extends Resource {
+export class PointEntryResource extends TimestampedResource {
   @Field(() => ID)
   uuid!: string;
   @Field(() => String, { nullable: true })
