@@ -1,11 +1,10 @@
 import { PrismaClient } from "@prisma/client";
+import { Container } from "typedi";
 
 export const prisma = new PrismaClient();
 
-console.log("prisma.ts");
-console.log(
-  await prisma.person.findMany({
-    take: 20,
-    where: { committeeRole: { not: null } },
-  })
-);
+Container.set<PrismaClient>(PrismaClient, prisma);
+
+if (!Container.has(PrismaClient)) {
+  throw new Error("PrismaClient not registered");
+}
