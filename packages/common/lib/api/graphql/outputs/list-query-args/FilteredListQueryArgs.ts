@@ -27,7 +27,6 @@ import {
 } from "./FilterItem.js";
 import type { UnorderedOrderItemArray } from "./UnfilteredListQueryArgs.js";
 import { UnfilteredListQueryArgs } from "./UnfilteredListQueryArgs.js";
-import { filterToWhereOptions } from "./filterToWhereOptions.js";
 import { registerFilterKeyEnums } from "./registerFilterKeyEnums.js";
 
 export abstract class AbstractFilteredListQueryArgs<
