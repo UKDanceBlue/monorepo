@@ -1,5 +1,6 @@
+import { DeleteOutlined } from "@ant-design/icons";
 import { LuxonDatePicker } from "@elements/components/antLuxonComponents";
-import { Checkbox, Flex } from "antd";
+import { Button, Checkbox, Flex } from "antd";
 import type { DateTime } from "luxon";
 import { Interval } from "luxon";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -11,9 +12,11 @@ export function EventOccurrencePicker<
 >({
   defaultOccurrence,
   onChange,
+  onDelete,
 }: {
   defaultOccurrence: XEventOccurrenceInput;
   onChange: (occurrence: XEventOccurrenceInput) => void;
+  onDelete?: () => void;
 }) {
   const [start, setStart] = useState<DateTime | null>(
     defaultOccurrence.interval.start
@@ -132,6 +135,7 @@ export function EventOccurrencePicker<
         />
       )}
       {fullDayCheckbox}
+      <Button onClick={onDelete} icon={<DeleteOutlined />} />
     </Flex>
   );
 }

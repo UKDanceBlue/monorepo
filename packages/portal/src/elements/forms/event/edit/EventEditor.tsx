@@ -7,6 +7,7 @@ import type { UseQueryExecute } from "urql";
 
 import { EventOccurrencePicker } from "../components/EventOccurrencePicker";
 
+import { PlusOutlined } from "@ant-design/icons";
 import { EventEditorFragment } from "./EventEditorGQL";
 import { useEventEditorForm } from "./useEventEditorForm";
 
@@ -202,6 +203,14 @@ export function EventEditor({
               )}
             />
           </List>
+          <Button
+            icon={<PlusOutlined />}
+            onClick={() => {
+              formApi.
+            }}
+            >
+            Add occurrence
+            </Button>
           <formApi.Field
             name="description"
             children={(field) => (
