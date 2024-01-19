@@ -31,7 +31,6 @@ function getLoginUrl(source: AuthSource): string {
   const urlString = `${API_BASE_URL}/api/auth/${urlComponent}?returning=token&redirectTo=${encodeURIComponent(
     createURL("/auth/login")
   )}`;
-  console.log("urlString", urlString);
   return urlString;
 }
 
@@ -49,7 +48,6 @@ export const useLogin = (): [boolean, (source: AuthSource) => void] => {
       if (result.type === "success") {
         const url = new URL(result.url);
         const token = url.searchParams.get("token");
-        console.log("token", token);
         if (token) {
           await AsyncStorage.setItem(DANCEBLUE_TOKEN_KEY, token);
         }

@@ -6,6 +6,7 @@ import {
   CommitteeIdentifier,
   CommitteeRole,
   DbRole,
+  defaultAuthorization,
   isCommitteeIdentifier,
 } from "../../../auth/index.js";
 import { roleToAccessLevel } from "../../../index.js";
@@ -100,3 +101,5 @@ export class RoleResource extends Resource {
     return roleToAccessLevel(this);
   }
 }
+
+export const defaultRole = RoleResource.fromAuthorization(defaultAuthorization);

@@ -1,0 +1,195 @@
+diff --git a/src/index.tsx b/src/index.tsx
+index 4d3338c65a8d49cf11abcd8f3a33fc8c85c29ae1..c2c4ba870aac9b7d0fd8fe58131fbe165598cf3c 100644
+--- a/src/index.tsx
++++ b/src/index.tsx
+@@ -1,30 +1,31 @@
+ import React, {
+-  useState,
+-  useImperativeHandle,
+-  useRef,
+   useContext,
+-  useMemo,
+   useEffect,
++  useImperativeHandle,
++  useMemo,
++  useRef,
++  useState,
+ } from "react";
+ import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+-import Animated, {
+-  useAnimatedStyle,
+-  useSharedValue,
+-  withSpring,
+-  useDerivedValue,
+-  useAnimatedReaction,
+-  runOnJS,
+-  WithSpringConfig,
+-  makeMutable,
+-  SharedValue,
+-  DerivedValue,
+-} from "react-native-reanimated";
+ import {
+   ComposedGesture,
+   Gesture,
+   GestureDetector,
+   GestureType,
+ } from "react-native-gesture-handler";
++import Animated, {
++  DerivedValue,
++  SharedValue,
++  WithSpringConfig,
++  makeMutable,
++  runOnJS,
++  runOnUI,
++  useAnimatedReaction,
++  useAnimatedStyle,
++  useDerivedValue,
++  useSharedValue,
++  withSpring,
++} from "react-native-reanimated";
+ import {
+   defaultPageInterpolator,
+   pageInterpolatorCube,
+@@ -303,21 +304,21 @@ function InfinitePager(
+ 
+   panGesture
+     .onBegin((evt) => {
+-      "worklet";
++      runOnUI(() => {
+       if (!isAtEdge) {
+-        const updated = activePagers.value.slice();
+-        updated.push(pagerId);
+-        activePagers.value = updated;
+-      }
+-      startTranslate.value = translate.value;
+-      initTouchX.value = evt.x;
+-      initTouchY.value = evt.y;
++          const updated = activePagers.value.slice();
++          updated.push(pagerId);
++          activePagers.value = updated;
++        }
++        startTranslate.value = translate.value;
++        initTouchX.value = evt.x;
++        initTouchY.value = evt.y;
++      })();
+       if (debugTag) {
+         console.log(`${debugTag} onBegin`, evt);
+       }
+     })
+     .onTouchesMove((evt, mgr) => {
+-      "worklet";
+       const mainTouch = evt.changedTouches[0];
+ 
+       const evtVal = mainTouch[vertical ? "y" : "x"];
+@@ -355,7 +356,6 @@ function InfinitePager(
+       }
+     })
+     .onUpdate((evt) => {
+-      "worklet";
+       const evtTranslate = vertical ? evt.translationY : evt.translationX;
+       const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
+ 
+@@ -372,50 +372,54 @@ function InfinitePager(
+         );
+       }
+ 
+-      const rawVal = startTranslate.value + evtTranslate;
+-      const page = initialIndex + -rawVal / pageSize.value;
+-      if (page >= minIndexAnim.value && page <= maxIndexAnim.value) {
+-        translate.value = rawVal;
+-      } else {
+-        const referenceVal =
+-          page < minIndexAnim.value ? minIndexAnim.value : maxIndexAnim.value;
+-        const pageOverflowPct = referenceVal - page;
+-        const overflowTrans = pageOverflowPct * pageSize.value;
+-        const maxBounceTrans = bouncePct * pageSize.value;
+-        const bounceTrans = pageOverflowPct * maxBounceTrans;
+-        const clampedVal = rawVal - overflowTrans;
+-        translate.value = clampedVal + bounceTrans;
+-      }
++      runOnUI(() => {
++        const rawVal = startTranslate.value + evtTranslate;
++        const page = initialIndex + -rawVal / pageSize.value;
++        if (page >= minIndexAnim.value && page <= maxIndexAnim.value) {
++          translate.value = rawVal;
++        } else {
++          const referenceVal =
++            page < minIndexAnim.value ? minIndexAnim.value : maxIndexAnim.value;
++          const pageOverflowPct = referenceVal - page;
++          const overflowTrans = pageOverflowPct * pageSize.value;
++          const maxBounceTrans = bouncePct * pageSize.value;
++          const bounceTrans = pageOverflowPct * maxBounceTrans;
++          const clampedVal = rawVal - overflowTrans;
++          translate.value = clampedVal + bounceTrans;
++        }
++      })();
+     })
+     .onEnd((evt) => {
+-      "worklet";
+-      const evtVelocity = vertical ? evt.velocityY : evt.velocityX;
+-      const evtTranslate = vertical ? evt.translationY : evt.translationX;
+-      const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
+-      const isSwipingCrossAxis =
+-        Math.abs(crossAxisTranslate) > Math.abs(evtTranslate);
++      runOnUI(() => {
++        const evtVelocity = vertical ? evt.velocityY : evt.velocityX;
++        const evtTranslate = vertical ? evt.translationY : evt.translationX;
++        const crossAxisTranslate = vertical ? evt.translationX : evt.translationY;
++        const isSwipingCrossAxis =
++          Math.abs(crossAxisTranslate) > Math.abs(evtTranslate);
++
++        const isFling =
++          isGestureLocked.value || isSwipingCrossAxis
++            ? false
++            : Math.abs(evtVelocity) > flingVelocity;
++        let velocityModifier = isFling ? pageSize.value / 2 : 0;
++        if (evtVelocity < 0) velocityModifier *= -1;
++        let page =
++          initialIndex +
++          -1 * Math.round((translate.value + velocityModifier) / pageSize.value);
++        if (page < minIndexAnim.value) page = minIndexAnim.value;
++        if (page > maxIndexAnim.value) page = maxIndexAnim.value;
++
++        const animCfg = Object.assign(
++          {},
++          DEFAULT_ANIMATION_CONFIG,
++          animCfgRef.current
++        );
++        translate.value = withSpring(
++          -(page - initialIndex) * pageSize.value,
++          animCfg
++        );
++      })();
+ 
+-      const isFling =
+-        isGestureLocked.value || isSwipingCrossAxis
+-          ? false
+-          : Math.abs(evtVelocity) > flingVelocity;
+-      let velocityModifier = isFling ? pageSize.value / 2 : 0;
+-      if (evtVelocity < 0) velocityModifier *= -1;
+-      let page =
+-        initialIndex +
+-        -1 * Math.round((translate.value + velocityModifier) / pageSize.value);
+-      if (page < minIndexAnim.value) page = minIndexAnim.value;
+-      if (page > maxIndexAnim.value) page = maxIndexAnim.value;
+-
+-      const animCfg = Object.assign(
+-        {},
+-        DEFAULT_ANIMATION_CONFIG,
+-        animCfgRef.current
+-      );
+-      translate.value = withSpring(
+-        -(page - initialIndex) * pageSize.value,
+-        animCfg
+-      );
+       if (debugTag) {
+         console.log(
+           `${debugTag}: onEnd (${
+@@ -426,7 +430,6 @@ function InfinitePager(
+       }
+     })
+     .onFinalize((evt) => {
+-      "worklet";
+       const updatedPagerIds = activePagers.value
+         .slice()
+         .filter((id) => id !== pagerId);

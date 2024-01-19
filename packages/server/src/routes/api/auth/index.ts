@@ -6,6 +6,10 @@ import { demoLogin } from "./demo.js";
 import { login } from "./login.js";
 import { oidcCallback } from "./oidcCallback.js";
 
+// TODO: Replace custom OAuth2 + middleware implementation with Passport.js and oauth2orize
+// https://www.passportjs.org
+// https://github.com/jaredhanson/oauth2orize
+
 const authApiRouter = new Router({ prefix: "/auth" });
 
 authApiRouter.get("/logout", (ctx) => {

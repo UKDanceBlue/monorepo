@@ -58,12 +58,14 @@ const EventRow = ({
           {whenString}
         </Text>
       </Row>
-      <Row>
-        <Icon as={<FontAwesome name="map-marker" />} size="sm" />
-        <Text ml={1} fontSize="sm" fontWeight="light">
-          {location}
-        </Text>
-      </Row>
+      {location && (
+        <Row>
+          <Icon as={<FontAwesome name="map-marker" />} size="sm" />
+          <Text ml={1} fontSize="sm" fontWeight="light">
+            {location}
+          </Text>
+        </Row>
+      )}
     </>
   );
 };
