@@ -251,6 +251,7 @@ export class EventResolver
   ): Promise<CreateEventResponse> {
     const row = await EventModel.create({
       title: input.title,
+      summary: input.summary,
       description: input.description,
       location: input.location,
     });

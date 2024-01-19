@@ -66,6 +66,7 @@ export function EventCreator() {
               }
             >
               <Input.TextArea
+                status={field.state.meta.errors.length > 0 ? "error" : ""}
                 name={field.name}
                 value={field.state.value ?? undefined}
                 onBlur={field.handleBlur}
