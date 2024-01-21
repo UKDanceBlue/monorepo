@@ -1,6 +1,7 @@
 import Jumbotron from "@common/components/Jumbotron";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import {
   getFragmentData,
@@ -83,22 +84,22 @@ const ScoreBoardScreen = ({
     teamsData.filter((team) => {
       switch (filter) {
         case "dancers": {
-          return team.type === "dancer";
+          return team.type === TeamType.Spirit;
         }
         case "new": {
-          return team.legacyStatus === "new";
+          return team.legacyStatus === TeamLegacyStatus.NewTeam;
         }
         case "returning": {
-          return team.legacyStatus === "returning";
+          return team.legacyStatus === TeamLegacyStatus.ReturningTeam;
         }
         case "committee": {
-          return team.type === "committee";
+          return team.type === TeamType.Committee;
         }
         default: {
           return true;
         } // Show all teams for "All" filter
       }
-})?? [], [teamsData]);
+  })?? [], [teamsData]);
 
 useEffect(() => {
 
