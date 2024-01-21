@@ -81,7 +81,7 @@ const ScoreBoardScreen = ({
 
   // Update filteredData based on the selected filter
   const filteredData = useMemo(() =>
-    teamsData.filter((team) => {
+    teamsData?.filter((team) => {
       switch (filter) {
         case "dancers": {
           return team.type === TeamType.Spirit;
@@ -99,7 +99,7 @@ const ScoreBoardScreen = ({
           return true;
         } // Show all teams for "All" filter
       }
-  })?? [], [teamsData]);
+  }) ?? [], [teamsData, filter]);
 
 useEffect(() => {
 
