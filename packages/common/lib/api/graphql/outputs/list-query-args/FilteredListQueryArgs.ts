@@ -1,11 +1,3 @@
-import type {
-  Attributes,
-  FindAndCountOptions,
-  Model,
-  ModelStatic,
-  OrderItemColumn,
-  WhereAttributeHash,
-} from "@sequelize/core";
 import { VoidResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType } from "type-graphql";
 
@@ -25,7 +17,6 @@ import {
   OneOfFilterItem,
   StringFilterItem,
 } from "./FilterItem.js";
-import type { UnorderedOrderItemArray } from "./UnfilteredListQueryArgs.js";
 import { UnfilteredListQueryArgs } from "./UnfilteredListQueryArgs.js";
 import { registerFilterKeyEnums } from "./registerFilterKeyEnums.js";
 
@@ -123,9 +114,7 @@ export function FilteredListQueryArgs<
   class KeyedIsNullFilterItem extends IsNullFilterItem(AllKeysEnum) {}
 
   @ArgsType()
-  abstract class FilteredListQueryArgs<
-    DbModel extends Model,
-  > extends AbstractFilteredListQueryArgs<
+  abstract class FilteredListQueryArgs extends AbstractFilteredListQueryArgs<
     AllKeys,
     StringFilterKeys,
     NumericFilterKeys,
@@ -189,41 +178,6 @@ export function FilteredListQueryArgs<
       }
     )
     oneOfFilters!: KeyedOneOfFilterItem[] | null;
-
-    toSequelizeFindOptions<M extends Model<Record<string, unknown>>>(
-      columnMap: Partial<Record<AllKeys, OrderItemColumn>>,
-      orderOverrideMap: Partial<Record<AllKeys, UnorderedOrderItemArray>>,
-      modelStatic?: ModelStatic<M>
-    ): FindAndCountOptions<Attributes<M>> & {
-      where: Partial<WhereAttributeHash<Attributes<M>>>;
-    } {
-      if (!modelStatic) {
-        throw new Error(
-          `No model static provided to ${resolverName} FilteredListQueryArgs`
-        );
-      }
-
-      const options: FindAndCountOptions<Record<AllKeys, never>> = {
-        ...super.toSequelizeFindOptions(columnMap, orderOverrideMap),
-        col: `${modelStatic.name}.id`,
-        distinct: true,
-      };
-
-      const whereOptions: Partial<WhereAttributeHash<Attributes<M>>> =
-        filterToWhereOptions<
-          DbModel,
-          AllKeys,
-          StringFilterKeys,
-          NumericFilterKeys,
-          DateFilterKeys,
-          BooleanFilterKeys
-        >(this, columnMap, resolverName);
-
-      return {
-        ...options,
-        where: whereOptions,
-      };
-    }
   }
 
   return FilteredListQueryArgs;

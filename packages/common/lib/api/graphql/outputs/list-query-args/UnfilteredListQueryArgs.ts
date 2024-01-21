@@ -1,5 +1,4 @@
 import type {
-  FindAndCountOptions,
   OrderItem,
   OrderItemAssociation,
   OrderItemColumn,
@@ -73,43 +72,4 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
       "The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match",
   })
   sortDirection?: SortDirection[] | null;
-
-  toSequelizeFindOptions(
-    columnMap?: Partial<Record<SortByKeys, OrderItemColumn>>,
-    orderOverrideMap?: Partial<Record<SortByKeys, UnorderedOrderItemArray>>
-  ): FindAndCountOptions<Record<SortByKeys, never>> {
-    const options: FindAndCountOptions<Record<SortByKeys, never>> = {
-      paranoid: this.includeDeleted === true ? false : true,
-    };
-
-    if (this.sendAll !== true) {
-      if (this.pageSize != null) {
-        options.limit = this.pageSize;
-      }
-
-      if (this.page != null) {
-        options.offset = (this.page - FIRST_PAGE) * (this.pageSize ?? 10);
-      }
-    }
-
-    if (this.sortBy != null && columnMap != null) {
-      const sortBy = this.sortBy.map(
-        (key) => orderOverrideMap?.[key] ?? columnMap[key]
-      );
-      const sortDirection =
-        this.sortDirection?.map((v) =>
-          v === SortDirection.DESCENDING ? "DESC" : "ASC"
-        ) ?? this.sortBy.map(() => "ASC");
-
-      options.order = sortBy
-        .filter((key, index) => key != null && sortDirection[index] != null)
-        .map((key, index) =>
-          Array.isArray(key)
-            ? [...(key as UnorderedOrderItemArray), sortDirection[index]!]
-            : ([key!, sortDirection[index]!] as const)
-        );
-    }
-
-    return options;
-  }
 }
