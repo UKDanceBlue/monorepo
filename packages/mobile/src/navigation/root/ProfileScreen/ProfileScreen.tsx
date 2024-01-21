@@ -14,6 +14,7 @@ import {
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
 import {
+  Box,
   Button,
   Center,
   Container,
@@ -25,6 +26,8 @@ import {
 import { useMemo } from "react";
 
 import { ProfileFooter } from "./ProfileFooter";
+import {openURL} from "expo-linking";
+import {universalCatch} from "@common/logging";
 
 export const ProfileScreenAuthFragment = graphql(/* GraphQL */ `
   fragment ProfileScreenAuthFragment on LoginState {
@@ -149,6 +152,11 @@ const ProfileScreen = ({
                 {committeeString}
               </Text>
             )}
+            <Box alignItems="center" width="full">
+              <Button onPress={() => openURL("https://drive.google.com/drive/u/1/folders/1m2Gxyjw05aF8yHYuiwa8L9S2modK-8e-").catch(
+                universalCatch
+              )}>Dancer Resources</Button>
+            </Box>
           </Container>
           {/* TODO: Implement server-side support for individual totals */}
           {/* {userData.teams.length > 0 &&
