@@ -79,12 +79,9 @@ const ScoreBoardScreen = ({
     highlightedTeamFragment
   );
 
-  useEffect(() => {
-
-    console.log(filter);
-
-    // Update filteredData based on the selected filter
-    const filteredData = teamsData.filter((team) => {
+  // Update filteredData based on the selected filter
+  const filteredData = useMemo(() => 
+    teamsData.filter((team) => {
       switch (filter) {
         case "dancers":
           return team.type === "dancer";
