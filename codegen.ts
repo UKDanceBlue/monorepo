@@ -51,7 +51,7 @@ const config: TypeScriptPluginConfig = {
   strictScalars: true,
 };
 const codegenConfig: CodegenConfig = {
-  schema: "./packages/server/schema.graphql",
+  schema: "schema.graphql",
   hooks: {
     onError: (e) => {
       console.error("Error generating GraphQL client:", e);
