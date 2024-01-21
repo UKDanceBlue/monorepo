@@ -6,7 +6,7 @@ import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
-import { View } from "native-base";
+import {Box, CheckIcon, HStack, Select, View, Text} from "native-base";
 import { Pressable } from "native-base/src/components/primitives";
 import { useEffect, useState } from "react";
 
@@ -35,6 +35,8 @@ const ScoreBoardFragment = graphql(/* GraphQL */ `
     uuid
     name
     totalPoints
+    legacyStatus
+    type
   }
 `);
 
@@ -42,6 +44,8 @@ const HighlightedTeamFragment = graphql(/* GraphQL */ `
   fragment HighlightedTeamFragment on TeamResource {
     uuid
     name
+    legacyStatus
+    type
   }
 `);
 
@@ -59,11 +63,13 @@ const ScoreBoardScreen = ({
   loading: boolean;
   refresh: () => void;
 }) => {
+  const [filter, setFilter] = useState<string>("all");
   const [userTeamRank, setUserTeamRank] = useState<number | undefined>(
     undefined
   );
   // const moraleTeamName = useAppSelector((state) => state);
   const [standingData, setStandingData] = useState<StandingType[]>([]);
+  const [filteredData, setFilteredData] = useState<StandingType[]>([]);
   const { navigate } =
     useNavigation<SpiritStackScreenProps<"Scoreboard">["navigation"]>();
 
@@ -74,22 +80,43 @@ const ScoreBoardScreen = ({
   );
 
   useEffect(() => {
+
+    console.log(filter);
+
+    // Update filteredData based on the selected filter
+    const filteredData = teamsData.filter((team) => {
+      switch (filter) {
+        case "dancers":
+          return team.type === "dancer";
+        case "new":
+          return team.legacyStatus === "new";
+        case "returning":
+          return team.legacyStatus === "returning";
+        case "committee":
+          return team.type === "committee";
+        default:
+          return true; // Show all teams for "All" filter
+      }
+    });
+
+    setFilteredData(filteredData);
+
+    // Determine the standings based on filteredData
     const newStandingData: StandingType[] = [];
-    if (teamsData) {
-      for (const team of teamsData) {
-        newStandingData.push({
-          name: team.name,
-          id: team.uuid,
-          points: team.totalPoints,
-          highlighted: team.uuid === userTeamData?.uuid,
-        });
-        if (team.uuid === userTeamData?.uuid) {
-          setUserTeamRank(newStandingData.length);
-        }
+    for (const team of filteredData) {
+      newStandingData.push({
+        name: team.name,
+        id: team.uuid,
+        points: team.totalPoints,
+        highlighted: team.uuid === userTeamData?.uuid,
+      });
+      if (team.uuid === userTeamData?.uuid) {
+        setUserTeamRank(newStandingData.length);
       }
     }
+
     setStandingData(newStandingData);
-  }, [teamsData, userTeamData]);
+  }, [teamsData, userTeamData, filter]);
 
   return (
     <View flex={1}>
@@ -126,6 +153,24 @@ const ScoreBoardScreen = ({
           />
         </Pressable>
       )}
+
+      <HStack space={2} justifyContent="center" justifyItems="center">
+        <Box>
+          <Text fontSize="xl">Filter Scoreboard:</Text>
+        </Box>
+        <Box>
+          <Select selectedValue={filter} minWidth="200" accessibilityLabel="Filter" placeholder="Filter" _selectedItem={{
+            endIcon: <CheckIcon size="5" />
+          }} mt={1} onValueChange={itemValue => setFilter(itemValue)}>
+            <Select.Item label="All" value="all"/>
+            <Select.Item label="Dancer Teams" value="dancers"/>
+            <Select.Item label="New Teams Only" value="new"/>
+            <Select.Item label="Returning Teams Only" value="returning"/>
+            <Select.Item label="Committee" value="committee"/>
+          </Select>
+        </Box>
+      </HStack>
+
       <Scoreboard
         title="Spirit Points"
         data={standingData}
