@@ -2,17 +2,17 @@ import random from "lodash/random";
 import type { ImageSourcePropType } from "react-native";
 
 const DBLetters5k =
-  require("../../../../assets/screens/login-modal/5k2023-299.jpg") as ImageSourcePropType;
+  require("../../../../assets/screens/login-modal/review/5k2023-299.jpg") as ImageSourcePropType;
 const CutsForTheClinic =
-  require("../../../../assets/screens/login-modal/Cutsfortheclinic-94.jpg") as ImageSourcePropType;
+  require("../../../../assets/screens/login-modal/review/Cutsfortheclinic-94.jpg") as ImageSourcePropType;
 const Stickers =
-  require("../../../../assets/screens/login-modal/DBCatapalooza-55.jpg") as ImageSourcePropType;
+  require("../../../../assets/screens/login-modal/review/DBCatapalooza-55.jpg") as ImageSourcePropType;
 const Running5k =
-  require("../../../../assets/screens/login-modal/DSC_0324.jpg") as ImageSourcePropType;
+  require("../../../../assets/screens/login-modal/review/DSC_0324.jpg") as ImageSourcePropType;
 const DBUCornHole =
-  require("../../../../assets/screens/login-modal/LDBU-19.jpg") as ImageSourcePropType;
+  require("../../../../assets/screens/login-modal/review/LDBU-19.jpg") as ImageSourcePropType;
 const DBUChalkBoard =
-  require("../../../../assets/screens/login-modal/LDBU-23.jpg") as ImageSourcePropType;
+  require("../../../../assets/screens/login-modal/review/LDBU-23.jpg") as ImageSourcePropType;
   const DanceBlueU13 =
   require("../../../../assets/screens/login-modal/DanceBlueU-13.jpg") as ImageSourcePropType;
 const DanceBlueU16 =
@@ -28,7 +28,7 @@ const DanceBlueU8 =
 const Blu =
   require("../../../../assets/screens/login-modal/blu.jpg") as ImageSourcePropType;
 const DBUMerch =
-  require("../../../../assets/screens/login-modal/LDBU.jpg") as ImageSourcePropType;
+  require("../../../../assets/screens/login-modal/review/LDBU.jpg") as ImageSourcePropType;
 
 const SplashLoginBackgrounds: ImageSourcePropType[] = [
   Stickers,
