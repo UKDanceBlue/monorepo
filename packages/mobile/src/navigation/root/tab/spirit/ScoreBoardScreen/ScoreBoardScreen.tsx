@@ -6,9 +6,9 @@ import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
-import {Box, CheckIcon, HStack, Select, View, Text} from "native-base";
+import {Box, CheckIcon, HStack, Select, Text, View} from "native-base";
 import { Pressable } from "native-base/src/components/primitives";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { StandingType } from "../../../../../types/StandingType";
 import type { SpiritStackScreenProps } from "../../../../../types/navigationTypes";
@@ -79,21 +79,26 @@ const ScoreBoardScreen = ({
   );
 
   // Update filteredData based on the selected filter
-  const filteredData = useMemo(() => 
+  const filteredData = useMemo(() =>
     teamsData.filter((team) => {
       switch (filter) {
-        case "dancers":
+        case "dancers": {
           return team.type === "dancer";
-        case "new":
+        }
+        case "new": {
           return team.legacyStatus === "new";
-        case "returning":
+        }
+        case "returning": {
           return team.legacyStatus === "returning";
-        case "committee":
+        }
+        case "committee": {
           return team.type === "committee";
-        default:
-          return true; // Show all teams for "All" filter
+        }
+        default: {
+          return true;
+        } // Show all teams for "All" filter
       }
-    ?? [], [teamsData]);
+})?? [], [teamsData]);
 
 useEffect(() => {
 
