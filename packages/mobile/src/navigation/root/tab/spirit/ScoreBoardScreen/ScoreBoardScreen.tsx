@@ -69,7 +69,6 @@ const ScoreBoardScreen = ({
   );
   // const moraleTeamName = useAppSelector((state) => state);
   const [standingData, setStandingData] = useState<StandingType[]>([]);
-  const [filteredData, setFilteredData] = useState<StandingType[]>([]);
   const { navigate } =
     useNavigation<SpiritStackScreenProps<"Scoreboard">["navigation"]>();
 
