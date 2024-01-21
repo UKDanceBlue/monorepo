@@ -97,9 +97,9 @@ const ScoreBoardScreen = ({
         default:
           return true; // Show all teams for "All" filter
       }
-    });
+    ?? [], [teamsData]);
 
-    setFilteredData(filteredData);
+useEffect(() => {
 
     // Determine the standings based on filteredData
     const newStandingData: StandingType[] = [];
