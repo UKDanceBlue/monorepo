@@ -3,13 +3,11 @@ import type {
   OrderItemAssociation,
   OrderItemColumn,
 } from "@sequelize/core";
-import type {
-  ListQueryType,
-  OptionalToNullable,
-  Resource,
-} from "@ukdanceblue/common";
-import { SortDirection } from "@ukdanceblue/common";
+import type { OptionalToNullable, Resource } from "@ukdanceblue/common";
 import { ArgsType, Field, Int } from "type-graphql";
+
+import type { ListQueryType } from "../../../request/ListQueryTypes.js";
+import { SortDirection } from "../../../request/ListQueryTypes.js";
 
 import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./common.js";
 

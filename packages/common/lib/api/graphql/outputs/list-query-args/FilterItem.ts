@@ -1,20 +1,21 @@
 import type {
   BooleanFilterItemInterface,
-  Comparator,
   DateFilterItemInterface,
   FilterItem as FilterItemInterface,
   IsNullFilterItemInterface,
   NumericFilterItemInterface,
   OneOfFilterItemInterface,
+  StringFilterItemInterface,
+} from "@ukdanceblue/common";
+import { DateTimeScalar } from "@ukdanceblue/common";
+import { Field, InputType } from "type-graphql";
 
-  StringFilterItemInterface} from "@ukdanceblue/common";
+import type { Comparator } from "../../../request/ListQueryTypes.js";
 import {
-  DateTimeScalar,
   IsComparator,
   NumericComparator,
   StringComparator,
-} from "@ukdanceblue/common";
-import { Field, InputType } from "type-graphql";
+} from "../../../request/ListQueryTypes.js";
 
 @InputType()
 export abstract class FilterItem<Field extends string, V>
