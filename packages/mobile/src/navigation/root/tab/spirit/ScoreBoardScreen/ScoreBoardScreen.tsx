@@ -1,14 +1,15 @@
 import Jumbotron from "@common/components/Jumbotron";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
-import {Box, CheckIcon, HStack, Select, View, Text} from "native-base";
+import {Box, CheckIcon, HStack, Select, Text, View} from "native-base";
 import { Pressable } from "native-base/src/components/primitives";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { StandingType } from "../../../../../types/StandingType";
 import type { SpiritStackScreenProps } from "../../../../../types/navigationTypes";
@@ -79,21 +80,26 @@ const ScoreBoardScreen = ({
   );
 
   // Update filteredData based on the selected filter
-  const filteredData = useMemo(() => 
-    teamsData.filter((team) => {
+  const filteredData = useMemo(() =>
+    teamsData?.filter((team) => {
       switch (filter) {
-        case "dancers":
-          return team.type === "dancer";
-        case "new":
-          return team.legacyStatus === "new";
-        case "returning":
-          return team.legacyStatus === "returning";
-        case "committee":
-          return team.type === "committee";
-        default:
-          return true; // Show all teams for "All" filter
+        case "dancers": {
+          return team.type === TeamType.Spirit;
+        }
+        case "new": {
+          return team.legacyStatus === TeamLegacyStatus.NewTeam;
+        }
+        case "returning": {
+          return team.legacyStatus === TeamLegacyStatus.ReturningTeam;
+        }
+        case "committee": {
+          return team.type === TeamType.Committee;
+        }
+        default: {
+          return true;
+        } // Show all teams for "All" filter
       }
-    ?? [], [teamsData]);
+  }) ?? [], [teamsData, filter]);
 
 useEffect(() => {
 
@@ -112,7 +118,7 @@ useEffect(() => {
     }
 
     setStandingData(newStandingData);
-  }, [teamsData, userTeamData, filter]);
+  }, [teamsData, userTeamData, filter, filteredData]);
 
   return (
     <View flex={1}>
@@ -152,7 +158,7 @@ useEffect(() => {
 
       <HStack space={2} justifyContent="center" justifyItems="center">
         <Box>
-          <Text fontSize="xl">Filter Scoreboard:</Text>
+          <Text fontSize="xl">Filter Leaderboard:</Text>
         </Box>
         <Box>
           <Select selectedValue={filter} minWidth="200" accessibilityLabel="Filter" placeholder="Filter" _selectedItem={{
