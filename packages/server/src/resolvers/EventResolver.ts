@@ -5,6 +5,7 @@ import {
   DetailedError,
   ErrorCode,
   EventResource,
+  FilteredListQueryArgs,
   ImageResource,
 } from "@ukdanceblue/common";
 import { Interval } from "luxon";
@@ -37,7 +38,6 @@ import type {
   ResolverInterface,
   ResolverInterfaceWithFilteredList,
 } from "./ResolverInterface.js";
-import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("GetEventByUuidResponse", {
   implements: AbstractGraphQLOkResponse<EventResource>,
@@ -195,7 +195,7 @@ class ListEventsArgs extends FilteredListQueryArgs("EventResolver", {
     "occurrenceStart",
     "occurrenceEnd",
   ],
-})<EventModel> {}
+}) {}
 
 @Resolver(() => EventResource)
 export class EventResolver

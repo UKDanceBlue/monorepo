@@ -2,6 +2,7 @@ import {
   DetailedError,
   DeviceResource,
   ErrorCode,
+  FilteredListQueryArgs,
   PersonResource,
 } from "@ukdanceblue/common";
 import {
@@ -30,7 +31,6 @@ import type {
   ResolverInterface,
   ResolverInterfaceWithFilteredList,
 } from "./ResolverInterface.js";
-import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("GetDeviceByUuidResponse", {
   implements: AbstractGraphQLOkResponse<DeviceResource>,
@@ -81,7 +81,7 @@ class ListDevicesArgs extends FilteredListQueryArgs("DeviceResolver", {
   all: ["deviceId", "expoPushToken", "lastLogin", "createdAt", "updatedAt"],
   string: ["deviceId", "expoPushToken"],
   date: ["lastLogin", "createdAt", "updatedAt"],
-})<DeviceModel> {}
+}) {}
 
 @Resolver(() => DeviceResource)
 export class DeviceResolver
