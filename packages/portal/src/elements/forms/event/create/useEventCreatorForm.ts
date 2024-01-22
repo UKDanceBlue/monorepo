@@ -57,8 +57,7 @@ export function useEventCreatorForm() {
 
       if (data) {
         await navigate({
-          to: "/events/$eventId/",
-          params: { eventId: "TODO" },
+          to: "/events/",
         });
       }
     },

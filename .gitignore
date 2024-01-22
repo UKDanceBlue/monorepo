@@ -6,7 +6,6 @@ temp/
 .env
 .env*.local
 coverage/
-assets/
 *.log
 tsconfig.tsbuildinfo
 .pnp.*

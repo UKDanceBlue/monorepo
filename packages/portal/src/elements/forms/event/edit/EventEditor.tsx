@@ -1,7 +1,9 @@
+import { PlusOutlined } from "@ant-design/icons";
 import { base64StringToArray } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
 import { App, Button, Empty, Flex, Form, Image, Input, List } from "antd";
+import { DateTime, Interval } from "luxon";
 import { thumbHashToDataURL } from "thumbhash";
 import type { UseQueryExecute } from "urql";
 
@@ -159,34 +161,36 @@ export function EventEditor({
             )}
           />
 
-          <List>
-            <formApi.Field
-              name="occurrences"
-              onChange={(value) => {
-                for (let i = 0; i < value.length; i++) {
-                  const interval = value[i]?.interval;
-                  if (interval && !interval.isValid) {
-                    return `Occurrence interval ${i + 1} is invalid: ${
-                      interval.invalidExplanation
-                    }`;
-                  }
+          <formApi.Field
+            name="occurrences"
+            onChange={(value) => {
+              for (let i = 0; i < value.length; i++) {
+                const interval = value[i]?.interval;
+                if (interval && !interval.isValid) {
+                  return `Occurrence interval ${i + 1} is invalid: ${
+                    interval.invalidExplanation
+                  }`;
                 }
-                return undefined;
-              }}
-              children={(field) => (
-                <Form.Item
-                  label="Occurrences"
-                  validateStatus={
-                    field.state.meta.errors.length > 0 ? "error" : ""
-                  }
-                  help={
-                    field.state.meta.errors.length > 0
-                      ? field.state.meta.errors[0]
-                      : undefined
-                  }
-                >
-                  <List>
-                    {field.state.value.map((occurrence, index) => (
+              }
+              return undefined;
+            }}
+            mode="array"
+          >
+            {(field) => (
+              <Form.Item
+                label="Occurrences"
+                validateStatus={
+                  field.state.meta.errors.length > 0 ? "error" : ""
+                }
+                help={
+                  field.state.meta.errors.length > 0
+                    ? field.state.meta.errors[0]
+                    : undefined
+                }
+              >
+                <List>
+                  {field.state.value.length > 0 ? (
+                    field.state.value.map((occurrence, index) => (
                       <List.Item key={occurrence.uuid ?? index}>
                         <EventOccurrencePicker
                           defaultOccurrence={occurrence}
@@ -196,12 +200,28 @@ export function EventEditor({
                           }}
                         />
                       </List.Item>
-                    ))}
-                  </List>
-                </Form.Item>
-              )}
-            />
-          </List>
+                    ))
+                  ) : (
+                    <Empty description="No occurrences" />
+                  )}
+                </List>
+                <Button
+                  icon={<PlusOutlined />}
+                  onClick={() => {
+                    field.pushValue({
+                      interval: Interval.fromDateTimes(
+                        DateTime.now(),
+                        DateTime.now().plus({ hours: 1 })
+                      ),
+                      fullDay: false,
+                    });
+                  }}
+                >
+                  Add occurrence
+                </Button>
+              </Form.Item>
+            )}
+          </formApi.Field>
           <formApi.Field
             name="description"
             children={(field) => (
