@@ -118,7 +118,7 @@ useEffect(() => {
     }
 
     setStandingData(newStandingData);
-  }, [teamsData, userTeamData, filter]);
+  }, [teamsData, userTeamData, filter, filteredData]);
 
   return (
     <View flex={1}>
@@ -158,7 +158,7 @@ useEffect(() => {
 
       <HStack space={2} justifyContent="center" justifyItems="center">
         <Box>
-          <Text fontSize="xl">Filter Scoreboard:</Text>
+          <Text fontSize="xl">Filter Leaderboard:</Text>
         </Box>
         <Box>
           <Select selectedValue={filter} minWidth="200" accessibilityLabel="Filter" placeholder="Filter" _selectedItem={{
