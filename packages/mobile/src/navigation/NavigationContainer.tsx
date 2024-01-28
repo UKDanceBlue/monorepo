@@ -150,6 +150,7 @@ export const FilledNavigationContainer = () => {
                 path: "/",
                 screens: {
                   Home: { path: "/" },
+                  Explorer: { path: "/explorer" },
                   Events: { path: "/events" },
                   Teams: { path: "/my-team" },
                   Marathon: { path: "/scoreboard" },

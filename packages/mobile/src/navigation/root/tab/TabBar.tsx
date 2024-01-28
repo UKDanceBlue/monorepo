@@ -18,12 +18,16 @@ import MarathonScreen from "./MarathonScreen";
 import MoraleCup from "./MoraleCup";
 import TabBarComponent from "./TabBarComponent";
 import SpiritScreen from "./spirit/SpiritStack";
+import ExplorerScreen from "./ExplorerScreen";
 
 const Tabs = createBottomTabNavigator<TabNavigatorParamList>();
 
 export const possibleTabs = {
   Events: (
     <Tabs.Screen key="Events" name="Events" component={EventListScreen} />
+  ),
+  Explorer: (
+    <Tabs.Screen key="Explorer" name="Explorer" component={ExplorerScreen} />
   ),
   Teams: <Tabs.Screen key="Spirit" name="Teams" component={SpiritScreen} />,
   Marathon: (
