@@ -7,7 +7,11 @@ import { useExplorerFeed } from "./useExplorerFeed";
 export const ExplorerScreen = () => {
   const [{ isConnected }, isNetStatusLoaded] = useNetworkStatus();
 
-  const {} = useExplorerFeed();
+  const {
+    blogPosts,
+    podcasts,
+    loading: explorerFeedLoading,
+  } = useExplorerFeed();
 
   /*
 
