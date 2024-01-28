@@ -67,6 +67,9 @@ const TabBar = () => {
         }
       }
 
+      // TODO: Must remove before merging PR
+      tempCurrentTabs.push(possibleTabs["Explorer"]);
+
       // if there is a fancy tab, add it to the middle
       if (fancyTab != null) {
         const middleIndex = Math.floor(tempCurrentTabs.length / 2);
