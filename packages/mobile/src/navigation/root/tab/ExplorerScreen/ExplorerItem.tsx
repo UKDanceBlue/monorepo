@@ -49,12 +49,13 @@ export const ExplorerItem = ({
         icon = <FontAwesome5 name="compass" size={PixelRatio.get() * 9} color="#0032A0"/>
         source = "DB Blog";
         link = "https://danceblue.org/news";
+        
         content = 
             <View width="100%">
                 <Text textAlign="center" fontSize={blogTitleFontSize}>{blogTitle}</Text>
                 <Text fontSize={blogContentFontSize} textAlign="justify" fontFamily=""> { blogContent } </Text>
-                <Box width="full" alignItems="center">
-                    <Button onPress={() => { openURL(resourceLink).catch(universalCatch) }}>Read More!</Button>
+                <Box width="full" alignItems="flex-end">
+                    <Button marginTop={0.5} width="1/3" onPress={() => { openURL(resourceLink).catch(universalCatch) }}>Read More!</Button>
                 </Box>
             </View>;
 
