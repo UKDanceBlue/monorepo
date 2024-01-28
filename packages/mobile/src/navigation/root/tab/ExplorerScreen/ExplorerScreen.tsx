@@ -1,66 +1,13 @@
 import { useNetworkStatus } from "@common/customHooks";
 import { ScrollView, VStack } from "native-base";
-import { useState } from "react";
-import type { FeedItem } from "react-native-rss-parser";
-import { parse } from "react-native-rss-parser";
 
 import { ExplorerItem } from "./ExplorerItem";
+import { useExplorerFeed } from "./useExplorerFeed";
 
 export const ExplorerScreen = () => {
   const [{ isConnected }, isNetStatusLoaded] = useNetworkStatus();
-  const [blogPosts, setBlogPosts] = useState<FeedItem[] | undefined>();
-  const [podcasts, setPodcasts] = useState<FeedItem[] | undefined>();
-  const [instagramPosts, setInstagramPosts] = useState();
-  const [tiktokPosts, setTikTokPosts] = useState();
-  const [youtubePosts, setYoutubePosts] = useState();
 
-  const loadFeed = async () => {
-    try {
-      const dbWebsiteRSS = await fetch("https://danceblue.org/feed");
-      const dbWebsiteXML = await dbWebsiteRSS.text();
-      const dbWebsiteParsed = await parse(dbWebsiteXML);
-
-      const blogPosts = dbWebsiteParsed.items.filter((item) =>
-        item.categories.some((category) => category?.name !== "Podcast")
-      );
-
-      setBlogPosts(blogPosts);
-
-      const podcastPosts = dbWebsiteParsed.items
-        .filter((item) =>
-          item.categories.some((category) => category?.name === "Podcast")
-        )
-        .filter((item) =>
-          item.enclosures.some(
-            (enclosure) => enclosure.mimeType === "audio/mpeg"
-          )
-        );
-
-      setPodcasts(podcastPosts);
-    } catch (error) {
-      console.error(error);
-    }
-
-    // TODO: Implement Instagram, TikTok, YouTube RSS if possible
-  };
-
-  /*
-        TO SORT FeedItem[]      (blog posts and podcasts)
-
-            .map((item) => ({
-                ...item,
-                dateTimePublished: DateTime.fromRFC2822(item.published),
-            }))
-            .sort((a,b) =>
-                a.dateTimePublished > b.dateTimePublished
-                ? -1
-                : a.dateTimePublished > b.dateTimePublished
-                ? 1
-                : 0
-            );
-    */
-
-  loadFeed();
+  const {} = useExplorerFeed();
 
   /*
 
