@@ -4,6 +4,7 @@ import {
   AccessLevel,
   DetailedError,
   ErrorCode,
+  FilteredListQueryArgs,
   MembershipPositionType,
   MembershipResource,
   PersonResource,
@@ -38,7 +39,6 @@ import {
 } from "./ApiResponse.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 import * as Context from "./context.js";
-import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("CreatePersonResponse", {
   implements: AbstractGraphQLCreatedResponse<PersonResource>,
@@ -91,7 +91,7 @@ class ListPeopleArgs extends FilteredListQueryArgs("PersonResolver", {
     "committeeRole",
     "committeeName",
   ],
-})<PersonModel> {}
+}) {}
 @InputType()
 class CreatePersonInput {
   @Field(() => String, { nullable: true })

@@ -1,6 +1,19 @@
 import "reflect-metadata";
 
 export * from "./api/request/FilterItem.js";
+export {
+  Comparator,
+  IsComparator,
+  NumericComparator,
+  SortDirection,
+  StringComparator,
+} from "./api/request/ListQueryTypes.js";
+export type {
+  FilterOptions,
+  ListQueryType,
+  PaginationOptions,
+  SortingOptions,
+} from "./api/request/ListQueryTypes.js";
 
 export * from "./api/response/JsonResponse.js";
 

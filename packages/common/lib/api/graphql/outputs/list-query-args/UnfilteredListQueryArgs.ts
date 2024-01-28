@@ -36,6 +36,8 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
   @Field(() => Boolean, {
     nullable: true,
     description: "Whether to include deleted items in the results",
+    deprecationReason:
+      "Soft-deletion is no longer used in this project, this parameter is ignored",
   })
   includeDeleted!: boolean | null;
 
