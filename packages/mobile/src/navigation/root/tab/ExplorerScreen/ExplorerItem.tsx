@@ -6,6 +6,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { Audio } from "expo-av";
 import { openURL } from "expo-linking";
 import { Box, Button, HStack, Text, View } from "native-base";
+import { useMemo } from "react";
 import { PixelRatio, useWindowDimensions } from "react-native";
 
 import DBRibbon from "../../../../../assets/svgs/DBRibbon";
@@ -45,15 +46,25 @@ export const ExplorerItem = ({
 
   let source = "Our Imagination";
   let link = "https://danceblue.org";
-  let content = (
-    <>
-      <Text fontSize={blogContentFontSize} textAlign="justify" fontFamily="">
-        DanceBlue is an entirely student-run organization that fundraises
-        year-round for the DanceBlue Hematology/Oncology Clinic and culminates
-        in a 24-hour no sitting, no sleeping dance marathon.
-      </Text>
-    </>
+
+  // useMemo is a react hook that returns a memoized value
+  // This means that the value will only be recreated if one of the dependencies changes
+  // This is a handy way to avoid recreating values that are expensive to create or that
+  // would cause unnecessary re-renders
+  let content = useMemo(
+    () => (
+      <>
+        <Text fontSize={blogContentFontSize} textAlign="justify" fontFamily="">
+          DanceBlue is an entirely student-run organization that fundraises
+          year-round for the DanceBlue Hematology/Oncology Clinic and culminates
+          in a 24-hour no sitting, no sleeping dance marathon.
+        </Text>
+      </>
+    ),
+    [blogContentFontSize]
   );
+
+  // Maybe replace this if/else with a more generic object? Just to avoid repetition, up to you though
 
   if (isText) {
     icon = (
@@ -101,7 +112,7 @@ export const ExplorerItem = ({
     }).catch(showMessage);
 
     const sound = new Audio.Sound();
-    sound.loadAsync({ uri: resourceLink });
+    sound.loadAsync({ uri: resourceLink }).catch(universalCatch);
 
     content = (
       <>
