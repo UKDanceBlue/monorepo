@@ -8008,9 +8008,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/koa@npm:*, @types/koa@npm:^2.13.6":
-  version: 2.13.9
-  resolution: "@types/koa@npm:2.13.9"
+"@types/koa@npm:*, @types/koa@npm:^2.13.5, @types/koa@npm:^2.13.6":
+  version: 2.14.0
+  resolution: "@types/koa@npm:2.14.0"
   dependencies:
     "@types/accepts": "*"
     "@types/content-disposition": "*"
@@ -8020,23 +8020,7 @@ __metadata:
     "@types/keygrip": "*"
     "@types/koa-compose": "*"
     "@types/node": "*"
-  checksum: af9cd599c8e17e2ae0f4168a61d964e343f713d002b65fd995658d7addc6551ccadecfd32b3405cf44e4d360178ee4f972d6881533548261ae1f636a655d24b1
-  languageName: node
-  linkType: hard
-
-"@types/koa@npm:^2.13.5":
-  version: 2.13.11
-  resolution: "@types/koa@npm:2.13.11"
-  dependencies:
-    "@types/accepts": "*"
-    "@types/content-disposition": "*"
-    "@types/cookies": "*"
-    "@types/http-assert": "*"
-    "@types/http-errors": "*"
-    "@types/keygrip": "*"
-    "@types/koa-compose": "*"
-    "@types/node": "*"
-  checksum: 8116669411d5a01e1430a3c39bb62195bc41c3a0eaa4565fff0a902fc7851fe22003ae9ca4c4680d46a71a40d0c48e092f8d8a7c7e9776885bada2cfa31a84e2
+  checksum: 57d809e42350c9ddefa2150306355e40757877468bb027e0bd99f5aeb43cfaf8ba8b14761ea65e419d6fb4c2403a1f3ed0762872a9cf040dbd14357caca56548
   languageName: node
   linkType: hard
 
