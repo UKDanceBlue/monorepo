@@ -8,6 +8,7 @@ import { parse } from "react-native-rss-parser";
 export function useExplorerFeed(): {
   blogPosts: FeedItem[] | undefined;
   podcasts: FeedItem[] | undefined;
+  youtubes: FeedItem[] | undefined;
   loading: boolean;
 } {
   const [loading, setLoading] = useLoading();
@@ -15,7 +16,7 @@ export function useExplorerFeed(): {
   const [podcasts, setPodcasts] = useState<FeedItem[] | undefined>();
   // const [instagramPosts, setInstagramPosts] = useState();
   // const [tiktokPosts, setTikTokPosts] = useState();
-  // const [youtubePosts, setYoutubePosts] = useState();
+  const [youtubes, setYoutubes] = useState<FeedItem[] | undefined>();
 
   // useCallback is a react hook that returns a memoized callback
   // This means that the function will only be recreated if one of the dependencies changes
@@ -30,6 +31,7 @@ export function useExplorerFeed(): {
       );
 
       setBlogPosts(blogPosts);
+      // console.log(blogPosts);
 
       const podcastPosts = dbWebsiteParsed.items
         .filter((item) =>
@@ -42,11 +44,28 @@ export function useExplorerFeed(): {
         );
 
       setPodcasts(podcastPosts);
+      // console.log(podcastPosts);
+
+      const youtubeRSS = await fetch("https://www.youtube.com/feeds/videos.xml?channel_id=UCcF8V41xkzYkZ0B1IOXntjg");
+      const youtubeXML = await youtubeRSS.text();
+      const youtubeParsed = await parse(youtubeXML);
+      const youtubePosts = youtubeParsed.items;
+
+      /*
+        youtubeParsed.items.forEach((item) => { console.log(item.links) });
+
+        YouTube Link
+      */
+
+      console.log(JSON.stringify(youtubePosts, null, 2));
+
+      setYoutubes(youtubePosts);
+
     } catch (error) {
       console.error(error);
     }
 
-    // TODO: Implement Instagram, TikTok, YouTube RSS if possible
+    // TODO: Implement Instagram and TikTok RSS if possible
 
     // The empty array at the end of the useCallback hook means that the function will only be recreated if the parent component is recreated
     // If there were any dependencies in the array, the function would be recreated if any of the dependencies changed. i.e. if you had some
@@ -81,7 +100,7 @@ export function useExplorerFeed(): {
     // But since we have a dependency, the function will run whenever the dependency changes
   }, [loadFeed, setLoading]);
 
-  return { blogPosts, podcasts, loading };
+  return { blogPosts, podcasts, youtubes, loading };
 }
 
 // I would suggest splitting this file into one for each type of feed item instead of having them all in one file

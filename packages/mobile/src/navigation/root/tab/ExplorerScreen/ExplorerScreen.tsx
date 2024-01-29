@@ -2,29 +2,16 @@ import { useNetworkStatus } from "@common/customHooks";
 import { ScrollView, VStack } from "native-base";
 
 import { ExplorerItem } from "./ExplorerItem";
-import { useExplorerFeed } from "./useExplorerFeed";
+import { FeedSortingItem, useCombinedFeed } from "./combineFeeds";
 
 export const ExplorerScreen = () => {
   const [{ isConnected }, isNetStatusLoaded] = useNetworkStatus();
 
-  const {
-    blogPosts,
-    podcasts,
-    loading: explorerFeedLoading,
-  } = useExplorerFeed();
+  const { feed } = useCombinedFeed();
 
-  /*
-
-        TODO:
-
-        1. Iterate through all posts types
-            - Add them to a map of:
-                * <ExplorerItem>
-                * dateTimePublished
-        2. Sort the master list by their dateTimePublished
-        3. Iterate through each map item
-            - Add the item to the return component
-    */
+  feed.sort((a, b) =>
+    b.published.toMillis() - a.published.toMillis()
+);
 
   /*
    * Called by React Native when rendering the screen
@@ -32,6 +19,11 @@ export const ExplorerScreen = () => {
   return (
     <VStack h="full">
       <ScrollView flex={1}>
+        {
+          feed.map((item: FeedSortingItem) =>
+            item.jsxElement
+          )
+        }
         <ExplorerItem
           isText={false}
           resourceLink={""}
@@ -54,13 +46,11 @@ export const ExplorerScreen = () => {
           isTikTok={false}
           isYouTube={false}
         />
-        {/*
                     <ExplorerItem
                         isText={false}
                         resourceLink={"https://danceblue.org/wp-content/uploads/2024/01/DBPodcast1.mp3"}
                         blogTitle={"Podcast- DB Behind the Scenes"} blogContent={""}
                         isAudio={true} isInstagram={false} isTikTok={false} isYouTube={false}/>
-                */}
         <ExplorerItem
           isText={false}
           resourceLink={""}
@@ -83,7 +73,7 @@ export const ExplorerScreen = () => {
         />
         <ExplorerItem
           isText={false}
-          resourceLink={""}
+          resourceLink={"https://www.youtube.com/embed/uDrXtr6pEVc"}
           blogTitle={""}
           blogContent={""}
           isAudio={false}

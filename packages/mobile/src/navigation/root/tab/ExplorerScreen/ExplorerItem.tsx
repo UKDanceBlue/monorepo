@@ -10,6 +10,7 @@ import { useMemo } from "react";
 import { PixelRatio, useWindowDimensions } from "react-native";
 
 import DBRibbon from "../../../../../assets/svgs/DBRibbon";
+import WebView from "react-native-webview";
 
 export const ExplorerItem = ({
   resourceLink = "https://danceblue.org",
@@ -21,16 +22,16 @@ export const ExplorerItem = ({
   isTikTok = false,
   isYouTube = false,
 }: {
-  resourceLink: string;
-  isText: boolean;
-  blogTitle: string;
-  blogContent: string;
-  isAudio: boolean;
-  isInstagram: boolean;
-  isTikTok: boolean;
-  isYouTube: boolean;
+  resourceLink?: string;
+  isText?: boolean;
+  blogTitle?: string;
+  blogContent?: string;
+  isAudio?: boolean;
+  isInstagram?: boolean;
+  isTikTok?: boolean;
+  isYouTube?: boolean;
 }) => {
-  const { fontScale } = useWindowDimensions();
+  const { width: windowX, fontScale } = useWindowDimensions();
 
   // DBLogoCondensed is currently broken
   // let icon = <DBLogoCondensed svgProps={{ width: screenWidth * 0.12, height: screenWidth * 0.12 }} letterColor="#0032A0" ribbonColor="#FFC72C"/>;
@@ -165,9 +166,20 @@ export const ExplorerItem = ({
     );
     source = "YouTube";
     link = "https://www.youtube.com/channel/UCcF8V41xkzYkZ0B1IOXntjg";
+
+    const width = 560;
+    const height = 315;
+    const ratio = height / width;
+
+    const calculatedHeight = windowX * ratio;
+
     content = (
       <>
-        <Text>YouTube</Text>
+        <WebView
+          style={{ height: calculatedHeight }}
+          source={{ uri: resourceLink }}
+          allowsFullscreenVideo={true}
+        />
       </>
     );
   }
