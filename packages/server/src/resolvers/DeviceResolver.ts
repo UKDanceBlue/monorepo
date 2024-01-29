@@ -31,6 +31,7 @@ import type {
   ResolverInterface,
   ResolverInterfaceWithFilteredList,
 } from "./ResolverInterface.js";
+import { toSequelizeFindOptions } from "./list-query-args/toSequelizeFindOptions.js";
 
 @ObjectType("GetDeviceByUuidResponse", {
   implements: AbstractGraphQLOkResponse<DeviceResource>,
@@ -104,7 +105,8 @@ export class DeviceResolver
   async list(
     @Args(() => ListDevicesArgs) query: ListDevicesArgs
   ): Promise<ListDevicesResponse> {
-    const findOptions = query.toSequelizeFindOptions(
+    const findOptions = toSequelizeFindOptions(
+      query,
       {
         deviceId: "deviceId",
         expoPushToken: "expoPushToken",

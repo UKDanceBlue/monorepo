@@ -39,6 +39,7 @@ import {
 } from "./ApiResponse.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 import * as Context from "./context.js";
+import { toSequelizeFindOptions } from "./list-query-args/toSequelizeFindOptions.js";
 
 @ObjectType("CreatePersonResponse", {
   implements: AbstractGraphQLCreatedResponse<PersonResource>,
@@ -174,7 +175,8 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     @Args(() => ListPeopleArgs) args: ListPeopleArgs
   ): Promise<ListPeopleResponse> {
     const { rows, count } = await PersonModel.findAndCountAll({
-      ...args.toSequelizeFindOptions(
+      ...toSequelizeFindOptions(
+        args,
         {
           committeeName: "committeeName",
           committeeRole: "committeeRole",
@@ -187,7 +189,6 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
         PersonModel
       ),
     });
-
     return ListPeopleResponse.newPaginated({
       data: await Promise.all(rows.map((row) => row.toResource())),
       total: count,

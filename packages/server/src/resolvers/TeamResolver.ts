@@ -48,7 +48,7 @@ import type {
   ResolverInterfaceWithFilteredList,
 } from "./ResolverInterface.js";
 import * as Context from "./context.js";
-import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
+import { toSequelizeFindOptions } from "./list-query-args/toSequelizeFindOptions.js";
 
 @ObjectType("SingleTeamResponse", {
   implements: AbstractGraphQLOkResponse<TeamResource>,
@@ -113,11 +113,11 @@ class SetTeamInput implements OptionalToNullable<Partial<TeamResource>> {
 }
 
 @ArgsType()
-class ListTeamsArgs extends FilteredListQueryArgs("TeamResolver", {
+class ListTeamsArgs extends Common.FilteredListQueryArgs("TeamResolver", {
   all: ["name", "type", "legacyStatus", "marathonYear", "totalPoints"],
   string: ["name", "type", "marathonYear", "legacyStatus"],
   numeric: ["totalPoints"],
-})<TeamModel> {
+}) {
   @Field(() => [TeamType], { nullable: true })
   type!: [TeamType] | null;
 
@@ -155,7 +155,8 @@ export class TeamResolver
     @Args(() => ListTeamsArgs) query: ListTeamsArgs,
     @Ctx() ctx: Context.GraphQLContext
   ): Promise<ListTeamsResponse> {
-    const findOptions = query.toSequelizeFindOptions(
+    const findOptions = toSequelizeFindOptions(
+      query,
       {
         name: "name",
         legacyStatus: "legacyStatus",

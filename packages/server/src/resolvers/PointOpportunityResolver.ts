@@ -3,6 +3,7 @@ import {
   DetailedError,
   ErrorCode,
   EventResource,
+  FilteredListQueryArgs,
   PointOpportunityResource,
   TeamType,
 } from "@ukdanceblue/common";
@@ -35,7 +36,7 @@ import type {
   ResolverInterface,
   ResolverInterfaceWithFilteredList,
 } from "./ResolverInterface.js";
-import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
+import { toSequelizeFindOptions } from "./list-query-args/toSequelizeFindOptions.js";
 
 @ObjectType("SinglePointOpportunityResponse", {
   implements: AbstractGraphQLOkResponse<PointOpportunityResource>,
@@ -101,7 +102,7 @@ class ListPointOpportunitiesArgs extends FilteredListQueryArgs(
     string: ["name", "type"],
     date: ["opportunityDate", "createdAt", "updatedAt"],
   }
-)<PointOpportunityModel> {}
+) {}
 
 @Resolver(() => PointOpportunityResource)
 export class PointOpportunityResolver
@@ -129,7 +130,8 @@ export class PointOpportunityResolver
   async list(
     @Args(() => ListPointOpportunitiesArgs) query: ListPointOpportunitiesArgs
   ): Promise<ListPointOpportunitiesResponse> {
-    const findOptions = query.toSequelizeFindOptions(
+    const findOptions = toSequelizeFindOptions(
+      query,
       {
         name: "name",
         type: "type",

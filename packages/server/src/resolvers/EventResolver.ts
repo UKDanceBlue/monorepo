@@ -38,6 +38,7 @@ import type {
   ResolverInterface,
   ResolverInterfaceWithFilteredList,
 } from "./ResolverInterface.js";
+import { toSequelizeFindOptions } from "./list-query-args/toSequelizeFindOptions.js";
 
 @ObjectType("GetEventByUuidResponse", {
   implements: AbstractGraphQLOkResponse<EventResource>,
@@ -216,7 +217,8 @@ export class EventResolver
 
   @Query(() => ListEventsResponse, { name: "events" })
   async list(@Args() query: ListEventsArgs) {
-    const findOptions = query.toSequelizeFindOptions(
+    const findOptions = toSequelizeFindOptions(
+      query,
       {
         title: "title",
         description: "description",

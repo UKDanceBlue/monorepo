@@ -1,4 +1,8 @@
-import type { Resource } from "@ukdanceblue/common";
+import type {
+  AbstractFilteredListQueryArgs,
+  Resource,
+  UnfilteredListQueryArgs,
+} from "@ukdanceblue/common";
 
 import type {
   AbstractGraphQLArrayOkResponse,
@@ -6,8 +10,6 @@ import type {
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
-import type { AbstractFilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
-import type { UnfilteredListQueryArgs } from "./list-query-args/UnfilteredListQueryArgs.js";
 
 export interface ResolverInterface<R extends Resource> {
   getByUuid?: (

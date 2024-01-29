@@ -1,6 +1,7 @@
 import {
   DetailedError,
   ErrorCode,
+  FilteredListQueryArgs,
   PersonResource,
   PointEntryResource,
   PointOpportunityResource,
@@ -34,7 +35,7 @@ import type {
   ResolverInterface,
   ResolverInterfaceWithFilteredList,
 } from "./ResolverInterface.js";
-import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
+import { toSequelizeFindOptions } from "./list-query-args/toSequelizeFindOptions.js";
 
 @ObjectType("GetPointEntryByUuidResponse", {
   implements: AbstractGraphQLOkResponse<PointEntryResource>,
@@ -85,7 +86,7 @@ class ListPointEntriesArgs extends FilteredListQueryArgs("PointEntryResolver", {
   all: ["createdAt", "updatedAt"],
   string: [],
   date: ["createdAt", "updatedAt"],
-})<PointEntryModel> {}
+}) {}
 
 @Resolver(() => PointEntryResource)
 export class PointEntryResolver
@@ -110,7 +111,7 @@ export class PointEntryResolver
   async list(
     @Args(() => ListPointEntriesArgs) query: ListPointEntriesArgs
   ): Promise<ListPointEntriesResponse> {
-    const findOptions = query.toSequelizeFindOptions({}, {}, PointEntryModel);
+    const findOptions = toSequelizeFindOptions(query, {}, {}, PointEntryModel);
 
     const { rows, count } = await PointEntryModel.findAndCountAll(findOptions);
 

@@ -2,6 +2,7 @@ import type { OptionalToNullable } from "@ukdanceblue/common";
 import {
   DetailedError,
   ErrorCode,
+  FilteredListQueryArgs,
   NotificationResource,
 } from "@ukdanceblue/common";
 import {
@@ -29,7 +30,7 @@ import type {
   ResolverInterface,
   ResolverInterfaceWithFilteredList,
 } from "./ResolverInterface.js";
-import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
+import { toSequelizeFindOptions } from "./list-query-args/toSequelizeFindOptions.js";
 
 @ObjectType("GetNotificationByUuidResponse", {
   implements: AbstractGraphQLOkResponse<NotificationResource>,
@@ -74,7 +75,7 @@ class ListNotificationsArgs extends FilteredListQueryArgs(
   {
     all: ["uuid"],
   }
-)<NotificationModel> {}
+) {}
 
 @Resolver(() => NotificationResource)
 export class NotificationResolver
@@ -102,7 +103,8 @@ export class NotificationResolver
   async list(
     @Args(() => ListNotificationsArgs) query: ListNotificationsArgs
   ): Promise<ListNotificationsResponse> {
-    const findOptions = query.toSequelizeFindOptions(
+    const findOptions = toSequelizeFindOptions(
+      query,
       {
         uuid: "uuid",
       },
