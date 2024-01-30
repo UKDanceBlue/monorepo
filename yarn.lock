@@ -23514,12 +23514,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-rss-parser@npm:^1.5.1":
+"react-native-rss-parser@npm:1.5.1":
   version: 1.5.1
   resolution: "react-native-rss-parser@npm:1.5.1"
   dependencies:
     xmldom: "npm:^0.3.0"
   checksum: 10/80334a647c26ff33fcbf9d7687337d4e6152a497e05a549a5d54fd3529923b2cfd4c956286a34aa5b10f7d4527d51c2768fbe487b04dd7d2981bd1a640ed7c79
+  languageName: node
+  linkType: hard
+
+"react-native-rss-parser@patch:react-native-rss-parser@npm%3A1.5.1#./.yarn/patches/react-native-rss-parser-npm-1.5.1-e4cc1d8bd8.patch::locator=%40ukdanceblue%2Fmonorepo%40workspace%3A.":
+  version: 1.5.1
+  resolution: "react-native-rss-parser@patch:react-native-rss-parser@npm%3A1.5.1#./.yarn/patches/react-native-rss-parser-npm-1.5.1-e4cc1d8bd8.patch::version=1.5.1&hash=5e3ce3&locator=%40ukdanceblue%2Fmonorepo%40workspace%3A."
+  dependencies:
+    xmldom: ^0.3.0
+  checksum: fec1d11d6c5554cc8de6214d1653c7916e70e7d00dee3d9af9e7a01e2146624a09f42c93404fb239392d30f2e32850bb9955a3fc692a3ff21c8ffd20afa0f2a8
   languageName: node
   linkType: hard
 

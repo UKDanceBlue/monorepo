@@ -64,7 +64,8 @@
   "resolutions": {
     "@graphql-codegen/client-preset@^4.1.0": "patch:@graphql-codegen/client-preset@npm%3A4.1.0#./.yarn/patches/@graphql-codegen-client-preset-npm-4.1.0-ffbe3e3006.patch",
     "type-graphql@^2.0.0-beta.3": "patch:type-graphql@npm%3A2.0.0-beta.3#./.yarn/patches/type-graphql-npm-2.0.0-beta.3-3be2585c9a.patch",
-    "react-native-infinite-pager@^0.3.13": "patch:react-native-infinite-pager@npm%3A0.3.13#./.yarn/patches/react-native-infinite-pager-npm-0.3.13-59b67e2e46.patch"
+    "react-native-infinite-pager@^0.3.13": "patch:react-native-infinite-pager@npm%3A0.3.13#./.yarn/patches/react-native-infinite-pager-npm-0.3.13-59b67e2e46.patch",
+    "react-native-rss-parser@^1.5.1": "patch:react-native-rss-parser@npm%3A1.5.1#./.yarn/patches/react-native-rss-parser-npm-1.5.1-e4cc1d8bd8.patch"
   },
   "dependencies": {
     "babel-cli": "^6.26.0"
