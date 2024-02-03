@@ -1,15 +1,14 @@
 import { Field, InputType, ObjectType } from "type-graphql";
 
-import type { Authorization } from "../../../auth/index.js";
+import type { AccessLevel, Authorization } from "../../../auth/index.js";
 import {
-  AccessLevel,
   CommitteeIdentifier,
   CommitteeRole,
   DbRole,
   defaultAuthorization,
   isCommitteeIdentifier,
 } from "../../../auth/index.js";
-import { roleToAccessLevel } from "../../../index.js";
+import { roleToAccessLevel, roleToAuthorization } from "../../../index.js";
 
 import { Resource } from "./Resource.js";
 
@@ -41,60 +40,7 @@ export class RoleResource extends Resource {
   }
 
   toAuthorization(): Authorization {
-    const authorization: Authorization = {
-      dbRole: this.dbRole,
-      accessLevel: AccessLevel.None,
-    };
-    if (this.committeeRole) {
-      authorization.committeeRole = this.committeeRole;
-    }
-    if (this.committeeIdentifier) {
-      authorization.committeeIdentifier = this.committeeIdentifier;
-    }
-    switch (this.dbRole) {
-      case DbRole.None: {
-        authorization.accessLevel = AccessLevel.None;
-        break;
-      }
-      case DbRole.Public: {
-        authorization.accessLevel = AccessLevel.Public;
-        break;
-      }
-      case DbRole.TeamMember: {
-        authorization.accessLevel = AccessLevel.TeamMember;
-        break;
-      }
-      case DbRole.TeamCaptain: {
-        authorization.accessLevel = AccessLevel.TeamCaptain;
-        break;
-      }
-      case DbRole.Committee: {
-        switch (this.committeeRole) {
-          case CommitteeRole.Chair:
-          case CommitteeRole.Coordinator: {
-            authorization.accessLevel =
-              this.committeeIdentifier === CommitteeIdentifier["techCommittee"]
-                ? AccessLevel.Admin
-                : AccessLevel.CommitteeChairOrCoordinator;
-            break;
-          }
-          case CommitteeRole.Member: {
-            authorization.accessLevel = AccessLevel.Committee;
-            break;
-          }
-          default: {
-            authorization.accessLevel = AccessLevel.None;
-            break;
-          }
-        }
-        break;
-      }
-      default: {
-        authorization.accessLevel = AccessLevel.None;
-        break;
-      }
-    }
-    return authorization;
+    return roleToAuthorization(this);
   }
 
   toAccessLevel(): AccessLevel {
