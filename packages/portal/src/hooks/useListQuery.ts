@@ -8,15 +8,8 @@ import type {
   SortingOptions,
   StringFilterItemInterface,
 } from "@ukdanceblue/common";
-import type {
-  Dispatch,
-  SetStateAction} from "react";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import type { Dispatch, SetStateAction } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type FilterObject<
   DateFields extends string,
