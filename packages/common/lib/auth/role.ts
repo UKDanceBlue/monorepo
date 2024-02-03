@@ -30,7 +30,9 @@ export function roleToAccessLevel(role: RoleResource): AccessLevel {
       return AccessLevel.TeamCaptain;
     }
     case DbRole.Committee: {
-      if (
+      if (role.committeeIdentifier === CommitteeIdentifier.techCommittee) {
+        return AccessLevel.Admin;
+      } else if (
         role.committeeRole === CommitteeRole.Coordinator ||
         role.committeeRole === CommitteeRole.Chair
       ) {
@@ -59,46 +61,9 @@ export function roleToAccessLevel(role: RoleResource): AccessLevel {
  * @throws Error if one of committee or committeeRole is set without the other
  */
 export function roleToAuthorization(role: RoleResource): Authorization {
-  let accessLevel: AccessLevel = AccessLevel.None;
-  switch (role.dbRole) {
-    case DbRole.Committee: {
-      accessLevel = AccessLevel.Committee;
-      break;
-    }
-    case DbRole.TeamCaptain: {
-      accessLevel = AccessLevel.TeamCaptain;
-      break;
-    }
-    case DbRole.TeamMember: {
-      accessLevel = AccessLevel.TeamMember;
-      break;
-    }
-    case DbRole.Public: {
-      accessLevel = AccessLevel.Public;
-      break;
-    }
-    case DbRole.None: {
-      accessLevel = AccessLevel.None;
-      break;
-    }
-    default: {
-      throw new TypeError(
-        `Illegal DbRole: ${JSON.stringify(
-          role.dbRole
-        )}, using None. This is a bug.`
-      );
-    }
-  }
-  if (
-    role.committeeRole === CommitteeRole.Chair ||
-    role.committeeIdentifier === CommitteeIdentifier["techCommittee"]
-  ) {
-    accessLevel = AccessLevel.Admin;
-  }
-
   const auth: Authorization = {
     dbRole: role.dbRole,
-    accessLevel,
+    accessLevel: roleToAccessLevel(role),
   };
 
   if (role.committeeRole && role.committeeIdentifier) {
