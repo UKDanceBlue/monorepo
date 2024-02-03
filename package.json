@@ -20,7 +20,10 @@
     "mobile:start": "yarn workspace @ukdanceblue/mobile start",
     "docker:server:start": "docker-compose up -d --build",
     "docker:server:stop": "docker-compose down",
-    "test": "vitest"
+    "test": "vitest",
+    "test-ui": "vitest --ui --coverage",
+    "coverage": "vitest run --coverage",
+    "coverage-browser": "vitest run --coverage --reporter html && yarn dlx vite preview --outDir html"
   },
   "devDependencies": {
     "@eslint/js": "8.56.0",
@@ -28,6 +31,8 @@
     "@graphql-codegen/client-preset": "^4.1.0",
     "@typescript-eslint/eslint-plugin": "6.16.0",
     "@typescript-eslint/parser": "6.16.0",
+    "@vitest/coverage-v8": "^1.2.2",
+    "@vitest/ui": "^1.2.2",
     "eslint": "8.56.0",
     "eslint-config-next": "14.0.4",
     "eslint-config-prettier": "9.1.0",
