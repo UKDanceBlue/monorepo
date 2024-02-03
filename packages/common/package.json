@@ -50,9 +50,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "jest",
-    "test-coverage": "jest --coverage",
-    "test-coverage-all": "jest --coverage --collectCoverageFrom=./lib/**/*"
+    "test": "vitest"
   },
   "author": "UKDanceBlue",
   "license": "ISC",
@@ -74,7 +72,8 @@
     "typedi": "^0.10.0",
     "typescript": "^5.3.3",
     "utility-types": "^3.10.0",
-    "validator": "^13.9.0"
+    "validator": "^13.9.0",
+    "vitest": "^1.2.2"
   },
   "peerDependencies": {
     "@apollo/client": "3.8.4",

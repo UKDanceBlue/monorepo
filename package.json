@@ -19,7 +19,8 @@
     "portal:build": "yarn workspace @ukdanceblue/portal build",
     "mobile:start": "yarn workspace @ukdanceblue/mobile start",
     "docker:server:start": "docker-compose up -d --build",
-    "docker:server:stop": "docker-compose down"
+    "docker:server:stop": "docker-compose down",
+    "test": "vitest"
   },
   "devDependencies": {
     "@eslint/js": "8.56.0",
@@ -43,7 +44,8 @@
     "graphql": "^16.8.1",
     "graphql-scalars": "^1.22.4",
     "prettier": "^3.0.3",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.2"
   },
   "workspaces": [
     "packages/*"
