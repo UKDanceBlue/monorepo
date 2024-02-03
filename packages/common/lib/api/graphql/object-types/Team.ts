@@ -1,9 +1,10 @@
 import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
 
-import { AccessControl, AccessLevel } from "../../../index.js";
+import { AccessLevel } from "../../../auth/index.js";
 import * as SimpleTypes from "../../SimpleTypes.js";
 
 import { Resource } from "./Resource.js";
+import { AccessControl } from "./authorization.js";
 
 export const TeamType = {
   Spirit: "Spirit",
