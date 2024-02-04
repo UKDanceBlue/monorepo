@@ -178,6 +178,7 @@ useEffect(() => {
         data={standingData}
         refreshing={loading}
         onRefresh={refresh}
+        onTeamClick={userTeamData?.uuid ? () => navigate("MyTeam") : undefined}
       />
     </View>
   );

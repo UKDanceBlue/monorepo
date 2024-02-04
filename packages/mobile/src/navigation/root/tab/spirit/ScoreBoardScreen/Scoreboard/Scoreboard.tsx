@@ -67,7 +67,7 @@ const Scoreboard = ({
               highlighted={item.highlighted}
             />
           );
-          if (item.highlighted) {
+          if (item.highlighted && onTeamClick) {
             return (
               <TouchableOpacity onPress={onTeamClick}>
                 {scoreboardItem}
