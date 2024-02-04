@@ -8,9 +8,9 @@ import { openURL } from "expo-linking";
 import { Box, Button, HStack, Text, View } from "native-base";
 import { useMemo } from "react";
 import { PixelRatio, useWindowDimensions } from "react-native";
+import WebView from "react-native-webview";
 
 import DBRibbon from "../../../../../assets/svgs/DBRibbon";
-import WebView from "react-native-webview";
 
 export const ExplorerItem = ({
   resourceLink = "https://danceblue.org",

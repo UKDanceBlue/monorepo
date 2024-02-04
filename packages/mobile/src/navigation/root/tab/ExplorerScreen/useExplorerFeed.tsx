@@ -31,7 +31,7 @@ export function useExplorerFeed(): {
       );
 
       setBlogPosts(blogPosts);
-      // console.log(blogPosts);
+      // console.log(JSON.stringify(blogPosts, null, 2));
 
       const podcastPosts = dbWebsiteParsed.items
         .filter((item) =>
@@ -44,20 +44,14 @@ export function useExplorerFeed(): {
         );
 
       setPodcasts(podcastPosts);
-      // console.log(podcastPosts);
+      // console.log(JSON.stringify(podcastPosts, null, 2));
 
       const youtubeRSS = await fetch("https://www.youtube.com/feeds/videos.xml?channel_id=UCcF8V41xkzYkZ0B1IOXntjg");
       const youtubeXML = await youtubeRSS.text();
       const youtubeParsed = await parse(youtubeXML);
       const youtubePosts = youtubeParsed.items;
 
-      /*
-        youtubeParsed.items.forEach((item) => { console.log(item.links) });
-
-        YouTube Link
-      */
-
-      console.log(JSON.stringify(youtubePosts, null, 2));
+      // console.log(JSON.stringify(youtubePosts, null, 2));
 
       setYoutubes(youtubePosts);
 
@@ -72,22 +66,6 @@ export function useExplorerFeed(): {
     // state value that you wanted to use in the function, you would put it in the array so that the function would be recreated if that state
     // value changed
   }, []);
-
-  /*
-        TO SORT FeedItem[]      (blog posts and podcasts)
-
-            .map((item) => ({
-                ...item,
-                dateTimePublished: DateTime.fromRFC2822(item.published),
-            }))
-            .sort((a,b) =>
-                a.dateTimePublished > b.dateTimePublished
-                ? -1
-                : a.dateTimePublished > b.dateTimePublished
-                ? 1
-                : 0
-            );
-    */
 
   useEffect(() => {
     setLoading(true);
