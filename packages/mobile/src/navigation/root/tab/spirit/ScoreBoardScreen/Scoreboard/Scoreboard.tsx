@@ -2,6 +2,7 @@ import { useThemeColors } from "@common/customHooks";
 import { colors } from "@theme/colors";
 import { Box, Flex, Text } from "native-base";
 import { FlatList, RefreshControl } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 import type { StandingType } from "../../../../../../types/StandingType";
 import ScoreboardItem from "../ScoreboardItem";
@@ -12,12 +13,14 @@ const Scoreboard = ({
   onRefresh,
   refreshing,
   titleButton,
+  onTeamClick,
 }: {
   title: string;
   data: StandingType[];
   onRefresh?: () => void;
   refreshing?: boolean;
   titleButton?: React.ReactNode;
+  onTeamClick?: () => void;
 }) => {
   const textShadowColor = useThemeColors().secondary[300];
 
@@ -54,15 +57,26 @@ const Scoreboard = ({
             />
           ) : undefined
         }
-        renderItem={({ item, index }) => (
-          <ScoreboardItem
-            key={item.id}
-            rank={index + 1}
-            name={item.name}
-            points={item.points}
-            highlighted={item.highlighted}
-          />
-        )}
+        renderItem={({ item, index }) => {
+          const scoreboardItem = (
+            <ScoreboardItem
+              key={item.id}
+              rank={index + 1}
+              name={item.name}
+              points={item.points}
+              highlighted={item.highlighted}
+            />
+          );
+          if (item.highlighted) {
+            return (
+              <TouchableOpacity onPress={onTeamClick}>
+                {scoreboardItem}
+              </TouchableOpacity>
+            );
+          }
+
+          return scoreboardItem;
+        }}
         ItemSeparatorComponent={() => (
           <Box
             marginLeft={3}
