@@ -4,7 +4,7 @@
     "description": "University of Kentucky DanceBlue Mobile Application",
     "slug": "danceblue-mobile",
     "privacy": "unlisted",
-    "owner": "university-of-kentucky-danceblue",
+    "owner": "ukdanceblue",
     "scheme": "danceblue",
     "jsEngine": "hermes",
     "notification": {

@@ -90,7 +90,7 @@ const ProfileScreen = ({
   }
 
   function nameString() {
-    return userData?.name ?? "Anonymous :)";
+    return userData?.name ?? "Anonymous";
   }
 
   const committeeString = useMemo(() => {
