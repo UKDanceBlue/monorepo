@@ -53,7 +53,7 @@ export const MarathonCountdownScreen = () => {
             textShadowRadius: 1,
           }}
         >
-          {"March 25th - 26th, 2023"}
+          {"April 6th - 7th, 2024"}
         </Text>
         <Text
           textAlign="center"
