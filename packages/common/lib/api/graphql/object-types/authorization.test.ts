@@ -182,4 +182,41 @@ describe(checkAuthorization, (it) => {
       .expect(checkAuthorization({ accessLevel: AccessLevel.None }, captain))
       .toBe(true);
   });
+
+  it("should return false when the user's access level is lower than the required access level", (assert) => {
+    assert
+      .expect(
+        checkAuthorization({ accessLevel: AccessLevel.Committee }, overallChair)
+      )
+      .toBe(false);
+    assert
+      .expect(
+        checkAuthorization(
+          { accessLevel: AccessLevel.Committee },
+          dancerRelationsChair
+        )
+      )
+      .toBe(false);
+    assert
+      .expect(
+        checkAuthorization(
+          { accessLevel: AccessLevel.Committee },
+          dancerRelationsCoordinator
+        )
+      )
+      .toBe(false);
+    assert
+      .expect(
+        checkAuthorization({ accessLevel: AccessLevel.TeamCaptain }, member)
+      )
+      .toBe(false);
+    assert
+      .expect(
+        checkAuthorization({ accessLevel: AccessLevel.TeamMember }, publicAuth)
+      )
+      .toBe(false);
+    assert
+      .expect(checkAuthorization({ accessLevel: AccessLevel.Public }, none))
+      .toBe(false);
+  });
 });
