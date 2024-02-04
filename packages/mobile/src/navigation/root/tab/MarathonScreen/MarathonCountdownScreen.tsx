@@ -1,4 +1,4 @@
-import CountdownView from "@common/components/CountdownView";
+import CountdownView from "@common/components/CountdownView/CountdownView";
 import { useThemeColors } from "@common/customHooks";
 import { marathonInterval } from "@common/marathonTime";
 import { Text, View } from "native-base";

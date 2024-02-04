@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 
 import { useThemeColors } from "../../customHooks";
-import TimeUnit from "../TimeUnit";
 
-const CountdownView = ({ endTime }: { endTime: number }) => {
+import { CountdownNumber } from "./CountdownNumber";
+
+export const CountdownViewNew = ({ endTime }: { endTime: number }) => {
   const [countdownDisplayDuration, setCountdownDisplayDuration] =
     useState<Duration>(Duration.fromMillis(0));
   const [showZeros, setShowZeros] = useState(false);
@@ -47,7 +48,7 @@ const CountdownView = ({ endTime }: { endTime: number }) => {
   return (
     <View style={styles.container}>
       <View style={styles.countdownTimer}>
-
+        <CountdownNumber/>
       </View>
     </View>
   );
