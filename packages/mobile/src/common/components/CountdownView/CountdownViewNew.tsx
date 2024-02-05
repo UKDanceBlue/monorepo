@@ -1,5 +1,5 @@
 import { DateTime, Duration, Interval } from "luxon";
-import { View } from "native-base";
+import { Text, View } from "native-base";
 import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 
@@ -46,25 +46,12 @@ export const CountdownViewNew = ({ endTime }: { endTime: number }) => {
   // console.log(countdownDisplayDuration.toObject());
 
   return (
-    <View style={styles.container}>
-      <View style={styles.countdownTimer}>
-        <CountdownNumber/>
+    <View style={{alignItems: "center", justifyContent: "center"}}>
+      <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
+        <CountdownNumber value={2} total={31} radius={60} amountInRow={3}/>
+        <CountdownNumber value={2} total={31} radius={60} amountInRow={3}/>
+        <CountdownNumber value={2} total={31} radius={60} amountInRow={3}/>
       </View>
     </View>
   );
 };
-
-export const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    flex: 1,
-    justifyContent: "center",
-  },
-  countdownTimer: {
-    flexDirection: "row",
-    flex: 1,
-    justifyContent: "center",
-  },
-});
-
-export default CountdownView;

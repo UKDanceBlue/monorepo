@@ -1,4 +1,5 @@
-import CountdownView from "@common/components/CountdownView/CountdownView";
+// import CountdownView from "@common/components/CountdownView/CountdownView";
+import CountdownViewNew from "@common/components/CountdownView";
 import { useThemeColors } from "@common/customHooks";
 import { marathonInterval } from "@common/marathonTime";
 import { Text, View } from "native-base";
@@ -35,7 +36,7 @@ export const MarathonCountdownScreen = () => {
         >
           {"Countdown 'til Marathon"}
         </Text>
-        <CountdownView endTime={marathonInterval.start.toMillis()} />
+        <CountdownViewNew endTime={marathonInterval.start.toMillis()} />
       </View>
       <View flex={2}>
         <CommitteeHoldingSign color="#fff" />
