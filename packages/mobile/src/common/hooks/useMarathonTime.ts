@@ -70,7 +70,7 @@ export function useMarathonTime(): {
 
     try {
       if (startValue) {
-        const parsed = JSON.parse(startValue.value) as string;
+        const parsed = startValue.value;
         startTime = DateTime.fromISO(parsed);
         if (!startTime.isValid) {
           log(`Unrecognized marathon start time: ${startTime.toString()}`, "warn");
@@ -78,7 +78,7 @@ export function useMarathonTime(): {
       }
 
       if (endValue) {
-        const parsed = JSON.parse(endValue.value) as string;
+        const parsed = endValue.value;
         endTime = DateTime.fromISO(parsed);
         if (!endTime.isValid) {
           log(`Unrecognized marathon end time: ${endTime.toString()}`, "warn");

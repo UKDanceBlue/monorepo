@@ -13,24 +13,20 @@ import CommitteeHoldingSign from "../../../../../assets/svgs/CommitteeHoldingSig
 export const MarathonCountdownScreen = () => {
   const { height: screenHeight, width: screenWidth } = useWindowDimensions();
   const { primary } = useThemeColors();
-  const { timesLoading, marathonTime } = useMarathonTime();
-  let dateString = "failed to load";
-  let timeString = "failed to load";
+  const { marathonTime } = useMarathonTime();
 
-  if (timesLoading) {
-    const startHour = marathonTime.startTime.hour.toString();
-    const startMinute = marathonTime.startTime.minute.toString();
+  const ordinals = ["th", "st", "nd", "rd"]; // s
+  const startOrdinal = ordinals[((marathonTime.startTime.day % 100) - 20) % 10]
+                    || ordinals[marathonTime.startTime.day % 100]
+                    || ordinals[0];
+  const endOrdinal = ordinals[((marathonTime.endTime.day % 100) - 20) % 10]
+                  || ordinals[marathonTime.startTime.day % 100]
+                  || ordinals[0];
 
-    const endHour = marathonTime.endTime.hour.toString();
-    const endMinute = marathonTime.endTime.minute.toString();
+  // technically this isn't the best way of doing the date but idrc atm
+  const dateString = `${marathonTime.startTime.toFormat('LLLL d')}${startOrdinal} - ${marathonTime.endTime.toFormat('d, yyyy').replace(',', `${endOrdinal},`)}`;
 
-    dateString = `${marathonTime.startTime.month} ${marathonTime.startTime.day} - ${marathonTime.endTime.day}, ${marathonTime.startTime.year}`;
-
-    const timeStartString = `${startHour}:${startMinute} ${marathonTime.startTime.hour >= 12 ? 'PM' : 'AM'}`;
-    const timeEndString = `${endHour}:${endMinute} ${marathonTime.endTime.hour >= 12 ? 'PM' : 'AM'}`;
-
-    timeString = `${timeStartString} - ${timeEndString}`;
-  }
+  const timeString = `${marathonTime.startTime.toFormat('h:mm a')} - ${marathonTime.endTime.toFormat('h:mm a')}`;
 
   return (
     <ImageBackground
