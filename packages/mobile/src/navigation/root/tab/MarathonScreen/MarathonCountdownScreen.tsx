@@ -20,7 +20,7 @@ export const MarathonCountdownScreen = () => {
                     || ordinals[marathonTime.startTime.day % 100]
                     || ordinals[0];
   const endOrdinal = ordinals[((marathonTime.endTime.day % 100) - 20) % 10]
-                  || ordinals[marathonTime.startTime.day % 100]
+                  || ordinals[marathonTime.endTime.day % 100]
                   || ordinals[0];
 
   // technically this isn't the best way of doing the date but idrc atm
