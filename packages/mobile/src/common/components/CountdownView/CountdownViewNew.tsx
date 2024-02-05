@@ -1,7 +1,6 @@
 import { DateTime, Duration, Interval } from "luxon";
-import { Text, View } from "native-base";
+import { View } from "native-base";
 import { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
 
 import { useThemeColors } from "../../customHooks";
 

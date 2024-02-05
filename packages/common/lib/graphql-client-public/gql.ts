@@ -16,6 +16,8 @@ const documents = {
     "\n  fragment SimpleConfig on ConfigurationResource {\n    uuid\n    key\n    value\n  }\n": types.SimpleConfigFragmentDoc,
     "\n  fragment FullConfig on ConfigurationResource {\n    ...SimpleConfig\n    validAfter\n    validUntil\n    createdAt\n  }\n": types.FullConfigFragmentDoc,
     "\n  query useAllowedLoginTypes {\n    activeConfiguration(key: \"ALLOWED_LOGIN_TYPES\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n": types.UseAllowedLoginTypesDocument,
+    "\n  query useMarathonStart {\n    activeConfiguration(key: \"MARATHON_START\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n": types.UseMarathonStartDocument,
+    "\n  query useMarathonEnd {\n    activeConfiguration(key: \"MARATHON_END\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n": types.UseMarathonEndDocument,
     "\n  query useTabBarConfig {\n    activeConfiguration(key: \"TAB_BAR_CONFIG\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n": types.UseTabBarConfigDocument,
     "\n  query AuthState {\n    me {\n      data {\n        uuid\n      }\n    }\n    loginState {\n      role {\n        dbRole\n        committeeIdentifier\n        committeeRole\n      }\n      loggedIn\n      authSource\n    }\n  }\n": types.AuthStateDocument,
     "\n  mutation SetDevice($input: RegisterDeviceInput!) {\n    registerDevice(input: $input) {\n      ok\n    }\n  }\n": types.SetDeviceDocument,
@@ -57,6 +59,14 @@ export function graphql(source: "\n  fragment FullConfig on ConfigurationResourc
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query useAllowedLoginTypes {\n    activeConfiguration(key: \"ALLOWED_LOGIN_TYPES\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n"): (typeof documents)["\n  query useAllowedLoginTypes {\n    activeConfiguration(key: \"ALLOWED_LOGIN_TYPES\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query useMarathonStart {\n    activeConfiguration(key: \"MARATHON_START\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n"): (typeof documents)["\n  query useMarathonStart {\n    activeConfiguration(key: \"MARATHON_START\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query useMarathonEnd {\n    activeConfiguration(key: \"MARATHON_END\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n"): (typeof documents)["\n  query useMarathonEnd {\n    activeConfiguration(key: \"MARATHON_END\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

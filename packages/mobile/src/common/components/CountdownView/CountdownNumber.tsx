@@ -50,7 +50,7 @@ export const CountdownNumber = ({
             r={radius}
             stroke={'#ffc72c'}
             strokeWidth={strokeWidth}
-            fill={'#0032a0'}
+            fill={'#0032dd'}
           />
         </Svg>
       </View>

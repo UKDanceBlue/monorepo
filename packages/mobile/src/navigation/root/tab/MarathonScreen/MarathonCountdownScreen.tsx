@@ -1,17 +1,37 @@
 // import CountdownView from "@common/components/CountdownView/CountdownView";
 import CountdownViewNew from "@common/components/CountdownView";
 import { useThemeColors } from "@common/customHooks";
-import { marathonInterval } from "@common/marathonTime";
+import { useMarathonTime } from "@common/hooks/useMarathonTime";
+import { Interval } from "luxon";
 import { Text, View } from "native-base";
 import type { ImageSourcePropType } from "react-native";
 import { ImageBackground, useWindowDimensions } from "react-native";
 
-
 import CommitteeHoldingSign from "../../../../../assets/svgs/CommitteeHoldingSign";
+
 
 export const MarathonCountdownScreen = () => {
   const { height: screenHeight, width: screenWidth } = useWindowDimensions();
   const { primary } = useThemeColors();
+  const { timesLoading, marathonTime } = useMarathonTime();
+  let dateString = "failed to load";
+  let timeString = "failed to load";
+
+  if (timesLoading) {
+    const startHour = marathonTime.startTime.hour.toString();
+    const startMinute = marathonTime.startTime.minute.toString();
+
+    const endHour = marathonTime.endTime.hour.toString();
+    const endMinute = marathonTime.endTime.minute.toString();
+
+    dateString = `${marathonTime.startTime.month} ${marathonTime.startTime.day} - ${marathonTime.endTime.day}, ${marathonTime.startTime.year}`;
+
+    const timeStartString = `${startHour}:${startMinute} ${marathonTime.startTime.hour >= 12 ? 'PM' : 'AM'}`;
+    const timeEndString = `${endHour}:${endMinute} ${marathonTime.endTime.hour >= 12 ? 'PM' : 'AM'}`;
+
+    timeString = `${timeStartString} - ${timeEndString}`;
+  }
+
   return (
     <ImageBackground
       source={
@@ -36,7 +56,7 @@ export const MarathonCountdownScreen = () => {
         >
           {"Countdown 'til Marathon"}
         </Text>
-        <CountdownViewNew endTime={marathonInterval.start.toMillis()} />
+        <CountdownViewNew endTime={Interval.fromDateTimes(marathonTime.startTime, marathonTime.endTime).start.toMillis()} />
       </View>
       <View flex={2}>
         <CommitteeHoldingSign color="#fff" />
@@ -54,7 +74,7 @@ export const MarathonCountdownScreen = () => {
             textShadowRadius: 1,
           }}
         >
-          {"April 6th - 7th, 2024"}
+          {dateString}
         </Text>
         <Text
           textAlign="center"
@@ -63,7 +83,7 @@ export const MarathonCountdownScreen = () => {
           fontSize="2xl"
           bg={`${primary[600]}BD`}
         >
-          {"8:00 PM - 8:00 PM"}
+          {timeString}
         </Text>
       </View>
     </ImageBackground>
