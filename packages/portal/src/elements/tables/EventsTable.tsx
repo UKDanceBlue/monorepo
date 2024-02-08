@@ -12,6 +12,7 @@ import {
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
 import { Button, Flex, Table } from "antd";
+import { useEffect, useState } from "react";
 import { useQuery } from "urql";
 
 const EventsTableFragment = graphql(/* GraphQL */ `
@@ -64,22 +65,41 @@ const eventsTableQueryDocument = graphql(/* GraphQL */ `
 export const EventsTable = () => {
   const navigate = useNavigate();
 
-  const { queryOptions, updatePagination, clearSorting, pushSorting } =
-    useListQuery(
-      {
-        initPage: 1,
-        initPageSize: 10,
-        initSorting: [],
-      },
-      {
-        allFields: ["uuid", "title", "description", "occurrences", "summary"],
-        dateFields: [],
-        isNullFields: [],
-        numericFields: [],
-        oneOfFields: [],
-        stringFields: [],
-      }
-    );
+  const {
+    queryOptions,
+    updatePagination,
+    clearSorting,
+    pushSorting,
+    updateFilter,
+    clearFilter,
+  } = useListQuery(
+    {
+      initPage: 1,
+      initPageSize: 10,
+      initSorting: [],
+    },
+    {
+      allFields: ["uuid", "title", "description", "occurrenceStart", "summary"],
+      dateFields: ["occurrenceStart"],
+      isNullFields: [],
+      numericFields: [],
+      oneOfFields: [],
+      stringFields: [],
+    }
+  );
+
+  const [hidePast, setHidePast] = useState(false);
+  useEffect(() => {
+    if (hidePast) {
+      updateFilter("occurrenceStart", {
+        field: "occurrenceStart",
+        comparison: "GREATER_THAN_OR_EQUAL_TO",
+        value: new Date().toISOString(),
+      });
+    } else {
+      clearFilter("occurrenceStart");
+    }
+  }, [clearFilter, hidePast, pushSorting, updateFilter]);
 
   const [{ fetching, error, data: eventsDocument }] = useQuery({
     query: eventsTableQueryDocument,
@@ -99,6 +119,11 @@ export const EventsTable = () => {
 
   return (
     <>
+      <div style={{ marginBottom: "1rem" }}>
+        <Button onClick={() => setHidePast(!hidePast)}>
+          {hidePast ? "Show Past" : "Hide Past"}
+        </Button>
+      </div>
       <Table
         dataSource={listEventsData ?? undefined}
         rowKey={({ uuid }) => uuid}
@@ -129,7 +154,7 @@ export const EventsTable = () => {
                 | "uuid"
                 | "title"
                 | "description"
-                | "occurrences"
+                | "occurrenceStart"
                 | "summary",
               direction:
                 sort.order === "ascend"
