@@ -2,6 +2,7 @@
   "name": "@ukdanceblue/mobile",
   "main": "./index.js",
   "version": "2.2.2",
+  "type": "commonjs",
   "scripts": {
     "start": "expo start --dev-client",
     "test": "jest",

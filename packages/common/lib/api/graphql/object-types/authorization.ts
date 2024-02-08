@@ -5,11 +5,17 @@ import type { Primitive } from "utility-types";
 import type {
   AccessLevel,
   Authorization,
+  CommitteeRole,
   DbRole,
   PersonResource,
   UserData,
 } from "../../../index.js";
-import { CommitteeRole, DetailedError, ErrorCode } from "../../../index.js";
+import {
+  DetailedError,
+  ErrorCode,
+  compareCommitteeRole,
+  compareDbRole,
+} from "../../../index.js";
 
 export interface AuthorizationRule extends Partial<Authorization> {
   /**
@@ -70,9 +76,17 @@ export function checkAuthorization(
 
   let matches = true;
 
+  // Access Level
+  if (role.accessLevel != null) {
+    matches &&= authorization.accessLevel >= role.accessLevel;
+  }
+
   // DB role
   if (role.dbRole != null) {
     matches &&= authorization.dbRole === role.dbRole;
+  }
+  if (role.minDbRole != null) {
+    matches &&= compareDbRole(authorization.dbRole, role.minDbRole) >= 0;
   }
 
   // Committee role
@@ -80,24 +94,14 @@ export function checkAuthorization(
     matches &&= authorization.committeeRole === role.committeeRole;
   }
   if (role.minCommitteeRole != null) {
-    switch (role.minCommitteeRole) {
-      case CommitteeRole.Chair: {
-        matches &&= authorization.committeeRole === CommitteeRole.Chair;
-        break;
-      }
-      case CommitteeRole.Coordinator: {
-        matches &&=
-          authorization.committeeRole === CommitteeRole.Chair ||
-          authorization.committeeRole === CommitteeRole.Coordinator;
-        break;
-      }
-      case CommitteeRole.Member: {
-        matches &&=
-          authorization.committeeRole === CommitteeRole.Chair ||
-          authorization.committeeRole === CommitteeRole.Coordinator ||
-          authorization.committeeRole === CommitteeRole.Member;
-        break;
-      }
+    if (authorization.committeeRole == null) {
+      matches = false;
+    } else {
+      matches &&=
+        compareCommitteeRole(
+          authorization.committeeRole,
+          role.minCommitteeRole
+        ) >= 0;
     }
   }
 
