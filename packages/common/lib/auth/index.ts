@@ -147,6 +147,51 @@ export function stringifyDbRole(val: unknown): string {
   }
 }
 
+export function compareDbRole(a: DbRole, b: DbRole): number {
+  if (a === b) {
+    return 0;
+  }
+
+  switch (a) {
+    case DbRole.None: {
+      return -1;
+    }
+    case DbRole.Public: {
+      if (b === DbRole.None) {
+        return 1;
+      }
+      return -1;
+    }
+    case DbRole.TeamMember: {
+      if (b === DbRole.None || b === DbRole.Public) {
+        return 1;
+      }
+      return -1;
+    }
+    case DbRole.TeamCaptain: {
+      if (b === DbRole.None || b === DbRole.Public || b === DbRole.TeamMember) {
+        return 1;
+      }
+      return -1;
+    }
+    case DbRole.Committee: {
+      if (
+        b === DbRole.None ||
+        b === DbRole.Public ||
+        b === DbRole.TeamMember ||
+        b === DbRole.TeamCaptain
+      ) {
+        return 1;
+      }
+      return -1;
+    }
+    default: {
+      a satisfies never;
+      throw new Error(`Unknown DbRole: ${String(a)}`);
+    }
+  }
+}
+
 export const CommitteeRole = {
   Chair: "Chair",
   Coordinator: "Coordinator",
@@ -159,6 +204,37 @@ export function isCommitteeRole(val: unknown): val is CommitteeRole {
     return false;
   }
   return Object.values(CommitteeRole).includes(val as CommitteeRole);
+}
+
+export function compareCommitteeRole(
+  a: CommitteeRole,
+  b: CommitteeRole
+): number {
+  if (a === b) {
+    return 0;
+  }
+
+  switch (a) {
+    case CommitteeRole.Member: {
+      return -1;
+    }
+    case CommitteeRole.Coordinator: {
+      if (b === CommitteeRole.Member) {
+        return 1;
+      }
+      return -1;
+    }
+    case CommitteeRole.Chair: {
+      if (b === CommitteeRole.Member || b === CommitteeRole.Coordinator) {
+        return 1;
+      }
+      return -1;
+    }
+    default: {
+      a satisfies never;
+      throw new Error(`Unknown CommitteeRole: ${String(a)}`);
+    }
+  }
 }
 
 export const CommitteeIdentifier = {
