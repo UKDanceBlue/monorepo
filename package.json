@@ -45,6 +45,7 @@
     "eslint-plugin-react-native": "4.1.0",
     "eslint-plugin-react-refresh": "0.4.5",
     "eslint-plugin-unicorn": "50.0.1",
+    "eslint-plugin-vitest": "^0.3.22",
     "globals": "^13.24.0",
     "graphql": "^16.8.1",
     "graphql-scalars": "^1.22.4",
