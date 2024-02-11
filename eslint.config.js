@@ -287,28 +287,6 @@ const eslintConfig = [
     processor: eslintPluginJest.processors[".snap"],
   },
   {
-    files: ["**/*.test.*"],
-    plugins: {
-      jest: eslintPluginJest,
-    },
-    rules: {
-      ...eslintPluginJest.configs.recommended.rules,
-      ...eslintPluginJest.configs.style.rules,
-      "jest/prefer-todo": "warn",
-      "jest/consistent-test-it": ["error", { fn: "test" }],
-      "@typescript-eslint/no-unsafe-assignment": "off",
-    },
-    languageOptions: {
-      globals: {
-        ...globals.jest,
-        ...eslintPluginJest.configs.recommended.env.globals,
-      },
-      parserOptions: {
-        ecmaFeatures: {},
-      },
-    },
-  },
-  {
     files: [
       "packages/**/common/lib/**/**/*.js",
       "packages/**/common/lib/**/**/*.ts",
