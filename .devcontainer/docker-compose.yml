@@ -6,7 +6,12 @@ services:
       dockerfile: Dockerfile
 
     volumes:
+      # The actual workspace is mounted here. This is where the source code is located.
       - ../..:/workspaces:cached
+      # .ssh folder
+      - type: bind
+        source: $HOME/.ssh
+        target: /home/node/.ssh
 
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
