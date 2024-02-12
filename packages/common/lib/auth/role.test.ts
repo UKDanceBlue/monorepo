@@ -85,7 +85,7 @@ describe(roleToAccessLevel, () => {
     const illegalRole = RoleResource.init({
       dbRole: "illegal" as DbRole,
     });
-    expect(() => roleToAccessLevel(illegalRole)).toThrowError(
+    expect(() => roleToAccessLevel(illegalRole)).toThrow(
       "Illegal DbRole: [Parsing of 'illegal' failed]"
     );
   });
