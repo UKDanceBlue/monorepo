@@ -4,6 +4,7 @@ import eslintPluginReactHooks from "eslint-plugin-react-hooks";
 import eslintPluginReactNative from "eslint-plugin-react-native";
 import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
 import globals from "globals";
+import { fileURLToPath } from "url";
 import { extractPluginRules } from "./util.js";
 const reactPlugins = [
     {
@@ -89,12 +90,14 @@ export default [
     }),
 ];
 function makePackageConfig(folder, plugins, rules, settings, globalKeys, overrides) {
+    const rootDirUrl = new URL("../..", import.meta.url);
+    const rootDir = fileURLToPath(rootDirUrl);
     const base = {
         files: [
-            `packages/**/${folder}/**/**/*.js`,
-            `packages/**/${folder}/**/**/*.ts`,
-            `packages/**/${folder}/**/**/*.jsx`,
-            `packages/**/${folder}/**/**/*.tsx`,
+            `${rootDir}packages/**/${folder}/**/**/*.js`,
+            `${rootDir}packages/**/${folder}/**/**/*.ts`,
+            `${rootDir}packages/**/${folder}/**/**/*.jsx`,
+            `${rootDir}packages/**/${folder}/**/**/*.tsx`,
         ],
         plugins: plugins.reduce((acc, plugin) => {
             acc[plugin.name] = plugin.plugin;
@@ -117,7 +120,8 @@ function makePackageConfig(folder, plugins, rules, settings, globalKeys, overrid
                 }, {}),
             },
             parserOptions: {
-                project: `./packages/${folder}/tsconfig.json`,
+                tsconfigRootDir: `${rootDir}packages/${folder}`,
+                project: `./tsconfig.json`,
             },
         },
         rules: {

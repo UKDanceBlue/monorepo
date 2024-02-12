@@ -5,10 +5,7 @@ import eslintPluginImport from "eslint-plugin-import";
 import eslintPluginJsdoc from "eslint-plugin-jsdoc";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 
-import { extractPluginRules } from "./util.js";
-
 const rules: Linter.RulesRecord = {
-  "import/export": "off",
   // Possible Errors
   "no-undef": "off",
   "spaced-comment": ["error", "always"],
@@ -56,14 +53,7 @@ const rules: Linter.RulesRecord = {
   // Don't require jsdoc
   "jsdoc/require-jsdoc": "off",
   // Imports
-  "import/named": "off",
-  "import/namespace": "off",
-  "import/default": "off",
-  "import/no-named-as-default-member": "off",
-  "import/no-named-as-default": "off",
-  "import/no-cycle": "off",
-  "import/no-unused-modules": "off",
-  "import/no-deprecated": "off",
+  "import/no-duplicates": "warn",
   "import/order": [
     "error",
     {
@@ -89,7 +79,6 @@ const rules: Linter.RulesRecord = {
       ignoreDeclarationSort: true,
     },
   ],
-  "import/no-unresolved": "off",
   // Unicorn Plugin
   "unicorn/better-regex": "error",
   "unicorn/catch-error-name": "error",
@@ -160,6 +149,7 @@ const rules: Linter.RulesRecord = {
   // Personal preferences
   "class-methods-use-this": "off",
 };
+
 const eslintConfig: Linter.FlatConfig[] = [
   {
     ignores: [
@@ -176,12 +166,6 @@ const eslintConfig: Linter.FlatConfig[] = [
     ],
   },
   eslintJs.configs.recommended,
-  {
-    rules: extractPluginRules(
-      eslintPluginImport,
-      "recommended"
-    ) as Linter.RulesRecord,
-  },
   {
     files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
     languageOptions: {
@@ -203,8 +187,8 @@ const eslintConfig: Linter.FlatConfig[] = [
         },
       },
     },
-    rules,
   },
+  { rules },
   {
     files: ["**/*.cjs"],
     languageOptions: {

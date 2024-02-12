@@ -39,7 +39,6 @@
     "eslint-config-next": "14.0.4",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-import": "2.29.1",
-    "eslint-plugin-jest": "27.6.0",
     "eslint-plugin-jsdoc": "46.9.1",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-react": "7.33.2",

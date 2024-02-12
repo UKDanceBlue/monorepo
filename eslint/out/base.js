@@ -3,9 +3,7 @@ import eslintConfigPrettier from "eslint-config-prettier";
 import eslintPluginImport from "eslint-plugin-import";
 import eslintPluginJsdoc from "eslint-plugin-jsdoc";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
-import { extractPluginRules } from "./util.js";
 const rules = {
-    "import/export": "off",
     // Possible Errors
     "no-undef": "off",
     "spaced-comment": ["error", "always"],
@@ -53,14 +51,7 @@ const rules = {
     // Don't require jsdoc
     "jsdoc/require-jsdoc": "off",
     // Imports
-    "import/named": "off",
-    "import/namespace": "off",
-    "import/default": "off",
-    "import/no-named-as-default-member": "off",
-    "import/no-named-as-default": "off",
-    "import/no-cycle": "off",
-    "import/no-unused-modules": "off",
-    "import/no-deprecated": "off",
+    "import/no-duplicates": "warn",
     "import/order": [
         "error",
         {
@@ -86,7 +77,6 @@ const rules = {
             ignoreDeclarationSort: true,
         },
     ],
-    "import/no-unresolved": "off",
     // Unicorn Plugin
     "unicorn/better-regex": "error",
     "unicorn/catch-error-name": "error",
@@ -174,9 +164,6 @@ const eslintConfig = [
     },
     eslintJs.configs.recommended,
     {
-        rules: extractPluginRules(eslintPluginImport, "recommended"),
-    },
-    {
         files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
         languageOptions: {
             ecmaVersion: 2021,
@@ -197,8 +184,8 @@ const eslintConfig = [
                 },
             },
         },
-        rules,
     },
+    { rules },
     {
         files: ["**/*.cjs"],
         languageOptions: {

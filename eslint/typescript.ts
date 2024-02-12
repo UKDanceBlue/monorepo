@@ -1,22 +1,21 @@
 import eslintPluginTypescript from "@typescript-eslint/eslint-plugin";
 import eslintParserTypescript from "@typescript-eslint/parser";
 import type { ESLint, Linter } from "eslint";
-import eslintPluginImport from "eslint-plugin-import";
 
 import { extractPluginRules } from "./util.js";
 
+import { fileURLToPath } from "url";
+
+const rootDir = new URL("../..", import.meta.url);
+
 const typescriptConfig: Linter.FlatConfig[] = [
-  {
-    ...extractPluginRules(eslintPluginImport, "typescript"),
-    files: ["**/*.ts", "**/*.tsx"],
-  },
   {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
       parser: eslintParserTypescript as unknown as Linter.ParserModule,
       parserOptions: {
         project: "./tsconfig.json",
-        tsconfigRootDir: __dirname,
+        tsconfigRootDir: fileURLToPath(rootDir),
       },
     },
     plugins: {
