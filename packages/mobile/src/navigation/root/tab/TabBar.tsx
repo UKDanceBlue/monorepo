@@ -13,12 +13,12 @@ import HeaderIcons from "../../HeaderIcons";
 
 import { DBHeaderText } from "./DBHeaderText";
 import EventListScreen from "./EventListScreen";
+import ExplorerScreen from "./ExplorerScreen";
 import HomeScreen from "./HomeScreen";
 import MarathonScreen from "./MarathonScreen";
 import MoraleCup from "./MoraleCup";
 import TabBarComponent from "./TabBarComponent";
 import SpiritScreen from "./spirit/SpiritStack";
-import ExplorerScreen from "./ExplorerScreen";
 
 const Tabs = createBottomTabNavigator<TabNavigatorParamList>();
 
