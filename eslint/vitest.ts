@@ -30,7 +30,13 @@ const vitestConfig: Linter.FlatConfig = {
     "vitest/prefer-comparison-matcher": "warn",
     "vitest/prefer-each": "warn",
     "vitest/prefer-equality-matcher": "warn",
-    "vitest/prefer-expect-assertions": "warn",
+    "vitest/prefer-expect-assertions": [
+      "warn",
+      {
+        onlyFunctionsWithAsyncKeyword: true,
+        onlyFunctionsWithExpectInCallback: true,
+      },
+    ],
     "vitest/prefer-expect-resolves": "warn",
     "vitest/prefer-hooks-in-order": "warn",
     "vitest/prefer-hooks-on-top": "warn",
@@ -51,6 +57,8 @@ const vitestConfig: Linter.FlatConfig = {
   languageOptions: {
     globals: eslintPluginVitest.environments.env.globals,
   },
+  // TODO: switch the mobile tests over to vitest
+  ignores: ["**/mobile/**"],
 };
 
 export default vitestConfig;

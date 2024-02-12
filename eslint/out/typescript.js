@@ -1,3 +1,4 @@
+import { fileURLToPath } from "url";
 import eslintPluginTypescript from "@typescript-eslint/eslint-plugin";
 import eslintParserTypescript from "@typescript-eslint/parser";
 import { extractPluginRules } from "./util.js";
@@ -51,6 +52,14 @@ const typescriptConfig = [
             ],
             "no-redeclare": "off",
             "no-dupe-class-members": "off",
+        },
+    },
+    {
+        files: ["eslint/**/*.ts", "eslint/**/*.tsx"],
+        languageOptions: {
+            parserOptions: {
+                tsconfigRootDir: fileURLToPath(new URL("..", import.meta.url)),
+            },
         },
     },
 ];

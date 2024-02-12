@@ -14,10 +14,8 @@ const vitestConfig = {
         "vitest/no-conditional-in-test": "warn",
         "vitest/no-conditional-tests": "warn",
         "vitest/no-disabled-tests": "warn",
-        "vitest/no-done-callback": "warn",
         "vitest/no-duplicate-hooks": "warn",
         "vitest/no-focused-tests": "warn",
-        "vitest/no-hooks": "warn",
         "vitest/no-interpolation-in-snapshots": "warn",
         "vitest/no-large-snapshots": "warn",
         "vitest/no-mocks-import": "warn",
@@ -30,7 +28,13 @@ const vitestConfig = {
         "vitest/prefer-comparison-matcher": "warn",
         "vitest/prefer-each": "warn",
         "vitest/prefer-equality-matcher": "warn",
-        "vitest/prefer-expect-assertions": "warn",
+        "vitest/prefer-expect-assertions": [
+            "warn",
+            {
+                onlyFunctionsWithAsyncKeyword: true,
+                onlyFunctionsWithExpectInCallback: true,
+            },
+        ],
         "vitest/prefer-expect-resolves": "warn",
         "vitest/prefer-hooks-in-order": "warn",
         "vitest/prefer-hooks-on-top": "warn",
@@ -51,5 +55,7 @@ const vitestConfig = {
     languageOptions: {
         globals: eslintPluginVitest.environments.env.globals,
     },
+    // TODO: switch the mobile tests over to vitest
+    ignores: ["**/mobile/**"],
 };
 export default vitestConfig;

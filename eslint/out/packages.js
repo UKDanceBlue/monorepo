@@ -1,3 +1,4 @@
+import { fileURLToPath } from "url";
 import eslintPluginNode from "eslint-plugin-node";
 import eslintPluginReact from "eslint-plugin-react";
 import eslintPluginReactHooks from "eslint-plugin-react-hooks";
@@ -120,8 +121,7 @@ function makePackageConfig(folder, subDir, plugins, rules, settings, globalKeys,
                 }, {}),
             },
             parserOptions: {
-                tsconfigRootDir: `packages/${folder}`,
-                project: `./tsconfig.json`,
+                tsconfigRootDir: `${fileURLToPath(new URL("../..", import.meta.url))}packages/${folder}`,
             },
         },
         rules: {
