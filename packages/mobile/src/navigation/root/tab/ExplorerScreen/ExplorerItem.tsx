@@ -6,7 +6,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { Audio } from "expo-av";
 import { openURL } from "expo-linking";
 import { Box, Button, HStack, Text, View } from "native-base";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PixelRatio, useWindowDimensions } from "react-native";
 import WebView from "react-native-webview";
 
@@ -27,7 +27,7 @@ export const ExplorerItem = ({
   hasAudio?: boolean;
   hasYouTubeVideo?: boolean;
 }) => {
-  const [sound, setSound] = useState<Audio.Sound | undefined>(undefined);
+  const [sound, setSound] = useState<Audio.Sound>();
 
   const { width: windowX, fontScale } = useWindowDimensions();
 
@@ -45,6 +45,23 @@ export const ExplorerItem = ({
 
   const calculatedHeight = windowX * ratio;
 
+  useEffect(() => {
+    const newSound = new Audio.Sound();
+    if (hasAudio) {
+      newSound
+        .loadAsync({ uri: resourceLink })
+        .then(() => {
+          setSound(newSound);
+        })
+        .catch(universalCatch);
+      return () => {
+        newSound.unloadAsync().catch(universalCatch);
+      };
+    }
+
+    return () => {};
+  }, [hasAudio, resourceLink]);
+
   if (hasAudio) {
     iconName = "music";
     source = "DB Podcast";
@@ -54,14 +71,6 @@ export const ExplorerItem = ({
       staysActiveInBackground: true,
       playsInSilentModeIOS: true,
     }).catch(showMessage);
-
-    const sound = new Audio.Sound();
-    sound
-      .loadAsync({ uri: resourceLink })
-      .then(() => {
-        setSound(sound);
-      })
-      .catch(universalCatch);
   } else if (hasYouTubeVideo) {
     iconName = "youtube";
     source = "YouTube";

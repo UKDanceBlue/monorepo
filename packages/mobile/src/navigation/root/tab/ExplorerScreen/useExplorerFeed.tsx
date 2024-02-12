@@ -8,7 +8,7 @@ import { parse } from "react-native-rss-parser";
 export function useExplorerFeed(): {
   blogPosts: FeedItem[] | undefined;
   podcasts: FeedItem[] | undefined;
-  youtubes: FeedItem[] | undefined;
+  youtubeVideos: FeedItem[] | undefined;
   loading: boolean;
 } {
   const [loading, setLoading] = useLoading();
@@ -16,7 +16,7 @@ export function useExplorerFeed(): {
   const [podcasts, setPodcasts] = useState<FeedItem[] | undefined>();
   // const [instagramPosts, setInstagramPosts] = useState();
   // const [tiktokPosts, setTikTokPosts] = useState();
-  const [youtubes, setYoutubes] = useState<FeedItem[] | undefined>();
+  const [youtubeVideos, setYoutubeVideos] = useState<FeedItem[] | undefined>();
 
   // useCallback is a react hook that returns a memoized callback
   // This means that the function will only be recreated if one of the dependencies changes
@@ -46,15 +46,16 @@ export function useExplorerFeed(): {
       setPodcasts(podcastPosts);
       // console.log(JSON.stringify(podcastPosts, null, 2));
 
-      const youtubeRSS = await fetch("https://www.youtube.com/feeds/videos.xml?channel_id=UCcF8V41xkzYkZ0B1IOXntjg");
+      const youtubeRSS = await fetch(
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCcF8V41xkzYkZ0B1IOXntjg"
+      );
       const youtubeXML = await youtubeRSS.text();
       const youtubeParsed = await parse(youtubeXML);
       const youtubePosts = youtubeParsed.items;
 
       // console.log(JSON.stringify(youtubePosts, null, 2));
 
-      setYoutubes(youtubePosts);
-
+      setYoutubeVideos(youtubePosts);
     } catch (error) {
       console.error(error);
     }
@@ -78,7 +79,7 @@ export function useExplorerFeed(): {
     // But since we have a dependency, the function will run whenever the dependency changes
   }, [loadFeed, setLoading]);
 
-  return { blogPosts, podcasts, youtubes, loading };
+  return { blogPosts, podcasts, youtubeVideos, loading };
 }
 
 // I would suggest splitting this file into one for each type of feed item instead of having them all in one file

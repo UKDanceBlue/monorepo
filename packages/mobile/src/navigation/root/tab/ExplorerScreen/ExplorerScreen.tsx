@@ -6,8 +6,6 @@ import { useCombinedFeed } from "./combineFeeds";
 export const ExplorerScreen = () => {
   const { feed } = useCombinedFeed();
 
-  feed.sort((a, b) => b.published.toMillis() - a.published.toMillis());
-
   /*
    * Called by React Native when rendering the screen
    */
