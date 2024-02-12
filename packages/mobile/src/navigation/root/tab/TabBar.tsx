@@ -18,6 +18,7 @@ import MarathonScreen from "./MarathonScreen";
 import MoraleCup from "./MoraleCup";
 import TabBarComponent from "./TabBarComponent";
 import SpiritScreen from "./spirit/SpiritStack";
+import DBMomentsScreen from "./DBMoments";
 
 const Tabs = createBottomTabNavigator<TabNavigatorParamList>();
 
@@ -32,6 +33,9 @@ export const possibleTabs = {
       name="Marathon"
       component={MarathonScreen}
     />
+  ),
+  DBMoments: (
+    <Tabs.Screen key="DBMoments" name="DB Moments" component={DBMomentsScreen}/>
   ),
   MoraleCup: (
     <Tabs.Screen key="MoraleCup" name="Morale Cup" component={MoraleCup} />
@@ -72,6 +76,8 @@ const TabBar = () => {
         const secondHalf = tempCurrentTabs.slice(middleIndex);
         tempCurrentTabs = [...firstHalf, fancyTabElement, ...secondHalf];
       }
+
+      tempCurrentTabs.push(possibleTabs["DBMoments"]);
 
       setCurrentTabs(tempCurrentTabs);
       // log(

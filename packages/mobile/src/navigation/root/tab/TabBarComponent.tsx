@@ -33,6 +33,7 @@ const iconMap = {
   "Scavenger Hunt": "search",
   "Logo": null,
   "Morale Cup": "trophy",
+  "DB Moments": "camera-retro",
 };
 
 const tabBarIcon = ({
