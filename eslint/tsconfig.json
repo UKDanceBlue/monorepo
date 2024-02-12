@@ -1,7 +1,13 @@
 {
   "compilerOptions": {
-    "lib": ["ES2020"]
+    "lib": ["ES2020"],
+    "allowJs": true,
+    "checkJs": true,
+    "rootDir": ".",
+    "noEmit": false,
+    "outDir": "out"
   },
   "include": ["./*.ts"],
+  "exclude": [],
   "extends": "../tsconfig.json"
 }
