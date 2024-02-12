@@ -1,8 +1,6 @@
 import eslintPluginTypescript from "@typescript-eslint/eslint-plugin";
 import eslintParserTypescript from "@typescript-eslint/parser";
 import { extractPluginRules } from "./util.js";
-import { fileURLToPath } from "url";
-const rootDir = new URL("../..", import.meta.url);
 const typescriptConfig = [
     {
         files: ["**/*.ts", "**/*.tsx"],
@@ -10,7 +8,6 @@ const typescriptConfig = [
             parser: eslintParserTypescript,
             parserOptions: {
                 project: "./tsconfig.json",
-                tsconfigRootDir: fileURLToPath(rootDir),
             },
         },
         plugins: {

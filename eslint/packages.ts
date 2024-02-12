@@ -6,8 +6,6 @@ import eslintPluginReactNative from "eslint-plugin-react-native";
 import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
 import globals from "globals";
 
-import { fileURLToPath } from "url";
-
 import { extractPluginRules } from "./util.js";
 
 const reactPlugins = [
@@ -27,13 +25,14 @@ const reactPlugins = [
 
 export default [
   // @ukdanceblue/common
-  makePackageConfig("common/lib", [], {}, {}, [
+  makePackageConfig("common", "lib", [], {}, {}, [
     "es2015",
     "shared-node-browser",
   ]),
   // @ukdanceblue/portal
   makePackageConfig(
-    "portal/src",
+    "portal",
+    "src",
     [
       ...reactPlugins,
       {
@@ -55,7 +54,8 @@ export default [
   ),
   // @ukdanceblue/server
   makePackageConfig(
-    "server/src",
+    "server",
+    "src",
     [
       {
         plugin: eslintPluginNode,
@@ -83,6 +83,7 @@ export default [
   // @ukdanceblue/mobile
   makePackageConfig(
     "mobile",
+    null,
     [
       ...reactPlugins,
       {
@@ -123,21 +124,23 @@ interface PackagePluginConfig {
 
 function makePackageConfig(
   folder: string,
+  subDir: string | null,
   plugins: PackagePluginConfig[],
   rules: Linter.RulesRecord,
   settings: Record<string, unknown>,
   globalKeys: (keyof typeof globals)[],
   overrides?: Partial<Linter.FlatConfig>
 ): Linter.FlatConfig {
-  const rootDirUrl = new URL("../..", import.meta.url);
-  const rootDir = fileURLToPath(rootDirUrl);
+  const fileMatch = subDir
+    ? `packages/**/${folder}/${subDir}/**/**/*.`
+    : `packages/**/${folder}/**/**/*.`;
 
   const base = {
     files: [
-      `${rootDir}packages/**/${folder}/**/**/*.js`,
-      `${rootDir}packages/**/${folder}/**/**/*.ts`,
-      `${rootDir}packages/**/${folder}/**/**/*.jsx`,
-      `${rootDir}packages/**/${folder}/**/**/*.tsx`,
+      `${fileMatch}ts`,
+      `${fileMatch}tsx`,
+      `${fileMatch}js`,
+      `${fileMatch}jsx`,
     ],
     plugins: plugins.reduce<Record<string, ESLint.Plugin>>((acc, plugin) => {
       acc[plugin.name] = plugin.plugin;
@@ -160,7 +163,7 @@ function makePackageConfig(
         }, {}),
       },
       parserOptions: {
-        tsconfigRootDir: `${rootDir}packages/${folder}`,
+        tsconfigRootDir: `packages/${folder}`,
         project: `./tsconfig.json`,
       },
     },

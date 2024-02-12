@@ -4,10 +4,6 @@ import type { ESLint, Linter } from "eslint";
 
 import { extractPluginRules } from "./util.js";
 
-import { fileURLToPath } from "url";
-
-const rootDir = new URL("../..", import.meta.url);
-
 const typescriptConfig: Linter.FlatConfig[] = [
   {
     files: ["**/*.ts", "**/*.tsx"],
@@ -15,7 +11,6 @@ const typescriptConfig: Linter.FlatConfig[] = [
       parser: eslintParserTypescript as unknown as Linter.ParserModule,
       parserOptions: {
         project: "./tsconfig.json",
-        tsconfigRootDir: fileURLToPath(rootDir),
       },
     },
     plugins: {

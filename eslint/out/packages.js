@@ -22,12 +22,12 @@ const reactPlugins = [
 ];
 export default [
     // @ukdanceblue/common
-    makePackageConfig("common/lib", [], {}, {}, [
+    makePackageConfig("common", "lib", [], {}, {}, [
         "es2015",
         "shared-node-browser",
     ]),
     // @ukdanceblue/portal
-    makePackageConfig("portal/src", [
+    makePackageConfig("portal", "src", [
         ...reactPlugins,
         {
             plugin: eslintPluginReactRefresh,
@@ -43,7 +43,7 @@ export default [
         },
     }, ["es2017", "browser"]),
     // @ukdanceblue/server
-    makePackageConfig("server/src", [
+    makePackageConfig("server", "src", [
         {
             plugin: eslintPluginNode,
             ruleSets: [],
@@ -64,7 +64,7 @@ export default [
         "node/shebang": "error",
     }, {}, ["nodeBuiltin"]),
     // @ukdanceblue/mobile
-    makePackageConfig("mobile", [
+    makePackageConfig("mobile", null, [
         ...reactPlugins,
         {
             plugin: eslintPluginReactNative,
@@ -89,15 +89,18 @@ export default [
         },
     }),
 ];
-function makePackageConfig(folder, plugins, rules, settings, globalKeys, overrides) {
+function makePackageConfig(folder, subDir, plugins, rules, settings, globalKeys, overrides) {
     const rootDirUrl = new URL("../..", import.meta.url);
     const rootDir = fileURLToPath(rootDirUrl);
+    const fileMatch = subDir
+        ? `packages/**/${folder}/${subDir}/**/**/*.`
+        : `packages/**/${folder}/**/**/*.`;
     const base = {
         files: [
-            `${rootDir}packages/**/${folder}/**/**/*.js`,
-            `${rootDir}packages/**/${folder}/**/**/*.ts`,
-            `${rootDir}packages/**/${folder}/**/**/*.jsx`,
-            `${rootDir}packages/**/${folder}/**/**/*.tsx`,
+            `${fileMatch}ts`,
+            `${fileMatch}tsx`,
+            `${fileMatch}js`,
+            `${fileMatch}jsx`,
         ],
         plugins: plugins.reduce((acc, plugin) => {
             acc[plugin.name] = plugin.plugin;
@@ -120,7 +123,7 @@ function makePackageConfig(folder, plugins, rules, settings, globalKeys, overrid
                 }, {}),
             },
             parserOptions: {
-                tsconfigRootDir: `${rootDir}packages/${folder}`,
+                tsconfigRootDir: `packages/${folder}`,
                 project: `./tsconfig.json`,
             },
         },
