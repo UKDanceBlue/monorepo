@@ -10,7 +10,7 @@ import {
 
 import { roleToAccessLevel, roleToAuthorization } from "./role.js";
 
-describe(roleToAccessLevel, () => {
+describe("roleToAccessLevel", () => {
   it("returns the correct access level for a given role normally", () => {
     const chairRole = RoleResource.init({
       dbRole: DbRole.Committee,
@@ -85,18 +85,18 @@ describe(roleToAccessLevel, () => {
     const illegalRole = RoleResource.init({
       dbRole: "illegal" as DbRole,
     });
-    expect(() => roleToAccessLevel(illegalRole)).toThrowError(
+    expect(() => roleToAccessLevel(illegalRole)).toThrow(
       "Illegal DbRole: [Parsing of 'illegal' failed]"
     );
   });
 });
 
-describe(roleToAuthorization, () => {
+describe("roleToAuthorization", () => {
   it("converts a role to an authorization object", () => {
     const role = RoleResource.init({
       dbRole: DbRole.TeamMember,
     });
-    expect(roleToAuthorization(role)).toEqual({
+    expect(roleToAuthorization(role)).toStrictEqual({
       dbRole: DbRole.TeamMember,
       accessLevel: AccessLevel.TeamMember,
     });
@@ -108,7 +108,7 @@ describe(roleToAuthorization, () => {
       committeeRole: CommitteeRole.Member,
       committeeIdentifier: CommitteeIdentifier.dancerRelationsCommittee,
     });
-    expect(roleToAuthorization(role)).toEqual({
+    expect(roleToAuthorization(role)).toStrictEqual({
       dbRole: DbRole.Committee,
       accessLevel: AccessLevel.Committee,
       committeeRole: CommitteeRole.Member,

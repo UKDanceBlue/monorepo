@@ -1,4 +1,4 @@
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { Authorization } from "../../../index.js";
 import {
@@ -79,7 +79,7 @@ const none: Authorization = {
   dbRole: DbRole.None,
 };
 
-describe(checkAuthorization, (it) => {
+describe("checkAuthorization", () => {
   it("should return true when the user's access level matches the required access level", () => {
     expect(
       checkAuthorization({ accessLevel: AccessLevel.Admin }, techChair)
