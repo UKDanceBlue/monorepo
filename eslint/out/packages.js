@@ -4,7 +4,6 @@ import eslintPluginReactHooks from "eslint-plugin-react-hooks";
 import eslintPluginReactNative from "eslint-plugin-react-native";
 import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
 import globals from "globals";
-import { fileURLToPath } from "url";
 import { extractPluginRules } from "./util.js";
 const reactPlugins = [
     {
@@ -90,8 +89,6 @@ export default [
     }),
 ];
 function makePackageConfig(folder, subDir, plugins, rules, settings, globalKeys, overrides) {
-    const rootDirUrl = new URL("../..", import.meta.url);
-    const rootDir = fileURLToPath(rootDirUrl);
     const fileMatch = subDir
         ? `packages/**/${folder}/${subDir}/**/**/*.`
         : `packages/**/${folder}/**/**/*.`;

@@ -1,6 +1,7 @@
 import { useLogin } from "@common/auth";
 import JumbotronGeometric from "@common/components/JumbotronGeometric";
 import { useThemeFonts } from "@common/customHooks";
+import {universalCatch} from "@common/logging";
 import {
   AuthSource,
   CommitteeIdentifier,
@@ -13,6 +14,7 @@ import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
+import {openURL} from "expo-linking";
 import {
   Box,
   Button,
@@ -26,8 +28,6 @@ import {
 import { useMemo } from "react";
 
 import { ProfileFooter } from "./ProfileFooter";
-import {openURL} from "expo-linking";
-import {universalCatch} from "@common/logging";
 
 export const ProfileScreenAuthFragment = graphql(/* GraphQL */ `
   fragment ProfileScreenAuthFragment on LoginState {

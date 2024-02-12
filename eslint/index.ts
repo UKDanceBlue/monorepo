@@ -1,4 +1,5 @@
-import { Linter } from "eslint";
+import type { Linter } from "eslint";
+
 import baseConfig from "./base.js";
 import packagesConfig from "./packages.js";
 import typescriptConfig from "./typescript.js";

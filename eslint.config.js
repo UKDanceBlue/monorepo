@@ -1,3 +1,4 @@
-import config from "./eslint/out/index.js";
 
-export default config;
+
+
+export {default} from "./eslint/out/index.js";

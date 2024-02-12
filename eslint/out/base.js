@@ -160,6 +160,7 @@ const eslintConfig = [
             "packages/common/lib/graphql-client-*/**",
             ".yarn/**",
             "compose-volumes/**",
+            "eslint/out/*.js",
         ],
     },
     eslintJs.configs.recommended,
