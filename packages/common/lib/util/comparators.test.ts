@@ -1,7 +1,8 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect } from "@jest/globals";
 import { DateTime, Interval } from "luxon";
+import { it } from "vitest";
 
-import { intervalComparator } from "../../lib/util/comparators.js";
+import { intervalComparator } from "./comparators.js";
 
 describe("intervalComparator", () => {
   const earlyDate = DateTime.fromObject(
@@ -60,7 +61,7 @@ describe("intervalComparator", () => {
   // Invalid interval:
   const testIntervalMid2Mid1 = Interval.fromDateTimes(midDate2, midDate1);
 
-  test("returns negative when the first interval's start is before and the ends are the same", () => {
+  it("returns negative when the first interval's start is before and the ends are the same", () => {
     expect(
       intervalComparator(testIntervalEarlyMid2, testIntervalMid1Mid2)
     ).toBeLessThan(0);
@@ -69,7 +70,7 @@ describe("intervalComparator", () => {
     ).toBeLessThan(0);
   });
 
-  test("returns positive when the first interval's start is after and the ends are the same", () => {
+  it("returns positive when the first interval's start is after and the ends are the same", () => {
     expect(
       intervalComparator(testIntervalMid1Mid2, testIntervalEarlyMid2)
     ).toBeGreaterThan(0);
@@ -78,7 +79,7 @@ describe("intervalComparator", () => {
     ).toBeGreaterThan(0);
   });
 
-  test("returns negative when the first interval's end is before and the starts are the same", () => {
+  it("returns negative when the first interval's end is before and the starts are the same", () => {
     expect(
       intervalComparator(testIntervalEarlyMid1, testIntervalEarlyMid2)
     ).toBeLessThan(0);
@@ -87,7 +88,7 @@ describe("intervalComparator", () => {
     ).toBeLessThan(0);
   });
 
-  test("returns positive when the first interval's end is after and the starts are the same", () => {
+  it("returns positive when the first interval's end is after and the starts are the same", () => {
     expect(
       intervalComparator(testIntervalEarlyMid2, testIntervalEarlyMid1)
     ).toBeGreaterThan(0);
@@ -96,7 +97,7 @@ describe("intervalComparator", () => {
     ).toBeGreaterThan(0);
   });
 
-  test("returns negative when the first interval engulfs the second", () => {
+  it("returns negative when the first interval engulfs the second", () => {
     expect(
       intervalComparator(testIntervalEarlyLate, testIntervalMid1Mid2)
     ).toBeLessThan(0);
@@ -108,13 +109,13 @@ describe("intervalComparator", () => {
     ).toBeLessThan(0);
   });
 
-  test("returns 0 when the intervals are the same", () => {
+  it("returns 0 when the intervals are the same", () => {
     expect(
       intervalComparator(testIntervalEarlyMid1, testIntervalEarlyMid1)
     ).toBe(0);
   });
 
-  test("throws an error for an invalid interval", () => {
+  it("throws an error for an invalid interval", () => {
     expect(() =>
       intervalComparator(testIntervalEarlyMid1, testIntervalMid2Mid1)
     ).toThrow();
