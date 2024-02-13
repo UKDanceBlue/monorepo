@@ -155,12 +155,15 @@ export function BooleanFilterItem<Field extends string>(fieldEnum: {
 }
 
 @InputType()
-export abstract class AbstractOneOfFilterItem<Field extends string>
-  extends FilterItem<Field, readonly string[]>
+export abstract class AbstractOneOfFilterItem<
+    Field extends string,
+    ValueEnum extends string = string,
+  >
+  extends FilterItem<Field, readonly ValueEnum[]>
   implements OneOfFilterItemInterface<Field>
 {
   @Field(() => [String])
-  value!: readonly string[];
+  value!: readonly ValueEnum[];
 
   comparison!: never;
 }

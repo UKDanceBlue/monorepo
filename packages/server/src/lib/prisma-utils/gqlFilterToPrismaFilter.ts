@@ -13,8 +13,23 @@ import {
   StringComparator,
 } from "@ukdanceblue/common";
 
-export function stringFilterToPrisma(
-  filter: AbstractStringFilterItem<never>
+export type FilterItems<
+  B extends string,
+  D extends string,
+  I extends string,
+  N extends string,
+  O extends string,
+  S extends string,
+> =
+  | AbstractBooleanFilterItem<B>
+  | AbstractDateFilterItem<D>
+  | AbstractIsNullFilterItem<I>
+  | AbstractNumericFilterItem<N>
+  | AbstractOneOfFilterItem<O>
+  | AbstractStringFilterItem<S>;
+
+export function stringFilterToPrisma<T extends string>(
+  filter: AbstractStringFilterItem<T>
 ): Prisma.StringFilter {
   switch (filter.comparison) {
     case StringComparator.IS:
@@ -50,8 +65,8 @@ export function stringFilterToPrisma(
   }
 }
 
-export function booleanFilterToPrisma(
-  filter: AbstractBooleanFilterItem<never>
+export function booleanFilterToPrisma<T extends string>(
+  filter: AbstractBooleanFilterItem<T>
 ): Prisma.BoolFilter {
   switch (filter.comparison) {
     case IsComparator.IS: {
@@ -68,8 +83,8 @@ export function booleanFilterToPrisma(
   }
 }
 
-export function dateFilterToPrisma(
-  filter: AbstractDateFilterItem<never>
+export function dateFilterToPrisma<T extends string>(
+  filter: AbstractDateFilterItem<T>
 ): Prisma.DateTimeFilter {
   switch (filter.comparison) {
     case IsComparator.IS:
@@ -111,8 +126,8 @@ export function dateFilterToPrisma(
   }
 }
 
-export function isNullFilterToPrisma(
-  filter: AbstractIsNullFilterItem<never>
+export function isNullFilterToPrisma<T extends string>(
+  filter: AbstractIsNullFilterItem<T>
 ):
   | Prisma.IntNullableFilter
   | Prisma.StringNullableFilter
@@ -124,8 +139,8 @@ export function isNullFilterToPrisma(
   return { equals: null };
 }
 
-export function numericFilterToPrisma(
-  filter: AbstractNumericFilterItem<never>
+export function numericFilterToPrisma<T extends string>(
+  filter: AbstractNumericFilterItem<T>
 ): Prisma.IntFilter {
   switch (filter.comparison) {
     case NumericComparator.EQUALS: {
@@ -166,11 +181,11 @@ export function numericFilterToPrisma(
   }
 }
 
-export function oneOfFilterToPrisma(
-  filter: AbstractOneOfFilterItem<never>
-): Prisma.StringFilter {
+export function oneOfFilterToPrisma<T extends string>(
+  filter: AbstractOneOfFilterItem<T>
+): { not?: { in?: never[] } } | { in?: never[] } {
   if (filter.negate) {
-    return { not: { in: [...filter.value] } };
+    return { not: { in: [...filter.value] as never[] } };
   }
-  return { in: [...filter.value] };
+  return { in: [...filter.value] as never[] };
 }
