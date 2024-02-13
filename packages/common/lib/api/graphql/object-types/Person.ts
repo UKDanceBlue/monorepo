@@ -12,6 +12,23 @@ export class AuthIdList {
 
   @Field(() => String)
   value!: string;
+
+  public static isAuthIdList(obj: unknown): obj is AuthIdList {
+    return (
+      typeof obj === "object" &&
+      obj !== null &&
+      "source" in obj &&
+      "value" in obj &&
+      typeof (obj as AuthIdList).source === "string" &&
+      typeof (obj as AuthIdList).value === "string"
+    );
+  }
+
+  public static isAuthIdListArray(obj: unknown): obj is AuthIdList[] {
+    return (
+      Array.isArray(obj) && obj.every((item) => AuthIdList.isAuthIdList(item))
+    );
+  }
 }
 
 @ObjectType()
