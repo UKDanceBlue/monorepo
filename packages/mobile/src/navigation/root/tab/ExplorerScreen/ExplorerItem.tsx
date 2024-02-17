@@ -12,11 +12,13 @@ import WebView from "react-native-webview";
 
 import DBRibbon from "../../../../../assets/svgs/DBRibbon";
 
+import { parseBlogText } from "./parseBlogText";
+
 export const ExplorerItem = ({
-  resourceLink = "https://danceblue.org",
-  title = "",
+  resourceLink,
+  title,
   showMotd = false,
-  textContent = "",
+  textContent,
   hasAudio = false,
   hasYouTubeVideo = false,
 }: {
@@ -28,6 +30,7 @@ export const ExplorerItem = ({
   hasYouTubeVideo?: boolean;
 }) => {
   const [sound, setSound] = useState<Audio.Sound>();
+  const [plainTextContent, setPlainTextContent] = useState<string>();
 
   const { width: windowX, fontScale } = useWindowDimensions();
 
@@ -47,7 +50,7 @@ export const ExplorerItem = ({
 
   useEffect(() => {
     const newSound = new Audio.Sound();
-    if (hasAudio) {
+    if (hasAudio && resourceLink) {
       newSound
         .loadAsync({ uri: resourceLink })
         .then(() => {
@@ -61,6 +64,14 @@ export const ExplorerItem = ({
 
     return () => {};
   }, [hasAudio, resourceLink]);
+
+  useEffect(() => {
+    if (textContent) {
+      parseBlogText(textContent, 350)
+        .then(setPlainTextContent)
+        .catch(showMessage);
+    }
+  }, [textContent]);
 
   if (hasAudio) {
     iconName = "music";
@@ -154,27 +165,28 @@ export const ExplorerItem = ({
                 {title}
               </Text>
             )}
-            {textContent && (
+            {plainTextContent && (
               <>
                 <Text
                   fontSize={blogContentFontSize}
                   textAlign="justify"
                   fontFamily=""
                 >
-                  {" "}
-                  {textContent}{" "}
+                  {plainTextContent}
                 </Text>
-                <Box width="full" alignItems="flex-end">
-                  <Button
-                    marginTop={0.5}
-                    width="1/3"
-                    onPress={() => {
-                      openURL(resourceLink).catch(universalCatch);
-                    }}
-                  >
-                    Read More!
-                  </Button>
-                </Box>
+                {resourceLink && (
+                  <Box width="full" alignItems="flex-end">
+                    <Button
+                      marginTop={0.5}
+                      width="1/3"
+                      onPress={() => {
+                        openURL(resourceLink).catch(universalCatch);
+                      }}
+                    >
+                      Read More!
+                    </Button>
+                  </Box>
+                )}
               </>
             )}
             {sound && (
@@ -185,7 +197,7 @@ export const ExplorerItem = ({
                 titleLink="https://danceblue.org/category/podcast/"
               />
             )}
-            {hasYouTubeVideo && (
+            {hasYouTubeVideo && resourceLink && (
               <WebView
                 style={{ height: calculatedHeight }}
                 source={{ uri: resourceLink }}

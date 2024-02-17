@@ -68,6 +68,7 @@
     "react-native-rss-parser@^1.5.1": "patch:react-native-rss-parser@npm%3A1.5.1#./.yarn/patches/react-native-rss-parser-npm-1.5.1-e4cc1d8bd8.patch"
   },
   "dependencies": {
-    "babel-cli": "^6.26.0"
+    "babel-cli": "^6.26.0",
+    "htmlparser2": "^9.1.0"
   }
 }

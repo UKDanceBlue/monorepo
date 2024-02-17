@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { Text } from "native-base";
 import { useMemo } from "react";
+import { View } from "react-native";
 import type { FeedItem } from "react-native-rss-parser";
 
 import { ExplorerItem } from "./ExplorerItem";
@@ -23,18 +24,18 @@ export function useCombinedFeed(): {
           const published = DateTime.fromRFC2822(post.published);
 
           const jsxElement = (
-            <>
+            <View key={post.id}>
               <ExplorerItem
                 resourceLink={post.id
                   .replace("new.danceblue.org", "danceblue.org")
                   .replace("preview.danceblue.org", "danceblue.org")}
                 title={post.title}
-                textContent={`${post.content.substring(0, 350)} [...]`}
+                textContent={post.content}
               />
               <Text paddingRight={3} width="100%" textAlign="right">
                 {published.toLocaleString()}
               </Text>
-            </>
+            </View>
           );
 
           return { jsxElement, published };
@@ -48,7 +49,7 @@ export function useCombinedFeed(): {
           const published = DateTime.fromRFC2822(podcast.published);
 
           const jsxElement = (
-            <>
+            <View key={podcast.id}>
               <ExplorerItem
                 hasAudio={true}
                 resourceLink={podcastUrl}
@@ -57,7 +58,7 @@ export function useCombinedFeed(): {
               <Text paddingRight={3} width="100%" textAlign="right">
                 {published.toLocaleString()}
               </Text>
-            </>
+            </View>
           );
 
           return { jsxElement, published };
@@ -77,12 +78,12 @@ export function useCombinedFeed(): {
           const published = DateTime.fromISO(video.published);
 
           const jsxElement = (
-            <>
+            <View key={video.id}>
               <ExplorerItem hasYouTubeVideo={true} resourceLink={videoUrl} />
               <Text paddingRight={3} width="100%" textAlign="right">
                 {published.toLocaleString()}
               </Text>
-            </>
+            </View>
           );
 
           return { jsxElement, published };
