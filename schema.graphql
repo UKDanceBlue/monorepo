@@ -330,10 +330,8 @@ A field whose value conforms to the standard internet email address format as sp
 scalar EmailAddress @specifiedBy(url: "https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address")
 
 type EventOccurrenceResource {
-  createdAt: DateTimeISO
   fullDay: Boolean!
   interval: LuxonDateRange!
-  updatedAt: DateTimeISO
   uuid: ID!
 }
 
@@ -1270,9 +1268,7 @@ type RemoveEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBase
 type RoleResource {
   committeeIdentifier: CommitteeIdentifier
   committeeRole: CommitteeRole
-  createdAt: DateTimeISO
   dbRole: DbRole!
-  updatedAt: DateTimeISO
 }
 
 input RoleResourceInput {
@@ -1366,11 +1362,7 @@ enum SortDirection {
 enum StringComparator {
   ENDS_WITH
   EQUALS
-  ILIKE
-  IREGEX
   IS
-  LIKE
-  REGEX
   STARTS_WITH
   SUBSTRING
 }

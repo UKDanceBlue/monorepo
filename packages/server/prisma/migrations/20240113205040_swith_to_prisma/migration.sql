@@ -40,6 +40,18 @@ DELETE FROM "event_occurrences"
 WHERE
   "deleted_at" IS NOT NULL;
 
+UPDATE "event_occurrences"
+SET
+  "created_at" = CURRENT_TIMESTAMP
+WHERE
+  "created_at" IS NULL;
+
+UPDATE "event_occurrences"
+SET
+  "updated_at" = CURRENT_TIMESTAMP
+WHERE
+  "updated_at" IS NULL;
+
 ALTER TABLE "event_occurrences"
 DROP COLUMN "deleted_at",
 ALTER COLUMN "created_at"
@@ -50,6 +62,8 @@ SET DEFAULT CURRENT_TIMESTAMP,
 ALTER COLUMN "updated_at"
 SET
   NOT NULL,
+ALTER COLUMN "updated_at"
+SET DEFAULT CURRENT_TIMESTAMP,
 ALTER COLUMN "full_day"
 SET DEFAULT false;
 
@@ -129,7 +143,7 @@ ALTER COLUMN "created_at"
 SET DEFAULT CURRENT_TIMESTAMP;
 
 -- DropTable
-DROP TABLE "sequelize_meta";
+DROP TABLE IF EXISTS "sequelize_meta";
 
 -- CreateIndex
 CREATE INDEX "event_occurrences_uuid" ON "event_occurrences" ("uuid");
