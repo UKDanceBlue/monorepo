@@ -1,8 +1,11 @@
 import dbWordLogo from "@assets/logo/big-words.png";
+import dbMonogram from "@assets/logo/monogram.png";
+import DBLogoCondensed from "@assets/svgs/DBLogoCondensed";
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import type { CameraCapturedPicture} from "expo-camera";
+import type { CameraCapturedPicture, CameraPictureOptions} from "expo-camera";
 import { Camera, CameraType, FlashMode } from "expo-camera";
-import { Box, Button, Fab, Icon, Image, Text, View } from "native-base";
+import { manipulateAsync, FlipType, SaveFormat } from 'expo-image-manipulator';
+import { Box, Button, Fab, HStack, Icon, Image, Text, View } from "native-base";
 import { useRef, useState } from "react";
 import { ImageBackground, TouchableOpacity, useWindowDimensions } from "react-native";
 
@@ -93,14 +96,25 @@ export const DBMomentsScreen = () => {
     let photo = null;
 
     if (cameraRef.current && cameraReady) {
-      const options = { quality: 1, base64: true, skipProcessing: true };
-
+      const options: CameraPictureOptions = {quality: 0.8, base64: true, skipProcessing: true, isImageMirror: false};
       const captured: Promise<CameraCapturedPicture> = await cameraRef.current.takePictureAsync(options);
       photo = (await captured);
       console.log(photo.uri);
     }
 
     if (photo) {
+      /*
+      if (cameraType === CameraType.front) {
+        photo = await manipulateAsync(
+          photo.uri,
+          [
+              { rotate: 180 },
+              { flip: FlipType.Vertical },
+          ],
+          { compress: 1, format: SaveFormat.JPEG }
+        );
+      }
+      */
       setPreviewVisible(true);
       setCapturedImage(photo);
     } else {
@@ -115,27 +129,25 @@ export const DBMomentsScreen = () => {
       <View style={{backgroundColor: 'transparent', flex: 1, width: '100%', height: '100%'}}>
         <ImageBackground source={{uri: capturedImage.uri}} style={{flex: 1}}>
           <View style={{flex: 1, flexDirection: 'column', padding: 15, justifyContent: 'flex-end'}}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <TouchableOpacity
-                onPress={retakeMoment}
-                style={{
-                  width: 130,
-                  height: 40,
-                  alignItems: 'center',
-                  borderRadius: 4
-                }}>
-                <Text style={{color: '#fff',fontSize: 20}}>Re-take</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={saveMoment}
-                style={{
-                  width: 130,
-                  height: 40,
-                  alignItems: 'center',
-                  borderRadius: 4
-                }}>
-                <Text style={{color: '#fff', fontSize: 20}}>Save Moment</Text>
-              </TouchableOpacity>
+            <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+              <Box alignItems="center">
+                <HStack>
+                  <Image
+                  source={dbMonogram}
+                  alt="DB Logo Condensed"
+                  width={100}
+                  height={100}
+                  resizeMode="contain"/>
+
+                  {/* REPLACE WITH THIS
+                  <DBLogoCondensed svgProps={{ width: 100, height: 100 }} letterColor="rgba(255,255,255,0.6)" ribbonColor="rgba(255,255,255,0.6)"/>
+                  */}
+                </HStack>
+                <HStack><Text width={100} textAlign={"center"} color="rgba(255, 255, 255, 0.6)">Marathon '24</Text></HStack>
+                <HStack>
+                  <Text width={100} textAlign={"center"} color="rgba(255, 255, 255, 0.6)" fontSize={20} marginTop={-3}>Hour 24</Text>
+                </HStack>
+              </Box>
             </View>
           </View>
         </ImageBackground>
