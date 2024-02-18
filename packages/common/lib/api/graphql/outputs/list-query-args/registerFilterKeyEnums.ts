@@ -3,6 +3,7 @@ import { registerEnumType } from "type-graphql";
 export function registerFilterKeyEnums<
   AllKeys extends string,
   StringFilterKeys extends AllKeys,
+  OneOfFilterKeys extends AllKeys,
   NumericFilterKeys extends AllKeys,
   DateFilterKeys extends AllKeys,
   BooleanFilterKeys extends AllKeys,
@@ -10,6 +11,7 @@ export function registerFilterKeyEnums<
   allKeys: AllKeys[],
   resolverName: string,
   stringFilterKeys: StringFilterKeys[],
+  oneOfFilterKeys: OneOfFilterKeys[],
   numericFilterKeys: NumericFilterKeys[],
   dateFilterKeys: DateFilterKeys[],
   booleanFilterKeys: BooleanFilterKeys[]
@@ -29,6 +31,17 @@ export function registerFilterKeyEnums<
   if (stringFilterKeys.length > 0) {
     registerEnumType(StringFilterKeysEnum, {
       name: `${resolverName}StringFilterKeys`,
+    });
+  }
+
+  const OneOfFilterKeysEnum = Object.fromEntries(
+    oneOfFilterKeys.map((key) => [key, key])
+  ) as {
+    [key in OneOfFilterKeys]: key;
+  };
+  if (oneOfFilterKeys.length > 0) {
+    registerEnumType(OneOfFilterKeysEnum, {
+      name: `${resolverName}OneOfFilterKeys`,
     });
   }
 
@@ -66,6 +79,7 @@ export function registerFilterKeyEnums<
   }
   return {
     StringFilterKeysEnum,
+    OneOfFilterKeysEnum,
     NumericFilterKeysEnum,
     DateFilterKeysEnum,
     BooleanFilterKeysEnum,

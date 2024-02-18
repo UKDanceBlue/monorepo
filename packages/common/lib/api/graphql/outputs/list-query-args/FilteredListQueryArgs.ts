@@ -23,6 +23,7 @@ import { registerFilterKeyEnums } from "./registerFilterKeyEnums.js";
 export abstract class AbstractFilteredListQueryArgs<
   AllKeys extends string,
   StringFilterKeys extends AllKeys,
+  OneOfFilterKeys extends AllKeys,
   NumericFilterKeys extends AllKeys,
   DateFilterKeys extends AllKeys,
   BooleanFilterKeys extends AllKeys,
@@ -32,7 +33,7 @@ export abstract class AbstractFilteredListQueryArgs<
   dateFilters!: AbstractDateFilterItem<DateFilterKeys>[] | null;
   booleanFilters!: AbstractBooleanFilterItem<BooleanFilterKeys>[] | null;
   isNullFilters!: AbstractIsNullFilterItem<AllKeys>[] | null;
-  oneOfFilters!: AbstractOneOfFilterItem<StringFilterKeys>[] | null;
+  oneOfFilters!: AbstractOneOfFilterItem<OneOfFilterKeys>[] | null;
 
   get filters(): (
     | AbstractStringFilterItem<StringFilterKeys>
@@ -40,7 +41,7 @@ export abstract class AbstractFilteredListQueryArgs<
     | AbstractDateFilterItem<DateFilterKeys>
     | AbstractBooleanFilterItem<BooleanFilterKeys>
     | AbstractIsNullFilterItem<AllKeys>
-    | AbstractOneOfFilterItem<StringFilterKeys>
+    | AbstractOneOfFilterItem<OneOfFilterKeys>
   )[] {
     return [
       ...(this.stringFilters ?? []),
@@ -56,6 +57,7 @@ export abstract class AbstractFilteredListQueryArgs<
 export function FilteredListQueryArgs<
   AllKeys extends string,
   StringFilterKeys extends AllKeys,
+  OneOfFilterKeys extends AllKeys,
   NumericFilterKeys extends AllKeys,
   DateFilterKeys extends AllKeys,
   BooleanFilterKeys extends AllKeys,
@@ -64,12 +66,14 @@ export function FilteredListQueryArgs<
   {
     all: allKeys = [],
     string: stringFilterKeys = [],
+    oneOf: oneOfFilterKeys = [],
     numeric: numericFilterKeys = [],
     date: dateFilterKeys = [],
     boolean: booleanFilterKeys = [],
   }: {
     all?: AllKeys[];
     string?: StringFilterKeys[];
+    oneOf?: OneOfFilterKeys[];
     numeric?: NumericFilterKeys[];
     date?: DateFilterKeys[];
     boolean?: BooleanFilterKeys[];
@@ -77,6 +81,7 @@ export function FilteredListQueryArgs<
 ) {
   const {
     StringFilterKeysEnum,
+    OneOfFilterKeysEnum,
     NumericFilterKeysEnum,
     DateFilterKeysEnum,
     BooleanFilterKeysEnum,
@@ -84,6 +89,7 @@ export function FilteredListQueryArgs<
   } = registerFilterKeyEnums<
     AllKeys,
     StringFilterKeys,
+    OneOfFilterKeys,
     NumericFilterKeys,
     DateFilterKeys,
     BooleanFilterKeys
@@ -91,6 +97,7 @@ export function FilteredListQueryArgs<
     allKeys,
     resolverName,
     stringFilterKeys,
+    oneOfFilterKeys,
     numericFilterKeys,
     dateFilterKeys,
     booleanFilterKeys
@@ -109,7 +116,7 @@ export function FilteredListQueryArgs<
     BooleanFilterKeysEnum
   ) {}
   @InputType(`${resolverName}KeyedOneOfFilterItem`)
-  class KeyedOneOfFilterItem extends OneOfFilterItem(StringFilterKeysEnum) {}
+  class KeyedOneOfFilterItem extends OneOfFilterItem(OneOfFilterKeysEnum) {}
   @InputType(`${resolverName}KeyedIsNullFilterItem`)
   class KeyedIsNullFilterItem extends IsNullFilterItem(AllKeysEnum) {}
 
@@ -117,6 +124,7 @@ export function FilteredListQueryArgs<
   abstract class FilteredListQueryArgs extends AbstractFilteredListQueryArgs<
     AllKeys,
     StringFilterKeys,
+    OneOfFilterKeys,
     NumericFilterKeys,
     DateFilterKeys,
     BooleanFilterKeys
