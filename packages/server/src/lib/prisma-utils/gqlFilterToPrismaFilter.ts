@@ -35,27 +35,27 @@ export function stringFilterToPrisma<T extends string>(
     case StringComparator.IS:
     case StringComparator.EQUALS: {
       if (filter.negate) {
-        return { not: { equals: filter.value } };
+        return { not: { equals: filter.value }, mode: "insensitive" };
       }
       return { equals: filter.value };
     }
     case StringComparator.STARTS_WITH: {
       if (filter.negate) {
-        return { not: { startsWith: filter.value } };
+        return { not: { startsWith: filter.value }, mode: "insensitive" };
       }
-      return { startsWith: filter.value };
+      return { startsWith: filter.value, mode: "insensitive" };
     }
     case StringComparator.ENDS_WITH: {
       if (filter.negate) {
-        return { not: { endsWith: filter.value } };
+        return { not: { endsWith: filter.value }, mode: "insensitive" };
       }
-      return { endsWith: filter.value };
+      return { endsWith: filter.value, mode: "insensitive" };
     }
     case StringComparator.SUBSTRING: {
       if (filter.negate) {
-        return { not: { contains: filter.value } };
+        return { not: { contains: filter.value }, mode: "insensitive" };
       }
-      return { contains: filter.value };
+      return { contains: filter.value, mode: "insensitive" };
     }
     default: {
       throw new Error(
