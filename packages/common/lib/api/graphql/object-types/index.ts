@@ -9,7 +9,7 @@ export {
   NotificationPayloadPresentationType,
   NotificationResource,
 } from "./Notification.js";
-export { AuthIdList, PersonResource } from "./Person.js";
+export { AuthIdPair as AuthIdList, PersonResource } from "./Person.js";
 export { PointEntryResource } from "./PointEntry.js";
 export { PointOpportunityResource } from "./PointOpportunity.js";
 export { Resource, TimestampedResource } from "./Resource.js";

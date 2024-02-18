@@ -6,27 +6,27 @@ import { TimestampedResource } from "./Resource.js";
 import { RoleResource, defaultRole } from "./Role.js";
 
 @ObjectType()
-export class AuthIdList {
+export class AuthIdPair {
   @Field(() => AuthSource)
   source!: AuthSource;
 
   @Field(() => String)
   value!: string;
 
-  public static isAuthIdList(obj: unknown): obj is AuthIdList {
+  public static isAuthIdList(obj: unknown): obj is AuthIdPair {
     return (
       typeof obj === "object" &&
       obj !== null &&
       "source" in obj &&
       "value" in obj &&
-      typeof (obj as AuthIdList).source === "string" &&
-      typeof (obj as AuthIdList).value === "string"
+      typeof (obj as AuthIdPair).source === "string" &&
+      typeof (obj as AuthIdPair).value === "string"
     );
   }
 
-  public static isAuthIdListArray(obj: unknown): obj is AuthIdList[] {
+  public static isAuthIdListArray(obj: unknown): obj is AuthIdPair[] {
     return (
-      Array.isArray(obj) && obj.every((item) => AuthIdList.isAuthIdList(item))
+      Array.isArray(obj) && obj.every((item) => AuthIdPair.isAuthIdList(item))
     );
   }
 }
@@ -35,8 +35,8 @@ export class AuthIdList {
 export class PersonResource extends TimestampedResource {
   @Field(() => ID)
   uuid!: string;
-  @Field(() => [AuthIdList])
-  authIds!: AuthIdList[]; // TODO: decide if this needs to be secured
+  @Field(() => [AuthIdPair])
+  authIds!: AuthIdPair[]; // TODO: decide if this needs to be secured
   @Field(() => String, { nullable: true })
   name!: string | null;
   @Field(() => String)
@@ -52,7 +52,7 @@ export class PersonResource extends TimestampedResource {
 
   public static init(init: {
     uuid: string;
-    authIds?: AuthIdList[] | null;
+    authIds?: AuthIdPair[] | null;
     name?: string | null;
     email: string;
     linkblue?: string | null;
