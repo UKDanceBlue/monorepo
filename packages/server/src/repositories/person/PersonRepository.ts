@@ -1,7 +1,17 @@
 import type { Person, Prisma } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
-import type { AuthSource, SortDirection } from "@ukdanceblue/common";
-import { AuthIdList, PersonResource, RoleResource } from "@ukdanceblue/common";
+import type {
+  AuthSource,
+  CommitteeIdentifier,
+  CommitteeRole,
+  SortDirection,
+} from "@ukdanceblue/common";
+import {
+  AuthIdList,
+  DbRole,
+  PersonResource,
+  RoleResource,
+} from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import { findPersonForLogin } from "../../lib/auth/findPersonForLogin.js";
@@ -30,6 +40,8 @@ export type PersonFilters = FilterItems<
 @Service()
 export class PersonRepository {
   constructor(private prisma: PrismaClient) {}
+
+  // Finders
 
   findPersonForLogin(
     authIds: Partial<Record<AuthSource, string>>,
@@ -133,5 +145,89 @@ export class PersonRepository {
         },
       },
     });
+  }
+
+  // Mutators
+
+  createPerson({
+    name,
+    email,
+    linkblue,
+    dbRole,
+    committeeRole,
+    committeeName,
+    authIds,
+  }: {
+    name?: string | null;
+    email: string;
+    linkblue?: string | null;
+    dbRole?: DbRole | null;
+    committeeRole?: CommitteeRole | null;
+    committeeName?: CommitteeIdentifier | null;
+    authIds?: AuthIdList[] | null;
+  }): Promise<Person> {
+    return this.prisma.person.create({
+      data: {
+        name,
+        email,
+        linkblue,
+        dbRole: dbRole ?? DbRole.None,
+        committeeRole,
+        committeeName,
+        authIds:
+          authIds?.reduce<Record<string, string>>((acc, cur) => {
+            if (AuthIdList.isAuthIdList(cur)) {
+              acc[cur.source] = cur.value;
+            }
+            return acc;
+          }, {}) ?? {},
+      },
+    });
+  }
+
+  updatePerson({
+    uuid,
+    id,
+    name,
+    email,
+    linkblue,
+    dbRole,
+    committeeRole,
+    committeeName,
+    authIds,
+  }: {
+    name?: string;
+    email?: string;
+    linkblue?: string;
+    dbRole?: DbRole;
+    committeeRole?: CommitteeRole;
+    committeeName?: CommitteeIdentifier;
+    authIds?: AuthIdList;
+  } & (
+    | {
+        uuid: string;
+        id?: number;
+      }
+    | {
+        id: number;
+        uuid?: string;
+      }
+  )): Promise<Person> {
+    return this.prisma.person.update({
+      where: uuid ? { uuid } : { id },
+      data: {
+        name,
+        email,
+        linkblue,
+        dbRole,
+        committeeRole,
+        committeeName,
+        authIds,
+      },
+    });
+  }
+
+  deletePerson(identifier: { uuid: string } | { id: number }): Promise<Person> {
+    return this.prisma.person.delete({ where: identifier });
   }
 }
