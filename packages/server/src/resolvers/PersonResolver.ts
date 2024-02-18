@@ -1,4 +1,3 @@
-import { Op } from "@sequelize/core";
 import {
   AccessControl,
   AccessLevel,
@@ -9,6 +8,7 @@ import {
   MembershipResource,
   PersonResource,
   RoleResource,
+  SortDirection,
 } from "@ukdanceblue/common";
 import { EmailAddressResolver } from "graphql-scalars";
 import {
@@ -25,11 +25,13 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
+import { Service } from "typedi";
 
 import { sequelizeDb } from "../data-source.js";
 import { MembershipModel } from "../models/Membership.js";
 import { PersonModel } from "../models/Person.js";
 import { TeamModel } from "../models/Team.js";
+import { PersonRepository } from "../repositories/Person.js";
 
 import {
   AbstractGraphQLArrayOkResponse,
@@ -39,7 +41,6 @@ import {
 } from "./ApiResponse.js";
 import type { ResolverInterface } from "./ResolverInterface.js";
 import * as Context from "./context.js";
-import { toSequelizeFindOptions } from "./list-query-args/toSequelizeFindOptions.js";
 
 @ObjectType("CreatePersonResponse", {
   implements: AbstractGraphQLCreatedResponse<PersonResource>,
@@ -75,7 +76,14 @@ class ListPeopleResponse extends AbstractGraphQLPaginatedResponse<PersonResource
 class DeletePersonResponse extends AbstractGraphQLOkResponse<never> {}
 
 @ArgsType()
-class ListPeopleArgs extends FilteredListQueryArgs("PersonResolver", {
+class ListPeopleArgs extends FilteredListQueryArgs<
+  "name" | "email" | "linkblue" | "dbRole" | "committeeRole" | "committeeName",
+  "name" | "email" | "linkblue",
+  "dbRole" | "committeeRole" | "committeeName",
+  never,
+  never,
+  never
+>("PersonResolver", {
   all: [
     "name",
     "email",
@@ -84,14 +92,8 @@ class ListPeopleArgs extends FilteredListQueryArgs("PersonResolver", {
     "committeeRole",
     "committeeName",
   ],
-  string: [
-    "name",
-    "email",
-    "linkblue",
-    "dbRole",
-    "committeeRole",
-    "committeeName",
-  ],
+  string: ["name", "email", "linkblue"],
+  oneOf: ["dbRole", "committeeRole", "committeeName"],
 }) {}
 @InputType()
 class CreatePersonInput {
@@ -135,10 +137,13 @@ class SetPersonInput {
 }
 
 @Resolver(() => PersonResource)
+@Service()
 export class PersonResolver implements ResolverInterface<PersonResource> {
+  constructor(private personRepository: PersonRepository) {}
+
   @Query(() => GetPersonResponse, { name: "person" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetPersonResponse> {
-    const row = await PersonModel.findOne({ where: { uuid } });
+    const row = await this.personRepository.findPersonByUuid(uuid);
 
     if (row == null) {
       return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
@@ -147,7 +152,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     }
 
     return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-      await row.toResource()
+      PersonRepository.personModelToResource(row)
     );
   }
 
@@ -156,7 +161,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
   async getByLinkBlueId(
     @Arg("linkBlueId") linkBlueId: string
   ): Promise<GetPersonResponse> {
-    const row = await PersonModel.findOne({ where: { linkblue: linkBlueId } });
+    const row = await this.personRepository.findPersonByLinkblue(linkBlueId);
 
     if (row == null) {
       return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
@@ -165,7 +170,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     }
 
     return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-      await row.toResource()
+      PersonRepository.personModelToResource(row)
     );
   }
 
@@ -174,24 +179,26 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
   async list(
     @Args(() => ListPeopleArgs) args: ListPeopleArgs
   ): Promise<ListPeopleResponse> {
-    const { rows, count } = await PersonModel.findAndCountAll({
-      ...toSequelizeFindOptions(
-        args,
-        {
-          committeeName: "committeeName",
-          committeeRole: "committeeRole",
-          dbRole: "dbRole",
-          email: "email",
-          linkblue: "linkblue",
-          name: "name",
-        },
-        {},
-        PersonModel
-      ),
-    });
+    const [rows, total] = await Promise.all([
+      this.personRepository.listPeople({
+        filters: args.filters,
+        order:
+          args.sortBy?.map((key, i) => [
+            key,
+            args.sortDirection?.[i] ?? SortDirection.DESCENDING,
+          ]) ?? [],
+        skip:
+          args.page != null && args.pageSize != null
+            ? args.page * args.pageSize
+            : null,
+        take: args.pageSize,
+      }),
+      this.personRepository.countPeople({ filters: args.filters }),
+    ]);
+
     return ListPeopleResponse.newPaginated({
-      data: await Promise.all(rows.map((row) => row.toResource())),
-      total: count,
+      data: rows.map((row) => PersonRepository.personModelToResource(row)),
+      total,
       page: args.page,
       pageSize: args.pageSize,
     });
@@ -206,12 +213,10 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
 
   @Query(() => GetPeopleResponse, { name: "searchPeopleByName" })
   async searchByName(@Arg("name") name: string): Promise<GetPeopleResponse> {
-    const rows = await PersonModel.findAll({
-      where: { name: { [Op.iLike]: `%${name}%` } },
-    });
+    const rows = await this.personRepository.searchByName(name);
 
     return GetPeopleResponse.newOk(
-      await Promise.all(rows.map((row) => row.toResource()))
+      rows.map((row) => PersonRepository.personModelToResource(row))
     );
   }
 
