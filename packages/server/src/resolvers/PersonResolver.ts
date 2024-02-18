@@ -1,3 +1,4 @@
+import type { Person } from "@prisma/client";
 import {
   AccessControl,
   AccessLevel,
@@ -28,10 +29,7 @@ import {
 import { Service } from "typedi";
 
 import { sequelizeDb } from "../data-source.js";
-import { MembershipModel } from "../models/Membership.js";
-import { PersonModel } from "../models/Person.js";
-import { TeamModel } from "../models/Team.js";
-import { PersonRepository } from "../repositories/Person.js";
+import { PersonRepository } from "../repositories/person/PersonRepository.js";
 
 import {
   AbstractGraphQLArrayOkResponse,
@@ -226,7 +224,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     @Arg("input") input: CreatePersonInput
   ): Promise<CreatePersonResponse> {
     return sequelizeDb.transaction(async () => {
-      const creationAttributes: Partial<PersonModel> = {};
+      const creationAttributes: Partial<Person> = {};
       if (input.name) {
         creationAttributes.name = input.name;
       }
@@ -238,54 +236,64 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
         creationAttributes.committeeName = input.role.committeeIdentifier;
       }
 
-      const result = await PersonModel.create({
+      // const result = await PersonModel.create({
+      //   email: input.email,
+      //   ...creationAttributes,
+      //   authIds: {},
+      // });
+
+      // const promises: Promise<void>[] = [];
+      // for (const memberOfTeam of input.memberOf ?? []) {
+      //   promises.push(
+      //     TeamModel.findByUuid(memberOfTeam).then((team) =>
+      //       team == null
+      //         ? Promise.reject(
+      //             new DetailedError(ErrorCode.NotFound, "Team not found")
+      //           )
+      //         : result
+      //             .createMembership({
+      //               personId: result.id,
+      //               teamId: team.id,
+      //               position: "Member",
+      //             })
+      //             .then()
+      //     )
+      //   );
+      // }
+      // for (const captainOfTeam of input.captainOf ?? []) {
+      //   promises.push(
+      //     TeamModel.findByUuid(captainOfTeam).then((team) =>
+      //       team == null
+      //         ? Promise.reject(
+      //             new DetailedError(ErrorCode.NotFound, "Team not found")
+      //           )
+      //         : result
+      //             .createMembership({
+      //               personId: result.id,
+      //               teamId: team.id,
+      //               position: "Captain",
+      //             })
+      //             .then()
+      //     )
+      //   );
+      // }
+
+      // await Promise.all(promises);
+
+      // return CreatePersonResponse.newCreated(
+      //   await result.toResource(),
+      //   result.uuid
+      // );
+
+      const person = await this.personRepository.createPerson({
+        name: input.name,
         email: input.email,
-        ...creationAttributes,
-        authIds: {},
+        linkblue: input.linkblue,
+        dbRole: "User",
+        committeeRole: "Member",
+        committeeName: "General",
+        authIds: [],
       });
-
-      const promises: Promise<void>[] = [];
-      for (const memberOfTeam of input.memberOf ?? []) {
-        promises.push(
-          TeamModel.findByUuid(memberOfTeam).then((team) =>
-            team == null
-              ? Promise.reject(
-                  new DetailedError(ErrorCode.NotFound, "Team not found")
-                )
-              : result
-                  .createMembership({
-                    personId: result.id,
-                    teamId: team.id,
-                    position: "Member",
-                  })
-                  .then()
-          )
-        );
-      }
-      for (const captainOfTeam of input.captainOf ?? []) {
-        promises.push(
-          TeamModel.findByUuid(captainOfTeam).then((team) =>
-            team == null
-              ? Promise.reject(
-                  new DetailedError(ErrorCode.NotFound, "Team not found")
-                )
-              : result
-                  .createMembership({
-                    personId: result.id,
-                    teamId: team.id,
-                    position: "Captain",
-                  })
-                  .then()
-          )
-        );
-      }
-
-      await Promise.all(promises);
-
-      return CreatePersonResponse.newCreated(
-        await result.toResource(),
-        result.uuid
-      );
     });
   }
 
