@@ -149,6 +149,7 @@ model Person {
 model AuthIdPair {
   id       Int        @id @default(autoincrement())
   source   AuthSource @map("source")
+  value    String     @map("value")
   personId Int        @map("person_id")
   person   Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
 
