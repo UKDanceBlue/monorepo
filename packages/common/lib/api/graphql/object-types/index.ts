@@ -1,3 +1,4 @@
+export { AuthIdPairResource } from "./AuthIdPair.js";
 export { ConfigurationResource } from "./Configuration.js";
 export { DeviceResource } from "./Device.js";
 export { EventOccurrenceResource, EventResource } from "./Event.js";
@@ -9,7 +10,7 @@ export {
   NotificationPayloadPresentationType,
   NotificationResource,
 } from "./Notification.js";
-export { AuthIdPair as AuthIdList, PersonResource } from "./Person.js";
+export { PersonResource } from "./Person.js";
 export { PointEntryResource } from "./PointEntry.js";
 export { PointOpportunityResource } from "./PointOpportunity.js";
 export { Resource, TimestampedResource } from "./Resource.js";

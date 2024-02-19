@@ -1,42 +1,17 @@
 import { Field, ID, ObjectType } from "type-graphql";
 
-import { AuthSource } from "../../../auth/index.js";
-
+import { AuthIdPairResource } from "./AuthIdPair.js";
 import { TimestampedResource } from "./Resource.js";
 import { RoleResource, defaultRole } from "./Role.js";
-
-@ObjectType()
-export class AuthIdPair {
-  @Field(() => AuthSource)
-  source!: AuthSource;
-
-  @Field(() => String)
-  value!: string;
-
-  public static isAuthIdList(obj: unknown): obj is AuthIdPair {
-    return (
-      typeof obj === "object" &&
-      obj !== null &&
-      "source" in obj &&
-      "value" in obj &&
-      typeof (obj as AuthIdPair).source === "string" &&
-      typeof (obj as AuthIdPair).value === "string"
-    );
-  }
-
-  public static isAuthIdListArray(obj: unknown): obj is AuthIdPair[] {
-    return (
-      Array.isArray(obj) && obj.every((item) => AuthIdPair.isAuthIdList(item))
-    );
-  }
-}
 
 @ObjectType()
 export class PersonResource extends TimestampedResource {
   @Field(() => ID)
   uuid!: string;
-  @Field(() => [AuthIdPair])
-  authIds!: AuthIdPair[]; // TODO: decide if this needs to be secured
+  @Field(() => [AuthIdPairResource], {
+    deprecationReason: "This is now provided on the AuthIdPair resource.",
+  })
+  authIds!: AuthIdPairResource[];
   @Field(() => String, { nullable: true })
   name!: string | null;
   @Field(() => String)
@@ -52,7 +27,7 @@ export class PersonResource extends TimestampedResource {
 
   public static init(init: {
     uuid: string;
-    authIds?: AuthIdPair[] | null;
+    authIds?: AuthIdPairResource[] | null;
     name?: string | null;
     email: string;
     linkblue?: string | null;

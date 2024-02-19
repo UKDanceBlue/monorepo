@@ -1,7 +1,7 @@
 import { registerEnumType } from "type-graphql";
 
 export const AuthSource = {
-  UkyLinkblue: "UkyLinkblue",
+  LinkBlue: "LinkBlue",
   Anonymous: "Anonymous",
   /**
    * This is a special auth source that is used to indicate that the user
