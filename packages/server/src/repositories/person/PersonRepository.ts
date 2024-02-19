@@ -1,16 +1,13 @@
-import type { Person, Prisma } from "@prisma/client";
-import { PrismaClient } from "@prisma/client";
-import type {
+import { Person, Prisma, PrismaClient } from "@prisma/client";
+import {
+  AuthIdPairResource,
   AuthSource,
   CommitteeIdentifier,
   CommitteeRole,
-  SortDirection,
-} from "@ukdanceblue/common";
-import {
-  AuthIdList,
   DbRole,
   PersonResource,
   RoleResource,
+  SortDirection,
 } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
@@ -116,9 +113,6 @@ export class PersonRepository {
         committeeRole: person.committeeRole,
         committeeIdentifier: person.committeeName,
       }),
-      authIds: AuthIdList.isAuthIdListArray(person.authIds)
-        ? person.authIds
-        : [],
 
       createdAt: person.createdAt,
       updatedAt: person.updatedAt,
@@ -164,7 +158,7 @@ export class PersonRepository {
     dbRole?: DbRole | null;
     committeeRole?: CommitteeRole | null;
     committeeName?: CommitteeIdentifier | null;
-    authIds?: AuthIdList[] | null;
+    authIds?: AuthIdPairResource<Exclude<AuthSource, "None">>[] | null;
   }): Promise<Person> {
     return this.prisma.person.create({
       data: {
@@ -174,18 +168,24 @@ export class PersonRepository {
         dbRole: dbRole ?? DbRole.None,
         committeeRole,
         committeeName,
-        authIds:
-          authIds?.reduce<Record<string, string>>((acc, cur) => {
-            if (AuthIdList.isAuthIdList(cur)) {
-              acc[cur.source] = cur.value;
+        authIdPairs: authIds
+          ? {
+              createMany: {
+                data: authIds.map((authId): Prisma.AuthIdPairCreateInput => {
+                  return {
+                    source: authId.source,
+                    value: authId.value,
+                    person: { connect: { email } },
+                  };
+                }),
+              },
             }
-            return acc;
-          }, {}) ?? {},
+          : undefined,
       },
     });
   }
 
-  updatePerson({
+  async updatePerson({
     uuid,
     id,
     name,
@@ -196,13 +196,13 @@ export class PersonRepository {
     committeeName,
     authIds,
   }: {
-    name?: string;
+    name?: string | null;
     email?: string;
-    linkblue?: string;
+    linkblue?: string | null;
     dbRole?: DbRole;
-    committeeRole?: CommitteeRole;
-    committeeName?: CommitteeIdentifier;
-    authIds?: AuthIdList;
+    committeeRole?: CommitteeRole | null;
+    committeeName?: CommitteeIdentifier | null;
+    authIds?: AuthIdPairResource<Exclude<AuthSource, "None">>[];
   } & (
     | {
         uuid: string;
@@ -212,22 +212,82 @@ export class PersonRepository {
         id: number;
         uuid?: string;
       }
-  )): Promise<Person> {
-    return this.prisma.person.update({
-      where: uuid ? { uuid } : { id },
-      data: {
-        name,
-        email,
-        linkblue,
-        dbRole,
-        committeeRole,
-        committeeName,
-        authIds,
-      },
-    });
+  )): Promise<Person | null> {
+    let personId: number;
+    if (id != null && uuid == null) {
+      personId = id;
+    } else if (uuid != null && id == null) {
+      const found = await this.prisma.person.findUnique({
+        where: { uuid },
+        select: { id: true },
+      });
+      if (found == null) {
+        return null;
+      }
+      personId = found.id;
+    } else {
+      throw new Error("Must provide either UUID or ID");
+    }
+
+    try {
+      return this.prisma.person.update({
+        where: { id: personId },
+        data: {
+          name,
+          email,
+          linkblue,
+          dbRole,
+          committeeRole,
+          committeeName,
+          authIdPairs: authIds
+            ? {
+                upsert: authIds.map((authId) => {
+                  return {
+                    create: {
+                      source: authId.source,
+                      value: authId.value,
+                    },
+                    update: {
+                      value: authId.value,
+                    },
+                    where: {
+                      personId_source: {
+                        personId,
+                        source: authId.source,
+                      },
+                    },
+                  };
+                }),
+              }
+            : undefined,
+        },
+      });
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2025"
+      ) {
+        return null;
+      } else {
+        throw e;
+      }
+    }
   }
 
-  deletePerson(identifier: { uuid: string } | { id: number }): Promise<Person> {
-    return this.prisma.person.delete({ where: identifier });
+  async deletePerson(
+    identifier: { uuid: string } | { id: number }
+  ): Promise<Person | null> {
+    try {
+      return this.prisma.person.delete({ where: identifier });
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2025"
+      ) {
+        return null;
+      } else {
+        throw e;
+      }
+    }
   }
 }
