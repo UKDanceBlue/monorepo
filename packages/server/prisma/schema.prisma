@@ -18,7 +18,7 @@ model Configuration {
   updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@index([uuid], map: "configurations_uuid")
-  @@map(name: "configurations")
+  @@map("configurations")
 }
 
 model Device {
@@ -32,7 +32,7 @@ model Device {
   people        Person?   @relation(fields: [lastUserId], references: [id])
 
   @@index([uuid], map: "devices_uuid")
-  @@map(name: "devices")
+  @@map("devices")
 }
 
 model EventImage {
@@ -44,7 +44,7 @@ model EventImage {
   images    Image    @relation(fields: [imageId], references: [id], onDelete: Cascade)
 
   @@id([eventId, imageId])
-  @@map(name: "event_images")
+  @@map("event_images")
 }
 
 model EventOccurrence {
@@ -59,7 +59,7 @@ model EventOccurrence {
   events    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@index([uuid], map: "event_occurrences_uuid")
-  @@map(name: "event_occurrences")
+  @@map("event_occurrences")
 }
 
 model Event {
@@ -76,7 +76,7 @@ model Event {
   pointOpportunities PointOpportunity[]
 
   @@index([uuid], map: "events_uuid")
-  @@map(name: "events")
+  @@map("events")
 }
 
 model Image {
@@ -94,7 +94,7 @@ model Image {
   eventImages EventImage[]
 
   @@index([uuid], map: "images_uuid")
-  @@map(name: "images")
+  @@map("images")
 }
 
 model LoginFlowSession {
@@ -108,7 +108,7 @@ model LoginFlowSession {
   sendToken            Boolean? @default(false) @map("send_token")
 
   @@index([uuid], map: "login_flow_sessions_uuid")
-  @@map(name: "login_flow_sessions")
+  @@map("login_flow_sessions")
 }
 
 model Membership {
@@ -123,7 +123,7 @@ model Membership {
   teams     Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@index([uuid], map: "memberships_uuid")
-  @@map(name: "memberships")
+  @@map("memberships")
 }
 
 model Person {
@@ -134,16 +134,16 @@ model Person {
   name          String?
   email         String         @unique(map: "people_email_unique")
   linkblue      String?        @unique(map: "people_linkblue_unique")
-  authIdPairs   AuthIdPair[]
   dbRole        DbRole         @default(None) @map("db_role")
   committeeRole CommitteeRole? @map("committee_role")
   committeeName CommitteeName? @map("committee_name")
+  authIdPairs   AuthIdPair[]
   devices       Device[]
   memberships   Membership[]
   pointEntries  PointEntry[]
 
   @@index([uuid], map: "people_uuid")
-  @@map(name: "people")
+  @@map("people")
 }
 
 model AuthIdPair {
@@ -153,7 +153,7 @@ model AuthIdPair {
   personId Int        @map("person_id")
   person   Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
 
-  @@map(name: "auth_id_pairs")
+  @@map("auth_id_pairs")
 }
 
 model PointEntry {
@@ -171,7 +171,7 @@ model PointEntry {
   teams              Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@index([uuid], map: "point_entries_uuid")
-  @@map(name: "point_entries")
+  @@map("point_entries")
 }
 
 model PointOpportunity {
@@ -187,7 +187,7 @@ model PointOpportunity {
   events          Event?               @relation(fields: [eventId], references: [id])
 
   @@index([uuid], map: "point_opportunities_uuid")
-  @@map(name: "point_opportunities")
+  @@map("point_opportunities")
 }
 
 model Team {
@@ -204,14 +204,14 @@ model Team {
   pointEntries         PointEntry[]
 
   @@index([uuid], map: "teams_uuid")
-  @@map(name: "teams")
+  @@map("teams")
 }
 
 enum MembershipPosition {
   Member
   Captain
 
-  @@map(name: "enum_memberships_position")
+  @@map("enum_memberships_position")
 }
 
 enum CommitteeName {
@@ -227,7 +227,7 @@ enum CommitteeName {
   miniMarathonsCommittee
   viceCommittee
 
-  @@map(name: "enum_people_committee_name")
+  @@map("enum_people_committee_name")
 }
 
 enum CommitteeRole {
@@ -235,7 +235,7 @@ enum CommitteeRole {
   Coordinator
   Member
 
-  @@map(name: "enum_people_committee_role")
+  @@map("enum_people_committee_role")
 }
 
 enum DbRole {
@@ -245,7 +245,7 @@ enum DbRole {
   TeamCaptain
   Committee
 
-  @@map(name: "enum_people_db_role")
+  @@map("enum_people_db_role")
 }
 
 enum PointOpportunityType {
@@ -253,7 +253,7 @@ enum PointOpportunityType {
   Morale
   Committee
 
-  @@map(name: "enum_point_opportunities_type")
+  @@map("enum_point_opportunities_type")
 }
 
 enum TeamLegacyStatus {
@@ -261,7 +261,7 @@ enum TeamLegacyStatus {
   ReturningTeam
   DemoTeam
 
-  @@map(name: "enum_teams_legacy_status")
+  @@map("enum_teams_legacy_status")
 }
 
 enum TeamType {
@@ -269,7 +269,7 @@ enum TeamType {
   Morale
   Committee
 
-  @@map(name: "enum_teams_type")
+  @@map("enum_teams_type")
 }
 
 enum AuthSource {
