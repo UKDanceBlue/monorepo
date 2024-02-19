@@ -1,11 +1,9 @@
-import type { Person } from "@prisma/client";
 import {
   AccessControl,
   AccessLevel,
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
-  MembershipPositionType,
   MembershipResource,
   PersonResource,
   RoleResource,
@@ -28,7 +26,6 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { sequelizeDb } from "../data-source.js";
 import { PersonRepository } from "../repositories/person/PersonRepository.js";
 
 import {
@@ -37,7 +34,6 @@ import {
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
-import type { ResolverInterface } from "./ResolverInterface.js";
 import * as Context from "./context.js";
 
 @ObjectType("CreatePersonResponse", {
@@ -136,7 +132,7 @@ class SetPersonInput {
 
 @Resolver(() => PersonResource)
 @Service()
-export class PersonResolver implements ResolverInterface<PersonResource> {
+export class PersonResolver {
   constructor(private personRepository: PersonRepository) {}
 
   @Query(() => GetPersonResponse, { name: "person" })
@@ -223,78 +219,19 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
   async create(
     @Arg("input") input: CreatePersonInput
   ): Promise<CreatePersonResponse> {
-    return sequelizeDb.transaction(async () => {
-      const creationAttributes: Partial<Person> = {};
-      if (input.name) {
-        creationAttributes.name = input.name;
-      }
-      if (input.linkblue) {
-        creationAttributes.linkblue = input.linkblue.toLowerCase();
-      }
-      if (input.role) {
-        creationAttributes.committeeRole = input.role.committeeRole;
-        creationAttributes.committeeName = input.role.committeeIdentifier;
-      }
-
-      // const result = await PersonModel.create({
-      //   email: input.email,
-      //   ...creationAttributes,
-      //   authIds: {},
-      // });
-
-      // const promises: Promise<void>[] = [];
-      // for (const memberOfTeam of input.memberOf ?? []) {
-      //   promises.push(
-      //     TeamModel.findByUuid(memberOfTeam).then((team) =>
-      //       team == null
-      //         ? Promise.reject(
-      //             new DetailedError(ErrorCode.NotFound, "Team not found")
-      //           )
-      //         : result
-      //             .createMembership({
-      //               personId: result.id,
-      //               teamId: team.id,
-      //               position: "Member",
-      //             })
-      //             .then()
-      //     )
-      //   );
-      // }
-      // for (const captainOfTeam of input.captainOf ?? []) {
-      //   promises.push(
-      //     TeamModel.findByUuid(captainOfTeam).then((team) =>
-      //       team == null
-      //         ? Promise.reject(
-      //             new DetailedError(ErrorCode.NotFound, "Team not found")
-      //           )
-      //         : result
-      //             .createMembership({
-      //               personId: result.id,
-      //               teamId: team.id,
-      //               position: "Captain",
-      //             })
-      //             .then()
-      //     )
-      //   );
-      // }
-
-      // await Promise.all(promises);
-
-      // return CreatePersonResponse.newCreated(
-      //   await result.toResource(),
-      //   result.uuid
-      // );
-
-      const person = await this.personRepository.createPerson({
-        name: input.name,
-        email: input.email,
-        linkblue: input.linkblue,
-        dbRole: "User",
-        committeeRole: "Member",
-        committeeName: "General",
-        authIds: [],
-      });
+    const person = await this.personRepository.createPerson({
+      name: input.name,
+      email: input.email,
+      linkblue: input.linkblue,
+      dbRole: input.role?.dbRole,
+      committeeRole: input.role?.committeeRole,
+      committeeName: input.role?.committeeIdentifier,
     });
+
+    return CreatePersonResponse.newCreated(
+      PersonRepository.personModelToResource(person),
+      person.uuid
+    );
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
@@ -303,134 +240,41 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     @Arg("uuid") id: string,
     @Arg("input") input: SetPersonInput
   ): Promise<GetPersonResponse> {
-    const row = await PersonModel.findOne({
-      where: { uuid: id },
-      attributes: ["id"],
+    const row = await this.personRepository.updatePerson({
+      uuid: id,
+      name: input.name,
+      email: input.email,
+      linkblue: input.linkblue,
+      dbRole: input.role?.dbRole,
+      committeeRole: input.role?.committeeRole,
+      committeeName: input.role?.committeeIdentifier,
     });
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Person not found");
+      return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+        null
+      );
     }
 
-    return sequelizeDb.transaction(async () => {
-      const updateAttributes: Partial<PersonModel> = {};
-      if (input.name) {
-        updateAttributes.name = input.name;
-      }
-      if (input.linkblue) {
-        updateAttributes.linkblue = input.linkblue.toLowerCase();
-      }
-      if (input.role) {
-        updateAttributes.committeeRole = input.role.committeeRole;
-        updateAttributes.committeeName = input.role.committeeIdentifier;
-      }
-
-      await row.update(updateAttributes);
-
-      const promises: Promise<void>[] = [];
-      const memberships = await row.getMemberships({
-        scope: "withTeam",
-      });
-
-      for (const membership of memberships) {
-        if (!membership.team) {
-          throw new DetailedError(
-            ErrorCode.InternalFailure,
-            "Membership has no accessible team"
-          );
-        }
-        if (membership.position === MembershipPositionType.Captain) {
-          if (
-            input.captainOf != null &&
-            !input.captainOf.includes(membership.team.uuid)
-          ) {
-            promises.push(membership.destroy());
-          }
-        } else if (
-          input.memberOf != null &&
-          !input.memberOf.includes(membership.team.uuid)
-        ) {
-          promises.push(membership.destroy());
-        }
-      }
-
-      if (input.captainOf != null) {
-        for (const captainOfTeam of input.captainOf) {
-          if (
-            !memberships.some(
-              (membership) =>
-                membership.team!.uuid === captainOfTeam &&
-                membership.position === MembershipPositionType.Captain
-            )
-          ) {
-            promises.push(
-              TeamModel.findByUuid(captainOfTeam).then((team) =>
-                team == null
-                  ? Promise.reject(
-                      new DetailedError(ErrorCode.NotFound, "Team not found")
-                    )
-                  : row
-                      .createMembership({
-                        personId: row.id,
-                        teamId: team.id,
-                        position: MembershipPositionType.Captain,
-                      })
-                      .then()
-              )
-            );
-          }
-        }
-      }
-
-      if (input.memberOf != null) {
-        for (const memberOfTeam of input.memberOf) {
-          if (
-            !memberships.some(
-              (membership) =>
-                membership.team!.uuid === memberOfTeam &&
-                membership.position === MembershipPositionType.Member
-            )
-          ) {
-            promises.push(
-              TeamModel.findByUuid(memberOfTeam).then((team) =>
-                team == null
-                  ? Promise.reject(
-                      new DetailedError(ErrorCode.NotFound, "Team not found")
-                    )
-                  : row
-                      .createMembership({
-                        personId: row.id,
-                        teamId: team.id,
-                        position: MembershipPositionType.Member,
-                      })
-                      .then()
-              )
-            );
-          }
-        }
-      }
-
-      await Promise.all(promises);
-
-      return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-        await row.toResource()
-      );
-    });
+    return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+      PersonRepository.personModelToResource(row)
+    );
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
   @Mutation(() => DeletePersonResponse, { name: "deletePerson" })
   async delete(@Arg("uuid") id: string): Promise<DeletePersonResponse> {
-    const row = await PersonModel.findOne({
-      where: { uuid: id },
-      attributes: ["id"],
-    });
+    const row = await this.personRepository.findPersonByUuid(id);
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Person not found");
     }
 
-    await row.destroy();
+    const result = await this.personRepository.deletePerson(row);
+
+    if (result == null) {
+      throw new DetailedError(ErrorCode.DatabaseFailure, "Failed to delete");
+    }
 
     return DeletePersonResponse.newOk(true);
   }
