@@ -134,8 +134,7 @@ model Person {
   name          String?
   email         String         @unique(map: "people_email_unique")
   linkblue      String?        @unique(map: "people_linkblue_unique")
-  // authIds       Json           @default("{}") @map("auth_ids")
-  authIds       AuthIdPair[]
+  authIdPairs   AuthIdPair[]
   dbRole        DbRole         @default(None) @map("db_role")
   committeeRole CommitteeRole? @map("committee_role")
   committeeName CommitteeName? @map("committee_name")
@@ -148,12 +147,10 @@ model Person {
 }
 
 model AuthIdPair {
-  id        Int        @id @default(autoincrement())
-  sourceId  Int        @map("source_id")
-  source    AuthSource @relation(fields: [sourceId], references: [id])
-  sourceUid String     @map("source_uid")
-  personId  Int        @map("person_id")
-  people    Person     @relation(fields: [personId], references: [id])
+  id       Int        @id @default(autoincrement())
+  source   AuthSource @map("source")
+  personId Int        @map("person_id")
+  person   Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
 
   @@map(name: "auth_id_pairs")
 }
