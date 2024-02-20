@@ -29,7 +29,7 @@ model Device {
   expoPushToken String?   @map("expo_push_token")
   lastLogin     DateTime? @map("last_login") @db.Timestamptz(6)
   lastUserId    Int?      @map("last_user_id")
-  people        Person?   @relation(fields: [lastUserId], references: [id])
+  lastUser      Person?   @relation(fields: [lastUserId], references: [id])
 
   @@index([uuid], map: "devices_uuid")
   @@map("devices")

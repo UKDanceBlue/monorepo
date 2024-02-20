@@ -65,6 +65,10 @@ export class PersonRepository {
     return this.prisma.person.findUnique({ where: { uuid } });
   }
 
+  findPersonById(id: number): Promise<Person | null> {
+    return this.prisma.person.findUnique({ where: { id } });
+  }
+
   findPersonByLinkblue(linkblue: string): Promise<Person | null> {
     return this.prisma.person.findUnique({ where: { linkblue } });
   }
