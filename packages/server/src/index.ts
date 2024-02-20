@@ -3,7 +3,6 @@ import { argv } from "node:process";
 import { QueryTypes } from "@sequelize/core";
 
 import { sequelizeDb } from "./data-source.js";
-import { isDatabaseLocal } from "./environment.js";
 import { logFatal, logger } from "./logger.js";
 
 import "reflect-metadata";
@@ -15,9 +14,6 @@ logger.info("DanceBlue Server Starting");
 
 await import("./environment.js");
 logger.info("Loaded environment variables");
-
-await import("./models/init.js");
-logger.info("Initialized database models");
 
 if (argv.includes("--migrate-db")) {
   const { default: doMigration } = await import("./umzug.js");
@@ -49,14 +45,6 @@ if (argv.includes("--migrate-db")) {
     logger.info("Database synced");
     await doMigration(true);
   }
-}
-
-// Seed the database if passed the --seed flag
-if (argv.includes("--seed-db") && isDatabaseLocal) {
-  logger.info("'--seed-db' flag detected, seeding database");
-  const { default: seedDatabase } = await import("./seeders/index.js");
-  await seedDatabase();
-  logger.info("Database seeded");
 }
 
 const { createServer, startHttpServer, startServer } = await import(
