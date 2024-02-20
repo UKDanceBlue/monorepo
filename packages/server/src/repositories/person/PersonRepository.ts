@@ -1,14 +1,13 @@
-import { Person, Prisma, PrismaClient } from "@prisma/client";
-import {
+import type { Person } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
+import type {
   AuthIdPairResource,
   AuthSource,
   CommitteeIdentifier,
   CommitteeRole,
-  DbRole,
-  PersonResource,
-  RoleResource,
   SortDirection,
 } from "@ukdanceblue/common";
+import { DbRole, PersonResource, RoleResource } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import { findPersonForLogin } from "../../lib/auth/findPersonForLogin.js";
@@ -230,7 +229,7 @@ export class PersonRepository {
     }
 
     try {
-      return this.prisma.person.update({
+      return await this.prisma.person.update({
         where: { id: personId },
         data: {
           name,
@@ -262,14 +261,14 @@ export class PersonRepository {
             : undefined,
         },
       });
-    } catch (e) {
+    } catch (error) {
       if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === "P2025"
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
       ) {
         return null;
       } else {
-        throw e;
+        throw error;
       }
     }
   }
@@ -278,15 +277,15 @@ export class PersonRepository {
     identifier: { uuid: string } | { id: number }
   ): Promise<Person | null> {
     try {
-      return this.prisma.person.delete({ where: identifier });
-    } catch (e) {
+      return await this.prisma.person.delete({ where: identifier });
+    } catch (error) {
       if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === "P2025"
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
       ) {
         return null;
       } else {
-        throw e;
+        throw error;
       }
     }
   }
