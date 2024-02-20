@@ -27,6 +27,7 @@ import {
 import { Service } from "typedi";
 
 import { PersonRepository } from "../repositories/person/PersonRepository.js";
+import { personModelToResource } from "../repositories/person/personModelToResource.js";
 
 import {
   AbstractGraphQLArrayOkResponse,
@@ -146,7 +147,7 @@ export class PersonResolver {
     }
 
     return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-      PersonRepository.personModelToResource(row)
+      personModelToResource(row)
     );
   }
 
@@ -164,7 +165,7 @@ export class PersonResolver {
     }
 
     return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-      PersonRepository.personModelToResource(row)
+      personModelToResource(row)
     );
   }
 
@@ -191,7 +192,7 @@ export class PersonResolver {
     ]);
 
     return ListPeopleResponse.newPaginated({
-      data: rows.map((row) => PersonRepository.personModelToResource(row)),
+      data: rows.map((row) => personModelToResource(row)),
       total,
       page: args.page,
       pageSize: args.pageSize,
@@ -210,7 +211,7 @@ export class PersonResolver {
     const rows = await this.personRepository.searchByName(name);
 
     return GetPeopleResponse.newOk(
-      rows.map((row) => PersonRepository.personModelToResource(row))
+      rows.map((row) => personModelToResource(row))
     );
   }
 
@@ -229,7 +230,7 @@ export class PersonResolver {
     });
 
     return CreatePersonResponse.newCreated(
-      PersonRepository.personModelToResource(person),
+      personModelToResource(person),
       person.uuid
     );
   }
@@ -257,7 +258,7 @@ export class PersonResolver {
     }
 
     return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-      PersonRepository.personModelToResource(row)
+      personModelToResource(row)
     );
   }
 

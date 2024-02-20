@@ -5,9 +5,10 @@ import type {
   AuthSource,
   CommitteeIdentifier,
   CommitteeRole,
+  RoleResource,
   SortDirection,
 } from "@ukdanceblue/common";
-import { DbRole, PersonResource, RoleResource } from "@ukdanceblue/common";
+import { DbRole } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import { findPersonForLogin } from "../../lib/auth/findPersonForLogin.js";
@@ -99,23 +100,6 @@ export class PersonRepository {
     const where: Prisma.PersonWhereInput = buildPersonWhere(filters);
 
     return this.prisma.person.count({ where });
-  }
-
-  static personModelToResource(person: Person): PersonResource {
-    return PersonResource.init({
-      uuid: person.uuid,
-      name: person.name,
-      email: person.email,
-      linkblue: person.linkblue,
-      role: RoleResource.init({
-        dbRole: person.dbRole,
-        committeeRole: person.committeeRole,
-        committeeIdentifier: person.committeeName,
-      }),
-
-      createdAt: person.createdAt,
-      updatedAt: person.updatedAt,
-    });
   }
 
   searchByName(name: string): Promise<Person[]> {
