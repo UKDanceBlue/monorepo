@@ -57,13 +57,6 @@ class CreateConfigurationsResponse extends AbstractGraphQLArrayOkResponse<Config
   @Field(() => [ConfigurationResource])
   data!: ConfigurationResource[];
 }
-@ObjectType("SetConfigurationResponse", {
-  implements: AbstractGraphQLOkResponse<ConfigurationResource>,
-})
-class SetConfigurationResponse extends AbstractGraphQLOkResponse<ConfigurationResource> {
-  @Field(() => ConfigurationResource)
-  data!: ConfigurationResource;
-}
 @ObjectType("DeleteConfigurationResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
@@ -83,17 +76,12 @@ class CreateConfigurationInput implements Partial<ConfigurationResource> {
   validUntil!: DateTime | null;
 }
 
-@InputType()
-class SetConfigurationInput implements Partial<ConfigurationResource> {
-  @Field()
-  key?: string;
-}
-
 @Resolver(() => ConfigurationResource)
 @Service()
-export class ConfigurationResolver
-{
-  constructor(private readonly configurationRepository: ConfigurationRepository) {}
+export class ConfigurationResolver {
+  constructor(
+    private readonly configurationRepository: ConfigurationRepository
+  ) {}
   @Query(() => GetConfigurationResponse, {
     name: "activeConfiguration",
   })
@@ -114,10 +102,9 @@ export class ConfigurationResolver
 
   @Query(() => GetAllConfigurationsResponse, { name: "allConfigurations" })
   async getAll(): Promise<GetAllConfigurationsResponse> {
-    const rows = await this.configurationRepository.findConfigurations(
-      null,
-      [["createdAt", SortDirection.DESCENDING]],
-    );
+    const rows = await this.configurationRepository.findConfigurations(null, [
+      ["createdAt", SortDirection.DESCENDING],
+    ]);
 
     return GetAllConfigurationsResponse.newOk(
       rows.map(configurationModelToResource)
@@ -129,10 +116,17 @@ export class ConfigurationResolver
   async create(
     @Arg("input") input: CreateConfigurationInput
   ): Promise<CreateConfigurationResponse> {
-    const row = await this.configurationRepository.createConfiguration(
-      { key: input.key, value: input.value, validAfter: input.validAfter ?? null, validUntil: input.validUntil ?? null }    );
+    const row = await this.configurationRepository.createConfiguration({
+      key: input.key,
+      value: input.value,
+      validAfter: input.validAfter ?? null,
+      validUntil: input.validUntil ?? null,
+    });
 
-    return CreateConfigurationResponse.newCreated(configurationModelToResource(row), row.uuid);
+    return CreateConfigurationResponse.newCreated(
+      configurationModelToResource(row),
+      row.uuid
+    );
   }
 
   @AccessControl({ accessLevel: AccessLevel.Admin })
@@ -142,48 +136,33 @@ export class ConfigurationResolver
     input: CreateConfigurationInput[]
   ): Promise<CreateConfigurationsResponse> {
     return prisma.$transaction(async () => {
-    const rows = await Promise.all(
-      input.map((i) =>
-        this.configurationRepository.createConfiguration(
-          { key: i.key, value: i.value, validAfter: i.validAfter ?? null, validUntil: i.validUntil ?? null }        )
-      )
-    );
+      const rows = await Promise.all(
+        input.map((i) =>
+          this.configurationRepository.createConfiguration({
+            key: i.key,
+            value: i.value,
+            validAfter: i.validAfter ?? null,
+            validUntil: i.validUntil ?? null,
+          })
+        )
+      );
 
-    return CreateConfigurationsResponse.newOk(
-      rows.map(configurationModelToResource)
-    );
+      return CreateConfigurationsResponse.newOk(
+        rows.map(configurationModelToResource)
+      );
     });
-  }
-
-  @AccessControl({ accessLevel: AccessLevel.Admin })
-  @Mutation(() => SetConfigurationResponse, { name: "setConfiguration" })
-  async set(
-    @Arg("key") key: string,
-    @Arg("input") input: SetConfigurationInput
-  ): Promise<SetConfigurationResponse> {
-    const row = await ConfigurationModel.findOne({ where: { key } });
-
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
-    }
-    await row.update(input);
-
-    return SetConfigurationResponse.newOk(row.toResource());
   }
 
   @AccessControl({ accessLevel: AccessLevel.Admin })
   @Mutation(() => DeleteConfigurationResponse, { name: "deleteConfiguration" })
-  async delete(@Arg("uuid") id: string): Promise<DeleteConfigurationResponse> {
-    const row = await ConfigurationModel.findOne({
-      where: { key: id },
-      attributes: ["id"],
-      include: [],
-    });
+  async delete(
+    @Arg("uuid") uuid: string
+  ): Promise<DeleteConfigurationResponse> {
+    const row = await this.configurationRepository.deleteConfiguration(uuid);
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
     }
-    await row.destroy();
 
     return DeleteConfigurationResponse.newOk(true);
   }
