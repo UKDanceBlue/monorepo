@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
 import { Service } from "typedi";
@@ -57,20 +57,16 @@ export class ConfigurationRepository {
     return this.prisma.configuration.findFirst({
       where: {
         key,
-        AND: at ? [
-          {
-            OR: [
-              { validAfter: null },
-              { validAfter: { lte: at } },
-            ],
-          },
-          {
-            OR: [
-              { validUntil: null },
-              { validUntil: { gte: at } },
-            ],
-          },
-        ] : [],
+        AND: at
+          ? [
+              {
+                OR: [{ validAfter: null }, { validAfter: { lte: at } }],
+              },
+              {
+                OR: [{ validUntil: null }, { validUntil: { gte: at } }],
+              },
+            ]
+          : [],
       },
       orderBy: { createdAt: "desc" },
     });
@@ -78,8 +74,17 @@ export class ConfigurationRepository {
 
   // Mutators
 
-  createConfiguration(
-{ key, value, validAfter, validUntil }: { key: string; value: string; validAfter: DateTime | null; validUntil: DateTime | null; }  ) {
+  createConfiguration({
+    key,
+    value,
+    validAfter,
+    validUntil,
+  }: {
+    key: string;
+    value: string;
+    validAfter: DateTime | null;
+    validUntil: DateTime | null;
+  }) {
     return this.prisma.configuration.create({
       data: {
         key,
@@ -107,6 +112,17 @@ export class ConfigurationRepository {
   }
 
   deleteConfiguration(uuid: string) {
-    return this.prisma.configuration.delete({ where: { uuid } });
+    try {
+      return this.prisma.configuration.delete({ where: { uuid } });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        return null;
+      } else {
+        throw error;
+      }
+    }
   }
 }
