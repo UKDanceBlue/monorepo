@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
-import { DateTime } from "luxon";
+import type { DateTime } from "luxon";
 import { Service } from "typedi";
 
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
@@ -36,11 +36,11 @@ export class ConfigurationRepository {
 
   // Finders
 
-  async findConfigurations(
+  findConfigurations(
     filters: readonly ConfigurationFilters[] | null | undefined,
     order: readonly [key: string, sort: SortDirection][] | null | undefined,
-    limit: number,
-    offset: number
+    limit?: number | undefined,
+    offset?: number | undefined
   ) {
     const where = buildConfigurationWhere(filters);
     const orderBy = buildConfigurationOrder(order);
@@ -53,25 +53,33 @@ export class ConfigurationRepository {
     });
   }
 
-  async findConfigurationByKey(key: string, at: DateTime | null) {
+  findConfigurationByKey(key: string, at: Date | undefined) {
     return this.prisma.configuration.findFirst({
       where: {
         key,
-        validAfter: { lte: (at ?? DateTime.utc()).toJSDate() },
-        validUntil: { gte: (at ?? DateTime.utc()).toJSDate() },
+        AND: at ? [
+          {
+            OR: [
+              { validAfter: null },
+              { validAfter: { lte: at } },
+            ],
+          },
+          {
+            OR: [
+              { validUntil: null },
+              { validUntil: { gte: at } },
+            ],
+          },
+        ] : [],
       },
-      orderBy: { validAfter: "desc" },
+      orderBy: { createdAt: "desc" },
     });
   }
 
   // Mutators
 
-  async createConfiguration(
-    key: string,
-    value: string,
-    validAfter: DateTime | null,
-    validUntil: DateTime | null
-  ) {
+  createConfiguration(
+{ key, value, validAfter, validUntil }: { key: string; value: string; validAfter: DateTime | null; validUntil: DateTime | null; }  ) {
     return this.prisma.configuration.create({
       data: {
         key,
@@ -82,7 +90,7 @@ export class ConfigurationRepository {
     });
   }
 
-  async updateConfiguration(
+  updateConfiguration(
     uuid: string,
     value?: string | undefined,
     validAfter?: DateTime | undefined | null,
@@ -98,7 +106,7 @@ export class ConfigurationRepository {
     });
   }
 
-  async deleteConfiguration(uuid: string) {
+  deleteConfiguration(uuid: string) {
     return this.prisma.configuration.delete({ where: { uuid } });
   }
 }
