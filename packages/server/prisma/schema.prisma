@@ -89,8 +89,8 @@ model Image {
   mimeType    String?      @map("mime_type") @db.VarChar(255)
   thumbHash   Bytes?       @map("thumb_hash")
   alt         String?
-  width       BigInt
-  height      BigInt
+  width       Int
+  height      Int
   eventImages EventImage[]
 
   @@index([uuid], map: "images_uuid")
