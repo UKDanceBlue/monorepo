@@ -1,4 +1,3 @@
-import { Op } from "@sequelize/core";
 import {
   AccessControl,
   AccessLevel,
@@ -6,6 +5,7 @@ import {
   DateTimeScalar,
   DetailedError,
   ErrorCode,
+  SortDirection,
 } from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
 import {
@@ -17,20 +17,22 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
+import { Service } from "typedi";
 
-import { ConfigurationModel } from "../models/Configuration.js";
+import { prisma } from "../prisma.js";
+import { ConfigurationRepository } from "../repositories/configuration/ConfigurationRepository.js";
+import { configurationModelToResource } from "../repositories/configuration/configurationModelToResource.js";
 
 import {
   AbstractGraphQLArrayOkResponse,
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
 } from "./ApiResponse.js";
-import type { ResolverInterface } from "./ResolverInterface.js";
 
 @ObjectType("GetConfigurationByUuidResponse", {
   implements: AbstractGraphQLOkResponse<ConfigurationResource>,
 })
-class GetConfigurationByKeyResponse extends AbstractGraphQLOkResponse<ConfigurationResource> {
+class GetConfigurationResponse extends AbstractGraphQLOkResponse<ConfigurationResource> {
   @Field(() => ConfigurationResource)
   data!: ConfigurationResource;
 }
@@ -88,59 +90,37 @@ class SetConfigurationInput implements Partial<ConfigurationResource> {
 }
 
 @Resolver(() => ConfigurationResource)
+@Service()
 export class ConfigurationResolver
-  implements ResolverInterface<ConfigurationResource>
 {
-  @Query(() => GetConfigurationByKeyResponse, {
-    name: "configuration",
-  })
-  async getByUuid(
-    @Arg("uuid") uuid: string
-  ): Promise<GetConfigurationByKeyResponse> {
-    const row = await ConfigurationModel.findByUuid(uuid);
-
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
-    }
-    return GetConfigurationByKeyResponse.newOk(row.toResource());
-  }
-
-  @Query(() => GetConfigurationByKeyResponse, {
+  constructor(private readonly configurationRepository: ConfigurationRepository) {}
+  @Query(() => GetConfigurationResponse, {
     name: "activeConfiguration",
   })
-  async getByKey(
+  async activeConfiguration(
     @Arg("key") key: string
-  ): Promise<GetConfigurationByKeyResponse> {
-    const rows = await ConfigurationModel.findAll({
-      where: {
-        key,
-        validAfter: {
-          [Op.or]: [null, { [Op.lte]: new Date() }],
-        },
-        validUntil: {
-          [Op.or]: [null, { [Op.gte]: new Date() }],
-        },
-      },
-      order: [["createdAt", "DESC"]],
-    });
-
-    const row = rows[0];
+  ): Promise<GetConfigurationResponse> {
+    const row = await this.configurationRepository.findConfigurationByKey(
+      key,
+      new Date()
+    );
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
     }
 
-    return GetConfigurationByKeyResponse.newOk(row.toResource());
+    return GetConfigurationResponse.newOk(configurationModelToResource(row));
   }
 
   @Query(() => GetAllConfigurationsResponse, { name: "allConfigurations" })
   async getAll(): Promise<GetAllConfigurationsResponse> {
-    const resources = await ConfigurationModel.findAll({
-      order: [["createdAt", "DESC"]],
-    });
+    const rows = await this.configurationRepository.findConfigurations(
+      null,
+      [["createdAt", SortDirection.DESCENDING]],
+    );
 
     return GetAllConfigurationsResponse.newOk(
-      resources.map((r) => r.toResource())
+      rows.map(configurationModelToResource)
     );
   }
 
@@ -149,14 +129,10 @@ export class ConfigurationResolver
   async create(
     @Arg("input") input: CreateConfigurationInput
   ): Promise<CreateConfigurationResponse> {
-    const row = await ConfigurationModel.create({
-      key: input.key,
-      value: input.value,
-      validAfter: input.validAfter ? input.validAfter.toJSDate() : null,
-      validUntil: input.validUntil ? input.validUntil.toJSDate() : null,
-    });
+    const row = await this.configurationRepository.createConfiguration(
+      { key: input.key, value: input.value, validAfter: input.validAfter ?? null, validUntil: input.validUntil ?? null }    );
 
-    return CreateConfigurationResponse.newCreated(row.toResource(), row.uuid);
+    return CreateConfigurationResponse.newCreated(configurationModelToResource(row), row.uuid);
   }
 
   @AccessControl({ accessLevel: AccessLevel.Admin })
@@ -165,16 +141,18 @@ export class ConfigurationResolver
     @Arg("input", () => [CreateConfigurationInput])
     input: CreateConfigurationInput[]
   ): Promise<CreateConfigurationsResponse> {
-    const rows = await ConfigurationModel.bulkCreate(
-      input.map((i) => ({
-        key: i.key,
-        value: i.value,
-        validAfter: i.validAfter ? i.validAfter.toJSDate() : null,
-        validUntil: i.validUntil ? i.validUntil.toJSDate() : null,
-      }))
+    return prisma.$transaction(async () => {
+    const rows = await Promise.all(
+      input.map((i) =>
+        this.configurationRepository.createConfiguration(
+          { key: i.key, value: i.value, validAfter: i.validAfter ?? null, validUntil: i.validUntil ?? null }        )
+      )
     );
 
-    return CreateConfigurationsResponse.newOk(rows.map((r) => r.toResource()));
+    return CreateConfigurationsResponse.newOk(
+      rows.map(configurationModelToResource)
+    );
+    });
   }
 
   @AccessControl({ accessLevel: AccessLevel.Admin })
