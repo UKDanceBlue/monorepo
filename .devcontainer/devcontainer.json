@@ -53,5 +53,9 @@
         "GitHub.vscode-pull-request-github"
       ]
     }
-  }
+  },
+
+  "mounts": [
+    "source=~/.ssh,target=/home/node/.ssh,type=bind,consistency=cached"
+  ]
 }
