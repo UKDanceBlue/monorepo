@@ -26,7 +26,7 @@ model Device {
   uuid                   String                 @unique(map: "devices_uuid_unique") @default(uuid()) @db.Uuid
   createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt              DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
-  // Verifier for the device, this is a base64 encoded digest of a secret the device knows
+  // Verifier for the device, this is a base64 encoded SHA512 digest of a secret the device knows
   // This is nullable for devices that were registered before we started using the
   // verifier and will be set once the device registers next and will never be null again
   // This means that when this is null, simply trust the device

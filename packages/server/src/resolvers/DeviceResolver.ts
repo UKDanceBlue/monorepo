@@ -68,6 +68,11 @@ class RegisterDeviceInput implements Partial<DeviceResource> {
   expoPushToken?: string | null;
 
   @Field(() => String, {
+    description: "base64 encoded SHA-256 hash of a secret known to the device",
+  })
+  verifier!: string;
+
+  @Field(() => String, {
     description: "The ID of the last user to log in on this device",
     nullable: true,
   })
@@ -76,16 +81,16 @@ class RegisterDeviceInput implements Partial<DeviceResource> {
 
 @ArgsType()
 class ListDevicesArgs extends FilteredListQueryArgs<
-  "expoPushToken" | "lastLogin" | "createdAt" | "updatedAt",
+  "expoPushToken" | "lastSeen" | "createdAt" | "updatedAt",
   "expoPushToken",
   never,
   never,
-  "lastLogin" | "createdAt" | "updatedAt",
+  "lastSeen" | "createdAt" | "updatedAt",
   never
 >("DeviceResolver", {
-  all: ["expoPushToken", "lastLogin", "createdAt", "updatedAt"],
+  all: ["expoPushToken", "lastSeen", "createdAt", "updatedAt"],
   string: ["expoPushToken"],
-  date: ["lastLogin", "createdAt", "updatedAt"],
+  date: ["lastSeen", "createdAt", "updatedAt"],
 }) {}
 
 @Resolver(() => DeviceResource)
@@ -137,10 +142,14 @@ export class DeviceResolver {
   async register(
     @Arg("input") input: RegisterDeviceInput
   ): Promise<RegisterDeviceResponse> {
-    const row = await this.deviceRepository.registerDevice(input.deviceId, {
-      expoPushToken: input.expoPushToken ?? null,
-      lastUserId: input.lastUserId ?? null,
-    });
+    const row = await this.deviceRepository.registerDevice(
+      input.deviceId,
+      input.verifier,
+      {
+        expoPushToken: input.expoPushToken ?? null,
+        lastUserId: input.lastUserId ?? null,
+      }
+    );
 
     return RegisterDeviceResponse.newOk(deviceModelToResource(row));
   }
