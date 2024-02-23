@@ -22,14 +22,24 @@ model Configuration {
 }
 
 model Device {
-  id            Int       @id @default(autoincrement())
-  uuid          String    @unique(map: "devices_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  expoPushToken String?   @map("expo_push_token")
-  lastLogin     DateTime? @map("last_login") @db.Timestamptz(6)
-  lastUserId    Int?      @map("last_user_id")
-  lastUser      Person?   @relation(fields: [lastUserId], references: [id])
+  id                     Int                    @id @default(autoincrement())
+  uuid                   String                 @unique(map: "devices_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  // Verifier for the device, this is a base64 encoded digest of a secret the device knows
+  // This is nullable for devices that were registered before we started using the
+  // verifier and will be set once the device registers next and will never be null again
+  // This means that when this is null, simply trust the device
+  verifier               String?
+  // The Expo push token for the device, if available
+  expoPushToken          String?                @map("expo_push_token")
+  // The last time the device was seen
+  lastSeen               DateTime?              @map("last_login") @db.Timestamptz(6)
+  lastSeenPersonId       Int?                   @map("last_user_id")
+  // The last person to use the device
+  lastSeenPerson         Person?                @relation(fields: [lastSeenPersonId], references: [id])
+  // The notifications that have been sent to this device
+  deliveredNotifications NotificationDelivery[]
 
   @@index([uuid], map: "devices_uuid")
   @@map("devices")
@@ -198,13 +208,73 @@ model Team {
   name                 String
   type                 TeamType
   legacyStatus         TeamLegacyStatus @map("legacy_status")
-  marathonYear         String           @map("marathon_year") @db.VarChar(4)
+  marathonYear         String           @map("marathon_year") @db.Char(4)
   persistentIdentifier String?          @unique(map: "teams_persistent_identifier_unique") @map("persistent_identifier")
   memberships          Membership[]
   pointEntries         PointEntry[]
 
   @@index([uuid], map: "teams_uuid")
   @@map("teams")
+}
+
+// The contents of a notification
+model Notification {
+  id                          Int                    @id @default(autoincrement())
+  uuid                        String                 @unique(map: "notifications_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt                   DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                   DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  title                       String
+  body                        String
+  // URL to open when the notification is tapped
+  url                         String?
+  // False by default, set to true once the notification has been sent to Expo
+  sent                        Boolean                @default(false)
+  // Every individual delivery of the notification
+  deliveries                  NotificationDelivery[]
+  // If set, indicates a potential issue with delivery
+  deliveryIssue               String?                @map("delivery_issue")
+  // If set, indicates the time at which the delivery issue was acknowledged, null until then
+  deliveryIssueAwknowledgedAt DateTime?              @map("delivery_issue_acknowledged_at") @db.Timestamptz(6)
+
+  @@index([uuid], map: "notifications_uuid")
+  @@map("notifications")
+}
+
+// A record of a notification being sent to a device
+model NotificationDelivery {
+  id             Int                @id @default(autoincrement())
+  uuid           String             @unique(map: "notification_deliveries_uuid_unique") @default(uuid()) @db.Uuid
+  deviceId       Int                @map("device_id")
+  notificationId Int                @map("notification_id")
+  // The device to which the notification was sent
+  device         Device             @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  // The notification that was sent
+  notification   Notification       @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  // The receipt ID from Expo
+  receiptId      String?            @map("receipt_id")
+  // Whether the push receipt indicates the notification was delivered, remains null until the receipt is checked
+  delivered      Boolean?
+  // If set, either the push ticket or receipt indicated an error (not necessarily mutually exclusive with delivered)
+  deliveryError  NotificationError? @map("delivery_error")
+  createdAt      DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([uuid], map: "notification_deliveries_uuid")
+  @@map("notification_deliveries")
+}
+
+// Potential errors after sending a notification to Expo (see https://docs.expo.dev/push-notifications/sending-notifications/#individual-errors)
+enum NotificationError {
+  // The device cannot receive push notifications anymore and you should stop sending messages to the corresponding Expo push token.
+  DeviceNotRegistered
+  // Your push notification credentials for your standalone app are invalid (for example, you may have revoked them).
+  InvalidCredentials
+  // The total notification payload was too large. On Android and iOS, the total payload must be at most 4096 bytes.
+  MessageTooBig
+  // You are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
+  MessageRateExceeded
+  // This indicates that there is an issue with your FCM push credentials.
+  MismatchSenderId
 }
 
 enum MembershipPosition {
