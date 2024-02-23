@@ -11,7 +11,7 @@ import { buildDeviceOrder, buildDeviceWhere } from "./deviceRepositoryUtils.js";
 const deviceStringKeys = ["expoPushToken"] as const;
 type DeviceStringKey = (typeof deviceStringKeys)[number];
 
-const deviceDateKeys = ["lastLogin", "createdAt", "updatedAt"] as const;
+const deviceDateKeys = ["lastSeen", "createdAt", "updatedAt"] as const;
 type DeviceDateKey = (typeof deviceDateKeys)[number];
 
 export type DeviceFilters = FilterItems<
@@ -39,9 +39,9 @@ export class DeviceRepository {
   async getLastLoggedInUser(deviceUuid: string) {
     const device = await this.getDeviceByUuid(deviceUuid);
 
-    return device?.lastUserId == null
+    return device?.lastSeenPersonId == null
       ? null
-      : this.personRepository.findPersonById(device.lastUserId);
+      : this.personRepository.findPersonById(device.lastSeenPersonId);
   }
 
   async listDevices({
@@ -74,6 +74,7 @@ export class DeviceRepository {
 
   async registerDevice(
     deviceUuid: string,
+    verifier: string,
     {
       expoPushToken,
       lastUserId,
@@ -92,15 +93,17 @@ export class DeviceRepository {
       where: { uuid: deviceUuid },
       update: {
         expoPushToken,
-        lastUser:
+        verifier,
+        lastSeenPerson:
           user == null ? { disconnect: true } : { connect: { id: user.id } },
-        lastLogin: new Date(),
+        lastSeen: new Date(),
       },
       create: {
         uuid: deviceUuid,
         expoPushToken,
-        lastUser: user == null ? undefined : { connect: { id: user.id } },
-        lastLogin: new Date(),
+        verifier,
+        lastSeenPerson: user == null ? undefined : { connect: { id: user.id } },
+        lastSeen: new Date(),
       },
     });
   }

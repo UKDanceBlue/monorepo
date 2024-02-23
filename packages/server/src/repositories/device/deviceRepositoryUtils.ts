@@ -16,7 +16,7 @@ export function buildDeviceOrder(
   for (const [key, sort] of order ?? []) {
     switch (key) {
       case "expoPushToken":
-      case "lastLogin":
+      case "lastSeen":
       case "createdAt":
       case "updatedAt": {
         orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
@@ -41,7 +41,7 @@ export function buildDeviceWhere(
         where[filter.field] = stringFilterToPrisma(filter);
         break;
       }
-      case "lastLogin": {
+      case "lastSeen": {
         where[filter.field] = dateFilterToPrisma(filter);
         break;
       }
