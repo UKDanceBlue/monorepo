@@ -50,8 +50,8 @@ model EventImage {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
   eventId   Int      @map("event_id")
   imageId   Int      @map("image_id")
-  events    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  images    Image    @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  image     Image    @relation(fields: [imageId], references: [id], onDelete: Cascade)
 
   @@id([eventId, imageId])
   @@map("event_images")
@@ -66,7 +66,7 @@ model EventOccurrence {
   date      DateTime @db.Timestamptz(6)
   endDate   DateTime @map("end_date") @db.Timestamptz(6)
   eventId   Int      @map("event_id")
-  events    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@index([uuid], map: "event_occurrences_uuid")
   @@map("event_occurrences")
@@ -129,8 +129,8 @@ model Membership {
   personId  Int                @map("person_id")
   teamId    Int                @map("team_id")
   position  MembershipPosition
-  people    Person             @relation(fields: [personId], references: [id], onDelete: Cascade)
-  teams     Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  person    Person             @relation(fields: [personId], references: [id], onDelete: Cascade)
+  team      Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@index([uuid], map: "memberships_uuid")
   @@map("memberships")
@@ -176,9 +176,9 @@ model PointEntry {
   personFromId       Int?              @map("person_from_id")
   teamId             Int               @map("team_id")
   pointOpportunityId Int?              @map("point_opportunity_id")
-  people             Person?           @relation(fields: [personFromId], references: [id])
-  pointOpportunities PointOpportunity? @relation(fields: [pointOpportunityId], references: [id])
-  teams              Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  person             Person?           @relation(fields: [personFromId], references: [id])
+  pointOpportunity   PointOpportunity? @relation(fields: [pointOpportunityId], references: [id])
+  team               Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@index([uuid], map: "point_entries_uuid")
   @@map("point_entries")
@@ -194,7 +194,7 @@ model PointOpportunity {
   type            PointOpportunityType
   eventId         Int?                 @map("event_id")
   pointEntries    PointEntry[]
-  events          Event?               @relation(fields: [eventId], references: [id])
+  event           Event?               @relation(fields: [eventId], references: [id])
 
   @@index([uuid], map: "point_opportunities_uuid")
   @@map("point_opportunities")
