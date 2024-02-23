@@ -1,11 +1,10 @@
-import type { MembershipFilters } from "./MembershipRepository.ts";
-import type { Membership, Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
-import { buildFilter } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
+import type { MembershipFilters } from "./MembershipRepository.ts";
 
 export function buildMembershipOrder(
-  order: string,
-  direction: SortDirection
+  order: readonly [key: string, sort: SortDirection][] | null | undefined
 ) {
   const orderBy: Prisma.MembershipOrderByWithRelationInput = {};
 
@@ -25,7 +24,7 @@ export function buildMembershipOrder(
 }
 
 export function buildMembershipWhere(
-  filters: MembershipFilters[]
+  filters: readonly MembershipFilters[] | null | undefined
 ) {
   const where: Prisma.MembershipWhereInput = {};
 

@@ -1,11 +1,10 @@
-import type { EventFilters } from "./EventRepository.ts";
-import type { Event, Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
-import { buildFilter } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
+import type { EventFilters } from "./EventRepository.ts";
 
 export function buildEventOrder(
-  order: string,
-  direction: SortDirection
+  order: readonly [key: string, sort: SortDirection][] | null | undefined
 ) {
   const orderBy: Prisma.EventOrderByWithRelationInput = {};
 
@@ -25,7 +24,7 @@ export function buildEventOrder(
 }
 
 export function buildEventWhere(
-  filters: EventFilters[]
+  filters: readonly EventFilters[] | null | undefined
 ) {
   const where: Prisma.EventWhereInput = {};
 

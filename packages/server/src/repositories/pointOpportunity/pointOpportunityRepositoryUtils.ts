@@ -1,11 +1,10 @@
-import type { PointOpportunityFilters } from "./PointOpportunityRepository.ts";
-import type { PointOpportunity, Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
-import { buildFilter } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
+import type { PointOpportunityFilters } from "./PointOpportunityRepository.ts";
 
 export function buildPointOpportunityOrder(
-  order: string,
-  direction: SortDirection
+  order: readonly [key: string, sort: SortDirection][] | null | undefined
 ) {
   const orderBy: Prisma.PointOpportunityOrderByWithRelationInput = {};
 
@@ -25,7 +24,7 @@ export function buildPointOpportunityOrder(
 }
 
 export function buildPointOpportunityWhere(
-  filters: PointOpportunityFilters[]
+  filters: readonly PointOpportunityFilters[] | null | undefined
 ) {
   const where: Prisma.PointOpportunityWhereInput = {};
 

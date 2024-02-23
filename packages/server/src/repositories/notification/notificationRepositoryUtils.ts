@@ -1,11 +1,10 @@
-import type { NotificationFilters } from "./NotificationRepository.ts";
-import type { Notification, Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
-import { buildFilter } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
+import type { NotificationFilters } from "./NotificationRepository.ts";
 
 export function buildNotificationOrder(
-  order: string,
-  direction: SortDirection
+  order: readonly [key: string, sort: SortDirection][] | null | undefined
 ) {
   const orderBy: Prisma.NotificationOrderByWithRelationInput = {};
 
@@ -25,7 +24,7 @@ export function buildNotificationOrder(
 }
 
 export function buildNotificationWhere(
-  filters: NotificationFilters[]
+  filters: readonly NotificationFilters[] | null | undefined
 ) {
   const where: Prisma.NotificationWhereInput = {};
 

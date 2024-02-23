@@ -1,5 +1,5 @@
 
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
@@ -34,9 +34,83 @@ export type NotificationFilters = FilterItems<
   NotificationStringKey
 >;
 
+type UniqueNotificationParam = { id: number } | { uuid: string };
+
 @Service()
 export class NotificationRepository {
   constructor(
     private prisma: PrismaClient,
     ) {}
+
+    findNotificationByUnique(param: UniqueNotificationParam) {
+      return this.prisma.notification.findUnique({where: param});
+    }
+
+    listNotification({
+      filters,
+      order,
+      skip,
+      take,
+    }: {
+      filters?: readonly NotificationFilters[] | undefined | null;
+      order?: readonly [key: string, sort: SortDirection][] | undefined | null;
+      skip?: number | undefined | null;
+      take?: number | undefined | null;
+    }) {
+      const where = buildNotificationWhere(filters);
+      const orderBy = buildNotificationOrder(order);
+
+      return this.prisma.notification.findMany({
+        where,
+        orderBy,
+        skip: skip ?? undefined,
+        take: take ?? undefined,
+      });
+    }
+
+    countNotification({
+      filters,
+    }: {
+      filters?: readonly NotificationFilters[] | undefined | null;
+    }) {
+      const where = buildNotificationWhere(filters);
+
+      return this.prisma.notification.count({
+        where,
+      });
+    }
+
+    createNotification(data: Prisma.NotificationCreateInput) {
+      return this.prisma.notification.create({ data });
+    }
+
+    updateNotification(param: UniqueNotificationParam, data: Prisma.NotificationUpdateInput) {
+      try {
+        return this.prisma.notification.update({ where: param, data });
+      } catch (error) {
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === "P2025"
+        ) {
+          return null;
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    deleteNotification(param: UniqueNotificationParam) {
+      try {
+        return this.prisma.notification.delete({ where: param });
+      } catch (error) {
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === "P2025"
+        ) {
+          return null;
+        } else {
+          throw error;
+        }
+      }
+    }
 }

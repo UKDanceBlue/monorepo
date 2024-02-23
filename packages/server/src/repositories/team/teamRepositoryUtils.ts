@@ -1,11 +1,10 @@
-import type { TeamFilters } from "./TeamRepository.ts";
-import type { Team, Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
-import { buildFilter } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
+import type { TeamFilters } from "./TeamRepository.ts";
 
 export function buildTeamOrder(
-  order: string,
-  direction: SortDirection
+  order: readonly [key: string, sort: SortDirection][] | null | undefined
 ) {
   const orderBy: Prisma.TeamOrderByWithRelationInput = {};
 
@@ -25,7 +24,7 @@ export function buildTeamOrder(
 }
 
 export function buildTeamWhere(
-  filters: TeamFilters[]
+  filters: readonly TeamFilters[] | null | undefined
 ) {
   const where: Prisma.TeamWhereInput = {};
 

@@ -1,11 +1,10 @@
-import type { PointEntryFilters } from "./PointEntryRepository.ts";
-import type { PointEntry, Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
-import { buildFilter } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
+import type { PointEntryFilters } from "./PointEntryRepository.ts";
 
 export function buildPointEntryOrder(
-  order: string,
-  direction: SortDirection
+  order: readonly [key: string, sort: SortDirection][] | null | undefined
 ) {
   const orderBy: Prisma.PointEntryOrderByWithRelationInput = {};
 
@@ -25,7 +24,7 @@ export function buildPointEntryOrder(
 }
 
 export function buildPointEntryWhere(
-  filters: PointEntryFilters[]
+  filters: readonly PointEntryFilters[] | null | undefined
 ) {
   const where: Prisma.PointEntryWhereInput = {};
 

@@ -1,11 +1,10 @@
-import type { ImageFilters } from "./ImageRepository.ts";
-import type { Image, Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
-import { buildFilter } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
+import type { ImageFilters } from "./ImageRepository.ts";
 
 export function buildImageOrder(
-  order: string,
-  direction: SortDirection
+  order: readonly [key: string, sort: SortDirection][] | null | undefined
 ) {
   const orderBy: Prisma.ImageOrderByWithRelationInput = {};
 
@@ -25,7 +24,7 @@ export function buildImageOrder(
 }
 
 export function buildImageWhere(
-  filters: ImageFilters[]
+  filters: readonly ImageFilters[] | null | undefined
 ) {
   const where: Prisma.ImageWhereInput = {};
 

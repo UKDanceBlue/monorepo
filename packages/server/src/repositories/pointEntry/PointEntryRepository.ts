@@ -1,5 +1,5 @@
 
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
@@ -34,9 +34,83 @@ export type PointEntryFilters = FilterItems<
   PointEntryStringKey
 >;
 
+type UniquePointEntryParam = { id: number } | { uuid: string };
+
 @Service()
 export class PointEntryRepository {
   constructor(
     private prisma: PrismaClient,
     ) {}
+
+    findPointEntryByUnique(param: UniquePointEntryParam) {
+      return this.prisma.pointEntry.findUnique({where: param});
+    }
+
+    listPointEntry({
+      filters,
+      order,
+      skip,
+      take,
+    }: {
+      filters?: readonly PointEntryFilters[] | undefined | null;
+      order?: readonly [key: string, sort: SortDirection][] | undefined | null;
+      skip?: number | undefined | null;
+      take?: number | undefined | null;
+    }) {
+      const where = buildPointEntryWhere(filters);
+      const orderBy = buildPointEntryOrder(order);
+
+      return this.prisma.pointEntry.findMany({
+        where,
+        orderBy,
+        skip: skip ?? undefined,
+        take: take ?? undefined,
+      });
+    }
+
+    countPointEntry({
+      filters,
+    }: {
+      filters?: readonly PointEntryFilters[] | undefined | null;
+    }) {
+      const where = buildPointEntryWhere(filters);
+
+      return this.prisma.pointEntry.count({
+        where,
+      });
+    }
+
+    createPointEntry(data: Prisma.PointEntryCreateInput) {
+      return this.prisma.pointEntry.create({ data });
+    }
+
+    updatePointEntry(param: UniquePointEntryParam, data: Prisma.PointEntryUpdateInput) {
+      try {
+        return this.prisma.pointEntry.update({ where: param, data });
+      } catch (error) {
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === "P2025"
+        ) {
+          return null;
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    deletePointEntry(param: UniquePointEntryParam) {
+      try {
+        return this.prisma.pointEntry.delete({ where: param });
+      } catch (error) {
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === "P2025"
+        ) {
+          return null;
+        } else {
+          throw error;
+        }
+      }
+    }
 }
