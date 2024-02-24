@@ -12,6 +12,7 @@ type EventBooleanKey = (typeof eventBooleanKeys)[number];
 const eventDateKeys = [
   "createdAt",
   "updatedAt",
+  "occurrence",
   "occurrenceStart",
   "occurrenceEnd",
 ] as const;
@@ -20,7 +21,7 @@ type EventDateKey = (typeof eventDateKeys)[number];
 const eventIsNullKeys = [] as const;
 type EventIsNullKey = (typeof eventIsNullKeys)[number];
 
-const eventNumericKeys = ["duration"] as const;
+const eventNumericKeys = [] as const;
 type EventNumericKey = (typeof eventNumericKeys)[number];
 
 const eventOneOfKeys = [] as const;
@@ -67,7 +68,7 @@ export class EventRepository {
     });
   }
 
-  async listEvent({
+  async listEvents({
     filters,
     order,
     skip,
@@ -128,7 +129,7 @@ export class EventRepository {
     return rows;
   }
 
-  countEvent({
+  countEvents({
     filters,
   }: {
     filters?: readonly EventFilters[] | undefined | null;

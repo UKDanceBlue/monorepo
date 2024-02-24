@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client";
+import type { FilterItem } from "@ukdanceblue/common";
 import { SortDirection } from "@ukdanceblue/common";
 
 import {
@@ -59,6 +60,7 @@ export function buildEventWhere(
         where.description = stringFilterToPrisma(filter);
         break;
       }
+      case "occurrence":
       case "occurrenceStart": {
         where.eventOccurrences = {
           some: {
@@ -81,7 +83,11 @@ export function buildEventWhere(
         break;
       }
       default: {
-        throw new Error(`Unsupported filter key: ${String(filter.field)}`);
+        throw new Error(
+          `Unsupported filter key: ${String(
+            (filter as FilterItem<never, never>).field
+          )}`
+        );
       }
     }
   }
