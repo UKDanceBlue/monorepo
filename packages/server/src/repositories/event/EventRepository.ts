@@ -1,5 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
+import { SortDirection } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
@@ -9,20 +9,41 @@ import { buildEventOrder, buildEventWhere } from "./eventRepositoryUtils.js";
 const eventBooleanKeys = [] as const;
 type EventBooleanKey = (typeof eventBooleanKeys)[number];
 
-const eventDateKeys = ["createdAt", "updatedAt"] as const;
+const eventDateKeys = [
+  "createdAt",
+  "updatedAt",
+  "occurrenceStart",
+  "occurrenceEnd",
+] as const;
 type EventDateKey = (typeof eventDateKeys)[number];
 
 const eventIsNullKeys = [] as const;
 type EventIsNullKey = (typeof eventIsNullKeys)[number];
 
-const eventNumericKeys = [] as const;
+const eventNumericKeys = ["duration"] as const;
 type EventNumericKey = (typeof eventNumericKeys)[number];
 
 const eventOneOfKeys = [] as const;
 type EventOneOfKey = (typeof eventOneOfKeys)[number];
 
-const eventStringKeys = [] as const;
+const eventStringKeys = [
+  "title",
+  "summary",
+  "description",
+  "location",
+] as const;
 type EventStringKey = (typeof eventStringKeys)[number];
+
+export type EventOrderKeys =
+  | "title"
+  | "description"
+  | "summary"
+  | "location"
+  | "occurrence"
+  | "occurrenceStart"
+  | "occurrenceEnd"
+  | "createdAt"
+  | "updatedAt";
 
 export type EventFilters = FilterItems<
   EventBooleanKey,
@@ -40,29 +61,71 @@ export class EventRepository {
   constructor(private prisma: PrismaClient) {}
 
   findEventByUnique(param: UniqueEventParam) {
-    return this.prisma.event.findUnique({ where: param });
+    return this.prisma.event.findUnique({
+      where: param,
+      include: { eventOccurrences: true },
+    });
   }
 
-  listEvent({
+  async listEvent({
     filters,
     order,
     skip,
     take,
   }: {
     filters?: readonly EventFilters[] | undefined | null;
-    order?: readonly [key: string, sort: SortDirection][] | undefined | null;
+    order?:
+      | readonly [key: EventOrderKeys, sort: SortDirection][]
+      | undefined
+      | null;
     skip?: number | undefined | null;
     take?: number | undefined | null;
   }) {
     const where = buildEventWhere(filters);
     const orderBy = buildEventOrder(order);
 
-    return this.prisma.event.findMany({
+    let rows = await this.prisma.event.findMany({
       where,
       orderBy,
       skip: skip ?? undefined,
       take: take ?? undefined,
+      include: { eventOccurrences: true },
     });
+
+    rows = rows.map((row) => {
+      row.eventOccurrences.sort((a, b) => {
+        return a.date.getTime() - b.date.getTime();
+      });
+      return row;
+    });
+
+    for (const [key, sort] of order ?? []) {
+      switch (key) {
+        case "occurrence":
+        case "occurrenceStart": {
+          rows.sort((a, b) => {
+            const aDate = a.eventOccurrences[0]?.date ?? new Date(0);
+            const bDate = b.eventOccurrences[0]?.date ?? new Date(0);
+            return sort === SortDirection.ASCENDING
+              ? aDate.getTime() - bDate.getTime()
+              : bDate.getTime() - aDate.getTime();
+          });
+          break;
+        }
+        case "occurrenceEnd": {
+          rows.sort((a, b) => {
+            const aDate = a.eventOccurrences.at(-1)?.date ?? new Date(0);
+            const bDate = b.eventOccurrences.at(-1)?.date ?? new Date(0);
+            return sort === SortDirection.ASCENDING
+              ? aDate.getTime() - bDate.getTime()
+              : bDate.getTime() - aDate.getTime();
+          });
+          break;
+        }
+      }
+    }
+
+    return rows;
   }
 
   countEvent({
