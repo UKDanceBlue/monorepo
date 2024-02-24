@@ -142,12 +142,19 @@ export class EventRepository {
   }
 
   createEvent(data: Prisma.EventCreateInput) {
-    return this.prisma.event.create({ data });
+    return this.prisma.event.create({
+      data,
+      include: { eventOccurrences: true },
+    });
   }
 
   updateEvent(param: UniqueEventParam, data: Prisma.EventUpdateInput) {
     try {
-      return this.prisma.event.update({ where: param, data });
+      return this.prisma.event.update({
+        where: param,
+        data,
+        include: { eventOccurrences: true },
+      });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
