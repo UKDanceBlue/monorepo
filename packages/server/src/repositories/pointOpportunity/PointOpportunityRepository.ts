@@ -1,11 +1,13 @@
-
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import { buildPointOpportunityOrder, buildPointOpportunityWhere } from "./pointOpportunityRepositoryUtils.js";
+import {
+  buildPointOpportunityOrder,
+  buildPointOpportunityWhere,
+} from "./pointOpportunityRepositoryUtils.js";
 
 const pointOpportunityBooleanKeys = [] as const;
 type PointOpportunityBooleanKey = (typeof pointOpportunityBooleanKeys)[number];
@@ -38,79 +40,80 @@ type UniquePointOpportunityParam = { id: number } | { uuid: string };
 
 @Service()
 export class PointOpportunityRepository {
-  constructor(
-    private prisma: PrismaClient,
-    ) {}
+  constructor(private prisma: PrismaClient) {}
 
-    findPointOpportunityByUnique(param: UniquePointOpportunityParam) {
-      return this.prisma.pointOpportunity.findUnique({where: param});
-    }
+  findPointOpportunityByUnique(param: UniquePointOpportunityParam) {
+    return this.prisma.pointOpportunity.findUnique({ where: param });
+  }
 
-    listPointOpportunity({
-      filters,
-      order,
-      skip,
-      take,
-    }: {
-      filters?: readonly PointOpportunityFilters[] | undefined | null;
-      order?: readonly [key: string, sort: SortDirection][] | undefined | null;
-      skip?: number | undefined | null;
-      take?: number | undefined | null;
-    }) {
-      const where = buildPointOpportunityWhere(filters);
-      const orderBy = buildPointOpportunityOrder(order);
+  listPointOpportunities({
+    filters,
+    order,
+    skip,
+    take,
+  }: {
+    filters?: readonly PointOpportunityFilters[] | undefined | null;
+    order?: readonly [key: string, sort: SortDirection][] | undefined | null;
+    skip?: number | undefined | null;
+    take?: number | undefined | null;
+  }) {
+    const where = buildPointOpportunityWhere(filters);
+    const orderBy = buildPointOpportunityOrder(order);
 
-      return this.prisma.pointOpportunity.findMany({
-        where,
-        orderBy,
-        skip: skip ?? undefined,
-        take: take ?? undefined,
-      });
-    }
+    return this.prisma.pointOpportunity.findMany({
+      where,
+      orderBy,
+      skip: skip ?? undefined,
+      take: take ?? undefined,
+    });
+  }
 
-    countPointOpportunity({
-      filters,
-    }: {
-      filters?: readonly PointOpportunityFilters[] | undefined | null;
-    }) {
-      const where = buildPointOpportunityWhere(filters);
+  countPointOpportunities({
+    filters,
+  }: {
+    filters?: readonly PointOpportunityFilters[] | undefined | null;
+  }) {
+    const where = buildPointOpportunityWhere(filters);
 
-      return this.prisma.pointOpportunity.count({
-        where,
-      });
-    }
+    return this.prisma.pointOpportunity.count({
+      where,
+    });
+  }
 
-    createPointOpportunity(data: Prisma.PointOpportunityCreateInput) {
-      return this.prisma.pointOpportunity.create({ data });
-    }
+  createPointOpportunity(data: Prisma.PointOpportunityCreateInput) {
+    return this.prisma.pointOpportunity.create({ data });
+  }
 
-    updatePointOpportunity(param: UniquePointOpportunityParam, data: Prisma.PointOpportunityUpdateInput) {
-      try {
-        return this.prisma.pointOpportunity.update({ where: param, data });
-      } catch (error) {
-        if (
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === "P2025"
-        ) {
-          return null;
-        } else {
-          throw error;
-        }
+  updatePointOpportunity(
+    param: UniquePointOpportunityParam,
+    data: Prisma.PointOpportunityUpdateInput
+  ) {
+    try {
+      return this.prisma.pointOpportunity.update({ where: param, data });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        return null;
+      } else {
+        throw error;
       }
     }
+  }
 
-    deletePointOpportunity(param: UniquePointOpportunityParam) {
-      try {
-        return this.prisma.pointOpportunity.delete({ where: param });
-      } catch (error) {
-        if (
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === "P2025"
-        ) {
-          return null;
-        } else {
-          throw error;
-        }
+  deletePointOpportunity(param: UniquePointOpportunityParam) {
+    try {
+      return this.prisma.pointOpportunity.delete({ where: param });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        return null;
+      } else {
+        throw error;
       }
     }
+  }
 }

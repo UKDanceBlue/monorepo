@@ -7,6 +7,7 @@ import {
   EventResource,
   FilteredListQueryArgs,
   ImageResource,
+  SortDirection,
 } from "@ukdanceblue/common";
 import { Interval } from "luxon";
 import {
@@ -23,22 +24,21 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
+import { Service } from "typedi";
 
 import { sequelizeDb } from "../data-source.js";
-import { EventModel } from "../models/Event.js";
-import { EventOccurrenceModel } from "../models/EventOccurrence.js";
-import { ImageModel } from "../models/Image.js";
+import { EventRepository } from "../repositories/event/EventRepository.js";
+import {
+  eventModelToResource,
+  eventOccurrenceModelToResource,
+} from "../repositories/event/eventModelToResource.js";
+import { EventImagesRepository } from "../repositories/event/images/EventImagesRepository.js";
 
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
-import type {
-  ResolverInterface,
-  ResolverInterfaceWithFilteredList,
-} from "./ResolverInterface.js";
-import { toSequelizeFindOptions } from "./list-query-args/toSequelizeFindOptions.js";
 
 @ObjectType("GetEventByUuidResponse", {
   implements: AbstractGraphQLOkResponse<EventResource>,
@@ -174,7 +174,26 @@ class AddEventImageInput {
 }
 
 @ArgsType()
-class ListEventsArgs extends FilteredListQueryArgs("EventResolver", {
+class ListEventsArgs extends FilteredListQueryArgs<
+  | "title"
+  | "description"
+  | "summary"
+  | "location"
+  | "occurrence"
+  | "occurrenceStart"
+  | "occurrenceEnd"
+  | "createdAt"
+  | "updatedAt",
+  "title" | "description" | "summary" | "location",
+  never,
+  never,
+  | "occurrence"
+  | "occurrenceStart"
+  | "occurrenceEnd"
+  | "createdAt"
+  | "updatedAt",
+  never
+>("EventResolver", {
   all: [
     "title",
     "description",
@@ -183,12 +202,10 @@ class ListEventsArgs extends FilteredListQueryArgs("EventResolver", {
     "occurrence",
     "occurrenceStart",
     "occurrenceEnd",
-    "duration",
     "createdAt",
     "updatedAt",
   ],
   string: ["title", "summary", "description", "location"],
-  numeric: ["duration"],
   date: [
     "occurrence",
     "createdAt",
@@ -198,49 +215,53 @@ class ListEventsArgs extends FilteredListQueryArgs("EventResolver", {
   ],
 }) {}
 
+@Service()
 @Resolver(() => EventResource)
-export class EventResolver
-  implements
-    ResolverInterface<EventResource>,
-    ResolverInterfaceWithFilteredList<EventResource, ListEventsArgs>
-{
+export class EventResolver {
+  constructor(
+    private eventRepository: EventRepository,
+    private eventImageRepository: EventImagesRepository
+  ) {}
   @Query(() => GetEventByUuidResponse, { name: "event" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetEventByUuidResponse> {
-    const row = await EventModel.findOne({ where: { uuid } });
+    const row = await this.eventRepository.findEventByUnique({ uuid });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
 
-    return GetEventByUuidResponse.newOk(await row.toResource());
+    return GetEventByUuidResponse.newOk(
+      eventModelToResource(
+        row,
+        row.eventOccurrences.map(eventOccurrenceModelToResource)
+      )
+    );
   }
 
   @Query(() => ListEventsResponse, { name: "events" })
   async list(@Args() query: ListEventsArgs) {
-    const findOptions = toSequelizeFindOptions(
-      query,
-      {
-        title: "title",
-        description: "description",
-        location: "location",
-        occurrence: "$occurrences.date$",
-        duration: "duration",
-        occurrenceStart: "$occurrences.date$",
-        occurrenceEnd: "$occurrences.endDate$",
-      },
-      {
-        occurrence: [EventOccurrenceModel, "date"] as const,
-        occurrenceStart: [EventOccurrenceModel, "date"] as const,
-        occurrenceEnd: [EventOccurrenceModel, "endDate"] as const,
-      },
-      EventModel
-    );
-
-    const { rows, count } = await EventModel.findAndCountAll(findOptions);
+    const rows = await this.eventRepository.listEvents({
+      filters: query.filters,
+      order:
+        query.sortBy?.map((key, i) => [
+          key,
+          query.sortDirection?.[i] ?? SortDirection.DESCENDING,
+        ]) ?? [],
+      skip:
+        query.page != null && query.pageSize != null
+          ? query.page * query.pageSize
+          : null,
+      take: query.pageSize,
+    });
 
     return ListEventsResponse.newPaginated({
-      data: await Promise.all(rows.map((row) => row.toResource())),
-      total: count,
+      data: rows.map((row) =>
+        eventModelToResource(
+          row,
+          row.eventOccurrences.map(eventOccurrenceModelToResource)
+        )
+      ),
+      total: await this.eventRepository.countEvents(query.filters),
       page: query.page,
       pageSize: query.pageSize,
     });

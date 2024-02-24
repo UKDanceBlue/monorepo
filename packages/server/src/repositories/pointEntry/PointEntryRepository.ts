@@ -1,11 +1,13 @@
-
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import { buildPointEntryOrder, buildPointEntryWhere } from "./pointEntryRepositoryUtils.js";
+import {
+  buildPointEntryOrder,
+  buildPointEntryWhere,
+} from "./pointEntryRepositoryUtils.js";
 
 const pointEntryBooleanKeys = [] as const;
 type PointEntryBooleanKey = (typeof pointEntryBooleanKeys)[number];
@@ -38,79 +40,80 @@ type UniquePointEntryParam = { id: number } | { uuid: string };
 
 @Service()
 export class PointEntryRepository {
-  constructor(
-    private prisma: PrismaClient,
-    ) {}
+  constructor(private prisma: PrismaClient) {}
 
-    findPointEntryByUnique(param: UniquePointEntryParam) {
-      return this.prisma.pointEntry.findUnique({where: param});
-    }
+  findPointEntryByUnique(param: UniquePointEntryParam) {
+    return this.prisma.pointEntry.findUnique({ where: param });
+  }
 
-    listPointEntry({
-      filters,
-      order,
-      skip,
-      take,
-    }: {
-      filters?: readonly PointEntryFilters[] | undefined | null;
-      order?: readonly [key: string, sort: SortDirection][] | undefined | null;
-      skip?: number | undefined | null;
-      take?: number | undefined | null;
-    }) {
-      const where = buildPointEntryWhere(filters);
-      const orderBy = buildPointEntryOrder(order);
+  listPointEntries({
+    filters,
+    order,
+    skip,
+    take,
+  }: {
+    filters?: readonly PointEntryFilters[] | undefined | null;
+    order?: readonly [key: string, sort: SortDirection][] | undefined | null;
+    skip?: number | undefined | null;
+    take?: number | undefined | null;
+  }) {
+    const where = buildPointEntryWhere(filters);
+    const orderBy = buildPointEntryOrder(order);
 
-      return this.prisma.pointEntry.findMany({
-        where,
-        orderBy,
-        skip: skip ?? undefined,
-        take: take ?? undefined,
-      });
-    }
+    return this.prisma.pointEntry.findMany({
+      where,
+      orderBy,
+      skip: skip ?? undefined,
+      take: take ?? undefined,
+    });
+  }
 
-    countPointEntry({
-      filters,
-    }: {
-      filters?: readonly PointEntryFilters[] | undefined | null;
-    }) {
-      const where = buildPointEntryWhere(filters);
+  countPointEntries({
+    filters,
+  }: {
+    filters?: readonly PointEntryFilters[] | undefined | null;
+  }) {
+    const where = buildPointEntryWhere(filters);
 
-      return this.prisma.pointEntry.count({
-        where,
-      });
-    }
+    return this.prisma.pointEntry.count({
+      where,
+    });
+  }
 
-    createPointEntry(data: Prisma.PointEntryCreateInput) {
-      return this.prisma.pointEntry.create({ data });
-    }
+  createPointEntry(data: Prisma.PointEntryCreateInput) {
+    return this.prisma.pointEntry.create({ data });
+  }
 
-    updatePointEntry(param: UniquePointEntryParam, data: Prisma.PointEntryUpdateInput) {
-      try {
-        return this.prisma.pointEntry.update({ where: param, data });
-      } catch (error) {
-        if (
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === "P2025"
-        ) {
-          return null;
-        } else {
-          throw error;
-        }
+  updatePointEntry(
+    param: UniquePointEntryParam,
+    data: Prisma.PointEntryUpdateInput
+  ) {
+    try {
+      return this.prisma.pointEntry.update({ where: param, data });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        return null;
+      } else {
+        throw error;
       }
     }
+  }
 
-    deletePointEntry(param: UniquePointEntryParam) {
-      try {
-        return this.prisma.pointEntry.delete({ where: param });
-      } catch (error) {
-        if (
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === "P2025"
-        ) {
-          return null;
-        } else {
-          throw error;
-        }
+  deletePointEntry(param: UniquePointEntryParam) {
+    try {
+      return this.prisma.pointEntry.delete({ where: param });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        return null;
+      } else {
+        throw error;
       }
     }
+  }
 }
