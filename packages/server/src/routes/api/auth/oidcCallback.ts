@@ -1,14 +1,15 @@
 import type { IncomingMessage } from "node:http";
 
-import { AuthSource } from "@ukdanceblue/common";
+import { AuthSource, makeUserData } from "@ukdanceblue/common";
 import createHttpError from "http-errors";
 import jsonwebtoken from "jsonwebtoken";
 import type { Context } from "koa";
 import { DateTime } from "luxon";
+import { Container } from "typedi";
 
-import { findPersonForLogin } from "../../../controllers/PersonController.js";
 import { sequelizeDb } from "../../../data-source.js";
 import { makeUserJwt } from "../../../lib/auth/index.js";
+import { PersonRepository } from "../../../repositories/person/PersonRepository.js";
 
 import { makeOidcClient } from "./oidcClient.js";
 
@@ -26,6 +27,8 @@ export const oidcCallback = async (ctx: Context) => {
   }
 
   let sessionDeleted: boolean = false;
+
+  const personRepository = Container.get(PersonRepository);
 
   try {
     await sequelizeDb.transaction(async () => {
@@ -73,16 +76,25 @@ export const oidcCallback = async (ctx: Context) => {
       if (typeof objectId !== "string") {
         return ctx.throw("Missing OID", 500);
       }
-      let [currentPerson] = await findPersonForLogin(
-        { [AuthSource.UkyLinkblue]: objectId },
+      const [currentPerson] = await personRepository.findPersonForLogin(
+        [[AuthSource.LinkBlue, objectId]],
         { email, linkblue }
       );
 
-      if (currentPerson.authIds?.[AuthSource.UkyLinkblue] !== objectId) {
-        currentPerson.authIds = {
-          ...currentPerson.authIds,
-          [AuthSource.UkyLinkblue]: objectId,
-        };
+      if (
+        !currentPerson.authIdPairs.some(
+          ({ source, value }) =>
+            source === AuthSource.LinkBlue && value === objectId
+        )
+      ) {
+        currentPerson.authIdPairs = [
+          ...currentPerson.authIdPairs,
+          {
+            personId: currentPerson.id,
+            source: AuthSource.LinkBlue,
+            value: objectId,
+          },
+        ];
       }
       if (email && currentPerson.email !== email) {
         currentPerson.email = email;
@@ -97,10 +109,14 @@ export const oidcCallback = async (ctx: Context) => {
         currentPerson.linkblue = linkblue;
       }
 
-      currentPerson = await currentPerson.save({ returning: true });
+      const updatedPerson = await personRepository.updatePerson(currentPerson);
 
-      const userData = await currentPerson.toUserData(AuthSource.UkyLinkblue);
-      const jwt = makeUserJwt(userData);
+      const jwt = makeUserJwt(
+        makeUserData({
+          authSource: AuthSource.LinkBlue,
+          dbRole: updatedPerson.dbRole,
+        })
+      );
       let redirectTo = session.redirectToAfterLogin ?? "/";
       if (session.sendToken) {
         redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;
