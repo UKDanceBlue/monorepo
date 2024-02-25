@@ -2,7 +2,9 @@ import {
   DetailedError,
   DeviceResource,
   ErrorCode,
+  FilteredListQueryArgs,
   PersonResource,
+  SortDirection,
 } from "@ukdanceblue/common";
 import {
   Arg,
@@ -17,20 +19,17 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
+import { Service } from "typedi";
 
-import { sequelizeDb } from "../data-source.js";
-import { DeviceModel } from "../models/Device.js";
-import { PersonModel } from "../models/Person.js";
+import { auditLogger } from "../lib/logging/auditLogging.js";
+import { DeviceRepository } from "../repositories/device/DeviceRepository.js";
+import { deviceModelToResource } from "../repositories/device/deviceModelToResource.js";
+import { personModelToResource } from "../repositories/person/personModelToResource.js";
 
 import {
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
-import type {
-  ResolverInterface,
-  ResolverInterfaceWithFilteredList,
-} from "./ResolverInterface.js";
-import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("GetDeviceByUuidResponse", {
   implements: AbstractGraphQLOkResponse<DeviceResource>,
@@ -70,6 +69,11 @@ class RegisterDeviceInput implements Partial<DeviceResource> {
   expoPushToken?: string | null;
 
   @Field(() => String, {
+    description: "base64 encoded SHA-256 hash of a secret known to the device",
+  })
+  verifier!: string;
+
+  @Field(() => String, {
     description: "The ID of the last user to log in on this device",
     nullable: true,
   })
@@ -77,47 +81,58 @@ class RegisterDeviceInput implements Partial<DeviceResource> {
 }
 
 @ArgsType()
-class ListDevicesArgs extends FilteredListQueryArgs("DeviceResolver", {
-  all: ["deviceId", "expoPushToken", "lastLogin", "createdAt", "updatedAt"],
-  string: ["deviceId", "expoPushToken"],
-  date: ["lastLogin", "createdAt", "updatedAt"],
-})<DeviceModel> {}
+class ListDevicesArgs extends FilteredListQueryArgs<
+  "expoPushToken" | "lastSeen" | "createdAt" | "updatedAt",
+  "expoPushToken",
+  never,
+  never,
+  "lastSeen" | "createdAt" | "updatedAt",
+  never
+>("DeviceResolver", {
+  all: ["expoPushToken", "lastSeen", "createdAt", "updatedAt"],
+  string: ["expoPushToken"],
+  date: ["lastSeen", "createdAt", "updatedAt"],
+}) {}
 
 @Resolver(() => DeviceResource)
-export class DeviceResolver
-  implements
-    ResolverInterface<DeviceResource>,
-    ResolverInterfaceWithFilteredList<DeviceResource, ListDevicesArgs>
-{
+@Service()
+export class DeviceResolver {
+  constructor(private deviceRepository: DeviceRepository) {}
+
   @Query(() => GetDeviceByUuidResponse, { name: "device" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetDeviceByUuidResponse> {
-    const row = await DeviceModel.findOne({ where: { uuid } });
+    const row = await this.deviceRepository.getDeviceByUuid(uuid);
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Device not found");
     }
 
-    return GetDeviceByUuidResponse.newOk(row.toResource());
+    return GetDeviceByUuidResponse.newOk(deviceModelToResource(row));
   }
 
   @Query(() => ListDevicesResponse, { name: "devices" })
   async list(
     @Args(() => ListDevicesArgs) query: ListDevicesArgs
   ): Promise<ListDevicesResponse> {
-    const findOptions = query.toSequelizeFindOptions(
-      {
-        deviceId: "deviceId",
-        expoPushToken: "expoPushToken",
-        lastLogin: "lastLogin",
-      },
-      {},
-      DeviceModel
-    );
-
-    const { rows, count } = await DeviceModel.findAndCountAll(findOptions);
+    const [rows, count] = await Promise.all([
+      this.deviceRepository.listDevices({
+        filters: query.filters,
+        orderBy:
+          query.sortBy?.map((key, i) => [
+            key,
+            query.sortDirection?.[i] ?? SortDirection.DESCENDING,
+          ]) ?? [],
+        skip:
+          query.page != null && query.pageSize != null
+            ? query.page * query.pageSize
+            : null,
+        take: query.pageSize,
+      }),
+      this.deviceRepository.countDevices({ filters: query.filters }),
+    ]);
 
     return ListDevicesResponse.newPaginated({
-      data: rows.map((row) => row.toResource()),
+      data: rows.map((row) => deviceModelToResource(row)),
       total: count,
       page: query.page,
       pageSize: query.pageSize,
@@ -128,56 +143,23 @@ export class DeviceResolver
   async register(
     @Arg("input") input: RegisterDeviceInput
   ): Promise<RegisterDeviceResponse> {
-    let lastUserId: number | null = null;
-
-    if (input.lastUserId != null) {
-      const lastUser = await PersonModel.findOne({
-        where: { uuid: input.lastUserId },
-      });
-      if (lastUser == null) {
-        throw new DetailedError(ErrorCode.NotFound, "Last user not found");
+    const row = await this.deviceRepository.registerDevice(
+      input.deviceId,
+      input.verifier,
+      {
+        expoPushToken: input.expoPushToken ?? null,
+        lastUserId: input.lastUserId ?? null,
       }
-      lastUserId = lastUser.id;
-    }
+    );
 
-    const row = await sequelizeDb.transaction(async () => {
-      const [row, created] = await DeviceModel.findOrCreate({
-        where: { uuid: input.deviceId },
-        defaults: {
-          uuid: input.deviceId,
-          expoPushToken: input.expoPushToken ?? null,
-          lastUserId: lastUserId ?? null,
-        },
-      });
-      if (
-        !created &&
-        (row.expoPushToken !== (input.expoPushToken ?? null) ||
-          row.lastUserId !== lastUserId)
-      ) {
-        return row.update({
-          expoPushToken: input.expoPushToken ?? null,
-          lastUserId: lastUserId ?? null,
-        });
-      } else {
-        return row;
-      }
-    });
-
-    return RegisterDeviceResponse.newOk(row.toResource());
+    return RegisterDeviceResponse.newOk(deviceModelToResource(row));
   }
 
   @Mutation(() => DeleteDeviceResponse, { name: "deleteDevice" })
-  async delete(@Arg("uuid") id: string): Promise<DeleteDeviceResponse> {
-    const row = await DeviceModel.findOne({
-      where: { uuid: id },
-      attributes: ["id"],
-    });
+  async delete(@Arg("uuid") uuid: string): Promise<DeleteDeviceResponse> {
+    await this.deviceRepository.deleteDevice({ uuid });
 
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Device not found");
-    }
-
-    await row.destroy();
+    auditLogger.normal("Device deleted", { uuid });
 
     return DeleteDeviceResponse.newOk(true);
   }
@@ -186,15 +168,8 @@ export class DeviceResolver
   async lastLoggedInUser(
     @Root() device: DeviceResource
   ): Promise<PersonResource | null> {
-    const model = await DeviceModel.findByUuid(device.uuid, {
-      attributes: ["lastUserId"],
-      include: [PersonModel],
-    });
+    const user = await this.deviceRepository.getLastLoggedInUser(device.uuid);
 
-    if (model == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Device not found");
-    }
-
-    return model.lastUser?.toResource() ?? null;
+    return user == null ? null : personModelToResource(user);
   }
 }

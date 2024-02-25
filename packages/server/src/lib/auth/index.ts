@@ -47,13 +47,9 @@ export const simpleAuthorizations: Record<AccessLevel, Authorization> = {
     dbRole: DbRole.Public,
     accessLevel: AccessLevel.Public,
   },
-  [AccessLevel.TeamMember]: {
-    dbRole: DbRole.TeamMember,
-    accessLevel: AccessLevel.TeamMember,
-  },
-  [AccessLevel.TeamCaptain]: {
-    dbRole: DbRole.TeamCaptain,
-    accessLevel: AccessLevel.TeamCaptain,
+  [AccessLevel.UKY]: {
+    dbRole: DbRole.UKY,
+    accessLevel: AccessLevel.UKY,
   },
   [AccessLevel.Committee]: {
     dbRole: DbRole.Committee,

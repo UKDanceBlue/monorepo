@@ -46,6 +46,12 @@ const typescriptConfig: Linter.FlatConfig[] = [
         "error",
         { fixMixedExportsWithInlineTypeSpecifier: false },
       ],
+      "@typescript-eslint/unbound-method": [
+        "error",
+        {
+          ignoreStatic: true,
+        },
+      ],
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-confusing-void-expression": "off",
       "no-restricted-syntax": [

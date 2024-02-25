@@ -12,7 +12,7 @@ import {
   databaseUsername,
   isDevelopment,
 } from "./environment.js";
-import { logFatal, logger, sqlLogger } from "./logger.js";
+import { logFatal, logger, sqlLogger } from "./lib/logging/logger.js";
 
 if (isDevelopment) {
   Sequelize.hooks.addListeners({

@@ -7,7 +7,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "exactOptionalPropertyTypes": true,
+    // "exactOptionalPropertyTypes": true,  // This is really just more trouble than it's worth
     "noEmit": true,
     "noImplicitAny": true,
     "noImplicitThis": true,

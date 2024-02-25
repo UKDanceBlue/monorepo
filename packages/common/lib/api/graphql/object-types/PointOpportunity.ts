@@ -3,11 +3,11 @@ import { Field, ID, ObjectType } from "type-graphql";
 
 import { DateTimeScalar } from "../custom-scalars/DateTimeScalar.js";
 
-import { Resource } from "./Resource.js";
+import { TimestampedResource } from "./Resource.js";
 import { TeamType } from "./Team.js";
 
 @ObjectType()
-export class PointOpportunityResource extends Resource {
+export class PointOpportunityResource extends TimestampedResource {
   @Field(() => ID)
   uuid!: string;
   @Field(() => String)

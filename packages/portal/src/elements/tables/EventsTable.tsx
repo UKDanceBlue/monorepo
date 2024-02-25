@@ -37,7 +37,6 @@ const eventsTableQueryDocument = graphql(/* GraphQL */ `
     $sortDirection: [SortDirection!]
     $dateFilters: [EventResolverKeyedDateFilterItem!]
     $isNullFilters: [EventResolverKeyedIsNullFilterItem!]
-    $numericFilters: [EventResolverKeyedNumericFilterItem!]
     $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]
     $stringFilters: [EventResolverKeyedStringFilterItem!]
   ) {
@@ -48,7 +47,6 @@ const eventsTableQueryDocument = graphql(/* GraphQL */ `
       sortDirection: $sortDirection
       dateFilters: $dateFilters
       isNullFilters: $isNullFilters
-      numericFilters: $numericFilters
       oneOfFilters: $oneOfFilters
       stringFilters: $stringFilters
     ) {

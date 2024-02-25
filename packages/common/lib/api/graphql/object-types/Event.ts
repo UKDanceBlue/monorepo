@@ -3,10 +3,10 @@ import { Field, ID, ObjectType } from "type-graphql";
 
 import { DateRangeScalar } from "../custom-scalars/DateRangeScalar.js";
 
-import { Resource } from "./Resource.js";
+import { Resource, TimestampedResource } from "./Resource.js";
 
 @ObjectType()
-export class EventResource extends Resource {
+export class EventResource extends TimestampedResource {
   @Field(() => ID)
   uuid!: string;
   @Field(() => [EventOccurrenceResource])

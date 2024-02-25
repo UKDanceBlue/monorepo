@@ -1,7 +1,11 @@
 import { registerEnumType } from "type-graphql";
 
+import type { PersonResource } from "../index.js";
+
+import { roleToAccessLevel } from "./role.js";
+
 export const AuthSource = {
-  UkyLinkblue: "UkyLinkblue",
+  LinkBlue: "LinkBlue",
   Anonymous: "Anonymous",
   /**
    * This is a special auth source that is used to indicate that the user
@@ -25,8 +29,7 @@ export type AuthSource = (typeof AuthSource)[keyof typeof AuthSource];
 export const AccessLevel = {
   None: -1,
   Public: 0,
-  TeamMember: 1,
-  TeamCaptain: 2,
+  UKY: 1,
   Committee: 3,
   CommitteeChairOrCoordinator: 3.5,
   Admin: 4, // Tech committee
@@ -68,11 +71,8 @@ export function stringifyAccessLevel(val: unknown): string {
     case AccessLevel.Public: {
       return "Public";
     }
-    case AccessLevel.TeamMember: {
-      return "Team Member";
-    }
-    case AccessLevel.TeamCaptain: {
-      return "Team Captain";
+    case AccessLevel.UKY: {
+      return "UK Staff/Student";
     }
     case AccessLevel.Committee: {
       return "Committee Member";
@@ -97,8 +97,7 @@ export function stringifyAccessLevel(val: unknown): string {
 export const DbRole = {
   None: "None",
   Public: "Public",
-  TeamMember: "TeamMember",
-  TeamCaptain: "TeamCaptain",
+  UKY: "UKY",
   Committee: "Committee",
 } as const;
 export type DbRole = (typeof DbRole)[keyof typeof DbRole];
@@ -135,11 +134,8 @@ export function stringifyDbRole(val: unknown): string {
     case DbRole.Public: {
       return "Public";
     }
-    case DbRole.TeamMember: {
-      return "Team Member";
-    }
-    case DbRole.TeamCaptain: {
-      return "Team Captain";
+    case DbRole.UKY: {
+      return "UK Staff/Student";
     }
     case DbRole.Committee: {
       return "Committee Member";
@@ -162,25 +158,14 @@ export function compareDbRole(a: DbRole, b: DbRole): number {
       }
       return -1;
     }
-    case DbRole.TeamMember: {
+    case DbRole.UKY: {
       if (b === DbRole.None || b === DbRole.Public) {
         return 1;
       }
       return -1;
     }
-    case DbRole.TeamCaptain: {
-      if (b === DbRole.None || b === DbRole.Public || b === DbRole.TeamMember) {
-        return 1;
-      }
-      return -1;
-    }
     case DbRole.Committee: {
-      if (
-        b === DbRole.None ||
-        b === DbRole.Public ||
-        b === DbRole.TeamMember ||
-        b === DbRole.TeamCaptain
-      ) {
+      if (b === DbRole.None || b === DbRole.Public || b === DbRole.UKY) {
         return 1;
       }
       return -1;
@@ -301,6 +286,26 @@ export interface UserData {
   teamIds?: string[];
   captainOfTeamIds?: string[];
   authSource: AuthSource;
+}
+
+export function makeUserData(
+  person: PersonResource,
+  authSource: AuthSource,
+  teamIds?: string[],
+  captainOfTeamIds?: string[]
+): UserData {
+  return {
+    auth: {
+      dbRole: person.role.dbRole,
+      committeeRole: person.role.committeeRole ?? undefined,
+      committeeIdentifier: person.role.committeeIdentifier ?? undefined,
+      accessLevel: roleToAccessLevel(person.role),
+    },
+    userId: person.uuid,
+    teamIds,
+    captainOfTeamIds,
+    authSource,
+  };
 }
 
 export interface JwtPayload {

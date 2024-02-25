@@ -37,15 +37,10 @@ describe("roleToAccessLevel", () => {
     });
     expect(roleToAccessLevel(memberRole)).toBe(AccessLevel.Committee);
 
-    const teamCaptainRole = RoleResource.init({
-      dbRole: DbRole.TeamCaptain,
-    });
-    expect(roleToAccessLevel(teamCaptainRole)).toBe(AccessLevel.TeamCaptain);
-
     const teamMemberRole = RoleResource.init({
-      dbRole: DbRole.TeamMember,
+      dbRole: DbRole.UKY,
     });
-    expect(roleToAccessLevel(teamMemberRole)).toBe(AccessLevel.TeamMember);
+    expect(roleToAccessLevel(teamMemberRole)).toBe(AccessLevel.UKY);
 
     const publicRole = RoleResource.init({
       dbRole: DbRole.Public,
@@ -94,11 +89,11 @@ describe("roleToAccessLevel", () => {
 describe("roleToAuthorization", () => {
   it("converts a role to an authorization object", () => {
     const role = RoleResource.init({
-      dbRole: DbRole.TeamMember,
+      dbRole: DbRole.UKY,
     });
     expect(roleToAuthorization(role)).toStrictEqual({
-      dbRole: DbRole.TeamMember,
-      accessLevel: AccessLevel.TeamMember,
+      dbRole: DbRole.UKY,
+      accessLevel: AccessLevel.UKY,
     });
   });
 

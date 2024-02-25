@@ -15,7 +15,11 @@ import {
  * @return The equivalent AccessLevel
  * @throws Error if the DbRole is not a valid member of the DbRole enum
  */
-export function roleToAccessLevel(role: RoleResource): AccessLevel {
+export function roleToAccessLevel(role: {
+  dbRole: DbRole;
+  committeeRole?: CommitteeRole | null;
+  committeeIdentifier?: CommitteeIdentifier | null;
+}): AccessLevel {
   switch (role.dbRole) {
     case DbRole.None: {
       return AccessLevel.None;
@@ -23,11 +27,8 @@ export function roleToAccessLevel(role: RoleResource): AccessLevel {
     case DbRole.Public: {
       return AccessLevel.Public;
     }
-    case DbRole.TeamMember: {
-      return AccessLevel.TeamMember;
-    }
-    case DbRole.TeamCaptain: {
-      return AccessLevel.TeamCaptain;
+    case DbRole.UKY: {
+      return AccessLevel.UKY;
     }
     case DbRole.Committee: {
       if (role.committeeIdentifier === CommitteeIdentifier.techCommittee) {

@@ -1,5 +1,6 @@
 import { AuthSource, RoleResource } from "@ukdanceblue/common";
 import { Ctx, Field, ObjectType, Query, Resolver } from "type-graphql";
+import { Service } from "typedi";
 
 import * as Context from "./context.js";
 
@@ -16,6 +17,7 @@ export class LoginState {
 }
 
 @Resolver(() => LoginState)
+@Service()
 export class LoginStateResolver {
   @Query(() => LoginState)
   loginState(@Ctx() ctx: Context.GraphQLContext): LoginState {

@@ -4,10 +4,6 @@ export const Comparator = {
   LESS_THAN: "LESS_THAN",
   GREATER_THAN_OR_EQUAL_TO: "GREATER_THAN_OR_EQUAL_TO",
   LESS_THAN_OR_EQUAL_TO: "LESS_THAN_OR_EQUAL_TO",
-  LIKE: "LIKE",
-  ILIKE: "ILIKE",
-  REGEX: "REGEX",
-  IREGEX: "IREGEX",
   SUBSTRING: "SUBSTRING",
   STARTS_WITH: "STARTS_WITH",
   ENDS_WITH: "ENDS_WITH",
@@ -17,10 +13,6 @@ export type Comparator = (typeof Comparator)[keyof typeof Comparator];
 
 export const StringComparator = {
   EQUALS: "EQUALS",
-  LIKE: "LIKE",
-  ILIKE: "ILIKE",
-  REGEX: "REGEX",
-  IREGEX: "IREGEX",
   SUBSTRING: "SUBSTRING",
   STARTS_WITH: "STARTS_WITH",
   ENDS_WITH: "ENDS_WITH",

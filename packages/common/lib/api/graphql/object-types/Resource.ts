@@ -3,11 +3,6 @@ import type { Class } from "utility-types";
 
 @ObjectType()
 export abstract class Resource {
-  @Field(() => Date, { nullable: true })
-  createdAt?: Date | null;
-  @Field(() => Date, { nullable: true })
-  updatedAt?: Date | null;
-
   /**
    * This method should return a unique identifier for the instance.
    * This is usually a UUID, but should never be the numeric ID of
@@ -21,16 +16,17 @@ export abstract class Resource {
     throw new Error(`Method not implemented by subclass.`);
   }
 
-  protected static doInit<R extends object>(
-    this: Class<R>,
-    init: Partial<R>
-  ): R {
+  protected static doInit<R extends object>(this: Class<R>, init: object): R {
     const instance = new this();
     Object.assign(instance, init);
     return instance;
   }
+}
 
-  protected static init<R extends Resource>(_init: R): Resource {
-    throw new Error(`Method not implemented by subclass.`);
-  }
+@ObjectType()
+export abstract class TimestampedResource extends Resource {
+  @Field(() => Date, { nullable: true })
+  createdAt?: Date | null;
+  @Field(() => Date, { nullable: true })
+  updatedAt?: Date | null;
 }

@@ -1,13 +1,14 @@
-import { Op } from "@sequelize/core";
 import {
   AccessControl,
   AccessLevel,
   DetailedError,
   ErrorCode,
+  FilteredListQueryArgs,
   MembershipPositionType,
   MembershipResource,
   PersonResource,
   RoleResource,
+  SortDirection,
 } from "@ukdanceblue/common";
 import { EmailAddressResolver } from "graphql-scalars";
 import {
@@ -24,11 +25,12 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
+import { Service } from "typedi";
 
-import { sequelizeDb } from "../data-source.js";
-import { MembershipModel } from "../models/Membership.js";
-import { PersonModel } from "../models/Person.js";
-import { TeamModel } from "../models/Team.js";
+import { auditLogger } from "../lib/logging/auditLogging.js";
+import { membershipModelToResource } from "../repositories/membership/membershipModelToResource.js";
+import { PersonRepository } from "../repositories/person/PersonRepository.js";
+import { personModelToResource } from "../repositories/person/personModelToResource.js";
 
 import {
   AbstractGraphQLArrayOkResponse,
@@ -36,9 +38,7 @@ import {
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
-import type { ResolverInterface } from "./ResolverInterface.js";
 import * as Context from "./context.js";
-import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("CreatePersonResponse", {
   implements: AbstractGraphQLCreatedResponse<PersonResource>,
@@ -74,24 +74,25 @@ class ListPeopleResponse extends AbstractGraphQLPaginatedResponse<PersonResource
 class DeletePersonResponse extends AbstractGraphQLOkResponse<never> {}
 
 @ArgsType()
-class ListPeopleArgs extends FilteredListQueryArgs("PersonResolver", {
+class ListPeopleArgs extends FilteredListQueryArgs<
+  "name" | "email" | "linkblue" | "committeeRole" | "committeeName" | "dbRole",
+  "name" | "email" | "linkblue",
+  "committeeRole" | "committeeName" | "dbRole",
+  never,
+  never,
+  never
+>("PersonResolver", {
   all: [
     "name",
     "email",
     "linkblue",
-    "dbRole",
     "committeeRole",
     "committeeName",
-  ],
-  string: [
-    "name",
-    "email",
-    "linkblue",
     "dbRole",
-    "committeeRole",
-    "committeeName",
   ],
-})<PersonModel> {}
+  string: ["name", "email", "linkblue"],
+  oneOf: ["committeeRole", "committeeName", "dbRole"],
+}) {}
 @InputType()
 class CreatePersonInput {
   @Field(() => String, { nullable: true })
@@ -134,10 +135,13 @@ class SetPersonInput {
 }
 
 @Resolver(() => PersonResource)
-export class PersonResolver implements ResolverInterface<PersonResource> {
+@Service()
+export class PersonResolver {
+  constructor(private personRepository: PersonRepository) {}
+
   @Query(() => GetPersonResponse, { name: "person" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetPersonResponse> {
-    const row = await PersonModel.findOne({ where: { uuid } });
+    const row = await this.personRepository.findPersonByUuid(uuid);
 
     if (row == null) {
       return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
@@ -146,7 +150,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     }
 
     return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-      await row.toResource()
+      personModelToResource(row)
     );
   }
 
@@ -155,7 +159,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
   async getByLinkBlueId(
     @Arg("linkBlueId") linkBlueId: string
   ): Promise<GetPersonResponse> {
-    const row = await PersonModel.findOne({ where: { linkblue: linkBlueId } });
+    const row = await this.personRepository.findPersonByLinkblue(linkBlueId);
 
     if (row == null) {
       return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
@@ -164,7 +168,7 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     }
 
     return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-      await row.toResource()
+      personModelToResource(row)
     );
   }
 
@@ -173,24 +177,26 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
   async list(
     @Args(() => ListPeopleArgs) args: ListPeopleArgs
   ): Promise<ListPeopleResponse> {
-    const { rows, count } = await PersonModel.findAndCountAll({
-      ...args.toSequelizeFindOptions(
-        {
-          committeeName: "committeeName",
-          committeeRole: "committeeRole",
-          dbRole: "dbRole",
-          email: "email",
-          linkblue: "linkblue",
-          name: "name",
-        },
-        {},
-        PersonModel
-      ),
-    });
+    const [rows, total] = await Promise.all([
+      this.personRepository.listPeople({
+        filters: args.filters,
+        order:
+          args.sortBy?.map((key, i) => [
+            key,
+            args.sortDirection?.[i] ?? SortDirection.DESCENDING,
+          ]) ?? [],
+        skip:
+          args.page != null && args.pageSize != null
+            ? args.page * args.pageSize
+            : null,
+        take: args.pageSize,
+      }),
+      this.personRepository.countPeople({ filters: args.filters }),
+    ]);
 
     return ListPeopleResponse.newPaginated({
-      data: await Promise.all(rows.map((row) => row.toResource())),
-      total: count,
+      data: rows.map((row) => personModelToResource(row)),
+      total,
       page: args.page,
       pageSize: args.pageSize,
     });
@@ -205,12 +211,10 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
 
   @Query(() => GetPeopleResponse, { name: "searchPeopleByName" })
   async searchByName(@Arg("name") name: string): Promise<GetPeopleResponse> {
-    const rows = await PersonModel.findAll({
-      where: { name: { [Op.iLike]: `%${name}%` } },
-    });
+    const rows = await this.personRepository.searchByName(name);
 
     return GetPeopleResponse.newOk(
-      await Promise.all(rows.map((row) => row.toResource()))
+      rows.map((row) => personModelToResource(row))
     );
   }
 
@@ -219,68 +223,18 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
   async create(
     @Arg("input") input: CreatePersonInput
   ): Promise<CreatePersonResponse> {
-    return sequelizeDb.transaction(async () => {
-      const creationAttributes: Partial<PersonModel> = {};
-      if (input.name) {
-        creationAttributes.name = input.name;
-      }
-      if (input.linkblue) {
-        creationAttributes.linkblue = input.linkblue.toLowerCase();
-      }
-      if (input.role) {
-        creationAttributes.committeeRole = input.role.committeeRole;
-        creationAttributes.committeeName = input.role.committeeIdentifier;
-      }
-
-      const result = await PersonModel.create({
-        email: input.email,
-        ...creationAttributes,
-        authIds: {},
-      });
-
-      const promises: Promise<void>[] = [];
-      for (const memberOfTeam of input.memberOf ?? []) {
-        promises.push(
-          TeamModel.findByUuid(memberOfTeam).then((team) =>
-            team == null
-              ? Promise.reject(
-                  new DetailedError(ErrorCode.NotFound, "Team not found")
-                )
-              : result
-                  .createMembership({
-                    personId: result.id,
-                    teamId: team.id,
-                    position: "Member",
-                  })
-                  .then()
-          )
-        );
-      }
-      for (const captainOfTeam of input.captainOf ?? []) {
-        promises.push(
-          TeamModel.findByUuid(captainOfTeam).then((team) =>
-            team == null
-              ? Promise.reject(
-                  new DetailedError(ErrorCode.NotFound, "Team not found")
-                )
-              : result
-                  .createMembership({
-                    personId: result.id,
-                    teamId: team.id,
-                    position: "Captain",
-                  })
-                  .then()
-          )
-        );
-      }
-
-      await Promise.all(promises);
-
-      return CreatePersonResponse.newCreated(
-        await result.toResource(),
-        result.uuid
-      );
+    const person = await this.personRepository.createPerson({
+      name: input.name,
+      email: input.email,
+      linkblue: input.linkblue,
+      committeeRole: input.role?.committeeRole,
+      committeeName: input.role?.committeeIdentifier,
     });
+
+    return CreatePersonResponse.newCreated(
+      personModelToResource(person),
+      person.uuid
+    );
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
@@ -289,134 +243,46 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
     @Arg("uuid") id: string,
     @Arg("input") input: SetPersonInput
   ): Promise<GetPersonResponse> {
-    const row = await PersonModel.findOne({
-      where: { uuid: id },
-      attributes: ["id"],
-    });
+    const row = await this.personRepository.updatePerson(
+      {
+        uuid: id,
+      },
+      {
+        name: input.name,
+        email: input.email,
+        linkblue: input.linkblue,
+        committeeRole: input.role?.committeeRole,
+        committeeName: input.role?.committeeIdentifier,
+      }
+    );
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Person not found");
+      return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+        null
+      );
     }
 
-    return sequelizeDb.transaction(async () => {
-      const updateAttributes: Partial<PersonModel> = {};
-      if (input.name) {
-        updateAttributes.name = input.name;
-      }
-      if (input.linkblue) {
-        updateAttributes.linkblue = input.linkblue.toLowerCase();
-      }
-      if (input.role) {
-        updateAttributes.committeeRole = input.role.committeeRole;
-        updateAttributes.committeeName = input.role.committeeIdentifier;
-      }
-
-      await row.update(updateAttributes);
-
-      const promises: Promise<void>[] = [];
-      const memberships = await row.getMemberships({
-        scope: "withTeam",
-      });
-
-      for (const membership of memberships) {
-        if (!membership.team) {
-          throw new DetailedError(
-            ErrorCode.InternalFailure,
-            "Membership has no accessible team"
-          );
-        }
-        if (membership.position === MembershipPositionType.Captain) {
-          if (
-            input.captainOf != null &&
-            !input.captainOf.includes(membership.team.uuid)
-          ) {
-            promises.push(membership.destroy());
-          }
-        } else if (
-          input.memberOf != null &&
-          !input.memberOf.includes(membership.team.uuid)
-        ) {
-          promises.push(membership.destroy());
-        }
-      }
-
-      if (input.captainOf != null) {
-        for (const captainOfTeam of input.captainOf) {
-          if (
-            !memberships.some(
-              (membership) =>
-                membership.team!.uuid === captainOfTeam &&
-                membership.position === MembershipPositionType.Captain
-            )
-          ) {
-            promises.push(
-              TeamModel.findByUuid(captainOfTeam).then((team) =>
-                team == null
-                  ? Promise.reject(
-                      new DetailedError(ErrorCode.NotFound, "Team not found")
-                    )
-                  : row
-                      .createMembership({
-                        personId: row.id,
-                        teamId: team.id,
-                        position: MembershipPositionType.Captain,
-                      })
-                      .then()
-              )
-            );
-          }
-        }
-      }
-
-      if (input.memberOf != null) {
-        for (const memberOfTeam of input.memberOf) {
-          if (
-            !memberships.some(
-              (membership) =>
-                membership.team!.uuid === memberOfTeam &&
-                membership.position === MembershipPositionType.Member
-            )
-          ) {
-            promises.push(
-              TeamModel.findByUuid(memberOfTeam).then((team) =>
-                team == null
-                  ? Promise.reject(
-                      new DetailedError(ErrorCode.NotFound, "Team not found")
-                    )
-                  : row
-                      .createMembership({
-                        personId: row.id,
-                        teamId: team.id,
-                        position: MembershipPositionType.Member,
-                      })
-                      .then()
-              )
-            );
-          }
-        }
-      }
-
-      await Promise.all(promises);
-
-      return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-        await row.toResource()
-      );
-    });
+    return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+      personModelToResource(row)
+    );
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
   @Mutation(() => DeletePersonResponse, { name: "deletePerson" })
-  async delete(@Arg("uuid") id: string): Promise<DeletePersonResponse> {
-    const row = await PersonModel.findOne({
-      where: { uuid: id },
-      attributes: ["id"],
-    });
+  async delete(@Arg("uuid") uuid: string): Promise<DeletePersonResponse> {
+    const result = await this.personRepository.deletePerson({ uuid });
 
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Person not found");
+    if (result == null) {
+      throw new DetailedError(ErrorCode.DatabaseFailure, "Failed to delete");
     }
 
-    await row.destroy();
+    auditLogger.sensitive("Person deleted", {
+      person: {
+        name: result.name,
+        email: result.email,
+        uuid: result.uuid,
+      },
+    });
 
     return DeletePersonResponse.newOk(true);
   }
@@ -434,17 +300,15 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
   )
   @FieldResolver(() => [MembershipResource])
   async teams(@Root() person: PersonResource): Promise<MembershipResource[]> {
-    const model = await PersonModel.findByUuid(person.uuid, {
-      attributes: ["id"],
-      include: [MembershipModel.withScope("withTeam")],
+    const models = await this.personRepository.findMembershipsOfPerson({
+      uuid: person.uuid,
     });
 
-    if (model == null) {
-      // I guess this is fine? May need more robust error handling
+    if (models == null) {
       return [];
     }
 
-    return model.memberships.map((row) => row.toResource());
+    return models.map((row) => membershipModelToResource(row));
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
@@ -454,16 +318,15 @@ export class PersonResolver implements ResolverInterface<PersonResource> {
   async captaincies(
     @Root() person: PersonResource
   ): Promise<MembershipResource[]> {
-    const model = await PersonModel.findByUuid(person.uuid, {
-      attributes: ["id"],
-      include: [MembershipModel.withScope("withTeam").withScope("captains")],
-    });
+    const models = await this.personRepository.findMembershipsOfPerson(
+      { uuid: person.uuid },
+      { position: MembershipPositionType.Captain }
+    );
 
-    if (model == null) {
-      // I guess this is fine? May need more robust error handling
+    if (models == null) {
       return [];
     }
 
-    return model.memberships.map((row) => row.toResource());
+    return models.map((row) => membershipModelToResource(row));
   }
 }

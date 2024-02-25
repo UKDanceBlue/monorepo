@@ -1,6 +1,6 @@
 import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
 
-import { Resource } from "./Resource.js";
+import { TimestampedResource } from "./Resource.js";
 
 export const MembershipPositionType = {
   Member: "Member",
@@ -15,7 +15,7 @@ registerEnumType(MembershipPositionType, {
 });
 
 @ObjectType()
-export class MembershipResource extends Resource {
+export class MembershipResource extends TimestampedResource {
   @Field(() => ID)
   uuid!: string;
 

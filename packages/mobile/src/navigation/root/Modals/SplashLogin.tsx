@@ -63,7 +63,7 @@ const SplashLoginScreen = () => {
             {allowedLoginTypes.includes("ms-oath-linkblue") && (
               <View>
                 <Button
-                  onPress={() => trigger(AuthSource.UkyLinkblue)}
+                  onPress={() => trigger(AuthSource.LinkBlue)}
                   width={Dimensions.get("window").width - 50}
                   backgroundColor="secondary.400"
                   _pressed={{ backgroundColor: "primary.600" }}

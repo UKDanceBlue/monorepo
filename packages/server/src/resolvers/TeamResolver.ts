@@ -1,4 +1,3 @@
-import { Op, QueryTypes, literal } from "@sequelize/core";
 import type {
   MarathonYearString,
   OptionalToNullable,
@@ -12,8 +11,10 @@ import {
   DbRole,
   DetailedError,
   ErrorCode,
+  FilteredListQueryArgs,
   MembershipResource,
   PointEntryResource,
+  SortDirection,
   TeamLegacyStatus,
   TeamResource,
   TeamType,
@@ -33,22 +34,19 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
+import { Service } from "typedi";
 
-import { sequelizeDb } from "../data-source.js";
-import { MembershipModel } from "../models/Membership.js";
-import { TeamModel } from "../models/Team.js";
+import { membershipModelToResource } from "../repositories/membership/membershipModelToResource.js";
+import { pointEntryModelToResource } from "../repositories/pointEntry/pointEntryModelToResource.js";
+import { TeamRepository } from "../repositories/team/TeamRepository.js";
+import { teamModelToResource } from "../repositories/team/teamModelToResource.js";
 
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
-import type {
-  ResolverInterface,
-  ResolverInterfaceWithFilteredList,
-} from "./ResolverInterface.js";
 import * as Context from "./context.js";
-import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("SingleTeamResponse", {
   implements: AbstractGraphQLOkResponse<TeamResource>,
@@ -106,25 +104,33 @@ class SetTeamInput implements OptionalToNullable<Partial<TeamResource>> {
   legacyStatus!: TeamLegacyStatus | null;
 
   @Field(() => String, { nullable: true })
-  marathonYear!: Common.MarathonYearString | null;
+  marathonYear!: MarathonYearString | null;
 
   @Field(() => String, { nullable: true })
   persistentIdentifier!: string | null;
 }
 
 @ArgsType()
-class ListTeamsArgs extends FilteredListQueryArgs("TeamResolver", {
-  all: ["name", "type", "legacyStatus", "marathonYear", "totalPoints"],
-  string: ["name", "type", "marathonYear", "legacyStatus"],
-  numeric: ["totalPoints"],
-})<TeamModel> {
+class ListTeamsArgs extends FilteredListQueryArgs<
+  "name" | "type" | "legacyStatus" | "marathonYear",
+  "name",
+  "type" | "legacyStatus" | "marathonYear",
+  never,
+  never,
+  never
+>("TeamResolver", {
+  all: ["name", "type", "legacyStatus", "marathonYear"],
+  string: ["name"],
+  numeric: [],
+  oneOf: ["type", "marathonYear", "legacyStatus"],
+}) {
   @Field(() => [TeamType], { nullable: true })
   type!: [TeamType] | null;
 
   @Field(() => [TeamLegacyStatus], { nullable: true })
   legacyStatus!: [TeamLegacyStatus] | null;
 
-  @Field(() => [DbRole], { nullable: true })
+  @Field(() => [DbRole], { nullable: true, deprecationReason: "Use type" })
   visibility!: [DbRole] | null;
 
   @Field(() => [String], { nullable: true })
@@ -132,21 +138,20 @@ class ListTeamsArgs extends FilteredListQueryArgs("TeamResolver", {
 }
 
 @Resolver(() => TeamResource)
-export class TeamResolver
-  implements
-    ResolverInterface<TeamResource>,
-    ResolverInterfaceWithFilteredList<TeamResource, ListTeamsArgs>
-{
+@Service()
+export class TeamResolver {
+  constructor(private teamRepository: TeamRepository) {}
+
   @AccessControl({ accessLevel: AccessLevel.Committee })
   @Query(() => SingleTeamResponse, { name: "team" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<SingleTeamResponse> {
-    const row = await TeamModel.findOne({ where: { uuid } });
+    const row = await this.teamRepository.findTeamByUnique({ uuid });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Team not found");
     }
 
-    return SingleTeamResponse.newOk(row.toResource());
+    return SingleTeamResponse.newOk(teamModelToResource(row));
   }
 
   @AccessControl({ accessLevel: AccessLevel.Public })
@@ -155,37 +160,42 @@ export class TeamResolver
     @Args(() => ListTeamsArgs) query: ListTeamsArgs,
     @Ctx() ctx: Context.GraphQLContext
   ): Promise<ListTeamsResponse> {
-    const findOptions = query.toSequelizeFindOptions(
-      {
-        name: "name",
-        legacyStatus: "legacyStatus",
-        marathonYear: "marathonYear",
-        type: "type",
-        totalPoints: literal(
-          `(SELECT COALESCE(SUM(points), 0) AS totalPoints FROM danceblue.point_entries WHERE team_id = "Team"."id" AND deleted_at IS NULL)`
-        ),
-      },
-      {},
-      TeamModel
-    );
-
-    if (query.type != null) {
-      findOptions.where.type = { [Op.in]: query.type };
-    }
-    if (query.legacyStatus != null) {
-      findOptions.where.legacyStatus = { [Op.in]: query.legacyStatus };
-    } else if (ctx.userData.authSource !== AuthSource.Demo) {
-      findOptions.where.legacyStatus = { [Op.ne]: TeamLegacyStatus.DemoTeam };
-    }
-    if (query.marathonYear != null) {
-      findOptions.where.marathonYear = { [Op.in]: query.marathonYear };
-    }
-
-    const { rows, count } = await TeamModel.findAndCountAll(findOptions);
+    const [rows, total] = await Promise.all([
+      this.teamRepository.listTeams({
+        filters: query.filters,
+        order:
+          query.sortBy?.map((key, i) => [
+            key,
+            query.sortDirection?.[i] ?? SortDirection.DESCENDING,
+          ]) ?? [],
+        skip:
+          query.page != null && query.pageSize != null
+            ? query.page * query.pageSize
+            : null,
+        take: query.pageSize,
+        onlyDemo: ctx.userData.authSource === AuthSource.Demo,
+        legacyStatus: query.legacyStatus,
+        marathonYear: query.marathonYear,
+        type: query.type,
+      }),
+      this.teamRepository.countTeams({ filters: query.filters }),
+    ]);
 
     return ListTeamsResponse.newPaginated({
-      data: rows.map((row) => row.toResource()),
-      total: count,
+      data: rows.map((row) =>
+        teamModelToResource({
+          id: row.id,
+          uuid: row.uuid,
+          name: row.name,
+          persistentIdentifier: row.persistentIdentifier,
+          legacyStatus: row.legacyStatus,
+          marathonYear: row.marathonYear,
+          type: row.type,
+          updatedAt: row.updatedAt,
+          createdAt: row.createdAt,
+        })
+      ),
+      total,
       page: query.page,
       pageSize: query.pageSize,
     });
@@ -209,7 +219,7 @@ export class TeamResolver
   async create(
     @Arg("input") input: CreateTeamInput
   ): Promise<CreateTeamResponse> {
-    const row = await TeamModel.create({
+    const row = await this.teamRepository.createTeam({
       name: input.name,
       type: input.type,
       legacyStatus: input.legacyStatus,
@@ -217,7 +227,7 @@ export class TeamResolver
       persistentIdentifier: input.persistentIdentifier,
     });
 
-    return CreateTeamResponse.newCreated(row.toResource(), row.uuid);
+    return CreateTeamResponse.newCreated(teamModelToResource(row), row.uuid);
   }
 
   @AccessControl(
@@ -239,31 +249,23 @@ export class TeamResolver
     @Arg("uuid") uuid: string,
     @Arg("input") input: SetTeamInput
   ): Promise<SingleTeamResponse> {
-    const row = await TeamModel.findByUuid(uuid);
+    const row = await this.teamRepository.updateTeam(
+      { uuid },
+      {
+        uuid,
+        name: input.name ?? undefined,
+        type: input.type ?? undefined,
+        legacyStatus: input.legacyStatus ?? undefined,
+        marathonYear: input.marathonYear ?? undefined,
+        persistentIdentifier: input.persistentIdentifier,
+      }
+    );
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Team not found");
     }
 
-    if (input.name != null) {
-      row.name = input.name;
-    }
-    if (input.type != null) {
-      row.type = input.type;
-    }
-    if (input.legacyStatus != null) {
-      row.legacyStatus = input.legacyStatus;
-    }
-    if (input.marathonYear != null) {
-      row.marathonYear = input.marathonYear;
-    }
-    if (input.persistentIdentifier != null) {
-      row.persistentIdentifier = input.persistentIdentifier;
-    }
-
-    await row.save();
-
-    return SingleTeamResponse.newOk(row.toResource());
+    return SingleTeamResponse.newOk(teamModelToResource(row));
   }
 
   @AccessControl(
@@ -281,17 +283,12 @@ export class TeamResolver
     }
   )
   @Mutation(() => DeleteTeamResponse, { name: "deleteTeam" })
-  async delete(@Arg("uuid") id: string): Promise<DeleteTeamResponse> {
-    const row = await TeamModel.findOne({
-      where: { uuid: id },
-      attributes: ["id"],
-    });
+  async delete(@Arg("uuid") uuid: string): Promise<DeleteTeamResponse> {
+    const row = await this.teamRepository.deleteTeam({ uuid });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Team not found");
     }
-
-    await row.destroy();
 
     return DeleteTeamResponse.newOk(true);
   }
@@ -299,7 +296,6 @@ export class TeamResolver
   @AccessControl(
     { accessLevel: AccessLevel.Committee },
     {
-      accessLevel: AccessLevel.TeamMember,
       rootMatch: [
         {
           root: "uuid",
@@ -310,24 +306,11 @@ export class TeamResolver
   )
   @FieldResolver(() => [MembershipResource])
   async members(@Root() team: TeamResource): Promise<MembershipResource[]> {
-    const model = await TeamModel.findByUuid(team.uuid, {
-      attributes: ["id", "uuid"],
-      include: [
-        {
-          model: MembershipModel,
-          required: false,
-        },
-      ],
+    const memberships = await this.teamRepository.findMembersOfTeam({
+      uuid: team.uuid,
     });
 
-    if (model == null) {
-      throw new DetailedError(
-        ErrorCode.NotFound,
-        "Failed to load team for members"
-      );
-    }
-
-    return model.memberships.map((row) => row.toResource());
+    return memberships.map((row) => membershipModelToResource(row));
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
@@ -335,30 +318,17 @@ export class TeamResolver
     deprecationReason: "Just query the members field and filter by role",
   })
   async captains(@Root() team: TeamResource): Promise<MembershipResource[]> {
-    const model = await TeamModel.findByUuid(team.uuid, {
-      attributes: ["id", "uuid"],
-      include: [
-        {
-          model: MembershipModel.withScope("captains"),
-          required: false,
-        },
-      ],
-    });
+    const memberships = await this.teamRepository.findMembersOfTeam(
+      { uuid: team.uuid },
+      { captainsOnly: true }
+    );
 
-    if (model == null) {
-      throw new DetailedError(
-        ErrorCode.NotFound,
-        "Failed to load team for captains"
-      );
-    }
-
-    return model.memberships.map((row) => row.toResource());
+    return memberships.map((row) => membershipModelToResource(row));
   }
 
   @AccessControl(
     { accessLevel: AccessLevel.Committee },
     {
-      accessLevel: AccessLevel.TeamMember,
       rootMatch: [
         {
           root: "uuid",
@@ -371,53 +341,20 @@ export class TeamResolver
   async pointEntries(
     @Root() team: TeamResource
   ): Promise<PointEntryResource[]> {
-    const model = await TeamModel.findByUuid(team.uuid, {
-      attributes: ["id", "uuid"],
+    const rows = await this.teamRepository.getTeamPointEntries({
+      uuid: team.uuid,
     });
 
-    if (!model) {
-      throw new DetailedError(
-        ErrorCode.NotFound,
-        "Failed to load team for point entries"
-      );
-    }
-
-    const pointEntries = await model.getPointEntries();
-
-    return pointEntries.map((row) => row.toResource());
+    return rows.map((row) => pointEntryModelToResource(row));
   }
 
   @AccessControl({ accessLevel: AccessLevel.Public })
   @FieldResolver(() => Int)
   async totalPoints(@Root() team: TeamResource): Promise<number> {
-    const teamModel = await TeamModel.findByUuid(team.uuid, {});
+    const result = await this.teamRepository.getTotalTeamPoints({
+      uuid: team.uuid,
+    });
 
-    if (!teamModel) {
-      throw new DetailedError(ErrorCode.NotFound, "Team not found");
-    }
-
-    const val = await sequelizeDb.query(
-      `SELECT COALESCE(SUM(points), 0) AS "totalPoints" FROM danceblue.point_entries WHERE team_id = ? AND deleted_at IS NULL`,
-      {
-        type: QueryTypes.SELECT,
-        replacements: [teamModel.id],
-      }
-    );
-
-    if (val.length === 0) {
-      throw new DetailedError(ErrorCode.NotFound, "Team not found");
-    }
-
-    if (val.length > 1) {
-      throw new Error("More than one row returned");
-    }
-
-    const { totalPoints: totalPointsString } = val[0] as Record<
-      string,
-      unknown
-    >;
-    return typeof totalPointsString === "string"
-      ? Number.parseInt(totalPointsString, 10)
-      : Number(totalPointsString);
+    return result._sum.points ?? 0;
   }
 }
