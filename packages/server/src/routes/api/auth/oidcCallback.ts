@@ -1,6 +1,10 @@
 import type { IncomingMessage } from "node:http";
 
-import { AuthSource, makeUserData } from "@ukdanceblue/common";
+import {
+  AuthSource,
+  MembershipPositionType,
+  makeUserData,
+} from "@ukdanceblue/common";
 import createHttpError from "http-errors";
 import jsonwebtoken from "jsonwebtoken";
 import type { Context } from "koa";
@@ -10,6 +14,7 @@ import { Container } from "typedi";
 import { sequelizeDb } from "../../../data-source.js";
 import { makeUserJwt } from "../../../lib/auth/index.js";
 import { PersonRepository } from "../../../repositories/person/PersonRepository.js";
+import { personModelToResource } from "../../../repositories/person/personModelToResource.js";
 
 import { makeOidcClient } from "./oidcClient.js";
 
@@ -111,11 +116,19 @@ export const oidcCallback = async (ctx: Context) => {
 
       const updatedPerson = await personRepository.updatePerson(currentPerson);
 
+      if (!updatedPerson) {
+        return ctx.throw("Failed to update database entry", 500);
+      }
+
       const jwt = makeUserJwt(
-        makeUserData({
-          authSource: AuthSource.LinkBlue,
-          dbRole: updatedPerson.dbRole,
-        })
+        makeUserData(
+          personModelToResource(updatedPerson),
+          AuthSource.LinkBlue,
+          currentPerson.memberships.map((m) => m.team.uuid),
+          currentPerson.memberships
+            .filter((m) => m.position === MembershipPositionType.Captain)
+            .map((m) => m.team.uuid)
+        )
       );
       let redirectTo = session.redirectToAfterLogin ?? "/";
       if (session.sendToken) {

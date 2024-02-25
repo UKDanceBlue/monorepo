@@ -36,8 +36,8 @@ export const demoLogin = async (ctx: Context) => {
 
   const jwt = makeUserJwt({
     auth: {
-      accessLevel: AccessLevel.TeamMember,
-      dbRole: DbRole.TeamMember,
+      accessLevel: AccessLevel.UKY,
+      dbRole: DbRole.UKY,
     },
     userId: person.uuid,
     teamIds: person.memberships.map((m) => m.team.uuid),
