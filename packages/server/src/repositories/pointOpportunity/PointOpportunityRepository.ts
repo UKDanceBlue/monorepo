@@ -13,7 +13,11 @@ import {
 const pointOpportunityBooleanKeys = [] as const;
 type PointOpportunityBooleanKey = (typeof pointOpportunityBooleanKeys)[number];
 
-const pointOpportunityDateKeys = ["createdAt", "updatedAt"] as const;
+const pointOpportunityDateKeys = [
+  "opportunityDate",
+  "createdAt",
+  "updatedAt",
+] as const;
 type PointOpportunityDateKey = (typeof pointOpportunityDateKeys)[number];
 
 const pointOpportunityIsNullKeys = [] as const;
@@ -22,11 +26,18 @@ type PointOpportunityIsNullKey = (typeof pointOpportunityIsNullKeys)[number];
 const pointOpportunityNumericKeys = [] as const;
 type PointOpportunityNumericKey = (typeof pointOpportunityNumericKeys)[number];
 
-const pointOpportunityOneOfKeys = [] as const;
+const pointOpportunityOneOfKeys = ["type"] as const;
 type PointOpportunityOneOfKey = (typeof pointOpportunityOneOfKeys)[number];
 
-const pointOpportunityStringKeys = [] as const;
+const pointOpportunityStringKeys = ["name"] as const;
 type PointOpportunityStringKey = (typeof pointOpportunityStringKeys)[number];
+
+export type PointOpportunityOrderKeys =
+  | "name"
+  | "opportunityDate"
+  | "type"
+  | "createdAt"
+  | "updatedAt";
 
 export type PointOpportunityFilters = FilterItems<
   PointOpportunityBooleanKey,
@@ -54,7 +65,10 @@ export class PointOpportunityRepository {
     take,
   }: {
     filters?: readonly PointOpportunityFilters[] | undefined | null;
-    order?: readonly [key: string, sort: SortDirection][] | undefined | null;
+    order?:
+      | readonly [key: PointOpportunityOrderKeys, sort: SortDirection][]
+      | undefined
+      | null;
     skip?: number | undefined | null;
     take?: number | undefined | null;
   }) {

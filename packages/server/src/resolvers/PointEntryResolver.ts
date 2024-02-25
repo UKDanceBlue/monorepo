@@ -80,9 +80,15 @@ class CreatePointEntryInput implements Partial<PointEntryResource> {
 }
 
 @ArgsType()
-class ListPointEntriesArgs extends FilteredListQueryArgs("PointEntryResolver", {
+class ListPointEntriesArgs extends FilteredListQueryArgs<
+  "createdAt" | "updatedAt",
+  never,
+  never,
+  never,
+  "createdAt" | "updatedAt",
+  never
+>("PointEntryResolver", {
   all: ["createdAt", "updatedAt"],
-  string: [],
   date: ["createdAt", "updatedAt"],
 }) {}
 
