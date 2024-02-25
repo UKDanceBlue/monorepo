@@ -1,10 +1,7 @@
 import type winston from "winston";
-import { createLogger, format } from "winston";
+import { createLogger, format, transports } from "winston";
 
 import { loggingLevel } from "../../environment.js";
-
-import { consoleTransport } from "./transports/consoleTransport.js";
-import { combinedLogTransport } from "./transports/fileLogTransports.js";
 
 export const SyslogLevels = {
   emerg: 0,
@@ -30,6 +27,22 @@ export const syslogColors = {
   debug: "blue",
   trace: "gray",
 } satisfies winston.config.AbstractConfigSetColors;
+
+const consoleTransport = new transports.Console({
+  format: format.combine(
+    format.splat(),
+    format.simple(),
+    format.colorize({
+      colors: syslogColors,
+    })
+  ),
+});
+
+const combinedLogTransport = new transports.File({
+  filename: "combined.log",
+  maxsize: 1_000_000,
+  maxFiles: 3,
+});
 
 export const logger = createLogger({
   level: loggingLevel,

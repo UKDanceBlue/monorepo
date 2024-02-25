@@ -1,8 +1,12 @@
-import { createLogger, format } from "winston";
+import { createLogger, format, transports } from "winston";
 
 import { isDevelopment } from "../../environment.js";
 
-import { databaseLogTransport } from "./transports/fileLogTransports.js";
+const databaseLogTransport = new transports.File({
+  filename: "database.log",
+  maxsize: 1_000_000,
+  maxFiles: 3,
+});
 
 export const sqlLogger = createLogger({
   exitOnError: false,
