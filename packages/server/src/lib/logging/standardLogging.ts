@@ -16,6 +16,27 @@ export const SyslogLevels = {
 } as const satisfies winston.config.AbstractConfigSetLevels;
 export type SyslogLevels = keyof typeof SyslogLevels;
 
+interface StandardLogger extends winston.Logger {
+  emerg: winston.LeveledLogMethod;
+  alert: winston.LeveledLogMethod;
+  crit: winston.LeveledLogMethod;
+  error: winston.LeveledLogMethod;
+  warning: winston.LeveledLogMethod;
+  notice: winston.LeveledLogMethod;
+  info: winston.LeveledLogMethod;
+  debug: winston.LeveledLogMethod;
+  trace: winston.LeveledLogMethod;
+
+  warn: never;
+  help: never;
+  data: never;
+  prompt: never;
+  http: never;
+  verbose: never;
+  input: never;
+  silly: never;
+}
+
 export const syslogColors = {
   emerg: "red",
   alert: "yellow",
@@ -55,7 +76,7 @@ export const logger = createLogger({
   ),
   transports: [combinedLogTransport, consoleTransport],
   exitOnError: false,
-});
+}) as StandardLogger;
 
 /**
  * Log a fatal message to the logger

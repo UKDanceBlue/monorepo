@@ -39,7 +39,7 @@ export async function findPersonForLogin(
   memberOf?: (string | number)[],
   captainOf?: (string | number)[]
 ) {
-  logger.debug(`Looking for person with auth IDs: ${JSON.stringify(authIds)}`);
+  logger.trace(`Looking for person with auth IDs: ${JSON.stringify(authIds)}`);
   // TODO: pick specific values of authIds to search for, instead of all of them at once
   let currentPerson;
   let created = false;
@@ -51,7 +51,7 @@ export async function findPersonForLogin(
       include,
     });
     if (currentPerson) {
-      logger.debug(`Found person by uuid: ${currentPerson.uuid}`);
+      logger.trace(`Found person by uuid: ${currentPerson.uuid}`);
     }
   }
 
@@ -66,7 +66,7 @@ export async function findPersonForLogin(
       include,
     });
     if (currentPerson) {
-      logger.debug(`Found person by ${source}: ${currentPerson.uuid}`);
+      logger.trace(`Found person by ${source}: ${currentPerson.uuid}`);
       break;
     }
   }
@@ -78,7 +78,7 @@ export async function findPersonForLogin(
       include,
     });
     if (currentPerson) {
-      logger.debug(`Found person by linkblue: ${currentPerson.uuid}`);
+      logger.trace(`Found person by linkblue: ${currentPerson.uuid}`);
     }
   }
   if (!currentPerson && userData.email) {
@@ -87,12 +87,12 @@ export async function findPersonForLogin(
       include,
     });
     if (currentPerson) {
-      logger.debug(`Found person by email: ${currentPerson.uuid}`);
+      logger.trace(`Found person by email: ${currentPerson.uuid}`);
     }
   }
 
   if (!currentPerson) {
-    logger.debug("No person found, creating new person");
+    logger.trace("No person found, creating new person");
     if (!userData.email) {
       throw new Error("No email provided for new user");
     }

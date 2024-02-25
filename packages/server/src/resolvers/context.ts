@@ -56,7 +56,7 @@ export const graphqlContextFunction: ContextFunction<
   if (person) {
     const personResource = personModelToResource(person);
 
-    logger.debug("graphqlContextFunction Found user", personResource);
+    logger.trace("graphqlContextFunction Found user", personResource);
     return {
       authenticatedUser: personResource,
       userData: {
