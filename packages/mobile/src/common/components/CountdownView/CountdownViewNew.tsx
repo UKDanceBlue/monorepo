@@ -47,9 +47,9 @@ export const CountdownViewNew = ({ endTime }: { endTime: number }) => {
   return (
     <View style={{alignItems: "center", justifyContent: "center"}}>
       <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
-        <CountdownNumber value={2} total={31} radius={60} amountInRow={3}/>
-        <CountdownNumber value={2} total={31} radius={60} amountInRow={3}/>
-        <CountdownNumber value={2} total={31} radius={60} amountInRow={3}/>
+        <CountdownNumber value={2} unit={"days"} total={31} radius={60} amountInRow={3}/>
+        <CountdownNumber value={2} unit={"hours"} total={31} radius={60} amountInRow={3}/>
+        <CountdownNumber value={2} unit={"min"} total={31} radius={60} amountInRow={3}/>
       </View>
     </View>
   );

@@ -1,7 +1,8 @@
+import { fontSizes } from "@theme/typography";
 import { View } from "native-base";
 import React from "react";
 import { useWindowDimensions } from "react-native";
-import { Circle, Svg } from "react-native-svg";
+import { Text, Circle, Svg } from "react-native-svg";
 
 const validUnits = ["sec", "min", "hours", "days", "months", "years"] as const;
 
@@ -39,6 +40,9 @@ export const CountdownNumber = ({
   const cx = canvasWidth / 2;
   const cy = canvasHeight / 2;
 
+  const fontSizeValue = fontSizes["md"];
+  const fontSizeUnit = fontSizes["sm"];
+
   const viewBox = `0 0 ${canvasWidth} ${canvasHeight}`;
 
     return (
@@ -52,6 +56,26 @@ export const CountdownNumber = ({
             strokeWidth={strokeWidth}
             fill={'#0032dd'}
           />
+        <Text
+          x={cx}
+          y={cy}
+          textAnchor="middle"
+          alignmentBaseline="middle"
+          fontSize={fontSizeValue}
+          fill={'#ffffff'}
+        >
+          {value}
+        </Text>
+        <Text
+          x={cx}
+          y={cy + fontSizeValue} // Adjust the y-coordinate to position the unit below the number
+          textAnchor="middle"
+          alignmentBaseline="middle"
+          fontSize={fontSizeUnit} // Adjust the font size of the unit
+          fill={'#ffffff'}
+        >
+          {unit}
+        </Text>
         </Svg>
       </View>
     );
