@@ -1,10 +1,10 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import { SortDirection } from "@ukdanceblue/common";
+import { SortDirection, TeamLegacyStatus } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import { buildTeamWhere } from "./teamRepositoryUtils.js";
+import { buildTeamOrder, buildTeamWhere } from "./teamRepositoryUtils.js";
 
 const teamBooleanKeys = [] as const;
 type TeamBooleanKey = (typeof teamBooleanKeys)[number];
@@ -15,7 +15,7 @@ type TeamDateKey = (typeof teamDateKeys)[number];
 const teamIsNullKeys = [] as const;
 type TeamIsNullKey = (typeof teamIsNullKeys)[number];
 
-const teamNumericKeys = ["totalPoints"] as const;
+const teamNumericKeys = [] as const;
 type TeamNumericKey = (typeof teamNumericKeys)[number];
 
 const teamOneOfKeys = ["type", "marathonYear", "legacyStatus"] as const;
@@ -52,7 +52,7 @@ export class TeamRepository {
     return this.prisma.team.findUnique({ where: param });
   }
 
-  listTeams({
+  async listTeams({
     filters,
     order,
     skip,
@@ -68,18 +68,45 @@ export class TeamRepository {
     take?: number | undefined | null;
     onlyDemo?: boolean;
   }) {
-    const wheres = buildTeamWhere(filters);
+    const where = buildTeamWhere(filters);
+    const orderBy = buildTeamOrder(order);
 
-    const orders: Prisma.Sql[] = [];
-    for (const [key, sort] of order ?? []) {
-      orders.push(
-        Prisma.sql`${key} ${sort === SortDirection.ASCENDING ? "asc" : "desc"}`
-      );
-    }
+    const rows = await this.prisma.team.findMany({
+      where: {
+        ...where,
+        legacyStatus:
+          where.legacyStatus ??
+          (onlyDemo
+            ? {
+                notIn: [TeamLegacyStatus.DemoTeam],
+              }
+            : undefined),
+      },
+      orderBy,
+      skip: skip ?? undefined,
+      take: take ?? undefined,
+    });
 
-    return this.prisma.$queryRaw`SELECT * FROM team WHERE ${wheres.join(
-      " AND "
-    )} ORDER BY ${orders}.join(", ") LIMIT ${take} OFFSET ${skip}`;
+    const totalPointsOrder = order?.find(([key]) => key === "totalPoints");
+
+    return totalPointsOrder
+      ? (
+          await Promise.all(
+            rows.map((row) =>
+              this.getTotalTeamPoints({ id: row.id }).then((totalPoints) => ({
+                ...row,
+                totalPoints: totalPoints._sum.points ?? 0,
+              }))
+            )
+          )
+        )
+          // eslint-disable-next-line unicorn/no-await-expression-member
+          .sort((a, b) =>
+            totalPointsOrder[1] === SortDirection.ASCENDING
+              ? a.totalPoints - b.totalPoints
+              : b.totalPoints - a.totalPoints
+          )
+      : rows;
   }
 
   countTeams({

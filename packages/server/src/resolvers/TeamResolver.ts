@@ -112,16 +112,16 @@ class SetTeamInput implements OptionalToNullable<Partial<TeamResource>> {
 
 @ArgsType()
 class ListTeamsArgs extends FilteredListQueryArgs<
-  "name" | "type" | "legacyStatus" | "marathonYear" | "totalPoints",
+  "name" | "type" | "legacyStatus" | "marathonYear",
   "name",
   "type" | "legacyStatus" | "marathonYear",
-  "totalPoints",
+  never,
   never,
   never
 >("TeamResolver", {
-  all: ["name", "type", "legacyStatus", "marathonYear", "totalPoints"],
+  all: ["name", "type", "legacyStatus", "marathonYear"],
   string: ["name"],
-  numeric: ["totalPoints"],
+  numeric: [],
   oneOf: ["type", "marathonYear", "legacyStatus"],
 }) {
   @Field(() => [TeamType], { nullable: true })
@@ -179,7 +179,19 @@ export class TeamResolver {
     ]);
 
     return ListTeamsResponse.newPaginated({
-      data: rows.map((row) => teamModelToResource(row)),
+      data: rows.map((row) =>
+        teamModelToResource({
+          id: row.id,
+          uuid: row.uuid,
+          name: row.name,
+          persistentIdentifier: row.persistentIdentifier,
+          legacyStatus: row.legacyStatus,
+          marathonYear: row.marathonYear,
+          type: row.type,
+          updatedAt: row.updatedAt,
+          createdAt: row.createdAt,
+        })
+      ),
       total,
       page: query.page,
       pageSize: query.pageSize,
