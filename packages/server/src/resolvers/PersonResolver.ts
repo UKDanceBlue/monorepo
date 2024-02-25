@@ -4,6 +4,7 @@ import {
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
+  MembershipPositionType,
   MembershipResource,
   PersonResource,
   RoleResource,
@@ -26,6 +27,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import { membershipModelToResource } from "../repositories/membership/membershipModelToResource.js";
 import { PersonRepository } from "../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
 
@@ -293,17 +295,15 @@ export class PersonResolver {
   )
   @FieldResolver(() => [MembershipResource])
   async teams(@Root() person: PersonResource): Promise<MembershipResource[]> {
-    const model = await PersonModel.findByUuid(person.uuid, {
-      attributes: ["id"],
-      include: [MembershipModel.withScope("withTeam")],
+    const models = await this.personRepository.findMembershipsOfPerson({
+      uuid: person.uuid,
     });
 
-    if (model == null) {
-      // I guess this is fine? May need more robust error handling
+    if (models == null) {
       return [];
     }
 
-    return model.memberships.map((row) => row.toResource());
+    return models.map((row) => membershipModelToResource(row));
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
@@ -313,16 +313,15 @@ export class PersonResolver {
   async captaincies(
     @Root() person: PersonResource
   ): Promise<MembershipResource[]> {
-    const model = await PersonModel.findByUuid(person.uuid, {
-      attributes: ["id"],
-      include: [MembershipModel.withScope("withTeam").withScope("captains")],
-    });
+    const models = await this.personRepository.findMembershipsOfPerson(
+      { uuid: person.uuid },
+      { position: MembershipPositionType.Captain }
+    );
 
-    if (model == null) {
-      // I guess this is fine? May need more robust error handling
+    if (models == null) {
       return [];
     }
 
-    return model.memberships.map((row) => row.toResource());
+    return models.map((row) => membershipModelToResource(row));
   }
 }

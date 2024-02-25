@@ -5,6 +5,7 @@ import type {
   AuthSource,
   CommitteeIdentifier,
   CommitteeRole,
+  MembershipPositionType,
   RoleResource,
   SortDirection,
 } from "@ukdanceblue/common";
@@ -128,16 +129,24 @@ export class PersonRepository {
     });
   }
 
-  findTeamsForPerson(param: { uuid: string } | { id: number }) {
-    return this.prisma.person.findMany({
-      where: {
+  async findMembershipsOfPerson(
+    param: { uuid: string } | { id: number },
+    opts: {
+      position?: MembershipPositionType;
+    } = {}
+  ) {
+    const rows = await this.prisma.person.findUnique({
+      where: param,
+      select: {
         memberships: {
-          some: {
-            person: param,
+          where: {
+            position: opts.position,
           },
         },
       },
     });
+
+    return rows?.memberships ?? null;
   }
 
   // Mutators
