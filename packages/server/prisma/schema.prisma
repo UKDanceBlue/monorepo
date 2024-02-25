@@ -307,16 +307,6 @@ enum CommitteeRole {
   @@map("enum_people_committee_role")
 }
 
-enum DbRole {
-  None
-  Public
-  TeamMember
-  TeamCaptain
-  Committee
-
-  @@map("enum_people_db_role")
-}
-
 enum PointOpportunityType {
   Spirit
   Morale
