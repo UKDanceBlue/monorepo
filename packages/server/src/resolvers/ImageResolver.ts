@@ -16,13 +16,10 @@ import {
   Resolver,
 } from "type-graphql";
 
-import { ImageModel } from "../models/Image.js";
-
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
 } from "./ApiResponse.js";
-import type { ResolverInterface } from "./ResolverInterface.js";
 
 @ObjectType("GetImageByUuidResponse", { implements: AbstractGraphQLOkResponse })
 class GetImageByUuidResponse extends AbstractGraphQLOkResponse<ImageResource> {

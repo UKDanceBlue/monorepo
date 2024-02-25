@@ -19,18 +19,12 @@ import {
 
 import { selectAudience } from "../lib/notification/selectAudience.js";
 import { sendNotification } from "../lib/notification/sendNotification.js";
-import { NotificationModel } from "../models/Notification.js";
 
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
-import type {
-  ResolverInterface,
-  ResolverInterfaceWithFilteredList,
-} from "./ResolverInterface.js";
-import { toSequelizeFindOptions } from "./list-query-args/toSequelizeFindOptions.js";
 
 @ObjectType("GetNotificationByUuidResponse", {
   implements: AbstractGraphQLOkResponse<NotificationResource>,

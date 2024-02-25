@@ -21,21 +21,11 @@ import {
   Root,
 } from "type-graphql";
 
-import { PersonModel } from "../models/Person.js";
-import { PointEntryModel } from "../models/PointEntry.js";
-import { PointOpportunityModel } from "../models/PointOpportunity.js";
-import { TeamModel } from "../models/Team.js";
-
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
-import type {
-  ResolverInterface,
-  ResolverInterfaceWithFilteredList,
-} from "./ResolverInterface.js";
-import { toSequelizeFindOptions } from "./list-query-args/toSequelizeFindOptions.js";
 
 @ObjectType("GetPointEntryByUuidResponse", {
   implements: AbstractGraphQLOkResponse<PointEntryResource>,

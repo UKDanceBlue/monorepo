@@ -4,7 +4,6 @@ import type {
   PersonResource,
 } from "@ukdanceblue/common";
 
-import { PersonModel } from ".././models/Person.js";
 import { sequelizeDb } from "../data-source.js";
 import { logger } from "../logger.js";
 

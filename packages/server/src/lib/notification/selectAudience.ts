@@ -1,5 +1,3 @@
-import type { NotificationModel } from "../../models/Notification.js";
-
 // Stub for now
 export async function selectAudience(
   _notification: NotificationModel,

@@ -6,8 +6,6 @@ import type { DefaultState } from "koa";
 
 import { defaultAuthorization, parseUserJwt } from "../lib/auth/index.js";
 import { logger } from "../logger.js";
-import { MembershipModel } from "../models/Membership.js";
-import { PersonModel } from "../models/Person.js";
 
 export interface GraphQLContext extends AuthorizationContext {
   contextErrors: string[];

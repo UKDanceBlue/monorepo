@@ -24,19 +24,12 @@ import {
 } from "type-graphql";
 
 import { sequelizeDb } from "../data-source.js";
-import { EventModel } from "../models/Event.js";
-import { PointOpportunityModel } from "../models/PointOpportunity.js";
 
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
-import type {
-  ResolverInterface,
-  ResolverInterfaceWithFilteredList,
-} from "./ResolverInterface.js";
-import { toSequelizeFindOptions } from "./list-query-args/toSequelizeFindOptions.js";
 
 @ObjectType("SinglePointOpportunityResponse", {
   implements: AbstractGraphQLOkResponse<PointOpportunityResource>,

@@ -35,20 +35,13 @@ import {
 } from "type-graphql";
 
 import { sequelizeDb } from "../data-source.js";
-import { MembershipModel } from "../models/Membership.js";
-import { TeamModel } from "../models/Team.js";
 
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
-import type {
-  ResolverInterface,
-  ResolverInterfaceWithFilteredList,
-} from "./ResolverInterface.js";
 import * as Context from "./context.js";
-import { toSequelizeFindOptions } from "./list-query-args/toSequelizeFindOptions.js";
 
 @ObjectType("SingleTeamResponse", {
   implements: AbstractGraphQLOkResponse<TeamResource>,

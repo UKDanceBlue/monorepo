@@ -6,7 +6,6 @@ import jsonwebtoken from "jsonwebtoken";
 import type { Context } from "koa";
 import { DateTime } from "luxon";
 
-import { LoginFlowSessionModel } from "../../.././models/LoginFlowSession.js";
 import { findPersonForLogin } from "../../../controllers/PersonController.js";
 import { sequelizeDb } from "../../../data-source.js";
 import { makeUserJwt } from "../../../lib/auth/index.js";

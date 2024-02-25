@@ -2,8 +2,6 @@ import type { InferCreationAttributes } from "@sequelize/core";
 import type { Context } from "koa";
 import { generators } from "openid-client";
 
-import { LoginFlowSessionModel } from "../../.././models/LoginFlowSession.js";
-
 import { makeOidcClient } from "./oidcClient.js";
 
 // TODO: convert to OAuth2

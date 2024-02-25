@@ -6,10 +6,6 @@ import {
 } from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
-import { MembershipModel } from "../models/Membership.js";
-import { PersonModel } from "../models/Person.js";
-import { PointEntryModel } from "../models/PointEntry.js";
-import { TeamModel } from "../models/Team.js";
 
 export async function getOrMakeDemoUser() {
   return sequelizeDb.transaction(async () => {

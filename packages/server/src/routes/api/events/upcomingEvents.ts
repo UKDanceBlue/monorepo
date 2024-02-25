@@ -3,9 +3,6 @@ import type { Context } from "koa";
 import { DateTime } from "luxon";
 import type { NextFn } from "type-graphql";
 
-import { EventModel } from "../../../models/Event.js";
-import { EventOccurrenceModel } from "../../../models/EventOccurrence.js";
-
 export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
   let eventsToSend = 10;
   if (ctx.query.count) {
