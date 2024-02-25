@@ -2,7 +2,6 @@
 import CountdownViewNew from "@common/components/CountdownView";
 import { useThemeColors } from "@common/customHooks";
 import { useMarathonTime } from "@common/hooks/useMarathonTime";
-import { Interval } from "luxon";
 import { Text, View } from "native-base";
 import type { ImageSourcePropType } from "react-native";
 import { ImageBackground, useWindowDimensions } from "react-native";
@@ -44,6 +43,7 @@ export const MarathonCountdownScreen = () => {
           fontSize="3xl"
           bg={`${primary[600]}BD`}
           marginTop="4"
+          marginBottom={"4"}
           style={{
             textShadowColor: "secondary.300",
             textShadowOffset: { width: 2, height: 1.5 },
@@ -52,12 +52,12 @@ export const MarathonCountdownScreen = () => {
         >
           {"Countdown 'til Marathon"}
         </Text>
-        <CountdownViewNew endTime={Interval.fromDateTimes(marathonTime.startTime, marathonTime.endTime).start.toMillis()} />
+        <CountdownViewNew endTime={marathonTime.startTime.toMillis()} />
       </View>
       <View flex={2}>
         <CommitteeHoldingSign color="#fff" />
       </View>
-      <View flex={1}>
+      <View flex={0.6}>
         <Text
           textAlign="center"
           color="secondary.400"

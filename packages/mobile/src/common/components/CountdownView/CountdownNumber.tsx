@@ -2,7 +2,7 @@ import { fontSizes } from "@theme/typography";
 import { View } from "native-base";
 import React from "react";
 import { useWindowDimensions } from "react-native";
-import { Text, Circle, Svg } from "react-native-svg";
+import { Circle, Svg, Text } from "react-native-svg";
 
 const validUnits = ["sec", "min", "hours", "days", "months", "years"] as const;
 
@@ -40,8 +40,8 @@ export const CountdownNumber = ({
   const cx = canvasWidth / 2;
   const cy = canvasHeight / 2;
 
-  const fontSizeValue = fontSizes["md"];
-  const fontSizeUnit = fontSizes["sm"];
+  const fontSizeValue = fontSizes["4xl"];
+  const fontSizeUnit = fontSizes["xl"];
 
   const viewBox = `0 0 ${canvasWidth} ${canvasHeight}`;
 
@@ -56,21 +56,24 @@ export const CountdownNumber = ({
             strokeWidth={strokeWidth}
             fill={'#0032dd'}
           />
-        <Text
+        <Text // numbers
           x={cx}
-          y={cy}
+          y={cy- fontSizeValue / 2} // Adjust the y-coordinate
           textAnchor="middle"
           alignmentBaseline="middle"
+          fontFamily="bodoni-flf-bold"
+          fontWeight={"bold"}
           fontSize={fontSizeValue}
           fill={'#ffffff'}
         >
           {value}
         </Text>
-        <Text
+        <Text // words
           x={cx}
-          y={cy + fontSizeValue} // Adjust the y-coordinate to position the unit below the number
+          y={cy + fontSizeValue / 2} // Adjust the y-coordinate to position the unit below the number
           textAnchor="middle"
           alignmentBaseline="middle"
+          fontFamily="bodoni-flf-bold"
           fontSize={fontSizeUnit} // Adjust the font size of the unit
           fill={'#ffffff'}
         >
