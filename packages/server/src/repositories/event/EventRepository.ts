@@ -141,6 +141,43 @@ export class EventRepository {
     });
   }
 
+  async getUpcomingEvents({ count, until }: { count: number; until: Date }) {
+    const rows = await this.prisma.event.findMany({
+      where: {
+        eventOccurrences: {
+          some: {
+            date: {
+              gte: new Date(),
+              lte: until,
+            },
+          },
+        },
+      },
+      take: count,
+      include: {
+        eventOccurrences: true,
+        eventImages: {
+          include: {
+            image: true,
+          },
+        },
+      },
+    });
+
+    return rows
+      .map((row) => {
+        row.eventOccurrences.sort((a, b) => {
+          return a.date.getTime() - b.date.getTime();
+        });
+        return row;
+      })
+      .sort((a, b) => {
+        const aDate = a.eventOccurrences[0]?.date ?? new Date(0);
+        const bDate = b.eventOccurrences[0]?.date ?? new Date(0);
+        return aDate.getTime() - bDate.getTime();
+      });
+  }
+
   createEvent(data: Prisma.EventCreateInput) {
     return this.prisma.event.create({
       data,
