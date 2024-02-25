@@ -22,9 +22,8 @@ export interface AuditLogger extends Logger {
   /**
    * Log a message with the level `secure`
    *
-   * Use this level for an action that can only be
-   * taken by an authorized user (i.e. a committee
-   * member or an admin) and is a destructive action
+   * Use this level for an action that might break
+   * something or is otherwise dangerous
    */
   dangerous: LeveledLogMethod;
   /**
