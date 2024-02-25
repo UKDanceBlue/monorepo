@@ -15,7 +15,11 @@ import {
  * @return The equivalent AccessLevel
  * @throws Error if the DbRole is not a valid member of the DbRole enum
  */
-export function roleToAccessLevel(role: RoleResource): AccessLevel {
+export function roleToAccessLevel(role: {
+  dbRole: DbRole;
+  committeeRole?: CommitteeRole | null;
+  committeeIdentifier?: CommitteeIdentifier | null;
+}): AccessLevel {
   switch (role.dbRole) {
     case DbRole.None: {
       return AccessLevel.None;

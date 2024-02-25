@@ -1,5 +1,7 @@
 import { registerEnumType } from "type-graphql";
 
+import { roleToAccessLevel } from "./role.js";
+
 export const AuthSource = {
   LinkBlue: "LinkBlue",
   Anonymous: "Anonymous",
@@ -301,6 +303,29 @@ export interface UserData {
   teamIds?: string[];
   captainOfTeamIds?: string[];
   authSource: AuthSource;
+}
+
+export function makeUserData(props: {
+  dbRole: DbRole;
+  committeeRole?: CommitteeRole;
+  committeeIdentifier?: CommitteeIdentifier;
+  userId?: string;
+  teamIds?: string[];
+  captainOfTeamIds?: string[];
+  authSource: AuthSource;
+}): UserData {
+  return {
+    auth: {
+      dbRole: props.dbRole,
+      committeeRole: props.committeeRole,
+      committeeIdentifier: props.committeeIdentifier,
+      accessLevel: roleToAccessLevel(props),
+    },
+    userId: props.userId,
+    teamIds: props.teamIds,
+    captainOfTeamIds: props.captainOfTeamIds,
+    authSource: props.authSource,
+  };
 }
 
 export interface JwtPayload {
