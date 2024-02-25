@@ -58,10 +58,26 @@ const auditLogTransport = new transports.File({
   maxFiles: 3,
 });
 
+const dangerousConsoleTransport = new transports.Console({
+  format: format.combine(
+    format.splat(),
+    format.simple(),
+    format.colorize({
+      colors: {
+        dangerous: "red",
+        secure: "yellow",
+        insecure: "yellow",
+        info: "green",
+      },
+    })
+  ),
+  level: "dangerous",
+});
+
 export const auditLogger = createLogger({
   level: "secure",
   silent: isDevelopment,
-  transports: auditLogTransport,
+  transports: [auditLogTransport, dangerousConsoleTransport],
   format: format.combine(format.timestamp(), format.json()),
   levels: {
     info: 0,
