@@ -27,6 +27,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import { auditLogger } from "../lib/logging/auditLogging.js";
 import { EventRepository } from "../repositories/event/EventRepository.js";
 import {
   eventModelToResource,
@@ -291,6 +292,8 @@ export class EventResolver {
       },
     });
 
+    auditLogger.sensitive("Event created", { event: row });
+
     return CreateEventResponse.newCreated(
       eventModelToResource(
         row,
@@ -308,6 +311,8 @@ export class EventResolver {
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
+
+    auditLogger.sensitive("Event deleted", { uuid });
 
     return DeleteEventResponse.newOk(true);
   }
@@ -367,6 +372,8 @@ export class EventResolver {
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
 
+    auditLogger.sensitive("Event updated", { event: row });
+
     return SetEventResponse.newOk(
       eventModelToResource(
         row,
@@ -389,6 +396,8 @@ export class EventResolver {
     if (!row) {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");
     }
+
+    auditLogger.sensitive("Event image removed", { eventUuid, imageUuid });
 
     return RemoveEventImageResponse.newOk(true);
   }

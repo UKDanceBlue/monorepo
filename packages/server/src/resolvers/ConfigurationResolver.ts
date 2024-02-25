@@ -19,7 +19,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { prisma } from "../prisma.js";
+import { auditLogger } from "../lib/logging/auditLogging.js";
 import { ConfigurationRepository } from "../repositories/configuration/ConfigurationRepository.js";
 import { configurationModelToResource } from "../repositories/configuration/configurationModelToResource.js";
 
@@ -123,6 +123,8 @@ export class ConfigurationResolver {
       validUntil: input.validUntil ?? null,
     });
 
+    auditLogger.dangerous("Configuration created", { configuration: row });
+
     return CreateConfigurationResponse.newCreated(
       configurationModelToResource(row),
       row.uuid
@@ -135,22 +137,25 @@ export class ConfigurationResolver {
     @Arg("input", () => [CreateConfigurationInput])
     input: CreateConfigurationInput[]
   ): Promise<CreateConfigurationsResponse> {
-    return prisma.$transaction(async () => {
-      const rows = await Promise.all(
-        input.map((i) =>
-          this.configurationRepository.createConfiguration({
-            key: i.key,
-            value: i.value,
-            validAfter: i.validAfter ?? null,
-            validUntil: i.validUntil ?? null,
-          })
-        )
-      );
+    // TODO: This should be converted into a batch operation
+    const rows = await Promise.all(
+      input.map((i) =>
+        this.configurationRepository.createConfiguration({
+          key: i.key,
+          value: i.value,
+          validAfter: i.validAfter ?? null,
+          validUntil: i.validUntil ?? null,
+        })
+      )
+    );
 
-      return CreateConfigurationsResponse.newOk(
-        rows.map(configurationModelToResource)
-      );
+    auditLogger.dangerous("Configurations created", {
+      configurations: rows,
     });
+
+    return CreateConfigurationsResponse.newOk(
+      rows.map(configurationModelToResource)
+    );
   }
 
   @AccessControl({ accessLevel: AccessLevel.Admin })
@@ -163,6 +168,8 @@ export class ConfigurationResolver {
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
     }
+
+    auditLogger.dangerous("Configuration deleted", { configuration: row });
 
     return DeleteConfigurationResponse.newOk(true);
   }

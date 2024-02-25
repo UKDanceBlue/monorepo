@@ -21,6 +21,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import { auditLogger } from "../lib/logging/auditLogging.js";
 import { DeviceRepository } from "../repositories/device/DeviceRepository.js";
 import { deviceModelToResource } from "../repositories/device/deviceModelToResource.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
@@ -155,8 +156,10 @@ export class DeviceResolver {
   }
 
   @Mutation(() => DeleteDeviceResponse, { name: "deleteDevice" })
-  async delete(@Arg("uuid") id: string): Promise<DeleteDeviceResponse> {
-    await this.deviceRepository.deleteDevice({ uuid: id });
+  async delete(@Arg("uuid") uuid: string): Promise<DeleteDeviceResponse> {
+    await this.deviceRepository.deleteDevice({ uuid });
+
+    auditLogger.normal("Device deleted", { uuid });
 
     return DeleteDeviceResponse.newOk(true);
   }
