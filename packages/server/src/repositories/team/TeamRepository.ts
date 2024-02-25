@@ -120,6 +120,14 @@ export class TeamRepository {
     });
   }
 
+  getTeamPointEntries(param: UniqueTeamParam) {
+    return this.prisma.pointEntry.findMany({
+      where: {
+        team: param,
+      },
+    });
+  }
+
   createTeam(data: Prisma.TeamCreateInput) {
     return this.prisma.team.create({ data });
   }

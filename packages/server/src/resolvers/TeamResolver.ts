@@ -37,6 +37,7 @@ import {
 import { Service } from "typedi";
 
 import { membershipModelToResource } from "../repositories/membership/membershipModelToResource.js";
+import { pointEntryModelToResource } from "../repositories/pointEntry/pointEntryModelToResource.js";
 import { TeamRepository } from "../repositories/team/TeamRepository.js";
 import { teamModelToResource } from "../repositories/team/teamModelToResource.js";
 
@@ -325,20 +326,11 @@ export class TeamResolver {
   async pointEntries(
     @Root() team: TeamResource
   ): Promise<PointEntryResource[]> {
-    const model = await TeamModel.findByUuid(team.uuid, {
-      attributes: ["id", "uuid"],
+    const rows = await this.teamRepository.getTeamPointEntries({
+      uuid: team.uuid,
     });
 
-    if (!model) {
-      throw new DetailedError(
-        ErrorCode.NotFound,
-        "Failed to load team for point entries"
-      );
-    }
-
-    const pointEntries = await model.getPointEntries();
-
-    return pointEntries.map((row) => row.toResource());
+    return rows.map((row) => pointEntryModelToResource(row));
   }
 
   @AccessControl({ accessLevel: AccessLevel.Public })
