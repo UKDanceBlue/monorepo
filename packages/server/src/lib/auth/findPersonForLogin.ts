@@ -1,10 +1,10 @@
-import type { Person, PrismaClient } from "@prisma/client";
-import type { AuthSource, RoleResource } from "@ukdanceblue/common";
+import type { AuthSource, Person, PrismaClient } from "@prisma/client";
+import type { RoleResource } from "@ukdanceblue/common";
 import { MembershipPositionType } from "@ukdanceblue/common";
 
 import { logger } from "../logging/logger.js";
 
-// TODO: rework this whole thing, it doesn't really make much sense anymore
+// TODO: rework this whole thing, it's pretty boated and confusing
 
 /**
  * Searches the database for a user with the given auth IDs or user data, or creates a new user if none is found
@@ -14,7 +14,7 @@ import { logger } from "../logging/logger.js";
  */
 export async function findPersonForLogin(
   client: PrismaClient,
-  authIds: Partial<Record<AuthSource, string>>,
+  authIds: [AuthSource, string][],
   userData: {
     uuid?: string | null;
     email?: string | null;
@@ -41,13 +41,13 @@ export async function findPersonForLogin(
   }
 
   // Search for an existing person with the given auth IDs
-  for (const [source, id] of Object.entries(authIds)) {
+  for (const [source, id] of authIds) {
     if (!id) {
       continue;
     }
     // eslint-disable-next-line no-await-in-loop
     currentPerson = await client.person.findFirst({
-      where: { authIds: { [source]: id } },
+      where: { authIdPairs: { some: { source, value: id } } },
     });
     if (currentPerson) {
       logger.debug(`Found person by ${source}: ${currentPerson.uuid}`);
@@ -133,7 +133,14 @@ export async function findPersonForLogin(
 
     currentPerson = await client.person.create({
       data: {
-        authIds,
+        authIdPairs: {
+          createMany: {
+            data: authIds.map(([source, value]) => ({
+              source,
+              value,
+            })),
+          },
+        },
         email: userData.email,
         name: userData.name ?? null,
         linkblue: userData.linkblue ?? null,

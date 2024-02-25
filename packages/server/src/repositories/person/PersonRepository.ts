@@ -1,5 +1,5 @@
 import type { Person } from "@prisma/client";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { AuthSource, Prisma, PrismaClient } from "@prisma/client";
 import type {
   AuthIdPairResource,
   CommitteeIdentifier,
@@ -8,7 +8,6 @@ import type {
   SortDirection,
 } from "@ukdanceblue/common";
 import {
-  AuthSource,
   DbRole,
   MembershipPositionType,
   TeamLegacyStatus,
@@ -45,7 +44,7 @@ export class PersonRepository {
   // Finders
 
   findPersonForLogin(
-    authIds: Partial<Record<AuthSource, string>>,
+    authIds: [AuthSource, string][],
     userData: {
       uuid?: string | null;
       email?: string | null;
