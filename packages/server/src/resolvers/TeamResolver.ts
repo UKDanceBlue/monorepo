@@ -130,7 +130,7 @@ class ListTeamsArgs extends FilteredListQueryArgs<
   @Field(() => [TeamLegacyStatus], { nullable: true })
   legacyStatus!: [TeamLegacyStatus] | null;
 
-  @Field(() => [DbRole], { nullable: true })
+  @Field(() => [DbRole], { nullable: true, deprecationReason: "Use type" })
   visibility!: [DbRole] | null;
 
   @Field(() => [String], { nullable: true })
@@ -174,6 +174,9 @@ export class TeamResolver {
             : null,
         take: query.pageSize,
         onlyDemo: ctx.userData.authSource === AuthSource.Demo,
+        legacyStatus: query.legacyStatus,
+        marathonYear: query.marathonYear,
+        type: query.type,
       }),
       this.teamRepository.countTeams({ filters: query.filters }),
     ]);

@@ -1,4 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import type { MarathonYearString, TeamType } from "@ukdanceblue/common";
 import { SortDirection, TeamLegacyStatus } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
@@ -58,6 +59,9 @@ export class TeamRepository {
     skip,
     take,
     onlyDemo,
+    legacyStatus,
+    marathonYear,
+    type,
   }: {
     filters?: readonly TeamFilters[] | undefined | null;
     order?:
@@ -67,20 +71,27 @@ export class TeamRepository {
     skip?: number | undefined | null;
     take?: number | undefined | null;
     onlyDemo?: boolean;
+    legacyStatus?: TeamLegacyStatus[] | undefined | null;
+    marathonYear?: MarathonYearString[] | undefined | null;
+    type?: TeamType[] | undefined | null;
   }) {
     const where = buildTeamWhere(filters);
     const orderBy = buildTeamOrder(order);
 
     const rows = await this.prisma.team.findMany({
       where: {
+        type: type ? { in: type } : undefined,
+        marathonYear: marathonYear ? { in: marathonYear } : undefined,
+
         ...where,
-        legacyStatus:
-          where.legacyStatus ??
-          (onlyDemo
-            ? {
-                notIn: [TeamLegacyStatus.DemoTeam],
-              }
-            : undefined),
+        legacyStatus: legacyStatus
+          ? { in: legacyStatus }
+          : where.legacyStatus ??
+            (onlyDemo
+              ? {
+                  notIn: [TeamLegacyStatus.DemoTeam],
+                }
+              : undefined),
       },
       orderBy,
       skip: skip ?? undefined,
