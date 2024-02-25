@@ -15,6 +15,7 @@ import { sequelizeDb } from "../../../data-source.js";
 import { makeUserJwt } from "../../../lib/auth/index.js";
 import { PersonRepository } from "../../../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../../../repositories/person/personModelToResource.js";
+import { LoginFlowSessionRepository } from "../../../resolvers/LoginFlowSession.js";
 
 import { makeOidcClient } from "./oidcClient.js";
 
@@ -34,14 +35,14 @@ export const oidcCallback = async (ctx: Context) => {
   let sessionDeleted: boolean = false;
 
   const personRepository = Container.get(PersonRepository);
+  const loginFlowSessionRepository = Container.get(LoginFlowSessionRepository);
 
   try {
     await sequelizeDb.transaction(async () => {
-      const session = await LoginFlowSessionModel.findOne({
-        where: {
+      const session =
+        await loginFlowSessionRepository.findLoginFlowSessionByUnique({
           uuid: flowSessionId,
-        },
-      });
+        });
       if (!session?.codeVerifier) {
         throw new createHttpError.InternalServerError(
           `No ${session == null ? "session" : "codeVerifier"} found`
@@ -54,7 +55,9 @@ export const oidcCallback = async (ctx: Context) => {
         { code_verifier: session.codeVerifier, state: flowSessionId }
       );
       // Destroy the session
-      await session.destroy();
+      await loginFlowSessionRepository.completeLoginFlow({
+        uuid: flowSessionId,
+      });
       sessionDeleted = true;
       if (!tokenSet.access_token) {
         throw new createHttpError.InternalServerError("Missing access token");
@@ -130,7 +133,7 @@ export const oidcCallback = async (ctx: Context) => {
             .map((m) => m.team.uuid)
         )
       );
-      let redirectTo = session.redirectToAfterLogin ?? "/";
+      let redirectTo = session.redirectToAfterLogin;
       if (session.sendToken) {
         redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;
       }
@@ -146,10 +149,8 @@ export const oidcCallback = async (ctx: Context) => {
     });
   } finally {
     if (!(sessionDeleted as true | typeof sessionDeleted)) {
-      await LoginFlowSessionModel.destroy({
-        where: {
-          uuid: flowSessionId,
-        },
+      await loginFlowSessionRepository.completeLoginFlow({
+        uuid: flowSessionId,
       });
     }
   }

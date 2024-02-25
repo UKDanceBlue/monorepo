@@ -1,6 +1,8 @@
-import type { InferCreationAttributes } from "@sequelize/core";
 import type { Context } from "koa";
 import { generators } from "openid-client";
+import { Container } from "typedi";
+
+import { LoginFlowSessionRepository } from "../../../resolvers/LoginFlowSession.js";
 
 import { makeOidcClient } from "./oidcClient.js";
 
@@ -8,32 +10,24 @@ import { makeOidcClient } from "./oidcClient.js";
 export const login = async (ctx: Context) => {
   const oidcClient = await makeOidcClient(ctx.request);
 
-  // Figure out where to redirect to after login
-  const loginFlowSessionInitializer: Partial<
-    InferCreationAttributes<LoginFlowSessionModel>
-  > = {};
+  const loginFlowSessionRepository = Container.get(LoginFlowSessionRepository);
 
   const queryRedirectTo = Array.isArray(ctx.query.redirectTo)
     ? ctx.query.redirectTo[0]
     : ctx.query.redirectTo;
-  if (queryRedirectTo && queryRedirectTo.length > 0) {
-    loginFlowSessionInitializer.redirectToAfterLogin = queryRedirectTo;
-  } else {
+  if (!queryRedirectTo || queryRedirectTo.length === 0) {
     return ctx.throw("Missing redirectTo query parameter", 400);
   }
+
   const returning = Array.isArray(ctx.query.returning)
     ? ctx.query.returning
     : [ctx.query.returning];
-  if (returning.includes("cookie")) {
-    loginFlowSessionInitializer.setCookie = true;
-  }
-  if (returning.includes("token")) {
-    loginFlowSessionInitializer.sendToken = true;
-  }
 
-  const session = await LoginFlowSessionModel.create(
-    loginFlowSessionInitializer
-  );
+  const session = await loginFlowSessionRepository.startLoginFlow({
+    redirectToAfterLogin: queryRedirectTo,
+    setCookie: returning.includes("cookie"),
+    sendToken: returning.includes("token"),
+  });
   const codeChallenge = generators.codeChallenge(session.codeVerifier);
   return ctx.redirect(
     oidcClient.authorizationUrl({
