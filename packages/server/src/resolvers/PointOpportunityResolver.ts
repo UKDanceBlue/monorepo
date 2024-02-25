@@ -22,8 +22,10 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
+import { Service } from "typedi";
 
 import { sequelizeDb } from "../data-source.js";
+import { PointOpportunityRepository } from "../repositories/pointOpportunity/PointOpportunityRepository.js";
 
 import {
   AbstractGraphQLCreatedResponse,
@@ -98,14 +100,12 @@ class ListPointOpportunitiesArgs extends FilteredListQueryArgs(
 ) {}
 
 @Resolver(() => PointOpportunityResource)
-export class PointOpportunityResolver
-  implements
-    ResolverInterface<PointOpportunityResource>,
-    ResolverInterfaceWithFilteredList<
-      PointOpportunityResource,
-      ListPointOpportunitiesArgs
-    >
-{
+@Service()
+export class PointOpportunityResolver {
+  constructor(
+    private readonly pointOpportunityRepository: PointOpportunityRepository
+  ) {}
+
   @Query(() => SinglePointOpportunityResponse, { name: "pointOpportunity" })
   async getByUuid(
     @Arg("uuid") uuid: string

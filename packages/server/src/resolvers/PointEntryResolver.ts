@@ -20,6 +20,9 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
+import { Service } from "typedi";
+
+import { PointEntryRepository } from "../repositories/pointEntry/PointEntryRepository.js";
 
 import {
   AbstractGraphQLCreatedResponse,
@@ -79,11 +82,10 @@ class ListPointEntriesArgs extends FilteredListQueryArgs("PointEntryResolver", {
 }) {}
 
 @Resolver(() => PointEntryResource)
-export class PointEntryResolver
-  implements
-    ResolverInterface<PointEntryResource>,
-    ResolverInterfaceWithFilteredList<PointEntryResource, ListPointEntriesArgs>
-{
+@Service()
+export class PointEntryResolver {
+  constructor(private readonly pointEntryRepository: PointEntryRepository) {}
+
   @Query(() => GetPointEntryByUuidResponse, { name: "pointEntry" })
   async getByUuid(
     @Arg("uuid") uuid: string
