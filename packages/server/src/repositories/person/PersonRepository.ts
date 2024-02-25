@@ -128,6 +128,18 @@ export class PersonRepository {
     });
   }
 
+  findTeamsForPerson(param: { uuid: string } | { id: number }) {
+    return this.prisma.person.findMany({
+      where: {
+        memberships: {
+          some: {
+            person: param,
+          },
+        },
+      },
+    });
+  }
+
   // Mutators
 
   createPerson({

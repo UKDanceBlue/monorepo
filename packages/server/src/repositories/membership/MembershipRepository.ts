@@ -42,8 +42,11 @@ type UniqueMembershipParam = { id: number } | { uuid: string };
 export class MembershipRepository {
   constructor(private prisma: PrismaClient) {}
 
-  findMembershipByUnique(param: UniqueMembershipParam) {
-    return this.prisma.membership.findUnique({ where: param });
+  findMembershipByUnique(
+    param: UniqueMembershipParam,
+    include: Prisma.MembershipInclude
+  ) {
+    return this.prisma.membership.findUnique({ where: param, include });
   }
 
   listMemberships({
