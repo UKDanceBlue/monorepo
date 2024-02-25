@@ -3,6 +3,7 @@ import { fileURLToPath } from "url";
 
 import type { MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
+import { Container } from "typedi";
 
 import { ConfigurationResolver } from "../resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "../resolvers/DeviceResolver.js";
@@ -45,4 +46,5 @@ export default await buildSchema({
   ],
   emitSchemaFile: normalize(join(__dirname, "../../../../schema.graphql")),
   globalMiddlewares: [errorHandlingMiddleware],
+  container: Container,
 });

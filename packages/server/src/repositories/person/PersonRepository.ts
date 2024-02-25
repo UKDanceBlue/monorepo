@@ -220,38 +220,30 @@ export class PersonRepository {
     });
   }
 
-  async updatePerson({
-    uuid,
-    id,
-    name,
-    email,
-    linkblue,
-    committeeRole,
-    committeeName,
-    authIds,
-  }: {
-    name?: string | null;
-    email?: string;
-    linkblue?: string | null;
-    committeeRole?: CommitteeRole | null;
-    committeeName?: CommitteeIdentifier | null;
-    authIds?: AuthIdPairResource<Exclude<AuthSource, "None">>[];
-  } & (
-    | {
-        uuid: string;
-        id?: number;
-      }
-    | {
-        id: number;
-        uuid?: string;
-      }
-  )) {
+  async updatePerson(
+    param: { uuid: string } | { id: number },
+    {
+      name,
+      email,
+      linkblue,
+      committeeRole,
+      committeeName,
+      authIds,
+    }: {
+      name?: string | null;
+      email?: string;
+      linkblue?: string | null;
+      committeeRole?: CommitteeRole | null;
+      committeeName?: CommitteeIdentifier | null;
+      authIds?: { source: Exclude<AuthSource, "None">; value: string }[];
+    }
+  ) {
     let personId: number;
-    if (id != null && uuid == null) {
-      personId = id;
-    } else if (uuid != null && id == null) {
+    if ("id" in param) {
+      personId = param.id;
+    } else if ("uuid" in param) {
       const found = await this.prisma.person.findUnique({
-        where: { uuid },
+        where: { uuid: param.uuid },
         select: { id: true },
       });
       if (found == null) {
@@ -264,7 +256,7 @@ export class PersonRepository {
 
     try {
       return await this.prisma.person.update({
-        where: { id: personId },
+        where: param,
         data: {
           name,
           email,

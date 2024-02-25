@@ -235,14 +235,18 @@ export class PersonResolver {
     @Arg("uuid") id: string,
     @Arg("input") input: SetPersonInput
   ): Promise<GetPersonResponse> {
-    const row = await this.personRepository.updatePerson({
-      uuid: id,
-      name: input.name,
-      email: input.email,
-      linkblue: input.linkblue,
-      committeeRole: input.role?.committeeRole,
-      committeeName: input.role?.committeeIdentifier,
-    });
+    const row = await this.personRepository.updatePerson(
+      {
+        uuid: id,
+      },
+      {
+        name: input.name,
+        email: input.email,
+        linkblue: input.linkblue,
+        committeeRole: input.role?.committeeRole,
+        committeeName: input.role?.committeeIdentifier,
+      }
+    );
 
     if (row == null) {
       return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(

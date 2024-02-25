@@ -30,6 +30,7 @@ export const syslogColors = {
 
 const consoleTransport = new transports.Console({
   format: format.combine(
+    format.errors(),
     format.splat(),
     format.simple(),
     format.colorize({

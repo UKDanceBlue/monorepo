@@ -117,7 +117,20 @@ export const oidcCallback = async (ctx: Context) => {
         currentPerson.linkblue = linkblue;
       }
 
-      const updatedPerson = await personRepository.updatePerson(currentPerson);
+      const updatedPerson = await personRepository.updatePerson(
+        { id: currentPerson.id },
+        {
+          name: currentPerson.name,
+          email: currentPerson.email,
+          linkblue: currentPerson.linkblue,
+          committeeName: currentPerson.committeeName,
+          committeeRole: currentPerson.committeeRole,
+          authIds: currentPerson.authIdPairs.map((a) => ({
+            source: a.source,
+            value: a.value,
+          })),
+        }
+      );
 
       if (!updatedPerson) {
         return ctx.throw("Failed to update database entry", 500);

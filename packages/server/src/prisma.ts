@@ -7,4 +7,6 @@ Container.set<typeof prisma>(PrismaClient, prisma);
 
 if (!Container.has(PrismaClient)) {
   throw new Error("PrismaClient not registered");
+} else {
+  console.log("PrismaClient registered");
 }

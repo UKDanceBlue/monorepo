@@ -1,9 +1,4 @@
-import { argv } from "node:process";
-
-import { QueryTypes } from "@sequelize/core";
-
-import { sequelizeDb } from "./data-source.js";
-import { logFatal, logger } from "./lib/logging/logger.js";
+import { logger } from "./lib/logging/logger.js";
 
 import "reflect-metadata";
 
@@ -15,37 +10,7 @@ logger.info("DanceBlue Server Starting");
 await import("./environment.js");
 logger.info("Loaded environment variables");
 
-if (argv.includes("--migrate-db")) {
-  const { default: doMigration } = await import("./umzug.js");
-
-  const doesPeopleTableExist = await sequelizeDb.query(
-    "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'danceblue' AND table_name = 'people')",
-    { type: QueryTypes.SELECT }
-  );
-
-  if ((doesPeopleTableExist[0] as { exists: boolean }).exists) {
-    logger.info("Database exists, running migration");
-    try {
-      await doMigration(false);
-      logger.info("Database migrated");
-    } catch (error) {
-      logFatal(
-        `Failed to migrate database: ${
-          typeof error === "object" && error && "message" in error
-            ? String(error.message)
-            : String(error)
-        }`
-      );
-    }
-  } else {
-    logger.info(
-      "Database does not exist, skipping migration and syncing instead"
-    );
-    await sequelizeDb.sync();
-    logger.info("Database synced");
-    await doMigration(true);
-  }
-}
+await import("./prisma.js");
 
 const { createServer, startHttpServer, startServer } = await import(
   "./server.js"
