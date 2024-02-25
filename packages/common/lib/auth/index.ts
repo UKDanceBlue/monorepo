@@ -1,5 +1,7 @@
 import { registerEnumType } from "type-graphql";
 
+import type { PersonResource } from "../index.js";
+
 import { roleToAccessLevel } from "./role.js";
 
 export const AuthSource = {
@@ -286,26 +288,23 @@ export interface UserData {
   authSource: AuthSource;
 }
 
-export function makeUserData(props: {
-  dbRole: DbRole;
-  committeeRole?: CommitteeRole;
-  committeeIdentifier?: CommitteeIdentifier;
-  userId?: string;
-  teamIds?: string[];
-  captainOfTeamIds?: string[];
-  authSource: AuthSource;
-}): UserData {
+export function makeUserData(
+  person: PersonResource,
+  authSource: AuthSource,
+  teamIds?: string[],
+  captainOfTeamIds?: string[]
+): UserData {
   return {
     auth: {
-      dbRole: props.dbRole,
-      committeeRole: props.committeeRole,
-      committeeIdentifier: props.committeeIdentifier,
-      accessLevel: roleToAccessLevel(props),
+      dbRole: person.role.dbRole,
+      committeeRole: person.role.committeeRole ?? undefined,
+      committeeIdentifier: person.role.committeeIdentifier ?? undefined,
+      accessLevel: roleToAccessLevel(person.role),
     },
-    userId: props.userId,
-    teamIds: props.teamIds,
-    captainOfTeamIds: props.captainOfTeamIds,
-    authSource: props.authSource,
+    userId: person.uuid,
+    teamIds,
+    captainOfTeamIds,
+    authSource,
   };
 }
 
