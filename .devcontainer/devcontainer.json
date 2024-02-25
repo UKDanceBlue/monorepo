@@ -15,8 +15,8 @@
   // This can be used to network with other containers or with the host.
   "forwardPorts": [5173, 8000, 8081],
 
-  // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "sudo corepack enable; yarn install",
+  "postCreateCommand": "yarn install",
+  "postAttachCommand": "echo 'This terminal will output logs from both the common:wath and gql:watch commands.' & yarn common:watch & yarn gql:watch",
 
   // Configure tool-specific properties.
   // "customizations": {},
@@ -29,6 +29,22 @@
   },
   "customizations": {
     "vscode": {
+      "settings": {
+        "git.autofetch": true,
+        "cSpell.words": ["emerg", "healthcheck", "maxsize", "RNCAL", "umzug"],
+        "[typescriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        }
+      },
       "extensions": [
         "dbaeumer.vscode-eslint",
         "msjsdiag.vscode-react-native",
