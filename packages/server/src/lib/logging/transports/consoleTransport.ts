@@ -1,6 +1,6 @@
 import { format, transports } from "winston";
 
-import { syslogColors } from "../base.js";
+import { syslogColors } from "../standardLogging.js";
 
 export const consoleTransport = new transports.Console({
   format: format.combine(

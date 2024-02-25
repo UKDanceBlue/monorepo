@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 
-import type { SyslogLevels } from "./lib/logging/base.js";
+import type { SyslogLevels } from "./lib/logging/standardLogging.js";
 
 dotenv.config();
 

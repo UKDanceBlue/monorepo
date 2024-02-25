@@ -1,4 +1,4 @@
-import { format, transports } from "winston";
+import { transports } from "winston";
 
 export const combinedLogTransport = new transports.File({
   filename: "combined.log",
@@ -16,5 +16,4 @@ export const auditLogTransport = new transports.File({
   filename: "audit.log.json",
   maxsize: 1_000_000,
   maxFiles: 3,
-  format: format.combine(format.timestamp(), format.json()),
 });

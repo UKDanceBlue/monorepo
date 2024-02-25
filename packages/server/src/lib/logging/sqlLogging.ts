@@ -13,11 +13,8 @@ export const sqlLogger = createLogger({
     warning: 1,
     error: 0,
   },
-  transports: isDevelopment
-    ? [databaseLogTransport]
-    : [
-        /* In production this logger should never be used, but just in case someone tries to use it, we'll disable the transport */
-      ],
+  transports: isDevelopment ? databaseLogTransport : [],
+  silent: !isDevelopment,
   format: format.combine(format.timestamp(), format.simple()),
 });
 
