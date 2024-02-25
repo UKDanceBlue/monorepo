@@ -1,5 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
+import { TeamLegacyStatus } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
@@ -15,13 +16,13 @@ type TeamDateKey = (typeof teamDateKeys)[number];
 const teamIsNullKeys = [] as const;
 type TeamIsNullKey = (typeof teamIsNullKeys)[number];
 
-const teamNumericKeys = [] as const;
+const teamNumericKeys = ["totalPoints"] as const;
 type TeamNumericKey = (typeof teamNumericKeys)[number];
 
-const teamOneOfKeys = [] as const;
+const teamOneOfKeys = ["type", "marathonYear", "legacyStatus"] as const;
 type TeamOneOfKey = (typeof teamOneOfKeys)[number];
 
-const teamStringKeys = [] as const;
+const teamStringKeys = ["name"] as const;
 type TeamStringKey = (typeof teamStringKeys)[number];
 
 export type TeamFilters = FilterItems<
@@ -43,29 +44,40 @@ export class TeamRepository {
     return this.prisma.team.findUnique({ where: param });
   }
 
-  listTeam({
+  listTeams({
     filters,
     order,
     skip,
     take,
+    onlyDemo,
   }: {
     filters?: readonly TeamFilters[] | undefined | null;
     order?: readonly [key: string, sort: SortDirection][] | undefined | null;
     skip?: number | undefined | null;
     take?: number | undefined | null;
+    onlyDemo?: boolean;
   }) {
     const where = buildTeamWhere(filters);
     const orderBy = buildTeamOrder(order);
 
     return this.prisma.team.findMany({
-      where,
+      where: {
+        ...where,
+        legacyStatus:
+          where.legacyStatus ??
+          (onlyDemo
+            ? {
+                notIn: [TeamLegacyStatus.DemoTeam],
+              }
+            : undefined),
+      },
       orderBy,
       skip: skip ?? undefined,
       take: take ?? undefined,
     });
   }
 
-  countTeam({
+  countTeams({
     filters,
   }: {
     filters?: readonly TeamFilters[] | undefined | null;
@@ -77,14 +89,22 @@ export class TeamRepository {
     });
   }
 
-  findMembersOfTeam(param: { uuid: string } | { id: number }) {
-    return this.prisma.person.findMany({
+  findMembersOfTeam(
+    param: { uuid: string } | { id: number },
+    {
+      captainsOnly = false,
+    }: {
+      captainsOnly?: boolean;
+    } = {}
+  ) {
+    return this.prisma.membership.findMany({
       where: {
-        memberships: {
-          some: {
-            team: param,
-          },
-        },
+        team: param,
+        position: captainsOnly
+          ? {
+              equals: "Captain",
+            }
+          : undefined,
       },
     });
   }
