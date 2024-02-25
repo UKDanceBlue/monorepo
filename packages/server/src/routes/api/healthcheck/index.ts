@@ -1,12 +1,12 @@
 import Router from "@koa/router";
 
-import { sequelizeDb } from "../../../data-source.js";
+import { prisma } from "../../../prisma.js";
 
 const healthCheckRouter = new Router({ prefix: "/healthcheck" });
 
 healthCheckRouter.get("/", async (ctx) => {
   try {
-    await sequelizeDb.authenticate();
+    await prisma.$connect();
   } catch (error) {
     ctx.type = "text/plain";
     ctx.body = "Database connection error";
