@@ -92,14 +92,19 @@ class SetPointOpportunityInput {
 }
 
 @ArgsType()
-class ListPointOpportunitiesArgs extends FilteredListQueryArgs(
-  "PointOpportunityResolver",
-  {
-    all: ["name", "opportunityDate", "type", "createdAt", "updatedAt"],
-    string: ["name", "type"],
-    date: ["opportunityDate", "createdAt", "updatedAt"],
-  }
-) {}
+class ListPointOpportunitiesArgs extends FilteredListQueryArgs<
+  "name" | "opportunityDate" | "type" | "createdAt" | "updatedAt",
+  "name",
+  "type",
+  never,
+  "opportunityDate" | "createdAt" | "updatedAt",
+  never
+>("PointOpportunityResolver", {
+  all: ["name", "opportunityDate", "type", "createdAt", "updatedAt"],
+  oneOf: ["type"],
+  string: ["name"],
+  date: ["opportunityDate", "createdAt", "updatedAt"],
+}) {}
 
 @Resolver(() => PointOpportunityResource)
 @Service()
