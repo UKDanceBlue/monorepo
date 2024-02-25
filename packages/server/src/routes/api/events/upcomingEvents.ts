@@ -1,10 +1,9 @@
-import { Op } from "@sequelize/core";
 import type { Context } from "koa";
 import { DateTime } from "luxon";
 import type { NextFn } from "type-graphql";
+import { Container } from "typedi";
 
-import { EventModel } from "../../../models/Event.js";
-import { EventOccurrenceModel } from "../../../models/EventOccurrence.js";
+import { EventRepository } from "../../../repositories/event/EventRepository.js";
 
 export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
   let eventsToSend = 10;
@@ -28,34 +27,17 @@ export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
     }
   }
 
-  const upcomingEvents = await EventModel.withoutScope().findAll({
-    order: [[EventOccurrenceModel, "date", "ASC"]],
-    limit: eventsToSend,
-    include: [
-      {
-        model: EventOccurrenceModel,
-        where: {
-          [Op.and]: {
-            [Op.or]: [
-              { date: { [Op.gte]: new Date() } },
-              {
-                [Op.and]: [
-                  { date: { [Op.lte]: new Date() } },
-                  { endDate: { [Op.gte]: new Date() } },
-                ],
-              },
-            ],
-            endDate: { [Op.lte]: until },
-          },
-        },
-      },
-    ],
-  });
+  const upcomingEvents = await Container.get(EventRepository).getUpcomingEvents(
+    {
+      count: eventsToSend,
+      until,
+    }
+  );
 
   const eventsJson = await Promise.all(
-    upcomingEvents.map(async (event) => {
-      const occurrences = await event.getOccurrences();
-      const images = await event.getImages();
+    upcomingEvents.map((event) => {
+      const occurrences = event.eventOccurrences;
+      const images = event.eventImages;
       return {
         title: event.title,
         summary: event.summary,
@@ -65,7 +47,7 @@ export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
           start: occurrence.date,
           end: occurrence.endDate,
         })),
-        images: images.map((image) => ({
+        images: images.map(({ image }) => ({
           url: image.url ?? null,
           alt: image.alt ?? null,
           mimeType: image.mimeType,

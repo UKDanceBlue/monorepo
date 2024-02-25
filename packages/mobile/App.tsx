@@ -3,6 +3,7 @@ import ErrorBoundary from "@common/components/ErrorBoundary";
 import { log, logError, universalCatch } from "@common/logging";
 import { showMessage, showPrompt } from "@common/util/alertUtils";
 import { UrqlContext } from "@context/urql";
+import { useAsyncStorageDevTools } from "@dev-plugins/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import { useFonts } from "expo-font";
 import { hideAsync } from "expo-splash-screen";
@@ -37,6 +38,8 @@ import { getCustomTheme } from "./src/theme";
 const App = () => {
   const isOfflineInternal = useRef(false);
   const [theme, setTheme] = useState<ICustomTheme | undefined>(undefined);
+
+  useAsyncStorageDevTools();
 
   const [fontsLoaded, error] = useFonts({
     "bodoni-flf-bold": BoldoniFlfBoldFont,

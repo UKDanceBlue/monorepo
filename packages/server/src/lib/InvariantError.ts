@@ -1,4 +1,4 @@
-import { logger } from "../logger.js";
+import { logger } from "./logging/logger.js";
 
 export class InvariantError extends Error {
   readonly name: string = "InvariantError";

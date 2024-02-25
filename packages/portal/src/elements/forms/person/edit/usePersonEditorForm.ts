@@ -35,7 +35,7 @@ export function usePersonEditorForm(
       linkblue: personData?.linkblue ?? "",
       email: personData?.email ?? "",
       role: {
-        dbRole: personData?.role.dbRole ?? DbRole.Public,
+        dbRole: DbRole.None,
         committeeRole: personData?.role.committeeRole ?? null,
         committeeIdentifier: personData?.role.committeeIdentifier ?? null,
       },
@@ -96,14 +96,9 @@ export function usePersonEditorForm(
         throw new Error("Email is required");
       }
 
-      let dbRole: DbRole = values.role?.dbRole ?? DbRole.Public;
-      if (values.role?.committeeRole != null) {
-        dbRole = DbRole.Committee;
-      } else if ((values.captainOf?.length ?? 0) > 0) {
-        dbRole = DbRole.TeamCaptain;
-      } else if ((values.memberOf?.length ?? 0) > 0) {
-        dbRole = DbRole.TeamMember;
-      }
+      // TODO: This is actually ignored on the server, we need to find a way to
+      // remove it here
+      const dbRole: DbRole = DbRole.None;
 
       const { data } = await setPerson({
         uuid: personData.uuid,

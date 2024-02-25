@@ -1,15 +1,21 @@
 import type { IncomingMessage } from "node:http";
 
-import { AuthSource } from "@ukdanceblue/common";
+import {
+  AuthSource,
+  MembershipPositionType,
+  makeUserData,
+} from "@ukdanceblue/common";
 import createHttpError from "http-errors";
 import jsonwebtoken from "jsonwebtoken";
 import type { Context } from "koa";
 import { DateTime } from "luxon";
+import { Container } from "typedi";
 
-import { LoginFlowSessionModel } from "../../.././models/LoginFlowSession.js";
-import { findPersonForLogin } from "../../../controllers/PersonController.js";
 import { sequelizeDb } from "../../../data-source.js";
 import { makeUserJwt } from "../../../lib/auth/index.js";
+import { PersonRepository } from "../../../repositories/person/PersonRepository.js";
+import { personModelToResource } from "../../../repositories/person/personModelToResource.js";
+import { LoginFlowSessionRepository } from "../../../resolvers/LoginFlowSession.js";
 
 import { makeOidcClient } from "./oidcClient.js";
 
@@ -28,13 +34,15 @@ export const oidcCallback = async (ctx: Context) => {
 
   let sessionDeleted: boolean = false;
 
+  const personRepository = Container.get(PersonRepository);
+  const loginFlowSessionRepository = Container.get(LoginFlowSessionRepository);
+
   try {
     await sequelizeDb.transaction(async () => {
-      const session = await LoginFlowSessionModel.findOne({
-        where: {
+      const session =
+        await loginFlowSessionRepository.findLoginFlowSessionByUnique({
           uuid: flowSessionId,
-        },
-      });
+        });
       if (!session?.codeVerifier) {
         throw new createHttpError.InternalServerError(
           `No ${session == null ? "session" : "codeVerifier"} found`
@@ -47,7 +55,9 @@ export const oidcCallback = async (ctx: Context) => {
         { code_verifier: session.codeVerifier, state: flowSessionId }
       );
       // Destroy the session
-      await session.destroy();
+      await loginFlowSessionRepository.completeLoginFlow({
+        uuid: flowSessionId,
+      });
       sessionDeleted = true;
       if (!tokenSet.access_token) {
         throw new createHttpError.InternalServerError("Missing access token");
@@ -74,16 +84,25 @@ export const oidcCallback = async (ctx: Context) => {
       if (typeof objectId !== "string") {
         return ctx.throw("Missing OID", 500);
       }
-      let [currentPerson] = await findPersonForLogin(
-        { [AuthSource.UkyLinkblue]: objectId },
+      const [currentPerson] = await personRepository.findPersonForLogin(
+        [[AuthSource.LinkBlue, objectId]],
         { email, linkblue }
       );
 
-      if (currentPerson.authIds?.[AuthSource.UkyLinkblue] !== objectId) {
-        currentPerson.authIds = {
-          ...currentPerson.authIds,
-          [AuthSource.UkyLinkblue]: objectId,
-        };
+      if (
+        !currentPerson.authIdPairs.some(
+          ({ source, value }) =>
+            source === AuthSource.LinkBlue && value === objectId
+        )
+      ) {
+        currentPerson.authIdPairs = [
+          ...currentPerson.authIdPairs,
+          {
+            personId: currentPerson.id,
+            source: AuthSource.LinkBlue,
+            value: objectId,
+          },
+        ];
       }
       if (email && currentPerson.email !== email) {
         currentPerson.email = email;
@@ -98,11 +117,36 @@ export const oidcCallback = async (ctx: Context) => {
         currentPerson.linkblue = linkblue;
       }
 
-      currentPerson = await currentPerson.save({ returning: true });
+      const updatedPerson = await personRepository.updatePerson(
+        { id: currentPerson.id },
+        {
+          name: currentPerson.name,
+          email: currentPerson.email,
+          linkblue: currentPerson.linkblue,
+          committeeName: currentPerson.committeeName,
+          committeeRole: currentPerson.committeeRole,
+          authIds: currentPerson.authIdPairs.map((a) => ({
+            source: a.source,
+            value: a.value,
+          })),
+        }
+      );
 
-      const userData = await currentPerson.toUserData(AuthSource.UkyLinkblue);
-      const jwt = makeUserJwt(userData);
-      let redirectTo = session.redirectToAfterLogin ?? "/";
+      if (!updatedPerson) {
+        return ctx.throw("Failed to update database entry", 500);
+      }
+
+      const jwt = makeUserJwt(
+        makeUserData(
+          personModelToResource(updatedPerson),
+          AuthSource.LinkBlue,
+          currentPerson.memberships.map((m) => m.team.uuid),
+          currentPerson.memberships
+            .filter((m) => m.position === MembershipPositionType.Captain)
+            .map((m) => m.team.uuid)
+        )
+      );
+      let redirectTo = session.redirectToAfterLogin;
       if (session.sendToken) {
         redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;
       }
@@ -118,10 +162,8 @@ export const oidcCallback = async (ctx: Context) => {
     });
   } finally {
     if (!(sessionDeleted as true | typeof sessionDeleted)) {
-      await LoginFlowSessionModel.destroy({
-        where: {
-          uuid: flowSessionId,
-        },
+      await loginFlowSessionRepository.completeLoginFlow({
+        uuid: flowSessionId,
       });
     }
   }

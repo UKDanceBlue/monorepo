@@ -10,3 +10,6 @@ FROM mcr.microsoft.com/devcontainers/javascript-node:18
 
 # [Optional] Uncomment if you want to install more global node modules
 # RUN su node -c "npm install -g <your-package-list-here>"
+
+# Enable corepack
+RUN sudo corepack enable

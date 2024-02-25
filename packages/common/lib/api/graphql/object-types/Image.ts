@@ -1,10 +1,10 @@
 import { URLResolver } from "graphql-scalars";
 import { Field, ID, Int, ObjectType } from "type-graphql";
 
-import { Resource } from "./Resource.js";
+import { TimestampedResource } from "./Resource.js";
 
 @ObjectType()
-export class ImageResource extends Resource {
+export class ImageResource extends TimestampedResource {
   @Field(() => ID)
   uuid!: string;
 

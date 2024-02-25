@@ -3,7 +3,7 @@ import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
 import { AccessLevel } from "../../../auth/index.js";
 import * as SimpleTypes from "../../SimpleTypes.js";
 
-import { Resource } from "./Resource.js";
+import { TimestampedResource } from "./Resource.js";
 import { AccessControl } from "./authorization.js";
 
 export const TeamType = {
@@ -34,7 +34,7 @@ registerEnumType(TeamLegacyStatus, {
 });
 
 @ObjectType()
-export class TeamResource extends Resource {
+export class TeamResource extends TimestampedResource {
   @Field(() => ID)
   uuid!: string;
   @Field(() => String)

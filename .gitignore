@@ -7,6 +7,7 @@ temp/
 .env*.local
 coverage/
 *.log
+*.log.json
 tsconfig.tsbuildinfo
 .pnp.*
 .yarn/*

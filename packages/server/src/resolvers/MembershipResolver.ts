@@ -3,49 +3,51 @@ import {
   ErrorCode,
   MembershipResource,
   PersonResource,
- TeamResource } from "@ukdanceblue/common";
+  TeamResource,
+} from "@ukdanceblue/common";
 import { FieldResolver, Resolver, Root } from "type-graphql";
+import { Service } from "typedi";
 
-import { MembershipModel } from "../models/Membership.js";
-import { PersonModel } from "../models/Person.js";
-import { TeamModel } from "../models/Team.js";
-
+import { MembershipRepository } from "../repositories/membership/MembershipRepository.js";
+import { personModelToResource } from "../repositories/person/personModelToResource.js";
+import { teamModelToResource } from "../repositories/team/teamModelToResource.js";
 
 @Resolver(() => MembershipResource)
+@Service()
 export class MembershipResolver {
+  constructor(private readonly membershipRepository: MembershipRepository) {}
+
   @FieldResolver(() => PersonResource)
   async person(
     @Root() membership: MembershipResource
   ): Promise<PersonResource> {
-    const row = await MembershipModel.findByUuid(membership.uuid, {
-      include: [PersonModel],
-      attributes: ["uuid", "personId"],
-    });
+    const row = await this.membershipRepository.findMembershipByUnique(
+      { uuid: membership.uuid },
+      {
+        person: true,
+      }
+    );
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Membership not found");
     }
-    if (row.person == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Person not found");
-    }
 
-    return row.person.toResource();
+    return personModelToResource(row.person);
   }
 
   @FieldResolver(() => TeamResource)
   async team(@Root() membership: MembershipResource): Promise<TeamResource> {
-    const row = await MembershipModel.findByUuid(membership.uuid, {
-      include: [TeamModel],
-      attributes: ["uuid", "teamId"],
-    });
+    const row = await this.membershipRepository.findMembershipByUnique(
+      { uuid: membership.uuid },
+      {
+        team: true,
+      }
+    );
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Membership not found");
     }
-    if (row.team == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Team not found");
-    }
 
-    return row.team.toResource();
+    return teamModelToResource(row.team);
   }
 }
