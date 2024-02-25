@@ -15,6 +15,11 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
+import { Service } from "typedi";
+
+import { auditLogger } from "../lib/logging/auditLogging.js";
+import { ImageRepository } from "../repositories/image/ImageRepository.js";
+import { imageModelToResource } from "../repositories/image/imageModelToResource.js";
 
 import {
   AbstractGraphQLCreatedResponse,
@@ -25,13 +30,6 @@ import {
 class GetImageByUuidResponse extends AbstractGraphQLOkResponse<ImageResource> {
   @Field(() => ImageResource)
   data!: ImageResource;
-}
-@ObjectType("GetThumbHashByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<string>,
-})
-class GetThumbHashByUuidResponse extends AbstractGraphQLOkResponse<string> {
-  @Field(() => String)
-  data!: string;
 }
 @ObjectType("CreateImageResponse", {
   implements: AbstractGraphQLCreatedResponse<ImageResource>,
@@ -67,37 +65,19 @@ class CreateImageInput implements Partial<ImageResource> {
 }
 
 @Resolver(() => ImageResource)
-export class ImageResolver implements ResolverInterface<ImageResource> {
+@Service()
+export class ImageResolver {
+  constructor(private readonly imageRepository: ImageRepository) {}
+
   @Query(() => GetImageByUuidResponse, { name: "image" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetImageByUuidResponse> {
-    const row = await ImageModel.findOne({ where: { uuid } });
-
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Image not found");
-    }
-
-    return GetImageByUuidResponse.newOk(row.toResource());
-  }
-
-  @Query(() => GetThumbHashByUuidResponse, {
-    name: "thumbhash",
-    nullable: true,
-  })
-  async getThumbHashByUuid(
-    @Arg("uuid") uuid: string
-  ): Promise<GetThumbHashByUuidResponse> {
-    const result = await ImageModel.findOne({
-      where: { uuid },
-      attributes: ["thumbHash"],
-    });
+    const result = await this.imageRepository.findImageByUnique({ uuid });
 
     if (result == null) {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");
     }
 
-    return GetThumbHashByUuidResponse.newOk(
-      result.thumbHash?.toString("base64")
-    );
+    return GetImageByUuidResponse.newOk(imageModelToResource(result));
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
@@ -112,48 +92,36 @@ export class ImageResolver implements ResolverInterface<ImageResource> {
       );
     }
 
-    const result = await ImageModel.create({
-      width: input.width,
-      height: input.height,
-      mimeType: input.mimeType,
-      alt: input.alt ?? null,
+    const result = await this.imageRepository.createImage({
+      url: input.url?.href,
       imageData: input.imageData
         ? Buffer.from(input.imageData, "base64")
         : null,
-      url: input.url ?? null,
+      width: input.width,
+      height: input.height,
+      alt: input.alt,
       thumbHash: input.thumbHash
         ? Buffer.from(input.thumbHash, "base64")
         : null,
+      mimeType: input.mimeType,
     });
 
-    if (!("uuid" in result)) {
-      // return GraphQLErrorResponse.from(result);
-      throw new DetailedError(
-        ErrorCode.InternalFailure,
-        "UUID not found on created image"
-      );
-    }
-
-    const response = CreateImageResponse.newCreated(
-      result.toResource(),
+    return CreateImageResponse.newCreated(
+      imageModelToResource(result),
       result.uuid
     );
-    return response;
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => DeleteImageResponse, { name: "deleteImage" })
-  async delete(@Arg("uuid") id: string): Promise<DeleteImageResponse> {
-    const row = await ImageModel.findOne({
-      where: { uuid: id },
-      attributes: ["id"],
-    });
+  async delete(@Arg("uuid") uuid: string): Promise<DeleteImageResponse> {
+    const result = await this.imageRepository.deleteImage({ uuid });
 
-    if (row == null) {
+    if (result == null) {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");
     }
 
-    await row.destroy();
+    auditLogger.normal("Image deleted", { image: result });
 
     return DeleteImageResponse.newOk(true);
   }
