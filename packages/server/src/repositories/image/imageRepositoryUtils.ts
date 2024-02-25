@@ -1,6 +1,8 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
+import { dateFilterToPrisma } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
 import type { ImageFilters } from "./ImageRepository.ts";
 
 export function buildImageOrder(
@@ -30,8 +32,17 @@ export function buildImageWhere(
 
   for (const filter of filters ?? []) {
     switch (filter.field) {
+      case "createdAt":
+      case "updatedAt": {
+        where[filter.field] = dateFilterToPrisma(filter);
+        break;
+      }
       default: {
-        throw new Error(`Unsupported filter key: ${filter.field}`);
+        throw new Error(
+          `Unsupported filter key: ${String(
+            (filter as { field?: string } | undefined)?.field
+          )}`
+        );
       }
     }
   }

@@ -1,37 +1,45 @@
 import type { Prisma } from "@prisma/client";
-import { SortDirection } from "@ukdanceblue/common";
+
+import {
+  dateFilterToSql,
+  oneOfFilterToSql,
+  stringFilterToSql,
+} from "../../lib/prisma-utils/gqlFilterToSql.js";
 
 import type { TeamFilters } from "./TeamRepository.ts";
-
-export function buildTeamOrder(
-  order: readonly [key: string, sort: SortDirection][] | null | undefined
-) {
-  const orderBy: Prisma.TeamOrderByWithRelationInput = {};
-
-  for (const [key, sort] of order ?? []) {
-    switch (key) {
-      case "createdAt":
-      case "updatedAt": {
-        orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
-        break;
-      }
-      default: {
-        throw new Error(`Unsupported sort key: ${key}`);
-      }
-    }
-  }
-  return orderBy;
-}
 
 export function buildTeamWhere(
   filters: readonly TeamFilters[] | null | undefined
 ) {
-  const where: Prisma.TeamWhereInput = {};
+  const where: Prisma.Sql[] = [];
 
   for (const filter of filters ?? []) {
     switch (filter.field) {
+      case "createdAt":
+      case "updatedAt": {
+        where.push(dateFilterToSql(filter));
+        break;
+      }
+      case "marathonYear":
+      case "type":
+      case "legacyStatus": {
+        where.push(oneOfFilterToSql(filter));
+        break;
+      }
+      case "name": {
+        where.push(stringFilterToSql(filter));
+        break;
+      }
+      case "totalPoints": {
+        // Handled by the query in the repository
+        break;
+      }
       default: {
-        throw new Error(`Unsupported filter key: ${filter.field}`);
+        throw new Error(
+          `Unsupported filter key: ${String(
+            (filter as { field?: string } | undefined)?.field
+          )}`
+        );
       }
     }
   }

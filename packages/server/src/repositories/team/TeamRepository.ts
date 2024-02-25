@@ -1,11 +1,10 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
-import { TeamLegacyStatus } from "@ukdanceblue/common";
+import { SortDirection } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import { buildTeamOrder, buildTeamWhere } from "./teamRepositoryUtils.js";
+import { buildTeamWhere } from "./teamRepositoryUtils.js";
 
 const teamBooleanKeys = [] as const;
 type TeamBooleanKey = (typeof teamBooleanKeys)[number];
@@ -34,6 +33,15 @@ export type TeamFilters = FilterItems<
   TeamStringKey
 >;
 
+export type TeamOrderKeys =
+  | "createdAt"
+  | "updatedAt"
+  | "type"
+  | "marathonYear"
+  | "legacyStatus"
+  | "name"
+  | "totalPoints";
+
 type UniqueTeamParam = { id: number } | { uuid: string };
 
 @Service()
@@ -52,29 +60,26 @@ export class TeamRepository {
     onlyDemo,
   }: {
     filters?: readonly TeamFilters[] | undefined | null;
-    order?: readonly [key: string, sort: SortDirection][] | undefined | null;
+    order?:
+      | readonly [key: TeamOrderKeys, sort: SortDirection][]
+      | undefined
+      | null;
     skip?: number | undefined | null;
     take?: number | undefined | null;
     onlyDemo?: boolean;
   }) {
-    const where = buildTeamWhere(filters);
-    const orderBy = buildTeamOrder(order);
+    const wheres = buildTeamWhere(filters);
 
-    return this.prisma.team.findMany({
-      where: {
-        ...where,
-        legacyStatus:
-          where.legacyStatus ??
-          (onlyDemo
-            ? {
-                notIn: [TeamLegacyStatus.DemoTeam],
-              }
-            : undefined),
-      },
-      orderBy,
-      skip: skip ?? undefined,
-      take: take ?? undefined,
-    });
+    const orders: Prisma.Sql[] = [];
+    for (const [key, sort] of order ?? []) {
+      orders.push(
+        Prisma.sql`${key} ${sort === SortDirection.ASCENDING ? "asc" : "desc"}`
+      );
+    }
+
+    return this.prisma.$queryRaw`SELECT * FROM team WHERE ${wheres.join(
+      " AND "
+    )} ORDER BY ${orders}.join(", ") LIMIT ${take} OFFSET ${skip}`;
   }
 
   countTeams({

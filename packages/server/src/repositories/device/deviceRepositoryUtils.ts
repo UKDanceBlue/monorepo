@@ -41,7 +41,9 @@ export function buildDeviceWhere(
         where[filter.field] = stringFilterToPrisma(filter);
         break;
       }
-      case "lastSeen": {
+      case "lastSeen":
+      case "createdAt":
+      case "updatedAt": {
         where[filter.field] = dateFilterToPrisma(filter);
         break;
       }
