@@ -24,8 +24,14 @@ type NotificationNumericKey = (typeof notificationNumericKeys)[number];
 const notificationOneOfKeys = [] as const;
 type NotificationOneOfKey = (typeof notificationOneOfKeys)[number];
 
-const notificationStringKeys = [] as const;
+const notificationStringKeys = ["title", "body"] as const;
 type NotificationStringKey = (typeof notificationStringKeys)[number];
+
+export type NotificationOrderKeys =
+  | "createdAt"
+  | "updatedAt"
+  | "title"
+  | "body";
 
 export type NotificationFilters = FilterItems<
   NotificationBooleanKey,
@@ -53,7 +59,10 @@ export class NotificationRepository {
     take,
   }: {
     filters?: readonly NotificationFilters[] | undefined | null;
-    order?: readonly [key: string, sort: SortDirection][] | undefined | null;
+    order?:
+      | readonly [key: NotificationOrderKeys, sort: SortDirection][]
+      | undefined
+      | null;
     skip?: number | undefined | null;
     take?: number | undefined | null;
   }) {

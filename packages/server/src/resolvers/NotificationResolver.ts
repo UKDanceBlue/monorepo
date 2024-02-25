@@ -4,6 +4,7 @@ import {
   ErrorCode,
   FilteredListQueryArgs,
   NotificationResource,
+  SortDirection,
 } from "@ukdanceblue/common";
 import {
   Arg,
@@ -16,9 +17,11 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
+import { Service } from "typedi";
 
-import { selectAudience } from "../lib/notification/selectAudience.js";
-import { sendNotification } from "../lib/notification/sendNotification.js";
+import { auditLogger } from "../lib/logging/auditLogging.js";
+import { NotificationRepository } from "../repositories/notification/NotificationRepository.js";
+import { notificationModelToResource } from "../repositories/notification/notificationModelToResource.js";
 
 import {
   AbstractGraphQLCreatedResponse,
@@ -64,54 +67,66 @@ class SendNotificationInput
 }
 
 @ArgsType()
-class ListNotificationsArgs extends FilteredListQueryArgs(
-  "NotificationResolver",
-  {
-    all: ["uuid"],
-  }
-) {}
+class ListNotificationsArgs extends FilteredListQueryArgs<
+  "createdAt" | "updatedAt" | "title" | "body",
+  "title" | "body",
+  never,
+  never,
+  "createdAt" | "updatedAt",
+  never
+>("NotificationResolver", {
+  all: ["createdAt", "updatedAt", "title", "body"],
+  date: ["createdAt", "updatedAt"],
+  string: ["title", "body"],
+}) {}
 
 @Resolver(() => NotificationResource)
-export class NotificationResolver
-  implements
-    ResolverInterface<NotificationResource>,
-    ResolverInterfaceWithFilteredList<
-      NotificationResource,
-      ListNotificationsArgs
-    >
-{
+@Service()
+export class NotificationResolver {
+  constructor(
+    private readonly notificationRepository: NotificationRepository
+  ) {}
+
   @Query(() => GetNotificationByUuidResponse, { name: "notification" })
   async getByUuid(
     @Arg("uuid") uuid: string
   ): Promise<GetNotificationByUuidResponse> {
-    const row = await NotificationModel.findOne({ where: { uuid } });
+    const row = await this.notificationRepository.findNotificationByUnique({
+      uuid,
+    });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Notification not found");
     }
 
-    return GetNotificationByUuidResponse.newOk(row.toResource());
+    return GetNotificationByUuidResponse.newOk(
+      notificationModelToResource(row)
+    );
   }
 
   @Query(() => ListNotificationsResponse, { name: "notifications" })
   async list(
     @Args(() => ListNotificationsArgs) query: ListNotificationsArgs
   ): Promise<ListNotificationsResponse> {
-    const findOptions = toSequelizeFindOptions(
-      query,
-      {
-        uuid: "uuid",
-      },
-      {},
-      NotificationModel
-    );
-
-    const { rows, count } =
-      await NotificationModel.findAndCountAll(findOptions);
+    const rows = await this.notificationRepository.listNotifications({
+      filters: query.filters,
+      order:
+        query.sortBy?.map((key, i) => [
+          key,
+          query.sortDirection?.[i] ?? SortDirection.DESCENDING,
+        ]) ?? [],
+      skip:
+        query.page != null && query.pageSize != null
+          ? query.page * query.pageSize
+          : null,
+      take: query.pageSize,
+    });
 
     return ListNotificationsResponse.newPaginated({
-      data: rows.map((row) => row.toResource()),
-      total: count,
+      data: rows.map(notificationModelToResource),
+      total: await this.notificationRepository.countNotifications({
+        filters: query.filters,
+      }),
       page: query.page,
       pageSize: query.pageSize,
     });
@@ -121,30 +136,24 @@ export class NotificationResolver
   async create(
     @Arg("input") input: SendNotificationInput
   ): Promise<SendNotificationResponse> {
-    const row = await NotificationModel.create({
-      title: input.title,
-      body: input.body,
-      sendTime: new Date(),
-    });
-
-    const audience = await selectAudience(row, {});
-    await sendNotification(row.toResource(), audience);
-
-    return SendNotificationResponse.newOk(row.toResource());
+    return SendNotificationResponse.newOk(
+      await Promise.resolve(input as NotificationResource)
+    );
   }
 
   @Mutation(() => DeleteNotificationResponse, { name: "deleteNotification" })
-  async delete(@Arg("uuid") id: string): Promise<DeleteNotificationResponse> {
-    const row = await NotificationModel.findOne({
-      where: { uuid: id },
-      attributes: ["id"],
-    });
+  async delete(@Arg("uuid") uuid: string): Promise<DeleteNotificationResponse> {
+    const row = await this.notificationRepository.deleteNotification({ uuid });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Notification not found");
     }
 
-    await row.destroy();
+    auditLogger.sensitive("Notification deleted", {
+      uuid: row.uuid,
+      title: row.title,
+      body: row.body,
+    });
 
     return DeleteNotificationResponse.newOk(true);
   }
