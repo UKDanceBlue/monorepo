@@ -112,10 +112,10 @@ model LoginFlowSession {
   uuid                 String   @unique(map: "login_flow_sessions_uuid_unique") @default(uuid()) @db.Uuid
   createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  codeVerifier         String?  @map("code_verifier")
+  codeVerifier         String   @map("code_verifier")
   redirectToAfterLogin String   @map("redirect_to_after_login")
-  setCookie            Boolean? @default(false) @map("set_cookie")
-  sendToken            Boolean? @default(false) @map("send_token")
+  setCookie            Boolean  @default(false) @map("set_cookie")
+  sendToken            Boolean  @default(false) @map("send_token")
 
   @@index([uuid], map: "login_flow_sessions_uuid")
   @@map("login_flow_sessions")
