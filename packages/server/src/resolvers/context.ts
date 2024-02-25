@@ -3,9 +3,12 @@ import type { KoaContextFunctionArgument } from "@as-integrations/koa";
 import type { AuthorizationContext } from "@ukdanceblue/common";
 import { AuthSource, MembershipPositionType } from "@ukdanceblue/common";
 import type { DefaultState } from "koa";
+import { Container } from "typedi";
 
 import { defaultAuthorization, parseUserJwt } from "../lib/auth/index.js";
 import { logger } from "../lib/logging/logger.js";
+import { PersonRepository } from "../repositories/person/PersonRepository.js";
+import { personModelToResource } from "../repositories/person/personModelToResource.js";
 
 export interface GraphQLContext extends AuthorizationContext {
   contextErrors: string[];
@@ -45,31 +48,24 @@ export const graphqlContextFunction: ContextFunction<
     };
   }
 
-  const person = await PersonModel.findByUuid(userId, {
-    include: [MembershipModel.withScope("withTeam")],
+  const personRepository = Container.get(PersonRepository);
+  const person = await personRepository.findPersonAndTeamsByUnique({
+    uuid: userId,
   });
+
   if (person) {
-    const personResource = await person.toResource();
+    const personResource = personModelToResource(person);
+
     logger.debug("graphqlContextFunction Found user", personResource);
     return {
       authenticatedUser: personResource,
       userData: {
         auth: personResource.role.toAuthorization(),
         userId,
-        teamIds: person.memberships.map((m) => {
-          if (!m.team) {
-            throw new Error("Membership has no team");
-          }
-          return m.team.uuid;
-        }),
+        teamIds: person.memberships.map((m) => m.team.uuid),
         captainOfTeamIds: person.memberships
           .filter((m) => m.position === MembershipPositionType.Captain)
-          .map((m) => {
-            if (!m.team) {
-              throw new Error("Membership has no team");
-            }
-            return m.team.uuid;
-          }),
+          .map((m) => m.team.uuid),
         authSource,
       },
       contextErrors: [],

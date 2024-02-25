@@ -62,16 +62,48 @@ export class PersonRepository {
     );
   }
 
+  /** @deprecated Use findPersonByUnique directly */
   findPersonByUuid(uuid: string): Promise<Person | null> {
     return this.prisma.person.findUnique({ where: { uuid } });
   }
 
+  /** @deprecated Use findPersonByUnique directly */
   findPersonById(id: number): Promise<Person | null> {
     return this.prisma.person.findUnique({ where: { id } });
   }
 
+  /** @deprecated Use findPersonByUnique directly */
   findPersonByLinkblue(linkblue: string): Promise<Person | null> {
     return this.prisma.person.findUnique({ where: { linkblue } });
+  }
+
+  async findPersonByUnique(
+    param:
+      | { uuid: string }
+      | { id: number }
+      | { email: string }
+      | { linkblue: string }
+  ) {
+    return this.prisma.person.findUnique({ where: param });
+  }
+
+  async findPersonAndTeamsByUnique(
+    param:
+      | { uuid: string }
+      | { id: number }
+      | { email: string }
+      | { linkblue: string }
+  ) {
+    return this.prisma.person.findUnique({
+      where: param,
+      include: {
+        memberships: {
+          include: {
+            team: true,
+          },
+        },
+      },
+    });
   }
 
   listPeople({
