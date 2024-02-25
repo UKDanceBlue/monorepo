@@ -27,6 +27,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import { auditLogger } from "../lib/logging/auditLogging.js";
 import { membershipModelToResource } from "../repositories/membership/membershipModelToResource.js";
 import { PersonRepository } from "../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
@@ -261,18 +262,20 @@ export class PersonResolver {
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
   @Mutation(() => DeletePersonResponse, { name: "deletePerson" })
-  async delete(@Arg("uuid") id: string): Promise<DeletePersonResponse> {
-    const row = await this.personRepository.findPersonByUuid(id);
-
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Person not found");
-    }
-
-    const result = await this.personRepository.deletePerson(row);
+  async delete(@Arg("uuid") uuid: string): Promise<DeletePersonResponse> {
+    const result = await this.personRepository.deletePerson({ uuid });
 
     if (result == null) {
       throw new DetailedError(ErrorCode.DatabaseFailure, "Failed to delete");
     }
+
+    auditLogger.sensitive("Person deleted", {
+      person: {
+        name: result.name,
+        email: result.email,
+        uuid: result.uuid,
+      },
+    });
 
     return DeletePersonResponse.newOk(true);
   }
