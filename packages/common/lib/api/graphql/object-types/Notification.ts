@@ -1,3 +1,4 @@
+import { URLResolver } from "graphql-scalars";
 import { Field, ID, ObjectType } from "type-graphql";
 
 import { TimestampedResource } from "./Resource.js";
@@ -18,14 +19,14 @@ export class NotificationResource extends TimestampedResource {
     description:
       "The time the notification should have been received by the device (if applicable)",
   })
-  receivedAt?: Date | undefined | null;
+  receivedAt?: Date | null;
 
-  @Field({
+  @Field(() => URLResolver, {
     nullable: true,
     description:
       "A URL related to the notification, opened immediately for presentation type URL, opened in a webview for presentation type IN_APP_VIEW, and shown as a button for presentation type INFO_POPUP",
   })
-  url?: string | undefined | null;
+  url?: string | null;
 
   public getUniqueId(): string {
     return this.uuid;

@@ -48,7 +48,7 @@ type AddEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseRes
   ok: Boolean!
 }
 
-type AuthIdList {
+type AuthIdPairResource {
   source: AuthSource!
   value: String!
 }
@@ -57,8 +57,8 @@ type AuthIdList {
 enum AuthSource {
   Anonymous
   Demo
+  LinkBlue
   None
-  UkyLinkblue
 }
 
 """The identifier for a committee"""
@@ -207,8 +207,7 @@ enum DbRole {
   Committee
   None
   Public
-  TeamCaptain
-  TeamMember
+  UKY
 }
 
 type DeleteConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -249,15 +248,14 @@ type DeleteTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseRespon
 
 enum DeviceResolverAllKeys {
   createdAt
-  deviceId
   expoPushToken
-  lastLogin
+  lastSeen
   updatedAt
 }
 
 enum DeviceResolverDateFilterKeys {
   createdAt
-  lastLogin
+  lastSeen
   updatedAt
 }
 
@@ -287,7 +285,7 @@ input DeviceResolverKeyedIsNullFilterItem {
 
 input DeviceResolverKeyedOneOfFilterItem {
   """The field to filter on"""
-  field: DeviceResolverStringFilterKeys!
+  field: Void!
 
   """
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
@@ -311,7 +309,6 @@ input DeviceResolverKeyedStringFilterItem {
 }
 
 enum DeviceResolverStringFilterKeys {
-  deviceId
   expoPushToken
 }
 
@@ -338,7 +335,6 @@ type EventOccurrenceResource {
 enum EventResolverAllKeys {
   createdAt
   description
-  duration
   location
   occurrence
   occurrenceEnd
@@ -380,23 +376,9 @@ input EventResolverKeyedIsNullFilterItem {
   negate: Boolean = false
 }
 
-input EventResolverKeyedNumericFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: EventResolverNumericFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: Float!
-}
-
 input EventResolverKeyedOneOfFilterItem {
   """The field to filter on"""
-  field: EventResolverStringFilterKeys!
+  field: Void!
 
   """
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
@@ -417,10 +399,6 @@ input EventResolverKeyedStringFilterItem {
   """
   negate: Boolean = false
   value: String!
-}
-
-enum EventResolverNumericFilterKeys {
-  duration
 }
 
 enum EventResolverStringFilterKeys {
@@ -484,11 +462,6 @@ type GetPersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseRespons
 
 type GetPointEntryByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: PointEntryResource!
-  ok: Boolean!
-}
-
-type GetThumbHashByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: String!
   ok: Boolean!
 }
 
@@ -658,7 +631,6 @@ type Mutation {
   registerDevice(input: RegisterDeviceInput!): RegisterDeviceResponse!
   removeImageFromEvent(eventId: String!, imageId: String!): RemoveEventImageResponse!
   sendNotification(input: SendNotificationInput!): SendNotificationResponse!
-  setConfiguration(input: SetConfigurationInput!, key: String!): SetConfigurationResponse!
   setEvent(input: SetEventInput!, uuid: String!): SetEventResponse!
   setPerson(input: SetPersonInput!, uuid: String!): GetPersonResponse!
   setPointOpportunity(input: SetPointOpportunityInput!, uuid: String!): SinglePointOpportunityResponse!
@@ -668,35 +640,30 @@ type Mutation {
 """Integers that will have a value of 0 or more."""
 scalar NonNegativeInt
 
-type NotificationPayload {
-  """
-  Only shown for presentation type INFO_POPUP, shown at the bottom of the popup
-  """
-  message: String
-  presentation: NotificationPayloadPresentationType!
-
-  """
-  A title for the notification, ignored for presentation type URL, shown with the webview for presentation type IN_APP_VIEW, and shown at the top of the popup for presentation type INFO_POPUP
-  """
-  title: String
-
-  """
-  A URL related to the notification, opened immediately for presentation type URL, opened in a webview for presentation type IN_APP_VIEW, and shown as a button for presentation type INFO_POPUP
-  """
-  url: String
-}
-
-"""
-The type of presentation for the notification, URL skips the app and opens a URL directly, IN_APP_VIEW opens a webview, and INFO_POPUP shows a popup
-"""
-enum NotificationPayloadPresentationType {
-  INFO_POPUP
-  IN_APP_VIEW
-  OPEN_URL
-}
-
 enum NotificationResolverAllKeys {
-  uuid
+  body
+  createdAt
+  title
+  updatedAt
+}
+
+enum NotificationResolverDateFilterKeys {
+  createdAt
+  updatedAt
+}
+
+input NotificationResolverKeyedDateFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: NotificationResolverDateFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: LuxonDateTime!
 }
 
 input NotificationResolverKeyedIsNullFilterItem {
@@ -709,14 +676,51 @@ input NotificationResolverKeyedIsNullFilterItem {
   negate: Boolean = false
 }
 
+input NotificationResolverKeyedOneOfFilterItem {
+  """The field to filter on"""
+  field: Void!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: [String!]!
+}
+
+input NotificationResolverKeyedStringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The field to filter on"""
+  field: NotificationResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: String!
+}
+
+enum NotificationResolverStringFilterKeys {
+  body
+  title
+}
+
 type NotificationResource {
   body: String!
   createdAt: DateTimeISO
-  payload: NotificationPayload
-  sendTime: DateTimeISO!
-  sound: String
+
+  """
+  The time the notification should have been received by the device (if applicable)
+  """
+  receivedAt: DateTimeISO
   title: String!
   updatedAt: DateTimeISO
+
+  """
+  A URL related to the notification, opened immediately for presentation type URL, opened in a webview for presentation type IN_APP_VIEW, and shown as a button for presentation type INFO_POPUP
+  """
+  url: URL
   uuid: ID!
 }
 
@@ -750,7 +754,7 @@ input PersonResolverKeyedIsNullFilterItem {
 
 input PersonResolverKeyedOneOfFilterItem {
   """The field to filter on"""
-  field: PersonResolverStringFilterKeys!
+  field: PersonResolverOneOfFilterKeys!
 
   """
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
@@ -773,17 +777,20 @@ input PersonResolverKeyedStringFilterItem {
   value: String!
 }
 
-enum PersonResolverStringFilterKeys {
+enum PersonResolverOneOfFilterKeys {
   committeeName
   committeeRole
   dbRole
+}
+
+enum PersonResolverStringFilterKeys {
   email
   linkblue
   name
 }
 
 type PersonResource {
-  authIds: [AuthIdList!]!
+  authIds: [AuthIdPairResource!]! @deprecated(reason: "This is now provided on the AuthIdPair resource.")
   captaincies: [MembershipResource!]! @deprecated(reason: "Use teams instead and filter by position")
   createdAt: DateTimeISO
   email: String!
@@ -880,7 +887,7 @@ input PointOpportunityResolverKeyedIsNullFilterItem {
 
 input PointOpportunityResolverKeyedOneOfFilterItem {
   """The field to filter on"""
-  field: PointOpportunityResolverStringFilterKeys!
+  field: Void!
 
   """
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
@@ -924,7 +931,6 @@ scalar PositiveInt
 type Query {
   activeConfiguration(key: String!): GetConfigurationByUuidResponse!
   allConfigurations: GetAllConfigurationsResponse!
-  configuration(uuid: String!): GetConfigurationByUuidResponse!
   device(uuid: String!): GetDeviceByUuidResponse!
   devices(
     """The boolean filters to apply to the query"""
@@ -934,7 +940,7 @@ type Query {
     dateFilters: [DeviceResolverKeyedDateFilterItem!]
 
     """Whether to include deleted items in the results"""
-    includeDeleted: Boolean
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
     isNullFilters: [DeviceResolverKeyedIsNullFilterItem!]
@@ -978,13 +984,13 @@ type Query {
     dateFilters: [EventResolverKeyedDateFilterItem!]
 
     """Whether to include deleted items in the results"""
-    includeDeleted: Boolean
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
     isNullFilters: [EventResolverKeyedIsNullFilterItem!]
 
     """The numeric filters to apply to the query"""
-    numericFilters: [EventResolverKeyedNumericFilterItem!]
+    numericFilters: Void
 
     """The one-of filters to apply to the query"""
     oneOfFilters: [EventResolverKeyedOneOfFilterItem!]
@@ -1022,7 +1028,7 @@ type Query {
     dateFilters: Void
 
     """Whether to include deleted items in the results"""
-    includeDeleted: Boolean
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
     isNullFilters: [PersonResolverKeyedIsNullFilterItem!]
@@ -1065,10 +1071,10 @@ type Query {
     booleanFilters: Void
 
     """The date filters to apply to the query"""
-    dateFilters: Void
+    dateFilters: [NotificationResolverKeyedDateFilterItem!]
 
     """Whether to include deleted items in the results"""
-    includeDeleted: Boolean
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
     isNullFilters: [NotificationResolverKeyedIsNullFilterItem!]
@@ -1077,7 +1083,7 @@ type Query {
     numericFilters: Void
 
     """The one-of filters to apply to the query"""
-    oneOfFilters: Void
+    oneOfFilters: [NotificationResolverKeyedOneOfFilterItem!]
 
     """The page number to return, defaults to 1"""
     page: Int
@@ -1101,7 +1107,7 @@ type Query {
     sortDirection: [SortDirection!]
 
     """The string filters to apply to the query"""
-    stringFilters: Void
+    stringFilters: [NotificationResolverKeyedStringFilterItem!]
   ): ListNotificationsResponse!
   person(uuid: String!): GetPersonResponse!
   personByLinkBlue(linkBlueId: String!): GetPersonResponse!
@@ -1113,7 +1119,7 @@ type Query {
     dateFilters: [PointEntryResolverKeyedDateFilterItem!]
 
     """Whether to include deleted items in the results"""
-    includeDeleted: Boolean
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
     isNullFilters: [PointEntryResolverKeyedIsNullFilterItem!]
@@ -1157,7 +1163,7 @@ type Query {
     dateFilters: [PointOpportunityResolverKeyedDateFilterItem!]
 
     """Whether to include deleted items in the results"""
-    includeDeleted: Boolean
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
     isNullFilters: [PointOpportunityResolverKeyedIsNullFilterItem!]
@@ -1203,7 +1209,7 @@ type Query {
     dateFilters: Void
 
     """Whether to include deleted items in the results"""
-    includeDeleted: Boolean
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
     isNullFilters: [TeamResolverKeyedIsNullFilterItem!]
@@ -1242,7 +1248,6 @@ type Query {
     type: [TeamType!]
     visibility: [DbRole!]
   ): ListTeamsResponse!
-  thumbhash(uuid: String!): GetThumbHashByUuidResponse
 }
 
 input RegisterDeviceInput {
@@ -1253,6 +1258,9 @@ input RegisterDeviceInput {
 
   """The ID of the last user to log in on this device"""
   lastUserId: String
+
+  """base64 encoded SHA-256 hash of a secret known to the device"""
+  verifier: String!
 }
 
 type RegisterDeviceResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -1286,15 +1294,6 @@ type SendNotificationResponse implements AbstractGraphQLCreatedResponse & Abstra
   data: NotificationResource!
   ok: Boolean!
   uuid: String!
-}
-
-input SetConfigurationInput {
-  key: String!
-}
-
-type SetConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: ConfigurationResource!
-  ok: Boolean!
 }
 
 input SetEventInput {
@@ -1408,7 +1407,7 @@ input TeamResolverKeyedNumericFilterItem {
 
 input TeamResolverKeyedOneOfFilterItem {
   """The field to filter on"""
-  field: TeamResolverStringFilterKeys!
+  field: Void!
 
   """
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.

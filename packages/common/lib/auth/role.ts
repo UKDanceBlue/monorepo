@@ -27,11 +27,8 @@ export function roleToAccessLevel(role: {
     case DbRole.Public: {
       return AccessLevel.Public;
     }
-    case DbRole.TeamMember: {
-      return AccessLevel.TeamMember;
-    }
-    case DbRole.TeamCaptain: {
-      return AccessLevel.TeamCaptain;
+    case DbRole.UKY: {
+      return AccessLevel.UKY;
     }
     case DbRole.Committee: {
       if (role.committeeIdentifier === CommitteeIdentifier.techCommittee) {

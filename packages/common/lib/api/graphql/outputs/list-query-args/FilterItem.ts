@@ -8,6 +8,7 @@ import type {
   StringFilterItemInterface,
 } from "@ukdanceblue/common";
 import { DateTimeScalar } from "@ukdanceblue/common";
+import { VoidResolver } from "graphql-scalars";
 import { Field, InputType } from "type-graphql";
 
 import type { Comparator } from "../../../request/ListQueryTypes.js";
@@ -173,7 +174,10 @@ export function OneOfFilterItem<Field extends string>(fieldEnum: {
 }) {
   @InputType()
   abstract class OneOfFilterItem extends AbstractOneOfFilterItem<Field> {
-    @Field(() => fieldEnum, { description: "The field to filter on" })
+    @Field(
+      () => (Object.keys(fieldEnum).length > 0 ? fieldEnum : VoidResolver),
+      { description: "The field to filter on" }
+    )
     field!: Field;
   }
 

@@ -15,6 +15,7 @@ import { PersonResolver } from "../resolvers/PersonResolver.js";
 import { PointEntryResolver } from "../resolvers/PointEntryResolver.js";
 import { PointOpportunityResolver } from "../resolvers/PointOpportunityResolver.js";
 import { TeamResolver } from "../resolvers/TeamResolver.js";
+
 import { logger } from "./logging/logger.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

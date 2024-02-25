@@ -82,8 +82,8 @@ export type AddEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseRespo
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type AuthIdList = {
-  readonly __typename?: 'AuthIdList';
+export type AuthIdPairResource = {
+  readonly __typename?: 'AuthIdPairResource';
   readonly source: AuthSource;
   readonly value: Scalars['String']['output'];
 };
@@ -279,16 +279,15 @@ export type DeleteTeamResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse
 
 export const DeviceResolverAllKeys = {
   CreatedAt: 'createdAt',
-  DeviceId: 'deviceId',
   ExpoPushToken: 'expoPushToken',
-  LastLogin: 'lastLogin',
+  LastSeen: 'lastSeen',
   UpdatedAt: 'updatedAt'
 } as const;
 
 export type DeviceResolverAllKeys = typeof DeviceResolverAllKeys[keyof typeof DeviceResolverAllKeys];
 export const DeviceResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
-  LastLogin: 'lastLogin',
+  LastSeen: 'lastSeen',
   UpdatedAt: 'updatedAt'
 } as const;
 
@@ -312,7 +311,7 @@ export type DeviceResolverKeyedIsNullFilterItem = {
 
 export type DeviceResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: DeviceResolverStringFilterKeys;
+  readonly field: Scalars['Void']['input'];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
@@ -329,7 +328,6 @@ export type DeviceResolverKeyedStringFilterItem = {
 };
 
 export const DeviceResolverStringFilterKeys = {
-  DeviceId: 'deviceId',
   ExpoPushToken: 'expoPushToken'
 } as const;
 
@@ -346,17 +344,14 @@ export type DeviceResource = {
 
 export type EventOccurrenceResource = {
   readonly __typename?: 'EventOccurrenceResource';
-  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly fullDay: Scalars['Boolean']['output'];
   readonly interval: Scalars['LuxonDateRange']['output'];
-  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
 
 export const EventResolverAllKeys = {
   CreatedAt: 'createdAt',
   Description: 'description',
-  Duration: 'duration',
   Location: 'location',
   Occurrence: 'occurrence',
   OccurrenceEnd: 'occurrenceEnd',
@@ -393,19 +388,9 @@ export type EventResolverKeyedIsNullFilterItem = {
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type EventResolverKeyedNumericFilterItem = {
-  /** The comparator to use for the filter */
-  readonly comparison: NumericComparator;
-  /** The field to filter on */
-  readonly field: EventResolverNumericFilterKeys;
-  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
-  readonly value: Scalars['Float']['input'];
-};
-
 export type EventResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: EventResolverStringFilterKeys;
+  readonly field: Scalars['Void']['input'];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
@@ -421,11 +406,6 @@ export type EventResolverKeyedStringFilterItem = {
   readonly value: Scalars['String']['input'];
 };
 
-export const EventResolverNumericFilterKeys = {
-  Duration: 'duration'
-} as const;
-
-export type EventResolverNumericFilterKeys = typeof EventResolverNumericFilterKeys[keyof typeof EventResolverNumericFilterKeys];
 export const EventResolverStringFilterKeys = {
   Description: 'description',
   Location: 'location',
@@ -498,12 +478,6 @@ export type GetPersonResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse 
 export type GetPointEntryByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetPointEntryByUuidResponse';
   readonly data: PointEntryResource;
-  readonly ok: Scalars['Boolean']['output'];
-};
-
-export type GetThumbHashByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  readonly __typename?: 'GetThumbHashByUuidResponse';
-  readonly data: Scalars['String']['output'];
   readonly ok: Scalars['Boolean']['output'];
 };
 
@@ -658,7 +632,6 @@ export type Mutation = {
   readonly registerDevice: RegisterDeviceResponse;
   readonly removeImageFromEvent: RemoveEventImageResponse;
   readonly sendNotification: SendNotificationResponse;
-  readonly setConfiguration: SetConfigurationResponse;
   readonly setEvent: SetEventResponse;
   readonly setPerson: GetPersonResponse;
   readonly setPointOpportunity: SinglePointOpportunityResponse;
@@ -779,12 +752,6 @@ export type MutationSendNotificationArgs = {
 };
 
 
-export type MutationSetConfigurationArgs = {
-  input: SetConfigurationInput;
-  key: Scalars['String']['input'];
-};
-
-
 export type MutationSetEventArgs = {
   input: SetEventInput;
   uuid: Scalars['String']['input'];
@@ -808,30 +775,30 @@ export type MutationSetTeamArgs = {
   uuid: Scalars['String']['input'];
 };
 
-export type NotificationPayload = {
-  readonly __typename?: 'NotificationPayload';
-  /** Only shown for presentation type INFO_POPUP, shown at the bottom of the popup */
-  readonly message?: Maybe<Scalars['String']['output']>;
-  readonly presentation: NotificationPayloadPresentationType;
-  /** A title for the notification, ignored for presentation type URL, shown with the webview for presentation type IN_APP_VIEW, and shown at the top of the popup for presentation type INFO_POPUP */
-  readonly title?: Maybe<Scalars['String']['output']>;
-  /** A URL related to the notification, opened immediately for presentation type URL, opened in a webview for presentation type IN_APP_VIEW, and shown as a button for presentation type INFO_POPUP */
-  readonly url?: Maybe<Scalars['String']['output']>;
-};
-
-/** The type of presentation for the notification, URL skips the app and opens a URL directly, IN_APP_VIEW opens a webview, and INFO_POPUP shows a popup */
-export const NotificationPayloadPresentationType = {
-  InfoPopup: 'INFO_POPUP',
-  InAppView: 'IN_APP_VIEW',
-  OpenUrl: 'OPEN_URL'
-} as const;
-
-export type NotificationPayloadPresentationType = typeof NotificationPayloadPresentationType[keyof typeof NotificationPayloadPresentationType];
 export const NotificationResolverAllKeys = {
-  Uuid: 'uuid'
+  Body: 'body',
+  CreatedAt: 'createdAt',
+  Title: 'title',
+  UpdatedAt: 'updatedAt'
 } as const;
 
 export type NotificationResolverAllKeys = typeof NotificationResolverAllKeys[keyof typeof NotificationResolverAllKeys];
+export const NotificationResolverDateFilterKeys = {
+  CreatedAt: 'createdAt',
+  UpdatedAt: 'updatedAt'
+} as const;
+
+export type NotificationResolverDateFilterKeys = typeof NotificationResolverDateFilterKeys[keyof typeof NotificationResolverDateFilterKeys];
+export type NotificationResolverKeyedDateFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: NumericComparator;
+  /** The field to filter on */
+  readonly field: NotificationResolverDateFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['LuxonDateTime']['input'];
+};
+
 export type NotificationResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
   readonly field: NotificationResolverAllKeys;
@@ -839,15 +806,40 @@ export type NotificationResolverKeyedIsNullFilterItem = {
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type NotificationResolverKeyedOneOfFilterItem = {
+  /** The field to filter on */
+  readonly field: Scalars['Void']['input'];
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
+};
+
+export type NotificationResolverKeyedStringFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: StringComparator;
+  /** The field to filter on */
+  readonly field: NotificationResolverStringFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
+};
+
+export const NotificationResolverStringFilterKeys = {
+  Body: 'body',
+  Title: 'title'
+} as const;
+
+export type NotificationResolverStringFilterKeys = typeof NotificationResolverStringFilterKeys[keyof typeof NotificationResolverStringFilterKeys];
 export type NotificationResource = {
   readonly __typename?: 'NotificationResource';
   readonly body: Scalars['String']['output'];
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  readonly payload?: Maybe<NotificationPayload>;
-  readonly sendTime: Scalars['DateTimeISO']['output'];
-  readonly sound?: Maybe<Scalars['String']['output']>;
+  /** The time the notification should have been received by the device (if applicable) */
+  readonly receivedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly title: Scalars['String']['output'];
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  /** A URL related to the notification, opened immediately for presentation type URL, opened in a webview for presentation type IN_APP_VIEW, and shown as a button for presentation type INFO_POPUP */
+  readonly url?: Maybe<Scalars['URL']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
 
@@ -872,7 +864,7 @@ export type PersonResolverKeyedIsNullFilterItem = {
 
 export type PersonResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: PersonResolverStringFilterKeys;
+  readonly field: PersonResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
@@ -888,10 +880,14 @@ export type PersonResolverKeyedStringFilterItem = {
   readonly value: Scalars['String']['input'];
 };
 
-export const PersonResolverStringFilterKeys = {
+export const PersonResolverOneOfFilterKeys = {
   CommitteeName: 'committeeName',
   CommitteeRole: 'committeeRole',
-  DbRole: 'dbRole',
+  DbRole: 'dbRole'
+} as const;
+
+export type PersonResolverOneOfFilterKeys = typeof PersonResolverOneOfFilterKeys[keyof typeof PersonResolverOneOfFilterKeys];
+export const PersonResolverStringFilterKeys = {
   Email: 'email',
   Linkblue: 'linkblue',
   Name: 'name'
@@ -900,7 +896,8 @@ export const PersonResolverStringFilterKeys = {
 export type PersonResolverStringFilterKeys = typeof PersonResolverStringFilterKeys[keyof typeof PersonResolverStringFilterKeys];
 export type PersonResource = {
   readonly __typename?: 'PersonResource';
-  readonly authIds: ReadonlyArray<AuthIdList>;
+  /** @deprecated This is now provided on the AuthIdPair resource. */
+  readonly authIds: ReadonlyArray<AuthIdPairResource>;
   /** @deprecated Use teams instead and filter by position */
   readonly captaincies: ReadonlyArray<MembershipResource>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -989,7 +986,7 @@ export type PointOpportunityResolverKeyedIsNullFilterItem = {
 
 export type PointOpportunityResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: PointOpportunityResolverStringFilterKeys;
+  readonly field: Scalars['Void']['input'];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
@@ -1026,7 +1023,6 @@ export type Query = {
   readonly __typename?: 'Query';
   readonly activeConfiguration: GetConfigurationByUuidResponse;
   readonly allConfigurations: GetAllConfigurationsResponse;
-  readonly configuration: GetConfigurationByUuidResponse;
   readonly device: GetDeviceByUuidResponse;
   readonly devices: ListDevicesResponse;
   readonly event: GetEventByUuidResponse;
@@ -1046,17 +1042,11 @@ export type Query = {
   readonly searchPeopleByName: GetPeopleResponse;
   readonly team: SingleTeamResponse;
   readonly teams: ListTeamsResponse;
-  readonly thumbhash?: Maybe<GetThumbHashByUuidResponse>;
 };
 
 
 export type QueryActiveConfigurationArgs = {
   key: Scalars['String']['input'];
-};
-
-
-export type QueryConfigurationArgs = {
-  uuid: Scalars['String']['input'];
 };
 
 
@@ -1091,7 +1081,7 @@ export type QueryEventsArgs = {
   dateFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
   isNullFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedIsNullFilterItem>>;
-  numericFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedNumericFilterItem>>;
+  numericFilters?: InputMaybe<Scalars['Void']['input']>;
   oneOfFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
@@ -1130,17 +1120,17 @@ export type QueryNotificationArgs = {
 
 export type QueryNotificationsArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<Scalars['Void']['input']>;
+  dateFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
   isNullFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<Scalars['Void']['input']>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
-  stringFilters?: InputMaybe<Scalars['Void']['input']>;
+  stringFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedStringFilterItem>>;
 };
 
 
@@ -1225,17 +1215,14 @@ export type QueryTeamsArgs = {
   visibility?: InputMaybe<ReadonlyArray<DbRole>>;
 };
 
-
-export type QueryThumbhashArgs = {
-  uuid: Scalars['String']['input'];
-};
-
 export type RegisterDeviceInput = {
   readonly deviceId: Scalars['String']['input'];
   /** The Expo push token of the device */
   readonly expoPushToken?: InputMaybe<Scalars['String']['input']>;
   /** The ID of the last user to log in on this device */
   readonly lastUserId?: InputMaybe<Scalars['String']['input']>;
+  /** base64 encoded SHA-256 hash of a secret known to the device */
+  readonly verifier: Scalars['String']['input'];
 };
 
 export type RegisterDeviceResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
@@ -1254,9 +1241,7 @@ export type RoleResource = {
   readonly __typename?: 'RoleResource';
   readonly committeeIdentifier?: Maybe<CommitteeIdentifier>;
   readonly committeeRole?: Maybe<CommitteeRole>;
-  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly dbRole: DbRole;
-  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
 export type RoleResourceInput = {
@@ -1275,16 +1260,6 @@ export type SendNotificationResponse = AbstractGraphQlCreatedResponse & Abstract
   readonly data: NotificationResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
-};
-
-export type SetConfigurationInput = {
-  readonly key: Scalars['String']['input'];
-};
-
-export type SetConfigurationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  readonly __typename?: 'SetConfigurationResponse';
-  readonly data: ConfigurationResource;
-  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type SetEventInput = {
@@ -1384,7 +1359,7 @@ export type TeamResolverKeyedNumericFilterItem = {
 
 export type TeamResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: TeamResolverStringFilterKeys;
+  readonly field: Scalars['Void']['input'];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
