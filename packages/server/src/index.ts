@@ -3,7 +3,7 @@ import { argv } from "node:process";
 import { QueryTypes } from "@sequelize/core";
 
 import { sequelizeDb } from "./data-source.js";
-import { logFatal, logger } from "./logger.js";
+import { logFatal, logger } from "./lib/logging/logger.js";
 
 import "reflect-metadata";
 

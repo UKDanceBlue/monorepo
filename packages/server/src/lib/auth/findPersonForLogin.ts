@@ -2,7 +2,7 @@ import type { Person, PrismaClient } from "@prisma/client";
 import type { AuthSource, RoleResource } from "@ukdanceblue/common";
 import { MembershipPositionType } from "@ukdanceblue/common";
 
-import { logger } from "../../logger.js";
+import { logger } from "../logging/logger.js";
 
 // TODO: rework this whole thing, it doesn't really make much sense anymore
 

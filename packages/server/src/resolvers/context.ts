@@ -5,7 +5,7 @@ import { AuthSource, MembershipPositionType } from "@ukdanceblue/common";
 import type { DefaultState } from "koa";
 
 import { defaultAuthorization, parseUserJwt } from "../lib/auth/index.js";
-import { logger } from "../logger.js";
+import { logger } from "../lib/logging/logger.js";
 
 export interface GraphQLContext extends AuthorizationContext {
   contextErrors: string[];

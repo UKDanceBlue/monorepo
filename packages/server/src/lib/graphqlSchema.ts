@@ -4,7 +4,6 @@ import { fileURLToPath } from "url";
 import type { MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
 
-import { logger } from "../logger.js";
 import { ConfigurationResolver } from "../resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "../resolvers/DeviceResolver.js";
 import { EventResolver } from "../resolvers/EventResolver.js";
@@ -16,6 +15,7 @@ import { PersonResolver } from "../resolvers/PersonResolver.js";
 import { PointEntryResolver } from "../resolvers/PointEntryResolver.js";
 import { PointOpportunityResolver } from "../resolvers/PointOpportunityResolver.js";
 import { TeamResolver } from "../resolvers/TeamResolver.js";
+import { logger } from "./logging/logger.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

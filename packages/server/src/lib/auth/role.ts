@@ -6,7 +6,7 @@ import {
   DbRole,
 } from "@ukdanceblue/common";
 
-import { logger } from "../../logger.js";
+import { logger } from "../logging/logger.js";
 
 /**
  * Converts a DbRole to an AccessLevel

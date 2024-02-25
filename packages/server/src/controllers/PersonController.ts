@@ -5,7 +5,7 @@ import type {
 } from "@ukdanceblue/common";
 
 import { sequelizeDb } from "../data-source.js";
-import { logger } from "../logger.js";
+import { logger } from "../lib/logging/logger.js";
 
 // TODO: rework this whole thing, it doesn't really make much sense anymore
 
