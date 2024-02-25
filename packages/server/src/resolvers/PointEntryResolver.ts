@@ -5,6 +5,7 @@ import {
   PersonResource,
   PointEntryResource,
   PointOpportunityResource,
+  SortDirection,
   TeamResource,
 } from "@ukdanceblue/common";
 import {
@@ -22,7 +23,11 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import { personModelToResource } from "../repositories/person/personModelToResource.js";
 import { PointEntryRepository } from "../repositories/pointEntry/PointEntryRepository.js";
+import { pointEntryModelToResource } from "../repositories/pointEntry/pointEntryModelToResource.js";
+import { pointOpportunityModelToResource } from "../repositories/pointOpportunity/pointOpportunityModelToResource.js";
+import { teamModelToResource } from "../repositories/team/teamModelToResource.js";
 
 import {
   AbstractGraphQLCreatedResponse,
@@ -90,26 +95,43 @@ export class PointEntryResolver {
   async getByUuid(
     @Arg("uuid") uuid: string
   ): Promise<GetPointEntryByUuidResponse> {
-    const row = await PointEntryModel.findOne({ where: { uuid } });
+    const model = await this.pointEntryRepository.findPointEntryByUnique({
+      uuid,
+    });
 
-    if (row == null) {
+    if (model == null) {
       throw new DetailedError(ErrorCode.NotFound, "PointEntry not found");
     }
 
-    return GetPointEntryByUuidResponse.newOk(row.toResource());
+    return GetPointEntryByUuidResponse.newOk(pointEntryModelToResource(model));
   }
 
   @Query(() => ListPointEntriesResponse, { name: "pointEntries" })
   async list(
     @Args(() => ListPointEntriesArgs) query: ListPointEntriesArgs
   ): Promise<ListPointEntriesResponse> {
-    const findOptions = toSequelizeFindOptions(query, {}, {}, PointEntryModel);
-
-    const { rows, count } = await PointEntryModel.findAndCountAll(findOptions);
+    const [rows, total] = await Promise.all([
+      this.pointEntryRepository.listPointEntries({
+        filters: query.filters,
+        order:
+          query.sortBy?.map((key, i) => [
+            key,
+            query.sortDirection?.[i] ?? SortDirection.DESCENDING,
+          ]) ?? [],
+        skip:
+          query.page != null && query.pageSize != null
+            ? query.page * query.pageSize
+            : null,
+        take: query.pageSize,
+      }),
+      this.pointEntryRepository.countPointEntries({
+        filters: query.filters,
+      }),
+    ]);
 
     return ListPointEntriesResponse.newPaginated({
-      data: rows.map((row) => row.toResource()),
-      total: count,
+      data: rows.map((row) => pointEntryModelToResource(row)),
+      total,
       page: query.page,
       pageSize: query.pageSize,
     });
@@ -119,62 +141,24 @@ export class PointEntryResolver {
   async create(
     @Arg("input") input: CreatePointEntryInput
   ): Promise<CreatePointEntryResponse> {
-    let personFromId;
-    if (input.personFromUuid != null) {
-      const personFrom = await PersonModel.findOne({
-        where: { uuid: input.personFromUuid },
-        attributes: ["id"],
-      });
-      if (!personFrom) {
-        throw new DetailedError(ErrorCode.NotFound, "Person not found");
-      }
-      personFromId = personFrom.id;
-    }
-
-    let pointOpportunityId: number | null = null;
-    if (input.opportunityUuid != null) {
-      const pointOpportunity = await PointOpportunityModel.findOne({
-        where: { uuid: input.opportunityUuid },
-        attributes: ["id"],
-      });
-      if (!pointOpportunity) {
-        throw new DetailedError(
-          ErrorCode.NotFound,
-          "PointOpportunity not found"
-        );
-      }
-      pointOpportunityId = pointOpportunity.id;
-    }
-
-    const team = await TeamModel.findByUuid(input.teamUuid);
-
-    if (!team) {
-      throw new DetailedError(ErrorCode.NotFound, "Team not found");
-    }
-
-    const row = await PointEntryModel.create({
-      comment: input.comment,
+    const model = await this.pointEntryRepository.createPointEntry({
       points: input.points,
-      personFromId,
-      pointOpportunityId,
-      teamId: team.id,
+      comment: input.comment,
+      personParam: input.personFromUuid
+        ? { uuid: input.personFromUuid }
+        : undefined,
+      opportunityParam: input.opportunityUuid
+        ? { uuid: input.opportunityUuid }
+        : undefined,
+      teamParam: { uuid: input.teamUuid },
     });
 
-    return CreatePointEntryResponse.newCreated(row.toResource(), row.uuid);
+    return CreatePointEntryResponse.newOk(pointEntryModelToResource(model));
   }
 
   @Mutation(() => DeletePointEntryResponse, { name: "deletePointEntry" })
   async delete(@Arg("uuid") id: string): Promise<DeletePointEntryResponse> {
-    const row = await PointEntryModel.findOne({
-      where: { uuid: id },
-      attributes: ["id"],
-    });
-
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "PointEntry not found");
-    }
-
-    await row.destroy();
+    await this.pointEntryRepository.deletePointEntry({ uuid: id });
 
     return DeletePointEntryResponse.newOk(true);
   }
@@ -183,42 +167,34 @@ export class PointEntryResolver {
   async personFrom(
     @Root() pointEntry: PointEntryResource
   ): Promise<PersonResource | null> {
-    const model = await PointEntryModel.findByUuid(pointEntry.uuid, {
-      include: { model: PersonModel, as: "personFrom" },
+    const model = await this.pointEntryRepository.getPointEntryPersonFrom({
+      uuid: pointEntry.uuid,
     });
 
-    if (model == null) {
-      throw new DetailedError(ErrorCode.NotFound, "PointEntry not found");
-    }
-
-    return model.personFrom?.toResource() ?? null;
+    return model ? personModelToResource(model) : null;
   }
 
   @FieldResolver(() => TeamResource)
   async team(@Root() pointEntry: PointEntryResource): Promise<TeamResource> {
-    const model = await PointEntryModel.findByUuid(pointEntry.uuid, {
-      include: { model: PersonModel, as: "team" },
+    const model = await this.pointEntryRepository.getPointEntryTeam({
+      uuid: pointEntry.uuid,
     });
 
     if (model == null) {
       throw new DetailedError(ErrorCode.NotFound, "PointEntry not found");
     }
 
-    return model.team.toResource();
+    return teamModelToResource(model);
   }
 
   @FieldResolver(() => PointOpportunityResource, { nullable: true })
   async pointOpportunity(
     @Root() pointEntry: PointEntryResource
   ): Promise<PointOpportunityResource | null> {
-    const model = await PointEntryModel.findByUuid(pointEntry.uuid, {
-      include: { model: PointOpportunityModel, as: "pointOpportunity" },
+    const model = await this.pointEntryRepository.getPointEntryOpportunity({
+      uuid: pointEntry.uuid,
     });
 
-    if (model == null) {
-      throw new DetailedError(ErrorCode.NotFound, "PointEntry not found");
-    }
-
-    return model.pointOpportunity?.toResource() ?? null;
+    return model ? pointOpportunityModelToResource(model) : null;
   }
 }

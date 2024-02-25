@@ -80,16 +80,82 @@ export class PointEntryRepository {
     });
   }
 
-  createPointEntry(data: Prisma.PointEntryCreateInput) {
-    return this.prisma.pointEntry.create({ data });
+  getPointEntryPersonFrom(param: { id: number } | { uuid: string }) {
+    return this.prisma.pointEntry.findUnique({ where: param }).person();
+  }
+
+  getPointEntryOpportunity(param: { id: number } | { uuid: string }) {
+    return this.prisma.pointEntry
+      .findUnique({ where: param })
+      .pointOpportunity();
+  }
+
+  getPointEntryTeam(param: { id: number } | { uuid: string }) {
+    return this.prisma.pointEntry.findUnique({ where: param }).team();
+  }
+
+  createPointEntry({
+    points,
+    comment,
+    personParam,
+    opportunityParam,
+    teamParam,
+  }: {
+    points: number;
+    comment?: string | undefined | null;
+    personParam?: { id: number } | { uuid: string } | undefined | null;
+    opportunityParam?: { id: number } | { uuid: string } | undefined | null;
+    teamParam: { id: number } | { uuid: string };
+  }) {
+    return this.prisma.pointEntry.create({
+      data: {
+        points,
+        comment,
+        person: personParam != null ? { connect: personParam } : undefined,
+        pointOpportunity:
+          opportunityParam != null ? { connect: opportunityParam } : undefined,
+        team: { connect: teamParam },
+      },
+    });
   }
 
   updatePointEntry(
     param: UniquePointEntryParam,
-    data: Prisma.PointEntryUpdateInput
+    {
+      points,
+      comment,
+      personParam,
+      opportunityParam,
+      teamParam,
+    }: {
+      points?: number | undefined;
+      comment?: string | undefined | null;
+      personParam?: { id: number } | { uuid: string } | undefined | null;
+      opportunityParam?: { id: number } | { uuid: string } | undefined | null;
+      teamParam?: { id: number } | { uuid: string } | undefined;
+    }
   ) {
     try {
-      return this.prisma.pointEntry.update({ where: param, data });
+      return this.prisma.pointEntry.update({
+        where: param,
+        data: {
+          points,
+          comment,
+          person:
+            personParam === null
+              ? { disconnect: true }
+              : personParam === undefined
+              ? undefined
+              : { connect: personParam },
+          pointOpportunity:
+            opportunityParam === null
+              ? { disconnect: true }
+              : opportunityParam === undefined
+              ? undefined
+              : { connect: opportunityParam },
+          team: teamParam === undefined ? undefined : { connect: teamParam },
+        },
+      });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

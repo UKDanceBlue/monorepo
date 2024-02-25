@@ -1,3 +1,4 @@
+import type { PointOpportunityType } from "@prisma/client";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 import { Service } from "typedi";
@@ -80,16 +81,67 @@ export class PointOpportunityRepository {
     });
   }
 
-  createPointOpportunity(data: Prisma.PointOpportunityCreateInput) {
-    return this.prisma.pointOpportunity.create({ data });
+  getEventForPointOpportunity(param: UniquePointOpportunityParam) {
+    return this.prisma.pointOpportunity
+      .findUnique({
+        where: param,
+      })
+      .event();
+  }
+
+  createPointOpportunity({
+    name,
+    type,
+    eventParam,
+    opportunityDate,
+  }: {
+    name: string;
+    type: PointOpportunityType;
+    eventParam?: { id: number } | { uuid: string } | undefined | null;
+    opportunityDate?: Date | undefined | null;
+  }) {
+    return this.prisma.pointOpportunity.create({
+      data: {
+        name,
+        type,
+        event: eventParam
+          ? {
+              connect: eventParam,
+            }
+          : undefined,
+        opportunityDate,
+      },
+    });
   }
 
   updatePointOpportunity(
     param: UniquePointOpportunityParam,
-    data: Prisma.PointOpportunityUpdateInput
+    {
+      name,
+      type,
+      eventParam,
+      opportunityDate,
+    }: {
+      name?: string | undefined;
+      type?: PointOpportunityType | undefined;
+      eventParam?: { id: number } | { uuid: string } | undefined | null;
+      opportunityDate?: Date | undefined | null;
+    }
   ) {
     try {
-      return this.prisma.pointOpportunity.update({ where: param, data });
+      return this.prisma.pointOpportunity.update({
+        where: param,
+        data: {
+          name,
+          type,
+          event: eventParam
+            ? {
+                connect: eventParam,
+              }
+            : undefined,
+          opportunityDate,
+        },
+      });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
