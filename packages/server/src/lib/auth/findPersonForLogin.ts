@@ -1,4 +1,4 @@
-import type { AuthSource, Person, PrismaClient } from "@prisma/client";
+import type { AuthSource, PrismaClient } from "@prisma/client";
 import type { RoleResource } from "@ukdanceblue/common";
 import { MembershipPositionType } from "@ukdanceblue/common";
 
@@ -24,16 +24,19 @@ export async function findPersonForLogin(
   },
   memberOf?: (string | number)[],
   captainOf?: (string | number)[]
-): Promise<[Person, boolean]> {
+) {
   logger.debug(`Looking for person with auth IDs: ${JSON.stringify(authIds)}`);
   // TODO: pick specific values of authIds to search for, instead of all of them at once
-  let currentPerson: Person | null = null;
+  let currentPerson;
   let created = false;
 
   // If we have a UUID, search for an existing person with that UUID
   if (userData.uuid) {
     currentPerson = await client.person.findUnique({
       where: { uuid: userData.uuid },
+      include: {
+        authIdPairs: true,
+      },
     });
     if (currentPerson) {
       logger.debug(`Found person by uuid: ${currentPerson.uuid}`);
@@ -48,6 +51,9 @@ export async function findPersonForLogin(
     // eslint-disable-next-line no-await-in-loop
     currentPerson = await client.person.findFirst({
       where: { authIdPairs: { some: { source, value: id } } },
+      include: {
+        authIdPairs: true,
+      },
     });
     if (currentPerson) {
       logger.debug(`Found person by ${source}: ${currentPerson.uuid}`);
@@ -59,6 +65,9 @@ export async function findPersonForLogin(
   if (!currentPerson && userData.linkblue) {
     currentPerson = await client.person.findUnique({
       where: { linkblue: userData.linkblue },
+      include: {
+        authIdPairs: true,
+      },
     });
     if (currentPerson) {
       logger.debug(`Found person by linkblue: ${currentPerson.uuid}`);
@@ -67,6 +76,9 @@ export async function findPersonForLogin(
   if (!currentPerson && userData.email) {
     currentPerson = await client.person.findUnique({
       where: { email: userData.email },
+      include: {
+        authIdPairs: true,
+      },
     });
     if (currentPerson) {
       logger.debug(`Found person by email: ${currentPerson.uuid}`);
@@ -179,11 +191,14 @@ export async function findPersonForLogin(
           },
         },
       },
+      include: {
+        authIdPairs: true,
+      },
     });
 
     logger.info(`Created new person: ${currentPerson.uuid}`);
 
     created = true;
   }
-  return [currentPerson, created];
+  return [currentPerson, created] as const;
 }
