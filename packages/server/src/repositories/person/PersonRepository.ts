@@ -2,14 +2,17 @@ import type { Person } from "@prisma/client";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type {
   AuthIdPairResource,
-  AuthSource,
   CommitteeIdentifier,
   CommitteeRole,
-  MembershipPositionType,
   RoleResource,
   SortDirection,
 } from "@ukdanceblue/common";
-import { DbRole } from "@ukdanceblue/common";
+import {
+  AuthSource,
+  DbRole,
+  MembershipPositionType,
+  TeamLegacyStatus,
+} from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import { findPersonForLogin } from "../../lib/auth/findPersonForLogin.js";
@@ -329,5 +332,67 @@ export class PersonRepository {
         throw error;
       }
     }
+  }
+
+  async getDemoUser() {
+    return this.prisma.person.upsert({
+      where: {
+        authIdPairs: {
+          some: {
+            source: AuthSource.Demo,
+            value: "demo-user",
+          },
+        },
+        email: "demo--user@dancblue.org",
+      },
+      create: {
+        email: "demo--user@dancblue.org",
+        name: "Demo User",
+        linkblue: "demo-user",
+        memberships: {
+          create: {
+            team: {
+              connectOrCreate: {
+                where: {
+                  persistentIdentifier: "demo-team",
+                  legacyStatus: TeamLegacyStatus.DemoTeam,
+                },
+                create: {
+                  name: "Demo Team",
+                  type: "Spirit",
+                  marathonYear: "DB24",
+                  legacyStatus: TeamLegacyStatus.DemoTeam,
+                  persistentIdentifier: "demo-team",
+                },
+              },
+            },
+            position: MembershipPositionType.Captain,
+          },
+        },
+        pointEntries: {
+          create: {
+            team: {
+              connect: {
+                persistentIdentifier: "demo-team",
+              },
+            },
+            points: 1,
+            comment: "Demo point",
+          },
+        },
+      },
+      update: {
+        email: "demo--user@dancblue.org",
+        name: "Demo User",
+        linkblue: "demo-user",
+      },
+      include: {
+        memberships: {
+          include: {
+            team: true,
+          },
+        },
+      },
+    });
   }
 }
