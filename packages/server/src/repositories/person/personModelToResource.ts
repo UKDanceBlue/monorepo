@@ -1,7 +1,12 @@
 import type { Person } from "@prisma/client";
+import type { DbRole } from "@ukdanceblue/common";
 import { PersonResource, RoleResource } from "@ukdanceblue/common";
 
-export function personModelToResource(person: Person): PersonResource {
+export function personModelToResource(
+  person: Person & {
+    dbRole: DbRole;
+  }
+): PersonResource {
   return PersonResource.init({
     uuid: person.uuid,
     name: person.name,
@@ -12,7 +17,6 @@ export function personModelToResource(person: Person): PersonResource {
       committeeRole: person.committeeRole,
       committeeIdentifier: person.committeeName,
     }),
-
     createdAt: person.createdAt,
     updatedAt: person.updatedAt,
   });

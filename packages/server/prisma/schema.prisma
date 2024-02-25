@@ -144,7 +144,6 @@ model Person {
   name          String?
   email         String         @unique(map: "people_email_unique")
   linkblue      String?        @unique(map: "people_linkblue_unique")
-  dbRole        DbRole         @default(None) @map("db_role")
   committeeRole CommitteeRole? @map("committee_role")
   committeeName CommitteeName? @map("committee_name")
   authIdPairs   AuthIdPair[]

@@ -7,11 +7,7 @@ import type {
   RoleResource,
   SortDirection,
 } from "@ukdanceblue/common";
-import {
-  DbRole,
-  MembershipPositionType,
-  TeamLegacyStatus,
-} from "@ukdanceblue/common";
+import { MembershipPositionType, TeamLegacyStatus } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import { findPersonForLogin } from "../../lib/auth/findPersonForLogin.js";
@@ -22,7 +18,7 @@ import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
 const personStringKeys = ["name", "email", "linkblue"] as const;
 type PersonStringKey = (typeof personStringKeys)[number];
 
-const personOneOfKeys = ["dbRole", "committeeRole", "committeeName"] as const;
+const personOneOfKeys = ["committeeRole", "committeeName"] as const;
 type PersonOneOfKey = (typeof personOneOfKeys)[number];
 
 const personDateKeys = ["createdAt", "updatedAt"] as const;
@@ -54,7 +50,7 @@ export class PersonRepository {
     },
     memberOf?: (string | number)[],
     captainOf?: (string | number)[]
-  ): Promise<[Person, boolean]> {
+  ) {
     return findPersonForLogin(
       this.prisma,
       authIds,
@@ -189,7 +185,6 @@ export class PersonRepository {
     name,
     email,
     linkblue,
-    dbRole,
     committeeRole,
     committeeName,
     authIds,
@@ -197,7 +192,6 @@ export class PersonRepository {
     name?: string | null;
     email: string;
     linkblue?: string | null;
-    dbRole?: DbRole | null;
     committeeRole?: CommitteeRole | null;
     committeeName?: CommitteeIdentifier | null;
     authIds?: AuthIdPairResource<Exclude<AuthSource, "None">>[] | null;
@@ -207,7 +201,6 @@ export class PersonRepository {
         name,
         email,
         linkblue,
-        dbRole: dbRole ?? DbRole.None,
         committeeRole,
         committeeName,
         authIdPairs: authIds
@@ -233,7 +226,6 @@ export class PersonRepository {
     name,
     email,
     linkblue,
-    dbRole,
     committeeRole,
     committeeName,
     authIds,
@@ -241,7 +233,6 @@ export class PersonRepository {
     name?: string | null;
     email?: string;
     linkblue?: string | null;
-    dbRole?: DbRole;
     committeeRole?: CommitteeRole | null;
     committeeName?: CommitteeIdentifier | null;
     authIds?: AuthIdPairResource<Exclude<AuthSource, "None">>[];
@@ -254,7 +245,7 @@ export class PersonRepository {
         id: number;
         uuid?: string;
       }
-  )): Promise<Person | null> {
+  )) {
     let personId: number;
     if (id != null && uuid == null) {
       personId = id;
@@ -278,7 +269,6 @@ export class PersonRepository {
           name,
           email,
           linkblue,
-          dbRole,
           committeeRole,
           committeeName,
           authIdPairs: authIds
