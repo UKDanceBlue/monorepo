@@ -1220,7 +1220,7 @@ type Query {
     marathonYear: [String!]
 
     """The numeric filters to apply to the query"""
-    numericFilters: [TeamResolverKeyedNumericFilterItem!]
+    numericFilters: Void
 
     """The one-of filters to apply to the query"""
     oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]
@@ -1249,7 +1249,7 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [TeamResolverKeyedStringFilterItem!]
     type: [TeamType!]
-    visibility: [DbRole!]
+    visibility: [DbRole!] @deprecated(reason: "Use type")
   ): ListTeamsResponse!
 }
 
@@ -1380,7 +1380,6 @@ enum TeamResolverAllKeys {
   legacyStatus
   marathonYear
   name
-  totalPoints
   type
 }
 
@@ -1392,20 +1391,6 @@ input TeamResolverKeyedIsNullFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-}
-
-input TeamResolverKeyedNumericFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: TeamResolverNumericFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: Float!
 }
 
 input TeamResolverKeyedOneOfFilterItem {
@@ -1431,10 +1416,6 @@ input TeamResolverKeyedStringFilterItem {
   """
   negate: Boolean = false
   value: String!
-}
-
-enum TeamResolverNumericFilterKeys {
-  totalPoints
 }
 
 enum TeamResolverOneOfFilterKeys {
