@@ -1,10 +1,24 @@
-import type { AuthSource, PrismaClient } from "@prisma/client";
+import type { AuthSource, Prisma, PrismaClient } from "@prisma/client";
 import type { RoleResource } from "@ukdanceblue/common";
 import { MembershipPositionType } from "@ukdanceblue/common";
 
 import { logger } from "../logging/logger.js";
 
 // TODO: rework this whole thing, it's pretty boated and confusing
+
+const include = {
+  authIdPairs: true,
+  memberships: {
+    select: {
+      position: true,
+      team: {
+        select: {
+          uuid: true,
+        },
+      },
+    },
+  },
+} satisfies Prisma.PersonInclude;
 
 /**
  * Searches the database for a user with the given auth IDs or user data, or creates a new user if none is found
@@ -34,9 +48,7 @@ export async function findPersonForLogin(
   if (userData.uuid) {
     currentPerson = await client.person.findUnique({
       where: { uuid: userData.uuid },
-      include: {
-        authIdPairs: true,
-      },
+      include,
     });
     if (currentPerson) {
       logger.debug(`Found person by uuid: ${currentPerson.uuid}`);
@@ -51,9 +63,7 @@ export async function findPersonForLogin(
     // eslint-disable-next-line no-await-in-loop
     currentPerson = await client.person.findFirst({
       where: { authIdPairs: { some: { source, value: id } } },
-      include: {
-        authIdPairs: true,
-      },
+      include,
     });
     if (currentPerson) {
       logger.debug(`Found person by ${source}: ${currentPerson.uuid}`);
@@ -65,9 +75,7 @@ export async function findPersonForLogin(
   if (!currentPerson && userData.linkblue) {
     currentPerson = await client.person.findUnique({
       where: { linkblue: userData.linkblue },
-      include: {
-        authIdPairs: true,
-      },
+      include,
     });
     if (currentPerson) {
       logger.debug(`Found person by linkblue: ${currentPerson.uuid}`);
@@ -76,9 +84,7 @@ export async function findPersonForLogin(
   if (!currentPerson && userData.email) {
     currentPerson = await client.person.findUnique({
       where: { email: userData.email },
-      include: {
-        authIdPairs: true,
-      },
+      include,
     });
     if (currentPerson) {
       logger.debug(`Found person by email: ${currentPerson.uuid}`);
@@ -191,9 +197,7 @@ export async function findPersonForLogin(
           },
         },
       },
-      include: {
-        authIdPairs: true,
-      },
+      include,
     });
 
     logger.info(`Created new person: ${currentPerson.uuid}`);
