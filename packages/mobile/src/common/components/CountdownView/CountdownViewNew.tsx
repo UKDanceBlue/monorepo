@@ -43,7 +43,7 @@ export const CountdownViewNew = ({ endTime }: { endTime: number }) => {
     };
   }, [endTime]);
 
-  console.log(countdownDisplayDuration.toObject());
+  // console.log(countdownDisplayDuration.toObject());
 
   const countdown = countdownDisplayDuration.months > 0 ?
                     (<>
