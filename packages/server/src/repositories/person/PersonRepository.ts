@@ -18,7 +18,7 @@ import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
 const personStringKeys = ["name", "email", "linkblue"] as const;
 type PersonStringKey = (typeof personStringKeys)[number];
 
-const personOneOfKeys = ["committeeRole", "committeeName"] as const;
+const personOneOfKeys = ["committeeRole", "committeeName", "dbRole"] as const;
 type PersonOneOfKey = (typeof personOneOfKeys)[number];
 
 const personDateKeys = ["createdAt", "updatedAt"] as const;
@@ -32,6 +32,16 @@ export type PersonFilters = FilterItems<
   PersonOneOfKey,
   PersonStringKey
 >;
+
+export type PersonOrderKeys =
+  | "name"
+  | "email"
+  | "linkblue"
+  | "committeeRole"
+  | "committeeName"
+  | "dbRole"
+  | "createdAt"
+  | "updatedAt";
 
 @Service()
 export class PersonRepository {
@@ -111,7 +121,10 @@ export class PersonRepository {
     take,
   }: {
     filters?: readonly PersonFilters[] | undefined | null;
-    order?: readonly [key: string, sort: SortDirection][] | undefined | null;
+    order?:
+      | readonly [key: PersonOrderKeys, sort: SortDirection][]
+      | undefined
+      | null;
     skip?: number | undefined | null;
     take?: number | undefined | null;
   }): Promise<Person[]> {

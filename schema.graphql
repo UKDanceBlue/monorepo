@@ -736,6 +736,7 @@ enum NumericComparator {
 enum PersonResolverAllKeys {
   committeeName
   committeeRole
+  dbRole
   email
   linkblue
   name
@@ -779,6 +780,7 @@ input PersonResolverKeyedStringFilterItem {
 enum PersonResolverOneOfFilterKeys {
   committeeName
   committeeRole
+  dbRole
 }
 
 enum PersonResolverStringFilterKeys {
@@ -885,7 +887,7 @@ input PointOpportunityResolverKeyedIsNullFilterItem {
 
 input PointOpportunityResolverKeyedOneOfFilterItem {
   """The field to filter on"""
-  field: Void!
+  field: PointOpportunityResolverOneOfFilterKeys!
 
   """
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
@@ -908,9 +910,12 @@ input PointOpportunityResolverKeyedStringFilterItem {
   value: String!
 }
 
+enum PointOpportunityResolverOneOfFilterKeys {
+  type
+}
+
 enum PointOpportunityResolverStringFilterKeys {
   name
-  type
 }
 
 type PointOpportunityResource {

@@ -7,10 +7,13 @@ import {
   stringFilterToPrisma,
 } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import type { PersonFilters } from "./PersonRepository.js";
+import type { PersonFilters, PersonOrderKeys } from "./PersonRepository.js";
 
 export function buildPersonOrder(
-  order: readonly [key: string, sort: SortDirection][] | null | undefined
+  order:
+    | readonly [key: PersonOrderKeys, sort: SortDirection][]
+    | null
+    | undefined
 ) {
   const orderBy: Prisma.PersonOrderByWithRelationInput = {};
 

@@ -75,16 +75,23 @@ class DeletePersonResponse extends AbstractGraphQLOkResponse<never> {}
 
 @ArgsType()
 class ListPeopleArgs extends FilteredListQueryArgs<
-  "name" | "email" | "linkblue" | "committeeRole" | "committeeName",
+  "name" | "email" | "linkblue" | "committeeRole" | "committeeName" | "dbRole",
   "name" | "email" | "linkblue",
-  "committeeRole" | "committeeName",
+  "committeeRole" | "committeeName" | "dbRole",
   never,
   never,
   never
 >("PersonResolver", {
-  all: ["name", "email", "linkblue", "committeeRole", "committeeName"],
+  all: [
+    "name",
+    "email",
+    "linkblue",
+    "committeeRole",
+    "committeeName",
+    "dbRole",
+  ],
   string: ["name", "email", "linkblue"],
-  oneOf: ["committeeRole", "committeeName"],
+  oneOf: ["committeeRole", "committeeName", "dbRole"],
 }) {}
 @InputType()
 class CreatePersonInput {
