@@ -7,23 +7,24 @@ export interface AuditLogger extends Logger {
   /**
    * Log a message with the level `insecure`
    *
-   * Use this level for an action that can be taken
-   * by an arbitrary user, but is notable
+   * Use this level for common activities that
+   * influence users such as creating, updating,
+   * or deleting a resource
    */
-  insecure: LeveledLogMethod;
+  normal: LeveledLogMethod;
   /**
    * Log a message with the level `secure`
    *
-   * Use this level for an action that can only be
-   * taken by an authorized user (i.e. a committee
-   * member or an admin)
+   * Use this level for more sensitive activities
+   * such as deleting a user or modifying a team
    */
-  secure: LeveledLogMethod;
+  sensitive: LeveledLogMethod;
   /**
    * Log a message with the level `secure`
    *
    * Use this level for an action that might break
-   * something or is otherwise dangerous
+   * something or is otherwise dangerous such as
+   * changing configurations
    */
   dangerous: LeveledLogMethod;
   /**
@@ -81,8 +82,8 @@ export const auditLogger = createLogger({
   levels: {
     info: 0,
     dangerous: 2,
-    secure: 4,
-    insecure: 6,
+    sensitive: 4,
+    normal: 6,
   },
 }) as AuditLogger;
 
