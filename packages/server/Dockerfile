@@ -21,11 +21,14 @@ ENV MS_OIDC_URL="https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb
 # ENV MS_CLIENT_ID=""
 # ENV MS_CLIENT_SECRET=""
 
-COPY --chown=node:node yarn.lock /app
-COPY --chown=node:node package.json /app
-COPY --chown=node:node node_modules /app/node_modules
-COPY --chown=node:node packages/server /app/packages/server
-COPY --chown=node:node packages/common /app/packages/common
+RUN mkdir -p /app/packages/server
+RUN mkdir -p /app/packages/common
+
+COPY yarn.lock /app/
+COPY package.json /app/
+COPY node_modules /app/
+COPY packages/server /app/packages/
+COPY packages/common /app/packages/
 
 WORKDIR /app/packages/server
 
