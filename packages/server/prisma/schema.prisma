@@ -1,6 +1,7 @@
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
+  binaryTargets   = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -218,7 +219,21 @@ model Team {
   @@map("teams")
 }
 
-// The contents of a notification
+view TeamsWithTotalPoints {
+  id                   Int              @id @unique
+  uuid                 String           @unique @db.Uuid
+  name                 String
+  type                 TeamType
+  legacyStatus         TeamLegacyStatus @map("legacystatus")
+  persistentIdentifier String?          @unique @map("persistentidentifier")
+  marathonYear         String           @map("marathonyear") @db.Char(4)
+  createdAt            DateTime         @map("createdat") @db.Timestamptz(6)
+  updatedAt            DateTime         @map("updatedat") @db.Timestamptz(6)
+  totalPoints          BigInt           @map("totalpoints")
+
+  @@map("teams_with_total_points")
+}
+
 model Notification {
   id                          Int                    @id @default(autoincrement())
   uuid                        String                 @unique(map: "notifications_uuid_unique") @default(uuid()) @db.Uuid
