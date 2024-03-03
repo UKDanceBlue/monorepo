@@ -1,6 +1,10 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import type { MarathonYearString, TeamType } from "@ukdanceblue/common";
-import { SortDirection, TeamLegacyStatus } from "@ukdanceblue/common";
+import type {
+  MarathonYearString,
+  SortDirection,
+  TeamType,
+} from "@ukdanceblue/common";
+import { TeamLegacyStatus } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
@@ -16,7 +20,7 @@ type TeamDateKey = (typeof teamDateKeys)[number];
 const teamIsNullKeys = [] as const;
 type TeamIsNullKey = (typeof teamIsNullKeys)[number];
 
-const teamNumericKeys = [] as const;
+const teamNumericKeys = ["totalPoints"] as const;
 type TeamNumericKey = (typeof teamNumericKeys)[number];
 
 const teamOneOfKeys = ["type", "marathonYear", "legacyStatus"] as const;
@@ -53,7 +57,7 @@ export class TeamRepository {
     return this.prisma.team.findUnique({ where: param });
   }
 
-  async listTeams({
+  listTeams({
     filters,
     order,
     skip,
@@ -78,7 +82,7 @@ export class TeamRepository {
     const where = buildTeamWhere(filters);
     const orderBy = buildTeamOrder(order);
 
-    const rows = await this.prisma.team.findMany({
+    return this.prisma.teamsWithTotalPoints.findMany({
       where: {
         type: type ? { in: type } : undefined,
         marathonYear: marathonYear ? { in: marathonYear } : undefined,
@@ -97,27 +101,6 @@ export class TeamRepository {
       skip: skip ?? undefined,
       take: take ?? undefined,
     });
-
-    const totalPointsOrder = order?.find(([key]) => key === "totalPoints");
-
-    return totalPointsOrder
-      ? (
-          await Promise.all(
-            rows.map((row) =>
-              this.getTotalTeamPoints({ id: row.id }).then((totalPoints) => ({
-                ...row,
-                totalPoints: totalPoints._sum.points ?? 0,
-              }))
-            )
-          )
-        )
-          // eslint-disable-next-line unicorn/no-await-expression-member
-          .sort((a, b) =>
-            totalPointsOrder[1] === SortDirection.ASCENDING
-              ? a.totalPoints - b.totalPoints
-              : b.totalPoints - a.totalPoints
-          )
-      : rows;
   }
 
   countTeams({
@@ -127,7 +110,7 @@ export class TeamRepository {
   }) {
     const where = buildTeamWhere(filters);
 
-    return this.prisma.team.count({
+    return this.prisma.teamsWithTotalPoints.count({
       where,
     });
   }
