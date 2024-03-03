@@ -126,7 +126,7 @@ export class PointEntryResolver {
           ]) ?? [],
         skip:
           query.page != null && query.pageSize != null
-            ? query.page * query.pageSize
+            ? (query.page - 1) * query.pageSize
             : null,
         take: query.pageSize,
       }),

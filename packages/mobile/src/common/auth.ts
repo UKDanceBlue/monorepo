@@ -12,7 +12,7 @@ export const DANCEBLUE_TOKEN_KEY = "danceblue-auth-token";
 function getLoginUrl(source: AuthSource): string {
   let urlComponent = "";
   switch (source) {
-    case AuthSource.UkyLinkblue: {
+    case AuthSource.LinkBlue: {
       urlComponent = "login";
       break;
     }

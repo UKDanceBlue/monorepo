@@ -242,13 +242,20 @@ export class PersonRepository {
       committeeRole,
       committeeName,
       authIds,
+      memberOf,
+      captainOf,
     }: {
-      name?: string | null;
-      email?: string;
-      linkblue?: string | null;
-      committeeRole?: CommitteeRole | null;
-      committeeName?: CommitteeIdentifier | null;
-      authIds?: { source: Exclude<AuthSource, "None">; value: string }[];
+      name?: string | undefined | null;
+      email?: string | undefined;
+      linkblue?: string | undefined | null;
+      committeeRole?: CommitteeRole | undefined | null;
+      committeeName?: CommitteeIdentifier | undefined | null;
+      authIds?:
+        | { source: Exclude<AuthSource, "None">; value: string }[]
+        | undefined
+        | null;
+      memberOf?: ({ uuid: string } | { id: number })[] | undefined | null;
+      captainOf?: ({ uuid: string } | { id: number })[] | undefined | null;
     }
   ) {
     let personId: number;
@@ -266,6 +273,33 @@ export class PersonRepository {
     } else {
       throw new Error("Must provide either UUID or ID");
     }
+
+    const [memberOfIds, captainOfIds] = await Promise.all([
+      memberOf
+        ? Promise.all(
+            memberOf.map((team) =>
+              this.prisma.team
+                .findUnique({
+                  where: team,
+                  select: { id: true },
+                })
+                .then((team) => team?.id)
+            )
+          )
+        : Promise.resolve(null),
+      captainOf
+        ? Promise.all(
+            captainOf.map((team) =>
+              this.prisma.team
+                .findUnique({
+                  where: team,
+                  select: { id: true },
+                })
+                .then((team) => team?.id)
+            )
+          )
+        : Promise.resolve(null),
+    ]);
 
     try {
       return await this.prisma.person.update({
@@ -297,6 +331,56 @@ export class PersonRepository {
                 }),
               }
             : undefined,
+          memberships:
+            // TODO: this nesting is nightmarish and should be refactored
+            memberOf || captainOf
+              ? {
+                  connectOrCreate: [
+                    ...(memberOfIds
+                      ?.filter(
+                        (id): id is Exclude<typeof id, undefined> => id != null
+                      )
+                      .map(
+                        (
+                          teamId
+                        ): Prisma.MembershipCreateOrConnectWithoutPersonInput => {
+                          return {
+                            where: { personId_teamId: { personId, teamId } },
+                            create: {
+                              position: MembershipPositionType.Member,
+                              team: {
+                                connect: {
+                                  id: teamId,
+                                },
+                              },
+                            },
+                          };
+                        }
+                      ) ?? []),
+                    ...(captainOfIds
+                      ?.filter(
+                        (id): id is Exclude<typeof id, undefined> => id != null
+                      )
+                      .map(
+                        (
+                          teamId
+                        ): Prisma.MembershipCreateOrConnectWithoutPersonInput => {
+                          return {
+                            where: { personId_teamId: { personId, teamId } },
+                            create: {
+                              position: MembershipPositionType.Captain,
+                              team: {
+                                connect: {
+                                  id: teamId,
+                                },
+                              },
+                            },
+                          };
+                        }
+                      ) ?? []),
+                  ],
+                }
+              : undefined,
         },
       });
     } catch (error) {

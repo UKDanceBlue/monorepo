@@ -1,7 +1,14 @@
 import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
+import { arrayToBase64String } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
-import { randomUUID } from "expo-crypto";
+import {
+  CryptoDigestAlgorithm,
+  CryptoEncoding,
+  digestStringAsync,
+  getRandomBytesAsync,
+  randomUUID,
+} from "expo-crypto";
 import { isDevice, osName } from "expo-device";
 import type { PermissionStatus } from "expo-notifications";
 import {
@@ -37,6 +44,9 @@ const setDeviceQuery = graphql(/* GraphQL */ `
 const uuidStoreKey = __DEV__
   ? "danceblue.device-uuid.dev"
   : "danceblue.device-uuid";
+const verifierStoreKey = __DEV__
+  ? "danceblue.device-verifier.dev"
+  : "danceblue.device-verifier";
 
 interface DeviceData {
   deviceId: string | null;
@@ -67,6 +77,22 @@ async function obtainUuid() {
     keychainAccessible: AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
   });
   return uuid;
+}
+
+async function obtainVerifier(uuid: string): Promise<string> {
+  // Get verifier from async storage
+  let verifierString = await getItemAsync(verifierStoreKey, {
+    keychainAccessible: AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
+  });
+
+  if (!verifierString) {
+    const randomString = arrayToBase64String(await getRandomBytesAsync(32));
+    verifierString = `${uuid}:${randomString}`;
+  }
+
+  return digestStringAsync(CryptoDigestAlgorithm.SHA512, verifierString, {
+    encoding: CryptoEncoding.BASE64,
+  });
 }
 
 async function registerPushNotifications() {
@@ -152,8 +178,8 @@ export const DeviceDataProvider = ({
     setLoading(true);
 
     obtainUuid()
-      .then(async (uuid) => {
-        console.log("uuid", uuid);
+      .then(async (uuid) => ({ uuid, verifier: await obtainVerifier(uuid) }))
+      .then(async ({ uuid, verifier }) => {
         setDeviceId(uuid);
         try {
           const { token, notificationPermissionsGranted } =
@@ -164,6 +190,7 @@ export const DeviceDataProvider = ({
               deviceId: uuid,
               expoPushToken: token?.data ?? null,
               lastUserId: personUuid,
+              verifier,
             },
           });
           if (error) {
