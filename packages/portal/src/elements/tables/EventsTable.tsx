@@ -12,7 +12,7 @@ import {
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
 import { Button, Flex, Table } from "antd";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useQuery } from "urql";
 
 const EventsTableFragment = graphql(/* GraphQL */ `
@@ -87,17 +87,20 @@ export const EventsTable = () => {
   );
 
   const [hidePast, setHidePast] = useState(false);
-  useEffect(() => {
+
+  const toggleHidePast = useCallback(() => {
     if (hidePast) {
       updateFilter("occurrenceStart", {
         field: "occurrenceStart",
         comparison: "GREATER_THAN_OR_EQUAL_TO",
         value: new Date().toISOString(),
       });
+      setHidePast(false);
     } else {
       clearFilter("occurrenceStart");
+      setHidePast(true);
     }
-  }, [clearFilter, hidePast, pushSorting, updateFilter]);
+  }, [clearFilter, hidePast, updateFilter]);
 
   const [{ fetching, error, data: eventsDocument }] = useQuery({
     query: eventsTableQueryDocument,
@@ -118,7 +121,7 @@ export const EventsTable = () => {
   return (
     <>
       <div style={{ marginBottom: "1rem" }}>
-        <Button onClick={() => setHidePast(!hidePast)}>
+        <Button onClick={() => toggleHidePast()}>
           {hidePast ? "Show Past" : "Hide Past"}
         </Button>
       </div>
