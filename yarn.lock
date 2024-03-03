@@ -7473,50 +7473,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sequelize/core@npm:7.0.0-alpha.23":
-  version: 7.0.0-alpha.23
-  resolution: "@sequelize/core@npm:7.0.0-alpha.23"
-  dependencies:
-    "@types/debug": ^4.1.7
-    "@types/validator": ^13.7.5
-    dayjs: ^1.11.5
-    debug: ^4.3.4
-    dottie: ^2.0.2
-    fast-glob: ^3.2.12
-    inflection: ^2.0.0
-    lodash: ^4.17.21
-    pg-connection-string: ^2.5.0
-    retry-as-promised: ^7.0.3
-    semver: ^7.3.7
-    sequelize-pool: ^8.0.0
-    toposort-class: ^1.0.1
-    type-fest: ^2.18.1
-    uuid: ^9.0.0
-    validator: ^13.7.0
-    wkx: ^0.5.0
-  peerDependenciesMeta:
-    ibm_db:
-      optional: true
-    mariadb:
-      optional: true
-    mysql2:
-      optional: true
-    odbc:
-      optional: true
-    pg:
-      optional: true
-    pg-hstore:
-      optional: true
-    snowflake-sdk:
-      optional: true
-    sqlite3:
-      optional: true
-    tedious:
-      optional: true
-  checksum: 9385dcfcc3e8cb0976dd95d4dcc6ceec4666577de01970aacab5e624acddd4f3a3b6347c61157ab226d9bf9abc4714a71de1687cefa8bc33c44c3f9ea206e2e0
-  languageName: node
-  linkType: hard
-
 "@shopify/react-native-skia@npm:0.1.221":
   version: 0.1.221
   resolution: "@shopify/react-native-skia@npm:0.1.221"
@@ -8114,15 +8070,6 @@ __metadata:
   dependencies:
     "@types/ms": "*"
   checksum: e88ee8b19d106f33eb0d3bc58bacff9702e98d821fd1ebd1de8942e6b97419e19a1ccf39370f1764a1dc66f79fd4619f3412e1be6eeb9f0b76412f5ffe4ead93
-  languageName: node
-  linkType: hard
-
-"@types/debug@npm:^4.1.7":
-  version: 4.1.8
-  resolution: "@types/debug@npm:4.1.8"
-  dependencies:
-    "@types/ms": "*"
-  checksum: a9a9bb40a199e9724aa944e139a7659173a9b274798ea7efbc277cb084bc37d32fc4c00877c3496fac4fed70a23243d284adb75c00b5fdabb38a22154d18e5df
   languageName: node
   linkType: hard
 
@@ -8786,7 +8733,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/validator@npm:^13.7.10, @types/validator@npm:^13.7.5":
+"@types/validator@npm:^13.7.10":
   version: 13.11.1
   resolution: "@types/validator@npm:13.11.1"
   checksum: 49e8b611e0b9a0cd645534fd5eeacc64c14ac2f11d7e91d3d8b891f7cf730bccb8a4b7466ac67f4c11e16531bc211a547b97314ca977dd5e58468a77bd0da735
@@ -9266,7 +9213,6 @@ __metadata:
     "@koa/cors": ^4.0.0
     "@koa/router": ^12.0.1
     "@prisma/client": ^5.8.0
-    "@sequelize/core": 7.0.0-alpha.23
     "@types/body-parser": ^1.19.2
     "@types/cookie-parser": ^1.4.3
     "@types/cors": ^2.8.13
@@ -12673,7 +12619,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dayjs@npm:^1.11.5, dayjs@npm:^1.8.15":
+"dayjs@npm:^1.8.15":
   version: 1.11.9
   resolution: "dayjs@npm:1.11.9"
   checksum: a4844d83dc87f921348bb9b1b93af851c51e6f71fa259604809cfe1b49d1230e6b0212dab44d1cb01994c096ad3a77ea1cf18fa55154da6efcc9d3610526ac38
@@ -13178,13 +13124,6 @@ __metadata:
   version: 16.3.1
   resolution: "dotenv@npm:16.3.1"
   checksum: 15d75e7279018f4bafd0ee9706593dd14455ddb71b3bcba9c52574460b7ccaf67d5cf8b2c08a5af1a9da6db36c956a04a1192b101ee102a3e0cf8817bbcf3dfd
-  languageName: node
-  linkType: hard
-
-"dottie@npm:^2.0.2":
-  version: 2.0.6
-  resolution: "dottie@npm:2.0.6"
-  checksum: 4c778df9dc631a1108a32ef390916836814999a7411d10883f4151bd49c9c6934dc329b3f50fc7692849aa75ba87dba880fd54be501a3b39a6b9c23d6f772a09
   languageName: node
   linkType: hard
 
@@ -15095,7 +15034,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^3.2.12, fast-glob@npm:^3.2.5, fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.1":
+"fast-glob@npm:^3.2.5, fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.1":
   version: 3.3.1
   resolution: "fast-glob@npm:3.3.1"
   dependencies:
@@ -16756,13 +16695,6 @@ __metadata:
   version: 2.0.0
   resolution: "inflation@npm:2.0.0"
   checksum: a0494871b12275afdef9e2710ee1af1e0fc642b04613a9be69c05ef8b5e9627f3bd7d358a937fa47aa20235ee7313a4f30255048533add0ad4918beb918a586e
-  languageName: node
-  linkType: hard
-
-"inflection@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "inflection@npm:2.0.1"
-  checksum: bb095b495e10a77afc043cc349ae0f7c8c53e4d1fbcd7781111c18d17bde87ce31ea08bd883774bcbb2ff50c301dd4835b5448c80eb50b5e4e080165b6030f3b
   languageName: node
   linkType: hard
 
@@ -22018,7 +21950,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-connection-string@npm:^2.5.0, pg-connection-string@npm:^2.6.2":
+"pg-connection-string@npm:^2.6.2":
   version: 2.6.2
   resolution: "pg-connection-string@npm:2.6.2"
   checksum: 22265882c3b6f2320785378d0760b051294a684989163d5a1cde4009e64e84448d7bf67d9a7b9e7f69440c3ee9e2212f9aa10dd17ad6773f6143c6020cebbcb5
@@ -24385,13 +24317,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"retry-as-promised@npm:^7.0.3":
-  version: 7.0.4
-  resolution: "retry-as-promised@npm:7.0.4"
-  checksum: 2b0dcddb06649d42b1384ec1f933c7cb4461939c28004460b0c4be0c8ae16cabaed2411aa5d46e734a320f33f4a1d480078a19b97c743c754bd32e896b3f8ea2
-  languageName: node
-  linkType: hard
-
 "retry@npm:0.13.1":
   version: 0.13.1
   resolution: "retry@npm:0.13.1"
@@ -24799,13 +24724,6 @@ __metadata:
     tslib: ^2.0.3
     upper-case-first: ^2.0.2
   checksum: 3cfe6c0143e649132365695706702d7f729f484fa7b25f43435876efe7af2478243eefb052bacbcce10babf9319fd6b5b6bc59b94c80a1c819bcbb40651465d5
-  languageName: node
-  linkType: hard
-
-"sequelize-pool@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "sequelize-pool@npm:8.0.0"
-  checksum: 075139f7edeff103a42ed18e718d8f9c57ae7fda0184f3396e87fea4900ab35dba4026938098d4ca96aa52ae118293353a5f11affe09ddd03c0ac40849699498
   languageName: node
   linkType: hard
 
@@ -26397,13 +26315,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"toposort-class@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "toposort-class@npm:1.0.1"
-  checksum: c5e3229d4899b23350b09ed26cfb7a28aadd0889550625f1bcadc0da266cdf2790fb0ccc3e92be93ba6ad64f57bc2fd1ab94446cb4ae83054dab263753157f5f
-  languageName: node
-  linkType: hard
-
 "totalist@npm:^3.0.0":
   version: 3.0.1
   resolution: "totalist@npm:3.0.1"
@@ -26708,13 +26619,6 @@ __metadata:
   version: 0.8.1
   resolution: "type-fest@npm:0.8.1"
   checksum: d61c4b2eba24009033ae4500d7d818a94fd6d1b481a8111612ee141400d5f1db46f199c014766b9fa9b31a6a7374d96fc748c6d688a78a3ce5a33123839becb7
-  languageName: node
-  linkType: hard
-
-"type-fest@npm:^2.18.1":
-  version: 2.19.0
-  resolution: "type-fest@npm:2.19.0"
-  checksum: a4ef07ece297c9fba78fc1bd6d85dff4472fe043ede98bd4710d2615d15776902b595abf62bd78339ed6278f021235fb28a96361f8be86ed754f778973a0d278
   languageName: node
   linkType: hard
 
@@ -27952,15 +27856,6 @@ __metadata:
     triple-beam: ^1.3.0
     winston-transport: ^4.5.0
   checksum: 47df0361220d12b46d1b3c98a1c380a3718321739d527a182ce7984fc20715e5b0b55db0bcd3fd076d1b1d3261903b890b053851cfd4bc028bda7951fa8ca2e0
-  languageName: node
-  linkType: hard
-
-"wkx@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "wkx@npm:0.5.0"
-  dependencies:
-    "@types/node": "*"
-  checksum: 47b27387de81fbd077528c1c11be996bf5a6dbeb94858ea0e2fa6619c2af626aa2f127f6fee1b4b57057a7cbef8a810b39a67815f2eb54ed33b1790e29db86ee
   languageName: node
   linkType: hard
 

@@ -1,8 +1,3 @@
-import type {
-  OrderItem,
-  OrderItemAssociation,
-  OrderItemColumn,
-} from "@sequelize/core";
 import type { OptionalToNullable, Resource } from "@ukdanceblue/common";
 import { ArgsType, Field, Int } from "type-graphql";
 
@@ -10,24 +5,6 @@ import type { ListQueryType } from "../../../request/ListQueryTypes.js";
 import { SortDirection } from "../../../request/ListQueryTypes.js";
 
 import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./common.js";
-
-export type UnorderedOrderItemArray =
-  | [OrderItemAssociation, OrderItemColumn]
-  | [OrderItemAssociation, OrderItemAssociation, OrderItemColumn]
-  | [
-      OrderItemAssociation,
-      OrderItemAssociation,
-      OrderItemAssociation,
-      OrderItemColumn,
-    ]
-  | [
-      OrderItemAssociation,
-      OrderItemAssociation,
-      OrderItemAssociation,
-      OrderItemAssociation,
-      OrderItemColumn,
-    ];
-undefined as unknown as UnorderedOrderItemArray satisfies OrderItem;
 
 @ArgsType()
 export class UnfilteredListQueryArgs<SortByKeys extends string = never>
