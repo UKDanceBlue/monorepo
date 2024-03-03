@@ -23,12 +23,13 @@ ENV MS_OIDC_URL="https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb
 
 RUN mkdir -p /app/packages/server
 RUN mkdir -p /app/packages/common
+RUN mkdir -p /app/node_modules
 
-COPY yarn.lock /app/
-COPY package.json /app/
-COPY node_modules /app/
-COPY packages/server /app/packages/
-COPY packages/common /app/packages/
+COPY yarn.lock /app/yarn.lock
+COPY package.json /app/package.json
+COPY node_modules /app/node_modules/
+COPY packages/server /app/packages/server/
+COPY packages/common /app/packages/common/
 
 WORKDIR /app/packages/server
 
