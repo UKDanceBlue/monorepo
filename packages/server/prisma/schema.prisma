@@ -133,6 +133,7 @@ model Membership {
   person    Person             @relation(fields: [personId], references: [id], onDelete: Cascade)
   team      Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
+  @@unique([personId, teamId], map: "memberships_person_id_team_id_key")
   @@index([uuid], map: "memberships_uuid")
   @@map("memberships")
 }
