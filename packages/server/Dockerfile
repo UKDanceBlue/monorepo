@@ -33,4 +33,4 @@ COPY packages/common /app/packages/common/
 
 WORKDIR /app/packages/server
 
-CMD yarn dlx prisma generate && yarn dlx prisma migrate deploy && yarn start
+CMD cd /app/packages/server && corepack yarn dlx prisma generate && corepack yarn dlx prisma migrate deploy && corepack yarn start
