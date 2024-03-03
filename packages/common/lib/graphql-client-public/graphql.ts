@@ -848,6 +848,7 @@ export { NumericComparator };
 export const PersonResolverAllKeys = {
   CommitteeName: 'committeeName',
   CommitteeRole: 'committeeRole',
+  DbRole: 'dbRole',
   Email: 'email',
   Linkblue: 'linkblue',
   Name: 'name'
@@ -881,7 +882,8 @@ export type PersonResolverKeyedStringFilterItem = {
 
 export const PersonResolverOneOfFilterKeys = {
   CommitteeName: 'committeeName',
-  CommitteeRole: 'committeeRole'
+  CommitteeRole: 'committeeRole',
+  DbRole: 'dbRole'
 } as const;
 
 export type PersonResolverOneOfFilterKeys = typeof PersonResolverOneOfFilterKeys[keyof typeof PersonResolverOneOfFilterKeys];
@@ -984,7 +986,7 @@ export type PointOpportunityResolverKeyedIsNullFilterItem = {
 
 export type PointOpportunityResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: Scalars['Void']['input'];
+  readonly field: PointOpportunityResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
@@ -1000,9 +1002,13 @@ export type PointOpportunityResolverKeyedStringFilterItem = {
   readonly value: Scalars['String']['input'];
 };
 
-export const PointOpportunityResolverStringFilterKeys = {
-  Name: 'name',
+export const PointOpportunityResolverOneOfFilterKeys = {
   Type: 'type'
+} as const;
+
+export type PointOpportunityResolverOneOfFilterKeys = typeof PointOpportunityResolverOneOfFilterKeys[keyof typeof PointOpportunityResolverOneOfFilterKeys];
+export const PointOpportunityResolverStringFilterKeys = {
+  Name: 'name'
 } as const;
 
 export type PointOpportunityResolverStringFilterKeys = typeof PointOpportunityResolverStringFilterKeys[keyof typeof PointOpportunityResolverStringFilterKeys];
@@ -1201,7 +1207,7 @@ export type QueryTeamsArgs = {
   isNullFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedIsNullFilterItem>>;
   legacyStatus?: InputMaybe<ReadonlyArray<TeamLegacyStatus>>;
   marathonYear?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
-  numericFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedNumericFilterItem>>;
+  numericFilters?: InputMaybe<Scalars['Void']['input']>;
   oneOfFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
@@ -1333,7 +1339,6 @@ export const TeamResolverAllKeys = {
   LegacyStatus: 'legacyStatus',
   MarathonYear: 'marathonYear',
   Name: 'name',
-  TotalPoints: 'totalPoints',
   Type: 'type'
 } as const;
 
@@ -1343,16 +1348,6 @@ export type TeamResolverKeyedIsNullFilterItem = {
   readonly field: TeamResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type TeamResolverKeyedNumericFilterItem = {
-  /** The comparator to use for the filter */
-  readonly comparison: NumericComparator;
-  /** The field to filter on */
-  readonly field: TeamResolverNumericFilterKeys;
-  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
-  readonly value: Scalars['Float']['input'];
 };
 
 export type TeamResolverKeyedOneOfFilterItem = {
@@ -1373,11 +1368,6 @@ export type TeamResolverKeyedStringFilterItem = {
   readonly value: Scalars['String']['input'];
 };
 
-export const TeamResolverNumericFilterKeys = {
-  TotalPoints: 'totalPoints'
-} as const;
-
-export type TeamResolverNumericFilterKeys = typeof TeamResolverNumericFilterKeys[keyof typeof TeamResolverNumericFilterKeys];
 export const TeamResolverOneOfFilterKeys = {
   LegacyStatus: 'legacyStatus',
   MarathonYear: 'marathonYear',
