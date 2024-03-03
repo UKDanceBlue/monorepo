@@ -187,7 +187,7 @@ export class PersonResolver {
           ]) ?? [],
         skip:
           args.page != null && args.pageSize != null
-            ? args.page * args.pageSize
+            ? (args.page - 1) * args.pageSize
             : null,
         take: args.pageSize,
       }),
@@ -253,6 +253,8 @@ export class PersonResolver {
         linkblue: input.linkblue,
         committeeRole: input.role?.committeeRole,
         committeeName: input.role?.committeeIdentifier,
+        memberOf: input.memberOf?.map((uuid) => ({ uuid })),
+        captainOf: input.captainOf?.map((uuid) => ({ uuid })),
       }
     );
 
