@@ -109,6 +109,17 @@ export class DeviceRepository {
     });
   }
 
+  async unsubscribeFromNotifications(
+    param: { uuid: string } | { id: number } | { expoPushToken: string }
+  ) {
+    return this.prisma.device.updateMany({
+      where: param,
+      data: {
+        expoPushToken: null,
+      },
+    });
+  }
+
   async deleteDevice(param: { uuid: string } | { id: number }) {
     return this.prisma.device.delete({
       where: param,
