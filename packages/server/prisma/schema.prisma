@@ -243,11 +243,9 @@ model Notification {
   body                        String
   // URL to open when the notification is tapped
   url                         String?
-  // False by default, set to true once the notification has been sent to Expo
-  sent                        Boolean                @default(false)
   // Every individual delivery of the notification
   deliveries                  NotificationDelivery[]
-  // If set, indicates a potential issue with delivery
+  // If set, indicates a potential issue with delivery of the entire notification
   deliveryIssue               String?                @map("delivery_issue")
   // If set, indicates the time at which the delivery issue was acknowledged, null until then
   deliveryIssueAwknowledgedAt DateTime?              @map("delivery_issue_acknowledged_at") @db.Timestamptz(6)
@@ -266,10 +264,15 @@ model NotificationDelivery {
   device         Device             @relation(fields: [deviceId], references: [id], onDelete: Cascade)
   // The notification that was sent
   notification   Notification       @relation(fields: [notificationId], references: [id], onDelete: Cascade)
-  // The receipt ID from Expo
-  receiptId      String?            @map("receipt_id")
+  // A unique ID for each chunk of notifications sent to Expo
+  chunkUuid      String?            @map("chunk_uuid") @db.Uuid
+  // The receipt ID from Expo (I *think* this is unique, but I'm not 100% sure)
+  receiptId      String?            @unique @map("receipt_id")
+  // Null by default, set to true once the notification has been sent to Expo
+  sentAt         DateTime?          @map("sent_at") @db.Timestamptz(6)
   // Whether the push receipt indicates the notification was delivered, remains null until the receipt is checked
-  delivered      Boolean?
+  // This is set to the time that the receipt was checked, not necessarily the time the notification was actually delivered
+  deliveredBy    DateTime?          @map("delivered_by") @db.Timestamptz(6)
   // If set, either the push ticket or receipt indicated an error (not necessarily mutually exclusive with delivered)
   deliveryError  NotificationError? @map("delivery_error")
   createdAt      DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
