@@ -73,7 +73,6 @@ const none: Authorization = {
   accessLevel: AccessLevel.None,
   dbRole: DbRole.None,
 };
-
 describe("checkAuthorization", () => {
   it("should return true when the user's access level matches the required access level", () => {
     expect(
