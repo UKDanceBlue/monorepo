@@ -241,6 +241,8 @@ model Notification {
   updatedAt                   DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
   title                       String
   body                        String
+  // The time at which the notification should be sent, if null it's already been sent
+  sendAt                      DateTime?              @map("send_at") @db.Timestamptz(6)
   // URL to open when the notification is tapped
   url                         String?
   // Every individual delivery of the notification
