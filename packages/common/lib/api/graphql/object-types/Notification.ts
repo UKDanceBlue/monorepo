@@ -44,16 +44,9 @@ export class NotificationDeliveryResource extends TimestampedResource {
 
   @Field(() => Date, {
     nullable: true,
-    description: "The time the notification was sent to the user.",
-  })
-  sentAt?: Date | null;
-
-  @Field(() => Date, {
-    nullable: true,
     description:
       "The time the server received a delivery receipt from the user.",
   })
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   deliveredBy?: Date | null;
 
   @Field(() => String, {
