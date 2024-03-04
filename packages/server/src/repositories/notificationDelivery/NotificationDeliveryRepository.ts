@@ -1,5 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
+import type { ExpoPushTicket } from "expo-server-sdk";
+import type { DateTime } from "luxon";
 import { Service } from "typedi";
 
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
@@ -54,6 +56,15 @@ export class NotificationDeliveryRepository {
     return this.prisma.notificationDelivery.findUnique({ where: param });
   }
 
+  async findDeviceForDelivery(param: UniqueParam) {
+    const data = await this.prisma.notificationDelivery.findUnique({
+      where: param,
+      select: { device: true },
+    });
+
+    return data?.device;
+  }
+
   listNotificationDeliveries({
     filters,
     order,
@@ -91,19 +102,51 @@ export class NotificationDeliveryRepository {
     });
   }
 
-  createNotificationDeliveries({
+  async createNotificationDeliveries({
     deviceIds,
     notificationId,
   }: {
     deviceIds: number[];
     notificationId: number;
   }) {
-    return this.prisma.notificationDelivery.createMany({
+    await this.prisma.notificationDelivery.createMany({
       data: deviceIds.map((deviceId) => ({
         deviceId,
         notificationId,
       })),
     });
+
+    return this.prisma.notificationDelivery.findMany({
+      where: {
+        notificationId,
+      },
+      select: {
+        device: { select: { id: true, expoPushToken: true } },
+        uuid: true,
+      },
+    });
+  }
+
+  updateChunk({
+    chunkUuid,
+    tickets,
+    sentAt,
+  }: {
+    chunkUuid: string;
+    tickets: { ticket: ExpoPushTicket; deliveryUuid: string }[];
+    sentAt: DateTime;
+  }) {
+    return this.prisma.$transaction(
+      tickets.map(({ ticket, deliveryUuid }) =>
+        this.prisma.notificationDelivery.update({
+          where: { uuid: deliveryUuid },
+          data:
+            ticket.status === "ok"
+              ? { sentAt: sentAt.toJSDate(), receiptId: ticket.id, chunkUuid }
+              : { deliveryError: ticket.details?.error, chunkUuid },
+        })
+      )
+    );
   }
 
   updateNotificationDelivery(

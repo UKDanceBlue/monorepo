@@ -42,14 +42,26 @@ export type NotificationFilters = FilterItems<
   NotificationStringKey
 >;
 
-type UniqueNotificationParam = { id: number } | { uuid: string };
-
 @Service()
 export class NotificationRepository {
   constructor(private prisma: PrismaClient) {}
 
-  findNotificationByUnique(param: UniqueNotificationParam) {
+  findNotificationByUnique(param: Prisma.NotificationWhereUniqueInput) {
     return this.prisma.notification.findUnique({ where: param });
+  }
+
+  findDeliveriesForNotification(param: Prisma.NotificationWhereUniqueInput) {
+    return this.prisma.notificationDelivery.findMany({
+      where: { notification: param },
+      include: {
+        device: {
+          select: {
+            expoPushToken: true,
+            id: true,
+          },
+        },
+      },
+    });
   }
 
   listNotifications({
@@ -98,7 +110,7 @@ export class NotificationRepository {
   }
 
   updateNotification(
-    param: UniqueNotificationParam,
+    param: Prisma.NotificationWhereUniqueInput,
     data: Prisma.NotificationUpdateInput
   ) {
     try {
@@ -115,7 +127,7 @@ export class NotificationRepository {
     }
   }
 
-  deleteNotification(param: UniqueNotificationParam) {
+  deleteNotification(param: Prisma.NotificationWhereUniqueInput) {
     try {
       return this.prisma.notification.delete({ where: param });
     } catch (error) {
