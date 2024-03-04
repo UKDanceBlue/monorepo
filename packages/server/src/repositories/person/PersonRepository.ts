@@ -421,10 +421,10 @@ export class PersonRepository {
             value: "demo-user",
           },
         },
-        email: "demo--user@dancblue.org",
+        email: "demo-user@dancblue.org",
       },
       create: {
-        email: "demo--user@dancblue.org",
+        email: "demo-user@dancblue.org",
         name: "Demo User",
         linkblue: "demo-user",
         memberships: {
@@ -460,7 +460,7 @@ export class PersonRepository {
         },
       },
       update: {
-        email: "demo--user@dancblue.org",
+        email: "demo-user@dancblue.org",
         name: "Demo User",
         linkblue: "demo-user",
       },
