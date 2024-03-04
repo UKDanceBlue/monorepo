@@ -53,6 +53,20 @@ export function AuthStateProvider({ children }: { children: ReactNode }) {
     }
   }, [error]);
 
+  useEffect(() => {
+    if (!fetching && !error) {
+      Logger.debug("Auth state fetched", {
+        context: {
+          loggedIn: data?.loginState.loggedIn,
+          authSource: data?.loginState.authSource,
+          role: data?.loginState.role,
+          userUuid: data?.me.data?.uuid,
+        },
+        tags: ["graphql"],
+      });
+    }
+  }, [fetching, error, data]);
+
   return (
     <authStateContext.Provider
       value={{
