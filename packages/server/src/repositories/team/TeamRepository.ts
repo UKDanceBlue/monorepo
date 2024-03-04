@@ -93,9 +93,11 @@ export class TeamRepository {
           : where.legacyStatus ??
             (onlyDemo
               ? {
-                  notIn: [TeamLegacyStatus.DemoTeam],
+                  equals: TeamLegacyStatus.DemoTeam,
                 }
-              : undefined),
+              : {
+                  not: TeamLegacyStatus.DemoTeam,
+                }),
       },
       orderBy,
       skip: skip ?? undefined,
