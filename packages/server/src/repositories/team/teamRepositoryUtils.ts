@@ -13,7 +13,7 @@ import type { TeamFilters, TeamOrderKeys } from "./TeamRepository.ts";
 export function buildTeamOrder(
   order: readonly [key: TeamOrderKeys, sort: SortDirection][] | null | undefined
 ) {
-  const orderBy: Prisma.TeamsWithTotalPointsOrderByWithRelationInput = {};
+  const orderBy: Prisma.TeamsWithTotalPointsOrderByWithRelationInput[] = [];
 
   for (const [key, sort] of order ?? []) {
     switch (key) {
@@ -24,7 +24,9 @@ export function buildTeamOrder(
       case "name":
       case "createdAt":
       case "updatedAt": {
-        orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
+        orderBy.push({
+          [key]: sort === SortDirection.ASCENDING ? "asc" : "desc",
+        });
         break;
       }
       default: {
