@@ -1,6 +1,7 @@
 import { useLogin } from "@common/auth";
 import JumbotronGeometric from "@common/components/JumbotronGeometric";
 import { useThemeFonts } from "@common/customHooks";
+import { universalCatch } from "@common/logging";
 import {
   AuthSource,
   CommitteeIdentifier,
@@ -13,6 +14,7 @@ import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
+import { openURL } from "expo-linking";
 import {
   Box,
   Button,
@@ -26,8 +28,6 @@ import {
 import { useMemo } from "react";
 
 import { ProfileFooter } from "./ProfileFooter";
-import {openURL} from "expo-linking";
-import {universalCatch} from "@common/logging";
 
 export const ProfileScreenAuthFragment = graphql(/* GraphQL */ `
   fragment ProfileScreenAuthFragment on LoginState {
@@ -153,9 +153,15 @@ const ProfileScreen = ({
               </Text>
             )}
             <Box alignItems="center" width="full">
-              <Button onPress={() => openURL("https://drive.google.com/drive/u/1/folders/1m2Gxyjw05aF8yHYuiwa8L9S2modK-8e-").catch(
-                universalCatch
-              )}>Dancer Resources</Button>
+              <Button
+                onPress={() =>
+                  openURL(
+                    "https://drive.google.com/drive/u/1/folders/1m2Gxyjw05aF8yHYuiwa8L9S2modK-8e-"
+                  ).catch(universalCatch)
+                }
+              >
+                Dancer Resources
+              </Button>
             </Box>
           </Container>
           {/* TODO: Implement server-side support for individual totals */}
@@ -197,7 +203,7 @@ const ProfileScreen = ({
           <Text>You are not logged in.</Text>
           <Button
             onPress={() => {
-              trigger(AuthSource.UkyLinkblue);
+              trigger(AuthSource.LinkBlue);
             }}
             style={{ marginTop: 10 }}
           >

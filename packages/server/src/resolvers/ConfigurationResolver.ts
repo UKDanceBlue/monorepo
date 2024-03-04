@@ -1,4 +1,3 @@
-import { Op } from "@sequelize/core";
 import {
   AccessControl,
   AccessLevel,
@@ -6,6 +5,7 @@ import {
   DateTimeScalar,
   DetailedError,
   ErrorCode,
+  SortDirection,
 } from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
 import {
@@ -17,20 +17,22 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
+import { Service } from "typedi";
 
-import { ConfigurationModel } from "../models/Configuration.js";
+import { auditLogger } from "../lib/logging/auditLogging.js";
+import { ConfigurationRepository } from "../repositories/configuration/ConfigurationRepository.js";
+import { configurationModelToResource } from "../repositories/configuration/configurationModelToResource.js";
 
 import {
   AbstractGraphQLArrayOkResponse,
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
 } from "./ApiResponse.js";
-import type { ResolverInterface } from "./ResolverInterface.js";
 
 @ObjectType("GetConfigurationByUuidResponse", {
   implements: AbstractGraphQLOkResponse<ConfigurationResource>,
 })
-class GetConfigurationByKeyResponse extends AbstractGraphQLOkResponse<ConfigurationResource> {
+class GetConfigurationResponse extends AbstractGraphQLOkResponse<ConfigurationResource> {
   @Field(() => ConfigurationResource)
   data!: ConfigurationResource;
 }
@@ -55,13 +57,6 @@ class CreateConfigurationsResponse extends AbstractGraphQLArrayOkResponse<Config
   @Field(() => [ConfigurationResource])
   data!: ConfigurationResource[];
 }
-@ObjectType("SetConfigurationResponse", {
-  implements: AbstractGraphQLOkResponse<ConfigurationResource>,
-})
-class SetConfigurationResponse extends AbstractGraphQLOkResponse<ConfigurationResource> {
-  @Field(() => ConfigurationResource)
-  data!: ConfigurationResource;
-}
 @ObjectType("DeleteConfigurationResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
@@ -81,66 +76,38 @@ class CreateConfigurationInput implements Partial<ConfigurationResource> {
   validUntil!: DateTime | null;
 }
 
-@InputType()
-class SetConfigurationInput implements Partial<ConfigurationResource> {
-  @Field()
-  key?: string;
-}
-
 @Resolver(() => ConfigurationResource)
-export class ConfigurationResolver
-  implements ResolverInterface<ConfigurationResource>
-{
-  @Query(() => GetConfigurationByKeyResponse, {
-    name: "configuration",
-  })
-  async getByUuid(
-    @Arg("uuid") uuid: string
-  ): Promise<GetConfigurationByKeyResponse> {
-    const row = await ConfigurationModel.findByUuid(uuid);
-
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
-    }
-    return GetConfigurationByKeyResponse.newOk(row.toResource());
-  }
-
-  @Query(() => GetConfigurationByKeyResponse, {
+@Service()
+export class ConfigurationResolver {
+  constructor(
+    private readonly configurationRepository: ConfigurationRepository
+  ) {}
+  @Query(() => GetConfigurationResponse, {
     name: "activeConfiguration",
   })
-  async getByKey(
+  async activeConfiguration(
     @Arg("key") key: string
-  ): Promise<GetConfigurationByKeyResponse> {
-    const rows = await ConfigurationModel.findAll({
-      where: {
-        key,
-        validAfter: {
-          [Op.or]: [null, { [Op.lte]: new Date() }],
-        },
-        validUntil: {
-          [Op.or]: [null, { [Op.gte]: new Date() }],
-        },
-      },
-      order: [["createdAt", "DESC"]],
-    });
-
-    const row = rows[0];
+  ): Promise<GetConfigurationResponse> {
+    const row = await this.configurationRepository.findConfigurationByKey(
+      key,
+      new Date()
+    );
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
     }
 
-    return GetConfigurationByKeyResponse.newOk(row.toResource());
+    return GetConfigurationResponse.newOk(configurationModelToResource(row));
   }
 
   @Query(() => GetAllConfigurationsResponse, { name: "allConfigurations" })
   async getAll(): Promise<GetAllConfigurationsResponse> {
-    const resources = await ConfigurationModel.findAll({
-      order: [["createdAt", "DESC"]],
-    });
+    const rows = await this.configurationRepository.findConfigurations(null, [
+      ["createdAt", SortDirection.DESCENDING],
+    ]);
 
     return GetAllConfigurationsResponse.newOk(
-      resources.map((r) => r.toResource())
+      rows.map(configurationModelToResource)
     );
   }
 
@@ -149,14 +116,19 @@ export class ConfigurationResolver
   async create(
     @Arg("input") input: CreateConfigurationInput
   ): Promise<CreateConfigurationResponse> {
-    const row = await ConfigurationModel.create({
+    const row = await this.configurationRepository.createConfiguration({
       key: input.key,
       value: input.value,
-      validAfter: input.validAfter ? input.validAfter.toJSDate() : null,
-      validUntil: input.validUntil ? input.validUntil.toJSDate() : null,
+      validAfter: input.validAfter ?? null,
+      validUntil: input.validUntil ?? null,
     });
 
-    return CreateConfigurationResponse.newCreated(row.toResource(), row.uuid);
+    auditLogger.dangerous("Configuration created", { configuration: row });
+
+    return CreateConfigurationResponse.newCreated(
+      configurationModelToResource(row),
+      row.uuid
+    );
   }
 
   @AccessControl({ accessLevel: AccessLevel.Admin })
@@ -165,47 +137,39 @@ export class ConfigurationResolver
     @Arg("input", () => [CreateConfigurationInput])
     input: CreateConfigurationInput[]
   ): Promise<CreateConfigurationsResponse> {
-    const rows = await ConfigurationModel.bulkCreate(
-      input.map((i) => ({
-        key: i.key,
-        value: i.value,
-        validAfter: i.validAfter ? i.validAfter.toJSDate() : null,
-        validUntil: i.validUntil ? i.validUntil.toJSDate() : null,
-      }))
+    // TODO: This should be converted into a batch operation
+    const rows = await Promise.all(
+      input.map((i) =>
+        this.configurationRepository.createConfiguration({
+          key: i.key,
+          value: i.value,
+          validAfter: i.validAfter ?? null,
+          validUntil: i.validUntil ?? null,
+        })
+      )
     );
 
-    return CreateConfigurationsResponse.newOk(rows.map((r) => r.toResource()));
-  }
+    auditLogger.dangerous("Configurations created", {
+      configurations: rows,
+    });
 
-  @AccessControl({ accessLevel: AccessLevel.Admin })
-  @Mutation(() => SetConfigurationResponse, { name: "setConfiguration" })
-  async set(
-    @Arg("key") key: string,
-    @Arg("input") input: SetConfigurationInput
-  ): Promise<SetConfigurationResponse> {
-    const row = await ConfigurationModel.findOne({ where: { key } });
-
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
-    }
-    await row.update(input);
-
-    return SetConfigurationResponse.newOk(row.toResource());
+    return CreateConfigurationsResponse.newOk(
+      rows.map(configurationModelToResource)
+    );
   }
 
   @AccessControl({ accessLevel: AccessLevel.Admin })
   @Mutation(() => DeleteConfigurationResponse, { name: "deleteConfiguration" })
-  async delete(@Arg("uuid") id: string): Promise<DeleteConfigurationResponse> {
-    const row = await ConfigurationModel.findOne({
-      where: { key: id },
-      attributes: ["id"],
-      include: [],
-    });
+  async delete(
+    @Arg("uuid") uuid: string
+  ): Promise<DeleteConfigurationResponse> {
+    const row = await this.configurationRepository.deleteConfiguration(uuid);
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
     }
-    await row.destroy();
+
+    auditLogger.dangerous("Configuration deleted", { configuration: row });
 
     return DeleteConfigurationResponse.newOk(true);
   }

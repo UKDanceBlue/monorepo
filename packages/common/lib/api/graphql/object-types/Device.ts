@@ -3,10 +3,10 @@ import { Field, ID, ObjectType } from "type-graphql";
 
 import { DateTimeScalar } from "../custom-scalars/DateTimeScalar.js";
 
-import { Resource } from "./Resource.js";
+import { TimestampedResource } from "./Resource.js";
 
 @ObjectType()
-export class DeviceResource extends Resource {
+export class DeviceResource extends TimestampedResource {
   @Field(() => ID)
   uuid!: string;
   @Field(() => String, { nullable: true })

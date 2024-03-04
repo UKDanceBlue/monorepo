@@ -1,10 +1,9 @@
-import { dirname, join, normalize } from "path";
 import { fileURLToPath } from "url";
 
 import type { MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
+import { Container } from "typedi";
 
-import { logger } from "../logger.js";
 import { ConfigurationResolver } from "../resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "../resolvers/DeviceResolver.js";
 import { EventResolver } from "../resolvers/EventResolver.js";
@@ -17,7 +16,11 @@ import { PointEntryResolver } from "../resolvers/PointEntryResolver.js";
 import { PointOpportunityResolver } from "../resolvers/PointOpportunityResolver.js";
 import { TeamResolver } from "../resolvers/TeamResolver.js";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import { logger } from "./logging/logger.js";
+
+const schemaPath = fileURLToPath(
+  new URL("../../../../schema.graphql", import.meta.url)
+);
 
 const errorHandlingMiddleware: MiddlewareFn = async (_, next) => {
   try {
@@ -42,6 +45,7 @@ export default await buildSchema({
     PointEntryResolver,
     PointOpportunityResolver,
   ],
-  emitSchemaFile: normalize(join(__dirname, "../../../../schema.graphql")),
+  emitSchemaFile: schemaPath,
   globalMiddlewares: [errorHandlingMiddleware],
+  container: Container,
 });

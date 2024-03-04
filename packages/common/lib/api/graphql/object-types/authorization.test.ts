@@ -1,4 +1,4 @@
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { Authorization } from "../../../index.js";
 import {
@@ -59,14 +59,9 @@ const dancerRelationsMember: Authorization = {
   committeeRole: CommitteeRole.Member,
 };
 
-const captain: Authorization = {
-  accessLevel: AccessLevel.TeamCaptain,
-  dbRole: DbRole.TeamCaptain,
-};
-
 const member: Authorization = {
-  accessLevel: AccessLevel.TeamMember,
-  dbRole: DbRole.TeamMember,
+  accessLevel: AccessLevel.UKY,
+  dbRole: DbRole.UKY,
 };
 
 const publicAuth: Authorization = {
@@ -78,8 +73,7 @@ const none: Authorization = {
   accessLevel: AccessLevel.None,
   dbRole: DbRole.None,
 };
-
-describe(checkAuthorization, (it) => {
+describe("checkAuthorization", () => {
   it("should return true when the user's access level matches the required access level", () => {
     expect(
       checkAuthorization({ accessLevel: AccessLevel.Admin }, techChair)
@@ -114,12 +108,9 @@ describe(checkAuthorization, (it) => {
         dancerRelationsMember
       )
     ).toBe(true);
-    expect(
-      checkAuthorization({ accessLevel: AccessLevel.TeamCaptain }, captain)
-    ).toBe(true);
-    expect(
-      checkAuthorization({ accessLevel: AccessLevel.TeamMember }, member)
-    ).toBe(true);
+    expect(checkAuthorization({ accessLevel: AccessLevel.UKY }, member)).toBe(
+      true
+    );
     expect(
       checkAuthorization({ accessLevel: AccessLevel.Public }, publicAuth)
     ).toBe(true);
@@ -141,18 +132,6 @@ describe(checkAuthorization, (it) => {
     expect(
       checkAuthorization({ accessLevel: AccessLevel.Committee }, techMember)
     ).toBe(true);
-    expect(
-      checkAuthorization({ accessLevel: AccessLevel.TeamCaptain }, captain)
-    ).toBe(true);
-    expect(
-      checkAuthorization({ accessLevel: AccessLevel.TeamMember }, captain)
-    ).toBe(true);
-    expect(
-      checkAuthorization({ accessLevel: AccessLevel.Public }, captain)
-    ).toBe(true);
-    expect(checkAuthorization({ accessLevel: AccessLevel.None }, captain)).toBe(
-      true
-    );
   });
 
   it("should return false when the user's access level is lower than the required access level", () => {
@@ -163,13 +142,7 @@ describe(checkAuthorization, (it) => {
       )
     ).toBe(false);
     expect(
-      checkAuthorization({ accessLevel: AccessLevel.Committee }, captain)
-    ).toBe(false);
-    expect(
-      checkAuthorization({ accessLevel: AccessLevel.TeamCaptain }, member)
-    ).toBe(false);
-    expect(
-      checkAuthorization({ accessLevel: AccessLevel.TeamMember }, publicAuth)
+      checkAuthorization({ accessLevel: AccessLevel.UKY }, publicAuth)
     ).toBe(false);
     expect(checkAuthorization({ accessLevel: AccessLevel.Public }, none)).toBe(
       false
@@ -296,22 +269,6 @@ describe(checkAuthorization, (it) => {
         techChair
       )
     ).toBe(true);
-    expect(
-      checkAuthorization(
-        {
-          minDbRole: DbRole.TeamCaptain,
-        },
-        techChair
-      )
-    ).toBe(true);
-    expect(
-      checkAuthorization(
-        {
-          minDbRole: DbRole.TeamCaptain,
-        },
-        none
-      )
-    ).toBe(false);
   });
 
   it("should work with minimum committeeRole matching", () => {

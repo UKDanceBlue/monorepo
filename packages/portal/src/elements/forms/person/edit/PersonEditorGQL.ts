@@ -7,7 +7,6 @@ export const PersonEditorFragment = graphql(/* GraphQL */ `
     linkblue
     email
     role {
-      dbRole
       committeeRole
       committeeIdentifier
     }

@@ -22,7 +22,7 @@ import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
 const pointEntryOpportunityLookup = graphql(/* GraphQL */ `
   query PointEntryOpportunityLookup($name: String!) {
     pointOpportunities(
-      stringFilters: { field: name, comparison: ILIKE, value: $name }
+      stringFilters: { field: name, comparison: SUBSTRING, value: $name }
       sendAll: true
     ) {
       data {

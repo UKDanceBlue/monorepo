@@ -10,7 +10,7 @@ import {
 
 import { roleToAccessLevel, roleToAuthorization } from "./role.js";
 
-describe(roleToAccessLevel, () => {
+describe("roleToAccessLevel", () => {
   it("returns the correct access level for a given role normally", () => {
     const chairRole = RoleResource.init({
       dbRole: DbRole.Committee,
@@ -37,15 +37,10 @@ describe(roleToAccessLevel, () => {
     });
     expect(roleToAccessLevel(memberRole)).toBe(AccessLevel.Committee);
 
-    const teamCaptainRole = RoleResource.init({
-      dbRole: DbRole.TeamCaptain,
-    });
-    expect(roleToAccessLevel(teamCaptainRole)).toBe(AccessLevel.TeamCaptain);
-
     const teamMemberRole = RoleResource.init({
-      dbRole: DbRole.TeamMember,
+      dbRole: DbRole.UKY,
     });
-    expect(roleToAccessLevel(teamMemberRole)).toBe(AccessLevel.TeamMember);
+    expect(roleToAccessLevel(teamMemberRole)).toBe(AccessLevel.UKY);
 
     const publicRole = RoleResource.init({
       dbRole: DbRole.Public,
@@ -85,20 +80,20 @@ describe(roleToAccessLevel, () => {
     const illegalRole = RoleResource.init({
       dbRole: "illegal" as DbRole,
     });
-    expect(() => roleToAccessLevel(illegalRole)).toThrowError(
+    expect(() => roleToAccessLevel(illegalRole)).toThrow(
       "Illegal DbRole: [Parsing of 'illegal' failed]"
     );
   });
 });
 
-describe(roleToAuthorization, () => {
+describe("roleToAuthorization", () => {
   it("converts a role to an authorization object", () => {
     const role = RoleResource.init({
-      dbRole: DbRole.TeamMember,
+      dbRole: DbRole.UKY,
     });
-    expect(roleToAuthorization(role)).toEqual({
-      dbRole: DbRole.TeamMember,
-      accessLevel: AccessLevel.TeamMember,
+    expect(roleToAuthorization(role)).toStrictEqual({
+      dbRole: DbRole.UKY,
+      accessLevel: AccessLevel.UKY,
     });
   });
 
@@ -108,7 +103,7 @@ describe(roleToAuthorization, () => {
       committeeRole: CommitteeRole.Member,
       committeeIdentifier: CommitteeIdentifier.dancerRelationsCommittee,
     });
-    expect(roleToAuthorization(role)).toEqual({
+    expect(roleToAuthorization(role)).toStrictEqual({
       dbRole: DbRole.Committee,
       accessLevel: AccessLevel.Committee,
       committeeRole: CommitteeRole.Member,

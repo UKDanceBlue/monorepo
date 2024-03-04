@@ -1,0 +1,355 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
+  binaryTargets   = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Configuration {
+  id         Int       @id @default(autoincrement())
+  uuid       String    @unique(map: "configurations_uuid_unique") @default(uuid()) @db.Uuid
+  key        String
+  value      String
+  validAfter DateTime? @map("valid_after") @db.Timestamptz(6)
+  validUntil DateTime? @map("valid_until") @db.Timestamptz(6)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([uuid], map: "configurations_uuid")
+  @@map("configurations")
+}
+
+model Device {
+  id                     Int                    @id @default(autoincrement())
+  uuid                   String                 @unique(map: "devices_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  // Verifier for the device, this is a base64 encoded SHA512 digest of a secret the device knows
+  // This is nullable for devices that were registered before we started using the
+  // verifier and will be set once the device registers next and will never be null again
+  // This means that when this is null, simply trust the device
+  verifier               String?
+  // The Expo push token for the device, if available
+  expoPushToken          String?                @map("expo_push_token")
+  // The last time the device was seen
+  lastSeen               DateTime?              @map("last_login") @db.Timestamptz(6)
+  lastSeenPersonId       Int?                   @map("last_user_id")
+  // The last person to use the device
+  lastSeenPerson         Person?                @relation(fields: [lastSeenPersonId], references: [id])
+  // The notifications that have been sent to this device
+  deliveredNotifications NotificationDelivery[]
+
+  @@index([uuid], map: "devices_uuid")
+  @@map("devices")
+}
+
+model EventImage {
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  eventId   Int      @map("event_id")
+  imageId   Int      @map("image_id")
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  image     Image    @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, imageId])
+  @@map("event_images")
+}
+
+model EventOccurrence {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique(map: "event_occurrences_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  fullDay   Boolean  @default(false) @map("full_day")
+  date      DateTime @db.Timestamptz(6)
+  endDate   DateTime @map("end_date") @db.Timestamptz(6)
+  eventId   Int      @map("event_id")
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([uuid], map: "event_occurrences_uuid")
+  @@map("event_occurrences")
+}
+
+model Event {
+  id                 Int                @id @default(autoincrement())
+  uuid               String             @unique(map: "events_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  title              String
+  summary            String?
+  description        String?
+  location           String?
+  eventImages        EventImage[]
+  eventOccurrences   EventOccurrence[]
+  pointOpportunities PointOpportunity[]
+
+  @@index([uuid], map: "events_uuid")
+  @@map("events")
+}
+
+model Image {
+  id          Int          @id @default(autoincrement())
+  uuid        String       @unique(map: "images_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  url         String?      @unique(map: "images_url_unique")
+  imageData   Bytes?       @map("image_data")
+  mimeType    String?      @map("mime_type") @db.VarChar(255)
+  thumbHash   Bytes?       @map("thumb_hash")
+  alt         String?
+  width       Int
+  height      Int
+  eventImages EventImage[]
+
+  @@index([uuid], map: "images_uuid")
+  @@map("images")
+}
+
+model LoginFlowSession {
+  id                   Int      @id @default(autoincrement())
+  uuid                 String   @unique(map: "login_flow_sessions_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  codeVerifier         String   @map("code_verifier")
+  redirectToAfterLogin String   @map("redirect_to_after_login")
+  setCookie            Boolean  @default(false) @map("set_cookie")
+  sendToken            Boolean  @default(false) @map("send_token")
+
+  @@index([uuid], map: "login_flow_sessions_uuid")
+  @@map("login_flow_sessions")
+}
+
+model Membership {
+  id        Int                @id @default(autoincrement())
+  uuid      String             @unique(map: "memberships_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  personId  Int                @map("person_id")
+  teamId    Int                @map("team_id")
+  position  MembershipPosition
+  person    Person             @relation(fields: [personId], references: [id], onDelete: Cascade)
+  team      Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([personId, teamId], map: "memberships_person_id_team_id_key")
+  @@index([uuid], map: "memberships_uuid")
+  @@map("memberships")
+}
+
+model Person {
+  id            Int            @id @default(autoincrement())
+  uuid          String         @unique(map: "people_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  name          String?
+  email         String         @unique(map: "people_email_unique")
+  linkblue      String?        @unique(map: "people_linkblue_unique")
+  committeeRole CommitteeRole? @map("committee_role")
+  committeeName CommitteeName? @map("committee_name")
+  authIdPairs   AuthIdPair[]
+  devices       Device[]
+  memberships   Membership[]
+  pointEntries  PointEntry[]
+
+  @@index([uuid], map: "people_uuid")
+  @@map("people")
+}
+
+model AuthIdPair {
+  source   AuthSource @map("source")
+  value    String     @map("value")
+  personId Int        @map("person_id")
+  person   Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@id([personId, source])
+  @@map("auth_id_pairs")
+}
+
+model PointEntry {
+  id                 Int               @id @default(autoincrement())
+  uuid               String            @unique(map: "point_entries_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  comment            String?
+  points             Int
+  personFromId       Int?              @map("person_from_id")
+  teamId             Int               @map("team_id")
+  pointOpportunityId Int?              @map("point_opportunity_id")
+  person             Person?           @relation(fields: [personFromId], references: [id])
+  pointOpportunity   PointOpportunity? @relation(fields: [pointOpportunityId], references: [id])
+  team               Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([uuid], map: "point_entries_uuid")
+  @@map("point_entries")
+}
+
+model PointOpportunity {
+  id              Int                  @id @default(autoincrement())
+  uuid            String               @unique(map: "point_opportunities_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt       DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  name            String
+  opportunityDate DateTime?            @map("opportunity_date") @db.Timestamptz(6)
+  type            PointOpportunityType
+  eventId         Int?                 @map("event_id")
+  pointEntries    PointEntry[]
+  event           Event?               @relation(fields: [eventId], references: [id])
+
+  @@index([uuid], map: "point_opportunities_uuid")
+  @@map("point_opportunities")
+}
+
+model Team {
+  id                   Int              @id @default(autoincrement())
+  uuid                 String           @unique(map: "teams_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt            DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  name                 String
+  type                 TeamType
+  legacyStatus         TeamLegacyStatus @map("legacy_status")
+  marathonYear         String           @map("marathon_year") @db.Char(4)
+  persistentIdentifier String?          @unique(map: "teams_persistent_identifier_unique") @map("persistent_identifier")
+  memberships          Membership[]
+  pointEntries         PointEntry[]
+
+  @@index([uuid], map: "teams_uuid")
+  @@map("teams")
+}
+
+view TeamsWithTotalPoints {
+  id                   Int              @id @unique
+  uuid                 String           @unique @db.Uuid
+  name                 String
+  type                 TeamType
+  legacyStatus         TeamLegacyStatus @map("legacystatus")
+  persistentIdentifier String?          @unique @map("persistentidentifier")
+  marathonYear         String           @map("marathonyear") @db.Char(4)
+  createdAt            DateTime         @map("createdat") @db.Timestamptz(6)
+  updatedAt            DateTime         @map("updatedat") @db.Timestamptz(6)
+  totalPoints          BigInt           @map("totalpoints")
+
+  @@map("teams_with_total_points")
+}
+
+model Notification {
+  id                          Int                    @id @default(autoincrement())
+  uuid                        String                 @unique(map: "notifications_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt                   DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                   DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  title                       String
+  body                        String
+  // URL to open when the notification is tapped
+  url                         String?
+  // False by default, set to true once the notification has been sent to Expo
+  sent                        Boolean                @default(false)
+  // Every individual delivery of the notification
+  deliveries                  NotificationDelivery[]
+  // If set, indicates a potential issue with delivery
+  deliveryIssue               String?                @map("delivery_issue")
+  // If set, indicates the time at which the delivery issue was acknowledged, null until then
+  deliveryIssueAwknowledgedAt DateTime?              @map("delivery_issue_acknowledged_at") @db.Timestamptz(6)
+
+  @@index([uuid], map: "notifications_uuid")
+  @@map("notifications")
+}
+
+// A record of a notification being sent to a device
+model NotificationDelivery {
+  id             Int                @id @default(autoincrement())
+  uuid           String             @unique(map: "notification_deliveries_uuid_unique") @default(uuid()) @db.Uuid
+  deviceId       Int                @map("device_id")
+  notificationId Int                @map("notification_id")
+  // The device to which the notification was sent
+  device         Device             @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  // The notification that was sent
+  notification   Notification       @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  // The receipt ID from Expo
+  receiptId      String?            @map("receipt_id")
+  // Whether the push receipt indicates the notification was delivered, remains null until the receipt is checked
+  delivered      Boolean?
+  // If set, either the push ticket or receipt indicated an error (not necessarily mutually exclusive with delivered)
+  deliveryError  NotificationError? @map("delivery_error")
+  createdAt      DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([uuid], map: "notification_deliveries_uuid")
+  @@map("notification_deliveries")
+}
+
+// Potential errors after sending a notification to Expo (see https://docs.expo.dev/push-notifications/sending-notifications/#individual-errors)
+enum NotificationError {
+  // The device cannot receive push notifications anymore and you should stop sending messages to the corresponding Expo push token.
+  DeviceNotRegistered
+  // Your push notification credentials for your standalone app are invalid (for example, you may have revoked them).
+  InvalidCredentials
+  // The total notification payload was too large. On Android and iOS, the total payload must be at most 4096 bytes.
+  MessageTooBig
+  // You are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
+  MessageRateExceeded
+  // This indicates that there is an issue with your FCM push credentials.
+  MismatchSenderId
+}
+
+enum MembershipPosition {
+  Member
+  Captain
+
+  @@map("enum_memberships_position")
+}
+
+enum CommitteeName {
+  programmingCommittee
+  fundraisingCommittee
+  communityDevelopmentCommittee
+  dancerRelationsCommittee
+  familyRelationsCommittee
+  techCommittee
+  operationsCommittee
+  marketingCommittee
+  corporateCommittee
+  miniMarathonsCommittee
+  viceCommittee
+
+  @@map("enum_people_committee_name")
+}
+
+enum CommitteeRole {
+  Chair
+  Coordinator
+  Member
+
+  @@map("enum_people_committee_role")
+}
+
+enum PointOpportunityType {
+  Spirit
+  Morale
+  Committee
+
+  @@map("enum_point_opportunities_type")
+}
+
+enum TeamLegacyStatus {
+  NewTeam
+  ReturningTeam
+  DemoTeam
+
+  @@map("enum_teams_legacy_status")
+}
+
+enum TeamType {
+  Spirit
+  Morale
+  Committee
+
+  @@map("enum_teams_type")
+}
+
+enum AuthSource {
+  LinkBlue
+  Anonymous
+  Demo
+}

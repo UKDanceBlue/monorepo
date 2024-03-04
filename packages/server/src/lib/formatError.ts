@@ -1,10 +1,4 @@
 import { unwrapResolverError } from "@apollo/server/errors";
-import {
-  BaseError,
-  DatabaseError,
-  QueryError,
-  UniqueConstraintError,
-} from "@sequelize/core";
 import type { ApiError } from "@ukdanceblue/common";
 import {
   ValidationError as DbValidationError,
@@ -15,7 +9,6 @@ import {
   UnionValidationError,
   isErrorCode,
 } from "@ukdanceblue/common";
-import { ValidationError as SequelizeValidationError } from "class-validator";
 import type { GraphQLFormattedError } from "graphql";
 import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
@@ -98,41 +91,8 @@ export function formatError(
       error instanceof jwt.TokenExpiredError
     ) {
       formattedError.extensions.code = ErrorCode.NotLoggedIn;
-    } else if (error instanceof UniqueConstraintError) {
-      formattedError.extensions.code = ErrorCode.InvalidRequest;
-      formattedError.extensions.details = `Unique constraint error: ${error.errors
-        .map((e) => e.message)
-        .join(", ")}`;
-      formattedError.extensions.explanation = `You attempted to create a new record that conflicts with an existing record, does the record already exist? The conflicting fields are: '${error.errors
-        .map((e) => e.path)
-        .join("', '")}'.`;
-      if (shouldIncludeSensitiveInfo) {
-        formattedError.extensions.internalDetails!.sql = error.sql;
-        formattedError.extensions.internalDetails!.fields = JSON.stringify(
-          error.fields
-        );
-      }
-    } else if (error instanceof SequelizeValidationError) {
-      formattedError.extensions.code = ErrorCode.InvalidRequest;
-      formattedError.extensions.details = error.toString(
-        false,
-        undefined,
-        undefined,
-        !shouldIncludeSensitiveInfo
-      );
-    } else if (error instanceof QueryError) {
-      formattedError.extensions.code = ErrorCode.InternalFailure;
-    } else if (error instanceof DatabaseError) {
-      formattedError.extensions.code = ErrorCode.DatabaseFailure;
-      if (shouldIncludeSensitiveInfo) {
-        formattedError.extensions.internalDetails!.sql = error.sql;
-        formattedError.extensions.internalDetails!.parameters = JSON.stringify(
-          error.parameters
-        );
-      }
-    } else if (error instanceof BaseError) {
-      formattedError.extensions.code = ErrorCode.DatabaseFailure;
     } else if (error instanceof DbValidationError) {
+      // TODO: add Prisma errors here
       formattedError.extensions.code = ErrorCode.InvalidRequest;
       if (error instanceof LuxonError) {
         if (error.explanation && shouldIncludeSensitiveInfo) {

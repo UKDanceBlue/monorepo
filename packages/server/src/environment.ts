@@ -1,11 +1,17 @@
 import dotenv from "dotenv";
 
+import type { SyslogLevels } from "./lib/logging/standardLogging.js";
+
 dotenv.config();
 
 // Core env
 export const isDevelopment = process.env.NODE_ENV === "development";
 export const isProduction = process.env.NODE_ENV === "production";
-export const nodeEnvirnoment = process.env.NODE_ENV || "development";
+export const nodeEnvironment = process.env.NODE_ENV || "development";
+
+export const loggingLevel: SyslogLevels =
+  (process.env.LOGGING_LEVEL as SyslogLevels | undefined) ??
+  (isDevelopment ? "debug" : "notice");
 
 // Port and Host
 let applicationPort: number = 8000;

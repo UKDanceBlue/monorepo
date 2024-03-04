@@ -3,16 +3,21 @@ import { useInvalidateCache } from "@context/urql";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthSource } from "@ukdanceblue/common";
 import { createURL } from "expo-linking";
-import { dismissAuthSession, openAuthSessionAsync } from "expo-web-browser";
+import {
+  WebBrowserResultType,
+  dismissAuthSession,
+  openAuthSessionAsync,
+} from "expo-web-browser";
 
 import { API_BASE_URL } from "./apiUrl";
+import { Logger } from "./logger/Logger";
 
 export const DANCEBLUE_TOKEN_KEY = "danceblue-auth-token";
 
 function getLoginUrl(source: AuthSource): string {
   let urlComponent = "";
   switch (source) {
-    case AuthSource.UkyLinkblue: {
+    case AuthSource.LinkBlue: {
       urlComponent = "login";
       break;
     }
@@ -44,12 +49,29 @@ export const useLogin = (): [boolean, (source: AuthSource) => void] => {
     }
     setLoading(true);
     try {
-      const result = await openAuthSessionAsync(getLoginUrl(source));
-      if (result.type === "success") {
-        const url = new URL(result.url);
-        const token = url.searchParams.get("token");
-        if (token) {
-          await AsyncStorage.setItem(DANCEBLUE_TOKEN_KEY, token);
+      const result = await openAuthSessionAsync(
+        getLoginUrl(source),
+        createURL("/auth/login")
+      );
+      switch (result.type) {
+        case "success": {
+          const url = new URL(result.url);
+          const token = url.searchParams.get("token");
+          if (token) {
+            await AsyncStorage.setItem(DANCEBLUE_TOKEN_KEY, token);
+          }
+          break;
+        }
+        case WebBrowserResultType.CANCEL: {
+          Logger.debug("Auth session was cancelled", {
+            context: { result },
+          });
+          break;
+        }
+        default: {
+          Logger.warn("Auth session was not successful", {
+            context: { result },
+          });
         }
       }
       invalidateCache();

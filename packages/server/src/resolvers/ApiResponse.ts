@@ -3,7 +3,8 @@ import { NonNegativeIntResolver, PositiveIntResolver } from "graphql-scalars";
 import type { ClassType } from "type-graphql";
 import { Field, InterfaceType, registerEnumType } from "type-graphql";
 
-import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./list-query-args/common.js";
+const DEFAULT_PAGE_SIZE = 10;
+const FIRST_PAGE = 1;
 
 @InterfaceType({ description: "API response" })
 export class GraphQLBaseResponse {

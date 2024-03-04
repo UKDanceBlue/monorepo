@@ -12,7 +12,7 @@ import {
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
 import { Button, Flex, Table } from "antd";
-import { useEffect, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { useQuery } from "urql";
 
 const EventsTableFragment = graphql(/* GraphQL */ `
@@ -37,7 +37,6 @@ const eventsTableQueryDocument = graphql(/* GraphQL */ `
     $sortDirection: [SortDirection!]
     $dateFilters: [EventResolverKeyedDateFilterItem!]
     $isNullFilters: [EventResolverKeyedIsNullFilterItem!]
-    $numericFilters: [EventResolverKeyedNumericFilterItem!]
     $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]
     $stringFilters: [EventResolverKeyedStringFilterItem!]
   ) {
@@ -48,7 +47,6 @@ const eventsTableQueryDocument = graphql(/* GraphQL */ `
       sortDirection: $sortDirection
       dateFilters: $dateFilters
       isNullFilters: $isNullFilters
-      numericFilters: $numericFilters
       oneOfFilters: $oneOfFilters
       stringFilters: $stringFilters
     ) {
@@ -88,18 +86,27 @@ export const EventsTable = () => {
     }
   );
 
-  const [hidePast, setHidePast] = useState(false);
-  useEffect(() => {
-    if (hidePast) {
+  const hasOccurrenceStartGTE = useMemo(() => {
+    return queryOptions.dateFilters.some(
+      (filter) =>
+        (filter.field as string) === "occurrenceStart" &&
+        filter.comparison === "GREATER_THAN_OR_EQUAL_TO"
+    );
+  }, [queryOptions.dateFilters]);
+  const toggleHidePast = useCallback(() => {
+    if (hasOccurrenceStartGTE) {
+      // If we are already filtering for events that occur in the future, remove the filter
+      clearFilter("occurrenceStart");
+    } else {
+      // If we are not already filtering for events that occur in the future, add the filter
+      clearFilter("occurrenceStart");
       updateFilter("occurrenceStart", {
         field: "occurrenceStart",
         comparison: "GREATER_THAN_OR_EQUAL_TO",
         value: new Date().toISOString(),
       });
-    } else {
-      clearFilter("occurrenceStart");
     }
-  }, [clearFilter, hidePast, pushSorting, updateFilter]);
+  }, [clearFilter, hasOccurrenceStartGTE, updateFilter]);
 
   const [{ fetching, error, data: eventsDocument }] = useQuery({
     query: eventsTableQueryDocument,
@@ -120,8 +127,8 @@ export const EventsTable = () => {
   return (
     <>
       <div style={{ marginBottom: "1rem" }}>
-        <Button onClick={() => setHidePast(!hidePast)}>
-          {hidePast ? "Show Past" : "Hide Past"}
+        <Button onClick={() => toggleHidePast()}>
+          {hasOccurrenceStartGTE ? "Show Past" : "Hide Past"}
         </Button>
       </div>
       <Table

@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@apollo/client": "3.8.4",
+    "@dev-plugins/async-storage": "^0.0.1",
     "@expo/config-plugins": "~7.8.0",
     "@expo/vector-icons": "^14.0.0",
     "@jonasmerlin/react-native-markdown-display": "^1.1.0",

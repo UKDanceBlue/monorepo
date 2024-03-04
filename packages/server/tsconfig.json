@@ -11,6 +11,8 @@
     "sourceMap": true,
     "allowJs": true,
     "checkJs": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "types": [
       "body-parser",
       "cookie-parser",
