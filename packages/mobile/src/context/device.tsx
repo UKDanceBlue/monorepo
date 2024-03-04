@@ -28,7 +28,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
 import { universalCatch } from "../common/logging";
-import { showMessage } from "../common/util/alertUtils";
 
 import { useAuthState } from "./auth";
 import { useLoading } from "./loading";
@@ -204,7 +203,7 @@ export const DeviceDataProvider = ({
             setPushToken(null);
             setGetsNotifications(false);
 
-            showMessage("Notifications are not supported on emulators.");
+            Logger.warn("Notifications are not supported on emulators.");
           } else {
             Logger.error("Error registering push notifications", { error });
           }
