@@ -91,15 +91,18 @@ export class NotificationDeliveryRepository {
     });
   }
 
-  createNotificationDelivery(data: {
-    device: UniqueParam;
-    notification: UniqueParam;
+  createNotificationDeliveries({
+    deviceIds,
+    notificationId,
+  }: {
+    deviceIds: number[];
+    notificationId: number;
   }) {
-    return this.prisma.notificationDelivery.create({
-      data: {
-        device: { connect: data.device },
-        notification: { connect: data.notification },
-      },
+    return this.prisma.notificationDelivery.createMany({
+      data: deviceIds.map((deviceId) => ({
+        deviceId,
+        notificationId,
+      })),
     });
   }
 
