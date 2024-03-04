@@ -86,6 +86,13 @@ export const msOidcUrl = MS_OIDC_URL;
 export const msClientId = MS_CLIENT_ID;
 export const msClientSecret = MS_CLIENT_SECRET;
 
+// Expo access token
+const { EXPO_ACCESS_TOKEN } = process.env;
+if (!EXPO_ACCESS_TOKEN) {
+  throw new Error("EXPO_ACCESS_TOKEN is not set");
+}
+export const expoAccessToken = EXPO_ACCESS_TOKEN;
+
 // Disable all authorization checks
 const { OVERRIDE_AUTH } = process.env;
 export const authorizationOverride = OVERRIDE_AUTH === "THIS IS DANGEROUS";
