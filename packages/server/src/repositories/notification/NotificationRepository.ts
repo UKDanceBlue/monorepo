@@ -89,7 +89,11 @@ export class NotificationRepository {
     });
   }
 
-  createNotification(data: Prisma.NotificationCreateInput) {
+  createNotification(data: {
+    title: string;
+    body: string;
+    url?: string | undefined | null;
+  }) {
     return this.prisma.notification.create({ data });
   }
 
