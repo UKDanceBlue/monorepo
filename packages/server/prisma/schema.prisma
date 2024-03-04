@@ -250,7 +250,7 @@ model Notification {
   // If set, indicates a potential issue with delivery of the entire notification
   deliveryIssue               String?                @map("delivery_issue")
   // If set, indicates the time at which the delivery issue was acknowledged, null until then
-  deliveryIssueAwknowledgedAt DateTime?              @map("delivery_issue_acknowledged_at") @db.Timestamptz(6)
+  deliveryIssueAcknowledgedAt DateTime?              @map("delivery_issue_acknowledged_at") @db.Timestamptz(6)
 
   @@index([uuid], map: "notifications_uuid")
   @@map("notifications")

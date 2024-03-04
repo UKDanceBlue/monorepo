@@ -1,4 +1,3 @@
-import type { OptionalToNullable } from "@ukdanceblue/common";
 import {
   DetailedError,
   ErrorCode,
@@ -6,6 +5,7 @@ import {
   NotificationResource,
   SortDirection,
 } from "@ukdanceblue/common";
+import { URLResolver } from "graphql-scalars";
 import {
   Arg,
   Args,
@@ -19,7 +19,6 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { auditLogger } from "../lib/logging/auditLogging.js";
 import { NotificationRepository } from "../repositories/notification/NotificationRepository.js";
 import { notificationModelToResource } from "../repositories/notification/notificationModelToResource.js";
 
@@ -43,27 +42,65 @@ class ListNotificationsResponse extends AbstractGraphQLPaginatedResponse<Notific
   @Field(() => [NotificationResource])
   data!: NotificationResource[];
 }
-@ObjectType("SendNotificationResponse", {
-  implements: AbstractGraphQLCreatedResponse<NotificationResource>,
-})
-class SendNotificationResponse extends AbstractGraphQLCreatedResponse<NotificationResource> {
-  @Field(() => NotificationResource)
-  data!: NotificationResource;
-}
-@ObjectType("DeleteNotificationResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-class DeleteNotificationResponse extends AbstractGraphQLOkResponse<never> {}
 
-@InputType()
-class SendNotificationInput
-  implements OptionalToNullable<Partial<NotificationResource>>
-{
+@InputType("StageNotificationInput")
+class StageNotificationInput {
   @Field(() => String)
   title!: string;
 
   @Field(() => String)
   body!: string;
+
+  @Field(() => URLResolver, { nullable: true })
+  url?: URL | null;
+}
+
+@ObjectType("StageNotificationResponse", {
+  implements: AbstractGraphQLCreatedResponse<NotificationResource>,
+})
+class StageNotificationResponse extends AbstractGraphQLCreatedResponse<NotificationResource> {
+  @Field(() => NotificationResource)
+  data!: NotificationResource;
+}
+
+@ObjectType("SendNotificationResponse", {
+  implements: AbstractGraphQLOkResponse<boolean>,
+})
+class SendNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
+  @Field(() => Boolean)
+  data!: boolean;
+}
+
+@ObjectType("ScheduleNotificationResponse", {
+  implements: AbstractGraphQLOkResponse<boolean>,
+})
+class ScheduleNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
+  @Field(() => Boolean)
+  data!: boolean;
+}
+
+@ObjectType("AcknowledgeDeliveryIssueResponse", {
+  implements: AbstractGraphQLOkResponse<boolean>,
+})
+class AcknowledgeDeliveryIssueResponse extends AbstractGraphQLOkResponse<boolean> {
+  @Field(() => Boolean)
+  data!: boolean;
+}
+
+@ObjectType("AbortScheduledNotificationResponse", {
+  implements: AbstractGraphQLOkResponse<boolean>,
+})
+class AbortScheduledNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
+  @Field(() => Boolean)
+  data!: boolean;
+}
+
+@ObjectType("DeleteNotificationResponse", {
+  implements: AbstractGraphQLOkResponse<boolean>,
+})
+class DeleteNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
+  @Field(() => Boolean)
+  data!: boolean;
 }
 
 @ArgsType()
@@ -132,29 +169,56 @@ export class NotificationResolver {
     });
   }
 
+  @Mutation(() => StageNotificationResponse, { name: "stageNotification" })
+  async stage(
+    @Arg("input") input: StageNotificationInput
+  ): Promise<StageNotificationResponse> {
+    throw new Error("Not implemented");
+  }
+
   @Mutation(() => SendNotificationResponse, { name: "sendNotification" })
-  async create(
-    @Arg("input") input: SendNotificationInput
-  ): Promise<SendNotificationResponse> {
-    return SendNotificationResponse.newOk(
-      await Promise.resolve(input as NotificationResource)
-    );
+  async send(@Arg("uuid") uuid: string): Promise<SendNotificationResponse> {
+    throw new Error("Not implemented");
+  }
+
+  @Mutation(() => ScheduleNotificationResponse, {
+    name: "scheduleNotification",
+  })
+  async schedule(
+    @Arg("uuid") uuid: string,
+    @Arg("sendAt") sendAt: Date
+  ): Promise<ScheduleNotificationResponse> {
+    throw new Error("Not implemented");
+  }
+
+  @Mutation(() => AcknowledgeDeliveryIssueResponse, {
+    name: "acknowledgeDeliveryIssue",
+  })
+  async acknowledgeDeliveryIssue(
+    @Arg("uuid") uuid: string
+  ): Promise<AcknowledgeDeliveryIssueResponse> {
+    throw new Error("Not implemented");
+  }
+
+  @Mutation(() => AbortScheduledNotificationResponse, {
+    name: "abortScheduledNotification",
+  })
+  async abortScheduled(
+    @Arg("uuid") uuid: string
+  ): Promise<AbortScheduledNotificationResponse> {
+    throw new Error("Not implemented");
   }
 
   @Mutation(() => DeleteNotificationResponse, { name: "deleteNotification" })
-  async delete(@Arg("uuid") uuid: string): Promise<DeleteNotificationResponse> {
-    const row = await this.notificationRepository.deleteNotification({ uuid });
-
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Notification not found");
-    }
-
-    auditLogger.sensitive("Notification deleted", {
-      uuid: row.uuid,
-      title: row.title,
-      body: row.body,
-    });
-
-    return DeleteNotificationResponse.newOk(true);
+  async delete(
+    @Arg("uuid") uuid: string,
+    @Arg("force", {
+      nullable: true,
+      description:
+        "If true, the notification will be deleted even if it has already been sent, which will also delete the delivery records.",
+    })
+    force?: boolean
+  ): Promise<DeleteNotificationResponse> {
+    throw new Error("Not implemented");
   }
 }
