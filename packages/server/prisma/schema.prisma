@@ -260,27 +260,29 @@ model Notification {
 
 // A record of a notification being sent to a device
 model NotificationDelivery {
-  id             Int                @id @default(autoincrement())
-  uuid           String             @unique(map: "notification_deliveries_uuid_unique") @default(uuid()) @db.Uuid
-  deviceId       Int                @map("device_id")
-  notificationId Int                @map("notification_id")
+  id               Int                @id @default(autoincrement())
+  uuid             String             @unique(map: "notification_deliveries_uuid_unique") @default(uuid()) @db.Uuid
+  deviceId         Int                @map("device_id")
+  notificationId   Int                @map("notification_id")
   // The device to which the notification was sent
-  device         Device             @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  device           Device             @relation(fields: [deviceId], references: [id], onDelete: Cascade)
   // The notification that was sent
-  notification   Notification       @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  notification     Notification       @relation(fields: [notificationId], references: [id], onDelete: Cascade)
   // A unique ID for each chunk of notifications sent to Expo
-  chunkUuid      String?            @map("chunk_uuid") @db.Uuid
+  chunkUuid        String?            @map("chunk_uuid") @db.Uuid
   // The receipt ID from Expo (I *think* this is unique, but I'm not 100% sure)
-  receiptId      String?            @unique @map("receipt_id")
+  receiptId        String?            @unique @map("receipt_id")
   // Null by default, set to true once the notification has been sent to Expo
-  sentAt         DateTime?          @map("sent_at") @db.Timestamptz(6)
-  // Whether the push receipt indicates the notification was delivered, remains null until the receipt is checked
+  sentAt           DateTime?          @map("sent_at") @db.Timestamptz(6)
+  // The time we checked the push receipt from Expo, remains null until the receipt is checked and is always set once it is
   // This is set to the time that the receipt was checked, not necessarily the time the notification was actually delivered
-  deliveredBy    DateTime?          @map("delivered_by") @db.Timestamptz(6)
-  // If set, either the push ticket or receipt indicated an error (not necessarily mutually exclusive with delivered)
-  deliveryError  NotificationError? @map("delivery_error")
-  createdAt      DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt      DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  // Furthermore, this is never set if we got an error from the push ticket down below
+  receiptCheckedAt DateTime?          @map("delivered_by") @db.Timestamptz(6)
+  // If set, either the push ticket or receipt indicated an error
+  // If it is null we assume the notification made it to the device and should be considered delivered
+  deliveryError    NotificationError? @map("delivery_error")
+  createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@index([uuid], map: "notification_deliveries_uuid")
   @@map("notification_deliveries")
@@ -298,6 +300,8 @@ enum NotificationError {
   MessageRateExceeded
   // This indicates that there is an issue with your FCM push credentials.
   MismatchSenderId
+  // This is for any unknown errors that don't have a specific error code, this is not one of Expo's error codes.
+  Unknown
 }
 
 enum MembershipPosition {
