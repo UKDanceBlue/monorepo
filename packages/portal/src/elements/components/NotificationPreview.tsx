@@ -18,6 +18,7 @@ export const NotificationPreview = ({
         padding: "12px",
         border: "1px solid #ccc",
         borderRadius: "8px",
+        width: "50ch",
       }}
     >
       <Avatar

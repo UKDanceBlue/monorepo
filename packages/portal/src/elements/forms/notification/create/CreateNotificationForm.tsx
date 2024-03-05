@@ -3,7 +3,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { Button, Flex, Form, Input } from "antd";
 import TextArea from "antd/es/input/TextArea";
 
-import { NotificationPreview } from "./NotificationPreview";
+import { NotificationPreview } from "../../../components/NotificationPreview";
+
 import { useNotificationCreator } from "./useNotificationCreator";
 
 export const CreateNotificationForm = () => {

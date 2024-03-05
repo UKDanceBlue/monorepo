@@ -17,6 +17,11 @@ const documents = {
     "\n  fragment EventEditorFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      url\n      imageData\n      width\n      height\n      thumbHash\n      alt\n    }\n  }\n": types.EventEditorFragmentFragmentDoc,
     "\n  mutation SaveEvent($uuid: String!, $input: SetEventInput!) {\n    setEvent(uuid: $uuid, input: $input) {\n      data {\n        ...EventEditorFragment\n      }\n    }\n  }\n": types.SaveEventDocument,
     "\n  mutation CreateNotification(\n    $title: String!\n    $body: String!\n    $audience: NotificationAudienceInput!\n    $url: String\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n": types.CreateNotificationDocument,
+    "\n  fragment NotificationManagerFragment on NotificationResource {\n    uuid\n    title\n    body\n    deliveryIssue\n    deliveryIssueAcknowledgedAt\n    sendAt\n    startedSendingAt\n    createdAt\n  }\n": types.NotificationManagerFragmentFragmentDoc,
+    "\n  mutation CancelNotificationSchedule($uuid: String!) {\n    abortScheduledNotification(uuid: $uuid) {\n      ok\n    }\n  }\n": types.CancelNotificationScheduleDocument,
+    "\n  mutation DeleteNotification($uuid: String!, $force: Boolean) {\n    deleteNotification(uuid: $uuid, force: $force) {\n      ok\n    }\n  }\n": types.DeleteNotificationDocument,
+    "\n  mutation SendNotification($uuid: String!) {\n    sendNotification(uuid: $uuid) {\n      ok\n    }\n  }\n": types.SendNotificationDocument,
+    "\n  mutation ScheduleNotification($uuid: String!, $sendAt: DateTimeISO!) {\n    scheduleNotification(uuid: $uuid, sendAt: $sendAt) {\n      ok\n    }\n  }\n": types.ScheduleNotificationDocument,
     "\n  fragment TeamNameFragment on TeamResource {\n    uuid\n    name\n  }\n": types.TeamNameFragmentFragmentDoc,
     "\n  mutation PersonCreator($input: CreatePersonInput!) {\n    createPerson(input: $input) {\n      ok\n      uuid\n    }\n  }\n": types.PersonCreatorDocument,
     "\n  fragment PersonEditorFragment on PersonResource {\n    uuid\n    name\n    linkblue\n    email\n    role {\n      committeeRole\n      committeeIdentifier\n    }\n    teams {\n      position\n      team {\n        uuid\n        name\n      }\n    }\n  }\n": types.PersonEditorFragmentFragmentDoc,
@@ -53,6 +58,7 @@ const documents = {
     "\n      query ConfigQuery {\n        allConfigurations {\n          data {\n            ...ConfigFragment\n          }\n        }\n      }\n    ": types.ConfigQueryDocument,
     "\n  query EditEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventEditorFragment\n      }\n    }\n  }\n": types.EditEventPageDocument,
     "\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n": types.ViewEventPageDocument,
+    "\n  query NotificationManager($uuid: String!) {\n    notification(uuid: $uuid) {\n      data {\n        ...NotificationManagerFragment\n      }\n    }\n  }\n": types.NotificationManagerDocument,
     "\n  query CreatePersonPage {\n    teams(sendAll: true, sortBy: [\"name\"], sortDirection: [ASCENDING]) {\n      data {\n        ...TeamNameFragment\n      }\n    }\n  }\n": types.CreatePersonPageDocument,
     "\n  query EditPersonPage($uuid: String!) {\n    person(uuid: $uuid) {\n      data {\n        ...PersonEditorFragment\n      }\n    }\n    teams(sendAll: true, sortBy: [\"name\"], sortDirection: [ASCENDING]) {\n      data {\n        ...TeamNameFragment\n      }\n    }\n  }\n": types.EditPersonPageDocument,
     "\n  query ViewPersonPage($uuid: String!) {\n    person(uuid: $uuid) {\n      data {\n        ...PersonViewerFragment\n      }\n    }\n  }\n": types.ViewPersonPageDocument,
@@ -90,6 +96,26 @@ export function graphql(source: "\n  mutation SaveEvent($uuid: String!, $input: 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation CreateNotification(\n    $title: String!\n    $body: String!\n    $audience: NotificationAudienceInput!\n    $url: String\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n"): (typeof documents)["\n  mutation CreateNotification(\n    $title: String!\n    $body: String!\n    $audience: NotificationAudienceInput!\n    $url: String\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment NotificationManagerFragment on NotificationResource {\n    uuid\n    title\n    body\n    deliveryIssue\n    deliveryIssueAcknowledgedAt\n    sendAt\n    startedSendingAt\n    createdAt\n  }\n"): (typeof documents)["\n  fragment NotificationManagerFragment on NotificationResource {\n    uuid\n    title\n    body\n    deliveryIssue\n    deliveryIssueAcknowledgedAt\n    sendAt\n    startedSendingAt\n    createdAt\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CancelNotificationSchedule($uuid: String!) {\n    abortScheduledNotification(uuid: $uuid) {\n      ok\n    }\n  }\n"): (typeof documents)["\n  mutation CancelNotificationSchedule($uuid: String!) {\n    abortScheduledNotification(uuid: $uuid) {\n      ok\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteNotification($uuid: String!, $force: Boolean) {\n    deleteNotification(uuid: $uuid, force: $force) {\n      ok\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteNotification($uuid: String!, $force: Boolean) {\n    deleteNotification(uuid: $uuid, force: $force) {\n      ok\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation SendNotification($uuid: String!) {\n    sendNotification(uuid: $uuid) {\n      ok\n    }\n  }\n"): (typeof documents)["\n  mutation SendNotification($uuid: String!) {\n    sendNotification(uuid: $uuid) {\n      ok\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ScheduleNotification($uuid: String!, $sendAt: DateTimeISO!) {\n    scheduleNotification(uuid: $uuid, sendAt: $sendAt) {\n      ok\n    }\n  }\n"): (typeof documents)["\n  mutation ScheduleNotification($uuid: String!, $sendAt: DateTimeISO!) {\n    scheduleNotification(uuid: $uuid, sendAt: $sendAt) {\n      ok\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -234,6 +260,10 @@ export function graphql(source: "\n  query EditEventPage($uuid: String!) {\n    
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query NotificationManager($uuid: String!) {\n    notification(uuid: $uuid) {\n      data {\n        ...NotificationManagerFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query NotificationManager($uuid: String!) {\n    notification(uuid: $uuid) {\n      data {\n        ...NotificationManagerFragment\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
