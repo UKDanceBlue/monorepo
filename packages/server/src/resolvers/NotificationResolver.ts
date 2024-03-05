@@ -17,8 +17,10 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Inject, Service } from "typedi";
 
+import { ExpoNotificationProvider } from "../lib/notification/ExpoNotificationProvider.js";
+import * as NotificationProviderJs from "../lib/notification/NotificationProvider.js";
 import { NotificationRepository } from "../repositories/notification/NotificationRepository.js";
 import { notificationModelToResource } from "../repositories/notification/notificationModelToResource.js";
 
@@ -43,8 +45,14 @@ class ListNotificationsResponse extends AbstractGraphQLPaginatedResponse<Notific
   data!: NotificationResource[];
 }
 
-@InputType("StageNotificationInput")
-class StageNotificationInput {
+@InputType()
+class NotificationAudienceInput {
+  @Field(() => Boolean, { nullable: true })
+  all?: boolean;
+}
+
+@ArgsType()
+class StageNotificationArgs {
   @Field(() => String)
   title!: string;
 
@@ -53,6 +61,9 @@ class StageNotificationInput {
 
   @Field(() => URLResolver, { nullable: true })
   url?: URL | null;
+
+  @Field(() => NotificationAudienceInput)
+  audience!: NotificationAudienceInput;
 }
 
 @ObjectType("StageNotificationResponse", {
@@ -121,7 +132,9 @@ class ListNotificationsArgs extends FilteredListQueryArgs<
 @Service()
 export class NotificationResolver {
   constructor(
-    private readonly notificationRepository: NotificationRepository
+    private readonly notificationRepository: NotificationRepository,
+    @Inject(() => ExpoNotificationProvider)
+    private readonly notificationProvider: NotificationProviderJs.NotificationProvider
   ) {}
 
   @Query(() => GetNotificationByUuidResponse, { name: "notification" })
@@ -171,9 +184,21 @@ export class NotificationResolver {
 
   @Mutation(() => StageNotificationResponse, { name: "stageNotification" })
   async stage(
-    @Arg("input") input: StageNotificationInput
+    @Args(() => StageNotificationArgs) args: StageNotificationArgs
   ): Promise<StageNotificationResponse> {
-    throw new Error("Not implemented");
+    const result = await this.notificationProvider.makeNotification(
+      {
+        title: args.title,
+        body: args.body,
+        url: args.url ?? undefined,
+      },
+      args.audience.all ? "all" : {}
+    );
+
+    return StageNotificationResponse.newCreated(
+      notificationModelToResource(result),
+      result.uuid
+    );
   }
 
   @Mutation(() => SendNotificationResponse, { name: "sendNotification" })
