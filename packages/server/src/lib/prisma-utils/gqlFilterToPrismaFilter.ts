@@ -131,7 +131,7 @@ export function isNullFilterToPrisma<T extends string>(
 ):
   | Prisma.IntNullableFilter
   | Prisma.StringNullableFilter
-  | Prisma.BoolNullableFilter
+  // | Prisma.BoolNullableFilter
   | Prisma.DateTimeNullableFilter {
   if (filter.negate) {
     return { not: { equals: null } };
