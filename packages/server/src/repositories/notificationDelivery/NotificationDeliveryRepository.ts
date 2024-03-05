@@ -1,6 +1,6 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { NotificationError, Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
-import type { ExpoPushTicket } from "expo-server-sdk";
+import type { ExpoPushReceipt, ExpoPushTicket } from "expo-server-sdk";
 import type { DateTime } from "luxon";
 import { Service } from "typedi";
 
@@ -65,6 +65,26 @@ export class NotificationDeliveryRepository {
     return data?.device;
   }
 
+  async findUncheckedDeliveries() {
+    const returnVal = await this.prisma.notificationDelivery.findMany({
+      where: {
+        AND: [
+          { receiptCheckedAt: null },
+          { deliveryError: null },
+          { receiptId: { not: null } },
+        ],
+      },
+      select: { id: true, receiptId: true, device: { select: { id: true } } },
+    });
+
+    // THIS IS ONLY VALID SO LONG AS THE WHERE FOR receiptId IS NOT NULL
+    return returnVal as Array<
+      Omit<(typeof returnVal)[number], "receiptId"> & {
+        receiptId: NonNullable<(typeof returnVal)[number]["receiptId"]>;
+      }
+    >;
+  }
+
   listNotificationDeliveries({
     filters,
     order,
@@ -127,7 +147,7 @@ export class NotificationDeliveryRepository {
     });
   }
 
-  updateChunk({
+  updateTicketChunk({
     chunkUuid,
     tickets,
     sentAt,
@@ -147,6 +167,46 @@ export class NotificationDeliveryRepository {
         })
       )
     );
+  }
+
+  updateReceiptChunk({
+    receipts,
+  }: {
+    receipts: { receipt: ExpoPushReceipt; deliveryId: number }[];
+  }) {
+    // We can optimize this a bit by using a single query for all the successful
+    // receipts, and then another one for each unique error message.
+
+    const successfulDeliveries: number[] = [];
+    // Map of error message to delivery IDs
+    const errorReceipts = new Map<NotificationError, number[]>();
+    for (const param of receipts) {
+      if (param.receipt.status === "ok") {
+        successfulDeliveries.push(param.deliveryId);
+      } else {
+        const existing =
+          errorReceipts.get(
+            param.receipt.details?.error ?? NotificationError.Unknown
+          ) ?? [];
+        errorReceipts.set(
+          param.receipt.details?.error ?? NotificationError.Unknown,
+          [...existing, param.deliveryId]
+        );
+      }
+    }
+
+    return this.prisma.$transaction([
+      this.prisma.notificationDelivery.updateMany({
+        where: { id: { in: successfulDeliveries } },
+        data: { receiptCheckedAt: new Date() },
+      }),
+      ...[...errorReceipts.entries()].map(([error, deliveryIds]) =>
+        this.prisma.notificationDelivery.updateMany({
+          where: { id: { in: deliveryIds } },
+          data: { deliveryError: error },
+        })
+      ),
+    ]);
   }
 
   updateNotificationDelivery(

@@ -310,7 +310,7 @@ export class ExpoNotificationProvider implements NotificationProvider {
 
       // Lifecycle step 7,8
       try {
-        await this.notificationDeliveryRepository.updateChunk({
+        await this.notificationDeliveryRepository.updateTicketChunk({
           chunkUuid: randomUUID(),
           tickets: ticketChunk.map(([ticket, deliveryUuid]) => ({
             ticket,
