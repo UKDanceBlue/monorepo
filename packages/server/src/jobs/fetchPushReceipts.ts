@@ -1,6 +1,7 @@
 import Cron from "croner";
 import { Container } from "typedi";
 
+import { logger } from "../lib/logging/standardLogging.js";
 import { ExpoPushReceiptHandler } from "../lib/notification/ExpoPushReceiptHandler.js";
 
 export const fetchPushReceipts = new Cron(
@@ -12,7 +13,12 @@ export const fetchPushReceipts = new Cron(
     },
   },
   async () => {
-    const expoPushReceiptHandler = Container.get(ExpoPushReceiptHandler);
-    await expoPushReceiptHandler.handlePushReceipts();
+    try {
+      logger.info("Fetching push receipts");
+      const expoPushReceiptHandler = Container.get(ExpoPushReceiptHandler);
+      await expoPushReceiptHandler.handlePushReceipts();
+    } catch (error) {
+      console.error("Failed to fetch push receipts", { error });
+    }
   }
 );
