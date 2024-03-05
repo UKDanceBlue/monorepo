@@ -7,9 +7,8 @@ import { DetailedError, ErrorCode } from "@ukdanceblue/common";
 import type { ExpoPushMessage, ExpoPushTicket } from "expo-server-sdk";
 import { Expo } from "expo-server-sdk";
 import { DateTime } from "luxon";
-import { Container, Service } from "typedi";
+import { Service } from "typedi";
 
-import { expoAccessToken } from "../../environment.js";
 import { DeviceRepository } from "../../repositories/device/DeviceRepository.js";
 import { NotificationRepository } from "../../repositories/notification/NotificationRepository.js";
 import { NotificationDeliveryRepository } from "../../repositories/notificationDelivery/NotificationDeliveryRepository.js";
@@ -53,8 +52,6 @@ function makeExpoNotifications(
 
   return messages;
 }
-
-Container.set(Expo, new Expo({ accessToken: expoAccessToken }));
 
 @Service()
 export class ExpoNotificationProvider implements NotificationProvider {

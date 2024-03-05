@@ -1,4 +1,6 @@
 import dotenv from "dotenv";
+import { Expo } from "expo-server-sdk";
+import { Container } from "typedi";
 
 import type { SyslogLevels } from "./lib/logging/standardLogging.js";
 
@@ -92,6 +94,8 @@ if (!EXPO_ACCESS_TOKEN) {
   throw new Error("EXPO_ACCESS_TOKEN is not set");
 }
 export const expoAccessToken = EXPO_ACCESS_TOKEN;
+
+Container.set(Expo, new Expo({ accessToken: expoAccessToken }));
 
 // Disable all authorization checks
 const { OVERRIDE_AUTH } = process.env;
