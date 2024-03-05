@@ -18,6 +18,7 @@ import {
 } from "type-graphql";
 import { Inject, Service } from "typedi";
 
+import { NotificationScheduler } from "../jobs/NotificationScheduler.js";
 import { ExpoNotificationProvider } from "../lib/notification/ExpoNotificationProvider.js";
 import * as NotificationProviderJs from "../lib/notification/NotificationProvider.js";
 import { NotificationRepository } from "../repositories/notification/NotificationRepository.js";
@@ -133,7 +134,8 @@ export class NotificationResolver {
   constructor(
     private readonly notificationRepository: NotificationRepository,
     @Inject(() => ExpoNotificationProvider)
-    private readonly notificationProvider: NotificationProviderJs.NotificationProvider
+    private readonly notificationProvider: NotificationProviderJs.NotificationProvider,
+    private readonly notificationScheduler: NotificationScheduler
   ) {}
 
   @Query(() => GetNotificationByUuidResponse, { name: "notification" })
@@ -205,10 +207,22 @@ export class NotificationResolver {
     description: "Send a notification immediately.",
   })
   async send(@Arg("uuid") uuid: string): Promise<SendNotificationResponse> {
+    const databaseNotification =
+      await this.notificationRepository.findNotificationByUnique({ uuid });
+
+    if (databaseNotification == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Notification not found");
+    }
+
+    if (databaseNotification.sendAt != null) {
+      throw new DetailedError(
+        ErrorCode.InvalidRequest,
+        "Cannot send a scheduled notification, cancel the schedule first."
+      );
+    }
+
     await this.notificationProvider.sendNotification({
-      where: {
-        uuid,
-      },
+      value: databaseNotification,
     });
 
     return SendNotificationResponse.newOk(true);
@@ -239,6 +253,8 @@ export class NotificationResolver {
       { id: notification.id },
       { sendAt }
     );
+
+    this.notificationScheduler.ensureNotificationScheduler();
 
     return ScheduleNotificationResponse.newOk(true);
   }

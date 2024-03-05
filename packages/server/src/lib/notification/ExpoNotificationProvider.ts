@@ -134,13 +134,6 @@ export class ExpoNotificationProvider implements NotificationProvider {
       );
     }
 
-    if (databaseNotification.sendAt != null) {
-      throw new DetailedError(
-        ErrorCode.InvalidRequest,
-        "Cannot send a scheduled notification, cancel the schedule first."
-      );
-    }
-
     if (databaseNotification.startedSendingAt != null) {
       throw new DetailedError(
         ErrorCode.InvalidRequest,
@@ -166,19 +159,19 @@ export class ExpoNotificationProvider implements NotificationProvider {
 
       if (result === "AllSent") {
         logger.info("Notification sent", {
-          notification: databaseNotification,
+          notificationUuid: databaseNotification.uuid,
         });
       }
 
       if (result === "SomeFailed") {
         logger.warning("Notification partially sent", {
-          notification: databaseNotification,
+          notificationUuid: databaseNotification.uuid,
         });
       }
 
       if (result === "AllFailed") {
         logger.error("Notification failed to send", {
-          notification: databaseNotification,
+          notificationUuid: databaseNotification.uuid,
         });
       }
     } catch (error) {
@@ -186,6 +179,9 @@ export class ExpoNotificationProvider implements NotificationProvider {
     }
   }
 
+  /**
+   * Create a notification in the database, finds the devices to send it to, and creates the delivery rows.
+   */
   private async addNotificationToDatabase(
     sendable: SendableNotification,
     audience: NotificationAudience
@@ -211,6 +207,9 @@ export class ExpoNotificationProvider implements NotificationProvider {
     return databaseNotification;
   }
 
+  /**
+   * Send the notification to Expo and update the database with the results.
+   */
   private async completeNotificationDelivery(
     databaseNotification: Notification
   ): Promise<"AllSent" | "SomeFailed" | "AllFailed" | "NoAction"> {
@@ -247,6 +246,17 @@ export class ExpoNotificationProvider implements NotificationProvider {
       chunks = this.expoSdk.chunkPushNotifications(messages);
     } catch (error) {
       logger.error("Error chunking notifications", { error });
+      return "NoAction";
+    }
+
+    // Remove the sendAt date so that the notification is not sent again
+    try {
+      await this.notificationRepository.updateNotification(
+        { id: databaseNotification.id },
+        { sendAt: null }
+      );
+    } catch (error) {
+      logger.error("Error clearing sendAt date on notification", { error });
       return "NoAction";
     }
 
