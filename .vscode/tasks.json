@@ -1,0 +1,110 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "server:prisma-generate",
+      "problemMatcher": [],
+      "label": "Server: Prisma Generate",
+      "detail": "yarn workspace @ukdanceblue/server prisma generate"
+    },
+    {
+      "type": "npm",
+      "script": "common:build",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "Common: Build",
+      "detail": "yarn workspace @ukdanceblue/common run build",
+      "dependsOn": ["GraphQL: Build"]
+    },
+    {
+      "type": "npm",
+      "script": "gql:build",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "GraphQL: Build",
+      "detail": "graphql-codegen-esm --config codegen.ts"
+    },
+    {
+      "type": "npm",
+      "script": "repo:lint",
+      "problemMatcher": [],
+      "label": "Repo: Lint",
+      "detail": "eslint ."
+    },
+    {
+      "type": "npm",
+      "script": "repo:lint:fix",
+      "problemMatcher": [],
+      "label": "Repo: Lint (fix)",
+      "detail": "eslint --fix ."
+    },
+    {
+      "type": "npm",
+      "script": "repo:format",
+      "problemMatcher": [],
+      "label": "Repo: Format",
+      "detail": "prettier ."
+    },
+    {
+      "type": "npm",
+      "script": "repo:format:fix",
+      "problemMatcher": [],
+      "label": "Repo: Format (fix)",
+      "detail": "prettier --write ."
+    },
+    {
+      "type": "npm",
+      "script": "repo:lint:report",
+      "problemMatcher": [],
+      "label": "Repo: Lint (report)",
+      "detail": "eslint --output-file eslint_report.json --format json ."
+    },
+    {
+      "type": "npm",
+      "script": "repo:test",
+      "problemMatcher": [],
+      "label": "Repo: Test",
+      "detail": "vitest"
+    },
+    {
+      "type": "npm",
+      "script": "repo:test-ui",
+      "problemMatcher": [],
+      "label": "Repo: Test (webUI)",
+      "detail": "vitest --ui --coverage"
+    },
+    {
+      "type": "npm",
+      "script": "repo:coverage",
+      "problemMatcher": [],
+      "label": "Repo: Coverage",
+      "detail": "vitest run --coverage"
+    },
+    {
+      "type": "npm",
+      "script": "repo:coverage-browser",
+      "problemMatcher": [],
+      "label": "Repo: Coverage (browser)",
+      "detail": "vitest run --coverage --reporter html && yarn dlx vite preview --outDir html"
+    },
+    {
+      "type": "npm",
+      "script": "portal:build",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "Portal: Build",
+      "detail": "yarn workspace @ukdanceblue/portal build",
+      "dependsOn": ["Common: Build"]
+    },
+    {
+      "type": "npm",
+      "script": "server:build",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "Server: Build",
+      "detail": "yarn workspace @ukdanceblue/server run build",
+      "dependsOn": ["Server: Prisma Generate", "Common: Build"]
+    }
+  ]
+}
