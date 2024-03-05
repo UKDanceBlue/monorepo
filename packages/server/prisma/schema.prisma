@@ -243,6 +243,8 @@ model Notification {
   body                        String
   // The time at which the notification should be sent, if null it's already been sent
   sendAt                      DateTime?              @map("send_at") @db.Timestamptz(6)
+  // The time at which the process of sending the notification was started
+  startedSendingAt            DateTime?              @map("started_sending_at") @db.Timestamptz(6)
   // URL to open when the notification is tapped
   url                         String?
   // Every individual delivery of the notification

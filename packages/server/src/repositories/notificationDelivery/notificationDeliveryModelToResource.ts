@@ -6,6 +6,7 @@ export function notificationDeliveryModelToResource(
 ): NotificationDeliveryResource {
   return NotificationDeliveryResource.init({
     uuid: notificationDeliveryModel.uuid,
+    sentAt: notificationDeliveryModel.sentAt,
     deliveredBy: notificationDeliveryModel.deliveredBy,
     chunkUuid: notificationDeliveryModel.chunkUuid,
     deliveryError: notificationDeliveryModel.deliveryError,

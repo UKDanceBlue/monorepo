@@ -28,6 +28,19 @@ export class NotificationResource extends TimestampedResource {
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   deliveryIssueAcknowledgedAt?: Date | null;
 
+  @Field(() => Date, {
+    nullable: true,
+    description:
+      "The time the notification is scheduled to be sent, if null it is either already sent or unscheduled.",
+  })
+  sendAt?: Date | null;
+
+  @Field(() => Date, {
+    nullable: true,
+    description: "The time the server started sending the notification.",
+  })
+  startedSendingAt?: Date | null;
+
   public getUniqueId(): string {
     return this.uuid;
   }
@@ -45,8 +58,16 @@ export class NotificationDeliveryResource extends TimestampedResource {
   @Field(() => Date, {
     nullable: true,
     description:
+      "The time the server sent the notification to Expo for delivery.",
+  })
+  sentAt?: Date | null;
+
+  @Field(() => Date, {
+    nullable: true,
+    description:
       "The time the server received a delivery receipt from the user.",
   })
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   deliveredBy?: Date | null;
 
   @Field(() => String, {

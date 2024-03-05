@@ -11,6 +11,8 @@ export function notificationModelToResource(
     url: notificationModel.url ? new URL(notificationModel.url) : null,
     deliveryIssue: notificationModel.deliveryIssue,
     deliveryIssueAcknowledgedAt: notificationModel.deliveryIssueAcknowledgedAt,
+    sendAt: notificationModel.sendAt,
+    startedSendingAt: notificationModel.startedSendingAt,
     createdAt: notificationModel.createdAt,
     updatedAt: notificationModel.updatedAt,
   });
