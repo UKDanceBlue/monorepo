@@ -5,7 +5,6 @@ import {
   NotificationResource,
   SortDirection,
 } from "@ukdanceblue/common";
-import { URLResolver } from "graphql-scalars";
 import {
   Arg,
   Args,
@@ -59,8 +58,8 @@ class StageNotificationArgs {
   @Field(() => String)
   body!: string;
 
-  @Field(() => URLResolver, { nullable: true })
-  url?: URL | null;
+  @Field(() => String, { nullable: true })
+  url?: string | null;
 
   @Field(() => NotificationAudienceInput)
   audience!: NotificationAudienceInput;
@@ -190,7 +189,7 @@ export class NotificationResolver {
       {
         title: args.title,
         body: args.body,
-        url: args.url ?? undefined,
+        url: args.url ? new URL(args.url) : undefined,
       },
       args.audience.all ? "all" : {}
     );

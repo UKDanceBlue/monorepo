@@ -3,6 +3,11 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type AbortScheduledNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: Boolean!
+  ok: Boolean!
+}
+
 """API response"""
 interface AbstractGraphQLArrayOkResponse implements GraphQLBaseResponse {
   ok: Boolean!
@@ -31,6 +36,11 @@ interface AbstractGraphQLPaginatedResponse implements AbstractGraphQLArrayOkResp
 
   """The total number of items"""
   total: NonNegativeInt!
+}
+
+type AcknowledgeDeliveryIssueResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: Boolean!
+  ok: Boolean!
 }
 
 input AddEventImageInput {
@@ -227,6 +237,7 @@ type DeleteImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseRespo
 }
 
 type DeleteNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: Boolean!
   ok: Boolean!
 }
 
@@ -609,6 +620,8 @@ type MembershipResource {
 }
 
 type Mutation {
+  abortScheduledNotification(uuid: String!): AbortScheduledNotificationResponse!
+  acknowledgeDeliveryIssue(uuid: String!): AcknowledgeDeliveryIssueResponse!
   addExistingImageToEvent(eventId: String!, imageId: String!): AddEventImageResponse!
   addImageToEvent(eventId: String!, input: AddEventImageInput!): AddEventImageResponse!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
@@ -623,22 +636,36 @@ type Mutation {
   deleteDevice(uuid: String!): DeleteDeviceResponse!
   deleteEvent(uuid: String!): DeleteEventResponse!
   deleteImage(uuid: String!): DeleteImageResponse!
-  deleteNotification(uuid: String!): DeleteNotificationResponse!
+  deleteNotification(
+    """
+    If true, the notification will be deleted even if it has already been sent, which will also delete the delivery records.
+    """
+    force: Boolean
+    uuid: String!
+  ): DeleteNotificationResponse!
   deletePerson(uuid: String!): DeletePersonResponse!
   deletePointEntry(uuid: String!): DeletePointEntryResponse!
   deletePointOpportunity(uuid: String!): DeletePointOpportunityResponse!
   deleteTeam(uuid: String!): DeleteTeamResponse!
   registerDevice(input: RegisterDeviceInput!): RegisterDeviceResponse!
   removeImageFromEvent(eventId: String!, imageId: String!): RemoveEventImageResponse!
-  sendNotification(input: SendNotificationInput!): SendNotificationResponse!
+  scheduleNotification(sendAt: DateTimeISO!, uuid: String!): ScheduleNotificationResponse!
+
+  """Send a notification immediately."""
+  sendNotification(uuid: String!): SendNotificationResponse!
   setEvent(input: SetEventInput!, uuid: String!): SetEventResponse!
   setPerson(input: SetPersonInput!, uuid: String!): GetPersonResponse!
   setPointOpportunity(input: SetPointOpportunityInput!, uuid: String!): SinglePointOpportunityResponse!
   setTeam(input: SetTeamInput!, uuid: String!): SingleTeamResponse!
+  stageNotification(audience: NotificationAudienceInput!, body: String!, title: String!, url: String): StageNotificationResponse!
 }
 
 """Integers that will have a value of 0 or more."""
 scalar NonNegativeInt
+
+input NotificationAudienceInput {
+  all: Boolean
+}
 
 enum NotificationResolverAllKeys {
   body
@@ -709,17 +736,18 @@ enum NotificationResolverStringFilterKeys {
 type NotificationResource {
   body: String!
   createdAt: DateTimeISO
+  deliveryIssue: String
+  deliveryIssueAcknowledgedAt: DateTimeISO
 
   """
-  The time the notification should have been received by the device (if applicable)
+  The time the notification is scheduled to be sent, if null it is either already sent or unscheduled.
   """
-  receivedAt: DateTimeISO
+  sendAt: DateTimeISO
+
+  """The time the server started sending the notification."""
+  startedSendingAt: DateTimeISO
   title: String!
   updatedAt: DateTimeISO
-
-  """
-  A URL related to the notification, opened immediately for presentation type URL, opened in a webview for presentation type IN_APP_VIEW, and shown as a button for presentation type INFO_POPUP
-  """
   url: URL
   uuid: ID!
 }
@@ -1288,15 +1316,14 @@ input RoleResourceInput {
   dbRole: DbRole! = None
 }
 
-input SendNotificationInput {
-  body: String!
-  title: String!
+type ScheduleNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: Boolean!
+  ok: Boolean!
 }
 
-type SendNotificationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: NotificationResource!
+type SendNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: Boolean!
   ok: Boolean!
-  uuid: String!
 }
 
 input SetEventInput {
@@ -1359,6 +1386,12 @@ type SingleTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseRespon
 enum SortDirection {
   ASCENDING
   DESCENDING
+}
+
+type StageNotificationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: NotificationResource!
+  ok: Boolean!
+  uuid: String!
 }
 
 enum StringComparator {

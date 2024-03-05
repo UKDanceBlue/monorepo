@@ -39,6 +39,12 @@ export type Scalars = {
   Void: { input: void; output: void; }
 };
 
+export type AbortScheduledNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'AbortScheduledNotificationResponse';
+  readonly data: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
+};
+
 /** API response */
 export type AbstractGraphQlArrayOkResponse = {
   readonly ok: Scalars['Boolean']['output'];
@@ -64,6 +70,12 @@ export type AbstractGraphQlPaginatedResponse = {
   readonly pageSize: Scalars['NonNegativeInt']['output'];
   /** The total number of items */
   readonly total: Scalars['NonNegativeInt']['output'];
+};
+
+export type AcknowledgeDeliveryIssueResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'AcknowledgeDeliveryIssueResponse';
+  readonly data: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type AddEventImageInput = {
@@ -254,6 +266,7 @@ export type DeleteImageResponse = AbstractGraphQlOkResponse & GraphQlBaseRespons
 
 export type DeleteNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeleteNotificationResponse';
+  readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
 };
 
@@ -610,6 +623,8 @@ export type MembershipResource = {
 
 export type Mutation = {
   readonly __typename?: 'Mutation';
+  readonly abortScheduledNotification: AbortScheduledNotificationResponse;
+  readonly acknowledgeDeliveryIssue: AcknowledgeDeliveryIssueResponse;
   readonly addExistingImageToEvent: AddEventImageResponse;
   readonly addImageToEvent: AddEventImageResponse;
   readonly createConfiguration: CreateConfigurationResponse;
@@ -631,11 +646,24 @@ export type Mutation = {
   readonly deleteTeam: DeleteTeamResponse;
   readonly registerDevice: RegisterDeviceResponse;
   readonly removeImageFromEvent: RemoveEventImageResponse;
+  readonly scheduleNotification: ScheduleNotificationResponse;
+  /** Send a notification immediately. */
   readonly sendNotification: SendNotificationResponse;
   readonly setEvent: SetEventResponse;
   readonly setPerson: GetPersonResponse;
   readonly setPointOpportunity: SinglePointOpportunityResponse;
   readonly setTeam: SingleTeamResponse;
+  readonly stageNotification: StageNotificationResponse;
+};
+
+
+export type MutationAbortScheduledNotificationArgs = {
+  uuid: Scalars['String']['input'];
+};
+
+
+export type MutationAcknowledgeDeliveryIssueArgs = {
+  uuid: Scalars['String']['input'];
 };
 
 
@@ -712,6 +740,7 @@ export type MutationDeleteImageArgs = {
 
 
 export type MutationDeleteNotificationArgs = {
+  force?: InputMaybe<Scalars['Boolean']['input']>;
   uuid: Scalars['String']['input'];
 };
 
@@ -747,8 +776,14 @@ export type MutationRemoveImageFromEventArgs = {
 };
 
 
+export type MutationScheduleNotificationArgs = {
+  sendAt: Scalars['DateTimeISO']['input'];
+  uuid: Scalars['String']['input'];
+};
+
+
 export type MutationSendNotificationArgs = {
-  input: SendNotificationInput;
+  uuid: Scalars['String']['input'];
 };
 
 
@@ -773,6 +808,18 @@ export type MutationSetPointOpportunityArgs = {
 export type MutationSetTeamArgs = {
   input: SetTeamInput;
   uuid: Scalars['String']['input'];
+};
+
+
+export type MutationStageNotificationArgs = {
+  audience: NotificationAudienceInput;
+  body: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type NotificationAudienceInput = {
+  readonly all?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export const NotificationResolverAllKeys = {
@@ -834,11 +881,14 @@ export type NotificationResource = {
   readonly __typename?: 'NotificationResource';
   readonly body: Scalars['String']['output'];
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  /** The time the notification should have been received by the device (if applicable) */
-  readonly receivedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly deliveryIssue?: Maybe<Scalars['String']['output']>;
+  readonly deliveryIssueAcknowledgedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  /** The time the notification is scheduled to be sent, if null it is either already sent or unscheduled. */
+  readonly sendAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  /** The time the server started sending the notification. */
+  readonly startedSendingAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly title: Scalars['String']['output'];
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  /** A URL related to the notification, opened immediately for presentation type URL, opened in a webview for presentation type IN_APP_VIEW, and shown as a button for presentation type INFO_POPUP */
   readonly url?: Maybe<Scalars['URL']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
@@ -1254,16 +1304,16 @@ export type RoleResourceInput = {
   readonly dbRole?: DbRole;
 };
 
-export type SendNotificationInput = {
-  readonly body: Scalars['String']['input'];
-  readonly title: Scalars['String']['input'];
+export type ScheduleNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'ScheduleNotificationResponse';
+  readonly data: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
 };
 
-export type SendNotificationResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type SendNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'SendNotificationResponse';
-  readonly data: NotificationResource;
+  readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
-  readonly uuid: Scalars['String']['output'];
 };
 
 export type SetEventInput = {
@@ -1324,6 +1374,13 @@ export type SingleTeamResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse
 };
 
 export { SortDirection };
+
+export type StageNotificationResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'StageNotificationResponse';
+  readonly data: NotificationResource;
+  readonly ok: Scalars['Boolean']['output'];
+  readonly uuid: Scalars['String']['output'];
+};
 
 export { StringComparator };
 
