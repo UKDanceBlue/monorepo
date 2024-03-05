@@ -825,6 +825,9 @@ export type NotificationAudienceInput = {
 export const NotificationResolverAllKeys = {
   Body: 'body',
   CreatedAt: 'createdAt',
+  DeliveryIssue: 'deliveryIssue',
+  SendAt: 'sendAt',
+  StartedSendingAt: 'startedSendingAt',
   Title: 'title',
   UpdatedAt: 'updatedAt'
 } as const;
@@ -832,6 +835,8 @@ export const NotificationResolverAllKeys = {
 export type NotificationResolverAllKeys = typeof NotificationResolverAllKeys[keyof typeof NotificationResolverAllKeys];
 export const NotificationResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
+  SendAt: 'sendAt',
+  StartedSendingAt: 'startedSendingAt',
   UpdatedAt: 'updatedAt'
 } as const;
 
@@ -855,7 +860,7 @@ export type NotificationResolverKeyedIsNullFilterItem = {
 
 export type NotificationResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: Scalars['Void']['input'];
+  readonly field: NotificationResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
@@ -871,6 +876,11 @@ export type NotificationResolverKeyedStringFilterItem = {
   readonly value: Scalars['String']['input'];
 };
 
+export const NotificationResolverOneOfFilterKeys = {
+  DeliveryIssue: 'deliveryIssue'
+} as const;
+
+export type NotificationResolverOneOfFilterKeys = typeof NotificationResolverOneOfFilterKeys[keyof typeof NotificationResolverOneOfFilterKeys];
 export const NotificationResolverStringFilterKeys = {
   Body: 'body',
   Title: 'title'

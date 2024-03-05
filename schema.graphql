@@ -670,12 +670,17 @@ input NotificationAudienceInput {
 enum NotificationResolverAllKeys {
   body
   createdAt
+  deliveryIssue
+  sendAt
+  startedSendingAt
   title
   updatedAt
 }
 
 enum NotificationResolverDateFilterKeys {
   createdAt
+  sendAt
+  startedSendingAt
   updatedAt
 }
 
@@ -705,7 +710,7 @@ input NotificationResolverKeyedIsNullFilterItem {
 
 input NotificationResolverKeyedOneOfFilterItem {
   """The field to filter on"""
-  field: Void!
+  field: NotificationResolverOneOfFilterKeys!
 
   """
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
@@ -726,6 +731,10 @@ input NotificationResolverKeyedStringFilterItem {
   """
   negate: Boolean = false
   value: String!
+}
+
+enum NotificationResolverOneOfFilterKeys {
+  deliveryIssue
 }
 
 enum NotificationResolverStringFilterKeys {

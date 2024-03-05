@@ -72,11 +72,19 @@ export const NotificationsTable = () => {
       initSorting: [],
     },
     {
-      allFields: ["title", "body", "createdAt", "updatedAt"],
-      dateFields: ["createdAt", "updatedAt"],
+      allFields: [
+        "createdAt",
+        "updatedAt",
+        "title",
+        "body",
+        "deliveryIssue",
+        "sendAt",
+        "startedSendingAt",
+      ],
+      dateFields: ["createdAt", "updatedAt", "sendAt", "startedSendingAt"],
       isNullFields: [],
       numericFields: [],
-      oneOfFields: [],
+      oneOfFields: ["deliveryIssue"],
       stringFields: ["title", "body"],
     }
   );
@@ -160,7 +168,7 @@ export const NotificationsTable = () => {
             title: "Delivery Issue",
             dataIndex: "deliveryIssue",
             key: "deliveryIssue",
-            sorter: false,
+            sorter: true,
             render: (
               deliveryIssue: boolean,
               { deliveryIssueAcknowledgedAt }
@@ -178,7 +186,7 @@ export const NotificationsTable = () => {
             title: "Scheduled for",
             dataIndex: "sendAt",
             key: "sendAt",
-            sorter: false,
+            sorter: true,
             render: (sendAt: string) => {
               if (!sendAt) return "Manual";
               return DateTime.fromISO(sendAt).toLocaleString(
@@ -190,7 +198,7 @@ export const NotificationsTable = () => {
             title: "Sent",
             dataIndex: "startedSendingAt",
             key: "startedSendingAt",
-            sorter: false,
+            sorter: true,
             render: (startedSendingAt: string) => {
               return startedSendingAt
                 ? DateTime.fromISO(startedSendingAt).toLocaleString(
