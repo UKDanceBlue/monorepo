@@ -89,6 +89,16 @@ export class NotificationRepository {
     });
   }
 
+  findScheduledNotifications() {
+    return this.prisma.notification.findMany({
+      where: {
+        sendAt: {
+          not: null,
+        },
+      },
+    });
+  }
+
   countNotifications({
     filters,
   }: {
