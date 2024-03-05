@@ -153,7 +153,37 @@ export class ExpoNotificationProvider implements NotificationProvider {
       { startedSendingAt: new Date() }
     );
 
-    await this.completeNotificationDelivery(databaseNotification);
+    try {
+      const result =
+        await this.completeNotificationDelivery(databaseNotification);
+
+      if (result === "NoAction") {
+        await this.notificationRepository.updateNotification(
+          { id: databaseNotification.id },
+          { startedSendingAt: null }
+        );
+      }
+
+      if (result === "AllSent") {
+        logger.info("Notification sent", {
+          notification: databaseNotification,
+        });
+      }
+
+      if (result === "SomeFailed") {
+        logger.warning("Notification partially sent", {
+          notification: databaseNotification,
+        });
+      }
+
+      if (result === "AllFailed") {
+        logger.error("Notification failed to send", {
+          notification: databaseNotification,
+        });
+      }
+    } catch (error) {
+      logger.error("Error sending notification", { error });
+    }
   }
 
   private async addNotificationToDatabase(
@@ -183,25 +213,44 @@ export class ExpoNotificationProvider implements NotificationProvider {
 
   private async completeNotificationDelivery(
     databaseNotification: Notification
-  ) {
+  ): Promise<"AllSent" | "SomeFailed" | "AllFailed" | "NoAction"> {
     const tickets: [ExpoPushTicket, deliveryUuid: string][] = [];
 
-    const deliveryRows =
-      await this.notificationRepository.findDeliveriesForNotification({
-        id: databaseNotification.id,
-      });
+    let deliveryRows: {
+      uuid: string;
+      device: {
+        id: number;
+        expoPushToken: string | null;
+      };
+    }[];
+    try {
+      deliveryRows =
+        await this.notificationRepository.findDeliveriesForNotification({
+          id: databaseNotification.id,
+        });
+    } catch (error) {
+      logger.error("Error finding notification deliveries", { error });
+      return "NoAction";
+    }
 
     // Lifecycle step 5
-    const messages: ExpoPushMessage[] = makeExpoNotifications(
-      {
-        body: databaseNotification.body,
-        title: databaseNotification.title,
-        url: databaseNotification.url,
-      },
-      deliveryRows
-    );
-    const chunks: readonly ExpoPushMessage[][] =
-      this.expoSdk.chunkPushNotifications(messages);
+    let chunks: readonly ExpoPushMessage[][];
+    try {
+      const messages: ExpoPushMessage[] = makeExpoNotifications(
+        {
+          body: databaseNotification.body,
+          title: databaseNotification.title,
+          url: databaseNotification.url,
+        },
+        deliveryRows
+      );
+      chunks = this.expoSdk.chunkPushNotifications(messages);
+    } catch (error) {
+      logger.error("Error chunking notifications", { error });
+      return "NoAction";
+    }
+
+    let fullSuccess = true;
 
     for (const chunk of chunks) {
       const ticketChunk: [ExpoPushTicket, deliveryUuid: string][] = [];
@@ -224,10 +273,12 @@ export class ExpoNotificationProvider implements NotificationProvider {
             logger.error("Delivery UUID not found in notification data", {
               notificationData,
             });
+            fullSuccess = false;
           }
         }
       } catch (error) {
         logger.error("Error sending notification", { error });
+        fullSuccess = false;
 
         if (typeof error === "object" && error) {
           let errorString = "Unknown error";
@@ -260,17 +311,32 @@ export class ExpoNotificationProvider implements NotificationProvider {
         tickets.push(...ticketChunk);
       } catch (error) {
         logger.error("Error updating notification delivery", { error });
+        fullSuccess = false;
       }
     }
 
     // Lifecycle step 9
-    await Promise.all(
-      tickets.map((ticket) => {
-        return ticket[0].status === "error" &&
-          ticket[0].details?.error === "DeviceNotRegistered"
-          ? this.handleDeviceNotRegistered(ticket[1])
-          : Promise.resolve();
-      })
-    );
+    try {
+      await Promise.all(
+        tickets.map((ticket) => {
+          return ticket[0].status === "error" &&
+            ticket[0].details?.error === "DeviceNotRegistered"
+            ? this.handleDeviceNotRegistered(ticket[1])
+            : Promise.resolve();
+        })
+      );
+    } catch (error) {
+      logger.error("Error handling device not registered", { error });
+    }
+
+    if (fullSuccess) {
+      return "AllSent";
+    }
+
+    if (tickets.length === 0 && deliveryRows.length > 0) {
+      return "AllFailed";
+    }
+
+    return "SomeFailed";
   }
 }
