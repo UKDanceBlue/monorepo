@@ -14,7 +14,6 @@
   "forwardPorts": [5173, 8000, 8081, 5432],
 
   "postCreateCommand": "yarn install",
-  "postAttachCommand": "echo 'This terminal will output logs from both the common:wath and gql:watch commands.' & yarn common:watch & yarn gql:watch",
 
   // Configure tool-specific properties.
   // "customizations": {},

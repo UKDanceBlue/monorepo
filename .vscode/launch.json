@@ -5,123 +5,172 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Build and Start Server",
-      "request": "launch",
-      "runtimeArgs": ["run", "bs"],
-      "cwd": "${workspaceFolder}/packages/server",
-      "runtimeExecutable": "yarn",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "node",
-      "console": "integratedTerminal"
-    },
-    {
-      "name": "Build GraphQL",
-      "request": "launch",
-      "runtimeArgs": ["run", "gql:build"],
-      "runtimeExecutable": "yarn",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "node"
-    },
-    {
-      "name": "Watch GraphQL",
+      "name": "GraphQL: Watch",
       "request": "launch",
       "runtimeArgs": ["run", "gql:watch"],
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**"],
       "type": "node",
-      "console": "integratedTerminal"
+      "presentation": {
+        "group": "2graphql"
+      }
     },
     {
-      "name": "Watch Common",
+      "name": "Common: Watch",
       "request": "launch",
-      "runtimeArgs": ["run", "watch"],
-      "cwd": "${workspaceFolder}/packages/common",
+      "runtimeArgs": ["run", "common:watch"],
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**"],
       "type": "node",
-      "console": "integratedTerminal"
+      "presentation": {
+        "group": "3shared"
+      }
     },
     {
-      "name": "Build Common",
+      "name": "Server: Start",
       "request": "launch",
-      "runtimeArgs": ["run", "build"],
-      "cwd": "${workspaceFolder}/packages/common",
-      "runtimeExecutable": "yarn",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "node"
-    },
-    {
-      "name": "Build Server",
-      "request": "launch",
-      "runtimeArgs": ["run", "build"],
-      "cwd": "${workspaceFolder}/packages/server",
-      "runtimeExecutable": "yarn",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "node"
-    },
-    {
-      "name": "Start Server",
-      "request": "launch",
-      "runtimeArgs": ["run", "start"],
-      "cwd": "${workspaceFolder}/packages/server",
+      "runtimeArgs": ["run", "server:start"],
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**"],
       "type": "node",
-      "console": "integratedTerminal"
+      "presentation": {
+        "group": "6server"
+      },
+      "preLaunchTask": "Server: Build"
     },
     {
-      "name": "Start Portal",
+      "name": "Server: Open Prisma Studio",
       "request": "launch",
-      "runtimeArgs": [
-        "workspace",
-        "@ukdanceblue/portal",
-        "dev",
-        "--port",
-        "5173",
-        "--strictPort"
-      ],
+      "runtimeArgs": ["run", "server:prisma", "studio"],
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**"],
       "type": "node",
-      "console": "integratedTerminal"
+      "presentation": {
+        "group": "6server"
+      }
     },
     {
-      "name": "Debug Portal",
+      "name": "Portal: Dev",
+      "request": "launch",
+      "runtimeArgs": ["run", "portal:dev"],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "presentation": {
+        "group": "5portal"
+      }
+    },
+    {
+      "name": "Mobile: Start",
+      "request": "launch",
+      "runtimeArgs": ["run", "mobile:start"],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "presentation": {
+        "group": "4mobile"
+      }
+    },
+    {
+      "name": "Docker: Server Start",
+      "request": "launch",
+      "runtimeArgs": ["run", "docker:server:start"],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "presentation": {
+        "group": "9docker"
+      }
+    },
+    {
+      "name": "Docker: Server Stop",
+      "request": "launch",
+      "runtimeArgs": ["run", "docker:server:stop"],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "presentation": {
+        "group": "9docker"
+      }
+    },
+    {
+      "name": "Debug Portal (firefox)",
       "request": "launch",
       "type": "firefox",
       "url": "http://localhost:5173",
       "webRoot": "${workspaceFolder}/packages/portal/src",
-      "pathMappings": [
-        {
-          "url": "http://localhost:5173/src",
-          "path": "${workspaceFolder}/packages/portal/src"
-        }
-      ]
+      "presentation": {
+        "group": "5portal"
+      }
     },
     {
-      "name": "Build Portal",
+      "name": "Debug Portal (chrome)",
       "request": "launch",
-      "runtimeArgs": ["workspace", "@ukdanceblue/portal", "build"],
-      "runtimeExecutable": "yarn",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "node"
+      "type": "chrome",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/packages/portal/src",
+      "presentation": {
+        "group": "5portal"
+      }
     },
     {
       "name": "Debug Expo",
       "request": "attach",
       "type": "expo",
-      "projectRoot": "${workspaceFolder}/packages/mobile"
+      "projectRoot": "${workspaceFolder}/packages/mobile",
+      "presentation": {
+        "group": "4mobile"
+      }
     }
   ],
   "compounds": [
     {
-      "name": "Portal Dev Environment",
+      "name": "Dev Environment: Base",
+      "configurations": ["Common: Watch", "GraphQL: Watch"],
+      "presentation": {
+        "group": "0dev-enviroment",
+        "order": 3
+      }
+    },
+    {
+      "name": "Dev Environment: Server",
+      "configurations": ["Server: Start", "Common: Watch"],
+      "preLaunchTask": "Server: Prisma Generate",
+      "presentation": {
+        "group": "0dev-enviroment",
+        "order": 2
+      }
+    },
+    {
+      "name": "Dev Environment: Portal",
+      "configurations": ["Portal: Dev", "Common: Watch", "GraphQL: Watch"],
+      "presentation": {
+        "group": "0dev-enviroment",
+        "order": 2
+      }
+    },
+    {
+      "name": "Dev Environment: Mobile",
+      "configurations": ["Mobile: Start", "Common: Watch", "GraphQL: Watch"],
+      "presentation": {
+        "group": "0dev-enviroment",
+        "order": 2
+      }
+    },
+    {
+      "name": "Dev Environment: *",
       "configurations": [
-        "Build and Start Server",
-        "Watch Common",
-        "Watch GraphQL",
-        "Start Portal"
-      ]
+        "Server: Start",
+        "Portal: Dev",
+        "Mobile: Start",
+        "Common: Watch",
+        "GraphQL: Watch"
+      ],
+      "preLaunchTask": "Server: Prisma Generate",
+      "presentation": {
+        "group": "0dev-enviroment",
+        "order": 1
+      }
     }
   ]
 }
