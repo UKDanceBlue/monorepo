@@ -11,6 +11,7 @@
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**"],
       "type": "node",
+      "console": "integratedTerminal",
       "presentation": {
         "group": "2graphql"
       }
@@ -22,6 +23,7 @@
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**"],
       "type": "node",
+      "console": "integratedTerminal",
       "presentation": {
         "group": "3shared"
       }
@@ -36,6 +38,7 @@
       "presentation": {
         "group": "6server"
       },
+      "console": "integratedTerminal",
       "preLaunchTask": "Server: Build"
     },
     {
@@ -45,6 +48,7 @@
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**"],
       "type": "node",
+      "console": "integratedTerminal",
       "presentation": {
         "group": "6server"
       }
@@ -56,6 +60,7 @@
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**"],
       "type": "node",
+      "console": "integratedTerminal",
       "presentation": {
         "group": "5portal"
       }
@@ -67,30 +72,9 @@
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**"],
       "type": "node",
+      "console": "integratedTerminal",
       "presentation": {
         "group": "4mobile"
-      }
-    },
-    {
-      "name": "Docker: Server Start",
-      "request": "launch",
-      "runtimeArgs": ["run", "docker:server:start"],
-      "runtimeExecutable": "yarn",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "node",
-      "presentation": {
-        "group": "9docker"
-      }
-    },
-    {
-      "name": "Docker: Server Stop",
-      "request": "launch",
-      "runtimeArgs": ["run", "docker:server:stop"],
-      "runtimeExecutable": "yarn",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "node",
-      "presentation": {
-        "group": "9docker"
       }
     },
     {
