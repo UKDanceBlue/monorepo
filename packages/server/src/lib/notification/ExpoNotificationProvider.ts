@@ -117,7 +117,7 @@ export class ExpoNotificationProvider implements NotificationProvider {
           where: Prisma.NotificationWhereUniqueInput;
         }
       | {
-          value: Notification;
+          value?: Notification | null;
         }
   ) {
     const databaseNotification =
@@ -137,9 +137,21 @@ export class ExpoNotificationProvider implements NotificationProvider {
     if (databaseNotification.sendAt != null) {
       throw new DetailedError(
         ErrorCode.InvalidRequest,
-        "Notification is already scheduled, cancel the schedule first"
+        "Cannot send a scheduled notification, cancel the schedule first."
       );
     }
+
+    if (databaseNotification.startedSendingAt != null) {
+      throw new DetailedError(
+        ErrorCode.InvalidRequest,
+        "Notification has already been sent."
+      );
+    }
+
+    await this.notificationRepository.updateNotification(
+      { id: databaseNotification.id },
+      { startedSendingAt: new Date() }
+    );
 
     await this.completeNotificationDelivery(databaseNotification);
   }

@@ -201,9 +201,18 @@ export class NotificationResolver {
     );
   }
 
-  @Mutation(() => SendNotificationResponse, { name: "sendNotification" })
+  @Mutation(() => SendNotificationResponse, {
+    name: "sendNotification",
+    description: "Send a notification immediately.",
+  })
   async send(@Arg("uuid") uuid: string): Promise<SendNotificationResponse> {
-    throw new Error("Not implemented");
+    await this.notificationProvider.sendNotification({
+      where: {
+        uuid,
+      },
+    });
+
+    return SendNotificationResponse.newOk(true);
   }
 
   @Mutation(() => ScheduleNotificationResponse, {
@@ -213,7 +222,26 @@ export class NotificationResolver {
     @Arg("uuid") uuid: string,
     @Arg("sendAt") sendAt: Date
   ): Promise<ScheduleNotificationResponse> {
-    throw new Error("Not implemented");
+    const notification =
+      await this.notificationRepository.findNotificationByUnique({ uuid });
+
+    if (notification == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Notification not found");
+    }
+
+    if (notification.startedSendingAt != null) {
+      throw new DetailedError(
+        ErrorCode.InvalidRequest,
+        "Notification has already been sent."
+      );
+    }
+
+    await this.notificationRepository.updateNotification(
+      { id: notification.id },
+      { sendAt }
+    );
+
+    return ScheduleNotificationResponse.newOk(true);
   }
 
   @Mutation(() => AcknowledgeDeliveryIssueResponse, {
@@ -222,7 +250,26 @@ export class NotificationResolver {
   async acknowledgeDeliveryIssue(
     @Arg("uuid") uuid: string
   ): Promise<AcknowledgeDeliveryIssueResponse> {
-    throw new Error("Not implemented");
+    const notification =
+      await this.notificationRepository.findNotificationByUnique({ uuid });
+
+    if (notification == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Notification not found");
+    }
+
+    if (notification.deliveryIssue == null) {
+      throw new DetailedError(
+        ErrorCode.InvalidRequest,
+        "Notification has no delivery issue to acknowledge."
+      );
+    }
+
+    await this.notificationRepository.updateNotification(
+      { id: notification.id },
+      { deliveryIssueAcknowledgedAt: new Date() }
+    );
+
+    return AcknowledgeDeliveryIssueResponse.newOk(true);
   }
 
   @Mutation(() => AbortScheduledNotificationResponse, {
@@ -231,7 +278,33 @@ export class NotificationResolver {
   async abortScheduled(
     @Arg("uuid") uuid: string
   ): Promise<AbortScheduledNotificationResponse> {
-    throw new Error("Not implemented");
+    const notification =
+      await this.notificationRepository.findNotificationByUnique({ uuid });
+
+    if (notification == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Notification not found");
+    }
+
+    if (notification.startedSendingAt != null) {
+      throw new DetailedError(
+        ErrorCode.InvalidRequest,
+        "Notification has already been sent."
+      );
+    }
+
+    if (notification.sendAt == null) {
+      throw new DetailedError(
+        ErrorCode.InvalidRequest,
+        "Notification is not scheduled."
+      );
+    }
+
+    await this.notificationRepository.updateNotification(
+      { id: notification.id },
+      { sendAt: null }
+    );
+
+    return AbortScheduledNotificationResponse.newOk(true);
   }
 
   @Mutation(() => DeleteNotificationResponse, { name: "deleteNotification" })
@@ -244,6 +317,24 @@ export class NotificationResolver {
     })
     force?: boolean
   ): Promise<DeleteNotificationResponse> {
-    throw new Error("Not implemented");
+    const notification =
+      await this.notificationRepository.findNotificationByUnique({ uuid });
+
+    if (notification == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Notification not found");
+    }
+
+    if (notification.startedSendingAt != null && force !== true) {
+      throw new DetailedError(
+        ErrorCode.InvalidRequest,
+        "Cannot delete a notification that has already been sent without setting force to true."
+      );
+    }
+
+    await this.notificationRepository.deleteNotification({
+      id: notification.id,
+    });
+
+    return DeleteNotificationResponse.newOk(true);
   }
 }
