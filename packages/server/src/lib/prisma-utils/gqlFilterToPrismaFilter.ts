@@ -29,7 +29,7 @@ export type FilterItems<
   | AbstractStringFilterItem<S>;
 
 export function stringFilterToPrisma<T extends string>(
-  filter: AbstractStringFilterItem<T>
+  filter: AbstractStringFilterItem<T> | AbstractIsNullFilterItem<T>
 ): Prisma.StringFilter {
   switch (filter.comparison) {
     case StringComparator.IS:
@@ -58,15 +58,16 @@ export function stringFilterToPrisma<T extends string>(
       return { contains: filter.value, mode: "insensitive" };
     }
     default: {
+      filter satisfies never;
       throw new Error(
-        `Unsupported string comparator: ${String(filter.comparison)}`
+        `Unsupported string comparator: ${JSON.stringify(filter)}`
       );
     }
   }
 }
 
 export function booleanFilterToPrisma<T extends string>(
-  filter: AbstractBooleanFilterItem<T>
+  filter: AbstractBooleanFilterItem<T> | AbstractIsNullFilterItem<T>
 ): Prisma.BoolFilter {
   switch (filter.comparison) {
     case IsComparator.IS: {
@@ -76,15 +77,16 @@ export function booleanFilterToPrisma<T extends string>(
       return { equals: filter.value };
     }
     default: {
+      filter satisfies never;
       throw new Error(
-        `Unsupported boolean comparator: ${String(filter.comparison)}`
+        `Unsupported boolean comparator: ${JSON.stringify(filter)}`
       );
     }
   }
 }
 
 export function dateFilterToPrisma<T extends string>(
-  filter: AbstractDateFilterItem<T>
+  filter: AbstractDateFilterItem<T> | AbstractIsNullFilterItem<T>
 ): Prisma.DateTimeFilter {
   switch (filter.comparison) {
     case IsComparator.IS:
@@ -119,30 +121,17 @@ export function dateFilterToPrisma<T extends string>(
       return { lte: filter.value };
     }
     default: {
-      throw new Error(
-        `Unsupported date comparator: ${String(filter.comparison)}`
-      );
+      filter satisfies never;
+      throw new Error(`Unsupported date comparator: ${JSON.stringify(filter)}`);
     }
   }
 }
 
-export function isNullFilterToPrisma<T extends string>(
-  filter: AbstractIsNullFilterItem<T>
-):
-  | Prisma.IntNullableFilter
-  | Prisma.StringNullableFilter
-  // | Prisma.BoolNullableFilter
-  | Prisma.DateTimeNullableFilter {
-  if (filter.negate) {
-    return { not: { equals: null } };
-  }
-  return { equals: null };
-}
-
 export function numericFilterToPrisma<T extends string>(
-  filter: AbstractNumericFilterItem<T>
+  filter: AbstractNumericFilterItem<T> | AbstractIsNullFilterItem<T>
 ): Prisma.IntFilter {
   switch (filter.comparison) {
+    case IsComparator.IS:
     case NumericComparator.EQUALS: {
       if (filter.negate) {
         return { not: { equals: filter.value } };
@@ -174,8 +163,9 @@ export function numericFilterToPrisma<T extends string>(
       return { lte: filter.value };
     }
     default: {
+      filter satisfies never;
       throw new Error(
-        `Unsupported numeric comparator: ${String(filter.comparison)}`
+        `Unsupported numeric comparator: ${JSON.stringify(filter)}`
       );
     }
   }
