@@ -11,8 +11,8 @@ function scheduleId(notificationUuid: string) {
   return `scheduled-notification:${notificationUuid}`;
 }
 
-function makeScheduledJobNamesSet() {
-  return new Set(scheduledJobs.map((job) => job.name));
+function makeScheduledJobsMap() {
+  return new Map(scheduledJobs.map((job) => [job.name, job]));
 }
 
 @Service()
@@ -66,14 +66,29 @@ export class NotificationScheduler {
       `Found ${scheduledNotifications.length} scheduled notifications`
     );
 
-    const scheduledJobNames = makeScheduledJobNamesSet();
+    const scheduledJobNames = makeScheduledJobsMap();
     const now = new Date();
     const promises: Promise<void>[] = [];
     for (const notification of scheduledNotifications) {
       if (notification.sendAt) {
-        if (scheduledJobNames.has(scheduleId(notification.uuid))) {
-          continue;
-        } else if (notification.sendAt < now) {
+        const exitingJob = scheduledJobNames.get(scheduleId(notification.uuid));
+        if (exitingJob != null) {
+          if (exitingJob.nextRun() === notification.sendAt) {
+            continue;
+          } else {
+            logger.info(
+              "A notification's sendAt has been updated, rescheduling",
+              {
+                notificationUuid: notification.uuid,
+                oldSendAt: exitingJob.nextRun(),
+                newSendAt: notification.sendAt,
+              }
+            );
+            exitingJob.stop();
+          }
+        }
+
+        if (notification.sendAt < now) {
           logger.info("Found past-due scheduled notification", {
             notificationUuid: notification.uuid,
           });
@@ -123,6 +138,19 @@ export class NotificationScheduler {
           logger.info("Sending scheduled notification", {
             notificationUuid: notification.uuid,
           });
+          const updatedNotification =
+            await this.notificationRepository.findNotificationByUnique({
+              uuid: notification.uuid,
+            });
+          if (notification.sendAt !== updatedNotification?.sendAt) {
+            logger.info(
+              "Scheduled notification was updated since it was scheduled, not sending",
+              {
+                notificationUuid: notification.uuid,
+              }
+            );
+            return;
+          }
           await this.notificationProvider.sendNotification({
             value: notification,
           });
