@@ -12,16 +12,29 @@ import {
 const notificationBooleanKeys = [] as const;
 type NotificationBooleanKey = (typeof notificationBooleanKeys)[number];
 
-const notificationDateKeys = ["createdAt", "updatedAt"] as const;
+const notificationDateKeys = [
+  "createdAt",
+  "updatedAt",
+  "sendAt",
+  "startedSendingAt",
+] as const;
 type NotificationDateKey = (typeof notificationDateKeys)[number];
 
-const notificationIsNullKeys = [] as const;
+const notificationIsNullKeys = [
+  "createdAt",
+  "updatedAt",
+  "title",
+  "body",
+  "deliveryIssue",
+  "sendAt",
+  "startedSendingAt",
+] as const;
 type NotificationIsNullKey = (typeof notificationIsNullKeys)[number];
 
 const notificationNumericKeys = [] as const;
 type NotificationNumericKey = (typeof notificationNumericKeys)[number];
 
-const notificationOneOfKeys = [] as const;
+const notificationOneOfKeys = ["deliveryIssue"] as const;
 type NotificationOneOfKey = (typeof notificationOneOfKeys)[number];
 
 const notificationStringKeys = ["title", "body"] as const;
@@ -31,7 +44,11 @@ export type NotificationOrderKeys =
   | "createdAt"
   | "updatedAt"
   | "title"
-  | "body";
+  | "body"
+  | "deliveryIssue"
+  | "deliveryIssueAcknowledgedAt"
+  | "sendAt"
+  | "startedSendingAt";
 
 export type NotificationFilters = FilterItems<
   NotificationBooleanKey,

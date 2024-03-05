@@ -116,16 +116,31 @@ class DeleteNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
 
 @ArgsType()
 class ListNotificationsArgs extends FilteredListQueryArgs<
-  "createdAt" | "updatedAt" | "title" | "body",
+  | "createdAt"
+  | "updatedAt"
+  | "title"
+  | "body"
+  | "deliveryIssue"
+  | "sendAt"
+  | "startedSendingAt",
   "title" | "body",
+  "deliveryIssue",
   never,
-  never,
-  "createdAt" | "updatedAt",
+  "createdAt" | "updatedAt" | "sendAt" | "startedSendingAt",
   never
 >("NotificationResolver", {
-  all: ["createdAt", "updatedAt", "title", "body"],
-  date: ["createdAt", "updatedAt"],
+  all: [
+    "createdAt",
+    "updatedAt",
+    "title",
+    "body",
+    "deliveryIssue",
+    "sendAt",
+    "startedSendingAt",
+  ],
+  date: ["createdAt", "updatedAt", "sendAt", "startedSendingAt"],
   string: ["title", "body"],
+  oneOf: ["deliveryIssue"],
 }) {}
 
 @Resolver(() => NotificationResource)
