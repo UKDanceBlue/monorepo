@@ -52,6 +52,15 @@ export const NavigationMenu = () => {
         ],
       },
       {
+        slug: "notifications",
+        title: "Notifications",
+        authorizationRules: [
+          {
+            accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+          },
+        ],
+      },
+      {
         slug: "config",
         title: "Config",
         authorizationRules: [
