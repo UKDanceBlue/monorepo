@@ -38,10 +38,12 @@ export class NotificationScheduler {
             logger.error("Failed to check for scheduled notifications", error);
           },
         },
-        () => {
-          this.checkScheduledNotifications().catch((error) =>
-            logger.error("Failed to check for scheduled notifications", error)
-          );
+        async () => {
+          try {
+            await this.checkScheduledNotifications();
+          } catch (error) {
+            logger.error("Failed to check for scheduled notifications", error);
+          }
         }
       );
 
@@ -116,19 +118,22 @@ export class NotificationScheduler {
         },
         protect: true,
       },
-      () => {
-        logger.info("Sending scheduled notification", {
-          notificationUuid: notification.uuid,
-        });
-        this.notificationProvider
-          .sendNotification({ value: notification })
-          .catch((error: unknown) => {
-            logger.error("Failed to send scheduled notification", {
-              notificationUuid: notification.uuid,
-              error,
-            });
+      async () => {
+        try {
+          logger.info("Sending scheduled notification", {
+            notificationUuid: notification.uuid,
           });
-        job.stop();
+          await this.notificationProvider.sendNotification({
+            value: notification,
+          });
+        } catch (error) {
+          logger.error("Failed to send scheduled notification", {
+            notificationUuid: notification.uuid,
+            error,
+          });
+        } finally {
+          job.stop();
+        }
       }
     );
   }
