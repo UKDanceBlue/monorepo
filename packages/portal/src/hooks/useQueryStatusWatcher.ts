@@ -19,7 +19,7 @@ export function useQueryStatusWatcher({
   error?: CombinedError | undefined;
   fetching?: boolean | undefined;
   loadingMessage?: string | (() => string) | undefined;
-}) {
+}): { resetWatcher: () => void } {
   const antApp = App.useApp();
 
   const networkLoadingTimer = useRef<ReturnType<typeof setTimeout> | null>(
@@ -68,4 +68,15 @@ export function useQueryStatusWatcher({
       loadingMessageHandle.current = null;
     }
   });
+
+  return {
+    resetWatcher: () => {
+      if (networkLoadingTimer.current) {
+        clearTimeout(networkLoadingTimer.current);
+        networkLoadingTimer.current = null;
+      }
+      networkLoadingMessageHandle.current?.();
+      loadingMessageHandle.current?.();
+    },
+  };
 }

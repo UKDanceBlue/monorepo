@@ -18,10 +18,10 @@ export function useNotificationCreator(
   const [{ fetching, error }, createNotification] = useMutation(
     createNotificationDocument
   );
-  useQueryStatusWatcher({
+  const { resetWatcher } = useQueryStatusWatcher({
     error,
     fetching,
-    loadingMessage: "Saving person...",
+    loadingMessage: "Saving notification...",
   });
 
   const Form = useForm<{
@@ -65,6 +65,8 @@ export function useNotificationCreator(
         audience: values.audience,
         url: values.url,
       });
+
+      resetWatcher();
 
       return afterSubmit?.(data?.stageNotification);
     },
