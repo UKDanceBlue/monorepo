@@ -68,7 +68,7 @@ export class NotificationDeliveryResource extends TimestampedResource {
       "The time the server received a delivery receipt from the user.",
   })
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
-  deliveredBy?: Date | null;
+  receiptCheckedAt?: Date | null;
 
   @Field(() => String, {
     nullable: true,
