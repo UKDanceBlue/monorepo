@@ -1,28 +1,26 @@
 import { LuxonDatePicker } from "@elements/components/antLuxonComponents";
+import { NotificationViewer } from "@elements/viewers/notification/NotificationViewer";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
-import { Button, Empty, Flex, Form, Typography } from "antd";
+import { Button, Empty, Flex, Form } from "antd";
 import { DateTime } from "luxon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { UseQueryExecute } from "urql";
 
-import { NotificationPreview } from "../../../components/NotificationPreview";
+import { SingleNotificationFragment } from "../SingleNotificationGQL";
 
-import { NotificationManagerFragment } from "./NotificationManagerGQL";
 import { useNotificationManagerForm } from "./useNotificationManager";
 
 export const ManageNotificationForm = ({
   notificationFragment,
   refetchNotification,
 }: {
-  notificationFragment?: FragmentType<
-    typeof NotificationManagerFragment
-  > | null;
+  notificationFragment?: FragmentType<typeof SingleNotificationFragment> | null;
   refetchNotification: UseQueryExecute;
 }) => {
   const notification = getFragmentData(
-    NotificationManagerFragment,
+    SingleNotificationFragment,
     notificationFragment
   );
   const actions = useNotificationManagerForm({
@@ -38,6 +36,13 @@ export const ManageNotificationForm = ({
   );
 
   const { showErrorMessage, showInfoMessage } = useAntFeedback();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetchNotification({ requestPolicy: "network-only" });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [refetchNotification]);
 
   if (!notification || !actions) {
     return <Empty description="Notification not found" />;
@@ -57,39 +62,39 @@ export const ManageNotificationForm = ({
   ) {
     promise
       .then(async (result) => {
-        if (result.data?.[responseKey].ok) {
-          await showInfoMessage(`${operationText} successful`);
-          refetchNotification();
-        } else {
-          await showErrorMessage(`${operationText} failed`);
-        }
+        refetchNotification({ requestPolicy: "network-only" });
+        await (result.data?.[responseKey].ok
+          ? showInfoMessage(`${operationText} successful`)
+          : showErrorMessage(`${operationText} failed`));
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error(error);
         void showErrorMessage(`${operationText} failed`);
       });
   }
 
   return (
     <>
-      <NotificationPreview
-        title={notification.title}
-        body={notification.body}
-      />
-      <Flex justify="space-between" align="center">
-        <Typography.Title level={2}>{notification.title}</Typography.Title>
+      <Flex justify="space-between" align="center" gap={16}>
+        <NotificationViewer notificationFragment={notificationFragment} />
         <Form layout="vertical">
-          <Form.Item label="Send At">
+          <Form.Item label="Schedule the notification">
             <LuxonDatePicker
+              disabled={
+                notification.startedSendingAt !== null || !!notification.sendAt
+              }
               value={sendAt}
               onChange={(value) => setSendAt(value)}
               showTime
               format="yyyy-MM-dd HH:mm"
             />
-          </Form.Item>
-          <Form.Item>
             <Button
               type="primary"
-              disabled={!sendAt}
+              disabled={
+                !sendAt ||
+                notification.startedSendingAt !== null ||
+                !!notification.sendAt
+              }
               onClick={() => {
                 if (sendAt) {
                   handleOperationResult(
@@ -102,6 +107,8 @@ export const ManageNotificationForm = ({
             >
               Schedule
             </Button>
+          </Form.Item>
+          <Form.Item label="Send the notification now">
             <Button
               type="primary"
               disabled={notification.startedSendingAt !== null}
@@ -115,6 +122,8 @@ export const ManageNotificationForm = ({
             >
               Send
             </Button>
+          </Form.Item>
+          <Form.Item label="Cancel a scheduled notification">
             <Button
               type="primary"
               disabled={!notification.sendAt}
@@ -128,6 +137,8 @@ export const ManageNotificationForm = ({
             >
               Cancel
             </Button>
+          </Form.Item>
+          <Form.Item label="Delete the notification">
             <Button
               type="primary"
               danger

@@ -1,18 +1,5 @@
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 
-export const NotificationManagerFragment = graphql(/* GraphQL */ `
-  fragment NotificationManagerFragment on NotificationResource {
-    uuid
-    title
-    body
-    deliveryIssue
-    deliveryIssueAcknowledgedAt
-    sendAt
-    startedSendingAt
-    createdAt
-  }
-`);
-
 export const cancelNotificationScheduleDocument = graphql(/* GraphQL */ `
   mutation CancelNotificationSchedule($uuid: String!) {
     abortScheduledNotification(uuid: $uuid) {

@@ -8,7 +8,7 @@ const notificationManagerDocument = graphql(/* GraphQL */ `
   query NotificationManager($uuid: String!) {
     notification(uuid: $uuid) {
       data {
-        ...NotificationManagerFragment
+        ...SingleNotificationFragment
       }
     }
   }
