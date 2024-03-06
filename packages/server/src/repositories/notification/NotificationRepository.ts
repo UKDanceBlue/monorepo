@@ -1,3 +1,4 @@
+import type { NotificationError } from "@prisma/client";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 import { Service } from "typedi";
@@ -12,16 +13,29 @@ import {
 const notificationBooleanKeys = [] as const;
 type NotificationBooleanKey = (typeof notificationBooleanKeys)[number];
 
-const notificationDateKeys = ["createdAt", "updatedAt"] as const;
+const notificationDateKeys = [
+  "createdAt",
+  "updatedAt",
+  "sendAt",
+  "startedSendingAt",
+] as const;
 type NotificationDateKey = (typeof notificationDateKeys)[number];
 
-const notificationIsNullKeys = [] as const;
+const notificationIsNullKeys = [
+  "createdAt",
+  "updatedAt",
+  "title",
+  "body",
+  "deliveryIssue",
+  "sendAt",
+  "startedSendingAt",
+] as const;
 type NotificationIsNullKey = (typeof notificationIsNullKeys)[number];
 
 const notificationNumericKeys = [] as const;
 type NotificationNumericKey = (typeof notificationNumericKeys)[number];
 
-const notificationOneOfKeys = [] as const;
+const notificationOneOfKeys = ["deliveryIssue"] as const;
 type NotificationOneOfKey = (typeof notificationOneOfKeys)[number];
 
 const notificationStringKeys = ["title", "body"] as const;
@@ -31,7 +45,11 @@ export type NotificationOrderKeys =
   | "createdAt"
   | "updatedAt"
   | "title"
-  | "body";
+  | "body"
+  | "deliveryIssue"
+  | "deliveryIssueAcknowledgedAt"
+  | "sendAt"
+  | "startedSendingAt";
 
 export type NotificationFilters = FilterItems<
   NotificationBooleanKey,
@@ -42,14 +60,63 @@ export type NotificationFilters = FilterItems<
   NotificationStringKey
 >;
 
-type UniqueNotificationParam = { id: number } | { uuid: string };
-
 @Service()
 export class NotificationRepository {
   constructor(private prisma: PrismaClient) {}
 
-  findNotificationByUnique(param: UniqueNotificationParam) {
+  findNotificationByUnique(param: Prisma.NotificationWhereUniqueInput) {
     return this.prisma.notification.findUnique({ where: param });
+  }
+
+  findDeliveriesForNotification(param: Prisma.NotificationWhereUniqueInput) {
+    return this.prisma.notificationDelivery.findMany({
+      where: { notification: param },
+      include: {
+        device: {
+          select: {
+            expoPushToken: true,
+            id: true,
+          },
+        },
+      },
+    });
+  }
+
+  countDeliveriesForNotification(param: Prisma.NotificationWhereUniqueInput) {
+    return this.prisma.notificationDelivery.count({
+      where: { notification: param },
+    });
+  }
+
+  async countFailedDeliveriesForNotification(
+    param: Prisma.NotificationWhereUniqueInput
+  ) {
+    const rows = await this.prisma.notificationDelivery.groupBy({
+      by: ["deliveryError"],
+      _count: true,
+      where: {
+        notification: param,
+        deliveryError: {
+          not: null,
+        },
+      },
+    });
+
+    const record: Record<NotificationError, number> = {
+      DeviceNotRegistered: 0,
+      MessageTooBig: 0,
+      InvalidCredentials: 0,
+      MessageRateExceeded: 0,
+      MismatchSenderId: 0,
+      Unknown: 0,
+    };
+    for (const row of rows) {
+      if (row.deliveryError !== null) {
+        record[row.deliveryError] = row._count;
+      }
+    }
+
+    return record;
   }
 
   listNotifications({
@@ -77,6 +144,16 @@ export class NotificationRepository {
     });
   }
 
+  findScheduledNotifications() {
+    return this.prisma.notification.findMany({
+      where: {
+        sendAt: {
+          not: null,
+        },
+      },
+    });
+  }
+
   countNotifications({
     filters,
   }: {
@@ -89,12 +166,16 @@ export class NotificationRepository {
     });
   }
 
-  createNotification(data: Prisma.NotificationCreateInput) {
+  createNotification(data: {
+    title: string;
+    body: string;
+    url?: string | undefined | null;
+  }) {
     return this.prisma.notification.create({ data });
   }
 
   updateNotification(
-    param: UniqueNotificationParam,
+    param: Prisma.NotificationWhereUniqueInput,
     data: Prisma.NotificationUpdateInput
   ) {
     try {
@@ -111,7 +192,7 @@ export class NotificationRepository {
     }
   }
 
-  deleteNotification(param: UniqueNotificationParam) {
+  deleteNotification(param: Prisma.NotificationWhereUniqueInput) {
     try {
       return this.prisma.notification.delete({ where: param });
     } catch (error) {

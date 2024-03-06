@@ -20,7 +20,8 @@
       "@hooks/*": ["hooks/*"],
       "@pages/*": ["pages/*"],
       "@routing/*": ["routing/*"],
-      "@tools/*": ["tools/*"]
+      "@tools/*": ["tools/*"],
+      "@assets/*": ["../assets/*"]
     },
 
     "baseUrl": "./src"

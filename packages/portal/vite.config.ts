@@ -21,7 +21,9 @@ export default defineConfig({
       "@pages": resolveRelative("src", "pages"),
       "@routing": resolveRelative("src", "routing"),
       "@tools": resolveRelative("src", "tools"),
+      "@assets": resolveRelative("assets"),
     },
   },
+
   plugins: [react()],
 });
