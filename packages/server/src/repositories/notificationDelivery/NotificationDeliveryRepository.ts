@@ -85,25 +85,30 @@ export class NotificationDeliveryRepository {
     >;
   }
 
-  listNotificationDeliveries({
-    filters,
-    order,
-    skip,
-    take,
-  }: {
-    filters?: readonly NotificationDeliveryFilters[] | undefined | null;
-    order?:
-      | readonly [key: NotificationDeliveryOrderKeys, sort: SortDirection][]
-      | undefined
-      | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }) {
+  listNotificationDeliveries(
+    forNotification: UniqueParam,
+    {
+      filters,
+      order,
+      skip,
+      take,
+    }: {
+      filters?: readonly NotificationDeliveryFilters[] | undefined | null;
+      order?:
+        | readonly [key: NotificationDeliveryOrderKeys, sort: SortDirection][]
+        | undefined
+        | null;
+      skip?: number | undefined | null;
+      take?: number | undefined | null;
+    }
+  ) {
     const where = buildNotificationDeliveryWhere(filters);
     const orderBy = buildNotificationDeliveryOrder(order);
 
     return this.prisma.notificationDelivery.findMany({
-      where,
+      where: {
+        AND: [{ notification: forNotification }, where],
+      },
       orderBy,
       skip: skip ?? undefined,
       take: take ?? undefined,

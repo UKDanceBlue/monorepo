@@ -1,3 +1,4 @@
+import type { NotificationError } from "@prisma/client";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 import { Service } from "typedi";
@@ -79,6 +80,43 @@ export class NotificationRepository {
         },
       },
     });
+  }
+
+  countDeliveriesForNotification(param: Prisma.NotificationWhereUniqueInput) {
+    return this.prisma.notificationDelivery.count({
+      where: { notification: param },
+    });
+  }
+
+  async countFailedDeliveriesForNotification(
+    param: Prisma.NotificationWhereUniqueInput
+  ) {
+    const rows = await this.prisma.notificationDelivery.groupBy({
+      by: ["deliveryError"],
+      _count: true,
+      where: {
+        notification: param,
+        deliveryError: {
+          not: null,
+        },
+      },
+    });
+
+    const record: Record<NotificationError, number> = {
+      DeviceNotRegistered: 0,
+      MessageTooBig: 0,
+      InvalidCredentials: 0,
+      MessageRateExceeded: 0,
+      MismatchSenderId: 0,
+      Unknown: 0,
+    };
+    for (const row of rows) {
+      if (row.deliveryError !== null) {
+        record[row.deliveryError] = row._count;
+      }
+    }
+
+    return record;
   }
 
   listNotifications({
