@@ -1,4 +1,5 @@
 import { SendOutlined } from "@ant-design/icons";
+import { NotificationDeliveriesTable } from "@elements/tables/notification/NotificationDeliveriesTable";
 import { NotificationViewer } from "@elements/viewers/notification/NotificationViewer";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useNavigate, useParams } from "@tanstack/react-router";
@@ -21,7 +22,7 @@ export function ViewNotificationPage() {
     from: "/notifications/$notificationId/",
   });
 
-  const [{ data, fetching, error }] = useQuery({
+  const [{ data, fetching, error }, refetch] = useQuery({
     query: notificationViewerDocument,
     variables: { uuid: notificationId },
   });
@@ -35,7 +36,7 @@ export function ViewNotificationPage() {
   const navigate = useNavigate();
 
   return (
-    <>
+    <Flex vertical gap={16}>
       <Flex justify="space-between" align="center">
         <Typography.Title>Notification</Typography.Title>
         <Button
@@ -51,7 +52,11 @@ export function ViewNotificationPage() {
           Manage delivery
         </Button>
       </Flex>
-      <NotificationViewer notificationFragment={data?.notification.data} />
-    </>
+      <NotificationViewer
+        notificationFragment={data?.notification.data}
+        refetch={refetch}
+      />
+      <NotificationDeliveriesTable notificationUuid={notificationId} />
+    </Flex>
   );
 }

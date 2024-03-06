@@ -1,32 +1,30 @@
 import { NotificationPreview } from "@elements/components/NotificationPreview";
 import { SingleNotificationFragment } from "@elements/forms/notification/SingleNotificationGQL";
+import { renderDateTime } from "@tools/luxonTools";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
 import { Descriptions, Empty } from "antd";
 import { DateTime } from "luxon";
-
-function renderDateTime(
-  dateTime: string | Date | null | undefined,
-  formatOpts?: Intl.DateTimeFormatOptions
-) {
-  if (!dateTime) {
-    return "Never";
-  }
-
-  return typeof dateTime === "string"
-    ? DateTime.fromISO(dateTime).toLocaleString(formatOpts)
-    : DateTime.fromJSDate(dateTime).toLocaleString(formatOpts);
-}
+import { useEffect } from "react";
+import type { UseQueryExecute } from "urql";
 
 export const NotificationViewer = ({
   notificationFragment,
+  refetch,
 }: {
   notificationFragment?: FragmentType<typeof SingleNotificationFragment> | null;
+  refetch: UseQueryExecute;
 }) => {
   const notification = getFragmentData(
     SingleNotificationFragment,
     notificationFragment
   );
+
+  useEffect(() => {
+    setInterval(() => {
+      refetch({ requestPolicy: "network-only" });
+    }, 10_000);
+  }, [refetch]);
 
   if (!notification) {
     return <Empty description="Notification not found" />;
