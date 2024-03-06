@@ -15,11 +15,16 @@ const notificationDeliveryBooleanKeys = [] as const;
 type NotificationDeliveryBooleanKey =
   (typeof notificationDeliveryBooleanKeys)[number];
 
-const notificationDeliveryDateKeys = ["createdAt", "updatedAt"] as const;
+const notificationDeliveryDateKeys = [
+  "createdAt",
+  "updatedAt",
+  "sentAt",
+  "receiptCheckedAt",
+] as const;
 type NotificationDeliveryDateKey =
   (typeof notificationDeliveryDateKeys)[number];
 
-const notificationDeliveryIsNullKeys = [] as const;
+const notificationDeliveryIsNullKeys = ["sentAt", "receiptCheckedAt"] as const;
 type NotificationDeliveryIsNullKey =
   (typeof notificationDeliveryIsNullKeys)[number];
 
@@ -27,7 +32,7 @@ const notificationDeliveryNumericKeys = [] as const;
 type NotificationDeliveryNumericKey =
   (typeof notificationDeliveryNumericKeys)[number];
 
-const notificationDeliveryOneOfKeys = [] as const;
+const notificationDeliveryOneOfKeys = ["deliveryError"] as const;
 type NotificationDeliveryOneOfKey =
   (typeof notificationDeliveryOneOfKeys)[number];
 
@@ -35,7 +40,12 @@ const notificationDeliveryStringKeys = [] as const;
 type NotificationDeliveryStringKey =
   (typeof notificationDeliveryStringKeys)[number];
 
-export type NotificationDeliveryOrderKeys = "createdAt" | "updatedAt";
+export type NotificationDeliveryOrderKeys =
+  | "createdAt"
+  | "updatedAt"
+  | "sentAt"
+  | "receiptCheckedAt"
+  | "deliveryError";
 
 export type NotificationDeliveryFilters = FilterItems<
   NotificationDeliveryBooleanKey,

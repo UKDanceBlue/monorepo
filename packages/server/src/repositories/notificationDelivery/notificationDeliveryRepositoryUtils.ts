@@ -1,7 +1,10 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
-import { dateFilterToPrisma } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import {
+  dateFilterToPrisma,
+  oneOfFilterToPrisma,
+} from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 import type {
   NotificationDeliveryFilters,
@@ -18,6 +21,9 @@ export function buildNotificationDeliveryOrder(
 
   for (const [key, sort] of order ?? []) {
     switch (key) {
+      case "sentAt":
+      case "receiptCheckedAt":
+      case "deliveryError":
       case "createdAt":
       case "updatedAt": {
         orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
@@ -38,6 +44,12 @@ export function buildNotificationDeliveryWhere(
 
   for (const filter of filters ?? []) {
     switch (filter.field) {
+      case "deliveryError": {
+        where[filter.field] = oneOfFilterToPrisma(filter);
+        break;
+      }
+      case "sentAt":
+      case "receiptCheckedAt":
       case "createdAt":
       case "updatedAt": {
         where[filter.field] = dateFilterToPrisma(filter);
