@@ -76,7 +76,10 @@ export const ManageNotificationForm = ({
   return (
     <>
       <Flex justify="space-between" align="center" gap={16}>
-        <NotificationViewer notificationFragment={notificationFragment} />
+        <NotificationViewer
+          notificationFragment={notificationFragment}
+          refetch={() => undefined}
+        />
         <Form layout="vertical">
           <Form.Item label="Schedule the notification">
             <LuxonDatePicker
