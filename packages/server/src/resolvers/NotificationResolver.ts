@@ -1,5 +1,7 @@
 import type { NotificationError } from "@prisma/client";
 import {
+  AccessControl,
+  AccessLevel,
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
@@ -212,6 +214,9 @@ export class NotificationResolver {
     private readonly notificationScheduler: NotificationScheduler
   ) {}
 
+  @AccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   @Query(() => GetNotificationByUuidResponse, { name: "notification" })
   async getByUuid(
     @Arg("uuid") uuid: string
@@ -229,6 +234,9 @@ export class NotificationResolver {
     );
   }
 
+  @AccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   @Query(() => ListNotificationsResponse, { name: "notifications" })
   async list(
     @Args(() => ListNotificationsArgs) query: ListNotificationsArgs
@@ -257,6 +265,9 @@ export class NotificationResolver {
     });
   }
 
+  @AccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   @Query(() => ListNotificationDeliveriesResponse, {
     name: "notificationDeliveries",
   })
@@ -298,6 +309,9 @@ export class NotificationResolver {
     });
   }
 
+  @AccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   @Mutation(() => StageNotificationResponse, { name: "stageNotification" })
   async stage(
     @Args(() => StageNotificationArgs) args: StageNotificationArgs
@@ -317,6 +331,9 @@ export class NotificationResolver {
     );
   }
 
+  @AccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   @Mutation(() => SendNotificationResponse, {
     name: "sendNotification",
     description: "Send a notification immediately.",
@@ -343,6 +360,9 @@ export class NotificationResolver {
     return SendNotificationResponse.newOk(true);
   }
 
+  @AccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   @Mutation(() => ScheduleNotificationResponse, {
     name: "scheduleNotification",
   })
@@ -374,6 +394,9 @@ export class NotificationResolver {
     return ScheduleNotificationResponse.newOk(true);
   }
 
+  @AccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   @Mutation(() => AcknowledgeDeliveryIssueResponse, {
     name: "acknowledgeDeliveryIssue",
   })
@@ -402,6 +425,9 @@ export class NotificationResolver {
     return AcknowledgeDeliveryIssueResponse.newOk(true);
   }
 
+  @AccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   @Mutation(() => AbortScheduledNotificationResponse, {
     name: "abortScheduledNotification",
   })
@@ -437,6 +463,9 @@ export class NotificationResolver {
     return AbortScheduledNotificationResponse.newOk(true);
   }
 
+  @AccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   @Mutation(() => DeleteNotificationResponse, { name: "deleteNotification" })
   async delete(
     @Arg("uuid") uuid: string,
@@ -468,11 +497,17 @@ export class NotificationResolver {
     return DeleteNotificationResponse.newOk(true);
   }
 
+  @AccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   @FieldResolver(() => Number, { name: "deliveryCount" })
   async deliveryCount(@Root() { uuid }: NotificationResource): Promise<number> {
     return this.notificationRepository.countDeliveriesForNotification({ uuid });
   }
 
+  @AccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   @FieldResolver(() => NotificationDeliveryIssueCount, {
     name: "deliveryIssueCount",
   })
@@ -488,5 +523,23 @@ export class NotificationResolver {
     Object.assign(retVal, issues);
 
     return retVal;
+  }
+
+  @FieldResolver(() => NotificationResource, {
+    name: "notification",
+  })
+  async getNotificationForDelivery(
+    @Root() { uuid }: NotificationDeliveryResource
+  ): Promise<NotificationResource> {
+    const notification =
+      await this.notificationDeliveryRepository.findNotificationForDelivery({
+        uuid,
+      });
+
+    if (notification == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Notification not found");
+    }
+
+    return notificationModelToResource(notification);
   }
 }

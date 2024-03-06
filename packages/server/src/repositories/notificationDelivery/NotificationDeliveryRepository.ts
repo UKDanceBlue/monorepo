@@ -66,6 +66,15 @@ export class NotificationDeliveryRepository {
     return this.prisma.notificationDelivery.findUnique({ where: param });
   }
 
+  async findNotificationForDelivery(param: UniqueParam) {
+    const val = await this.prisma.notificationDelivery.findUnique({
+      where: param,
+      select: { notification: true },
+    });
+
+    return val?.notification ?? null;
+  }
+
   async findDeviceForDelivery(param: UniqueParam) {
     const data = await this.prisma.notificationDelivery.findUnique({
       where: param,
