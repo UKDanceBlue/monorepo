@@ -4,6 +4,7 @@ import {
   configRoute,
   eventsRoute,
   homeRoute,
+  notificationsRoute,
   peopleRoute,
   teamsRoute,
 } from "./baseRoutes";
@@ -14,6 +15,13 @@ import {
   singleEventRoute,
   viewEventRoute,
 } from "./eventRoutes";
+import {
+  createNotificationRoute,
+  manageNotificationRoute,
+  notificationsTableRoute,
+  singleNotificationRoute,
+  viewNotificationRoute,
+} from "./notificationRoutes";
 import {
   createPersonRoute,
   editPersonRoute,
@@ -48,6 +56,14 @@ const routeTree = rootRoute.addChildren([
     singlePersonRoute.addChildren([editPersonRoute, viewPersonRoute]),
   ]),
   configRoute,
+  notificationsRoute.addChildren([
+    notificationsTableRoute,
+    createNotificationRoute,
+    singleNotificationRoute.addChildren([
+      viewNotificationRoute,
+      manageNotificationRoute,
+    ]),
+  ]),
 ]);
 
 export const router = new Router({

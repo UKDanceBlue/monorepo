@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { DateTime } from "luxon";
 import { generators } from "openid-client";
 import { Service } from "typedi";
 
@@ -29,6 +30,16 @@ export class LoginFlowSessionRepository {
         setCookie,
         sendToken,
         codeVerifier: generators.codeVerifier(),
+      },
+    });
+  }
+
+  gcOldLoginFlows() {
+    return this.prisma.loginFlowSession.deleteMany({
+      where: {
+        createdAt: {
+          lte: DateTime.now().minus({ days: 1 }).toJSDate(),
+        },
       },
     });
   }

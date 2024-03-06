@@ -39,6 +39,12 @@ export type Scalars = {
   Void: { input: void; output: void; }
 };
 
+export type AbortScheduledNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'AbortScheduledNotificationResponse';
+  readonly data: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
+};
+
 /** API response */
 export type AbstractGraphQlArrayOkResponse = {
   readonly ok: Scalars['Boolean']['output'];
@@ -64,6 +70,12 @@ export type AbstractGraphQlPaginatedResponse = {
   readonly pageSize: Scalars['NonNegativeInt']['output'];
   /** The total number of items */
   readonly total: Scalars['NonNegativeInt']['output'];
+};
+
+export type AcknowledgeDeliveryIssueResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'AcknowledgeDeliveryIssueResponse';
+  readonly data: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type AddEventImageInput = {
@@ -254,6 +266,7 @@ export type DeleteImageResponse = AbstractGraphQlOkResponse & GraphQlBaseRespons
 
 export type DeleteNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeleteNotificationResponse';
+  readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
 };
 
@@ -524,6 +537,18 @@ export type ListEventsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQ
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
+export type ListNotificationDeliveriesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'ListNotificationDeliveriesResponse';
+  readonly data: ReadonlyArray<NotificationDeliveryResource>;
+  readonly ok: Scalars['Boolean']['output'];
+  /** The current page number (1-indexed) */
+  readonly page: Scalars['PositiveInt']['output'];
+  /** The number of items per page */
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
+  /** The total number of items */
+  readonly total: Scalars['NonNegativeInt']['output'];
+};
+
 export type ListNotificationsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListNotificationsResponse';
   readonly data: ReadonlyArray<NotificationResource>;
@@ -610,6 +635,8 @@ export type MembershipResource = {
 
 export type Mutation = {
   readonly __typename?: 'Mutation';
+  readonly abortScheduledNotification: AbortScheduledNotificationResponse;
+  readonly acknowledgeDeliveryIssue: AcknowledgeDeliveryIssueResponse;
   readonly addExistingImageToEvent: AddEventImageResponse;
   readonly addImageToEvent: AddEventImageResponse;
   readonly createConfiguration: CreateConfigurationResponse;
@@ -631,11 +658,24 @@ export type Mutation = {
   readonly deleteTeam: DeleteTeamResponse;
   readonly registerDevice: RegisterDeviceResponse;
   readonly removeImageFromEvent: RemoveEventImageResponse;
+  readonly scheduleNotification: ScheduleNotificationResponse;
+  /** Send a notification immediately. */
   readonly sendNotification: SendNotificationResponse;
   readonly setEvent: SetEventResponse;
   readonly setPerson: GetPersonResponse;
   readonly setPointOpportunity: SinglePointOpportunityResponse;
   readonly setTeam: SingleTeamResponse;
+  readonly stageNotification: StageNotificationResponse;
+};
+
+
+export type MutationAbortScheduledNotificationArgs = {
+  uuid: Scalars['String']['input'];
+};
+
+
+export type MutationAcknowledgeDeliveryIssueArgs = {
+  uuid: Scalars['String']['input'];
 };
 
 
@@ -712,6 +752,7 @@ export type MutationDeleteImageArgs = {
 
 
 export type MutationDeleteNotificationArgs = {
+  force?: InputMaybe<Scalars['Boolean']['input']>;
   uuid: Scalars['String']['input'];
 };
 
@@ -747,8 +788,14 @@ export type MutationRemoveImageFromEventArgs = {
 };
 
 
+export type MutationScheduleNotificationArgs = {
+  sendAt: Scalars['DateTimeISO']['input'];
+  uuid: Scalars['String']['input'];
+};
+
+
 export type MutationSendNotificationArgs = {
-  input: SendNotificationInput;
+  uuid: Scalars['String']['input'];
 };
 
 
@@ -775,9 +822,84 @@ export type MutationSetTeamArgs = {
   uuid: Scalars['String']['input'];
 };
 
+
+export type MutationStageNotificationArgs = {
+  audience: NotificationAudienceInput;
+  body: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type NotificationAudienceInput = {
+  readonly all?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** The number of delivery issues for a notification, broken down by type. */
+export type NotificationDeliveryIssueCount = {
+  readonly __typename?: 'NotificationDeliveryIssueCount';
+  readonly DeviceNotRegistered: Scalars['Float']['output'];
+  readonly InvalidCredentials: Scalars['Float']['output'];
+  readonly MessageRateExceeded: Scalars['Float']['output'];
+  readonly MessageTooBig: Scalars['Float']['output'];
+  readonly MismatchSenderId: Scalars['Float']['output'];
+  readonly Unknown: Scalars['Float']['output'];
+};
+
+export const NotificationDeliveryResolverAllKeys = {
+  CreatedAt: 'createdAt',
+  DeliveryError: 'deliveryError',
+  ReceiptCheckedAt: 'receiptCheckedAt',
+  SentAt: 'sentAt',
+  UpdatedAt: 'updatedAt'
+} as const;
+
+export type NotificationDeliveryResolverAllKeys = typeof NotificationDeliveryResolverAllKeys[keyof typeof NotificationDeliveryResolverAllKeys];
+export const NotificationDeliveryResolverDateFilterKeys = {
+  CreatedAt: 'createdAt',
+  ReceiptCheckedAt: 'receiptCheckedAt',
+  SentAt: 'sentAt',
+  UpdatedAt: 'updatedAt'
+} as const;
+
+export type NotificationDeliveryResolverDateFilterKeys = typeof NotificationDeliveryResolverDateFilterKeys[keyof typeof NotificationDeliveryResolverDateFilterKeys];
+export type NotificationDeliveryResolverKeyedDateFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: NumericComparator;
+  /** The field to filter on */
+  readonly field: NotificationDeliveryResolverDateFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['LuxonDateTime']['input'];
+};
+
+export type NotificationDeliveryResolverKeyedIsNullFilterItem = {
+  /** The field to filter on */
+  readonly field: NotificationDeliveryResolverAllKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type NotificationDeliveryResource = {
+  readonly __typename?: 'NotificationDeliveryResource';
+  /** A unique identifier corresponding the group of notifications this was sent to Expo with. */
+  readonly chunkUuid?: Maybe<Scalars['String']['output']>;
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  /** Any error message returned by Expo when sending the notification. */
+  readonly deliveryError?: Maybe<Scalars['String']['output']>;
+  /** The time the server received a delivery receipt from the user. */
+  readonly receiptCheckedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  /** The time the server sent the notification to Expo for delivery. */
+  readonly sentAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly uuid: Scalars['ID']['output'];
+};
+
 export const NotificationResolverAllKeys = {
   Body: 'body',
   CreatedAt: 'createdAt',
+  DeliveryIssue: 'deliveryIssue',
+  SendAt: 'sendAt',
+  StartedSendingAt: 'startedSendingAt',
   Title: 'title',
   UpdatedAt: 'updatedAt'
 } as const;
@@ -785,6 +907,8 @@ export const NotificationResolverAllKeys = {
 export type NotificationResolverAllKeys = typeof NotificationResolverAllKeys[keyof typeof NotificationResolverAllKeys];
 export const NotificationResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
+  SendAt: 'sendAt',
+  StartedSendingAt: 'startedSendingAt',
   UpdatedAt: 'updatedAt'
 } as const;
 
@@ -808,7 +932,7 @@ export type NotificationResolverKeyedIsNullFilterItem = {
 
 export type NotificationResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: Scalars['Void']['input'];
+  readonly field: NotificationResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
@@ -824,6 +948,11 @@ export type NotificationResolverKeyedStringFilterItem = {
   readonly value: Scalars['String']['input'];
 };
 
+export const NotificationResolverOneOfFilterKeys = {
+  DeliveryIssue: 'deliveryIssue'
+} as const;
+
+export type NotificationResolverOneOfFilterKeys = typeof NotificationResolverOneOfFilterKeys[keyof typeof NotificationResolverOneOfFilterKeys];
 export const NotificationResolverStringFilterKeys = {
   Body: 'body',
   Title: 'title'
@@ -834,11 +963,16 @@ export type NotificationResource = {
   readonly __typename?: 'NotificationResource';
   readonly body: Scalars['String']['output'];
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  /** The time the notification should have been received by the device (if applicable) */
-  readonly receivedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly deliveryCount: Scalars['Float']['output'];
+  readonly deliveryIssue?: Maybe<Scalars['String']['output']>;
+  readonly deliveryIssueAcknowledgedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly deliveryIssueCount: NotificationDeliveryIssueCount;
+  /** The time the notification is scheduled to be sent, if null it is either already sent or unscheduled. */
+  readonly sendAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  /** The time the server started sending the notification. */
+  readonly startedSendingAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly title: Scalars['String']['output'];
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  /** A URL related to the notification, opened immediately for presentation type URL, opened in a webview for presentation type IN_APP_VIEW, and shown as a button for presentation type INFO_POPUP */
   readonly url?: Maybe<Scalars['URL']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
@@ -1036,6 +1170,7 @@ export type Query = {
   readonly loginState: LoginState;
   readonly me: GetPersonResponse;
   readonly notification: GetNotificationByUuidResponse;
+  readonly notificationDeliveries: ListNotificationDeliveriesResponse;
   readonly notifications: ListNotificationsResponse;
   readonly person: GetPersonResponse;
   readonly personByLinkBlue: GetPersonResponse;
@@ -1119,6 +1254,23 @@ export type QueryListPeopleArgs = {
 
 export type QueryNotificationArgs = {
   uuid: Scalars['String']['input'];
+};
+
+
+export type QueryNotificationDeliveriesArgs = {
+  booleanFilters?: InputMaybe<Scalars['Void']['input']>;
+  dateFilters?: InputMaybe<ReadonlyArray<NotificationDeliveryResolverKeyedDateFilterItem>>;
+  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  isNullFilters?: InputMaybe<ReadonlyArray<NotificationDeliveryResolverKeyedIsNullFilterItem>>;
+  notificationUuid: Scalars['String']['input'];
+  numericFilters?: InputMaybe<Scalars['Void']['input']>;
+  oneOfFilters?: InputMaybe<Scalars['Void']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sendAll?: InputMaybe<Scalars['Boolean']['input']>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<Scalars['Void']['input']>;
 };
 
 
@@ -1254,16 +1406,16 @@ export type RoleResourceInput = {
   readonly dbRole?: DbRole;
 };
 
-export type SendNotificationInput = {
-  readonly body: Scalars['String']['input'];
-  readonly title: Scalars['String']['input'];
+export type ScheduleNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'ScheduleNotificationResponse';
+  readonly data: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
 };
 
-export type SendNotificationResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type SendNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'SendNotificationResponse';
-  readonly data: NotificationResource;
+  readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
-  readonly uuid: Scalars['String']['output'];
 };
 
 export type SetEventInput = {
@@ -1324,6 +1476,13 @@ export type SingleTeamResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse
 };
 
 export { SortDirection };
+
+export type StageNotificationResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'StageNotificationResponse';
+  readonly data: NotificationResource;
+  readonly ok: Scalars['Boolean']['output'];
+  readonly uuid: Scalars['String']['output'];
+};
 
 export { StringComparator };
 

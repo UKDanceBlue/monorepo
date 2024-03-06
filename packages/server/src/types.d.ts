@@ -25,6 +25,8 @@ declare global {
 
       LOGGING_LEVEL?: SyslogLevels;
 
+      EXPO_ACCESS_TOKEN?: string;
+
       // If "THIS IS DANGEROUS" is set, then the app will bypass auth checks and grand admin rights to all connections
       OVERRIDE_AUTH?: string;
     }

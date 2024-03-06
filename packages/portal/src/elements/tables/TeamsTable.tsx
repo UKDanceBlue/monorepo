@@ -1,6 +1,6 @@
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useListQuery } from "@hooks/useListQuery";
-import { useMakeSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
+import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useNavigate } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
@@ -103,7 +103,7 @@ export const TeamsTable = () => {
           title: "Name",
           dataIndex: "name",
           sorter: true,
-          ...useMakeSearchFilterProps("name", updateFilter, clearFilter),
+          ...useMakeStringSearchFilterProps("name", updateFilter, clearFilter),
         },
         {
           title: "Type",

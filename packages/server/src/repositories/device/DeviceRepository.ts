@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
+import type { NotificationAudience } from "../../lib/notification/NotificationProvider.js";
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import { PersonRepository } from "../person/PersonRepository.js";
 
@@ -108,9 +109,43 @@ export class DeviceRepository {
     });
   }
 
+  async unsubscribeFromNotifications(
+    param: { uuid: string } | { id: number } | { expoPushToken: string }
+  ) {
+    return this.prisma.device.updateMany({
+      where: param,
+      data: {
+        expoPushToken: null,
+      },
+    });
+  }
+
   async deleteDevice(param: { uuid: string } | { id: number }) {
     return this.prisma.device.delete({
       where: param,
     });
+  }
+
+  async lookupNotificationAudience(
+    audience: NotificationAudience
+  ): Promise<{ id: number; uuid: string; expoPushToken: string }[]> {
+    if (audience === "all") {
+      return this.prisma.device
+        .findMany({
+          select: { id: true, uuid: true, expoPushToken: true },
+          where: { expoPushToken: { not: null } },
+        })
+        .then((devices) =>
+          devices.filter(
+            (
+              device
+            ): device is Omit<typeof device, "expoPushToken"> & {
+              expoPushToken: Exclude<(typeof device)["expoPushToken"], null>;
+            } => device.expoPushToken != null
+          )
+        );
+    } else {
+      throw new Error("Not implemented");
+    }
   }
 }

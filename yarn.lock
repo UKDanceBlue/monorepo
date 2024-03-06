@@ -9239,6 +9239,7 @@ __metadata:
     class-validator: ^0.14.0
     cookie-parser: ^1.4.6
     cors: ^2.8.5
+    croner: ^8.0.1
     dotenv: ^16.0.3
     dree: ^4.5.2
     ejs: ^3.1.9
@@ -12414,6 +12415,13 @@ __metadata:
   version: 1.1.1
   resolution: "create-require@npm:1.1.1"
   checksum: a9a1503d4390d8b59ad86f4607de7870b39cad43d929813599a23714831e81c520bddf61bcdd1f8e30f05fd3a2b71ae8538e946eb2786dc65c2bbc520f692eff
+  languageName: node
+  linkType: hard
+
+"croner@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "croner@npm:8.0.1"
+  checksum: 98369c312a5accfa4f03bd4c876deca6c26335e24bc6a34b034025ae5d00ae2e378d62b76ed10658a74eac6e61accc1a45c3227527775a9b2d8e6c3d5b96eec5
   languageName: node
   linkType: hard
 

@@ -8,7 +8,11 @@ export function notificationModelToResource(
     uuid: notificationModel.uuid,
     title: notificationModel.title,
     body: notificationModel.body,
-    url: notificationModel.url,
+    url: notificationModel.url ? new URL(notificationModel.url) : null,
+    deliveryIssue: notificationModel.deliveryIssue,
+    deliveryIssueAcknowledgedAt: notificationModel.deliveryIssueAcknowledgedAt,
+    sendAt: notificationModel.sendAt,
+    startedSendingAt: notificationModel.startedSendingAt,
     createdAt: notificationModel.createdAt,
     updatedAt: notificationModel.updatedAt,
   });

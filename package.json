@@ -25,11 +25,7 @@
     "portal:build": "yarn workspace @ukdanceblue/portal build",
     "mobile:start": "yarn workspace @ukdanceblue/mobile start",
     "docker:server:start": "docker-compose up -d --build",
-    "docker:server:stop": "docker-compose down",
-    "test": "vitest",
-    "test-ui": "vitest --ui --coverage",
-    "coverage": "vitest run --coverage",
-    "coverage-browser": "vitest run --coverage --reporter html && yarn dlx vite preview --outDir html"
+    "docker:server:stop": "docker-compose down"
   },
   "devDependencies": {
     "@eslint/js": "8.56.0",

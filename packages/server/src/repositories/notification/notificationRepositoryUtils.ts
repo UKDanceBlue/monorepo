@@ -3,6 +3,7 @@ import { SortDirection } from "@ukdanceblue/common";
 
 import {
   dateFilterToPrisma,
+  oneOfFilterToPrisma,
   stringFilterToPrisma,
 } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
@@ -21,15 +22,20 @@ export function buildNotificationOrder(
 
   for (const [key, sort] of order ?? []) {
     switch (key) {
+      case "createdAt":
+      case "updatedAt":
       case "title":
       case "body":
-      case "createdAt":
-      case "updatedAt": {
+      case "deliveryIssue":
+      case "deliveryIssueAcknowledgedAt":
+      case "sendAt":
+      case "startedSendingAt": {
         orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
         break;
       }
       default: {
-        throw new Error(`Unsupported sort key: ${String(key)}`);
+        key satisfies never;
+        throw new Error(`Unsupported filter field: ${JSON.stringify(key)}`);
       }
     }
   }
@@ -43,22 +49,25 @@ export function buildNotificationWhere(
 
   for (const filter of filters ?? []) {
     switch (filter.field) {
+      case "deliveryIssue": {
+        where[filter.field] = oneOfFilterToPrisma(filter);
+        break;
+      }
       case "title":
       case "body": {
         where[filter.field] = stringFilterToPrisma(filter);
         break;
       }
       case "createdAt":
-      case "updatedAt": {
+      case "updatedAt":
+      case "sendAt":
+      case "startedSendingAt": {
         where[filter.field] = dateFilterToPrisma(filter);
         break;
       }
       default: {
-        throw new Error(
-          `Unsupported filter key: ${String(
-            (filter as { field?: unknown } | undefined)?.field
-          )}`
-        );
+        filter satisfies never;
+        throw new Error(`Unsupported filter field: ${JSON.stringify(filter)}`);
       }
     }
   }

@@ -12,6 +12,9 @@ logger.info("Loaded environment variables");
 
 await import("./prisma.js");
 
+// Start any manual cron jobs
+await import("./jobs/index.js");
+
 const { createServer, startHttpServer, startServer } = await import(
   "./server.js"
 );

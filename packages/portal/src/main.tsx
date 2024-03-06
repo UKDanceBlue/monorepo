@@ -12,8 +12,15 @@ import "normalize.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <style>
+      {`
+      html, body, #root {
+        height: 100%;
+      }
+      `}
+    </style>
     <AntConfigProvider>
-      <AntApp>
+      <AntApp style={{ height: "100%" }}>
         <UrqlProvider value={urqlClient}>
           <RouterProvider router={router} />
         </UrqlProvider>
