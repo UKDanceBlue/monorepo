@@ -1,4 +1,4 @@
-import { EyeOutlined, SettingOutlined } from "@ant-design/icons";
+import { EyeOutlined, SendOutlined } from "@ant-design/icons";
 import { useListQuery } from "@hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
@@ -228,7 +228,7 @@ export const NotificationsTable = () => {
                       params: { notificationId: uuid },
                     }).catch(console.error)
                   }
-                  icon={<SettingOutlined />}
+                  icon={<SendOutlined />}
                 />
               </Flex>
             ),

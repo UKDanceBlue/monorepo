@@ -1,7 +1,9 @@
+import type { NotificationError } from "@prisma/client";
 import {
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
+  NotificationDeliveryResource,
   NotificationResource,
   SortDirection,
 } from "@ukdanceblue/common";
@@ -10,11 +12,13 @@ import {
   Args,
   ArgsType,
   Field,
+  FieldResolver,
   InputType,
   Mutation,
   ObjectType,
   Query,
   Resolver,
+  Root,
 } from "type-graphql";
 import { Inject, Service } from "typedi";
 
@@ -23,6 +27,8 @@ import { ExpoNotificationProvider } from "../lib/notification/ExpoNotificationPr
 import * as NotificationProviderJs from "../lib/notification/NotificationProvider.js";
 import { NotificationRepository } from "../repositories/notification/NotificationRepository.js";
 import { notificationModelToResource } from "../repositories/notification/notificationModelToResource.js";
+import { NotificationDeliveryRepository } from "../repositories/notificationDelivery/NotificationDeliveryRepository.js";
+import { notificationDeliveryModelToResource } from "../repositories/notificationDelivery/notificationDeliveryModelToResource.js";
 
 import {
   AbstractGraphQLCreatedResponse,
@@ -143,11 +149,59 @@ class ListNotificationsArgs extends FilteredListQueryArgs<
   oneOf: ["deliveryIssue"],
 }) {}
 
+@ArgsType()
+class ListNotificationDeliveriesArgs extends FilteredListQueryArgs<
+  "createdAt" | "updatedAt",
+  never,
+  never,
+  never,
+  "createdAt" | "updatedAt",
+  never
+>("NotificationDeliveryResolver", {
+  all: ["createdAt", "updatedAt"],
+  date: ["createdAt", "updatedAt"],
+  string: [],
+  oneOf: [],
+}) {
+  @Field(() => String)
+  notificationUuid!: string;
+}
+
+@ObjectType("ListNotificationDeliveriesResponse", {
+  implements: AbstractGraphQLPaginatedResponse<NotificationDeliveryResource>,
+})
+class ListNotificationDeliveriesResponse extends AbstractGraphQLPaginatedResponse<NotificationDeliveryResource> {
+  @Field(() => [NotificationDeliveryResource])
+  data!: NotificationDeliveryResource[];
+}
+
+@ObjectType("NotificationDeliveryIssueCount", {
+  description:
+    "The number of delivery issues for a notification, broken down by type.",
+})
+class NotificationDeliveryIssueCount
+  implements Record<NotificationError, number>
+{
+  @Field(() => Number)
+  DeviceNotRegistered!: number;
+  @Field(() => Number)
+  InvalidCredentials!: number;
+  @Field(() => Number)
+  MessageTooBig!: number;
+  @Field(() => Number)
+  MessageRateExceeded!: number;
+  @Field(() => Number)
+  MismatchSenderId!: number;
+  @Field(() => Number)
+  Unknown!: number;
+}
+
 @Resolver(() => NotificationResource)
 @Service()
 export class NotificationResolver {
   constructor(
     private readonly notificationRepository: NotificationRepository,
+    private readonly notificationDeliveryRepository: NotificationDeliveryRepository,
     @Inject(() => ExpoNotificationProvider)
     private readonly notificationProvider: NotificationProviderJs.NotificationProvider,
     private readonly notificationScheduler: NotificationScheduler
@@ -190,6 +244,41 @@ export class NotificationResolver {
 
     return ListNotificationsResponse.newPaginated({
       data: rows.map(notificationModelToResource),
+      total: await this.notificationRepository.countNotifications({
+        filters: query.filters,
+      }),
+      page: query.page,
+      pageSize: query.pageSize,
+    });
+  }
+
+  @Query(() => ListNotificationDeliveriesResponse, {
+    name: "notificationDeliveries",
+  })
+  async listDeliveries(
+    @Args(() => ListNotificationDeliveriesArgs)
+    query: ListNotificationDeliveriesArgs
+  ): Promise<ListNotificationDeliveriesResponse> {
+    const rows =
+      await this.notificationDeliveryRepository.listNotificationDeliveries(
+        { uuid: query.notificationUuid },
+        {
+          filters: query.filters,
+          order:
+            query.sortBy?.map((key, i) => [
+              key,
+              query.sortDirection?.[i] ?? SortDirection.DESCENDING,
+            ]) ?? [],
+          skip:
+            query.page != null && query.pageSize != null
+              ? (query.page - 1) * query.pageSize
+              : null,
+          take: query.pageSize,
+        }
+      );
+
+    return ListNotificationDeliveriesResponse.newPaginated({
+      data: rows.map(notificationDeliveryModelToResource),
       total: await this.notificationRepository.countNotifications({
         filters: query.filters,
       }),
@@ -366,5 +455,27 @@ export class NotificationResolver {
     });
 
     return DeleteNotificationResponse.newOk(true);
+  }
+
+  @FieldResolver(() => Number, { name: "deliveryCount" })
+  async deliveryCount(@Root() { uuid }: NotificationResource): Promise<number> {
+    return this.notificationRepository.countDeliveriesForNotification({ uuid });
+  }
+
+  @FieldResolver(() => NotificationDeliveryIssueCount, {
+    name: "deliveryIssueCount",
+  })
+  async deliveryIssueCount(
+    @Root() { uuid }: NotificationResource
+  ): Promise<NotificationDeliveryIssueCount> {
+    const issues =
+      await this.notificationRepository.countFailedDeliveriesForNotification({
+        uuid,
+      });
+
+    const retVal = new NotificationDeliveryIssueCount();
+    Object.assign(retVal, issues);
+
+    return retVal;
   }
 }

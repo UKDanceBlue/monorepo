@@ -537,6 +537,18 @@ export type ListEventsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQ
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
+export type ListNotificationDeliveriesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'ListNotificationDeliveriesResponse';
+  readonly data: ReadonlyArray<NotificationDeliveryResource>;
+  readonly ok: Scalars['Boolean']['output'];
+  /** The current page number (1-indexed) */
+  readonly page: Scalars['PositiveInt']['output'];
+  /** The number of items per page */
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
+  /** The total number of items */
+  readonly total: Scalars['NonNegativeInt']['output'];
+};
+
 export type ListNotificationsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListNotificationsResponse';
   readonly data: ReadonlyArray<NotificationResource>;
@@ -822,6 +834,61 @@ export type NotificationAudienceInput = {
   readonly all?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+/** The number of delivery issues for a notification, broken down by type. */
+export type NotificationDeliveryIssueCount = {
+  readonly __typename?: 'NotificationDeliveryIssueCount';
+  readonly DeviceNotRegistered: Scalars['Float']['output'];
+  readonly InvalidCredentials: Scalars['Float']['output'];
+  readonly MessageRateExceeded: Scalars['Float']['output'];
+  readonly MessageTooBig: Scalars['Float']['output'];
+  readonly MismatchSenderId: Scalars['Float']['output'];
+  readonly Unknown: Scalars['Float']['output'];
+};
+
+export const NotificationDeliveryResolverAllKeys = {
+  CreatedAt: 'createdAt',
+  UpdatedAt: 'updatedAt'
+} as const;
+
+export type NotificationDeliveryResolverAllKeys = typeof NotificationDeliveryResolverAllKeys[keyof typeof NotificationDeliveryResolverAllKeys];
+export const NotificationDeliveryResolverDateFilterKeys = {
+  CreatedAt: 'createdAt',
+  UpdatedAt: 'updatedAt'
+} as const;
+
+export type NotificationDeliveryResolverDateFilterKeys = typeof NotificationDeliveryResolverDateFilterKeys[keyof typeof NotificationDeliveryResolverDateFilterKeys];
+export type NotificationDeliveryResolverKeyedDateFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: NumericComparator;
+  /** The field to filter on */
+  readonly field: NotificationDeliveryResolverDateFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['LuxonDateTime']['input'];
+};
+
+export type NotificationDeliveryResolverKeyedIsNullFilterItem = {
+  /** The field to filter on */
+  readonly field: NotificationDeliveryResolverAllKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type NotificationDeliveryResource = {
+  readonly __typename?: 'NotificationDeliveryResource';
+  /** A unique identifier corresponding the group of notifications this was sent to Expo with. */
+  readonly chunkUuid?: Maybe<Scalars['String']['output']>;
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  /** Any error message returned by Expo when sending the notification. */
+  readonly deliveryError?: Maybe<Scalars['String']['output']>;
+  /** The time the server received a delivery receipt from the user. */
+  readonly receiptCheckedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  /** The time the server sent the notification to Expo for delivery. */
+  readonly sentAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly uuid: Scalars['ID']['output'];
+};
+
 export const NotificationResolverAllKeys = {
   Body: 'body',
   CreatedAt: 'createdAt',
@@ -891,8 +958,10 @@ export type NotificationResource = {
   readonly __typename?: 'NotificationResource';
   readonly body: Scalars['String']['output'];
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly deliveryCount: Scalars['Float']['output'];
   readonly deliveryIssue?: Maybe<Scalars['String']['output']>;
   readonly deliveryIssueAcknowledgedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly deliveryIssueCount: NotificationDeliveryIssueCount;
   /** The time the notification is scheduled to be sent, if null it is either already sent or unscheduled. */
   readonly sendAt?: Maybe<Scalars['DateTimeISO']['output']>;
   /** The time the server started sending the notification. */
@@ -1096,6 +1165,7 @@ export type Query = {
   readonly loginState: LoginState;
   readonly me: GetPersonResponse;
   readonly notification: GetNotificationByUuidResponse;
+  readonly notificationDeliveries: ListNotificationDeliveriesResponse;
   readonly notifications: ListNotificationsResponse;
   readonly person: GetPersonResponse;
   readonly personByLinkBlue: GetPersonResponse;
@@ -1179,6 +1249,23 @@ export type QueryListPeopleArgs = {
 
 export type QueryNotificationArgs = {
   uuid: Scalars['String']['input'];
+};
+
+
+export type QueryNotificationDeliveriesArgs = {
+  booleanFilters?: InputMaybe<Scalars['Void']['input']>;
+  dateFilters?: InputMaybe<ReadonlyArray<NotificationDeliveryResolverKeyedDateFilterItem>>;
+  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  isNullFilters?: InputMaybe<ReadonlyArray<NotificationDeliveryResolverKeyedIsNullFilterItem>>;
+  notificationUuid: Scalars['String']['input'];
+  numericFilters?: InputMaybe<Scalars['Void']['input']>;
+  oneOfFilters?: InputMaybe<Scalars['Void']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sendAll?: InputMaybe<Scalars['Boolean']['input']>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<Scalars['Void']['input']>;
 };
 
 

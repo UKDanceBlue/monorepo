@@ -522,6 +522,20 @@ type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
   total: NonNegativeInt!
 }
 
+type ListNotificationDeliveriesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+  data: [NotificationDeliveryResource!]!
+  ok: Boolean!
+
+  """The current page number (1-indexed)"""
+  page: PositiveInt!
+
+  """The number of items per page"""
+  pageSize: NonNegativeInt!
+
+  """The total number of items"""
+  total: NonNegativeInt!
+}
+
 type ListNotificationsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
   data: [NotificationResource!]!
   ok: Boolean!
@@ -667,6 +681,69 @@ input NotificationAudienceInput {
   all: Boolean
 }
 
+"""The number of delivery issues for a notification, broken down by type."""
+type NotificationDeliveryIssueCount {
+  DeviceNotRegistered: Float!
+  InvalidCredentials: Float!
+  MessageRateExceeded: Float!
+  MessageTooBig: Float!
+  MismatchSenderId: Float!
+  Unknown: Float!
+}
+
+enum NotificationDeliveryResolverAllKeys {
+  createdAt
+  updatedAt
+}
+
+enum NotificationDeliveryResolverDateFilterKeys {
+  createdAt
+  updatedAt
+}
+
+input NotificationDeliveryResolverKeyedDateFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: NotificationDeliveryResolverDateFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: LuxonDateTime!
+}
+
+input NotificationDeliveryResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: NotificationDeliveryResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+type NotificationDeliveryResource {
+  """
+  A unique identifier corresponding the group of notifications this was sent to Expo with.
+  """
+  chunkUuid: String
+  createdAt: DateTimeISO
+
+  """Any error message returned by Expo when sending the notification."""
+  deliveryError: String
+
+  """The time the server received a delivery receipt from the user."""
+  receiptCheckedAt: DateTimeISO
+
+  """The time the server sent the notification to Expo for delivery."""
+  sentAt: DateTimeISO
+  updatedAt: DateTimeISO
+  uuid: ID!
+}
+
 enum NotificationResolverAllKeys {
   body
   createdAt
@@ -745,8 +822,10 @@ enum NotificationResolverStringFilterKeys {
 type NotificationResource {
   body: String!
   createdAt: DateTimeISO
+  deliveryCount: Float!
   deliveryIssue: String
   deliveryIssueAcknowledgedAt: DateTimeISO
+  deliveryIssueCount: NotificationDeliveryIssueCount!
 
   """
   The time the notification is scheduled to be sent, if null it is either already sent or unscheduled.
@@ -1106,6 +1185,50 @@ type Query {
   loginState: LoginState!
   me: GetPersonResponse!
   notification(uuid: String!): GetNotificationByUuidResponse!
+  notificationDeliveries(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: [NotificationDeliveryResolverKeyedDateFilterItem!]
+
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [NotificationDeliveryResolverKeyedIsNullFilterItem!]
+    notificationUuid: String!
+
+    """The numeric filters to apply to the query"""
+    numericFilters: Void
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: Void
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: Void
+  ): ListNotificationDeliveriesResponse!
   notifications(
     """The boolean filters to apply to the query"""
     booleanFilters: Void

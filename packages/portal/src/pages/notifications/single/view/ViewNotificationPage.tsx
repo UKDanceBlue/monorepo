@@ -1,7 +1,9 @@
+import { SendOutlined } from "@ant-design/icons";
 import { NotificationViewer } from "@elements/viewers/notification/NotificationViewer";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { useParams } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { Button, Flex, Typography } from "antd";
 import { useQuery } from "urql";
 
 const notificationViewerDocument = graphql(/* GraphQL */ `
@@ -30,10 +32,26 @@ export function ViewNotificationPage() {
     loadingMessage: "Loading notification...",
   });
 
+  const navigate = useNavigate();
+
   return (
-    <div>
-      <h1>View Notification</h1>
+    <>
+      <Flex justify="space-between" align="center">
+        <Typography.Title>Notification</Typography.Title>
+        <Button
+          type="link"
+          icon={<SendOutlined />}
+          onClick={() =>
+            void navigate({
+              to: "/notifications/$notificationId/manage",
+            })
+          }
+          size="large"
+        >
+          Manage delivery
+        </Button>
+      </Flex>
       <NotificationViewer notificationFragment={data?.notification.data} />
-    </div>
+    </>
   );
 }

@@ -10,5 +10,14 @@ export const SingleNotificationFragment = graphql(/* GraphQL */ `
     sendAt
     startedSendingAt
     createdAt
+    deliveryCount
+    deliveryIssueCount {
+      DeviceNotRegistered
+      InvalidCredentials
+      MessageRateExceeded
+      MessageTooBig
+      MismatchSenderId
+      Unknown
+    }
   }
 `);

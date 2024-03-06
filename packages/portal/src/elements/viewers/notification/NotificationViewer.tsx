@@ -42,6 +42,13 @@ export const NotificationViewer = ({
     )})`;
   }
 
+  const totalDeliveryIssues = Object.values(
+    notification.deliveryIssueCount
+  ).reduce<number>(
+    (acc, val) => (val === "NotificationDeliveryIssueCount" ? acc : acc + val),
+    0
+  );
+
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 16 }}>
       <h2>Notification Overview</h2>
@@ -56,13 +63,8 @@ export const NotificationViewer = ({
           { label: "Title", span: 2, children: notification.title },
           { label: "Body", span: 2, children: notification.body },
           {
-            label: "Delivery issue",
-            span: 1,
-            children: deliveryIssueText,
-          },
-          {
             label: "Scheduled to be sent at",
-            span: 1,
+            span: 2,
             children: renderDateTime(
               notification.sendAt,
               DateTime.DATETIME_SHORT
@@ -83,6 +85,37 @@ export const NotificationViewer = ({
               notification.createdAt,
               DateTime.DATETIME_SHORT
             ),
+          },
+          {
+            label: "Notification problem",
+            span: 1,
+            children: deliveryIssueText,
+          },
+          {
+            label: "Total number of notifications",
+            span: 1,
+            children: notification.deliveryCount,
+          },
+          {
+            label: "Individual delivery issues",
+            span: 2,
+            children:
+              totalDeliveryIssues === 0 ? (
+                "No issues"
+              ) : (
+                <Descriptions
+                  size="small"
+                  items={Object.entries(notification.deliveryIssueCount)
+                    .filter(([, val]) => typeof val === "number")
+                    .map(([key, value]) => ({
+                      label: key,
+                      children:
+                        value === "NotificationDeliveryIssueCount"
+                          ? "No issues"
+                          : value,
+                    }))}
+                />
+              ),
           },
         ]}
         column={2}
