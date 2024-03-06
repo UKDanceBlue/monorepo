@@ -6,7 +6,7 @@ import { NavigationMenu } from "../../elements/singletons/NavigationMenu";
 export const RootPage = () => {
   return (
     <>
-      <Layout>
+      <Layout style={{ height: "100%" }}>
         <Layout.Header>
           <NavigationMenu />
         </Layout.Header>
