@@ -146,6 +146,13 @@ const rules = {
     "unicorn/throw-new-error": "error",
     // Personal preferences
     "class-methods-use-this": "off",
+    // Global vitest rules
+    "node/no-unpublished-import": [
+        "error",
+        {
+            allowModules: ["vitest"],
+        },
+    ],
 };
 const eslintConfig = [
     {
