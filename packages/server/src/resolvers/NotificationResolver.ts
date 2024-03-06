@@ -151,17 +151,22 @@ class ListNotificationsArgs extends FilteredListQueryArgs<
 
 @ArgsType()
 class ListNotificationDeliveriesArgs extends FilteredListQueryArgs<
-  "createdAt" | "updatedAt",
+  "createdAt" | "updatedAt" | "sentAt" | "receiptCheckedAt" | "deliveryError",
   never,
+  "deliveryError",
   never,
-  never,
-  "createdAt" | "updatedAt",
+  "createdAt" | "updatedAt" | "sentAt" | "receiptCheckedAt",
   never
 >("NotificationDeliveryResolver", {
-  all: ["createdAt", "updatedAt"],
-  date: ["createdAt", "updatedAt"],
-  string: [],
-  oneOf: [],
+  all: [
+    "createdAt",
+    "updatedAt",
+    "sentAt",
+    "receiptCheckedAt",
+    "deliveryError",
+  ],
+  date: ["createdAt", "updatedAt", "sentAt", "receiptCheckedAt"],
+  oneOf: ["deliveryError"],
 }) {
   @Field(() => String)
   notificationUuid!: string;
@@ -279,9 +284,15 @@ export class NotificationResolver {
 
     return ListNotificationDeliveriesResponse.newPaginated({
       data: rows.map(notificationDeliveryModelToResource),
-      total: await this.notificationRepository.countNotifications({
-        filters: query.filters,
-      }),
+      total:
+        await this.notificationDeliveryRepository.countNotificationDeliveries(
+          {
+            uuid: query.notificationUuid,
+          },
+          {
+            filters: query.filters,
+          }
+        ),
       page: query.page,
       pageSize: query.pageSize,
     });

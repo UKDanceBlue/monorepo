@@ -847,12 +847,17 @@ export type NotificationDeliveryIssueCount = {
 
 export const NotificationDeliveryResolverAllKeys = {
   CreatedAt: 'createdAt',
+  DeliveryError: 'deliveryError',
+  ReceiptCheckedAt: 'receiptCheckedAt',
+  SentAt: 'sentAt',
   UpdatedAt: 'updatedAt'
 } as const;
 
 export type NotificationDeliveryResolverAllKeys = typeof NotificationDeliveryResolverAllKeys[keyof typeof NotificationDeliveryResolverAllKeys];
 export const NotificationDeliveryResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
+  ReceiptCheckedAt: 'receiptCheckedAt',
+  SentAt: 'sentAt',
   UpdatedAt: 'updatedAt'
 } as const;
 

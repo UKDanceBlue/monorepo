@@ -10,10 +10,17 @@ export const RootPage = () => {
         <Layout.Header>
           <NavigationMenu />
         </Layout.Header>
-        <Layout.Content style={{ padding: "1vh 15vw" }}>
-          <Outlet />
-        </Layout.Content>
-        <Layout.Footer></Layout.Footer>
+        <div
+          style={{
+            overflowY:
+              "auto" /* TODO: dark mode , scrollbarColor: "grey black"*/,
+          }}
+        >
+          <Layout.Content style={{ padding: "1vh 15vw" }}>
+            <Outlet />
+          </Layout.Content>
+          <Layout.Footer></Layout.Footer>
+        </div>
       </Layout>
     </>
   );

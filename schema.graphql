@@ -693,11 +693,16 @@ type NotificationDeliveryIssueCount {
 
 enum NotificationDeliveryResolverAllKeys {
   createdAt
+  deliveryError
+  receiptCheckedAt
+  sentAt
   updatedAt
 }
 
 enum NotificationDeliveryResolverDateFilterKeys {
   createdAt
+  receiptCheckedAt
+  sentAt
   updatedAt
 }
 

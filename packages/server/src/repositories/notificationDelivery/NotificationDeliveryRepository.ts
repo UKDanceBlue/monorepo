@@ -125,15 +125,20 @@ export class NotificationDeliveryRepository {
     });
   }
 
-  countNotificationDeliveries({
-    filters,
-  }: {
-    filters?: readonly NotificationDeliveryFilters[] | undefined | null;
-  }) {
+  countNotificationDeliveries(
+    notification: UniqueParam,
+    {
+      filters,
+    }: {
+      filters?: readonly NotificationDeliveryFilters[] | undefined | null;
+    }
+  ) {
     const where = buildNotificationDeliveryWhere(filters);
 
     return this.prisma.notificationDelivery.count({
-      where,
+      where: {
+        AND: [{ notification }, where],
+      },
     });
   }
 

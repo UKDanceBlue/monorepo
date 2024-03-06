@@ -7,6 +7,7 @@ import {
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
 import { Table } from "antd";
+import { DateTime } from "luxon";
 import { useQuery } from "urql";
 
 const NotificationDeliveriesTableFragment = graphql(/* GraphQL */ `
@@ -52,22 +53,34 @@ export const NotificationDeliveriesTable = ({
 }: {
   notificationUuid: string;
 }) => {
-  const { queryOptions, updatePagination, clearSorting, pushSorting } =
-    useListQuery(
-      {
-        initPage: 1,
-        initPageSize: 10,
-        initSorting: [],
-      },
-      {
-        allFields: ["createdAt", "updatedAt"],
-        dateFields: ["createdAt", "updatedAt"],
-        isNullFields: [],
-        numericFields: [],
-        oneOfFields: [],
-        stringFields: [],
-      }
-    );
+  const {
+    queryOptions,
+    updatePagination,
+    clearSorting,
+    pushSorting,
+    updateFilter,
+    clearFilters,
+  } = useListQuery(
+    {
+      initPage: 1,
+      initPageSize: 10,
+      initSorting: [],
+    },
+    {
+      allFields: [
+        "createdAt",
+        "updatedAt",
+        "sentAt",
+        "receiptCheckedAt",
+        "deliveryError",
+      ],
+      dateFields: ["createdAt", "updatedAt", "sentAt", "receiptCheckedAt"],
+      isNullFields: [],
+      numericFields: [],
+      oneOfFields: ["deliveryError"],
+      stringFields: [],
+    }
+  );
 
   const [{ fetching, error, data: notificationDeliveriesDocument }] = useQuery({
     query: notificationDeliveriesTableQueryDocument,
@@ -109,7 +122,7 @@ export const NotificationDeliveriesTable = ({
             : false
         }
         sortDirections={["ascend", "descend"]}
-        onChange={(pagination, _filters, sorter, _extra) => {
+        onChange={(pagination, filters, sorter, _extra) => {
           updatePagination({
             page: pagination.current,
             pageSize: pagination.pageSize,
@@ -120,12 +133,38 @@ export const NotificationDeliveriesTable = ({
               continue;
             }
             pushSorting({
-              field: sort.field as "createdAt" | "updatedAt",
+              field: sort.field as
+                | "createdAt"
+                | "updatedAt"
+                | "sentAt"
+                | "receiptCheckedAt"
+                | "deliveryError",
               direction:
                 sort.order === "ascend"
                   ? SortDirection.ASCENDING
                   : SortDirection.DESCENDING,
             });
+          }
+
+          clearFilters();
+          for (const key of Object.keys(filters)) {
+            const value = filters[key];
+            if (!value) {
+              continue;
+            }
+            switch (key) {
+              case "deliveryError": {
+                updateFilter("deliveryError", {
+                  field: "deliveryError",
+                  value: value.map((v) => v.toString()),
+                });
+                break;
+              }
+              default: {
+                console.error("Unhandled filter key", key);
+                break;
+              }
+            }
           }
         }}
         columns={[
@@ -134,14 +173,17 @@ export const NotificationDeliveriesTable = ({
             dataIndex: "sentAt",
             sorter: true,
             render: (sentAt: string | Date | null | undefined) =>
-              renderDateTime(sentAt),
+              renderDateTime(sentAt, DateTime.DATETIME_SHORT_WITH_SECONDS),
           },
           {
             title: "Receipt Checked At",
             dataIndex: "receiptCheckedAt",
             sorter: true,
             render: (receiptCheckedAt: string | Date | null | undefined) =>
-              renderDateTime(receiptCheckedAt),
+              renderDateTime(
+                receiptCheckedAt,
+                DateTime.DATETIME_SHORT_WITH_SECONDS
+              ),
           },
           {
             title: "Delivery Error",
@@ -149,6 +191,14 @@ export const NotificationDeliveriesTable = ({
             sorter: true,
             render: (deliveryError: string | null | undefined) =>
               deliveryError ?? "None",
+            filters: [
+              { text: "Device Not Registered", value: "DeviceNotRegistered" },
+              { text: "Invalid Credentials", value: "InvalidCredentials" },
+              { text: "Message Too Big", value: "MessageTooBig" },
+              { text: "Message Rate Exceeded", value: "MessageRateExceeded" },
+              { text: "Mismatch Sender Id", value: "MismatchSenderId" },
+              { text: "Unknown", value: "Unknown" },
+            ],
           },
         ]}
       />
