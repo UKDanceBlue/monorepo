@@ -1,6 +1,4 @@
 import { universalCatch } from "@common/logging";
-import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import type { FirestoreNotification } from "@ukdanceblue/db-app-common";
 // import { getInstallationTimeAsync } from "expo-application";
 import { useEffect, useMemo, useState } from "react";
 import type { SharedValue } from "react-native-reanimated";

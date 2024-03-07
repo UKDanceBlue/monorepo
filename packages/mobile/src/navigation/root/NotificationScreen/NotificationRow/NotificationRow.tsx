@@ -1,5 +1,4 @@
 import { universalCatch } from "@common/logging";
-import firestore from "@react-native-firebase/firestore";
 import { Box, Button, Row, useTheme } from "native-base";
 import type { SectionListRenderItem } from "react-native";
 import { Alert, useWindowDimensions } from "react-native";

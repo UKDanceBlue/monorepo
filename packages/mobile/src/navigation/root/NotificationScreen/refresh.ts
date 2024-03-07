@@ -1,7 +1,4 @@
 import { log, universalCatch } from "@common/logging";
-import type { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import type { FirestoreNotification } from "@ukdanceblue/db-app-common";
-import { isFirestoreNotification } from "@ukdanceblue/db-app-common";
 import { DateTime } from "luxon";
 import type { Dispatch, SetStateAction } from "react";
 import { Alert } from "react-native";
