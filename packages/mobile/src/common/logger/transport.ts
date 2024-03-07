@@ -82,6 +82,8 @@ export abstract class LoggerTransport {
                 error:
                   extra.error instanceof Error
                     ? extra.error
+                    : typeof extra.error === "string"
+                    ? new Error(extra.error)
                     : new Error("Nonstandard error", { cause: extra.error }),
               }
             : (extra as Omit<typeof extra, "error">),
