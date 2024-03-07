@@ -1,5 +1,13 @@
 import JumbotronGeometric from "@common/components/JumbotronGeometric";
+import { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
+import { Logger } from "@common/logger/Logger";
 import { universalCatch } from "@common/logging";
+import { dateTimeFromSomething } from "@ukdanceblue/common";
+import type {
+  FragmentType} from "@ukdanceblue/common/dist/graphql-client-public";
+import {
+  getFragmentData,
+} from "@ukdanceblue/common/dist/graphql-client-public";
 import { manufacturer as deviceManufacturer } from "expo-device";
 import { openSettings } from "expo-linking";
 import { setBadgeCountAsync } from "expo-notifications";
@@ -10,13 +18,7 @@ import { RefreshControl } from "react-native";
 
 import { useDeviceData, useLoading, useUserData } from "../../../context";
 
-import { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
-import { Logger } from "@common/logger/Logger";
-import { dateTimeFromSomething } from "@ukdanceblue/common";
-import {
-  FragmentType,
-  getFragmentData,
-} from "@ukdanceblue/common/dist/graphql-client-public";
+
 import { NotificationRow } from "./NotificationRow";
 import { NotificationSectionHeader } from "./NotificationSectionHeader";
 import { useLoadNotifications } from "./refresh";
@@ -54,7 +56,7 @@ function NotificationScreen() {
         const date = dateTimeFromSomething(delivery.sentAt) as DateTime;
 
         if (date !== lastDate[0]) {
-          const title = date?.toLocaleString(DateTime.DATE_MED) ?? "";
+          const title = date.toLocaleString(DateTime.DATE_MED) ?? "";
           sections.push({ title, data: [notification] });
           lastDate = [date, title];
         } else {

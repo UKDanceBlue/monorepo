@@ -41,7 +41,7 @@ export function ThemeConfigProvider({
 }
 
 export function AntConfigProvider({ children }: { children: React.ReactNode }) {
-  const dark = useContext(themeConfigContext).dark;
+  const {dark} = useContext(themeConfigContext);
 
   return (
     <ConfigProvider theme={makeAntDesignTheme({ dark })}>

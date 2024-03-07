@@ -1,4 +1,13 @@
 import { useThemeFonts } from "@common/customHooks";
+import {
+  NotificationDeliveryFragment,
+  NotificationFragment,
+} from "@common/fragments/NotificationScreenGQL";
+import type {
+  FragmentType} from "@ukdanceblue/common/dist/graphql-client-public";
+import {
+  getFragmentData,
+} from "@ukdanceblue/common/dist/graphql-client-public";
 import { isEqual } from "lodash";
 import { DateTime } from "luxon";
 import {
@@ -13,14 +22,7 @@ import {
 import { memo } from "react";
 import { useWindowDimensions } from "react-native";
 
-import {
-  NotificationDeliveryFragment,
-  NotificationFragment,
-} from "@common/fragments/NotificationScreenGQL";
-import {
-  FragmentType,
-  getFragmentData,
-} from "@ukdanceblue/common/dist/graphql-client-public";
+
 import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
 
 const NonMemoizedNotificationRowContent = ({

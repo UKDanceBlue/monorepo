@@ -1,10 +1,11 @@
+import type { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import { Box, Row, useTheme } from "native-base";
 import type { SectionListRenderItem } from "react-native";
 import { useWindowDimensions } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 
-import { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
-import { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+
 import { NotificationRowContent } from "./NotificationRowContent";
 
 export const AnimatedNotificationRow: SectionListRenderItem<

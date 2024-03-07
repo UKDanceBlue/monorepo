@@ -1,25 +1,30 @@
-import { useCallback, useEffect, useState } from "react";
-
-import { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
+import type { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
 import { Logger } from "@common/logger/Logger";
 import { showMessage } from "@common/util/alertUtils";
 import { useDeviceData } from "@context/device";
 import { ErrorCode } from "@ukdanceblue/common";
-import {
-  FragmentType,
-  graphql,
-} from "@ukdanceblue/common/dist/graphql-client-public";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
+import { useCallback, useEffect, useState } from "react";
 import { useClient } from "urql";
+
+const NOTIFICATION_PAGE_SIZE = 2;
+const INCOMPLETE_PAGE_TIMEOUT = 5000;
 
 export const deviceNotificationsQuery = graphql(/* GraphQL */ `
   query DeviceNotifications(
     $deviceUuid: String!
     $page: Int
+    $pageSize: Int
     $verifier: String!
   ) {
     device(uuid: $deviceUuid) {
       data {
-        notificationDeliveries(pageSize: 8, page: $page, verifier: $verifier) {
+        notificationDeliveries(
+          pageSize: $pageSize
+          page: $page
+          verifier: $verifier
+        ) {
           ...NotificationDeliveryFragment
         }
       }
@@ -45,20 +50,37 @@ export function useLoadNotifications(): {
 
   const [stopLoadingTimeout, setStopLoadingTimeout] =
     useState<NodeJS.Timeout>();
-
   useEffect(() => {
-    return () => {
-      if (stopLoadingTimeout) {
-        clearTimeout(stopLoadingTimeout);
-      }
-    };
+    if (stopLoadingTimeout) {
+      clearTimeout(stopLoadingTimeout);
+      setStopLoadingTimeout(undefined);
+    }
+  }, [stopLoadingTimeout]);
+
+  const unlockLoading = useCallback(() => {
+    if (stopLoadingTimeout) {
+      Logger.debug("Unlocking notifications loading");
+      clearTimeout(stopLoadingTimeout);
+      setStopLoadingTimeout(undefined);
+    }
   }, [stopLoadingTimeout]);
 
   const loadPage = useCallback(
     (page: number) => {
       if (!deviceId || !verifier) {
+        Logger.debug(
+          "Not loading notifications, missing either the device ID or verifier"
+        );
         return;
       }
+      if (stopLoadingTimeout) {
+        Logger.debug(
+          "Not loading notifications for now, we found the end of the list already"
+        );
+        return;
+      }
+
+      Logger.debug(`Loading notifications page ${page}`);
 
       client
         .query(
@@ -67,13 +89,14 @@ export function useLoadNotifications(): {
             deviceUuid: deviceId,
             verifier,
             page,
+            pageSize: NOTIFICATION_PAGE_SIZE,
           },
           { requestPolicy: "network-only" }
         )
         .then((result) => {
           try {
             if (result.error) {
-              const code = result.error?.graphQLErrors[0]?.extensions?.code;
+              const code = result.error.graphQLErrors[0]?.extensions?.code;
               if (code === ErrorCode.Unauthorized) {
                 // I don't really want to handle dealing with a device that's forgotten it's verifier...
                 // ...so I'm just going to tell the user to report it as a bug and we'll figure it out if it happens
@@ -99,6 +122,18 @@ export function useLoadNotifications(): {
                 const existingPages = [...(prev ?? [])];
                 existingPages[page - 1] =
                   result.data.device.data.notificationDeliveries;
+
+                if (existingPages[page - 1].length < NOTIFICATION_PAGE_SIZE) {
+                  Logger.debug(
+                    `Loaded incomplete page ${page}, stopping loading for ${INCOMPLETE_PAGE_TIMEOUT}ms`
+                  );
+                  setStopLoadingTimeout(
+                    setTimeout(() => {
+                      unlockLoading();
+                    }, INCOMPLETE_PAGE_TIMEOUT)
+                  );
+                }
+
                 return existingPages;
               });
             }
@@ -108,22 +143,33 @@ export function useLoadNotifications(): {
           }
         });
     },
-    [deviceId, verifier, client]
+    [client, deviceId, verifier, stopLoadingTimeout, unlockLoading]
   );
 
   const refreshNotifications = useCallback(() => {
-    if (deviceId && verifier) {
-      Logger.debug("Refreshing notifications");
-      loadPage(1);
-    }
+    loadPage(1);
   }, [deviceId, verifier, loadPage]);
 
   const loadMoreNotifications = useCallback(() => {
     if (notificationPages) {
-      Logger.debug("Loading more notifications", {
-        context: { notificationPagesLength: notificationPages.length },
-      });
-      loadPage(notificationPages.length + 1);
+      // Should we load a new page or an old one?
+      let reloadAll = false;
+      let lastCompletePage = 0;
+      for (let i = 0; i < notificationPages.length; i++) {
+        // If we have a page that's longer than the page size, we need to reload all as that's an invariant violation
+        if (notificationPages[i].length > NOTIFICATION_PAGE_SIZE) {
+          reloadAll = true;
+          break;
+        } else if (notificationPages[i].length === NOTIFICATION_PAGE_SIZE) {
+          lastCompletePage = i;
+        }
+      }
+      if (reloadAll) {
+        Logger.debug("Reloading all notifications");
+        refreshNotifications();
+      } else {
+        loadPage(lastCompletePage + 2);
+      }
     }
   }, [notificationPages, loadPage]);
 

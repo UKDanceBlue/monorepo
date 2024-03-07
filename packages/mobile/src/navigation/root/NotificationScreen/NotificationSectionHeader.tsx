@@ -1,5 +1,5 @@
-import { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
-import { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import type { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import { Heading, View } from "native-base";
 import type { SectionListProps } from "react-native";
 
