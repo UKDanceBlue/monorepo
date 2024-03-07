@@ -73,6 +73,20 @@ export class DeviceRepository {
     return this.prisma.device.count({ where });
   }
 
+  async findNotificationDeliveriesForDevice(
+    deviceUuid: string,
+    { skip, take }: { skip?: number; take?: number }
+  ) {
+    return this.prisma.notificationDelivery.findMany({
+      where: {
+        device: { uuid: deviceUuid },
+      },
+      orderBy: { sentAt: "desc" },
+      take,
+      skip,
+    });
+  }
+
   async registerDevice(
     deviceUuid: string,
     verifier: string,

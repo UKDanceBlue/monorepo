@@ -3,6 +3,7 @@ import {
   DeviceResource,
   ErrorCode,
   FilteredListQueryArgs,
+  NotificationDeliveryResource,
   PersonResource,
   SortDirection,
 } from "@ukdanceblue/common";
@@ -24,6 +25,7 @@ import { Service } from "typedi";
 import { auditLogger } from "../lib/logging/auditLogging.js";
 import { DeviceRepository } from "../repositories/device/DeviceRepository.js";
 import { deviceModelToResource } from "../repositories/device/deviceModelToResource.js";
+import { notificationDeliveryModelToResource } from "../repositories/notificationDelivery/notificationDeliveryModelToResource.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
 
 import {
@@ -93,6 +95,15 @@ class ListDevicesArgs extends FilteredListQueryArgs<
   string: ["expoPushToken"],
   date: ["lastSeen", "createdAt", "updatedAt"],
 }) {}
+
+@ArgsType()
+class NotificationDeliveriesArgs {
+  @Field(() => Number, { nullable: true, defaultValue: 1 })
+  page?: number;
+
+  @Field(() => Number, { nullable: true, defaultValue: 10 })
+  pageSize?: number;
+}
 
 @Resolver(() => DeviceResource)
 @Service()
@@ -171,5 +182,25 @@ export class DeviceResolver {
     const user = await this.deviceRepository.getLastLoggedInUser(device.uuid);
 
     return user == null ? null : personModelToResource(user);
+  }
+
+  @FieldResolver(() => [NotificationDeliveryResource])
+  async notificationDeliveries(
+    @Root() device: DeviceResource,
+    @Args(() => NotificationDeliveriesArgs) query: NotificationDeliveriesArgs
+  ): Promise<NotificationDeliveryResource[]> {
+    const rows =
+      await this.deviceRepository.findNotificationDeliveriesForDevice(
+        device.uuid,
+        {
+          skip:
+            query.page != null && query.pageSize != null
+              ? (query.page - 1) * query.pageSize
+              : undefined,
+          take: query.pageSize,
+        }
+      );
+
+    return rows.map(notificationDeliveryModelToResource);
   }
 }
