@@ -4,7 +4,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider as UrqlProvider } from "urql";
 
-import { AntConfigProvider } from "./config/ant.tsx";
+import { AntConfigProvider, ThemeConfigProvider } from "./config/ant.tsx";
 import { urqlClient } from "./config/urql.ts";
 import { router } from "./routing/router.ts";
 
@@ -19,12 +19,14 @@ createRoot(document.getElementById("root")!).render(
       }
       `}
     </style>
-    <AntConfigProvider>
-      <AntApp style={{ height: "100%" }}>
-        <UrqlProvider value={urqlClient}>
-          <RouterProvider router={router} />
-        </UrqlProvider>
-      </AntApp>
-    </AntConfigProvider>
+    <ThemeConfigProvider>
+      <AntConfigProvider>
+        <AntApp style={{ height: "100%" }}>
+          <UrqlProvider value={urqlClient}>
+            <RouterProvider router={router} />
+          </UrqlProvider>
+        </AntApp>
+      </AntConfigProvider>
+    </ThemeConfigProvider>
   </StrictMode>
 );

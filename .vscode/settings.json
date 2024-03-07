@@ -19,5 +19,6 @@
   "search.exclude": {
     "package-lock.json": true,
     "yarn.lock": true
-  }
+  },
+  "remote.localPortHost": "allInterfaces"
 }

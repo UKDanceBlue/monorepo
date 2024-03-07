@@ -1,8 +1,9 @@
-import { universalCatch } from "@common/logging";
-import firestore from "@react-native-firebase/firestore";
+import type { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
+import { showMessage } from "@common/util/alertUtils";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import { Box, Button, Row, useTheme } from "native-base";
 import type { SectionListRenderItem } from "react-native";
-import { Alert, useWindowDimensions } from "react-native";
+import { useWindowDimensions } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedGestureHandler,
@@ -11,22 +12,21 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
-import { useAuthData, useFirebase } from "../../../../context";
-import { useRefreshUserData } from "../../../../context/user";
-import type { NotificationListDataEntry } from "../NotificationScreen";
-
 import { NotificationRowContent } from "./NotificationRowContent";
 
 export const AnimatedNotificationRow: SectionListRenderItem<
-  NotificationListDataEntry | undefined,
-  { title: string; data: (NotificationListDataEntry | undefined)[] }
-> = ({ item }: { item: NotificationListDataEntry | undefined }) => {
+  FragmentType<typeof NotificationDeliveryFragment> | undefined,
+  {
+    title: string;
+    data: (FragmentType<typeof NotificationDeliveryFragment> | undefined)[];
+  }
+> = ({
+  item: notification,
+}: {
+  item: FragmentType<typeof NotificationDeliveryFragment> | undefined;
+}) => {
   const { width: screenWidth } = useWindowDimensions();
   const { sizes } = useTheme();
-  const refreshUserData = useRefreshUserData();
-  const { fbFirestore } = useFirebase();
-
-  const { uid } = useAuthData();
 
   const sideMenuWidth = screenWidth * 0.2;
   const x = useSharedValue(0);
@@ -68,15 +68,12 @@ export const AnimatedNotificationRow: SectionListRenderItem<
     return { width, height: buttonRowHeight.value };
   }, [x, buttonRowHeight, flung]);
 
-  const notification = item?.notification;
   const loading = notification == null;
-
-  const { isLoggedIn, isAnonymous } = useAuthData();
 
   // TODO: When Backend for Read/Unread Notifications are done, pls add compatibility
   const unread = true as boolean;
 
-  const canDelete = !isAnonymous && isLoggedIn;
+  const canDelete = false as boolean;
 
   return (
     <PanGestureHandler
@@ -111,49 +108,51 @@ export const AnimatedNotificationRow: SectionListRenderItem<
             <Button
               disabled={!canDelete}
               onPress={() => {
-                Alert.alert(
-                  "Delete Notification",
-                  "Are you sure you want to delete this notification?",
-                  [
-                    {
-                      style: "cancel",
-                      text: "Cancel",
-                    },
-                    {
-                      style: "destructive",
-                      text: "Delete",
-                      onPress: () => {
-                        if (item != null) {
-                          if (uid) {
-                            fbFirestore
-                              .collection("users")
-                              .doc(uid)
-                              .update({
-                                notificationReferences:
-                                  firestore.FieldValue.arrayRemove(
-                                    item.reference
-                                  ),
-                              })
-                              .then(refreshUserData)
-                              .catch(universalCatch);
-                            if (
-                              item.reference?.parent.isEqual(
-                                fbFirestore.collection(
-                                  `users/${uid}/past-notifications`
-                                )
-                              )
-                            ) {
-                              item.reference.delete().catch(universalCatch);
-                            }
-                          }
-                        }
-                      },
-                    },
-                  ]
+                showMessage(
+                  "Deleting notifications is currently disabled, sorry!"
                 );
+                // Alert.alert(
+                //   "Delete Notification",
+                //   "Are you sure you want to delete this notification?",
+                //   [
+                //     {
+                //       style: "cancel",
+                //       text: "Cancel",
+                //     },
+                //     {
+                //       style: "destructive",
+                //       text: "Delete",
+                //       onPress: () => {
+                //         if (item != null) {
+                //           if (uid) {
+                //             fbFirestore
+                //               .collection("users")
+                //               .doc(uid)
+                //               .update({
+                //                 notificationReferences:
+                //                   firestore.FieldValue.arrayRemove(
+                //                     item.reference
+                //                   ),
+                //               })
+                //               .then(refreshUserData)
+                //               .catch(universalCatch);
+                //             if (
+                //               item.reference?.parent.isEqual(
+                //                 fbFirestore.collection(
+                //                   `users/${uid}/past-notifications`
+                //                 )
+                //               )
+                //             ) {
+                //               item.reference.delete().catch(universalCatch);
+                //             }
+                //           }
+                //         }
+                //       },
+                //     },
+                //   ]
+                // );
               }}
               width="100%"
-              height="100%"
               variant="solid"
               colorScheme="red"
             >

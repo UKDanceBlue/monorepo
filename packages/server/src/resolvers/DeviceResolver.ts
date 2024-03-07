@@ -3,6 +3,7 @@ import {
   DeviceResource,
   ErrorCode,
   FilteredListQueryArgs,
+  NotificationDeliveryResource,
   PersonResource,
   SortDirection,
 } from "@ukdanceblue/common";
@@ -13,6 +14,7 @@ import {
   Field,
   FieldResolver,
   InputType,
+  Int,
   Mutation,
   ObjectType,
   Query,
@@ -24,6 +26,7 @@ import { Service } from "typedi";
 import { auditLogger } from "../lib/logging/auditLogging.js";
 import { DeviceRepository } from "../repositories/device/DeviceRepository.js";
 import { deviceModelToResource } from "../repositories/device/deviceModelToResource.js";
+import { notificationDeliveryModelToResource } from "../repositories/notificationDelivery/notificationDeliveryModelToResource.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
 
 import {
@@ -93,6 +96,23 @@ class ListDevicesArgs extends FilteredListQueryArgs<
   string: ["expoPushToken"],
   date: ["lastSeen", "createdAt", "updatedAt"],
 }) {}
+
+@ArgsType()
+class NotificationDeliveriesArgs {
+  // TODO: Handle this in the normal authorization flow instead of here
+  @Field(() => String, {
+    nullable: true,
+    description:
+      "The verifier code for this device, if it does not match then the query will be rejected",
+  })
+  verifier?: string;
+
+  @Field(() => Int, { nullable: true, defaultValue: 1 })
+  page?: number;
+
+  @Field(() => Int, { nullable: true, defaultValue: 10 })
+  pageSize?: number;
+}
 
 @Resolver(() => DeviceResource)
 @Service()
@@ -171,5 +191,41 @@ export class DeviceResolver {
     const user = await this.deviceRepository.getLastLoggedInUser(device.uuid);
 
     return user == null ? null : personModelToResource(user);
+  }
+
+  @FieldResolver(() => [NotificationDeliveryResource])
+  async notificationDeliveries(
+    @Root() device: DeviceResource,
+    @Args(() => NotificationDeliveriesArgs) query: NotificationDeliveriesArgs
+  ): Promise<NotificationDeliveryResource[]> {
+    const row = await this.deviceRepository.getDeviceByUuid(device.uuid);
+
+    if (row == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Device not found");
+    }
+
+    if (
+      row.verifier != null &&
+      (query.verifier == null || row.verifier !== query.verifier)
+    ) {
+      throw new DetailedError(
+        ErrorCode.Unauthorized,
+        "Incorrect device verifier"
+      );
+    }
+
+    const rows =
+      await this.deviceRepository.findNotificationDeliveriesForDevice(
+        device.uuid,
+        {
+          skip:
+            query.page != null && query.pageSize != null
+              ? (query.page - 1) * query.pageSize
+              : undefined,
+          take: query.pageSize,
+        }
+      );
+
+    return rows.map(notificationDeliveryModelToResource);
   }
 }

@@ -15,6 +15,7 @@ import {
   Field,
   FieldResolver,
   InputType,
+  Int,
   Mutation,
   ObjectType,
   Query,
@@ -66,7 +67,7 @@ class CreatePointEntryInput implements Partial<PointEntryResource> {
   @Field(() => String, { nullable: true })
   comment!: string | null;
 
-  @Field(() => Number)
+  @Field(() => Int)
   points!: number;
 
   @Field(() => String, { nullable: true })

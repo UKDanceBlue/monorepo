@@ -73,6 +73,20 @@ export class DeviceRepository {
     return this.prisma.device.count({ where });
   }
 
+  async findNotificationDeliveriesForDevice(
+    deviceUuid: string,
+    { skip, take }: { skip?: number; take?: number }
+  ) {
+    return this.prisma.notificationDelivery.findMany({
+      where: {
+        device: { uuid: deviceUuid },
+      },
+      orderBy: { sentAt: "desc" },
+      take,
+      skip,
+    });
+  }
+
   async registerDevice(
     deviceUuid: string,
     verifier: string,
@@ -130,20 +144,31 @@ export class DeviceRepository {
     audience: NotificationAudience
   ): Promise<{ id: number; uuid: string; expoPushToken: string }[]> {
     if (audience === "all") {
-      return this.prisma.device
-        .findMany({
-          select: { id: true, uuid: true, expoPushToken: true },
-          where: { expoPushToken: { not: null } },
-        })
-        .then((devices) =>
-          devices.filter(
-            (
-              device
-            ): device is Omit<typeof device, "expoPushToken"> & {
-              expoPushToken: Exclude<(typeof device)["expoPushToken"], null>;
-            } => device.expoPushToken != null
-          )
-        );
+      const rows = await this.prisma.device.findMany({
+        select: { id: true, uuid: true, expoPushToken: true },
+        where: { expoPushToken: { not: null } },
+        // It is possible for a device to be registered multiple times, so we
+        // need to dedupe them somehow. To achieve this, we will use the
+        // `expoPushToken` as the key and only keep the last seen device.
+        orderBy: { lastSeen: "asc" },
+      });
+
+      const pushTokenToDevice = new Map<
+        string,
+        Omit<(typeof rows)[number], "expoPushToken"> & { expoPushToken: string }
+      >();
+      for (const device of rows) {
+        if (device.expoPushToken != null) {
+          pushTokenToDevice.set(
+            device.expoPushToken,
+            device as Omit<typeof device, "expoPushToken"> & {
+              expoPushToken: string;
+            }
+          );
+        }
+      }
+
+      return [...pushTokenToDevice.values()];
     } else {
       throw new Error("Not implemented");
     }

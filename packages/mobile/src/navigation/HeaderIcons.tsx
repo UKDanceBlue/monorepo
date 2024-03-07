@@ -1,4 +1,4 @@
-import { FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { View } from "native-base";
 import {
@@ -48,16 +48,16 @@ const HeaderIcons = ({
         />
       </TouchableOpacity> */}
       <View>
-        {/* <TouchableOpacity onPress={() => navigation.navigate("Notifications")}>
-        <FontAwesome
-          name="bell"
-          color="#0032A0"
-          style={{
-            textAlignVertical: "center",
-            fontSize: PixelRatio.get() * 8,
-          }}
-        />
-      </TouchableOpacity> */}
+        <TouchableOpacity onPress={() => navigation.navigate("Notifications")}>
+          <FontAwesome
+            name="bell"
+            color="#0032A0"
+            style={{
+              textAlignVertical: "center",
+              fontSize: PixelRatio.get() * 8,
+            }}
+          />
+        </TouchableOpacity>
       </View>
       <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
         <FontAwesome5

@@ -49,12 +49,14 @@ const verifierStoreKey = __DEV__
 
 interface DeviceData {
   deviceId: string | null;
+  verifier: string | null;
   pushToken: string | null;
   getsNotifications: boolean;
 }
 
 const initialDeviceDataState: DeviceData = {
   deviceId: null,
+  verifier: null,
   pushToken: null,
   getsNotifications: false,
 };
@@ -160,6 +162,7 @@ export const DeviceDataProvider = ({
   const [{ isConnected }, isNetStatusLoaded] = useNetworkStatus();
 
   const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [verifier, setVerifier] = useState<string | null>(null);
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [getsNotifications, setGetsNotifications] = useState<boolean>(false);
 
@@ -180,6 +183,7 @@ export const DeviceDataProvider = ({
       .then(async (uuid) => ({ uuid, verifier: await obtainVerifier(uuid) }))
       .then(async ({ uuid, verifier }) => {
         setDeviceId(uuid);
+        setVerifier(verifier);
         try {
           const { token, notificationPermissionsGranted } =
             await registerPushNotifications();
@@ -222,7 +226,7 @@ export const DeviceDataProvider = ({
 
   return (
     <DeviceDataContext.Provider
-      value={{ deviceId, pushToken, getsNotifications }}
+      value={{ deviceId, verifier, pushToken, getsNotifications }}
     >
       {children}
     </DeviceDataContext.Provider>

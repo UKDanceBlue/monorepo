@@ -1,11 +1,12 @@
-import { LoadingOutlined } from "@ant-design/icons";
+import { LoadingOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
+import { themeConfigContext } from "@config/antThemeConfig";
 import { API_BASE_URL } from "@config/api";
 import { useLoginState } from "@hooks/useLoginState";
 import type { AuthorizationRule } from "@ukdanceblue/common";
 import { AccessLevel, checkAuthorization } from "@ukdanceblue/common";
-import { Menu } from "antd";
+import { Button, Menu } from "antd";
 import type { ItemType } from "antd/es/menu/hooks/useItems";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 
 interface NavItemType {
   slug: string;
@@ -16,6 +17,8 @@ interface NavItemType {
 }
 
 export const NavigationMenu = () => {
+  const { dark, setDark } = useContext(themeConfigContext);
+
   const { loggedIn, authorization } = useLoginState();
   const navItems = useMemo((): NavItemType[] => {
     return [
@@ -136,6 +139,31 @@ export const NavigationMenu = () => {
               Login
             </a>
           ),
+          style: {
+            background: "transparent",
+            marginLeft: "auto",
+          },
+        },
+        {
+          key: "dark",
+          title: "Dark",
+          label: (
+            <Button
+              icon={
+                dark ? (
+                  <SunOutlined style={{ color: "inherit" }} />
+                ) : (
+                  <MoonOutlined style={{ color: "inherit" }} />
+                )
+              }
+              onClick={() => setDark(!dark)}
+              type="text"
+              style={{ color: "inherit" }}
+            />
+          ),
+          style: {
+            background: "transparent",
+          },
         },
       ]}
     />

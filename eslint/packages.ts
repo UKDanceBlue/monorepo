@@ -74,10 +74,15 @@ export default [
       "node/no-exports-assign": "error",
       "node/no-missing-require": "error",
       "node/no-unpublished-bin": "error",
-      "node/no-unpublished-import": "error",
       "node/no-unpublished-require": "error",
       "node/process-exit-as-throw": "error",
       "node/shebang": "error",
+      "node/no-unpublished-import": [
+        "error",
+        {
+          allowModules: ["vitest"],
+        },
+      ],
     },
     {},
     ["nodeBuiltin"]

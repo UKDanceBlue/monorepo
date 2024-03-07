@@ -10,7 +10,10 @@ import { EventResolver } from "../resolvers/EventResolver.js";
 import { ImageResolver } from "../resolvers/ImageResolver.js";
 import { LoginStateResolver } from "../resolvers/LoginState.js";
 import { MembershipResolver } from "../resolvers/MembershipResolver.js";
-import { NotificationResolver } from "../resolvers/NotificationResolver.js";
+import {
+  NotificationDeliveryResolver,
+  NotificationResolver,
+} from "../resolvers/NotificationResolver.js";
 import { PersonResolver } from "../resolvers/PersonResolver.js";
 import { PointEntryResolver } from "../resolvers/PointEntryResolver.js";
 import { PointOpportunityResolver } from "../resolvers/PointOpportunityResolver.js";
@@ -40,6 +43,7 @@ export default await buildSchema({
     PersonResolver,
     MembershipResolver,
     NotificationResolver,
+    NotificationDeliveryResolver,
     TeamResolver,
     LoginStateResolver,
     PointEntryResolver,

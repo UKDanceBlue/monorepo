@@ -1,6 +1,5 @@
-import { describe, expect } from "@jest/globals";
 import { DateTime, Interval } from "luxon";
-import { it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { validateInterval } from "./intervalTools.js";
 
