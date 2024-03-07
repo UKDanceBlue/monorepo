@@ -11,34 +11,31 @@
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // This can be used to network with other containers or with the host.
-  // "forwardPorts": [5173, 8000, 8081, 5432],
+  "forwardPorts": [5173, 8000, 8081, 5432],
   "portsAttributes": {
-    // "5173": {
-    //   "label": "Admin Portal",
-    //   "onAutoForward": "openBrowserOnce"
-    // },
-    // "8000": {
-    //   "label": "Server",
-    //   "onAutoForward": "silent"
-    // },
-    // "8081": {
-    //   "label": "Metro Bundler",
-    //   "onAutoForward": "silent"
-    // },
-    // "5432": {
-    //   "label": "PostgreSQL",
-    //   "onAutoForward": "silent"
-    // },
-    // "5555": {
-    //   "label": "Prisma Studio"
-    // },
-    // "4040": {
-    //   "label": "Ngrok Tunnel",
-    //   "onAutoForward": "ignore"
-    // }
-  },
-  "otherPortsAttributes": {
-    "onAutoForward": "ignore"
+    "5173": {
+      "label": "Admin Portal",
+      "onAutoForward": "openBrowserOnce"
+    },
+    "8000": {
+      "label": "Server",
+      "onAutoForward": "silent"
+    },
+    "8081": {
+      "label": "Metro Bundler",
+      "onAutoForward": "silent"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    },
+    "5555": {
+      "label": "Prisma Studio"
+    },
+    "4040": {
+      "label": "Ngrok Tunnel",
+      "onAutoForward": "ignore"
+    }
   },
 
   "postCreateCommand": "yarn install",
@@ -50,7 +47,17 @@
   // "remoteUser": "root"
 
   "containerEnv": {
-    "HOME": "/home/node"
+    "HOME": "/home/node",
+    "DB_HOST": "localhost",
+    "DB_PORT": "5432",
+    "DB_NAME": "danceblue",
+    "DB_UNAME": "danceblue",
+    "DB_PWD": "danceblue",
+    "DATABASE_URL": "postgres://danceblue:danceblue@localhost:5432/danceblue?schema=danceblue",
+    "NODE_ENV": "development",
+    "APPLICATION_HOST": "localhost",
+    "APPLICATION_PORT": "8000",
+    "MS_OIDC_URL": "https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0/.well-known/openid-configuration"
   },
   "customizations": {
     "vscode": {
