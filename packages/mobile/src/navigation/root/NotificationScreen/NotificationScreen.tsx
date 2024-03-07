@@ -3,11 +3,8 @@ import { NotificationDeliveryFragment } from "@common/fragments/NotificationScre
 import { Logger } from "@common/logger/Logger";
 import { universalCatch } from "@common/logging";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import type {
-  FragmentType} from "@ukdanceblue/common/dist/graphql-client-public";
-import {
-  getFragmentData,
-} from "@ukdanceblue/common/dist/graphql-client-public";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
 import { manufacturer as deviceManufacturer } from "expo-device";
 import { openSettings } from "expo-linking";
 import { setBadgeCountAsync } from "expo-notifications";
@@ -17,7 +14,6 @@ import { useEffect, useMemo } from "react";
 import { RefreshControl } from "react-native";
 
 import { useDeviceData, useLoading, useUserData } from "../../../context";
-
 
 import { NotificationRow } from "./NotificationRow";
 import { NotificationSectionHeader } from "./NotificationSectionHeader";
@@ -56,7 +52,7 @@ function NotificationScreen() {
         const date = dateTimeFromSomething(delivery.sentAt) as DateTime;
 
         if (date !== lastDate[0]) {
-          const title = date.toLocaleString(DateTime.DATE_MED) ?? "";
+          const title = date.toLocaleString(DateTime.DATE_MED);
           sections.push({ title, data: [notification] });
           lastDate = [date, title];
         } else {
@@ -78,8 +74,8 @@ function NotificationScreen() {
           error: "setBadgeCountAsync returned false",
         });
       }
-    })().catch((error) => {
-      Logger.error("Failed to clear badge count", error);
+    })().catch((error: unknown) => {
+      Logger.error("Failed to clear badge count", { error });
     });
   }, []);
 

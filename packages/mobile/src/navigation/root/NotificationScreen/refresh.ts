@@ -9,7 +9,7 @@ import { DateTime } from "luxon";
 import { useCallback, useEffect, useState } from "react";
 import { useClient } from "urql";
 
-const NOTIFICATION_PAGE_SIZE = 2;
+const NOTIFICATION_PAGE_SIZE = 8;
 const INCOMPLETE_PAGE_TIMEOUT = 10_000;
 
 export const deviceNotificationsQuery = graphql(/* GraphQL */ `

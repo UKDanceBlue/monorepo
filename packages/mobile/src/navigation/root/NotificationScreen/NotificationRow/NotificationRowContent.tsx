@@ -3,11 +3,8 @@ import {
   NotificationDeliveryFragment,
   NotificationFragment,
 } from "@common/fragments/NotificationScreenGQL";
-import type {
-  FragmentType} from "@ukdanceblue/common/dist/graphql-client-public";
-import {
-  getFragmentData,
-} from "@ukdanceblue/common/dist/graphql-client-public";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
 import { isEqual } from "lodash";
 import { DateTime } from "luxon";
 import {
@@ -21,7 +18,6 @@ import {
 } from "native-base";
 import { memo } from "react";
 import { useWindowDimensions } from "react-native";
-
 
 import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
 
@@ -60,13 +56,14 @@ const NonMemoizedNotificationRowContent = ({
 
   return (
     <>
-      <HStack alignItems="center" maxWidth="85%">
+      <HStack alignItems="center" flex={1}>
         <View
           backgroundColor={unread ? "primary.600" : "primary.600"}
           borderRadius="50"
           marginRight="3"
           shadow="3"
           style={{ shadowOpacity: unread ? 0.6 : 0.6 }}
+          flex={0}
         >
           {/* TODO: FIX AND CHANGE TO DBLOGO CONDENSED
           <DBLogoCondensed svgProps={{ width: screenWidth*0.5, height: screenWidth*0.5 }} letterColor="#fff"/>
@@ -75,8 +72,13 @@ const NonMemoizedNotificationRowContent = ({
             svgProps={{ width: screenWidth * 0.12, height: screenWidth * 0.12 }}
           />
         </View>
-        <VStack>
-          <View flexDirection="row" justifyContent="space-between" mb="2">
+        <VStack flex={1}>
+          <View
+            flexDirection="row"
+            justifyContent="space-between"
+            mb="2"
+            flex={1}
+          >
             <Skeleton.Text
               isLoaded={!loading}
               lines={1}
@@ -97,7 +99,11 @@ const NonMemoizedNotificationRowContent = ({
               </Text>
             </Skeleton.Text>
           </View>
-          <Skeleton.Text isLoaded={!loading} width={screenWidth - sizes[4] * 3}>
+          <Skeleton.Text
+            isLoaded={!loading}
+            width={screenWidth - sizes[4] * 3}
+            flex={1}
+          >
             <Text>
               <Text fontFamily={mono} fontSize={fontSizes.lg}>
                 {notificationFragmentData?.body}
