@@ -1,14 +1,8 @@
 import type { ThemeConfig } from "antd";
 import { ConfigProvider, theme } from "antd";
-import { createContext, useContext, useState } from "react";
+import { useContext, useState } from "react";
 
-export const themeConfigContext = createContext<{
-  dark: boolean;
-  setDark: (dark: boolean) => void;
-}>({
-  dark: false,
-  setDark: () => {},
-});
+import { themeConfigContext } from "./antThemeConfig";
 
 function makeAntDesignTheme({ dark }: { dark: boolean }): ThemeConfig {
   return {
@@ -41,7 +35,7 @@ export function ThemeConfigProvider({
 }
 
 export function AntConfigProvider({ children }: { children: React.ReactNode }) {
-  const {dark} = useContext(themeConfigContext);
+  const { dark } = useContext(themeConfigContext);
 
   return (
     <ConfigProvider theme={makeAntDesignTheme({ dark })}>

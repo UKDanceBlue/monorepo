@@ -1,5 +1,5 @@
 import { LoadingOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
-import { themeConfigContext } from "@config/ant";
+import { themeConfigContext } from "@config/antThemeConfig";
 import { API_BASE_URL } from "@config/api";
 import { useLoginState } from "@hooks/useLoginState";
 import type { AuthorizationRule } from "@ukdanceblue/common";
