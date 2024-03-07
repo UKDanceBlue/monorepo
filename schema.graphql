@@ -170,7 +170,7 @@ input CreatePointEntryInput {
   comment: String
   opportunityUuid: String
   personFromUuid: String
-  points: Float!
+  points: Int!
   teamUuid: String!
 }
 
@@ -329,8 +329,8 @@ type DeviceResource {
   lastLoggedInUser: PersonResource
   lastLogin: LuxonDateTime
   notificationDeliveries(
-    page: Float = 1
-    pageSize: Float = 10
+    page: Int = 1
+    pageSize: Int = 10
 
     """
     The verifier code for this device, if it does not match then the query will be rejected
@@ -692,12 +692,12 @@ input NotificationAudienceInput {
 
 """The number of delivery issues for a notification, broken down by type."""
 type NotificationDeliveryIssueCount {
-  DeviceNotRegistered: Float!
-  InvalidCredentials: Float!
-  MessageRateExceeded: Float!
-  MessageTooBig: Float!
-  MismatchSenderId: Float!
-  Unknown: Float!
+  DeviceNotRegistered: Int!
+  InvalidCredentials: Int!
+  MessageRateExceeded: Int!
+  MessageTooBig: Int!
+  MismatchSenderId: Int!
+  Unknown: Int!
 }
 
 enum NotificationDeliveryResolverAllKeys {
@@ -837,7 +837,7 @@ enum NotificationResolverStringFilterKeys {
 type NotificationResource {
   body: String!
   createdAt: DateTimeISO
-  deliveryCount: Float!
+  deliveryCount: Int!
   deliveryIssue: String
   deliveryIssueAcknowledgedAt: DateTimeISO
   deliveryIssueCount: NotificationDeliveryIssueCount!
