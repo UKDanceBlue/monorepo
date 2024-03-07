@@ -202,7 +202,7 @@ export type CreatePointEntryInput = {
   readonly comment?: InputMaybe<Scalars['String']['input']>;
   readonly opportunityUuid?: InputMaybe<Scalars['String']['input']>;
   readonly personFromUuid?: InputMaybe<Scalars['String']['input']>;
-  readonly points: Scalars['Float']['input'];
+  readonly points: Scalars['Int']['input'];
   readonly teamUuid: Scalars['String']['input'];
 };
 
@@ -351,8 +351,16 @@ export type DeviceResource = {
   readonly expoPushToken?: Maybe<Scalars['String']['output']>;
   readonly lastLoggedInUser?: Maybe<PersonResource>;
   readonly lastLogin?: Maybe<Scalars['LuxonDateTime']['output']>;
+  readonly notificationDeliveries: ReadonlyArray<NotificationDeliveryResource>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
+};
+
+
+export type DeviceResourceNotificationDeliveriesArgs = {
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  verifier?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EventOccurrenceResource = {
@@ -837,12 +845,12 @@ export type NotificationAudienceInput = {
 /** The number of delivery issues for a notification, broken down by type. */
 export type NotificationDeliveryIssueCount = {
   readonly __typename?: 'NotificationDeliveryIssueCount';
-  readonly DeviceNotRegistered: Scalars['Float']['output'];
-  readonly InvalidCredentials: Scalars['Float']['output'];
-  readonly MessageRateExceeded: Scalars['Float']['output'];
-  readonly MessageTooBig: Scalars['Float']['output'];
-  readonly MismatchSenderId: Scalars['Float']['output'];
-  readonly Unknown: Scalars['Float']['output'];
+  readonly DeviceNotRegistered: Scalars['Int']['output'];
+  readonly InvalidCredentials: Scalars['Int']['output'];
+  readonly MessageRateExceeded: Scalars['Int']['output'];
+  readonly MessageTooBig: Scalars['Int']['output'];
+  readonly MismatchSenderId: Scalars['Int']['output'];
+  readonly Unknown: Scalars['Int']['output'];
 };
 
 export const NotificationDeliveryResolverAllKeys = {
@@ -886,6 +894,7 @@ export type NotificationDeliveryResource = {
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   /** Any error message returned by Expo when sending the notification. */
   readonly deliveryError?: Maybe<Scalars['String']['output']>;
+  readonly notification: NotificationResource;
   /** The time the server received a delivery receipt from the user. */
   readonly receiptCheckedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   /** The time the server sent the notification to Expo for delivery. */
@@ -963,7 +972,7 @@ export type NotificationResource = {
   readonly __typename?: 'NotificationResource';
   readonly body: Scalars['String']['output'];
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  readonly deliveryCount: Scalars['Float']['output'];
+  readonly deliveryCount: Scalars['Int']['output'];
   readonly deliveryIssue?: Maybe<Scalars['String']['output']>;
   readonly deliveryIssueAcknowledgedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly deliveryIssueCount: NotificationDeliveryIssueCount;

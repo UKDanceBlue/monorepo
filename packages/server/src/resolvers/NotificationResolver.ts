@@ -16,6 +16,7 @@ import {
   Field,
   FieldResolver,
   InputType,
+  Int,
   Mutation,
   ObjectType,
   Query,
@@ -189,17 +190,17 @@ class ListNotificationDeliveriesResponse extends AbstractGraphQLPaginatedRespons
 class NotificationDeliveryIssueCount
   implements Record<NotificationError, number>
 {
-  @Field(() => Number)
+  @Field(() => Int)
   DeviceNotRegistered!: number;
-  @Field(() => Number)
+  @Field(() => Int)
   InvalidCredentials!: number;
-  @Field(() => Number)
+  @Field(() => Int)
   MessageTooBig!: number;
-  @Field(() => Number)
+  @Field(() => Int)
   MessageRateExceeded!: number;
-  @Field(() => Number)
+  @Field(() => Int)
   MismatchSenderId!: number;
-  @Field(() => Number)
+  @Field(() => Int)
   Unknown!: number;
 }
 
@@ -500,7 +501,7 @@ export class NotificationResolver {
   @AccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
-  @FieldResolver(() => Number, { name: "deliveryCount" })
+  @FieldResolver(() => Int, { name: "deliveryCount" })
   async deliveryCount(@Root() { uuid }: NotificationResource): Promise<number> {
     return this.notificationRepository.countDeliveriesForNotification({ uuid });
   }
@@ -524,6 +525,14 @@ export class NotificationResolver {
 
     return retVal;
   }
+}
+
+@Resolver(() => NotificationDeliveryResource)
+@Service()
+export class NotificationDeliveryResolver {
+  constructor(
+    private readonly notificationDeliveryRepository: NotificationDeliveryRepository
+  ) {}
 
   @FieldResolver(() => NotificationResource, {
     name: "notification",

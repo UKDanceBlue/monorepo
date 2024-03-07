@@ -9,4 +9,7 @@ export default defineWorkspace([
       },
     },
   },
+  {
+    root: "packages/server/src",
+  },
 ]);
