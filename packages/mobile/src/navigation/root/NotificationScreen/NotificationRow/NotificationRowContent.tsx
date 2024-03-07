@@ -1,5 +1,4 @@
 import { useThemeFonts } from "@common/customHooks";
-import type { FirestoreNotification } from "@ukdanceblue/db-app-common";
 import { isEqual } from "lodash";
 import { DateTime } from "luxon";
 import {
@@ -14,6 +13,14 @@ import {
 import { memo } from "react";
 import { useWindowDimensions } from "react-native";
 
+import {
+  NotificationDeliveryFragment,
+  NotificationFragment,
+} from "@common/fragments/NotificationScreenGQL";
+import {
+  FragmentType,
+  getFragmentData,
+} from "@ukdanceblue/common/dist/graphql-client-public";
 import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
 
 const NonMemoizedNotificationRowContent = ({
@@ -22,13 +29,32 @@ const NonMemoizedNotificationRowContent = ({
   unread,
 }: {
   loading: boolean;
-  notification: FirestoreNotification | undefined;
+  notification?:
+    | FragmentType<typeof NotificationDeliveryFragment>
+    | undefined
+    | null;
   unread: boolean;
 }) => {
   const { width: screenWidth } = useWindowDimensions();
   const { sizes, fontSizes } = useTheme();
 
   const { mono } = useThemeFonts();
+
+  const deliveryFragmentData = getFragmentData(
+    NotificationDeliveryFragment,
+    notification
+  );
+  const notificationFragmentData = getFragmentData(
+    NotificationFragment,
+    deliveryFragmentData?.notification
+  );
+
+  const notificationTime =
+    deliveryFragmentData?.sentAt == null
+      ? null
+      : typeof deliveryFragmentData.sentAt === "string"
+      ? DateTime.fromISO(deliveryFragmentData.sentAt)
+      : DateTime.fromJSDate(deliveryFragmentData.sentAt);
 
   return (
     <>
@@ -55,7 +81,7 @@ const NonMemoizedNotificationRowContent = ({
               width={(screenWidth / 6) * 3}
             >
               <Heading size="sm" flex={5} color="primary.600">
-                {notification?.title}
+                {notificationFragmentData?.title}
               </Heading>
             </Skeleton.Text>
             <Skeleton.Text
@@ -65,17 +91,14 @@ const NonMemoizedNotificationRowContent = ({
               textAlign="end"
             >
               <Text flex={1} fontFamily={mono} color="primary.600">
-                {notification &&
-                  DateTime.fromISO(notification.sendTime).toLocaleString(
-                    DateTime.TIME_SIMPLE
-                  )}
+                {notificationTime?.toLocaleString(DateTime.TIME_SIMPLE)}
               </Text>
             </Skeleton.Text>
           </View>
           <Skeleton.Text isLoaded={!loading} width={screenWidth - sizes[4] * 3}>
             <Text>
               <Text fontFamily={mono} fontSize={fontSizes.lg}>
-                {notification?.body}
+                {notificationFragmentData?.body}
               </Text>
             </Text>
           </Skeleton.Text>
