@@ -5,7 +5,7 @@ import { openSettings } from "expo-linking";
 import { setBadgeCountAsync } from "expo-notifications";
 import { DateTime } from "luxon";
 import { Button, SectionList, Text, View, useTheme } from "native-base";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { RefreshControl } from "react-native";
 
 import { useDeviceData, useLoading, useUserData } from "../../../context";
@@ -35,6 +35,36 @@ function NotificationScreen() {
   const { notifications, refreshNotifications, loadMoreNotifications } =
     useLoadNotifications();
   const isAnyLoading = notifications == null || isUserDataLoading;
+
+  const sections = useMemo(() => {
+    const sections: {
+      title: string;
+      data: FragmentType<typeof NotificationDeliveryFragment>[];
+    }[] = [];
+    let lastDate: [DateTime | null, string] = [null, ""];
+
+    for (const notification of notifications ?? []) {
+      const delivery = getFragmentData(
+        NotificationDeliveryFragment,
+        notification
+      );
+      if (delivery.sentAt == null) {
+        sections.push({ title: "", data: [notification] });
+      } else {
+        const date = dateTimeFromSomething(delivery.sentAt) as DateTime;
+
+        if (date !== lastDate[0]) {
+          const title = date?.toLocaleString(DateTime.DATE_MED) ?? "";
+          sections.push({ title, data: [notification] });
+          lastDate = [date, title];
+        } else {
+          sections[sections.length - 1].data.push(notification);
+        }
+      }
+    }
+
+    return sections;
+  }, [notifications]);
 
   // Clear badge count when navigating to this screen
   useEffect(() => {
@@ -95,35 +125,7 @@ function NotificationScreen() {
             />
           }
           data={notifications}
-          sections={Object.entries(
-            notifications?.reduce<
-              Record<
-                string,
-                FragmentType<typeof NotificationDeliveryFragment>[]
-              >
-            >((acc, data) => {
-              const delivery = getFragmentData(
-                NotificationDeliveryFragment,
-                data
-              );
-              if (delivery == null) {
-                acc[""] = [...(acc[""] ?? []), data];
-
-                return acc;
-              } else {
-                const date = dateTimeFromSomething(
-                  delivery.sentAt
-                )?.toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
-
-                acc[date ?? ""] = [...(acc[date ?? ""] ?? []), data];
-
-                return acc;
-              }
-            }, {}) ?? []
-          ).map(([date, notifications]) => ({
-            title: date,
-            data: notifications ?? [],
-          }))}
+          sections={sections}
           keyExtractor={(data, i) =>
             getFragmentData(NotificationDeliveryFragment, data)?.uuid ??
             `notification-${i}`

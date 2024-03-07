@@ -11,31 +11,34 @@
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // This can be used to network with other containers or with the host.
-  "forwardPorts": [5173, 8000, 8081, 5432],
+  // "forwardPorts": [5173, 8000, 8081, 5432],
   "portsAttributes": {
-    "5173": {
-      "label": "Admin Portal",
-      "onAutoForward": "openBrowserOnce"
-    },
-    "8000": {
-      "label": "Server",
-      "onAutoForward": "silent"
-    },
-    "8081": {
-      "label": "Metro Bundler",
-      "onAutoForward": "silent"
-    },
-    "5432": {
-      "label": "PostgreSQL",
-      "onAutoForward": "silent"
-    },
-    "5555": {
-      "label": "Prisma Studio"
-    },
-    "4040": {
-      "label": "Ngrok Tunnel",
-      "onAutoForward": "ignore"
-    }
+    // "5173": {
+    //   "label": "Admin Portal",
+    //   "onAutoForward": "openBrowserOnce"
+    // },
+    // "8000": {
+    //   "label": "Server",
+    //   "onAutoForward": "silent"
+    // },
+    // "8081": {
+    //   "label": "Metro Bundler",
+    //   "onAutoForward": "silent"
+    // },
+    // "5432": {
+    //   "label": "PostgreSQL",
+    //   "onAutoForward": "silent"
+    // },
+    // "5555": {
+    //   "label": "Prisma Studio"
+    // },
+    // "4040": {
+    //   "label": "Ngrok Tunnel",
+    //   "onAutoForward": "ignore"
+    // }
+  },
+  "otherPortsAttributes": {
+    "onAutoForward": "ignore"
   },
 
   "postCreateCommand": "yarn install",

@@ -19,7 +19,7 @@ export const deviceNotificationsQuery = graphql(/* GraphQL */ `
   ) {
     device(uuid: $deviceUuid) {
       data {
-        notificationDeliveries(pageSize: 2, page: $page, verifier: $verifier) {
+        notificationDeliveries(pageSize: 8, page: $page, verifier: $verifier) {
           ...NotificationDeliveryFragment
         }
       }
@@ -42,6 +42,17 @@ export function useLoadNotifications(): {
   const { deviceId, verifier } = useDeviceData();
 
   const client = useClient();
+
+  const [stopLoadingTimeout, setStopLoadingTimeout] =
+    useState<NodeJS.Timeout>();
+
+  useEffect(() => {
+    return () => {
+      if (stopLoadingTimeout) {
+        clearTimeout(stopLoadingTimeout);
+      }
+    };
+  }, [stopLoadingTimeout]);
 
   const loadPage = useCallback(
     (page: number) => {
@@ -85,7 +96,7 @@ export function useLoadNotifications(): {
                 if (!result.data) {
                   return prev;
                 }
-                const existingPages = prev ?? [];
+                const existingPages = [...(prev ?? [])];
                 existingPages[page - 1] =
                   result.data.device.data.notificationDeliveries;
                 return existingPages;
