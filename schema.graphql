@@ -328,6 +328,15 @@ type DeviceResource {
   expoPushToken: String
   lastLoggedInUser: PersonResource
   lastLogin: LuxonDateTime
+  notificationDeliveries(
+    page: Float = 1
+    pageSize: Float = 10
+
+    """
+    The verifier code for this device, if it does not match then the query will be rejected
+    """
+    verifier: String
+  ): [NotificationDeliveryResource!]!
   updatedAt: DateTimeISO
   uuid: ID!
 }
@@ -739,6 +748,7 @@ type NotificationDeliveryResource {
 
   """Any error message returned by Expo when sending the notification."""
   deliveryError: String
+  notification: NotificationResource!
 
   """The time the server received a delivery receipt from the user."""
   receiptCheckedAt: DateTimeISO
