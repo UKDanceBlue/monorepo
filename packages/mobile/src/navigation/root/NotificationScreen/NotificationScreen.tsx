@@ -1,30 +1,25 @@
 import JumbotronGeometric from "@common/components/JumbotronGeometric";
-import { log, universalCatch } from "@common/logging";
+import { universalCatch } from "@common/logging";
 import { manufacturer as deviceManufacturer } from "expo-device";
 import { openSettings } from "expo-linking";
 import { setBadgeCountAsync } from "expo-notifications";
 import { DateTime } from "luxon";
 import { Button, SectionList, Text, View, useTheme } from "native-base";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { RefreshControl } from "react-native";
-import type Animated from "react-native-reanimated";
-import { useSharedValue } from "react-native-reanimated";
 
 import { useDeviceData, useLoading, useUserData } from "../../../context";
-import { useRefreshUserData } from "../../../context/user";
 
+import { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
+import { Logger } from "@common/logger/Logger";
+import { dateTimeFromSomething } from "@ukdanceblue/common";
+import {
+  FragmentType,
+  getFragmentData,
+} from "@ukdanceblue/common/dist/graphql-client-public";
 import { NotificationRow } from "./NotificationRow";
 import { NotificationSectionHeader } from "./NotificationSectionHeader";
-import { useFallBackNotificationLoader } from "./fallbackNotificationLoader";
-import { refreshNotificationScreen } from "./refresh";
-
-export interface NotificationListDataEntry {
-  notification: FirestoreNotification | undefined;
-  reference:
-    | FirebaseFirestoreTypes.DocumentReference<FirestoreNotification>
-    | undefined;
-  indexWithOpenMenu: Animated.SharedValue<undefined | number>;
-}
+import { useLoadNotifications } from "./refresh";
 
 /**
  * Component for "Profile" screen in main navigation
@@ -32,31 +27,14 @@ export interface NotificationListDataEntry {
 function NotificationScreen() {
   const { getsNotifications: notificationPermissionsGranted } = useDeviceData();
 
-  const indexWithOpenMenu = useSharedValue<undefined | number>(undefined);
-
-  const { notificationReferences } = useUserData();
-  const refreshUserData = useRefreshUserData();
-
   const [, , { UserDataProvider: isUserDataLoading }] = useLoading();
-
-  const [isLoading, setIsLoading] = useState(false);
-  const isAnyLoading = isLoading || isUserDataLoading;
 
   const theme = useTheme();
   const userData = useUserData();
 
-  const [fallbackNotifications, refreshFallbackNotifications] =
-    useFallBackNotificationLoader(
-      notificationReferences.length === 0,
-      indexWithOpenMenu
-    );
-  const [userNotifications, setNotifications] = useState<
-    (NotificationListDataEntry | undefined)[]
-  >([]);
-  const notifications = [
-    ...userNotifications,
-    ...(fallbackNotifications ?? []),
-  ];
+  const { notifications, refreshNotifications, loadMoreNotifications } =
+    useLoadNotifications();
+  const isAnyLoading = notifications == null || isUserDataLoading;
 
   // Clear badge count when navigating to this screen
   useEffect(() => {
@@ -64,18 +42,14 @@ function NotificationScreen() {
       const success = await setBadgeCountAsync(0);
 
       if (!success) {
-        log("Failed to clear badge count", "warn");
+        Logger.warn("Failed to clear badge count", {
+          error: "setBadgeCountAsync returned false",
+        });
       }
-    })().catch(universalCatch);
+    })().catch((error) => {
+      Logger.error("Failed to clear badge count", error);
+    });
   }, []);
-
-  useEffect(() => {
-    refreshNotificationScreen(
-      notificationReferences,
-      setNotifications,
-      indexWithOpenMenu
-    ).catch(universalCatch);
-  }, [indexWithOpenMenu, notificationReferences]);
 
   function jumboText() {
     let welcomeString = "Welcome to DanceBlue!";
@@ -116,58 +90,43 @@ function NotificationScreen() {
             <RefreshControl
               refreshing={isAnyLoading ?? false}
               onRefresh={() => {
-                setIsLoading(true);
-                setNotifications(notificationReferences.map(() => undefined));
-                refreshUserData()
-                  .then(() =>
-                    Promise.all([
-                      refreshFallbackNotifications(),
-                      refreshNotificationScreen(
-                        notificationReferences,
-                        setNotifications,
-                        indexWithOpenMenu
-                      ),
-                    ])
-                  )
-                  .then(() => setIsLoading(false))
-                  .catch(universalCatch);
+                refreshNotifications();
               }}
             />
           }
           data={notifications}
           sections={Object.entries(
-            notifications.reduce<
-              Record<string, NotificationListDataEntry[] | undefined>
+            notifications?.reduce<
+              Record<
+                string,
+                FragmentType<typeof NotificationDeliveryFragment>[]
+              >
             >((acc, data) => {
-              if (data?.notification == null) {
-                acc[""] = [
-                  ...(acc[""] ?? []),
-                  {
-                    notification: undefined,
-                    reference: undefined,
-                    indexWithOpenMenu,
-                  },
-                ];
+              const delivery = getFragmentData(
+                NotificationDeliveryFragment,
+                data
+              );
+              if (delivery == null) {
+                acc[""] = [...(acc[""] ?? []), data];
 
                 return acc;
               } else {
-                const date = DateTime.fromISO(
-                  data.notification.sendTime
-                ).toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
+                const date = dateTimeFromSomething(
+                  delivery.sentAt
+                )?.toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
 
-                acc[date] = [...(acc[date] ?? []), data];
+                acc[date ?? ""] = [...(acc[date ?? ""] ?? []), data];
 
                 return acc;
               }
-            }, {})
+            }, {}) ?? []
           ).map(([date, notifications]) => ({
             title: date,
             data: notifications ?? [],
           }))}
           keyExtractor={(data, i) =>
-            data?.notification == null
-              ? String(i)
-              : `${data.notification.title} : ${data.notification.sendTime}`
+            getFragmentData(NotificationDeliveryFragment, data)?.uuid ??
+            `notification-${i}`
           }
           ListEmptyComponent={() => (
             <View>
@@ -176,6 +135,8 @@ function NotificationScreen() {
           )}
           renderSectionHeader={NotificationSectionHeader}
           renderItem={NotificationRow}
+          onEndReached={loadMoreNotifications}
+          onEndReachedThreshold={0.5}
         />
       </>
     );
