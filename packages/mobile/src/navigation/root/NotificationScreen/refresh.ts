@@ -5,11 +5,12 @@ import { useDeviceData } from "@context/device";
 import { ErrorCode } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
+import { DateTime } from "luxon";
 import { useCallback, useEffect, useState } from "react";
 import { useClient } from "urql";
 
 const NOTIFICATION_PAGE_SIZE = 2;
-const INCOMPLETE_PAGE_TIMEOUT = 5000;
+const INCOMPLETE_PAGE_TIMEOUT = 10_000;
 
 export const deviceNotificationsQuery = graphql(/* GraphQL */ `
   query DeviceNotifications(
@@ -48,22 +49,8 @@ export function useLoadNotifications(): {
 
   const client = useClient();
 
-  const [stopLoadingTimeout, setStopLoadingTimeout] =
-    useState<NodeJS.Timeout>();
-  useEffect(() => {
-    if (stopLoadingTimeout) {
-      clearTimeout(stopLoadingTimeout);
-      setStopLoadingTimeout(undefined);
-    }
-  }, [stopLoadingTimeout]);
-
-  const unlockLoading = useCallback(() => {
-    if (stopLoadingTimeout) {
-      Logger.debug("Unlocking notifications loading");
-      clearTimeout(stopLoadingTimeout);
-      setStopLoadingTimeout(undefined);
-    }
-  }, [stopLoadingTimeout]);
+  const [foundIncompletePageAt, setFoundIncompletePageAt] =
+    useState<DateTime>();
 
   const loadPage = useCallback(
     (page: number) => {
@@ -73,16 +60,24 @@ export function useLoadNotifications(): {
         );
         return;
       }
-      if (stopLoadingTimeout) {
-        Logger.debug(
-          "Not loading notifications for now, we found the end of the list already"
-        );
-        return;
+      if (foundIncompletePageAt) {
+        if (
+          foundIncompletePageAt
+            .plus({ milliseconds: INCOMPLETE_PAGE_TIMEOUT })
+            .diffNow().milliseconds > 0
+        ) {
+          Logger.debug(
+            "Not loading notifications for now, we found the end of the list already"
+          );
+          return;
+        } else {
+          setFoundIncompletePageAt(undefined);
+        }
       }
 
       Logger.debug(`Loading notifications page ${page}`);
 
-      client
+      void client
         .query(
           deviceNotificationsQuery,
           {
@@ -127,11 +122,7 @@ export function useLoadNotifications(): {
                   Logger.debug(
                     `Loaded incomplete page ${page}, stopping loading for ${INCOMPLETE_PAGE_TIMEOUT}ms`
                   );
-                  setStopLoadingTimeout(
-                    setTimeout(() => {
-                      unlockLoading();
-                    }, INCOMPLETE_PAGE_TIMEOUT)
-                  );
+                  setFoundIncompletePageAt(DateTime.now());
                 }
 
                 return existingPages;
@@ -143,12 +134,12 @@ export function useLoadNotifications(): {
           }
         });
     },
-    [client, deviceId, verifier, stopLoadingTimeout, unlockLoading]
+    [client, deviceId, verifier, foundIncompletePageAt]
   );
 
   const refreshNotifications = useCallback(() => {
     loadPage(1);
-  }, [deviceId, verifier, loadPage]);
+  }, [loadPage]);
 
   const loadMoreNotifications = useCallback(() => {
     if (notificationPages) {
@@ -171,7 +162,7 @@ export function useLoadNotifications(): {
         loadPage(lastCompletePage + 2);
       }
     }
-  }, [notificationPages, loadPage]);
+  }, [notificationPages, loadPage, refreshNotifications]);
 
   useEffect(() => {
     refreshNotifications();
