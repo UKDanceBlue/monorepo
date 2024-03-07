@@ -1,28 +1,37 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { PrismaClient } from "@prisma/client";
+import type { Mock } from "vitest";
 import { vi } from "vitest";
 
 export function makePrismaMock() {
+  const mocksToClear: Mock[] = [];
+
+  function makeMockFn<TArgs extends any[] = any, TReturns = any>() {
+    const mock = vi.fn<TArgs, TReturns>();
+    mocksToClear.push(mock);
+    return mock;
+  }
   function makeModelMock() {
     const modelMock = {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-      findUniqueOrThrow: vi.fn(),
-      findFirst: vi.fn(),
-      findFirstOrThrow: vi.fn(),
-      aggregate: vi.fn(),
-      count: vi.fn(),
-      create: vi.fn(),
-      createMany: vi.fn(),
-      delete: vi.fn(),
-      deleteMany: vi.fn(),
-      groupBy: vi.fn(),
-      update: vi.fn(),
-      updateMany: vi.fn(),
-      upsert: vi.fn(),
+      findMany: makeMockFn(),
+      findUnique: makeMockFn(),
+      findUniqueOrThrow: makeMockFn(),
+      findFirst: makeMockFn(),
+      findFirstOrThrow: makeMockFn(),
+      aggregate: makeMockFn(),
+      count: makeMockFn(),
+      create: makeMockFn(),
+      createMany: makeMockFn(),
+      delete: makeMockFn(),
+      deleteMany: makeMockFn(),
+      groupBy: makeMockFn(),
+      update: makeMockFn(),
+      updateMany: makeMockFn(),
+      upsert: makeMockFn(),
       fields: undefined as never,
     };
     // Add one more mock for the `fields` property
-    const fieldsMock = vi.fn();
+    const fieldsMock = makeMockFn();
     Object.defineProperty(modelMock, "fields", {
       get: fieldsMock,
     });
@@ -46,17 +55,17 @@ export function makePrismaMock() {
   const teamMock = makeModelMock();
   const teamsWithTotalPointsMock = makeModelMock();
 
-  const prismaMock: PrismaClient = {
-    $connect: vi.fn(),
-    $disconnect: vi.fn(),
-    $executeRaw: vi.fn(),
-    $executeRawUnsafe: vi.fn(),
-    $queryRaw: vi.fn(),
-    $queryRawUnsafe: vi.fn(),
-    $transaction: vi.fn() as unknown as PrismaClient["$transaction"],
-    $use: vi.fn(),
-    $extends: vi.fn() as unknown as PrismaClient["$extends"],
-    $on: vi.fn(),
+  const prismaMock = {
+    $connect: makeMockFn(),
+    $disconnect: makeMockFn(),
+    $executeRaw: makeMockFn(),
+    $executeRawUnsafe: makeMockFn(),
+    $queryRaw: makeMockFn(),
+    $queryRawUnsafe: makeMockFn(),
+    $transaction: makeMockFn() as unknown as PrismaClient["$transaction"],
+    $use: makeMockFn(),
+    $extends: makeMockFn() as unknown as PrismaClient["$extends"],
+    $on: makeMockFn(),
     authIdPair: authIdPairMock[0],
     configuration: configurationMock[0],
     device: deviceMock[0],
@@ -93,5 +102,10 @@ export function makePrismaMock() {
     pointOpportunityFieldsMock: pointOpportunityMock[1],
     teamFieldsMock: teamMock[1],
     teamsWithTotalPointsFieldsMock: teamsWithTotalPointsMock[1],
+    resetMocks: () => {
+      mocksToClear.forEach((mock) => {
+        mock.mockClear();
+      });
+    },
   };
 }
