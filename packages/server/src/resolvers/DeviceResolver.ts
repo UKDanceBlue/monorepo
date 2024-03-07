@@ -14,6 +14,7 @@ import {
   Field,
   FieldResolver,
   InputType,
+  Int,
   Mutation,
   ObjectType,
   Query,
@@ -98,10 +99,18 @@ class ListDevicesArgs extends FilteredListQueryArgs<
 
 @ArgsType()
 class NotificationDeliveriesArgs {
-  @Field(() => Number, { nullable: true, defaultValue: 1 })
+  // TODO: Handle this in the normal authorization flow instead of here
+  @Field(() => String, {
+    nullable: true,
+    description:
+      "The verifier code for this device, if it does not match then the query will be rejected",
+  })
+  verifier?: string;
+
+  @Field(() => Int, { nullable: true, defaultValue: 1 })
   page?: number;
 
-  @Field(() => Number, { nullable: true, defaultValue: 10 })
+  @Field(() => Int, { nullable: true, defaultValue: 10 })
   pageSize?: number;
 }
 
@@ -189,6 +198,22 @@ export class DeviceResolver {
     @Root() device: DeviceResource,
     @Args(() => NotificationDeliveriesArgs) query: NotificationDeliveriesArgs
   ): Promise<NotificationDeliveryResource[]> {
+    const row = await this.deviceRepository.getDeviceByUuid(device.uuid);
+
+    if (row == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Device not found");
+    }
+
+    if (
+      row.verifier != null &&
+      (query.verifier == null || row.verifier !== query.verifier)
+    ) {
+      throw new DetailedError(
+        ErrorCode.Unauthorized,
+        "Incorrect device verifier"
+      );
+    }
+
     const rows =
       await this.deviceRepository.findNotificationDeliveriesForDevice(
         device.uuid,
