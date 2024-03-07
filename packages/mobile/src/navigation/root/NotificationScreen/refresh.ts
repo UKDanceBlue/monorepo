@@ -1,85 +1,128 @@
-import { log, universalCatch } from "@common/logging";
-import { DateTime } from "luxon";
-import type { Dispatch, SetStateAction } from "react";
-import { Alert } from "react-native";
-import type { SharedValue } from "react-native-reanimated";
+import { useCallback, useEffect, useState } from "react";
 
-import type { NotificationListDataEntry } from "./NotificationScreen";
+import { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
+import { Logger } from "@common/logger/Logger";
+import { showMessage } from "@common/util/alertUtils";
+import { useDeviceData } from "@context/device";
+import { ErrorCode } from "@ukdanceblue/common";
+import {
+  FragmentType,
+  graphql,
+} from "@ukdanceblue/common/dist/graphql-client-public";
+import { useClient } from "urql";
 
-export async function refreshNotificationScreen(
-  notificationReferences: FirebaseFirestoreTypes.DocumentReference<FirestoreNotification>[],
-  setNotifications: Dispatch<
-    SetStateAction<(NotificationListDataEntry | undefined)[]>
-  >,
-  indexWithOpenMenu: SharedValue<number | undefined>
-) {
-  // Get the notifications from references
-  const promises: Promise<NotificationListDataEntry | undefined>[] = [];
-
-  let hasAlerted = false as boolean;
-
-  for (const pastNotificationRef of notificationReferences) {
-    promises.push(
-      (async () => {
-        let pastNotificationSnapshot:
-          | FirebaseFirestoreTypes.DocumentSnapshot<FirestoreNotification>
-          | undefined = undefined;
-        try {
-          pastNotificationSnapshot = await pastNotificationRef.get({
-            source: "server",
-          });
-        } catch (_) {
-          try {
-            pastNotificationSnapshot = await pastNotificationRef.get();
-          } catch (error) {
-            universalCatch(error);
-
-            if (!hasAlerted) {
-              Alert.alert(
-                "Error",
-                "There was an error loading some of your notifications. Please try again."
-              );
-              hasAlerted = true;
-            }
-          }
+export const deviceNotificationsQuery = graphql(/* GraphQL */ `
+  query DeviceNotifications(
+    $deviceUuid: String!
+    $page: Int
+    $verifier: String!
+  ) {
+    device(uuid: $deviceUuid) {
+      data {
+        notificationDeliveries(pageSize: 2, page: $page, verifier: $verifier) {
+          ...NotificationDeliveryFragment
         }
-
-        if (pastNotificationSnapshot == null) {
-          return undefined;
-        }
-
-        const pastNotificationSnapshotData = pastNotificationSnapshot.data();
-        if (isFirestoreNotification(pastNotificationSnapshotData)) {
-          return {
-            notification: pastNotificationSnapshotData,
-            indexWithOpenMenu,
-            reference: pastNotificationSnapshot.ref,
-          };
-        } else {
-          log(
-            `Past notification: FirebaseFirestoreTypes.DocumentSnapshot<FirestoreNotification> "${pastNotificationSnapshot.ref.path}" is not valid`,
-            "warn"
-          );
-          return undefined;
-        }
-      })()
-    );
+      }
+    }
   }
+`);
 
-  const resolvedPromises = await Promise.all(promises);
-  const notificationsByDate = resolvedPromises
-    .filter(
-      (notification): notification is NotificationListDataEntry =>
-        notification !== undefined
-    )
-    .sort(
-      (a, b) =>
-        (b.notification?.sendTime == null
-          ? 0
-          : DateTime.fromISO(b.notification.sendTime).toMillis()) -
-        (a.notification?.sendTime == null
-          ? 0
-          : DateTime.fromISO(a.notification.sendTime).toMillis())
-    );
-  setNotifications(notificationsByDate);
+export function useLoadNotifications(): {
+  refreshNotifications: () => void;
+  loadMoreNotifications: () => void;
+  notifications:
+    | readonly FragmentType<typeof NotificationDeliveryFragment>[]
+    | null;
+} {
+  // Null when loading, an array of notification pages when loaded (2D array)
+  const [notificationPages, setNotificationPages] = useState<
+    (readonly FragmentType<typeof NotificationDeliveryFragment>[])[] | null
+  >(null);
+
+  const { deviceId, verifier } = useDeviceData();
+
+  const client = useClient();
+
+  const loadPage = useCallback(
+    (page: number) => {
+      if (!deviceId || !verifier) {
+        return;
+      }
+
+      client
+        .query(
+          deviceNotificationsQuery,
+          {
+            deviceUuid: deviceId,
+            verifier,
+            page,
+          },
+          { requestPolicy: "network-only" }
+        )
+        .then((result) => {
+          try {
+            if (result.error) {
+              const code = result.error?.graphQLErrors[0]?.extensions?.code;
+              if (code === ErrorCode.Unauthorized) {
+                // I don't really want to handle dealing with a device that's forgotten it's verifier...
+                // ...so I'm just going to tell the user to report it as a bug and we'll figure it out if it happens
+                showMessage(
+                  "This is a bug. Please report it using the button in the profile screen.",
+                  "Access Denied"
+                );
+              } else {
+                showMessage(
+                  "We're having some trouble loading your notifications."
+                );
+              }
+              Logger.error("Failed to load notifications", {
+                error: result.error,
+              });
+              setNotificationPages([]);
+            } else {
+              Logger.debug(`Loaded notifications page ${page}`);
+              setNotificationPages((prev) => {
+                if (!result.data) {
+                  return prev;
+                }
+                const existingPages = prev ?? [];
+                existingPages[page - 1] =
+                  result.data.device.data.notificationDeliveries;
+                return existingPages;
+              });
+            }
+          } finally {
+            // Make sure we don't leave the state as null
+            setNotificationPages((old) => old ?? []);
+          }
+        });
+    },
+    [deviceId, verifier, client]
+  );
+
+  const refreshNotifications = useCallback(() => {
+    if (deviceId && verifier) {
+      Logger.debug("Refreshing notifications");
+      loadPage(1);
+    }
+  }, [deviceId, verifier, loadPage]);
+
+  const loadMoreNotifications = useCallback(() => {
+    if (notificationPages) {
+      Logger.debug("Loading more notifications", {
+        context: { notificationPagesLength: notificationPages.length },
+      });
+      loadPage(notificationPages.length + 1);
+    }
+  }, [notificationPages, loadPage]);
+
+  useEffect(() => {
+    refreshNotifications();
+  }, [refreshNotifications]);
+
+  return {
+    refreshNotifications,
+    loadMoreNotifications,
+    notifications: notificationPages?.flat() ?? null,
+  };
 }
