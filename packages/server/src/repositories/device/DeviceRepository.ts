@@ -136,7 +136,7 @@ export class DeviceRepository {
         // It is possible for a device to be registered multiple times, so we
         // need to dedupe them somehow. To achieve this, we will use the
         // `expoPushToken` as the key and only keep the last seen device.
-        orderBy: { lastSeen: "desc" },
+        orderBy: { lastSeen: "asc" },
       });
 
       const pushTokenToDevice = new Map<
