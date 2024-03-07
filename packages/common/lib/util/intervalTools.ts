@@ -1,4 +1,5 @@
-import { DateTime, Interval } from "luxon";
+import type { Interval } from "luxon";
+import { DateTime } from "luxon";
 
 type ValidInterval = Interval & {
   start: NonNullable<Interval["start"]>;
@@ -47,17 +48,21 @@ export function dateTimeFromSomething(
     return something;
   }
   switch (typeof something) {
-    case "string":
+    case "string": {
       return DateTime.fromISO(something);
-    case "number":
+    }
+    case "number": {
       return DateTime.fromMillis(something);
-    case "object":
+    }
+    case "object": {
       return something instanceof Date
         ? DateTime.fromJSDate(something)
         : DateTime.isDateTime(something)
         ? something
         : DateTime.invalid("Invalid input type for dateTimeFromSomething");
-    default:
+    }
+    default: {
       return DateTime.invalid("Invalid input type for dateTimeFromSomething");
+    }
   }
 }
