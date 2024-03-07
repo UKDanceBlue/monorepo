@@ -35,33 +35,40 @@ function NotificationScreen() {
   const isAnyLoading = notifications == null || isUserDataLoading;
 
   const sections = useMemo(() => {
-    const sections: {
-      title: string;
-      data: FragmentType<typeof NotificationDeliveryFragment>[];
-    }[] = [];
-    let lastDate: [DateTime | null, string] = [null, ""];
+    const sections: Partial<
+      Record<string, FragmentType<typeof NotificationDeliveryFragment>[]>
+    > = {};
 
     for (const notification of notifications ?? []) {
       const delivery = getFragmentData(
         NotificationDeliveryFragment,
         notification
       );
-      if (delivery.sentAt == null) {
-        sections.push({ title: "", data: [notification] });
-      } else {
+      let dateString = "";
+      if (delivery.sentAt != null) {
         const date = dateTimeFromSomething(delivery.sentAt) as DateTime;
+        dateString = date.toLocaleString(DateTime.DATE_MED);
+      }
 
-        if (date !== lastDate[0]) {
-          const title = date.toLocaleString(DateTime.DATE_MED);
-          sections.push({ title, data: [notification] });
-          lastDate = [date, title];
-        } else {
-          sections[sections.length - 1].data.push(notification);
-        }
+      if (sections[dateString] == null) {
+        sections[dateString] = [];
+      }
+
+      sections[dateString]?.push(notification);
+    }
+
+    const sectionsArray: {
+      title: string;
+      data: FragmentType<typeof NotificationDeliveryFragment>[];
+    }[] = [];
+
+    for (const [title, data] of Object.entries(sections)) {
+      if (data != null) {
+        sectionsArray.push({ title, data });
       }
     }
 
-    return sections;
+    return sectionsArray;
   }, [notifications]);
 
   // Clear badge count when navigating to this screen
