@@ -24,7 +24,7 @@ if (isDevelopmentBuild()) {
   DevMenu.registerDevMenuItems([
     {
       name: "Clear AsyncStorage",
-      action: async () => {
+      callback: async () => {
         Logger.log("Clearing AsyncStorage");
         await AsyncStorage.clear();
         alert("AsyncStorage cleared successfully");
@@ -32,7 +32,7 @@ if (isDevelopmentBuild()) {
     },
     {
       name: "Print AsyncStorage",
-      action: async () => {
+      callback: async () => {
         Logger.log("Printing AsyncStorage");
         const keys = await AsyncStorage.getAllKeys();
         const values = await AsyncStorage.multiGet(keys);
