@@ -1,3 +1,4 @@
+// @ts-check
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { registerRootComponent } from "expo";
 import { DevMenu, isDevelopmentBuild } from "expo-dev-client";
