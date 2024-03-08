@@ -187,7 +187,7 @@ export const DeviceDataProvider = ({
         try {
           const { token, notificationPermissionsGranted } =
             await registerPushNotifications();
-          console.log("token", token);
+
           const { error } = await setDevice({
             input: {
               deviceId: uuid,
@@ -212,6 +212,10 @@ export const DeviceDataProvider = ({
             Logger.error("Error registering push notifications", { error });
           }
         }
+
+        Logger.info("Device registered", {
+          context: { deviceId: uuid },
+        });
       })
       .catch(universalCatch)
       .finally(() => setLoading(false));
