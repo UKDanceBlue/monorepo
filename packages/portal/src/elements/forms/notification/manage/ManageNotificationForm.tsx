@@ -35,7 +35,12 @@ export const ManageNotificationForm = ({
       : null
   );
 
-  const { showErrorMessage, showInfoMessage } = useAntFeedback();
+  const {
+    showErrorMessage,
+    showInfoMessage,
+    showWarningModal,
+    showConfirmModal,
+  } = useAntFeedback();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -100,11 +105,20 @@ export const ManageNotificationForm = ({
               }
               onClick={() => {
                 if (sendAt) {
-                  handleOperationResult(
-                    scheduleNotification(sendAt),
-                    "scheduleNotification",
-                    "Schedule"
-                  );
+                  showConfirmModal({
+                    title:
+                      "Are you sure you would like to schedule the notification?",
+                    content: `This will send the notification to all specified recipients on ${sendAt.toLocaleString(
+                      DateTime.DATE_MED_WITH_WEEKDAY
+                    )} at ${sendAt.toLocaleString(DateTime.TIME_SIMPLE)}.`,
+                    onOk: () => {
+                      handleOperationResult(
+                        scheduleNotification(sendAt),
+                        "scheduleNotification",
+                        "Schedule"
+                      );
+                    },
+                  });
                 }
               }}
             >
@@ -115,13 +129,22 @@ export const ManageNotificationForm = ({
             <Button
               type="primary"
               disabled={notification.startedSendingAt !== null}
-              onClick={() =>
-                handleOperationResult(
-                  sendNotification(),
-                  "sendNotification",
-                  "Send"
-                )
-              }
+              onClick={() => {
+                showWarningModal({
+                  title:
+                    "Are you sure you would like to send the notification?",
+                  content:
+                    "This will immediately send the notification to all recipients. There is no way to cancel this operation.",
+                  onOk: () => {
+                    handleOperationResult(
+                      sendNotification(),
+                      "sendNotification",
+                      "Send"
+                    );
+                  },
+                  type: "warning",
+                });
+              }}
             >
               Send
             </Button>
@@ -130,13 +153,21 @@ export const ManageNotificationForm = ({
             <Button
               type="primary"
               disabled={!notification.sendAt}
-              onClick={() =>
-                handleOperationResult(
-                  cancelNotificationSchedule(),
-                  "abortScheduledNotification",
-                  "Cancel"
-                )
-              }
+              onClick={() => {
+                showWarningModal({
+                  title:
+                    "Are you sure you would like to cancel the scheduled notification?",
+                  content:
+                    "This will cancel the scheduled notification. It will not be sent to any recipients.",
+                  onOk: () => {
+                    handleOperationResult(
+                      cancelNotificationSchedule(),
+                      "abortScheduledNotification",
+                      "Cancel"
+                    );
+                  },
+                });
+              }}
             >
               Cancel
             </Button>
@@ -146,13 +177,21 @@ export const ManageNotificationForm = ({
               type="primary"
               danger
               disabled={notification.startedSendingAt !== null}
-              onClick={() =>
-                handleOperationResult(
-                  deleteNotification(),
-                  "deleteNotification",
-                  "Delete"
-                )
-              }
+              onClick={() => {
+                showWarningModal({
+                  title:
+                    "Are you sure you would like to delete the notification?",
+                  content:
+                    "This will permanently delete the notification. There is no way to recover it.",
+                  onOk: () => {
+                    handleOperationResult(
+                      deleteNotification(),
+                      "deleteNotification",
+                      "Delete"
+                    );
+                  },
+                });
+              }}
             >
               Delete
             </Button>
