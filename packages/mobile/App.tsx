@@ -9,6 +9,7 @@ import NetInfo from "@react-native-community/netinfo";
 import { useFonts } from "expo-font";
 import { hideAsync } from "expo-splash-screen";
 // TODO: Switch away from native-base https://nativebase.io/blogs/road-ahead-with-gluestack-ui
+import { isEmergencyLaunch } from "expo-updates";
 import type { ICustomTheme } from "native-base";
 import { NativeBaseProvider } from "native-base";
 import { useEffect, useRef, useState } from "react";
@@ -23,6 +24,12 @@ import OpenSansCondensedLightFont from "./assets/fonts/opensans-condensed/OpenSa
 import { CombinedContext } from "./src/context";
 import { FilledNavigationContainer } from "./src/navigation/NavigationContainer";
 import { getCustomTheme } from "./src/theme";
+
+if (isEmergencyLaunch) {
+  alert(
+    "A CRITICAL ERROR HAS OCCURRED!\nYou are running a fallback version of the app and will likely experience issues. Please try to restart the app to fix this issue. If the issue persists, please contact the Tech Committee."
+  );
+}
 
 /**
  * Main app container
