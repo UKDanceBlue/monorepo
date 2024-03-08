@@ -43,7 +43,7 @@ function makeExpoNotifications(
         title: content.title,
         body: content.body,
         data: {
-          url: content.url,
+          url: content.url ? encodeURI(content.url) : null,
           notificationDeliveryUuid: delivery.uuid,
         },
       });
