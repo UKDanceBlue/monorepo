@@ -1,4 +1,5 @@
 import type { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
+import { useAsyncStorage } from "@common/hooks/useAsyncStorage";
 import { Logger } from "@common/logger/Logger";
 import { showMessage } from "@common/util/alertUtils";
 import { useDeviceData } from "@context/device";
@@ -34,16 +35,39 @@ export const deviceNotificationsQuery = graphql(/* GraphQL */ `
 `);
 
 export function useLoadNotifications(): {
-  refreshNotifications: () => void;
+  refreshNotifications: (force?: boolean) => void;
   loadMoreNotifications: () => void;
   notifications:
     | readonly FragmentType<typeof NotificationDeliveryFragment>[]
     | null;
+  loading: boolean;
 } {
   // Null when loading, an array of notification pages when loaded (2D array)
   const [notificationPages, setNotificationPages] = useState<
     (readonly FragmentType<typeof NotificationDeliveryFragment>[])[] | null
-  >(null);
+  >([]);
+  const [, setHasWarnedAboutNoNotifications] = useState(false);
+  const [loadingNotification, setLoadingNotification] = useState(false);
+
+  const { getItem, setItem } = useAsyncStorage("notification-cache");
+
+  useEffect(() => {
+    (async () => {
+      const cached = await getItem();
+      if (cached) {
+        Logger.debug("Loaded cached notifications");
+        setNotificationPages((notificationPages) =>
+          notificationPages?.length === 0
+            ? (JSON.parse(cached) as (readonly FragmentType<
+                typeof NotificationDeliveryFragment
+              >[])[])
+            : notificationPages
+        );
+      }
+    })().catch((error: unknown) => {
+      Logger.error("Failed to load cached notifications", { error });
+    });
+  }, [getItem]);
 
   const { deviceId, verifier } = useDeviceData();
 
@@ -53,14 +77,14 @@ export function useLoadNotifications(): {
     useState<DateTime>();
 
   const loadPage = useCallback(
-    (page: number) => {
+    (page: number, force?: boolean) => {
       if (!deviceId || !verifier) {
         Logger.debug(
           "Not loading notifications, missing either the device ID or verifier"
         );
         return;
       }
-      if (foundIncompletePageAt) {
+      if (foundIncompletePageAt && !force) {
         if (
           foundIncompletePageAt
             .plus({ milliseconds: INCOMPLETE_PAGE_TIMEOUT })
@@ -77,6 +101,7 @@ export function useLoadNotifications(): {
 
       Logger.debug(`Loading notifications page ${page}`);
 
+      setLoadingNotification(true);
       void client
         .query(
           deviceNotificationsQuery,
@@ -100,46 +125,67 @@ export function useLoadNotifications(): {
                   "Access Denied"
                 );
               } else {
-                showMessage(
-                  "We're having some trouble loading your notifications."
-                );
+                setHasWarnedAboutNoNotifications((existing) => {
+                  if (!existing) {
+                    showMessage(
+                      "We're having some trouble loading your latest notifications."
+                    );
+                  }
+                  return true;
+                });
               }
               Logger.error("Failed to load notifications", {
                 error: result.error,
               });
-              setNotificationPages([]);
             } else {
               Logger.debug(`Loaded notifications page ${page}`);
               setNotificationPages((prev) => {
                 if (!result.data) {
                   return prev;
                 }
-                const existingPages = [...(prev ?? [])];
-                existingPages[page - 1] =
+                const newPages = [...(prev ?? [])];
+                newPages[page - 1] =
                   result.data.device.data.notificationDeliveries;
 
-                if (existingPages[page - 1].length < NOTIFICATION_PAGE_SIZE) {
+                if (newPages[page - 1].length < NOTIFICATION_PAGE_SIZE) {
                   Logger.debug(
                     `Loaded incomplete page ${page}, stopping loading for ${INCOMPLETE_PAGE_TIMEOUT}ms`
                   );
                   setFoundIncompletePageAt(DateTime.now());
                 }
 
-                return existingPages;
+                void setItem(JSON.stringify(newPages)).catch(
+                  (error: unknown) => {
+                    Logger.error("Failed to save notifications to cache", {
+                      error,
+                    });
+                  }
+                );
+
+                return newPages;
               });
             }
           } finally {
-            // Make sure we don't leave the state as null
-            setNotificationPages((old) => old ?? []);
+            setLoadingNotification(false);
           }
         });
     },
-    [client, deviceId, verifier, foundIncompletePageAt]
+    [
+      deviceId,
+      verifier,
+      foundIncompletePageAt,
+      setLoadingNotification,
+      client,
+      setItem,
+    ]
   );
 
-  const refreshNotifications = useCallback(() => {
-    loadPage(1);
-  }, [loadPage]);
+  const refreshNotifications = useCallback(
+    (force?: boolean) => {
+      loadPage(1, force);
+    },
+    [loadPage]
+  );
 
   const loadMoreNotifications = useCallback(() => {
     if (notificationPages) {
@@ -172,5 +218,6 @@ export function useLoadNotifications(): {
     refreshNotifications,
     loadMoreNotifications,
     notifications: notificationPages?.flat() ?? null,
+    loading: loadingNotification,
   };
 }
