@@ -202,7 +202,10 @@ export const markEvents = (
     }
   }
 
-  marked[getTodayDateString()] = { today: true };
+  marked[getTodayDateString()] = {
+    ...(marked[getTodayDateString()] ?? {}),
+    today: true,
+  };
 
   return marked as MarkedDates;
 };
