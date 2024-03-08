@@ -23,10 +23,15 @@ export function ThemeConfigProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(document.cookie.includes("dark=true"));
+
+  const setDarkAndCookie = (dark: boolean) => {
+    setDark(dark);
+    document.cookie = `dark=${dark}; path=/; max-age=31536000`;
+  };
 
   return (
-    <themeConfigContext.Provider value={{ dark, setDark }}>
+    <themeConfigContext.Provider value={{ dark, setDark: setDarkAndCookie }}>
       <ConfigProvider theme={makeAntDesignTheme({ dark })}>
         {children}
       </ConfigProvider>
