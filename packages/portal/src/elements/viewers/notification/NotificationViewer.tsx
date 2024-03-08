@@ -31,7 +31,7 @@ export const NotificationViewer = ({
   }
   let deliveryIssueText = "No";
   if (notification.deliveryIssue) {
-    deliveryIssueText = notification.deliveryIssue;
+    deliveryIssueText = `${notification.deliveryIssue} - PLEASE CONTACT TECH`;
   }
   if (notification.deliveryIssueAcknowledgedAt) {
     deliveryIssueText += ` (Acknowledged at ${renderDateTime(
