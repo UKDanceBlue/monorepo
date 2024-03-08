@@ -3,6 +3,7 @@ import { NotificationViewer } from "@elements/viewers/notification/NotificationV
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
+import type { ModalFuncProps } from "antd";
 import { Button, Empty, Flex, Form } from "antd";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
@@ -11,6 +12,17 @@ import type { UseQueryExecute } from "urql";
 import { SingleNotificationFragment } from "../SingleNotificationGQL";
 
 import { useNotificationManagerForm } from "./useNotificationManager";
+
+const confirmationModalProps: ModalFuncProps = {
+  okText: "Yes",
+  cancelText: "No",
+  autoFocusButton: "cancel",
+  cancelButtonProps: { danger: false },
+  okButtonProps: { danger: true },
+  onCancel: () => undefined,
+  closable: true,
+  maskClosable: true,
+};
 
 export const ManageNotificationForm = ({
   notificationFragment,
@@ -106,6 +118,7 @@ export const ManageNotificationForm = ({
               onClick={() => {
                 if (sendAt) {
                   showConfirmModal({
+                    ...confirmationModalProps,
                     title:
                       "Are you sure you would like to schedule the notification?",
                     content: `This will send the notification to all specified recipients on ${sendAt.toLocaleString(
@@ -131,6 +144,7 @@ export const ManageNotificationForm = ({
               disabled={notification.startedSendingAt !== null}
               onClick={() => {
                 showWarningModal({
+                  ...confirmationModalProps,
                   title:
                     "Are you sure you would like to send the notification?",
                   content:
@@ -142,7 +156,6 @@ export const ManageNotificationForm = ({
                       "Send"
                     );
                   },
-                  type: "warning",
                 });
               }}
             >
@@ -155,6 +168,7 @@ export const ManageNotificationForm = ({
               disabled={!notification.sendAt}
               onClick={() => {
                 showWarningModal({
+                  ...confirmationModalProps,
                   title:
                     "Are you sure you would like to cancel the scheduled notification?",
                   content:
@@ -179,6 +193,7 @@ export const ManageNotificationForm = ({
               disabled={notification.startedSendingAt !== null}
               onClick={() => {
                 showWarningModal({
+                  ...confirmationModalProps,
                   title:
                     "Are you sure you would like to delete the notification?",
                   content:
