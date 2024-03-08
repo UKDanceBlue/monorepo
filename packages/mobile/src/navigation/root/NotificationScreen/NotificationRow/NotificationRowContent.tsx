@@ -3,13 +3,16 @@ import {
   NotificationDeliveryFragment,
   NotificationFragment,
 } from "@common/fragments/NotificationScreenGQL";
+import { Logger } from "@common/logger/Logger";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
+import { openURL } from "expo-linking";
 import { isEqual } from "lodash";
 import { DateTime } from "luxon";
 import {
   HStack,
   Heading,
+  Pressable,
   Skeleton,
   Text,
   VStack,
@@ -55,7 +58,20 @@ const NonMemoizedNotificationRowContent = ({
       : DateTime.fromJSDate(deliveryFragmentData.sentAt);
 
   return (
-    <>
+    <Pressable
+      onPress={() =>
+        notificationFragmentData?.url &&
+        openURL(notificationFragmentData.url.toString()).catch(
+          (error: unknown) =>
+            Logger.error("Error opening URL from notification", {
+              error,
+              context: { url: notificationFragmentData.url },
+            })
+        )
+      }
+      disabled={loading || !notificationFragmentData?.url}
+      _pressed={{ opacity: 0.7 }}
+    >
       <HStack alignItems="center" flex={1}>
         <View
           backgroundColor={unread ? "primary.600" : "primary.600"}
@@ -112,7 +128,7 @@ const NonMemoizedNotificationRowContent = ({
           </Skeleton.Text>
         </VStack>
       </HStack>
-    </>
+    </Pressable>
   );
 };
 
