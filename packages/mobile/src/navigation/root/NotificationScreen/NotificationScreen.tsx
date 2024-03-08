@@ -30,9 +30,13 @@ function NotificationScreen() {
   const theme = useTheme();
   const userData = useUserData();
 
-  const { notifications, refreshNotifications, loadMoreNotifications } =
-    useLoadNotifications();
-  const isAnyLoading = notifications == null || isUserDataLoading;
+  const {
+    notifications,
+    refreshNotifications,
+    loadMoreNotifications,
+    loading: notificationsLoading,
+  } = useLoadNotifications();
+  const isAnyLoading = notificationsLoading || isUserDataLoading;
 
   const sections = useMemo(() => {
     const sections: Partial<
@@ -125,10 +129,11 @@ function NotificationScreen() {
             <RefreshControl
               refreshing={isAnyLoading ?? false}
               onRefresh={() => {
-                refreshNotifications();
+                refreshNotifications(true);
               }}
             />
           }
+          refreshing={isAnyLoading ?? false}
           data={notifications}
           sections={sections}
           keyExtractor={(data, i) =>

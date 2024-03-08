@@ -37,11 +37,7 @@ if (isDevelopmentBuild()) {
         Logger.log("Printing AsyncStorage");
         const keys = await AsyncStorage.getAllKeys();
         const values = await AsyncStorage.multiGet(keys);
-        if (console.table) {
-          console.table(values);
-        } else {
-          console.log(values);
-        }
+        console.log(values);
       },
     },
   ]).catch(console.error);
