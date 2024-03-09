@@ -288,6 +288,20 @@ model NotificationDelivery {
   @@map("notification_deliveries")
 }
 
+model Marathon {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique(map: "marathons_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  // Same format as Team.marathonYear
+  year      String   @unique
+  startDate DateTime @map("start_date") @db.Timestamptz(6)
+  endDate   DateTime @map("end_date") @db.Timestamptz(6)
+
+  @@index([uuid], map: "marathons_uuid")
+  @@map("marathons")
+}
+
 // Potential errors after sending a notification to Expo (see https://docs.expo.dev/push-notifications/sending-notifications/#individual-errors)
 enum NotificationError {
   // The device cannot receive push notifications anymore and you should stop sending messages to the corresponding Expo push token.
@@ -338,6 +352,7 @@ enum CommitteeRole {
 enum PointOpportunityType {
   Spirit
   Morale
+  // TODO: Get rid of committee type
   Committee
 
   @@map("enum_point_opportunities_type")
@@ -354,6 +369,7 @@ enum TeamLegacyStatus {
 enum TeamType {
   Spirit
   Morale
+  // TODO: Get rid of committee type
   Committee
 
   @@map("enum_teams_type")
