@@ -92,18 +92,21 @@ model Event {
 }
 
 model Image {
-  id          Int          @id @default(autoincrement())
-  uuid        String       @unique(map: "images_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
-  url         String?      @unique(map: "images_url_unique")
-  imageData   Bytes?       @map("image_data")
-  mimeType    String?      @map("mime_type") @db.VarChar(255)
-  thumbHash   Bytes?       @map("thumb_hash")
-  alt         String?
-  width       Int
-  height      Int
-  eventImages EventImage[]
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique(map: "images_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  url       String?  @unique(map: "images_url_unique")
+  imageData Bytes?   @map("image_data")
+  mimeType  String?  @map("mime_type") @db.VarChar(255)
+  thumbHash Bytes?   @map("thumb_hash")
+  alt       String?
+  width     Int
+  height    Int
+
+  // Things with images
+  eventImages           EventImage[]
+  marathonHourMapImages MarathonHourMapImage[]
 
   @@index([uuid], map: "images_uuid")
   @@map("images")
@@ -289,17 +292,49 @@ model NotificationDelivery {
 }
 
 model Marathon {
-  id        Int      @id @default(autoincrement())
-  uuid      String   @unique(map: "marathons_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id        Int            @id @default(autoincrement())
+  uuid      String         @unique(map: "marathons_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
   // Same format as Team.marathonYear
-  year      String   @unique
-  startDate DateTime @map("start_date") @db.Timestamptz(6)
-  endDate   DateTime @map("end_date") @db.Timestamptz(6)
+  year      String         @unique
+  startDate DateTime       @map("start_date") @db.Timestamptz(6)
+  endDate   DateTime       @map("end_date") @db.Timestamptz(6)
+  hours     MarathonHour[]
 
   @@index([uuid], map: "marathons_uuid")
   @@map("marathons")
+}
+
+model MarathonHour {
+  id              Int                    @id @default(autoincrement())
+  uuid            String                 @unique(map: "marathon_hours_uuid_unique") @default(uuid()) @db.Uuid
+  marathon        Marathon               @relation(fields: [marathonId], references: [id], onDelete: Cascade)
+  marathonId      Int                    @map("marathon_id")
+  maps            MarathonHourMapImage[]
+  title           String
+  details         String?
+  shownStartingAt DateTime               @map("shown_starting_at") @db.Timestamptz(6)
+  durationInfo    String                 @map("duration_info")
+  createdAt       DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([uuid], map: "marathon_hours_uuid")
+  @@map("marathon_hours")
+}
+
+model MarathonHourMapImage {
+  id             Int          @id @default(autoincrement())
+  uuid           String       @unique(map: "marathon_hour_map_images_uuid_unique") @default(uuid()) @db.Uuid
+  marathonHour   MarathonHour @relation(fields: [marathonHourId], references: [id], onDelete: Cascade)
+  marathonHourId Int          @map("marathon_hour_id")
+  image          Image        @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  imageId        Int          @map("image_id")
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([uuid], map: "marathon_hour_map_images_uuid")
+  @@map("marathon_hour_map_images")
 }
 
 // Potential errors after sending a notification to Expo (see https://docs.expo.dev/push-notifications/sending-notifications/#individual-errors)
