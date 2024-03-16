@@ -15,4 +15,28 @@ export class MarathonHourResource extends TimestampedResource {
   shownStartingAt!: Date;
   @Field(() => String)
   durationInfo!: string;
+
+  static init({
+    uuid,
+    title,
+    details,
+    shownStartingAt,
+    durationInfo,
+    createdAt,
+    updatedAt,
+  }: Omit<MarathonHourResource, "getUniqueId">): MarathonHourResource {
+    return this.doInit({
+      uuid,
+      title,
+      details,
+      shownStartingAt,
+      durationInfo,
+      createdAt,
+      updatedAt,
+    });
+  }
+
+  public getUniqueId(): string {
+    return this.uuid;
+  }
 }

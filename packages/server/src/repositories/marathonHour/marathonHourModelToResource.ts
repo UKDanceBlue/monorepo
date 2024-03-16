@@ -6,7 +6,10 @@ export function marathonHourModelToResource(
 ): MarathonHourResource {
   return MarathonHourResource.init({
     uuid: marathonHourModel.uuid,
-    // TODO: Add the rest of the fields
+    title: marathonHourModel.title,
+    details: marathonHourModel.details,
+    durationInfo: marathonHourModel.durationInfo,
+    shownStartingAt: marathonHourModel.shownStartingAt,
     createdAt: marathonHourModel.createdAt,
     updatedAt: marathonHourModel.updatedAt,
   });

@@ -13,4 +13,26 @@ export class MarathonResource extends TimestampedResource {
   startDate!: Date;
   @Field(() => DateTimeResolver)
   endDate!: Date;
+
+  static init({
+    uuid,
+    year,
+    startDate,
+    endDate,
+    createdAt,
+    updatedAt,
+  }: Omit<MarathonResource, "getUniqueId">): MarathonResource {
+    return this.doInit({
+      uuid,
+      year,
+      startDate,
+      endDate,
+      createdAt,
+      updatedAt,
+    });
+  }
+
+  public getUniqueId(): string {
+    return this.uuid;
+  }
 }
