@@ -20,6 +20,7 @@ describe("deviceModelToResource", () => {
 
     const resource = deviceModelToResource(deviceModel);
 
+    expect(resource).toBeInstanceOf(DeviceResource);
     expect(resource).toStrictEqual(
       DeviceResource.init({
         uuid: "uuid",
