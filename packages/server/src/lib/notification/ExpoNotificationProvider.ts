@@ -9,6 +9,7 @@ import { Expo } from "expo-server-sdk";
 import { DateTime } from "luxon";
 import { Service } from "typedi";
 
+import { isDevelopment } from "../../environment.js";
 import { DeviceRepository } from "../../repositories/device/DeviceRepository.js";
 import { NotificationRepository } from "../../repositories/notification/NotificationRepository.js";
 import { NotificationDeliveryRepository } from "../../repositories/notificationDelivery/NotificationDeliveryRepository.js";
@@ -229,6 +230,18 @@ export class ExpoNotificationProvider implements NotificationProvider {
       return "NoAction";
     }
 
+    if (isDevelopment && deliveryRows.length > 10) {
+      await this.notificationRepository.updateNotification(
+        { id: databaseNotification.id },
+        {
+          deliveryIssue:
+            "FAILSAFE TRIGGERED: you are in a development environment and trying to send a notification to more than 10 devices. This is likely a mistake.",
+          sendAt: null,
+        }
+      );
+      return "NoAction";
+    }
+
     // Lifecycle step 5
     let chunks: readonly ExpoPushMessage[][];
     try {
@@ -256,6 +269,8 @@ export class ExpoNotificationProvider implements NotificationProvider {
       logger.error("Error clearing sendAt date on notification", { error });
       return "NoAction";
     }
+
+    // BEGIN DANGER ZONE
 
     let fullSuccess = true;
 
@@ -321,6 +336,8 @@ export class ExpoNotificationProvider implements NotificationProvider {
         fullSuccess = false;
       }
     }
+
+    // END DANGER ZONE
 
     // Lifecycle step 9
     try {
