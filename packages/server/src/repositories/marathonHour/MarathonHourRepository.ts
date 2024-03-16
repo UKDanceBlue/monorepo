@@ -84,6 +84,26 @@ export class MarathonHourRepository {
     });
   }
 
+  countMarathonHours({
+    filters,
+  }: {
+    filters?: readonly MarathonHourFilters[] | undefined | null;
+  }) {
+    const where = buildMarathonHourWhere(filters);
+
+    return this.prisma.marathonHour.count({ where });
+  }
+
+  async getMaps(param: UniqueParam) {
+    const rows = await this.prisma.marathonHour.findUnique({
+      where: param,
+      include: {
+        maps: { orderBy: { imageId: "asc" }, include: { image: true } },
+      },
+    });
+    return rows?.maps.map((map) => map.image);
+  }
+
   createMarathonHour({
     title,
     details,
@@ -92,7 +112,7 @@ export class MarathonHourRepository {
     durationInfo,
   }: {
     title: string;
-    details?: string | undefined;
+    details?: string | null | undefined;
     marathon: UniqueParam;
     shownStartingAt: Date;
     durationInfo: string;
@@ -150,6 +170,50 @@ export class MarathonHourRepository {
   deleteMarathonHour(param: UniqueParam) {
     try {
       return this.prisma.marathonHour.delete({ where: param });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        return null;
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  addMap(param: UniqueParam, image: { id: number } | { uuid: string }) {
+    try {
+      return this.prisma.marathonHour.update({
+        where: param,
+        data: {
+          maps: {
+            connect: image,
+          },
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        return null;
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  removeMap(param: UniqueParam, image: { id: number } | { uuid: string }) {
+    try {
+      return this.prisma.marathonHour.update({
+        where: param,
+        data: {
+          maps: {
+            disconnect: image,
+          },
+        },
+      });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
