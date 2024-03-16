@@ -48,14 +48,29 @@ export type MarathonFilters = FilterItems<
   MarathonStringKey
 >;
 
-type UniqueParam = { id: number } | { uuid: string };
+// type UniqueParam = { id: number } | { uuid: string };
+type UniqueMarathonParam = { id: number } | { uuid: string } | { year: string };
 
 @Service()
 export class MarathonRepository {
   constructor(private prisma: PrismaClient) {}
 
-  findMarathonByUnique(param: UniqueParam) {
+  findMarathonByUnique(param: UniqueMarathonParam) {
     return this.prisma.marathon.findUnique({ where: param });
+  }
+
+  findCurrentMarathon() {
+    return this.prisma.marathon.findFirst({
+      orderBy: { year: "desc" },
+      where: { startDate: { lte: new Date() }, endDate: { gte: new Date() } },
+    });
+  }
+
+  findNextMarathon() {
+    return this.prisma.marathon.findFirst({
+      orderBy: { year: "asc" },
+      where: { startDate: { gte: new Date() } },
+    });
   }
 
   listMarathons({
@@ -83,6 +98,16 @@ export class MarathonRepository {
     });
   }
 
+  countMarathons({
+    filters,
+  }: {
+    filters?: readonly MarathonFilters[] | undefined | null;
+  }) {
+    const where = buildMarathonWhere(filters);
+
+    return this.prisma.marathon.count({ where });
+  }
+
   createMarathon({
     year,
     startDate,
@@ -102,7 +127,7 @@ export class MarathonRepository {
   }
 
   updateMarathon(
-    param: UniqueParam,
+    param: UniqueMarathonParam,
     {
       year,
       startDate,
@@ -134,7 +159,7 @@ export class MarathonRepository {
     }
   }
 
-  deleteMarathon(param: UniqueParam) {
+  deleteMarathon(param: UniqueMarathonParam) {
     try {
       return this.prisma.marathon.delete({ where: param });
     } catch (error) {
