@@ -59,7 +59,7 @@
   "workspaces": [
     "packages/*"
   ],
-  "packageManager": "yarn@3.6.4",
+  "packageManager": "yarn@4.1.1+sha256.f3cc0eda8e5560e529c7147565b30faa43b4e472d90e8634d7134a37c7f59781",
   "resolutions": {
     "@graphql-codegen/client-preset@^4.1.0": "patch:@graphql-codegen/client-preset@npm%3A4.1.0#./.yarn/patches/@graphql-codegen-client-preset-npm-4.1.0-ffbe3e3006.patch",
     "type-graphql@^2.0.0-beta.3": "patch:type-graphql@npm%3A2.0.0-beta.3#./.yarn/patches/type-graphql-npm-2.0.0-beta.3-3be2585c9a.patch",
