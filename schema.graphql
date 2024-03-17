@@ -151,6 +151,19 @@ type CreateImageResponse implements AbstractGraphQLCreatedResponse & AbstractGra
   uuid: String!
 }
 
+input CreateMarathonHourInput {
+  details: String
+  durationInfo: String!
+  shownStartingAt: Date!
+  title: String!
+}
+
+input CreateMarathonInput {
+  endDate: Date!
+  startDate: Date!
+  year: String!
+}
+
 input CreatePersonInput {
   captainOf: [String!]! = []
   email: EmailAddress!
@@ -206,6 +219,16 @@ type CreateTeamResponse implements AbstractGraphQLCreatedResponse & AbstractGrap
   ok: Boolean!
   uuid: String!
 }
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
 
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
@@ -531,6 +554,20 @@ type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
   total: NonNegativeInt!
 }
 
+type ListMarathonsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+  data: [MarathonResource!]!
+  ok: Boolean!
+
+  """The current page number (1-indexed)"""
+  page: PositiveInt!
+
+  """The number of items per page"""
+  pageSize: NonNegativeInt!
+
+  """The total number of items"""
+  total: NonNegativeInt!
+}
+
 type ListNotificationDeliveriesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
   data: [NotificationDeliveryResource!]!
   ok: Boolean!
@@ -627,6 +664,66 @@ scalar LuxonDateRange @specifiedBy(url: "https://www.iso.org/iso-8601-date-and-t
 """Luxon DateTime custom scalar type"""
 scalar LuxonDateTime
 
+type MarathonHourResource {
+  createdAt: DateTimeISO
+  details: String
+  durationInfo: String!
+  mapImages: [ImageResource!]!
+  shownStartingAt: DateTime!
+  title: String!
+  updatedAt: DateTimeISO
+  uuid: ID!
+}
+
+enum MarathonResolverAllKeys {
+  createdAt
+  endDate
+  startDate
+  updatedAt
+  year
+}
+
+enum MarathonResolverDateFilterKeys {
+  createdAt
+  endDate
+  startDate
+  updatedAt
+}
+
+input MarathonResolverKeyedDateFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: MarathonResolverDateFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: LuxonDateTime!
+}
+
+input MarathonResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: MarathonResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+type MarathonResource {
+  createdAt: DateTimeISO
+  endDate: DateTime!
+  hours: [MarathonHourResource!]!
+  startDate: DateTime!
+  updatedAt: DateTimeISO
+  uuid: ID!
+  year: String!
+}
+
 """The position of a member on a team"""
 enum MembershipPositionType {
   Captain
@@ -647,10 +744,13 @@ type Mutation {
   acknowledgeDeliveryIssue(uuid: String!): AcknowledgeDeliveryIssueResponse!
   addExistingImageToEvent(eventId: String!, imageId: String!): AddEventImageResponse!
   addImageToEvent(eventId: String!, input: AddEventImageInput!): AddEventImageResponse!
+  addMap(imageUuid: String!, uuid: String!): MarathonHourResource!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
   createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
   createEvent(input: CreateEventInput!): CreateEventResponse!
   createImage(input: CreateImageInput!): CreateImageResponse!
+  createMarathon(input: CreateMarathonInput!): MarathonResource!
+  createMarathonHour(input: CreateMarathonHourInput!, marathonUuid: String!): MarathonHourResource!
   createPerson(input: CreatePersonInput!): CreatePersonResponse!
   createPointEntry(input: CreatePointEntryInput!): CreatePointEntryResponse!
   createPointOpportunity(input: CreatePointOpportunityInput!): CreatePointOpportunityResponse!
@@ -659,6 +759,8 @@ type Mutation {
   deleteDevice(uuid: String!): DeleteDeviceResponse!
   deleteEvent(uuid: String!): DeleteEventResponse!
   deleteImage(uuid: String!): DeleteImageResponse!
+  deleteMarathon(uuid: String!): Void!
+  deleteMarathonHour(uuid: String!): Void!
   deleteNotification(
     """
     If true, the notification will be deleted even if it has already been sent, which will also delete the delivery records.
@@ -672,11 +774,14 @@ type Mutation {
   deleteTeam(uuid: String!): DeleteTeamResponse!
   registerDevice(input: RegisterDeviceInput!): RegisterDeviceResponse!
   removeImageFromEvent(eventId: String!, imageId: String!): RemoveEventImageResponse!
+  removeMap(imageUuid: String!, uuid: String!): Void!
   scheduleNotification(sendAt: DateTimeISO!, uuid: String!): ScheduleNotificationResponse!
 
   """Send a notification immediately."""
   sendNotification(uuid: String!): SendNotificationResponse!
   setEvent(input: SetEventInput!, uuid: String!): SetEventResponse!
+  setMarathon(input: SetMarathonInput!, uuid: String!): MarathonResource!
+  setMarathonHour(input: SetMarathonHourInput!, uuid: String!): MarathonHourResource!
   setPerson(input: SetPersonInput!, uuid: String!): GetPersonResponse!
   setPointOpportunity(input: SetPointOpportunityInput!, uuid: String!): SinglePointOpportunityResponse!
   setTeam(input: SetTeamInput!, uuid: String!): SingleTeamResponse!
@@ -1065,6 +1170,7 @@ scalar PositiveInt
 type Query {
   activeConfiguration(key: String!): GetConfigurationByUuidResponse!
   allConfigurations: GetAllConfigurationsResponse!
+  currentMarathon: MarathonResource
   device(uuid: String!): GetDeviceByUuidResponse!
   devices(
     """The boolean filters to apply to the query"""
@@ -1198,7 +1304,54 @@ type Query {
     stringFilters: [PersonResolverKeyedStringFilterItem!]
   ): ListPeopleResponse!
   loginState: LoginState!
+  marathon(uuid: String!): MarathonResource!
+  marathonForYear(year: String!): MarathonResource!
+  marathonHour(uuid: String!): MarathonHourResource!
+  marathons(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: [MarathonResolverKeyedDateFilterItem!]
+
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [MarathonResolverKeyedIsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: Void
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: Void
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: Void
+  ): ListMarathonsResponse!
   me: GetPersonResponse!
+  nextMarathon: MarathonResource
   notification(uuid: String!): GetNotificationByUuidResponse!
   notificationDeliveries(
     """The boolean filters to apply to the query"""
@@ -1494,6 +1647,19 @@ input SetEventOccurrenceInput {
 type SetEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: EventResource!
   ok: Boolean!
+}
+
+input SetMarathonHourInput {
+  details: String
+  durationInfo: String!
+  shownStartingAt: Date!
+  title: String!
+}
+
+input SetMarathonInput {
+  endDate: Date!
+  startDate: Date!
+  year: String!
 }
 
 input SetPersonInput {
