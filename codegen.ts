@@ -68,7 +68,6 @@ const codegenConfig: CodegenConfig = {
       presetConfig,
       config: {
         ...config,
-        typesPrefix: "GqlPublic",
       },
       documents: [
         "./packages/mobile/src/**/*.ts",
@@ -80,7 +79,6 @@ const codegenConfig: CodegenConfig = {
       presetConfig,
       config: {
         ...config,
-        typesPrefix: "GqlAdmin",
       },
       documents: [
         "./packages/portal/src/**/*.ts",

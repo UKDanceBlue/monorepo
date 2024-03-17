@@ -42,30 +42,30 @@ export type Scalars = {
   Void: { input: void; output: void; }
 };
 
-export type GqlPublicAbortScheduledNotificationResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type AbortScheduledNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'AbortScheduledNotificationResponse';
   readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
 };
 
 /** API response */
-export type GqlPublicAbstractGraphQlArrayOkResponse = {
+export type AbstractGraphQlArrayOkResponse = {
   readonly ok: Scalars['Boolean']['output'];
 };
 
 /** API response */
-export type GqlPublicAbstractGraphQlCreatedResponse = {
+export type AbstractGraphQlCreatedResponse = {
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
 /** API response */
-export type GqlPublicAbstractGraphQlOkResponse = {
+export type AbstractGraphQlOkResponse = {
   readonly ok: Scalars['Boolean']['output'];
 };
 
 /** API response */
-export type GqlPublicAbstractGraphQlPaginatedResponse = {
+export type AbstractGraphQlPaginatedResponse = {
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -75,13 +75,13 @@ export type GqlPublicAbstractGraphQlPaginatedResponse = {
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type GqlPublicAcknowledgeDeliveryIssueResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type AcknowledgeDeliveryIssueResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'AcknowledgeDeliveryIssueResponse';
   readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicAddEventImageInput = {
+export type AddEventImageInput = {
   readonly alt?: InputMaybe<Scalars['String']['input']>;
   readonly height: Scalars['Int']['input'];
   readonly imageData?: InputMaybe<Scalars['String']['input']>;
@@ -91,13 +91,13 @@ export type GqlPublicAddEventImageInput = {
   readonly width: Scalars['Int']['input'];
 };
 
-export type GqlPublicAddEventImageResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type AddEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'AddEventImageResponse';
-  readonly data: GqlPublicImageResource;
+  readonly data: ImageResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicAuthIdPairResource = {
+export type AuthIdPairResource = {
   readonly __typename?: 'AuthIdPairResource';
   readonly source: AuthSource;
   readonly value: Scalars['String']['output'];
@@ -109,7 +109,7 @@ export { CommitteeIdentifier };
 
 export { CommitteeRole };
 
-export type GqlPublicConfigurationResource = {
+export type ConfigurationResource = {
   readonly __typename?: 'ConfigurationResource';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly key: Scalars['String']['output'];
@@ -120,41 +120,41 @@ export type GqlPublicConfigurationResource = {
   readonly value: Scalars['String']['output'];
 };
 
-export type GqlPublicCreateConfigurationInput = {
+export type CreateConfigurationInput = {
   readonly key: Scalars['String']['input'];
   readonly validAfter?: InputMaybe<Scalars['LuxonDateTime']['input']>;
   readonly validUntil?: InputMaybe<Scalars['LuxonDateTime']['input']>;
   readonly value: Scalars['String']['input'];
 };
 
-export type GqlPublicCreateConfigurationResponse = GqlPublicAbstractGraphQlCreatedResponse & GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type CreateConfigurationResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'CreateConfigurationResponse';
-  readonly data: GqlPublicConfigurationResource;
+  readonly data: ConfigurationResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
-export type GqlPublicCreateEventInput = {
+export type CreateEventInput = {
   readonly description?: InputMaybe<Scalars['String']['input']>;
   readonly location?: InputMaybe<Scalars['String']['input']>;
-  readonly occurrences: ReadonlyArray<GqlPublicCreateEventOccurrenceInput>;
+  readonly occurrences: ReadonlyArray<CreateEventOccurrenceInput>;
   readonly summary?: InputMaybe<Scalars['String']['input']>;
   readonly title: Scalars['String']['input'];
 };
 
-export type GqlPublicCreateEventOccurrenceInput = {
+export type CreateEventOccurrenceInput = {
   readonly fullDay: Scalars['Boolean']['input'];
   readonly interval: Scalars['LuxonDateRange']['input'];
 };
 
-export type GqlPublicCreateEventResponse = GqlPublicAbstractGraphQlCreatedResponse & GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type CreateEventResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'CreateEventResponse';
-  readonly data: GqlPublicEventResource;
+  readonly data: EventResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
-export type GqlPublicCreateImageInput = {
+export type CreateImageInput = {
   readonly alt?: InputMaybe<Scalars['String']['input']>;
   readonly height: Scalars['NonNegativeInt']['input'];
   readonly imageData?: InputMaybe<Scalars['String']['input']>;
@@ -164,30 +164,30 @@ export type GqlPublicCreateImageInput = {
   readonly width: Scalars['NonNegativeInt']['input'];
 };
 
-export type GqlPublicCreateImageResponse = GqlPublicAbstractGraphQlCreatedResponse & GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type CreateImageResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'CreateImageResponse';
-  readonly data: GqlPublicImageResource;
+  readonly data: ImageResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
-export type GqlPublicCreatePersonInput = {
+export type CreatePersonInput = {
   readonly captainOf?: ReadonlyArray<Scalars['String']['input']>;
   readonly email: Scalars['EmailAddress']['input'];
   readonly linkblue?: InputMaybe<Scalars['String']['input']>;
   readonly memberOf?: ReadonlyArray<Scalars['String']['input']>;
   readonly name?: InputMaybe<Scalars['String']['input']>;
-  readonly role?: InputMaybe<GqlPublicRoleResourceInput>;
+  readonly role?: InputMaybe<RoleResourceInput>;
 };
 
-export type GqlPublicCreatePersonResponse = GqlPublicAbstractGraphQlCreatedResponse & GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type CreatePersonResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'CreatePersonResponse';
-  readonly data: GqlPublicPersonResource;
+  readonly data: PersonResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
-export type GqlPublicCreatePointEntryInput = {
+export type CreatePointEntryInput = {
   readonly comment?: InputMaybe<Scalars['String']['input']>;
   readonly opportunityUuid?: InputMaybe<Scalars['String']['input']>;
   readonly personFromUuid?: InputMaybe<Scalars['String']['input']>;
@@ -195,28 +195,28 @@ export type GqlPublicCreatePointEntryInput = {
   readonly teamUuid: Scalars['String']['input'];
 };
 
-export type GqlPublicCreatePointEntryResponse = GqlPublicAbstractGraphQlCreatedResponse & GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type CreatePointEntryResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'CreatePointEntryResponse';
-  readonly data: GqlPublicPointEntryResource;
+  readonly data: PointEntryResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
-export type GqlPublicCreatePointOpportunityInput = {
+export type CreatePointOpportunityInput = {
   readonly eventUuid?: InputMaybe<Scalars['ID']['input']>;
   readonly name: Scalars['String']['input'];
   readonly opportunityDate?: InputMaybe<Scalars['LuxonDateTime']['input']>;
   readonly type: TeamType;
 };
 
-export type GqlPublicCreatePointOpportunityResponse = GqlPublicAbstractGraphQlCreatedResponse & GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type CreatePointOpportunityResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'CreatePointOpportunityResponse';
-  readonly data: GqlPublicPointOpportunityResource;
+  readonly data: PointOpportunityResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
-export type GqlPublicCreateTeamInput = {
+export type CreateTeamInput = {
   readonly legacyStatus: TeamLegacyStatus;
   readonly marathonYear: Scalars['String']['input'];
   readonly name: Scalars['String']['input'];
@@ -224,94 +224,94 @@ export type GqlPublicCreateTeamInput = {
   readonly type: TeamType;
 };
 
-export type GqlPublicCreateTeamResponse = GqlPublicAbstractGraphQlCreatedResponse & GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type CreateTeamResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'CreateTeamResponse';
-  readonly data: GqlPublicTeamResource;
+  readonly data: TeamResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
 export { DbRole };
 
-export type GqlPublicDeleteConfigurationResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type DeleteConfigurationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeleteConfigurationResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicDeleteDeviceResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type DeleteDeviceResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeleteDeviceResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicDeleteEventResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type DeleteEventResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeleteEventResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicDeleteImageResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type DeleteImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeleteImageResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicDeleteNotificationResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type DeleteNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeleteNotificationResponse';
   readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicDeletePersonResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type DeletePersonResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeletePersonResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicDeletePointEntryResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type DeletePointEntryResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeletePointEntryResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicDeletePointOpportunityResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type DeletePointOpportunityResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeletePointOpportunityResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicDeleteTeamResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type DeleteTeamResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'DeleteTeamResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export const GqlPublicDeviceResolverAllKeys = {
+export const DeviceResolverAllKeys = {
   CreatedAt: 'createdAt',
   ExpoPushToken: 'expoPushToken',
   LastSeen: 'lastSeen',
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type GqlPublicDeviceResolverAllKeys = typeof GqlPublicDeviceResolverAllKeys[keyof typeof GqlPublicDeviceResolverAllKeys];
-export const GqlPublicDeviceResolverDateFilterKeys = {
+export type DeviceResolverAllKeys = typeof DeviceResolverAllKeys[keyof typeof DeviceResolverAllKeys];
+export const DeviceResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
   LastSeen: 'lastSeen',
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type GqlPublicDeviceResolverDateFilterKeys = typeof GqlPublicDeviceResolverDateFilterKeys[keyof typeof GqlPublicDeviceResolverDateFilterKeys];
-export type GqlPublicDeviceResolverKeyedDateFilterItem = {
+export type DeviceResolverDateFilterKeys = typeof DeviceResolverDateFilterKeys[keyof typeof DeviceResolverDateFilterKeys];
+export type DeviceResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
-  readonly field: GqlPublicDeviceResolverDateFilterKeys;
+  readonly field: DeviceResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['LuxonDateTime']['input'];
 };
 
-export type GqlPublicDeviceResolverKeyedIsNullFilterItem = {
+export type DeviceResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: GqlPublicDeviceResolverAllKeys;
+  readonly field: DeviceResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type GqlPublicDeviceResolverKeyedOneOfFilterItem = {
+export type DeviceResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
   readonly field: Scalars['Void']['input'];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
@@ -319,47 +319,47 @@ export type GqlPublicDeviceResolverKeyedOneOfFilterItem = {
   readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
-export type GqlPublicDeviceResolverKeyedStringFilterItem = {
+export type DeviceResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
-  readonly field: GqlPublicDeviceResolverStringFilterKeys;
+  readonly field: DeviceResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['String']['input'];
 };
 
-export const GqlPublicDeviceResolverStringFilterKeys = {
+export const DeviceResolverStringFilterKeys = {
   ExpoPushToken: 'expoPushToken'
 } as const;
 
-export type GqlPublicDeviceResolverStringFilterKeys = typeof GqlPublicDeviceResolverStringFilterKeys[keyof typeof GqlPublicDeviceResolverStringFilterKeys];
-export type GqlPublicDeviceResource = {
+export type DeviceResolverStringFilterKeys = typeof DeviceResolverStringFilterKeys[keyof typeof DeviceResolverStringFilterKeys];
+export type DeviceResource = {
   readonly __typename?: 'DeviceResource';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly expoPushToken?: Maybe<Scalars['String']['output']>;
-  readonly lastLoggedInUser?: Maybe<GqlPublicPersonResource>;
+  readonly lastLoggedInUser?: Maybe<PersonResource>;
   readonly lastLogin?: Maybe<Scalars['LuxonDateTime']['output']>;
-  readonly notificationDeliveries: ReadonlyArray<GqlPublicNotificationDeliveryResource>;
+  readonly notificationDeliveries: ReadonlyArray<NotificationDeliveryResource>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
 
 
-export type GqlPublicDeviceResourceNotificationDeliveriesArgs = {
+export type DeviceResourceNotificationDeliveriesArgs = {
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   verifier?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type GqlPublicEventOccurrenceResource = {
+export type EventOccurrenceResource = {
   readonly __typename?: 'EventOccurrenceResource';
   readonly fullDay: Scalars['Boolean']['output'];
   readonly interval: Scalars['LuxonDateRange']['output'];
   readonly uuid: Scalars['ID']['output'];
 };
 
-export const GqlPublicEventResolverAllKeys = {
+export const EventResolverAllKeys = {
   CreatedAt: 'createdAt',
   Description: 'description',
   Location: 'location',
@@ -371,8 +371,8 @@ export const GqlPublicEventResolverAllKeys = {
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type GqlPublicEventResolverAllKeys = typeof GqlPublicEventResolverAllKeys[keyof typeof GqlPublicEventResolverAllKeys];
-export const GqlPublicEventResolverDateFilterKeys = {
+export type EventResolverAllKeys = typeof EventResolverAllKeys[keyof typeof EventResolverAllKeys];
+export const EventResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
   Occurrence: 'occurrence',
   OccurrenceEnd: 'occurrenceEnd',
@@ -380,25 +380,25 @@ export const GqlPublicEventResolverDateFilterKeys = {
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type GqlPublicEventResolverDateFilterKeys = typeof GqlPublicEventResolverDateFilterKeys[keyof typeof GqlPublicEventResolverDateFilterKeys];
-export type GqlPublicEventResolverKeyedDateFilterItem = {
+export type EventResolverDateFilterKeys = typeof EventResolverDateFilterKeys[keyof typeof EventResolverDateFilterKeys];
+export type EventResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
-  readonly field: GqlPublicEventResolverDateFilterKeys;
+  readonly field: EventResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['LuxonDateTime']['input'];
 };
 
-export type GqlPublicEventResolverKeyedIsNullFilterItem = {
+export type EventResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: GqlPublicEventResolverAllKeys;
+  readonly field: EventResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type GqlPublicEventResolverKeyedOneOfFilterItem = {
+export type EventResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
   readonly field: Scalars['Void']['input'];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
@@ -406,97 +406,97 @@ export type GqlPublicEventResolverKeyedOneOfFilterItem = {
   readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
-export type GqlPublicEventResolverKeyedStringFilterItem = {
+export type EventResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
-  readonly field: GqlPublicEventResolverStringFilterKeys;
+  readonly field: EventResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['String']['input'];
 };
 
-export const GqlPublicEventResolverStringFilterKeys = {
+export const EventResolverStringFilterKeys = {
   Description: 'description',
   Location: 'location',
   Summary: 'summary',
   Title: 'title'
 } as const;
 
-export type GqlPublicEventResolverStringFilterKeys = typeof GqlPublicEventResolverStringFilterKeys[keyof typeof GqlPublicEventResolverStringFilterKeys];
-export type GqlPublicEventResource = {
+export type EventResolverStringFilterKeys = typeof EventResolverStringFilterKeys[keyof typeof EventResolverStringFilterKeys];
+export type EventResource = {
   readonly __typename?: 'EventResource';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly description?: Maybe<Scalars['String']['output']>;
-  readonly images: ReadonlyArray<GqlPublicImageResource>;
+  readonly images: ReadonlyArray<ImageResource>;
   readonly location?: Maybe<Scalars['String']['output']>;
-  readonly occurrences: ReadonlyArray<GqlPublicEventOccurrenceResource>;
+  readonly occurrences: ReadonlyArray<EventOccurrenceResource>;
   readonly summary?: Maybe<Scalars['String']['output']>;
   readonly title: Scalars['String']['output'];
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
 
-export type GqlPublicGetAllConfigurationsResponse = GqlPublicAbstractGraphQlArrayOkResponse & GqlPublicGraphQlBaseResponse & {
+export type GetAllConfigurationsResponse = AbstractGraphQlArrayOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetAllConfigurationsResponse';
-  readonly data: ReadonlyArray<GqlPublicConfigurationResource>;
+  readonly data: ReadonlyArray<ConfigurationResource>;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicGetConfigurationByUuidResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type GetConfigurationByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetConfigurationByUuidResponse';
-  readonly data: GqlPublicConfigurationResource;
+  readonly data: ConfigurationResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicGetDeviceByUuidResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type GetDeviceByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetDeviceByUuidResponse';
-  readonly data: GqlPublicDeviceResource;
+  readonly data: DeviceResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicGetEventByUuidResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type GetEventByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetEventByUuidResponse';
-  readonly data: GqlPublicEventResource;
+  readonly data: EventResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicGetImageByUuidResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type GetImageByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetImageByUuidResponse';
-  readonly data: GqlPublicImageResource;
+  readonly data: ImageResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicGetNotificationByUuidResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type GetNotificationByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetNotificationByUuidResponse';
-  readonly data: GqlPublicNotificationResource;
+  readonly data: NotificationResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicGetPeopleResponse = GqlPublicAbstractGraphQlArrayOkResponse & GqlPublicGraphQlBaseResponse & {
+export type GetPeopleResponse = AbstractGraphQlArrayOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetPeopleResponse';
-  readonly data: ReadonlyArray<GqlPublicPersonResource>;
+  readonly data: ReadonlyArray<PersonResource>;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicGetPersonResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type GetPersonResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetPersonResponse';
-  readonly data?: Maybe<GqlPublicPersonResource>;
+  readonly data?: Maybe<PersonResource>;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicGetPointEntryByUuidResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type GetPointEntryByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetPointEntryByUuidResponse';
-  readonly data: GqlPublicPointEntryResource;
+  readonly data: PointEntryResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
 /** API response */
-export type GqlPublicGraphQlBaseResponse = {
+export type GraphQlBaseResponse = {
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicImageResource = {
+export type ImageResource = {
   readonly __typename?: 'ImageResource';
   readonly alt?: Maybe<Scalars['String']['output']>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -510,9 +510,9 @@ export type GqlPublicImageResource = {
   readonly width: Scalars['Int']['output'];
 };
 
-export type GqlPublicListDevicesResponse = GqlPublicAbstractGraphQlArrayOkResponse & GqlPublicAbstractGraphQlPaginatedResponse & GqlPublicGraphQlBaseResponse & {
+export type ListDevicesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListDevicesResponse';
-  readonly data: ReadonlyArray<GqlPublicDeviceResource>;
+  readonly data: ReadonlyArray<DeviceResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -522,9 +522,9 @@ export type GqlPublicListDevicesResponse = GqlPublicAbstractGraphQlArrayOkRespon
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type GqlPublicListEventsResponse = GqlPublicAbstractGraphQlArrayOkResponse & GqlPublicAbstractGraphQlPaginatedResponse & GqlPublicGraphQlBaseResponse & {
+export type ListEventsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListEventsResponse';
-  readonly data: ReadonlyArray<GqlPublicEventResource>;
+  readonly data: ReadonlyArray<EventResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -534,9 +534,9 @@ export type GqlPublicListEventsResponse = GqlPublicAbstractGraphQlArrayOkRespons
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type GqlPublicListNotificationDeliveriesResponse = GqlPublicAbstractGraphQlArrayOkResponse & GqlPublicAbstractGraphQlPaginatedResponse & GqlPublicGraphQlBaseResponse & {
+export type ListNotificationDeliveriesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListNotificationDeliveriesResponse';
-  readonly data: ReadonlyArray<GqlPublicNotificationDeliveryResource>;
+  readonly data: ReadonlyArray<NotificationDeliveryResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -546,9 +546,9 @@ export type GqlPublicListNotificationDeliveriesResponse = GqlPublicAbstractGraph
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type GqlPublicListNotificationsResponse = GqlPublicAbstractGraphQlArrayOkResponse & GqlPublicAbstractGraphQlPaginatedResponse & GqlPublicGraphQlBaseResponse & {
+export type ListNotificationsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListNotificationsResponse';
-  readonly data: ReadonlyArray<GqlPublicNotificationResource>;
+  readonly data: ReadonlyArray<NotificationResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -558,9 +558,9 @@ export type GqlPublicListNotificationsResponse = GqlPublicAbstractGraphQlArrayOk
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type GqlPublicListPeopleResponse = GqlPublicAbstractGraphQlArrayOkResponse & GqlPublicAbstractGraphQlPaginatedResponse & GqlPublicGraphQlBaseResponse & {
+export type ListPeopleResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListPeopleResponse';
-  readonly data: ReadonlyArray<GqlPublicPersonResource>;
+  readonly data: ReadonlyArray<PersonResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -570,9 +570,9 @@ export type GqlPublicListPeopleResponse = GqlPublicAbstractGraphQlArrayOkRespons
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type GqlPublicListPointEntriesResponse = GqlPublicAbstractGraphQlArrayOkResponse & GqlPublicAbstractGraphQlPaginatedResponse & GqlPublicGraphQlBaseResponse & {
+export type ListPointEntriesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListPointEntriesResponse';
-  readonly data: ReadonlyArray<GqlPublicPointEntryResource>;
+  readonly data: ReadonlyArray<PointEntryResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -582,9 +582,9 @@ export type GqlPublicListPointEntriesResponse = GqlPublicAbstractGraphQlArrayOkR
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type GqlPublicListPointOpportunitiesResponse = GqlPublicAbstractGraphQlArrayOkResponse & GqlPublicAbstractGraphQlPaginatedResponse & GqlPublicGraphQlBaseResponse & {
+export type ListPointOpportunitiesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListPointOpportunitiesResponse';
-  readonly data: ReadonlyArray<GqlPublicPointOpportunityResource>;
+  readonly data: ReadonlyArray<PointOpportunityResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -594,9 +594,9 @@ export type GqlPublicListPointOpportunitiesResponse = GqlPublicAbstractGraphQlAr
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type GqlPublicListTeamsResponse = GqlPublicAbstractGraphQlArrayOkResponse & GqlPublicAbstractGraphQlPaginatedResponse & GqlPublicGraphQlBaseResponse & {
+export type ListTeamsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListTeamsResponse';
-  readonly data: ReadonlyArray<GqlPublicTeamResource>;
+  readonly data: ReadonlyArray<TeamResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -606,228 +606,228 @@ export type GqlPublicListTeamsResponse = GqlPublicAbstractGraphQlArrayOkResponse
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type GqlPublicLoginState = {
+export type LoginState = {
   readonly __typename?: 'LoginState';
   readonly authSource: AuthSource;
   readonly loggedIn: Scalars['Boolean']['output'];
-  readonly role: GqlPublicRoleResource;
+  readonly role: RoleResource;
 };
 
 export { MembershipPositionType };
 
-export type GqlPublicMembershipResource = {
+export type MembershipResource = {
   readonly __typename?: 'MembershipResource';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  readonly person: GqlPublicPersonResource;
+  readonly person: PersonResource;
   readonly position: MembershipPositionType;
-  readonly team: GqlPublicTeamResource;
+  readonly team: TeamResource;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
 
-export type GqlPublicMutation = {
+export type Mutation = {
   readonly __typename?: 'Mutation';
-  readonly abortScheduledNotification: GqlPublicAbortScheduledNotificationResponse;
-  readonly acknowledgeDeliveryIssue: GqlPublicAcknowledgeDeliveryIssueResponse;
-  readonly addExistingImageToEvent: GqlPublicAddEventImageResponse;
-  readonly addImageToEvent: GqlPublicAddEventImageResponse;
-  readonly createConfiguration: GqlPublicCreateConfigurationResponse;
-  readonly createConfigurations: GqlPublicCreateConfigurationResponse;
-  readonly createEvent: GqlPublicCreateEventResponse;
-  readonly createImage: GqlPublicCreateImageResponse;
-  readonly createPerson: GqlPublicCreatePersonResponse;
-  readonly createPointEntry: GqlPublicCreatePointEntryResponse;
-  readonly createPointOpportunity: GqlPublicCreatePointOpportunityResponse;
-  readonly createTeam: GqlPublicCreateTeamResponse;
-  readonly deleteConfiguration: GqlPublicDeleteConfigurationResponse;
-  readonly deleteDevice: GqlPublicDeleteDeviceResponse;
-  readonly deleteEvent: GqlPublicDeleteEventResponse;
-  readonly deleteImage: GqlPublicDeleteImageResponse;
-  readonly deleteNotification: GqlPublicDeleteNotificationResponse;
-  readonly deletePerson: GqlPublicDeletePersonResponse;
-  readonly deletePointEntry: GqlPublicDeletePointEntryResponse;
-  readonly deletePointOpportunity: GqlPublicDeletePointOpportunityResponse;
-  readonly deleteTeam: GqlPublicDeleteTeamResponse;
-  readonly registerDevice: GqlPublicRegisterDeviceResponse;
-  readonly removeImageFromEvent: GqlPublicRemoveEventImageResponse;
-  readonly scheduleNotification: GqlPublicScheduleNotificationResponse;
+  readonly abortScheduledNotification: AbortScheduledNotificationResponse;
+  readonly acknowledgeDeliveryIssue: AcknowledgeDeliveryIssueResponse;
+  readonly addExistingImageToEvent: AddEventImageResponse;
+  readonly addImageToEvent: AddEventImageResponse;
+  readonly createConfiguration: CreateConfigurationResponse;
+  readonly createConfigurations: CreateConfigurationResponse;
+  readonly createEvent: CreateEventResponse;
+  readonly createImage: CreateImageResponse;
+  readonly createPerson: CreatePersonResponse;
+  readonly createPointEntry: CreatePointEntryResponse;
+  readonly createPointOpportunity: CreatePointOpportunityResponse;
+  readonly createTeam: CreateTeamResponse;
+  readonly deleteConfiguration: DeleteConfigurationResponse;
+  readonly deleteDevice: DeleteDeviceResponse;
+  readonly deleteEvent: DeleteEventResponse;
+  readonly deleteImage: DeleteImageResponse;
+  readonly deleteNotification: DeleteNotificationResponse;
+  readonly deletePerson: DeletePersonResponse;
+  readonly deletePointEntry: DeletePointEntryResponse;
+  readonly deletePointOpportunity: DeletePointOpportunityResponse;
+  readonly deleteTeam: DeleteTeamResponse;
+  readonly registerDevice: RegisterDeviceResponse;
+  readonly removeImageFromEvent: RemoveEventImageResponse;
+  readonly scheduleNotification: ScheduleNotificationResponse;
   /** Send a notification immediately. */
-  readonly sendNotification: GqlPublicSendNotificationResponse;
-  readonly setEvent: GqlPublicSetEventResponse;
-  readonly setPerson: GqlPublicGetPersonResponse;
-  readonly setPointOpportunity: GqlPublicSinglePointOpportunityResponse;
-  readonly setTeam: GqlPublicSingleTeamResponse;
-  readonly stageNotification: GqlPublicStageNotificationResponse;
+  readonly sendNotification: SendNotificationResponse;
+  readonly setEvent: SetEventResponse;
+  readonly setPerson: GetPersonResponse;
+  readonly setPointOpportunity: SinglePointOpportunityResponse;
+  readonly setTeam: SingleTeamResponse;
+  readonly stageNotification: StageNotificationResponse;
 };
 
 
-export type GqlPublicMutationAbortScheduledNotificationArgs = {
+export type MutationAbortScheduledNotificationArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationAcknowledgeDeliveryIssueArgs = {
+export type MutationAcknowledgeDeliveryIssueArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationAddExistingImageToEventArgs = {
+export type MutationAddExistingImageToEventArgs = {
   eventId: Scalars['String']['input'];
   imageId: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationAddImageToEventArgs = {
+export type MutationAddImageToEventArgs = {
   eventId: Scalars['String']['input'];
-  input: GqlPublicAddEventImageInput;
+  input: AddEventImageInput;
 };
 
 
-export type GqlPublicMutationCreateConfigurationArgs = {
-  input: GqlPublicCreateConfigurationInput;
+export type MutationCreateConfigurationArgs = {
+  input: CreateConfigurationInput;
 };
 
 
-export type GqlPublicMutationCreateConfigurationsArgs = {
-  input: ReadonlyArray<GqlPublicCreateConfigurationInput>;
+export type MutationCreateConfigurationsArgs = {
+  input: ReadonlyArray<CreateConfigurationInput>;
 };
 
 
-export type GqlPublicMutationCreateEventArgs = {
-  input: GqlPublicCreateEventInput;
+export type MutationCreateEventArgs = {
+  input: CreateEventInput;
 };
 
 
-export type GqlPublicMutationCreateImageArgs = {
-  input: GqlPublicCreateImageInput;
+export type MutationCreateImageArgs = {
+  input: CreateImageInput;
 };
 
 
-export type GqlPublicMutationCreatePersonArgs = {
-  input: GqlPublicCreatePersonInput;
+export type MutationCreatePersonArgs = {
+  input: CreatePersonInput;
 };
 
 
-export type GqlPublicMutationCreatePointEntryArgs = {
-  input: GqlPublicCreatePointEntryInput;
+export type MutationCreatePointEntryArgs = {
+  input: CreatePointEntryInput;
 };
 
 
-export type GqlPublicMutationCreatePointOpportunityArgs = {
-  input: GqlPublicCreatePointOpportunityInput;
+export type MutationCreatePointOpportunityArgs = {
+  input: CreatePointOpportunityInput;
 };
 
 
-export type GqlPublicMutationCreateTeamArgs = {
-  input: GqlPublicCreateTeamInput;
+export type MutationCreateTeamArgs = {
+  input: CreateTeamInput;
 };
 
 
-export type GqlPublicMutationDeleteConfigurationArgs = {
+export type MutationDeleteConfigurationArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationDeleteDeviceArgs = {
+export type MutationDeleteDeviceArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationDeleteEventArgs = {
+export type MutationDeleteEventArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationDeleteImageArgs = {
+export type MutationDeleteImageArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationDeleteNotificationArgs = {
+export type MutationDeleteNotificationArgs = {
   force?: InputMaybe<Scalars['Boolean']['input']>;
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationDeletePersonArgs = {
+export type MutationDeletePersonArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationDeletePointEntryArgs = {
+export type MutationDeletePointEntryArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationDeletePointOpportunityArgs = {
+export type MutationDeletePointOpportunityArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationDeleteTeamArgs = {
+export type MutationDeleteTeamArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationRegisterDeviceArgs = {
-  input: GqlPublicRegisterDeviceInput;
+export type MutationRegisterDeviceArgs = {
+  input: RegisterDeviceInput;
 };
 
 
-export type GqlPublicMutationRemoveImageFromEventArgs = {
+export type MutationRemoveImageFromEventArgs = {
   eventId: Scalars['String']['input'];
   imageId: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationScheduleNotificationArgs = {
+export type MutationScheduleNotificationArgs = {
   sendAt: Scalars['DateTimeISO']['input'];
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationSendNotificationArgs = {
+export type MutationSendNotificationArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationSetEventArgs = {
-  input: GqlPublicSetEventInput;
+export type MutationSetEventArgs = {
+  input: SetEventInput;
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationSetPersonArgs = {
-  input: GqlPublicSetPersonInput;
+export type MutationSetPersonArgs = {
+  input: SetPersonInput;
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationSetPointOpportunityArgs = {
-  input: GqlPublicSetPointOpportunityInput;
+export type MutationSetPointOpportunityArgs = {
+  input: SetPointOpportunityInput;
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationSetTeamArgs = {
-  input: GqlPublicSetTeamInput;
+export type MutationSetTeamArgs = {
+  input: SetTeamInput;
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicMutationStageNotificationArgs = {
-  audience: GqlPublicNotificationAudienceInput;
+export type MutationStageNotificationArgs = {
+  audience: NotificationAudienceInput;
   body: Scalars['String']['input'];
   title: Scalars['String']['input'];
   url?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type GqlPublicNotificationAudienceInput = {
+export type NotificationAudienceInput = {
   readonly all?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** The number of delivery issues for a notification, broken down by type. */
-export type GqlPublicNotificationDeliveryIssueCount = {
+export type NotificationDeliveryIssueCount = {
   readonly __typename?: 'NotificationDeliveryIssueCount';
   readonly DeviceNotRegistered: Scalars['Int']['output'];
   readonly InvalidCredentials: Scalars['Int']['output'];
@@ -837,7 +837,7 @@ export type GqlPublicNotificationDeliveryIssueCount = {
   readonly Unknown: Scalars['Int']['output'];
 };
 
-export const GqlPublicNotificationDeliveryResolverAllKeys = {
+export const NotificationDeliveryResolverAllKeys = {
   CreatedAt: 'createdAt',
   DeliveryError: 'deliveryError',
   ReceiptCheckedAt: 'receiptCheckedAt',
@@ -845,40 +845,40 @@ export const GqlPublicNotificationDeliveryResolverAllKeys = {
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type GqlPublicNotificationDeliveryResolverAllKeys = typeof GqlPublicNotificationDeliveryResolverAllKeys[keyof typeof GqlPublicNotificationDeliveryResolverAllKeys];
-export const GqlPublicNotificationDeliveryResolverDateFilterKeys = {
+export type NotificationDeliveryResolverAllKeys = typeof NotificationDeliveryResolverAllKeys[keyof typeof NotificationDeliveryResolverAllKeys];
+export const NotificationDeliveryResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
   ReceiptCheckedAt: 'receiptCheckedAt',
   SentAt: 'sentAt',
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type GqlPublicNotificationDeliveryResolverDateFilterKeys = typeof GqlPublicNotificationDeliveryResolverDateFilterKeys[keyof typeof GqlPublicNotificationDeliveryResolverDateFilterKeys];
-export type GqlPublicNotificationDeliveryResolverKeyedDateFilterItem = {
+export type NotificationDeliveryResolverDateFilterKeys = typeof NotificationDeliveryResolverDateFilterKeys[keyof typeof NotificationDeliveryResolverDateFilterKeys];
+export type NotificationDeliveryResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
-  readonly field: GqlPublicNotificationDeliveryResolverDateFilterKeys;
+  readonly field: NotificationDeliveryResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['LuxonDateTime']['input'];
 };
 
-export type GqlPublicNotificationDeliveryResolverKeyedIsNullFilterItem = {
+export type NotificationDeliveryResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: GqlPublicNotificationDeliveryResolverAllKeys;
+  readonly field: NotificationDeliveryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type GqlPublicNotificationDeliveryResource = {
+export type NotificationDeliveryResource = {
   readonly __typename?: 'NotificationDeliveryResource';
   /** A unique identifier corresponding the group of notifications this was sent to Expo with. */
   readonly chunkUuid?: Maybe<Scalars['String']['output']>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   /** Any error message returned by Expo when sending the notification. */
   readonly deliveryError?: Maybe<Scalars['String']['output']>;
-  readonly notification: GqlPublicNotificationResource;
+  readonly notification: NotificationResource;
   /** The time the server received a delivery receipt from the user. */
   readonly receiptCheckedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   /** The time the server sent the notification to Expo for delivery. */
@@ -887,7 +887,7 @@ export type GqlPublicNotificationDeliveryResource = {
   readonly uuid: Scalars['ID']['output'];
 };
 
-export const GqlPublicNotificationResolverAllKeys = {
+export const NotificationResolverAllKeys = {
   Body: 'body',
   CreatedAt: 'createdAt',
   DeliveryIssue: 'deliveryIssue',
@@ -897,69 +897,69 @@ export const GqlPublicNotificationResolverAllKeys = {
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type GqlPublicNotificationResolverAllKeys = typeof GqlPublicNotificationResolverAllKeys[keyof typeof GqlPublicNotificationResolverAllKeys];
-export const GqlPublicNotificationResolverDateFilterKeys = {
+export type NotificationResolverAllKeys = typeof NotificationResolverAllKeys[keyof typeof NotificationResolverAllKeys];
+export const NotificationResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
   SendAt: 'sendAt',
   StartedSendingAt: 'startedSendingAt',
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type GqlPublicNotificationResolverDateFilterKeys = typeof GqlPublicNotificationResolverDateFilterKeys[keyof typeof GqlPublicNotificationResolverDateFilterKeys];
-export type GqlPublicNotificationResolverKeyedDateFilterItem = {
+export type NotificationResolverDateFilterKeys = typeof NotificationResolverDateFilterKeys[keyof typeof NotificationResolverDateFilterKeys];
+export type NotificationResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
-  readonly field: GqlPublicNotificationResolverDateFilterKeys;
+  readonly field: NotificationResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['LuxonDateTime']['input'];
 };
 
-export type GqlPublicNotificationResolverKeyedIsNullFilterItem = {
+export type NotificationResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: GqlPublicNotificationResolverAllKeys;
+  readonly field: NotificationResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type GqlPublicNotificationResolverKeyedOneOfFilterItem = {
+export type NotificationResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: GqlPublicNotificationResolverOneOfFilterKeys;
+  readonly field: NotificationResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
-export type GqlPublicNotificationResolverKeyedStringFilterItem = {
+export type NotificationResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
-  readonly field: GqlPublicNotificationResolverStringFilterKeys;
+  readonly field: NotificationResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['String']['input'];
 };
 
-export const GqlPublicNotificationResolverOneOfFilterKeys = {
+export const NotificationResolverOneOfFilterKeys = {
   DeliveryIssue: 'deliveryIssue'
 } as const;
 
-export type GqlPublicNotificationResolverOneOfFilterKeys = typeof GqlPublicNotificationResolverOneOfFilterKeys[keyof typeof GqlPublicNotificationResolverOneOfFilterKeys];
-export const GqlPublicNotificationResolverStringFilterKeys = {
+export type NotificationResolverOneOfFilterKeys = typeof NotificationResolverOneOfFilterKeys[keyof typeof NotificationResolverOneOfFilterKeys];
+export const NotificationResolverStringFilterKeys = {
   Body: 'body',
   Title: 'title'
 } as const;
 
-export type GqlPublicNotificationResolverStringFilterKeys = typeof GqlPublicNotificationResolverStringFilterKeys[keyof typeof GqlPublicNotificationResolverStringFilterKeys];
-export type GqlPublicNotificationResource = {
+export type NotificationResolverStringFilterKeys = typeof NotificationResolverStringFilterKeys[keyof typeof NotificationResolverStringFilterKeys];
+export type NotificationResource = {
   readonly __typename?: 'NotificationResource';
   readonly body: Scalars['String']['output'];
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly deliveryCount: Scalars['Int']['output'];
   readonly deliveryIssue?: Maybe<Scalars['String']['output']>;
   readonly deliveryIssueAcknowledgedAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  readonly deliveryIssueCount: GqlPublicNotificationDeliveryIssueCount;
+  readonly deliveryIssueCount: NotificationDeliveryIssueCount;
   /** The time the notification is scheduled to be sent, if null it is either already sent or unscheduled. */
   readonly sendAt?: Maybe<Scalars['DateTimeISO']['output']>;
   /** The time the server started sending the notification. */
@@ -972,7 +972,7 @@ export type GqlPublicNotificationResource = {
 
 export { NumericComparator };
 
-export const GqlPublicPersonResolverAllKeys = {
+export const PersonResolverAllKeys = {
   CommitteeName: 'committeeName',
   CommitteeRole: 'committeeRole',
   DbRole: 'dbRole',
@@ -981,104 +981,104 @@ export const GqlPublicPersonResolverAllKeys = {
   Name: 'name'
 } as const;
 
-export type GqlPublicPersonResolverAllKeys = typeof GqlPublicPersonResolverAllKeys[keyof typeof GqlPublicPersonResolverAllKeys];
-export type GqlPublicPersonResolverKeyedIsNullFilterItem = {
+export type PersonResolverAllKeys = typeof PersonResolverAllKeys[keyof typeof PersonResolverAllKeys];
+export type PersonResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: GqlPublicPersonResolverAllKeys;
+  readonly field: PersonResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type GqlPublicPersonResolverKeyedOneOfFilterItem = {
+export type PersonResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: GqlPublicPersonResolverOneOfFilterKeys;
+  readonly field: PersonResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
-export type GqlPublicPersonResolverKeyedStringFilterItem = {
+export type PersonResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
-  readonly field: GqlPublicPersonResolverStringFilterKeys;
+  readonly field: PersonResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['String']['input'];
 };
 
-export const GqlPublicPersonResolverOneOfFilterKeys = {
+export const PersonResolverOneOfFilterKeys = {
   CommitteeName: 'committeeName',
   CommitteeRole: 'committeeRole',
   DbRole: 'dbRole'
 } as const;
 
-export type GqlPublicPersonResolverOneOfFilterKeys = typeof GqlPublicPersonResolverOneOfFilterKeys[keyof typeof GqlPublicPersonResolverOneOfFilterKeys];
-export const GqlPublicPersonResolverStringFilterKeys = {
+export type PersonResolverOneOfFilterKeys = typeof PersonResolverOneOfFilterKeys[keyof typeof PersonResolverOneOfFilterKeys];
+export const PersonResolverStringFilterKeys = {
   Email: 'email',
   Linkblue: 'linkblue',
   Name: 'name'
 } as const;
 
-export type GqlPublicPersonResolverStringFilterKeys = typeof GqlPublicPersonResolverStringFilterKeys[keyof typeof GqlPublicPersonResolverStringFilterKeys];
-export type GqlPublicPersonResource = {
+export type PersonResolverStringFilterKeys = typeof PersonResolverStringFilterKeys[keyof typeof PersonResolverStringFilterKeys];
+export type PersonResource = {
   readonly __typename?: 'PersonResource';
   /** @deprecated This is now provided on the AuthIdPair resource. */
-  readonly authIds: ReadonlyArray<GqlPublicAuthIdPairResource>;
+  readonly authIds: ReadonlyArray<AuthIdPairResource>;
   /** @deprecated Use teams instead and filter by position */
-  readonly captaincies: ReadonlyArray<GqlPublicMembershipResource>;
+  readonly captaincies: ReadonlyArray<MembershipResource>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly email: Scalars['String']['output'];
   readonly linkblue?: Maybe<Scalars['String']['output']>;
   readonly name?: Maybe<Scalars['String']['output']>;
-  readonly role: GqlPublicRoleResource;
-  readonly teams: ReadonlyArray<GqlPublicMembershipResource>;
+  readonly role: RoleResource;
+  readonly teams: ReadonlyArray<MembershipResource>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
 
-export const GqlPublicPointEntryResolverAllKeys = {
+export const PointEntryResolverAllKeys = {
   CreatedAt: 'createdAt',
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type GqlPublicPointEntryResolverAllKeys = typeof GqlPublicPointEntryResolverAllKeys[keyof typeof GqlPublicPointEntryResolverAllKeys];
-export const GqlPublicPointEntryResolverDateFilterKeys = {
+export type PointEntryResolverAllKeys = typeof PointEntryResolverAllKeys[keyof typeof PointEntryResolverAllKeys];
+export const PointEntryResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type GqlPublicPointEntryResolverDateFilterKeys = typeof GqlPublicPointEntryResolverDateFilterKeys[keyof typeof GqlPublicPointEntryResolverDateFilterKeys];
-export type GqlPublicPointEntryResolverKeyedDateFilterItem = {
+export type PointEntryResolverDateFilterKeys = typeof PointEntryResolverDateFilterKeys[keyof typeof PointEntryResolverDateFilterKeys];
+export type PointEntryResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
-  readonly field: GqlPublicPointEntryResolverDateFilterKeys;
+  readonly field: PointEntryResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['LuxonDateTime']['input'];
 };
 
-export type GqlPublicPointEntryResolverKeyedIsNullFilterItem = {
+export type PointEntryResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: GqlPublicPointEntryResolverAllKeys;
+  readonly field: PointEntryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type GqlPublicPointEntryResource = {
+export type PointEntryResource = {
   readonly __typename?: 'PointEntryResource';
   readonly comment?: Maybe<Scalars['String']['output']>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  readonly personFrom?: Maybe<GqlPublicPersonResource>;
-  readonly pointOpportunity?: Maybe<GqlPublicPointOpportunityResource>;
+  readonly personFrom?: Maybe<PersonResource>;
+  readonly pointOpportunity?: Maybe<PointOpportunityResource>;
   readonly points: Scalars['Int']['output'];
-  readonly team: GqlPublicTeamResource;
+  readonly team: TeamResource;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
 
-export const GqlPublicPointOpportunityResolverAllKeys = {
+export const PointOpportunityResolverAllKeys = {
   CreatedAt: 'createdAt',
   Name: 'name',
   OpportunityDate: 'opportunityDate',
@@ -1086,63 +1086,63 @@ export const GqlPublicPointOpportunityResolverAllKeys = {
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type GqlPublicPointOpportunityResolverAllKeys = typeof GqlPublicPointOpportunityResolverAllKeys[keyof typeof GqlPublicPointOpportunityResolverAllKeys];
-export const GqlPublicPointOpportunityResolverDateFilterKeys = {
+export type PointOpportunityResolverAllKeys = typeof PointOpportunityResolverAllKeys[keyof typeof PointOpportunityResolverAllKeys];
+export const PointOpportunityResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
   OpportunityDate: 'opportunityDate',
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type GqlPublicPointOpportunityResolverDateFilterKeys = typeof GqlPublicPointOpportunityResolverDateFilterKeys[keyof typeof GqlPublicPointOpportunityResolverDateFilterKeys];
-export type GqlPublicPointOpportunityResolverKeyedDateFilterItem = {
+export type PointOpportunityResolverDateFilterKeys = typeof PointOpportunityResolverDateFilterKeys[keyof typeof PointOpportunityResolverDateFilterKeys];
+export type PointOpportunityResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
-  readonly field: GqlPublicPointOpportunityResolverDateFilterKeys;
+  readonly field: PointOpportunityResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['LuxonDateTime']['input'];
 };
 
-export type GqlPublicPointOpportunityResolverKeyedIsNullFilterItem = {
+export type PointOpportunityResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: GqlPublicPointOpportunityResolverAllKeys;
+  readonly field: PointOpportunityResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type GqlPublicPointOpportunityResolverKeyedOneOfFilterItem = {
+export type PointOpportunityResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: GqlPublicPointOpportunityResolverOneOfFilterKeys;
+  readonly field: PointOpportunityResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
-export type GqlPublicPointOpportunityResolverKeyedStringFilterItem = {
+export type PointOpportunityResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
-  readonly field: GqlPublicPointOpportunityResolverStringFilterKeys;
+  readonly field: PointOpportunityResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['String']['input'];
 };
 
-export const GqlPublicPointOpportunityResolverOneOfFilterKeys = {
+export const PointOpportunityResolverOneOfFilterKeys = {
   Type: 'type'
 } as const;
 
-export type GqlPublicPointOpportunityResolverOneOfFilterKeys = typeof GqlPublicPointOpportunityResolverOneOfFilterKeys[keyof typeof GqlPublicPointOpportunityResolverOneOfFilterKeys];
-export const GqlPublicPointOpportunityResolverStringFilterKeys = {
+export type PointOpportunityResolverOneOfFilterKeys = typeof PointOpportunityResolverOneOfFilterKeys[keyof typeof PointOpportunityResolverOneOfFilterKeys];
+export const PointOpportunityResolverStringFilterKeys = {
   Name: 'name'
 } as const;
 
-export type GqlPublicPointOpportunityResolverStringFilterKeys = typeof GqlPublicPointOpportunityResolverStringFilterKeys[keyof typeof GqlPublicPointOpportunityResolverStringFilterKeys];
-export type GqlPublicPointOpportunityResource = {
+export type PointOpportunityResolverStringFilterKeys = typeof PointOpportunityResolverStringFilterKeys[keyof typeof PointOpportunityResolverStringFilterKeys];
+export type PointOpportunityResource = {
   readonly __typename?: 'PointOpportunityResource';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  readonly event?: Maybe<GqlPublicEventResource>;
+  readonly event?: Maybe<EventResource>;
   readonly name: Scalars['String']['output'];
   readonly opportunityDate?: Maybe<Scalars['LuxonDateTime']['output']>;
   readonly type: TeamType;
@@ -1150,111 +1150,111 @@ export type GqlPublicPointOpportunityResource = {
   readonly uuid: Scalars['ID']['output'];
 };
 
-export type GqlPublicQuery = {
+export type Query = {
   readonly __typename?: 'Query';
-  readonly activeConfiguration: GqlPublicGetConfigurationByUuidResponse;
-  readonly allConfigurations: GqlPublicGetAllConfigurationsResponse;
-  readonly device: GqlPublicGetDeviceByUuidResponse;
-  readonly devices: GqlPublicListDevicesResponse;
-  readonly event: GqlPublicGetEventByUuidResponse;
-  readonly events: GqlPublicListEventsResponse;
-  readonly image: GqlPublicGetImageByUuidResponse;
-  readonly listPeople: GqlPublicListPeopleResponse;
-  readonly loginState: GqlPublicLoginState;
-  readonly me: GqlPublicGetPersonResponse;
-  readonly notification: GqlPublicGetNotificationByUuidResponse;
-  readonly notificationDeliveries: GqlPublicListNotificationDeliveriesResponse;
-  readonly notifications: GqlPublicListNotificationsResponse;
-  readonly person: GqlPublicGetPersonResponse;
-  readonly personByLinkBlue: GqlPublicGetPersonResponse;
-  readonly pointEntries: GqlPublicListPointEntriesResponse;
-  readonly pointEntry: GqlPublicGetPointEntryByUuidResponse;
-  readonly pointOpportunities: GqlPublicListPointOpportunitiesResponse;
-  readonly pointOpportunity: GqlPublicSinglePointOpportunityResponse;
-  readonly searchPeopleByName: GqlPublicGetPeopleResponse;
-  readonly team: GqlPublicSingleTeamResponse;
-  readonly teams: GqlPublicListTeamsResponse;
+  readonly activeConfiguration: GetConfigurationByUuidResponse;
+  readonly allConfigurations: GetAllConfigurationsResponse;
+  readonly device: GetDeviceByUuidResponse;
+  readonly devices: ListDevicesResponse;
+  readonly event: GetEventByUuidResponse;
+  readonly events: ListEventsResponse;
+  readonly image: GetImageByUuidResponse;
+  readonly listPeople: ListPeopleResponse;
+  readonly loginState: LoginState;
+  readonly me: GetPersonResponse;
+  readonly notification: GetNotificationByUuidResponse;
+  readonly notificationDeliveries: ListNotificationDeliveriesResponse;
+  readonly notifications: ListNotificationsResponse;
+  readonly person: GetPersonResponse;
+  readonly personByLinkBlue: GetPersonResponse;
+  readonly pointEntries: ListPointEntriesResponse;
+  readonly pointEntry: GetPointEntryByUuidResponse;
+  readonly pointOpportunities: ListPointOpportunitiesResponse;
+  readonly pointOpportunity: SinglePointOpportunityResponse;
+  readonly searchPeopleByName: GetPeopleResponse;
+  readonly team: SingleTeamResponse;
+  readonly teams: ListTeamsResponse;
 };
 
 
-export type GqlPublicQueryActiveConfigurationArgs = {
+export type QueryActiveConfigurationArgs = {
   key: Scalars['String']['input'];
 };
 
 
-export type GqlPublicQueryDeviceArgs = {
+export type QueryDeviceArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicQueryDevicesArgs = {
+export type QueryDevicesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<ReadonlyArray<GqlPublicDeviceResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<GqlPublicDeviceResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<GqlPublicDeviceResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
-  stringFilters?: InputMaybe<ReadonlyArray<GqlPublicDeviceResolverKeyedStringFilterItem>>;
+  stringFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedStringFilterItem>>;
 };
 
 
-export type GqlPublicQueryEventArgs = {
+export type QueryEventArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicQueryEventsArgs = {
+export type QueryEventsArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<ReadonlyArray<GqlPublicEventResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<GqlPublicEventResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<GqlPublicEventResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
-  stringFilters?: InputMaybe<ReadonlyArray<GqlPublicEventResolverKeyedStringFilterItem>>;
+  stringFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedStringFilterItem>>;
 };
 
 
-export type GqlPublicQueryImageArgs = {
+export type QueryImageArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicQueryListPeopleArgs = {
+export type QueryListPeopleArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
   dateFilters?: InputMaybe<Scalars['Void']['input']>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<GqlPublicPersonResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<PersonResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<GqlPublicPersonResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<PersonResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
-  stringFilters?: InputMaybe<ReadonlyArray<GqlPublicPersonResolverKeyedStringFilterItem>>;
+  stringFilters?: InputMaybe<ReadonlyArray<PersonResolverKeyedStringFilterItem>>;
 };
 
 
-export type GqlPublicQueryNotificationArgs = {
+export type QueryNotificationArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicQueryNotificationDeliveriesArgs = {
+export type QueryNotificationDeliveriesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<ReadonlyArray<GqlPublicNotificationDeliveryResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<NotificationDeliveryResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<GqlPublicNotificationDeliveryResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<NotificationDeliveryResolverKeyedIsNullFilterItem>>;
   notificationUuid: Scalars['String']['input'];
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
   oneOfFilters?: InputMaybe<Scalars['Void']['input']>;
@@ -1267,37 +1267,37 @@ export type GqlPublicQueryNotificationDeliveriesArgs = {
 };
 
 
-export type GqlPublicQueryNotificationsArgs = {
+export type QueryNotificationsArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<ReadonlyArray<GqlPublicNotificationResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<GqlPublicNotificationResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<GqlPublicNotificationResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
-  stringFilters?: InputMaybe<ReadonlyArray<GqlPublicNotificationResolverKeyedStringFilterItem>>;
+  stringFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedStringFilterItem>>;
 };
 
 
-export type GqlPublicQueryPersonArgs = {
+export type QueryPersonArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicQueryPersonByLinkBlueArgs = {
+export type QueryPersonByLinkBlueArgs = {
   linkBlueId: Scalars['String']['input'];
 };
 
 
-export type GqlPublicQueryPointEntriesArgs = {
+export type QueryPointEntriesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<ReadonlyArray<GqlPublicPointEntryResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<PointEntryResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<GqlPublicPointEntryResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<PointEntryResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
   oneOfFilters?: InputMaybe<Scalars['Void']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -1309,62 +1309,62 @@ export type GqlPublicQueryPointEntriesArgs = {
 };
 
 
-export type GqlPublicQueryPointEntryArgs = {
+export type QueryPointEntryArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicQueryPointOpportunitiesArgs = {
+export type QueryPointOpportunitiesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<ReadonlyArray<GqlPublicPointOpportunityResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<GqlPublicPointOpportunityResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<GqlPublicPointOpportunityResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
-  stringFilters?: InputMaybe<ReadonlyArray<GqlPublicPointOpportunityResolverKeyedStringFilterItem>>;
+  stringFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedStringFilterItem>>;
 };
 
 
-export type GqlPublicQueryPointOpportunityArgs = {
+export type QueryPointOpportunityArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicQuerySearchPeopleByNameArgs = {
+export type QuerySearchPeopleByNameArgs = {
   name: Scalars['String']['input'];
 };
 
 
-export type GqlPublicQueryTeamArgs = {
+export type QueryTeamArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type GqlPublicQueryTeamsArgs = {
+export type QueryTeamsArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
   dateFilters?: InputMaybe<Scalars['Void']['input']>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<GqlPublicTeamResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedIsNullFilterItem>>;
   legacyStatus?: InputMaybe<ReadonlyArray<TeamLegacyStatus>>;
   marathonYear?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<GqlPublicTeamResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
-  stringFilters?: InputMaybe<ReadonlyArray<GqlPublicTeamResolverKeyedStringFilterItem>>;
+  stringFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedStringFilterItem>>;
   type?: InputMaybe<ReadonlyArray<TeamType>>;
   visibility?: InputMaybe<ReadonlyArray<DbRole>>;
 };
 
-export type GqlPublicRegisterDeviceInput = {
+export type RegisterDeviceInput = {
   readonly deviceId: Scalars['String']['input'];
   /** The Expo push token of the device */
   readonly expoPushToken?: InputMaybe<Scalars['String']['input']>;
@@ -1374,81 +1374,81 @@ export type GqlPublicRegisterDeviceInput = {
   readonly verifier: Scalars['String']['input'];
 };
 
-export type GqlPublicRegisterDeviceResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type RegisterDeviceResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'RegisterDeviceResponse';
-  readonly data: GqlPublicDeviceResource;
+  readonly data: DeviceResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicRemoveEventImageResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type RemoveEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'RemoveEventImageResponse';
   readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicRoleResource = {
+export type RoleResource = {
   readonly __typename?: 'RoleResource';
   readonly committeeIdentifier?: Maybe<CommitteeIdentifier>;
   readonly committeeRole?: Maybe<CommitteeRole>;
   readonly dbRole: DbRole;
 };
 
-export type GqlPublicRoleResourceInput = {
+export type RoleResourceInput = {
   readonly committeeIdentifier?: InputMaybe<CommitteeIdentifier>;
   readonly committeeRole?: InputMaybe<CommitteeRole>;
   readonly dbRole?: DbRole;
 };
 
-export type GqlPublicScheduleNotificationResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type ScheduleNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ScheduleNotificationResponse';
   readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicSendNotificationResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type SendNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'SendNotificationResponse';
   readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicSetEventInput = {
+export type SetEventInput = {
   readonly description?: InputMaybe<Scalars['String']['input']>;
   readonly location?: InputMaybe<Scalars['String']['input']>;
-  readonly occurrences: ReadonlyArray<GqlPublicSetEventOccurrenceInput>;
+  readonly occurrences: ReadonlyArray<SetEventOccurrenceInput>;
   readonly summary?: InputMaybe<Scalars['String']['input']>;
   readonly title: Scalars['String']['input'];
 };
 
-export type GqlPublicSetEventOccurrenceInput = {
+export type SetEventOccurrenceInput = {
   readonly fullDay: Scalars['Boolean']['input'];
   readonly interval: Scalars['LuxonDateRange']['input'];
   /** If updating an existing occurrence, the UUID of the occurrence to update */
   readonly uuid?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type GqlPublicSetEventResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type SetEventResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'SetEventResponse';
-  readonly data: GqlPublicEventResource;
+  readonly data: EventResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicSetPersonInput = {
+export type SetPersonInput = {
   readonly captainOf?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   readonly email?: InputMaybe<Scalars['EmailAddress']['input']>;
   readonly linkblue?: InputMaybe<Scalars['String']['input']>;
   readonly memberOf?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   readonly name?: InputMaybe<Scalars['String']['input']>;
-  readonly role?: InputMaybe<GqlPublicRoleResourceInput>;
+  readonly role?: InputMaybe<RoleResourceInput>;
 };
 
-export type GqlPublicSetPointOpportunityInput = {
+export type SetPointOpportunityInput = {
   readonly eventUuid?: InputMaybe<Scalars['ID']['input']>;
   readonly name?: InputMaybe<Scalars['String']['input']>;
   readonly opportunityDate?: InputMaybe<Scalars['LuxonDateTime']['input']>;
   readonly type?: InputMaybe<TeamType>;
 };
 
-export type GqlPublicSetTeamInput = {
+export type SetTeamInput = {
   readonly legacyStatus?: InputMaybe<TeamLegacyStatus>;
   readonly marathonYear?: InputMaybe<Scalars['String']['input']>;
   readonly name?: InputMaybe<Scalars['String']['input']>;
@@ -1456,23 +1456,23 @@ export type GqlPublicSetTeamInput = {
   readonly type?: InputMaybe<TeamType>;
 };
 
-export type GqlPublicSinglePointOpportunityResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type SinglePointOpportunityResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'SinglePointOpportunityResponse';
-  readonly data: GqlPublicPointOpportunityResource;
+  readonly data: PointOpportunityResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GqlPublicSingleTeamResponse = GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type SingleTeamResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'SingleTeamResponse';
-  readonly data: GqlPublicTeamResource;
+  readonly data: TeamResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export { SortDirection };
 
-export type GqlPublicStageNotificationResponse = GqlPublicAbstractGraphQlCreatedResponse & GqlPublicAbstractGraphQlOkResponse & GqlPublicGraphQlBaseResponse & {
+export type StageNotificationResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'StageNotificationResponse';
-  readonly data: GqlPublicNotificationResource;
+  readonly data: NotificationResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
@@ -1481,62 +1481,62 @@ export { StringComparator };
 
 export { TeamLegacyStatus };
 
-export const GqlPublicTeamResolverAllKeys = {
+export const TeamResolverAllKeys = {
   LegacyStatus: 'legacyStatus',
   MarathonYear: 'marathonYear',
   Name: 'name',
   Type: 'type'
 } as const;
 
-export type GqlPublicTeamResolverAllKeys = typeof GqlPublicTeamResolverAllKeys[keyof typeof GqlPublicTeamResolverAllKeys];
-export type GqlPublicTeamResolverKeyedIsNullFilterItem = {
+export type TeamResolverAllKeys = typeof TeamResolverAllKeys[keyof typeof TeamResolverAllKeys];
+export type TeamResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: GqlPublicTeamResolverAllKeys;
+  readonly field: TeamResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type GqlPublicTeamResolverKeyedOneOfFilterItem = {
+export type TeamResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: GqlPublicTeamResolverOneOfFilterKeys;
+  readonly field: TeamResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
-export type GqlPublicTeamResolverKeyedStringFilterItem = {
+export type TeamResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
-  readonly field: GqlPublicTeamResolverStringFilterKeys;
+  readonly field: TeamResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['String']['input'];
 };
 
-export const GqlPublicTeamResolverOneOfFilterKeys = {
+export const TeamResolverOneOfFilterKeys = {
   LegacyStatus: 'legacyStatus',
   MarathonYear: 'marathonYear',
   Type: 'type'
 } as const;
 
-export type GqlPublicTeamResolverOneOfFilterKeys = typeof GqlPublicTeamResolverOneOfFilterKeys[keyof typeof GqlPublicTeamResolverOneOfFilterKeys];
-export const GqlPublicTeamResolverStringFilterKeys = {
+export type TeamResolverOneOfFilterKeys = typeof TeamResolverOneOfFilterKeys[keyof typeof TeamResolverOneOfFilterKeys];
+export const TeamResolverStringFilterKeys = {
   Name: 'name'
 } as const;
 
-export type GqlPublicTeamResolverStringFilterKeys = typeof GqlPublicTeamResolverStringFilterKeys[keyof typeof GqlPublicTeamResolverStringFilterKeys];
-export type GqlPublicTeamResource = {
+export type TeamResolverStringFilterKeys = typeof TeamResolverStringFilterKeys[keyof typeof TeamResolverStringFilterKeys];
+export type TeamResource = {
   readonly __typename?: 'TeamResource';
   /** @deprecated Just query the members field and filter by role */
-  readonly captains: ReadonlyArray<GqlPublicMembershipResource>;
+  readonly captains: ReadonlyArray<MembershipResource>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly legacyStatus: TeamLegacyStatus;
   readonly marathonYear: Scalars['String']['output'];
-  readonly members: ReadonlyArray<GqlPublicMembershipResource>;
+  readonly members: ReadonlyArray<MembershipResource>;
   readonly name: Scalars['String']['output'];
   readonly persistentIdentifier?: Maybe<Scalars['String']['output']>;
-  readonly pointEntries: ReadonlyArray<GqlPublicPointEntryResource>;
+  readonly pointEntries: ReadonlyArray<PointEntryResource>;
   readonly totalPoints: Scalars['Int']['output'];
   readonly type: TeamType;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -1545,51 +1545,51 @@ export type GqlPublicTeamResource = {
 
 export { TeamType };
 
-export type GqlPublicSimpleConfigFragment = { readonly __typename?: 'ConfigurationResource', readonly uuid: string, readonly key: string, readonly value: string } & { ' $fragmentName'?: 'GqlPublicSimpleConfigFragment' };
+export type SimpleConfigFragment = { readonly __typename?: 'ConfigurationResource', readonly uuid: string, readonly key: string, readonly value: string } & { ' $fragmentName'?: 'SimpleConfigFragment' };
 
-export type GqlPublicFullConfigFragment = (
+export type FullConfigFragment = (
   { readonly __typename?: 'ConfigurationResource', readonly validAfter?: string | null, readonly validUntil?: string | null, readonly createdAt?: Date | string | null }
-  & { ' $fragmentRefs'?: { 'GqlPublicSimpleConfigFragment': GqlPublicSimpleConfigFragment } }
-) & { ' $fragmentName'?: 'GqlPublicFullConfigFragment' };
+  & { ' $fragmentRefs'?: { 'SimpleConfigFragment': SimpleConfigFragment } }
+) & { ' $fragmentName'?: 'FullConfigFragment' };
 
-export type GqlPublicNotificationFragmentFragment = { readonly __typename?: 'NotificationResource', readonly uuid: string, readonly title: string, readonly body: string, readonly url?: URL | string | null } & { ' $fragmentName'?: 'GqlPublicNotificationFragmentFragment' };
+export type NotificationFragmentFragment = { readonly __typename?: 'NotificationResource', readonly uuid: string, readonly title: string, readonly body: string, readonly url?: URL | string | null } & { ' $fragmentName'?: 'NotificationFragmentFragment' };
 
-export type GqlPublicNotificationDeliveryFragmentFragment = { readonly __typename?: 'NotificationDeliveryResource', readonly uuid: string, readonly sentAt?: Date | string | null, readonly notification: (
+export type NotificationDeliveryFragmentFragment = { readonly __typename?: 'NotificationDeliveryResource', readonly uuid: string, readonly sentAt?: Date | string | null, readonly notification: (
     { readonly __typename?: 'NotificationResource' }
-    & { ' $fragmentRefs'?: { 'GqlPublicNotificationFragmentFragment': GqlPublicNotificationFragmentFragment } }
-  ) } & { ' $fragmentName'?: 'GqlPublicNotificationDeliveryFragmentFragment' };
+    & { ' $fragmentRefs'?: { 'NotificationFragmentFragment': NotificationFragmentFragment } }
+  ) } & { ' $fragmentName'?: 'NotificationDeliveryFragmentFragment' };
 
-export type GqlPublicUseAllowedLoginTypesQueryVariables = Exact<{ [key: string]: never; }>;
+export type UseAllowedLoginTypesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GqlPublicUseAllowedLoginTypesQuery = { readonly __typename?: 'Query', readonly activeConfiguration: { readonly __typename?: 'GetConfigurationByUuidResponse', readonly data: (
+export type UseAllowedLoginTypesQuery = { readonly __typename?: 'Query', readonly activeConfiguration: { readonly __typename?: 'GetConfigurationByUuidResponse', readonly data: (
       { readonly __typename?: 'ConfigurationResource' }
-      & { ' $fragmentRefs'?: { 'GqlPublicSimpleConfigFragment': GqlPublicSimpleConfigFragment } }
+      & { ' $fragmentRefs'?: { 'SimpleConfigFragment': SimpleConfigFragment } }
     ) } };
 
-export type GqlPublicUseTabBarConfigQueryVariables = Exact<{ [key: string]: never; }>;
+export type UseTabBarConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GqlPublicUseTabBarConfigQuery = { readonly __typename?: 'Query', readonly activeConfiguration: { readonly __typename?: 'GetConfigurationByUuidResponse', readonly data: (
+export type UseTabBarConfigQuery = { readonly __typename?: 'Query', readonly activeConfiguration: { readonly __typename?: 'GetConfigurationByUuidResponse', readonly data: (
       { readonly __typename?: 'ConfigurationResource' }
-      & { ' $fragmentRefs'?: { 'GqlPublicSimpleConfigFragment': GqlPublicSimpleConfigFragment } }
+      & { ' $fragmentRefs'?: { 'SimpleConfigFragment': SimpleConfigFragment } }
     ) } };
 
-export type GqlPublicAuthStateQueryVariables = Exact<{ [key: string]: never; }>;
+export type AuthStateQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GqlPublicAuthStateQuery = { readonly __typename?: 'Query', readonly me: { readonly __typename?: 'GetPersonResponse', readonly data?: { readonly __typename?: 'PersonResource', readonly uuid: string } | null }, readonly loginState: { readonly __typename?: 'LoginState', readonly loggedIn: boolean, readonly authSource: GqlPublicAuthSource, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: GqlPublicDbRole, readonly committeeIdentifier?: GqlPublicCommitteeIdentifier | null, readonly committeeRole?: GqlPublicCommitteeRole | null } } };
+export type AuthStateQuery = { readonly __typename?: 'Query', readonly me: { readonly __typename?: 'GetPersonResponse', readonly data?: { readonly __typename?: 'PersonResource', readonly uuid: string } | null }, readonly loginState: { readonly __typename?: 'LoginState', readonly loggedIn: boolean, readonly authSource: AuthSource, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: DbRole, readonly committeeIdentifier?: CommitteeIdentifier | null, readonly committeeRole?: CommitteeRole | null } } };
 
-export type GqlPublicSetDeviceMutationVariables = Exact<{
-  input: GqlPublicRegisterDeviceInput;
+export type SetDeviceMutationVariables = Exact<{
+  input: RegisterDeviceInput;
 }>;
 
 
-export type GqlPublicSetDeviceMutation = { readonly __typename?: 'Mutation', readonly registerDevice: { readonly __typename?: 'RegisterDeviceResponse', readonly ok: boolean } };
+export type SetDeviceMutation = { readonly __typename?: 'Mutation', readonly registerDevice: { readonly __typename?: 'RegisterDeviceResponse', readonly ok: boolean } };
 
-export type GqlPublicEventScreenFragmentFragment = { readonly __typename?: 'EventResource', readonly uuid: string, readonly title: string, readonly summary?: string | null, readonly description?: string | null, readonly location?: string | null, readonly occurrences: ReadonlyArray<{ readonly __typename?: 'EventOccurrenceResource', readonly uuid: string, readonly interval: string, readonly fullDay: boolean }>, readonly images: ReadonlyArray<{ readonly __typename?: 'ImageResource', readonly imageData?: string | null, readonly thumbHash?: string | null, readonly url?: URL | string | null, readonly height: number, readonly width: number, readonly alt?: string | null, readonly mimeType: string }> } & { ' $fragmentName'?: 'GqlPublicEventScreenFragmentFragment' };
+export type EventScreenFragmentFragment = { readonly __typename?: 'EventResource', readonly uuid: string, readonly title: string, readonly summary?: string | null, readonly description?: string | null, readonly location?: string | null, readonly occurrences: ReadonlyArray<{ readonly __typename?: 'EventOccurrenceResource', readonly uuid: string, readonly interval: string, readonly fullDay: boolean }>, readonly images: ReadonlyArray<{ readonly __typename?: 'ImageResource', readonly imageData?: string | null, readonly thumbHash?: string | null, readonly url?: URL | string | null, readonly height: number, readonly width: number, readonly alt?: string | null, readonly mimeType: string }> } & { ' $fragmentName'?: 'EventScreenFragmentFragment' };
 
-export type GqlPublicDeviceNotificationsQueryVariables = Exact<{
+export type DeviceNotificationsQueryVariables = Exact<{
   deviceUuid: Scalars['String']['input'];
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
@@ -1597,72 +1597,72 @@ export type GqlPublicDeviceNotificationsQueryVariables = Exact<{
 }>;
 
 
-export type GqlPublicDeviceNotificationsQuery = { readonly __typename?: 'Query', readonly device: { readonly __typename?: 'GetDeviceByUuidResponse', readonly data: { readonly __typename?: 'DeviceResource', readonly notificationDeliveries: ReadonlyArray<(
+export type DeviceNotificationsQuery = { readonly __typename?: 'Query', readonly device: { readonly __typename?: 'GetDeviceByUuidResponse', readonly data: { readonly __typename?: 'DeviceResource', readonly notificationDeliveries: ReadonlyArray<(
         { readonly __typename?: 'NotificationDeliveryResource' }
-        & { ' $fragmentRefs'?: { 'GqlPublicNotificationDeliveryFragmentFragment': GqlPublicNotificationDeliveryFragmentFragment } }
+        & { ' $fragmentRefs'?: { 'NotificationDeliveryFragmentFragment': NotificationDeliveryFragmentFragment } }
       )> } } };
 
-export type GqlPublicProfileScreenAuthFragmentFragment = { readonly __typename?: 'LoginState', readonly authSource: GqlPublicAuthSource, readonly role: { readonly __typename?: 'RoleResource', readonly committeeIdentifier?: GqlPublicCommitteeIdentifier | null, readonly committeeRole?: GqlPublicCommitteeRole | null, readonly dbRole: GqlPublicDbRole } } & { ' $fragmentName'?: 'GqlPublicProfileScreenAuthFragmentFragment' };
+export type ProfileScreenAuthFragmentFragment = { readonly __typename?: 'LoginState', readonly authSource: AuthSource, readonly role: { readonly __typename?: 'RoleResource', readonly committeeIdentifier?: CommitteeIdentifier | null, readonly committeeRole?: CommitteeRole | null, readonly dbRole: DbRole } } & { ' $fragmentName'?: 'ProfileScreenAuthFragmentFragment' };
 
-export type GqlPublicProfileScreenUserFragmentFragment = { readonly __typename?: 'PersonResource', readonly name?: string | null, readonly linkblue?: string | null, readonly teams: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly position: GqlPublicMembershipPositionType, readonly team: { readonly __typename?: 'TeamResource', readonly name: string } }> } & { ' $fragmentName'?: 'GqlPublicProfileScreenUserFragmentFragment' };
+export type ProfileScreenUserFragmentFragment = { readonly __typename?: 'PersonResource', readonly name?: string | null, readonly linkblue?: string | null, readonly teams: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly position: MembershipPositionType, readonly team: { readonly __typename?: 'TeamResource', readonly name: string } }> } & { ' $fragmentName'?: 'ProfileScreenUserFragmentFragment' };
 
-export type GqlPublicRootScreenDocumentQueryVariables = Exact<{ [key: string]: never; }>;
+export type RootScreenDocumentQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GqlPublicRootScreenDocumentQuery = { readonly __typename?: 'Query', readonly loginState: (
+export type RootScreenDocumentQuery = { readonly __typename?: 'Query', readonly loginState: (
     { readonly __typename?: 'LoginState' }
-    & { ' $fragmentRefs'?: { 'GqlPublicProfileScreenAuthFragmentFragment': GqlPublicProfileScreenAuthFragmentFragment;'GqlPublicRootScreenAuthFragmentFragment': GqlPublicRootScreenAuthFragmentFragment } }
+    & { ' $fragmentRefs'?: { 'ProfileScreenAuthFragmentFragment': ProfileScreenAuthFragmentFragment;'RootScreenAuthFragmentFragment': RootScreenAuthFragmentFragment } }
   ), readonly me: { readonly __typename?: 'GetPersonResponse', readonly data?: (
       { readonly __typename?: 'PersonResource' }
-      & { ' $fragmentRefs'?: { 'GqlPublicProfileScreenUserFragmentFragment': GqlPublicProfileScreenUserFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'ProfileScreenUserFragmentFragment': ProfileScreenUserFragmentFragment } }
     ) | null } };
 
-export type GqlPublicRootScreenAuthFragmentFragment = { readonly __typename?: 'LoginState', readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: GqlPublicDbRole } } & { ' $fragmentName'?: 'GqlPublicRootScreenAuthFragmentFragment' };
+export type RootScreenAuthFragmentFragment = { readonly __typename?: 'LoginState', readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: DbRole } } & { ' $fragmentName'?: 'RootScreenAuthFragmentFragment' };
 
-export type GqlPublicEventsQueryVariables = Exact<{
+export type EventsQueryVariables = Exact<{
   earliestTimestamp: Scalars['LuxonDateTime']['input'];
   lastTimestamp: Scalars['LuxonDateTime']['input'];
 }>;
 
 
-export type GqlPublicEventsQuery = { readonly __typename?: 'Query', readonly events: { readonly __typename?: 'ListEventsResponse', readonly data: ReadonlyArray<(
+export type EventsQuery = { readonly __typename?: 'Query', readonly events: { readonly __typename?: 'ListEventsResponse', readonly data: ReadonlyArray<(
       { readonly __typename?: 'EventResource' }
-      & { ' $fragmentRefs'?: { 'GqlPublicEventScreenFragmentFragment': GqlPublicEventScreenFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'EventScreenFragmentFragment': EventScreenFragmentFragment } }
     )> } };
 
-export type GqlPublicScoreBoardFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string, readonly totalPoints: number, readonly legacyStatus: GqlPublicTeamLegacyStatus, readonly type: GqlPublicTeamType } & { ' $fragmentName'?: 'GqlPublicScoreBoardFragmentFragment' };
+export type ScoreBoardFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string, readonly totalPoints: number, readonly legacyStatus: TeamLegacyStatus, readonly type: TeamType } & { ' $fragmentName'?: 'ScoreBoardFragmentFragment' };
 
-export type GqlPublicHighlightedTeamFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string, readonly legacyStatus: GqlPublicTeamLegacyStatus, readonly type: GqlPublicTeamType } & { ' $fragmentName'?: 'GqlPublicHighlightedTeamFragmentFragment' };
+export type HighlightedTeamFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string, readonly legacyStatus: TeamLegacyStatus, readonly type: TeamType } & { ' $fragmentName'?: 'HighlightedTeamFragmentFragment' };
 
-export type GqlPublicScoreBoardDocumentQueryVariables = Exact<{ [key: string]: never; }>;
+export type ScoreBoardDocumentQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GqlPublicScoreBoardDocumentQuery = { readonly __typename?: 'Query', readonly me: { readonly __typename?: 'GetPersonResponse', readonly data?: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly teams: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly team: (
+export type ScoreBoardDocumentQuery = { readonly __typename?: 'Query', readonly me: { readonly __typename?: 'GetPersonResponse', readonly data?: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly teams: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly team: (
           { readonly __typename?: 'TeamResource' }
-          & { ' $fragmentRefs'?: { 'GqlPublicHighlightedTeamFragmentFragment': GqlPublicHighlightedTeamFragmentFragment;'GqlPublicMyTeamFragmentFragment': GqlPublicMyTeamFragmentFragment } }
+          & { ' $fragmentRefs'?: { 'HighlightedTeamFragmentFragment': HighlightedTeamFragmentFragment;'MyTeamFragmentFragment': MyTeamFragmentFragment } }
         ) }> } | null }, readonly teams: { readonly __typename?: 'ListTeamsResponse', readonly data: ReadonlyArray<(
       { readonly __typename?: 'TeamResource' }
-      & { ' $fragmentRefs'?: { 'GqlPublicScoreBoardFragmentFragment': GqlPublicScoreBoardFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'ScoreBoardFragmentFragment': ScoreBoardFragmentFragment } }
     )> } };
 
-export type GqlPublicMyTeamFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string, readonly totalPoints: number, readonly pointEntries: ReadonlyArray<{ readonly __typename?: 'PointEntryResource', readonly points: number, readonly personFrom?: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null } | null }>, readonly members: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly position: GqlPublicMembershipPositionType, readonly person: { readonly __typename?: 'PersonResource', readonly linkblue?: string | null, readonly name?: string | null } }> } & { ' $fragmentName'?: 'GqlPublicMyTeamFragmentFragment' };
+export type MyTeamFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string, readonly totalPoints: number, readonly pointEntries: ReadonlyArray<{ readonly __typename?: 'PointEntryResource', readonly points: number, readonly personFrom?: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null } | null }>, readonly members: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly position: MembershipPositionType, readonly person: { readonly __typename?: 'PersonResource', readonly linkblue?: string | null, readonly name?: string | null } }> } & { ' $fragmentName'?: 'MyTeamFragmentFragment' };
 
-export const SimpleConfigFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SimpleConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<GqlPublicSimpleConfigFragment, unknown>;
-export const FullConfigFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FullConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SimpleConfig"}},{"kind":"Field","name":{"kind":"Name","value":"validAfter"}},{"kind":"Field","name":{"kind":"Name","value":"validUntil"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SimpleConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<GqlPublicFullConfigFragment, unknown>;
-export const NotificationFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]} as unknown as DocumentNode<GqlPublicNotificationFragmentFragment, unknown>;
-export const NotificationDeliveryFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationDeliveryFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationDeliveryResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"sentAt"}},{"kind":"Field","name":{"kind":"Name","value":"notification"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NotificationFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]} as unknown as DocumentNode<GqlPublicNotificationDeliveryFragmentFragment, unknown>;
-export const EventScreenFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventScreenFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}}]}}]}}]} as unknown as DocumentNode<GqlPublicEventScreenFragmentFragment, unknown>;
-export const ProfileScreenAuthFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProfileScreenAuthFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LoginState"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"dbRole"}}]}},{"kind":"Field","name":{"kind":"Name","value":"authSource"}}]}}]} as unknown as DocumentNode<GqlPublicProfileScreenAuthFragmentFragment, unknown>;
-export const ProfileScreenUserFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProfileScreenUserFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GqlPublicProfileScreenUserFragmentFragment, unknown>;
-export const RootScreenAuthFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RootScreenAuthFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LoginState"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}}]}}]}}]} as unknown as DocumentNode<GqlPublicRootScreenAuthFragmentFragment, unknown>;
-export const ScoreBoardFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScoreBoardFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<GqlPublicScoreBoardFragmentFragment, unknown>;
-export const HighlightedTeamFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"HighlightedTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<GqlPublicHighlightedTeamFragmentFragment, unknown>;
-export const MyTeamFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"pointEntries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personFrom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"points"}}]}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GqlPublicMyTeamFragmentFragment, unknown>;
-export const UseAllowedLoginTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"useAllowedLoginTypes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"activeConfiguration"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"key"},"value":{"kind":"StringValue","value":"ALLOWED_LOGIN_TYPES","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SimpleConfig"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SimpleConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<GqlPublicUseAllowedLoginTypesQuery, GqlPublicUseAllowedLoginTypesQueryVariables>;
-export const UseTabBarConfigDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"useTabBarConfig"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"activeConfiguration"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"key"},"value":{"kind":"StringValue","value":"TAB_BAR_CONFIG","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SimpleConfig"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SimpleConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<GqlPublicUseTabBarConfigQuery, GqlPublicUseTabBarConfigQueryVariables>;
-export const AuthStateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AuthState"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"loginState"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}}]}},{"kind":"Field","name":{"kind":"Name","value":"loggedIn"}},{"kind":"Field","name":{"kind":"Name","value":"authSource"}}]}}]}}]} as unknown as DocumentNode<GqlPublicAuthStateQuery, GqlPublicAuthStateQueryVariables>;
-export const SetDeviceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SetDevice"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RegisterDeviceInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerDevice"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<GqlPublicSetDeviceMutation, GqlPublicSetDeviceMutationVariables>;
-export const DeviceNotificationsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"DeviceNotifications"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"deviceUuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"verifier"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"device"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"deviceUuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"notificationDeliveries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"verifier"},"value":{"kind":"Variable","name":{"kind":"Name","value":"verifier"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NotificationDeliveryFragment"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"url"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationDeliveryFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationDeliveryResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"sentAt"}},{"kind":"Field","name":{"kind":"Name","value":"notification"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NotificationFragment"}}]}}]}}]} as unknown as DocumentNode<GqlPublicDeviceNotificationsQuery, GqlPublicDeviceNotificationsQueryVariables>;
-export const RootScreenDocumentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RootScreenDocument"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginState"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProfileScreenAuthFragment"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"RootScreenAuthFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProfileScreenUserFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProfileScreenAuthFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LoginState"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"dbRole"}}]}},{"kind":"Field","name":{"kind":"Name","value":"authSource"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RootScreenAuthFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LoginState"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProfileScreenUserFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GqlPublicRootScreenDocumentQuery, GqlPublicRootScreenDocumentQueryVariables>;
-export const EventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Events"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"earliestTimestamp"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LuxonDateTime"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"lastTimestamp"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LuxonDateTime"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"events"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"dateFilters"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"comparison"},"value":{"kind":"EnumValue","value":"GREATER_THAN_OR_EQUAL_TO"}},{"kind":"ObjectField","name":{"kind":"Name","value":"field"},"value":{"kind":"EnumValue","value":"occurrenceStart"}},{"kind":"ObjectField","name":{"kind":"Name","value":"value"},"value":{"kind":"Variable","name":{"kind":"Name","value":"earliestTimestamp"}}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"comparison"},"value":{"kind":"EnumValue","value":"LESS_THAN_OR_EQUAL_TO"}},{"kind":"ObjectField","name":{"kind":"Name","value":"field"},"value":{"kind":"EnumValue","value":"occurrenceStart"}},{"kind":"ObjectField","name":{"kind":"Name","value":"value"},"value":{"kind":"Variable","name":{"kind":"Name","value":"lastTimestamp"}}}]}]}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"EnumValue","value":"ASCENDING"}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"StringValue","value":"occurrence","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventScreenFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventScreenFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}}]}}]}}]} as unknown as DocumentNode<GqlPublicEventsQuery, GqlPublicEventsQueryVariables>;
-export const ScoreBoardDocumentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ScoreBoardDocument"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"HighlightedTeamFragment"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MyTeamFragment"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"sendAll"},"value":{"kind":"BooleanValue","value":true}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"totalPoints","block":false},{"kind":"StringValue","value":"name","block":false}]}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"DESCENDING"},{"kind":"EnumValue","value":"ASCENDING"}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ScoreBoardFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"HighlightedTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"pointEntries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personFrom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"points"}}]}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScoreBoardFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<GqlPublicScoreBoardDocumentQuery, GqlPublicScoreBoardDocumentQueryVariables>;
+export const SimpleConfigFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SimpleConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<SimpleConfigFragment, unknown>;
+export const FullConfigFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FullConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SimpleConfig"}},{"kind":"Field","name":{"kind":"Name","value":"validAfter"}},{"kind":"Field","name":{"kind":"Name","value":"validUntil"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SimpleConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<FullConfigFragment, unknown>;
+export const NotificationFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]} as unknown as DocumentNode<NotificationFragmentFragment, unknown>;
+export const NotificationDeliveryFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationDeliveryFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationDeliveryResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"sentAt"}},{"kind":"Field","name":{"kind":"Name","value":"notification"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NotificationFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]} as unknown as DocumentNode<NotificationDeliveryFragmentFragment, unknown>;
+export const EventScreenFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventScreenFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}}]}}]}}]} as unknown as DocumentNode<EventScreenFragmentFragment, unknown>;
+export const ProfileScreenAuthFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProfileScreenAuthFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LoginState"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"dbRole"}}]}},{"kind":"Field","name":{"kind":"Name","value":"authSource"}}]}}]} as unknown as DocumentNode<ProfileScreenAuthFragmentFragment, unknown>;
+export const ProfileScreenUserFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProfileScreenUserFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<ProfileScreenUserFragmentFragment, unknown>;
+export const RootScreenAuthFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RootScreenAuthFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LoginState"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}}]}}]}}]} as unknown as DocumentNode<RootScreenAuthFragmentFragment, unknown>;
+export const ScoreBoardFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScoreBoardFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<ScoreBoardFragmentFragment, unknown>;
+export const HighlightedTeamFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"HighlightedTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<HighlightedTeamFragmentFragment, unknown>;
+export const MyTeamFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"pointEntries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personFrom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"points"}}]}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<MyTeamFragmentFragment, unknown>;
+export const UseAllowedLoginTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"useAllowedLoginTypes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"activeConfiguration"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"key"},"value":{"kind":"StringValue","value":"ALLOWED_LOGIN_TYPES","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SimpleConfig"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SimpleConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<UseAllowedLoginTypesQuery, UseAllowedLoginTypesQueryVariables>;
+export const UseTabBarConfigDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"useTabBarConfig"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"activeConfiguration"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"key"},"value":{"kind":"StringValue","value":"TAB_BAR_CONFIG","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SimpleConfig"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SimpleConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<UseTabBarConfigQuery, UseTabBarConfigQueryVariables>;
+export const AuthStateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AuthState"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"loginState"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}}]}},{"kind":"Field","name":{"kind":"Name","value":"loggedIn"}},{"kind":"Field","name":{"kind":"Name","value":"authSource"}}]}}]}}]} as unknown as DocumentNode<AuthStateQuery, AuthStateQueryVariables>;
+export const SetDeviceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SetDevice"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RegisterDeviceInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerDevice"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<SetDeviceMutation, SetDeviceMutationVariables>;
+export const DeviceNotificationsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"DeviceNotifications"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"deviceUuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"verifier"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"device"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"deviceUuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"notificationDeliveries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"verifier"},"value":{"kind":"Variable","name":{"kind":"Name","value":"verifier"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NotificationDeliveryFragment"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"url"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationDeliveryFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationDeliveryResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"sentAt"}},{"kind":"Field","name":{"kind":"Name","value":"notification"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NotificationFragment"}}]}}]}}]} as unknown as DocumentNode<DeviceNotificationsQuery, DeviceNotificationsQueryVariables>;
+export const RootScreenDocumentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RootScreenDocument"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginState"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProfileScreenAuthFragment"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"RootScreenAuthFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProfileScreenUserFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProfileScreenAuthFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LoginState"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"dbRole"}}]}},{"kind":"Field","name":{"kind":"Name","value":"authSource"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RootScreenAuthFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LoginState"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProfileScreenUserFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<RootScreenDocumentQuery, RootScreenDocumentQueryVariables>;
+export const EventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Events"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"earliestTimestamp"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LuxonDateTime"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"lastTimestamp"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LuxonDateTime"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"events"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"dateFilters"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"comparison"},"value":{"kind":"EnumValue","value":"GREATER_THAN_OR_EQUAL_TO"}},{"kind":"ObjectField","name":{"kind":"Name","value":"field"},"value":{"kind":"EnumValue","value":"occurrenceStart"}},{"kind":"ObjectField","name":{"kind":"Name","value":"value"},"value":{"kind":"Variable","name":{"kind":"Name","value":"earliestTimestamp"}}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"comparison"},"value":{"kind":"EnumValue","value":"LESS_THAN_OR_EQUAL_TO"}},{"kind":"ObjectField","name":{"kind":"Name","value":"field"},"value":{"kind":"EnumValue","value":"occurrenceStart"}},{"kind":"ObjectField","name":{"kind":"Name","value":"value"},"value":{"kind":"Variable","name":{"kind":"Name","value":"lastTimestamp"}}}]}]}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"EnumValue","value":"ASCENDING"}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"StringValue","value":"occurrence","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventScreenFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventScreenFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}}]}}]}}]} as unknown as DocumentNode<EventsQuery, EventsQueryVariables>;
+export const ScoreBoardDocumentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ScoreBoardDocument"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"HighlightedTeamFragment"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MyTeamFragment"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"sendAll"},"value":{"kind":"BooleanValue","value":true}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"totalPoints","block":false},{"kind":"StringValue","value":"name","block":false}]}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"DESCENDING"},{"kind":"EnumValue","value":"ASCENDING"}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ScoreBoardFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"HighlightedTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"pointEntries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personFrom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"points"}}]}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScoreBoardFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<ScoreBoardDocumentQuery, ScoreBoardDocumentQueryVariables>;
