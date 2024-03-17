@@ -108,6 +108,14 @@ export class MarathonRepository {
     return this.prisma.marathon.count({ where });
   }
 
+  async getMarathonHours(param: UniqueMarathonParam) {
+    const rows = await this.prisma.marathon.findUnique({
+      where: param,
+      include: { hours: true },
+    });
+    return rows?.hours ?? [];
+  }
+
   createMarathon({
     year,
     startDate,

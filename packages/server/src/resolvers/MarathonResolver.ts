@@ -2,6 +2,7 @@ import {
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
+  MarathonHourResource,
   MarathonResource,
 } from "@ukdanceblue/common";
 import { DateResolver, VoidResolver } from "graphql-scalars";
@@ -10,16 +11,19 @@ import {
   Args,
   ArgsType,
   Field,
+  FieldResolver,
   InputType,
   Mutation,
   ObjectType,
   Query,
   Resolver,
+  Root,
 } from "type-graphql";
 import { Service } from "typedi";
 
 import { MarathonRepository } from "../repositories/marathon/MarathonRepository.js";
 import { marathonModelToResource } from "../repositories/marathon/marathonModelToResource.js";
+import { marathonHourModelToResource } from "../repositories/marathonHour/marathonHourModelToResource.js";
 
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
@@ -153,5 +157,13 @@ export class MarathonResolver {
     if (marathon == null) {
       throw new DetailedError(ErrorCode.NotFound, "Marathon not found");
     }
+  }
+
+  @FieldResolver(() => [MarathonHourResource])
+  async hours(@Root() marathon: MarathonResource) {
+    const rows = await this.marathonRepository.getMarathonHours({
+      uuid: marathon.uuid,
+    });
+    return rows.map(marathonHourModelToResource);
   }
 }

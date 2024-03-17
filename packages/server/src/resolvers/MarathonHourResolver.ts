@@ -36,13 +36,13 @@ class ListMarathonHoursResponse extends AbstractGraphQLPaginatedResponse<Maratho
 
 @InputType()
 class CreateMarathonHourInput {
-  @Field()
+  @Field(() => String)
   title!: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   details?: string | null;
 
-  @Field()
+  @Field(() => String)
   durationInfo!: string;
 
   @Field(() => DateResolver)
@@ -51,13 +51,13 @@ class CreateMarathonHourInput {
 
 @InputType()
 class SetMarathonHourInput {
-  @Field()
+  @Field(() => String)
   title!: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   details?: string | null;
 
-  @Field()
+  @Field(() => String)
   durationInfo!: string;
 
   @Field(() => DateResolver)

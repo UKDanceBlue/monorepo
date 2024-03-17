@@ -9,6 +9,8 @@ import { DeviceResolver } from "../resolvers/DeviceResolver.js";
 import { EventResolver } from "../resolvers/EventResolver.js";
 import { ImageResolver } from "../resolvers/ImageResolver.js";
 import { LoginStateResolver } from "../resolvers/LoginState.js";
+import { MarathonHourResolver } from "../resolvers/MarathonHourResolver.js";
+import { MarathonResolver } from "../resolvers/MarathonResolver.js";
 import { MembershipResolver } from "../resolvers/MembershipResolver.js";
 import {
   NotificationDeliveryResolver,
@@ -48,6 +50,8 @@ export default await buildSchema({
     LoginStateResolver,
     PointEntryResolver,
     PointOpportunityResolver,
+    MarathonHourResolver,
+    MarathonResolver,
   ],
   emitSchemaFile: schemaPath,
   globalMiddlewares: [errorHandlingMiddleware],
