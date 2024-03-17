@@ -7,7 +7,7 @@ import { DateTime, Interval } from "luxon";
 import { thumbHashToDataURL } from "thumbhash";
 import type { UseQueryExecute } from "urql";
 
-import { EventOccurrencePicker } from "../components/EventOccurrencePicker";
+import { EventOccurrencePicker } from "../../../../elements/components/event/EventOccurrencePicker";
 
 import { EventEditorFragment } from "./EventEditorGQL";
 import { useEventEditorForm } from "./useEventEditorForm";

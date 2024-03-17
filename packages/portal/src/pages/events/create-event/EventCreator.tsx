@@ -2,7 +2,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { App, Button, Form, Input, List } from "antd";
 import { Interval } from "luxon";
 
-import { EventOccurrencePicker } from "../components/EventOccurrencePicker";
+import { EventOccurrencePicker } from "../../../elements/components/event/EventOccurrencePicker";
 
 import { useEventCreatorForm } from "./useEventCreatorForm";
 
