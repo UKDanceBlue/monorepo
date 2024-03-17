@@ -21,5 +21,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "isolatedModules": true
-  }
+  },
+  "include": ["./*.ts"]
 }

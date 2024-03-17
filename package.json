@@ -12,6 +12,7 @@
     "repo:test-ui": "vitest --ui --coverage",
     "repo:coverage": "vitest run --coverage",
     "repo:coverage-browser": "vitest run --coverage --reporter html && yarn dlx vite preview --outDir html",
+    "repo:typecheck": "yarn workspace @ukdanceblue/common tsc --noEmit && yarn workspace @ukdanceblue/server tsc --noEmit && yarn workspace @ukdanceblue/portal tsc --noEmit && yarn workspace @ukdanceblue/mobile tsc --noEmit",
     "gql:build": "graphql-codegen-esm --config codegen.ts",
     "gql:watch": "graphql-codegen-esm --config codegen.ts -w ./packages",
     "common:watch": "yarn workspace @ukdanceblue/common run watch",
