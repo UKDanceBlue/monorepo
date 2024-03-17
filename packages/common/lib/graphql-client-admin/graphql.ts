@@ -24,6 +24,10 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
+  Date: { input: Date | string; output: Date | string; }
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
+  DateTime: { input: Date | string; output: Date | string; }
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format. */
   DateTimeISO: { input: Date | string; output: Date | string; }
   /** A field whose value conforms to the standard internet email address format as specified in HTML Spec: https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address. */
@@ -169,6 +173,19 @@ export type CreateImageResponse = AbstractGraphQlCreatedResponse & AbstractGraph
   readonly data: ImageResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
+};
+
+export type CreateMarathonHourInput = {
+  readonly details?: InputMaybe<Scalars['String']['input']>;
+  readonly durationInfo: Scalars['String']['input'];
+  readonly shownStartingAt: Scalars['Date']['input'];
+  readonly title: Scalars['String']['input'];
+};
+
+export type CreateMarathonInput = {
+  readonly endDate: Scalars['Date']['input'];
+  readonly startDate: Scalars['Date']['input'];
+  readonly year: Scalars['String']['input'];
 };
 
 export type CreatePersonInput = {
@@ -534,6 +551,18 @@ export type ListEventsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQ
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
+export type ListMarathonsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'ListMarathonsResponse';
+  readonly data: ReadonlyArray<MarathonResource>;
+  readonly ok: Scalars['Boolean']['output'];
+  /** The current page number (1-indexed) */
+  readonly page: Scalars['PositiveInt']['output'];
+  /** The number of items per page */
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
+  /** The total number of items */
+  readonly total: Scalars['NonNegativeInt']['output'];
+};
+
 export type ListNotificationDeliveriesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListNotificationDeliveriesResponse';
   readonly data: ReadonlyArray<NotificationDeliveryResource>;
@@ -613,6 +642,63 @@ export type LoginState = {
   readonly role: RoleResource;
 };
 
+export type MarathonHourResource = {
+  readonly __typename?: 'MarathonHourResource';
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly details?: Maybe<Scalars['String']['output']>;
+  readonly durationInfo: Scalars['String']['output'];
+  readonly mapImages: ReadonlyArray<ImageResource>;
+  readonly shownStartingAt: Scalars['DateTime']['output'];
+  readonly title: Scalars['String']['output'];
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly uuid: Scalars['ID']['output'];
+};
+
+export const MarathonResolverAllKeys = {
+  CreatedAt: 'createdAt',
+  EndDate: 'endDate',
+  StartDate: 'startDate',
+  UpdatedAt: 'updatedAt',
+  Year: 'year'
+} as const;
+
+export type MarathonResolverAllKeys = typeof MarathonResolverAllKeys[keyof typeof MarathonResolverAllKeys];
+export const MarathonResolverDateFilterKeys = {
+  CreatedAt: 'createdAt',
+  EndDate: 'endDate',
+  StartDate: 'startDate',
+  UpdatedAt: 'updatedAt'
+} as const;
+
+export type MarathonResolverDateFilterKeys = typeof MarathonResolverDateFilterKeys[keyof typeof MarathonResolverDateFilterKeys];
+export type MarathonResolverKeyedDateFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: NumericComparator;
+  /** The field to filter on */
+  readonly field: MarathonResolverDateFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['LuxonDateTime']['input'];
+};
+
+export type MarathonResolverKeyedIsNullFilterItem = {
+  /** The field to filter on */
+  readonly field: MarathonResolverAllKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type MarathonResource = {
+  readonly __typename?: 'MarathonResource';
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly endDate: Scalars['DateTime']['output'];
+  readonly hours: ReadonlyArray<MarathonHourResource>;
+  readonly startDate: Scalars['DateTime']['output'];
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly uuid: Scalars['ID']['output'];
+  readonly year: Scalars['String']['output'];
+};
+
 export { MembershipPositionType };
 
 export type MembershipResource = {
@@ -631,10 +717,13 @@ export type Mutation = {
   readonly acknowledgeDeliveryIssue: AcknowledgeDeliveryIssueResponse;
   readonly addExistingImageToEvent: AddEventImageResponse;
   readonly addImageToEvent: AddEventImageResponse;
+  readonly addMap: MarathonHourResource;
   readonly createConfiguration: CreateConfigurationResponse;
   readonly createConfigurations: CreateConfigurationResponse;
   readonly createEvent: CreateEventResponse;
   readonly createImage: CreateImageResponse;
+  readonly createMarathon: MarathonResource;
+  readonly createMarathonHour: MarathonHourResource;
   readonly createPerson: CreatePersonResponse;
   readonly createPointEntry: CreatePointEntryResponse;
   readonly createPointOpportunity: CreatePointOpportunityResponse;
@@ -643,6 +732,8 @@ export type Mutation = {
   readonly deleteDevice: DeleteDeviceResponse;
   readonly deleteEvent: DeleteEventResponse;
   readonly deleteImage: DeleteImageResponse;
+  readonly deleteMarathon: Scalars['Void']['output'];
+  readonly deleteMarathonHour: Scalars['Void']['output'];
   readonly deleteNotification: DeleteNotificationResponse;
   readonly deletePerson: DeletePersonResponse;
   readonly deletePointEntry: DeletePointEntryResponse;
@@ -650,10 +741,13 @@ export type Mutation = {
   readonly deleteTeam: DeleteTeamResponse;
   readonly registerDevice: RegisterDeviceResponse;
   readonly removeImageFromEvent: RemoveEventImageResponse;
+  readonly removeMap: Scalars['Void']['output'];
   readonly scheduleNotification: ScheduleNotificationResponse;
   /** Send a notification immediately. */
   readonly sendNotification: SendNotificationResponse;
   readonly setEvent: SetEventResponse;
+  readonly setMarathon: MarathonResource;
+  readonly setMarathonHour: MarathonHourResource;
   readonly setPerson: GetPersonResponse;
   readonly setPointOpportunity: SinglePointOpportunityResponse;
   readonly setTeam: SingleTeamResponse;
@@ -683,6 +777,12 @@ export type MutationAddImageToEventArgs = {
 };
 
 
+export type MutationAddMapArgs = {
+  imageUuid: Scalars['String']['input'];
+  uuid: Scalars['String']['input'];
+};
+
+
 export type MutationCreateConfigurationArgs = {
   input: CreateConfigurationInput;
 };
@@ -700,6 +800,17 @@ export type MutationCreateEventArgs = {
 
 export type MutationCreateImageArgs = {
   input: CreateImageInput;
+};
+
+
+export type MutationCreateMarathonArgs = {
+  input: CreateMarathonInput;
+};
+
+
+export type MutationCreateMarathonHourArgs = {
+  input: CreateMarathonHourInput;
+  marathonUuid: Scalars['String']['input'];
 };
 
 
@@ -743,6 +854,16 @@ export type MutationDeleteImageArgs = {
 };
 
 
+export type MutationDeleteMarathonArgs = {
+  uuid: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteMarathonHourArgs = {
+  uuid: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteNotificationArgs = {
   force?: InputMaybe<Scalars['Boolean']['input']>;
   uuid: Scalars['String']['input'];
@@ -780,6 +901,12 @@ export type MutationRemoveImageFromEventArgs = {
 };
 
 
+export type MutationRemoveMapArgs = {
+  imageUuid: Scalars['String']['input'];
+  uuid: Scalars['String']['input'];
+};
+
+
 export type MutationScheduleNotificationArgs = {
   sendAt: Scalars['DateTimeISO']['input'];
   uuid: Scalars['String']['input'];
@@ -793,6 +920,18 @@ export type MutationSendNotificationArgs = {
 
 export type MutationSetEventArgs = {
   input: SetEventInput;
+  uuid: Scalars['String']['input'];
+};
+
+
+export type MutationSetMarathonArgs = {
+  input: SetMarathonInput;
+  uuid: Scalars['String']['input'];
+};
+
+
+export type MutationSetMarathonHourArgs = {
+  input: SetMarathonHourInput;
   uuid: Scalars['String']['input'];
 };
 
@@ -1154,6 +1293,7 @@ export type Query = {
   readonly __typename?: 'Query';
   readonly activeConfiguration: GetConfigurationByUuidResponse;
   readonly allConfigurations: GetAllConfigurationsResponse;
+  readonly currentMarathon?: Maybe<MarathonResource>;
   readonly device: GetDeviceByUuidResponse;
   readonly devices: ListDevicesResponse;
   readonly event: GetEventByUuidResponse;
@@ -1161,7 +1301,12 @@ export type Query = {
   readonly image: GetImageByUuidResponse;
   readonly listPeople: ListPeopleResponse;
   readonly loginState: LoginState;
+  readonly marathon: MarathonResource;
+  readonly marathonForYear: MarathonResource;
+  readonly marathonHour: MarathonHourResource;
+  readonly marathons: ListMarathonsResponse;
   readonly me: GetPersonResponse;
+  readonly nextMarathon?: Maybe<MarathonResource>;
   readonly notification: GetNotificationByUuidResponse;
   readonly notificationDeliveries: ListNotificationDeliveriesResponse;
   readonly notifications: ListNotificationsResponse;
@@ -1242,6 +1387,37 @@ export type QueryListPeopleArgs = {
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
   stringFilters?: InputMaybe<ReadonlyArray<PersonResolverKeyedStringFilterItem>>;
+};
+
+
+export type QueryMarathonArgs = {
+  uuid: Scalars['String']['input'];
+};
+
+
+export type QueryMarathonForYearArgs = {
+  year: Scalars['String']['input'];
+};
+
+
+export type QueryMarathonHourArgs = {
+  uuid: Scalars['String']['input'];
+};
+
+
+export type QueryMarathonsArgs = {
+  booleanFilters?: InputMaybe<Scalars['Void']['input']>;
+  dateFilters?: InputMaybe<ReadonlyArray<MarathonResolverKeyedDateFilterItem>>;
+  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  isNullFilters?: InputMaybe<ReadonlyArray<MarathonResolverKeyedIsNullFilterItem>>;
+  numericFilters?: InputMaybe<Scalars['Void']['input']>;
+  oneOfFilters?: InputMaybe<Scalars['Void']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sendAll?: InputMaybe<Scalars['Boolean']['input']>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<Scalars['Void']['input']>;
 };
 
 
@@ -1430,6 +1606,19 @@ export type SetEventResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse &
   readonly __typename?: 'SetEventResponse';
   readonly data: EventResource;
   readonly ok: Scalars['Boolean']['output'];
+};
+
+export type SetMarathonHourInput = {
+  readonly details?: InputMaybe<Scalars['String']['input']>;
+  readonly durationInfo: Scalars['String']['input'];
+  readonly shownStartingAt: Scalars['Date']['input'];
+  readonly title: Scalars['String']['input'];
+};
+
+export type SetMarathonInput = {
+  readonly endDate: Scalars['Date']['input'];
+  readonly startDate: Scalars['Date']['input'];
+  readonly year: Scalars['String']['input'];
 };
 
 export type SetPersonInput = {
@@ -1864,6 +2053,8 @@ export type ViewEventPageQuery = { readonly __typename?: 'Query', readonly event
       & { ' $fragmentRefs'?: { 'EventViewerFragmentFragment': EventViewerFragmentFragment } }
     ) } };
 
+export type MarathonTableFragmentFragment = { readonly __typename?: 'MarathonResource', readonly uuid: string, readonly year: string, readonly startDate: Date | string, readonly endDate: Date | string } & { ' $fragmentName'?: 'MarathonTableFragmentFragment' };
+
 export type NotificationManagerQueryVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
@@ -1953,6 +2144,7 @@ export const ConfigFragmentFragmentDoc = {"kind":"Document","definitions":[{"kin
 export const EventsTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"summary"}}]}}]} as unknown as DocumentNode<EventsTableFragmentFragment, unknown>;
 export const EventEditorFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}}]}}]}}]} as unknown as DocumentNode<EventEditorFragmentFragment, unknown>;
 export const EventViewerFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventViewerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<EventViewerFragmentFragment, unknown>;
+export const MarathonTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MarathonTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MarathonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}}]}}]} as unknown as DocumentNode<MarathonTableFragmentFragment, unknown>;
 export const CreateNotificationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateNotification"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"title"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"audience"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationAudienceInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"url"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stageNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"title"},"value":{"kind":"Variable","name":{"kind":"Name","value":"title"}}},{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}},{"kind":"Argument","name":{"kind":"Name","value":"audience"},"value":{"kind":"Variable","name":{"kind":"Name","value":"audience"}}},{"kind":"Argument","name":{"kind":"Name","value":"url"},"value":{"kind":"Variable","name":{"kind":"Name","value":"url"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]} as unknown as DocumentNode<CreateNotificationMutation, CreateNotificationMutationVariables>;
 export const CancelNotificationScheduleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CancelNotificationSchedule"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"abortScheduledNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<CancelNotificationScheduleMutation, CancelNotificationScheduleMutationVariables>;
 export const DeleteNotificationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteNotification"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"force"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}},{"kind":"Argument","name":{"kind":"Name","value":"force"},"value":{"kind":"Variable","name":{"kind":"Name","value":"force"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<DeleteNotificationMutation, DeleteNotificationMutationVariables>;
