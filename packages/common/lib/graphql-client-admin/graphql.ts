@@ -1,11 +1,14 @@
 /* eslint-disable */
-import type { StringComparator } from '../api/request/ListQueryTypes.js';
-import type { NumericComparator } from '../api/request/ListQueryTypes.js';
-import type { SortDirection } from '../api/request/ListQueryTypes.js';
-import type { TeamType } from '../api/graphql/object-types/Team.js';
-import type { AuthSource } from '../auth/index.js';
-import type { DbRole } from '../auth/index.js';
-import type { CommitteeRole } from '../auth/index.js';
+import type { AuthSource } from '../index.js';
+import type { DbRole } from '../index.js';
+import type { CommitteeRole } from '../index.js';
+import type { CommitteeIdentifier } from '../index.js';
+import type { MembershipPositionType } from '../index.js';
+import type { TeamLegacyStatus } from '../index.js';
+import type { TeamType } from '../index.js';
+import type { SortDirection } from '../index.js';
+import type { NumericComparator } from '../index.js';
+import type { StringComparator } from '../index.js';
 import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -39,30 +42,30 @@ export type Scalars = {
   Void: { input: void; output: void; }
 };
 
-export type AbortScheduledNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminAbortScheduledNotificationResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'AbortScheduledNotificationResponse';
   readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
 };
 
 /** API response */
-export type AbstractGraphQlArrayOkResponse = {
+export type GqlAdminAbstractGraphQlArrayOkResponse = {
   readonly ok: Scalars['Boolean']['output'];
 };
 
 /** API response */
-export type AbstractGraphQlCreatedResponse = {
+export type GqlAdminAbstractGraphQlCreatedResponse = {
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
 /** API response */
-export type AbstractGraphQlOkResponse = {
+export type GqlAdminAbstractGraphQlOkResponse = {
   readonly ok: Scalars['Boolean']['output'];
 };
 
 /** API response */
-export type AbstractGraphQlPaginatedResponse = {
+export type GqlAdminAbstractGraphQlPaginatedResponse = {
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -72,13 +75,13 @@ export type AbstractGraphQlPaginatedResponse = {
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type AcknowledgeDeliveryIssueResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminAcknowledgeDeliveryIssueResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'AcknowledgeDeliveryIssueResponse';
   readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type AddEventImageInput = {
+export type GqlAdminAddEventImageInput = {
   readonly alt?: InputMaybe<Scalars['String']['input']>;
   readonly height: Scalars['Int']['input'];
   readonly imageData?: InputMaybe<Scalars['String']['input']>;
@@ -88,13 +91,13 @@ export type AddEventImageInput = {
   readonly width: Scalars['Int']['input'];
 };
 
-export type AddEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminAddEventImageResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'AddEventImageResponse';
-  readonly data: ImageResource;
+  readonly data: GqlAdminImageResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type AuthIdPairResource = {
+export type GqlAdminAuthIdPairResource = {
   readonly __typename?: 'AuthIdPairResource';
   readonly source: AuthSource;
   readonly value: Scalars['String']['output'];
@@ -102,25 +105,11 @@ export type AuthIdPairResource = {
 
 export { AuthSource };
 
-/** The identifier for a committee */
-export const CommitteeIdentifier = {
-  CommunityDevelopmentCommittee: 'communityDevelopmentCommittee',
-  CorporateCommittee: 'corporateCommittee',
-  DancerRelationsCommittee: 'dancerRelationsCommittee',
-  FamilyRelationsCommittee: 'familyRelationsCommittee',
-  FundraisingCommittee: 'fundraisingCommittee',
-  MarketingCommittee: 'marketingCommittee',
-  MiniMarathonsCommittee: 'miniMarathonsCommittee',
-  OperationsCommittee: 'operationsCommittee',
-  ProgrammingCommittee: 'programmingCommittee',
-  TechCommittee: 'techCommittee',
-  ViceCommittee: 'viceCommittee'
-} as const;
+export { CommitteeIdentifier };
 
-export type CommitteeIdentifier = typeof CommitteeIdentifier[keyof typeof CommitteeIdentifier];
 export { CommitteeRole };
 
-export type ConfigurationResource = {
+export type GqlAdminConfigurationResource = {
   readonly __typename?: 'ConfigurationResource';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly key: Scalars['String']['output'];
@@ -131,41 +120,41 @@ export type ConfigurationResource = {
   readonly value: Scalars['String']['output'];
 };
 
-export type CreateConfigurationInput = {
+export type GqlAdminCreateConfigurationInput = {
   readonly key: Scalars['String']['input'];
   readonly validAfter?: InputMaybe<Scalars['LuxonDateTime']['input']>;
   readonly validUntil?: InputMaybe<Scalars['LuxonDateTime']['input']>;
   readonly value: Scalars['String']['input'];
 };
 
-export type CreateConfigurationResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminCreateConfigurationResponse = GqlAdminAbstractGraphQlCreatedResponse & GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'CreateConfigurationResponse';
-  readonly data: ConfigurationResource;
+  readonly data: GqlAdminConfigurationResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
-export type CreateEventInput = {
+export type GqlAdminCreateEventInput = {
   readonly description?: InputMaybe<Scalars['String']['input']>;
   readonly location?: InputMaybe<Scalars['String']['input']>;
-  readonly occurrences: ReadonlyArray<CreateEventOccurrenceInput>;
+  readonly occurrences: ReadonlyArray<GqlAdminCreateEventOccurrenceInput>;
   readonly summary?: InputMaybe<Scalars['String']['input']>;
   readonly title: Scalars['String']['input'];
 };
 
-export type CreateEventOccurrenceInput = {
+export type GqlAdminCreateEventOccurrenceInput = {
   readonly fullDay: Scalars['Boolean']['input'];
   readonly interval: Scalars['LuxonDateRange']['input'];
 };
 
-export type CreateEventResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminCreateEventResponse = GqlAdminAbstractGraphQlCreatedResponse & GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'CreateEventResponse';
-  readonly data: EventResource;
+  readonly data: GqlAdminEventResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
-export type CreateImageInput = {
+export type GqlAdminCreateImageInput = {
   readonly alt?: InputMaybe<Scalars['String']['input']>;
   readonly height: Scalars['NonNegativeInt']['input'];
   readonly imageData?: InputMaybe<Scalars['String']['input']>;
@@ -175,30 +164,30 @@ export type CreateImageInput = {
   readonly width: Scalars['NonNegativeInt']['input'];
 };
 
-export type CreateImageResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminCreateImageResponse = GqlAdminAbstractGraphQlCreatedResponse & GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'CreateImageResponse';
-  readonly data: ImageResource;
+  readonly data: GqlAdminImageResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
-export type CreatePersonInput = {
+export type GqlAdminCreatePersonInput = {
   readonly captainOf?: ReadonlyArray<Scalars['String']['input']>;
   readonly email: Scalars['EmailAddress']['input'];
   readonly linkblue?: InputMaybe<Scalars['String']['input']>;
   readonly memberOf?: ReadonlyArray<Scalars['String']['input']>;
   readonly name?: InputMaybe<Scalars['String']['input']>;
-  readonly role?: InputMaybe<RoleResourceInput>;
+  readonly role?: InputMaybe<GqlAdminRoleResourceInput>;
 };
 
-export type CreatePersonResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminCreatePersonResponse = GqlAdminAbstractGraphQlCreatedResponse & GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'CreatePersonResponse';
-  readonly data: PersonResource;
+  readonly data: GqlAdminPersonResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
-export type CreatePointEntryInput = {
+export type GqlAdminCreatePointEntryInput = {
   readonly comment?: InputMaybe<Scalars['String']['input']>;
   readonly opportunityUuid?: InputMaybe<Scalars['String']['input']>;
   readonly personFromUuid?: InputMaybe<Scalars['String']['input']>;
@@ -206,28 +195,28 @@ export type CreatePointEntryInput = {
   readonly teamUuid: Scalars['String']['input'];
 };
 
-export type CreatePointEntryResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminCreatePointEntryResponse = GqlAdminAbstractGraphQlCreatedResponse & GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'CreatePointEntryResponse';
-  readonly data: PointEntryResource;
+  readonly data: GqlAdminPointEntryResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
-export type CreatePointOpportunityInput = {
+export type GqlAdminCreatePointOpportunityInput = {
   readonly eventUuid?: InputMaybe<Scalars['ID']['input']>;
   readonly name: Scalars['String']['input'];
   readonly opportunityDate?: InputMaybe<Scalars['LuxonDateTime']['input']>;
   readonly type: TeamType;
 };
 
-export type CreatePointOpportunityResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminCreatePointOpportunityResponse = GqlAdminAbstractGraphQlCreatedResponse & GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'CreatePointOpportunityResponse';
-  readonly data: PointOpportunityResource;
+  readonly data: GqlAdminPointOpportunityResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
-export type CreateTeamInput = {
+export type GqlAdminCreateTeamInput = {
   readonly legacyStatus: TeamLegacyStatus;
   readonly marathonYear: Scalars['String']['input'];
   readonly name: Scalars['String']['input'];
@@ -235,94 +224,94 @@ export type CreateTeamInput = {
   readonly type: TeamType;
 };
 
-export type CreateTeamResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminCreateTeamResponse = GqlAdminAbstractGraphQlCreatedResponse & GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'CreateTeamResponse';
-  readonly data: TeamResource;
+  readonly data: GqlAdminTeamResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
 export { DbRole };
 
-export type DeleteConfigurationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminDeleteConfigurationResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'DeleteConfigurationResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type DeleteDeviceResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminDeleteDeviceResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'DeleteDeviceResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type DeleteEventResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminDeleteEventResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'DeleteEventResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type DeleteImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminDeleteImageResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'DeleteImageResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type DeleteNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminDeleteNotificationResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'DeleteNotificationResponse';
   readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type DeletePersonResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminDeletePersonResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'DeletePersonResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type DeletePointEntryResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminDeletePointEntryResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'DeletePointEntryResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type DeletePointOpportunityResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminDeletePointOpportunityResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'DeletePointOpportunityResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type DeleteTeamResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminDeleteTeamResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'DeleteTeamResponse';
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export const DeviceResolverAllKeys = {
+export const GqlAdminDeviceResolverAllKeys = {
   CreatedAt: 'createdAt',
   ExpoPushToken: 'expoPushToken',
   LastSeen: 'lastSeen',
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type DeviceResolverAllKeys = typeof DeviceResolverAllKeys[keyof typeof DeviceResolverAllKeys];
-export const DeviceResolverDateFilterKeys = {
+export type GqlAdminDeviceResolverAllKeys = typeof GqlAdminDeviceResolverAllKeys[keyof typeof GqlAdminDeviceResolverAllKeys];
+export const GqlAdminDeviceResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
   LastSeen: 'lastSeen',
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type DeviceResolverDateFilterKeys = typeof DeviceResolverDateFilterKeys[keyof typeof DeviceResolverDateFilterKeys];
-export type DeviceResolverKeyedDateFilterItem = {
+export type GqlAdminDeviceResolverDateFilterKeys = typeof GqlAdminDeviceResolverDateFilterKeys[keyof typeof GqlAdminDeviceResolverDateFilterKeys];
+export type GqlAdminDeviceResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
-  readonly field: DeviceResolverDateFilterKeys;
+  readonly field: GqlAdminDeviceResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['LuxonDateTime']['input'];
 };
 
-export type DeviceResolverKeyedIsNullFilterItem = {
+export type GqlAdminDeviceResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: DeviceResolverAllKeys;
+  readonly field: GqlAdminDeviceResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type DeviceResolverKeyedOneOfFilterItem = {
+export type GqlAdminDeviceResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
   readonly field: Scalars['Void']['input'];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
@@ -330,47 +319,47 @@ export type DeviceResolverKeyedOneOfFilterItem = {
   readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
-export type DeviceResolverKeyedStringFilterItem = {
+export type GqlAdminDeviceResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
-  readonly field: DeviceResolverStringFilterKeys;
+  readonly field: GqlAdminDeviceResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['String']['input'];
 };
 
-export const DeviceResolverStringFilterKeys = {
+export const GqlAdminDeviceResolverStringFilterKeys = {
   ExpoPushToken: 'expoPushToken'
 } as const;
 
-export type DeviceResolverStringFilterKeys = typeof DeviceResolverStringFilterKeys[keyof typeof DeviceResolverStringFilterKeys];
-export type DeviceResource = {
+export type GqlAdminDeviceResolverStringFilterKeys = typeof GqlAdminDeviceResolverStringFilterKeys[keyof typeof GqlAdminDeviceResolverStringFilterKeys];
+export type GqlAdminDeviceResource = {
   readonly __typename?: 'DeviceResource';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly expoPushToken?: Maybe<Scalars['String']['output']>;
-  readonly lastLoggedInUser?: Maybe<PersonResource>;
+  readonly lastLoggedInUser?: Maybe<GqlAdminPersonResource>;
   readonly lastLogin?: Maybe<Scalars['LuxonDateTime']['output']>;
-  readonly notificationDeliveries: ReadonlyArray<NotificationDeliveryResource>;
+  readonly notificationDeliveries: ReadonlyArray<GqlAdminNotificationDeliveryResource>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
 
 
-export type DeviceResourceNotificationDeliveriesArgs = {
+export type GqlAdminDeviceResourceNotificationDeliveriesArgs = {
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   verifier?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type EventOccurrenceResource = {
+export type GqlAdminEventOccurrenceResource = {
   readonly __typename?: 'EventOccurrenceResource';
   readonly fullDay: Scalars['Boolean']['output'];
   readonly interval: Scalars['LuxonDateRange']['output'];
   readonly uuid: Scalars['ID']['output'];
 };
 
-export const EventResolverAllKeys = {
+export const GqlAdminEventResolverAllKeys = {
   CreatedAt: 'createdAt',
   Description: 'description',
   Location: 'location',
@@ -382,8 +371,8 @@ export const EventResolverAllKeys = {
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type EventResolverAllKeys = typeof EventResolverAllKeys[keyof typeof EventResolverAllKeys];
-export const EventResolverDateFilterKeys = {
+export type GqlAdminEventResolverAllKeys = typeof GqlAdminEventResolverAllKeys[keyof typeof GqlAdminEventResolverAllKeys];
+export const GqlAdminEventResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
   Occurrence: 'occurrence',
   OccurrenceEnd: 'occurrenceEnd',
@@ -391,25 +380,25 @@ export const EventResolverDateFilterKeys = {
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type EventResolverDateFilterKeys = typeof EventResolverDateFilterKeys[keyof typeof EventResolverDateFilterKeys];
-export type EventResolverKeyedDateFilterItem = {
+export type GqlAdminEventResolverDateFilterKeys = typeof GqlAdminEventResolverDateFilterKeys[keyof typeof GqlAdminEventResolverDateFilterKeys];
+export type GqlAdminEventResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
-  readonly field: EventResolverDateFilterKeys;
+  readonly field: GqlAdminEventResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['LuxonDateTime']['input'];
 };
 
-export type EventResolverKeyedIsNullFilterItem = {
+export type GqlAdminEventResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: EventResolverAllKeys;
+  readonly field: GqlAdminEventResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type EventResolverKeyedOneOfFilterItem = {
+export type GqlAdminEventResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
   readonly field: Scalars['Void']['input'];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
@@ -417,97 +406,97 @@ export type EventResolverKeyedOneOfFilterItem = {
   readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
-export type EventResolverKeyedStringFilterItem = {
+export type GqlAdminEventResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
-  readonly field: EventResolverStringFilterKeys;
+  readonly field: GqlAdminEventResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['String']['input'];
 };
 
-export const EventResolverStringFilterKeys = {
+export const GqlAdminEventResolverStringFilterKeys = {
   Description: 'description',
   Location: 'location',
   Summary: 'summary',
   Title: 'title'
 } as const;
 
-export type EventResolverStringFilterKeys = typeof EventResolverStringFilterKeys[keyof typeof EventResolverStringFilterKeys];
-export type EventResource = {
+export type GqlAdminEventResolverStringFilterKeys = typeof GqlAdminEventResolverStringFilterKeys[keyof typeof GqlAdminEventResolverStringFilterKeys];
+export type GqlAdminEventResource = {
   readonly __typename?: 'EventResource';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly description?: Maybe<Scalars['String']['output']>;
-  readonly images: ReadonlyArray<ImageResource>;
+  readonly images: ReadonlyArray<GqlAdminImageResource>;
   readonly location?: Maybe<Scalars['String']['output']>;
-  readonly occurrences: ReadonlyArray<EventOccurrenceResource>;
+  readonly occurrences: ReadonlyArray<GqlAdminEventOccurrenceResource>;
   readonly summary?: Maybe<Scalars['String']['output']>;
   readonly title: Scalars['String']['output'];
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
 
-export type GetAllConfigurationsResponse = AbstractGraphQlArrayOkResponse & GraphQlBaseResponse & {
+export type GqlAdminGetAllConfigurationsResponse = GqlAdminAbstractGraphQlArrayOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'GetAllConfigurationsResponse';
-  readonly data: ReadonlyArray<ConfigurationResource>;
+  readonly data: ReadonlyArray<GqlAdminConfigurationResource>;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GetConfigurationByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminGetConfigurationByUuidResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'GetConfigurationByUuidResponse';
-  readonly data: ConfigurationResource;
+  readonly data: GqlAdminConfigurationResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GetDeviceByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminGetDeviceByUuidResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'GetDeviceByUuidResponse';
-  readonly data: DeviceResource;
+  readonly data: GqlAdminDeviceResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GetEventByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminGetEventByUuidResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'GetEventByUuidResponse';
-  readonly data: EventResource;
+  readonly data: GqlAdminEventResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GetImageByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminGetImageByUuidResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'GetImageByUuidResponse';
-  readonly data: ImageResource;
+  readonly data: GqlAdminImageResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GetNotificationByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminGetNotificationByUuidResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'GetNotificationByUuidResponse';
-  readonly data: NotificationResource;
+  readonly data: GqlAdminNotificationResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GetPeopleResponse = AbstractGraphQlArrayOkResponse & GraphQlBaseResponse & {
+export type GqlAdminGetPeopleResponse = GqlAdminAbstractGraphQlArrayOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'GetPeopleResponse';
-  readonly data: ReadonlyArray<PersonResource>;
+  readonly data: ReadonlyArray<GqlAdminPersonResource>;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GetPersonResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminGetPersonResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'GetPersonResponse';
-  readonly data?: Maybe<PersonResource>;
+  readonly data?: Maybe<GqlAdminPersonResource>;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type GetPointEntryByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminGetPointEntryByUuidResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'GetPointEntryByUuidResponse';
-  readonly data: PointEntryResource;
+  readonly data: GqlAdminPointEntryResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
 /** API response */
-export type GraphQlBaseResponse = {
+export type GqlAdminGraphQlBaseResponse = {
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type ImageResource = {
+export type GqlAdminImageResource = {
   readonly __typename?: 'ImageResource';
   readonly alt?: Maybe<Scalars['String']['output']>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -521,9 +510,9 @@ export type ImageResource = {
   readonly width: Scalars['Int']['output'];
 };
 
-export type ListDevicesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+export type GqlAdminListDevicesResponse = GqlAdminAbstractGraphQlArrayOkResponse & GqlAdminAbstractGraphQlPaginatedResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'ListDevicesResponse';
-  readonly data: ReadonlyArray<DeviceResource>;
+  readonly data: ReadonlyArray<GqlAdminDeviceResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -533,9 +522,9 @@ export type ListDevicesResponse = AbstractGraphQlArrayOkResponse & AbstractGraph
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type ListEventsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+export type GqlAdminListEventsResponse = GqlAdminAbstractGraphQlArrayOkResponse & GqlAdminAbstractGraphQlPaginatedResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'ListEventsResponse';
-  readonly data: ReadonlyArray<EventResource>;
+  readonly data: ReadonlyArray<GqlAdminEventResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -545,9 +534,9 @@ export type ListEventsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQ
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type ListNotificationDeliveriesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+export type GqlAdminListNotificationDeliveriesResponse = GqlAdminAbstractGraphQlArrayOkResponse & GqlAdminAbstractGraphQlPaginatedResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'ListNotificationDeliveriesResponse';
-  readonly data: ReadonlyArray<NotificationDeliveryResource>;
+  readonly data: ReadonlyArray<GqlAdminNotificationDeliveryResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -557,9 +546,9 @@ export type ListNotificationDeliveriesResponse = AbstractGraphQlArrayOkResponse 
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type ListNotificationsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+export type GqlAdminListNotificationsResponse = GqlAdminAbstractGraphQlArrayOkResponse & GqlAdminAbstractGraphQlPaginatedResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'ListNotificationsResponse';
-  readonly data: ReadonlyArray<NotificationResource>;
+  readonly data: ReadonlyArray<GqlAdminNotificationResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -569,9 +558,9 @@ export type ListNotificationsResponse = AbstractGraphQlArrayOkResponse & Abstrac
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type ListPeopleResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+export type GqlAdminListPeopleResponse = GqlAdminAbstractGraphQlArrayOkResponse & GqlAdminAbstractGraphQlPaginatedResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'ListPeopleResponse';
-  readonly data: ReadonlyArray<PersonResource>;
+  readonly data: ReadonlyArray<GqlAdminPersonResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -581,9 +570,9 @@ export type ListPeopleResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQ
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type ListPointEntriesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+export type GqlAdminListPointEntriesResponse = GqlAdminAbstractGraphQlArrayOkResponse & GqlAdminAbstractGraphQlPaginatedResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'ListPointEntriesResponse';
-  readonly data: ReadonlyArray<PointEntryResource>;
+  readonly data: ReadonlyArray<GqlAdminPointEntryResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -593,9 +582,9 @@ export type ListPointEntriesResponse = AbstractGraphQlArrayOkResponse & Abstract
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type ListPointOpportunitiesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+export type GqlAdminListPointOpportunitiesResponse = GqlAdminAbstractGraphQlArrayOkResponse & GqlAdminAbstractGraphQlPaginatedResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'ListPointOpportunitiesResponse';
-  readonly data: ReadonlyArray<PointOpportunityResource>;
+  readonly data: ReadonlyArray<GqlAdminPointOpportunityResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -605,9 +594,9 @@ export type ListPointOpportunitiesResponse = AbstractGraphQlArrayOkResponse & Ab
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type ListTeamsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+export type GqlAdminListTeamsResponse = GqlAdminAbstractGraphQlArrayOkResponse & GqlAdminAbstractGraphQlPaginatedResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'ListTeamsResponse';
-  readonly data: ReadonlyArray<TeamResource>;
+  readonly data: ReadonlyArray<GqlAdminTeamResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -617,233 +606,228 @@ export type ListTeamsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQl
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
-export type LoginState = {
+export type GqlAdminLoginState = {
   readonly __typename?: 'LoginState';
   readonly authSource: AuthSource;
   readonly loggedIn: Scalars['Boolean']['output'];
-  readonly role: RoleResource;
+  readonly role: GqlAdminRoleResource;
 };
 
-/** The position of a member on a team */
-export const MembershipPositionType = {
-  Captain: 'Captain',
-  Member: 'Member'
-} as const;
+export { MembershipPositionType };
 
-export type MembershipPositionType = typeof MembershipPositionType[keyof typeof MembershipPositionType];
-export type MembershipResource = {
+export type GqlAdminMembershipResource = {
   readonly __typename?: 'MembershipResource';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  readonly person: PersonResource;
+  readonly person: GqlAdminPersonResource;
   readonly position: MembershipPositionType;
-  readonly team: TeamResource;
+  readonly team: GqlAdminTeamResource;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
 
-export type Mutation = {
+export type GqlAdminMutation = {
   readonly __typename?: 'Mutation';
-  readonly abortScheduledNotification: AbortScheduledNotificationResponse;
-  readonly acknowledgeDeliveryIssue: AcknowledgeDeliveryIssueResponse;
-  readonly addExistingImageToEvent: AddEventImageResponse;
-  readonly addImageToEvent: AddEventImageResponse;
-  readonly createConfiguration: CreateConfigurationResponse;
-  readonly createConfigurations: CreateConfigurationResponse;
-  readonly createEvent: CreateEventResponse;
-  readonly createImage: CreateImageResponse;
-  readonly createPerson: CreatePersonResponse;
-  readonly createPointEntry: CreatePointEntryResponse;
-  readonly createPointOpportunity: CreatePointOpportunityResponse;
-  readonly createTeam: CreateTeamResponse;
-  readonly deleteConfiguration: DeleteConfigurationResponse;
-  readonly deleteDevice: DeleteDeviceResponse;
-  readonly deleteEvent: DeleteEventResponse;
-  readonly deleteImage: DeleteImageResponse;
-  readonly deleteNotification: DeleteNotificationResponse;
-  readonly deletePerson: DeletePersonResponse;
-  readonly deletePointEntry: DeletePointEntryResponse;
-  readonly deletePointOpportunity: DeletePointOpportunityResponse;
-  readonly deleteTeam: DeleteTeamResponse;
-  readonly registerDevice: RegisterDeviceResponse;
-  readonly removeImageFromEvent: RemoveEventImageResponse;
-  readonly scheduleNotification: ScheduleNotificationResponse;
+  readonly abortScheduledNotification: GqlAdminAbortScheduledNotificationResponse;
+  readonly acknowledgeDeliveryIssue: GqlAdminAcknowledgeDeliveryIssueResponse;
+  readonly addExistingImageToEvent: GqlAdminAddEventImageResponse;
+  readonly addImageToEvent: GqlAdminAddEventImageResponse;
+  readonly createConfiguration: GqlAdminCreateConfigurationResponse;
+  readonly createConfigurations: GqlAdminCreateConfigurationResponse;
+  readonly createEvent: GqlAdminCreateEventResponse;
+  readonly createImage: GqlAdminCreateImageResponse;
+  readonly createPerson: GqlAdminCreatePersonResponse;
+  readonly createPointEntry: GqlAdminCreatePointEntryResponse;
+  readonly createPointOpportunity: GqlAdminCreatePointOpportunityResponse;
+  readonly createTeam: GqlAdminCreateTeamResponse;
+  readonly deleteConfiguration: GqlAdminDeleteConfigurationResponse;
+  readonly deleteDevice: GqlAdminDeleteDeviceResponse;
+  readonly deleteEvent: GqlAdminDeleteEventResponse;
+  readonly deleteImage: GqlAdminDeleteImageResponse;
+  readonly deleteNotification: GqlAdminDeleteNotificationResponse;
+  readonly deletePerson: GqlAdminDeletePersonResponse;
+  readonly deletePointEntry: GqlAdminDeletePointEntryResponse;
+  readonly deletePointOpportunity: GqlAdminDeletePointOpportunityResponse;
+  readonly deleteTeam: GqlAdminDeleteTeamResponse;
+  readonly registerDevice: GqlAdminRegisterDeviceResponse;
+  readonly removeImageFromEvent: GqlAdminRemoveEventImageResponse;
+  readonly scheduleNotification: GqlAdminScheduleNotificationResponse;
   /** Send a notification immediately. */
-  readonly sendNotification: SendNotificationResponse;
-  readonly setEvent: SetEventResponse;
-  readonly setPerson: GetPersonResponse;
-  readonly setPointOpportunity: SinglePointOpportunityResponse;
-  readonly setTeam: SingleTeamResponse;
-  readonly stageNotification: StageNotificationResponse;
+  readonly sendNotification: GqlAdminSendNotificationResponse;
+  readonly setEvent: GqlAdminSetEventResponse;
+  readonly setPerson: GqlAdminGetPersonResponse;
+  readonly setPointOpportunity: GqlAdminSinglePointOpportunityResponse;
+  readonly setTeam: GqlAdminSingleTeamResponse;
+  readonly stageNotification: GqlAdminStageNotificationResponse;
 };
 
 
-export type MutationAbortScheduledNotificationArgs = {
+export type GqlAdminMutationAbortScheduledNotificationArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationAcknowledgeDeliveryIssueArgs = {
+export type GqlAdminMutationAcknowledgeDeliveryIssueArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationAddExistingImageToEventArgs = {
+export type GqlAdminMutationAddExistingImageToEventArgs = {
   eventId: Scalars['String']['input'];
   imageId: Scalars['String']['input'];
 };
 
 
-export type MutationAddImageToEventArgs = {
+export type GqlAdminMutationAddImageToEventArgs = {
   eventId: Scalars['String']['input'];
-  input: AddEventImageInput;
+  input: GqlAdminAddEventImageInput;
 };
 
 
-export type MutationCreateConfigurationArgs = {
-  input: CreateConfigurationInput;
+export type GqlAdminMutationCreateConfigurationArgs = {
+  input: GqlAdminCreateConfigurationInput;
 };
 
 
-export type MutationCreateConfigurationsArgs = {
-  input: ReadonlyArray<CreateConfigurationInput>;
+export type GqlAdminMutationCreateConfigurationsArgs = {
+  input: ReadonlyArray<GqlAdminCreateConfigurationInput>;
 };
 
 
-export type MutationCreateEventArgs = {
-  input: CreateEventInput;
+export type GqlAdminMutationCreateEventArgs = {
+  input: GqlAdminCreateEventInput;
 };
 
 
-export type MutationCreateImageArgs = {
-  input: CreateImageInput;
+export type GqlAdminMutationCreateImageArgs = {
+  input: GqlAdminCreateImageInput;
 };
 
 
-export type MutationCreatePersonArgs = {
-  input: CreatePersonInput;
+export type GqlAdminMutationCreatePersonArgs = {
+  input: GqlAdminCreatePersonInput;
 };
 
 
-export type MutationCreatePointEntryArgs = {
-  input: CreatePointEntryInput;
+export type GqlAdminMutationCreatePointEntryArgs = {
+  input: GqlAdminCreatePointEntryInput;
 };
 
 
-export type MutationCreatePointOpportunityArgs = {
-  input: CreatePointOpportunityInput;
+export type GqlAdminMutationCreatePointOpportunityArgs = {
+  input: GqlAdminCreatePointOpportunityInput;
 };
 
 
-export type MutationCreateTeamArgs = {
-  input: CreateTeamInput;
+export type GqlAdminMutationCreateTeamArgs = {
+  input: GqlAdminCreateTeamInput;
 };
 
 
-export type MutationDeleteConfigurationArgs = {
+export type GqlAdminMutationDeleteConfigurationArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationDeleteDeviceArgs = {
+export type GqlAdminMutationDeleteDeviceArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationDeleteEventArgs = {
+export type GqlAdminMutationDeleteEventArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationDeleteImageArgs = {
+export type GqlAdminMutationDeleteImageArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationDeleteNotificationArgs = {
+export type GqlAdminMutationDeleteNotificationArgs = {
   force?: InputMaybe<Scalars['Boolean']['input']>;
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationDeletePersonArgs = {
+export type GqlAdminMutationDeletePersonArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationDeletePointEntryArgs = {
+export type GqlAdminMutationDeletePointEntryArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationDeletePointOpportunityArgs = {
+export type GqlAdminMutationDeletePointOpportunityArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationDeleteTeamArgs = {
+export type GqlAdminMutationDeleteTeamArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationRegisterDeviceArgs = {
-  input: RegisterDeviceInput;
+export type GqlAdminMutationRegisterDeviceArgs = {
+  input: GqlAdminRegisterDeviceInput;
 };
 
 
-export type MutationRemoveImageFromEventArgs = {
+export type GqlAdminMutationRemoveImageFromEventArgs = {
   eventId: Scalars['String']['input'];
   imageId: Scalars['String']['input'];
 };
 
 
-export type MutationScheduleNotificationArgs = {
+export type GqlAdminMutationScheduleNotificationArgs = {
   sendAt: Scalars['DateTimeISO']['input'];
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationSendNotificationArgs = {
+export type GqlAdminMutationSendNotificationArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationSetEventArgs = {
-  input: SetEventInput;
+export type GqlAdminMutationSetEventArgs = {
+  input: GqlAdminSetEventInput;
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationSetPersonArgs = {
-  input: SetPersonInput;
+export type GqlAdminMutationSetPersonArgs = {
+  input: GqlAdminSetPersonInput;
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationSetPointOpportunityArgs = {
-  input: SetPointOpportunityInput;
+export type GqlAdminMutationSetPointOpportunityArgs = {
+  input: GqlAdminSetPointOpportunityInput;
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationSetTeamArgs = {
-  input: SetTeamInput;
+export type GqlAdminMutationSetTeamArgs = {
+  input: GqlAdminSetTeamInput;
   uuid: Scalars['String']['input'];
 };
 
 
-export type MutationStageNotificationArgs = {
-  audience: NotificationAudienceInput;
+export type GqlAdminMutationStageNotificationArgs = {
+  audience: GqlAdminNotificationAudienceInput;
   body: Scalars['String']['input'];
   title: Scalars['String']['input'];
   url?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type NotificationAudienceInput = {
+export type GqlAdminNotificationAudienceInput = {
   readonly all?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** The number of delivery issues for a notification, broken down by type. */
-export type NotificationDeliveryIssueCount = {
+export type GqlAdminNotificationDeliveryIssueCount = {
   readonly __typename?: 'NotificationDeliveryIssueCount';
   readonly DeviceNotRegistered: Scalars['Int']['output'];
   readonly InvalidCredentials: Scalars['Int']['output'];
@@ -853,7 +837,7 @@ export type NotificationDeliveryIssueCount = {
   readonly Unknown: Scalars['Int']['output'];
 };
 
-export const NotificationDeliveryResolverAllKeys = {
+export const GqlAdminNotificationDeliveryResolverAllKeys = {
   CreatedAt: 'createdAt',
   DeliveryError: 'deliveryError',
   ReceiptCheckedAt: 'receiptCheckedAt',
@@ -861,40 +845,40 @@ export const NotificationDeliveryResolverAllKeys = {
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type NotificationDeliveryResolverAllKeys = typeof NotificationDeliveryResolverAllKeys[keyof typeof NotificationDeliveryResolverAllKeys];
-export const NotificationDeliveryResolverDateFilterKeys = {
+export type GqlAdminNotificationDeliveryResolverAllKeys = typeof GqlAdminNotificationDeliveryResolverAllKeys[keyof typeof GqlAdminNotificationDeliveryResolverAllKeys];
+export const GqlAdminNotificationDeliveryResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
   ReceiptCheckedAt: 'receiptCheckedAt',
   SentAt: 'sentAt',
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type NotificationDeliveryResolverDateFilterKeys = typeof NotificationDeliveryResolverDateFilterKeys[keyof typeof NotificationDeliveryResolverDateFilterKeys];
-export type NotificationDeliveryResolverKeyedDateFilterItem = {
+export type GqlAdminNotificationDeliveryResolverDateFilterKeys = typeof GqlAdminNotificationDeliveryResolverDateFilterKeys[keyof typeof GqlAdminNotificationDeliveryResolverDateFilterKeys];
+export type GqlAdminNotificationDeliveryResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
-  readonly field: NotificationDeliveryResolverDateFilterKeys;
+  readonly field: GqlAdminNotificationDeliveryResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['LuxonDateTime']['input'];
 };
 
-export type NotificationDeliveryResolverKeyedIsNullFilterItem = {
+export type GqlAdminNotificationDeliveryResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: NotificationDeliveryResolverAllKeys;
+  readonly field: GqlAdminNotificationDeliveryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type NotificationDeliveryResource = {
+export type GqlAdminNotificationDeliveryResource = {
   readonly __typename?: 'NotificationDeliveryResource';
   /** A unique identifier corresponding the group of notifications this was sent to Expo with. */
   readonly chunkUuid?: Maybe<Scalars['String']['output']>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   /** Any error message returned by Expo when sending the notification. */
   readonly deliveryError?: Maybe<Scalars['String']['output']>;
-  readonly notification: NotificationResource;
+  readonly notification: GqlAdminNotificationResource;
   /** The time the server received a delivery receipt from the user. */
   readonly receiptCheckedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   /** The time the server sent the notification to Expo for delivery. */
@@ -903,7 +887,7 @@ export type NotificationDeliveryResource = {
   readonly uuid: Scalars['ID']['output'];
 };
 
-export const NotificationResolverAllKeys = {
+export const GqlAdminNotificationResolverAllKeys = {
   Body: 'body',
   CreatedAt: 'createdAt',
   DeliveryIssue: 'deliveryIssue',
@@ -913,69 +897,69 @@ export const NotificationResolverAllKeys = {
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type NotificationResolverAllKeys = typeof NotificationResolverAllKeys[keyof typeof NotificationResolverAllKeys];
-export const NotificationResolverDateFilterKeys = {
+export type GqlAdminNotificationResolverAllKeys = typeof GqlAdminNotificationResolverAllKeys[keyof typeof GqlAdminNotificationResolverAllKeys];
+export const GqlAdminNotificationResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
   SendAt: 'sendAt',
   StartedSendingAt: 'startedSendingAt',
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type NotificationResolverDateFilterKeys = typeof NotificationResolverDateFilterKeys[keyof typeof NotificationResolverDateFilterKeys];
-export type NotificationResolverKeyedDateFilterItem = {
+export type GqlAdminNotificationResolverDateFilterKeys = typeof GqlAdminNotificationResolverDateFilterKeys[keyof typeof GqlAdminNotificationResolverDateFilterKeys];
+export type GqlAdminNotificationResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
-  readonly field: NotificationResolverDateFilterKeys;
+  readonly field: GqlAdminNotificationResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['LuxonDateTime']['input'];
 };
 
-export type NotificationResolverKeyedIsNullFilterItem = {
+export type GqlAdminNotificationResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: NotificationResolverAllKeys;
+  readonly field: GqlAdminNotificationResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type NotificationResolverKeyedOneOfFilterItem = {
+export type GqlAdminNotificationResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: NotificationResolverOneOfFilterKeys;
+  readonly field: GqlAdminNotificationResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
-export type NotificationResolverKeyedStringFilterItem = {
+export type GqlAdminNotificationResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
-  readonly field: NotificationResolverStringFilterKeys;
+  readonly field: GqlAdminNotificationResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['String']['input'];
 };
 
-export const NotificationResolverOneOfFilterKeys = {
+export const GqlAdminNotificationResolverOneOfFilterKeys = {
   DeliveryIssue: 'deliveryIssue'
 } as const;
 
-export type NotificationResolverOneOfFilterKeys = typeof NotificationResolverOneOfFilterKeys[keyof typeof NotificationResolverOneOfFilterKeys];
-export const NotificationResolverStringFilterKeys = {
+export type GqlAdminNotificationResolverOneOfFilterKeys = typeof GqlAdminNotificationResolverOneOfFilterKeys[keyof typeof GqlAdminNotificationResolverOneOfFilterKeys];
+export const GqlAdminNotificationResolverStringFilterKeys = {
   Body: 'body',
   Title: 'title'
 } as const;
 
-export type NotificationResolverStringFilterKeys = typeof NotificationResolverStringFilterKeys[keyof typeof NotificationResolverStringFilterKeys];
-export type NotificationResource = {
+export type GqlAdminNotificationResolverStringFilterKeys = typeof GqlAdminNotificationResolverStringFilterKeys[keyof typeof GqlAdminNotificationResolverStringFilterKeys];
+export type GqlAdminNotificationResource = {
   readonly __typename?: 'NotificationResource';
   readonly body: Scalars['String']['output'];
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly deliveryCount: Scalars['Int']['output'];
   readonly deliveryIssue?: Maybe<Scalars['String']['output']>;
   readonly deliveryIssueAcknowledgedAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  readonly deliveryIssueCount: NotificationDeliveryIssueCount;
+  readonly deliveryIssueCount: GqlAdminNotificationDeliveryIssueCount;
   /** The time the notification is scheduled to be sent, if null it is either already sent or unscheduled. */
   readonly sendAt?: Maybe<Scalars['DateTimeISO']['output']>;
   /** The time the server started sending the notification. */
@@ -988,7 +972,7 @@ export type NotificationResource = {
 
 export { NumericComparator };
 
-export const PersonResolverAllKeys = {
+export const GqlAdminPersonResolverAllKeys = {
   CommitteeName: 'committeeName',
   CommitteeRole: 'committeeRole',
   DbRole: 'dbRole',
@@ -997,104 +981,104 @@ export const PersonResolverAllKeys = {
   Name: 'name'
 } as const;
 
-export type PersonResolverAllKeys = typeof PersonResolverAllKeys[keyof typeof PersonResolverAllKeys];
-export type PersonResolverKeyedIsNullFilterItem = {
+export type GqlAdminPersonResolverAllKeys = typeof GqlAdminPersonResolverAllKeys[keyof typeof GqlAdminPersonResolverAllKeys];
+export type GqlAdminPersonResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: PersonResolverAllKeys;
+  readonly field: GqlAdminPersonResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type PersonResolverKeyedOneOfFilterItem = {
+export type GqlAdminPersonResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: PersonResolverOneOfFilterKeys;
+  readonly field: GqlAdminPersonResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
-export type PersonResolverKeyedStringFilterItem = {
+export type GqlAdminPersonResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
-  readonly field: PersonResolverStringFilterKeys;
+  readonly field: GqlAdminPersonResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['String']['input'];
 };
 
-export const PersonResolverOneOfFilterKeys = {
+export const GqlAdminPersonResolverOneOfFilterKeys = {
   CommitteeName: 'committeeName',
   CommitteeRole: 'committeeRole',
   DbRole: 'dbRole'
 } as const;
 
-export type PersonResolverOneOfFilterKeys = typeof PersonResolverOneOfFilterKeys[keyof typeof PersonResolverOneOfFilterKeys];
-export const PersonResolverStringFilterKeys = {
+export type GqlAdminPersonResolverOneOfFilterKeys = typeof GqlAdminPersonResolverOneOfFilterKeys[keyof typeof GqlAdminPersonResolverOneOfFilterKeys];
+export const GqlAdminPersonResolverStringFilterKeys = {
   Email: 'email',
   Linkblue: 'linkblue',
   Name: 'name'
 } as const;
 
-export type PersonResolverStringFilterKeys = typeof PersonResolverStringFilterKeys[keyof typeof PersonResolverStringFilterKeys];
-export type PersonResource = {
+export type GqlAdminPersonResolverStringFilterKeys = typeof GqlAdminPersonResolverStringFilterKeys[keyof typeof GqlAdminPersonResolverStringFilterKeys];
+export type GqlAdminPersonResource = {
   readonly __typename?: 'PersonResource';
   /** @deprecated This is now provided on the AuthIdPair resource. */
-  readonly authIds: ReadonlyArray<AuthIdPairResource>;
+  readonly authIds: ReadonlyArray<GqlAdminAuthIdPairResource>;
   /** @deprecated Use teams instead and filter by position */
-  readonly captaincies: ReadonlyArray<MembershipResource>;
+  readonly captaincies: ReadonlyArray<GqlAdminMembershipResource>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly email: Scalars['String']['output'];
   readonly linkblue?: Maybe<Scalars['String']['output']>;
   readonly name?: Maybe<Scalars['String']['output']>;
-  readonly role: RoleResource;
-  readonly teams: ReadonlyArray<MembershipResource>;
+  readonly role: GqlAdminRoleResource;
+  readonly teams: ReadonlyArray<GqlAdminMembershipResource>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
 
-export const PointEntryResolverAllKeys = {
+export const GqlAdminPointEntryResolverAllKeys = {
   CreatedAt: 'createdAt',
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type PointEntryResolverAllKeys = typeof PointEntryResolverAllKeys[keyof typeof PointEntryResolverAllKeys];
-export const PointEntryResolverDateFilterKeys = {
+export type GqlAdminPointEntryResolverAllKeys = typeof GqlAdminPointEntryResolverAllKeys[keyof typeof GqlAdminPointEntryResolverAllKeys];
+export const GqlAdminPointEntryResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type PointEntryResolverDateFilterKeys = typeof PointEntryResolverDateFilterKeys[keyof typeof PointEntryResolverDateFilterKeys];
-export type PointEntryResolverKeyedDateFilterItem = {
+export type GqlAdminPointEntryResolverDateFilterKeys = typeof GqlAdminPointEntryResolverDateFilterKeys[keyof typeof GqlAdminPointEntryResolverDateFilterKeys];
+export type GqlAdminPointEntryResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
-  readonly field: PointEntryResolverDateFilterKeys;
+  readonly field: GqlAdminPointEntryResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['LuxonDateTime']['input'];
 };
 
-export type PointEntryResolverKeyedIsNullFilterItem = {
+export type GqlAdminPointEntryResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: PointEntryResolverAllKeys;
+  readonly field: GqlAdminPointEntryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type PointEntryResource = {
+export type GqlAdminPointEntryResource = {
   readonly __typename?: 'PointEntryResource';
   readonly comment?: Maybe<Scalars['String']['output']>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  readonly personFrom?: Maybe<PersonResource>;
-  readonly pointOpportunity?: Maybe<PointOpportunityResource>;
+  readonly personFrom?: Maybe<GqlAdminPersonResource>;
+  readonly pointOpportunity?: Maybe<GqlAdminPointOpportunityResource>;
   readonly points: Scalars['Int']['output'];
-  readonly team: TeamResource;
+  readonly team: GqlAdminTeamResource;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
 };
 
-export const PointOpportunityResolverAllKeys = {
+export const GqlAdminPointOpportunityResolverAllKeys = {
   CreatedAt: 'createdAt',
   Name: 'name',
   OpportunityDate: 'opportunityDate',
@@ -1102,63 +1086,63 @@ export const PointOpportunityResolverAllKeys = {
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type PointOpportunityResolverAllKeys = typeof PointOpportunityResolverAllKeys[keyof typeof PointOpportunityResolverAllKeys];
-export const PointOpportunityResolverDateFilterKeys = {
+export type GqlAdminPointOpportunityResolverAllKeys = typeof GqlAdminPointOpportunityResolverAllKeys[keyof typeof GqlAdminPointOpportunityResolverAllKeys];
+export const GqlAdminPointOpportunityResolverDateFilterKeys = {
   CreatedAt: 'createdAt',
   OpportunityDate: 'opportunityDate',
   UpdatedAt: 'updatedAt'
 } as const;
 
-export type PointOpportunityResolverDateFilterKeys = typeof PointOpportunityResolverDateFilterKeys[keyof typeof PointOpportunityResolverDateFilterKeys];
-export type PointOpportunityResolverKeyedDateFilterItem = {
+export type GqlAdminPointOpportunityResolverDateFilterKeys = typeof GqlAdminPointOpportunityResolverDateFilterKeys[keyof typeof GqlAdminPointOpportunityResolverDateFilterKeys];
+export type GqlAdminPointOpportunityResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
-  readonly field: PointOpportunityResolverDateFilterKeys;
+  readonly field: GqlAdminPointOpportunityResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['LuxonDateTime']['input'];
 };
 
-export type PointOpportunityResolverKeyedIsNullFilterItem = {
+export type GqlAdminPointOpportunityResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: PointOpportunityResolverAllKeys;
+  readonly field: GqlAdminPointOpportunityResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type PointOpportunityResolverKeyedOneOfFilterItem = {
+export type GqlAdminPointOpportunityResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: PointOpportunityResolverOneOfFilterKeys;
+  readonly field: GqlAdminPointOpportunityResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
-export type PointOpportunityResolverKeyedStringFilterItem = {
+export type GqlAdminPointOpportunityResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
-  readonly field: PointOpportunityResolverStringFilterKeys;
+  readonly field: GqlAdminPointOpportunityResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['String']['input'];
 };
 
-export const PointOpportunityResolverOneOfFilterKeys = {
+export const GqlAdminPointOpportunityResolverOneOfFilterKeys = {
   Type: 'type'
 } as const;
 
-export type PointOpportunityResolverOneOfFilterKeys = typeof PointOpportunityResolverOneOfFilterKeys[keyof typeof PointOpportunityResolverOneOfFilterKeys];
-export const PointOpportunityResolverStringFilterKeys = {
+export type GqlAdminPointOpportunityResolverOneOfFilterKeys = typeof GqlAdminPointOpportunityResolverOneOfFilterKeys[keyof typeof GqlAdminPointOpportunityResolverOneOfFilterKeys];
+export const GqlAdminPointOpportunityResolverStringFilterKeys = {
   Name: 'name'
 } as const;
 
-export type PointOpportunityResolverStringFilterKeys = typeof PointOpportunityResolverStringFilterKeys[keyof typeof PointOpportunityResolverStringFilterKeys];
-export type PointOpportunityResource = {
+export type GqlAdminPointOpportunityResolverStringFilterKeys = typeof GqlAdminPointOpportunityResolverStringFilterKeys[keyof typeof GqlAdminPointOpportunityResolverStringFilterKeys];
+export type GqlAdminPointOpportunityResource = {
   readonly __typename?: 'PointOpportunityResource';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  readonly event?: Maybe<EventResource>;
+  readonly event?: Maybe<GqlAdminEventResource>;
   readonly name: Scalars['String']['output'];
   readonly opportunityDate?: Maybe<Scalars['LuxonDateTime']['output']>;
   readonly type: TeamType;
@@ -1166,111 +1150,111 @@ export type PointOpportunityResource = {
   readonly uuid: Scalars['ID']['output'];
 };
 
-export type Query = {
+export type GqlAdminQuery = {
   readonly __typename?: 'Query';
-  readonly activeConfiguration: GetConfigurationByUuidResponse;
-  readonly allConfigurations: GetAllConfigurationsResponse;
-  readonly device: GetDeviceByUuidResponse;
-  readonly devices: ListDevicesResponse;
-  readonly event: GetEventByUuidResponse;
-  readonly events: ListEventsResponse;
-  readonly image: GetImageByUuidResponse;
-  readonly listPeople: ListPeopleResponse;
-  readonly loginState: LoginState;
-  readonly me: GetPersonResponse;
-  readonly notification: GetNotificationByUuidResponse;
-  readonly notificationDeliveries: ListNotificationDeliveriesResponse;
-  readonly notifications: ListNotificationsResponse;
-  readonly person: GetPersonResponse;
-  readonly personByLinkBlue: GetPersonResponse;
-  readonly pointEntries: ListPointEntriesResponse;
-  readonly pointEntry: GetPointEntryByUuidResponse;
-  readonly pointOpportunities: ListPointOpportunitiesResponse;
-  readonly pointOpportunity: SinglePointOpportunityResponse;
-  readonly searchPeopleByName: GetPeopleResponse;
-  readonly team: SingleTeamResponse;
-  readonly teams: ListTeamsResponse;
+  readonly activeConfiguration: GqlAdminGetConfigurationByUuidResponse;
+  readonly allConfigurations: GqlAdminGetAllConfigurationsResponse;
+  readonly device: GqlAdminGetDeviceByUuidResponse;
+  readonly devices: GqlAdminListDevicesResponse;
+  readonly event: GqlAdminGetEventByUuidResponse;
+  readonly events: GqlAdminListEventsResponse;
+  readonly image: GqlAdminGetImageByUuidResponse;
+  readonly listPeople: GqlAdminListPeopleResponse;
+  readonly loginState: GqlAdminLoginState;
+  readonly me: GqlAdminGetPersonResponse;
+  readonly notification: GqlAdminGetNotificationByUuidResponse;
+  readonly notificationDeliveries: GqlAdminListNotificationDeliveriesResponse;
+  readonly notifications: GqlAdminListNotificationsResponse;
+  readonly person: GqlAdminGetPersonResponse;
+  readonly personByLinkBlue: GqlAdminGetPersonResponse;
+  readonly pointEntries: GqlAdminListPointEntriesResponse;
+  readonly pointEntry: GqlAdminGetPointEntryByUuidResponse;
+  readonly pointOpportunities: GqlAdminListPointOpportunitiesResponse;
+  readonly pointOpportunity: GqlAdminSinglePointOpportunityResponse;
+  readonly searchPeopleByName: GqlAdminGetPeopleResponse;
+  readonly team: GqlAdminSingleTeamResponse;
+  readonly teams: GqlAdminListTeamsResponse;
 };
 
 
-export type QueryActiveConfigurationArgs = {
+export type GqlAdminQueryActiveConfigurationArgs = {
   key: Scalars['String']['input'];
 };
 
 
-export type QueryDeviceArgs = {
+export type GqlAdminQueryDeviceArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type QueryDevicesArgs = {
+export type GqlAdminQueryDevicesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<GqlAdminDeviceResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<GqlAdminDeviceResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<GqlAdminDeviceResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
-  stringFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedStringFilterItem>>;
+  stringFilters?: InputMaybe<ReadonlyArray<GqlAdminDeviceResolverKeyedStringFilterItem>>;
 };
 
 
-export type QueryEventArgs = {
+export type GqlAdminQueryEventArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type QueryEventsArgs = {
+export type GqlAdminQueryEventsArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<GqlAdminEventResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<GqlAdminEventResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<GqlAdminEventResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
-  stringFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedStringFilterItem>>;
+  stringFilters?: InputMaybe<ReadonlyArray<GqlAdminEventResolverKeyedStringFilterItem>>;
 };
 
 
-export type QueryImageArgs = {
+export type GqlAdminQueryImageArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type QueryListPeopleArgs = {
+export type GqlAdminQueryListPeopleArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
   dateFilters?: InputMaybe<Scalars['Void']['input']>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<PersonResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<GqlAdminPersonResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<PersonResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<GqlAdminPersonResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
-  stringFilters?: InputMaybe<ReadonlyArray<PersonResolverKeyedStringFilterItem>>;
+  stringFilters?: InputMaybe<ReadonlyArray<GqlAdminPersonResolverKeyedStringFilterItem>>;
 };
 
 
-export type QueryNotificationArgs = {
+export type GqlAdminQueryNotificationArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type QueryNotificationDeliveriesArgs = {
+export type GqlAdminQueryNotificationDeliveriesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<ReadonlyArray<NotificationDeliveryResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<GqlAdminNotificationDeliveryResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<NotificationDeliveryResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<GqlAdminNotificationDeliveryResolverKeyedIsNullFilterItem>>;
   notificationUuid: Scalars['String']['input'];
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
   oneOfFilters?: InputMaybe<Scalars['Void']['input']>;
@@ -1283,37 +1267,37 @@ export type QueryNotificationDeliveriesArgs = {
 };
 
 
-export type QueryNotificationsArgs = {
+export type GqlAdminQueryNotificationsArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<GqlAdminNotificationResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<GqlAdminNotificationResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<GqlAdminNotificationResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
-  stringFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedStringFilterItem>>;
+  stringFilters?: InputMaybe<ReadonlyArray<GqlAdminNotificationResolverKeyedStringFilterItem>>;
 };
 
 
-export type QueryPersonArgs = {
+export type GqlAdminQueryPersonArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type QueryPersonByLinkBlueArgs = {
+export type GqlAdminQueryPersonByLinkBlueArgs = {
   linkBlueId: Scalars['String']['input'];
 };
 
 
-export type QueryPointEntriesArgs = {
+export type GqlAdminQueryPointEntriesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<ReadonlyArray<PointEntryResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<GqlAdminPointEntryResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<PointEntryResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<GqlAdminPointEntryResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
   oneOfFilters?: InputMaybe<Scalars['Void']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -1325,62 +1309,62 @@ export type QueryPointEntriesArgs = {
 };
 
 
-export type QueryPointEntryArgs = {
+export type GqlAdminQueryPointEntryArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type QueryPointOpportunitiesArgs = {
+export type GqlAdminQueryPointOpportunitiesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<GqlAdminPointOpportunityResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<GqlAdminPointOpportunityResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<GqlAdminPointOpportunityResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
-  stringFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedStringFilterItem>>;
+  stringFilters?: InputMaybe<ReadonlyArray<GqlAdminPointOpportunityResolverKeyedStringFilterItem>>;
 };
 
 
-export type QueryPointOpportunityArgs = {
+export type GqlAdminQueryPointOpportunityArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type QuerySearchPeopleByNameArgs = {
+export type GqlAdminQuerySearchPeopleByNameArgs = {
   name: Scalars['String']['input'];
 };
 
 
-export type QueryTeamArgs = {
+export type GqlAdminQueryTeamArgs = {
   uuid: Scalars['String']['input'];
 };
 
 
-export type QueryTeamsArgs = {
+export type GqlAdminQueryTeamsArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
   dateFilters?: InputMaybe<Scalars['Void']['input']>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<GqlAdminTeamResolverKeyedIsNullFilterItem>>;
   legacyStatus?: InputMaybe<ReadonlyArray<TeamLegacyStatus>>;
   marathonYear?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<GqlAdminTeamResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
-  stringFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedStringFilterItem>>;
+  stringFilters?: InputMaybe<ReadonlyArray<GqlAdminTeamResolverKeyedStringFilterItem>>;
   type?: InputMaybe<ReadonlyArray<TeamType>>;
   visibility?: InputMaybe<ReadonlyArray<DbRole>>;
 };
 
-export type RegisterDeviceInput = {
+export type GqlAdminRegisterDeviceInput = {
   readonly deviceId: Scalars['String']['input'];
   /** The Expo push token of the device */
   readonly expoPushToken?: InputMaybe<Scalars['String']['input']>;
@@ -1390,81 +1374,81 @@ export type RegisterDeviceInput = {
   readonly verifier: Scalars['String']['input'];
 };
 
-export type RegisterDeviceResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminRegisterDeviceResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'RegisterDeviceResponse';
-  readonly data: DeviceResource;
+  readonly data: GqlAdminDeviceResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type RemoveEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminRemoveEventImageResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'RemoveEventImageResponse';
   readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type RoleResource = {
+export type GqlAdminRoleResource = {
   readonly __typename?: 'RoleResource';
   readonly committeeIdentifier?: Maybe<CommitteeIdentifier>;
   readonly committeeRole?: Maybe<CommitteeRole>;
   readonly dbRole: DbRole;
 };
 
-export type RoleResourceInput = {
+export type GqlAdminRoleResourceInput = {
   readonly committeeIdentifier?: InputMaybe<CommitteeIdentifier>;
   readonly committeeRole?: InputMaybe<CommitteeRole>;
   readonly dbRole?: DbRole;
 };
 
-export type ScheduleNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminScheduleNotificationResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'ScheduleNotificationResponse';
   readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type SendNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminSendNotificationResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'SendNotificationResponse';
   readonly data: Scalars['Boolean']['output'];
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type SetEventInput = {
+export type GqlAdminSetEventInput = {
   readonly description?: InputMaybe<Scalars['String']['input']>;
   readonly location?: InputMaybe<Scalars['String']['input']>;
-  readonly occurrences: ReadonlyArray<SetEventOccurrenceInput>;
+  readonly occurrences: ReadonlyArray<GqlAdminSetEventOccurrenceInput>;
   readonly summary?: InputMaybe<Scalars['String']['input']>;
   readonly title: Scalars['String']['input'];
 };
 
-export type SetEventOccurrenceInput = {
+export type GqlAdminSetEventOccurrenceInput = {
   readonly fullDay: Scalars['Boolean']['input'];
   readonly interval: Scalars['LuxonDateRange']['input'];
   /** If updating an existing occurrence, the UUID of the occurrence to update */
   readonly uuid?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type SetEventResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminSetEventResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'SetEventResponse';
-  readonly data: EventResource;
+  readonly data: GqlAdminEventResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type SetPersonInput = {
+export type GqlAdminSetPersonInput = {
   readonly captainOf?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   readonly email?: InputMaybe<Scalars['EmailAddress']['input']>;
   readonly linkblue?: InputMaybe<Scalars['String']['input']>;
   readonly memberOf?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   readonly name?: InputMaybe<Scalars['String']['input']>;
-  readonly role?: InputMaybe<RoleResourceInput>;
+  readonly role?: InputMaybe<GqlAdminRoleResourceInput>;
 };
 
-export type SetPointOpportunityInput = {
+export type GqlAdminSetPointOpportunityInput = {
   readonly eventUuid?: InputMaybe<Scalars['ID']['input']>;
   readonly name?: InputMaybe<Scalars['String']['input']>;
   readonly opportunityDate?: InputMaybe<Scalars['LuxonDateTime']['input']>;
   readonly type?: InputMaybe<TeamType>;
 };
 
-export type SetTeamInput = {
+export type GqlAdminSetTeamInput = {
   readonly legacyStatus?: InputMaybe<TeamLegacyStatus>;
   readonly marathonYear?: InputMaybe<Scalars['String']['input']>;
   readonly name?: InputMaybe<Scalars['String']['input']>;
@@ -1472,93 +1456,87 @@ export type SetTeamInput = {
   readonly type?: InputMaybe<TeamType>;
 };
 
-export type SinglePointOpportunityResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminSinglePointOpportunityResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'SinglePointOpportunityResponse';
-  readonly data: PointOpportunityResource;
+  readonly data: GqlAdminPointOpportunityResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type SingleTeamResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminSingleTeamResponse = GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'SingleTeamResponse';
-  readonly data: TeamResource;
+  readonly data: GqlAdminTeamResource;
   readonly ok: Scalars['Boolean']['output'];
 };
 
 export { SortDirection };
 
-export type StageNotificationResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
+export type GqlAdminStageNotificationResponse = GqlAdminAbstractGraphQlCreatedResponse & GqlAdminAbstractGraphQlOkResponse & GqlAdminGraphQlBaseResponse & {
   readonly __typename?: 'StageNotificationResponse';
-  readonly data: NotificationResource;
+  readonly data: GqlAdminNotificationResource;
   readonly ok: Scalars['Boolean']['output'];
   readonly uuid: Scalars['String']['output'];
 };
 
 export { StringComparator };
 
-/** New Team vs Returning Team */
-export const TeamLegacyStatus = {
-  DemoTeam: 'DemoTeam',
-  NewTeam: 'NewTeam',
-  ReturningTeam: 'ReturningTeam'
-} as const;
+export { TeamLegacyStatus };
 
-export type TeamLegacyStatus = typeof TeamLegacyStatus[keyof typeof TeamLegacyStatus];
-export const TeamResolverAllKeys = {
+export const GqlAdminTeamResolverAllKeys = {
   LegacyStatus: 'legacyStatus',
   MarathonYear: 'marathonYear',
   Name: 'name',
   Type: 'type'
 } as const;
 
-export type TeamResolverAllKeys = typeof TeamResolverAllKeys[keyof typeof TeamResolverAllKeys];
-export type TeamResolverKeyedIsNullFilterItem = {
+export type GqlAdminTeamResolverAllKeys = typeof GqlAdminTeamResolverAllKeys[keyof typeof GqlAdminTeamResolverAllKeys];
+export type GqlAdminTeamResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  readonly field: TeamResolverAllKeys;
+  readonly field: GqlAdminTeamResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type TeamResolverKeyedOneOfFilterItem = {
+export type GqlAdminTeamResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  readonly field: TeamResolverOneOfFilterKeys;
+  readonly field: GqlAdminTeamResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
-export type TeamResolverKeyedStringFilterItem = {
+export type GqlAdminTeamResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
-  readonly field: TeamResolverStringFilterKeys;
+  readonly field: GqlAdminTeamResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
   readonly value: Scalars['String']['input'];
 };
 
-export const TeamResolverOneOfFilterKeys = {
+export const GqlAdminTeamResolverOneOfFilterKeys = {
   LegacyStatus: 'legacyStatus',
   MarathonYear: 'marathonYear',
   Type: 'type'
 } as const;
 
-export type TeamResolverOneOfFilterKeys = typeof TeamResolverOneOfFilterKeys[keyof typeof TeamResolverOneOfFilterKeys];
-export const TeamResolverStringFilterKeys = {
+export type GqlAdminTeamResolverOneOfFilterKeys = typeof GqlAdminTeamResolverOneOfFilterKeys[keyof typeof GqlAdminTeamResolverOneOfFilterKeys];
+export const GqlAdminTeamResolverStringFilterKeys = {
   Name: 'name'
 } as const;
 
-export type TeamResolverStringFilterKeys = typeof TeamResolverStringFilterKeys[keyof typeof TeamResolverStringFilterKeys];
-export type TeamResource = {
+export type GqlAdminTeamResolverStringFilterKeys = typeof GqlAdminTeamResolverStringFilterKeys[keyof typeof GqlAdminTeamResolverStringFilterKeys];
+export type GqlAdminTeamResource = {
   readonly __typename?: 'TeamResource';
   /** @deprecated Just query the members field and filter by role */
-  readonly captains: ReadonlyArray<MembershipResource>;
+  readonly captains: ReadonlyArray<GqlAdminMembershipResource>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly legacyStatus: TeamLegacyStatus;
   readonly marathonYear: Scalars['String']['output'];
-  readonly members: ReadonlyArray<MembershipResource>;
+  readonly members: ReadonlyArray<GqlAdminMembershipResource>;
   readonly name: Scalars['String']['output'];
   readonly persistentIdentifier?: Maybe<Scalars['String']['output']>;
-  readonly pointEntries: ReadonlyArray<PointEntryResource>;
+  readonly pointEntries: ReadonlyArray<GqlAdminPointEntryResource>;
   readonly totalPoints: Scalars['Int']['output'];
   readonly type: TeamType;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -1567,450 +1545,450 @@ export type TeamResource = {
 
 export { TeamType };
 
-export type CreateEventMutationVariables = Exact<{
-  input: CreateEventInput;
+export type GqlAdminCreateEventMutationVariables = Exact<{
+  input: GqlAdminCreateEventInput;
 }>;
 
 
-export type CreateEventMutation = { readonly __typename?: 'Mutation', readonly createEvent: { readonly __typename?: 'CreateEventResponse', readonly data: { readonly __typename?: 'EventResource', readonly uuid: string } } };
+export type GqlAdminCreateEventMutation = { readonly __typename?: 'Mutation', readonly createEvent: { readonly __typename?: 'CreateEventResponse', readonly data: { readonly __typename?: 'EventResource', readonly uuid: string } } };
 
-export type EventEditorFragmentFragment = { readonly __typename?: 'EventResource', readonly uuid: string, readonly title: string, readonly summary?: string | null, readonly description?: string | null, readonly location?: string | null, readonly occurrences: ReadonlyArray<{ readonly __typename?: 'EventOccurrenceResource', readonly uuid: string, readonly interval: string, readonly fullDay: boolean }>, readonly images: ReadonlyArray<{ readonly __typename?: 'ImageResource', readonly url?: URL | string | null, readonly imageData?: string | null, readonly width: number, readonly height: number, readonly thumbHash?: string | null, readonly alt?: string | null }> } & { ' $fragmentName'?: 'EventEditorFragmentFragment' };
+export type GqlAdminEventEditorFragmentFragment = { readonly __typename?: 'EventResource', readonly uuid: string, readonly title: string, readonly summary?: string | null, readonly description?: string | null, readonly location?: string | null, readonly occurrences: ReadonlyArray<{ readonly __typename?: 'EventOccurrenceResource', readonly uuid: string, readonly interval: string, readonly fullDay: boolean }>, readonly images: ReadonlyArray<{ readonly __typename?: 'ImageResource', readonly url?: URL | string | null, readonly imageData?: string | null, readonly width: number, readonly height: number, readonly thumbHash?: string | null, readonly alt?: string | null }> } & { ' $fragmentName'?: 'GqlAdminEventEditorFragmentFragment' };
 
-export type SaveEventMutationVariables = Exact<{
+export type GqlAdminSaveEventMutationVariables = Exact<{
   uuid: Scalars['String']['input'];
-  input: SetEventInput;
+  input: GqlAdminSetEventInput;
 }>;
 
 
-export type SaveEventMutation = { readonly __typename?: 'Mutation', readonly setEvent: { readonly __typename?: 'SetEventResponse', readonly data: (
+export type GqlAdminSaveEventMutation = { readonly __typename?: 'Mutation', readonly setEvent: { readonly __typename?: 'SetEventResponse', readonly data: (
       { readonly __typename?: 'EventResource' }
-      & { ' $fragmentRefs'?: { 'EventEditorFragmentFragment': EventEditorFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminEventEditorFragmentFragment': GqlAdminEventEditorFragmentFragment } }
     ) } };
 
-export type SingleNotificationFragmentFragment = { readonly __typename?: 'NotificationResource', readonly uuid: string, readonly title: string, readonly body: string, readonly deliveryIssue?: string | null, readonly deliveryIssueAcknowledgedAt?: Date | string | null, readonly sendAt?: Date | string | null, readonly startedSendingAt?: Date | string | null, readonly createdAt?: Date | string | null, readonly deliveryCount: number, readonly deliveryIssueCount: { readonly __typename?: 'NotificationDeliveryIssueCount', readonly DeviceNotRegistered: number, readonly InvalidCredentials: number, readonly MessageRateExceeded: number, readonly MessageTooBig: number, readonly MismatchSenderId: number, readonly Unknown: number } } & { ' $fragmentName'?: 'SingleNotificationFragmentFragment' };
+export type GqlAdminSingleNotificationFragmentFragment = { readonly __typename?: 'NotificationResource', readonly uuid: string, readonly title: string, readonly body: string, readonly deliveryIssue?: string | null, readonly deliveryIssueAcknowledgedAt?: Date | string | null, readonly sendAt?: Date | string | null, readonly startedSendingAt?: Date | string | null, readonly createdAt?: Date | string | null, readonly deliveryCount: number, readonly deliveryIssueCount: { readonly __typename?: 'NotificationDeliveryIssueCount', readonly DeviceNotRegistered: number, readonly InvalidCredentials: number, readonly MessageRateExceeded: number, readonly MessageTooBig: number, readonly MismatchSenderId: number, readonly Unknown: number } } & { ' $fragmentName'?: 'GqlAdminSingleNotificationFragmentFragment' };
 
-export type CreateNotificationMutationVariables = Exact<{
+export type GqlAdminCreateNotificationMutationVariables = Exact<{
   title: Scalars['String']['input'];
   body: Scalars['String']['input'];
-  audience: NotificationAudienceInput;
+  audience: GqlAdminNotificationAudienceInput;
   url?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type CreateNotificationMutation = { readonly __typename?: 'Mutation', readonly stageNotification: { readonly __typename?: 'StageNotificationResponse', readonly uuid: string } };
+export type GqlAdminCreateNotificationMutation = { readonly __typename?: 'Mutation', readonly stageNotification: { readonly __typename?: 'StageNotificationResponse', readonly uuid: string } };
 
-export type CancelNotificationScheduleMutationVariables = Exact<{
+export type GqlAdminCancelNotificationScheduleMutationVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type CancelNotificationScheduleMutation = { readonly __typename?: 'Mutation', readonly abortScheduledNotification: { readonly __typename?: 'AbortScheduledNotificationResponse', readonly ok: boolean } };
+export type GqlAdminCancelNotificationScheduleMutation = { readonly __typename?: 'Mutation', readonly abortScheduledNotification: { readonly __typename?: 'AbortScheduledNotificationResponse', readonly ok: boolean } };
 
-export type DeleteNotificationMutationVariables = Exact<{
+export type GqlAdminDeleteNotificationMutationVariables = Exact<{
   uuid: Scalars['String']['input'];
   force?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 
-export type DeleteNotificationMutation = { readonly __typename?: 'Mutation', readonly deleteNotification: { readonly __typename?: 'DeleteNotificationResponse', readonly ok: boolean } };
+export type GqlAdminDeleteNotificationMutation = { readonly __typename?: 'Mutation', readonly deleteNotification: { readonly __typename?: 'DeleteNotificationResponse', readonly ok: boolean } };
 
-export type SendNotificationMutationVariables = Exact<{
+export type GqlAdminSendNotificationMutationVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type SendNotificationMutation = { readonly __typename?: 'Mutation', readonly sendNotification: { readonly __typename?: 'SendNotificationResponse', readonly ok: boolean } };
+export type GqlAdminSendNotificationMutation = { readonly __typename?: 'Mutation', readonly sendNotification: { readonly __typename?: 'SendNotificationResponse', readonly ok: boolean } };
 
-export type ScheduleNotificationMutationVariables = Exact<{
+export type GqlAdminScheduleNotificationMutationVariables = Exact<{
   uuid: Scalars['String']['input'];
   sendAt: Scalars['DateTimeISO']['input'];
 }>;
 
 
-export type ScheduleNotificationMutation = { readonly __typename?: 'Mutation', readonly scheduleNotification: { readonly __typename?: 'ScheduleNotificationResponse', readonly ok: boolean } };
+export type GqlAdminScheduleNotificationMutation = { readonly __typename?: 'Mutation', readonly scheduleNotification: { readonly __typename?: 'ScheduleNotificationResponse', readonly ok: boolean } };
 
-export type TeamNameFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string } & { ' $fragmentName'?: 'TeamNameFragmentFragment' };
+export type GqlAdminTeamNameFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string } & { ' $fragmentName'?: 'GqlAdminTeamNameFragmentFragment' };
 
-export type PersonCreatorMutationVariables = Exact<{
-  input: CreatePersonInput;
+export type GqlAdminPersonCreatorMutationVariables = Exact<{
+  input: GqlAdminCreatePersonInput;
 }>;
 
 
-export type PersonCreatorMutation = { readonly __typename?: 'Mutation', readonly createPerson: { readonly __typename?: 'CreatePersonResponse', readonly ok: boolean, readonly uuid: string } };
+export type GqlAdminPersonCreatorMutation = { readonly __typename?: 'Mutation', readonly createPerson: { readonly __typename?: 'CreatePersonResponse', readonly ok: boolean, readonly uuid: string } };
 
-export type PersonEditorFragmentFragment = { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null, readonly email: string, readonly role: { readonly __typename?: 'RoleResource', readonly committeeRole?: CommitteeRole | null, readonly committeeIdentifier?: CommitteeIdentifier | null }, readonly teams: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly position: MembershipPositionType, readonly team: { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string } }> } & { ' $fragmentName'?: 'PersonEditorFragmentFragment' };
+export type GqlAdminPersonEditorFragmentFragment = { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null, readonly email: string, readonly role: { readonly __typename?: 'RoleResource', readonly committeeRole?: GqlAdminCommitteeRole | null, readonly committeeIdentifier?: GqlAdminCommitteeIdentifier | null }, readonly teams: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly position: GqlAdminMembershipPositionType, readonly team: { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string } }> } & { ' $fragmentName'?: 'GqlAdminPersonEditorFragmentFragment' };
 
-export type PersonEditorMutationVariables = Exact<{
+export type GqlAdminPersonEditorMutationVariables = Exact<{
   uuid: Scalars['String']['input'];
-  input: SetPersonInput;
+  input: GqlAdminSetPersonInput;
 }>;
 
 
-export type PersonEditorMutation = { readonly __typename?: 'Mutation', readonly setPerson: { readonly __typename?: 'GetPersonResponse', readonly ok: boolean } };
+export type GqlAdminPersonEditorMutation = { readonly __typename?: 'Mutation', readonly setPerson: { readonly __typename?: 'GetPersonResponse', readonly ok: boolean } };
 
-export type CreatePointEntryMutationVariables = Exact<{
-  input: CreatePointEntryInput;
+export type GqlAdminCreatePointEntryMutationVariables = Exact<{
+  input: GqlAdminCreatePointEntryInput;
 }>;
 
 
-export type CreatePointEntryMutation = { readonly __typename?: 'Mutation', readonly createPointEntry: { readonly __typename?: 'CreatePointEntryResponse', readonly data: { readonly __typename?: 'PointEntryResource', readonly uuid: string } } };
+export type GqlAdminCreatePointEntryMutation = { readonly __typename?: 'Mutation', readonly createPointEntry: { readonly __typename?: 'CreatePointEntryResponse', readonly data: { readonly __typename?: 'PointEntryResource', readonly uuid: string } } };
 
-export type GetPersonByUuidQueryVariables = Exact<{
+export type GqlAdminGetPersonByUuidQueryVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type GetPersonByUuidQuery = { readonly __typename?: 'Query', readonly person: { readonly __typename?: 'GetPersonResponse', readonly data?: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null } | null } };
+export type GqlAdminGetPersonByUuidQuery = { readonly __typename?: 'Query', readonly person: { readonly __typename?: 'GetPersonResponse', readonly data?: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null } | null } };
 
-export type GetPersonByLinkBlueQueryVariables = Exact<{
+export type GqlAdminGetPersonByLinkBlueQueryVariables = Exact<{
   linkBlue: Scalars['String']['input'];
 }>;
 
 
-export type GetPersonByLinkBlueQuery = { readonly __typename?: 'Query', readonly personByLinkBlue: { readonly __typename?: 'GetPersonResponse', readonly data?: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null } | null } };
+export type GqlAdminGetPersonByLinkBlueQuery = { readonly __typename?: 'Query', readonly personByLinkBlue: { readonly __typename?: 'GetPersonResponse', readonly data?: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null } | null } };
 
-export type SearchPersonByNameQueryVariables = Exact<{
+export type GqlAdminSearchPersonByNameQueryVariables = Exact<{
   name: Scalars['String']['input'];
 }>;
 
 
-export type SearchPersonByNameQuery = { readonly __typename?: 'Query', readonly searchPeopleByName: { readonly __typename?: 'GetPeopleResponse', readonly data: ReadonlyArray<{ readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null }> } };
+export type GqlAdminSearchPersonByNameQuery = { readonly __typename?: 'Query', readonly searchPeopleByName: { readonly __typename?: 'GetPeopleResponse', readonly data: ReadonlyArray<{ readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null }> } };
 
-export type CreatePersonByLinkBlueMutationVariables = Exact<{
+export type GqlAdminCreatePersonByLinkBlueMutationVariables = Exact<{
   linkBlue: Scalars['String']['input'];
   email: Scalars['EmailAddress']['input'];
   teamUuid: Scalars['String']['input'];
 }>;
 
 
-export type CreatePersonByLinkBlueMutation = { readonly __typename?: 'Mutation', readonly createPerson: { readonly __typename?: 'CreatePersonResponse', readonly uuid: string } };
+export type GqlAdminCreatePersonByLinkBlueMutation = { readonly __typename?: 'Mutation', readonly createPerson: { readonly __typename?: 'CreatePersonResponse', readonly uuid: string } };
 
-export type PointEntryOpportunityLookupQueryVariables = Exact<{
+export type GqlAdminPointEntryOpportunityLookupQueryVariables = Exact<{
   name: Scalars['String']['input'];
 }>;
 
 
-export type PointEntryOpportunityLookupQuery = { readonly __typename?: 'Query', readonly pointOpportunities: { readonly __typename?: 'ListPointOpportunitiesResponse', readonly data: ReadonlyArray<{ readonly __typename?: 'PointOpportunityResource', readonly name: string, readonly uuid: string }> } };
+export type GqlAdminPointEntryOpportunityLookupQuery = { readonly __typename?: 'Query', readonly pointOpportunities: { readonly __typename?: 'ListPointOpportunitiesResponse', readonly data: ReadonlyArray<{ readonly __typename?: 'PointOpportunityResource', readonly name: string, readonly uuid: string }> } };
 
-export type CreatePointOpportunityMutationVariables = Exact<{
-  input: CreatePointOpportunityInput;
+export type GqlAdminCreatePointOpportunityMutationVariables = Exact<{
+  input: GqlAdminCreatePointOpportunityInput;
 }>;
 
 
-export type CreatePointOpportunityMutation = { readonly __typename?: 'Mutation', readonly createPointOpportunity: { readonly __typename?: 'CreatePointOpportunityResponse', readonly uuid: string } };
+export type GqlAdminCreatePointOpportunityMutation = { readonly __typename?: 'Mutation', readonly createPointOpportunity: { readonly __typename?: 'CreatePointOpportunityResponse', readonly uuid: string } };
 
-export type TeamCreatorMutationVariables = Exact<{
-  input: CreateTeamInput;
+export type GqlAdminTeamCreatorMutationVariables = Exact<{
+  input: GqlAdminCreateTeamInput;
 }>;
 
 
-export type TeamCreatorMutation = { readonly __typename?: 'Mutation', readonly createTeam: { readonly __typename?: 'CreateTeamResponse', readonly ok: boolean, readonly uuid: string } };
+export type GqlAdminTeamCreatorMutation = { readonly __typename?: 'Mutation', readonly createTeam: { readonly __typename?: 'CreateTeamResponse', readonly ok: boolean, readonly uuid: string } };
 
-export type TeamEditorFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string, readonly marathonYear: string, readonly legacyStatus: TeamLegacyStatus, readonly persistentIdentifier?: string | null, readonly type: TeamType } & { ' $fragmentName'?: 'TeamEditorFragmentFragment' };
+export type GqlAdminTeamEditorFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string, readonly marathonYear: string, readonly legacyStatus: GqlAdminTeamLegacyStatus, readonly persistentIdentifier?: string | null, readonly type: GqlAdminTeamType } & { ' $fragmentName'?: 'GqlAdminTeamEditorFragmentFragment' };
 
-export type TeamEditorMutationVariables = Exact<{
+export type GqlAdminTeamEditorMutationVariables = Exact<{
   uuid: Scalars['String']['input'];
-  input: SetTeamInput;
+  input: GqlAdminSetTeamInput;
 }>;
 
 
-export type TeamEditorMutation = { readonly __typename?: 'Mutation', readonly setTeam: { readonly __typename?: 'SingleTeamResponse', readonly ok: boolean } };
+export type GqlAdminTeamEditorMutation = { readonly __typename?: 'Mutation', readonly setTeam: { readonly __typename?: 'SingleTeamResponse', readonly ok: boolean } };
 
-export type EventsTableFragmentFragment = { readonly __typename?: 'EventResource', readonly uuid: string, readonly title: string, readonly description?: string | null, readonly summary?: string | null, readonly occurrences: ReadonlyArray<{ readonly __typename?: 'EventOccurrenceResource', readonly uuid: string, readonly interval: string, readonly fullDay: boolean }> } & { ' $fragmentName'?: 'EventsTableFragmentFragment' };
+export type GqlAdminEventsTableFragmentFragment = { readonly __typename?: 'EventResource', readonly uuid: string, readonly title: string, readonly description?: string | null, readonly summary?: string | null, readonly occurrences: ReadonlyArray<{ readonly __typename?: 'EventOccurrenceResource', readonly uuid: string, readonly interval: string, readonly fullDay: boolean }> } & { ' $fragmentName'?: 'GqlAdminEventsTableFragmentFragment' };
 
-export type EventsTableQueryVariables = Exact<{
+export type GqlAdminEventsTableQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']> | Scalars['String']['input']>;
-  sortDirection?: InputMaybe<ReadonlyArray<SortDirection> | SortDirection>;
-  dateFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedDateFilterItem> | EventResolverKeyedDateFilterItem>;
-  isNullFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedIsNullFilterItem> | EventResolverKeyedIsNullFilterItem>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedOneOfFilterItem> | EventResolverKeyedOneOfFilterItem>;
-  stringFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedStringFilterItem> | EventResolverKeyedStringFilterItem>;
+  sortDirection?: InputMaybe<ReadonlyArray<GqlAdminSortDirection> | GqlAdminSortDirection>;
+  dateFilters?: InputMaybe<ReadonlyArray<GqlAdminEventResolverKeyedDateFilterItem> | GqlAdminEventResolverKeyedDateFilterItem>;
+  isNullFilters?: InputMaybe<ReadonlyArray<GqlAdminEventResolverKeyedIsNullFilterItem> | GqlAdminEventResolverKeyedIsNullFilterItem>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<GqlAdminEventResolverKeyedOneOfFilterItem> | GqlAdminEventResolverKeyedOneOfFilterItem>;
+  stringFilters?: InputMaybe<ReadonlyArray<GqlAdminEventResolverKeyedStringFilterItem> | GqlAdminEventResolverKeyedStringFilterItem>;
 }>;
 
 
-export type EventsTableQuery = { readonly __typename?: 'Query', readonly events: { readonly __typename?: 'ListEventsResponse', readonly page: number, readonly pageSize: number, readonly total: number, readonly data: ReadonlyArray<(
+export type GqlAdminEventsTableQuery = { readonly __typename?: 'Query', readonly events: { readonly __typename?: 'ListEventsResponse', readonly page: number, readonly pageSize: number, readonly total: number, readonly data: ReadonlyArray<(
       { readonly __typename?: 'EventResource' }
-      & { ' $fragmentRefs'?: { 'EventsTableFragmentFragment': EventsTableFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminEventsTableFragmentFragment': GqlAdminEventsTableFragmentFragment } }
     )> } };
 
-export type PeopleTableFragmentFragment = { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null, readonly email: string, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: DbRole, readonly committeeRole?: CommitteeRole | null, readonly committeeIdentifier?: CommitteeIdentifier | null } } & { ' $fragmentName'?: 'PeopleTableFragmentFragment' };
+export type GqlAdminPeopleTableFragmentFragment = { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null, readonly email: string, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: GqlAdminDbRole, readonly committeeRole?: GqlAdminCommitteeRole | null, readonly committeeIdentifier?: GqlAdminCommitteeIdentifier | null } } & { ' $fragmentName'?: 'GqlAdminPeopleTableFragmentFragment' };
 
-export type PeopleTableQueryVariables = Exact<{
+export type GqlAdminPeopleTableQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']> | Scalars['String']['input']>;
-  sortDirection?: InputMaybe<ReadonlyArray<SortDirection> | SortDirection>;
-  isNullFilters?: InputMaybe<ReadonlyArray<PersonResolverKeyedIsNullFilterItem> | PersonResolverKeyedIsNullFilterItem>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<PersonResolverKeyedOneOfFilterItem> | PersonResolverKeyedOneOfFilterItem>;
-  stringFilters?: InputMaybe<ReadonlyArray<PersonResolverKeyedStringFilterItem> | PersonResolverKeyedStringFilterItem>;
+  sortDirection?: InputMaybe<ReadonlyArray<GqlAdminSortDirection> | GqlAdminSortDirection>;
+  isNullFilters?: InputMaybe<ReadonlyArray<GqlAdminPersonResolverKeyedIsNullFilterItem> | GqlAdminPersonResolverKeyedIsNullFilterItem>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<GqlAdminPersonResolverKeyedOneOfFilterItem> | GqlAdminPersonResolverKeyedOneOfFilterItem>;
+  stringFilters?: InputMaybe<ReadonlyArray<GqlAdminPersonResolverKeyedStringFilterItem> | GqlAdminPersonResolverKeyedStringFilterItem>;
 }>;
 
 
-export type PeopleTableQuery = { readonly __typename?: 'Query', readonly listPeople: { readonly __typename?: 'ListPeopleResponse', readonly page: number, readonly pageSize: number, readonly total: number, readonly data: ReadonlyArray<(
+export type GqlAdminPeopleTableQuery = { readonly __typename?: 'Query', readonly listPeople: { readonly __typename?: 'ListPeopleResponse', readonly page: number, readonly pageSize: number, readonly total: number, readonly data: ReadonlyArray<(
       { readonly __typename?: 'PersonResource' }
-      & { ' $fragmentRefs'?: { 'PeopleTableFragmentFragment': PeopleTableFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminPeopleTableFragmentFragment': GqlAdminPeopleTableFragmentFragment } }
     )> } };
 
-export type TeamsTableQueryVariables = Exact<{
+export type GqlAdminTeamsTableQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']> | Scalars['String']['input']>;
-  sortDirection?: InputMaybe<ReadonlyArray<SortDirection> | SortDirection>;
-  isNullFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedIsNullFilterItem> | TeamResolverKeyedIsNullFilterItem>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedOneOfFilterItem> | TeamResolverKeyedOneOfFilterItem>;
-  stringFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedStringFilterItem> | TeamResolverKeyedStringFilterItem>;
+  sortDirection?: InputMaybe<ReadonlyArray<GqlAdminSortDirection> | GqlAdminSortDirection>;
+  isNullFilters?: InputMaybe<ReadonlyArray<GqlAdminTeamResolverKeyedIsNullFilterItem> | GqlAdminTeamResolverKeyedIsNullFilterItem>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<GqlAdminTeamResolverKeyedOneOfFilterItem> | GqlAdminTeamResolverKeyedOneOfFilterItem>;
+  stringFilters?: InputMaybe<ReadonlyArray<GqlAdminTeamResolverKeyedStringFilterItem> | GqlAdminTeamResolverKeyedStringFilterItem>;
 }>;
 
 
-export type TeamsTableQuery = { readonly __typename?: 'Query', readonly teams: { readonly __typename?: 'ListTeamsResponse', readonly page: number, readonly pageSize: number, readonly total: number, readonly data: ReadonlyArray<(
+export type GqlAdminTeamsTableQuery = { readonly __typename?: 'Query', readonly teams: { readonly __typename?: 'ListTeamsResponse', readonly page: number, readonly pageSize: number, readonly total: number, readonly data: ReadonlyArray<(
       { readonly __typename?: 'TeamResource' }
-      & { ' $fragmentRefs'?: { 'TeamsTableFragmentFragment': TeamsTableFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminTeamsTableFragmentFragment': GqlAdminTeamsTableFragmentFragment } }
     )> } };
 
-export type TeamsTableFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly type: TeamType, readonly name: string, readonly legacyStatus: TeamLegacyStatus, readonly marathonYear: string, readonly totalPoints: number } & { ' $fragmentName'?: 'TeamsTableFragmentFragment' };
+export type GqlAdminTeamsTableFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly type: GqlAdminTeamType, readonly name: string, readonly legacyStatus: GqlAdminTeamLegacyStatus, readonly marathonYear: string, readonly totalPoints: number } & { ' $fragmentName'?: 'GqlAdminTeamsTableFragmentFragment' };
 
-export type NotificationDeliveriesTableFragmentFragment = { readonly __typename?: 'NotificationDeliveryResource', readonly uuid: string, readonly deliveryError?: string | null, readonly receiptCheckedAt?: Date | string | null, readonly sentAt?: Date | string | null } & { ' $fragmentName'?: 'NotificationDeliveriesTableFragmentFragment' };
+export type GqlAdminNotificationDeliveriesTableFragmentFragment = { readonly __typename?: 'NotificationDeliveryResource', readonly uuid: string, readonly deliveryError?: string | null, readonly receiptCheckedAt?: Date | string | null, readonly sentAt?: Date | string | null } & { ' $fragmentName'?: 'GqlAdminNotificationDeliveriesTableFragmentFragment' };
 
-export type NotificationDeliveriesTableQueryQueryVariables = Exact<{
+export type GqlAdminNotificationDeliveriesTableQueryQueryVariables = Exact<{
   notificationId: Scalars['String']['input'];
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']> | Scalars['String']['input']>;
-  sortDirection?: InputMaybe<ReadonlyArray<SortDirection> | SortDirection>;
-  dateFilters?: InputMaybe<ReadonlyArray<NotificationDeliveryResolverKeyedDateFilterItem> | NotificationDeliveryResolverKeyedDateFilterItem>;
-  isNullFilters?: InputMaybe<ReadonlyArray<NotificationDeliveryResolverKeyedIsNullFilterItem> | NotificationDeliveryResolverKeyedIsNullFilterItem>;
+  sortDirection?: InputMaybe<ReadonlyArray<GqlAdminSortDirection> | GqlAdminSortDirection>;
+  dateFilters?: InputMaybe<ReadonlyArray<GqlAdminNotificationDeliveryResolverKeyedDateFilterItem> | GqlAdminNotificationDeliveryResolverKeyedDateFilterItem>;
+  isNullFilters?: InputMaybe<ReadonlyArray<GqlAdminNotificationDeliveryResolverKeyedIsNullFilterItem> | GqlAdminNotificationDeliveryResolverKeyedIsNullFilterItem>;
 }>;
 
 
-export type NotificationDeliveriesTableQueryQuery = { readonly __typename?: 'Query', readonly notificationDeliveries: { readonly __typename?: 'ListNotificationDeliveriesResponse', readonly page: number, readonly pageSize: number, readonly total: number, readonly data: ReadonlyArray<(
+export type GqlAdminNotificationDeliveriesTableQueryQuery = { readonly __typename?: 'Query', readonly notificationDeliveries: { readonly __typename?: 'ListNotificationDeliveriesResponse', readonly page: number, readonly pageSize: number, readonly total: number, readonly data: ReadonlyArray<(
       { readonly __typename?: 'NotificationDeliveryResource' }
-      & { ' $fragmentRefs'?: { 'NotificationDeliveriesTableFragmentFragment': NotificationDeliveriesTableFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminNotificationDeliveriesTableFragmentFragment': GqlAdminNotificationDeliveriesTableFragmentFragment } }
     )> } };
 
-export type NotificationsTableFragmentFragment = { readonly __typename?: 'NotificationResource', readonly uuid: string, readonly title: string, readonly body: string, readonly deliveryIssue?: string | null, readonly deliveryIssueAcknowledgedAt?: Date | string | null, readonly sendAt?: Date | string | null, readonly startedSendingAt?: Date | string | null } & { ' $fragmentName'?: 'NotificationsTableFragmentFragment' };
+export type GqlAdminNotificationsTableFragmentFragment = { readonly __typename?: 'NotificationResource', readonly uuid: string, readonly title: string, readonly body: string, readonly deliveryIssue?: string | null, readonly deliveryIssueAcknowledgedAt?: Date | string | null, readonly sendAt?: Date | string | null, readonly startedSendingAt?: Date | string | null } & { ' $fragmentName'?: 'GqlAdminNotificationsTableFragmentFragment' };
 
-export type NotificationsTableQueryQueryVariables = Exact<{
+export type GqlAdminNotificationsTableQueryQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']> | Scalars['String']['input']>;
-  sortDirection?: InputMaybe<ReadonlyArray<SortDirection> | SortDirection>;
-  dateFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedDateFilterItem> | NotificationResolverKeyedDateFilterItem>;
-  isNullFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedIsNullFilterItem> | NotificationResolverKeyedIsNullFilterItem>;
-  oneOfFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedOneOfFilterItem> | NotificationResolverKeyedOneOfFilterItem>;
-  stringFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedStringFilterItem> | NotificationResolverKeyedStringFilterItem>;
+  sortDirection?: InputMaybe<ReadonlyArray<GqlAdminSortDirection> | GqlAdminSortDirection>;
+  dateFilters?: InputMaybe<ReadonlyArray<GqlAdminNotificationResolverKeyedDateFilterItem> | GqlAdminNotificationResolverKeyedDateFilterItem>;
+  isNullFilters?: InputMaybe<ReadonlyArray<GqlAdminNotificationResolverKeyedIsNullFilterItem> | GqlAdminNotificationResolverKeyedIsNullFilterItem>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<GqlAdminNotificationResolverKeyedOneOfFilterItem> | GqlAdminNotificationResolverKeyedOneOfFilterItem>;
+  stringFilters?: InputMaybe<ReadonlyArray<GqlAdminNotificationResolverKeyedStringFilterItem> | GqlAdminNotificationResolverKeyedStringFilterItem>;
 }>;
 
 
-export type NotificationsTableQueryQuery = { readonly __typename?: 'Query', readonly notifications: { readonly __typename?: 'ListNotificationsResponse', readonly page: number, readonly pageSize: number, readonly total: number, readonly data: ReadonlyArray<(
+export type GqlAdminNotificationsTableQueryQuery = { readonly __typename?: 'Query', readonly notifications: { readonly __typename?: 'ListNotificationsResponse', readonly page: number, readonly pageSize: number, readonly total: number, readonly data: ReadonlyArray<(
       { readonly __typename?: 'NotificationResource' }
-      & { ' $fragmentRefs'?: { 'NotificationsTableFragmentFragment': NotificationsTableFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminNotificationsTableFragmentFragment': GqlAdminNotificationsTableFragmentFragment } }
     )> } };
 
-export type DeletePointEntryMutationVariables = Exact<{
+export type GqlAdminDeletePointEntryMutationVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type DeletePointEntryMutation = { readonly __typename?: 'Mutation', readonly deletePointEntry: { readonly __typename?: 'DeletePointEntryResponse', readonly ok: boolean } };
+export type GqlAdminDeletePointEntryMutation = { readonly __typename?: 'Mutation', readonly deletePointEntry: { readonly __typename?: 'DeletePointEntryResponse', readonly ok: boolean } };
 
-export type PointEntryTableFragmentFragment = { readonly __typename?: 'PointEntryResource', readonly uuid: string, readonly points: number, readonly comment?: string | null, readonly personFrom?: { readonly __typename?: 'PersonResource', readonly name?: string | null, readonly linkblue?: string | null } | null, readonly pointOpportunity?: { readonly __typename?: 'PointOpportunityResource', readonly name: string, readonly opportunityDate?: string | null } | null } & { ' $fragmentName'?: 'PointEntryTableFragmentFragment' };
+export type GqlAdminPointEntryTableFragmentFragment = { readonly __typename?: 'PointEntryResource', readonly uuid: string, readonly points: number, readonly comment?: string | null, readonly personFrom?: { readonly __typename?: 'PersonResource', readonly name?: string | null, readonly linkblue?: string | null } | null, readonly pointOpportunity?: { readonly __typename?: 'PointOpportunityResource', readonly name: string, readonly opportunityDate?: string | null } | null } & { ' $fragmentName'?: 'GqlAdminPointEntryTableFragmentFragment' };
 
-export type DeleteEventMutationVariables = Exact<{
+export type GqlAdminDeleteEventMutationVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type DeleteEventMutation = { readonly __typename?: 'Mutation', readonly deleteEvent: { readonly __typename?: 'DeleteEventResponse', readonly ok: boolean } };
+export type GqlAdminDeleteEventMutation = { readonly __typename?: 'Mutation', readonly deleteEvent: { readonly __typename?: 'DeleteEventResponse', readonly ok: boolean } };
 
-export type EventViewerFragmentFragment = { readonly __typename?: 'EventResource', readonly uuid: string, readonly title: string, readonly summary?: string | null, readonly description?: string | null, readonly location?: string | null, readonly createdAt?: Date | string | null, readonly updatedAt?: Date | string | null, readonly occurrences: ReadonlyArray<{ readonly __typename?: 'EventOccurrenceResource', readonly interval: string, readonly fullDay: boolean }>, readonly images: ReadonlyArray<{ readonly __typename?: 'ImageResource', readonly url?: URL | string | null, readonly imageData?: string | null, readonly width: number, readonly height: number, readonly thumbHash?: string | null, readonly alt?: string | null }> } & { ' $fragmentName'?: 'EventViewerFragmentFragment' };
+export type GqlAdminEventViewerFragmentFragment = { readonly __typename?: 'EventResource', readonly uuid: string, readonly title: string, readonly summary?: string | null, readonly description?: string | null, readonly location?: string | null, readonly createdAt?: Date | string | null, readonly updatedAt?: Date | string | null, readonly occurrences: ReadonlyArray<{ readonly __typename?: 'EventOccurrenceResource', readonly interval: string, readonly fullDay: boolean }>, readonly images: ReadonlyArray<{ readonly __typename?: 'ImageResource', readonly url?: URL | string | null, readonly imageData?: string | null, readonly width: number, readonly height: number, readonly thumbHash?: string | null, readonly alt?: string | null }> } & { ' $fragmentName'?: 'GqlAdminEventViewerFragmentFragment' };
 
-export type DeletePersonMutationVariables = Exact<{
+export type GqlAdminDeletePersonMutationVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type DeletePersonMutation = { readonly __typename?: 'Mutation', readonly deletePerson: { readonly __typename?: 'DeletePersonResponse', readonly ok: boolean } };
+export type GqlAdminDeletePersonMutation = { readonly __typename?: 'Mutation', readonly deletePerson: { readonly __typename?: 'DeletePersonResponse', readonly ok: boolean } };
 
-export type PersonViewerFragmentFragment = { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null, readonly email: string, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: DbRole, readonly committeeRole?: CommitteeRole | null, readonly committeeIdentifier?: CommitteeIdentifier | null }, readonly teams: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly position: MembershipPositionType, readonly team: { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string } }> } & { ' $fragmentName'?: 'PersonViewerFragmentFragment' };
+export type GqlAdminPersonViewerFragmentFragment = { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null, readonly email: string, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: GqlAdminDbRole, readonly committeeRole?: GqlAdminCommitteeRole | null, readonly committeeIdentifier?: GqlAdminCommitteeIdentifier | null }, readonly teams: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly position: GqlAdminMembershipPositionType, readonly team: { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string } }> } & { ' $fragmentName'?: 'GqlAdminPersonViewerFragmentFragment' };
 
-export type DeleteTeamMutationVariables = Exact<{
+export type GqlAdminDeleteTeamMutationVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type DeleteTeamMutation = { readonly __typename?: 'Mutation', readonly deleteTeam: { readonly __typename?: 'DeleteTeamResponse', readonly ok: boolean } };
+export type GqlAdminDeleteTeamMutation = { readonly __typename?: 'Mutation', readonly deleteTeam: { readonly __typename?: 'DeleteTeamResponse', readonly ok: boolean } };
 
-export type TeamViewerFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string, readonly marathonYear: string, readonly legacyStatus: TeamLegacyStatus, readonly totalPoints: number, readonly type: TeamType, readonly members: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly person: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null } }>, readonly captains: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly person: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null } }> } & { ' $fragmentName'?: 'TeamViewerFragmentFragment' };
+export type GqlAdminTeamViewerFragmentFragment = { readonly __typename?: 'TeamResource', readonly uuid: string, readonly name: string, readonly marathonYear: string, readonly legacyStatus: GqlAdminTeamLegacyStatus, readonly totalPoints: number, readonly type: GqlAdminTeamType, readonly members: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly person: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null } }>, readonly captains: ReadonlyArray<{ readonly __typename?: 'MembershipResource', readonly person: { readonly __typename?: 'PersonResource', readonly uuid: string, readonly name?: string | null, readonly linkblue?: string | null } }> } & { ' $fragmentName'?: 'GqlAdminTeamViewerFragmentFragment' };
 
-export type LoginStateQueryVariables = Exact<{ [key: string]: never; }>;
+export type GqlAdminLoginStateQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type LoginStateQuery = { readonly __typename?: 'Query', readonly loginState: { readonly __typename?: 'LoginState', readonly loggedIn: boolean, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: DbRole, readonly committeeRole?: CommitteeRole | null, readonly committeeIdentifier?: CommitteeIdentifier | null } } };
+export type GqlAdminLoginStateQuery = { readonly __typename?: 'Query', readonly loginState: { readonly __typename?: 'LoginState', readonly loggedIn: boolean, readonly role: { readonly __typename?: 'RoleResource', readonly dbRole: GqlAdminDbRole, readonly committeeRole?: GqlAdminCommitteeRole | null, readonly committeeIdentifier?: GqlAdminCommitteeIdentifier | null } } };
 
-export type CommitConfigChangesMutationVariables = Exact<{
-  changes: ReadonlyArray<CreateConfigurationInput> | CreateConfigurationInput;
+export type GqlAdminCommitConfigChangesMutationVariables = Exact<{
+  changes: ReadonlyArray<GqlAdminCreateConfigurationInput> | GqlAdminCreateConfigurationInput;
 }>;
 
 
-export type CommitConfigChangesMutation = { readonly __typename?: 'Mutation', readonly createConfigurations: { readonly __typename?: 'CreateConfigurationResponse', readonly ok: boolean } };
+export type GqlAdminCommitConfigChangesMutation = { readonly __typename?: 'Mutation', readonly createConfigurations: { readonly __typename?: 'CreateConfigurationResponse', readonly ok: boolean } };
 
-export type ConfigFragmentFragment = { readonly __typename?: 'ConfigurationResource', readonly uuid: string, readonly key: string, readonly value: string, readonly validAfter?: string | null, readonly validUntil?: string | null, readonly createdAt?: Date | string | null } & { ' $fragmentName'?: 'ConfigFragmentFragment' };
+export type GqlAdminConfigFragmentFragment = { readonly __typename?: 'ConfigurationResource', readonly uuid: string, readonly key: string, readonly value: string, readonly validAfter?: string | null, readonly validUntil?: string | null, readonly createdAt?: Date | string | null } & { ' $fragmentName'?: 'GqlAdminConfigFragmentFragment' };
 
-export type ConfigQueryQueryVariables = Exact<{ [key: string]: never; }>;
+export type GqlAdminConfigQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ConfigQueryQuery = { readonly __typename?: 'Query', readonly allConfigurations: { readonly __typename?: 'GetAllConfigurationsResponse', readonly data: ReadonlyArray<(
+export type GqlAdminConfigQueryQuery = { readonly __typename?: 'Query', readonly allConfigurations: { readonly __typename?: 'GetAllConfigurationsResponse', readonly data: ReadonlyArray<(
       { readonly __typename?: 'ConfigurationResource' }
-      & { ' $fragmentRefs'?: { 'ConfigFragmentFragment': ConfigFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminConfigFragmentFragment': GqlAdminConfigFragmentFragment } }
     )> } };
 
-export type EditEventPageQueryVariables = Exact<{
+export type GqlAdminEditEventPageQueryVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type EditEventPageQuery = { readonly __typename?: 'Query', readonly event: { readonly __typename?: 'GetEventByUuidResponse', readonly data: (
+export type GqlAdminEditEventPageQuery = { readonly __typename?: 'Query', readonly event: { readonly __typename?: 'GetEventByUuidResponse', readonly data: (
       { readonly __typename?: 'EventResource' }
-      & { ' $fragmentRefs'?: { 'EventEditorFragmentFragment': EventEditorFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminEventEditorFragmentFragment': GqlAdminEventEditorFragmentFragment } }
     ) } };
 
-export type ViewEventPageQueryVariables = Exact<{
+export type GqlAdminViewEventPageQueryVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type ViewEventPageQuery = { readonly __typename?: 'Query', readonly event: { readonly __typename?: 'GetEventByUuidResponse', readonly data: (
+export type GqlAdminViewEventPageQuery = { readonly __typename?: 'Query', readonly event: { readonly __typename?: 'GetEventByUuidResponse', readonly data: (
       { readonly __typename?: 'EventResource' }
-      & { ' $fragmentRefs'?: { 'EventViewerFragmentFragment': EventViewerFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminEventViewerFragmentFragment': GqlAdminEventViewerFragmentFragment } }
     ) } };
 
-export type NotificationManagerQueryVariables = Exact<{
+export type GqlAdminNotificationManagerQueryVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type NotificationManagerQuery = { readonly __typename?: 'Query', readonly notification: { readonly __typename?: 'GetNotificationByUuidResponse', readonly data: (
+export type GqlAdminNotificationManagerQuery = { readonly __typename?: 'Query', readonly notification: { readonly __typename?: 'GetNotificationByUuidResponse', readonly data: (
       { readonly __typename?: 'NotificationResource' }
-      & { ' $fragmentRefs'?: { 'SingleNotificationFragmentFragment': SingleNotificationFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminSingleNotificationFragmentFragment': GqlAdminSingleNotificationFragmentFragment } }
     ) } };
 
-export type NotificationViewerQueryVariables = Exact<{
+export type GqlAdminNotificationViewerQueryVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type NotificationViewerQuery = { readonly __typename?: 'Query', readonly notification: { readonly __typename?: 'GetNotificationByUuidResponse', readonly data: (
+export type GqlAdminNotificationViewerQuery = { readonly __typename?: 'Query', readonly notification: { readonly __typename?: 'GetNotificationByUuidResponse', readonly data: (
       { readonly __typename?: 'NotificationResource' }
-      & { ' $fragmentRefs'?: { 'SingleNotificationFragmentFragment': SingleNotificationFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminSingleNotificationFragmentFragment': GqlAdminSingleNotificationFragmentFragment } }
     ) } };
 
-export type CreatePersonPageQueryVariables = Exact<{ [key: string]: never; }>;
+export type GqlAdminCreatePersonPageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CreatePersonPageQuery = { readonly __typename?: 'Query', readonly teams: { readonly __typename?: 'ListTeamsResponse', readonly data: ReadonlyArray<(
+export type GqlAdminCreatePersonPageQuery = { readonly __typename?: 'Query', readonly teams: { readonly __typename?: 'ListTeamsResponse', readonly data: ReadonlyArray<(
       { readonly __typename?: 'TeamResource' }
-      & { ' $fragmentRefs'?: { 'TeamNameFragmentFragment': TeamNameFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminTeamNameFragmentFragment': GqlAdminTeamNameFragmentFragment } }
     )> } };
 
-export type EditPersonPageQueryVariables = Exact<{
+export type GqlAdminEditPersonPageQueryVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type EditPersonPageQuery = { readonly __typename?: 'Query', readonly person: { readonly __typename?: 'GetPersonResponse', readonly data?: (
+export type GqlAdminEditPersonPageQuery = { readonly __typename?: 'Query', readonly person: { readonly __typename?: 'GetPersonResponse', readonly data?: (
       { readonly __typename?: 'PersonResource' }
-      & { ' $fragmentRefs'?: { 'PersonEditorFragmentFragment': PersonEditorFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminPersonEditorFragmentFragment': GqlAdminPersonEditorFragmentFragment } }
     ) | null }, readonly teams: { readonly __typename?: 'ListTeamsResponse', readonly data: ReadonlyArray<(
       { readonly __typename?: 'TeamResource' }
-      & { ' $fragmentRefs'?: { 'TeamNameFragmentFragment': TeamNameFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminTeamNameFragmentFragment': GqlAdminTeamNameFragmentFragment } }
     )> } };
 
-export type ViewPersonPageQueryVariables = Exact<{
+export type GqlAdminViewPersonPageQueryVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type ViewPersonPageQuery = { readonly __typename?: 'Query', readonly person: { readonly __typename?: 'GetPersonResponse', readonly data?: (
+export type GqlAdminViewPersonPageQuery = { readonly __typename?: 'Query', readonly person: { readonly __typename?: 'GetPersonResponse', readonly data?: (
       { readonly __typename?: 'PersonResource' }
-      & { ' $fragmentRefs'?: { 'PersonViewerFragmentFragment': PersonViewerFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminPersonViewerFragmentFragment': GqlAdminPersonViewerFragmentFragment } }
     ) | null } };
 
-export type EditTeamPageQueryVariables = Exact<{
+export type GqlAdminEditTeamPageQueryVariables = Exact<{
   uuid: Scalars['String']['input'];
 }>;
 
 
-export type EditTeamPageQuery = { readonly __typename?: 'Query', readonly team: { readonly __typename?: 'SingleTeamResponse', readonly data: (
+export type GqlAdminEditTeamPageQuery = { readonly __typename?: 'Query', readonly team: { readonly __typename?: 'SingleTeamResponse', readonly data: (
       { readonly __typename?: 'TeamResource' }
-      & { ' $fragmentRefs'?: { 'TeamEditorFragmentFragment': TeamEditorFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminTeamEditorFragmentFragment': GqlAdminTeamEditorFragmentFragment } }
     ) } };
 
-export type ViewTeamPageQueryVariables = Exact<{
+export type GqlAdminViewTeamPageQueryVariables = Exact<{
   teamUuid: Scalars['String']['input'];
 }>;
 
 
-export type ViewTeamPageQuery = { readonly __typename?: 'Query', readonly team: { readonly __typename?: 'SingleTeamResponse', readonly data: (
+export type GqlAdminViewTeamPageQuery = { readonly __typename?: 'Query', readonly team: { readonly __typename?: 'SingleTeamResponse', readonly data: (
       { readonly __typename?: 'TeamResource', readonly pointEntries: ReadonlyArray<(
         { readonly __typename?: 'PointEntryResource' }
-        & { ' $fragmentRefs'?: { 'PointEntryTableFragmentFragment': PointEntryTableFragmentFragment } }
+        & { ' $fragmentRefs'?: { 'GqlAdminPointEntryTableFragmentFragment': GqlAdminPointEntryTableFragmentFragment } }
       )> }
-      & { ' $fragmentRefs'?: { 'TeamViewerFragmentFragment': TeamViewerFragmentFragment } }
+      & { ' $fragmentRefs'?: { 'GqlAdminTeamViewerFragmentFragment': GqlAdminTeamViewerFragmentFragment } }
     ) } };
 
-export const EventEditorFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}}]}}]}}]} as unknown as DocumentNode<EventEditorFragmentFragment, unknown>;
-export const SingleNotificationFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SingleNotificationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssue"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueAcknowledgedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"startedSendingAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryCount"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueCount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"DeviceNotRegistered"}},{"kind":"Field","name":{"kind":"Name","value":"InvalidCredentials"}},{"kind":"Field","name":{"kind":"Name","value":"MessageRateExceeded"}},{"kind":"Field","name":{"kind":"Name","value":"MessageTooBig"}},{"kind":"Field","name":{"kind":"Name","value":"MismatchSenderId"}},{"kind":"Field","name":{"kind":"Name","value":"Unknown"}}]}}]}}]} as unknown as DocumentNode<SingleNotificationFragmentFragment, unknown>;
-export const TeamNameFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamNameFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<TeamNameFragmentFragment, unknown>;
-export const PersonEditorFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PersonEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<PersonEditorFragmentFragment, unknown>;
-export const TeamEditorFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"persistentIdentifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<TeamEditorFragmentFragment, unknown>;
-export const EventsTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"summary"}}]}}]} as unknown as DocumentNode<EventsTableFragmentFragment, unknown>;
-export const PeopleTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PeopleTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}}]}}]}}]} as unknown as DocumentNode<PeopleTableFragmentFragment, unknown>;
-export const TeamsTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}}]}}]} as unknown as DocumentNode<TeamsTableFragmentFragment, unknown>;
-export const NotificationDeliveriesTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationDeliveriesTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationDeliveryResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryError"}},{"kind":"Field","name":{"kind":"Name","value":"receiptCheckedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sentAt"}}]}}]} as unknown as DocumentNode<NotificationDeliveriesTableFragmentFragment, unknown>;
-export const NotificationsTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssue"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueAcknowledgedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"startedSendingAt"}}]}}]} as unknown as DocumentNode<NotificationsTableFragmentFragment, unknown>;
-export const PointEntryTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PointEntryTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PointEntryResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"personFrom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"points"}},{"kind":"Field","name":{"kind":"Name","value":"pointOpportunity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"opportunityDate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"comment"}}]}}]} as unknown as DocumentNode<PointEntryTableFragmentFragment, unknown>;
-export const EventViewerFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventViewerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<EventViewerFragmentFragment, unknown>;
-export const PersonViewerFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PersonViewerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<PersonViewerFragmentFragment, unknown>;
-export const TeamViewerFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamViewerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"captains"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}}]}}]}}]} as unknown as DocumentNode<TeamViewerFragmentFragment, unknown>;
-export const ConfigFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ConfigFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"validAfter"}},{"kind":"Field","name":{"kind":"Name","value":"validUntil"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<ConfigFragmentFragment, unknown>;
-export const CreateEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateEventInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]}}]} as unknown as DocumentNode<CreateEventMutation, CreateEventMutationVariables>;
-export const SaveEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SaveEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SetEventInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventEditorFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}}]}}]}}]} as unknown as DocumentNode<SaveEventMutation, SaveEventMutationVariables>;
-export const CreateNotificationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateNotification"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"title"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"audience"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationAudienceInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"url"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stageNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"title"},"value":{"kind":"Variable","name":{"kind":"Name","value":"title"}}},{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}},{"kind":"Argument","name":{"kind":"Name","value":"audience"},"value":{"kind":"Variable","name":{"kind":"Name","value":"audience"}}},{"kind":"Argument","name":{"kind":"Name","value":"url"},"value":{"kind":"Variable","name":{"kind":"Name","value":"url"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]} as unknown as DocumentNode<CreateNotificationMutation, CreateNotificationMutationVariables>;
-export const CancelNotificationScheduleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CancelNotificationSchedule"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"abortScheduledNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<CancelNotificationScheduleMutation, CancelNotificationScheduleMutationVariables>;
-export const DeleteNotificationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteNotification"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"force"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}},{"kind":"Argument","name":{"kind":"Name","value":"force"},"value":{"kind":"Variable","name":{"kind":"Name","value":"force"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<DeleteNotificationMutation, DeleteNotificationMutationVariables>;
-export const SendNotificationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SendNotification"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<SendNotificationMutation, SendNotificationMutationVariables>;
-export const ScheduleNotificationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ScheduleNotification"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sendAt"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTimeISO"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"scheduleNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}},{"kind":"Argument","name":{"kind":"Name","value":"sendAt"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sendAt"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<ScheduleNotificationMutation, ScheduleNotificationMutationVariables>;
-export const PersonCreatorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PersonCreator"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreatePersonInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPerson"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}},{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]} as unknown as DocumentNode<PersonCreatorMutation, PersonCreatorMutationVariables>;
-export const PersonEditorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PersonEditor"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SetPersonInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setPerson"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<PersonEditorMutation, PersonEditorMutationVariables>;
-export const CreatePointEntryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePointEntry"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreatePointEntryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPointEntry"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]}}]} as unknown as DocumentNode<CreatePointEntryMutation, CreatePointEntryMutationVariables>;
-export const GetPersonByUuidDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPersonByUuid"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}}]}}]}}]} as unknown as DocumentNode<GetPersonByUuidQuery, GetPersonByUuidQueryVariables>;
-export const GetPersonByLinkBlueDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPersonByLinkBlue"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"linkBlue"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personByLinkBlue"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"linkBlueId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"linkBlue"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetPersonByLinkBlueQuery, GetPersonByLinkBlueQueryVariables>;
-export const SearchPersonByNameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SearchPersonByName"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"searchPeopleByName"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<SearchPersonByNameQuery, SearchPersonByNameQueryVariables>;
-export const CreatePersonByLinkBlueDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePersonByLinkBlue"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"linkBlue"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EmailAddress"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"teamUuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPerson"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"linkblue"},"value":{"kind":"Variable","name":{"kind":"Name","value":"linkBlue"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"memberOf"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"teamUuid"}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]} as unknown as DocumentNode<CreatePersonByLinkBlueMutation, CreatePersonByLinkBlueMutationVariables>;
-export const PointEntryOpportunityLookupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PointEntryOpportunityLookup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pointOpportunities"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"field"},"value":{"kind":"EnumValue","value":"name"}},{"kind":"ObjectField","name":{"kind":"Name","value":"comparison"},"value":{"kind":"EnumValue","value":"SUBSTRING"}},{"kind":"ObjectField","name":{"kind":"Name","value":"value"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"sendAll"},"value":{"kind":"BooleanValue","value":true}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]}}]} as unknown as DocumentNode<PointEntryOpportunityLookupQuery, PointEntryOpportunityLookupQueryVariables>;
-export const CreatePointOpportunityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePointOpportunity"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreatePointOpportunityInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPointOpportunity"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]} as unknown as DocumentNode<CreatePointOpportunityMutation, CreatePointOpportunityMutationVariables>;
-export const TeamCreatorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TeamCreator"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateTeamInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTeam"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}},{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]} as unknown as DocumentNode<TeamCreatorMutation, TeamCreatorMutationVariables>;
-export const TeamEditorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TeamEditor"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SetTeamInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setTeam"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<TeamEditorMutation, TeamEditorMutationVariables>;
-export const EventsTableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"EventsTable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedDateFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedIsNullFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedOneOfFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedStringFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"events"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"dateFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"oneOfFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventsTableFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"summary"}}]}}]} as unknown as DocumentNode<EventsTableQuery, EventsTableQueryVariables>;
-export const PeopleTableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PeopleTable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResolverKeyedIsNullFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResolverKeyedOneOfFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResolverKeyedStringFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listPeople"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"oneOfFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PeopleTableFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PeopleTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}}]}}]}}]} as unknown as DocumentNode<PeopleTableQuery, PeopleTableQueryVariables>;
-export const TeamsTableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TeamsTable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResolverKeyedIsNullFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResolverKeyedOneOfFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResolverKeyedStringFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"teams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"oneOfFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamsTableFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}}]}}]} as unknown as DocumentNode<TeamsTableQuery, TeamsTableQueryVariables>;
-export const NotificationDeliveriesTableQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NotificationDeliveriesTableQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"notificationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationDeliveryResolverKeyedDateFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationDeliveryResolverKeyedIsNullFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"notificationDeliveries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"notificationUuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"notificationId"}}},{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"dateFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NotificationDeliveriesTableFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationDeliveriesTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationDeliveryResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryError"}},{"kind":"Field","name":{"kind":"Name","value":"receiptCheckedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sentAt"}}]}}]} as unknown as DocumentNode<NotificationDeliveriesTableQueryQuery, NotificationDeliveriesTableQueryQueryVariables>;
-export const NotificationsTableQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NotificationsTableQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResolverKeyedDateFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResolverKeyedIsNullFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResolverKeyedOneOfFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResolverKeyedStringFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"notifications"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"dateFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"oneOfFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NotificationsTableFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssue"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueAcknowledgedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"startedSendingAt"}}]}}]} as unknown as DocumentNode<NotificationsTableQueryQuery, NotificationsTableQueryQueryVariables>;
-export const DeletePointEntryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeletePointEntry"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePointEntry"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<DeletePointEntryMutation, DeletePointEntryMutationVariables>;
-export const DeleteEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<DeleteEventMutation, DeleteEventMutationVariables>;
-export const DeletePersonDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeletePerson"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePerson"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<DeletePersonMutation, DeletePersonMutationVariables>;
-export const DeleteTeamDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteTeam"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteTeam"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<DeleteTeamMutation, DeleteTeamMutationVariables>;
-export const LoginStateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"LoginState"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginState"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loggedIn"}},{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}}]}}]}}]}}]} as unknown as DocumentNode<LoginStateQuery, LoginStateQueryVariables>;
-export const CommitConfigChangesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CommitConfigChanges"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"changes"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateConfigurationInput"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createConfigurations"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"changes"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<CommitConfigChangesMutation, CommitConfigChangesMutationVariables>;
-export const ConfigQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ConfigQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"allConfigurations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ConfigFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ConfigFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"validAfter"}},{"kind":"Field","name":{"kind":"Name","value":"validUntil"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<ConfigQueryQuery, ConfigQueryQueryVariables>;
-export const EditEventPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"EditEventPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventEditorFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}}]}}]}}]} as unknown as DocumentNode<EditEventPageQuery, EditEventPageQueryVariables>;
-export const ViewEventPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ViewEventPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventViewerFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventViewerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<ViewEventPageQuery, ViewEventPageQueryVariables>;
-export const NotificationManagerDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NotificationManager"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"notification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SingleNotificationFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SingleNotificationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssue"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueAcknowledgedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"startedSendingAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryCount"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueCount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"DeviceNotRegistered"}},{"kind":"Field","name":{"kind":"Name","value":"InvalidCredentials"}},{"kind":"Field","name":{"kind":"Name","value":"MessageRateExceeded"}},{"kind":"Field","name":{"kind":"Name","value":"MessageTooBig"}},{"kind":"Field","name":{"kind":"Name","value":"MismatchSenderId"}},{"kind":"Field","name":{"kind":"Name","value":"Unknown"}}]}}]}}]} as unknown as DocumentNode<NotificationManagerQuery, NotificationManagerQueryVariables>;
-export const NotificationViewerDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NotificationViewer"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"notification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SingleNotificationFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SingleNotificationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssue"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueAcknowledgedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"startedSendingAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryCount"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueCount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"DeviceNotRegistered"}},{"kind":"Field","name":{"kind":"Name","value":"InvalidCredentials"}},{"kind":"Field","name":{"kind":"Name","value":"MessageRateExceeded"}},{"kind":"Field","name":{"kind":"Name","value":"MessageTooBig"}},{"kind":"Field","name":{"kind":"Name","value":"MismatchSenderId"}},{"kind":"Field","name":{"kind":"Name","value":"Unknown"}}]}}]}}]} as unknown as DocumentNode<NotificationViewerQuery, NotificationViewerQueryVariables>;
-export const CreatePersonPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CreatePersonPage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"teams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"sendAll"},"value":{"kind":"BooleanValue","value":true}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"name","block":false}]}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ASCENDING"}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamNameFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamNameFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<CreatePersonPageQuery, CreatePersonPageQueryVariables>;
-export const EditPersonPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"EditPersonPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PersonEditorFragment"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"sendAll"},"value":{"kind":"BooleanValue","value":true}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"name","block":false}]}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ASCENDING"}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamNameFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PersonEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamNameFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<EditPersonPageQuery, EditPersonPageQueryVariables>;
-export const ViewPersonPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ViewPersonPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PersonViewerFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PersonViewerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<ViewPersonPageQuery, ViewPersonPageQueryVariables>;
-export const EditTeamPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"EditTeamPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"team"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamEditorFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"persistentIdentifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<EditTeamPageQuery, EditTeamPageQueryVariables>;
-export const ViewTeamPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ViewTeamPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"teamUuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"team"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"teamUuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamViewerFragment"}},{"kind":"Field","name":{"kind":"Name","value":"pointEntries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PointEntryTableFragment"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamViewerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"captains"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PointEntryTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PointEntryResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"personFrom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"points"}},{"kind":"Field","name":{"kind":"Name","value":"pointOpportunity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"opportunityDate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"comment"}}]}}]} as unknown as DocumentNode<ViewTeamPageQuery, ViewTeamPageQueryVariables>;
+export const EventEditorFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}}]}}]}}]} as unknown as DocumentNode<GqlAdminEventEditorFragmentFragment, unknown>;
+export const SingleNotificationFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SingleNotificationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssue"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueAcknowledgedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"startedSendingAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryCount"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueCount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"DeviceNotRegistered"}},{"kind":"Field","name":{"kind":"Name","value":"InvalidCredentials"}},{"kind":"Field","name":{"kind":"Name","value":"MessageRateExceeded"}},{"kind":"Field","name":{"kind":"Name","value":"MessageTooBig"}},{"kind":"Field","name":{"kind":"Name","value":"MismatchSenderId"}},{"kind":"Field","name":{"kind":"Name","value":"Unknown"}}]}}]}}]} as unknown as DocumentNode<GqlAdminSingleNotificationFragmentFragment, unknown>;
+export const TeamNameFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamNameFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GqlAdminTeamNameFragmentFragment, unknown>;
+export const PersonEditorFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PersonEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GqlAdminPersonEditorFragmentFragment, unknown>;
+export const TeamEditorFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"persistentIdentifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<GqlAdminTeamEditorFragmentFragment, unknown>;
+export const EventsTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"summary"}}]}}]} as unknown as DocumentNode<GqlAdminEventsTableFragmentFragment, unknown>;
+export const PeopleTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PeopleTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}}]}}]}}]} as unknown as DocumentNode<GqlAdminPeopleTableFragmentFragment, unknown>;
+export const TeamsTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}}]}}]} as unknown as DocumentNode<GqlAdminTeamsTableFragmentFragment, unknown>;
+export const NotificationDeliveriesTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationDeliveriesTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationDeliveryResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryError"}},{"kind":"Field","name":{"kind":"Name","value":"receiptCheckedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sentAt"}}]}}]} as unknown as DocumentNode<GqlAdminNotificationDeliveriesTableFragmentFragment, unknown>;
+export const NotificationsTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssue"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueAcknowledgedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"startedSendingAt"}}]}}]} as unknown as DocumentNode<GqlAdminNotificationsTableFragmentFragment, unknown>;
+export const PointEntryTableFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PointEntryTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PointEntryResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"personFrom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"points"}},{"kind":"Field","name":{"kind":"Name","value":"pointOpportunity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"opportunityDate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"comment"}}]}}]} as unknown as DocumentNode<GqlAdminPointEntryTableFragmentFragment, unknown>;
+export const EventViewerFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventViewerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GqlAdminEventViewerFragmentFragment, unknown>;
+export const PersonViewerFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PersonViewerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GqlAdminPersonViewerFragmentFragment, unknown>;
+export const TeamViewerFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamViewerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"captains"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}}]}}]}}]} as unknown as DocumentNode<GqlAdminTeamViewerFragmentFragment, unknown>;
+export const ConfigFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ConfigFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"validAfter"}},{"kind":"Field","name":{"kind":"Name","value":"validUntil"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<GqlAdminConfigFragmentFragment, unknown>;
+export const CreateEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateEventInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]}}]} as unknown as DocumentNode<GqlAdminCreateEventMutation, GqlAdminCreateEventMutationVariables>;
+export const SaveEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SaveEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SetEventInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventEditorFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}}]}}]}}]} as unknown as DocumentNode<GqlAdminSaveEventMutation, GqlAdminSaveEventMutationVariables>;
+export const CreateNotificationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateNotification"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"title"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"audience"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationAudienceInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"url"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stageNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"title"},"value":{"kind":"Variable","name":{"kind":"Name","value":"title"}}},{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}},{"kind":"Argument","name":{"kind":"Name","value":"audience"},"value":{"kind":"Variable","name":{"kind":"Name","value":"audience"}}},{"kind":"Argument","name":{"kind":"Name","value":"url"},"value":{"kind":"Variable","name":{"kind":"Name","value":"url"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]} as unknown as DocumentNode<GqlAdminCreateNotificationMutation, GqlAdminCreateNotificationMutationVariables>;
+export const CancelNotificationScheduleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CancelNotificationSchedule"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"abortScheduledNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<GqlAdminCancelNotificationScheduleMutation, GqlAdminCancelNotificationScheduleMutationVariables>;
+export const DeleteNotificationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteNotification"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"force"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}},{"kind":"Argument","name":{"kind":"Name","value":"force"},"value":{"kind":"Variable","name":{"kind":"Name","value":"force"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<GqlAdminDeleteNotificationMutation, GqlAdminDeleteNotificationMutationVariables>;
+export const SendNotificationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SendNotification"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<GqlAdminSendNotificationMutation, GqlAdminSendNotificationMutationVariables>;
+export const ScheduleNotificationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ScheduleNotification"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sendAt"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTimeISO"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"scheduleNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}},{"kind":"Argument","name":{"kind":"Name","value":"sendAt"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sendAt"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<GqlAdminScheduleNotificationMutation, GqlAdminScheduleNotificationMutationVariables>;
+export const PersonCreatorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PersonCreator"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreatePersonInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPerson"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}},{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]} as unknown as DocumentNode<GqlAdminPersonCreatorMutation, GqlAdminPersonCreatorMutationVariables>;
+export const PersonEditorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PersonEditor"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SetPersonInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setPerson"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<GqlAdminPersonEditorMutation, GqlAdminPersonEditorMutationVariables>;
+export const CreatePointEntryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePointEntry"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreatePointEntryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPointEntry"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]}}]} as unknown as DocumentNode<GqlAdminCreatePointEntryMutation, GqlAdminCreatePointEntryMutationVariables>;
+export const GetPersonByUuidDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPersonByUuid"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}}]}}]}}]} as unknown as DocumentNode<GqlAdminGetPersonByUuidQuery, GqlAdminGetPersonByUuidQueryVariables>;
+export const GetPersonByLinkBlueDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPersonByLinkBlue"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"linkBlue"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personByLinkBlue"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"linkBlueId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"linkBlue"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GqlAdminGetPersonByLinkBlueQuery, GqlAdminGetPersonByLinkBlueQueryVariables>;
+export const SearchPersonByNameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SearchPersonByName"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"searchPeopleByName"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GqlAdminSearchPersonByNameQuery, GqlAdminSearchPersonByNameQueryVariables>;
+export const CreatePersonByLinkBlueDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePersonByLinkBlue"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"linkBlue"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EmailAddress"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"teamUuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPerson"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"linkblue"},"value":{"kind":"Variable","name":{"kind":"Name","value":"linkBlue"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"memberOf"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"teamUuid"}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]} as unknown as DocumentNode<GqlAdminCreatePersonByLinkBlueMutation, GqlAdminCreatePersonByLinkBlueMutationVariables>;
+export const PointEntryOpportunityLookupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PointEntryOpportunityLookup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pointOpportunities"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"field"},"value":{"kind":"EnumValue","value":"name"}},{"kind":"ObjectField","name":{"kind":"Name","value":"comparison"},"value":{"kind":"EnumValue","value":"SUBSTRING"}},{"kind":"ObjectField","name":{"kind":"Name","value":"value"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"sendAll"},"value":{"kind":"BooleanValue","value":true}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]}}]} as unknown as DocumentNode<GqlAdminPointEntryOpportunityLookupQuery, GqlAdminPointEntryOpportunityLookupQueryVariables>;
+export const CreatePointOpportunityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePointOpportunity"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreatePointOpportunityInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPointOpportunity"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]} as unknown as DocumentNode<GqlAdminCreatePointOpportunityMutation, GqlAdminCreatePointOpportunityMutationVariables>;
+export const TeamCreatorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TeamCreator"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateTeamInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTeam"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}},{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]} as unknown as DocumentNode<GqlAdminTeamCreatorMutation, GqlAdminTeamCreatorMutationVariables>;
+export const TeamEditorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TeamEditor"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SetTeamInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setTeam"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<GqlAdminTeamEditorMutation, GqlAdminTeamEditorMutationVariables>;
+export const EventsTableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"EventsTable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedDateFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedIsNullFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedOneOfFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventResolverKeyedStringFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"events"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"dateFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"oneOfFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventsTableFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"summary"}}]}}]} as unknown as DocumentNode<GqlAdminEventsTableQuery, GqlAdminEventsTableQueryVariables>;
+export const PeopleTableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PeopleTable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResolverKeyedIsNullFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResolverKeyedOneOfFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResolverKeyedStringFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listPeople"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"oneOfFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PeopleTableFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PeopleTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}}]}}]}}]} as unknown as DocumentNode<GqlAdminPeopleTableQuery, GqlAdminPeopleTableQueryVariables>;
+export const TeamsTableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TeamsTable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResolverKeyedIsNullFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResolverKeyedOneOfFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResolverKeyedStringFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"teams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"oneOfFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamsTableFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}}]}}]} as unknown as DocumentNode<GqlAdminTeamsTableQuery, GqlAdminTeamsTableQueryVariables>;
+export const NotificationDeliveriesTableQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NotificationDeliveriesTableQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"notificationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationDeliveryResolverKeyedDateFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationDeliveryResolverKeyedIsNullFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"notificationDeliveries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"notificationUuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"notificationId"}}},{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"dateFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NotificationDeliveriesTableFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationDeliveriesTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationDeliveryResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryError"}},{"kind":"Field","name":{"kind":"Name","value":"receiptCheckedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sentAt"}}]}}]} as unknown as DocumentNode<GqlAdminNotificationDeliveriesTableQueryQuery, GqlAdminNotificationDeliveriesTableQueryQueryVariables>;
+export const NotificationsTableQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NotificationsTableQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SortDirection"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResolverKeyedDateFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResolverKeyedIsNullFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResolverKeyedOneOfFilterItem"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResolverKeyedStringFilterItem"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"notifications"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"dateFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"isNullFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isNullFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"oneOfFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"oneOfFilters"}}},{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"stringFilters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NotificationsTableFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationsTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssue"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueAcknowledgedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"startedSendingAt"}}]}}]} as unknown as DocumentNode<GqlAdminNotificationsTableQueryQuery, GqlAdminNotificationsTableQueryQueryVariables>;
+export const DeletePointEntryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeletePointEntry"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePointEntry"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<GqlAdminDeletePointEntryMutation, GqlAdminDeletePointEntryMutationVariables>;
+export const DeleteEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<GqlAdminDeleteEventMutation, GqlAdminDeleteEventMutationVariables>;
+export const DeletePersonDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeletePerson"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePerson"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<GqlAdminDeletePersonMutation, GqlAdminDeletePersonMutationVariables>;
+export const DeleteTeamDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteTeam"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteTeam"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<GqlAdminDeleteTeamMutation, GqlAdminDeleteTeamMutationVariables>;
+export const LoginStateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"LoginState"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginState"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loggedIn"}},{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}}]}}]}}]}}]} as unknown as DocumentNode<GqlAdminLoginStateQuery, GqlAdminLoginStateQueryVariables>;
+export const CommitConfigChangesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CommitConfigChanges"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"changes"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateConfigurationInput"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createConfigurations"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"changes"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<GqlAdminCommitConfigChangesMutation, GqlAdminCommitConfigChangesMutationVariables>;
+export const ConfigQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ConfigQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"allConfigurations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ConfigFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ConfigFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"validAfter"}},{"kind":"Field","name":{"kind":"Name","value":"validUntil"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<GqlAdminConfigQueryQuery, GqlAdminConfigQueryQueryVariables>;
+export const EditEventPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"EditEventPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventEditorFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}}]}}]}}]} as unknown as DocumentNode<GqlAdminEditEventPageQuery, GqlAdminEditEventPageQueryVariables>;
+export const ViewEventPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ViewEventPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventViewerFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventViewerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"interval"}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"imageData"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GqlAdminViewEventPageQuery, GqlAdminViewEventPageQueryVariables>;
+export const NotificationManagerDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NotificationManager"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"notification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SingleNotificationFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SingleNotificationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssue"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueAcknowledgedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"startedSendingAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryCount"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueCount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"DeviceNotRegistered"}},{"kind":"Field","name":{"kind":"Name","value":"InvalidCredentials"}},{"kind":"Field","name":{"kind":"Name","value":"MessageRateExceeded"}},{"kind":"Field","name":{"kind":"Name","value":"MessageTooBig"}},{"kind":"Field","name":{"kind":"Name","value":"MismatchSenderId"}},{"kind":"Field","name":{"kind":"Name","value":"Unknown"}}]}}]}}]} as unknown as DocumentNode<GqlAdminNotificationManagerQuery, GqlAdminNotificationManagerQueryVariables>;
+export const NotificationViewerDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NotificationViewer"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"notification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SingleNotificationFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SingleNotificationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssue"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueAcknowledgedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"startedSendingAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryCount"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryIssueCount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"DeviceNotRegistered"}},{"kind":"Field","name":{"kind":"Name","value":"InvalidCredentials"}},{"kind":"Field","name":{"kind":"Name","value":"MessageRateExceeded"}},{"kind":"Field","name":{"kind":"Name","value":"MessageTooBig"}},{"kind":"Field","name":{"kind":"Name","value":"MismatchSenderId"}},{"kind":"Field","name":{"kind":"Name","value":"Unknown"}}]}}]}}]} as unknown as DocumentNode<GqlAdminNotificationViewerQuery, GqlAdminNotificationViewerQueryVariables>;
+export const CreatePersonPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CreatePersonPage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"teams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"sendAll"},"value":{"kind":"BooleanValue","value":true}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"name","block":false}]}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ASCENDING"}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamNameFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamNameFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GqlAdminCreatePersonPageQuery, GqlAdminCreatePersonPageQueryVariables>;
+export const EditPersonPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"EditPersonPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PersonEditorFragment"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"sendAll"},"value":{"kind":"BooleanValue","value":true}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"name","block":false}]}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"ASCENDING"}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamNameFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PersonEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamNameFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GqlAdminEditPersonPageQuery, GqlAdminEditPersonPageQueryVariables>;
+export const ViewPersonPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ViewPersonPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PersonViewerFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PersonViewerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dbRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeRole"}},{"kind":"Field","name":{"kind":"Name","value":"committeeIdentifier"}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GqlAdminViewPersonPageQuery, GqlAdminViewPersonPageQueryVariables>;
+export const EditTeamPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"EditTeamPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"team"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamEditorFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamEditorFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"persistentIdentifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<GqlAdminEditTeamPageQuery, GqlAdminEditTeamPageQueryVariables>;
+export const ViewTeamPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ViewTeamPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"teamUuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"team"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"teamUuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamViewerFragment"}},{"kind":"Field","name":{"kind":"Name","value":"pointEntries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PointEntryTableFragment"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamViewerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"marathonYear"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"captains"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PointEntryTableFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PointEntryResource"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"personFrom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"points"}},{"kind":"Field","name":{"kind":"Name","value":"pointOpportunity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"opportunityDate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"comment"}}]}}]} as unknown as DocumentNode<GqlAdminViewTeamPageQuery, GqlAdminViewTeamPageQueryVariables>;
