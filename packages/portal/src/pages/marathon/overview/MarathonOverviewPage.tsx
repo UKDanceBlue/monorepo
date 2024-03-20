@@ -10,7 +10,7 @@ import { MarathonsTable } from "./MarathonsTable";
 
 const marathonOverviewPageDocument = graphql(/* GraphQL */ `
   query MarathonOverviewPage {
-    currentMarathon {
+    nextMarathon {
       ...MarathonViewerFragment
     }
     marathons(sendAll: true) {
@@ -41,10 +41,10 @@ export function MarathonOverviewPage() {
           Create New Marathon
         </Button>
       </Flex>
-      {result.data?.currentMarathon || result.data?.marathons.data.length ? (
+      {result.data?.nextMarathon || result.data?.marathons.data.length ? (
         <div>
           <h2>Current Marathon</h2>
-          <MarathonViewer marathon={result.data.currentMarathon} />
+          <MarathonViewer marathon={result.data.nextMarathon} />
           <h2>All Marathons</h2>
           <MarathonsTable marathons={result.data.marathons.data} />
         </div>
