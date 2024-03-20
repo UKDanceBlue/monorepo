@@ -60,7 +60,10 @@ const documents = {
     "\n  mutation DeleteEvent($uuid: String!) {\n    deleteEvent(uuid: $uuid) {\n      ok\n    }\n  }\n": types.DeleteEventDocument,
     "\n  fragment EventViewerFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      interval\n      fullDay\n    }\n    images {\n      url\n      imageData\n      width\n      height\n      thumbHash\n      alt\n    }\n    createdAt\n    updatedAt\n  }\n": types.EventViewerFragmentFragmentDoc,
     "\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n": types.ViewEventPageDocument,
+    "\n  query MarathonOverviewPage {\n    currentMarathon {\n      ...MarathonViewerFragment\n    }\n    marathons(sendAll: true) {\n      data {\n        ...MarathonTableFragment\n      }\n    }\n  }\n": types.MarathonOverviewPageDocument,
     "\n  fragment MarathonTableFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n  }\n": types.MarathonTableFragmentFragmentDoc,
+    "\n  fragment MarathonViewerFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n    hours {\n      uuid\n    }\n  }\n": types.MarathonViewerFragmentFragmentDoc,
+    "\n  query MarathonPage($marathonUuid: String!) {\n    marathon(uuid: $marathonUuid) {\n      ...MarathonViewerFragment\n    }\n  }\n": types.MarathonPageDocument,
     "\n  query NotificationManager($uuid: String!) {\n    notification(uuid: $uuid) {\n      data {\n        ...SingleNotificationFragment\n      }\n    }\n  }\n": types.NotificationManagerDocument,
     "\n  query NotificationViewer($uuid: String!) {\n    notification(uuid: $uuid) {\n      data {\n        ...SingleNotificationFragment\n      }\n    }\n  }\n": types.NotificationViewerDocument,
     "\n  query CreatePersonPage {\n    teams(sendAll: true, sortBy: [\"name\"], sortDirection: [ASCENDING]) {\n      data {\n        ...TeamNameFragment\n      }\n    }\n  }\n": types.CreatePersonPageDocument,
@@ -275,7 +278,19 @@ export function graphql(source: "\n  query ViewEventPage($uuid: String!) {\n    
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  query MarathonOverviewPage {\n    currentMarathon {\n      ...MarathonViewerFragment\n    }\n    marathons(sendAll: true) {\n      data {\n        ...MarathonTableFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query MarathonOverviewPage {\n    currentMarathon {\n      ...MarathonViewerFragment\n    }\n    marathons(sendAll: true) {\n      data {\n        ...MarathonTableFragment\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  fragment MarathonTableFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n  }\n"): (typeof documents)["\n  fragment MarathonTableFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment MarathonViewerFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n    hours {\n      uuid\n    }\n  }\n"): (typeof documents)["\n  fragment MarathonViewerFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n    hours {\n      uuid\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query MarathonPage($marathonUuid: String!) {\n    marathon(uuid: $marathonUuid) {\n      ...MarathonViewerFragment\n    }\n  }\n"): (typeof documents)["\n  query MarathonPage($marathonUuid: String!) {\n    marathon(uuid: $marathonUuid) {\n      ...MarathonViewerFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
