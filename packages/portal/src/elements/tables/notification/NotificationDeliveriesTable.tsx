@@ -93,7 +93,7 @@ export const NotificationDeliveriesTable = ({
   useQueryStatusWatcher({
     error,
     fetching,
-    loadingMessage: "Loading events...",
+    loadingMessage: "Loading deliveries...",
   });
 
   const listEventsData = getFragmentData(

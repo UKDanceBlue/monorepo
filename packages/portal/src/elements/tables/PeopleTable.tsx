@@ -101,7 +101,7 @@ export const PeopleTable = () => {
   useQueryStatusWatcher({
     error,
     fetching,
-    loadingMessage: "Loading events...",
+    loadingMessage: "Loading people...",
   });
 
   const listPeopleData = getFragmentData(
