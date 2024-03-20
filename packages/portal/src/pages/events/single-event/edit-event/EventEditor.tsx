@@ -50,7 +50,7 @@ export function EventEditor({
             onChange={(value) => (!value ? "Title is required" : undefined)}
             children={(field) => (
               <Form.Item
-                label="Title"
+                label="Title*"
                 validateStatus={
                   field.state.meta.errors.length > 0 ? "error" : ""
                 }
@@ -118,7 +118,7 @@ export function EventEditor({
             }
             children={(field) => (
               <Form.Item
-                label="Summary"
+                label="Summary*"
                 validateStatus={
                   field.state.meta.errors.length > 0 ? "error" : ""
                 }

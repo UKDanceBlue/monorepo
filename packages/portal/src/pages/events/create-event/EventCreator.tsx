@@ -57,7 +57,7 @@ export function EventCreator() {
           }
           children={(field) => (
             <Form.Item
-              label="Summary"
+              label="Summary*"
               validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
               help={
                 field.state.meta.errors.length > 0
