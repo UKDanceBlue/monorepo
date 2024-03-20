@@ -115,15 +115,15 @@ export class ExpoNotificationProvider implements NotificationProvider {
           where: Prisma.NotificationWhereUniqueInput;
         }
       | {
-          value?: Notification | null;
+          value: Notification;
         }
   ) {
     const databaseNotification =
-      "where" in notification
-        ? await this.notificationRepository.findNotificationByUnique(
-            notification.where
-          )
-        : notification.value;
+      await this.notificationRepository.findNotificationByUnique(
+        "where" in notification
+          ? notification.where
+          : { id: notification.value.id }
+      );
 
     if (databaseNotification == null) {
       throw new DetailedError(
