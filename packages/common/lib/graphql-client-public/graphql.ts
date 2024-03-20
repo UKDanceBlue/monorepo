@@ -26,8 +26,6 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   Date: { input: Date | string; output: Date | string; }
-  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
-  DateTime: { input: Date | string; output: Date | string; }
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format. */
   DateTimeISO: { input: Date | string; output: Date | string; }
   /** A field whose value conforms to the standard internet email address format as specified in HTML Spec: https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address. */
@@ -648,7 +646,7 @@ export type MarathonHourResource = {
   readonly details?: Maybe<Scalars['String']['output']>;
   readonly durationInfo: Scalars['String']['output'];
   readonly mapImages: ReadonlyArray<ImageResource>;
-  readonly shownStartingAt: Scalars['DateTime']['output'];
+  readonly shownStartingAt: Scalars['DateTimeISO']['output'];
   readonly title: Scalars['String']['output'];
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
@@ -691,9 +689,9 @@ export type MarathonResolverKeyedIsNullFilterItem = {
 export type MarathonResource = {
   readonly __typename?: 'MarathonResource';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  readonly endDate: Scalars['DateTime']['output'];
+  readonly endDate: Scalars['DateTimeISO']['output'];
   readonly hours: ReadonlyArray<MarathonHourResource>;
-  readonly startDate: Scalars['DateTime']['output'];
+  readonly startDate: Scalars['DateTimeISO']['output'];
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly uuid: Scalars['ID']['output'];
   readonly year: Scalars['String']['output'];

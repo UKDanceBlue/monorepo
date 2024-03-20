@@ -1,4 +1,4 @@
-import { DateTimeResolver } from "graphql-scalars";
+import { DateTimeISOResolver } from "graphql-scalars";
 import { Field, ID, ObjectType } from "type-graphql";
 
 import { TimestampedResource } from "./Resource.js";
@@ -11,7 +11,7 @@ export class MarathonHourResource extends TimestampedResource {
   title!: string;
   @Field(() => String, { nullable: true })
   details?: string | null;
-  @Field(() => DateTimeResolver)
+  @Field(() => DateTimeISOResolver)
   shownStartingAt!: Date;
   @Field(() => String)
   durationInfo!: string;
