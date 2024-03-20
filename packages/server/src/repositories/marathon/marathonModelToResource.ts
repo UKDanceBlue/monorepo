@@ -7,8 +7,8 @@ export function marathonModelToResource(
   return MarathonResource.init({
     uuid: marathonModel.uuid,
     year: marathonModel.year,
-    startDate: marathonModel.startDate,
-    endDate: marathonModel.endDate,
+    startDate: marathonModel.startDate.toISOString(),
+    endDate: marathonModel.endDate.toISOString(),
     createdAt: marathonModel.createdAt,
     updatedAt: marathonModel.updatedAt,
   });

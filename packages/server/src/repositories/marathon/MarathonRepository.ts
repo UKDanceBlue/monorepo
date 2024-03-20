@@ -122,8 +122,8 @@ export class MarathonRepository {
     endDate,
   }: {
     year: string;
-    startDate: Date;
-    endDate: Date;
+    startDate: string;
+    endDate: string;
   }) {
     return this.prisma.marathon.create({
       data: {
@@ -142,8 +142,8 @@ export class MarathonRepository {
       endDate,
     }: {
       year?: string;
-      startDate?: Date;
-      endDate?: Date;
+      startDate?: string;
+      endDate?: string;
     }
   ) {
     try {

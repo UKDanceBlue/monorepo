@@ -5,7 +5,7 @@ import {
   ImageResource,
   MarathonHourResource,
 } from "@ukdanceblue/common";
-import { DateResolver, VoidResolver } from "graphql-scalars";
+import { DateTimeISOResolver, VoidResolver } from "graphql-scalars";
 import {
   Arg,
   Args,
@@ -45,8 +45,8 @@ class CreateMarathonHourInput {
   @Field(() => String)
   durationInfo!: string;
 
-  @Field(() => DateResolver)
-  shownStartingAt!: Date;
+  @Field(() => DateTimeISOResolver)
+  shownStartingAt!: string;
 }
 
 @InputType()
@@ -60,8 +60,8 @@ class SetMarathonHourInput {
   @Field(() => String)
   durationInfo!: string;
 
-  @Field(() => DateResolver)
-  shownStartingAt!: Date;
+  @Field(() => DateTimeISOResolver)
+  shownStartingAt!: string;
 }
 
 @ArgsType()

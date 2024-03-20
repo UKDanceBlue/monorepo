@@ -9,7 +9,7 @@ export function marathonHourModelToResource(
     title: marathonHourModel.title,
     details: marathonHourModel.details,
     durationInfo: marathonHourModel.durationInfo,
-    shownStartingAt: marathonHourModel.shownStartingAt,
+    shownStartingAt: marathonHourModel.shownStartingAt.toISOString(),
     createdAt: marathonHourModel.createdAt,
     updatedAt: marathonHourModel.updatedAt,
   });

@@ -24,8 +24,6 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
-  Date: { input: Date | string; output: Date | string; }
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format. */
   DateTimeISO: { input: Date | string; output: Date | string; }
   /** A field whose value conforms to the standard internet email address format as specified in HTML Spec: https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address. */
@@ -176,13 +174,13 @@ export type CreateImageResponse = AbstractGraphQlCreatedResponse & AbstractGraph
 export type CreateMarathonHourInput = {
   readonly details?: InputMaybe<Scalars['String']['input']>;
   readonly durationInfo: Scalars['String']['input'];
-  readonly shownStartingAt: Scalars['Date']['input'];
+  readonly shownStartingAt: Scalars['DateTimeISO']['input'];
   readonly title: Scalars['String']['input'];
 };
 
 export type CreateMarathonInput = {
-  readonly endDate: Scalars['Date']['input'];
-  readonly startDate: Scalars['Date']['input'];
+  readonly endDate: Scalars['DateTimeISO']['input'];
+  readonly startDate: Scalars['DateTimeISO']['input'];
   readonly year: Scalars['String']['input'];
 };
 
@@ -1609,13 +1607,13 @@ export type SetEventResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse &
 export type SetMarathonHourInput = {
   readonly details?: InputMaybe<Scalars['String']['input']>;
   readonly durationInfo: Scalars['String']['input'];
-  readonly shownStartingAt: Scalars['Date']['input'];
+  readonly shownStartingAt: Scalars['DateTimeISO']['input'];
   readonly title: Scalars['String']['input'];
 };
 
 export type SetMarathonInput = {
-  readonly endDate: Scalars['Date']['input'];
-  readonly startDate: Scalars['Date']['input'];
+  readonly endDate: Scalars['DateTimeISO']['input'];
+  readonly startDate: Scalars['DateTimeISO']['input'];
   readonly year: Scalars['String']['input'];
 };
 
