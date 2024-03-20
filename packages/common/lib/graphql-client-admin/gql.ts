@@ -62,7 +62,7 @@ const documents = {
     "\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n": types.ViewEventPageDocument,
     "\n  query MarathonOverviewPage {\n    currentMarathon {\n      ...MarathonViewerFragment\n    }\n    marathons(sendAll: true) {\n      data {\n        ...MarathonTableFragment\n      }\n    }\n  }\n": types.MarathonOverviewPageDocument,
     "\n  fragment MarathonTableFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n  }\n": types.MarathonTableFragmentFragmentDoc,
-    "\n  fragment MarathonViewerFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n    hours {\n      uuid\n    }\n  }\n": types.MarathonViewerFragmentFragmentDoc,
+    "\n  fragment MarathonViewerFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n    hours {\n      uuid\n      shownStartingAt\n      title\n    }\n  }\n": types.MarathonViewerFragmentFragmentDoc,
     "\n  query MarathonPage($marathonUuid: String!) {\n    marathon(uuid: $marathonUuid) {\n      ...MarathonViewerFragment\n    }\n  }\n": types.MarathonPageDocument,
     "\n  query NotificationManager($uuid: String!) {\n    notification(uuid: $uuid) {\n      data {\n        ...SingleNotificationFragment\n      }\n    }\n  }\n": types.NotificationManagerDocument,
     "\n  query NotificationViewer($uuid: String!) {\n    notification(uuid: $uuid) {\n      data {\n        ...SingleNotificationFragment\n      }\n    }\n  }\n": types.NotificationViewerDocument,
@@ -286,7 +286,7 @@ export function graphql(source: "\n  fragment MarathonTableFragment on MarathonR
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment MarathonViewerFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n    hours {\n      uuid\n    }\n  }\n"): (typeof documents)["\n  fragment MarathonViewerFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n    hours {\n      uuid\n    }\n  }\n"];
+export function graphql(source: "\n  fragment MarathonViewerFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n    hours {\n      uuid\n      shownStartingAt\n      title\n    }\n  }\n"): (typeof documents)["\n  fragment MarathonViewerFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n    hours {\n      uuid\n      shownStartingAt\n      title\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
