@@ -1,6 +1,6 @@
 import { Outlet } from "@tanstack/react-router";
 
-export function ViewMarathonHourPage() {
+export function AddMarathonHourPage() {
   return (
     <div>
       <Outlet />

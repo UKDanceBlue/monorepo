@@ -4,8 +4,8 @@ import { SingleMarathonPage } from "@pages/marathon/single/SingleMarathonPage";
 import { EditMarathonPage } from "@pages/marathon/single/edit/EditMarathonPage";
 import { ViewMarathonPage } from "@pages/marathon/single/view/ViewMarathonPage";
 import { MarathonHoursPage } from "@pages/marathon/single/view/hour/MarathonHoursPage";
+import { AddMarathonHourPage } from "@pages/marathon/single/view/hour/add/AddMarathonHourPage";
 import { EditMarathonHourPage } from "@pages/marathon/single/view/hour/edit/EditMarathonHourPage";
-import { ViewMarathonHourPage } from "@pages/marathon/single/view/hour/view/ViewMarathonHourPage";
 import { Route } from "@tanstack/react-router";
 
 import { marathonsRoute } from "./baseRoutes";
@@ -46,14 +46,14 @@ export const marathonHoursRoute = new Route({
   component: MarathonHoursPage,
 });
 
-export const viewMarathonHourRoute = new Route({
-  path: "/",
+export const addMarathonHourRoute = new Route({
+  path: "add",
   getParentRoute: () => marathonHoursRoute,
-  component: ViewMarathonHourPage,
+  component: AddMarathonHourPage,
 });
 
 export const editMarathonHourRoute = new Route({
-  path: "edit",
+  path: "/",
   getParentRoute: () => marathonHoursRoute,
   component: EditMarathonHourPage,
 });

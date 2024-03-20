@@ -17,13 +17,13 @@ import {
   viewEventRoute,
 } from "./eventRoutes";
 import {
+  addMarathonHourRoute,
   createMarathonRoute,
   editMarathonHourRoute,
   editMarathonRoute,
   marathonHoursRoute,
   marathonOverviewRoute,
   singleMarathonRoute,
-  viewMarathonHourRoute,
   viewMarathonRoute,
 } from "./marathonRouter";
 import {
@@ -83,7 +83,7 @@ const routeTree = rootRoute.addChildren([
       editMarathonRoute,
       marathonHoursRoute.addChildren([
         editMarathonHourRoute,
-        viewMarathonHourRoute,
+        addMarathonHourRoute,
       ]),
     ]),
   ]),
