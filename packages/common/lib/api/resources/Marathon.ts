@@ -10,9 +10,9 @@ export class MarathonResource extends TimestampedResource {
   @Field(() => String)
   year!: string;
   @Field(() => DateTimeISOResolver)
-  startDate!: Date;
+  startDate!: string;
   @Field(() => DateTimeISOResolver)
-  endDate!: Date;
+  endDate!: string;
 
   static init({
     uuid,

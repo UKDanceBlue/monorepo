@@ -12,7 +12,7 @@ export class MarathonHourResource extends TimestampedResource {
   @Field(() => String, { nullable: true })
   details?: string | null;
   @Field(() => DateTimeISOResolver)
-  shownStartingAt!: Date;
+  shownStartingAt!: string;
   @Field(() => String)
   durationInfo!: string;
 

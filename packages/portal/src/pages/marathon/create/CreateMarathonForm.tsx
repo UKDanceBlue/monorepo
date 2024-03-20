@@ -86,7 +86,12 @@ export const CreateMarathonForm = () => {
                 name={fieldApi.name}
                 value={fieldApi.state.value}
                 onBlur={fieldApi.handleBlur}
-                onChange={(value) => fieldApi.handleChange(value ?? undefined)}
+                onChange={(value) =>
+                  fieldApi.handleChange(
+                    value?.set({ minute: 0, second: 0, millisecond: 0 }) ??
+                      undefined
+                  )
+                }
               />
             </Form.Item>
           )}
@@ -124,7 +129,12 @@ export const CreateMarathonForm = () => {
                 name={fieldApi.name}
                 value={fieldApi.state.value}
                 onBlur={fieldApi.handleBlur}
-                onChange={(value) => fieldApi.handleChange(value ?? undefined)}
+                onChange={(value) =>
+                  fieldApi.handleChange(
+                    value?.set({ minute: 0, second: 0, millisecond: 0 }) ??
+                      undefined
+                  )
+                }
               />
             </Form.Item>
           )}
