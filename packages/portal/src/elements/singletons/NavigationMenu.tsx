@@ -64,6 +64,15 @@ export const NavigationMenu = () => {
         ],
       },
       {
+        slug: "marathon",
+        title: "Marathon",
+        authorizationRules: [
+          {
+            accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+          },
+        ],
+      },
+      {
         slug: "config",
         title: "Config",
         authorizationRules: [

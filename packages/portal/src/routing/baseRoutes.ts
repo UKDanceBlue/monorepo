@@ -45,7 +45,7 @@ export const notificationsRoute = new Route({
 });
 
 export const marathonsRoute = new Route({
-  path: "marathons",
+  path: "marathon",
   getParentRoute: () => rootRoute,
   component: MarathonsPage,
 });
