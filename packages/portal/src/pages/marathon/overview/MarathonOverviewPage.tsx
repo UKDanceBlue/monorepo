@@ -1,5 +1,7 @@
+import { PlusOutlined } from "@ant-design/icons";
+import { useLinkProps } from "@tanstack/react-router";
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
-import { Empty } from "antd";
+import { Button, Empty, Flex } from "antd";
 import { useQuery } from "urql";
 
 import { MarathonViewer } from "../single/view/MarathonViewer";
@@ -24,12 +26,31 @@ export function MarathonOverviewPage() {
     query: marathonOverviewPageDocument,
   });
 
-  return result.data?.currentMarathon || result.data?.marathons.data.length ? (
-    <div>
-      <MarathonViewer marathon={result.data.currentMarathon} />
-      <MarathonsTable marathons={result.data.marathons.data} />
-    </div>
-  ) : (
-    <Empty description="No marathons found" />
+  const router = useLinkProps({ to: "/marathon/create" });
+
+  return (
+    <>
+      <Flex
+        align="center"
+        justify="space-between"
+        style={{ marginBottom: "1rem" }}
+        gap="1rem"
+      >
+        <h1>Marathon</h1>
+        <Button icon={<PlusOutlined />} type="primary" href={router.href}>
+          Create New Marathon
+        </Button>
+      </Flex>
+      {result.data?.currentMarathon || result.data?.marathons.data.length ? (
+        <div>
+          <h2>Current Marathon</h2>
+          <MarathonViewer marathon={result.data.currentMarathon} />
+          <h2>All Marathons</h2>
+          <MarathonsTable marathons={result.data.marathons.data} />
+        </div>
+      ) : (
+        <Empty description="No marathons found" />
+      )}
+    </>
   );
 }
