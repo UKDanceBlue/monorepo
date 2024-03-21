@@ -59,6 +59,16 @@ export class MarathonHourRepository {
     return this.prisma.marathonHour.findUnique({ where: param });
   }
 
+  findCurrentMarathonHour() {
+    return this.prisma.marathonHour.findFirst({
+      where: {
+        shownStartingAt: { lte: new Date() },
+        marathon: { endDate: { gte: new Date() } },
+      },
+      orderBy: { shownStartingAt: "desc" },
+    });
+  }
+
   listMarathonHours({
     filters,
     order,
