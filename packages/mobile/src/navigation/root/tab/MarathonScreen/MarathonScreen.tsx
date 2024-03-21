@@ -45,11 +45,11 @@ export const MarathonScreen = () => {
     // If we are, rather than assuming we are, we should refresh the data
     // to ensure we're showing the correct screen
     const interval = setInterval(() => {
-      if (data?.nextMarathon?.startDate) {
+      if (!data?.currentMarathonHour && data?.nextMarathon?.startDate) {
         const now = new Date();
         const marathonStart = new Date(data.nextMarathon.startDate);
         if (now >= marathonStart) {
-          refresh({ requestPolicy: "network-only" });
+          // refresh({ requestPolicy: "network-only" });
         }
       }
     }, 1000);
@@ -57,21 +57,11 @@ export const MarathonScreen = () => {
     return () => {
       clearInterval(interval);
     };
-  }, [data?.nextMarathon?.startDate, refresh]);
+  }, [data?.nextMarathon?.startDate, data?.currentMarathonHour, refresh]);
 
   if (error) {
     // TODO: Handle error
     return <Text> {JSON.stringify(error)}</Text>;
-  }
-
-  if (data?.nextMarathon?.year) {
-    return (
-      <MarathonCountdownScreen
-        marathonYear={data.nextMarathon.year}
-        marathonStart={dateTimeFromSomething(data.nextMarathon.startDate)}
-        marathonEnd={dateTimeFromSomething(data.nextMarathon.endDate)}
-      />
-    );
   }
 
   if (data?.currentMarathonHour) {
@@ -80,6 +70,16 @@ export const MarathonScreen = () => {
         hourScreenFragment={data.currentMarathonHour}
         isLoading={fetching}
         refresh={refresh}
+      />
+    );
+  }
+
+  if (data?.nextMarathon?.year) {
+    return (
+      <MarathonCountdownScreen
+        marathonYear={data.nextMarathon.year}
+        marathonStart={dateTimeFromSomething(data.nextMarathon.startDate)}
+        marathonEnd={dateTimeFromSomething(data.nextMarathon.endDate)}
       />
     );
   }
