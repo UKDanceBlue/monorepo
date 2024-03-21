@@ -41,7 +41,7 @@ export const createMarathonRoute = new Route({
 });
 
 export const marathonHoursRoute = new Route({
-  path: "hours/$hourId",
+  path: "hours",
   getParentRoute: () => singleMarathonRoute,
   component: MarathonHoursPage,
 });
@@ -53,7 +53,7 @@ export const addMarathonHourRoute = new Route({
 });
 
 export const editMarathonHourRoute = new Route({
-  path: "/",
+  path: "$hourId",
   getParentRoute: () => marathonHoursRoute,
   component: EditMarathonHourPage,
 });
