@@ -68,6 +68,8 @@ const documents = {
     "\n  fragment MarathonViewerFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n    hours {\n      uuid\n      shownStartingAt\n      title\n    }\n  }\n": types.MarathonViewerFragmentFragmentDoc,
     "\n  query MarathonPage($marathonUuid: String!) {\n    marathon(uuid: $marathonUuid) {\n      ...MarathonViewerFragment\n    }\n  }\n": types.MarathonPageDocument,
     "\n      mutation AddMarathonHour(\n        $input: CreateMarathonHourInput!\n        $marathonUuid: String!\n      ) {\n        createMarathonHour(input: $input, marathonUuid: $marathonUuid) {\n          uuid\n        }\n      }\n    ": types.AddMarathonHourDocument,
+    "\n  query EditMarathonHourData($marathonHourUuid: String!) {\n    marathonHour(uuid: $marathonHourUuid) {\n      details\n      durationInfo\n      shownStartingAt\n      title\n    }\n  }\n": types.EditMarathonHourDataDocument,
+    "\n  mutation EditMarathonHour($input: SetMarathonHourInput!, $uuid: String!) {\n    setMarathonHour(input: $input, uuid: $uuid) {\n      uuid\n    }\n  }\n": types.EditMarathonHourDocument,
     "\n  query NotificationManager($uuid: String!) {\n    notification(uuid: $uuid) {\n      data {\n        ...SingleNotificationFragment\n      }\n    }\n  }\n": types.NotificationManagerDocument,
     "\n  query NotificationViewer($uuid: String!) {\n    notification(uuid: $uuid) {\n      data {\n        ...SingleNotificationFragment\n      }\n    }\n  }\n": types.NotificationViewerDocument,
     "\n  query CreatePersonPage {\n    teams(sendAll: true, sortBy: [\"name\"], sortDirection: [ASCENDING]) {\n      data {\n        ...TeamNameFragment\n      }\n    }\n  }\n": types.CreatePersonPageDocument,
@@ -311,6 +313,14 @@ export function graphql(source: "\n  query MarathonPage($marathonUuid: String!) 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n      mutation AddMarathonHour(\n        $input: CreateMarathonHourInput!\n        $marathonUuid: String!\n      ) {\n        createMarathonHour(input: $input, marathonUuid: $marathonUuid) {\n          uuid\n        }\n      }\n    "): (typeof documents)["\n      mutation AddMarathonHour(\n        $input: CreateMarathonHourInput!\n        $marathonUuid: String!\n      ) {\n        createMarathonHour(input: $input, marathonUuid: $marathonUuid) {\n          uuid\n        }\n      }\n    "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query EditMarathonHourData($marathonHourUuid: String!) {\n    marathonHour(uuid: $marathonHourUuid) {\n      details\n      durationInfo\n      shownStartingAt\n      title\n    }\n  }\n"): (typeof documents)["\n  query EditMarathonHourData($marathonHourUuid: String!) {\n    marathonHour(uuid: $marathonHourUuid) {\n      details\n      durationInfo\n      shownStartingAt\n      title\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation EditMarathonHour($input: SetMarathonHourInput!, $uuid: String!) {\n    setMarathonHour(input: $input, uuid: $uuid) {\n      uuid\n    }\n  }\n"): (typeof documents)["\n  mutation EditMarathonHour($input: SetMarathonHourInput!, $uuid: String!) {\n    setMarathonHour(input: $input, uuid: $uuid) {\n      uuid\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
