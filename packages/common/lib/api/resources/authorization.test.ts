@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { checkAuthorization } from "../../authorization/accessControl.js";
 import type { Authorization } from "../../index.js";
 import {
   AccessLevel,
@@ -8,7 +9,6 @@ import {
   DbRole,
 } from "../../index.js";
 
-import { checkAuthorization } from "../../authorization/accessControl.js";
 
 const techChair: Authorization = {
   accessLevel: AccessLevel.Admin,

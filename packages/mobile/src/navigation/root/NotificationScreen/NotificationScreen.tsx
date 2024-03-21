@@ -50,7 +50,7 @@ function NotificationScreen() {
       );
       let dateString = "";
       if (delivery.sentAt != null) {
-        const date = dateTimeFromSomething(delivery.sentAt) as DateTime;
+        const date = dateTimeFromSomething(delivery.sentAt) ;
         dateString = date.toLocaleString(DateTime.DATE_MED);
       }
 

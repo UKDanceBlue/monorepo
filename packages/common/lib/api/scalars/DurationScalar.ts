@@ -13,7 +13,7 @@ export const DurationScalar = new GraphQLScalarType({
       return Duration.fromMillis(value);
     } else if (value && typeof value === "object") {
       const durationFromObject = Duration.fromObject(value);
-      if (durationFromObject.isValid) {
+      if (durationFromObject.isValid as boolean) {
         return durationFromObject;
       } else {
         throw new TypeError(

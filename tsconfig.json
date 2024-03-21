@@ -22,5 +22,9 @@
     "emitDecoratorMetadata": true,
     "isolatedModules": true
   },
-  "include": ["./*.ts"]
+  "include": [
+    "./*.ts",
+    "./packages/portal/vite.config.ts",
+    "packages/common/jest.config.ts"
+  ]
 }

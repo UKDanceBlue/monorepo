@@ -117,14 +117,14 @@ describe("intervalComparator", () => {
   it("throws an error for an invalid interval", () => {
     expect(() =>
       intervalComparator(testIntervalEarlyMid1, testIntervalMid2Mid1)
-    ).toThrow();
+    ).toThrow("Invalid interval");
 
     expect(() =>
       intervalComparator(testIntervalMid2Mid1, testIntervalEarlyMid1)
-    ).toThrow();
+    ).toThrow("Invalid interval");
 
     expect(() =>
       intervalComparator(testIntervalMid2Mid1, testIntervalMid2Mid1)
-    ).toThrow();
+    ).toThrow("Invalid interval");
   });
 });

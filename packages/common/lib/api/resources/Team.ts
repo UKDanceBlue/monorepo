@@ -1,9 +1,9 @@
 import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
 
+import { AccessControl } from "../../authorization/accessControl.js";
 import { AccessLevel } from "../../authorization/structures.js";
 import * as SimpleTypes from "../../utility/primitive/SimpleTypes.js";
 
-import { AccessControl } from "../../authorization/accessControl.js";
 import { TimestampedResource } from "./Resource.js";
 
 export const TeamType = {

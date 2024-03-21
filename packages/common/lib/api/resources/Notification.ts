@@ -1,9 +1,9 @@
 import { URLResolver } from "graphql-scalars";
 import { Field, ID, ObjectType } from "type-graphql";
 
+import { AccessControl } from "../../authorization/accessControl.js";
 import { AccessLevel } from "../../index.js";
 
-import { AccessControl } from "../../authorization/accessControl.js";
 import { TimestampedResource } from "./Resource.js";
 
 @ObjectType()
