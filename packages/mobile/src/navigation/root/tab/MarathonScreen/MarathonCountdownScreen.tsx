@@ -1,5 +1,6 @@
 import CountdownView from "@common/components/CountdownView";
 import { useThemeColors } from "@common/customHooks";
+import type { DateTime } from "luxon";
 import { Text, View } from "native-base";
 import type { ImageSourcePropType } from "react-native";
 import { ImageBackground, useWindowDimensions } from "react-native";
@@ -10,9 +11,13 @@ import CommitteeHoldingSign from "../../../../../assets/svgs/CommitteeHoldingSig
  * @param params.countdownTo Countdown target in milliseconds
  */
 export const MarathonCountdownScreen = ({
-  countdownTo,
+  marathonYear,
+  marathonStart,
+  marathonEnd,
 }: {
-  countdownTo: number;
+  marathonYear: string;
+  marathonStart: DateTime;
+  marathonEnd: DateTime;
 }) => {
   const { height: screenHeight, width: screenWidth } = useWindowDimensions();
   const { primary } = useThemeColors();
@@ -38,9 +43,9 @@ export const MarathonCountdownScreen = ({
             textShadowRadius: 1,
           }}
         >
-          {"Countdown 'til Marathon"}
+          {`Countdown 'til ${marathonYear}`}
         </Text>
-        <CountdownView endTime={countdownTo} />
+        <CountdownView endTime={marathonStart.toMillis()} />
       </View>
       <View flex={2}>
         <CommitteeHoldingSign color="#fff" />
@@ -58,7 +63,9 @@ export const MarathonCountdownScreen = ({
             textShadowRadius: 1,
           }}
         >
-          {"March 25th - 26th, 2023"}
+          {`${marathonStart.toFormat("MMMM d")} - ${marathonEnd.toFormat(
+            "MMMM d, yyyy"
+          )}`}
         </Text>
         <Text
           textAlign="center"
@@ -67,7 +74,9 @@ export const MarathonCountdownScreen = ({
           fontSize="2xl"
           bg={`${primary[600]}BD`}
         >
-          {"8:00 PM - 8:00 PM"}
+          {`${marathonStart.toFormat("h:mm a")} - ${marathonEnd.toFormat(
+            "h:mm a"
+          )}`}
         </Text>
       </View>
     </ImageBackground>
