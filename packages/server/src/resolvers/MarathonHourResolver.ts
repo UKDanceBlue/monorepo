@@ -112,12 +112,12 @@ export class MarathonHourResolver {
     return marathonHourModelToResource(marathonHour);
   }
 
-  @Query(() => MarathonHourResource)
+  @Query(() => MarathonHourResource, { nullable: true })
   async currentMarathonHour() {
     const marathonHour =
       await this.marathonHourRepository.findCurrentMarathonHour();
     if (marathonHour == null) {
-      throw new DetailedError(ErrorCode.NotFound, "MarathonHour not found");
+      return null;
     }
     return marathonHourModelToResource(marathonHour);
   }

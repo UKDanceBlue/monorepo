@@ -1161,6 +1161,7 @@ type Query {
   activeConfiguration(key: String!): GetConfigurationByUuidResponse!
   allConfigurations: GetAllConfigurationsResponse!
   currentMarathon: MarathonResource
+  currentMarathonHour: MarathonHourResource
   device(uuid: String!): GetDeviceByUuidResponse!
   devices(
     """The boolean filters to apply to the query"""
