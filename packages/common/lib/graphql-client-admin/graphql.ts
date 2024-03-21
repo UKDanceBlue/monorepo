@@ -1290,6 +1290,7 @@ export type Query = {
   readonly activeConfiguration: GetConfigurationByUuidResponse;
   readonly allConfigurations: GetAllConfigurationsResponse;
   readonly currentMarathon?: Maybe<MarathonResource>;
+  readonly currentMarathonHour?: Maybe<MarathonHourResource>;
   readonly device: GetDeviceByUuidResponse;
   readonly devices: ListDevicesResponse;
   readonly event: GetEventByUuidResponse;
