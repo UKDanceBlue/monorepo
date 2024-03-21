@@ -1,14 +1,19 @@
 import CountdownView from "@common/components/CountdownView";
 import { useThemeColors } from "@common/customHooks";
-import { marathonInterval } from "@common/marathonTime";
 import { Text, View } from "native-base";
 import type { ImageSourcePropType } from "react-native";
 import { ImageBackground, useWindowDimensions } from "react-native";
 
-
 import CommitteeHoldingSign from "../../../../../assets/svgs/CommitteeHoldingSign";
 
-export const MarathonCountdownScreen = () => {
+/**
+ * @param params.countdownTo Countdown target in milliseconds
+ */
+export const MarathonCountdownScreen = ({
+  countdownTo,
+}: {
+  countdownTo: number;
+}) => {
   const { height: screenHeight, width: screenWidth } = useWindowDimensions();
   const { primary } = useThemeColors();
   return (
@@ -35,7 +40,7 @@ export const MarathonCountdownScreen = () => {
         >
           {"Countdown 'til Marathon"}
         </Text>
-        <CountdownView endTime={marathonInterval.start.toMillis()} />
+        <CountdownView endTime={countdownTo} />
       </View>
       <View flex={2}>
         <CommitteeHoldingSign color="#fff" />
