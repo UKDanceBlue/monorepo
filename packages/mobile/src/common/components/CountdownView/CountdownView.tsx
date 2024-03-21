@@ -131,9 +131,9 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   countdownTimer: {
+    alignItems: "center",
     flexDirection: "row",
     flex: 1,
-    justifyContent: "center",
   },
 });
 

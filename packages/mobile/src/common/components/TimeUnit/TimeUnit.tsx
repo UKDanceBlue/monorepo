@@ -38,7 +38,7 @@ const TimeUnit = ({
         fontSize="3xl"
         fontFamily={headingBold}
         flex={1}
-        minHeight={fontScale * 40}
+        // minHeight={fontScale * 40} This seems to break things at least on android
       >
         {Math.max(0, value ?? 0)}
       </Text>
