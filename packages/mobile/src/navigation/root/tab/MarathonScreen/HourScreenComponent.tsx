@@ -35,6 +35,8 @@ export const HourScreenComponent = ({
 
   let hourImageComponent = null;
   hourImageComponent = null;
+
+  // TODO: Once image support is worked out, uncomment this
   // if (hourImage != null) {
   //   hourImageComponent = (
   //     <Image
