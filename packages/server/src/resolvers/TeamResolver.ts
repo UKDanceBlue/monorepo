@@ -178,7 +178,13 @@ export class TeamResolver {
         marathonYear: query.marathonYear,
         type: query.type,
       }),
-      this.teamRepository.countTeams({ filters: query.filters }),
+      this.teamRepository.countTeams({
+        filters: query.filters,
+        onlyDemo: ctx.userData.authSource === AuthSource.Demo,
+        legacyStatus: query.legacyStatus,
+        marathonYear: query.marathonYear,
+        type: query.type,
+      }),
     ]);
 
     return ListTeamsResponse.newPaginated({

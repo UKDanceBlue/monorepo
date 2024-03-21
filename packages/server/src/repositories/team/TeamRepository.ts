@@ -107,13 +107,36 @@ export class TeamRepository {
 
   countTeams({
     filters,
+    onlyDemo,
+    legacyStatus,
+    marathonYear,
+    type,
   }: {
     filters?: readonly TeamFilters[] | undefined | null;
+    onlyDemo?: boolean;
+    legacyStatus?: TeamLegacyStatus[] | undefined | null;
+    marathonYear?: MarathonYearString[] | undefined | null;
+    type?: TeamType[] | undefined | null;
   }) {
     const where = buildTeamWhere(filters);
 
     return this.prisma.teamsWithTotalPoints.count({
-      where,
+      where: {
+        type: type ? { in: type } : undefined,
+        marathonYear: marathonYear ? { in: marathonYear } : undefined,
+
+        ...where,
+        legacyStatus: legacyStatus
+          ? { in: legacyStatus }
+          : where.legacyStatus ??
+            (onlyDemo
+              ? {
+                  equals: TeamLegacyStatus.DemoTeam,
+                }
+              : {
+                  not: TeamLegacyStatus.DemoTeam,
+                }),
+      },
     });
   }
 
