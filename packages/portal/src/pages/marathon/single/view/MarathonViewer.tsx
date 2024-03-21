@@ -56,14 +56,27 @@ export const MarathonViewer = ({
           )}
         </Descriptions.Item>
       </Descriptions>
-      <Descriptions title="Hours" bordered>
+      <Descriptions
+        title={
+          <Flex justify="space-between" align="center">
+            <span>Hours</span>
+            <Link
+              to="/marathon/$marathonId/hours/add"
+              params={{ marathonId: marathonData.uuid }}
+            >
+              Add
+            </Link>
+          </Flex>
+        }
+        bordered
+      >
         {sortedHours.map((hour) => (
           <Descriptions.Item
             key={hour.uuid}
             label={hour.shownStartingAt.toLocaleString(DateTime.DATETIME_MED)}
           >
             <Link
-              to="/marathon/$marathonId/hours/$hourId/"
+              to="/marathon/$marathonId/hours/$hourId"
               params={{ marathonId: marathonData.uuid, hourId: hour.uuid }}
             >
               {hour.title}
