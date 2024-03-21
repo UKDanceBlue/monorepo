@@ -38,7 +38,7 @@ export function useTeamCreatorForm(
           // TODO: Make this dynamic
           marathonYear: "DB24",
           persistentIdentifier: values.persistentIdentifier ?? null,
-          type: TeamType.Spirit,
+          type: values.type,
         },
       });
 
