@@ -17,7 +17,7 @@ export function useMarathonCreatorForm() {
     `)
   );
   const navigate = useNavigate();
-  useQueryStatusWatcher({
+  const { resetWatcher } = useQueryStatusWatcher({
     error,
     fetching,
     loadingMessage: "Saving marathon...",
@@ -64,6 +64,7 @@ export function useMarathonCreatorForm() {
       });
 
       if (data) {
+        resetWatcher();
         await navigate({
           to: "/marathon/$marathonId/",
           params: { marathonId: data.createMarathon.uuid },

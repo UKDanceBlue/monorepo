@@ -63,6 +63,8 @@ const documents = {
     "\n      mutation CreateMarathon($input: CreateMarathonInput!) {\n        createMarathon(input: $input) {\n          uuid\n        }\n      }\n    ": types.CreateMarathonDocument,
     "\n  query MarathonOverviewPage {\n    nextMarathon {\n      ...MarathonViewerFragment\n    }\n    marathons(sendAll: true) {\n      data {\n        ...MarathonTableFragment\n      }\n    }\n  }\n": types.MarathonOverviewPageDocument,
     "\n  fragment MarathonTableFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n  }\n": types.MarathonTableFragmentFragmentDoc,
+    "\n        mutation EditMarathon($input: SetMarathonInput!, $marathonId: String!) {\n          setMarathon(input: $input, uuid: $marathonId) {\n            uuid\n          }\n        }\n      ": types.EditMarathonDocument,
+    "\n      query GetMarathon($marathonId: String!) {\n        marathon(uuid: $marathonId) {\n          year\n          startDate\n          endDate\n        }\n      }\n    ": types.GetMarathonDocument,
     "\n  fragment MarathonViewerFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n    hours {\n      uuid\n      shownStartingAt\n      title\n    }\n  }\n": types.MarathonViewerFragmentFragmentDoc,
     "\n  query MarathonPage($marathonUuid: String!) {\n    marathon(uuid: $marathonUuid) {\n      ...MarathonViewerFragment\n    }\n  }\n": types.MarathonPageDocument,
     "\n  query NotificationManager($uuid: String!) {\n    notification(uuid: $uuid) {\n      data {\n        ...SingleNotificationFragment\n      }\n    }\n  }\n": types.NotificationManagerDocument,
@@ -288,6 +290,14 @@ export function graphql(source: "\n  query MarathonOverviewPage {\n    nextMarat
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  fragment MarathonTableFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n  }\n"): (typeof documents)["\n  fragment MarathonTableFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n        mutation EditMarathon($input: SetMarathonInput!, $marathonId: String!) {\n          setMarathon(input: $input, uuid: $marathonId) {\n            uuid\n          }\n        }\n      "): (typeof documents)["\n        mutation EditMarathon($input: SetMarathonInput!, $marathonId: String!) {\n          setMarathon(input: $input, uuid: $marathonId) {\n            uuid\n          }\n        }\n      "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n      query GetMarathon($marathonId: String!) {\n        marathon(uuid: $marathonId) {\n          year\n          startDate\n          endDate\n        }\n      }\n    "): (typeof documents)["\n      query GetMarathon($marathonId: String!) {\n        marathon(uuid: $marathonId) {\n          year\n          startDate\n          endDate\n        }\n      }\n    "];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -1,9 +1,9 @@
-import { Outlet } from "@tanstack/react-router";
+import { EditMarathonForm } from "./EditMarathonForm";
 
 export function EditMarathonPage() {
   return (
     <div>
-      <Outlet />
+      <EditMarathonForm />
     </div>
   );
 }
