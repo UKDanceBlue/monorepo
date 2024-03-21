@@ -34,7 +34,7 @@ export function useMarathonCreatorForm() {
       endDate: undefined,
     },
     onChange: ({ startDate, endDate }) => {
-      if (startDate && endDate && startDate > endDate) {
+      if (startDate && endDate && startDate.toMillis() > endDate.toMillis()) {
         return "Start date must be before end date";
       }
 

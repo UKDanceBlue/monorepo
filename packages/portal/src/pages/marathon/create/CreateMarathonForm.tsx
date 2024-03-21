@@ -1,5 +1,9 @@
 import { LuxonDatePicker } from "@elements/components/antLuxonComponents";
+import { TanAntForm } from "@elements/components/form/TanAntForm";
+import type { TanAntChildInputProps } from "@elements/components/form/TanAntFormItem";
+import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
 import { Button, Form, Input } from "antd";
+import { DateTime } from "luxon";
 
 import { useMarathonCreatorForm } from "./useMarathonCreatorForm";
 
@@ -9,16 +13,13 @@ export const CreateMarathonForm = () => {
   const { formApi } = useMarathonCreatorForm();
 
   return (
-    <formApi.Provider>
-      <Form
-        layout="vertical"
-        onFinish={() => {
-          void formApi.handleSubmit();
-        }}
-      >
-        <formApi.Field
-          name="year"
-          onChange={(value) => {
+    <TanAntForm formApi={formApi} layout="vertical">
+      <TanAntFormItem
+        formApi={formApi}
+        name="year"
+        label="Year"
+        fieldProps={{
+          validate: (value) => {
             if (!value) {
               return "Year is required";
             }
@@ -28,34 +29,31 @@ export const CreateMarathonForm = () => {
             }
 
             return undefined;
-          }}
-        >
-          {(fieldApi) => (
-            <Form.Item
-              label="Year"
-              validateStatus={
-                fieldApi.state.meta.errors.length > 0 ? "error" : ""
-              }
-              help={
-                fieldApi.state.meta.errors.length > 0
-                  ? fieldApi.state.meta.errors[0]
-                  : undefined
-              }
-            >
-              <Input
-                status={fieldApi.state.meta.errors.length > 0 ? "error" : ""}
-                name={fieldApi.name}
-                value={fieldApi.state.value}
-                onBlur={fieldApi.handleBlur}
-                onChange={(e) => fieldApi.handleChange(e.target.value)}
-                placeholder="DB22"
-              />
-            </Form.Item>
-          )}
-        </formApi.Field>
-        <formApi.Field
-          name="startDate"
-          onChange={(value) => {
+          },
+        }}
+      >
+        {({
+          onBlur,
+          onChange,
+          value,
+          status,
+        }: TanAntChildInputProps<string>) => (
+          <Input
+            status={status}
+            name="year"
+            value={value}
+            onBlur={onBlur}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="DB22"
+          />
+        )}
+      </TanAntFormItem>
+      <TanAntFormItem
+        formApi={formApi}
+        name="startDate"
+        label="Start Date"
+        fieldProps={{
+          validate: (value: DateTime | undefined) => {
             if (!value) {
               return "Start Date is required";
             }
@@ -63,42 +61,38 @@ export const CreateMarathonForm = () => {
               return value.invalidExplanation ?? "Invalid date";
             }
             return undefined;
-          }}
-        >
-          {(fieldApi) => (
-            <Form.Item
-              label="Start Date"
-              validateStatus={
-                fieldApi.state.meta.errors.length > 0 ? "error" : ""
-              }
-              help={
-                fieldApi.state.meta.errors.length > 0
-                  ? fieldApi.state.meta.errors[0]
-                  : undefined
-              }
-            >
-              <LuxonDatePicker
-                showTime
-                showSecond={false}
-                showMinute={false}
-                showNow={false}
-                status={fieldApi.state.meta.errors.length > 0 ? "error" : ""}
-                name={fieldApi.name}
-                value={fieldApi.state.value}
-                onBlur={fieldApi.handleBlur}
-                onChange={(value) =>
-                  fieldApi.handleChange(
-                    value?.set({ minute: 0, second: 0, millisecond: 0 }) ??
-                      undefined
-                  )
-                }
-              />
-            </Form.Item>
-          )}
-        </formApi.Field>
-        <formApi.Field
-          name="endDate"
-          onChange={(value) => {
+          },
+        }}
+      >
+        {({
+          onBlur,
+          onChange,
+          value,
+          status,
+        }: TanAntChildInputProps<DateTime>) => (
+          <LuxonDatePicker
+            showTime
+            showSecond={false}
+            showMinute={false}
+            showNow={false}
+            status={status}
+            name="startDate"
+            value={value}
+            onBlur={onBlur}
+            onChange={(value) =>
+              value?.isValid
+                ? onChange(value.set({ minute: 0, second: 0, millisecond: 0 }))
+                : DateTime.invalid("Invalid date")
+            }
+          />
+        )}
+      </TanAntFormItem>
+      <TanAntFormItem
+        formApi={formApi}
+        name="endDate"
+        label="End Date"
+        fieldProps={{
+          validate: (value: DateTime | undefined) => {
             if (!value) {
               return "End Date is required";
             }
@@ -106,45 +100,37 @@ export const CreateMarathonForm = () => {
               return value.invalidExplanation ?? "Invalid date";
             }
             return undefined;
-          }}
-        >
-          {(fieldApi) => (
-            <Form.Item
-              label="End Date"
-              validateStatus={
-                fieldApi.state.meta.errors.length > 0 ? "error" : ""
-              }
-              help={
-                fieldApi.state.meta.errors.length > 0
-                  ? fieldApi.state.meta.errors[0]
-                  : undefined
-              }
-            >
-              <LuxonDatePicker
-                showTime
-                showSecond={false}
-                showMinute={false}
-                showNow={false}
-                status={fieldApi.state.meta.errors.length > 0 ? "error" : ""}
-                name={fieldApi.name}
-                value={fieldApi.state.value}
-                onBlur={fieldApi.handleBlur}
-                onChange={(value) =>
-                  fieldApi.handleChange(
-                    value?.set({ minute: 0, second: 0, millisecond: 0 }) ??
-                      undefined
-                  )
-                }
-              />
-            </Form.Item>
-          )}
-        </formApi.Field>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Create Marathon
-          </Button>
-        </Form.Item>
-      </Form>
-    </formApi.Provider>
+          },
+        }}
+      >
+        {({
+          onBlur,
+          onChange,
+          value,
+          status,
+        }: TanAntChildInputProps<DateTime>) => (
+          <LuxonDatePicker
+            showTime
+            showSecond={false}
+            showMinute={false}
+            showNow={false}
+            status={status}
+            name="endDate"
+            value={value}
+            onBlur={onBlur}
+            onChange={(value) =>
+              value?.isValid
+                ? onChange(value.set({ minute: 0, second: 0, millisecond: 0 }))
+                : DateTime.invalid("Invalid date")
+            }
+          />
+        )}
+      </TanAntFormItem>
+      <Form.Item>
+        <Button type="primary" htmlType="submit">
+          Create Marathon
+        </Button>
+      </Form.Item>
+    </TanAntForm>
   );
 };
