@@ -55,11 +55,10 @@ jobs:
         run: yarn run gql:build
 
       - name: Build common
-        working-directory: ./packages/common
-        run: yarn build
+        run: yarn run common:build
 
       - name: Run ESLint
-        run: npm run lint:report
+        run: yarn run repo:lint:report
         continue-on-error: true
       - name: Annotate Code Linting Results
         uses: ataylorme/eslint-annotate-action@v2
