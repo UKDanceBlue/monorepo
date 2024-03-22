@@ -13,12 +13,12 @@ const EventRow = ({
   location,
 }: {
   title: string;
-  interval?: Interval;
+  interval?: Interval<true> | Interval<false>;
   location?: string;
 }) => {
   const whenString = useMemo(() => {
     let whenString = "";
-    if (interval != null) {
+    if (interval != null && interval.isValid) {
       if (
         interval.start.toMillis() ===
           DateTime.now().startOf("day").toMillis() &&
