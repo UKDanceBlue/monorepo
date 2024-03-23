@@ -61,6 +61,9 @@ export async function onAddToCalendar(
           occurrence: (typeof eventData.occurrences)[number]
         ): Partial<Event> => {
           const interval = Interval.fromISO(occurrence.interval);
+          if (!interval.isValid) {
+            throw new Error("Invalid interval");
+          }
           return {
             title: eventData.title,
             allDay: occurrence.fullDay,

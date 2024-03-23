@@ -248,10 +248,12 @@ const EventScreen = () => {
 };
 
 export default EventScreen;
-function stringifyInterval(interval: Interval | undefined) {
+function stringifyInterval(
+  interval: Interval<true> | Interval<false> | undefined
+) {
   let whenString = "";
   let allDay = false;
-  if (interval != null) {
+  if (interval != null && interval.isValid) {
     if (
       interval.start.toMillis() === DateTime.now().startOf("day").toMillis() &&
       interval.end.toMillis() === DateTime.now().endOf("day").toMillis()
