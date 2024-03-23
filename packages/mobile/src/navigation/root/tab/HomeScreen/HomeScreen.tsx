@@ -1,8 +1,9 @@
+import Pinwheel from "@common/components/Pinwheel";
 import { universalCatch } from "@common/logging";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { openURL } from "expo-linking";
 import { openBrowserAsync } from "expo-web-browser";
-import { Box, Button, HStack, Text, VStack } from "native-base";
+import { Box, Button, HStack, Text, VStack, View } from "native-base";
 import {
   PixelRatio,
   StatusBar,
@@ -24,6 +25,37 @@ const HomeScreen = () => {
   return (
     <>
       <StatusBar hidden={false} />
+      <View height={250} width={250}>
+        <Pinwheel
+          positions={[
+            {
+              text: "Test 1",
+              value: 1,
+            },
+            {
+              text: "Test 2",
+              value: 2,
+            },
+            {
+              text: "Test 3",
+              value: 3,
+            },
+            {
+              text: "Test 4",
+              value: 4,
+            },
+            {
+              text: "Test 5",
+              value: 5,
+            },
+            {
+              text: "Test 6",
+              value: 6,
+            },
+          ]}
+          getPosition={() => 1}
+        />
+      </View>
       <VStack flexDirection="column" bgColor={bgColor} flex={1}>
         <Box
           flex={1}
