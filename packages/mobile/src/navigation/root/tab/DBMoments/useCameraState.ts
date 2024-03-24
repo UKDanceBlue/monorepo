@@ -1,4 +1,5 @@
 import { Logger } from "@common/logger/Logger";
+import { asyncWait } from "@common/util/wait";
 import type {
   CameraCapturedPicture,
   CameraPictureOptions,
@@ -19,9 +20,11 @@ const takePicture = async (camera: Camera) => {
   const options: CameraPictureOptions = {
     quality: 0.8,
     base64: false,
-    skipProcessing: true,
+    skipProcessing: false,
     isImageMirror: false,
   };
+  // Need to wait when we take a picture to make sure the camera is focused
+  await asyncWait(800);
   return camera.takePictureAsync(options);
 };
 
@@ -40,6 +43,7 @@ export function useCameraState(): {
   requestPermission: () => void;
   startTakingPictures: () => void;
   reset: () => void;
+  takingPicture: boolean;
 } {
   const [flash, setFlash] = useState<FlashMode>(FlashMode.off);
   const [facing, setFacing] = useState<CameraType>(CameraType.front);
@@ -124,8 +128,9 @@ export function useCameraState(): {
 
     const checking = facing;
 
-    Logger.debug("Camera state update", {
-      context: { checking, currentlyTaking, images },
+    Logger.debug("Checking Camera", {
+      context: { checking, currentlyTaking, images, time: Date.now() },
+      source: "useCameraState",
     });
 
     // We always take a picture with whatever the current facing is
@@ -173,5 +178,7 @@ export function useCameraState(): {
     requestPermission,
     startTakingPictures,
     reset,
+    takingPicture:
+      currentlyTaking[CameraType.front] || currentlyTaking[CameraType.back],
   };
 }

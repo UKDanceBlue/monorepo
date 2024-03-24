@@ -1,8 +1,19 @@
 import dbWordLogo from "@assets/logo/big-words.png";
 import dbMonogram from "@assets/logo/monogram.png";
+import { Logger } from "@common/logger/Logger";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { Camera, FlashMode } from "expo-camera";
-import { Box, Button, Fab, HStack, Icon, Image, Text, View } from "native-base";
+import {
+  Box,
+  Button,
+  Fab,
+  HStack,
+  Icon,
+  Image,
+  ScrollView,
+  Text,
+  View,
+} from "native-base";
 import { ImageBackground, useWindowDimensions } from "react-native";
 
 import { useCameraState } from "./useCameraState";
@@ -28,6 +39,7 @@ export const DBMomentsScreen = () => {
     requestPermission,
     startTakingPictures,
     reset,
+    takingPicture,
   } = useCameraState();
 
   switch (state) {
@@ -221,11 +233,12 @@ export const DBMomentsScreen = () => {
                 right={2}
                 icon={
                   <Icon
-                    color="white"
+                    color={takingPicture ? "rgba(255, 255, 255, 0.6)" : "white"}
                     as={<MaterialCommunityIcons name="circle-slice-8" />}
                     size={10}
                   />
                 }
+                disabled={takingPicture}
                 onPress={() => startTakingPictures()}
               />
               <Fab
@@ -253,13 +266,17 @@ export const DBMomentsScreen = () => {
     }
     case "captured": {
       if (!(images.front && images.back)) {
-        throw new Error("State of DBMoments is invalid!");
+        Logger.error("State of DBMoments is invalid!", {
+          source: "DBMomentsScreen",
+          context: { images },
+        });
       }
       return (
-        <View>
-          <Image source={images.front} />
-          <Image source={images.back} />
-        </View>
+        <ScrollView width="100%" height="100%">
+          <Image source={images.front} size="2xl" alt="SHUT UP WARNING" />
+          <Image source={images.back} size="2xl" alt="SHUT UP WARNING" />
+          <Button onPress={reset}>Retake</Button>
+        </ScrollView>
       );
     }
   }
