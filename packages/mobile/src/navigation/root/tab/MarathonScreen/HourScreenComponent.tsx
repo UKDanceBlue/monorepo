@@ -53,7 +53,12 @@ export const HourScreenComponent = ({
       <Heading textAlign="center" marginBottom={2}>
         {hourScreenData.title}
       </Heading>
-      <Text textAlign="center" marginBottom={2}>
+      <Text
+        textAlign="center"
+        marginBottom={2}
+        fontSize={18}
+        fontFamily={"lightbody"}
+      >
         {hourScreenData.durationInfo}
       </Text>
       {hourScreenData.mapImages.length > 0 && (
