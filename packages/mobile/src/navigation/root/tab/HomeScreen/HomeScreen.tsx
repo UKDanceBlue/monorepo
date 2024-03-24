@@ -1,4 +1,4 @@
-import Pinwheel from "@common/components/Pinwheel";
+import { SpinnablePinwheel } from "@common/components/Pinwheel";
 import { universalCatch } from "@common/logging";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { openURL } from "expo-linking";
@@ -26,7 +26,7 @@ const HomeScreen = () => {
     <>
       <StatusBar hidden={false} />
       <View height={250} width={250}>
-        <Pinwheel
+        <SpinnablePinwheel
           positions={[
             {
               text: "Test 1",
@@ -53,7 +53,10 @@ const HomeScreen = () => {
               value: 6,
             },
           ]}
-          getPosition={() => 1}
+          getPosition={() => {
+            "worklet";
+            return 3;
+          }}
         />
       </View>
       <VStack flexDirection="column" bgColor={bgColor} flex={1}>

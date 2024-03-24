@@ -50,6 +50,16 @@ const PinwheelSegment = ({
     y: centerPoint.y - radius * Math.cos((angle * Math.PI) / 180),
   };
 
+  if (
+    [arcCoordinateA, arcCoordinateMid, arcCoordinateB].some((coord) => {
+      return Number.isNaN(coord.x) || Number.isNaN(coord.y);
+    })
+  ) {
+    throw new Error(
+      "Invalid coordinates calculated for pinwheel spinner, this is a bug!"
+    );
+  }
+
   // Rotate the entire thing by rotateBy about the center point
   const groupTransform = `rotate(${rotateBy} ${centerPoint.x} ${centerPoint.y})`;
   // Rotate the content so that it is in line with the segment
@@ -89,12 +99,10 @@ const PinwheelSegment = ({
  * @param positions - The positions of the pinwheel
  * @param getPosition - When spun this function is called to decide where the pinwheel stops, returning the index of the position
  */
-export default function Pinwheel<Values>({
+function Pinwheel<Values>({
   positions,
-  getPosition: _getPosition,
 }: {
   positions: PinwheelPosition<Values>[];
-  getPosition: (value: Values[]) => number;
 }) {
   return (
     <Svg height="100%" width="100%" viewBox="0 0 100 100">
@@ -113,3 +121,5 @@ export default function Pinwheel<Values>({
     </Svg>
   );
 }
+
+export default Pinwheel;
