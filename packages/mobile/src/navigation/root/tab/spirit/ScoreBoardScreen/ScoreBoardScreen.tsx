@@ -7,7 +7,7 @@ import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
-import {Box, CheckIcon, HStack, Select, Text, View} from "native-base";
+import { Box, CheckIcon, HStack, Select, Text, View } from "native-base";
 import { Pressable } from "native-base/src/components/primitives";
 import { useEffect, useMemo, useState } from "react";
 
@@ -58,11 +58,13 @@ const ScoreBoardScreen = ({
   scoreBoardFragment,
   loading,
   refresh,
+  mode,
 }: {
   highlightedTeamFragment: FragmentType<typeof HighlightedTeamFragment> | null;
   scoreBoardFragment: readonly FragmentType<typeof ScoreBoardFragment>[] | null;
   loading: boolean;
   refresh: () => void;
+  mode?: "spirit" | "morale";
 }) => {
   const [filter, setFilter] = useState<string>("all");
   const [userTeamRank, setUserTeamRank] = useState<number | undefined>(
@@ -80,29 +82,31 @@ const ScoreBoardScreen = ({
   );
 
   // Update filteredData based on the selected filter
-  const filteredData = useMemo(() =>
-    teamsData?.filter((team) => {
-      switch (filter) {
-        case "dancers": {
-          return team.type === TeamType.Spirit;
+  const filteredData = useMemo(
+    () =>
+      teamsData?.filter((team) => {
+        switch (filter) {
+          case "dancers": {
+            return team.type === TeamType.Spirit;
+          }
+          case "new": {
+            return team.legacyStatus === TeamLegacyStatus.NewTeam;
+          }
+          case "returning": {
+            return team.legacyStatus === TeamLegacyStatus.ReturningTeam;
+          }
+          case "committee": {
+            return team.type === TeamType.Committee;
+          }
+          default: {
+            return true;
+          } // Show all teams for "All" filter
         }
-        case "new": {
-          return team.legacyStatus === TeamLegacyStatus.NewTeam;
-        }
-        case "returning": {
-          return team.legacyStatus === TeamLegacyStatus.ReturningTeam;
-        }
-        case "committee": {
-          return team.type === TeamType.Committee;
-        }
-        default: {
-          return true;
-        } // Show all teams for "All" filter
-      }
-  }) ?? [], [teamsData, filter]);
+      }) ?? [],
+    [teamsData, filter]
+  );
 
-useEffect(() => {
-
+  useEffect(() => {
     // Determine the standings based on filteredData
     const newStandingData: StandingType[] = [];
     for (const team of filteredData) {
@@ -122,59 +126,73 @@ useEffect(() => {
 
   return (
     <View flex={1}>
-      {userTeamData?.uuid == null ? (
-        <Jumbotron
-          title="You are not part of a team"
-          subTitle=""
-          bodyText="If you believe this is an error and you have submitted your spirit points, please contact your team captain or the DanceBlue committee."
-          icon="users"
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          iconType={FontAwesome5}
-          iconColor="blue.500"
-        />
-      ) : (
-        <Pressable
-          onPress={() => {
-            navigate("MyTeam");
-          }}
-          _pressed={{ opacity: 0.5 }}
-        >
+      {mode === "spirit" ? (
+        userTeamData?.uuid == null ? (
           <Jumbotron
-            title={userTeamData.name}
-            subTitle={
-              userTeamRank == null
-                ? undefined
-                : `Team Spirit Point Ranking: ${addOrdinal(userTeamRank)}`
-            }
-            bodyText="Click here to go to your Team Dashboard!"
+            title="You are not part of a team"
+            subTitle=""
+            bodyText="If you believe this is an error and you have submitted your spirit points, please contact your team captain or the DanceBlue committee."
             icon="users"
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             iconType={FontAwesome5}
-            iconColor="secondary.100"
-            iconSize={40}
+            iconColor="blue.500"
           />
-        </Pressable>
+        ) : (
+          <Pressable
+            onPress={() => {
+              navigate("MyTeam");
+            }}
+            _pressed={{ opacity: 0.5 }}
+          >
+            <Jumbotron
+              title={userTeamData.name}
+              subTitle={
+                userTeamRank == null
+                  ? undefined
+                  : `Team Spirit Point Ranking: ${addOrdinal(userTeamRank)}`
+              }
+              bodyText="Click here to go to your Team Dashboard!"
+              icon="users"
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              iconType={FontAwesome5}
+              iconColor="secondary.100"
+              iconSize={40}
+            />
+          </Pressable>
+        )
+      ) : null}
+
+      {mode === "spirit" && (
+        <HStack space={2} justifyContent="center" justifyItems="center">
+          <Box>
+            <Text fontSize="xl">Filter Leaderboard:</Text>
+          </Box>
+          <Box>
+            <Select
+              selectedValue={filter}
+              minWidth="200"
+              accessibilityLabel="Filter"
+              placeholder="Filter"
+              _selectedItem={{
+                endIcon: <CheckIcon size="5" />,
+              }}
+              mt={1}
+              onValueChange={(itemValue) => setFilter(itemValue)}
+            >
+              <Select.Item label="All" value="all" />
+              <Select.Item label="Dancer Teams" value="dancers" />
+              <Select.Item label="New Teams Only" value="new" />
+              <Select.Item label="Returning Teams Only" value="returning" />
+              <Select.Item label="Committee" value="committee" />
+            </Select>
+          </Box>
+        </HStack>
       )}
 
-      <HStack space={2} justifyContent="center" justifyItems="center">
-        <Box>
-          <Text fontSize="xl">Filter Leaderboard:</Text>
-        </Box>
-        <Box>
-          <Select selectedValue={filter} minWidth="200" accessibilityLabel="Filter" placeholder="Filter" _selectedItem={{
-            endIcon: <CheckIcon size="5" />
-          }} mt={1} onValueChange={itemValue => setFilter(itemValue)}>
-            <Select.Item label="All" value="all"/>
-            <Select.Item label="Dancer Teams" value="dancers"/>
-            <Select.Item label="New Teams Only" value="new"/>
-            <Select.Item label="Returning Teams Only" value="returning"/>
-            <Select.Item label="Committee" value="committee"/>
-          </Select>
-        </Box>
-      </HStack>
-
       <Scoreboard
-        title="Spirit Points"
+        title={`${
+          !mode ? "" : mode === "spirit" ? "Spirit " : "Morale "
+        }Points`}
         data={standingData}
         refreshing={loading}
         onRefresh={refresh}
