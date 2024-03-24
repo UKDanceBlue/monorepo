@@ -15,6 +15,8 @@ interface Coordinate {
  *
  * Draws a segment of a circle with text in the middle, rotated so that it can be displayed in a pinwheel
  *
+ * The text needs to be pointing out from the center of the pinwheel
+ *
  * @param text - The text to display on the segment
  * @param centerPoint - The center point of the pinwheel
  * @param radius - The radius of the pinwheel
@@ -35,22 +37,46 @@ const PinwheelSegment = ({
   angle: number;
   rotateBy: number;
 }) => {
+  const arcCoordinateA = {
+    x: centerPoint.x,
+    y: centerPoint.y - radius,
+  };
+  const arcCoordinateMid = {
+    x: centerPoint.x + radius * Math.sin(((angle / 2) * Math.PI) / 180),
+    y: centerPoint.y - radius * Math.cos(((angle / 2) * Math.PI) / 180),
+  };
+  const arcCoordinateB = {
+    x: centerPoint.x + radius * Math.sin((angle * Math.PI) / 180),
+    y: centerPoint.y - radius * Math.cos((angle * Math.PI) / 180),
+  };
+
+  // Rotate the entire thing by rotateBy about the center point
+  const groupTransform = `rotate(${rotateBy} ${centerPoint.x} ${centerPoint.y})`;
+  // Rotate the content so that it is in line with the segment
+  const contentTransform = `rotate(${-angle} ${arcCoordinateMid.x} ${
+    arcCoordinateMid.y
+  })`;
+
   return (
-    <G transform={`rotate(${rotateBy} ${centerPoint.x} ${centerPoint.y})`}>
+    <G transform={groupTransform}>
       <Path
-        d={`M ${centerPoint.x} ${centerPoint.y} L ${centerPoint.x} ${
-          centerPoint.y - radius
-        } A ${radius} ${radius} 0 0 1 ${
-          centerPoint.x + radius * Math.sin((angle * Math.PI) / 180)
-        } ${centerPoint.y - radius * Math.cos((angle * Math.PI) / 180)} Z`}
+        d={
+          // Move the "stylus" to the center
+          `M ${centerPoint.x} ${centerPoint.y} ` +
+          // Draw a line to arc coordinate A
+          `L ${arcCoordinateA.x} ${arcCoordinateA.y} ` +
+          // Draw an arc to arc coordinate B and go back to the start (with Z)
+          `A ${radius} ${radius} 0 0 1 ${arcCoordinateB.x} ${arcCoordinateB.y} Z`
+        }
         fill="white"
         stroke="black"
       />
       <Text
-        x={centerPoint.x}
-        y={centerPoint.y - radius / 2}
-        textAnchor="middle"
+        x={arcCoordinateMid.x}
+        y={arcCoordinateMid.y}
+        textAnchor="end"
         alignmentBaseline="middle"
+        transform={contentTransform}
       >
         {text}
       </Text>
