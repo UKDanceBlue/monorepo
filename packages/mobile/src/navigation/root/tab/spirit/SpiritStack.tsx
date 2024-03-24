@@ -25,6 +25,7 @@ const scoreBoardDocument = graphql(/* GraphQL */ `
       sendAll: true
       sortBy: ["totalPoints", "name"]
       sortDirection: [DESCENDING, ASCENDING]
+      type: [Spirit, Committee]
     ) {
       data {
         ...ScoreBoardFragment

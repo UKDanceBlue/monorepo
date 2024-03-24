@@ -1,8 +1,9 @@
-import { EventViewer } from "@elements/viewers/event/EventViewer";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useParams } from "@tanstack/react-router";
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 import { useQuery } from "urql";
+
+import { EventViewer } from "./EventViewer";
 
 const viewEventPageDocument = graphql(/* GraphQL */ `
   query ViewEventPage($uuid: String!) {

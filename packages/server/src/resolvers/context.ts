@@ -37,7 +37,7 @@ export const graphqlContextFunction: ContextFunction<
   }
   const { userId, auth, authSource } = parseUserJwt(token);
   if (!userId) {
-    logger.debug("graphqlContextFunction No userId found");
+    logger.trace("graphqlContextFunction No userId found");
     return {
       authenticatedUser: null,
       userData: {
@@ -71,7 +71,7 @@ export const graphqlContextFunction: ContextFunction<
       contextErrors: [],
     };
   } else {
-    logger.debug("graphqlContextFunction User not found");
+    logger.trace("graphqlContextFunction User not found");
     return {
       authenticatedUser: null,
       userData: {

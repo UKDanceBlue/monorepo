@@ -1,5 +1,6 @@
+import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
 import { useNavigate } from "@tanstack/react-router";
-import { TeamLegacyStatus } from "@ukdanceblue/common";
+import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import { App, Button, Flex, Form, Input, Select } from "antd";
 
 import { useTeamCreatorForm } from "./useTeamCreatorForm";
@@ -58,7 +59,33 @@ export function TeamCreator() {
             )}
           </formApi.Field>
           <p>Marathon Year: DB24</p>
-          <p>Team Type: Spirit</p>
+          <TanAntFormItem
+            formApi={formApi}
+            fieldProps={{
+              validate(value: TeamType | "" | undefined) {
+                if (!value) {
+                  return "This field is required";
+                }
+
+                return undefined;
+              },
+            }}
+            name="type"
+          >
+            {({ onBlur, onChange, value, status }) => (
+              <Select
+                status={status}
+                options={[
+                  { label: "Spirit", value: TeamType.Spirit },
+                  { label: "Committee", value: TeamType.Committee },
+                  { label: "Morale", value: TeamType.Morale },
+                ]}
+                value={value}
+                onBlur={onBlur}
+                onChange={(value) => onChange(value)}
+              />
+            )}
+          </TanAntFormItem>
           {formApi.getFieldValue("persistentIdentifier") ? (
             <p>
               Special Identifier:{" "}

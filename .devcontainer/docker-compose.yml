@@ -4,6 +4,7 @@ services:
   app:
     build:
       dockerfile: Dockerfile
+      context: .
 
     volumes:
       # The actual workspace is mounted here. This is where the source code is located.

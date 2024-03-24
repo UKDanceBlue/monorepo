@@ -14,7 +14,10 @@ describe("deviceRepository", () => {
   it("lookupNotificationAudience('all')", async () => {
     expect.hasAssertions();
 
-    const deviceRepository = new DeviceRepository(prismaMock, null as never);
+    const deviceRepository = new DeviceRepository(
+      prismaMock.prismaClient,
+      null as never
+    );
 
     prismaMock.device.findMany.mockResolvedValueOnce([
       {
@@ -61,7 +64,10 @@ describe("deviceRepository", () => {
   it("lookupNotificationAudience(*)", async () => {
     expect.hasAssertions();
 
-    const deviceRepository = new DeviceRepository(prismaMock, null as never);
+    const deviceRepository = new DeviceRepository(
+      prismaMock.prismaClient,
+      null as never
+    );
 
     await expect(() =>
       deviceRepository.lookupNotificationAudience({})

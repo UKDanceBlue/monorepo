@@ -142,7 +142,19 @@ export class NotificationScheduler {
             await this.notificationRepository.findNotificationByUnique({
               uuid: notification.uuid,
             });
-          if (notification.sendAt !== updatedNotification?.sendAt) {
+          if (!updatedNotification) {
+            logger.info(
+              "Scheduled notification was deleted since it was scheduled, not sending",
+              {
+                notificationUuid: notification.uuid,
+                deletedNotification: {
+                  title: notification.title,
+                },
+              }
+            );
+            return;
+          }
+          if (notification.sendAt !== updatedNotification.sendAt) {
             logger.info(
               "Scheduled notification was updated since it was scheduled, not sending",
               {

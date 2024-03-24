@@ -97,7 +97,7 @@ export const NotificationsTable = () => {
   useQueryStatusWatcher({
     error,
     fetching,
-    loadingMessage: "Loading events...",
+    loadingMessage: "Loading notifications...",
   });
 
   const listEventsData = getFragmentData(

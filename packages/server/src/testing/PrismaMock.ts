@@ -82,6 +82,10 @@ export function makePrismaMock() {
     pointOpportunity: pointOpportunityMock[0],
     team: teamMock[0],
     teamsWithTotalPoints: teamsWithTotalPointsMock[0],
+
+    get prismaClient(): PrismaClient {
+      return this as unknown as PrismaClient;
+    },
   };
 
   return {

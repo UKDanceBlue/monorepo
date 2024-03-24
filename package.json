@@ -12,6 +12,7 @@
     "repo:test-ui": "vitest --ui --coverage",
     "repo:coverage": "vitest run --coverage",
     "repo:coverage-browser": "vitest run --coverage --reporter html && yarn dlx vite preview --outDir html",
+    "repo:typecheck": "yarn workspace @ukdanceblue/common tsc --noEmit && yarn workspace @ukdanceblue/server tsc --noEmit && yarn workspace @ukdanceblue/portal tsc --noEmit && yarn workspace @ukdanceblue/mobile tsc --noEmit",
     "gql:build": "graphql-codegen-esm --config codegen.ts",
     "gql:watch": "graphql-codegen-esm --config codegen.ts -w ./packages",
     "common:watch": "yarn workspace @ukdanceblue/common run watch",
@@ -51,7 +52,7 @@
     "eslint-plugin-vitest": "^0.3.22",
     "globals": "^13.24.0",
     "graphql": "^16.8.1",
-    "graphql-scalars": "^1.22.4",
+    "graphql-scalars": "^1.22.5",
     "prettier": "^3.0.3",
     "typescript": "^5.3.3",
     "vitest": "^1.3.1"
@@ -59,7 +60,7 @@
   "workspaces": [
     "packages/*"
   ],
-  "packageManager": "yarn@3.6.4",
+  "packageManager": "yarn@4.1.1+sha256.f3cc0eda8e5560e529c7147565b30faa43b4e472d90e8634d7134a37c7f59781",
   "resolutions": {
     "@graphql-codegen/client-preset@^4.1.0": "patch:@graphql-codegen/client-preset@npm%3A4.1.0#./.yarn/patches/@graphql-codegen-client-preset-npm-4.1.0-ffbe3e3006.patch",
     "type-graphql@^2.0.0-beta.3": "patch:type-graphql@npm%3A2.0.0-beta.3#./.yarn/patches/type-graphql-npm-2.0.0-beta.3-3be2585c9a.patch",

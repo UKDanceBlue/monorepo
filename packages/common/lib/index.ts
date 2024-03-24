@@ -1,53 +1,56 @@
 import "reflect-metadata";
 
-export * from "./api/request/FilterItem.js";
+export * from "./api/filtering/FilterItem.js";
 export {
   Comparator,
   IsComparator,
   NumericComparator,
   SortDirection,
   StringComparator,
-} from "./api/request/ListQueryTypes.js";
+} from "./api/filtering/ListQueryTypes.js";
 export type {
   FilterOptions,
   ListQueryType,
   PaginationOptions,
   SortingOptions,
-} from "./api/request/ListQueryTypes.js";
+} from "./api/filtering/ListQueryTypes.js";
 
-export * from "./api/response/JsonResponse.js";
+export * from "./authorization/accessControl.js";
+export * from "./utility/errors/ApiError.js";
+export * from "./utility/errors/validation.js";
 
-export * from "./api/SimpleTypes.js";
+export * from "./utility/primitive/SimpleTypes.js";
 
-export * from "./auth/index.js";
-export * from "./auth/role.js";
+export * from "./authentication/jwt.js";
 
-export * from "./util/TypeUtils.js";
-export * from "./util/base64.js";
-export * from "./util/comparators.js";
-export * from "./util/formData.js";
-export * from "./util/intervalTools.js";
-export * from "./util/typeTransformers.js";
-export * from "./util/validation.js";
+export * from "./authorization/role.js";
+export * from "./authorization/structures.js";
 
-export * from "./api/graphql/error.js";
-export * from "./api/graphql/object-types/index.js";
+export * from "./utility/primitive/TypeUtils.js";
+export * from "./utility/primitive/base64.js";
+export * from "./utility/primitive/formData.js";
+export * from "./utility/primitive/typeTransformers.js";
+export * from "./utility/time/comparators.js";
+export * from "./utility/time/intervalTools.js";
 
-export * from "./api/graphql/custom-scalars/DateRangeScalar.js";
-export * from "./api/graphql/custom-scalars/DateTimeScalar.js";
-export * from "./api/graphql/custom-scalars/DurationScalar.js";
+export * from "./api/resources/index.js";
+export * from "./utility/errors/DetailedError.js";
 
-export * from "./api/graphql/outputs/list-query-args/FilterItem.js";
-export * from "./api/graphql/outputs/list-query-args/FilteredListQueryArgs.js";
-export * from "./api/graphql/outputs/list-query-args/UnfilteredListQueryArgs.js";
-export * from "./api/graphql/outputs/list-query-args/common.js";
-export * from "./api/graphql/outputs/list-query-args/registerFilterKeyEnums.js";
+export * from "./api/scalars/DateRangeScalar.js";
+export * from "./api/scalars/DateTimeScalar.js";
+export * from "./api/scalars/DurationScalar.js";
 
-export * from "./style/color.js";
+export * from "./api/filtering/list-query-args/FilterItem.js";
+export * from "./api/filtering/list-query-args/FilteredListQueryArgs.js";
+export * from "./api/filtering/list-query-args/UnfilteredListQueryArgs.js";
+export * from "./api/filtering/list-query-args/common.js";
+export * from "./api/filtering/list-query-args/registerFilterKeyEnums.js";
+
+export * from "./ui/color.js";
 
 // React specific code:
-export * from "./util/formReducer.js";
-export { initializeReact } from "./util/reactLib.js";
+export * from "./ui/formReducer.js";
+export { initializeReact } from "./ui/reactLib.js";
 
 /*
 Note:
