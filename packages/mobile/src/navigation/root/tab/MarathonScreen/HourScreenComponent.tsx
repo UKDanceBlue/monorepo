@@ -1,12 +1,14 @@
+import ImageView, {
+  ImageViewFragment,
+} from "@common/components/ImageView/ImageView";
 import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
-import { Heading, ScrollView, Text, VStack } from "native-base";
+import { Heading, ScrollView, Text } from "native-base";
 import { RefreshControl, useWindowDimensions } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const HourScreenFragment = graphql(/* GraphQL */ `
   fragment HourScreenFragment on MarathonHourResource {
@@ -14,6 +16,9 @@ const HourScreenFragment = graphql(/* GraphQL */ `
     title
     details
     durationInfo
+    mapImages {
+      ...ImageViewFragment
+    }
   }
 `);
 
@@ -26,60 +31,56 @@ export const HourScreenComponent = ({
   isLoading: boolean;
   refresh: () => void;
 }) => {
-  const { width: screenWidth } = useWindowDimensions();
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
   const hourScreenData = getFragmentData(
     HourScreenFragment,
     hourScreenFragment
   );
-
-  let hourImageComponent = null;
-  hourImageComponent = null;
-
-  // TODO: Once image support is worked out, uncomment this
-  // if (hourImage != null) {
-  //   hourImageComponent = (
-  //     <Image
-  //       width={screenWidth}
-  //       height={(screenWidth * hourImage.height) / hourImage.width}
-  //       alt="Hour Image"
-  //       source={{
-  //         uri: hourImage.url,
-  //         height: hourImage.height,
-  //         width: hourImage.width,
-  //       }}
-  //       resizeMode="contain"
-  //     />
-  //   );
-  // }
-
   return (
-    <VStack flex={1} alignItems="center" flexDirection="column">
-      {hourImageComponent}
-      <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+    <ScrollView
+      marginTop={3}
+      flex={1}
+      width={screenWidth}
+      contentContainerStyle={{
+        paddingBottom: 32,
+      }}
+      paddingX={2}
+      refreshControl={
+        <RefreshControl refreshing={isLoading} onRefresh={refresh} />
+      }
+    >
+      <Heading textAlign="center" marginBottom={2}>
+        {hourScreenData.title}
+      </Heading>
+      <Text textAlign="center" marginBottom={2}>
+        {hourScreenData.durationInfo}
+      </Text>
+      {hourScreenData.mapImages.length > 0 && (
         <ScrollView
-          marginX={4}
-          marginTop={3}
+          width="full"
+          flexDirection="row"
+          height={screenHeight / 4}
+          horizontal
           flex={1}
-          width={screenWidth}
           contentContainerStyle={{
-            paddingBottom: 32,
-            width: screenWidth - 8,
-            paddingHorizontal: 4,
+            alignItems: "center",
+            justifyContent: "center",
+            flex: 1,
           }}
-          refreshControl={
-            <RefreshControl refreshing={isLoading} onRefresh={refresh} />
-          }
         >
-          <Heading textAlign="center" marginBottom={2}>
-            {hourScreenData.title}
-          </Heading>
-          <Text textAlign="center" marginBottom={2}>
-            {hourScreenData.durationInfo}
-          </Text>
-          <NativeBaseMarkdown>{hourScreenData.details}</NativeBaseMarkdown>
+          {hourScreenData.mapImages.map((image, i) => (
+            <ImageView
+              key={getFragmentData(ImageViewFragment, image).uuid + i}
+              imageFragment={image}
+              contentFit="contain"
+              renderHeight={screenHeight / 4}
+              style={{ marginRight: 6 }}
+            />
+          ))}
         </ScrollView>
-      </SafeAreaView>
-    </VStack>
+      )}
+      <NativeBaseMarkdown>{hourScreenData.details}</NativeBaseMarkdown>
+    </ScrollView>
   );
 };
