@@ -105,13 +105,13 @@ function Pinwheel<Values>({
   positions: PinwheelPosition<Values>[];
 }) {
   return (
-    <Svg height="100%" width="100%" viewBox="0 0 100 100">
+    <Svg height="100%" width="100%" viewBox="0 0 110 110">
       {positions.map((position, index) => {
         return (
           <PinwheelSegment
             key={index}
             text={position.text}
-            centerPoint={{ x: 50, y: 50 }}
+            centerPoint={{ x: 55, y: 55 }}
             radius={50}
             angle={360 / positions.length}
             rotateBy={(360 / positions.length) * index}
