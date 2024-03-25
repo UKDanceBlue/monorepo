@@ -75,6 +75,9 @@
       "console": "integratedTerminal",
       "presentation": {
         "group": "4mobile"
+      },
+      "env": {
+        "REACT_NATIVE_PACKAGER_HOSTNAME": "${input:ip}"
       }
     },
     {
@@ -155,6 +158,14 @@
         "group": "0dev-enviroment",
         "order": 1
       }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "ip",
+      "type": "promptString",
+      "description": "Enter your computer's IP address on your LAN\nOn a windows PC you can find this by running 'ipconfig' in the command prompt, on Linux or macOS you can run 'ifconfig'",
+      "default": "192.168.1.10"
     }
   ]
 }
