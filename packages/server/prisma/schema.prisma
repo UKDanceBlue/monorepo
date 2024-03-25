@@ -156,6 +156,7 @@ model Person {
   devices       Device[]
   memberships   Membership[]
   pointEntries  PointEntry[]
+  uploadedFiles UploadedFile[]
 
   @@index([uuid], map: "people_uuid")
   @@map("people")
@@ -335,6 +336,25 @@ model MarathonHourMapImage {
 
   @@index([uuid], map: "marathon_hour_map_images_uuid")
   @@map("marathon_hour_map_images")
+}
+
+model UploadedFile {
+  id          Int      @id @default(autoincrement())
+  uuid        String   @unique(map: "uploaded_files_uuid_unique") @default(uuid()) @db.Uuid
+  filename    String
+  mimeType    String   @map("mime_type") @db.VarChar(255)
+  locationUrl String   @map("location_url")
+  uploadedAt  DateTime @default(now()) @map("uploaded_at") @db.Timestamptz(6)
+  ownedBy     Int?     @map("owned_by")
+  owner       Person?  @relation(fields: [ownedBy], references: [id])
+
+  @@index([uuid], map: "uploaded_files_uuid")
+  @@map("uploaded_files")
+}
+
+enum UploadType {
+  Image
+  File
 }
 
 // Potential errors after sending a notification to Expo (see https://docs.expo.dev/push-notifications/sending-notifications/#individual-errors)

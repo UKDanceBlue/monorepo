@@ -7,7 +7,9 @@ import { ImageRepository } from "../../../repositories/image/ImageRepository.js"
 const uploadRouter = new Router({ prefix: "/upload" });
 
 // Multipart image upload
-uploadRouter.post("/image/:uuid",koaBody({multipart: true,}), async (ctx) => {
+uploadRouter.post("/image/:uuid",koaBody({multipart: true,formidable: {
+  allowEmptyFiles: false,
+}}), async (ctx) => {
   const imageRepository = Container.get(ImageRepository);
 
   const { uuid } = ctx.params;
