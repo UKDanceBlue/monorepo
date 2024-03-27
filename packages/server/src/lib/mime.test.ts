@@ -454,24 +454,11 @@ describe("mime", () => {
 
   describe.each(testList)("%suite", ({ tests }) => {
     it.each(tests)("$input -> $output", (test) => {
-      // expect(serializeMimeType(parseMimeType(test.input))).toBe(test.output);
       expect(() => parseMimeType(test.input)).not.toThrow();
+
       const parsed = parseMimeType(test.input);
       const serialized = serializeMimeType(parsed);
-      const parsedOutput = parseMimeType(test.output);
-      if (serialized !== test.output) {
-        console.log({
-          input: test.input,
-          parsedType: parsed.type,
-          parsedSubtype: parsed.subtype,
-          parsedParameters: parsed.parameters,
-          parsedOutputType: parsedOutput.type,
-          parsedOutputSubtype: parsedOutput.subtype,
-          parsedOutputParameters: parsedOutput.parameters,
-          serialized,
-          expected: test.output,
-        });
-      }
+
       expect(serialized).toBe(test.output);
     });
   });

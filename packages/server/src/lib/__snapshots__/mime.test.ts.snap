@@ -1,22 +1,22 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`mime > fail > '"text/html"' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+exports[`mime > fail > '"text/html"' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters: '22' at position 0)]`;
 
 exports[`mime > fail > '' throws 1`] = `[Error: Invalid MIME type (type is empty)]`;
 
-exports[`mime > fail > '(/)' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+exports[`mime > fail > '(/)' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters: '28' at position 0)]`;
 
 exports[`mime > fail > '/' throws 1`] = `[Error: Invalid MIME type (type is empty)]`;
 
-exports[`mime > fail > '</>' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+exports[`mime > fail > '</>' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters: '3c' at position 0)]`;
 
-exports[`mime > fail > '\\fx/x' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+exports[`mime > fail > '\\fx/x' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters: 'c' at position 0)]`;
 
 exports[`mime > fail > '\\t' throws 1`] = `[Error: Invalid MIME type (type is empty)]`;
 
-exports[`mime > fail > '\\u000bx/x' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+exports[`mime > fail > '\\u000bx/x' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters: 'b' at position 0)]`;
 
-exports[`mime > fail > '{/}' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+exports[`mime > fail > '{/}' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters: '7b' at position 0)]`;
 
 exports[`mime > fail > 'bogus' throws 1`] = `[Error: Invalid MIME type (missing subtype)]`;
 
@@ -24,18 +24,18 @@ exports[`mime > fail > 'bogus/ ' throws 1`] = `[Error: Invalid MIME type (subtyp
 
 exports[`mime > fail > 'bogus/' throws 1`] = `[Error: Invalid MIME type (subtype is empty)]`;
 
-exports[`mime > fail > 'bogus/bogus/;' throws 1`] = `[Error: Invalid MIME type (subtype contains invalid characters)]`;
+exports[`mime > fail > 'bogus/bogus/;' throws 1`] = `[Error: Invalid MIME type (subtype contains invalid characters: '2f' at position 5)]`;
 
-exports[`mime > fail > 'text /html' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+exports[`mime > fail > 'text /html' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters: '20' at position 4)]`;
 
-exports[`mime > fail > 'text/ html' throws 1`] = `[Error: Invalid MIME type (subtype contains invalid characters)]`;
+exports[`mime > fail > 'text/ html' throws 1`] = `[Error: Invalid MIME type (subtype contains invalid characters: '20' at position 0)]`;
 
-exports[`mime > fail > 'text/html(;doesnot=matter' throws 1`] = `[Error: Invalid MIME type (subtype contains invalid characters)]`;
+exports[`mime > fail > 'text/html(;doesnot=matter' throws 1`] = `[Error: Invalid MIME type (subtype contains invalid characters: '28' at position 4)]`;
 
-exports[`mime > fail > 'x/x\\f' throws 1`] = `[Error: Invalid MIME type (subtype contains invalid characters)]`;
+exports[`mime > fail > 'x/x\\f' throws 1`] = `[Error: Invalid MIME type (subtype contains invalid characters: 'c' at position 1)]`;
 
-exports[`mime > fail > 'x/x\\u000b' throws 1`] = `[Error: Invalid MIME type (subtype contains invalid characters)]`;
+exports[`mime > fail > 'x/x\\u000b' throws 1`] = `[Error: Invalid MIME type (subtype contains invalid characters: 'b' at position 1)]`;
 
-exports[`mime > fail > 'ÿ/ÿ' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+exports[`mime > fail > 'ÿ/ÿ' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters: 'ff' at position 0)]`;
 
-exports[`mime > fail > 'Ā/Ā' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+exports[`mime > fail > 'Ā/Ā' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters: '100' at position 0)]`;
