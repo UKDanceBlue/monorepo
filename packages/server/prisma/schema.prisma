@@ -101,47 +101,37 @@ model Image {
   width     Int
   height    Int
 
-  // Things with images
+  file   File @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  fileId Int  @map("file_id")
+
   eventImages           EventImage[]
   marathonHourMapImages MarathonHourMapImage[]
-  ImageContent          ImageContent[]
 
   @@index([uuid], map: "images_uuid")
   @@map("images")
 }
 
-model ImageContent {
-  id             Int           @id @default(autoincrement())
-  imageId        Int           @map("image_id")
-  image          Image         @relation(fields: [imageId], references: [id], onDelete: Cascade)
-  ImageData      ImageData[]
-  ImageUrl       ImageUrl[]
-  UploadedFile   UploadedFile? @relation(fields: [uploadedFileId], references: [id])
-  uploadedFileId Int?
+model File {
+  id   Int    @id @default(autoincrement())
+  uuid String @unique(map: "uploaded_files_uuid_unique") @default(uuid()) @db.Uuid
 
-  @@map("image_content")
-}
+  filename        String
+  mimeTypeName    String   @map("mime_type") @db.VarChar(127)
+  mimeSubtypeName String   @map("mime_subtype") @db.VarChar(127)
+  mimeParameters  String[] @map("mime_parameters")
+  locationUrl     String   @map("location_url")
 
-model ImageData {
-  id              Int          @id @default(autoincrement())
-  data            Bytes?       @map("image_data")
-  mimeTypeName    String       @map("mime_type") @db.VarChar(127)
-  mimeSubtypeName String       @map("mime_subtype") @db.VarChar(127)
-  mimeParameters  String[]     @map("mime_parameters")
-  ImageContent    ImageContent @relation(fields: [imageDataId], references: [id], onDelete: Cascade)
-  imageDataId     Int          @map("image_data_id")
+  requiresLogin Boolean @default(false) @map("requires_login")
 
-  @@map("image_data")
-}
+  owner   Person? @relation(fields: [ownedBy], references: [id])
+  ownedBy Int?    @map("owned_by")
 
-model ImageUrl {
-  id              Int          @id @default(autoincrement())
-  url             String       @unique(map: "image_urls_url_unique")
-  mimeTypeName    String       @map("mime_type") @db.VarChar(127)
-  mimeSubtypeName String       @map("mime_subtype") @db.VarChar(127)
-  mimeParameters  String[]     @map("mime_parameters")
-  ImageContent    ImageContent @relation(fields: [imageUrlId], references: [id], onDelete: Cascade)
-  imageUrlId      Int          @map("image_url_id")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  Image     Image[]
+
+  @@index([uuid], map: "uploaded_files_uuid")
+  @@map("uploaded_files")
 }
 
 model LoginFlowSession {
@@ -188,7 +178,7 @@ model Person {
   devices       Device[]
   memberships   Membership[]
   pointEntries  PointEntry[]
-  uploadedFiles UploadedFile[]
+  ownedFiles    File[]
 
   @@index([uuid], map: "people_uuid")
   @@map("people")
@@ -368,31 +358,6 @@ model MarathonHourMapImage {
 
   @@index([uuid], map: "marathon_hour_map_images_uuid")
   @@map("marathon_hour_map_images")
-}
-
-model UploadedFile {
-  id              Int      @id @default(autoincrement())
-  uuid            String   @unique(map: "uploaded_files_uuid_unique") @default(uuid()) @db.Uuid
-  filename        String
-  mimeTypeName    String   @map("mime_type") @db.VarChar(127)
-  mimeSubtypeName String   @map("mime_subtype") @db.VarChar(127)
-  mimeParameters  String[] @map("mime_parameters")
-  // The URL to the file, right now this will always be file:// but we are using URLs to make it easier to change in the future
-  locationUrl     String   @map("location_url")
-  uploadedAt      DateTime @default(now()) @map("uploaded_at") @db.Timestamptz(6)
-  ownedBy         Int?     @map("owned_by")
-  owner           Person?  @relation(fields: [ownedBy], references: [id])
-  requiresLogin   Boolean  @default(false) @map("requires_login")
-
-  ImageContent ImageContent[]
-
-  @@index([uuid], map: "uploaded_files_uuid")
-  @@map("uploaded_files")
-}
-
-enum UploadType {
-  Image
-  File
 }
 
 // Potential errors after sending a notification to Expo (see https://docs.expo.dev/push-notifications/sending-notifications/#individual-errors)
