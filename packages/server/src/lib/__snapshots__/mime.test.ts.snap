@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`mime > fail > '"text/html"' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+
+exports[`mime > fail > '' throws 1`] = `[Error: Invalid MIME type (type is empty)]`;
+
+exports[`mime > fail > '(/)' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+
+exports[`mime > fail > '/' throws 1`] = `[Error: Invalid MIME type (type is empty)]`;
+
+exports[`mime > fail > '</>' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+
+exports[`mime > fail > '\\fx/x' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+
+exports[`mime > fail > '\\t' throws 1`] = `[Error: Invalid MIME type (type is empty)]`;
+
+exports[`mime > fail > '\\u000bx/x' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+
+exports[`mime > fail > '{/}' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+
+exports[`mime > fail > 'bogus' throws 1`] = `[Error: Invalid MIME type (missing subtype)]`;
+
+exports[`mime > fail > 'bogus/ ' throws 1`] = `[Error: Invalid MIME type (subtype is empty)]`;
+
+exports[`mime > fail > 'bogus/' throws 1`] = `[Error: Invalid MIME type (subtype is empty)]`;
+
+exports[`mime > fail > 'bogus/bogus/;' throws 1`] = `[Error: Invalid MIME type (subtype contains invalid characters)]`;
+
+exports[`mime > fail > 'text /html' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+
+exports[`mime > fail > 'text/ html' throws 1`] = `[Error: Invalid MIME type (subtype contains invalid characters)]`;
+
+exports[`mime > fail > 'text/html(;doesnot=matter' throws 1`] = `[Error: Invalid MIME type (subtype contains invalid characters)]`;
+
+exports[`mime > fail > 'x/x\\f' throws 1`] = `[Error: Invalid MIME type (subtype contains invalid characters)]`;
+
+exports[`mime > fail > 'x/x\\u000b' throws 1`] = `[Error: Invalid MIME type (subtype contains invalid characters)]`;
+
+exports[`mime > fail > 'ÿ/ÿ' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
+
+exports[`mime > fail > 'Ā/Ā' throws 1`] = `[Error: Invalid MIME type (type contains invalid characters)]`;
