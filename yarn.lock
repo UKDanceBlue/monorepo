@@ -3309,6 +3309,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo/env@npm:~0.2.2":
+  version: 0.2.2
+  resolution: "@expo/env@npm:0.2.2"
+  dependencies:
+    chalk: "npm:^4.0.0"
+    debug: "npm:^4.3.4"
+    dotenv: "npm:~16.0.3"
+    dotenv-expand: "npm:~10.0.0"
+    getenv: "npm:^1.0.0"
+  checksum: 10/04558477968d542b402352ddecaa426083a0acc7ee5137e937352b2ad527351699f679d6bfd193fea4810c6d3602115e0474e2382d3165088f80601185af8c45
+  languageName: node
+  linkType: hard
+
+"@expo/env@npm:~0.2.2":
+  version: 0.2.2
+  resolution: "@expo/env@npm:0.2.2"
+  dependencies:
+    chalk: "npm:^4.0.0"
+    debug: "npm:^4.3.4"
+    dotenv: "npm:~16.0.3"
+    dotenv-expand: "npm:~10.0.0"
+    getenv: "npm:^1.0.0"
+  checksum: 10/740b92cafe3424e95e61ead316c8902b2764fa37fb48c8458477aa4582dbf6daf331b86058ea3dc0b1dff2738b6aa16c2b065d5c2d21ef4454277cfdb5b42566
+  languageName: node
+  linkType: hard
+
 "@expo/fingerprint@npm:^0.6.0":
   version: 0.6.0
   resolution: "@expo/fingerprint@npm:0.6.0"
@@ -3549,26 +3575,6 @@ __metadata:
     semver: "npm:^7.3.7"
     tslib: "npm:^2.4.0"
   checksum: 10/0d3d00acd4189addf9acd93a4fe6a3972416ec7ac309b96713c93129a7c69c12e77391edc9c52f7c0f2fc38b5eeeea80dcfb96290b5a99a7cb62f200b4c4c555
-  languageName: node
-  linkType: hard
-
-"@expo/prebuild-config@npm:6.7.3":
-  version: 6.7.3
-  resolution: "@expo/prebuild-config@npm:6.7.3"
-  dependencies:
-    "@expo/config": "npm:~8.5.0"
-    "@expo/config-plugins": "npm:~7.8.0"
-    "@expo/config-types": "npm:^50.0.0-alpha.1"
-    "@expo/image-utils": "npm:^0.4.0"
-    "@expo/json-file": "npm:^8.2.37"
-    debug: "npm:^4.3.1"
-    fs-extra: "npm:^9.0.0"
-    resolve-from: "npm:^5.0.0"
-    semver: "npm:7.5.3"
-    xml2js: "npm:0.6.0"
-  peerDependencies:
-    expo-modules-autolinking: ">=0.8.1"
-  checksum: 10/27dbe184cbf4810238109fae208edd27df295b4b5203b08e1bd44b0c8c5efe3ba80c1e74ee739615b8e537c85247063b933f8bcf43fec5412a32e7b85ced9527
   languageName: node
   linkType: hard
 
@@ -14372,7 +14378,7 @@ __metadata:
   version: 12.9.3
   resolution: "expo-barcode-scanner@npm:12.9.3"
   dependencies:
-    expo-image-loader: "npm:~4.6.0"
+    expo-image-loader: ~4.6.0
   peerDependencies:
     expo: "*"
   checksum: 10/7fce148925ddaad05b310967341af115cdd104b05327993943a721886a113b6eb58c2db7d1577f78e13e6d5d29a14a2f378841fd54e7f31bf601978c6c05be3f
@@ -14833,6 +14839,18 @@ __metadata:
 "expo-web-browser@npm:~12.8.0":
   version: 12.8.1
   resolution: "expo-web-browser@npm:12.8.1"
+  dependencies:
+    compare-urls: "npm:^2.0.0"
+    url: "npm:^0.11.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/3eafbdd0b03e0100e34f36629db4d67aff1db721fbe4d67425d16e0674220668f6e0bed5e40bdaf62dbf5299259f0f2d45c7dc3910e0131d1a65f3cac4cb6d59
+  languageName: node
+  linkType: hard
+
+"expo-web-browser@npm:~12.8.2":
+  version: 12.8.2
+  resolution: "expo-web-browser@npm:12.8.2"
   dependencies:
     compare-urls: "npm:^2.0.0"
     url: "npm:^0.11.0"
@@ -16421,18 +16439,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"htmlparser2@npm:^9.1.0":
-  version: 9.1.0
-  resolution: "htmlparser2@npm:9.1.0"
-  dependencies:
-    domelementtype: ^2.3.0
-    domhandler: ^5.0.3
-    domutils: ^3.1.0
-    entities: ^4.5.0
-  checksum: e5f8d5193967e4a500226f37bdf2c0f858cecb39dde14d0439f24bf2c461a4342778740d988fbaba652b0e4cb6052f7f2e99e69fc1a329a86c629032bb76e7c8
-  languageName: node
-  linkType: hard
-
 "http-assert@npm:^1.3.0":
   version: 1.5.0
   resolution: "http-assert@npm:1.5.0"
@@ -16815,7 +16821,7 @@ __metadata:
 "ip-regex@npm:^2.1.0":
   version: 2.1.0
   resolution: "ip-regex@npm:2.1.0"
-  checksum: 10/331d95052aa53ce245745ea0fc3a6a1e2e3c8d6da65fa8ea52bf73768c1b22a9ac50629d1d2b08c04e7b3ac4c21b536693c149ce2c2615ee4796030e5b3e3cba
+  checksum: 331d95052aa53ce245745ea0fc3a6a1e2e3c8d6da65fa8ea52bf73768c1b22a9ac50629d1d2b08c04e7b3ac4c21b536693c149ce2c2615ee4796030e5b3e3cba
   languageName: node
   linkType: hard
 
@@ -27332,6 +27338,15 @@ __metadata:
   version: 1.0.1
   resolution: "utils-merge@npm:1.0.1"
   checksum: 10/5d6949693d58cb2e636a84f3ee1c6e7b2f9c16cb1d42d0ecb386d8c025c69e327205aa1c69e2868cc06a01e5e20681fbba55a4e0ed0cce913d60334024eae798
+  languageName: node
+  linkType: hard
+
+"utrie@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "utrie@npm:1.0.2"
+  dependencies:
+    base64-arraybuffer: "npm:^1.0.2"
+  checksum: 10/0c9458380bf3113f425a268e3d605aef163bfbaea62bf24de517b62b6e6744394d8ef1cdd9b07423359aec5ed402baab4bb2c5beec64f674ec635dc2f8dbd4bf
   languageName: node
   linkType: hard
 
