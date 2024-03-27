@@ -32,5 +32,5 @@
   "javascript.inlayHints.parameterTypes.enabled": true,
   "javascript.inlayHints.variableTypes.enabled": true,
   "javascript.inlayHints.propertyDeclarationTypes.enabled": true,
-  "cSpell.words": ["Spinnable"]
+  "cSpell.words": ["Spinnable", "Whatwg"]
 }

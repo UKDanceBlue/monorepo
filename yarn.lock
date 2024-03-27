@@ -9446,6 +9446,7 @@ __metadata:
     koa: "npm:^2.14.2"
     koa-body: "npm:^6.0.1"
     luxon: "npm:^3.4.4"
+    mime: "npm:^4.0.1"
     multer: "npm:1.4.5-lts.1"
     node-fetch: "npm:^3.3.1"
     nodemon: "npm:^2.0.22"
@@ -20693,6 +20694,15 @@ __metadata:
   bin:
     mime: cli.js
   checksum: 10/7da117808b5cd0203bb1b5e33445c330fe213f4d8ee2402a84d62adbde9716ca4fb90dd6d9ab4e77a4128c6c5c24a9c4c9f6a4d720b095b1b342132d02dba58d
+  languageName: node
+  linkType: hard
+
+"mime@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "mime@npm:4.0.1"
+  bin:
+    mime: bin/cli.js
+  checksum: 10/4598030457488c240a4ba30561a619cfb627f96271ecced5d715eb5c44d33105e3f28d28fe46d72eeadb78d7de5aeb1f8e62d448c14b0e518a7ace76d2af5f2d
   languageName: node
   linkType: hard
 
