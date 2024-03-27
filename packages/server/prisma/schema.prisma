@@ -96,9 +96,6 @@ model Image {
   uuid      String   @unique(map: "images_uuid_unique") @default(uuid()) @db.Uuid
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  url       String?  @unique(map: "images_url_unique")
-  imageData Bytes?   @map("image_data")
-  mimeType  String?  @map("mime_type") @db.VarChar(255)
   thumbHash Bytes?   @map("thumb_hash")
   alt       String?
   width     Int
@@ -107,9 +104,44 @@ model Image {
   // Things with images
   eventImages           EventImage[]
   marathonHourMapImages MarathonHourMapImage[]
+  ImageContent          ImageContent[]
 
   @@index([uuid], map: "images_uuid")
   @@map("images")
+}
+
+model ImageContent {
+  id             Int           @id @default(autoincrement())
+  imageId        Int           @map("image_id")
+  image          Image         @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  ImageData      ImageData[]
+  ImageUrl       ImageUrl[]
+  UploadedFile   UploadedFile? @relation(fields: [uploadedFileId], references: [id])
+  uploadedFileId Int?
+
+  @@map("image_content")
+}
+
+model ImageData {
+  id              Int          @id @default(autoincrement())
+  data            Bytes?       @map("image_data")
+  mimeTypeName    String       @map("mime_type") @db.VarChar(127)
+  mimeSubtypeName String       @map("mime_subtype") @db.VarChar(127)
+  mimeParameters  String[]     @map("mime_parameters")
+  ImageContent    ImageContent @relation(fields: [imageDataId], references: [id], onDelete: Cascade)
+  imageDataId     Int          @map("image_data_id")
+
+  @@map("image_data")
+}
+
+model ImageUrl {
+  id              Int          @id @default(autoincrement())
+  url             String       @unique(map: "image_urls_url_unique")
+  mimeTypeName    String       @map("mime_type") @db.VarChar(127)
+  mimeSubtypeName String       @map("mime_subtype") @db.VarChar(127)
+  mimeParameters  String[]     @map("mime_parameters")
+  ImageContent    ImageContent @relation(fields: [imageUrlId], references: [id], onDelete: Cascade)
+  imageUrlId      Int          @map("image_url_id")
 }
 
 model LoginFlowSession {
@@ -339,14 +371,20 @@ model MarathonHourMapImage {
 }
 
 model UploadedFile {
-  id          Int      @id @default(autoincrement())
-  uuid        String   @unique(map: "uploaded_files_uuid_unique") @default(uuid()) @db.Uuid
-  filename    String
-  mimeType    String   @map("mime_type") @db.VarChar(255)
-  locationUrl String   @map("location_url")
-  uploadedAt  DateTime @default(now()) @map("uploaded_at") @db.Timestamptz(6)
-  ownedBy     Int?     @map("owned_by")
-  owner       Person?  @relation(fields: [ownedBy], references: [id])
+  id              Int      @id @default(autoincrement())
+  uuid            String   @unique(map: "uploaded_files_uuid_unique") @default(uuid()) @db.Uuid
+  filename        String
+  mimeTypeName    String   @map("mime_type") @db.VarChar(127)
+  mimeSubtypeName String   @map("mime_subtype") @db.VarChar(127)
+  mimeParameters  String[] @map("mime_parameters")
+  // The URL to the file, right now this will always be file:// but we are using URLs to make it easier to change in the future
+  locationUrl     String   @map("location_url")
+  uploadedAt      DateTime @default(now()) @map("uploaded_at") @db.Timestamptz(6)
+  ownedBy         Int?     @map("owned_by")
+  owner           Person?  @relation(fields: [ownedBy], references: [id])
+  requiresLogin   Boolean  @default(false) @map("requires_login")
+
+  ImageContent ImageContent[]
 
   @@index([uuid], map: "uploaded_files_uuid")
   @@map("uploaded_files")
