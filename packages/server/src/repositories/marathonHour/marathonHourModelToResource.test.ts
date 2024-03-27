@@ -21,12 +21,14 @@ describe("marathonHourModelToResource", () => {
 
     const result = marathonHourModelToResource(marathonHourModel);
 
+    const nowString = now.toISOString();
+
     expect(result).toBeInstanceOf(MarathonHourResource);
     expect(result.uuid).toBe("test-uuid");
     expect(result.title).toBe("test-title");
     expect(result.details).toBe("test-details");
     expect(result.durationInfo).toBe("test-durationInfo");
-    expect(result.shownStartingAt).toBe(now);
+    expect(result.shownStartingAt).toBe(nowString);
     expect(result.createdAt).toBe(now);
     expect(result.updatedAt).toBe(now);
   });
