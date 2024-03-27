@@ -77,5 +77,5 @@
     "utility-types": "^3.10.0",
     "validator": "^13.9.0"
   },
-  "packageManager": "yarn@3.6.4"
+  "packageManager": "yarn@4.1.1+sha256.f3cc0eda8e5560e529c7147565b30faa43b4e472d90e8634d7134a37c7f59781"
 }
