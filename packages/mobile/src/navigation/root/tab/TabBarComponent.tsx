@@ -24,6 +24,7 @@ const iconMap = {
   // Key: Screen   Value: Icon ID
   "Home": "home",
   "Events": "calendar",
+  "Explorer": "compass",
   "Store": "store",
   "More": "ellipsis-h",
   "Scoreboard": "list-ol",

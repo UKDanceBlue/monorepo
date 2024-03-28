@@ -24,5 +24,5 @@
   "typescript.inlayHints.parameterNames.enabled": "all",
   "typescript.preferences.preferTypeOnlyAutoImports": true,
   "javascript.inlayHints.parameterNames.enabled": "all",
-  "cSpell.words": ["Spinnable"]
+  "cSpell.words": ["Spinnable", "Whatwg"]
 }

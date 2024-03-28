@@ -13,6 +13,7 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
+    "\n  fragment ImageViewFragment on ImageResource {\n    uuid\n    url\n    imageData\n    thumbHash\n    alt\n    width\n    height\n    mimeType\n  }\n": types.ImageViewFragmentFragmentDoc,
     "\n  fragment SimpleConfig on ConfigurationResource {\n    uuid\n    key\n    value\n  }\n": types.SimpleConfigFragmentDoc,
     "\n  fragment FullConfig on ConfigurationResource {\n    ...SimpleConfig\n    validAfter\n    validUntil\n    createdAt\n  }\n": types.FullConfigFragmentDoc,
     "\n  fragment NotificationFragment on NotificationResource {\n    uuid\n    title\n    body\n    url\n  }\n": types.NotificationFragmentFragmentDoc,
@@ -30,11 +31,12 @@ const documents = {
     "\n  query RootScreenDocument {\n    loginState {\n      ...ProfileScreenAuthFragment\n      ...RootScreenAuthFragment\n    }\n    me {\n      data {\n        ...ProfileScreenUserFragment\n      }\n    }\n  }\n": types.RootScreenDocumentDocument,
     "\n  fragment RootScreenAuthFragment on LoginState {\n    role {\n      dbRole\n    }\n  }\n": types.RootScreenAuthFragmentFragmentDoc,
     "\n      query Events(\n        $earliestTimestamp: LuxonDateTime!\n        $lastTimestamp: LuxonDateTime!\n      ) {\n        events(\n          dateFilters: [\n            {\n              comparison: GREATER_THAN_OR_EQUAL_TO\n              field: occurrenceStart\n              value: $earliestTimestamp\n            }\n            {\n              comparison: LESS_THAN_OR_EQUAL_TO\n              field: occurrenceStart\n              value: $lastTimestamp\n            }\n          ]\n          sortDirection: ASCENDING\n          sortBy: \"occurrence\"\n        ) {\n          data {\n            ...EventScreenFragment\n          }\n        }\n      }\n    ": types.EventsDocument,
-    "\n  fragment HourScreenFragment on MarathonHourResource {\n    uuid\n    title\n    details\n    durationInfo\n  }\n": types.HourScreenFragmentFragmentDoc,
+    "\n  fragment HourScreenFragment on MarathonHourResource {\n    uuid\n    title\n    details\n    durationInfo\n    mapImages {\n      ...ImageViewFragment\n    }\n  }\n": types.HourScreenFragmentFragmentDoc,
     "\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    currentMarathon {\n      year\n    }\n    nextMarathon {\n      year\n      startDate\n      endDate\n    }\n  }\n": types.MarathonScreenDocument,
     "\n  fragment ScoreBoardFragment on TeamResource {\n    uuid\n    name\n    totalPoints\n    legacyStatus\n    type\n  }\n": types.ScoreBoardFragmentFragmentDoc,
     "\n  fragment HighlightedTeamFragment on TeamResource {\n    uuid\n    name\n    legacyStatus\n    type\n  }\n": types.HighlightedTeamFragmentFragmentDoc,
-    "\n  query ScoreBoardDocument {\n    me {\n      data {\n        uuid\n        teams {\n          team {\n            ...HighlightedTeamFragment\n            ...MyTeamFragment\n          }\n        }\n      }\n    }\n    teams(\n      sendAll: true\n      sortBy: [\"totalPoints\", \"name\"]\n      sortDirection: [DESCENDING, ASCENDING]\n      type: [Spirit, Committee]\n    ) {\n      data {\n        ...ScoreBoardFragment\n      }\n    }\n  }\n": types.ScoreBoardDocumentDocument,
+    "\n  query ScoreBoardDocument($type: [TeamType!]) {\n    me {\n      data {\n        uuid\n        teams {\n          team {\n            ...HighlightedTeamFragment\n            ...MyTeamFragment\n          }\n        }\n      }\n    }\n    teams(\n      sendAll: true\n      sortBy: [\"totalPoints\", \"name\"]\n      sortDirection: [DESCENDING, ASCENDING]\n      type: $type\n    ) {\n      data {\n        ...ScoreBoardFragment\n      }\n    }\n  }\n": types.ScoreBoardDocumentDocument,
+    "\n  query ActiveMarathonDocument {\n    currentMarathon {\n      uuid\n    }\n  }\n": types.ActiveMarathonDocumentDocument,
     "\n  fragment MyTeamFragment on TeamResource {\n    uuid\n    name\n    totalPoints\n    pointEntries {\n      personFrom {\n        uuid\n        name\n        linkblue\n      }\n      points\n    }\n    members {\n      position\n      person {\n        linkblue\n        name\n      }\n    }\n  }\n": types.MyTeamFragmentFragmentDoc,
 };
 
@@ -52,6 +54,10 @@ const documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment ImageViewFragment on ImageResource {\n    uuid\n    url\n    imageData\n    thumbHash\n    alt\n    width\n    height\n    mimeType\n  }\n"): (typeof documents)["\n  fragment ImageViewFragment on ImageResource {\n    uuid\n    url\n    imageData\n    thumbHash\n    alt\n    width\n    height\n    mimeType\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -123,7 +129,7 @@ export function graphql(source: "\n      query Events(\n        $earliestTimesta
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment HourScreenFragment on MarathonHourResource {\n    uuid\n    title\n    details\n    durationInfo\n  }\n"): (typeof documents)["\n  fragment HourScreenFragment on MarathonHourResource {\n    uuid\n    title\n    details\n    durationInfo\n  }\n"];
+export function graphql(source: "\n  fragment HourScreenFragment on MarathonHourResource {\n    uuid\n    title\n    details\n    durationInfo\n    mapImages {\n      ...ImageViewFragment\n    }\n  }\n"): (typeof documents)["\n  fragment HourScreenFragment on MarathonHourResource {\n    uuid\n    title\n    details\n    durationInfo\n    mapImages {\n      ...ImageViewFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -139,7 +145,11 @@ export function graphql(source: "\n  fragment HighlightedTeamFragment on TeamRes
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query ScoreBoardDocument {\n    me {\n      data {\n        uuid\n        teams {\n          team {\n            ...HighlightedTeamFragment\n            ...MyTeamFragment\n          }\n        }\n      }\n    }\n    teams(\n      sendAll: true\n      sortBy: [\"totalPoints\", \"name\"]\n      sortDirection: [DESCENDING, ASCENDING]\n      type: [Spirit, Committee]\n    ) {\n      data {\n        ...ScoreBoardFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query ScoreBoardDocument {\n    me {\n      data {\n        uuid\n        teams {\n          team {\n            ...HighlightedTeamFragment\n            ...MyTeamFragment\n          }\n        }\n      }\n    }\n    teams(\n      sendAll: true\n      sortBy: [\"totalPoints\", \"name\"]\n      sortDirection: [DESCENDING, ASCENDING]\n      type: [Spirit, Committee]\n    ) {\n      data {\n        ...ScoreBoardFragment\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query ScoreBoardDocument($type: [TeamType!]) {\n    me {\n      data {\n        uuid\n        teams {\n          team {\n            ...HighlightedTeamFragment\n            ...MyTeamFragment\n          }\n        }\n      }\n    }\n    teams(\n      sendAll: true\n      sortBy: [\"totalPoints\", \"name\"]\n      sortDirection: [DESCENDING, ASCENDING]\n      type: $type\n    ) {\n      data {\n        ...ScoreBoardFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query ScoreBoardDocument($type: [TeamType!]) {\n    me {\n      data {\n        uuid\n        teams {\n          team {\n            ...HighlightedTeamFragment\n            ...MyTeamFragment\n          }\n        }\n      }\n    }\n    teams(\n      sendAll: true\n      sortBy: [\"totalPoints\", \"name\"]\n      sortDirection: [DESCENDING, ASCENDING]\n      type: $type\n    ) {\n      data {\n        ...ScoreBoardFragment\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ActiveMarathonDocument {\n    currentMarathon {\n      uuid\n    }\n  }\n"): (typeof documents)["\n  query ActiveMarathonDocument {\n    currentMarathon {\n      uuid\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

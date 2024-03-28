@@ -158,7 +158,11 @@ export class EventRepository {
         eventOccurrences: true,
         eventImages: {
           include: {
-            image: true,
+            image: {
+              include: {
+                file: true,
+              },
+            },
           },
         },
       },

@@ -1,3 +1,6 @@
+import { statSync } from "fs";
+import path, { isAbsolute } from "path";
+
 import dotenv from "dotenv";
 import { Expo } from "expo-server-sdk";
 import { Container } from "typedi";
@@ -15,7 +18,7 @@ export const loggingLevel: SyslogLevels =
   (process.env.LOGGING_LEVEL as SyslogLevels | undefined) ??
   (isDevelopment ? "debug" : "notice");
 
-// Port and Host
+// Port, Host, and Protocol
 let applicationPort: number = 8000;
 if (process.env.APPLICATION_PORT) {
   const envApplicationPort = Number.parseInt(process.env.APPLICATION_PORT, 10);
@@ -31,6 +34,13 @@ if (process.env.APPLICATION_PORT) {
 }
 export { applicationPort };
 export const applicationHost = process.env.APPLICATION_HOST || "localhost";
+export const applicationProtocol = process.env.APPLICATION_PROTOCOL || "http";
+
+const applicationUrl = new URL(`${applicationProtocol}://${applicationHost}`);
+applicationUrl.protocol = applicationProtocol;
+applicationUrl.hostname = applicationHost;
+applicationUrl.port = applicationPort.toString();
+export { applicationUrl };
 
 // Secrets
 const { COOKIE_SECRET, JWT_SECRET, ASSET_PATH } = process.env;
@@ -96,6 +106,49 @@ if (!EXPO_ACCESS_TOKEN) {
 export const expoAccessToken = EXPO_ACCESS_TOKEN;
 
 Container.set(Expo, new Expo({ accessToken: expoAccessToken }));
+
+// File upload settings
+const { MAX_FILE_SIZE, SERVE_PATH, UPLOAD_PATH } = process.env;
+if (!MAX_FILE_SIZE) {
+  throw new Error("MAX_FILE_SIZE is not set");
+}
+if (!SERVE_PATH) {
+  throw new Error("SERVE_PATH is not set");
+}
+if (!UPLOAD_PATH) {
+  throw new Error("UPLOAD_PATH is not set");
+}
+
+const maxFileSize = Number.parseInt(MAX_FILE_SIZE, 10);
+if (Number.isNaN(maxFileSize)) {
+  throw new TypeError("MAX_FILE_SIZE is not a number");
+}
+if (maxFileSize < 10) {
+  throw new RangeError("MAX_FILE_SIZE must be at least 10 (MB)");
+}
+export { maxFileSize };
+
+if (!isAbsolute(SERVE_PATH) || !isAbsolute(UPLOAD_PATH)) {
+  throw new Error("SERVE_PATH and UPLOAD_PATH must be absolute paths");
+}
+if (statSync(SERVE_PATH).isFile() || statSync(UPLOAD_PATH).isFile()) {
+  throw new Error("SERVE_PATH and UPLOAD_PATH must be directories");
+}
+let uploadParentPath = UPLOAD_PATH;
+let isUploadInServe = false;
+while (path.dirname(uploadParentPath) !== uploadParentPath) {
+  if (uploadParentPath === SERVE_PATH) {
+    isUploadInServe = true;
+    break;
+  }
+  uploadParentPath = path.dirname(uploadParentPath);
+}
+if (!isUploadInServe) {
+  throw new Error("UPLOAD_PATH must be a subdirectory of SERVE_PATH");
+}
+
+export const servePath = SERVE_PATH;
+export const uploadPath = UPLOAD_PATH;
 
 // Disable all authorization checks
 const { OVERRIDE_AUTH } = process.env;
