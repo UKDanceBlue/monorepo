@@ -11,9 +11,6 @@ export class ImageResource extends TimestampedResource {
   @Field(() => URLResolver, { nullable: true })
   url!: URL | null;
 
-  @Field(() => String, { nullable: true })
-  imageData!: string | null;
-
   @Field(() => String)
   mimeType!: string;
 

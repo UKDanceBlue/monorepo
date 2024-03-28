@@ -101,8 +101,8 @@ model Image {
   width     Int
   height    Int
 
-  file   File @relation(fields: [fileId], references: [id], onDelete: Cascade)
-  fileId Int  @map("file_id")
+  file   File? @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  fileId Int?  @map("file_id")
 
   eventImages           EventImage[]
   marathonHourMapImages MarathonHourMapImage[]
