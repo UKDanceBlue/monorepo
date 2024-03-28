@@ -1,21 +1,11 @@
 import dbWordLogo from "@assets/logo/big-words.png";
-import dbMonogram from "@assets/logo/monogram.png";
 import { Logger } from "@common/logger/Logger";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { Camera, FlashMode } from "expo-camera";
-import {
-  Box,
-  Button,
-  Fab,
-  HStack,
-  Icon,
-  Image,
-  ScrollView,
-  Text,
-  View,
-} from "native-base";
-import { ImageBackground, useWindowDimensions } from "react-native";
+import { Box, Button, Fab, Icon, Image, Text, View } from "native-base";
+import { useWindowDimensions } from "react-native";
 
+import { PreviewMoment } from "./PreviewMoment";
 import { useCameraState } from "./useCameraState";
 
 export const DBMomentsScreen = () => {
@@ -78,70 +68,6 @@ export const DBMomentsScreen = () => {
       return <Text>Loading...</Text>;
     }
     case "ready": {
-      const capturedImage = images.front ?? images.back;
-      const PreviewPicture = capturedImage && (
-        <View
-          style={{
-            backgroundColor: "transparent",
-            flex: 1,
-          }}
-        >
-          <ImageBackground
-            source={{ uri: capturedImage.uri }}
-            style={{ flex: 1 }}
-          >
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "column",
-                padding: 15,
-                justifyContent: "flex-end",
-              }}
-            >
-              <View
-                style={{ flexDirection: "row", justifyContent: "flex-end" }}
-              >
-                <Box alignItems="center">
-                  <HStack>
-                    <Image
-                      source={dbMonogram}
-                      alt="DB Logo Condensed"
-                      width={100}
-                      height={100}
-                      resizeMode="contain"
-                    />
-
-                    {/* REPLACE WITH THIS
-                    <DBLogoCondensed svgProps={{ width: 100, height: 100 }} letterColor="rgba(255,255,255,0.6)" ribbonColor="rgba(255,255,255,0.6)"/>
-                    */}
-                  </HStack>
-                  <HStack>
-                    <Text
-                      width={100}
-                      textAlign={"center"}
-                      color="rgba(255, 255, 255, 0.6)"
-                    >
-                      Marathon '24
-                    </Text>
-                  </HStack>
-                  <HStack>
-                    <Text
-                      width={100}
-                      textAlign={"center"}
-                      color="rgba(255, 255, 255, 0.6)"
-                      fontSize={20}
-                      marginTop={-3}
-                    >
-                      Hour 24
-                    </Text>
-                  </HStack>
-                </Box>
-              </View>
-            </View>
-          </ImageBackground>
-        </View>
-      );
-
       // function saveMoment() {}
 
       // const retakeMoment = () => {
@@ -160,7 +86,9 @@ export const DBMomentsScreen = () => {
           >
             <Box style={{ flex: 1 }}>
               <View style={{ position: "absolute", top: 0, left: 0 }}>
-                {PreviewPicture}
+                {/*
+                        First pic preview ????????
+                */}
               </View>
               <Fab
                 renderInPortal={false}
@@ -271,12 +199,16 @@ export const DBMomentsScreen = () => {
           context: { images },
         });
       }
+
+      console.log(images.front.uri);
+      console.log(images.back.uri);
+
       return (
-        <ScrollView width="100%" height="100%">
-          <Image source={images.front} size="2xl" alt="SHUT UP WARNING" />
-          <Image source={images.back} size="2xl" alt="SHUT UP WARNING" />
-          <Button onPress={reset}>Retake</Button>
-        </ScrollView>
+        <PreviewMoment
+          frontImg={images.front}
+          backImg={images.back}
+          reset={reset}
+        />
       );
     }
   }

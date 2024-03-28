@@ -18,13 +18,13 @@ type CameraState =
 
 const takePicture = async (camera: Camera) => {
   const options: CameraPictureOptions = {
-    quality: 0.8,
+    quality: 1,
     base64: false,
     skipProcessing: false,
     isImageMirror: false,
   };
   // Need to wait when we take a picture to make sure the camera is focused
-  await asyncWait(800);
+  await asyncWait(1200);
   return camera.takePictureAsync(options);
 };
 
