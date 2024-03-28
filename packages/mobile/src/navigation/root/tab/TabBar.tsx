@@ -12,13 +12,13 @@ import type {
 import HeaderIcons from "../../HeaderIcons";
 
 import { DBHeaderText } from "./DBHeaderText";
+import DBMomentsScreen from "./DBMoments";
 import EventListScreen from "./EventListScreen";
 import HomeScreen from "./HomeScreen";
 import MarathonScreen from "./MarathonScreen";
 import MoraleCup from "./MoraleCup";
 import TabBarComponent from "./TabBarComponent";
 import SpiritScreen from "./spirit/SpiritStack";
-import DBMomentsScreen from "./DBMoments";
 
 const Tabs = createBottomTabNavigator<TabNavigatorParamList>();
 
@@ -35,7 +35,11 @@ export const possibleTabs = {
     />
   ),
   DBMoments: (
-    <Tabs.Screen key="DBMoments" name="DB Moments" component={DBMomentsScreen}/>
+    <Tabs.Screen
+      key="DBMoments"
+      name="DB Moments"
+      component={DBMomentsScreen}
+    />
   ),
   MoraleCup: (
     <Tabs.Screen key="MoraleCup" name="Morale Cup" component={MoraleCup} />
@@ -53,7 +57,7 @@ const TabBar = () => {
 
   useEffect(() => {
     if (!tabConfigLoading) {
-      let tempCurrentTabs = [possibleTabs.Marathon];
+      let tempCurrentTabs = [];
 
       const enabledScreens = allEnabledScreens.filter(
         (screen) => screen !== fancyTab
