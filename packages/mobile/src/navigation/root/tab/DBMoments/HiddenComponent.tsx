@@ -54,7 +54,6 @@ export const HiddenComponent = ({
                 width={100}
                 height={100}
                 resizeMode="contain"
-                alt="Back DBMoments Image"
               />
             </HStack>
             <HStack>
