@@ -1,26 +1,32 @@
-import CountdownView from "@common/components/CountdownView";
+// import CountdownView from "@common/components/CountdownView/CountdownView";
+import CountdownViewNew from "@common/components/CountdownView";
 import { useThemeColors } from "@common/customHooks";
-import type { DateTime } from "luxon";
+import { useMarathonTime } from "@common/hooks/useMarathonTime";
 import { Text, View } from "native-base";
 import type { ImageSourcePropType } from "react-native";
 import { ImageBackground, useWindowDimensions } from "react-native";
 
 import CommitteeHoldingSign from "../../../../../assets/svgs/CommitteeHoldingSign";
 
-/**
- * @param params.countdownTo Countdown target in milliseconds
- */
-export const MarathonCountdownScreen = ({
-  marathonYear,
-  marathonStart,
-  marathonEnd,
-}: {
-  marathonYear: string;
-  marathonStart: DateTime;
-  marathonEnd: DateTime;
-}) => {
+
+export const MarathonCountdownScreen = () => {
   const { height: screenHeight, width: screenWidth } = useWindowDimensions();
   const { primary } = useThemeColors();
+  const { marathonTime } = useMarathonTime();
+
+  const ordinals = ["th", "st", "nd", "rd"]; // s
+  const startOrdinal = ordinals[((marathonTime.startTime.day % 100) - 20) % 10]
+                    || ordinals[marathonTime.startTime.day % 100]
+                    || ordinals[0];
+  const endOrdinal = ordinals[((marathonTime.endTime.day % 100) - 20) % 10]
+                  || ordinals[marathonTime.endTime.day % 100]
+                  || ordinals[0];
+
+  // technically this isn't the best way of doing the date but idrc atm
+  const dateString = `${marathonTime.startTime.toFormat('LLLL d')}${startOrdinal} - ${marathonTime.endTime.toFormat('d, yyyy').replace(',', `${endOrdinal},`)}`;
+
+  const timeString = `${marathonTime.startTime.toFormat('h:mm a')} - ${marathonTime.endTime.toFormat('h:mm a')}`;
+
   return (
     <ImageBackground
       source={
@@ -37,20 +43,21 @@ export const MarathonCountdownScreen = ({
           fontSize="3xl"
           bg={`${primary[600]}BD`}
           marginTop="4"
+          marginBottom={"4"}
           style={{
             textShadowColor: "secondary.300",
             textShadowOffset: { width: 2, height: 1.5 },
             textShadowRadius: 1,
           }}
         >
-          {`Countdown 'til ${marathonYear}`}
+          {"Countdown 'til Marathon"}
         </Text>
-        <CountdownView endTime={marathonStart.toMillis()} />
+        <CountdownViewNew endTime={marathonTime.startTime.toMillis()} />
       </View>
       <View flex={2}>
         <CommitteeHoldingSign color="#fff" />
       </View>
-      <View flex={1}>
+      <View flex={0.6}>
         <Text
           textAlign="center"
           color="secondary.400"
@@ -63,9 +70,7 @@ export const MarathonCountdownScreen = ({
             textShadowRadius: 1,
           }}
         >
-          {`${marathonStart.toFormat("MMMM d")} - ${marathonEnd.toFormat(
-            "MMMM d, yyyy"
-          )}`}
+          {dateString}
         </Text>
         <Text
           textAlign="center"
@@ -74,9 +79,7 @@ export const MarathonCountdownScreen = ({
           fontSize="2xl"
           bg={`${primary[600]}BD`}
         >
-          {`${marathonStart.toFormat("h:mm a")} - ${marathonEnd.toFormat(
-            "h:mm a"
-          )}`}
+          {timeString}
         </Text>
       </View>
     </ImageBackground>
