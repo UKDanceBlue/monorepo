@@ -1,7 +1,7 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import type { CameraCapturedPicture } from "expo-camera";
 import { Fab, Icon, View } from "native-base";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { captureRef } from "react-native-view-shot";
 
 import { HiddenComponent } from "./HiddenComponent";
@@ -16,11 +16,19 @@ export const PreviewMoment = ({
   reset: () => void;
 }) => {
   const viewRef = useRef<typeof View>(null);
+  const [viewSize, setViewSize] = useState({ width: 0, height: 0 });
   const saveMoment = async () => {
+    console.log("Saving moment...");
     try {
+      console.log("Capturing image...", {
+        width: viewSize.width,
+        height: viewSize.height,
+      });
       const uri = await captureRef(viewRef, {
         format: "jpg", // Specify the format of the captured image
         quality: 0.8, // Specify the image quality (0.0 to 1.0)
+        width: viewSize.width, // Specify the width of the captured image
+        height: viewSize.height, // Specify the height of the captured image
       });
       console.log("Image captured:", uri);
       // Implement logic to save or share the captured image URI
@@ -30,7 +38,13 @@ export const PreviewMoment = ({
   };
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
+      <HiddenComponent
+        front={frontImg}
+        back={backImg}
+        viewRef={viewRef}
+        setViewSize={setViewSize}
+      />
       <View style={{ flex: 1 }}>
         <Fab
           renderInPortal={false}
@@ -65,7 +79,6 @@ export const PreviewMoment = ({
           onPress={() => reset()}
         />
       </View>
-      <HiddenComponent front={frontImg} back={backImg} viewRef={viewRef} />
     </View>
   );
 };

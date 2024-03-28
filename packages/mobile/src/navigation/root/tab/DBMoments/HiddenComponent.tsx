@@ -9,10 +9,12 @@ export const HiddenComponent = ({
   front,
   back,
   viewRef,
+  setViewSize,
 }: {
   front: CameraCapturedPicture | undefined;
   back: CameraCapturedPicture | undefined;
   viewRef: Ref<typeof View>;
+  setViewSize: (param: { width: number; height: number }) => void;
 }) => {
   const { width: screenWidth } = useWindowDimensions();
   const [frontImgHeight, setFrontImgHeight] = useState(0);
@@ -31,7 +33,18 @@ export const HiddenComponent = ({
   }, [front?.uri, maxWidth]);
 
   return (
-    <View style={{ flex: 1 }} ref={viewRef}>
+    <View
+      style={{ flex: 1 }}
+      ref={viewRef}
+      onLayout={({
+        nativeEvent: {
+          layout: { height, width },
+        },
+      }) => {
+        console.log("Setting view size...", { width, height });
+        setViewSize({ width, height });
+      }}
+    >
       <ImageBackground source={{ uri: back?.uri }} style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
           <Image
