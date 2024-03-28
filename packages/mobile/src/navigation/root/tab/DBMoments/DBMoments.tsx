@@ -169,6 +169,9 @@ export const DBMomentsScreen = () => {
                 disabled={takingPicture}
                 onPress={() => startTakingPictures()}
               />
+              {/*
+                  TO IMPLEMENT: Viewing pictures (picture recap at the end of marathon)
+
               <Fab
                 renderInPortal={false}
                 style={{
@@ -186,7 +189,7 @@ export const DBMomentsScreen = () => {
                   />
                 }
                 onPress={() => reset()}
-              />
+              /> */}
             </Box>
           </Camera>
         </View>

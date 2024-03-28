@@ -49,20 +49,29 @@ export const HiddenComponent = ({
     >
       <ImageBackground source={{ uri: back?.uri }} style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
-          <Image
-            source={{ uri: front?.uri }}
+          <View
             style={{
-              width: maxWidth,
-              height: frontImgHeight,
-              borderColor: "#0032a0",
-              borderWidth: 2,
-              borderRadius: 5,
-              marginTop: 10,
-              marginLeft: 10,
+              shadowColor: "rgba(255, 199, 44, 1)",
+              shadowOffset: { width: 0, height: 0 }, // Offset of the shadow
+              shadowRadius: 10, // Radius of the shadow (controls intensity)
+              shadowOpacity: 0.7, // Full opacity for the glow
             }}
-            resizeMode="contain"
-            alt="Front DBMoments Image"
-          />
+          >
+            <Image
+              source={{ uri: front?.uri }}
+              style={{
+                width: maxWidth,
+                height: frontImgHeight,
+                borderColor: "#0032a0",
+                borderWidth: 2,
+                borderRadius: 5,
+                marginTop: 10,
+                marginLeft: 10,
+              }}
+              resizeMode="contain"
+              alt="Front DBMoments Image"
+            />
+          </View>
         </View>
         <View style={{ padding: 15, alignItems: "flex-end" }}>
           <Box alignItems="center">
@@ -76,7 +85,15 @@ export const HiddenComponent = ({
               />
             </HStack>
             <HStack>
-              <Text textAlign="center" color="rgba(255, 255, 255, 0.6)">
+              <Text
+                textAlign="center"
+                style={{
+                  color: "rgba(255, 255, 255, 1)", // White text color
+                  textShadowColor: "rgba(255, 199, 44, 1)", // Yellow glow color
+                  textShadowOffset: { width: 0, height: 0 }, // Offset of the shadow
+                  textShadowRadius: 4,
+                }}
+              >
                 {/*
                       Need to figure out how to calculate this so that it automatically updates
                 */}
@@ -86,9 +103,14 @@ export const HiddenComponent = ({
             <HStack>
               <Text
                 textAlign="center"
-                color="rgba(255, 255, 255, 0.6)"
                 fontSize={20}
                 marginTop={-3}
+                style={{
+                  color: "rgba(255, 255, 255, 1)", // White text color
+                  textShadowColor: "rgba(255, 199, 44, 1)", // Yellow glow color
+                  textShadowOffset: { width: 0, height: 0 }, // Offset of the shadow
+                  textShadowRadius: 4,
+                }}
               >
                 {/*
                     Need to figure out how to calculate this so that it automatically updates
