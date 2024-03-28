@@ -3759,15 +3759,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gisatcz/cross-package-react-context@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "@gisatcz/cross-package-react-context@npm:0.2.0"
-  peerDependencies:
-    react: ^16.13.1 || ^17.0.2 || ^18.1.0
-  checksum: 10/741fc26bfae1de4f042f00d1fceda06166ad37a0bdbaa344bfa2a44d793978e1f338dea6de7d843e1518c528a60fc11788b8eed61bddc76bf2eefc0910c95171
-  languageName: node
-  linkType: hard
-
 "@graphql-codegen/add@npm:^5.0.0":
   version: 5.0.0
   resolution: "@graphql-codegen/add@npm:5.0.0"
@@ -7688,24 +7679,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-router@npm:0.0.1-beta.194":
-  version: 0.0.1-beta.194
-  resolution: "@tanstack/react-router@npm:0.0.1-beta.194"
-  dependencies:
-    "@babel/runtime": "npm:^7.16.7"
-    "@gisatcz/cross-package-react-context": "npm:^0.2.0"
-    "@tanstack/react-store": "npm:^0.0.1"
-    "@tanstack/router-core": "npm:0.0.1-beta.194"
-    tiny-invariant: "npm:^1.3.1"
-    tiny-warning: "npm:^1.0.3"
-  peerDependencies:
-    react: ">=16"
-    react-dom: ">=16"
-  checksum: 10/63c7a1cb0ac351729543bb2ebc66e941181618b38e41abce1808d2658169c1a69b66e847002ece6fdf14e909fc672de8d17b69c27b5e7a15a290a6ac70a2dd95
-  languageName: node
-  linkType: hard
-
-"@tanstack/react-router@npm:beta":
+"@tanstack/react-router@npm:0.0.1-beta.286, @tanstack/react-router@npm:beta":
   version: 0.0.1-beta.286
   resolution: "@tanstack/react-router@npm:0.0.1-beta.286"
   dependencies:
@@ -7735,19 +7709,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-store@npm:^0.0.1":
-  version: 0.0.1
-  resolution: "@tanstack/react-store@npm:0.0.1"
-  dependencies:
-    "@tanstack/store": "npm:0.0.1"
-    use-sync-external-store: "npm:^1.2.0"
-  peerDependencies:
-    react: ">=16"
-    react-dom: ">=16"
-  checksum: 10/ae03ebcd379345d8dc85b7d226f63d0d4623c5e0009b83bd228545b0925576bb9cf493596aba3e90479224c2cfbf493efc2dc4b46a5436dce095f66da3a49b1c
-  languageName: node
-  linkType: hard
-
 "@tanstack/react-store@npm:^0.2.1":
   version: 0.2.1
   resolution: "@tanstack/react-store@npm:0.2.1"
@@ -7761,40 +7722,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/router-core@npm:0.0.1-beta.194":
-  version: 0.0.1-beta.194
-  resolution: "@tanstack/router-core@npm:0.0.1-beta.194"
-  dependencies:
-    "@babel/runtime": "npm:^7.16.7"
-    "@gisatcz/cross-package-react-context": "npm:^0.2.0"
-    "@tanstack/store": "npm:^0.0.1"
-    tiny-invariant: "npm:^1.3.1"
-    tiny-warning: "npm:^1.0.3"
-  peerDependencies:
-    react: ">=16"
-    react-dom: ">=16"
-  checksum: 10/c41546164ed9c0ccf76fcafa65a7e34e95b4eadad7af8f18c3ff7170d26b5139adcb6286dc5e3ffb5547c9e1e80ae015b73c2cdd7cb52db156f1c24928807a73
-  languageName: node
-  linkType: hard
-
 "@tanstack/router-devtools@npm:beta":
-  version: 0.0.1-beta.194
-  resolution: "@tanstack/router-devtools@npm:0.0.1-beta.194"
+  version: 0.0.1-beta.286
+  resolution: "@tanstack/router-devtools@npm:0.0.1-beta.286"
   dependencies:
     "@babel/runtime": "npm:^7.16.7"
-    "@tanstack/react-router": "npm:0.0.1-beta.194"
+    "@tanstack/react-router": "npm:0.0.1-beta.286"
     date-fns: "npm:^2.29.1"
   peerDependencies:
     react: ">=16"
     react-dom: ">=16"
-  checksum: 10/68710dfdf9b9773eb01ac5e4d06a7620fa951f59a128e6f1b64937ee35f22aced76d2bd84332c72c591987d4be72fa741c0840c30af23c19312e5260e9660943
-  languageName: node
-  linkType: hard
-
-"@tanstack/store@npm:0.0.1, @tanstack/store@npm:^0.0.1":
-  version: 0.0.1
-  resolution: "@tanstack/store@npm:0.0.1"
-  checksum: 10/709aafc6cbb9fcea5a3a082f9c20ccd3f9f9c79c85521a5d0b0b012c501b91c73e6a632fd4167afc8fb8f3ac085210a309c0efd11272f2ccb3888bb7ed35b4ec
+  checksum: 10/7c3465f59caa464f6f29b700eb21ceb46af51d34d4689472527b9b789caeb333be0d97318e9b594e25fabba2994d7843d2c12b30cbcbe28de1f84fc8839b1201
   languageName: node
   linkType: hard
 
