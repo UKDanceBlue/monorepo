@@ -1,6 +1,7 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import type { CameraCapturedPicture } from "expo-camera";
-import { Fab, Icon, View } from "native-base";
+import type { View } from "native-base";
+import { Fab, Icon, ZStack } from "native-base";
 import React, { useRef, useState } from "react";
 import { captureRef } from "react-native-view-shot";
 
@@ -38,47 +39,41 @@ export const PreviewMoment = ({
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <ZStack style={{ flex: 1 }}>
       <HiddenComponent
         front={frontImg}
         back={backImg}
         viewRef={viewRef}
         setViewSize={setViewSize}
       />
-      <View style={{ flex: 1 }}>
-        <Fab
-          renderInPortal={false}
-          style={{
-            height: 40,
-            width: 40,
-            backgroundColor: "rgba(0, 0, 0, 0.2)",
-          }}
-          top={5}
-          right={2}
-          icon={
-            <Icon
-              color="white"
-              as={<MaterialIcons name="save-alt" />}
-              size={7}
-            />
-          }
-          onPress={() => saveMoment()}
-        />
-        <Fab
-          renderInPortal={false}
-          style={{
-            height: 40,
-            width: 40,
-            backgroundColor: "rgba(0, 0, 0, 0.2)",
-          }}
-          top={5 + 65}
-          right={2}
-          icon={
-            <Icon color="white" as={<MaterialIcons name="replay" />} size={7} />
-          }
-          onPress={() => reset()}
-        />
-      </View>
-    </View>
+      <Fab
+        renderInPortal={false}
+        style={{
+          height: 40,
+          width: 40,
+          backgroundColor: "rgba(0, 0, 0, 0.2)",
+        }}
+        top={5}
+        right={2}
+        icon={
+          <Icon color="white" as={<MaterialIcons name="save-alt" />} size={7} />
+        }
+        onPress={() => saveMoment()}
+      />
+      <Fab
+        renderInPortal={false}
+        style={{
+          height: 40,
+          width: 40,
+          backgroundColor: "rgba(0, 0, 0, 0.2)",
+        }}
+        top={5 + 65}
+        right={2}
+        icon={
+          <Icon color="white" as={<MaterialIcons name="replay" />} size={7} />
+        }
+        onPress={() => reset()}
+      />
+    </ZStack>
   );
 };
