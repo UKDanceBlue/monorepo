@@ -96,20 +96,42 @@ model Image {
   uuid      String   @unique(map: "images_uuid_unique") @default(uuid()) @db.Uuid
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  url       String?  @unique(map: "images_url_unique")
-  imageData Bytes?   @map("image_data")
-  mimeType  String?  @map("mime_type") @db.VarChar(255)
   thumbHash Bytes?   @map("thumb_hash")
   alt       String?
   width     Int
   height    Int
 
-  // Things with images
+  file   File? @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  fileId Int?  @map("file_id")
+
   eventImages           EventImage[]
   marathonHourMapImages MarathonHourMapImage[]
 
   @@index([uuid], map: "images_uuid")
   @@map("images")
+}
+
+model File {
+  id   Int    @id @default(autoincrement())
+  uuid String @unique(map: "uploaded_files_uuid_unique") @default(uuid()) @db.Uuid
+
+  filename        String
+  mimeTypeName    String   @map("mime_type") @db.VarChar(127)
+  mimeSubtypeName String   @map("mime_subtype") @db.VarChar(127)
+  mimeParameters  String[] @map("mime_parameters")
+  locationUrl     String   @map("location_url")
+
+  requiresLogin Boolean @default(false) @map("requires_login")
+
+  owner   Person? @relation(fields: [ownedBy], references: [id])
+  ownedBy Int?    @map("owned_by")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  Image     Image[]
+
+  @@index([uuid], map: "uploaded_files_uuid")
+  @@map("uploaded_files")
 }
 
 model LoginFlowSession {
@@ -156,6 +178,7 @@ model Person {
   devices       Device[]
   memberships   Membership[]
   pointEntries  PointEntry[]
+  ownedFiles    File[]
 
   @@index([uuid], map: "people_uuid")
   @@map("people")

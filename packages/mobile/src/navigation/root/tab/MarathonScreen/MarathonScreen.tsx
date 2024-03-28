@@ -1,3 +1,4 @@
+import { Logger } from "@common/logger/Logger";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
 import { Text } from "native-base";
@@ -33,43 +34,31 @@ export const MarathonScreen = () => {
     // in case the server has updated the marathon hour
     const interval = setInterval(() => {
       refresh({ requestPolicy: "network-only" });
-    }, 60_000);
+    }, 3000);
 
     return () => {
       clearInterval(interval);
     };
   }, [refresh]);
 
-  useEffect(() => {
-    // This one is to check if we should be within the marathon's time frame
-    // If we are, rather than assuming we are, we should refresh the data
-    // to ensure we're showing the correct screen
-    const interval = setInterval(() => {
-      if (!data?.currentMarathonHour && data?.nextMarathon?.startDate) {
-        const now = new Date();
-        const marathonStart = new Date(data.nextMarathon.startDate);
-        if (now >= marathonStart) {
-          // refresh({ requestPolicy: "network-only" });
-        }
-      }
-    }, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [data?.nextMarathon?.startDate, data?.currentMarathonHour, refresh]);
-
   if (error) {
-    // TODO: Handle error
-    return <Text> {JSON.stringify(error)}</Text>;
+    Logger.error("A graphql error occurred", {
+      error,
+      source: "MarathonScreen",
+    });
+    return (
+      <Text width="full" height="full" textAlign="center">
+        Something went Wrong!
+      </Text>
+    );
   }
 
   if (data?.currentMarathonHour) {
     return (
       <HourScreenComponent
         hourScreenFragment={data.currentMarathonHour}
-        isLoading={fetching}
-        refresh={refresh}
+        isLoading={fetching && !data.currentMarathonHour}
+        refresh={() => refresh({ requestPolicy: "network-only" })}
       />
     );
   }

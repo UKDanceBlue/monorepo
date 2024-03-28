@@ -11,40 +11,37 @@
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // This can be used to network with other containers or with the host.
-  "forwardPorts": [5173, 8000, 8081, 5432],
-  "portsAttributes": {
-    "5173": {
-      "label": "Admin Portal",
-      "onAutoForward": "openBrowserOnce"
-    },
-    "8000": {
-      "label": "Server",
-      "onAutoForward": "silent"
-    },
-    "8081": {
-      "label": "Metro Bundler",
-      "onAutoForward": "silent"
-    },
-    "5432": {
-      "label": "PostgreSQL",
-      "onAutoForward": "silent"
-    },
-    "5555": {
-      "label": "Prisma Studio"
-    },
-    "4040": {
-      "label": "Ngrok Tunnel",
-      "onAutoForward": "ignore"
-    }
+  // "forwardPorts": [5173, 8000, 8081, 5432],
+  // "portsAttributes": {
+  //   "5173": {
+  //     "label": "Admin Portal",
+  //     "onAutoForward": "openBrowserOnce"
+  //   },
+  //   "8000": {
+  //     "label": "Server",
+  //     "onAutoForward": "silent"
+  //   },
+  //   "8081": {
+  //     "label": "Metro Bundler",
+  //     "onAutoForward": "silent"
+  //   },
+  //   "5432": {
+  //     "label": "PostgreSQL",
+  //     "onAutoForward": "silent"
+  //   },
+  //   "5555": {
+  //     "label": "Prisma Studio"
+  //   },
+  //   "4040": {
+  //     "label": "Ngrok Tunnel",
+  //     "onAutoForward": "ignore"
+  //   }
+  // },
+  "otherPortsAttributes": {
+    "onAutoForward": "ignore"
   },
 
   "postCreateCommand": "yarn install",
-
-  // Configure tool-specific properties.
-  // "customizations": {},
-
-  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-  // "remoteUser": "root"
 
   "containerEnv": {
     "HOME": "/home/node",
@@ -57,8 +54,12 @@
     "NODE_ENV": "development",
     "APPLICATION_HOST": "localhost",
     "APPLICATION_PORT": "8000",
-    "MS_OIDC_URL": "https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0/.well-known/openid-configuration"
+    "MS_OIDC_URL": "https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0/.well-known/openid-configuration",
+    "SERVE_PATH": "/workspaces/monorepo/local-uploads",
+    "UPLOAD_PATH": "/workspaces/monorepo/local-uploads",
+    "MAX_FILE_SIZE": "200"
   },
+
   "customizations": {
     "vscode": {
       "settings": {

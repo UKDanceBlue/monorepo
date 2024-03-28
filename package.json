@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@eslint/js": "8.56.0",
+    "@expo/ngrok": "^4.1.0",
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/client-preset": "^4.1.0",
     "@types/eslint-config-prettier": "^6.11.3",
