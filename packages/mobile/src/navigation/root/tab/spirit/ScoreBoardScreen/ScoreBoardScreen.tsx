@@ -85,18 +85,20 @@ const ScoreBoardScreen = ({
   const filteredData = useMemo(
     () =>
       teamsData?.filter((team) => {
+        const teamType: TeamType = team.type;
+        const teamLegacyStatus: TeamLegacyStatus = team.legacyStatus;
         switch (filter) {
           case "dancers": {
-            return team.type === TeamType.Spirit;
+            return teamType === TeamType.Spirit;
           }
           case "new": {
-            return team.legacyStatus === TeamLegacyStatus.NewTeam;
+            return teamLegacyStatus === TeamLegacyStatus.NewTeam;
           }
           case "returning": {
-            return team.legacyStatus === TeamLegacyStatus.ReturningTeam;
+            return teamLegacyStatus === TeamLegacyStatus.ReturningTeam;
           }
           case "committee": {
-            return team.type === TeamType.Committee;
+            return teamType === TeamType.Committee;
           }
           default: {
             return true;
