@@ -8,11 +8,11 @@ import { ImageBackground, useWindowDimensions } from "react-native";
 export const HiddenComponent = ({
   front,
   back,
+  viewRef,
 }: {
   front: CameraCapturedPicture | undefined;
   back: CameraCapturedPicture | undefined;
-  front: CameraCapturedPicture;
-  back: CameraCapturedPicture;
+  viewRef: Ref<typeof View>;
 }) => {
   const { width: screenWidth } = useWindowDimensions();
   const [frontImgHeight, setFrontImgHeight] = useState(0);
@@ -31,7 +31,7 @@ export const HiddenComponent = ({
   }, [front?.uri, maxWidth]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1 }} ref={viewRef}>
       <ImageBackground source={{ uri: back?.uri }} style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
           <Image

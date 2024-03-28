@@ -15,11 +15,10 @@ export const PreviewMoment = ({
   backImg: CameraCapturedPicture | undefined;
   reset: () => void;
 }) => {
+  const viewRef = useRef<typeof View>(null);
   const saveMoment = async () => {
     try {
-      const uri = await captureRef(
-        <HiddenComponent front={frontImg} back={backImg} />,
-        {
+      const uri = await captureRef(viewRef, {
         format: "jpg", // Specify the format of the captured image
         quality: 0.8, // Specify the image quality (0.0 to 1.0)
       });
@@ -66,7 +65,7 @@ export const PreviewMoment = ({
           onPress={() => reset()}
         />
       </View>
-      <HiddenComponent front={frontImg} back={backImg} />
+      <HiddenComponent front={frontImg} back={backImg} viewRef={viewRef} />
     </View>
   );
 };
