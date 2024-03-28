@@ -40,7 +40,10 @@ export class ImageRepository {
   constructor(private prisma: PrismaClient) {}
 
   findImageByUnique(param: UniqueImageParam) {
-    return this.prisma.image.findUnique({ where: param });
+    return this.prisma.image.findUnique({
+      where: param,
+      include: { file: true },
+    });
   }
 
   listImages({
@@ -62,6 +65,7 @@ export class ImageRepository {
       orderBy,
       skip: skip ?? undefined,
       take: take ?? undefined,
+      include: { file: true },
     });
   }
 
@@ -83,7 +87,11 @@ export class ImageRepository {
 
   updateImage(param: UniqueImageParam, data: Prisma.ImageUpdateInput) {
     try {
-      return this.prisma.image.update({ where: param, data });
+      return this.prisma.image.update({
+        where: param,
+        data,
+        include: { file: true },
+      });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
