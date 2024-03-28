@@ -1,7 +1,7 @@
 import dbMonogram from "@assets/logo/monogram.png";
 import {
-  useMarathonTime,
   type MarathonTime,
+  useMarathonTime,
 } from "@common/hooks/useMarathonTime";
 import type { CameraCapturedPicture } from "expo-camera";
 import { DateTime } from "luxon";
