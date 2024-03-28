@@ -7,6 +7,9 @@ import { FileManager } from "../../../lib/files/FileManager.js";
 import { combineMimePartsToString } from "../../../lib/files/mime.js";
 import { EventRepository } from "../../../repositories/event/EventRepository.js";
 
+const EMPTY_PNG_URL =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIW2NgAAIAAAUAAR4f7BQAAAAASUVORK5CYII=";
+
 export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
   let eventsToSend = 10;
   if (ctx.query.count) {
@@ -41,19 +44,48 @@ export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
   const eventsJson = await Promise.all(
     upcomingEvents.map(async (event) => {
       const occurrences = event.eventOccurrences;
+
       const images = await Promise.all(
-        event.eventImages.map(async ({ image }) => ({
-          url: await fileManager.getExternalUrl(image.file),
-          alt: image.alt ?? null,
-          mimeType: combineMimePartsToString(
-            image.file.mimeTypeName,
-            image.file.mimeSubtypeName,
-            image.file.mimeParameters
-          ),
-          thumbHash: image.thumbHash?.toString("base64") ?? null,
-          width: image.width,
-          height: image.height,
-        }))
+        event.eventImages.map(async ({ image }) => {
+          let fileData:
+            | {
+                url: URL;
+                mimeType: string;
+                width?: number;
+                height?: number;
+              }
+            | undefined = undefined;
+
+          if (image.file) {
+            const externalUrl = await fileManager.getExternalUrl(image.file);
+            if (externalUrl) {
+              fileData = {
+                url: externalUrl,
+                mimeType: combineMimePartsToString(
+                  image.file!.mimeTypeName,
+                  image.file!.mimeSubtypeName,
+                  image.file!.mimeParameters
+                ),
+              };
+            }
+          }
+          if (!fileData) {
+            fileData = {
+              url: new URL(EMPTY_PNG_URL),
+              mimeType: "image/png",
+              width: 1,
+              height: 1,
+            };
+          }
+
+          return {
+            alt: image.alt ?? null,
+            thumbHash: image.thumbHash?.toString("base64") ?? null,
+            width: image.width,
+            height: image.height,
+            ...fileData,
+          };
+        })
       );
       return {
         title: event.title,
