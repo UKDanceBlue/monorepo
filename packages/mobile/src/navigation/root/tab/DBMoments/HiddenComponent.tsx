@@ -1,5 +1,10 @@
 import dbMonogram from "@assets/logo/monogram.png";
+import {
+  useMarathonTime,
+  type MarathonTime,
+} from "@common/hooks/useMarathonTime";
 import type { CameraCapturedPicture } from "expo-camera";
+import { DateTime } from "luxon";
 import { Box, HStack, Image, Text, View } from "native-base";
 import type { Ref } from "react";
 import React, { useEffect, useState } from "react";
@@ -8,6 +13,34 @@ import {
   Image as RNImage,
   useWindowDimensions,
 } from "react-native";
+
+function calculateDBYear() {
+  const currentYear = DateTime.now().year.toString().slice(-2);
+  return `Marathon '${currentYear}`;
+}
+
+function calculateMarathonHour(marathonTime: MarathonTime) {
+  const currentTime = DateTime.now();
+
+  if (currentTime < marathonTime.startTime.minus({ hours: 5 })) {
+    return "Pre-Marathon";
+  } else if (
+    currentTime >= marathonTime.startTime.minus({ hours: 5 }) &&
+    currentTime < marathonTime.startTime
+  ) {
+    const hoursDiff = marathonTime.startTime.diff(currentTime, "hours").hours;
+    return `T-${hoursDiff.toFixed(0)} Hours`;
+  } else if (
+    currentTime >= marathonTime.startTime &&
+    currentTime <= marathonTime.endTime
+  ) {
+    const hoursDiff =
+      currentTime.diff(marathonTime.startTime, "hours").hours + 1;
+    return `Hour ${hoursDiff.toFixed(0)}`;
+  } else {
+    return "Post-Marathon";
+  }
+}
 
 export const HiddenComponent = ({
   front,
@@ -23,6 +56,7 @@ export const HiddenComponent = ({
   const { width: screenWidth } = useWindowDimensions();
   const [frontImgHeight, setFrontImgHeight] = useState(0);
   const maxWidth = screenWidth / 3;
+  const { marathonTime } = useMarathonTime();
 
   useEffect(() => {
     if (front?.uri) {
@@ -97,7 +131,7 @@ export const HiddenComponent = ({
                 {/*
                       Need to figure out how to calculate this so that it automatically updates
                 */}
-                Marathon '24
+                {calculateDBYear()}
               </Text>
             </HStack>
             <HStack>
@@ -115,7 +149,7 @@ export const HiddenComponent = ({
                 {/*
                     Need to figure out how to calculate this so that it automatically updates
                 */}
-                Hour 24
+                {calculateMarathonHour(marathonTime)}
               </Text>
             </HStack>
           </Box>

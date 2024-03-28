@@ -57,7 +57,7 @@ const TabBar = () => {
 
   useEffect(() => {
     if (!tabConfigLoading) {
-      let tempCurrentTabs = [possibleTabs.Marathon];
+      let tempCurrentTabs = [];
 
       const enabledScreens = allEnabledScreens.filter(
         (screen) => screen !== fancyTab
@@ -80,8 +80,6 @@ const TabBar = () => {
         const secondHalf = tempCurrentTabs.slice(middleIndex);
         tempCurrentTabs = [...firstHalf, fancyTabElement, ...secondHalf];
       }
-
-      tempCurrentTabs.push(possibleTabs["DBMoments"]);
 
       setCurrentTabs(tempCurrentTabs);
       // log(
