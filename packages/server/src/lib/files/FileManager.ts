@@ -1,5 +1,6 @@
 import { MIMEType } from "util";
 
+import type { File } from "@prisma/client";
 import { Service } from "typedi";
 
 import { applicationUrl } from "../../environment.js";
@@ -10,6 +11,7 @@ import type {
   StorableFile,
   StorageProvider,
 } from "./storage/StorageProvider.js";
+import { UnsupportedAccessMethod } from "./storage/StorageProvider.js";
 
 const FILE_API = new URL("/api/file/download/", applicationUrl);
 
@@ -125,6 +127,54 @@ export class FileManager {
       }
       default: {
         throw new Error("Unsupported protocol");
+      }
+    }
+  }
+
+  /**
+   * Get a stream for a file
+   * @param file The file to get the stream for
+   * @returns The stream, or null if the file does not exist or is not a supported type
+   */
+  async getFileStream(file: { id: number } | { uuid: string }): Promise<{
+    file: File;
+    stream: NodeJS.ReadableStream;
+  } | null> {
+    const fileRecord = await this.fileRepository.findFileByUnique(file);
+    if (!fileRecord) {
+      return null;
+    }
+    const locationUrl = new URL(fileRecord.locationUrl);
+    switch (locationUrl.protocol) {
+      case "file": {
+        const stream = await this.localStorage.tryStreamFile(locationUrl);
+        if (stream === UnsupportedAccessMethod) {
+          throw new Error("Unsupported access method");
+        }
+        return stream ? { file: fileRecord, stream } : null;
+      }
+      // I don't think we really want to deal with parsing data URLs here, but if we do, we can uncomment this
+      // case "data": {
+      //   // Is it base64 or ASCII url encoded?
+      //   const match = /^[^/]+\/[^,;]+[^,]*?(;base64)?,([\S\s]*)$/.exec(
+      //     locationUrl.pathname
+      //   );
+      //   if (match === null) {
+      //     throw new Error("Invalid data URL");
+      //   }
+      //   const { 1: base64, 2: body } = match;
+      //   if (body === undefined) {
+      //     throw new Error("Invalid data URL");
+      //   }
+      //   const buffer = Buffer.from(
+      //     decodeURIComponent(body),
+      //     base64 ? "base64" : "utf8"
+      //   );
+
+      //   return Readable.from(buffer);
+      // }
+      default: {
+        return null;
       }
     }
   }
