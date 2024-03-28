@@ -15,6 +15,7 @@ import { DBHeaderText } from "./DBHeaderText";
 import EventListScreen from "./EventListScreen";
 import ExplorerScreen from "./ExplorerScreen";
 import HomeScreen from "./HomeScreen";
+import InfoScreen from "./InfoScreen";
 import MarathonScreen from "./MarathonScreen";
 import MoraleCup from "./MoraleCup";
 import TabBarComponent from "./TabBarComponent";
@@ -40,6 +41,7 @@ export const possibleTabs = {
   MoraleCup: (
     <Tabs.Screen key="MoraleCup" name="Morale Cup" component={MoraleCup} />
   ),
+  Info: <Tabs.Screen key="Info" name="Info" component={InfoScreen} />,
 } as const;
 
 const TabBar = () => {

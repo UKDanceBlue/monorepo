@@ -221,7 +221,7 @@ function TabBarComponent({
   const tabBarHeight = screenHeight * 0.1;
 
   const { dark } = useThemeColors();
-  const tabBarBackgroundColor = useColorModeValue("#f8f8f8", dark[100]);
+  const tabBarBackgroundColor = useColorModeValue("#ffebad", dark[100]);
 
   return (
     <Box
