@@ -9,7 +9,7 @@ import type {
   TabNavigationState,
 } from "@react-navigation/native";
 import { colors } from "@theme/colors";
-import { Box, VStack, View } from "native-base";
+import { Box, VStack, View, useTheme } from "native-base";
 import { ZStack } from "native-base/src/components/primitives";
 import { Text, TouchableOpacity, useWindowDimensions } from "react-native";
 
@@ -81,6 +81,7 @@ function TabBarIcon({
   iconKey: keyof typeof iconMap;
 }) {
   const navTheme = useReactNavigationTheme();
+  const theme = useTheme();
 
   return (
     <TouchableOpacity
@@ -108,6 +109,7 @@ function TabBarIcon({
           <Text
             style={{
               color: isFocused ? navTheme.colors.primary : navTheme.colors.text,
+              fontSize: theme.fontSizes["xs"],
             }}
           >
             {label}
