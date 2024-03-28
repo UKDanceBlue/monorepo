@@ -3,7 +3,11 @@ import type { CameraCapturedPicture } from "expo-camera";
 import { Box, HStack, Image, Text, View } from "native-base";
 import type { Ref } from "react";
 import React, { useEffect, useState } from "react";
-import { ImageBackground, useWindowDimensions } from "react-native";
+import {
+  ImageBackground,
+  Image as RNImage,
+  useWindowDimensions,
+} from "react-native";
 
 export const HiddenComponent = ({
   front,
@@ -21,15 +25,13 @@ export const HiddenComponent = ({
   const maxWidth = screenWidth / 3;
 
   useEffect(() => {
-    const getImageSize = () => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      Image.getSize(front?.uri, (imgWidth, imgHeight) => {
+    if (front?.uri) {
+      RNImage.getSize(front.uri, (imgWidth, imgHeight) => {
         const aspectRatio = imgWidth / imgHeight;
         const newHeight = maxWidth / aspectRatio;
         setFrontImgHeight(newHeight);
       });
-    };
-    getImageSize();
+    }
   }, [front?.uri, maxWidth]);
 
   return (
