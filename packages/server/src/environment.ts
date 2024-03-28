@@ -18,7 +18,7 @@ export const loggingLevel: SyslogLevels =
   (process.env.LOGGING_LEVEL as SyslogLevels | undefined) ??
   (isDevelopment ? "debug" : "notice");
 
-// Port and Host
+// Port, Host, and Protocol
 let applicationPort: number = 8000;
 if (process.env.APPLICATION_PORT) {
   const envApplicationPort = Number.parseInt(process.env.APPLICATION_PORT, 10);
@@ -34,6 +34,13 @@ if (process.env.APPLICATION_PORT) {
 }
 export { applicationPort };
 export const applicationHost = process.env.APPLICATION_HOST || "localhost";
+export const applicationProtocol = process.env.APPLICATION_PROTOCOL || "http";
+
+const applicationUrl = new URL(`${applicationProtocol}://${applicationHost}`);
+applicationUrl.protocol = applicationProtocol;
+applicationUrl.hostname = applicationHost;
+applicationUrl.port = applicationPort.toString();
+export { applicationUrl };
 
 // Secrets
 const { COOKIE_SECRET, JWT_SECRET, ASSET_PATH } = process.env;
