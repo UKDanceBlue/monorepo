@@ -1,4 +1,4 @@
-import { Button, Center, Modal } from "native-base";
+import { Button, Center, Modal, Text } from "native-base";
 
 export const InfoModal = ({
   setShowModal,
@@ -12,8 +12,16 @@ export const InfoModal = ({
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
         <Modal.Content maxWidth="400px">
           <Modal.CloseButton />
-          <Modal.Header>DBMoments Information</Modal.Header>
-          <Modal.Body></Modal.Body>
+          <Modal.Header>#DBMoments Information</Modal.Header>
+          <Modal.Body>
+            <Text>Hey cool peoples!{"\n"}</Text>
+            <Text style={{ fontFamily: "opensans-condensed-light" }}>
+              DBMoments is a way for you to show your pre-marathon, during
+              marathon, and post-marathon selves! Save these moments and share
+              them on your social media and tag us!
+            </Text>
+            <Text>{"\n"}-DB Tech &lt;3</Text>
+          </Modal.Body>
           <Modal.Footer>
             <Button.Group space={2}>
               <Button
@@ -23,7 +31,7 @@ export const InfoModal = ({
                   setShowModal(false);
                 }}
               >
-                Close
+                Fo sho
               </Button>
             </Button.Group>
           </Modal.Footer>
