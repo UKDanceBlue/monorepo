@@ -7,7 +7,7 @@ import type { MIMEType } from "util";
 import { DateTime } from "luxon";
 import { Service } from "typedi";
 
-import { uploadPath } from "../../../environment.js";
+import { servePath, uploadPath } from "../../../environment.js";
 import { logger } from "../../logging/standardLogging.js";
 
 import type {
@@ -16,6 +16,18 @@ import type {
   UnsupportedAccessMethod,
 } from "./StorageProvider.js";
 import { BaseStorageProvider } from "./StorageProvider.js";
+
+/**
+ * Determines if the location a path refers to is within `servePath`
+ *
+ * All access to files should be guarded by this function to prevent access to files outside of the `servePath`
+ * as this could be a major security risk (i.e. serving configuration files or overwriting system files)
+ */
+function isPathAllowed(path: string): boolean {
+  const resolvedPath = resolve(path);
+  const resolvedServePath = resolve(servePath);
+  return resolvedPath.startsWith(resolvedServePath);
+}
 
 @Service()
 export class LocalStorageProvider
@@ -36,6 +48,10 @@ export class LocalStorageProvider
     let stream: NodeJS.ReadableStream;
     try {
       const path = fileURLToPath(url);
+      if (!isPathAllowed(path)) {
+        throw new Error("Access to this file is not permitted");
+      }
+
       handle = await open(path);
       const stats = await handle.stat();
       if (!stats.isFile()) {
@@ -73,6 +89,10 @@ export class LocalStorageProvider
         dir: monthPath,
         base: filename,
       });
+
+      if (!isPathAllowed(finalPath)) {
+        throw new Error("Access to this location is not permitted");
+      }
 
       const handle = await open(finalPath, "w");
       try {
@@ -116,6 +136,11 @@ export class LocalStorageProvider
   async deleteFile(url: URL): Promise<void> {
     try {
       const path = fileURLToPath(url);
+
+      if (!isPathAllowed(path)) {
+        throw new Error("Access to this location is not permitted");
+      }
+
       await unlink(path);
     } catch (error) {
       logger.error("Error while deleting file", { error });
