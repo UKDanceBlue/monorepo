@@ -43,7 +43,7 @@ jobs:
         run: corepack enable
 
       - name: Set up node 18.x
-        uses: actions/setup-node@v4.0.1
+        uses: actions/setup-node@v4.0.2
         with:
           node-version: 18
           cache: yarn
@@ -61,6 +61,6 @@ jobs:
         run: yarn run repo:lint:report
         continue-on-error: true
       - name: Annotate Code Linting Results
-        uses: ataylorme/eslint-annotate-action@v2
+        uses: ataylorme/eslint-annotate-action@v3-beta
         with:
           report-json: "eslint_report.json"

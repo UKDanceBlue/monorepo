@@ -7208,7 +7208,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 10/bcc56b4f5961c66d567f797185801bc865e05eabf6f4cfe3dc6444151cf199d11af223db3ee5946529f565e3200cabcd7e531f91a66571a77c1b92e2c518c8a5
+  checksum: 10/c6836d985c74745adf906c98ece28f8345d15d5970edb2f468f3e3d264992cfe1f19f9b803d97fefac0e5003b76d5b86595b92ab3bcea020a1f02320d94c1a08
   languageName: node
   linkType: hard
 
@@ -7241,7 +7241,7 @@ __metadata:
   checksum: 10/350e73562dc6f244e33031dee84d8a720b96fd4c15c2ae4fdbca9f59beaf83ec6fc64fadcd9f6f1a68c5960cab2952478537b18b2c2b20a13ffba48af3e116ba
   languageName: node
   linkType: hard
-
+  
 "@tanstack/react-store@npm:^0.2.1":
   version: 0.2.1
   resolution: "@tanstack/react-store@npm:0.2.1"
@@ -10332,7 +10332,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"body-parser@npm:1.20.2, body-parser@npm:^1.20.2":
+"body-parser@npm:1.20.2, body-parser@npm:^1.20.0, body-parser@npm:^1.20.2":
   version: 1.20.2
   resolution: "body-parser@npm:1.20.2"
   dependencies:
@@ -11580,6 +11580,13 @@ __metadata:
   version: 0.4.1
   resolution: "cookie@npm:0.4.1"
   checksum: 10/0f2defd60ac93645ee31e82d11da695080435eb4fe5bed9b14d2fc4e0621a66f4c5c60f3eb05761df08a9d6279366e8646edfd1654f359d0b5afc25304fc4ddc
+  languageName: node
+  linkType: hard
+
+"cookie@npm:0.4.2":
+  version: 0.4.2
+  resolution: "cookie@npm:0.4.2"
+  checksum: 10/2e1de9fdedca54881eab3c0477aeb067f281f3155d9cfee9d28dfb252210d09e85e9d175c0a60689661feb9e35e588515352f2456bc1f8e8db4267e05fd70137
   languageName: node
   linkType: hard
 
@@ -17569,7 +17576,7 @@ __metadata:
   checksum: 10/b904c2f98549e4195022caca3a7dc837f9706c670ff333f3d617f2aed23bce2841322a999734683b6ab8e202568ad810c11ff79b58a64df66888153f04750239
   languageName: node
   linkType: hard
-
+  
 "jose@npm:^4.15.5":
   version: 4.15.5
   resolution: "jose@npm:4.15.5"
