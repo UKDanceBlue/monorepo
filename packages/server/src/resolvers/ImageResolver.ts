@@ -17,6 +17,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import { FileManager } from "../lib/files/FileManager.js";
 import { auditLogger } from "../lib/logging/auditLogging.js";
 import { ImageRepository } from "../repositories/image/ImageRepository.js";
 import { imageModelToResource } from "../repositories/image/imageModelToResource.js";
@@ -49,16 +50,8 @@ class CreateImageInput implements Partial<ImageResource> {
   @Field(() => NonNegativeIntResolver)
   height!: number;
 
-  @Field(() => String)
-  mimeType!: string;
-
   @Field(() => String, { nullable: true })
   alt?: string | null;
-
-  @Field(() => String, { nullable: true })
-  imageData?: string | null;
-  @Field(() => String, { nullable: true })
-  url?: URL | null;
 
   @Field(() => String, { nullable: true })
   thumbHash?: string | null;
@@ -67,7 +60,10 @@ class CreateImageInput implements Partial<ImageResource> {
 @Resolver(() => ImageResource)
 @Service()
 export class ImageResolver {
-  constructor(private readonly imageRepository: ImageRepository) {}
+  constructor(
+    private readonly imageRepository: ImageRepository,
+    private readonly fileManager: FileManager
+  ) {}
 
   @Query(() => GetImageByUuidResponse, { name: "image" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetImageByUuidResponse> {
@@ -77,7 +73,9 @@ export class ImageResolver {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");
     }
 
-    return GetImageByUuidResponse.newOk(imageModelToResource(result));
+    return GetImageByUuidResponse.newOk(
+      await imageModelToResource(result, result.file, this.fileManager)
+    );
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
@@ -85,29 +83,17 @@ export class ImageResolver {
   async create(
     @Arg("input") input: CreateImageInput
   ): Promise<CreateImageResponse> {
-    if (input.imageData == null && input.url == null) {
-      throw new DetailedError(
-        ErrorCode.MissingRequiredInput,
-        "Must provide either imageData or url"
-      );
-    }
-
     const result = await this.imageRepository.createImage({
-      url: input.url?.href,
-      imageData: input.imageData
-        ? Buffer.from(input.imageData, "base64")
-        : null,
       width: input.width,
       height: input.height,
       alt: input.alt,
       thumbHash: input.thumbHash
         ? Buffer.from(input.thumbHash, "base64")
         : null,
-      mimeType: input.mimeType,
     });
 
     return CreateImageResponse.newCreated(
-      imageModelToResource(result),
+      await imageModelToResource(result, null, this.fileManager),
       result.uuid
     );
   }

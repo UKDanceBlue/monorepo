@@ -18,7 +18,6 @@ import {
   Field,
   FieldResolver,
   InputType,
-  Int,
   Mutation,
   ObjectType,
   Query,
@@ -27,6 +26,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import { FileManager } from "../lib/files/FileManager.js";
 import { auditLogger } from "../lib/logging/auditLogging.js";
 import { EventRepository } from "../repositories/event/EventRepository.js";
 import {
@@ -150,31 +150,6 @@ class SetEventInput {
   description!: string | null;
 }
 
-@InputType()
-class AddEventImageInput {
-  // TODO: Make this a URL scalar, for some reason was getting 'Error: Schema must contain uniquely named types but contains multiple types named "URL".'
-  @Field(() => String, { nullable: true })
-  url!: string | null;
-
-  @Field(() => String, { nullable: true })
-  imageData!: string | null;
-
-  @Field(() => String)
-  mimeType!: string;
-
-  @Field(() => String, { nullable: true })
-  thumbHash!: string | null;
-
-  @Field(() => String, { nullable: true })
-  alt!: string | null;
-
-  @Field(() => Int)
-  width!: number;
-
-  @Field(() => Int)
-  height!: number;
-}
-
 @ArgsType()
 class ListEventsArgs extends FilteredListQueryArgs<
   | "title"
@@ -221,8 +196,9 @@ class ListEventsArgs extends FilteredListQueryArgs<
 @Resolver(() => EventResource)
 export class EventResolver {
   constructor(
-    private eventRepository: EventRepository,
-    private eventImageRepository: EventImagesRepository
+    private readonly eventRepository: EventRepository,
+    private readonly eventImageRepository: EventImagesRepository,
+    private readonly fileManager: FileManager
   ) {}
   @Query(() => GetEventByUuidResponse, { name: "event" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetEventByUuidResponse> {
@@ -403,32 +379,6 @@ export class EventResolver {
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
-  @Mutation(() => AddEventImageResponse, { name: "addImageToEvent" })
-  async addImage(
-    @Arg("eventId") eventUuid: string,
-    @Arg("input") input: AddEventImageInput
-  ): Promise<AddEventImageResponse> {
-    const row = await this.eventImageRepository.createEventImageForEvent(
-      { uuid: eventUuid },
-      {
-        url: input.url,
-        imageData: input.imageData
-          ? Buffer.from(input.imageData, "base64")
-          : null,
-        mimeType: input.mimeType,
-        thumbHash: input.thumbHash
-          ? Buffer.from(input.thumbHash, "base64")
-          : null,
-        alt: input.alt,
-        width: input.width,
-        height: input.height,
-      }
-    );
-
-    return AddEventImageResponse.newOk(imageModelToResource(row.image));
-  }
-
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => AddEventImageResponse, { name: "addExistingImageToEvent" })
   async addExistingImage(
     @Arg("eventId") eventId: string,
@@ -439,7 +389,9 @@ export class EventResolver {
       { uuid: imageId }
     );
 
-    return AddEventImageResponse.newOk(imageModelToResource(row.image));
+    return AddEventImageResponse.newOk(
+      await imageModelToResource(row.image, row.image.file, this.fileManager)
+    );
   }
 
   @FieldResolver(() => [ImageResource])
@@ -448,6 +400,10 @@ export class EventResolver {
       uuid: event.uuid,
     });
 
-    return rows.map((row) => imageModelToResource(row.image));
+    return Promise.all(
+      rows.map((row) =>
+        imageModelToResource(row.image, row.image.file, this.fileManager)
+      )
+    );
   }
 }

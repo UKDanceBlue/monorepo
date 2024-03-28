@@ -57,7 +57,7 @@ export class EventImagesRepository {
       where: {
         event: param,
       },
-      include: { image: true },
+      include: { image: { include: { file: true } } },
     });
   }
 
@@ -95,7 +95,7 @@ export class EventImagesRepository {
         event: { connect: eventParam },
         image: { connect: imageParam },
       },
-      include: { image: true },
+      include: { image: { include: { file: true } } },
     });
   }
 
