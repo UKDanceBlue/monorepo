@@ -107,23 +107,31 @@ export class FileManager {
    * @throws Error if the file's location is not supported
    */
   async getExternalUrl(
-    file: { id: number } | { uuid: string }
+    file: { uuid: string } | { uuid: string; locationUrl: string }
   ): Promise<URL | null> {
-    const fileRecord = await this.fileRepository.findFileByUnique(file);
-    if (!fileRecord) {
-      return null;
+    let locationUrl: URL;
+    let fileUuid: string;
+    if ("locationUrl" in file) {
+      locationUrl = new URL(file.locationUrl);
+      fileUuid = file.uuid;
+    } else {
+      const fileRecord = await this.fileRepository.findFileByUnique(file);
+      if (!fileRecord) {
+        return null;
+      }
+      locationUrl = new URL(fileRecord.locationUrl);
+      fileUuid = fileRecord.uuid;
     }
-    const locationUrl = new URL(fileRecord.locationUrl);
     switch (locationUrl.protocol) {
       case "file": {
-        return new URL(fileRecord.uuid, FILE_API);
+        return new URL(fileUuid, FILE_API);
       }
       case "http":
       case "https": {
         return locationUrl;
       }
       case "data": {
-        return new URL(fileRecord.uuid, FILE_API);
+        return new URL(fileUuid, FILE_API);
       }
       default: {
         throw new Error("Unsupported protocol");
