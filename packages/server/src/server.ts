@@ -1,5 +1,9 @@
 import http from "node:http";
 
+import type {
+  ApolloServerPlugin,
+  GraphQLRequestListener,
+} from "@apollo/server";
 import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { koaMiddleware } from "@as-integrations/koa";
@@ -9,32 +13,40 @@ import type { DefaultState } from "koa";
 import Koa from "koa";
 import { koaBody } from "koa-body";
 
-import { applicationHost, applicationPort } from "./environment.js";
-import { logger } from "./logger.js";
+import {
+  applicationHost,
+  applicationPort,
+  loggingLevel,
+} from "./environment.js";
+import { logger } from "./lib/logging/logger.js";
 import type { GraphQLContext } from "./resolvers/context.js";
 import eventsApiRouter from "./routes/api/events/index.js";
 import healthCheckRouter from "./routes/api/healthcheck/index.js";
 
-// const BASIC_LOGGING: ApolloServerPlugin = {
-//   async requestDidStart(requestContext) {
-//     logger.debug(`request started:\n${requestContext.request.query}`, {
-//       variables: requestContext.request.variables,
-//     });
-//     const listener: GraphQLRequestListener<GraphQLContext> = {
-//       async didEncounterErrors(requestContext) {
-//         logger.info(
-//           `an error happened in response to query: ${requestContext.request.query}`,
-//           { errors: requestContext.errors }
-//         );
-//       },
-//       async willSendResponse(requestContext) {
-//         logger.debug("response sent", { response: requestContext.response });
-//       },
-//     };
-//
-//     return listener;
-//   },
-// };
+const basicLoggingPlugin: ApolloServerPlugin = {
+  requestDidStart(requestContext) {
+    logger.trace(`graphQL request started:\n${requestContext.request.query}`, {
+      variables: requestContext.request.variables,
+    });
+    const listener: GraphQLRequestListener<GraphQLContext> = {
+      didEncounterErrors(requestContext) {
+        logger.info(
+          `an error happened in response to graphQL query: ${requestContext.request.query}`,
+          { errors: requestContext.errors }
+        );
+        return Promise.resolve();
+      },
+      willSendResponse(requestContext) {
+        logger.trace("graphQL response sent", {
+          response: requestContext.response.body,
+        });
+        return Promise.resolve();
+      },
+    };
+
+    return Promise.resolve(listener);
+  },
+};
 
 /**
  * Create the Koa, HTTP, and Apollo servers
@@ -55,13 +67,20 @@ export async function createServer() {
 
   const httpServer = http.createServer(app.callback());
 
+  const apolloServerPlugins = [
+    ApolloServerPluginDrainHttpServer({ httpServer }),
+  ];
+  if (loggingLevel === "trace") {
+    logger.warning(
+      "Apollo Server is running in trace mode, make sure to limit the number of requests you make as the logs will get big quickly. TURN OFF SCHEMA REFRESH IN GRAPHQL PLAYGROUND."
+    );
+    apolloServerPlugins.push(basicLoggingPlugin);
+  }
   // Set up Apollo Server
   const server = new ApolloServer<GraphQLContext>({
     introspection: true,
     schema: graphqlSchema,
-    plugins: [
-      ApolloServerPluginDrainHttpServer({ httpServer }) /* BASIC_LOGGING, */,
-    ],
+    plugins: apolloServerPlugins,
     logger: {
       debug: logger.debug,
       info: logger.info,
@@ -109,6 +128,16 @@ export async function startServer(
   app: Koa
 ) {
   await apolloServer.start();
+
+  if (loggingLevel === "trace") {
+    app.use(async (ctx, next) => {
+      logger.trace("request received", {
+        method: ctx.method,
+        url: ctx.url,
+      });
+      await next();
+    });
+  }
 
   const { default: authApiRouter } = await import("./routes/api/auth/index.js");
   const { graphqlContextFunction } = await import("./resolvers/context.js");

@@ -3,7 +3,7 @@ import { renderWithNativeBase } from "../../../../test-helpers/NativeBase";
 import TimeUnit from ".";
 
 describe("<TimeUnit />", () => {
-  test("renders 0 with a negative value", () => {
+  it("renders 0 with a negative value", () => {
     const tree = renderWithNativeBase(<TimeUnit value={-1} unit={"sec"} />);
 
     const valueElement = tree.queryAllByText("0");
@@ -13,7 +13,7 @@ describe("<TimeUnit />", () => {
     expect(unitElement).toHaveLength(1);
   });
 
-  test("renders 0 with a nullish value", () => {
+  it("renders 0 with a nullish value", () => {
     // @ts-expect-error Testing nullish values
     const tree = renderWithNativeBase(<TimeUnit value={null} unit={"sec"} />);
 
@@ -24,7 +24,7 @@ describe("<TimeUnit />", () => {
     expect(unitElement).toHaveLength(1);
   });
 
-  test("throws when passed an invalid type", () => {
+  it("throws when passed an invalid type", () => {
     const mockedConsoleError = jest
       .spyOn(console, "error")
       .mockImplementation(() => undefined);
@@ -38,14 +38,14 @@ describe("<TimeUnit />", () => {
     mockedConsoleError.mockRestore();
   });
 
-  test("renders correctly with a singular unit", () => {
+  it("renders correctly with a singular unit", () => {
     const tree = renderWithNativeBase(
       <TimeUnit value={1} unit={"sec"} />
     ).toJSON() as unknown;
 
     expect(tree).toMatchSnapshot();
   });
-  test("renders correctly with a plural unit", () => {
+  it("renders correctly with a plural unit", () => {
     const tree = renderWithNativeBase(
       <TimeUnit value={10} unit={"sec"} />
     ).toJSON() as unknown;

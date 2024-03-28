@@ -7,8 +7,22 @@
   ],
   "eslint.experimental.useFlatConfig": true,
   "typescript.tsdk": "node_modules/typescript/lib",
-  "cSpell.words": ["emerg", "healthcheck", "maxsize", "RNCAL", "umzug"],
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.tsserver.experimental.enableProjectDiagnostics": true,
-  "npm.packageManager": "yarn"
+  "npm.packageManager": "yarn",
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll": "explicit"
+  },
+  "search.exclude": {
+    "package-lock.json": true,
+    "yarn.lock": true
+  },
+  "remote.localPortHost": "allInterfaces",
+  "typescript.inlayHints.parameterNames.enabled": "all",
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
+  "javascript.inlayHints.parameterNames.enabled": "all",
+  "cSpell.words": ["Spinnable"]
 }

@@ -4,6 +4,8 @@ import {
   configRoute,
   eventsRoute,
   homeRoute,
+  marathonsRoute,
+  notificationsRoute,
   peopleRoute,
   teamsRoute,
 } from "./baseRoutes";
@@ -14,6 +16,23 @@ import {
   singleEventRoute,
   viewEventRoute,
 } from "./eventRoutes";
+import {
+  addMarathonHourRoute,
+  createMarathonRoute,
+  editMarathonHourRoute,
+  editMarathonRoute,
+  marathonHoursRoute,
+  marathonOverviewRoute,
+  singleMarathonRoute,
+  viewMarathonRoute,
+} from "./marathonRouter";
+import {
+  createNotificationRoute,
+  manageNotificationRoute,
+  notificationsTableRoute,
+  singleNotificationRoute,
+  viewNotificationRoute,
+} from "./notificationRoutes";
 import {
   createPersonRoute,
   editPersonRoute,
@@ -48,6 +67,26 @@ const routeTree = rootRoute.addChildren([
     singlePersonRoute.addChildren([editPersonRoute, viewPersonRoute]),
   ]),
   configRoute,
+  notificationsRoute.addChildren([
+    notificationsTableRoute,
+    createNotificationRoute,
+    singleNotificationRoute.addChildren([
+      viewNotificationRoute,
+      manageNotificationRoute,
+    ]),
+  ]),
+  marathonsRoute.addChildren([
+    marathonOverviewRoute,
+    createMarathonRoute,
+    singleMarathonRoute.addChildren([
+      viewMarathonRoute,
+      editMarathonRoute,
+      marathonHoursRoute.addChildren([
+        editMarathonHourRoute,
+        addMarathonHourRoute,
+      ]),
+    ]),
+  ]),
 ]);
 
 export const router = new Router({

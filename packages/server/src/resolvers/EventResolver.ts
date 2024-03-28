@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import {
   AccessControl,
   AccessLevel,
@@ -5,7 +6,9 @@ import {
   DetailedError,
   ErrorCode,
   EventResource,
+  FilteredListQueryArgs,
   ImageResource,
+  SortDirection,
 } from "@ukdanceblue/common";
 import { Interval } from "luxon";
 import {
@@ -22,22 +25,22 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
+import { Service } from "typedi";
 
-import { sequelizeDb } from "../data-source.js";
-import { EventModel } from "../models/Event.js";
-import { EventOccurrenceModel } from "../models/EventOccurrence.js";
-import { ImageModel } from "../models/Image.js";
+import { auditLogger } from "../lib/logging/auditLogging.js";
+import { EventRepository } from "../repositories/event/EventRepository.js";
+import {
+  eventModelToResource,
+  eventOccurrenceModelToResource,
+} from "../repositories/event/eventModelToResource.js";
+import { EventImagesRepository } from "../repositories/event/images/EventImagesRepository.js";
+import { imageModelToResource } from "../repositories/image/imageModelToResource.js";
 
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
-import type {
-  ResolverInterface,
-  ResolverInterfaceWithFilteredList,
-} from "./ResolverInterface.js";
-import { FilteredListQueryArgs } from "./list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("GetEventByUuidResponse", {
   implements: AbstractGraphQLOkResponse<EventResource>,
@@ -173,7 +176,26 @@ class AddEventImageInput {
 }
 
 @ArgsType()
-class ListEventsArgs extends FilteredListQueryArgs("EventResolver", {
+class ListEventsArgs extends FilteredListQueryArgs<
+  | "title"
+  | "description"
+  | "summary"
+  | "location"
+  | "occurrence"
+  | "occurrenceStart"
+  | "occurrenceEnd"
+  | "createdAt"
+  | "updatedAt",
+  "title" | "description" | "summary" | "location",
+  never,
+  never,
+  | "occurrence"
+  | "occurrenceStart"
+  | "occurrenceEnd"
+  | "createdAt"
+  | "updatedAt",
+  never
+>("EventResolver", {
   all: [
     "title",
     "description",
@@ -182,12 +204,10 @@ class ListEventsArgs extends FilteredListQueryArgs("EventResolver", {
     "occurrence",
     "occurrenceStart",
     "occurrenceEnd",
-    "duration",
     "createdAt",
     "updatedAt",
   ],
   string: ["title", "summary", "description", "location"],
-  numeric: ["duration"],
   date: [
     "occurrence",
     "createdAt",
@@ -195,50 +215,55 @@ class ListEventsArgs extends FilteredListQueryArgs("EventResolver", {
     "occurrenceStart",
     "occurrenceEnd",
   ],
-})<EventModel> {}
+}) {}
 
+@Service()
 @Resolver(() => EventResource)
-export class EventResolver
-  implements
-    ResolverInterface<EventResource>,
-    ResolverInterfaceWithFilteredList<EventResource, ListEventsArgs>
-{
+export class EventResolver {
+  constructor(
+    private eventRepository: EventRepository,
+    private eventImageRepository: EventImagesRepository
+  ) {}
   @Query(() => GetEventByUuidResponse, { name: "event" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetEventByUuidResponse> {
-    const row = await EventModel.findOne({ where: { uuid } });
+    const row = await this.eventRepository.findEventByUnique({ uuid });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
 
-    return GetEventByUuidResponse.newOk(await row.toResource());
+    return GetEventByUuidResponse.newOk(
+      eventModelToResource(
+        row,
+        row.eventOccurrences.map(eventOccurrenceModelToResource)
+      )
+    );
   }
 
   @Query(() => ListEventsResponse, { name: "events" })
   async list(@Args() query: ListEventsArgs) {
-    const findOptions = query.toSequelizeFindOptions(
-      {
-        title: "title",
-        description: "description",
-        location: "location",
-        occurrence: "$occurrences.date$",
-        duration: "duration",
-        occurrenceStart: "$occurrences.date$",
-        occurrenceEnd: "$occurrences.endDate$",
-      },
-      {
-        occurrence: [EventOccurrenceModel, "date"] as const,
-        occurrenceStart: [EventOccurrenceModel, "date"] as const,
-        occurrenceEnd: [EventOccurrenceModel, "endDate"] as const,
-      },
-      EventModel
-    );
-
-    const { rows, count } = await EventModel.findAndCountAll(findOptions);
+    const rows = await this.eventRepository.listEvents({
+      filters: query.filters,
+      order:
+        query.sortBy?.map((key, i) => [
+          key,
+          query.sortDirection?.[i] ?? SortDirection.DESCENDING,
+        ]) ?? [],
+      skip:
+        query.page != null && query.pageSize != null
+          ? (query.page - 1) * query.pageSize
+          : null,
+      take: query.pageSize,
+    });
 
     return ListEventsResponse.newPaginated({
-      data: await Promise.all(rows.map((row) => row.toResource())),
-      total: count,
+      data: rows.map((row) =>
+        eventModelToResource(
+          row,
+          row.eventOccurrences.map(eventOccurrenceModelToResource)
+        )
+      ),
+      total: await this.eventRepository.countEvents({ filters: query.filters }),
       page: query.page,
       pageSize: query.pageSize,
     });
@@ -249,49 +274,45 @@ export class EventResolver
   async create(
     @Arg("input") input: CreateEventInput
   ): Promise<CreateEventResponse> {
-    const row = await EventModel.create({
+    const row = await this.eventRepository.createEvent({
       title: input.title,
       summary: input.summary,
       description: input.description,
       location: input.location,
+      eventOccurrences: {
+        createMany: {
+          data: input.occurrences.map(
+            (occurrence): Prisma.EventOccurrenceCreateManyEventInput => ({
+              date: occurrence.interval.start!.toJSDate(),
+              endDate: occurrence.interval.end!.toJSDate(),
+              fullDay: occurrence.fullDay,
+            })
+          ),
+        },
+      },
     });
 
-    const promises: Promise<EventOccurrenceModel>[] = [];
-    for (const occurrence of input.occurrences) {
-      const {
-        interval: { start, end },
-        fullDay,
-      } = occurrence;
-      if (start == null || end == null) {
-        throw new DetailedError(ErrorCode.InvalidRequest, "Invalid occurrence");
-      }
-      promises.push(
-        row.createOccurrence({
-          date: start.toJSDate(),
-          endDate: end.toJSDate(),
-          fullDay,
-          eventId: row.id,
-        })
-      );
-    }
-    await Promise.all(promises);
+    auditLogger.sensitive("Event created", { event: row });
 
-    return CreateEventResponse.newCreated(await row.toResource(), row.uuid);
+    return CreateEventResponse.newCreated(
+      eventModelToResource(
+        row,
+        row.eventOccurrences.map(eventOccurrenceModelToResource)
+      ),
+      row.uuid
+    );
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => DeleteEventResponse, { name: "deleteEvent" })
-  async delete(@Arg("uuid") id: string): Promise<DeleteEventResponse> {
-    const row = await EventModel.findOne({
-      where: { uuid: id },
-      attributes: ["id"],
-    });
+  async delete(@Arg("uuid") uuid: string): Promise<DeleteEventResponse> {
+    const row = await this.eventRepository.deleteEvent({ uuid });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
 
-    await row.destroy();
+    auditLogger.sensitive("Event deleted", { uuid });
 
     return DeleteEventResponse.newOk(true);
   }
@@ -302,169 +323,109 @@ export class EventResolver
     @Arg("uuid") uuid: string,
     @Arg("input") input: SetEventInput
   ): Promise<SetEventResponse> {
-    const result = await sequelizeDb.transaction(async () => {
-      const basicEvent = await EventModel.findByUuid(uuid, {
-        include: [{ model: ImageModel, as: "images" }],
-      });
-
-      if (basicEvent == null) {
-        throw new DetailedError(ErrorCode.NotFound, "Event not found");
-      }
-
-      const rowId = basicEvent.id;
-
-      const occurrencesToDelete: EventOccurrenceModel[] = [];
-      const occurrencesToUpdate: EventOccurrenceModel[] = [];
-      const occurrencesToCreate: CreateEventOccurrenceInput[] = [];
-
-      for (const occurrence of basicEvent.occurrences ?? []) {
-        const inputOccurrence = input.occurrences.find(
-          (inputOccurrence) => inputOccurrence.uuid === occurrence.uuid
-        );
-        if (inputOccurrence == null) {
-          occurrencesToDelete.push(occurrence);
-        } else {
-          occurrencesToUpdate.push(occurrence);
-        }
-      }
-      for (const inputOccurrence of input.occurrences) {
-        if (
-          !basicEvent.occurrences?.some(
-            (occurrence) => occurrence.uuid === inputOccurrence.uuid
-          )
-        ) {
-          occurrencesToCreate.push(inputOccurrence);
-        }
-      }
-
-      const promises = [
-        // Delete any occurrences that are no longer in the input
-        ...occurrencesToDelete.map(async (occurrence) => {
-          await occurrence.destroy();
-          return undefined;
-        }),
-
-        // Update any occurrences that are in the input
-        ...occurrencesToUpdate.map((occurrence) => {
-          const inputOccurrence = input.occurrences.find(
-            (inputOccurrence) => inputOccurrence.uuid === occurrence.uuid
-          );
-          if (inputOccurrence == null) {
-            throw new DetailedError(
-              ErrorCode.InvalidRequest,
-              "Invalid occurrence"
-            );
-          }
-          const {
-            interval: { start, end },
-            fullDay,
-          } = inputOccurrence;
-          if (start == null || end == null) {
-            throw new DetailedError(
-              ErrorCode.InvalidRequest,
-              "Invalid occurrence"
-            );
-          }
-          return occurrence.update({
-            date: start.toJSDate(),
-            endDate: end.toJSDate(),
-            fullDay,
-          });
-        }),
-
-        // Create any occurrences that are only in the input
-        ...occurrencesToCreate.map((inputOccurrence) => {
-          const {
-            interval: { start, end },
-            fullDay,
-          } = inputOccurrence;
-          if (start == null || end == null) {
-            throw new DetailedError(
-              ErrorCode.InvalidRequest,
-              "Invalid occurrence"
-            );
-          }
-          return EventOccurrenceModel.create({
-            eventId: rowId,
-            date: start.toJSDate(),
-            endDate: end.toJSDate(),
-            fullDay,
-          });
-        }),
-      ];
-
-      await Promise.all(promises);
-
-      const row = await basicEvent.update(
-        {
-          title: input.title,
-          summary: input.summary,
-          description: input.description,
-          location: input.location,
+    const row = await this.eventRepository.updateEvent(
+      { uuid },
+      {
+        title: input.title,
+        summary: input.summary,
+        description: input.description,
+        location: input.location,
+        eventOccurrences: {
+          createMany: {
+            data: input.occurrences
+              .filter((occurrence) => occurrence.uuid == null)
+              .map(
+                (occurrence): Prisma.EventOccurrenceCreateManyEventInput => ({
+                  date: occurrence.interval.start!.toJSDate(),
+                  endDate: occurrence.interval.end!.toJSDate(),
+                  fullDay: occurrence.fullDay,
+                })
+              ),
+          },
+          updateMany: input.occurrences
+            .filter((occurrence) => occurrence.uuid != null)
+            .map(
+              (
+                occurrence
+              ): Prisma.EventOccurrenceUpdateManyWithWhereWithoutEventInput => ({
+                where: { uuid: occurrence.uuid! },
+                data: {
+                  date: occurrence.interval.start!.toJSDate(),
+                  endDate: occurrence.interval.end!.toJSDate(),
+                  fullDay: occurrence.fullDay,
+                },
+              })
+            ),
+          // TODO: test if this delete also deletes the occurrences we are creating
+          deleteMany: {
+            uuid: {
+              notIn: input.occurrences
+                .filter((occurrence) => occurrence.uuid != null)
+                .map((occurrence) => occurrence.uuid!),
+            },
+          },
         },
-        { returning: true }
-      );
+      }
+    );
 
-      return row;
-    });
+    if (row == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Event not found");
+    }
 
-    return SetEventResponse.newOk(await result.toResource());
+    auditLogger.sensitive("Event updated", { event: row });
+
+    return SetEventResponse.newOk(
+      eventModelToResource(
+        row,
+        row.eventOccurrences.map(eventOccurrenceModelToResource)
+      )
+    );
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => RemoveEventImageResponse, { name: "removeImageFromEvent" })
   async removeImage(
-    @Arg("eventId") eventId: string,
-    @Arg("imageId") imageId: string
+    @Arg("eventId") eventUuid: string,
+    @Arg("imageId") imageUuid: string
   ): Promise<RemoveEventImageResponse> {
-    return sequelizeDb.transaction(async () => {
-      const row = await EventModel.findByUuid(eventId, {
-        include: [{ model: ImageModel, as: "images" }],
-      });
-
-      if (row == null) {
-        throw new DetailedError(ErrorCode.NotFound, "Event not found");
-      }
-
-      const image = row.images?.find((image) => image.uuid === imageId);
-
-      if (image == null) {
-        throw new DetailedError(ErrorCode.NotFound, "Image not found");
-      }
-
-      await image.destroy();
-
-      return RemoveEventImageResponse.newOk(true);
+    const row = await this.eventImageRepository.removeEventImageByUnique({
+      eventUuid,
+      imageUuid,
     });
+
+    if (!row) {
+      throw new DetailedError(ErrorCode.NotFound, "Image not found");
+    }
+
+    auditLogger.sensitive("Event image removed", { eventUuid, imageUuid });
+
+    return RemoveEventImageResponse.newOk(true);
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => AddEventImageResponse, { name: "addImageToEvent" })
   async addImage(
-    @Arg("eventId") eventId: string,
+    @Arg("eventId") eventUuid: string,
     @Arg("input") input: AddEventImageInput
   ): Promise<AddEventImageResponse> {
-    return sequelizeDb.transaction(async () => {
-      const row = await EventModel.findByUuid(eventId);
-
-      if (row == null) {
-        throw new DetailedError(ErrorCode.NotFound, "Event not found");
-      }
-
-      const image = await ImageModel.create({
-        url: input.url ? new URL(input.url) : null,
-        imageData: input.imageData ? Buffer.from(input.imageData) : null,
+    const row = await this.eventImageRepository.createEventImageForEvent(
+      { uuid: eventUuid },
+      {
+        url: input.url,
+        imageData: input.imageData
+          ? Buffer.from(input.imageData, "base64")
+          : null,
         mimeType: input.mimeType,
-        thumbHash: input.thumbHash ? Buffer.from(input.thumbHash) : null,
+        thumbHash: input.thumbHash
+          ? Buffer.from(input.thumbHash, "base64")
+          : null,
         alt: input.alt,
         width: input.width,
         height: input.height,
-      });
+      }
+    );
 
-      await row.addImage(image);
-
-      return AddEventImageResponse.newOk(image.toResource());
-    });
+    return AddEventImageResponse.newOk(imageModelToResource(row.image));
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
@@ -473,35 +434,20 @@ export class EventResolver
     @Arg("eventId") eventId: string,
     @Arg("imageId") imageId: string
   ): Promise<AddEventImageResponse> {
-    return sequelizeDb.transaction(async () => {
-      const event = await EventModel.findByUuid(eventId);
+    const row = await this.eventImageRepository.addExistingImageToEvent(
+      { uuid: eventId },
+      { uuid: imageId }
+    );
 
-      if (event == null) {
-        throw new DetailedError(ErrorCode.NotFound, "Event not found");
-      }
-
-      const image = await ImageModel.findByUuid(imageId);
-
-      if (image == null) {
-        throw new DetailedError(ErrorCode.NotFound, "Image not found");
-      }
-
-      await event.addImage(image);
-
-      return AddEventImageResponse.newOk(image.toResource());
-    });
+    return AddEventImageResponse.newOk(imageModelToResource(row.image));
   }
 
   @FieldResolver(() => [ImageResource])
   async images(@Root() event: EventResource): Promise<ImageResource[]> {
-    const row = await EventModel.findByUuid(event.uuid, {
-      include: [{ model: ImageModel, as: "images" }],
+    const rows = await this.eventImageRepository.findEventImagesByEventUnique({
+      uuid: event.uuid,
     });
 
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Event not found");
-    }
-
-    return row.images?.map((row) => row.toResource()) ?? [];
+    return rows.map((row) => imageModelToResource(row.image));
   }
 }

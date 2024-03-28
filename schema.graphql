@@ -3,6 +3,11 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type AbortScheduledNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: Boolean!
+  ok: Boolean!
+}
+
 """API response"""
 interface AbstractGraphQLArrayOkResponse implements GraphQLBaseResponse {
   ok: Boolean!
@@ -33,6 +38,11 @@ interface AbstractGraphQLPaginatedResponse implements AbstractGraphQLArrayOkResp
   total: NonNegativeInt!
 }
 
+type AcknowledgeDeliveryIssueResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: Boolean!
+  ok: Boolean!
+}
+
 input AddEventImageInput {
   alt: String
   height: Int!
@@ -48,7 +58,7 @@ type AddEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseRes
   ok: Boolean!
 }
 
-type AuthIdList {
+type AuthIdPairResource {
   source: AuthSource!
   value: String!
 }
@@ -57,8 +67,8 @@ type AuthIdList {
 enum AuthSource {
   Anonymous
   Demo
+  LinkBlue
   None
-  UkyLinkblue
 }
 
 """The identifier for a committee"""
@@ -141,6 +151,19 @@ type CreateImageResponse implements AbstractGraphQLCreatedResponse & AbstractGra
   uuid: String!
 }
 
+input CreateMarathonHourInput {
+  details: String
+  durationInfo: String!
+  shownStartingAt: DateTimeISO!
+  title: String!
+}
+
+input CreateMarathonInput {
+  endDate: DateTimeISO!
+  startDate: DateTimeISO!
+  year: String!
+}
+
 input CreatePersonInput {
   captainOf: [String!]! = []
   email: EmailAddress!
@@ -160,7 +183,7 @@ input CreatePointEntryInput {
   comment: String
   opportunityUuid: String
   personFromUuid: String
-  points: Float!
+  points: Int!
   teamUuid: String!
 }
 
@@ -207,8 +230,7 @@ enum DbRole {
   Committee
   None
   Public
-  TeamCaptain
-  TeamMember
+  UKY
 }
 
 type DeleteConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -228,6 +250,7 @@ type DeleteImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseRespo
 }
 
 type DeleteNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: Boolean!
   ok: Boolean!
 }
 
@@ -249,15 +272,14 @@ type DeleteTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseRespon
 
 enum DeviceResolverAllKeys {
   createdAt
-  deviceId
   expoPushToken
-  lastLogin
+  lastSeen
   updatedAt
 }
 
 enum DeviceResolverDateFilterKeys {
   createdAt
-  lastLogin
+  lastSeen
   updatedAt
 }
 
@@ -287,7 +309,7 @@ input DeviceResolverKeyedIsNullFilterItem {
 
 input DeviceResolverKeyedOneOfFilterItem {
   """The field to filter on"""
-  field: DeviceResolverStringFilterKeys!
+  field: Void!
 
   """
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
@@ -311,7 +333,6 @@ input DeviceResolverKeyedStringFilterItem {
 }
 
 enum DeviceResolverStringFilterKeys {
-  deviceId
   expoPushToken
 }
 
@@ -320,6 +341,15 @@ type DeviceResource {
   expoPushToken: String
   lastLoggedInUser: PersonResource
   lastLogin: LuxonDateTime
+  notificationDeliveries(
+    page: Int = 1
+    pageSize: Int = 10
+
+    """
+    The verifier code for this device, if it does not match then the query will be rejected
+    """
+    verifier: String
+  ): [NotificationDeliveryResource!]!
   updatedAt: DateTimeISO
   uuid: ID!
 }
@@ -330,17 +360,14 @@ A field whose value conforms to the standard internet email address format as sp
 scalar EmailAddress @specifiedBy(url: "https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address")
 
 type EventOccurrenceResource {
-  createdAt: DateTimeISO
   fullDay: Boolean!
   interval: LuxonDateRange!
-  updatedAt: DateTimeISO
   uuid: ID!
 }
 
 enum EventResolverAllKeys {
   createdAt
   description
-  duration
   location
   occurrence
   occurrenceEnd
@@ -382,23 +409,9 @@ input EventResolverKeyedIsNullFilterItem {
   negate: Boolean = false
 }
 
-input EventResolverKeyedNumericFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: EventResolverNumericFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: Float!
-}
-
 input EventResolverKeyedOneOfFilterItem {
   """The field to filter on"""
-  field: EventResolverStringFilterKeys!
+  field: Void!
 
   """
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
@@ -419,10 +432,6 @@ input EventResolverKeyedStringFilterItem {
   """
   negate: Boolean = false
   value: String!
-}
-
-enum EventResolverNumericFilterKeys {
-  duration
 }
 
 enum EventResolverStringFilterKeys {
@@ -489,11 +498,6 @@ type GetPointEntryByUuidResponse implements AbstractGraphQLOkResponse & GraphQLB
   ok: Boolean!
 }
 
-type GetThumbHashByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: String!
-  ok: Boolean!
-}
-
 """API response"""
 interface GraphQLBaseResponse {
   ok: Boolean!
@@ -528,6 +532,34 @@ type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGra
 
 type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
   data: [EventResource!]!
+  ok: Boolean!
+
+  """The current page number (1-indexed)"""
+  page: PositiveInt!
+
+  """The number of items per page"""
+  pageSize: NonNegativeInt!
+
+  """The total number of items"""
+  total: NonNegativeInt!
+}
+
+type ListMarathonsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+  data: [MarathonResource!]!
+  ok: Boolean!
+
+  """The current page number (1-indexed)"""
+  page: PositiveInt!
+
+  """The number of items per page"""
+  pageSize: NonNegativeInt!
+
+  """The total number of items"""
+  total: NonNegativeInt!
+}
+
+type ListNotificationDeliveriesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+  data: [NotificationDeliveryResource!]!
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -622,6 +654,66 @@ scalar LuxonDateRange @specifiedBy(url: "https://www.iso.org/iso-8601-date-and-t
 """Luxon DateTime custom scalar type"""
 scalar LuxonDateTime
 
+type MarathonHourResource {
+  createdAt: DateTimeISO
+  details: String
+  durationInfo: String!
+  mapImages: [ImageResource!]!
+  shownStartingAt: DateTimeISO!
+  title: String!
+  updatedAt: DateTimeISO
+  uuid: ID!
+}
+
+enum MarathonResolverAllKeys {
+  createdAt
+  endDate
+  startDate
+  updatedAt
+  year
+}
+
+enum MarathonResolverDateFilterKeys {
+  createdAt
+  endDate
+  startDate
+  updatedAt
+}
+
+input MarathonResolverKeyedDateFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: MarathonResolverDateFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: LuxonDateTime!
+}
+
+input MarathonResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: MarathonResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+type MarathonResource {
+  createdAt: DateTimeISO
+  endDate: DateTimeISO!
+  hours: [MarathonHourResource!]!
+  startDate: DateTimeISO!
+  updatedAt: DateTimeISO
+  uuid: ID!
+  year: String!
+}
+
 """The position of a member on a team"""
 enum MembershipPositionType {
   Captain
@@ -638,12 +730,17 @@ type MembershipResource {
 }
 
 type Mutation {
+  abortScheduledNotification(uuid: String!): AbortScheduledNotificationResponse!
+  acknowledgeDeliveryIssue(uuid: String!): AcknowledgeDeliveryIssueResponse!
   addExistingImageToEvent(eventId: String!, imageId: String!): AddEventImageResponse!
   addImageToEvent(eventId: String!, input: AddEventImageInput!): AddEventImageResponse!
+  addMap(imageUuid: String!, uuid: String!): MarathonHourResource!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
   createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
   createEvent(input: CreateEventInput!): CreateEventResponse!
   createImage(input: CreateImageInput!): CreateImageResponse!
+  createMarathon(input: CreateMarathonInput!): MarathonResource!
+  createMarathonHour(input: CreateMarathonHourInput!, marathonUuid: String!): MarathonHourResource!
   createPerson(input: CreatePersonInput!): CreatePersonResponse!
   createPointEntry(input: CreatePointEntryInput!): CreatePointEntryResponse!
   createPointOpportunity(input: CreatePointOpportunityInput!): CreatePointOpportunityResponse!
@@ -652,53 +749,140 @@ type Mutation {
   deleteDevice(uuid: String!): DeleteDeviceResponse!
   deleteEvent(uuid: String!): DeleteEventResponse!
   deleteImage(uuid: String!): DeleteImageResponse!
-  deleteNotification(uuid: String!): DeleteNotificationResponse!
+  deleteMarathon(uuid: String!): Void!
+  deleteMarathonHour(uuid: String!): Void!
+  deleteNotification(
+    """
+    If true, the notification will be deleted even if it has already been sent, which will also delete the delivery records.
+    """
+    force: Boolean
+    uuid: String!
+  ): DeleteNotificationResponse!
   deletePerson(uuid: String!): DeletePersonResponse!
   deletePointEntry(uuid: String!): DeletePointEntryResponse!
   deletePointOpportunity(uuid: String!): DeletePointOpportunityResponse!
   deleteTeam(uuid: String!): DeleteTeamResponse!
   registerDevice(input: RegisterDeviceInput!): RegisterDeviceResponse!
   removeImageFromEvent(eventId: String!, imageId: String!): RemoveEventImageResponse!
-  sendNotification(input: SendNotificationInput!): SendNotificationResponse!
-  setConfiguration(input: SetConfigurationInput!, key: String!): SetConfigurationResponse!
+  removeMap(imageUuid: String!, uuid: String!): Void!
+  scheduleNotification(sendAt: DateTimeISO!, uuid: String!): ScheduleNotificationResponse!
+
+  """Send a notification immediately."""
+  sendNotification(uuid: String!): SendNotificationResponse!
   setEvent(input: SetEventInput!, uuid: String!): SetEventResponse!
+  setMarathon(input: SetMarathonInput!, uuid: String!): MarathonResource!
+  setMarathonHour(input: SetMarathonHourInput!, uuid: String!): MarathonHourResource!
   setPerson(input: SetPersonInput!, uuid: String!): GetPersonResponse!
   setPointOpportunity(input: SetPointOpportunityInput!, uuid: String!): SinglePointOpportunityResponse!
   setTeam(input: SetTeamInput!, uuid: String!): SingleTeamResponse!
+  stageNotification(audience: NotificationAudienceInput!, body: String!, title: String!, url: String): StageNotificationResponse!
 }
 
 """Integers that will have a value of 0 or more."""
 scalar NonNegativeInt
 
-type NotificationPayload {
-  """
-  Only shown for presentation type INFO_POPUP, shown at the bottom of the popup
-  """
-  message: String
-  presentation: NotificationPayloadPresentationType!
-
-  """
-  A title for the notification, ignored for presentation type URL, shown with the webview for presentation type IN_APP_VIEW, and shown at the top of the popup for presentation type INFO_POPUP
-  """
-  title: String
-
-  """
-  A URL related to the notification, opened immediately for presentation type URL, opened in a webview for presentation type IN_APP_VIEW, and shown as a button for presentation type INFO_POPUP
-  """
-  url: String
+input NotificationAudienceInput {
+  all: Boolean
 }
 
-"""
-The type of presentation for the notification, URL skips the app and opens a URL directly, IN_APP_VIEW opens a webview, and INFO_POPUP shows a popup
-"""
-enum NotificationPayloadPresentationType {
-  INFO_POPUP
-  IN_APP_VIEW
-  OPEN_URL
+"""The number of delivery issues for a notification, broken down by type."""
+type NotificationDeliveryIssueCount {
+  DeviceNotRegistered: Int!
+  InvalidCredentials: Int!
+  MessageRateExceeded: Int!
+  MessageTooBig: Int!
+  MismatchSenderId: Int!
+  Unknown: Int!
+}
+
+enum NotificationDeliveryResolverAllKeys {
+  createdAt
+  deliveryError
+  receiptCheckedAt
+  sentAt
+  updatedAt
+}
+
+enum NotificationDeliveryResolverDateFilterKeys {
+  createdAt
+  receiptCheckedAt
+  sentAt
+  updatedAt
+}
+
+input NotificationDeliveryResolverKeyedDateFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: NotificationDeliveryResolverDateFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: LuxonDateTime!
+}
+
+input NotificationDeliveryResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: NotificationDeliveryResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+type NotificationDeliveryResource {
+  """
+  A unique identifier corresponding the group of notifications this was sent to Expo with.
+  """
+  chunkUuid: String
+  createdAt: DateTimeISO
+
+  """Any error message returned by Expo when sending the notification."""
+  deliveryError: String
+  notification: NotificationResource!
+
+  """The time the server received a delivery receipt from the user."""
+  receiptCheckedAt: DateTimeISO
+
+  """The time the server sent the notification to Expo for delivery."""
+  sentAt: DateTimeISO
+  updatedAt: DateTimeISO
+  uuid: ID!
 }
 
 enum NotificationResolverAllKeys {
-  uuid
+  body
+  createdAt
+  deliveryIssue
+  sendAt
+  startedSendingAt
+  title
+  updatedAt
+}
+
+enum NotificationResolverDateFilterKeys {
+  createdAt
+  sendAt
+  startedSendingAt
+  updatedAt
+}
+
+input NotificationResolverKeyedDateFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: NotificationResolverDateFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: LuxonDateTime!
 }
 
 input NotificationResolverKeyedIsNullFilterItem {
@@ -711,14 +895,58 @@ input NotificationResolverKeyedIsNullFilterItem {
   negate: Boolean = false
 }
 
+input NotificationResolverKeyedOneOfFilterItem {
+  """The field to filter on"""
+  field: NotificationResolverOneOfFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: [String!]!
+}
+
+input NotificationResolverKeyedStringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The field to filter on"""
+  field: NotificationResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: String!
+}
+
+enum NotificationResolverOneOfFilterKeys {
+  deliveryIssue
+}
+
+enum NotificationResolverStringFilterKeys {
+  body
+  title
+}
+
 type NotificationResource {
   body: String!
   createdAt: DateTimeISO
-  payload: NotificationPayload
-  sendTime: DateTimeISO!
-  sound: String
+  deliveryCount: Int!
+  deliveryIssue: String
+  deliveryIssueAcknowledgedAt: DateTimeISO
+  deliveryIssueCount: NotificationDeliveryIssueCount!
+
+  """
+  The time the notification is scheduled to be sent, if null it is either already sent or unscheduled.
+  """
+  sendAt: DateTimeISO
+
+  """The time the server started sending the notification."""
+  startedSendingAt: DateTimeISO
   title: String!
   updatedAt: DateTimeISO
+  url: URL
   uuid: ID!
 }
 
@@ -752,7 +980,7 @@ input PersonResolverKeyedIsNullFilterItem {
 
 input PersonResolverKeyedOneOfFilterItem {
   """The field to filter on"""
-  field: PersonResolverStringFilterKeys!
+  field: PersonResolverOneOfFilterKeys!
 
   """
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
@@ -775,17 +1003,20 @@ input PersonResolverKeyedStringFilterItem {
   value: String!
 }
 
-enum PersonResolverStringFilterKeys {
+enum PersonResolverOneOfFilterKeys {
   committeeName
   committeeRole
   dbRole
+}
+
+enum PersonResolverStringFilterKeys {
   email
   linkblue
   name
 }
 
 type PersonResource {
-  authIds: [AuthIdList!]!
+  authIds: [AuthIdPairResource!]! @deprecated(reason: "This is now provided on the AuthIdPair resource.")
   captaincies: [MembershipResource!]! @deprecated(reason: "Use teams instead and filter by position")
   createdAt: DateTimeISO
   email: String!
@@ -882,7 +1113,7 @@ input PointOpportunityResolverKeyedIsNullFilterItem {
 
 input PointOpportunityResolverKeyedOneOfFilterItem {
   """The field to filter on"""
-  field: PointOpportunityResolverStringFilterKeys!
+  field: PointOpportunityResolverOneOfFilterKeys!
 
   """
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
@@ -905,9 +1136,12 @@ input PointOpportunityResolverKeyedStringFilterItem {
   value: String!
 }
 
+enum PointOpportunityResolverOneOfFilterKeys {
+  type
+}
+
 enum PointOpportunityResolverStringFilterKeys {
   name
-  type
 }
 
 type PointOpportunityResource {
@@ -926,7 +1160,8 @@ scalar PositiveInt
 type Query {
   activeConfiguration(key: String!): GetConfigurationByUuidResponse!
   allConfigurations: GetAllConfigurationsResponse!
-  configuration(uuid: String!): GetConfigurationByUuidResponse!
+  currentMarathon: MarathonResource
+  currentMarathonHour: MarathonHourResource
   device(uuid: String!): GetDeviceByUuidResponse!
   devices(
     """The boolean filters to apply to the query"""
@@ -936,7 +1171,7 @@ type Query {
     dateFilters: [DeviceResolverKeyedDateFilterItem!]
 
     """Whether to include deleted items in the results"""
-    includeDeleted: Boolean
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
     isNullFilters: [DeviceResolverKeyedIsNullFilterItem!]
@@ -980,13 +1215,13 @@ type Query {
     dateFilters: [EventResolverKeyedDateFilterItem!]
 
     """Whether to include deleted items in the results"""
-    includeDeleted: Boolean
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
     isNullFilters: [EventResolverKeyedIsNullFilterItem!]
 
     """The numeric filters to apply to the query"""
-    numericFilters: [EventResolverKeyedNumericFilterItem!]
+    numericFilters: Void
 
     """The one-of filters to apply to the query"""
     oneOfFilters: [EventResolverKeyedOneOfFilterItem!]
@@ -1024,7 +1259,7 @@ type Query {
     dateFilters: Void
 
     """Whether to include deleted items in the results"""
-    includeDeleted: Boolean
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
     isNullFilters: [PersonResolverKeyedIsNullFilterItem!]
@@ -1060,20 +1295,21 @@ type Query {
     stringFilters: [PersonResolverKeyedStringFilterItem!]
   ): ListPeopleResponse!
   loginState: LoginState!
-  me: GetPersonResponse!
-  notification(uuid: String!): GetNotificationByUuidResponse!
-  notifications(
+  marathon(uuid: String!): MarathonResource!
+  marathonForYear(year: String!): MarathonResource!
+  marathonHour(uuid: String!): MarathonHourResource!
+  marathons(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
 
     """The date filters to apply to the query"""
-    dateFilters: Void
+    dateFilters: [MarathonResolverKeyedDateFilterItem!]
 
     """Whether to include deleted items in the results"""
-    includeDeleted: Boolean
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
-    isNullFilters: [NotificationResolverKeyedIsNullFilterItem!]
+    isNullFilters: [MarathonResolverKeyedIsNullFilterItem!]
 
     """The numeric filters to apply to the query"""
     numericFilters: Void
@@ -1104,6 +1340,96 @@ type Query {
 
     """The string filters to apply to the query"""
     stringFilters: Void
+  ): ListMarathonsResponse!
+  me: GetPersonResponse!
+  nextMarathon: MarathonResource
+  notification(uuid: String!): GetNotificationByUuidResponse!
+  notificationDeliveries(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: [NotificationDeliveryResolverKeyedDateFilterItem!]
+
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [NotificationDeliveryResolverKeyedIsNullFilterItem!]
+    notificationUuid: String!
+
+    """The numeric filters to apply to the query"""
+    numericFilters: Void
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: Void
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: Void
+  ): ListNotificationDeliveriesResponse!
+  notifications(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: [NotificationResolverKeyedDateFilterItem!]
+
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [NotificationResolverKeyedIsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: Void
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: [NotificationResolverKeyedOneOfFilterItem!]
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: [NotificationResolverKeyedStringFilterItem!]
   ): ListNotificationsResponse!
   person(uuid: String!): GetPersonResponse!
   personByLinkBlue(linkBlueId: String!): GetPersonResponse!
@@ -1115,7 +1441,7 @@ type Query {
     dateFilters: [PointEntryResolverKeyedDateFilterItem!]
 
     """Whether to include deleted items in the results"""
-    includeDeleted: Boolean
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
     isNullFilters: [PointEntryResolverKeyedIsNullFilterItem!]
@@ -1159,7 +1485,7 @@ type Query {
     dateFilters: [PointOpportunityResolverKeyedDateFilterItem!]
 
     """Whether to include deleted items in the results"""
-    includeDeleted: Boolean
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
     isNullFilters: [PointOpportunityResolverKeyedIsNullFilterItem!]
@@ -1205,7 +1531,7 @@ type Query {
     dateFilters: Void
 
     """Whether to include deleted items in the results"""
-    includeDeleted: Boolean
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
     isNullFilters: [TeamResolverKeyedIsNullFilterItem!]
@@ -1213,7 +1539,7 @@ type Query {
     marathonYear: [String!]
 
     """The numeric filters to apply to the query"""
-    numericFilters: [TeamResolverKeyedNumericFilterItem!]
+    numericFilters: Void
 
     """The one-of filters to apply to the query"""
     oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]
@@ -1242,9 +1568,8 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [TeamResolverKeyedStringFilterItem!]
     type: [TeamType!]
-    visibility: [DbRole!]
+    visibility: [DbRole!] @deprecated(reason: "Use type")
   ): ListTeamsResponse!
-  thumbhash(uuid: String!): GetThumbHashByUuidResponse
 }
 
 input RegisterDeviceInput {
@@ -1255,6 +1580,9 @@ input RegisterDeviceInput {
 
   """The ID of the last user to log in on this device"""
   lastUserId: String
+
+  """base64 encoded SHA-256 hash of a secret known to the device"""
+  verifier: String!
 }
 
 type RegisterDeviceResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -1270,9 +1598,7 @@ type RemoveEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBase
 type RoleResource {
   committeeIdentifier: CommitteeIdentifier
   committeeRole: CommitteeRole
-  createdAt: DateTimeISO
   dbRole: DbRole!
-  updatedAt: DateTimeISO
 }
 
 input RoleResourceInput {
@@ -1281,23 +1607,13 @@ input RoleResourceInput {
   dbRole: DbRole! = None
 }
 
-input SendNotificationInput {
-  body: String!
-  title: String!
-}
-
-type SendNotificationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: NotificationResource!
+type ScheduleNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: Boolean!
   ok: Boolean!
-  uuid: String!
 }
 
-input SetConfigurationInput {
-  key: String!
-}
-
-type SetConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: ConfigurationResource!
+type SendNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: Boolean!
   ok: Boolean!
 }
 
@@ -1322,6 +1638,19 @@ input SetEventOccurrenceInput {
 type SetEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: EventResource!
   ok: Boolean!
+}
+
+input SetMarathonHourInput {
+  details: String
+  durationInfo: String!
+  shownStartingAt: DateTimeISO!
+  title: String!
+}
+
+input SetMarathonInput {
+  endDate: DateTimeISO!
+  startDate: DateTimeISO!
+  year: String!
 }
 
 input SetPersonInput {
@@ -1363,14 +1692,16 @@ enum SortDirection {
   DESCENDING
 }
 
+type StageNotificationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: NotificationResource!
+  ok: Boolean!
+  uuid: String!
+}
+
 enum StringComparator {
   ENDS_WITH
   EQUALS
-  ILIKE
-  IREGEX
   IS
-  LIKE
-  REGEX
   STARTS_WITH
   SUBSTRING
 }
@@ -1386,7 +1717,6 @@ enum TeamResolverAllKeys {
   legacyStatus
   marathonYear
   name
-  totalPoints
   type
 }
 
@@ -1400,23 +1730,9 @@ input TeamResolverKeyedIsNullFilterItem {
   negate: Boolean = false
 }
 
-input TeamResolverKeyedNumericFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: TeamResolverNumericFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: Float!
-}
-
 input TeamResolverKeyedOneOfFilterItem {
   """The field to filter on"""
-  field: TeamResolverStringFilterKeys!
+  field: TeamResolverOneOfFilterKeys!
 
   """
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
@@ -1439,15 +1755,14 @@ input TeamResolverKeyedStringFilterItem {
   value: String!
 }
 
-enum TeamResolverNumericFilterKeys {
-  totalPoints
+enum TeamResolverOneOfFilterKeys {
+  legacyStatus
+  marathonYear
+  type
 }
 
 enum TeamResolverStringFilterKeys {
-  legacyStatus
-  marathonYear
   name
-  type
 }
 
 type TeamResource {

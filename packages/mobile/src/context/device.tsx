@@ -1,7 +1,14 @@
 import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
+import { arrayToBase64String } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
-import { randomUUID } from "expo-crypto";
+import {
+  CryptoDigestAlgorithm,
+  CryptoEncoding,
+  digestStringAsync,
+  getRandomBytesAsync,
+  randomUUID,
+} from "expo-crypto";
 import { isDevice, osName } from "expo-device";
 import type { PermissionStatus } from "expo-notifications";
 import {
@@ -21,7 +28,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
 import { universalCatch } from "../common/logging";
-import { showMessage } from "../common/util/alertUtils";
 
 import { useAuthState } from "./auth";
 import { useLoading } from "./loading";
@@ -37,15 +43,20 @@ const setDeviceQuery = graphql(/* GraphQL */ `
 const uuidStoreKey = __DEV__
   ? "danceblue.device-uuid.dev"
   : "danceblue.device-uuid";
+const verifierStoreKey = __DEV__
+  ? "danceblue.device-verifier.dev"
+  : "danceblue.device-verifier";
 
 interface DeviceData {
   deviceId: string | null;
+  verifier: string | null;
   pushToken: string | null;
   getsNotifications: boolean;
 }
 
 const initialDeviceDataState: DeviceData = {
   deviceId: null,
+  verifier: null,
   pushToken: null,
   getsNotifications: false,
 };
@@ -67,6 +78,22 @@ async function obtainUuid() {
     keychainAccessible: AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
   });
   return uuid;
+}
+
+async function obtainVerifier(uuid: string): Promise<string> {
+  // Get verifier from async storage
+  let verifierString = await getItemAsync(verifierStoreKey, {
+    keychainAccessible: AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
+  });
+
+  if (!verifierString) {
+    const randomString = arrayToBase64String(await getRandomBytesAsync(32));
+    verifierString = `${uuid}:${randomString}`;
+  }
+
+  return digestStringAsync(CryptoDigestAlgorithm.SHA512, verifierString, {
+    encoding: CryptoEncoding.BASE64,
+  });
 }
 
 async function registerPushNotifications() {
@@ -135,6 +162,7 @@ export const DeviceDataProvider = ({
   const [{ isConnected }, isNetStatusLoaded] = useNetworkStatus();
 
   const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [verifier, setVerifier] = useState<string | null>(null);
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [getsNotifications, setGetsNotifications] = useState<boolean>(false);
 
@@ -152,18 +180,20 @@ export const DeviceDataProvider = ({
     setLoading(true);
 
     obtainUuid()
-      .then(async (uuid) => {
-        console.log("uuid", uuid);
+      .then(async (uuid) => ({ uuid, verifier: await obtainVerifier(uuid) }))
+      .then(async ({ uuid, verifier }) => {
         setDeviceId(uuid);
+        setVerifier(verifier);
         try {
           const { token, notificationPermissionsGranted } =
             await registerPushNotifications();
-          console.log("token", token);
+
           const { error } = await setDevice({
             input: {
               deviceId: uuid,
               expoPushToken: token?.data ?? null,
               lastUserId: personUuid,
+              verifier,
             },
           });
           if (error) {
@@ -177,11 +207,15 @@ export const DeviceDataProvider = ({
             setPushToken(null);
             setGetsNotifications(false);
 
-            showMessage("Notifications are not supported on emulators.");
+            Logger.warn("Notifications are not supported on emulators.");
           } else {
             Logger.error("Error registering push notifications", { error });
           }
         }
+
+        Logger.info("Device registered", {
+          context: { deviceId: uuid },
+        });
       })
       .catch(universalCatch)
       .finally(() => setLoading(false));
@@ -196,7 +230,7 @@ export const DeviceDataProvider = ({
 
   return (
     <DeviceDataContext.Provider
-      value={{ deviceId, pushToken, getsNotifications }}
+      value={{ deviceId, verifier, pushToken, getsNotifications }}
     >
       {children}
     </DeviceDataContext.Provider>

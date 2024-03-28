@@ -1,8 +1,9 @@
-import { EventEditor } from "@elements/forms/event/edit/EventEditor";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useParams } from "@tanstack/react-router";
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 import { useQuery } from "urql";
+
+import { EventEditor } from "./EventEditor";
 
 const viewEventPageDocument = graphql(/* GraphQL */ `
   query EditEventPage($uuid: String!) {

@@ -1,6 +1,6 @@
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useListQuery } from "@hooks/useListQuery";
-import { useMakeSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
+import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useNavigate } from "@tanstack/react-router";
 import type { CommitteeIdentifier } from "@ukdanceblue/common";
@@ -101,7 +101,7 @@ export const PeopleTable = () => {
   useQueryStatusWatcher({
     error,
     fetching,
-    loadingMessage: "Loading events...",
+    loadingMessage: "Loading people...",
   });
 
   const listPeopleData = getFragmentData(
@@ -187,21 +187,33 @@ export const PeopleTable = () => {
             dataIndex: "name",
             sorter: true,
             sortDirections: ["ascend", "descend"],
-            ...useMakeSearchFilterProps("name", updateFilter, clearFilter),
+            ...useMakeStringSearchFilterProps(
+              "name",
+              updateFilter,
+              clearFilter
+            ),
           },
           {
             title: "Email",
             dataIndex: "email",
             sorter: true,
             sortDirections: ["ascend", "descend"],
-            ...useMakeSearchFilterProps("email", updateFilter, clearFilter),
+            ...useMakeStringSearchFilterProps(
+              "email",
+              updateFilter,
+              clearFilter
+            ),
           },
           {
             title: "Linkblue",
             dataIndex: "linkblue",
             sorter: true,
             sortDirections: ["ascend", "descend"],
-            ...useMakeSearchFilterProps("linkblue", updateFilter, clearFilter),
+            ...useMakeStringSearchFilterProps(
+              "linkblue",
+              updateFilter,
+              clearFilter
+            ),
           },
           {
             title: "Role",

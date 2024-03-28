@@ -1,0 +1,107 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node-postgres
+{
+  "name": "Node.js & PostgreSQL",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  "features": {},
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // This can be used to network with other containers or with the host.
+  // "forwardPorts": [5173, 8000, 8081, 5432],
+  // "portsAttributes": {
+  //   "5173": {
+  //     "label": "Admin Portal",
+  //     "onAutoForward": "openBrowserOnce"
+  //   },
+  //   "8000": {
+  //     "label": "Server",
+  //     "onAutoForward": "silent"
+  //   },
+  //   "8081": {
+  //     "label": "Metro Bundler",
+  //     "onAutoForward": "silent"
+  //   },
+  //   "5432": {
+  //     "label": "PostgreSQL",
+  //     "onAutoForward": "silent"
+  //   },
+  //   "5555": {
+  //     "label": "Prisma Studio"
+  //   },
+  //   "4040": {
+  //     "label": "Ngrok Tunnel",
+  //     "onAutoForward": "ignore"
+  //   }
+  // },
+  "otherPortsAttributes": {
+    "onAutoForward": "ignore"
+  },
+
+  "postCreateCommand": "yarn install",
+
+  "containerEnv": {
+    "HOME": "/home/node",
+    "DB_HOST": "localhost",
+    "DB_PORT": "5432",
+    "DB_NAME": "danceblue",
+    "DB_UNAME": "danceblue",
+    "DB_PWD": "danceblue",
+    "DATABASE_URL": "postgres://danceblue:danceblue@localhost:5432/danceblue?schema=danceblue",
+    "NODE_ENV": "development",
+    "APPLICATION_HOST": "localhost",
+    "APPLICATION_PORT": "8000",
+    "MS_OIDC_URL": "https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0/.well-known/openid-configuration"
+  },
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "git.autofetch": true,
+        "cSpell.words": ["emerg", "healthcheck", "maxsize", "RNCAL", "umzug"],
+        "[typescriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        }
+      },
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "msjsdiag.vscode-react-native",
+        "Prisma.prisma",
+        "esbenp.prettier-vscode",
+        "christian-kohler.npm-intellisense",
+        "VisualStudioExptTeam.vscodeintellicode",
+        "VisualStudioExptTeam.intellicode-api-usage-examples",
+        "cmstead.js-codeformer",
+        "cmstead.jsrefactor",
+        "ecmel.vscode-html-css",
+        "GraphQL.vscode-graphql-syntax",
+        "GraphQL.vscode-graphql",
+        "eamodio.gitlens",
+        "github.vscode-github-actions",
+        "expo.vscode-expo-tools",
+        "ms-azuretools.vscode-docker",
+        "naumovs.color-highlight",
+        "streetsidesoftware.code-spell-checker",
+        "vitest.explorer",
+        "GitHub.copilot",
+        "GitHub.vscode-pull-request-github"
+      ]
+    }
+  },
+
+  "mounts": [
+    "source=~/.ssh,target=/home/node/.ssh,type=bind,consistency=cached"
+  ]
+}

@@ -1,6 +1,8 @@
+import { SyslogLevels } from "./lib/logging/standardLogging.ts";
+
 declare global {
   namespace NodeJS {
-    type ProcessEnvironment = Readonly<{
+    interface ProcessEnvironment {
       NODE_ENV?: "development" | "production";
       APPLICATION_PORT?: string;
       APPLICATION_HOST?: string;
@@ -21,9 +23,13 @@ declare global {
       MS_CLIENT_ID?: string;
       MS_CLIENT_SECRET?: string;
 
+      LOGGING_LEVEL?: SyslogLevels;
+
+      EXPO_ACCESS_TOKEN?: string;
+
       // If "THIS IS DANGEROUS" is set, then the app will bypass auth checks and grand admin rights to all connections
       OVERRIDE_AUTH?: string;
-    }>;
+    }
   }
 }
 

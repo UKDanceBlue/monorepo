@@ -8,7 +8,7 @@ import {
   luxonDateTimeToMonthString,
 } from "./eventListUtils";
 
-describe("Luxon <-> React Native Calendars date conversion (random data)", () => {
+describe("luxon <-> React Native Calendars date conversion (random data)", () => {
   const fakeDate = faker.date.future();
   fakeDate.setUTCHours(0, 0, 0, 0);
   const fakeYear = String(fakeDate.getUTCFullYear()).padStart(4, "0");
@@ -18,17 +18,17 @@ describe("Luxon <-> React Native Calendars date conversion (random data)", () =>
   const fakeTimestamp = fakeDate.getTime();
   const fakeLuxonDate = DateTime.fromJSDate(fakeDate, { zone: "utc" });
 
-  test("converts a luxon DateTime to a string in the format used by react-native-calendars", () => {
+  it("converts a luxon DateTime to a string in the format used by react-native-calendars", () => {
     expect(luxonDateTimeToDateString(fakeLuxonDate)).toBe(fakeDateString);
   });
 
-  test("converts a luxon DateTime to a month string in the format used by react-native-calendars", () => {
+  it("converts a luxon DateTime to a month string in the format used by react-native-calendars", () => {
     expect(luxonDateTimeToMonthString(fakeLuxonDate)).toBe(
       fakeDateString.split("-").slice(0, 2).join("-")
     );
   });
 
-  test("converts a luxon DateTime to a react-native-calendars date object", () => {
+  it("converts a luxon DateTime to a react-native-calendars date object", () => {
     expect(luxonDateTimeToDateData(fakeLuxonDate)).toEqual({
       dateString: fakeDateString,
       day: fakeLuxonDate.day,
@@ -38,7 +38,7 @@ describe("Luxon <-> React Native Calendars date conversion (random data)", () =>
     });
   });
 
-  test("converts a react-native-calendars date object to a luxon DateTime", () => {
+  it("converts a react-native-calendars date object to a luxon DateTime", () => {
     expect(
       dateDataToLuxonDateTime({
         dateString: fakeDateString,
@@ -50,13 +50,13 @@ describe("Luxon <-> React Native Calendars date conversion (random data)", () =>
     ).toEqual(fakeLuxonDate);
   });
 
-  test("is reversible with luxon input", () => {
+  it("is reversible with luxon input", () => {
     expect(
       dateDataToLuxonDateTime(luxonDateTimeToDateData(fakeLuxonDate))
     ).toEqual(fakeLuxonDate);
   });
 
-  test("is reversible with react-native-calendars input", () => {
+  it("is reversible with react-native-calendars input", () => {
     expect(
       luxonDateTimeToDateData(
         dateDataToLuxonDateTime({
@@ -77,7 +77,7 @@ describe("Luxon <-> React Native Calendars date conversion (random data)", () =>
   });
 });
 
-describe("Luxon <-> React Native Calendars date conversion (fixed data)", () => {
+describe("luxon <-> React Native Calendars date conversion (fixed data)", () => {
   const year = "2020";
   const month = "06";
   const day = "03";
@@ -92,17 +92,17 @@ describe("Luxon <-> React Native Calendars date conversion (fixed data)", () => 
   );
   const timestamp = luxonDate.toMillis();
 
-  test("converts a luxon DateTime to a string in the format used by react-native-calendars", () => {
+  it("converts a luxon DateTime to a string in the format used by react-native-calendars", () => {
     expect(luxonDateTimeToDateString(luxonDate)).toBe(dateString);
   });
 
-  test("converts a luxon DateTime to a month string in the format used by react-native-calendars", () => {
+  it("converts a luxon DateTime to a month string in the format used by react-native-calendars", () => {
     expect(luxonDateTimeToMonthString(luxonDate)).toBe(
       dateString.split("-").slice(0, 2).join("-")
     );
   });
 
-  test("converts a luxon DateTime to a react-native-calendars date object", () => {
+  it("converts a luxon DateTime to a react-native-calendars date object", () => {
     expect(luxonDateTimeToDateData(luxonDate)).toEqual({
       dateString,
       day: luxonDate.day,
@@ -112,7 +112,7 @@ describe("Luxon <-> React Native Calendars date conversion (fixed data)", () => 
     });
   });
 
-  test("converts a react-native-calendars date object to a luxon DateTime", () => {
+  it("converts a react-native-calendars date object to a luxon DateTime", () => {
     expect(
       dateDataToLuxonDateTime({
         dateString,
@@ -124,13 +124,13 @@ describe("Luxon <-> React Native Calendars date conversion (fixed data)", () => 
     ).toEqual(luxonDate);
   });
 
-  test("is reversible with luxon input", () => {
+  it("is reversible with luxon input", () => {
     expect(dateDataToLuxonDateTime(luxonDateTimeToDateData(luxonDate))).toEqual(
       luxonDate
     );
   });
 
-  test("is reversible with react-native-calendars input", () => {
+  it("is reversible with react-native-calendars input", () => {
     expect(
       luxonDateTimeToDateData(
         dateDataToLuxonDateTime({
@@ -151,6 +151,6 @@ describe("Luxon <-> React Native Calendars date conversion (fixed data)", () => 
   });
 });
 
-describe("Refresh Function", () => {
-  test.todo("Correctly downloads events");
+describe("refresh Function", () => {
+  it.todo("correctly downloads events");
 });

@@ -1,24 +1,18 @@
 // Import third-party dependencies
 import ErrorBoundary from "@common/components/ErrorBoundary";
-import { log, logError, universalCatch } from "@common/logging";
-import { showMessage, showPrompt } from "@common/util/alertUtils";
+import { useUpdateChecker } from "@common/hooks/useUpdateChecker";
+import { logError, universalCatch } from "@common/logging";
+import { showMessage } from "@common/util/alertUtils";
 import { UrqlContext } from "@context/urql";
+import { useAsyncStorageDevTools } from "@dev-plugins/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import { useFonts } from "expo-font";
 import { hideAsync } from "expo-splash-screen";
-import {
-  UpdateEventType,
-  addListener as addUpdateListener,
-  checkForUpdateAsync,
-  fetchUpdateAsync,
-  reloadAsync,
-} from "expo-updates";
 // TODO: Switch away from native-base https://nativebase.io/blogs/road-ahead-with-gluestack-ui
+import { isEmergencyLaunch } from "expo-updates";
 import type { ICustomTheme } from "native-base";
 import { NativeBaseProvider } from "native-base";
 import { useEffect, useRef, useState } from "react";
-import type { EventSubscription } from "react-native";
-import { AppState } from "react-native";
 
 import BoldoniFlfBoldItalicFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold-Italic.ttf";
 import BoldoniFlfBoldFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold.ttf";
@@ -31,12 +25,20 @@ import { CombinedContext } from "./src/context";
 import { FilledNavigationContainer } from "./src/navigation/NavigationContainer";
 import { getCustomTheme } from "./src/theme";
 
+if (isEmergencyLaunch) {
+  alert(
+    "A CRITICAL ERROR HAS OCCURRED!\nYou are running a fallback version of the app and will likely experience issues. Please try to restart the app to fix this issue. If the issue persists, please contact the Tech Committee."
+  );
+}
+
 /**
  * Main app container
  */
 const App = () => {
   const isOfflineInternal = useRef(false);
   const [theme, setTheme] = useState<ICustomTheme | undefined>(undefined);
+
+  useAsyncStorageDevTools();
 
   const [fontsLoaded, error] = useFonts({
     "bodoni-flf-bold": BoldoniFlfBoldFont,
@@ -78,46 +80,7 @@ const App = () => {
     []
   );
 
-  useEffect(() => {
-    // TODO: Switch to https://github.com/expo/custom-expo-updates-server
-    if (!__DEV__) {
-      const updatesSubscription = addUpdateListener(({ type, message }) => {
-        if (type === UpdateEventType.UPDATE_AVAILABLE) {
-          showPrompt(
-            "Updated data for the DanceBlue app is available, reload the app now?",
-            "New Content Available",
-            undefined,
-            () => {
-              reloadAsync().catch(universalCatch);
-            },
-            "Later",
-            "Yes"
-          );
-        } else if (type === UpdateEventType.ERROR) {
-          log(`Expo-Updates error: ${message ?? "[UNKNOWN]"}`, "warn");
-        }
-      }) as EventSubscription;
-
-      const listener = AppState.addEventListener("change", (nextAppState) => {
-        if (nextAppState === "active") {
-          checkForUpdateAsync()
-            .then(async ({ isAvailable }) => {
-              if (isAvailable) {
-                await fetchUpdateAsync();
-              }
-            })
-            .catch(universalCatch);
-        }
-      });
-
-      return () => {
-        updatesSubscription.remove();
-        listener.remove();
-      };
-    } else {
-      return () => undefined;
-    }
-  }, []);
+  useUpdateChecker();
 
   return (
     fontsLoaded &&

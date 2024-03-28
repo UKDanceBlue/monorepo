@@ -12,6 +12,7 @@ import type {
 import HeaderIcons from "../../HeaderIcons";
 
 import { DBHeaderText } from "./DBHeaderText";
+import DBMomentsScreen from "./DBMoments";
 import EventListScreen from "./EventListScreen";
 import HomeScreen from "./HomeScreen";
 import MarathonScreen from "./MarathonScreen";
@@ -31,6 +32,13 @@ export const possibleTabs = {
       key="MarathonScreen"
       name="Marathon"
       component={MarathonScreen}
+    />
+  ),
+  DBMoments: (
+    <Tabs.Screen
+      key="DBMoments"
+      name="DB Moments"
+      component={DBMomentsScreen}
     />
   ),
   MoraleCup: (
@@ -72,6 +80,8 @@ const TabBar = () => {
         const secondHalf = tempCurrentTabs.slice(middleIndex);
         tempCurrentTabs = [...firstHalf, fancyTabElement, ...secondHalf];
       }
+
+      tempCurrentTabs.push(possibleTabs["DBMoments"]);
 
       setCurrentTabs(tempCurrentTabs);
       // log(

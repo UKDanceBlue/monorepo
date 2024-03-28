@@ -49,7 +49,7 @@ export const EventListRenderItem = ({
   }, [occurrenceUuid, eventData.occurrences]);
 
   const eventDate = useMemo(() => {
-    return occurrence?.interval.start.toFormat(RNCAL_DATE_FORMAT);
+    return occurrence?.interval.start?.toFormat(RNCAL_DATE_FORMAT);
   }, [occurrence]);
 
   if (eventDate != null) {

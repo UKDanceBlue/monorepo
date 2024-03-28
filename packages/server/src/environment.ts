@@ -1,11 +1,19 @@
 import dotenv from "dotenv";
+import { Expo } from "expo-server-sdk";
+import { Container } from "typedi";
+
+import type { SyslogLevels } from "./lib/logging/standardLogging.js";
 
 dotenv.config();
 
 // Core env
 export const isDevelopment = process.env.NODE_ENV === "development";
 export const isProduction = process.env.NODE_ENV === "production";
-export const nodeEnvirnoment = process.env.NODE_ENV || "development";
+export const nodeEnvironment = process.env.NODE_ENV || "development";
+
+export const loggingLevel: SyslogLevels =
+  (process.env.LOGGING_LEVEL as SyslogLevels | undefined) ??
+  (isDevelopment ? "debug" : "notice");
 
 // Port and Host
 let applicationPort: number = 8000;
@@ -79,6 +87,15 @@ if (!MS_CLIENT_SECRET) {
 export const msOidcUrl = MS_OIDC_URL;
 export const msClientId = MS_CLIENT_ID;
 export const msClientSecret = MS_CLIENT_SECRET;
+
+// Expo access token
+const { EXPO_ACCESS_TOKEN } = process.env;
+if (!EXPO_ACCESS_TOKEN) {
+  throw new Error("EXPO_ACCESS_TOKEN is not set");
+}
+export const expoAccessToken = EXPO_ACCESS_TOKEN;
+
+Container.set(Expo, new Expo({ accessToken: expoAccessToken }));
 
 // Disable all authorization checks
 const { OVERRIDE_AUTH } = process.env;

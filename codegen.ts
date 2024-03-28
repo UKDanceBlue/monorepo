@@ -31,16 +31,20 @@ const config: TypeScriptPluginConfig = {
   enumsAsConst: true,
   immutableTypes: true,
   enumValues: {
-    // Comparator: '../api/request/ListQueryTypes.js#Comparator',
-    StringComparator: "../api/request/ListQueryTypes.js#StringComparator",
-    NumericComparator: "../api/request/ListQueryTypes.js#NumericComparator",
-    // IsComparator: '../api/request/ListQueryTypes.js#IsComparator',
-    SortDirection: "../api/request/ListQueryTypes.js#SortDirection",
-    TeamType: "../api/graphql/object-types/Team.js#TeamType",
-    AuthSource: "../auth/index.js#AuthSource",
-    // AccessLevel: '../auth/index.js#AccessLevel',
-    DbRole: "../auth/index.js#DbRole",
-    CommitteeRole: "../auth/index.js#CommitteeRole",
+    AuthSource: "../index.js#AuthSource",
+    // AccessLevel: "../index.js#AccessLevel",
+    DbRole: "../index.js#DbRole",
+    CommitteeRole: "../index.js#CommitteeRole",
+    CommitteeIdentifier: "../index.js#CommitteeIdentifier",
+    // ErrorCode: "../index.js#ErrorCode",
+    MembershipPositionType: "../index.js#MembershipPositionType",
+    TeamLegacyStatus: "../index.js#TeamLegacyStatus",
+    TeamType: "../index.js#TeamType",
+    SortDirection: "../index.js#SortDirection",
+    // Comparator: "../index.js#Comparator",
+    NumericComparator: "../index.js#NumericComparator",
+    StringComparator: "../index.js#StringComparator",
+    // IsComparator: "../index.js#IsComparator",
   },
   scalars: {
     LuxonDateRange: "string",
@@ -62,7 +66,9 @@ const codegenConfig: CodegenConfig = {
     "./packages/common/lib/graphql-client-public/": {
       preset: "client",
       presetConfig,
-      config,
+      config: {
+        ...config,
+      },
       documents: [
         "./packages/mobile/src/**/*.ts",
         "./packages/mobile/src/**/*.tsx",
@@ -71,7 +77,9 @@ const codegenConfig: CodegenConfig = {
     "./packages/common/lib/graphql-client-admin/": {
       preset: "client",
       presetConfig,
-      config,
+      config: {
+        ...config,
+      },
       documents: [
         "./packages/portal/src/**/*.ts",
         "./packages/portal/src/**/*.tsx",

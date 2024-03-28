@@ -119,13 +119,19 @@ export const splitEvents = (
           ] as const
       );
     })
-    .sort((a, b) => (a[1].interval.start > b[1].interval.start ? 1 : -1));
+    .sort((a, b) =>
+      (a[1].interval.start ?? 0) > (b[1].interval.start ?? 0) ? 1 : -1
+    );
 
   for (const [event, occurrence] of calendarEvents) {
     console.log(
       getFragmentData(EventScreenFragment, event).title,
-      occurrence.interval.start.toISO()
+
+      occurrence.interval.start?.toISO()
     );
+    if (!occurrence.interval.isValid) {
+      continue;
+    }
     const monthString = luxonDateTimeToMonthString(occurrence.interval.start);
     const existingEvents = newEvents[monthString] ?? [];
     newEvents[monthString] = [...existingEvents, [event, occurrence.uuid]];
@@ -168,6 +174,10 @@ export const markEvents = (
     for (const occurrence of eventData.occurrences) {
       const interval = Interval.fromISO(occurrence.interval);
 
+      if (!interval.isValid) {
+        continue;
+      }
+
       if (interval.start.diff(interval.end).as("hours") < 24) {
         const dateString = luxonDateTimeToDateString(interval.start);
         const existingDots = marked[dateString]?.dots ?? [];
@@ -184,7 +194,13 @@ export const markEvents = (
         };
       } else {
         for (const day of interval.splitBy({ day: 1 })) {
-          const dateString = luxonDateTimeToDateString(day.start);
+          if (!day.isValid) {
+            continue;
+          }
+
+          const dateString = luxonDateTimeToDateString(
+            (day as Interval<true>).start
+          );
           const existingDots = marked[dateString]?.dots ?? [];
           marked[dateString] = {
             dots:
@@ -202,7 +218,10 @@ export const markEvents = (
     }
   }
 
-  marked[getTodayDateString()] = { today: true };
+  marked[getTodayDateString()] = {
+    ...(marked[getTodayDateString()] ?? {}),
+    today: true,
+  };
 
   return marked as MarkedDates;
 };
@@ -213,13 +232,17 @@ export const getTodayDateString = () =>
 export const useEvents = ({
   month,
 }: {
-  month: DateTime;
+  month: DateTime<true> | DateTime<false>;
 }): [
   markedDates: MarkedDates,
   eventsByMonth: ReturnType<typeof splitEvents>,
   refreshing: boolean,
   refresh: () => void,
 ] => {
+  if (!month.isValid) {
+    throw new Error("Invalid month");
+  }
+
   const [eventsQueryResult, refresh] = useQuery({
     query: graphql(/* GraphQL */ `
       query Events(

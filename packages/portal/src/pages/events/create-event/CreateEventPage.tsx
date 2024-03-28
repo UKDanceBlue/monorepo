@@ -1,4 +1,4 @@
-import { EventCreator } from "@elements/forms/event/create/EventCreator";
+import { EventCreator } from "@pages/events/create-event/EventCreator";
 
 export function CreateEventPage() {
   return (

@@ -8,15 +8,8 @@ import type {
   SortingOptions,
   StringFilterItemInterface,
 } from "@ukdanceblue/common";
-import type {
-  Dispatch,
-  SetStateAction} from "react";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import type { Dispatch, SetStateAction } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type FilterObject<
   DateFields extends string,
@@ -211,17 +204,14 @@ export function useListQuery<
     []
   );
 
-  const pushSorting = useCallback(
-    (sortingOption: SortOption<AllFields>) => {
-      setSorting([
-        sortingOption,
-        ...sorting.filter(
-          (sortOption) => sortOption.field !== sortingOption.field
-        ),
-      ]);
-    },
-    [sorting]
-  );
+  const pushSorting = useCallback((sortingOption: SortOption<AllFields>) => {
+    setSorting((prevSorting) => [
+      sortingOption,
+      ...prevSorting.filter(
+        (sortOption) => sortOption.field !== sortingOption.field
+      ),
+    ]);
+  }, []);
 
   const clearSorting = useCallback(() => {
     setSorting([]);
@@ -250,124 +240,115 @@ export function useListQuery<
         : never
     ) => {
       if (dateFields.includes(field as never)) {
-        const newDateFilters = [...dateFilters];
-        const index = newDateFilters.findIndex(
-          (dateFilter) => dateFilter.field === field
-        );
-        if (index === -1) {
-          newDateFilters.push(filter as DateFilterItemInterface<DateFields>);
-        } else {
-          newDateFilters[index] = filter as DateFilterItemInterface<DateFields>;
-        }
-        setDateFilters(newDateFilters);
+        setDateFilters((dateFilters) => {
+          const newDateFilters = [...dateFilters];
+          const index = newDateFilters.findIndex(
+            (dateFilter) => dateFilter.field === field
+          );
+          if (index === -1) {
+            newDateFilters.push(filter as DateFilterItemInterface<DateFields>);
+          } else {
+            newDateFilters[index] =
+              filter as DateFilterItemInterface<DateFields>;
+          }
+          return newDateFilters;
+        });
       } else if (isNullFields.includes(field as never)) {
-        const newIsNullFilters = [...isNullFilters];
-        const index = newIsNullFilters.findIndex(
-          (isNullFilter) => isNullFilter.field === field
-        );
-        if (index === -1) {
-          newIsNullFilters.push(
-            filter as IsNullFilterItemInterface<IsNullFields>
+        setIsNullFilters((isNullFilters) => {
+          const newIsNullFilters = [...isNullFilters];
+          const index = newIsNullFilters.findIndex(
+            (isNullFilter) => isNullFilter.field === field
           );
-        } else {
-          newIsNullFilters[index] =
-            filter as IsNullFilterItemInterface<IsNullFields>;
-        }
-        setIsNullFilters(newIsNullFilters);
+          if (index === -1) {
+            newIsNullFilters.push(
+              filter as IsNullFilterItemInterface<IsNullFields>
+            );
+          } else {
+            newIsNullFilters[index] =
+              filter as IsNullFilterItemInterface<IsNullFields>;
+          }
+          return newIsNullFilters;
+        });
       } else if (numericFields.includes(field as never)) {
-        const newNumericFilters = [...numericFilters];
-        const index = newNumericFilters.findIndex(
-          (numericFilter) => numericFilter.field === field
-        );
-        if (index === -1) {
-          newNumericFilters.push(
-            filter as NumericFilterItemInterface<NumericFields>
+        setNumericFilters((numericFilters) => {
+          const newNumericFilters = [...numericFilters];
+          const index = newNumericFilters.findIndex(
+            (numericFilter) => numericFilter.field === field
           );
-        } else {
-          newNumericFilters[index] =
-            filter as NumericFilterItemInterface<NumericFields>;
-        }
-        setNumericFilters(newNumericFilters);
+          if (index === -1) {
+            newNumericFilters.push(
+              filter as NumericFilterItemInterface<NumericFields>
+            );
+          } else {
+            newNumericFilters[index] =
+              filter as NumericFilterItemInterface<NumericFields>;
+          }
+          return newNumericFilters;
+        });
       } else if (oneOfFields.includes(field as never)) {
-        const newOneOfFilters = [...oneOfFilters];
-        const index = newOneOfFilters.findIndex(
-          (oneOfFilter) => oneOfFilter.field === field
-        );
-        if (index === -1) {
-          newOneOfFilters.push(filter as OneOfFilterItemInterface<OneOfFields>);
-        } else {
-          newOneOfFilters[index] =
-            filter as OneOfFilterItemInterface<OneOfFields>;
-        }
-        setOneOfFilters(newOneOfFilters);
-      } else if (stringFields.includes(field as never)) {
-        const newStringFilters = [...stringFilters];
-        const index = newStringFilters.findIndex(
-          (stringFilter) => stringFilter.field === field
-        );
-        if (index === -1) {
-          newStringFilters.push(
-            filter as StringFilterItemInterface<StringFields>
+        setOneOfFilters((oneOfFilters) => {
+          const newOneOfFilters = [...oneOfFilters];
+          const index = newOneOfFilters.findIndex(
+            (oneOfFilter) => oneOfFilter.field === field
           );
-        } else {
-          newStringFilters[index] =
-            filter as StringFilterItemInterface<StringFields>;
-        }
-        setStringFilters(newStringFilters);
+          if (index === -1) {
+            newOneOfFilters.push(
+              filter as OneOfFilterItemInterface<OneOfFields>
+            );
+          } else {
+            newOneOfFilters[index] =
+              filter as OneOfFilterItemInterface<OneOfFields>;
+          }
+          return newOneOfFilters;
+        });
+      } else if (stringFields.includes(field as never)) {
+        setStringFilters((stringFilters) => {
+          const newStringFilters = [...stringFilters];
+          const index = newStringFilters.findIndex(
+            (stringFilter) => stringFilter.field === field
+          );
+          if (index === -1) {
+            newStringFilters.push(
+              filter as StringFilterItemInterface<StringFields>
+            );
+          } else {
+            newStringFilters[index] =
+              filter as StringFilterItemInterface<StringFields>;
+          }
+          return newStringFilters;
+        });
       }
     },
-    [
-      dateFields,
-      dateFilters,
-      isNullFields,
-      isNullFilters,
-      numericFields,
-      numericFilters,
-      oneOfFields,
-      oneOfFilters,
-      stringFields,
-      stringFilters,
-    ]
+    [dateFields, isNullFields, numericFields, oneOfFields, stringFields]
   );
 
   const clearFilter = useCallback(
     (field: AllFields) => {
       if (dateFields.includes(field as never)) {
-        setDateFilters(
+        setDateFilters((dateFilters) =>
           dateFilters.filter((dateFilter) => dateFilter.field !== field)
         );
       } else if (isNullFields.includes(field as never)) {
-        setIsNullFilters(
+        setIsNullFilters((isNullFilters) =>
           isNullFilters.filter((isNullFilter) => isNullFilter.field !== field)
         );
       } else if (numericFields.includes(field as never)) {
-        setNumericFilters(
+        setNumericFilters((numericFilters) =>
           numericFilters.filter(
             (numericFilter) => numericFilter.field !== field
           )
         );
       } else if (oneOfFields.includes(field as never)) {
-        setOneOfFilters(
+        setOneOfFilters((oneOfFilters) =>
           oneOfFilters.filter((oneOfFilter) => oneOfFilter.field !== field)
         );
       } else if (stringFields.includes(field as never)) {
-        setStringFilters(
+        setStringFilters((stringFilters) =>
           stringFilters.filter((stringFilter) => stringFilter.field !== field)
         );
       }
     },
-    [
-      dateFields,
-      dateFilters,
-      isNullFields,
-      isNullFilters,
-      numericFields,
-      numericFilters,
-      oneOfFields,
-      oneOfFilters,
-      stringFields,
-      stringFilters,
-    ]
+    [dateFields, isNullFields, numericFields, oneOfFields, stringFields]
   );
 
   const clearFilters = useCallback(() => {

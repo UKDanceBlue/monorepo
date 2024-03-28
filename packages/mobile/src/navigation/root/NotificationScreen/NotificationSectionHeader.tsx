@@ -1,12 +1,12 @@
+import type { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
+import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import { Heading, View } from "native-base";
 import type { SectionListProps } from "react-native";
 
-import type { NotificationListDataEntry } from "./NotificationScreen";
-
 type NotificationSectionHeaderType = NonNullable<
   SectionListProps<
-    NotificationListDataEntry | undefined,
-    { title: string; data: (NotificationListDataEntry | undefined)[] }
+    FragmentType<typeof NotificationDeliveryFragment> | undefined,
+    { title: string; data: FragmentType<typeof NotificationDeliveryFragment>[] }
   >["renderSectionHeader"]
 >;
 export const NotificationSectionHeader: NotificationSectionHeaderType = ({

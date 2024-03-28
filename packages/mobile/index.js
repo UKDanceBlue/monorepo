@@ -1,3 +1,4 @@
+// @ts-check
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { registerRootComponent } from "expo";
 import { DevMenu, isDevelopmentBuild } from "expo-dev-client";
@@ -7,9 +8,9 @@ import { LogBox } from "react-native";
 import "react-native-url-polyfill/auto";
 
 import App from "./App";
-import { log } from "./src/common/logging";
+import { Logger } from "./src/common/logger/Logger";
 
-log("Starting app", "debug");
+Logger.debug("Starting app");
 
 void preventAutoHideAsync();
 
@@ -24,23 +25,19 @@ if (isDevelopmentBuild()) {
   DevMenu.registerDevMenuItems([
     {
       name: "Clear AsyncStorage",
-      action: async () => {
-        log("Clearing AsyncStorage");
+      callback: async () => {
+        Logger.log("Clearing AsyncStorage");
         await AsyncStorage.clear();
         alert("AsyncStorage cleared successfully");
       },
     },
     {
       name: "Print AsyncStorage",
-      action: async () => {
-        log("Printing AsyncStorage");
+      callback: async () => {
+        Logger.log("Printing AsyncStorage");
         const keys = await AsyncStorage.getAllKeys();
         const values = await AsyncStorage.multiGet(keys);
-        if (console.table) {
-          console.table(values);
-        } else {
-          console.log(values);
-        }
+        console.log(values);
       },
     },
   ]).catch(console.error);
@@ -48,16 +45,17 @@ if (isDevelopmentBuild()) {
 
 // Configure the notifications handler to decide what to do when a notification is received if the app is open
 setNotificationHandler({
-  handleNotification: () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
+  handleNotification: () =>
+    Promise.resolve({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
 });
 
 try {
   registerRootComponent(App);
 } catch (error) {
-  log(error);
+  Logger.error("Error registering root component", { error });
   throw error;
 }

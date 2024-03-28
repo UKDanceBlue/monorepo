@@ -47,13 +47,9 @@ export const simpleAuthorizations: Record<AccessLevel, Authorization> = {
     dbRole: DbRole.Public,
     accessLevel: AccessLevel.Public,
   },
-  [AccessLevel.TeamMember]: {
-    dbRole: DbRole.TeamMember,
-    accessLevel: AccessLevel.TeamMember,
-  },
-  [AccessLevel.TeamCaptain]: {
-    dbRole: DbRole.TeamCaptain,
-    accessLevel: AccessLevel.TeamCaptain,
+  [AccessLevel.UKY]: {
+    dbRole: DbRole.UKY,
+    accessLevel: AccessLevel.UKY,
   },
   [AccessLevel.Committee]: {
     dbRole: DbRole.Committee,
@@ -92,7 +88,11 @@ export function isValidJwtPayload(payload: unknown): payload is JwtPayload {
   if (sub !== undefined && typeof sub !== "string") {
     return false;
   }
-  if (!Object.values(AuthSource).includes(auth_source as AuthSource)) {
+  if (
+    ![...Object.values(AuthSource), "UkyLinkblue"].includes(
+      auth_source as AuthSource
+    )
+  ) {
     return false;
   }
   if (
@@ -138,7 +138,11 @@ export function isValidJwtPayload(payload: unknown): payload is JwtPayload {
  */
 export function makeUserJwt(user: UserData): string {
   const payload: JwtPayload = {
-    auth_source: user.authSource,
+    auth_source:
+      // Handle legacy "UkyLinkblue" auth source, can remove eventually
+      (user.authSource as string) === "UkyLinkblue"
+        ? AuthSource.LinkBlue
+        : user.authSource,
     dbRole: user.auth.dbRole,
     access_level: user.auth.accessLevel,
   };
@@ -161,7 +165,7 @@ export function makeUserJwt(user: UserData): string {
 
   return jsonwebtoken.sign(payload, jwtSecret, {
     issuer: jwtIssuer,
-    expiresIn: "7d",
+    // TODO: Set expiration
   });
 }
 

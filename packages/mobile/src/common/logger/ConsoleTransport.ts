@@ -1,6 +1,14 @@
 import type { ExtraLogArgs } from "./transport";
 import { LogLevel, LoggerTransport } from "./transport";
 
+function safeStringify(value: unknown): string {
+  try {
+    return JSON.stringify(value);
+  } catch (error) {
+    return String(value);
+  }
+}
+
 export class ConsoleTransport extends LoggerTransport {
   constructor(level: LogLevel) {
     super("Console", level);
@@ -15,37 +23,51 @@ export class ConsoleTransport extends LoggerTransport {
     message: string | boolean | bigint | number | object;
     extra: ExtraLogArgs<true>;
   }) {
-    let extraString: string | undefined;
-    if (Object.keys(extra).length > 0) {
-      try {
-        extraString = JSON.stringify(extra);
-      } catch (error) {
-        extraString = `[extra: '${String(
-          extra
-        )}' - could not be stringified due to ${String(error)}]`;
+    const { context, error, source, tags } = extra;
+
+    try {
+      const args = [
+        ...(source ? [`${source}:`] : []),
+        ...(tags ? [`[${tags.join(",")}]`] : []),
+        message,
+      ];
+
+      if (context && !error) {
+        args.push(safeStringify(context));
+      } else if (error && !context) {
+        args.push(safeStringify(error));
+      } else if (error && context) {
+        args.push(safeStringify({ error, context }));
       }
-    }
-    switch (level) {
-      case LogLevel.debug: {
-        console.debug(message, extraString);
-        break;
+
+      switch (level) {
+        case LogLevel.debug: {
+          console.debug(...args);
+          break;
+        }
+        case LogLevel.log: {
+          console.log(...args);
+          break;
+        }
+        case LogLevel.info: {
+          console.info(...args);
+          break;
+        }
+        case LogLevel.warn: {
+          console.warn(...args);
+          break;
+        }
+        case LogLevel.error: {
+          console.error(...args);
+          break;
+        }
       }
-      case LogLevel.log: {
-        console.log(message, extraString);
-        break;
-      }
-      case LogLevel.info: {
-        console.info(message, extraString);
-        break;
-      }
-      case LogLevel.warn: {
-        console.warn(message, extraString);
-        break;
-      }
-      case LogLevel.error: {
-        console.error(message, extraString);
-        break;
-      }
+    } catch (error) {
+      console.error("Error when trying to write a log message", {
+        level,
+        message,
+        extra,
+      });
     }
   }
 }

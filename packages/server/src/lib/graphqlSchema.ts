@@ -1,23 +1,31 @@
-import { dirname, join, normalize } from "path";
 import { fileURLToPath } from "url";
 
 import type { MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
+import { Container } from "typedi";
 
-import { logger } from "../logger.js";
 import { ConfigurationResolver } from "../resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "../resolvers/DeviceResolver.js";
 import { EventResolver } from "../resolvers/EventResolver.js";
 import { ImageResolver } from "../resolvers/ImageResolver.js";
 import { LoginStateResolver } from "../resolvers/LoginState.js";
+import { MarathonHourResolver } from "../resolvers/MarathonHourResolver.js";
+import { MarathonResolver } from "../resolvers/MarathonResolver.js";
 import { MembershipResolver } from "../resolvers/MembershipResolver.js";
-import { NotificationResolver } from "../resolvers/NotificationResolver.js";
+import {
+  NotificationDeliveryResolver,
+  NotificationResolver,
+} from "../resolvers/NotificationResolver.js";
 import { PersonResolver } from "../resolvers/PersonResolver.js";
 import { PointEntryResolver } from "../resolvers/PointEntryResolver.js";
 import { PointOpportunityResolver } from "../resolvers/PointOpportunityResolver.js";
 import { TeamResolver } from "../resolvers/TeamResolver.js";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import { logger } from "./logging/logger.js";
+
+const schemaPath = fileURLToPath(
+  new URL("../../../../schema.graphql", import.meta.url)
+);
 
 const errorHandlingMiddleware: MiddlewareFn = async (_, next) => {
   try {
@@ -37,11 +45,15 @@ export default await buildSchema({
     PersonResolver,
     MembershipResolver,
     NotificationResolver,
+    NotificationDeliveryResolver,
     TeamResolver,
     LoginStateResolver,
     PointEntryResolver,
     PointOpportunityResolver,
+    MarathonHourResolver,
+    MarathonResolver,
   ],
-  emitSchemaFile: normalize(join(__dirname, "../../../../schema.graphql")),
+  emitSchemaFile: schemaPath,
   globalMiddlewares: [errorHandlingMiddleware],
+  container: Container,
 });

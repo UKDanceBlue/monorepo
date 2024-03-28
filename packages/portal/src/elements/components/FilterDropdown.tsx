@@ -25,9 +25,9 @@ export function FilterSearchDropdown<Field extends string>({
       onSearch={(value) => {
         if (value) {
           updateFilter(field, {
-            comparison: StringComparator.ILIKE,
+            comparison: StringComparator.SUBSTRING,
             field,
-            value: `%${value}%`,
+            value,
           });
         } else {
           clearFilter(field);
