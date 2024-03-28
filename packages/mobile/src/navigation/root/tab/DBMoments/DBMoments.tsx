@@ -3,19 +3,19 @@ import { Logger } from "@common/logger/Logger";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { Camera, FlashMode } from "expo-camera";
 import { Box, Button, Fab, Icon, Image, Text, View } from "native-base";
-import { useWindowDimensions } from "react-native";
+// import { useWindowDimensions } from "react-native";
 
 import { PreviewMoment } from "./PreviewMoment";
 import { useCameraState } from "./useCameraState";
 
 export const DBMomentsScreen = () => {
-  const { height: screenHeight } = useWindowDimensions();
+  // const { height: screenHeight } = useWindowDimensions();
 
   // relative heights based on jackson's iphone aspect ratio
-  const headerBias = (98 / 932) * screenHeight;
-  const invHeaderBias = screenHeight - headerBias;
-  const navBias = ((932 - 94) / 932) * screenHeight; // will not need once nav is changed
-  const invNavBias = screenHeight - navBias; // will not need once nav is changed
+  // const headerBias = (98 / 932) * screenHeight;
+  // const invHeaderBias = screenHeight - headerBias;
+  // const navBias = ((932 - 94) / 932) * screenHeight; // will not need once nav is changed
+  // const invNavBias = screenHeight - navBias; // will not need once nav is changed
 
   const {
     cameraRef,
@@ -200,8 +200,8 @@ export const DBMomentsScreen = () => {
         });
       }
 
-      console.log(images.front.uri);
-      console.log(images.back.uri);
+      console.log(images.front?.uri);
+      console.log(images.back?.uri);
 
       return (
         <PreviewMoment

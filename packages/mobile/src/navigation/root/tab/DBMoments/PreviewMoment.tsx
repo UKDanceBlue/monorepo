@@ -1,7 +1,7 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import type { CameraCapturedPicture } from "expo-camera";
 import { Fab, Icon, View } from "native-base";
-import React from "react";
+import React, { useRef } from "react";
 import { captureRef } from "react-native-view-shot";
 
 import { HiddenComponent } from "./HiddenComponent";
@@ -11,19 +11,18 @@ export const PreviewMoment = ({
   backImg,
   reset,
 }: {
-  frontImg: CameraCapturedPicture;
-  backImg: CameraCapturedPicture;
-  reset: any;
+  frontImg: CameraCapturedPicture | undefined;
+  backImg: CameraCapturedPicture | undefined;
+  reset: () => void;
 }) => {
   const saveMoment = async () => {
     try {
       const uri = await captureRef(
         <HiddenComponent front={frontImg} back={backImg} />,
         {
-          format: "jpg", // Specify the format of the captured image
-          quality: 0.8, // Specify the image quality (0.0 to 1.0)
-        }
-      );
+        format: "jpg", // Specify the format of the captured image
+        quality: 0.8, // Specify the image quality (0.0 to 1.0)
+      });
       console.log("Image captured:", uri);
       // Implement logic to save or share the captured image URI
     } catch (error) {

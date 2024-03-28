@@ -1,6 +1,7 @@
 import dbMonogram from "@assets/logo/monogram.png";
 import type { CameraCapturedPicture } from "expo-camera";
 import { Box, HStack, Image, Text, View } from "native-base";
+import type { Ref } from "react";
 import React, { useEffect, useState } from "react";
 import { ImageBackground, useWindowDimensions } from "react-native";
 
@@ -8,6 +9,8 @@ export const HiddenComponent = ({
   front,
   back,
 }: {
+  front: CameraCapturedPicture | undefined;
+  back: CameraCapturedPicture | undefined;
   front: CameraCapturedPicture;
   back: CameraCapturedPicture;
 }) => {
@@ -17,21 +20,22 @@ export const HiddenComponent = ({
 
   useEffect(() => {
     const getImageSize = () => {
-      Image.getSize(front.uri, (imgWidth, imgHeight) => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      Image.getSize(front?.uri, (imgWidth, imgHeight) => {
         const aspectRatio = imgWidth / imgHeight;
         const newHeight = maxWidth / aspectRatio;
         setFrontImgHeight(newHeight);
       });
     };
     getImageSize();
-  }, [front.uri, maxWidth]);
+  }, [front?.uri, maxWidth]);
 
   return (
     <View style={{ flex: 1 }}>
-      <ImageBackground source={{ uri: back.uri }} style={{ flex: 1 }}>
+      <ImageBackground source={{ uri: back?.uri }} style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
           <Image
-            source={{ uri: front.uri }}
+            source={{ uri: front?.uri }}
             style={{
               width: maxWidth,
               height: frontImgHeight,
