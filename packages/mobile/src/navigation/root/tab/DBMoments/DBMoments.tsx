@@ -3,20 +3,13 @@ import { Logger } from "@common/logger/Logger";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { Camera, FlashMode } from "expo-camera";
 import { Box, Button, Fab, Icon, Image, Text, View } from "native-base";
-// import { useWindowDimensions } from "react-native";
+import { useState } from "react";
 
+import { InfoModal } from "./InfoModal";
 import { PreviewMoment } from "./PreviewMoment";
 import { useCameraState } from "./useCameraState";
 
 export const DBMomentsScreen = () => {
-  // const { height: screenHeight } = useWindowDimensions();
-
-  // relative heights based on jackson's iphone aspect ratio
-  // const headerBias = (98 / 932) * screenHeight;
-  // const invHeaderBias = screenHeight - headerBias;
-  // const navBias = ((932 - 94) / 932) * screenHeight; // will not need once nav is changed
-  // const invNavBias = screenHeight - navBias; // will not need once nav is changed
-
   const {
     cameraRef,
     facing,
@@ -31,6 +24,8 @@ export const DBMomentsScreen = () => {
     reset,
     takingPicture,
   } = useCameraState();
+
+  const [showModal, setShowModal] = useState(false);
 
   switch (state) {
     case "permission-blocked": {
@@ -148,8 +143,9 @@ export const DBMomentsScreen = () => {
                     size={7}
                   />
                 }
-                onPress={() => toggleFacing()}
+                onPress={() => setShowModal(true)}
               />
+              <InfoModal setShowModal={setShowModal} showModal={showModal} />
               <Fab
                 renderInPortal={false}
                 style={{
