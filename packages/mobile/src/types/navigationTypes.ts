@@ -21,6 +21,7 @@ export type SpiritStackScreenProps<T extends keyof SpiritStackParamList> =
 export type TabNavigatorParamList = {
   "Home": undefined;
   "Events": undefined;
+  "Explorer": undefined;
   "Teams": NavigatorScreenParams<SpiritStackParamList>;
   "Marathon": undefined;
   "Scavenger Hunt": undefined;
@@ -43,6 +44,7 @@ export type RootStackParamList = {
     event: FragmentType<typeof EventScreenFragment>;
     occurrenceId: string;
   };
+  "Explorer": undefined;
   "Hour Details": { firestoreHour: FirestoreHour };
 };
 

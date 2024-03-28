@@ -13,6 +13,7 @@ import HeaderIcons from "../../HeaderIcons";
 
 import { DBHeaderText } from "./DBHeaderText";
 import EventListScreen from "./EventListScreen";
+import ExplorerScreen from "./ExplorerScreen";
 import HomeScreen from "./HomeScreen";
 import MarathonScreen from "./MarathonScreen";
 import MoraleCup from "./MoraleCup";
@@ -24,6 +25,9 @@ const Tabs = createBottomTabNavigator<TabNavigatorParamList>();
 export const possibleTabs = {
   Events: (
     <Tabs.Screen key="Events" name="Events" component={EventListScreen} />
+  ),
+  Explorer: (
+    <Tabs.Screen key="Explorer" name="Explorer" component={ExplorerScreen} />
   ),
   Teams: <Tabs.Screen key="Spirit" name="Teams" component={SpiritScreen} />,
   Marathon: (
@@ -62,6 +66,9 @@ const TabBar = () => {
           );
         }
       }
+
+      // TODO: Must remove before merging PR
+      tempCurrentTabs.push(possibleTabs["Explorer"]);
 
       // if there is a fancy tab, add it to the middle
       if (fancyTab != null) {

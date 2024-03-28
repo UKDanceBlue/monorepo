@@ -1,0 +1,17 @@
+diff --git a/parsers/atomv1.js b/parsers/atomv1.js
+index 8f75bbdbd91a235d010cf6a5413ca0df5ebed45f..574a43fe5a9ff6fe1a44f93e7fc628f984f02a0e 100644
+--- a/parsers/atomv1.js
++++ b/parsers/atomv1.js
+@@ -99,10 +99,10 @@ const getItemCategories = (node) => {
+ };
+ 
+ const getItemPublished = (node) => {
+-  let pub = utils.getElementTextContent(node, 'updated');
++  let pub = utils.getElementTextContent(node, 'published');
+ 
+   if (pub === '' || pub === undefined) {
+-    pub = utils.getElementTextContent(node, 'published');
++    pub = utils.getElementTextContent(node, 'updated');
+   }
+ 
+   return pub;
