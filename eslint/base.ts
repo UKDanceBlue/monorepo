@@ -8,7 +8,6 @@ import eslintPluginUnicorn from "eslint-plugin-unicorn";
 const rules: Linter.RulesRecord = {
   // Possible Errors
   "no-undef": "off",
-  "spaced-comment": ["error", "always"],
   "radix": "error",
   "yoda": "error",
   "prefer-template": "warn",

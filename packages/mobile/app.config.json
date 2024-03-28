@@ -27,7 +27,13 @@
           "calendarPermission": "You can add events to your calendar from the events tab"
         }
       ],
-      "expo-camera",
+      [
+        "expo-camera",
+        {
+          "microphonePermission": "Allow DanceBlue to access your camera.",
+          "cameraPermission": "Allow DanceBlue to access your microphone."
+        }
+      ],
       "expo-av",
       "expo-font",
       "expo-secure-store",

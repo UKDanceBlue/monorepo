@@ -6,7 +6,6 @@ import eslintPluginUnicorn from "eslint-plugin-unicorn";
 const rules = {
     // Possible Errors
     "no-undef": "off",
-    "spaced-comment": ["error", "always"],
     "radix": "error",
     "yoda": "error",
     "prefer-template": "warn",
