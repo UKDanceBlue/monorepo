@@ -8,7 +8,7 @@ const validUnits = ["sec", "min", "hours", "days", "months", "years"] as const;
 
 export const CountdownNumber = ({
   value,
-  total,
+  total: _total,
   unit,
   amountInRow,
   radius,
@@ -19,7 +19,7 @@ export const CountdownNumber = ({
   amountInRow: number | undefined;
   radius: number | undefined;
 }) => {
-  const {width, height} = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
 
   // Calculate the width of each component based on the screen width and the number of components in a row
   const canvasWidth = amountInRow ? width / amountInRow : width;
@@ -31,7 +31,7 @@ export const CountdownNumber = ({
 
   const strokeWidth = 0.1 * radius;
 
-  if (radius > (maxRadius - strokeWidth)) {
+  if (radius > maxRadius - strokeWidth) {
     radius = maxRadius - strokeWidth;
   }
 
@@ -40,31 +40,31 @@ export const CountdownNumber = ({
   const cx = canvasWidth / 2;
   const cy = canvasHeight / 2;
 
-  const fontSizeValue = fontSizes["4xl"];
+  const fontSizeValue = fontSizes["4xl"] ?? 0;
   const fontSizeUnit = fontSizes["xl"];
 
   const viewBox = `0 0 ${canvasWidth} ${canvasHeight}`;
 
-    return (
-      <View height={canvasHeight} width={canvasWidth}>
-        <Svg width="100%" height="100%" viewBox={viewBox}>
-          <Circle
-            cx={cx}
-            cy={cy}
-            r={radius}
-            stroke={'#ffc72c'}
-            strokeWidth={strokeWidth}
-            fill={'#0032dd'}
-          />
+  return (
+    <View height={canvasHeight} width={canvasWidth}>
+      <Svg width="100%" height="100%" viewBox={viewBox}>
+        <Circle
+          cx={cx}
+          cy={cy}
+          r={radius}
+          stroke={"#ffc72c"}
+          strokeWidth={strokeWidth}
+          fill={"#0032dd"}
+        />
         <Text // numbers
           x={cx}
-          y={cy- fontSizeValue / 2} // Adjust the y-coordinate
+          y={cy - fontSizeValue / 2} // Adjust the y-coordinate
           textAnchor="middle"
           alignmentBaseline="middle"
           fontFamily="bodoni-flf-bold"
           fontWeight={"bold"}
           fontSize={fontSizeValue}
-          fill={'#ffffff'}
+          fill={"#ffffff"}
         >
           {value}
         </Text>
@@ -75,11 +75,11 @@ export const CountdownNumber = ({
           alignmentBaseline="middle"
           fontFamily="bodoni-flf-bold"
           fontSize={fontSizeUnit} // Adjust the font size of the unit
-          fill={'#ffffff'}
+          fill={"#ffffff"}
         >
           {unit}
         </Text>
-        </Svg>
-      </View>
-    );
+      </Svg>
+    </View>
+  );
 };
