@@ -9,7 +9,7 @@ import type {
   TabNavigationState,
 } from "@react-navigation/native";
 import { colors } from "@theme/colors";
-import { Box, VStack, View } from "native-base";
+import { Box, VStack, View, useTheme } from "native-base";
 import { ZStack } from "native-base/src/components/primitives";
 import { Text, TouchableOpacity, useWindowDimensions } from "react-native";
 
@@ -34,6 +34,7 @@ const iconMap = {
   "Scavenger Hunt": "search",
   "Logo": null,
   "Morale Cup": "trophy",
+  "DB Moments": "camera-retro",
 };
 
 const tabBarIcon = ({
@@ -81,6 +82,7 @@ function TabBarIcon({
   iconKey: keyof typeof iconMap;
 }) {
   const navTheme = useReactNavigationTheme();
+  const theme = useTheme();
 
   return (
     <TouchableOpacity
@@ -108,6 +110,7 @@ function TabBarIcon({
           <Text
             style={{
               color: isFocused ? navTheme.colors.primary : navTheme.colors.text,
+              fontSize: theme.fontSizes["xs"],
             }}
           >
             {label}
@@ -250,7 +253,7 @@ function TabBarComponent({
           }}
         >
           {state.routes.map((route, index) => {
-            const { options } = descriptors[route.key]!;
+            const { options } = descriptors[route.key];
             return (
               <TabBarEntry
                 key={route.key}

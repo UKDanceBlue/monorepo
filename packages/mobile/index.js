@@ -40,7 +40,7 @@ if (isDevelopmentBuild()) {
         console.log(values);
       },
     },
-  ]).catch(console.error);
+  ]).catch((error) => console.error(error));
 }
 
 // Configure the notifications handler to decide what to do when a notification is received if the app is open

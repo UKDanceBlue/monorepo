@@ -30,14 +30,14 @@ export const DurationScalar = new GraphQLScalarType({
     if (typeof value === "string") {
       const duration = Duration.fromISO(value);
       if (duration.isValid) {
-        return duration.toISO()!;
+        return duration.toISO();
       } else {
         throw new TypeError(
           "DurationScalar can only serialize strings that are valid ISO 8601 durations"
         );
       }
     } else if (Duration.isDuration(value) && value.isValid) {
-      return value.toISO()!;
+      return value.toISO();
     } else {
       throw new TypeError(
         "DurationScalar can only serialize strings or Luxon Duration objects"

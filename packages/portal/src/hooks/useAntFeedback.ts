@@ -62,6 +62,7 @@ export const useAskConfirm = ({
             try {
               onOk?.();
             } catch (error) {
+              // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
               reject(error);
             }
             resolve();
@@ -70,8 +71,10 @@ export const useAskConfirm = ({
             try {
               onCancel?.();
             } catch (error) {
+              // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
               reject(error);
             }
+            // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
             reject("cancel");
           },
           afterClose: () => {

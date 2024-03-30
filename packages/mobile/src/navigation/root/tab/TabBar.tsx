@@ -12,6 +12,7 @@ import type {
 import HeaderIcons from "../../HeaderIcons";
 
 import { DBHeaderText } from "./DBHeaderText";
+import DBMomentsScreen from "./DBMoments";
 import EventListScreen from "./EventListScreen";
 import ExplorerScreen from "./ExplorerScreen";
 import HomeScreen from "./HomeScreen";
@@ -37,6 +38,13 @@ export const possibleTabs = {
       component={MarathonScreen}
     />
   ),
+  DBMoments: (
+    <Tabs.Screen
+      key="DBMoments"
+      name="DB Moments"
+      component={DBMomentsScreen}
+    />
+  ),
   MoraleCup: (
     <Tabs.Screen key="MoraleCup" name="Morale Cup" component={MoraleCup} />
   ),
@@ -53,7 +61,7 @@ const TabBar = () => {
 
   useEffect(() => {
     if (!tabConfigLoading) {
-      let tempCurrentTabs = [possibleTabs.Marathon];
+      let tempCurrentTabs = [];
 
       const enabledScreens = allEnabledScreens.filter(
         (screen) => screen !== fancyTab

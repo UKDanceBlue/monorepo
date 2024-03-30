@@ -1,7 +1,7 @@
 /**
  * How many months are loaded at once (i.e. how many pages are loaded in the PagerView)
  */
-export const LOADED_MONTHS = 7 as const;
+export const LOADED_MONTHS = 7;
 if (__DEV__ && LOADED_MONTHS % 2 === 0) {
   throw new Error(`LOADED_MONTHS must be odd, but is ${LOADED_MONTHS}`);
 }
@@ -18,5 +18,5 @@ if (__DEV__ && LOADED_MONTHS_BEFORE_AFTER < 1) {
   );
 }
 
-export const RNCAL_DATE_FORMAT = "yyyy-MM-dd" as const;
-export const RNCAL_DATE_FORMAT_NO_DAY = "yyyy-MM" as const;
+export const RNCAL_DATE_FORMAT = "yyyy-MM-dd";
+export const RNCAL_DATE_FORMAT_NO_DAY = "yyyy-MM";

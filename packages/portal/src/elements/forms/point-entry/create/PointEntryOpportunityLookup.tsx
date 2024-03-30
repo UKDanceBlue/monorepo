@@ -132,7 +132,7 @@ export function PointEntryOpportunityLookup({
                       setCreateModalVisible(false);
                     }
                   })
-                  .catch((error) => {
+                  .catch((error: unknown) => {
                     if (error instanceof Error) {
                       void message.error(error.message);
                     } else {

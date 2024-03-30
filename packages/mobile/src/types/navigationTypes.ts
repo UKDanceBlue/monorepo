@@ -25,6 +25,7 @@ export type TabNavigatorParamList = {
   "Teams": NavigatorScreenParams<SpiritStackParamList>;
   "Marathon": undefined;
   "Scavenger Hunt": undefined;
+  "DB Moments": undefined;
   "Morale Cup": undefined;
 };
 

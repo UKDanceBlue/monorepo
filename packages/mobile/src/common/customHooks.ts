@@ -27,7 +27,7 @@ export function useFirebaseStorageUrl(googleUri?: string) {
         .then((url) => {
           setState([url, null]);
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           setState([null, error as Error]);
         });
     }

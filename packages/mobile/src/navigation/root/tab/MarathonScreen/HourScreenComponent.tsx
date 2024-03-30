@@ -76,7 +76,7 @@ export const HourScreenComponent = ({
         >
           {hourScreenData.mapImages.map((image, i) => (
             <ImageView
-              key={getFragmentData(ImageViewFragment, image).uuid + i}
+              key={`${getFragmentData(ImageViewFragment, image).uuid}-${i}`}
               imageFragment={image}
               contentFit="contain"
               renderHeight={screenHeight / 4}

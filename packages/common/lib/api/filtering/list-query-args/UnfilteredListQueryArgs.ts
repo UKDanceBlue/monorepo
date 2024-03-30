@@ -27,13 +27,15 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
 
   @Field(() => Int, {
     nullable: true,
-    description: `The number of items to return per page, defaults to ${DEFAULT_PAGE_SIZE}`,
+    description: `The number of items to return per page, defaults to ${String(
+      DEFAULT_PAGE_SIZE
+    )}`,
   })
   pageSize!: number | null;
 
   @Field(() => Int, {
     nullable: true,
-    description: `The page number to return, defaults to ${FIRST_PAGE}`,
+    description: `The page number to return, defaults to ${String(FIRST_PAGE)}`,
   })
   page!: number | null;
 
