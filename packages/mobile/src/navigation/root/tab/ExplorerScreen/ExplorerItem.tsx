@@ -1,8 +1,11 @@
 // import DBLogoCondensed from "../../../../../assets/svgs/DBLogoCondensed";
 import AudioPlayer from "@common/components/AudioPlayer";
+import type { ImageViewFragment } from "@common/components/ImageView/ImageView";
+import ImageView from "@common/components/ImageView/ImageView";
 import { universalCatch } from "@common/logging";
 import { showMessage } from "@common/util/alertUtils";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { type FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import { Audio } from "expo-av";
 import { openURL } from "expo-linking";
 import { Box, Button, HStack, Text, View } from "native-base";
@@ -19,6 +22,7 @@ export const ExplorerItem = ({
   title,
   showMotd = false,
   textContent,
+  imageContent,
   hasAudio = false,
   hasYouTubeVideo = false,
 }: {
@@ -26,8 +30,10 @@ export const ExplorerItem = ({
   title?: string;
   showMotd?: boolean;
   textContent?: string;
+  imageContent?: FragmentType<typeof ImageViewFragment>;
   hasAudio?: boolean;
   hasYouTubeVideo?: boolean;
+  hasImage?: boolean;
 }) => {
   const [sound, setSound] = useState<Audio.Sound>();
   const [plainTextContent, setPlainTextContent] = useState<string>();
@@ -164,6 +170,12 @@ export const ExplorerItem = ({
               <Text textAlign="center" fontSize={blogTitleFontSize}>
                 {title}
               </Text>
+            )}
+            {imageContent && (
+              <ImageView
+                imageFragment={imageContent}
+                renderWidth={windowX * 0.8}
+              />
             )}
             {plainTextContent && (
               <>
