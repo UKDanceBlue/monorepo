@@ -58,6 +58,38 @@ export type NotificationDeliveryFilters = FilterItems<
 
 type UniqueParam = { id: number } | { uuid: string };
 
+function normalizeReceiptErrorCode(
+  code:
+    | "DeviceNotRegistered"
+    | "InvalidCredentials"
+    | "MessageTooBig"
+    | "MessageRateExceeded"
+    | "DeveloperError"
+    | "ExpoError"
+    | "ProviderError"
+    | undefined
+): NotificationError {
+  let normalizedCode: NotificationError;
+  switch (code) {
+    case "DeveloperError":
+    case "ExpoError":
+    case "ProviderError":
+    case undefined: {
+      normalizedCode = NotificationError.Unknown;
+
+      // If this gives an error, it means that the above cases are incorrect
+      code as NotificationError & typeof code satisfies never;
+
+      break;
+    }
+    default: {
+      normalizedCode = code;
+    }
+  }
+
+  return normalizedCode;
+}
+
 @Service()
 export class NotificationDeliveryRepository {
   constructor(private prisma: PrismaClient) {}
@@ -192,7 +224,12 @@ export class NotificationDeliveryRepository {
           data:
             ticket.status === "ok"
               ? { sentAt: sentAt.toJSDate(), receiptId: ticket.id, chunkUuid }
-              : { deliveryError: ticket.details?.error, chunkUuid },
+              : {
+                  deliveryError: normalizeReceiptErrorCode(
+                    ticket.details?.error
+                  ),
+                  chunkUuid,
+                },
         })
       )
     );
@@ -213,14 +250,11 @@ export class NotificationDeliveryRepository {
       if (param.receipt.status === "ok") {
         successfulDeliveries.push(param.deliveryId);
       } else {
-        const existing =
-          errorReceipts.get(
-            param.receipt.details?.error ?? NotificationError.Unknown
-          ) ?? [];
-        errorReceipts.set(
-          param.receipt.details?.error ?? NotificationError.Unknown,
-          [...existing, param.deliveryId]
+        const errorCode = normalizeReceiptErrorCode(
+          param.receipt.details?.error
         );
+        const existing = errorReceipts.get(errorCode) ?? [];
+        errorReceipts.set(errorCode, [...existing, param.deliveryId]);
       }
     }
 
