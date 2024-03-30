@@ -220,7 +220,7 @@ export const EventsTable = () => {
                     navigate({
                       to: "/events/$eventId/",
                       params: { eventId: uuid },
-                    }).catch(console.error)
+                    }).catch((error: unknown) => console.error(error))
                   }
                   icon={<EyeOutlined />}
                 />
@@ -229,7 +229,7 @@ export const EventsTable = () => {
                     navigate({
                       to: "/events/$eventId/edit",
                       params: { eventId: uuid },
-                    }).catch(console.error)
+                    }).catch((error: unknown) => console.error(error))
                   }
                   icon={<EditOutlined />}
                 />

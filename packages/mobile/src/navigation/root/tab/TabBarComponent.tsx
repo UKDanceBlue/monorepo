@@ -253,7 +253,7 @@ function TabBarComponent({
           }}
         >
           {state.routes.map((route, index) => {
-            const { options } = descriptors[route.key]!;
+            const { options } = descriptors[route.key];
             return (
               <TabBarEntry
                 key={route.key}

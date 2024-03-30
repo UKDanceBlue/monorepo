@@ -62,7 +62,7 @@ export const MoraleCup = () => {
           setMoraleTeamId(null);
         }
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         if (error instanceof Error) {
           setOtherErrorMessage(error.message);
         } else {
@@ -83,7 +83,7 @@ export const MoraleCup = () => {
         alert("Invalid team ID");
       } else {
         setMoraleTeamId(teamId);
-        storeMoraleTeamId(teamId).catch((error) => {
+        storeMoraleTeamId(teamId).catch((error: unknown) => {
           if (error instanceof Error) {
             setOtherErrorMessage(error.message);
           } else {
@@ -105,8 +105,8 @@ export const MoraleCup = () => {
   let moralePointComponent = null;
   if (teamPoints != null && teamNames != null) {
     const data: StandingType[] = Object.keys(teamPoints).map((teamNumber) => {
-      const teamName = teamNames[teamNumber]!;
-      const teamPoint = teamPoints[teamNumber]!;
+      const teamName = teamNames[teamNumber];
+      const teamPoint = teamPoints[teamNumber];
       return {
         id: teamNumber,
         name: `Team ${teamNumber}: ${teamName}`,
@@ -155,7 +155,7 @@ export const MoraleCup = () => {
               fbFirestore
                 .doc("marathon/2023/morale/teams")
                 .update({ [moraleTeamId]: event.nativeEvent.text })
-                .catch((error) => {
+                .catch((error: unknown) => {
                   if (error instanceof Error) {
                     alert(error.message);
                   } else {

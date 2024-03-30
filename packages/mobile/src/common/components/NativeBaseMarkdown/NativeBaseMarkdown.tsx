@@ -26,7 +26,7 @@ const NativeBaseMarkdown = ({
         ((url) => {
           canOpenURL(url)
             .then((canOpen) => (canOpen ? openURL(url) : null))
-            .catch((error) => {
+            .catch((error: unknown) => {
               log(
                 `Failed to open URL ${url}: ${JSON.stringify(error)}`,
                 "error"

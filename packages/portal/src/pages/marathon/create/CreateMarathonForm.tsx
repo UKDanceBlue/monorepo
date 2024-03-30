@@ -80,7 +80,7 @@ export const CreateMarathonForm = () => {
             value={value}
             onBlur={onBlur}
             onChange={(value) =>
-              value?.isValid
+              value.isValid
                 ? onChange(value.set({ minute: 0, second: 0, millisecond: 0 }))
                 : DateTime.invalid("Invalid date")
             }
@@ -119,7 +119,7 @@ export const CreateMarathonForm = () => {
             value={value}
             onBlur={onBlur}
             onChange={(value) =>
-              value?.isValid
+              value.isValid
                 ? onChange(value.set({ minute: 0, second: 0, millisecond: 0 }))
                 : DateTime.invalid("Invalid date")
             }

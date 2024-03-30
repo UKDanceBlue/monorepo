@@ -32,14 +32,14 @@ export const DateTimeScalar = new GraphQLScalarType({
     if (typeof value === "string") {
       const dateTime = DateTime.fromISO(value);
       if (dateTime.isValid) {
-        return dateTime.toISO()!;
+        return dateTime.toISO();
       } else {
         throw new TypeError(
           "DateTimeScalar can only serialize strings that are valid ISO 8601 dates"
         );
       }
     } else if (DateTime.isDateTime(value) && value.isValid) {
-      return value.toISO()!;
+      return value.toISO();
     } else {
       throw new TypeError(
         "DateTimeScalar can only serialize strings or Luxon DateTime objects"

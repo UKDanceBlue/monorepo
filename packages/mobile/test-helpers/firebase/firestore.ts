@@ -24,13 +24,13 @@ function extractDocDataByPath<
   // id is the last part of the path, the rest is the parent path, if any
   const [id, ...rest] = path.split("/").reverse();
 
-  let current: MockedCollection | undefined = mockedData[rest[0]!];
+  let current: MockedCollection | undefined = mockedData[rest[0]];
   if (current == null) {
     throw new Error(`No collection found at path ${path}`);
   }
 
   for (let i = 1; i < rest.length; i++) {
-    current = current.collections[rest[i]!];
+    current = current.collections[rest[i]];
     if (current == null) {
       throw new Error(`No collection found at path ${path}`);
     }
@@ -38,10 +38,10 @@ function extractDocDataByPath<
 
   return {
     id,
-    data: () => current?.documents[id] as T | undefined,
+    data: () => current.documents[id] as T | undefined,
     exists: current.documents[id] != null,
     get: (fieldPath: FirebaseFirestoreTypes.FieldPath | keyof T) => {
-      const data = current?.documents[id];
+      const data = current.documents[id];
       if (data == null) {
         throw new Error(`No document found at path ${path}`);
       }
@@ -87,7 +87,7 @@ function extractDocRefByPath<
     collection: (collectionPath: string) =>
       extractCollectionRefByPath(`${path}/${collectionPath}`, mockedData),
     firestore: firestoreModuleGetter() as FirebaseFirestoreTypes.Module,
-    id: path.split("/").reverse()[0]!,
+    id: path.split("/").reverse()[0],
     onSnapshot: () => {
       throw new Error("Not implemented");
     }, // TODO

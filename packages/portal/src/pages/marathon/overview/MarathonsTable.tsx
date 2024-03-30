@@ -32,11 +32,11 @@ export const MarathonsTable = ({
           <>
             <Button
               icon={<EyeOutlined />}
-              href={`/marathon/${(all as { uuid?: string }).uuid}`}
+              href={`/marathon/${String((all as { uuid?: string }).uuid)}`}
             />{" "}
             <Button
               icon={<EditOutlined />}
-              href={`/marathon/${(all as { uuid?: string }).uuid}/edit`}
+              href={`/marathon/${String((all as { uuid?: string }).uuid)}/edit`}
             />
           </>
         )}

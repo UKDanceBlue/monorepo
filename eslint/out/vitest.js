@@ -2,6 +2,7 @@ import eslintPluginVitest from "eslint-plugin-vitest";
 const vitestConfig = {
     files: ["**/*.test.ts", "**/*.test.tsx"],
     plugins: {
+        // THIS COULD BE AN ISSUE!!!
         vitest: eslintPluginVitest,
     },
     rules: {

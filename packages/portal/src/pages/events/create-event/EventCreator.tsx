@@ -15,7 +15,7 @@ export function EventCreator() {
     <formApi.Provider>
       <Form
         onFinish={() => {
-          formApi.handleSubmit().catch((error) => {
+          formApi.handleSubmit().catch((error: unknown) => {
             if (error instanceof Error) {
               void message.error(error.message);
             } else {

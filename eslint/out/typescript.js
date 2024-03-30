@@ -58,6 +58,12 @@ const typescriptConfig = [
             ],
             "no-redeclare": "off",
             "no-dupe-class-members": "off",
+            "@typescript-eslint/restrict-template-expressions": [
+                "error",
+                {
+                    allowNumber: true,
+                },
+            ],
         },
     },
     {

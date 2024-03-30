@@ -65,7 +65,9 @@ export function EventViewer({
   const { EventDeletePopup, showModal } = useEventDeletePopup({
     uuid: eventData?.uuid ?? "",
     onDelete: () => {
-      navigate({ to: "/events" }).catch(console.error);
+      navigate({ to: "/events" }).catch((error: unknown) =>
+        console.error(error)
+      );
     },
   });
 

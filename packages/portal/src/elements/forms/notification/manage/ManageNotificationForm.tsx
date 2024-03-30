@@ -84,7 +84,7 @@ export const ManageNotificationForm = ({
           ? showInfoMessage(`${operationText} successful`)
           : showErrorMessage(`${operationText} failed`));
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         console.error(error);
         void showErrorMessage(`${operationText} failed`);
       });

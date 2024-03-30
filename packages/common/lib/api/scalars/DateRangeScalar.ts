@@ -64,11 +64,11 @@ export const DateRangeScalar = new GraphQLScalarType<Interval, string>({
   specifiedByURL: "https://www.iso.org/iso-8601-date-and-time-format.html",
   serialize(value): string {
     if (Interval.isInterval(value) && value.isValid) {
-      return value.toISO()!;
+      return value.toISO();
     } else if (typeof value === "string") {
       const interval = Interval.fromISO(value);
       if (interval.isValid) {
-        return interval.toISO()!;
+        return interval.toISO();
       } else {
         throw new TypeError(
           "DateRangeScalar can only serialize strings that are valid ISO 8601 intervals",

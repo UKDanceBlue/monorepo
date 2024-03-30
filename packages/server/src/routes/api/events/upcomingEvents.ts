@@ -62,9 +62,9 @@ export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
               fileData = {
                 url: externalUrl,
                 mimeType: combineMimePartsToString(
-                  image.file!.mimeTypeName,
-                  image.file!.mimeSubtypeName,
-                  image.file!.mimeParameters
+                  image.file.mimeTypeName,
+                  image.file.mimeSubtypeName,
+                  image.file.mimeParameters
                 ),
               };
             }

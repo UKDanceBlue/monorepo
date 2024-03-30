@@ -196,7 +196,7 @@ export function EditMarathonHourPage() {
             <LuxonDatePicker
               showTime
               onBlur={onBlur}
-              onChange={(value) => onChange(value ?? undefined)}
+              onChange={(value) => onChange(value)}
               value={value}
               status={status}
               placeholder="2024-04-06 07:00:00"

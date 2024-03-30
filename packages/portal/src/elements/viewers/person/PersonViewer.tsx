@@ -42,7 +42,9 @@ export function PersonViewer({
   const { PersonDeletePopup, showModal } = usePersonDeletePopup({
     uuid: personData?.uuid ?? "",
     onDelete: () => {
-      navigate({ to: "/people/" }).catch(console.error);
+      navigate({ to: "/people/" }).catch((error: unknown) =>
+        console.error(error)
+      );
     },
   });
 

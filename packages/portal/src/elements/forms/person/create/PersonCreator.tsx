@@ -1,8 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { CommitteeRole, committeeNames } from "@ukdanceblue/common";
 import {
-  type FragmentType,
   getFragmentData,
+  type FragmentType,
 } from "@ukdanceblue/common/graphql-client-admin";
 import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
 import type { BaseOptionType } from "antd/es/select";
@@ -28,7 +28,7 @@ export function PersonCreator({
       navigate({
         to: "/people/$personId/",
         params: { personId: ret.uuid },
-      }).catch(console.error);
+      }).catch((error: unknown) => console.error(error));
     }
   });
 
@@ -77,7 +77,7 @@ export function PersonCreator({
       <formApi.Provider>
         <Form
           onFinish={() => {
-            formApi.handleSubmit().catch((error) => {
+            formApi.handleSubmit().catch((error: unknown) => {
               if (error instanceof Error) {
                 void message.error(error.message);
               } else {

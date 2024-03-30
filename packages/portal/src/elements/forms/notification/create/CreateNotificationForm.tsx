@@ -19,7 +19,7 @@ export const CreateNotificationForm = () => {
         params: {
           notificationId: data.uuid,
         },
-      }).catch(console.error);
+      }).catch((error: unknown) => console.error(error));
     }
   });
 
@@ -37,7 +37,7 @@ export const CreateNotificationForm = () => {
         <Form
           layout="vertical"
           onFinish={() => {
-            formApi.handleSubmit().catch((error) => {
+            formApi.handleSubmit().catch((error: unknown) => {
               if (error instanceof Error) {
                 void appMessage.error(error.message);
               } else {
