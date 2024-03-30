@@ -1,10 +1,5 @@
 {
-  "eslint.workingDirectories": [
-    "./packages/common",
-    "./packages/server",
-    "./packages/portal",
-    "./packages/mobile"
-  ],
+  "eslint.workingDirectories": ["."],
   "eslint.experimental.useFlatConfig": true,
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
@@ -24,5 +19,6 @@
   "typescript.inlayHints.parameterNames.enabled": "all",
   "typescript.preferences.preferTypeOnlyAutoImports": true,
   "javascript.inlayHints.parameterNames.enabled": "all",
-  "cSpell.words": ["Spinnable", "Whatwg"]
+  "cSpell.words": ["Spinnable", "Whatwg"],
+  "eslint.codeActionsOnSave.mode": "problems"
 }
