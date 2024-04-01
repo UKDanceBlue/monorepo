@@ -13,11 +13,7 @@ const marathonScreenDocument = graphql(/* GraphQL */ `
     currentMarathonHour {
       ...HourScreenFragment
     }
-    currentMarathon {
-      year
-    }
     nextMarathon {
-      year
       startDate
       endDate
     }
@@ -63,10 +59,9 @@ export const MarathonScreen = () => {
     );
   }
 
-  if (data?.nextMarathon?.year) {
+  if (data?.nextMarathon) {
     return (
       <MarathonCountdownScreen
-        marathonYear={data.nextMarathon.year}
         marathonStart={dateTimeFromSomething(data.nextMarathon.startDate)}
         marathonEnd={dateTimeFromSomething(data.nextMarathon.endDate)}
       />

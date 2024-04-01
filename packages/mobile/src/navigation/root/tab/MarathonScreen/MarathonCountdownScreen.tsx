@@ -1,31 +1,37 @@
 // import CountdownView from "@common/components/CountdownView/CountdownView";
 import CountdownViewNew from "@common/components/CountdownView";
 import { useThemeColors } from "@common/customHooks";
-import { useMarathonTime } from "@common/hooks/useMarathonTime";
+import type { DateTime } from "luxon";
 import { Text, View } from "native-base";
 import type { ImageSourcePropType } from "react-native";
 import { ImageBackground, useWindowDimensions } from "react-native";
 
 import CommitteeHoldingSign from "../../../../../assets/svgs/CommitteeHoldingSign";
 
-
-export const MarathonCountdownScreen = () => {
+export const MarathonCountdownScreen = ({
+  marathonStart,
+  marathonEnd,
+}: {
+  marathonStart: DateTime;
+  marathonEnd: DateTime;
+}) => {
   const { height: screenHeight, width: screenWidth } = useWindowDimensions();
   const { primary } = useThemeColors();
-  const { marathonTime } = useMarathonTime();
 
   const ordinals = ["th", "st", "nd", "rd"]; // s
-  const startOrdinal = ordinals[((marathonTime.startTime.day % 100) - 20) % 10]
-                    || ordinals[marathonTime.startTime.day % 100]
-                    || ordinals[0];
-  const endOrdinal = ordinals[((marathonTime.endTime.day % 100) - 20) % 10]
-                  || ordinals[marathonTime.endTime.day % 100]
-                  || ordinals[0];
+  const startOrdinal =
+    ordinals[((marathonStart.day % 100) - 20) % 10] ||
+    ordinals[marathonStart.day % 100] ||
+    ordinals[0];
+  const endOrdinal =
+    ordinals[((marathonEnd.day % 100) - 20) % 10] ||
+    ordinals[marathonEnd.day % 100] ||
+    ordinals[0];
 
   // technically this isn't the best way of doing the date but idrc atm
-  const dateString = `${marathonTime.startTime.toFormat('LLLL d')}${startOrdinal} - ${marathonTime.endTime.toFormat('d, yyyy').replace(',', `${endOrdinal},`)}`;
+  const dateString = `${marathonStart.toFormat("LLLL d")}${startOrdinal} - ${marathonEnd.toFormat("d, yyyy").replace(",", `${endOrdinal},`)}`;
 
-  const timeString = `${marathonTime.startTime.toFormat('h:mm a')} - ${marathonTime.endTime.toFormat('h:mm a')}`;
+  const timeString = `${marathonStart.toFormat("h:mm a")} - ${marathonEnd.toFormat("h:mm a")}`;
 
   return (
     <ImageBackground
@@ -52,7 +58,7 @@ export const MarathonCountdownScreen = () => {
         >
           {"Countdown 'til Marathon"}
         </Text>
-        <CountdownViewNew endTime={marathonTime.startTime.toMillis()} />
+        <CountdownViewNew endTime={marathonStart.toMillis()} />
       </View>
       <View flex={2}>
         <CommitteeHoldingSign color="#fff" />
