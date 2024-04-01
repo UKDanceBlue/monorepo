@@ -13,7 +13,7 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  fragment ImageViewFragment on ImageResource {\n    uuid\n    url\n    imageData\n    thumbHash\n    alt\n    width\n    height\n    mimeType\n  }\n": types.ImageViewFragmentFragmentDoc,
+    "\n  fragment ImageViewFragment on ImageResource {\n    uuid\n    url\n    thumbHash\n    alt\n    width\n    height\n    mimeType\n  }\n": types.ImageViewFragmentFragmentDoc,
     "\n  fragment SimpleConfig on ConfigurationResource {\n    uuid\n    key\n    value\n  }\n": types.SimpleConfigFragmentDoc,
     "\n  fragment FullConfig on ConfigurationResource {\n    ...SimpleConfig\n    validAfter\n    validUntil\n    createdAt\n  }\n": types.FullConfigFragmentDoc,
     "\n  fragment NotificationFragment on NotificationResource {\n    uuid\n    title\n    body\n    url\n  }\n": types.NotificationFragmentFragmentDoc,
@@ -23,7 +23,7 @@ const documents = {
     "\n  query useTabBarConfig {\n    activeConfiguration(key: \"TAB_BAR_CONFIG\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n": types.UseTabBarConfigDocument,
     "\n  query AuthState {\n    me {\n      data {\n        uuid\n      }\n    }\n    loginState {\n      role {\n        dbRole\n        committeeIdentifier\n        committeeRole\n      }\n      loggedIn\n      authSource\n    }\n  }\n": types.AuthStateDocument,
     "\n  mutation SetDevice($input: RegisterDeviceInput!) {\n    registerDevice(input: $input) {\n      ok\n    }\n  }\n": types.SetDeviceDocument,
-    "\n  fragment EventScreenFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      imageData\n      thumbHash\n      url\n      height\n      width\n      alt\n      mimeType\n    }\n  }\n": types.EventScreenFragmentFragmentDoc,
+    "\n  fragment EventScreenFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      thumbHash\n      url\n      height\n      width\n      alt\n      mimeType\n    }\n  }\n": types.EventScreenFragmentFragmentDoc,
     "\n  query DeviceNotifications(\n    $deviceUuid: String!\n    $page: Int\n    $pageSize: Int\n    $verifier: String!\n  ) {\n    device(uuid: $deviceUuid) {\n      data {\n        notificationDeliveries(\n          pageSize: $pageSize\n          page: $page\n          verifier: $verifier\n        ) {\n          ...NotificationDeliveryFragment\n        }\n      }\n    }\n  }\n": types.DeviceNotificationsDocument,
     "\n  fragment ProfileScreenAuthFragment on LoginState {\n    role {\n      committeeIdentifier\n      committeeRole\n      dbRole\n    }\n    authSource\n  }\n": types.ProfileScreenAuthFragmentFragmentDoc,
     "\n  fragment ProfileScreenUserFragment on PersonResource {\n    name\n    linkblue\n    teams {\n      position\n      team {\n        name\n      }\n    }\n  }\n": types.ProfileScreenUserFragmentFragmentDoc,
@@ -56,7 +56,7 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment ImageViewFragment on ImageResource {\n    uuid\n    url\n    imageData\n    thumbHash\n    alt\n    width\n    height\n    mimeType\n  }\n"): (typeof documents)["\n  fragment ImageViewFragment on ImageResource {\n    uuid\n    url\n    imageData\n    thumbHash\n    alt\n    width\n    height\n    mimeType\n  }\n"];
+export function graphql(source: "\n  fragment ImageViewFragment on ImageResource {\n    uuid\n    url\n    thumbHash\n    alt\n    width\n    height\n    mimeType\n  }\n"): (typeof documents)["\n  fragment ImageViewFragment on ImageResource {\n    uuid\n    url\n    thumbHash\n    alt\n    width\n    height\n    mimeType\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -96,7 +96,7 @@ export function graphql(source: "\n  mutation SetDevice($input: RegisterDeviceIn
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment EventScreenFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      imageData\n      thumbHash\n      url\n      height\n      width\n      alt\n      mimeType\n    }\n  }\n"): (typeof documents)["\n  fragment EventScreenFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      imageData\n      thumbHash\n      url\n      height\n      width\n      alt\n      mimeType\n    }\n  }\n"];
+export function graphql(source: "\n  fragment EventScreenFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      thumbHash\n      url\n      height\n      width\n      alt\n      mimeType\n    }\n  }\n"): (typeof documents)["\n  fragment EventScreenFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      thumbHash\n      url\n      height\n      width\n      alt\n      mimeType\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

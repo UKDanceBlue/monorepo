@@ -29,20 +29,6 @@ import type { RootStackScreenProps } from "../../../types/navigationTypes";
 import { EventScreenFragment } from "./EventScreenFragment";
 import { onAddToCalendar } from "./addToCalendar";
 
-function extractUrl(
-  url: URL | string | undefined | null,
-  imageData: string | undefined | null,
-  mimeType: string | undefined | null
-): string | undefined {
-  if (url) {
-    return url.toString();
-  } else if (imageData && mimeType) {
-    return `data:${mimeType};base64,${imageData}`;
-  } else {
-    return undefined;
-  }
-}
-
 const EventScreen = () => {
   const {
     params: { event, occurrenceId },
@@ -106,11 +92,7 @@ const EventScreen = () => {
                   )}
                   <Image
                     source={{
-                      uri: extractUrl(
-                        pageImage.url,
-                        pageImage.imageData,
-                        pageImage.mimeType
-                      ),
+                      uri: pageImage.url?.toString(),
                       width: pageImage.width,
                       height: pageImage.height,
                     }}
@@ -125,9 +107,7 @@ const EventScreen = () => {
             !!eventData.images[0] && (
               <Image
                 source={{
-                  uri:
-                    eventData.images[0].url?.toString() ??
-                    `data:image/png;base64,${eventData.images[0].imageData}`,
+                  uri: eventData.images[0].url?.toString(),
                   width: eventData.images[0].width,
                   height: eventData.images[0].height,
                 }}
