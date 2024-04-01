@@ -8,10 +8,10 @@ import { openURL } from "expo-linking";
 import { Box, Button, HStack, Text, View } from "native-base";
 import { useEffect, useState } from "react";
 import { PixelRatio, useWindowDimensions } from "react-native";
-import WebView from "react-native-webview";
 
 import DBRibbon from "../../../../../assets/svgs/DBRibbon";
 
+import { YoutubeEmbedWebView } from "./YoutubeEmbedWebView";
 import { parseBlogText } from "./parseBlogText";
 
 export const ExplorerItem = ({
@@ -21,6 +21,7 @@ export const ExplorerItem = ({
   textContent,
   hasAudio = false,
   hasYouTubeVideo = false,
+  blockResource,
 }: {
   resourceLink?: string;
   title?: string;
@@ -28,6 +29,7 @@ export const ExplorerItem = ({
   textContent?: string;
   hasAudio?: boolean;
   hasYouTubeVideo?: boolean;
+  blockResource?: (resource: string) => void;
 }) => {
   const [sound, setSound] = useState<Audio.Sound>();
   const [plainTextContent, setPlainTextContent] = useState<string>();
@@ -198,10 +200,11 @@ export const ExplorerItem = ({
               />
             )}
             {hasYouTubeVideo && resourceLink && (
-              <WebView
+              <YoutubeEmbedWebView
                 style={{ height: calculatedHeight }}
                 source={{ uri: resourceLink }}
                 allowsFullscreenVideo={true}
+                onErrorEmitted={() => blockResource?.(resourceLink)}
               />
             )}
           </View>

@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import { Text } from "native-base";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { View } from "react-native";
 import type { FeedItem } from "react-native-rss-parser";
 
@@ -17,77 +17,120 @@ export function useCombinedFeed(): {
 } {
   const { blogPosts, podcasts, youtubeVideos, loading } = useExplorerFeed();
 
+  const [blockedResources, setBlockedResources] = useState<string[]>([]);
+
   const feed = useMemo(() => {
     if (!loading) {
       const postComponents: FeedSortingItem[] =
-        blogPosts?.map((post: FeedItem) => {
-          const published = DateTime.fromRFC2822(post.published);
+        blogPosts
+          ?.map((post: FeedItem) => {
+            const link = post.id
+              .replace("new.danceblue.org", "danceblue.org")
+              .replace("preview.danceblue.org", "danceblue.org");
+            if (blockedResources.includes(link)) {
+              return null;
+            }
+            const published = DateTime.fromRFC2822(post.published);
 
-          const jsxElement = (
-            <View key={post.id}>
-              <ExplorerItem
-                resourceLink={post.id
-                  .replace("new.danceblue.org", "danceblue.org")
-                  .replace("preview.danceblue.org", "danceblue.org")}
-                title={post.title}
-                textContent={post.content}
-              />
-              <Text paddingRight={3} width="100%" textAlign="right">
-                {published.toLocaleString()}
-              </Text>
-            </View>
-          );
+            const jsxElement = (
+              <View key={post.id}>
+                <ExplorerItem
+                  resourceLink={link}
+                  blockResource={(resource) =>
+                    setBlockedResources((prev) => [...prev, resource])
+                  }
+                  title={post.title}
+                  textContent={post.content}
+                />
+                <Text paddingRight={3} width="100%" textAlign="right">
+                  {published.toLocaleString()}
+                </Text>
+              </View>
+            );
 
-          return { jsxElement, published };
-        }) ?? [];
+            return { jsxElement, published };
+          })
+          .filter(
+            (component): component is Exclude<typeof component, null> =>
+              component !== null
+          ) ?? [];
 
       const podcastComponents: FeedSortingItem[] =
-        podcasts?.map((podcast: FeedItem) => {
-          const podcastUrl = podcast.enclosures.find(
-            (enclosure) => enclosure.mimeType === "audio/mpeg"
-          )?.url;
-          const published = DateTime.fromRFC2822(podcast.published);
+        podcasts
+          ?.map((podcast: FeedItem) => {
+            const podcastUrl = podcast.enclosures.find(
+              (enclosure) => enclosure.mimeType === "audio/mpeg"
+            )?.url;
 
-          const jsxElement = (
-            <View key={podcast.id}>
-              <ExplorerItem
-                hasAudio={true}
-                resourceLink={podcastUrl}
-                title={podcast.title}
-              />
-              <Text paddingRight={3} width="100%" textAlign="right">
-                {published.toLocaleString()}
-              </Text>
-            </View>
-          );
+            if (blockedResources.includes(podcastUrl ?? "")) {
+              return null;
+            }
 
-          return { jsxElement, published };
-        }) ?? [];
+            const published = DateTime.fromRFC2822(podcast.published);
+
+            const jsxElement = (
+              <View key={podcast.id}>
+                <ExplorerItem
+                  hasAudio={true}
+                  resourceLink={podcastUrl}
+                  blockResource={(resource) =>
+                    setBlockedResources((prev) => [...prev, resource])
+                  }
+                  title={podcast.title}
+                />
+                <Text paddingRight={3} width="100%" textAlign="right">
+                  {published.toLocaleString()}
+                </Text>
+              </View>
+            );
+
+            return { jsxElement, published };
+          })
+          .filter(
+            (component): component is Exclude<typeof component, null> =>
+              component !== null
+          ) ?? [];
 
       const youtubeComponents: FeedSortingItem[] =
-        youtubeVideos?.map((video: FeedItem) => {
-          console.log(video);
-          let videoUrl: string | undefined;
-          for (const link of video.links) {
-            const videoId = new URL(link.url).searchParams.get("v");
-            if (videoId) {
-              videoUrl = `https://www.youtube.com/embed/${videoId}`;
-              break;
+        youtubeVideos
+          ?.map((video: FeedItem) => {
+            console.log(video);
+            let videoUrl: string | undefined;
+            for (const link of video.links) {
+              const videoId = new URL(link.url).searchParams.get("v");
+              if (videoId) {
+                videoUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
+                break;
+              }
             }
-          }
-          const published = DateTime.fromISO(video.published);
 
-          const jsxElement = (
-            <View key={video.id}>
-              <ExplorerItem hasYouTubeVideo={true} resourceLink={videoUrl} />
-              <Text paddingRight={3} width="100%" textAlign="right">
-                {published.toLocaleString()}
-              </Text>
-            </View>
-          );
+            if (blockedResources.includes(videoUrl ?? "")) {
+              return null;
+            }
+            const published = DateTime.fromISO(video.published);
 
-          return { jsxElement, published };
-        }) ?? [];
+            const jsxElement = (
+              <View key={video.id}>
+                <ExplorerItem
+                  hasYouTubeVideo={true}
+                  resourceLink={videoUrl}
+                  blockResource={(resource) =>
+                    setBlockedResources((prev) => [...prev, resource])
+                  }
+                  title={video.title}
+                />
+                <Text paddingRight={3} width="100%" textAlign="right">
+                  {published.toLocaleString()}
+                </Text>
+              </View>
+            );
+
+            return { jsxElement, published };
+          })
+          .filter(
+            (component): component is Exclude<typeof component, null> =>
+              component !== null
+          ) ?? [];
 
       return [
         ...postComponents,
@@ -97,7 +140,7 @@ export function useCombinedFeed(): {
     } else {
       return [];
     }
-  }, [blogPosts, loading, podcasts, youtubeVideos]);
+  }, [blockedResources, blogPosts, loading, podcasts, youtubeVideos]);
 
   return { feed };
 }
