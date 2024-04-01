@@ -27,6 +27,7 @@ export type TabNavigatorParamList = {
   "Scavenger Hunt": undefined;
   "DB Moments": undefined;
   "Morale Cup": undefined;
+  "Info": undefined;
 };
 
 export type TabNavigatorProps<T extends keyof TabNavigatorParamList> =
