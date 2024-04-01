@@ -59,7 +59,9 @@ const InfoScreen = () => {
             </Button>
             <Button
               onPress={() => {
-                openBrowserAsync("https://danceblue.org").catch(universalCatch);
+                openBrowserAsync("https://dancblue.org/db24-live").catch(
+                  universalCatch
+                );
               }}
               width="2/5"
               backgroundColor={"secondary.400"}

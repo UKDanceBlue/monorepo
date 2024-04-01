@@ -55,7 +55,7 @@ const TabBar = () => {
 
   useEffect(() => {
     if (!tabConfigLoading) {
-      let tempCurrentTabs = [possibleTabs.Marathon];
+      let tempCurrentTabs = [];
 
       const enabledScreens = allEnabledScreens.filter(
         (screen) => screen !== fancyTab
