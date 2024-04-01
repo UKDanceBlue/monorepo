@@ -24,6 +24,7 @@ import SpiritScreen from "./spirit/SpiritStack";
 const Tabs = createBottomTabNavigator<TabNavigatorParamList>();
 
 export const possibleTabs = {
+  Home: <Tabs.Screen name="Home" component={HomeScreen} />,
   Events: (
     <Tabs.Screen key="Events" name="Events" component={EventListScreen} />
   ),
@@ -74,9 +75,6 @@ const TabBar = () => {
           );
         }
       }
-
-      // TODO: Must remove before merging PR
-      tempCurrentTabs.push(possibleTabs["Explorer"]);
 
       // if there is a fancy tab, add it to the middle
       if (fancyTab != null) {
@@ -133,8 +131,9 @@ const TabBar = () => {
       })}
       tabBar={(props) => <TabBarComponent {...props} fancyTab={fancyTab} />}
     >
-      <Tabs.Screen name="Home" component={HomeScreen} />
-      {!tabConfigLoading && currentTabs}
+      {!tabConfigLoading && currentTabs.length > 0
+        ? currentTabs
+        : [possibleTabs.Home]}
     </Tabs.Navigator>
   );
 };
