@@ -143,34 +143,86 @@ export class DeviceRepository {
   async lookupNotificationAudience(
     audience: NotificationAudience
   ): Promise<{ id: number; uuid: string; expoPushToken: string }[]> {
+    const where: Exclude<
+      Exclude<
+        Parameters<PrismaClient["device"]["findMany"]>[0],
+        undefined
+      >["where"],
+      undefined
+    >[] = [];
+
     if (audience === "all") {
-      const rows = await this.prisma.device.findMany({
-        select: { id: true, uuid: true, expoPushToken: true },
-        where: { expoPushToken: { not: null } },
-        // It is possible for a device to be registered multiple times, so we
-        // need to dedupe them somehow. To achieve this, we will use the
-        // `expoPushToken` as the key and only keep the last seen device.
-        orderBy: { lastSeen: "asc" },
-      });
-
-      const pushTokenToDevice = new Map<
-        string,
-        Omit<(typeof rows)[number], "expoPushToken"> & { expoPushToken: string }
-      >();
-      for (const device of rows) {
-        if (device.expoPushToken != null) {
-          pushTokenToDevice.set(
-            device.expoPushToken,
-            device as Omit<typeof device, "expoPushToken"> & {
-              expoPushToken: string;
-            }
-          );
-        }
-      }
-
-      return [...pushTokenToDevice.values()];
+      where.push({ expoPushToken: { not: null } });
     } else {
+      if ("memberOfTeamType" in audience) {
+        where.push({
+          lastSeenPerson: {
+            memberships: {
+              some: {
+                team: {
+                  type: audience.memberOfTeamType,
+                },
+              },
+            },
+          },
+        });
+      }
+      if ("memberOfTeamIds" in audience) {
+        where.push({
+          lastSeenPerson: {
+            memberships: {
+              some: {
+                team: {
+                  uuid: {
+                    in: audience.memberOfTeamIds,
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+      if ("personIds" in audience) {
+        where.push({
+          lastSeenPerson: {
+            uuid: {
+              in: audience.personIds,
+            },
+          },
+        });
+      }
+    }
+
+    if (where.length === 0) {
       throw new Error("Not implemented");
     }
+
+    const rows = await this.prisma.device.findMany({
+      select: { id: true, uuid: true, expoPushToken: true },
+      where: {
+        AND: where,
+      },
+      // It is possible for a device to be registered multiple times, so we
+      // need to dedupe them somehow. To achieve this, we will use the
+      // `expoPushToken` as the key and only keep the last seen device.
+      orderBy: { lastSeen: "asc" },
+    });
+
+    const pushTokenToDevice = new Map<
+      string,
+      Omit<(typeof rows)[number], "expoPushToken"> & { expoPushToken: string }
+    >();
+    for (const device of rows) {
+      if (device.expoPushToken != null) {
+        pushTokenToDevice.set(
+          device.expoPushToken,
+          device as Omit<typeof device, "expoPushToken"> & {
+            expoPushToken: string;
+          }
+        );
+      }
+    }
+
+    return [...pushTokenToDevice.values()];
   }
 }
