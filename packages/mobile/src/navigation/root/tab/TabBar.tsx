@@ -24,7 +24,7 @@ import SpiritScreen from "./spirit/SpiritStack";
 const Tabs = createBottomTabNavigator<TabNavigatorParamList>();
 
 export const possibleTabs = {
-  Home: <Tabs.Screen name="Home" component={HomeScreen} />,
+  Home: <Tabs.Screen key="Home" name="Home" component={HomeScreen} />,
   Events: (
     <Tabs.Screen key="Events" name="Events" component={EventListScreen} />
   ),
