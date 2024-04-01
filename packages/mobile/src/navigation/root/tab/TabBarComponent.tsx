@@ -221,7 +221,7 @@ function TabBarComponent({
   const tabBarHeight = screenHeight * 0.1;
 
   const { dark } = useThemeColors();
-  const tabBarBackgroundColor = useColorModeValue("#ffebad", dark[100]);
+  const tabBarBackgroundColor = useColorModeValue("#e0edff", dark[100]);
 
   return (
     <Box
@@ -259,8 +259,8 @@ function TabBarComponent({
                   typeof options.tabBarLabel === "string"
                     ? options.tabBarLabel
                     : options.title !== undefined
-                    ? options.title
-                    : route.name
+                      ? options.title
+                      : route.name
                 }
                 isFocused={state.index === index}
                 options={options}

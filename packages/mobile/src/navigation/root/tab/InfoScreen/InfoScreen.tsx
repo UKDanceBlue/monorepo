@@ -23,6 +23,13 @@ const InfoScreen = () => {
     <>
       <StatusBar hidden={false} />
       <VStack flexDirection="column" bgColor={bgColor} flex={1}>
+        <Box
+          flex={1}
+          tintColor={bgColor}
+          borderBottomColor="secondary.400"
+          borderBottomWidth={2}
+          borderBottomStyle="solid"
+        ></Box>
         {/* Placeholder "Welcome to DanceBlue 2024, we're getting things ready for you!\nPlease check back soon!" */}
         <Box
           flex={2}
@@ -31,7 +38,8 @@ const InfoScreen = () => {
           width={screenWidth}
         >
           <Text fontSize={fontScale * 40} marginX={"1/6"} textAlign="center">
-            Welcome to DanceBlue 2024!
+            Welcome to DanceBlue Marathon 2024!\nWe are so excited that you are
+            here!
           </Text>
         </Box>
         <Box flex={1} justifyContent="center">
@@ -51,16 +59,14 @@ const InfoScreen = () => {
             </Button>
             <Button
               onPress={() => {
-                openBrowserAsync(
-                  "https://danceblue.org/spirit-point-form/"
-                ).catch(universalCatch);
+                openBrowserAsync("https://danceblue.org").catch(universalCatch);
               }}
               width="2/5"
               backgroundColor={"secondary.400"}
               _text={{ color: "primary.600" }}
               _pressed={{ opacity: 0.6 }}
             >
-              Submit Spirit Points
+              Link to the Live Stream!!
             </Button>
           </HStack>
           <HStack justifyContent="center">
