@@ -14,6 +14,52 @@ import DBRibbon from "../../../../../assets/svgs/DBRibbon";
 import { YoutubeEmbedWebView } from "./YoutubeEmbedWebView";
 import { parseBlogText } from "./parseBlogText";
 
+function cleanupTextContent(textContent: string) {
+  let completedText = "";
+
+  let state: "leadingWhiteSpace" | "normal" | "newline" | "doubleNewline" =
+    "leadingWhiteSpace";
+  for (let i = 0; i < textContent.length; i++) {
+    const char = textContent[i];
+
+    if (state === "leadingWhiteSpace") {
+      if (char === " " || char === "\n") {
+        continue;
+      } else {
+        state = "normal";
+      }
+    }
+
+    if (state === "normal") {
+      if (char === "\n") {
+        state = "newline";
+      } else {
+        completedText += char;
+      }
+    }
+
+    if (state === "newline") {
+      if (char === "\n") {
+        state = "doubleNewline";
+      } else {
+        completedText += `\n${char}`;
+        state = "normal";
+      }
+    }
+
+    if (state === "doubleNewline") {
+      if (char === "\n") {
+        continue;
+      } else {
+        completedText += `\n\n${char}`;
+        state = "normal";
+      }
+    }
+  }
+
+  return completedText;
+}
+
 export const ExplorerItem = ({
   resourceLink,
   title,
@@ -174,7 +220,7 @@ export const ExplorerItem = ({
                   textAlign="justify"
                   fontFamily=""
                 >
-                  {plainTextContent}
+                  {cleanupTextContent(plainTextContent)}
                 </Text>
                 {resourceLink && (
                   <Box width="full" alignItems="flex-end">
