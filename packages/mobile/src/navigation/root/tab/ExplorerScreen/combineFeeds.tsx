@@ -1,3 +1,4 @@
+import { Logger } from "@common/logger/Logger";
 import { DateTime } from "luxon";
 import { Text } from "native-base";
 import { useMemo, useState } from "react";
@@ -14,8 +15,11 @@ export interface FeedSortingItem {
 
 export function useCombinedFeed(): {
   feed: FeedSortingItem[];
+  loading: boolean;
+  refresh: () => void;
 } {
-  const { blogPosts, podcasts, youtubeVideos, loading } = useExplorerFeed();
+  const { blogPosts, podcasts, youtubeVideos, loading, refresh } =
+    useExplorerFeed();
 
   const [blockedResources, setBlockedResources] = useState<string[]>([]);
 
@@ -94,7 +98,6 @@ export function useCombinedFeed(): {
       const youtubeComponents: FeedSortingItem[] =
         youtubeVideos
           ?.map((video: FeedItem) => {
-            console.log(video);
             let videoUrl: string | undefined;
             for (const link of video.links) {
               const videoId = new URL(link.url).searchParams.get("v");
@@ -142,5 +145,16 @@ export function useCombinedFeed(): {
     }
   }, [blockedResources, blogPosts, loading, podcasts, youtubeVideos]);
 
-  return { feed };
+  return {
+    feed,
+    loading,
+    refresh: () => {
+      refresh().catch((error: unknown) =>
+        Logger.error("Error refreshing explorer feed", {
+          error,
+          source: "useCombinedFeed",
+        })
+      );
+    },
+  };
 }
