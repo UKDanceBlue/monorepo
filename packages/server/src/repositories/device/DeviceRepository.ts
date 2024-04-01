@@ -151,9 +151,7 @@ export class DeviceRepository {
       undefined
     >[] = [];
 
-    if (audience === "all") {
-      where.push({ expoPushToken: { not: null } });
-    } else {
+    if (audience !== "all") {
       if ("memberOfTeamType" in audience) {
         where.push({
           lastSeenPerson: {
@@ -200,7 +198,7 @@ export class DeviceRepository {
     const rows = await this.prisma.device.findMany({
       select: { id: true, uuid: true, expoPushToken: true },
       where: {
-        AND: where,
+        AND: [{ expoPushToken: { not: null } }, ...where],
       },
       // It is possible for a device to be registered multiple times, so we
       // need to dedupe them somehow. To achieve this, we will use the
