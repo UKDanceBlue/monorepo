@@ -22,6 +22,7 @@ export const EventListPage = ({
   refreshing,
   tryToNavigate,
   disabled = false,
+  offline = false,
 }: {
   month: DateTime;
   eventsByMonth: Partial<
@@ -41,6 +42,7 @@ export const EventListPage = ({
     occurrenceUuid: string
   ) => void;
   disabled?: boolean;
+  offline?: boolean;
 }) => {
   const monthString = luxonDateTimeToMonthString(month);
 
@@ -150,7 +152,7 @@ export const EventListPage = ({
               <Spinner size="lg" mt={20} />
             ) : (
               <Text style={{ textAlign: "center", marginTop: 20 }}>
-                No events this month
+                {offline ? "Could not load events" : "No events this month"}
               </Text>
             )
           }

@@ -1,3 +1,4 @@
+import { useNetworkStatus } from "@common/customHooks";
 import { useNavigation } from "@react-navigation/native";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
@@ -36,6 +37,30 @@ const EventListScreen = () => {
       }, 0);
     }
   }, [isFirstRender]);
+
+  const [{ isInternetReachable }] = useNetworkStatus();
+
+  if (isInternetReachable === false) {
+    return (
+      <View
+        onStartShouldSetResponder={() => true}
+        onTouchEnd={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        <EventListPage
+          eventsByMonth={{}}
+          marked={{}}
+          refreshing={false}
+          refresh={() => Promise.resolve()}
+          month={DateTime.now()}
+          tryToNavigate={() => undefined}
+          disabled
+          offline
+        />
+      </View>
+    );
+  }
 
   /*
    * Called by React Native when rendering the screen
