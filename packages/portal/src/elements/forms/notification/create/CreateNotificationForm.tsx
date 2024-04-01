@@ -159,7 +159,8 @@ export const CreateNotificationForm = () => {
                   All users
                 </Checkbox>
                 {!field.getValue().all ? (
-                  <>
+                  <div>
+                    <label>Individual</label>
                     <PersonSearch
                       onSelect={(person) => {
                         field.setValue({
@@ -168,18 +169,22 @@ export const CreateNotificationForm = () => {
                       }}
                       value={field.getValue().users?.[0]}
                     />
+
+                    <label>Type</label>
                     <Select
-                      value={field.getValue().memberOfTeamType}
+                      value={field.getValue().memberOfTeamType ?? ("" as const)}
                       onChange={(value) =>
-                        field.setValue({ memberOfTeamType: value })
+                        field.setValue({
+                          memberOfTeamType: value === "" ? undefined : value,
+                        })
                       }
                     >
-                      <Select.Option value={undefined}>Any</Select.Option>
+                      <Select.Option value="">Any</Select.Option>
                       <Select.Option value="Spirit">Spirit</Select.Option>
                       <Select.Option value="Morale">Morale</Select.Option>
                       <Select.Option value="Committee">Committee</Select.Option>
                     </Select>
-                  </>
+                  </div>
                 ) : null}
               </Form.Item>
             )}
