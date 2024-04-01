@@ -8,6 +8,7 @@ import { LogBox } from "react-native";
 import "react-native-url-polyfill/auto";
 
 import App from "./App";
+import { overrideApiBaseUrl } from "./src/common/apiUrl";
 import { Logger } from "./src/common/logger/Logger";
 
 Logger.debug("Starting app");
@@ -38,6 +39,15 @@ if (isDevelopmentBuild()) {
         const keys = await AsyncStorage.getAllKeys();
         const values = await AsyncStorage.multiGet(keys);
         console.log(values);
+      },
+    },
+    {
+      name: "Override url",
+      callback: async () => {
+        Logger.log("Overriding url");
+        overrideApiBaseUrl(
+          prompt("Enter the url to override or blank for default")
+        );
       },
     },
   ]).catch((error) => console.error(error));
