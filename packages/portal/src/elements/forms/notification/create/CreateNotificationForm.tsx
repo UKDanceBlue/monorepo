@@ -1,6 +1,7 @@
+import { PersonSearch } from "@elements/components/PersonSearch";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useNavigate } from "@tanstack/react-router";
-import { Button, Flex, Form, Input } from "antd";
+import { Button, Checkbox, Flex, Form, Input, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
 
 import { NotificationPreview } from "../../../components/NotificationPreview";
@@ -137,6 +138,49 @@ export const CreateNotificationForm = () => {
                   onChange={(e) => field.handleChange(e.target.value)}
                   style={{ width: "70ch" }}
                 />
+              </Form.Item>
+            )}
+          </formApi.Field>
+          <formApi.Field name="audience">
+            {(field) => (
+              <Form.Item label="Audience">
+                <Checkbox
+                  checked={field.getValue().all}
+                  onChange={(e) =>
+                    field.setValue(
+                      e.target.checked
+                        ? {
+                            all: true,
+                          }
+                        : {}
+                    )
+                  }
+                >
+                  All users
+                </Checkbox>
+                {!field.getValue().all ? (
+                  <>
+                    <PersonSearch
+                      onSelect={(person) => {
+                        field.setValue({
+                          users: [person.uuid],
+                        });
+                      }}
+                      value={field.getValue().users?.[0]}
+                    />
+                    <Select
+                      value={field.getValue().memberOfTeamType}
+                      onChange={(value) =>
+                        field.setValue({ memberOfTeamType: value })
+                      }
+                    >
+                      <Select.Option value={undefined}>Any</Select.Option>
+                      <Select.Option value="Spirit">Spirit</Select.Option>
+                      <Select.Option value="Morale">Morale</Select.Option>
+                      <Select.Option value="Committee">Committee</Select.Option>
+                    </Select>
+                  </>
+                ) : null}
               </Form.Item>
             )}
           </formApi.Field>

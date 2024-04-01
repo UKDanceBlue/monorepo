@@ -27,7 +27,6 @@ export const EventViewerFragment = graphql(/* GraphQL */ `
     }
     images {
       url
-      imageData
       width
       height
       thumbHash

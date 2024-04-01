@@ -81,16 +81,6 @@ export type AcknowledgeDeliveryIssueResponse = AbstractGraphQlOkResponse & Graph
   readonly ok: Scalars['Boolean']['output'];
 };
 
-export type AddEventImageInput = {
-  readonly alt?: InputMaybe<Scalars['String']['input']>;
-  readonly height: Scalars['Int']['input'];
-  readonly imageData?: InputMaybe<Scalars['String']['input']>;
-  readonly mimeType: Scalars['String']['input'];
-  readonly thumbHash?: InputMaybe<Scalars['String']['input']>;
-  readonly url?: InputMaybe<Scalars['String']['input']>;
-  readonly width: Scalars['Int']['input'];
-};
-
 export type AddEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'AddEventImageResponse';
   readonly data: ImageResource;
@@ -157,10 +147,7 @@ export type CreateEventResponse = AbstractGraphQlCreatedResponse & AbstractGraph
 export type CreateImageInput = {
   readonly alt?: InputMaybe<Scalars['String']['input']>;
   readonly height: Scalars['NonNegativeInt']['input'];
-  readonly imageData?: InputMaybe<Scalars['String']['input']>;
-  readonly mimeType: Scalars['String']['input'];
   readonly thumbHash?: InputMaybe<Scalars['String']['input']>;
-  readonly url?: InputMaybe<Scalars['String']['input']>;
   readonly width: Scalars['NonNegativeInt']['input'];
 };
 
@@ -514,7 +501,6 @@ export type ImageResource = {
   readonly alt?: Maybe<Scalars['String']['output']>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly height: Scalars['Int']['output'];
-  readonly imageData?: Maybe<Scalars['String']['output']>;
   readonly mimeType: Scalars['String']['output'];
   readonly thumbHash?: Maybe<Scalars['String']['output']>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -712,7 +698,6 @@ export type Mutation = {
   readonly abortScheduledNotification: AbortScheduledNotificationResponse;
   readonly acknowledgeDeliveryIssue: AcknowledgeDeliveryIssueResponse;
   readonly addExistingImageToEvent: AddEventImageResponse;
-  readonly addImageToEvent: AddEventImageResponse;
   readonly addMap: MarathonHourResource;
   readonly createConfiguration: CreateConfigurationResponse;
   readonly createConfigurations: CreateConfigurationResponse;
@@ -764,12 +749,6 @@ export type MutationAcknowledgeDeliveryIssueArgs = {
 export type MutationAddExistingImageToEventArgs = {
   eventId: Scalars['String']['input'];
   imageId: Scalars['String']['input'];
-};
-
-
-export type MutationAddImageToEventArgs = {
-  eventId: Scalars['String']['input'];
-  input: AddEventImageInput;
 };
 
 
@@ -959,6 +938,9 @@ export type MutationStageNotificationArgs = {
 
 export type NotificationAudienceInput = {
   readonly all?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly memberOfTeamType?: InputMaybe<TeamType>;
+  readonly memberOfTeams?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  readonly users?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
 };
 
 /** The number of delivery issues for a notification, broken down by type. */

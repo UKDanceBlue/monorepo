@@ -43,16 +43,6 @@ type AcknowledgeDeliveryIssueResponse implements AbstractGraphQLOkResponse & Gra
   ok: Boolean!
 }
 
-input AddEventImageInput {
-  alt: String
-  height: Int!
-  imageData: String
-  mimeType: String!
-  thumbHash: String
-  url: String
-  width: Int!
-}
-
 type AddEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: ImageResource!
   ok: Boolean!
@@ -138,10 +128,7 @@ type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGra
 input CreateImageInput {
   alt: String
   height: NonNegativeInt!
-  imageData: String
-  mimeType: String!
   thumbHash: String
-  url: String
   width: NonNegativeInt!
 }
 
@@ -507,7 +494,6 @@ type ImageResource {
   alt: String
   createdAt: DateTimeISO
   height: Int!
-  imageData: String
   mimeType: String!
   thumbHash: String
   updatedAt: DateTimeISO
@@ -733,7 +719,6 @@ type Mutation {
   abortScheduledNotification(uuid: String!): AbortScheduledNotificationResponse!
   acknowledgeDeliveryIssue(uuid: String!): AcknowledgeDeliveryIssueResponse!
   addExistingImageToEvent(eventId: String!, imageId: String!): AddEventImageResponse!
-  addImageToEvent(eventId: String!, input: AddEventImageInput!): AddEventImageResponse!
   addMap(imageUuid: String!, uuid: String!): MarathonHourResource!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
   createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
@@ -783,6 +768,9 @@ scalar NonNegativeInt
 
 input NotificationAudienceInput {
   all: Boolean
+  memberOfTeamType: TeamType
+  memberOfTeams: [String!]
+  users: [String!]
 }
 
 """The number of delivery issues for a notification, broken down by type."""
