@@ -1,6 +1,5 @@
 import { useNetworkStatus } from "@common/customHooks";
 import { universalCatch } from "@common/logging";
-import { showMessage } from "@common/util/alertUtils";
 import { useCallback, useEffect, useState } from "react";
 import type { FeedItem } from "react-native-rss-parser";
 import { parse } from "react-native-rss-parser";
@@ -25,10 +24,6 @@ export function useExplorerFeed(): {
   // This means that the function will only be recreated if one of the dependencies changes
   const loadFeed = useCallback(async () => {
     if (isInternetReachable === false) {
-      showMessage(
-        "No internet connection",
-        "Please connect to the internet to view the latest content"
-      );
       setLoading(false);
     } else if (isInternetReachable === true) {
       setLoading(true);
