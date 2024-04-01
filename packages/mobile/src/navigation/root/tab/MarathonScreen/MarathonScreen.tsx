@@ -1,3 +1,4 @@
+import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
@@ -13,11 +14,7 @@ const marathonScreenDocument = graphql(/* GraphQL */ `
     currentMarathonHour {
       ...HourScreenFragment
     }
-    currentMarathon {
-      year
-    }
     nextMarathon {
-      year
       startDate
       endDate
     }
@@ -25,6 +22,8 @@ const marathonScreenDocument = graphql(/* GraphQL */ `
 `);
 
 export const MarathonScreen = () => {
+  const [{ isInternetReachable }] = useNetworkStatus();
+
   const [{ fetching, data, error }, refresh] = useQuery({
     query: marathonScreenDocument,
   });
@@ -33,13 +32,21 @@ export const MarathonScreen = () => {
     // This is just a polling timer to refresh the data every minute
     // in case the server has updated the marathon hour
     const interval = setInterval(() => {
-      refresh({ requestPolicy: "network-only" });
+      if (isInternetReachable) refresh({ requestPolicy: "network-only" });
     }, 3000);
 
     return () => {
       clearInterval(interval);
     };
-  }, [refresh]);
+  }, [isInternetReachable, refresh]);
+
+  if (isInternetReachable === false) {
+    return (
+      <Text width="full" height="full" textAlign="center">
+        No Internet Connection, cannot load marathon information
+      </Text>
+    );
+  }
 
   if (error) {
     Logger.error("A graphql error occurred", {
@@ -63,10 +70,9 @@ export const MarathonScreen = () => {
     );
   }
 
-  if (data?.nextMarathon?.year) {
+  if (data?.nextMarathon) {
     return (
       <MarathonCountdownScreen
-        marathonYear={data.nextMarathon.year}
         marathonStart={dateTimeFromSomething(data.nextMarathon.startDate)}
         marathonEnd={dateTimeFromSomething(data.nextMarathon.endDate)}
       />

@@ -8,6 +8,7 @@ import {
   NotificationDeliveryResource,
   NotificationResource,
   SortDirection,
+  TeamType,
 } from "@ukdanceblue/common";
 import {
   Arg,
@@ -58,6 +59,15 @@ class ListNotificationsResponse extends AbstractGraphQLPaginatedResponse<Notific
 class NotificationAudienceInput {
   @Field(() => Boolean, { nullable: true })
   all?: boolean;
+
+  @Field(() => TeamType, { nullable: true })
+  memberOfTeamType?: TeamType | null;
+
+  @Field(() => [String], { nullable: true })
+  memberOfTeams?: string[] | null;
+
+  @Field(() => [String], { nullable: true })
+  users?: string[] | null;
 }
 
 @ArgsType()
@@ -317,13 +327,33 @@ export class NotificationResolver {
   async stage(
     @Args(() => StageNotificationArgs) args: StageNotificationArgs
   ): Promise<StageNotificationResponse> {
+    if (Object.keys(args.audience).length === 0) {
+      throw new DetailedError(
+        ErrorCode.InvalidRequest,
+        "Audience must be specified."
+      );
+    }
+
+    if (args.audience.all && Object.keys(args.audience).length > 1) {
+      throw new DetailedError(
+        ErrorCode.InvalidRequest,
+        "Audience must not contain other fields if all is true."
+      );
+    }
+
     const result = await this.notificationProvider.makeNotification(
       {
         title: args.title,
         body: args.body,
         url: args.url ? new URL(args.url) : undefined,
       },
-      args.audience.all ? "all" : {}
+      args.audience.all
+        ? "all"
+        : {
+            memberOfTeamIds: args.audience.memberOfTeams ?? undefined,
+            personIds: args.audience.users ?? undefined,
+            memberOfTeamType: args.audience.memberOfTeamType ?? undefined,
+          }
     );
 
     return StageNotificationResponse.newCreated(

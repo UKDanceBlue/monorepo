@@ -8,11 +8,57 @@ import { openURL } from "expo-linking";
 import { Box, Button, HStack, Text, View } from "native-base";
 import { useEffect, useState } from "react";
 import { PixelRatio, useWindowDimensions } from "react-native";
-import WebView from "react-native-webview";
 
 import DBRibbon from "../../../../../assets/svgs/DBRibbon";
 
+import { YoutubeEmbedWebView } from "./YoutubeEmbedWebView";
 import { parseBlogText } from "./parseBlogText";
+
+function cleanupTextContent(textContent: string) {
+  let completedText = "";
+
+  let state: "leadingWhiteSpace" | "normal" | "newline" | "doubleNewline" =
+    "leadingWhiteSpace";
+  for (let i = 0; i < textContent.length; i++) {
+    const char = textContent[i];
+
+    if (state === "leadingWhiteSpace") {
+      if (char === " " || char === "\n") {
+        continue;
+      } else {
+        state = "normal";
+      }
+    }
+
+    if (state === "normal") {
+      if (char === "\n") {
+        state = "newline";
+      } else {
+        completedText += char;
+      }
+    }
+
+    if (state === "newline") {
+      if (char === "\n") {
+        state = "doubleNewline";
+      } else {
+        completedText += `\n${char}`;
+        state = "normal";
+      }
+    }
+
+    if (state === "doubleNewline") {
+      if (char === "\n") {
+        continue;
+      } else {
+        completedText += `\n\n${char}`;
+        state = "normal";
+      }
+    }
+  }
+
+  return completedText;
+}
 
 export const ExplorerItem = ({
   resourceLink,
@@ -21,6 +67,7 @@ export const ExplorerItem = ({
   textContent,
   hasAudio = false,
   hasYouTubeVideo = false,
+  blockResource,
 }: {
   resourceLink?: string;
   title?: string;
@@ -28,6 +75,7 @@ export const ExplorerItem = ({
   textContent?: string;
   hasAudio?: boolean;
   hasYouTubeVideo?: boolean;
+  blockResource?: (resource: string) => void;
 }) => {
   const [sound, setSound] = useState<Audio.Sound>();
   const [plainTextContent, setPlainTextContent] = useState<string>();
@@ -172,7 +220,7 @@ export const ExplorerItem = ({
                   textAlign="justify"
                   fontFamily=""
                 >
-                  {plainTextContent}
+                  {cleanupTextContent(plainTextContent)}
                 </Text>
                 {resourceLink && (
                   <Box width="full" alignItems="flex-end">
@@ -198,10 +246,11 @@ export const ExplorerItem = ({
               />
             )}
             {hasYouTubeVideo && resourceLink && (
-              <WebView
+              <YoutubeEmbedWebView
                 style={{ height: calculatedHeight }}
                 source={{ uri: resourceLink }}
                 allowsFullscreenVideo={true}
+                onErrorEmitted={() => blockResource?.(resourceLink)}
               />
             )}
           </View>

@@ -1,4 +1,5 @@
 import type { Notification, Prisma } from "@prisma/client";
+import type { TeamType } from "@ukdanceblue/common";
 
 export interface SendableNotification {
   title: string;
@@ -9,8 +10,9 @@ export interface SendableNotification {
 export type NotificationAudience = "all" | NotificationAudienceFilter;
 
 export interface NotificationAudienceFilter {
-  committeeOnly?: boolean;
-  memberOfTeamUuid?: string;
+  memberOfTeamType?: TeamType;
+  memberOfTeamIds?: string[];
+  personIds?: string[];
 }
 
 export interface NotificationProvider {

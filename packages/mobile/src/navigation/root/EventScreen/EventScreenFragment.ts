@@ -13,7 +13,6 @@ export const EventScreenFragment = graphql(/* GraphQL */ `
       fullDay
     }
     images {
-      imageData
       thumbHash
       url
       height
