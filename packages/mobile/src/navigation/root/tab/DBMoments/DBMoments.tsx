@@ -1,8 +1,8 @@
-import dbWordLogo from "@assets/logo/big-words.png";
+import DBMomentsLogo from "@assets/svgs/DBMomentsLogo";
 import { Logger } from "@common/logger/Logger";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { Camera, FlashMode } from "expo-camera";
-import { Box, Button, Fab, Icon, Image, Text, View } from "native-base";
+import { Box, Button, Fab, Icon, Text, View } from "native-base";
 import { useState } from "react";
 
 import { InfoModal } from "./InfoModal";
@@ -31,10 +31,10 @@ export const DBMomentsScreen = () => {
     case "permission-blocked": {
       return (
         <View alignItems={"center"} height="100%" justifyContent={"center"}>
-          <Image source={dbWordLogo} alt="DB Word Logo" size="2xl" />
+          <DBMomentsLogo svgProps={{ width: "65%", height: "65%" }} />
           <Text fontSize="md" marginTop={5}>
             Camera permissions are disabled. Please enable them in your
-            settings.
+            settings!
           </Text>
         </View>
       );
@@ -42,7 +42,7 @@ export const DBMomentsScreen = () => {
     case "permission-ask": {
       return (
         <View alignItems={"center"} height="100%" justifyContent={"center"}>
-          <Image source={dbWordLogo} alt="DB Word Logo" size="2xl" />
+          <DBMomentsLogo svgProps={{ width: "65%", height: "65%" }} />
           <Text fontSize="md" marginTop={5}>
             Please give DanceBlue permission to use your camera!
           </Text>
