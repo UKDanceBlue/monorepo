@@ -1,4 +1,9 @@
-import { DetailedError, ErrorCode, FeedResource } from "@ukdanceblue/common";
+import {
+  DetailedError,
+  ErrorCode,
+  FeedResource,
+  ImageResource,
+} from "@ukdanceblue/common";
 import {
   Arg,
   Field,
@@ -112,7 +117,7 @@ export class FeedResolver {
     return feedItem != null;
   }
 
-  @FieldResolver()
+  @FieldResolver(() => ImageResource, { nullable: true })
   async image(@Root() { uuid }: FeedResource) {
     return this.feedRepository.getFeedItemImage({ uuid });
   }
