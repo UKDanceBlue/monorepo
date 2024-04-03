@@ -151,16 +151,7 @@ export type CreateFeedInput = {
 
 export type CreateImageInput = {
   readonly alt?: InputMaybe<Scalars['String']['input']>;
-  readonly height: Scalars['NonNegativeInt']['input'];
-  readonly thumbHash?: InputMaybe<Scalars['String']['input']>;
-  readonly width: Scalars['NonNegativeInt']['input'];
-};
-
-export type CreateImageResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  readonly __typename?: 'CreateImageResponse';
-  readonly data: ImageResource;
-  readonly ok: Scalars['Boolean']['output'];
-  readonly uuid: Scalars['String']['output'];
+  readonly url?: InputMaybe<Scalars['URL']['input']>;
 };
 
 export type CreateMarathonHourInput = {
@@ -511,6 +502,77 @@ export type GraphQlBaseResponse = {
   readonly ok: Scalars['Boolean']['output'];
 };
 
+export const ImageResolverAllKeys = {
+  Alt: 'alt',
+  CreatedAt: 'createdAt',
+  Height: 'height',
+  UpdatedAt: 'updatedAt',
+  Width: 'width'
+} as const;
+
+export type ImageResolverAllKeys = typeof ImageResolverAllKeys[keyof typeof ImageResolverAllKeys];
+export const ImageResolverDateFilterKeys = {
+  CreatedAt: 'createdAt',
+  UpdatedAt: 'updatedAt'
+} as const;
+
+export type ImageResolverDateFilterKeys = typeof ImageResolverDateFilterKeys[keyof typeof ImageResolverDateFilterKeys];
+export type ImageResolverKeyedDateFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: NumericComparator;
+  /** The field to filter on */
+  readonly field: ImageResolverDateFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['LuxonDateTime']['input'];
+};
+
+export type ImageResolverKeyedIsNullFilterItem = {
+  /** The field to filter on */
+  readonly field: ImageResolverAllKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type ImageResolverKeyedNumericFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: NumericComparator;
+  /** The field to filter on */
+  readonly field: ImageResolverNumericFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['Float']['input'];
+};
+
+export type ImageResolverKeyedOneOfFilterItem = {
+  /** The field to filter on */
+  readonly field: Scalars['Void']['input'];
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
+};
+
+export type ImageResolverKeyedStringFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: StringComparator;
+  /** The field to filter on */
+  readonly field: ImageResolverStringFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
+};
+
+export const ImageResolverNumericFilterKeys = {
+  Height: 'height',
+  Width: 'width'
+} as const;
+
+export type ImageResolverNumericFilterKeys = typeof ImageResolverNumericFilterKeys[keyof typeof ImageResolverNumericFilterKeys];
+export const ImageResolverStringFilterKeys = {
+  Alt: 'alt'
+} as const;
+
+export type ImageResolverStringFilterKeys = typeof ImageResolverStringFilterKeys[keyof typeof ImageResolverStringFilterKeys];
 export type ImageResource = {
   readonly __typename?: 'ImageResource';
   readonly alt?: Maybe<Scalars['String']['output']>;
@@ -539,6 +601,18 @@ export type ListDevicesResponse = AbstractGraphQlArrayOkResponse & AbstractGraph
 export type ListEventsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListEventsResponse';
   readonly data: ReadonlyArray<EventResource>;
+  readonly ok: Scalars['Boolean']['output'];
+  /** The current page number (1-indexed) */
+  readonly page: Scalars['PositiveInt']['output'];
+  /** The number of items per page */
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
+  /** The total number of items */
+  readonly total: Scalars['NonNegativeInt']['output'];
+};
+
+export type ListImagesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'ListImagesResponse';
+  readonly data: ReadonlyArray<ImageResource>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -719,7 +793,7 @@ export type Mutation = {
   readonly createConfigurations: CreateConfigurationResponse;
   readonly createEvent: CreateEventResponse;
   readonly createFeedItem: FeedResource;
-  readonly createImage: CreateImageResponse;
+  readonly createImage: ImageResource;
   readonly createMarathon: MarathonResource;
   readonly createMarathonHour: MarathonHourResource;
   readonly createPerson: CreatePersonResponse;
@@ -747,6 +821,8 @@ export type Mutation = {
   readonly sendNotification: SendNotificationResponse;
   readonly setEvent: SetEventResponse;
   readonly setFeedItem: FeedResource;
+  readonly setImageAltText: ImageResource;
+  readonly setImageUrl: ImageResource;
   readonly setMarathon: MarathonResource;
   readonly setMarathonHour: MarathonHourResource;
   readonly setPerson: GetPersonResponse;
@@ -943,6 +1019,17 @@ export type MutationSetEventArgs = {
 export type MutationSetFeedItemArgs = {
   feedItemUuid: Scalars['String']['input'];
   input: SetFeedInput;
+};
+
+
+export type MutationSetImageAltTextArgs = {
+  alt: Scalars['String']['input'];
+  uuid: Scalars['String']['input'];
+};
+
+
+export type MutationSetImageUrlArgs = {
+  uuid: Scalars['String']['input'];
 };
 
 
@@ -1326,6 +1413,7 @@ export type Query = {
   readonly events: ListEventsResponse;
   readonly feed: ReadonlyArray<FeedResource>;
   readonly image: GetImageByUuidResponse;
+  readonly images: ListImagesResponse;
   readonly listPeople: ListPeopleResponse;
   readonly loginState: LoginState;
   readonly marathon: MarathonResource;
@@ -1403,6 +1491,22 @@ export type QueryFeedArgs = {
 
 export type QueryImageArgs = {
   uuid: Scalars['String']['input'];
+};
+
+
+export type QueryImagesArgs = {
+  booleanFilters?: InputMaybe<Scalars['Void']['input']>;
+  dateFilters?: InputMaybe<ReadonlyArray<ImageResolverKeyedDateFilterItem>>;
+  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  isNullFilters?: InputMaybe<ReadonlyArray<ImageResolverKeyedIsNullFilterItem>>;
+  numericFilters?: InputMaybe<ReadonlyArray<ImageResolverKeyedNumericFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<ImageResolverKeyedOneOfFilterItem>>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sendAll?: InputMaybe<Scalars['Boolean']['input']>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<ImageResolverKeyedStringFilterItem>>;
 };
 
 

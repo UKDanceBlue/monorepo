@@ -1,9 +1,10 @@
+import { ListImagesPage } from "@pages/images/list/ListImagesPage";
 import { Route } from "@tanstack/react-router";
 
 import { imagesRoute } from "./baseRoutes";
 
-export const imagesOverviewRoute = new Route({
+export const imagesTableRoute = new Route({
   path: "/",
   getParentRoute: () => imagesRoute,
-  component: undefined,
+  component: ListImagesPage,
 });

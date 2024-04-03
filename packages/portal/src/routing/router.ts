@@ -19,7 +19,7 @@ import {
   viewEventRoute,
 } from "./eventRoutes";
 import { feedOverviewRoute } from "./feedRoutes";
-import { imagesOverviewRoute } from "./imageRoutes";
+import { imagesTableRoute } from "./imageRoutes";
 import {
   addMarathonHourRoute,
   createMarathonRoute,
@@ -91,7 +91,7 @@ const routeTree = rootRoute.addChildren([
       ]),
     ]),
   ]),
-  imagesRoute.addChildren([imagesOverviewRoute]),
+  imagesRoute.addChildren([imagesTableRoute]),
   feedRoute.addChildren([feedOverviewRoute]),
 ]);
 
