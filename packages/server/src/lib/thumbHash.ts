@@ -9,6 +9,8 @@ import { rgbaToThumbHash } from "thumbhash";
  *
  * @param input An image buffer or a path to an image
  * @param options Sharp options to use when processing the image
+ *
+ * @returns A promise that resolves to the thumbhash of the image, as well as the width and height of the original image for convenience
  */
 export async function generateThumbHash(
   input:
@@ -25,7 +27,7 @@ export async function generateThumbHash(
     | Float64Array
     | string,
   options?: SharpOptions
-): Promise<Uint8Array> {
+): Promise<{ thumbHash: Uint8Array; width: number; height: number }> {
   // Get an RGBA buffer from the image
   const baseImage = sharp(input, options);
 
@@ -56,5 +58,9 @@ export async function generateThumbHash(
     });
 
   // Convert to an array of js numbers ([r,g,b,a,r,g,b,a,...])
-  return rgbaToThumbHash(widthToUse, heightToUse, rgbaBuffer);
+  return {
+    thumbHash: rgbaToThumbHash(widthToUse, heightToUse, rgbaBuffer),
+    width,
+    height,
+  };
 }

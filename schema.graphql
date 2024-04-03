@@ -132,15 +132,7 @@ input CreateFeedInput {
 
 input CreateImageInput {
   alt: String
-  height: NonNegativeInt!
   url: URL
-  width: NonNegativeInt!
-}
-
-type CreateImageResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: ImageResource!
-  ok: Boolean!
-  uuid: String!
 }
 
 input CreateMarathonHourInput {
@@ -838,7 +830,7 @@ type Mutation {
   createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
   createEvent(input: CreateEventInput!): CreateEventResponse!
   createFeedItem(input: CreateFeedInput!): FeedResource!
-  createImage(input: CreateImageInput!): CreateImageResponse!
+  createImage(input: CreateImageInput!): ImageResource!
   createMarathon(input: CreateMarathonInput!): MarathonResource!
   createMarathonHour(input: CreateMarathonHourInput!, marathonUuid: String!): MarathonHourResource!
   createPerson(input: CreatePersonInput!): CreatePersonResponse!
@@ -873,6 +865,8 @@ type Mutation {
   sendNotification(uuid: String!): SendNotificationResponse!
   setEvent(input: SetEventInput!, uuid: String!): SetEventResponse!
   setFeedItem(feedItemUuid: String!, input: SetFeedInput!): FeedResource!
+  setImageAltText(alt: String!, uuid: String!): ImageResource!
+  setImageUrl(uuid: String!): ImageResource!
   setMarathon(input: SetMarathonInput!, uuid: String!): MarathonResource!
   setMarathonHour(input: SetMarathonHourInput!, uuid: String!): MarathonHourResource!
   setPerson(input: SetPersonInput!, uuid: String!): GetPersonResponse!

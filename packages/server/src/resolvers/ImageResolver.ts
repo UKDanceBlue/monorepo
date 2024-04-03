@@ -8,7 +8,7 @@ import {
   FilteredListQueryArgs,
   ImageResource,
 } from "@ukdanceblue/common";
-import { NonNegativeIntResolver, URLResolver } from "graphql-scalars";
+import { URLResolver } from "graphql-scalars";
 import {
   Arg,
   Args,
@@ -30,7 +30,6 @@ import { ImageRepository } from "../repositories/image/ImageRepository.js";
 import { imageModelToResource } from "../repositories/image/imageModelToResource.js";
 
 import {
-  AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
@@ -40,24 +39,13 @@ class GetImageByUuidResponse extends AbstractGraphQLOkResponse<ImageResource> {
   @Field(() => ImageResource)
   data!: ImageResource;
 }
-@ObjectType("CreateImageResponse", {
-  implements: AbstractGraphQLCreatedResponse<ImageResource>,
-})
-class CreateImageResponse extends AbstractGraphQLCreatedResponse<ImageResource> {
-  @Field(() => ImageResource)
-  data!: ImageResource;
-}
+
 @ObjectType("DeleteImageResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
 class DeleteImageResponse extends AbstractGraphQLOkResponse<never> {}
 @InputType()
 class CreateImageInput implements Partial<ImageResource> {
-  @Field(() => NonNegativeIntResolver)
-  width!: number;
-  @Field(() => NonNegativeIntResolver)
-  height!: number;
-
   @Field(() => String, { nullable: true })
   alt?: string | null;
 
@@ -129,14 +117,12 @@ export class ImageResolver {
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
-  @Mutation(() => CreateImageResponse, { name: "createImage" })
-  async create(
-    @Arg("input") input: CreateImageInput
-  ): Promise<CreateImageResponse> {
-    const { mime, thumbHash } = await handleImageUrl(input.url);
+  @Mutation(() => ImageResource, { name: "createImage" })
+  async create(@Arg("input") input: CreateImageInput): Promise<ImageResource> {
+    const { mime, thumbHash, width, height } = await handleImageUrl(input.url);
     const result = await this.imageRepository.createImage({
-      width: input.width,
-      height: input.height,
+      width,
+      height,
       alt: input.alt,
       file:
         input.url != null
@@ -144,15 +130,16 @@ export class ImageResolver {
               create: {
                 filename: input.url.pathname.split("/").pop() ?? "image",
                 locationUrl: input.url.toString(),
-                mimeTypeName: mime?.type ?? "image",
-                mimeSubtypeName: mime?.subtype ?? "jpeg",
-                mimeParameters: mime
-                  ? {
-                      set: [...mime.params.entries()].map(
-                        ([k, v]) => `${k}=${v}`
-                      ),
-                    }
-                  : undefined,
+                mimeTypeName: mime.type,
+                mimeSubtypeName: mime.subtype,
+                mimeParameters:
+                  mime.params.keys.length > 0
+                    ? {
+                        set: [...mime.params.entries()].map(
+                          ([k, v]) => `${k}=${v}`
+                        ),
+                      }
+                    : undefined,
               },
             }
           : {
@@ -166,12 +153,78 @@ export class ImageResolver {
       thumbHash: thumbHash != null ? Buffer.from(thumbHash) : null,
     });
 
-    return CreateImageResponse.newCreated(
-      await imageModelToResource(result, null, this.fileManager),
-      result.uuid
-    );
+    return imageModelToResource(result, null, this.fileManager);
   }
 
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @Mutation(() => ImageResource, { name: "setImageAltText" })
+  async setAltText(
+    @Arg("uuid") uuid: string,
+    @Arg("alt") alt: string
+  ): Promise<ImageResource> {
+    const result = await this.imageRepository.updateImage(
+      {
+        uuid,
+      },
+      {
+        alt,
+      }
+    );
+
+    if (result == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Image not found");
+    }
+
+    auditLogger.normal("Image alt text set", { image: result });
+
+    return imageModelToResource(result, result.file, this.fileManager);
+  }
+
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @Mutation(() => ImageResource, { name: "setImageUrl" })
+  async setImageUrl(
+    @Arg("uuid") uuid: string,
+    @Arg("url", () => URLResolver) url: URL
+  ): Promise<ImageResource> {
+    const { mime, thumbHash, width, height } = await handleImageUrl(url);
+    const result = await this.imageRepository.updateImage(
+      {
+        uuid,
+      },
+      {
+        width,
+        height,
+        file: {
+          create: {
+            filename: url.pathname.split("/").pop() ?? "image",
+            locationUrl: url.toString(),
+            mimeTypeName: mime.type,
+            mimeSubtypeName: mime.subtype,
+            mimeParameters:
+              mime.params.keys.length > 0
+                ? {
+                    set: [...mime.params.entries()].map(
+                      ([k, v]) => `${k}=${v}`
+                    ),
+                  }
+                : undefined,
+          },
+        },
+        thumbHash: thumbHash != null ? Buffer.from(thumbHash) : null,
+      }
+    );
+
+    if (result == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Image not found");
+    }
+
+    auditLogger.normal("Image URL set", { image: result });
+
+    return imageModelToResource(result, result.file, this.fileManager);
+  }
+
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @Mutation(() => ImageResource, { name: "setImageUrl" })
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => DeleteImageResponse, { name: "deleteImage" })
   async delete(@Arg("uuid") uuid: string): Promise<DeleteImageResponse> {
@@ -187,21 +240,11 @@ export class ImageResolver {
   }
 }
 
-async function handleImageUrl(url: URL): Promise<{
+async function handleImageUrl(url: URL | null | undefined): Promise<{
   mime: MIMEType;
-  thumbHash: Uint8Array;
-}>;
-async function handleImageUrl(url: null | undefined): Promise<{
-  mime: null;
-  thumbHash: null;
-}>;
-async function handleImageUrl(url: URL | null | undefined): Promise<{
-  mime: MIMEType | null;
   thumbHash: Uint8Array | null;
-}>;
-async function handleImageUrl(url: URL | null | undefined): Promise<{
-  mime: MIMEType | null;
-  thumbHash: Uint8Array | null;
+  width: number;
+  height: number;
 }> {
   if (url != null) {
     if (url.protocol !== "https:") {
@@ -238,7 +281,8 @@ async function handleImageUrl(url: URL | null | undefined): Promise<{
             "Could not determine the MIME type of the requested image"
           );
         }
-        return { mime, thumbHash: await generateThumbHash(image) };
+        const { thumbHash, width, height } = await generateThumbHash(image);
+        return { mime, thumbHash, width, height };
       } catch (error) {
         logger.error("Failed to fetch an image from url in createImage", {
           error,
@@ -250,5 +294,10 @@ async function handleImageUrl(url: URL | null | undefined): Promise<{
       }
     }
   }
-  return { mime: null, thumbHash: null };
+  return {
+    mime: new MIMEType("application/octet-stream"),
+    thumbHash: null,
+    width: 0,
+    height: 0,
+  };
 }
