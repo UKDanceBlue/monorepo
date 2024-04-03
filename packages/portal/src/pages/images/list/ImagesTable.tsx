@@ -2,14 +2,13 @@ import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useNavigate } from "@tanstack/react-router";
-import { SortDirection, base64StringToArray } from "@ukdanceblue/common";
+import { SortDirection } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
 import { Button, Flex, Image, Modal, Table } from "antd";
 import { useState } from "react";
-import { thumbHashToDataURL } from "thumbhash";
 import { useQuery } from "urql";
 
 const ImagesTableFragment = graphql(/* GraphQL */ `
@@ -104,20 +103,7 @@ export const ImagesTable = () => {
         open={previewedImage !== null}
         onCancel={() => setPreviewedImage(null)}
       >
-        <Image
-          width={previewedImage?.width}
-          height={previewedImage?.height}
-          src={previewedImage?.url?.toString()}
-          preview={
-            previewedImage?.thumbHash
-              ? {
-                  src: thumbHashToDataURL(
-                    base64StringToArray(previewedImage.thumbHash)
-                  ),
-                }
-              : false
-          }
-        />
+        <Image src={previewedImage?.url?.toString()} />
       </Modal>
       <Table
         dataSource={listImagesData ?? undefined}

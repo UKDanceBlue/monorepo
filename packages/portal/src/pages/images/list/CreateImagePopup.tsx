@@ -2,7 +2,7 @@ import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useForm } from "@tanstack/react-form";
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
-import { Button, Form, Input, Modal } from "antd";
+import { Form, Input, Modal } from "antd";
 import { useClient } from "urql";
 
 const createImageDocument = graphql(/* GraphQL */ `
@@ -50,18 +50,25 @@ export function CreateImagePopup({
   });
 
   return (
-    <Modal title="Create Image" visible={open} onCancel={() => onClose()}>
-      <formApi.Provider>
-        <Form
-          layout="vertical"
-          onFinish={async () => {
-            await formApi.handleSubmit().catch((error: unknown) => {
+    <formApi.Provider>
+      <Form layout="vertical">
+        <Modal
+          title="Create Image"
+          open={open}
+          okType="primary"
+          okText="Create"
+          onOk={async () => {
+            return formApi.handleSubmit().catch((error: unknown) => {
               if (error instanceof Error) {
                 void showErrorMessage(error.message);
               } else {
                 void showErrorMessage("An unknown error occurred");
               }
             });
+          }}
+          onCancel={() => {
+            onClose();
+            formApi.reset();
           }}
         >
           <TanAntFormItem
@@ -107,23 +114,24 @@ export function CreateImagePopup({
             label="Image URL"
           >
             {({ value, onBlur, onChange, status }) => (
-              <Input
-                placeholder="URL of the image"
-                value={value}
-                onBlur={onBlur}
-                onChange={(e) => onChange(e.target.value)}
-                status={status}
-              />
+              <>
+                <Input
+                  placeholder="URL of the image"
+                  value={value}
+                  onBlur={onBlur}
+                  onChange={(e) => onChange(e.target.value)}
+                  status={status}
+                />
+                <p>
+                  If you would like to upload the image rather than provide an
+                  external URL, just leave this field blank. You can upload the
+                  actual file in the next step.
+                </p>
+              </>
             )}
           </TanAntFormItem>
-
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Create
-            </Button>
-          </Form.Item>
-        </Form>
-      </formApi.Provider>
-    </Modal>
+        </Modal>
+      </Form>
+    </formApi.Provider>
   );
 }

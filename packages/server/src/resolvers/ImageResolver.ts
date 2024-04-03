@@ -9,6 +9,7 @@ import {
   ImageResource,
 } from "@ukdanceblue/common";
 import { URLResolver } from "graphql-scalars";
+import fetch from "node-fetch";
 import {
   Arg,
   Args,
@@ -255,10 +256,7 @@ async function handleImageUrl(url: URL | null | undefined): Promise<{
     } else {
       let image: Buffer;
       try {
-        const download = await fetch(url, {
-          mode: "no-cors",
-          credentials: "omit",
-        });
+        const download = await fetch(url);
         const buffer = await download.arrayBuffer();
         image = Buffer.from(buffer);
 

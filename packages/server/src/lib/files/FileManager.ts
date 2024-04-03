@@ -123,14 +123,14 @@ export class FileManager {
       fileUuid = fileRecord.uuid;
     }
     switch (locationUrl.protocol) {
-      case "file": {
+      case "file:": {
         return new URL(fileUuid, FILE_API);
       }
-      case "http":
-      case "https": {
+      case "http:":
+      case "https:": {
         return locationUrl;
       }
-      case "data": {
+      case "data:": {
         return new URL(fileUuid, FILE_API);
       }
       default: {
