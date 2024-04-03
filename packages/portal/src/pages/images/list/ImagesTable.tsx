@@ -2,13 +2,14 @@ import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useNavigate } from "@tanstack/react-router";
-import { SortDirection } from "@ukdanceblue/common";
+import { SortDirection, base64StringToArray } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
-import { Button, Flex, Image, Modal, Table } from "antd";
+import { Button, Flex, Image, Modal, Table, Typography } from "antd";
 import { useState } from "react";
+import { thumbHashToDataURL } from "thumbhash";
 import { useQuery } from "urql";
 
 const ImagesTableFragment = graphql(/* GraphQL */ `
@@ -102,7 +103,10 @@ export const ImagesTable = () => {
       <Modal
         open={previewedImage !== null}
         onCancel={() => setPreviewedImage(null)}
+        cancelButtonProps={{ style: { display: "none" } }}
+        okButtonProps={{ style: { display: "none" } }}
       >
+        <Typography>{previewedImage?.alt ?? "Image Preview"}</Typography>
         <Image src={previewedImage?.url?.toString()} />
       </Modal>
       <Table
@@ -145,6 +149,23 @@ export const ImagesTable = () => {
           }
         }}
         columns={[
+          {
+            title: "Preview",
+            dataIndex: "thumbHash",
+            render: (thumbHash: string, row) =>
+              thumbHash ? (
+                <Button
+                  onClick={() => setPreviewedImage(row)}
+                  type="text"
+                  style={{ padding: 0 }}
+                >
+                  <img
+                    src={thumbHashToDataURL(base64StringToArray(thumbHash))}
+                  />
+                </Button>
+              ) : undefined,
+            width: 1,
+          },
           {
             title: "Alt text",
             dataIndex: "alt",
