@@ -31,7 +31,7 @@ const documents = {
     "\n  fragment RootScreenAuthFragment on LoginState {\n    role {\n      dbRole\n    }\n  }\n": types.RootScreenAuthFragmentFragmentDoc,
     "\n      query Events(\n        $earliestTimestamp: LuxonDateTime!\n        $lastTimestamp: LuxonDateTime!\n      ) {\n        events(\n          dateFilters: [\n            {\n              comparison: GREATER_THAN_OR_EQUAL_TO\n              field: occurrenceStart\n              value: $earliestTimestamp\n            }\n            {\n              comparison: LESS_THAN_OR_EQUAL_TO\n              field: occurrenceStart\n              value: $lastTimestamp\n            }\n          ]\n          sortDirection: ASCENDING\n          sortBy: \"occurrence\"\n        ) {\n          data {\n            ...EventScreenFragment\n          }\n        }\n      }\n    ": types.EventsDocument,
     "\n  fragment HourScreenFragment on MarathonHourResource {\n    uuid\n    title\n    details\n    durationInfo\n    mapImages {\n      ...ImageViewFragment\n    }\n  }\n": types.HourScreenFragmentFragmentDoc,
-    "\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    nextMarathon {\n      startDate\n      endDate\n    }\n  }\n": types.MarathonScreenDocument,
+    "\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    nextMarathon {\n      startDate\n      endDate\n      hours {\n        ...HourScreenFragment\n      }\n    }\n  }\n": types.MarathonScreenDocument,
     "\n  fragment ScoreBoardFragment on TeamResource {\n    uuid\n    name\n    totalPoints\n    legacyStatus\n    type\n  }\n": types.ScoreBoardFragmentFragmentDoc,
     "\n  fragment HighlightedTeamFragment on TeamResource {\n    uuid\n    name\n    legacyStatus\n    type\n  }\n": types.HighlightedTeamFragmentFragmentDoc,
     "\n  query ScoreBoardDocument($type: [TeamType!]) {\n    me {\n      data {\n        uuid\n        teams {\n          team {\n            ...HighlightedTeamFragment\n            ...MyTeamFragment\n          }\n        }\n      }\n    }\n    teams(\n      sendAll: true\n      sortBy: [\"totalPoints\", \"name\"]\n      sortDirection: [DESCENDING, ASCENDING]\n      type: $type\n    ) {\n      data {\n        ...ScoreBoardFragment\n      }\n    }\n  }\n": types.ScoreBoardDocumentDocument,
@@ -128,7 +128,7 @@ export function graphql(source: "\n  fragment HourScreenFragment on MarathonHour
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    nextMarathon {\n      startDate\n      endDate\n    }\n  }\n"): (typeof documents)["\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    nextMarathon {\n      startDate\n      endDate\n    }\n  }\n"];
+export function graphql(source: "\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    nextMarathon {\n      startDate\n      endDate\n      hours {\n        ...HourScreenFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    nextMarathon {\n      startDate\n      endDate\n      hours {\n        ...HourScreenFragment\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
