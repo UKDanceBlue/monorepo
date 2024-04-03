@@ -1,6 +1,5 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, ID, ObjectType } from "type-graphql";
 
-import { ImageResource } from "./Image.js";
 import { TimestampedResource } from "./Resource.js";
 
 // TODO: Expand this to include more types of feed items
@@ -16,12 +15,24 @@ import { TimestampedResource } from "./Resource.js";
 
 @ObjectType()
 export class FeedResource extends TimestampedResource {
+  @Field(() => ID)
+  uuid!: string;
+
   @Field(() => String)
   title!: string;
 
-  @Field(() => ImageResource, { nullable: true })
-  image?: ImageResource;
-
   @Field(() => String, { nullable: true })
-  textContent!: string;
+  textContent?: string | null | undefined;
+
+  public getUniqueId(): string {
+    return this.uuid;
+  }
+
+  public static init(init: {
+    uuid: string;
+    title: string;
+    textContent?: string | null | undefined;
+  }) {
+    return FeedResource.doInit(init);
+  }
 }

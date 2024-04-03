@@ -1,6 +1,18 @@
-import { FeedResource } from "@ukdanceblue/common";
-import { Arg, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
+import { DetailedError, ErrorCode, FeedResource } from "@ukdanceblue/common";
+import {
+  Arg,
+  Field,
+  FieldResolver,
+  InputType,
+  Mutation,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
 import { Service } from "typedi";
+
+import { feedItemModelToResource } from "../repositories/feed/feedModelToResource.js";
+import { FeedRepository } from "../repositories/feed/feedRepository.js";
 
 @InputType()
 export class CreateFeedInput {
@@ -21,16 +33,23 @@ export class SetFeedInput {
 @Resolver(() => FeedResource)
 @Service()
 export class FeedResolver {
+  constructor(private readonly feedRepository: FeedRepository) {}
+
   @Query(() => [FeedResource])
   async feed(): Promise<FeedResource[]> {
-    return [];
+    const rows = await this.feedRepository.getCompleteFeed();
+    return rows.map(feedItemModelToResource);
   }
 
   @Mutation(() => FeedResource)
   async createFeedItem(
     @Arg("input") input: CreateFeedInput
   ): Promise<FeedResource> {
-    return new FeedResource();
+    const feedItem = await this.feedRepository.createFeedItem({
+      title: input.title,
+      textContent: input.textContent,
+    });
+    return feedItemModelToResource(feedItem);
   }
 
   @Mutation(() => FeedResource)
@@ -38,14 +57,31 @@ export class FeedResolver {
     @Arg("feedItemUuid") feedItemUuid: string,
     @Arg("imageUuid") imageUuid: string
   ): Promise<FeedResource> {
-    return new FeedResource();
+    const feedItem = await this.feedRepository.attachImageToFeedItem(
+      {
+        uuid: feedItemUuid,
+      },
+      {
+        uuid: imageUuid,
+      }
+    );
+    if (feedItem == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Feed item not found");
+    }
+    return feedItemModelToResource(feedItem);
   }
 
   @Mutation(() => FeedResource)
   async removeImageFromFeedItem(
     @Arg("feedItemUuid") feedItemUuid: string
   ): Promise<FeedResource> {
-    return new FeedResource();
+    const feedItem = await this.feedRepository.removeImageFromFeedItem({
+      uuid: feedItemUuid,
+    });
+    if (feedItem == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Feed item not found");
+    }
+    return feedItemModelToResource(feedItem);
   }
 
   @Mutation(() => FeedResource)
@@ -53,13 +89,31 @@ export class FeedResolver {
     @Arg("feedItemUuid") feedItemUuid: string,
     @Arg("input") input: SetFeedInput
   ): Promise<FeedResource> {
-    return new FeedResource();
+    const feedItem = await this.feedRepository.updateFeedItem(
+      { uuid: feedItemUuid },
+      {
+        title: input.title,
+        textContent: input.textContent,
+      }
+    );
+    if (feedItem == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Feed item not found");
+    }
+    return feedItemModelToResource(feedItem);
   }
 
   @Mutation(() => Boolean)
   async deleteFeedItem(
     @Arg("feedItemUuid") feedItemUuid: string
   ): Promise<boolean> {
-    return true;
+    const feedItem = await this.feedRepository.deleteFeedItem({
+      uuid: feedItemUuid,
+    });
+    return feedItem != null;
+  }
+
+  @FieldResolver()
+  async image(@Root() { uuid }: FeedResource) {
+    return this.feedRepository.getFeedItemImage({ uuid });
   }
 }
