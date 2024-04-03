@@ -1,9 +1,9 @@
 import { Route } from "@tanstack/react-router";
 
-import { feedRoutes } from "./baseRoutes";
+import { feedRoute } from "./baseRoutes";
 
 export const feedOverviewRoute = new Route({
   path: "/",
-  getParentRoute: () => feedRoutes,
+  getParentRoute: () => feedRoute,
   component: undefined,
 });

@@ -3,7 +3,9 @@ import { Router } from "@tanstack/react-router";
 import {
   configRoute,
   eventsRoute,
+  feedRoute,
   homeRoute,
+  imagesRoute,
   marathonsRoute,
   notificationsRoute,
   peopleRoute,
@@ -16,6 +18,8 @@ import {
   singleEventRoute,
   viewEventRoute,
 } from "./eventRoutes";
+import { feedOverviewRoute } from "./feedRoutes";
+import { imagesOverviewRoute } from "./imageRoutes";
 import {
   addMarathonHourRoute,
   createMarathonRoute,
@@ -87,6 +91,8 @@ const routeTree = rootRoute.addChildren([
       ]),
     ]),
   ]),
+  imagesRoute.addChildren([imagesOverviewRoute]),
+  feedRoute.addChildren([feedOverviewRoute]),
 ]);
 
 export const router = new Router({
