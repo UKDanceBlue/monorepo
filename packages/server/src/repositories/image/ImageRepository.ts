@@ -15,13 +15,13 @@ type ImageDateKey = (typeof imageDateKeys)[number];
 const imageIsNullKeys = [] as const;
 type ImageIsNullKey = (typeof imageIsNullKeys)[number];
 
-const imageNumericKeys = [] as const;
+const imageNumericKeys = ["width", "height"] as const;
 type ImageNumericKey = (typeof imageNumericKeys)[number];
 
 const imageOneOfKeys = [] as const;
 type ImageOneOfKey = (typeof imageOneOfKeys)[number];
 
-const imageStringKeys = [] as const;
+const imageStringKeys = ["alt"] as const;
 type ImageStringKey = (typeof imageStringKeys)[number];
 
 export type ImageFilters = FilterItems<

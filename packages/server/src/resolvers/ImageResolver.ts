@@ -3,11 +3,14 @@ import {
   AccessLevel,
   DetailedError,
   ErrorCode,
+  FilteredListQueryArgs,
   ImageResource,
 } from "@ukdanceblue/common";
 import { NonNegativeIntResolver } from "graphql-scalars";
 import {
   Arg,
+  Args,
+  ArgsType,
   Field,
   InputType,
   Mutation,
@@ -25,6 +28,7 @@ import { imageModelToResource } from "../repositories/image/imageModelToResource
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
+  AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
 
 @ObjectType("GetImageByUuidResponse", { implements: AbstractGraphQLOkResponse })
@@ -57,6 +61,29 @@ class CreateImageInput implements Partial<ImageResource> {
   thumbHash?: string | null;
 }
 
+@ArgsType()
+class ListImagesArgs extends FilteredListQueryArgs<
+  "alt" | "width" | "height" | "createdAt" | "updatedAt",
+  "alt",
+  never,
+  "width" | "height",
+  "createdAt" | "updatedAt",
+  never
+>("ImageResolver", {
+  all: ["alt", "width", "height", "createdAt", "updatedAt"],
+  string: ["alt"],
+  numeric: ["width", "height"],
+  date: ["createdAt", "updatedAt"],
+}) {}
+
+@ObjectType("ListImagesResponse", {
+  implements: AbstractGraphQLPaginatedResponse<ImageResource[]>,
+})
+class ListImagesResponse extends AbstractGraphQLPaginatedResponse<ImageResource> {
+  @Field(() => [ImageResource])
+  data!: ImageResource[];
+}
+
 @Resolver(() => ImageResource)
 @Service()
 export class ImageResolver {
@@ -76,6 +103,25 @@ export class ImageResolver {
     return GetImageByUuidResponse.newOk(
       await imageModelToResource(result, result.file, this.fileManager)
     );
+  }
+
+  @Query(() => [ImageResource], { name: "images" })
+  async list(
+    @Args(() => ListImagesArgs) args: ListImagesArgs
+  ): Promise<ListImagesResponse> {
+    const result = await this.imageRepository.listImages(args);
+    const count = await this.imageRepository.countImages(args);
+
+    return ListImagesResponse.newPaginated({
+      data: await Promise.all(
+        result.map((model) =>
+          imageModelToResource(model, model.file, this.fileManager)
+        )
+      ),
+      total: count,
+      page: args.page,
+      pageSize: args.pageSize,
+    });
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })

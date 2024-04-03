@@ -1396,6 +1396,11 @@ export type QueryEventsArgs = {
 };
 
 
+export type QueryFeedArgs = {
+  limit?: Scalars['Float']['input'];
+};
+
+
 export type QueryImageArgs = {
   uuid: Scalars['String']['input'];
 };
