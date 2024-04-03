@@ -7,9 +7,9 @@ type UniqueParam = { id: number } | { uuid: string };
 export class FeedRepository {
   constructor(private prisma: PrismaClient) {}
 
-  async getCompleteFeed() {
+  async getCompleteFeed({ limit }: { limit: number }) {
     return this.prisma.feedItem.findMany({
-      take: 15,
+      take: limit,
       orderBy: { createdAt: "desc" },
     });
   }

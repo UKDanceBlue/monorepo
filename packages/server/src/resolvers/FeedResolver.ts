@@ -41,8 +41,10 @@ export class FeedResolver {
   constructor(private readonly feedRepository: FeedRepository) {}
 
   @Query(() => [FeedResource])
-  async feed(): Promise<FeedResource[]> {
-    const rows = await this.feedRepository.getCompleteFeed();
+  async feed(
+    @Arg("limit", { defaultValue: 10 }) limit: number
+  ): Promise<FeedResource[]> {
+    const rows = await this.feedRepository.getCompleteFeed({ limit });
     return rows.map(feedItemModelToResource);
   }
 

@@ -1257,7 +1257,7 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
-  feed: [FeedResource!]!
+  feed(limit: Float! = 10): [FeedResource!]!
   image(uuid: String!): GetImageByUuidResponse!
   listPeople(
     """The boolean filters to apply to the query"""
