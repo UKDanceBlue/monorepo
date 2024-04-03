@@ -16,7 +16,7 @@ export const MarathonCountdownScreen = ({
   marathonEnd: DateTime;
 }) => {
   const { height: screenHeight, width: screenWidth } = useWindowDimensions();
-  const { primary } = useThemeColors();
+  const { primary, secondary } = useThemeColors();
 
   const ordinals = ["th", "st", "nd", "rd"]; // s
   const startOrdinal =
@@ -49,12 +49,6 @@ export const MarathonCountdownScreen = ({
           fontSize="3xl"
           bg={`${primary[600]}BD`}
           marginTop="4"
-          marginBottom={"4"}
-          style={{
-            textShadowColor: "secondary.300",
-            textShadowOffset: { width: 2, height: 1.5 },
-            textShadowRadius: 1,
-          }}
         >
           {"Countdown 'til Marathon"}
         </Text>
@@ -70,11 +64,6 @@ export const MarathonCountdownScreen = ({
           fontFamily="headingBold"
           fontSize="3xl"
           bg={`${primary[600]}BD`}
-          style={{
-            textShadowColor: "secondary.300",
-            textShadowOffset: { width: 2, height: 1.5 },
-            textShadowRadius: 1,
-          }}
         >
           {dateString}
         </Text>
