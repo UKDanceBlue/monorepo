@@ -144,6 +144,11 @@ export type CreateEventResponse = AbstractGraphQlCreatedResponse & AbstractGraph
   readonly uuid: Scalars['String']['output'];
 };
 
+export type CreateFeedInput = {
+  readonly textContent?: InputMaybe<Scalars['String']['input']>;
+  readonly title: Scalars['String']['input'];
+};
+
 export type CreateImageInput = {
   readonly alt?: InputMaybe<Scalars['String']['input']>;
   readonly height: Scalars['NonNegativeInt']['input'];
@@ -437,6 +442,15 @@ export type EventResource = {
   readonly uuid: Scalars['ID']['output'];
 };
 
+export type FeedResource = {
+  readonly __typename?: 'FeedResource';
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly image?: Maybe<ImageResource>;
+  readonly textContent?: Maybe<Scalars['String']['output']>;
+  readonly title: Scalars['String']['output'];
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+};
+
 export type GetAllConfigurationsResponse = AbstractGraphQlArrayOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetAllConfigurationsResponse';
   readonly data: ReadonlyArray<ConfigurationResource>;
@@ -699,9 +713,11 @@ export type Mutation = {
   readonly acknowledgeDeliveryIssue: AcknowledgeDeliveryIssueResponse;
   readonly addExistingImageToEvent: AddEventImageResponse;
   readonly addMap: MarathonHourResource;
+  readonly attachImageToFeedItem: FeedResource;
   readonly createConfiguration: CreateConfigurationResponse;
   readonly createConfigurations: CreateConfigurationResponse;
   readonly createEvent: CreateEventResponse;
+  readonly createFeedItem: FeedResource;
   readonly createImage: CreateImageResponse;
   readonly createMarathon: MarathonResource;
   readonly createMarathonHour: MarathonHourResource;
@@ -712,6 +728,7 @@ export type Mutation = {
   readonly deleteConfiguration: DeleteConfigurationResponse;
   readonly deleteDevice: DeleteDeviceResponse;
   readonly deleteEvent: DeleteEventResponse;
+  readonly deleteFeedItem: Scalars['Boolean']['output'];
   readonly deleteImage: DeleteImageResponse;
   readonly deleteMarathon: Scalars['Void']['output'];
   readonly deleteMarathonHour: Scalars['Void']['output'];
@@ -722,11 +739,13 @@ export type Mutation = {
   readonly deleteTeam: DeleteTeamResponse;
   readonly registerDevice: RegisterDeviceResponse;
   readonly removeImageFromEvent: RemoveEventImageResponse;
+  readonly removeImageFromFeedItem: FeedResource;
   readonly removeMap: Scalars['Void']['output'];
   readonly scheduleNotification: ScheduleNotificationResponse;
   /** Send a notification immediately. */
   readonly sendNotification: SendNotificationResponse;
   readonly setEvent: SetEventResponse;
+  readonly setFeedItem: FeedResource;
   readonly setMarathon: MarathonResource;
   readonly setMarathonHour: MarathonHourResource;
   readonly setPerson: GetPersonResponse;
@@ -758,6 +777,12 @@ export type MutationAddMapArgs = {
 };
 
 
+export type MutationAttachImageToFeedItemArgs = {
+  feedItemUuid: Scalars['String']['input'];
+  imageUuid: Scalars['String']['input'];
+};
+
+
 export type MutationCreateConfigurationArgs = {
   input: CreateConfigurationInput;
 };
@@ -770,6 +795,11 @@ export type MutationCreateConfigurationsArgs = {
 
 export type MutationCreateEventArgs = {
   input: CreateEventInput;
+};
+
+
+export type MutationCreateFeedItemArgs = {
+  input: CreateFeedInput;
 };
 
 
@@ -821,6 +851,11 @@ export type MutationDeleteDeviceArgs = {
 
 export type MutationDeleteEventArgs = {
   uuid: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteFeedItemArgs = {
+  feedItemUuid: Scalars['String']['input'];
 };
 
 
@@ -876,6 +911,11 @@ export type MutationRemoveImageFromEventArgs = {
 };
 
 
+export type MutationRemoveImageFromFeedItemArgs = {
+  feedItemUuid: Scalars['String']['input'];
+};
+
+
 export type MutationRemoveMapArgs = {
   imageUuid: Scalars['String']['input'];
   uuid: Scalars['String']['input'];
@@ -896,6 +936,12 @@ export type MutationSendNotificationArgs = {
 export type MutationSetEventArgs = {
   input: SetEventInput;
   uuid: Scalars['String']['input'];
+};
+
+
+export type MutationSetFeedItemArgs = {
+  feedItemUuid: Scalars['String']['input'];
+  input: SetFeedInput;
 };
 
 
@@ -1277,6 +1323,7 @@ export type Query = {
   readonly devices: ListDevicesResponse;
   readonly event: GetEventByUuidResponse;
   readonly events: ListEventsResponse;
+  readonly feed: ReadonlyArray<FeedResource>;
   readonly image: GetImageByUuidResponse;
   readonly listPeople: ListPeopleResponse;
   readonly loginState: LoginState;
@@ -1585,6 +1632,11 @@ export type SetEventResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse &
   readonly __typename?: 'SetEventResponse';
   readonly data: EventResource;
   readonly ok: Scalars['Boolean']['output'];
+};
+
+export type SetFeedInput = {
+  readonly textContent?: InputMaybe<Scalars['String']['input']>;
+  readonly title: Scalars['String']['input'];
 };
 
 export type SetMarathonHourInput = {

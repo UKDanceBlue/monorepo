@@ -125,6 +125,11 @@ type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGra
   uuid: String!
 }
 
+input CreateFeedInput {
+  textContent: String
+  title: String!
+}
+
 input CreateImageInput {
   alt: String
   height: NonNegativeInt!
@@ -440,6 +445,14 @@ type EventResource {
   uuid: ID!
 }
 
+type FeedResource {
+  createdAt: DateTimeISO
+  image: ImageResource
+  textContent: String
+  title: String!
+  updatedAt: DateTimeISO
+}
+
 type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
   data: [ConfigurationResource!]!
   ok: Boolean!
@@ -720,9 +733,11 @@ type Mutation {
   acknowledgeDeliveryIssue(uuid: String!): AcknowledgeDeliveryIssueResponse!
   addExistingImageToEvent(eventId: String!, imageId: String!): AddEventImageResponse!
   addMap(imageUuid: String!, uuid: String!): MarathonHourResource!
+  attachImageToFeedItem(feedItemUuid: String!, imageUuid: String!): FeedResource!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
   createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
   createEvent(input: CreateEventInput!): CreateEventResponse!
+  createFeedItem(input: CreateFeedInput!): FeedResource!
   createImage(input: CreateImageInput!): CreateImageResponse!
   createMarathon(input: CreateMarathonInput!): MarathonResource!
   createMarathonHour(input: CreateMarathonHourInput!, marathonUuid: String!): MarathonHourResource!
@@ -733,6 +748,7 @@ type Mutation {
   deleteConfiguration(uuid: String!): DeleteConfigurationResponse!
   deleteDevice(uuid: String!): DeleteDeviceResponse!
   deleteEvent(uuid: String!): DeleteEventResponse!
+  deleteFeedItem(feedItemUuid: String!): Boolean!
   deleteImage(uuid: String!): DeleteImageResponse!
   deleteMarathon(uuid: String!): Void!
   deleteMarathonHour(uuid: String!): Void!
@@ -749,12 +765,14 @@ type Mutation {
   deleteTeam(uuid: String!): DeleteTeamResponse!
   registerDevice(input: RegisterDeviceInput!): RegisterDeviceResponse!
   removeImageFromEvent(eventId: String!, imageId: String!): RemoveEventImageResponse!
+  removeImageFromFeedItem(feedItemUuid: String!): FeedResource!
   removeMap(imageUuid: String!, uuid: String!): Void!
   scheduleNotification(sendAt: DateTimeISO!, uuid: String!): ScheduleNotificationResponse!
 
   """Send a notification immediately."""
   sendNotification(uuid: String!): SendNotificationResponse!
   setEvent(input: SetEventInput!, uuid: String!): SetEventResponse!
+  setFeedItem(feedItemUuid: String!, input: SetFeedInput!): FeedResource!
   setMarathon(input: SetMarathonInput!, uuid: String!): MarathonResource!
   setMarathonHour(input: SetMarathonHourInput!, uuid: String!): MarathonHourResource!
   setPerson(input: SetPersonInput!, uuid: String!): GetPersonResponse!
@@ -1238,6 +1256,7 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
+  feed: [FeedResource!]!
   image(uuid: String!): GetImageByUuidResponse!
   listPeople(
     """The boolean filters to apply to the query"""
@@ -1626,6 +1645,11 @@ input SetEventOccurrenceInput {
 type SetEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: EventResource!
   ok: Boolean!
+}
+
+input SetFeedInput {
+  textContent: String
+  title: String!
 }
 
 input SetMarathonHourInput {
