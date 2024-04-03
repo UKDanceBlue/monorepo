@@ -451,6 +451,7 @@ type FeedResource {
   textContent: String
   title: String!
   updatedAt: DateTimeISO
+  uuid: ID!
 }
 
 type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {

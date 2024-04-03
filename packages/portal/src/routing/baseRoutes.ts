@@ -49,3 +49,15 @@ export const marathonsRoute = new Route({
   getParentRoute: () => rootRoute,
   component: MarathonsPage,
 });
+
+export const feedRoutes = new Route({
+  path: "feed",
+  getParentRoute: () => rootRoute,
+  component: undefined,
+});
+
+export const imagesRoutes = new Route({
+  path: "images",
+  getParentRoute: () => rootRoute,
+  component: undefined,
+});
