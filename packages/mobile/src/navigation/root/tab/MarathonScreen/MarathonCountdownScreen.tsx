@@ -16,7 +16,7 @@ export const MarathonCountdownScreen = ({
   marathonEnd: DateTime;
 }) => {
   const { height: screenHeight, width: screenWidth } = useWindowDimensions();
-  const { primary, secondary } = useThemeColors();
+  const { primary } = useThemeColors();
 
   const ordinals = ["th", "st", "nd", "rd"]; // s
   const startOrdinal =
