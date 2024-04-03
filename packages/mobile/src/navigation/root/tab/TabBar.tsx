@@ -58,44 +58,53 @@ const TabBar = () => {
     tabConfigLoading,
     shownTabs: allEnabledScreens,
     fancyTab,
+    forceAll,
   } = useTabBarConfig();
 
   const [currentTabs, setCurrentTabs] = useState<ReactElement[]>([]);
 
   useEffect(() => {
     if (!tabConfigLoading) {
-      let tempCurrentTabs = [];
+      if (forceAll) {
+        setCurrentTabs(Object.values(possibleTabs));
+        return;
+      } else if (allEnabledScreens.length === 0) {
+        setCurrentTabs([possibleTabs.Home]);
+        return;
+      } else {
+        let tempCurrentTabs = [];
 
-      const enabledScreens = allEnabledScreens.filter(
-        (screen) => screen !== fancyTab
-      );
+        const enabledScreens = allEnabledScreens.filter(
+          (screen) => screen !== fancyTab
+        );
 
-      for (let i = 0; i < enabledScreens.length; i++) {
-        if (enabledScreens[i] !== fancyTab) {
-          tempCurrentTabs.push(
-            possibleTabs[enabledScreens[i] as keyof typeof possibleTabs]
-          );
+        for (let i = 0; i < enabledScreens.length; i++) {
+          if (enabledScreens[i] !== fancyTab) {
+            tempCurrentTabs.push(
+              possibleTabs[enabledScreens[i] as keyof typeof possibleTabs]
+            );
+          }
         }
-      }
 
-      // if there is a fancy tab, add it to the middle
-      if (fancyTab != null) {
-        const middleIndex = Math.floor(tempCurrentTabs.length / 2);
-        const fancyTabElement =
-          possibleTabs[fancyTab as keyof typeof possibleTabs];
-        const firstHalf = tempCurrentTabs.slice(0, middleIndex);
-        const secondHalf = tempCurrentTabs.slice(middleIndex);
-        tempCurrentTabs = [...firstHalf, fancyTabElement, ...secondHalf];
-      }
+        // if there is a fancy tab, add it to the middle
+        if (fancyTab != null) {
+          const middleIndex = Math.floor(tempCurrentTabs.length / 2);
+          const fancyTabElement =
+            possibleTabs[fancyTab as keyof typeof possibleTabs];
+          const firstHalf = tempCurrentTabs.slice(0, middleIndex);
+          const secondHalf = tempCurrentTabs.slice(middleIndex);
+          tempCurrentTabs = [...firstHalf, fancyTabElement, ...secondHalf];
+        }
 
-      setCurrentTabs(tempCurrentTabs);
-      // log(
-      //   `Config loaded, setting current tabs to ${JSON.stringify({
-      //     currentTabs: tempCurrentTabs,
-      //   })}`
-      // );
+        setCurrentTabs(tempCurrentTabs);
+        // log(
+        //   `Config loaded, setting current tabs to ${JSON.stringify({
+        //     currentTabs: tempCurrentTabs,
+        //   })}`
+        // );
+      }
     }
-  }, [allEnabledScreens, fancyTab, tabConfigLoading]);
+  }, [allEnabledScreens, fancyTab, forceAll, tabConfigLoading]);
 
   return (
     <Tabs.Navigator
