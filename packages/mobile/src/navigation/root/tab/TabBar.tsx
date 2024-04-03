@@ -30,7 +30,7 @@ export const possibleTabs = {
     <Tabs.Screen key="Events" name="Events" component={EventListScreen} />
   ),
   Explorer: (
-    <Tabs.Screen key="Explorer" name="Explorer" component={ExplorerScreen} />
+    <Tabs.Screen key="Explore" name="Explore" component={ExplorerScreen} />
   ),
   Teams: <Tabs.Screen key="Spirit" name="Teams" component={SpiritScreen} />,
   Marathon: (
