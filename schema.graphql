@@ -133,7 +133,7 @@ input CreateFeedInput {
 input CreateImageInput {
   alt: String
   height: NonNegativeInt!
-  thumbHash: String
+  url: URL
   width: NonNegativeInt!
 }
 
@@ -617,6 +617,20 @@ type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGra
 
 type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
   data: [EventResource!]!
+  ok: Boolean!
+
+  """The current page number (1-indexed)"""
+  page: PositiveInt!
+
+  """The number of items per page"""
+  pageSize: NonNegativeInt!
+
+  """The total number of items"""
+  total: NonNegativeInt!
+}
+
+type ListImagesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+  data: [ImageResource!]!
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -1386,7 +1400,7 @@ type Query {
 
     """The string filters to apply to the query"""
     stringFilters: [ImageResolverKeyedStringFilterItem!]
-  ): [ImageResource!]!
+  ): ListImagesResponse!
   listPeople(
     """The boolean filters to apply to the query"""
     booleanFilters: Void

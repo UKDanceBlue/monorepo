@@ -24,7 +24,7 @@ export async function generateThumbHash(
     | Float32Array
     | Float64Array
     | string,
-  options: SharpOptions
+  options?: SharpOptions
 ): Promise<Uint8Array> {
   // Get an RGBA buffer from the image
   const baseImage = sharp(input, options);
