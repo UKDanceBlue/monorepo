@@ -130,8 +130,15 @@ export class FileManager {
       case "https:": {
         return locationUrl;
       }
+      case "about:": {
+        if (locationUrl.pathname === "blank") {
+          return locationUrl;
+        } else {
+          throw new Error("Unsupported protocol");
+        }
+      }
       case "data:": {
-        return new URL(fileUuid, FILE_API);
+        return locationUrl;
       }
       default: {
         throw new Error("Unsupported protocol");

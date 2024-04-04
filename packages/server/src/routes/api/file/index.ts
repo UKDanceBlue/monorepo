@@ -4,10 +4,9 @@ import { Container } from "typedi";
 import { FileManager } from "../../../lib/files/FileManager.js";
 import { combineMimePartsToString } from "../../../lib/files/mime.js";
 
-const uploadRouter = new Router({ prefix: "/upload" });
+const fileRouter = new Router({ prefix: "/upload" });
 
-// Multipart image upload
-uploadRouter.get("/file/:uuid", async (ctx) => {
+fileRouter.get("/file/:uuid", async (ctx) => {
   const fileManager = Container.get(FileManager);
 
   const { uuid } = ctx.params;
@@ -39,4 +38,4 @@ uploadRouter.get("/file/:uuid", async (ctx) => {
   }
 });
 
-export default uploadRouter;
+export default fileRouter;

@@ -26,13 +26,22 @@ uploadRouter.post(
 
     const { uuid } = ctx.params;
 
-    const image = ctx.request.files?.image;
+    const uploadedFiles = ctx.request.files
+      ? Object.values(ctx.request.files)
+      : [];
+    if (uploadedFiles.length === 0) {
+      return ctx.throw(400, "No image uploaded");
+    } else if (uploadedFiles.length > 1) {
+      return ctx.throw(400, "Only one image can be uploaded at a time");
+    }
 
-    if (!image) {
+    const uploadedFile = uploadedFiles[0];
+
+    if (uploadedFiles.length === 0 || !uploadedFile) {
       return ctx.throw(400, "No image uploaded");
     }
-    if (Array.isArray(image)) {
-      return ctx.throw(400, "Only one file can be attached to an image");
+    if (uploadedFiles.length > 1 || Array.isArray(uploadedFile)) {
+      return ctx.throw(400, "Only one image can be uploaded at a time");
     }
     if (!uuid) {
       return ctx.throw(400, "No image UUID provided");
@@ -45,18 +54,18 @@ uploadRouter.post(
 
     let file: File;
     try {
-      const tmpFileHandle = await open(image.filepath);
+      const tmpFileHandle = await open(uploadedFile.filepath);
       try {
         file = await fileManager.storeFile(
           {
             type: "stream",
-            name: image.originalFilename ?? image.newFilename,
+            name: uploadedFile.originalFilename ?? uploadedFile.newFilename,
             stream: tmpFileHandle.createReadStream({
               autoClose: true,
               emitClose: true,
             }),
           },
-          image.mimetype ?? "application/octet-stream",
+          uploadedFile.mimetype ?? "application/octet-stream",
           // TODO: Implement file ownership
           undefined,
           undefined,
