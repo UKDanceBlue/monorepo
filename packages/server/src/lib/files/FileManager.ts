@@ -161,7 +161,7 @@ export class FileManager {
     }
     const locationUrl = new URL(fileRecord.locationUrl);
     switch (locationUrl.protocol) {
-      case "file": {
+      case "file:": {
         const stream = await this.localStorage.tryStreamFile(locationUrl);
         if (stream === UnsupportedAccessMethod) {
           throw new Error("Unsupported access method");

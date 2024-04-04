@@ -79,9 +79,33 @@ export class LocalStorageProvider
     try {
       const { year, month } = DateTime.now().toObject();
       const yearPath = resolve(uploadPath, year.toString());
-      await mkdir(yearPath, { recursive: false });
+      try {
+        await mkdir(yearPath, { recursive: false });
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          "code" in error &&
+          error.code === "EEXIST"
+        ) {
+          // Do nothing, the directory already exists
+        } else {
+          throw error;
+        }
+      }
       const monthPath = join(yearPath, month.toString().padStart(2, "0"));
-      await mkdir(monthPath, { recursive: false });
+      try {
+        await mkdir(monthPath, { recursive: false });
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          "code" in error &&
+          error.code === "EEXIST"
+        ) {
+          // Do nothing, the directory already exists
+        } else {
+          throw error;
+        }
+      }
 
       const random = Math.random().toString(36).slice(2);
       const filename = `${random}-${file.name}`;

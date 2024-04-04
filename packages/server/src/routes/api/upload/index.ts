@@ -9,10 +9,7 @@ import { FileManager } from "../../../lib/files/FileManager.js";
 import { logger } from "../../../lib/logging/standardLogging.js";
 import { ImageRepository } from "../../../repositories/image/ImageRepository.js";
 
-const uploadRouter = new Router({ prefix: "/upload" });
-
-// Multipart image upload
-uploadRouter.post(
+const uploadRouter = new Router({ prefix: "/upload" }).post(
   "/image/:uuid",
   koaBody({
     multipart: true,
@@ -26,6 +23,16 @@ uploadRouter.post(
 
     const { uuid } = ctx.params;
 
+    // Check the image in the database
+    if (!uuid) {
+      return ctx.throw(400, "No image UUID provided");
+    }
+    const dbImage = await imageRepository.findImageByUnique({ uuid });
+    if (!dbImage) {
+      return ctx.throw(404, "Image not found");
+    }
+
+    // Check the uploaded file
     const uploadedFiles = ctx.request.files
       ? Object.values(ctx.request.files)
       : [];
@@ -36,20 +43,11 @@ uploadRouter.post(
     }
 
     const uploadedFile = uploadedFiles[0];
-
     if (uploadedFiles.length === 0 || !uploadedFile) {
       return ctx.throw(400, "No image uploaded");
     }
     if (uploadedFiles.length > 1 || Array.isArray(uploadedFile)) {
       return ctx.throw(400, "Only one image can be uploaded at a time");
-    }
-    if (!uuid) {
-      return ctx.throw(400, "No image UUID provided");
-    }
-    const dbImage = await imageRepository.findImageByUnique({ uuid });
-
-    if (!dbImage) {
-      return ctx.throw(404, "Image not found");
     }
 
     let file: File;
@@ -100,6 +98,8 @@ uploadRouter.post(
       logger.warning("Error while updating image", { error });
       return ctx.throw(500, "Error while updating image");
     }
+
+    ctx.status = 204;
   }
 );
 

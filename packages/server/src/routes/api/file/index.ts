@@ -4,9 +4,9 @@ import { Container } from "typedi";
 import { FileManager } from "../../../lib/files/FileManager.js";
 import { combineMimePartsToString } from "../../../lib/files/mime.js";
 
-const fileRouter = new Router({ prefix: "/upload" });
+const fileRouter = new Router({ prefix: "/file" });
 
-fileRouter.get("/file/:uuid", async (ctx) => {
+fileRouter.get("/download/:uuid", async (ctx) => {
   const fileManager = Container.get(FileManager);
 
   const { uuid } = ctx.params;
