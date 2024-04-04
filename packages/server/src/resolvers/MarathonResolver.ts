@@ -4,6 +4,7 @@ import {
   FilteredListQueryArgs,
   MarathonHourResource,
   MarathonResource,
+  SortDirection,
 } from "@ukdanceblue/common";
 import { DateTimeISOResolver, VoidResolver } from "graphql-scalars";
 import {
@@ -102,8 +103,22 @@ export class MarathonResolver {
 
   @Query(() => ListMarathonsResponse)
   async marathons(@Args() args: ListMarathonsArgs) {
-    const marathons = await this.marathonRepository.listMarathons(args);
-    const marathonCount = await this.marathonRepository.countMarathons(args);
+    const marathons = await this.marathonRepository.listMarathons({
+      filters: args.filters,
+      order:
+        args.sortBy?.map((key, i) => [
+          key,
+          args.sortDirection?.[i] ?? SortDirection.DESCENDING,
+        ]) ?? [],
+      skip:
+        args.page != null && args.pageSize != null
+          ? (args.page - 1) * args.pageSize
+          : null,
+      take: args.pageSize,
+    });
+    const marathonCount = await this.marathonRepository.countMarathons({
+      filters: args.filters,
+    });
     return ListMarathonsResponse.newPaginated({
       data: marathons.map(marathonModelToResource),
       total: marathonCount,

@@ -1,85 +1,191 @@
-import { universalCatch } from "@common/logging";
-import { useLoading } from "@context/loading";
-import { useCallback, useEffect, useState } from "react";
+import { API_BASE_URL } from "@common/apiUrl";
+import { useNetworkStatus } from "@common/customHooks";
+import { Logger } from "@common/logger/Logger";
+import { dateTimeFromSomething } from "@ukdanceblue/common";
+import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
+import type { DateTime } from "luxon";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FeedItem } from "react-native-rss-parser";
 import { parse } from "react-native-rss-parser";
+import { useQuery } from "urql";
 
-// A react hook works kinda like a controller in MVC
+const serverFeedDocument = graphql(/* GraphQL */ `
+  query ServerFeed {
+    feed(limit: 20) {
+      uuid
+      title
+      createdAt
+      textContent
+      image {
+        url
+        alt
+        width
+        height
+        thumbHash
+      }
+    }
+  }
+`);
+
+export interface ParsedServerFeedItem {
+  uuid: string;
+  title: string;
+  textContent?: string | undefined;
+  sortByDate: DateTime;
+  image?:
+    | {
+        url: string;
+        width: number;
+        height: number;
+        alt?: string | undefined;
+        thumbHash?: string | undefined;
+      }
+    | undefined;
+}
+
 export function useExplorerFeed(): {
   blogPosts: FeedItem[] | undefined;
   podcasts: FeedItem[] | undefined;
   youtubeVideos: FeedItem[] | undefined;
+  parsedServerFeed: ParsedServerFeedItem[];
   loading: boolean;
+  refresh: () => Promise<void>;
 } {
-  const [loading, setLoading] = useLoading();
+  const [{ isInternetReachable }] = useNetworkStatus();
+  const [loading, setLoading] = useState(true);
   const [blogPosts, setBlogPosts] = useState<FeedItem[] | undefined>();
   const [podcasts, setPodcasts] = useState<FeedItem[] | undefined>();
   // const [instagramPosts, setInstagramPosts] = useState();
   // const [tiktokPosts, setTikTokPosts] = useState();
   const [youtubeVideos, setYoutubeVideos] = useState<FeedItem[] | undefined>();
 
-  // useCallback is a react hook that returns a memoized callback
-  // This means that the function will only be recreated if one of the dependencies changes
-  const loadFeed = useCallback(async () => {
-    try {
-      const dbWebsiteRSS = await fetch("https://danceblue.org/feed");
-      const dbWebsiteXML = await dbWebsiteRSS.text();
-      const dbWebsiteParsed = await parse(dbWebsiteXML);
+  const [serverFeedResult, refreshServerFeed] = useQuery({
+    query: serverFeedDocument,
+  });
 
-      const blogPosts = dbWebsiteParsed.items.filter((item) =>
-        item.categories.some((category) => category?.name !== "Podcast")
-      );
+  const parsedServerFeed = useMemo(() => {
+    const parsedFeed: ParsedServerFeedItem[] = [];
 
-      setBlogPosts(blogPosts);
-      // console.log(JSON.stringify(blogPosts, null, 2));
+    if (serverFeedResult.data) {
+      for (const {
+        uuid,
+        title,
+        textContent,
+        createdAt,
+        image,
+      } of serverFeedResult.data.feed) {
+        if (!createdAt) {
+          continue;
+        }
 
-      const podcastPosts = dbWebsiteParsed.items
-        .filter((item) =>
-          item.categories.some((category) => category?.name === "Podcast")
-        )
-        .filter((item) =>
-          item.enclosures.some(
-            (enclosure) => enclosure.mimeType === "audio/mpeg"
-          )
-        );
+        let imageUrl: URL | undefined = image?.url
+          ? new URL(image.url)
+          : undefined;
+        // Special case for localhost server
+        if (imageUrl?.hostname === "localhost") {
+          imageUrl = new URL(imageUrl.pathname, API_BASE_URL);
+        }
+        if (image) {
+          if (!imageUrl) {
+            continue;
+          } else if (!imageUrl.protocol.startsWith("http")) {
+            continue;
+          }
+        }
 
-      setPodcasts(podcastPosts);
-      // console.log(JSON.stringify(podcastPosts, null, 2));
+        parsedFeed.push({
+          uuid,
+          title,
+          textContent: textContent ?? undefined,
+          sortByDate: dateTimeFromSomething(createdAt),
+          image:
+            imageUrl && image
+              ? {
+                  url: imageUrl.href,
+                  width: image.width,
+                  height: image.height,
+                  alt: image.alt ?? undefined,
 
-      const youtubeRSS = await fetch(
-        "https://www.youtube.com/feeds/videos.xml?channel_id=UCcF8V41xkzYkZ0B1IOXntjg"
-      );
-      const youtubeXML = await youtubeRSS.text();
-      const youtubeParsed = await parse(youtubeXML);
-      const youtubePosts = youtubeParsed.items;
-
-      // console.log(JSON.stringify(youtubePosts, null, 2));
-
-      setYoutubeVideos(youtubePosts);
-    } catch (error) {
-      console.error(error);
+                  // TODO decode and use the thumbHash
+                  thumbHash: undefined,
+                }
+              : undefined,
+        });
+      }
     }
 
-    // TODO: Implement Instagram and TikTok RSS if possible
+    return parsedFeed;
+  }, [serverFeedResult.data]);
 
-    // The empty array at the end of the useCallback hook means that the function will only be recreated if the parent component is recreated
-    // If there were any dependencies in the array, the function would be recreated if any of the dependencies changed. i.e. if you had some
-    // state value that you wanted to use in the function, you would put it in the array so that the function would be recreated if that state
-    // value changed
-  }, []);
+  const loadFeed = useCallback(async () => {
+    if (isInternetReachable === false) {
+      setLoading(false);
+    } else if (isInternetReachable === true) {
+      setLoading(true);
+      try {
+        const dbWebsiteRSS = await fetch("https://danceblue.org/feed");
+        const dbWebsiteXML = await dbWebsiteRSS.text();
+        const dbWebsiteParsed = await parse(dbWebsiteXML);
+
+        const blogPosts = dbWebsiteParsed.items.filter((item) =>
+          item.categories.some((category) => category?.name !== "Podcast")
+        );
+
+        setBlogPosts(blogPosts);
+        // console.log(JSON.stringify(blogPosts, null, 2));
+
+        const podcastPosts = dbWebsiteParsed.items
+          .filter((item) =>
+            item.categories.some((category) => category?.name === "Podcast")
+          )
+          .filter((item) =>
+            item.enclosures.some(
+              (enclosure) => enclosure.mimeType === "audio/mpeg"
+            )
+          );
+
+        setPodcasts(podcastPosts);
+        // console.log(JSON.stringify(podcastPosts, null, 2));
+
+        const youtubeRSS = await fetch(
+          "https://www.youtube.com/feeds/videos.xml?channel_id=UCcF8V41xkzYkZ0B1IOXntjg"
+        );
+        const youtubeXML = await youtubeRSS.text();
+        const youtubeParsed = await parse(youtubeXML);
+        const youtubePosts = youtubeParsed.items;
+
+        // console.log(JSON.stringify(youtubePosts, null, 2));
+
+        setYoutubeVideos(youtubePosts);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+
+      // TODO: Implement Instagram and TikTok RSS if possible
+    }
+  }, [isInternetReachable]);
 
   useEffect(() => {
-    setLoading(true);
-    loadFeed()
-      .catch(universalCatch)
-      .finally(() => setLoading(false));
-
-    // useEffect on the other hand is a react hook that runs the function whenever the dependencies change
-    // An empty array would mean that the function would only run once, when the component is first created
-    // But since we have a dependency, the function will run whenever the dependency changes
+    loadFeed().catch((error: unknown) => {
+      Logger.error("Failed to load explore feed", { error });
+    });
   }, [loadFeed, setLoading]);
 
-  return { blogPosts, podcasts, youtubeVideos, loading };
+  return {
+    blogPosts,
+    podcasts,
+    youtubeVideos,
+    loading,
+    parsedServerFeed,
+    refresh: async () => {
+      try {
+        refreshServerFeed({ requestPolicy: "network-only" });
+        await loadFeed();
+      } catch (error) {
+        Logger.error("Failed to refresh explore feed", { error });
+      }
+    },
+  };
 }
-
-// I would suggest splitting this file into one for each type of feed item instead of having them all in one file

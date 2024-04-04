@@ -16,6 +16,7 @@ import DBMomentsScreen from "./DBMoments";
 import EventListScreen from "./EventListScreen";
 import ExplorerScreen from "./ExplorerScreen";
 import HomeScreen from "./HomeScreen";
+import InfoScreen from "./InfoScreen";
 import MarathonScreen from "./MarathonScreen";
 import MoraleCup from "./MoraleCup";
 import TabBarComponent from "./TabBarComponent";
@@ -24,11 +25,12 @@ import SpiritScreen from "./spirit/SpiritStack";
 const Tabs = createBottomTabNavigator<TabNavigatorParamList>();
 
 export const possibleTabs = {
+  Home: <Tabs.Screen key="Home" name="Home" component={HomeScreen} />,
   Events: (
     <Tabs.Screen key="Events" name="Events" component={EventListScreen} />
   ),
   Explorer: (
-    <Tabs.Screen key="Explorer" name="Explorer" component={ExplorerScreen} />
+    <Tabs.Screen key="Explore" name="Explore" component={ExplorerScreen} />
   ),
   Teams: <Tabs.Screen key="Spirit" name="Teams" component={SpiritScreen} />,
   Marathon: (
@@ -48,6 +50,7 @@ export const possibleTabs = {
   MoraleCup: (
     <Tabs.Screen key="MoraleCup" name="Morale Cup" component={MoraleCup} />
   ),
+  Info: <Tabs.Screen key="Info" name="Info" component={InfoScreen} />,
 } as const;
 
 const TabBar = () => {
@@ -55,47 +58,53 @@ const TabBar = () => {
     tabConfigLoading,
     shownTabs: allEnabledScreens,
     fancyTab,
+    forceAll,
   } = useTabBarConfig();
 
   const [currentTabs, setCurrentTabs] = useState<ReactElement[]>([]);
 
   useEffect(() => {
     if (!tabConfigLoading) {
-      let tempCurrentTabs = [];
+      if (forceAll) {
+        setCurrentTabs(Object.values(possibleTabs));
+        return;
+      } else if (allEnabledScreens.length === 0) {
+        setCurrentTabs([possibleTabs.Home]);
+        return;
+      } else {
+        let tempCurrentTabs = [];
 
-      const enabledScreens = allEnabledScreens.filter(
-        (screen) => screen !== fancyTab
-      );
+        const enabledScreens = allEnabledScreens.filter(
+          (screen) => screen !== fancyTab
+        );
 
-      for (let i = 0; i < enabledScreens.length; i++) {
-        if (enabledScreens[i] !== fancyTab) {
-          tempCurrentTabs.push(
-            possibleTabs[enabledScreens[i] as keyof typeof possibleTabs]
-          );
+        for (let i = 0; i < enabledScreens.length; i++) {
+          if (enabledScreens[i] !== fancyTab) {
+            tempCurrentTabs.push(
+              possibleTabs[enabledScreens[i] as keyof typeof possibleTabs]
+            );
+          }
         }
+
+        // if there is a fancy tab, add it to the middle
+        if (fancyTab != null) {
+          const middleIndex = Math.floor(tempCurrentTabs.length / 2);
+          const fancyTabElement =
+            possibleTabs[fancyTab as keyof typeof possibleTabs];
+          const firstHalf = tempCurrentTabs.slice(0, middleIndex);
+          const secondHalf = tempCurrentTabs.slice(middleIndex);
+          tempCurrentTabs = [...firstHalf, fancyTabElement, ...secondHalf];
+        }
+
+        setCurrentTabs(tempCurrentTabs);
+        // log(
+        //   `Config loaded, setting current tabs to ${JSON.stringify({
+        //     currentTabs: tempCurrentTabs,
+        //   })}`
+        // );
       }
-
-      // TODO: Must remove before merging PR
-      tempCurrentTabs.push(possibleTabs["Explorer"]);
-
-      // if there is a fancy tab, add it to the middle
-      if (fancyTab != null) {
-        const middleIndex = Math.floor(tempCurrentTabs.length / 2);
-        const fancyTabElement =
-          possibleTabs[fancyTab as keyof typeof possibleTabs];
-        const firstHalf = tempCurrentTabs.slice(0, middleIndex);
-        const secondHalf = tempCurrentTabs.slice(middleIndex);
-        tempCurrentTabs = [...firstHalf, fancyTabElement, ...secondHalf];
-      }
-
-      setCurrentTabs(tempCurrentTabs);
-      // log(
-      //   `Config loaded, setting current tabs to ${JSON.stringify({
-      //     currentTabs: tempCurrentTabs,
-      //   })}`
-      // );
     }
-  }, [allEnabledScreens, fancyTab, tabConfigLoading]);
+  }, [allEnabledScreens, fancyTab, forceAll, tabConfigLoading]);
 
   return (
     <Tabs.Navigator
@@ -133,8 +142,9 @@ const TabBar = () => {
       })}
       tabBar={(props) => <TabBarComponent {...props} fancyTab={fancyTab} />}
     >
-      <Tabs.Screen name="Home" component={HomeScreen} />
-      {!tabConfigLoading && currentTabs}
+      {!tabConfigLoading && currentTabs.length > 0
+        ? currentTabs
+        : [possibleTabs.Home]}
     </Tabs.Navigator>
   );
 };

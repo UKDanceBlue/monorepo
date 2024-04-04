@@ -13,6 +13,8 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
+    "\n  query ImagePicker($stringFilters: [ImageResolverKeyedStringFilterItem!]) {\n    images(stringFilters: $stringFilters, pageSize: 9) {\n      data {\n        uuid\n        alt\n        url\n      }\n    }\n  }\n": types.ImagePickerDocument,
+    "\n  query PersonSearch($search: String!) {\n    searchPeopleByName(name: $search) {\n      data {\n        uuid\n        name\n        linkblue\n      }\n    }\n    personByLinkBlue(linkBlueId: $search) {\n      data {\n        uuid\n        name\n        linkblue\n      }\n    }\n  }\n": types.PersonSearchDocument,
     "\n  fragment SingleNotificationFragment on NotificationResource {\n    uuid\n    title\n    body\n    deliveryIssue\n    deliveryIssueAcknowledgedAt\n    sendAt\n    startedSendingAt\n    createdAt\n    deliveryCount\n    deliveryIssueCount {\n      DeviceNotRegistered\n      InvalidCredentials\n      MessageRateExceeded\n      MessageTooBig\n      MismatchSenderId\n      Unknown\n    }\n  }\n": types.SingleNotificationFragmentFragmentDoc,
     "\n  mutation CreateNotification(\n    $title: String!\n    $body: String!\n    $audience: NotificationAudienceInput!\n    $url: String\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n": types.CreateNotificationDocument,
     "\n  mutation CancelNotificationSchedule($uuid: String!) {\n    abortScheduledNotification(uuid: $uuid) {\n      ok\n    }\n  }\n": types.CancelNotificationScheduleDocument,
@@ -55,11 +57,17 @@ const documents = {
     "\n  fragment EventsTableFragment on EventResource {\n    uuid\n    title\n    description\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    summary\n  }\n": types.EventsTableFragmentFragmentDoc,
     "\n  query EventsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [EventResolverKeyedDateFilterItem!]\n    $isNullFilters: [EventResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]\n    $stringFilters: [EventResolverKeyedStringFilterItem!]\n  ) {\n    events(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...EventsTableFragment\n      }\n    }\n  }\n": types.EventsTableDocument,
     "\n  query EditEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventEditorFragment\n      }\n    }\n  }\n": types.EditEventPageDocument,
-    "\n  fragment EventEditorFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      url\n      imageData\n      width\n      height\n      thumbHash\n      alt\n    }\n  }\n": types.EventEditorFragmentFragmentDoc,
+    "\n  fragment EventEditorFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      url\n      width\n      height\n      thumbHash\n      alt\n    }\n  }\n": types.EventEditorFragmentFragmentDoc,
     "\n  mutation SaveEvent($uuid: String!, $input: SetEventInput!) {\n    setEvent(uuid: $uuid, input: $input) {\n      data {\n        ...EventEditorFragment\n      }\n    }\n  }\n": types.SaveEventDocument,
     "\n  mutation DeleteEvent($uuid: String!) {\n    deleteEvent(uuid: $uuid) {\n      ok\n    }\n  }\n": types.DeleteEventDocument,
-    "\n  fragment EventViewerFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      interval\n      fullDay\n    }\n    images {\n      url\n      imageData\n      width\n      height\n      thumbHash\n      alt\n    }\n    createdAt\n    updatedAt\n  }\n": types.EventViewerFragmentFragmentDoc,
+    "\n  fragment EventViewerFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      interval\n      fullDay\n    }\n    images {\n      url\n      width\n      height\n      thumbHash\n      alt\n    }\n    createdAt\n    updatedAt\n  }\n": types.EventViewerFragmentFragmentDoc,
     "\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n": types.ViewEventPageDocument,
+    "\n  query FeedPage {\n    feed(limit: null) {\n      uuid\n      title\n      createdAt\n      textContent\n      image {\n        url\n        alt\n      }\n    }\n  }\n": types.FeedPageDocument,
+    "\n  mutation CreateFeedItem($input: CreateFeedInput!) {\n    createFeedItem(input: $input) {\n      uuid\n    }\n  }\n": types.CreateFeedItemDocument,
+    "\n  mutation DeleteFeedItem($uuid: String!) {\n    deleteFeedItem(feedItemUuid: $uuid)\n  }\n": types.DeleteFeedItemDocument,
+    "\n  mutation CreateImage($input: CreateImageInput!) {\n    createImage(input: $input) {\n      uuid\n    }\n  }\n": types.CreateImageDocument,
+    "\n  fragment ImagesTableFragment on ImageResource {\n    uuid\n    url\n    thumbHash\n    height\n    width\n    alt\n    mimeType\n    createdAt\n  }\n": types.ImagesTableFragmentFragmentDoc,
+    "\n  query ImagesTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [ImageResolverKeyedDateFilterItem!]\n    $isNullFilters: [ImageResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [ImageResolverKeyedOneOfFilterItem!]\n    $stringFilters: [ImageResolverKeyedStringFilterItem!]\n    $numericFilters: [ImageResolverKeyedNumericFilterItem!]\n  ) {\n    images(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n      numericFilters: $numericFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...ImagesTableFragment\n      }\n    }\n  }\n": types.ImagesTableDocument,
     "\n      mutation CreateMarathon($input: CreateMarathonInput!) {\n        createMarathon(input: $input) {\n          uuid\n        }\n      }\n    ": types.CreateMarathonDocument,
     "\n  query MarathonOverviewPage {\n    nextMarathon {\n      ...MarathonViewerFragment\n    }\n    marathons(sendAll: true) {\n      data {\n        ...MarathonTableFragment\n      }\n    }\n  }\n": types.MarathonOverviewPageDocument,
     "\n  fragment MarathonTableFragment on MarathonResource {\n    uuid\n    year\n    startDate\n    endDate\n  }\n": types.MarathonTableFragmentFragmentDoc,
@@ -93,6 +101,14 @@ const documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ImagePicker($stringFilters: [ImageResolverKeyedStringFilterItem!]) {\n    images(stringFilters: $stringFilters, pageSize: 9) {\n      data {\n        uuid\n        alt\n        url\n      }\n    }\n  }\n"): (typeof documents)["\n  query ImagePicker($stringFilters: [ImageResolverKeyedStringFilterItem!]) {\n    images(stringFilters: $stringFilters, pageSize: 9) {\n      data {\n        uuid\n        alt\n        url\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query PersonSearch($search: String!) {\n    searchPeopleByName(name: $search) {\n      data {\n        uuid\n        name\n        linkblue\n      }\n    }\n    personByLinkBlue(linkBlueId: $search) {\n      data {\n        uuid\n        name\n        linkblue\n      }\n    }\n  }\n"): (typeof documents)["\n  query PersonSearch($search: String!) {\n    searchPeopleByName(name: $search) {\n      data {\n        uuid\n        name\n        linkblue\n      }\n    }\n    personByLinkBlue(linkBlueId: $search) {\n      data {\n        uuid\n        name\n        linkblue\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -264,7 +280,7 @@ export function graphql(source: "\n  query EditEventPage($uuid: String!) {\n    
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment EventEditorFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      url\n      imageData\n      width\n      height\n      thumbHash\n      alt\n    }\n  }\n"): (typeof documents)["\n  fragment EventEditorFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      url\n      imageData\n      width\n      height\n      thumbHash\n      alt\n    }\n  }\n"];
+export function graphql(source: "\n  fragment EventEditorFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      url\n      width\n      height\n      thumbHash\n      alt\n    }\n  }\n"): (typeof documents)["\n  fragment EventEditorFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      url\n      width\n      height\n      thumbHash\n      alt\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -276,11 +292,35 @@ export function graphql(source: "\n  mutation DeleteEvent($uuid: String!) {\n   
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment EventViewerFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      interval\n      fullDay\n    }\n    images {\n      url\n      imageData\n      width\n      height\n      thumbHash\n      alt\n    }\n    createdAt\n    updatedAt\n  }\n"): (typeof documents)["\n  fragment EventViewerFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      interval\n      fullDay\n    }\n    images {\n      url\n      imageData\n      width\n      height\n      thumbHash\n      alt\n    }\n    createdAt\n    updatedAt\n  }\n"];
+export function graphql(source: "\n  fragment EventViewerFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      interval\n      fullDay\n    }\n    images {\n      url\n      width\n      height\n      thumbHash\n      alt\n    }\n    createdAt\n    updatedAt\n  }\n"): (typeof documents)["\n  fragment EventViewerFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      interval\n      fullDay\n    }\n    images {\n      url\n      width\n      height\n      thumbHash\n      alt\n    }\n    createdAt\n    updatedAt\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query FeedPage {\n    feed(limit: null) {\n      uuid\n      title\n      createdAt\n      textContent\n      image {\n        url\n        alt\n      }\n    }\n  }\n"): (typeof documents)["\n  query FeedPage {\n    feed(limit: null) {\n      uuid\n      title\n      createdAt\n      textContent\n      image {\n        url\n        alt\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateFeedItem($input: CreateFeedInput!) {\n    createFeedItem(input: $input) {\n      uuid\n    }\n  }\n"): (typeof documents)["\n  mutation CreateFeedItem($input: CreateFeedInput!) {\n    createFeedItem(input: $input) {\n      uuid\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteFeedItem($uuid: String!) {\n    deleteFeedItem(feedItemUuid: $uuid)\n  }\n"): (typeof documents)["\n  mutation DeleteFeedItem($uuid: String!) {\n    deleteFeedItem(feedItemUuid: $uuid)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateImage($input: CreateImageInput!) {\n    createImage(input: $input) {\n      uuid\n    }\n  }\n"): (typeof documents)["\n  mutation CreateImage($input: CreateImageInput!) {\n    createImage(input: $input) {\n      uuid\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment ImagesTableFragment on ImageResource {\n    uuid\n    url\n    thumbHash\n    height\n    width\n    alt\n    mimeType\n    createdAt\n  }\n"): (typeof documents)["\n  fragment ImagesTableFragment on ImageResource {\n    uuid\n    url\n    thumbHash\n    height\n    width\n    alt\n    mimeType\n    createdAt\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ImagesTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [ImageResolverKeyedDateFilterItem!]\n    $isNullFilters: [ImageResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [ImageResolverKeyedOneOfFilterItem!]\n    $stringFilters: [ImageResolverKeyedStringFilterItem!]\n    $numericFilters: [ImageResolverKeyedNumericFilterItem!]\n  ) {\n    images(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n      numericFilters: $numericFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...ImagesTableFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query ImagesTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [ImageResolverKeyedDateFilterItem!]\n    $isNullFilters: [ImageResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [ImageResolverKeyedOneOfFilterItem!]\n    $stringFilters: [ImageResolverKeyedStringFilterItem!]\n    $numericFilters: [ImageResolverKeyedNumericFilterItem!]\n  ) {\n    images(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n      numericFilters: $numericFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...ImagesTableFragment\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

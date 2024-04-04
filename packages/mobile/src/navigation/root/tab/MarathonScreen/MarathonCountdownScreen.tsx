@@ -1,31 +1,45 @@
 // import CountdownView from "@common/components/CountdownView/CountdownView";
 import CountdownViewNew from "@common/components/CountdownView";
 import { useThemeColors } from "@common/customHooks";
-import { useMarathonTime } from "@common/hooks/useMarathonTime";
+import type { DateTime } from "luxon";
 import { Text, View } from "native-base";
+import { useState } from "react";
 import type { ImageSourcePropType } from "react-native";
 import { ImageBackground, useWindowDimensions } from "react-native";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 import CommitteeHoldingSign from "../../../../../assets/svgs/CommitteeHoldingSign";
 
+export const MarathonCountdownScreen = ({
+  marathonStart,
+  marathonEnd,
+  showSecretMenu,
+}: {
+  marathonStart: DateTime;
+  marathonEnd: DateTime;
+  showSecretMenu: () => void;
+}) => {
+  const [secretGestureState, setSecretGestureState] = useState<0 | 1 | 2 | 3>(
+    0
+  );
 
-export const MarathonCountdownScreen = () => {
   const { height: screenHeight, width: screenWidth } = useWindowDimensions();
   const { primary } = useThemeColors();
-  const { marathonTime } = useMarathonTime();
 
   const ordinals = ["th", "st", "nd", "rd"]; // s
-  const startOrdinal = ordinals[((marathonTime.startTime.day % 100) - 20) % 10]
-                    || ordinals[marathonTime.startTime.day % 100]
-                    || ordinals[0];
-  const endOrdinal = ordinals[((marathonTime.endTime.day % 100) - 20) % 10]
-                  || ordinals[marathonTime.endTime.day % 100]
-                  || ordinals[0];
+  const startOrdinal =
+    ordinals[((marathonStart.day % 100) - 20) % 10] ||
+    ordinals[marathonStart.day % 100] ||
+    ordinals[0];
+  const endOrdinal =
+    ordinals[((marathonEnd.day % 100) - 20) % 10] ||
+    ordinals[marathonEnd.day % 100] ||
+    ordinals[0];
 
   // technically this isn't the best way of doing the date but idrc atm
-  const dateString = `${marathonTime.startTime.toFormat('LLLL d')}${startOrdinal} - ${marathonTime.endTime.toFormat('d, yyyy').replace(',', `${endOrdinal},`)}`;
+  const dateString = `${marathonStart.toFormat("LLLL d")}${startOrdinal} - ${marathonEnd.toFormat("d, yyyy").replace(",", `${endOrdinal},`)}`;
 
-  const timeString = `${marathonTime.startTime.toFormat('h:mm a')} - ${marathonTime.endTime.toFormat('h:mm a')}`;
+  const timeString = `${marathonStart.toFormat("h:mm a")} - ${marathonEnd.toFormat("h:mm a")}`;
 
   return (
     <ImageBackground
@@ -36,51 +50,59 @@ export const MarathonCountdownScreen = () => {
       style={{ width: screenWidth, height: screenHeight, flex: 1 }}
     >
       <View flex={1} marginBottom="4">
-        <Text
-          textAlign="center"
-          color="secondary.400"
-          fontFamily="headingBold"
-          fontSize="3xl"
-          bg={`${primary[600]}BD`}
-          marginTop="4"
-          marginBottom={"4"}
-          style={{
-            textShadowColor: "secondary.300",
-            textShadowOffset: { width: 2, height: 1.5 },
-            textShadowRadius: 1,
-          }}
-        >
-          {"Countdown 'til Marathon"}
-        </Text>
-        <CountdownViewNew endTime={marathonTime.startTime.toMillis()} />
+        <TouchableWithoutFeedback onPress={() => setSecretGestureState(1)}>
+          <Text
+            textAlign="center"
+            color="secondary.400"
+            fontFamily="headingBold"
+            fontSize="3xl"
+            bg={`${primary[600]}BD`}
+            marginTop="4"
+          >
+            {"Countdown 'til Marathon"}
+          </Text>
+        </TouchableWithoutFeedback>
+        <CountdownViewNew endTime={marathonStart.toMillis()} />
       </View>
       <View flex={2}>
-        <CommitteeHoldingSign color="#fff" />
-      </View>
-      <View flex={0.6}>
-        <Text
-          textAlign="center"
-          color="secondary.400"
-          fontFamily="headingBold"
-          fontSize="3xl"
-          bg={`${primary[600]}BD`}
-          style={{
-            textShadowColor: "secondary.300",
-            textShadowOffset: { width: 2, height: 1.5 },
-            textShadowRadius: 1,
+        <TouchableWithoutFeedback
+          onPress={() => {
+            if (secretGestureState === 3) {
+              showSecretMenu();
+            }
+            setSecretGestureState(0);
           }}
         >
-          {dateString}
-        </Text>
-        <Text
-          textAlign="center"
-          color="secondary.400"
-          fontFamily="body"
-          fontSize="2xl"
-          bg={`${primary[600]}BD`}
+          <CommitteeHoldingSign color="#fff" />
+        </TouchableWithoutFeedback>
+      </View>
+      <View flex={0.6}>
+        <TouchableWithoutFeedback
+          onPress={() => setSecretGestureState((old) => (old === 2 ? 3 : 1))}
         >
-          {timeString}
-        </Text>
+          <Text
+            textAlign="center"
+            color="secondary.400"
+            fontFamily="headingBold"
+            fontSize="3xl"
+            bg={`${primary[600]}BD`}
+          >
+            {dateString}
+          </Text>
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback
+          onPress={() => setSecretGestureState((old) => (old === 1 ? 2 : 0))}
+        >
+          <Text
+            textAlign="center"
+            color="secondary.400"
+            fontFamily="body"
+            fontSize="2xl"
+            bg={`${primary[600]}BD`}
+          >
+            {timeString}
+          </Text>
+        </TouchableWithoutFeedback>
       </View>
     </ImageBackground>
   );

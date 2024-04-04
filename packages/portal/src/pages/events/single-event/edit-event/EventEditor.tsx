@@ -84,11 +84,7 @@ export function EventEditor({
 
                   return (
                     <Image
-                      src={
-                        image.url?.toString() ??
-                        image.imageData ??
-                        "about:blank"
-                      }
+                      src={image.url?.toString() ?? "about:blank"}
                       fallback={thumbHash ?? "about:blank"}
                       loading="lazy"
                       placeholder={

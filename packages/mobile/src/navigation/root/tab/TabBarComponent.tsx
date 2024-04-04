@@ -24,7 +24,7 @@ const iconMap = {
   // Key: Screen   Value: Icon ID
   "Home": "home",
   "Events": "calendar",
-  "Explorer": "compass",
+  "Explore": "compass",
   "Store": "store",
   "More": "ellipsis-h",
   "Scoreboard": "list-ol",
@@ -224,7 +224,7 @@ function TabBarComponent({
   const tabBarHeight = screenHeight * 0.1;
 
   const { dark } = useThemeColors();
-  const tabBarBackgroundColor = useColorModeValue("#f8f8f8", dark[100]);
+  const tabBarBackgroundColor = useColorModeValue("#e0edff", dark[100]);
 
   return (
     <Box
@@ -262,8 +262,8 @@ function TabBarComponent({
                   typeof options.tabBarLabel === "string"
                     ? options.tabBarLabel
                     : options.title !== undefined
-                    ? options.title
-                    : route.name
+                      ? options.title
+                      : route.name
                 }
                 isFocused={state.index === index}
                 options={options}

@@ -12,9 +12,6 @@ logger.info("Loaded environment variables");
 
 await import("./prisma.js");
 
-// Start any manual cron jobs
-await import("./jobs/index.js");
-
 const { createServer, startHttpServer, startServer } = await import(
   "./server.js"
 );
@@ -38,3 +35,6 @@ await startServer(apolloServer, app);
 logger.info("API started");
 
 logger.info("DanceBlue Server Started");
+
+// Start any manual cron jobs
+await import("./jobs/index.js");

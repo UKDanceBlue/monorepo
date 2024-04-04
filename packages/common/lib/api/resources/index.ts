@@ -2,6 +2,7 @@ export { AuthIdPairResource } from "./AuthIdPair.js";
 export { ConfigurationResource } from "./Configuration.js";
 export { DeviceResource } from "./Device.js";
 export { EventOccurrenceResource, EventResource } from "./Event.js";
+export { FeedResource } from "./FeedResource.js";
 export { ImageResource } from "./Image.js";
 export { LoginFlowSessionResource } from "./LoginFlowSession.js";
 export * from "./Marathon.js";

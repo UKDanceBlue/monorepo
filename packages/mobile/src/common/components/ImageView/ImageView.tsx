@@ -9,7 +9,6 @@ export const ImageViewFragment = graphql(/* GraphQL */ `
   fragment ImageViewFragment on ImageResource {
     uuid
     url
-    imageData
     thumbHash
     alt
     width
@@ -49,21 +48,12 @@ export default function ImageView({
     <Image
       {...imageProps}
       alt={imageData?.alt ?? undefined}
-      source={
-        imageData?.imageData
-          ? {
-              uri: `data:${imageData.mimeType};base64,${imageData.imageData}`,
-              height: imageData.height,
-              width: imageData.width,
-              thumbhash: imageData.thumbHash ?? undefined,
-            }
-          : {
-              uri: imageData?.url?.toString() ?? undefined,
-              thumbhash: imageData?.thumbHash ?? undefined,
-              height: imageData?.height,
-              width: imageData?.width,
-            }
-      }
+      source={{
+        uri: imageData?.url?.toString() ?? undefined,
+        thumbhash: imageData?.thumbHash ?? undefined,
+        height: imageData?.height,
+        width: imageData?.width,
+      }}
       style={[imageProps.style, { width, height }]}
     />
   );

@@ -14,6 +14,11 @@ const useTabBarConfigQuery = graphql(/* GraphQL */ `
         ...SimpleConfig
       }
     }
+    me {
+      data {
+        linkblue
+      }
+    }
   }
 `);
 
@@ -21,6 +26,7 @@ export function useTabBarConfig(): {
   tabConfigLoading: boolean;
   fancyTab: string | undefined;
   shownTabs: string[];
+  forceAll: boolean;
 } {
   const [{ data, fetching, error }] = useQuery({
     query: useTabBarConfigQuery,
@@ -103,5 +109,6 @@ export function useTabBarConfig(): {
     tabConfigLoading: fetching,
     fancyTab,
     shownTabs,
+    forceAll: data?.me.data?.linkblue === "demo-user",
   };
 }

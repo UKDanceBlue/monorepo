@@ -16,7 +16,7 @@ export const CountdownViewNew = ({ endTime }: { endTime: number }) => {
     // 1 second timer
     const timer = setInterval(() => {
       const interval = Interval.fromDateTimes(
-        new Date(),
+        DateTime.now(),
         DateTime.fromMillis(endTime)
       );
       let duration = interval.toDuration();
@@ -32,7 +32,8 @@ export const CountdownViewNew = ({ endTime }: { endTime: number }) => {
           "days",
           "hours",
           "minutes",
-          "seconds"
+          "seconds",
+          "milliseconds"
         )
       );
     }, 1000);
@@ -69,7 +70,7 @@ export const CountdownViewNew = ({ endTime }: { endTime: number }) => {
           amountInRow={3}
         />
       </>
-    ) : countdownDisplayDuration.days < 0 ? (
+    ) : countdownDisplayDuration.days > 0 ? (
       <>
         <CountdownNumber
           value={countdownDisplayDuration.days}

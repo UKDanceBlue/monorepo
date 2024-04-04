@@ -1,3 +1,5 @@
+import { Logger } from "@common/logger/Logger";
+import { showMessage } from "@common/util/alertUtils";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { TeamType } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
@@ -55,8 +57,8 @@ const SpiritScreen = () => {
       type: !spiritMode
         ? []
         : spiritMode === "spirit"
-        ? [TeamType.Spirit, TeamType.Committee]
-        : [TeamType.Morale],
+          ? [TeamType.Spirit, TeamType.Committee]
+          : [TeamType.Morale],
     },
   });
   const [currentMarathonQuery] = useQuery({
@@ -73,13 +75,36 @@ const SpiritScreen = () => {
 
   useEffect(() => {
     if (query.error) {
-      console.error(
-        query.error.message,
-        query.error.graphQLErrors,
-        query.error.networkError
-      );
+      Logger.error("Error with spirit/morale points query", {
+        error: query.error,
+        context: {
+          graphqlErrors: query.error.graphQLErrors,
+          networkError: query.error.networkError,
+        },
+        source: "SpiritScreen",
+        tags: ["graphql"],
+      });
+      showMessage("Could not load scoreboard");
     }
   }, [query.error]);
+
+  useEffect(() => {
+    if (currentMarathonQuery.error) {
+      Logger.error("Error with current marathon query", {
+        error: currentMarathonQuery.error,
+        context: {
+          graphqlErrors: currentMarathonQuery.error.graphQLErrors,
+          networkError: currentMarathonQuery.error.networkError,
+        },
+        source: "SpiritScreen",
+        tags: ["graphql"],
+      });
+      showMessage(
+        "Could not tell if spirit or morale points should be shown, defaulting to spirit points"
+      );
+      setSpiritMode("spirit");
+    }
+  }, [currentMarathonQuery.error]);
 
   return (
     <SpiritStack.Navigator screenOptions={{ headerShown: false }}>
