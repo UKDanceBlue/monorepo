@@ -2,9 +2,13 @@ import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
-import { Button, Modal, Text } from "native-base";
+import { Button, Modal, Text, View } from "native-base";
 import { useEffect, useMemo, useState } from "react";
-import { TextInput } from "react-native";
+import {
+  ActivityIndicator,
+  TextInput,
+  useWindowDimensions,
+} from "react-native";
 import { useQuery } from "urql";
 
 import { HourScreenComponent } from "./HourScreenComponent";
@@ -26,6 +30,7 @@ const marathonScreenDocument = graphql(/* GraphQL */ `
 `);
 
 export const MarathonScreen = () => {
+  const { height: vpHeight, width: vpWidth } = useWindowDimensions();
   const [{ isInternetReachable }] = useNetworkStatus();
 
   const [{ fetching, data, error }, refresh] = useQuery({
@@ -33,7 +38,7 @@ export const MarathonScreen = () => {
   });
   const [lastGoodData, setLastGoodData] = useState(data);
   useEffect(() => {
-    if (data) {
+    if (data?.currentMarathonHour || data?.nextMarathon) {
       setLastGoodData(data);
     }
   }, [data]);
@@ -130,9 +135,15 @@ export const MarathonScreen = () => {
         },
       });
       return (
-        <Text width="full" height="full" textAlign="center">
-          Invalid data received, please reach out to committee
-        </Text>
+        <View
+          flex={1}
+          height={vpHeight}
+          width={vpWidth}
+          justifyContent="center"
+          alignItems="center"
+        >
+          <ActivityIndicator size="large" />
+        </View>
       );
     }
   }, [
@@ -143,6 +154,8 @@ export const MarathonScreen = () => {
     lastGoodData?.currentMarathonHour,
     lastGoodData?.nextMarathon,
     refresh,
+    vpHeight,
+    vpWidth,
   ]);
 
   return (
