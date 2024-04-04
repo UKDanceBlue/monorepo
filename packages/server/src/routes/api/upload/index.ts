@@ -5,8 +5,10 @@ import type { File } from "@prisma/client";
 import { koaBody } from "koa-body";
 import { Container } from "typedi";
 
+import { maxFileSize } from "../../../environment.js";
 import { FileManager } from "../../../lib/files/FileManager.js";
 import { logger } from "../../../lib/logging/standardLogging.js";
+import { generateThumbHash } from "../../../lib/thumbHash.js";
 import { ImageRepository } from "../../../repositories/image/ImageRepository.js";
 
 const uploadRouter = new Router({ prefix: "/upload" }).post(
@@ -50,6 +52,18 @@ const uploadRouter = new Router({ prefix: "/upload" }).post(
       return ctx.throw(400, "Only one image can be uploaded at a time");
     }
 
+    if (uploadedFile.size * 1024 * 1024 > maxFileSize) {
+      return ctx.throw(400, "File too large");
+    }
+
+    const {
+      thumbHash: thumbHashArray,
+      height,
+      width,
+    } = await generateThumbHash(uploadedFile.filepath);
+
+    const thumbHash = Buffer.from(thumbHashArray);
+
     let file: File;
     try {
       const tmpFileHandle = await open(uploadedFile.filepath);
@@ -88,6 +102,9 @@ const uploadRouter = new Router({ prefix: "/upload" }).post(
               id: file.id,
             },
           },
+          thumbHash,
+          width,
+          height,
         }
       );
     } catch (error) {

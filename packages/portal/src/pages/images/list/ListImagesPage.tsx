@@ -28,7 +28,7 @@ export function ListImagesPage() {
         onClose={(createdImageUuid) => {
           setCreateImageOpen(false);
           if (createdImageUuid) {
-            alert(`Created image with UUID: ${createdImageUuid}`);
+            // TODO: Navigate to the created image
           }
         }}
       />

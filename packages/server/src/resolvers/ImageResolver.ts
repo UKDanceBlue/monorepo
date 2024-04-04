@@ -7,6 +7,7 @@ import {
   ErrorCode,
   FilteredListQueryArgs,
   ImageResource,
+  SortDirection,
 } from "@ukdanceblue/common";
 import { URLResolver } from "graphql-scalars";
 import fetch from "node-fetch";
@@ -102,8 +103,22 @@ export class ImageResolver {
   async list(
     @Args(() => ListImagesArgs) args: ListImagesArgs
   ): Promise<ListImagesResponse> {
-    const result = await this.imageRepository.listImages(args);
-    const count = await this.imageRepository.countImages(args);
+    const result = await this.imageRepository.listImages({
+      filters: args.filters,
+      order:
+        args.sortBy?.map((key, i) => [
+          key,
+          args.sortDirection?.[i] ?? SortDirection.DESCENDING,
+        ]) ?? [],
+      skip:
+        args.page != null && args.pageSize != null
+          ? (args.page - 1) * args.pageSize
+          : null,
+      take: args.pageSize,
+    });
+    const count = await this.imageRepository.countImages({
+      filters: args.filters,
+    });
 
     return ListImagesResponse.newPaginated({
       data: await Promise.all(

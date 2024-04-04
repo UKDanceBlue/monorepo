@@ -65,7 +65,9 @@ export const ImagesTable = () => {
       {
         initPage: 1,
         initPageSize: 10,
-        initSorting: [],
+        initSorting: [
+          { field: "createdAt", direction: SortDirection.DESCENDING },
+        ],
       },
       {
         allFields: ["alt", "width", "height", "createdAt", "updatedAt"],
@@ -128,7 +130,13 @@ export const ImagesTable = () => {
           maxCount={1}
           onChange={(info) => {
             if (info.file.status === "done") {
-              setTimeout(() => refresh(), 1000);
+              setTimeout(
+                () =>
+                  refresh({
+                    requestPolicy: "network-only",
+                  }),
+                1000
+              );
               setUploadingImage(null);
             }
             if (info.file.status === "error") {
@@ -204,18 +212,22 @@ export const ImagesTable = () => {
           {
             title: "Alt text",
             dataIndex: "alt",
+            sorter: true,
           },
           {
             title: "Width",
             dataIndex: "width",
+            sorter: true,
           },
           {
             title: "Height",
             dataIndex: "height",
+            sorter: true,
           },
           {
             title: "Created At",
             dataIndex: "createdAt",
+            sorter: true,
           },
           {
             title: "Actions",
