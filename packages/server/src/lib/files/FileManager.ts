@@ -5,6 +5,7 @@ import { Service } from "typedi";
 
 import { applicationUrl } from "../../environment.js";
 import { FileRepository } from "../../repositories/file/fileRepository.js";
+import { logger } from "../logging/standardLogging.js";
 
 import { LocalStorageProvider } from "./storage/LocalStorageProvider.js";
 import type {
@@ -14,6 +15,8 @@ import type {
 import { UnsupportedAccessMethod } from "./storage/StorageProvider.js";
 
 const FILE_API = new URL("/api/file/download/", applicationUrl);
+
+logger.info(`Serving files from ${FILE_API.href}`);
 
 @Service()
 export class FileManager {
@@ -123,15 +126,22 @@ export class FileManager {
       fileUuid = fileRecord.uuid;
     }
     switch (locationUrl.protocol) {
-      case "file": {
+      case "file:": {
         return new URL(fileUuid, FILE_API);
       }
-      case "http":
-      case "https": {
+      case "http:":
+      case "https:": {
         return locationUrl;
       }
-      case "data": {
-        return new URL(fileUuid, FILE_API);
+      case "about:": {
+        if (locationUrl.pathname === "blank") {
+          return locationUrl;
+        } else {
+          throw new Error("Unsupported protocol");
+        }
+      }
+      case "data:": {
+        return locationUrl;
       }
       default: {
         throw new Error("Unsupported protocol");
@@ -154,7 +164,7 @@ export class FileManager {
     }
     const locationUrl = new URL(fileRecord.locationUrl);
     switch (locationUrl.protocol) {
-      case "file": {
+      case "file:": {
         const stream = await this.localStorage.tryStreamFile(locationUrl);
         if (stream === UnsupportedAccessMethod) {
           throw new Error("Unsupported access method");

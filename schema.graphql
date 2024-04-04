@@ -125,17 +125,15 @@ type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGra
   uuid: String!
 }
 
-input CreateImageInput {
-  alt: String
-  height: NonNegativeInt!
-  thumbHash: String
-  width: NonNegativeInt!
+input CreateFeedInput {
+  imageUuid: String
+  textContent: String
+  title: String!
 }
 
-type CreateImageResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: ImageResource!
-  ok: Boolean!
-  uuid: String!
+input CreateImageInput {
+  alt: String
+  url: URL
 }
 
 input CreateMarathonHourInput {
@@ -440,6 +438,15 @@ type EventResource {
   uuid: ID!
 }
 
+type FeedResource {
+  createdAt: DateTimeISO
+  image: ImageResource
+  textContent: String
+  title: String!
+  updatedAt: DateTimeISO
+  uuid: ID!
+}
+
 type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
   data: [ConfigurationResource!]!
   ok: Boolean!
@@ -490,6 +497,91 @@ interface GraphQLBaseResponse {
   ok: Boolean!
 }
 
+enum ImageResolverAllKeys {
+  alt
+  createdAt
+  height
+  updatedAt
+  width
+}
+
+enum ImageResolverDateFilterKeys {
+  createdAt
+  updatedAt
+}
+
+input ImageResolverKeyedDateFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: ImageResolverDateFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: LuxonDateTime!
+}
+
+input ImageResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: ImageResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+input ImageResolverKeyedNumericFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: ImageResolverNumericFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: Float!
+}
+
+input ImageResolverKeyedOneOfFilterItem {
+  """The field to filter on"""
+  field: Void!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: [String!]!
+}
+
+input ImageResolverKeyedStringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The field to filter on"""
+  field: ImageResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: String!
+}
+
+enum ImageResolverNumericFilterKeys {
+  height
+  width
+}
+
+enum ImageResolverStringFilterKeys {
+  alt
+}
+
 type ImageResource {
   alt: String
   createdAt: DateTimeISO
@@ -518,6 +610,20 @@ type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGra
 
 type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
   data: [EventResource!]!
+  ok: Boolean!
+
+  """The current page number (1-indexed)"""
+  page: PositiveInt!
+
+  """The number of items per page"""
+  pageSize: NonNegativeInt!
+
+  """The total number of items"""
+  total: NonNegativeInt!
+}
+
+type ListImagesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+  data: [ImageResource!]!
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -720,10 +826,12 @@ type Mutation {
   acknowledgeDeliveryIssue(uuid: String!): AcknowledgeDeliveryIssueResponse!
   addExistingImageToEvent(eventId: String!, imageId: String!): AddEventImageResponse!
   addMap(imageUuid: String!, uuid: String!): MarathonHourResource!
+  attachImageToFeedItem(feedItemUuid: String!, imageUuid: String!): FeedResource!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
   createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
   createEvent(input: CreateEventInput!): CreateEventResponse!
-  createImage(input: CreateImageInput!): CreateImageResponse!
+  createFeedItem(input: CreateFeedInput!): FeedResource!
+  createImage(input: CreateImageInput!): ImageResource!
   createMarathon(input: CreateMarathonInput!): MarathonResource!
   createMarathonHour(input: CreateMarathonHourInput!, marathonUuid: String!): MarathonHourResource!
   createPerson(input: CreatePersonInput!): CreatePersonResponse!
@@ -733,6 +841,7 @@ type Mutation {
   deleteConfiguration(uuid: String!): DeleteConfigurationResponse!
   deleteDevice(uuid: String!): DeleteDeviceResponse!
   deleteEvent(uuid: String!): DeleteEventResponse!
+  deleteFeedItem(feedItemUuid: String!): Boolean!
   deleteImage(uuid: String!): DeleteImageResponse!
   deleteMarathon(uuid: String!): Void!
   deleteMarathonHour(uuid: String!): Void!
@@ -749,12 +858,16 @@ type Mutation {
   deleteTeam(uuid: String!): DeleteTeamResponse!
   registerDevice(input: RegisterDeviceInput!): RegisterDeviceResponse!
   removeImageFromEvent(eventId: String!, imageId: String!): RemoveEventImageResponse!
+  removeImageFromFeedItem(feedItemUuid: String!): FeedResource!
   removeMap(imageUuid: String!, uuid: String!): Void!
   scheduleNotification(sendAt: DateTimeISO!, uuid: String!): ScheduleNotificationResponse!
 
   """Send a notification immediately."""
   sendNotification(uuid: String!): SendNotificationResponse!
   setEvent(input: SetEventInput!, uuid: String!): SetEventResponse!
+  setFeedItem(feedItemUuid: String!, input: SetFeedInput!): FeedResource!
+  setImageAltText(alt: String!, uuid: String!): ImageResource!
+  setImageUrl(uuid: String!): ImageResource!
   setMarathon(input: SetMarathonInput!, uuid: String!): MarathonResource!
   setMarathonHour(input: SetMarathonHourInput!, uuid: String!): MarathonHourResource!
   setPerson(input: SetPersonInput!, uuid: String!): GetPersonResponse!
@@ -1238,7 +1351,51 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
+  feed(limit: Int = 10): [FeedResource!]!
   image(uuid: String!): GetImageByUuidResponse!
+  images(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: [ImageResolverKeyedDateFilterItem!]
+
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [ImageResolverKeyedIsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: [ImageResolverKeyedNumericFilterItem!]
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: [ImageResolverKeyedOneOfFilterItem!]
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: [ImageResolverKeyedStringFilterItem!]
+  ): ListImagesResponse!
   listPeople(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -1626,6 +1783,11 @@ input SetEventOccurrenceInput {
 type SetEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: EventResource!
   ok: Boolean!
+}
+
+input SetFeedInput {
+  textContent: String
+  title: String!
 }
 
 input SetMarathonHourInput {

@@ -106,6 +106,7 @@ model Image {
 
   eventImages           EventImage[]
   marathonHourMapImages MarathonHourMapImage[]
+  FeedItem              FeedItem[]
 
   @@index([uuid], map: "images_uuid")
   @@map("images")
@@ -358,6 +359,20 @@ model MarathonHourMapImage {
 
   @@index([uuid], map: "marathon_hour_map_images_uuid")
   @@map("marathon_hour_map_images")
+}
+
+model FeedItem {
+  id          Int      @id @default(autoincrement())
+  uuid        String   @unique(map: "feed_items_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  title       String
+  textContent String?
+  image       Image?   @relation(fields: [imageId], references: [id], onDelete: SetNull)
+  imageId     Int?     @map("image_id")
+
+  @@index([uuid], map: "feed_items_uuid")
+  @@map("feed_items")
 }
 
 // Potential errors after sending a notification to Expo (see https://docs.expo.dev/push-notifications/sending-notifications/#individual-errors)

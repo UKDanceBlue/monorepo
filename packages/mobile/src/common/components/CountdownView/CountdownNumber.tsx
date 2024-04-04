@@ -46,7 +46,7 @@ export const CountdownNumber = ({
   const viewBox = `0 0 ${canvasWidth} ${canvasHeight}`;
 
   return (
-    <View height={canvasHeight} width={canvasWidth}>
+    <View height={canvasWidth} width={canvasWidth}>
       <Svg width="100%" height="100%" viewBox={viewBox}>
         <Circle
           cx={cx}
