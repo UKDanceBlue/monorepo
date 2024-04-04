@@ -1,13 +1,13 @@
-import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { EyeOutlined, UploadOutlined } from "@ant-design/icons";
+import { API_BASE_URL } from "@config/api";
 import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { useNavigate } from "@tanstack/react-router";
 import { SortDirection, base64StringToArray } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
-import { Button, Flex, Image, Modal, Table, Typography } from "antd";
+import { Button, Flex, Image, Modal, Table, Typography, Upload } from "antd";
 import { useState } from "react";
 import { thumbHashToDataURL } from "thumbhash";
 import { useQuery } from "urql";
@@ -59,8 +59,6 @@ const imagesTableQueryDocument = graphql(/* GraphQL */ `
 `);
 
 export const ImagesTable = () => {
-  const navigate = useNavigate();
-
   const { queryOptions, updatePagination, clearSorting, pushSorting } =
     useListQuery(
       {
@@ -97,6 +95,9 @@ export const ImagesTable = () => {
   const [previewedImage, setPreviewedImage] = useState<
     Exclude<typeof listImagesData, null | undefined>[number] | null
   >(null);
+  const [uploadingImage, setUploadingImage] = useState<
+    Exclude<typeof listImagesData, null | undefined>[number] | null
+  >(null);
 
   return (
     <>
@@ -108,6 +109,18 @@ export const ImagesTable = () => {
       >
         <Typography>{previewedImage?.alt ?? "Image Preview"}</Typography>
         <Image src={previewedImage?.url?.toString()} />
+      </Modal>
+      <Modal
+        open={uploadingImage !== null}
+        onCancel={() => setUploadingImage(null)}
+        cancelButtonProps={{ style: { display: "none" } }}
+        okButtonProps={{ style: { display: "none" } }}
+      >
+        <Upload
+          accept="image/*"
+          action={new URL("/api/upload", API_BASE_URL).toString()}
+          type="drag"
+        />
       </Modal>
       <Table
         dataSource={listImagesData ?? undefined}
@@ -185,20 +198,15 @@ export const ImagesTable = () => {
           {
             title: "Actions",
             dataIndex: "uuid",
-            render: (uuid: string, row) => (
+            render: (_, row) => (
               <Flex gap="small" align="center">
                 <Button
                   onClick={() => setPreviewedImage(row)}
                   icon={<EyeOutlined />}
                 />
                 <Button
-                  onClick={() =>
-                    navigate({
-                      to: "/images/$imageId/edit",
-                      params: { imageId: uuid },
-                    }).catch((error: unknown) => console.error(error))
-                  }
-                  icon={<EditOutlined />}
+                  onClick={() => setUploadingImage(row)}
+                  icon={<UploadOutlined />}
                 />
               </Flex>
             ),
