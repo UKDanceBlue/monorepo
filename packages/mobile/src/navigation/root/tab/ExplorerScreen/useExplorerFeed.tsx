@@ -1,14 +1,52 @@
 import { useNetworkStatus } from "@common/customHooks";
-import { universalCatch } from "@common/logging";
-import { useCallback, useEffect, useState } from "react";
+import { Logger } from "@common/logger/Logger";
+import { dateTimeFromSomething } from "@ukdanceblue/common";
+import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
+import type { DateTime } from "luxon";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FeedItem } from "react-native-rss-parser";
 import { parse } from "react-native-rss-parser";
+import { useQuery } from "urql";
 
-// A react hook works kinda like a controller in MVC
+const serverFeedDocument = graphql(/* GraphQL */ `
+  query ServerFeed {
+    feed(limit: 20) {
+      uuid
+      title
+      createdAt
+      textContent
+      image {
+        url
+        alt
+        width
+        height
+        thumbHash
+      }
+    }
+  }
+`);
+
+export interface ParsedServerFeedItem {
+  uuid: string;
+  title: string;
+  textContent?: string | undefined;
+  sortByDate: DateTime;
+  image?:
+    | {
+        url: string;
+        width: number;
+        height: number;
+        alt?: string | undefined;
+        thumbHash?: string | undefined;
+      }
+    | undefined;
+}
+
 export function useExplorerFeed(): {
   blogPosts: FeedItem[] | undefined;
   podcasts: FeedItem[] | undefined;
   youtubeVideos: FeedItem[] | undefined;
+  parsedServerFeed: ParsedServerFeedItem[];
   loading: boolean;
   refresh: () => Promise<void>;
 } {
@@ -20,8 +58,58 @@ export function useExplorerFeed(): {
   // const [tiktokPosts, setTikTokPosts] = useState();
   const [youtubeVideos, setYoutubeVideos] = useState<FeedItem[] | undefined>();
 
-  // useCallback is a react hook that returns a memoized callback
-  // This means that the function will only be recreated if one of the dependencies changes
+  const [serverFeedResult, refreshServerFeed] = useQuery({
+    query: serverFeedDocument,
+  });
+
+  const parsedServerFeed = useMemo(() => {
+    const parsedFeed: ParsedServerFeedItem[] = [];
+
+    if (serverFeedResult.data) {
+      for (const {
+        uuid,
+        title,
+        textContent,
+        createdAt,
+        image,
+      } of serverFeedResult.data.feed) {
+        if (!createdAt) {
+          continue;
+        }
+
+        const imageUrl: string | undefined = image?.url?.toString();
+        if (image) {
+          if (!imageUrl) {
+            continue;
+          } else if (!imageUrl.startsWith("http")) {
+            continue;
+          }
+        }
+
+        parsedFeed.push({
+          uuid,
+          title,
+          textContent: textContent ?? undefined,
+          sortByDate: dateTimeFromSomething(createdAt),
+          image:
+            imageUrl && image
+              ? {
+                  url: imageUrl,
+                  width: image.width,
+                  height: image.height,
+                  alt: image.alt ?? undefined,
+
+                  // TODO decode and use the thumbHash
+                  thumbHash: undefined,
+                }
+              : undefined,
+        });
+      }
+    }
+
+    return parsedFeed;
+  }, [serverFeedResult.data]);
+
   const loadFeed = useCallback(async () => {
     if (isInternetReachable === false) {
       setLoading(false);
@@ -69,23 +157,28 @@ export function useExplorerFeed(): {
       }
 
       // TODO: Implement Instagram and TikTok RSS if possible
-
-      // The empty array at the end of the useCallback hook means that the function will only be recreated if the parent component is recreated
-      // If there were any dependencies in the array, the function would be recreated if any of the dependencies changed. i.e. if you had some
-      // state value that you wanted to use in the function, you would put it in the array so that the function would be recreated if that state
-      // value changed
     }
   }, [isInternetReachable]);
 
   useEffect(() => {
-    loadFeed().catch(universalCatch);
-
-    // useEffect on the other hand is a react hook that runs the function whenever the dependencies change
-    // An empty array would mean that the function would only run once, when the component is first created
-    // But since we have a dependency, the function will run whenever the dependency changes
+    loadFeed().catch((error: unknown) => {
+      Logger.error("Failed to load explore feed", { error });
+    });
   }, [loadFeed, setLoading]);
 
-  return { blogPosts, podcasts, youtubeVideos, loading, refresh: loadFeed };
+  return {
+    blogPosts,
+    podcasts,
+    youtubeVideos,
+    loading,
+    parsedServerFeed,
+    refresh: async () => {
+      try {
+        refreshServerFeed({ requestPolicy: "network-only" });
+        await loadFeed();
+      } catch (error) {
+        Logger.error("Failed to refresh explore feed", { error });
+      }
+    },
+  };
 }
-
-// I would suggest splitting this file into one for each type of feed item instead of having them all in one file

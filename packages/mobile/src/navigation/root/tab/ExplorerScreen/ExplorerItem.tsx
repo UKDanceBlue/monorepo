@@ -5,7 +5,7 @@ import { showMessage } from "@common/util/alertUtils";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Audio } from "expo-av";
 import { openURL } from "expo-linking";
-import { Box, Button, HStack, Text, View } from "native-base";
+import { Box, Button, HStack, Image, Text, View } from "native-base";
 import { useEffect, useState } from "react";
 import { PixelRatio, useWindowDimensions } from "react-native";
 
@@ -67,6 +67,7 @@ export const ExplorerItem = ({
   textContent,
   hasAudio = false,
   hasYouTubeVideo = false,
+  image,
   blockResource,
 }: {
   resourceLink?: string;
@@ -75,6 +76,12 @@ export const ExplorerItem = ({
   textContent?: string;
   hasAudio?: boolean;
   hasYouTubeVideo?: boolean;
+  image?: {
+    url: string;
+    width: number;
+    height: number;
+    alt?: string | undefined;
+  };
   blockResource?: (resource: string) => void;
 }) => {
   const [sound, setSound] = useState<Audio.Sound>();
@@ -134,6 +141,10 @@ export const ExplorerItem = ({
     iconName = "youtube";
     source = "YouTube";
     link = "https://www.youtube.com/channel/UCcF8V41xkzYkZ0B1IOXntjg";
+  } else if (image) {
+    iconName = "image";
+    source = "Featured Photo";
+    link = "https://photos.danceblue.org";
   } else if (textContent) {
     iconName = "compass";
     source = "DB Blog";
@@ -212,6 +223,36 @@ export const ExplorerItem = ({
               <Text textAlign="center" fontSize={blogTitleFontSize}>
                 {title}
               </Text>
+            )}
+            {image && (
+              <>
+                <Image
+                  source={{
+                    uri: image.url,
+                    width: image.width,
+                    height: image.height,
+                  }}
+                  alt={image.alt}
+                  width="full"
+                  height={1.5 * calculatedHeight}
+                  style={{
+                    objectFit: "contain",
+                  }}
+                />
+                <Box width="full" alignItems="flex-end">
+                  <Button
+                    marginTop={0.5}
+                    width="1/3"
+                    onPress={() => {
+                      openURL("https://photos.danceblue.org").catch(
+                        universalCatch
+                      );
+                    }}
+                  >
+                    See More Photos!
+                  </Button>
+                </Box>
+              </>
             )}
             {plainTextContent && (
               <>

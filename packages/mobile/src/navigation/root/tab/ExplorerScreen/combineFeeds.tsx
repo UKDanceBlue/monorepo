@@ -18,8 +18,14 @@ export function useCombinedFeed(): {
   loading: boolean;
   refresh: () => void;
 } {
-  const { blogPosts, podcasts, youtubeVideos, loading, refresh } =
-    useExplorerFeed();
+  const {
+    blogPosts,
+    podcasts,
+    youtubeVideos,
+    parsedServerFeed,
+    loading,
+    refresh,
+  } = useExplorerFeed();
 
   const [blockedResources, setBlockedResources] = useState<string[]>([]);
 
@@ -135,15 +141,40 @@ export function useCombinedFeed(): {
               component !== null
           ) ?? [];
 
+      const feedComponents: FeedSortingItem[] = parsedServerFeed.map((item) => {
+        const jsxElement = (
+          <View key={item.uuid}>
+            <ExplorerItem
+              title={item.title}
+              textContent={item.textContent}
+              image={item.image}
+            />
+            <Text paddingRight={3} width="100%" textAlign="right">
+              {item.sortByDate.toLocaleString()}
+            </Text>
+          </View>
+        );
+
+        return { jsxElement, published: item.sortByDate };
+      });
+
       return [
         ...postComponents,
         ...podcastComponents,
         ...youtubeComponents,
+        ...feedComponents,
       ].sort((a, b) => b.published.toMillis() - a.published.toMillis());
     } else {
       return [];
     }
-  }, [blockedResources, blogPosts, loading, podcasts, youtubeVideos]);
+  }, [
+    blockedResources,
+    blogPosts,
+    loading,
+    parsedServerFeed,
+    podcasts,
+    youtubeVideos,
+  ]);
 
   return {
     feed,
