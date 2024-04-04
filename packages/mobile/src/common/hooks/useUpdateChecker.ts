@@ -71,36 +71,36 @@ export function useUpdateChecker() {
   useEffect(() => {
     if (isUpdateAvailable) {
       Logger.info("Update available", { context: { availableUpdate } });
-      showPrompt({
-        title: "Update Available",
-        message:
-          "A new version of the app is available. Would you like to download it now?",
-        onConfirm: async () => {
+      showPrompt(
+        "A new version of the app is available. Would you like to download it now?",
+        "Update Available",
+        () => undefined,
+        async () => {
           try {
             await fetchUpdateAsync();
           } catch (error) {
             Logger.error("Error fetching update", { error });
           }
-        },
-      });
+        }
+      );
     }
   }, [availableUpdate, isUpdateAvailable]);
 
   useEffect(() => {
     if (isUpdatePending) {
       Logger.info("Update pending", { context: { downloadedUpdate } });
-      showPrompt({
-        title: "Update Pending",
-        message:
-          "A new version of the app has been downloaded. Would you like to reload the app to apply it?",
-        onConfirm: async () => {
+      showPrompt(
+        "A new version of the app has been downloaded. Would you like to reload the app to apply it?",
+        "Update Pending",
+        () => undefined,
+        async () => {
           try {
             await reloadAsync();
           } catch (error) {
             Logger.error("Error reloading app", { error });
           }
-        },
-      });
+        }
+      );
     }
   }, [downloadedUpdate, isUpdatePending]);
 }

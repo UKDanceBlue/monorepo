@@ -3,7 +3,7 @@ import { MIMEType } from "util";
 import type { File } from "@prisma/client";
 import { Service } from "typedi";
 
-import { applicationUrl } from "../../environment.js";
+import { serveOrigin } from "../../environment.js";
 import { FileRepository } from "../../repositories/file/fileRepository.js";
 import { logger } from "../logging/standardLogging.js";
 
@@ -14,7 +14,9 @@ import type {
 } from "./storage/StorageProvider.js";
 import { UnsupportedAccessMethod } from "./storage/StorageProvider.js";
 
-const FILE_API = new URL("/api/file/download/", applicationUrl);
+const FILE_API = new URL("/api/file/download/", serveOrigin);
+
+logger.info(`Serving files from ${FILE_API.href}`);
 
 logger.info(`Serving files from ${FILE_API.href}`);
 
