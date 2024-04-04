@@ -32,6 +32,8 @@ export class FeedResource extends TimestampedResource {
     uuid: string;
     title: string;
     textContent?: string | null | undefined;
+    createdAt?: Date;
+    updatedAt?: Date;
   }) {
     return FeedResource.doInit(init);
   }

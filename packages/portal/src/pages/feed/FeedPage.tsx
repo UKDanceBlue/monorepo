@@ -1,5 +1,5 @@
-import { Outlet } from "@tanstack/react-router";
+import { ImagePicker } from "@elements/components/ImagePicker";
 
 export function FeedPage() {
-  return <Outlet />;
+  return <ImagePicker onSelect={(uuid) => console.log(uuid)} />;
 }
