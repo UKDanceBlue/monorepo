@@ -1,5 +1,6 @@
-import { EyeOutlined, UploadOutlined } from "@ant-design/icons";
+import { EyeOutlined, InboxOutlined, UploadOutlined } from "@ant-design/icons";
 import { API_BASE_URL } from "@config/api";
+import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { SortDirection, base64StringToArray } from "@ukdanceblue/common";
@@ -75,8 +76,9 @@ export const ImagesTable = () => {
         isNullFields: [],
       }
     );
+  const { showErrorMessage } = useAntFeedback();
 
-  const [{ data: imagesDocument, error, fetching }] = useQuery({
+  const [{ data: imagesDocument, error, fetching }, refresh] = useQuery({
     query: imagesTableQueryDocument,
     variables: queryOptions,
   });
@@ -116,11 +118,31 @@ export const ImagesTable = () => {
         cancelButtonProps={{ style: { display: "none" } }}
         okButtonProps={{ style: { display: "none" } }}
       >
-        <Upload
+        <Typography.Title level={3}>Upload Image</Typography.Title>
+        <Upload.Dragger
           accept="image/*"
-          action={new URL("/api/upload", API_BASE_URL).toString()}
-          type="drag"
-        />
+          action={new URL(
+            `/api/upload/image/${uploadingImage?.uuid}`,
+            API_BASE_URL
+          ).toString()}
+          maxCount={1}
+          onChange={(info) => {
+            if (info.file.status === "done") {
+              setTimeout(() => refresh(), 1000);
+              setUploadingImage(null);
+            }
+            if (info.file.status === "error") {
+              void showErrorMessage(String(info.file.error));
+            }
+          }}
+        >
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p className="ant-upload-text">
+            Click or drag file to this area to upload
+          </p>
+        </Upload.Dragger>
       </Modal>
       <Table
         dataSource={listImagesData ?? undefined}
