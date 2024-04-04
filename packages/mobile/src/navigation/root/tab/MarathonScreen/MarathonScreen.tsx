@@ -3,7 +3,7 @@ import { Logger } from "@common/logger/Logger";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
 import { Button, Modal, Text } from "native-base";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { TextInput } from "react-native";
 import { useQuery } from "urql";
 
@@ -31,6 +31,12 @@ export const MarathonScreen = () => {
   const [{ fetching, data, error }, refresh] = useQuery({
     query: marathonScreenDocument,
   });
+  const [lastGoodData, setLastGoodData] = useState(data);
+  useEffect(() => {
+    if (data) {
+      setLastGoodData(data);
+    }
+  }, [data]);
 
   const [hourOverride, setHourOverride] = useState<number | undefined>(
     undefined
@@ -43,70 +49,101 @@ export const MarathonScreen = () => {
     // in case the server has updated the marathon hour
     const interval = setInterval(() => {
       if (isInternetReachable) refresh({ requestPolicy: "network-only" });
-    }, 3000);
+    }, 15_000);
 
     return () => {
       clearInterval(interval);
     };
   }, [isInternetReachable, refresh]);
 
-  let component = null;
+  useEffect(() => {
+    if (error) {
+      Logger.error("A graphql error occurred", {
+        error,
+        source: "MarathonScreen",
+        tags: ["graphql"],
+      });
+    }
+  }, [error]);
 
-  if (isInternetReachable === false) {
-    component = (
-      <Text width="full" height="full" textAlign="center">
-        No Internet Connection, cannot load marathon information
-      </Text>
-    );
-  } else if (error) {
-    Logger.error("A graphql error occurred", {
-      error,
-      source: "MarathonScreen",
-    });
-    component = (
-      <Text width="full" height="full" textAlign="center">
-        Something went Wrong!
-      </Text>
-    );
-  } else if (data?.nextMarathon && hourOverride != null) {
-    if (hourOverride < 0) {
-      component = (
-        <MarathonCountdownScreen
-          marathonStart={dateTimeFromSomething(data.nextMarathon.startDate)}
-          marathonEnd={dateTimeFromSomething(data.nextMarathon.endDate)}
-          showSecretMenu={() => setShowSecretMenu(true)}
-        />
+  const component = useMemo(() => {
+    if (isInternetReachable === false) {
+      return (
+        <Text width="full" height="full" textAlign="center">
+          No Internet Connection, cannot load marathon information
+        </Text>
       );
-    } else {
-      component = (
+    } else if (lastGoodData?.nextMarathon && hourOverride != null) {
+      if (hourOverride < 0) {
+        return (
+          <MarathonCountdownScreen
+            marathonStart={dateTimeFromSomething(
+              lastGoodData.nextMarathon.startDate
+            )}
+            marathonEnd={dateTimeFromSomething(
+              lastGoodData.nextMarathon.endDate
+            )}
+            showSecretMenu={() => setShowSecretMenu(true)}
+          />
+        );
+      } else {
+        return (
+          <HourScreenComponent
+            hourScreenFragment={lastGoodData.nextMarathon.hours[hourOverride]}
+            isLoading={fetching && !lastGoodData.nextMarathon}
+            refresh={() => refresh({ requestPolicy: "network-only" })}
+            showSecretMenu={() => setShowSecretMenu(true)}
+          />
+        );
+      }
+    } else if (lastGoodData?.currentMarathonHour) {
+      return (
         <HourScreenComponent
-          hourScreenFragment={data.nextMarathon.hours[hourOverride]}
-          isLoading={fetching && !data.nextMarathon}
+          hourScreenFragment={lastGoodData.currentMarathonHour}
+          isLoading={fetching && !lastGoodData.currentMarathonHour}
           refresh={() => refresh({ requestPolicy: "network-only" })}
           showSecretMenu={() => setShowSecretMenu(true)}
         />
       );
+    } else if (lastGoodData?.nextMarathon) {
+      return (
+        <MarathonCountdownScreen
+          marathonStart={dateTimeFromSomething(
+            lastGoodData.nextMarathon.startDate
+          )}
+          marathonEnd={dateTimeFromSomething(lastGoodData.nextMarathon.endDate)}
+          showSecretMenu={() => setShowSecretMenu(true)}
+        />
+      );
+    } else if (error) {
+      return (
+        <Text width="full" height="full" textAlign="center">
+          Something went Wrong!
+        </Text>
+      );
+    } else {
+      Logger.info("MarathonScreen has invalid data", {
+        source: "MarathonScreen",
+        context: {
+          nextMarathon: lastGoodData?.nextMarathon,
+          currentHour: lastGoodData?.currentMarathonHour,
+        },
+      });
+      return (
+        <Text width="full" height="full" textAlign="center">
+          Invalid data received, please reach out to committee
+        </Text>
+      );
     }
-  } else if (data?.currentMarathonHour) {
-    component = (
-      <HourScreenComponent
-        hourScreenFragment={data.currentMarathonHour}
-        isLoading={fetching && !data.currentMarathonHour}
-        refresh={() => refresh({ requestPolicy: "network-only" })}
-        showSecretMenu={() => setShowSecretMenu(true)}
-      />
-    );
-  } else if (data?.nextMarathon) {
-    component = (
-      <MarathonCountdownScreen
-        marathonStart={dateTimeFromSomething(data.nextMarathon.startDate)}
-        marathonEnd={dateTimeFromSomething(data.nextMarathon.endDate)}
-        showSecretMenu={() => setShowSecretMenu(true)}
-      />
-    );
-  } else {
-    component = <Text> {JSON.stringify(data)}</Text>;
-  }
+  }, [
+    error,
+    fetching,
+    hourOverride,
+    isInternetReachable,
+    lastGoodData?.currentMarathonHour,
+    lastGoodData?.nextMarathon,
+    refresh,
+  ]);
 
   return (
     <>
