@@ -126,6 +126,7 @@ type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGra
 }
 
 input CreateFeedInput {
+  imageUuid: String
   textContent: String
   title: String!
 }
@@ -1350,7 +1351,7 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
-  feed(limit: Float! = 10): [FeedResource!]!
+  feed(limit: Int = 10): [FeedResource!]!
   image(uuid: String!): GetImageByUuidResponse!
   images(
     """The boolean filters to apply to the query"""

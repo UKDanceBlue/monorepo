@@ -9,6 +9,7 @@ import {
   Field,
   FieldResolver,
   InputType,
+  Int,
   Mutation,
   Query,
   Resolver,
@@ -25,6 +26,8 @@ export class CreateFeedInput {
   title!: string;
   @Field(() => String, { nullable: true })
   textContent?: string | null | undefined;
+  @Field(() => String, { nullable: true })
+  imageUuid?: string | null | undefined;
 }
 
 @InputType()
@@ -42,7 +45,8 @@ export class FeedResolver {
 
   @Query(() => [FeedResource])
   async feed(
-    @Arg("limit", { defaultValue: 10 }) limit: number
+    @Arg("limit", () => Int, { defaultValue: 10, nullable: true })
+    limit: number | null
   ): Promise<FeedResource[]> {
     const rows = await this.feedRepository.getCompleteFeed({ limit });
     return rows.map(feedItemModelToResource);
