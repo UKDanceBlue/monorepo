@@ -39,8 +39,14 @@ const createFeedItemDocument = graphql(/* GraphQL */ `
   }
 `);
 
+const deleteFeedItemDocument = graphql(/* GraphQL */ `
+  mutation DeleteFeedItem($uuid: String!) {
+    deleteFeedItem(feedItemUuid: $uuid)
+  }
+`);
+
 export function FeedPage() {
-  const [result] = useQuery({
+  const [result, refresh] = useQuery({
     query: feedPageDocument,
   });
   const [feedItemFormData, setFeedItemFormData] = useState<{
@@ -67,7 +73,13 @@ export function FeedPage() {
       <Form
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
-        style={{ maxWidth: 600 }}
+        style={{
+          maxWidth: 600,
+          backgroundColor: "gray",
+          padding: 16,
+          borderRadius: 8,
+          border: "1px solid black",
+        }}
         layout="horizontal"
         onFinish={async () => {
           await client
@@ -84,6 +96,13 @@ export function FeedPage() {
             textContent: "",
             image: null,
           });
+          setTimeout(
+            () =>
+              refresh({
+                requestPolicy: "network-only",
+              }),
+            100
+          );
         }}
       >
         <Form.Item label="Title" name="title">
@@ -134,7 +153,7 @@ export function FeedPage() {
           </Button>
         </Form.Item>
       </Form>
-      <Row gutter={16}>
+      <Row gutter={16} style={{ rowGap: 16 }}>
         {result.data?.feed.map((feedItem) => (
           <Col key={feedItem.uuid} span={8}>
             <Card
@@ -147,10 +166,36 @@ export function FeedPage() {
                   <Image
                     alt={feedItem.image.alt ?? undefined}
                     src={feedItem.image.url?.toString() ?? undefined}
-                    style={{ width: "100%" }}
+                    style={{
+                      width: "100%",
+                      maxHeight: 400,
+                      objectFit: "contain",
+                    }}
                   />
                 )
               }
+              actions={[
+                <Button
+                  type="link"
+                  danger
+                  onClick={async () => {
+                    await client
+                      .mutation(deleteFeedItemDocument, {
+                        uuid: feedItem.uuid,
+                      })
+                      .toPromise();
+                    setTimeout(
+                      () =>
+                        refresh({
+                          requestPolicy: "network-only",
+                        }),
+                      100
+                    );
+                  }}
+                >
+                  Delete
+                </Button>,
+              ]}
             >
               <p>{feedItem.textContent}</p>
             </Card>

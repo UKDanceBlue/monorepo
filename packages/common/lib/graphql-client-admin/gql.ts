@@ -64,6 +64,7 @@ const documents = {
     "\n  query ViewEventPage($uuid: String!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n": types.ViewEventPageDocument,
     "\n  query FeedPage {\n    feed(limit: null) {\n      uuid\n      title\n      createdAt\n      textContent\n      image {\n        url\n        alt\n      }\n    }\n  }\n": types.FeedPageDocument,
     "\n  mutation CreateFeedItem($input: CreateFeedInput!) {\n    createFeedItem(input: $input) {\n      uuid\n    }\n  }\n": types.CreateFeedItemDocument,
+    "\n  mutation DeleteFeedItem($uuid: String!) {\n    deleteFeedItem(feedItemUuid: $uuid)\n  }\n": types.DeleteFeedItemDocument,
     "\n  mutation CreateImage($input: CreateImageInput!) {\n    createImage(input: $input) {\n      uuid\n    }\n  }\n": types.CreateImageDocument,
     "\n  fragment ImagesTableFragment on ImageResource {\n    uuid\n    url\n    thumbHash\n    height\n    width\n    alt\n    mimeType\n    createdAt\n  }\n": types.ImagesTableFragmentFragmentDoc,
     "\n  query ImagesTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [ImageResolverKeyedDateFilterItem!]\n    $isNullFilters: [ImageResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [ImageResolverKeyedOneOfFilterItem!]\n    $stringFilters: [ImageResolverKeyedStringFilterItem!]\n    $numericFilters: [ImageResolverKeyedNumericFilterItem!]\n  ) {\n    images(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n      numericFilters: $numericFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...ImagesTableFragment\n      }\n    }\n  }\n": types.ImagesTableDocument,
@@ -304,6 +305,10 @@ export function graphql(source: "\n  query FeedPage {\n    feed(limit: null) {\n
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation CreateFeedItem($input: CreateFeedInput!) {\n    createFeedItem(input: $input) {\n      uuid\n    }\n  }\n"): (typeof documents)["\n  mutation CreateFeedItem($input: CreateFeedInput!) {\n    createFeedItem(input: $input) {\n      uuid\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteFeedItem($uuid: String!) {\n    deleteFeedItem(feedItemUuid: $uuid)\n  }\n"): (typeof documents)["\n  mutation DeleteFeedItem($uuid: String!) {\n    deleteFeedItem(feedItemUuid: $uuid)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
