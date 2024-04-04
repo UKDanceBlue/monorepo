@@ -36,12 +36,6 @@ export { applicationPort };
 export const applicationHost = process.env.APPLICATION_HOST || "localhost";
 export const applicationProtocol = process.env.APPLICATION_PROTOCOL || "http";
 
-const applicationUrl = new URL(`${applicationProtocol}://${applicationHost}`);
-applicationUrl.protocol = applicationProtocol;
-applicationUrl.hostname = applicationHost;
-applicationUrl.port = applicationPort.toString();
-export { applicationUrl };
-
 // Secrets
 const { COOKIE_SECRET, JWT_SECRET, ASSET_PATH } = process.env;
 if (!JWT_SECRET) {
