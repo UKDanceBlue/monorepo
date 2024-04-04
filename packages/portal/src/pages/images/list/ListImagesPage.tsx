@@ -1,5 +1,4 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { useNavigate } from "@tanstack/react-router";
 import { Button, Flex, Typography } from "antd";
 import { useState } from "react";
 
@@ -7,7 +6,6 @@ import { CreateImagePopup } from "./CreateImagePopup";
 import { ImagesTable } from "./ImagesTable";
 
 export function ListImagesPage() {
-  const navigate = useNavigate();
   const [createImageOpen, setCreateImageOpen] = useState(false);
 
   return (
