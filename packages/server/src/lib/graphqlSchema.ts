@@ -7,6 +7,7 @@ import { Container } from "typedi";
 import { ConfigurationResolver } from "../resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "../resolvers/DeviceResolver.js";
 import { EventResolver } from "../resolvers/EventResolver.js";
+import { FeedResolver } from "../resolvers/FeedResolver.js";
 import { ImageResolver } from "../resolvers/ImageResolver.js";
 import { LoginStateResolver } from "../resolvers/LoginState.js";
 import { MarathonHourResolver } from "../resolvers/MarathonHourResolver.js";
@@ -52,6 +53,7 @@ export default await buildSchema({
     PointOpportunityResolver,
     MarathonHourResolver,
     MarathonResolver,
+    FeedResolver,
   ],
   emitSchemaFile: schemaPath,
   globalMiddlewares: [errorHandlingMiddleware],

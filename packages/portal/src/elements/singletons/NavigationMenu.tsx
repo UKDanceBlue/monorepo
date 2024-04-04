@@ -73,6 +73,24 @@ export const NavigationMenu = () => {
         ],
       },
       {
+        slug: "feed",
+        title: "Feed",
+        authorizationRules: [
+          {
+            accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+          },
+        ],
+      },
+      {
+        slug: "images",
+        title: "Images",
+        authorizationRules: [
+          {
+            accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+          },
+        ],
+      },
+      {
         slug: "config",
         title: "Config",
         authorizationRules: [

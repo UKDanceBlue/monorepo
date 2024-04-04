@@ -1,6 +1,8 @@
 import { ConfigPage } from "@pages/config/ConfigPage";
 import { EventsPage } from "@pages/events/EventsPage";
+import { FeedPage } from "@pages/feed/FeedPage";
 import { HomePage } from "@pages/home/HomePage";
+import { ImagesPage } from "@pages/images/ImagesPage";
 import { MarathonsPage } from "@pages/marathon/MarathonsPage";
 import { NotificationsPage } from "@pages/notifications/NotificationsPage";
 import { PeoplePage } from "@pages/people/PeoplePage";
@@ -48,4 +50,16 @@ export const marathonsRoute = new Route({
   path: "marathon",
   getParentRoute: () => rootRoute,
   component: MarathonsPage,
+});
+
+export const feedRoute = new Route({
+  path: "feed",
+  getParentRoute: () => rootRoute,
+  component: FeedPage,
+});
+
+export const imagesRoute = new Route({
+  path: "images",
+  getParentRoute: () => rootRoute,
+  component: ImagesPage,
 });

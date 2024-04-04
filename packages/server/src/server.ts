@@ -21,7 +21,9 @@ import {
 import { logger } from "./lib/logging/logger.js";
 import type { GraphQLContext } from "./resolvers/context.js";
 import eventsApiRouter from "./routes/api/events/index.js";
+import fileRouter from "./routes/api/file/index.js";
 import healthCheckRouter from "./routes/api/healthcheck/index.js";
+import uploadRouter from "./routes/api/upload/index.js";
 
 const basicLoggingPlugin: ApolloServerPlugin = {
   requestDidStart(requestContext) {
@@ -164,6 +166,8 @@ export async function startServer(
     "/api",
     authApiRouter.routes(),
     eventsApiRouter.routes(),
-    healthCheckRouter.routes()
+    healthCheckRouter.routes(),
+    fileRouter.routes(),
+    uploadRouter.routes()
   );
 }

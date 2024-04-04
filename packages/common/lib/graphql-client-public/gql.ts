@@ -20,7 +20,7 @@ const documents = {
     "\n  fragment NotificationDeliveryFragment on NotificationDeliveryResource {\n    uuid\n    sentAt\n    notification {\n      ...NotificationFragment\n    }\n  }\n": types.NotificationDeliveryFragmentFragmentDoc,
     "\n  query useAllowedLoginTypes {\n    activeConfiguration(key: \"ALLOWED_LOGIN_TYPES\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n": types.UseAllowedLoginTypesDocument,
     "\n  query MarathonTime {\n    nextMarathon {\n      startDate\n      endDate\n    }\n  }\n": types.MarathonTimeDocument,
-    "\n  query useTabBarConfig {\n    activeConfiguration(key: \"TAB_BAR_CONFIG\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n": types.UseTabBarConfigDocument,
+    "\n  query useTabBarConfig {\n    activeConfiguration(key: \"TAB_BAR_CONFIG\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n    me {\n      data {\n        linkblue\n      }\n    }\n  }\n": types.UseTabBarConfigDocument,
     "\n  query AuthState {\n    me {\n      data {\n        uuid\n      }\n    }\n    loginState {\n      role {\n        dbRole\n        committeeIdentifier\n        committeeRole\n      }\n      loggedIn\n      authSource\n    }\n  }\n": types.AuthStateDocument,
     "\n  mutation SetDevice($input: RegisterDeviceInput!) {\n    registerDevice(input: $input) {\n      ok\n    }\n  }\n": types.SetDeviceDocument,
     "\n  fragment EventScreenFragment on EventResource {\n    uuid\n    title\n    summary\n    description\n    location\n    occurrences {\n      uuid\n      interval\n      fullDay\n    }\n    images {\n      thumbHash\n      url\n      height\n      width\n      alt\n      mimeType\n    }\n  }\n": types.EventScreenFragmentFragmentDoc,
@@ -30,8 +30,9 @@ const documents = {
     "\n  query RootScreenDocument {\n    loginState {\n      ...ProfileScreenAuthFragment\n      ...RootScreenAuthFragment\n    }\n    me {\n      data {\n        ...ProfileScreenUserFragment\n      }\n    }\n  }\n": types.RootScreenDocumentDocument,
     "\n  fragment RootScreenAuthFragment on LoginState {\n    role {\n      dbRole\n    }\n  }\n": types.RootScreenAuthFragmentFragmentDoc,
     "\n      query Events(\n        $earliestTimestamp: LuxonDateTime!\n        $lastTimestamp: LuxonDateTime!\n      ) {\n        events(\n          dateFilters: [\n            {\n              comparison: GREATER_THAN_OR_EQUAL_TO\n              field: occurrenceStart\n              value: $earliestTimestamp\n            }\n            {\n              comparison: LESS_THAN_OR_EQUAL_TO\n              field: occurrenceStart\n              value: $lastTimestamp\n            }\n          ]\n          sortDirection: ASCENDING\n          sortBy: \"occurrence\"\n        ) {\n          data {\n            ...EventScreenFragment\n          }\n        }\n      }\n    ": types.EventsDocument,
+    "\n  query ServerFeed {\n    feed(limit: 20) {\n      uuid\n      title\n      createdAt\n      textContent\n      image {\n        url\n        alt\n        width\n        height\n        thumbHash\n      }\n    }\n  }\n": types.ServerFeedDocument,
     "\n  fragment HourScreenFragment on MarathonHourResource {\n    uuid\n    title\n    details\n    durationInfo\n    mapImages {\n      ...ImageViewFragment\n    }\n  }\n": types.HourScreenFragmentFragmentDoc,
-    "\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    nextMarathon {\n      startDate\n      endDate\n    }\n  }\n": types.MarathonScreenDocument,
+    "\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    nextMarathon {\n      startDate\n      endDate\n      hours {\n        ...HourScreenFragment\n      }\n    }\n  }\n": types.MarathonScreenDocument,
     "\n  fragment ScoreBoardFragment on TeamResource {\n    uuid\n    name\n    totalPoints\n    legacyStatus\n    type\n  }\n": types.ScoreBoardFragmentFragmentDoc,
     "\n  fragment HighlightedTeamFragment on TeamResource {\n    uuid\n    name\n    legacyStatus\n    type\n  }\n": types.HighlightedTeamFragmentFragmentDoc,
     "\n  query ScoreBoardDocument($type: [TeamType!]) {\n    me {\n      data {\n        uuid\n        teams {\n          team {\n            ...HighlightedTeamFragment\n            ...MyTeamFragment\n          }\n        }\n      }\n    }\n    teams(\n      sendAll: true\n      sortBy: [\"totalPoints\", \"name\"]\n      sortDirection: [DESCENDING, ASCENDING]\n      type: $type\n    ) {\n      data {\n        ...ScoreBoardFragment\n      }\n    }\n  }\n": types.ScoreBoardDocumentDocument,
@@ -84,7 +85,7 @@ export function graphql(source: "\n  query MarathonTime {\n    nextMarathon {\n 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query useTabBarConfig {\n    activeConfiguration(key: \"TAB_BAR_CONFIG\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n"): (typeof documents)["\n  query useTabBarConfig {\n    activeConfiguration(key: \"TAB_BAR_CONFIG\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query useTabBarConfig {\n    activeConfiguration(key: \"TAB_BAR_CONFIG\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n    me {\n      data {\n        linkblue\n      }\n    }\n  }\n"): (typeof documents)["\n  query useTabBarConfig {\n    activeConfiguration(key: \"TAB_BAR_CONFIG\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n    me {\n      data {\n        linkblue\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -124,11 +125,15 @@ export function graphql(source: "\n      query Events(\n        $earliestTimesta
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  query ServerFeed {\n    feed(limit: 20) {\n      uuid\n      title\n      createdAt\n      textContent\n      image {\n        url\n        alt\n        width\n        height\n        thumbHash\n      }\n    }\n  }\n"): (typeof documents)["\n  query ServerFeed {\n    feed(limit: 20) {\n      uuid\n      title\n      createdAt\n      textContent\n      image {\n        url\n        alt\n        width\n        height\n        thumbHash\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  fragment HourScreenFragment on MarathonHourResource {\n    uuid\n    title\n    details\n    durationInfo\n    mapImages {\n      ...ImageViewFragment\n    }\n  }\n"): (typeof documents)["\n  fragment HourScreenFragment on MarathonHourResource {\n    uuid\n    title\n    details\n    durationInfo\n    mapImages {\n      ...ImageViewFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    nextMarathon {\n      startDate\n      endDate\n    }\n  }\n"): (typeof documents)["\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    nextMarathon {\n      startDate\n      endDate\n    }\n  }\n"];
+export function graphql(source: "\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    nextMarathon {\n      startDate\n      endDate\n      hours {\n        ...HourScreenFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    nextMarathon {\n      startDate\n      endDate\n      hours {\n        ...HourScreenFragment\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
