@@ -17,8 +17,10 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import { FileManager } from "../lib/files/FileManager.js";
 import { feedItemModelToResource } from "../repositories/feed/feedModelToResource.js";
 import { FeedRepository } from "../repositories/feed/feedRepository.js";
+import { imageModelToResource } from "../repositories/image/imageModelToResource.js";
 
 @InputType()
 export class CreateFeedInput {
@@ -41,7 +43,10 @@ export class SetFeedInput {
 @Resolver(() => FeedResource)
 @Service()
 export class FeedResolver {
-  constructor(private readonly feedRepository: FeedRepository) {}
+  constructor(
+    private readonly feedRepository: FeedRepository,
+    private readonly fileManager: FileManager
+  ) {}
 
   @Query(() => [FeedResource])
   async feed(
@@ -59,6 +64,7 @@ export class FeedResolver {
     const feedItem = await this.feedRepository.createFeedItem({
       title: input.title,
       textContent: input.textContent,
+      imageUuid: input.imageUuid,
     });
     return feedItemModelToResource(feedItem);
   }
@@ -125,6 +131,10 @@ export class FeedResolver {
 
   @FieldResolver(() => ImageResource, { nullable: true })
   async image(@Root() { uuid }: FeedResource) {
-    return this.feedRepository.getFeedItemImage({ uuid });
+    const row = await this.feedRepository.getFeedItemImage({ uuid });
+    if (row == null) {
+      return null;
+    }
+    return imageModelToResource(row, row.file, this.fileManager);
   }
 }

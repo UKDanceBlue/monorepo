@@ -23,14 +23,23 @@ export class FeedRepository {
   async createFeedItem({
     title,
     textContent,
+    imageUuid,
   }: {
     title: string;
     textContent?: string | null | undefined;
+    imageUuid?: string | null | undefined;
   }) {
     return this.prisma.feedItem.create({
       data: {
         title,
         textContent,
+        image: imageUuid
+          ? {
+              connect: {
+                uuid: imageUuid,
+              },
+            }
+          : undefined,
       },
     });
   }
@@ -133,6 +142,6 @@ export class FeedRepository {
       .findUnique({
         where: feedItemParam,
       })
-      .image();
+      .image({ include: { file: true } });
   }
 }

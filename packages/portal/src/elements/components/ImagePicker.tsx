@@ -20,7 +20,10 @@ const imagePickerDocument = graphql(/* GraphQL */ `
 export function ImagePicker({
   onSelect,
 }: {
-  onSelect: (imageUuid: string) => void;
+  onSelect: (
+    imageUuid: string,
+    imageUrl: string | URL | null | undefined
+  ) => void;
 }) {
   const [search, setSearch] = useState("");
   const [result] = useQuery({
@@ -93,7 +96,7 @@ export function ImagePicker({
                       <Flex gap="small" vertical align="center">
                         <Button
                           type="primary"
-                          onClick={() => onSelect(image.uuid)}
+                          onClick={() => onSelect(image.uuid, image.url)}
                         >
                           Select
                         </Button>

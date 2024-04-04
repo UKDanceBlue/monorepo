@@ -145,6 +145,7 @@ export type CreateEventResponse = AbstractGraphQlCreatedResponse & AbstractGraph
 };
 
 export type CreateFeedInput = {
+  readonly imageUuid?: InputMaybe<Scalars['String']['input']>;
   readonly textContent?: InputMaybe<Scalars['String']['input']>;
   readonly title: Scalars['String']['input'];
 };
@@ -1485,7 +1486,7 @@ export type QueryEventsArgs = {
 
 
 export type QueryFeedArgs = {
-  limit?: Scalars['Float']['input'];
+  limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
 

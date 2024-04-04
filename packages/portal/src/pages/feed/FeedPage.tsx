@@ -1,5 +1,163 @@
-import { ImagePicker } from "@elements/components/ImagePicker";
+import { useImagePicker } from "@hooks/useImagePicker";
+import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
+import { dateTimeFromSomething } from "@ukdanceblue/common";
+import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import {
+  Button,
+  Card,
+  Col,
+  Flex,
+  Form,
+  Image,
+  Input,
+  Row,
+  Typography,
+} from "antd";
+import { useState } from "react";
+import { useClient, useQuery } from "urql";
+
+const feedPageDocument = graphql(/* GraphQL */ `
+  query FeedPage {
+    feed(limit: null) {
+      uuid
+      title
+      createdAt
+      textContent
+      image {
+        url
+        alt
+      }
+    }
+  }
+`);
+
+const createFeedItemDocument = graphql(/* GraphQL */ `
+  mutation CreateFeedItem($input: CreateFeedInput!) {
+    createFeedItem(input: $input) {
+      uuid
+    }
+  }
+`);
 
 export function FeedPage() {
-  return <ImagePicker onSelect={(uuid) => console.log(uuid)} />;
+  const [result] = useQuery({
+    query: feedPageDocument,
+  });
+  const [feedItemFormData, setFeedItemFormData] = useState<{
+    title: string;
+    textContent: string;
+    image: {
+      uuid: string;
+      url: string | URL | null | undefined;
+    } | null;
+  }>({
+    title: "",
+    textContent: "",
+    image: null,
+  });
+  const client = useClient();
+
+  useQueryStatusWatcher({ ...result, loadingMessage: "Loading feed..." });
+
+  const { openPicker, renderMe } = useImagePicker();
+
+  return (
+    <Flex vertical gap={16}>
+      <Typography.Title level={2}>Feed</Typography.Title>
+      <Form
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        style={{ maxWidth: 600 }}
+        layout="horizontal"
+        onFinish={async () => {
+          await client
+            .mutation(createFeedItemDocument, {
+              input: {
+                title: feedItemFormData.title,
+                textContent: feedItemFormData.textContent,
+                imageUuid: feedItemFormData.image?.uuid,
+              },
+            })
+            .toPromise();
+          setFeedItemFormData({
+            title: "",
+            textContent: "",
+            image: null,
+          });
+        }}
+      >
+        <Form.Item label="Title" name="title">
+          <Input
+            value={feedItemFormData.title}
+            onChange={(e) =>
+              setFeedItemFormData({
+                ...feedItemFormData,
+                title: e.target.value,
+              })
+            }
+          />
+        </Form.Item>
+        <Form.Item label="Text Content" name="textContent">
+          <Input.TextArea
+            value={feedItemFormData.textContent}
+            onChange={(e) =>
+              setFeedItemFormData({
+                ...feedItemFormData,
+                textContent: e.target.value,
+              })
+            }
+          />
+        </Form.Item>
+        <Form.Item>
+          <Flex gap={8} align="center">
+            <Image src={feedItemFormData.image?.url?.toString() ?? undefined} />
+            <Button
+              onClick={() =>
+                openPicker((imageUuid, imageUrl) => {
+                  setFeedItemFormData((prev) => ({
+                    ...prev,
+                    image: {
+                      uuid: imageUuid,
+                      url: imageUrl,
+                    },
+                  }));
+                })
+              }
+            >
+              Attach Image
+            </Button>
+          </Flex>
+        </Form.Item>
+        <Form.Item>
+          <Button htmlType="submit" type="primary">
+            Create Feed Item
+          </Button>
+        </Form.Item>
+      </Form>
+      <Row gutter={16}>
+        {result.data?.feed.map((feedItem) => (
+          <Col key={feedItem.uuid} span={8}>
+            <Card
+              title={feedItem.title}
+              extra={dateTimeFromSomething(
+                feedItem.createdAt
+              )?.toLocaleString()}
+              cover={
+                feedItem.image && (
+                  <Image
+                    alt={feedItem.image.alt ?? undefined}
+                    src={feedItem.image.url?.toString() ?? undefined}
+                    style={{ width: "100%" }}
+                  />
+                )
+              }
+            >
+              <p>{feedItem.textContent}</p>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+      {renderMe}
+    </Flex>
+  );
 }
