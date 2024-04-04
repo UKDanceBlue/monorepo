@@ -108,7 +108,7 @@ export const expoAccessToken = EXPO_ACCESS_TOKEN;
 Container.set(Expo, new Expo({ accessToken: expoAccessToken }));
 
 // File upload settings
-const { MAX_FILE_SIZE, SERVE_PATH, UPLOAD_PATH } = process.env;
+const { MAX_FILE_SIZE, SERVE_PATH, UPLOAD_PATH, SERVE_ORIGIN } = process.env;
 if (!MAX_FILE_SIZE) {
   throw new Error("MAX_FILE_SIZE is not set");
 }
@@ -117,6 +117,14 @@ if (!SERVE_PATH) {
 }
 if (!UPLOAD_PATH) {
   throw new Error("UPLOAD_PATH is not set");
+}
+if (!SERVE_ORIGIN) {
+  throw new Error("SERVE_ORIGIN is not set");
+}
+try {
+  new URL(SERVE_ORIGIN);
+} catch {
+  throw new Error("SERVE_ORIGIN is not a valid URL");
 }
 
 const maxFileSize = Number.parseInt(MAX_FILE_SIZE, 10);
@@ -147,6 +155,7 @@ if (!isUploadInServe) {
   throw new Error("UPLOAD_PATH must be a subdirectory of SERVE_PATH");
 }
 
+export const serveOrigin = SERVE_ORIGIN;
 export const servePath = SERVE_PATH;
 export const uploadPath = UPLOAD_PATH;
 
