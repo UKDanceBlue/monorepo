@@ -240,6 +240,7 @@ export const ExplorerItem = ({
                   }}
                 />
                 <Box width="full" alignItems="flex-end">
+                  {console.log(image)}
                   <Button
                     marginTop={0.5}
                     width="1/3"

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@common/apiUrl";
 import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
@@ -77,11 +78,17 @@ export function useExplorerFeed(): {
           continue;
         }
 
-        const imageUrl: string | undefined = image?.url?.toString();
+        let imageUrl: URL | undefined = image?.url
+          ? new URL(image.url)
+          : undefined;
+        // Special case for localhost server
+        if (imageUrl?.hostname === "localhost") {
+          imageUrl = new URL(imageUrl.pathname, API_BASE_URL);
+        }
         if (image) {
           if (!imageUrl) {
             continue;
-          } else if (!imageUrl.startsWith("http")) {
+          } else if (!imageUrl.protocol.startsWith("http")) {
             continue;
           }
         }
@@ -94,7 +101,7 @@ export function useExplorerFeed(): {
           image:
             imageUrl && image
               ? {
-                  url: imageUrl,
+                  url: imageUrl.href,
                   width: image.width,
                   height: image.height,
                   alt: image.alt ?? undefined,

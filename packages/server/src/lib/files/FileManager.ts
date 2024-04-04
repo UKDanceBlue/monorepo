@@ -5,6 +5,7 @@ import { Service } from "typedi";
 
 import { applicationUrl } from "../../environment.js";
 import { FileRepository } from "../../repositories/file/fileRepository.js";
+import { logger } from "../logging/standardLogging.js";
 
 import { LocalStorageProvider } from "./storage/LocalStorageProvider.js";
 import type {
@@ -14,6 +15,8 @@ import type {
 import { UnsupportedAccessMethod } from "./storage/StorageProvider.js";
 
 const FILE_API = new URL("/api/file/download/", applicationUrl);
+
+logger.info(`Serving files from ${FILE_API.href}`);
 
 @Service()
 export class FileManager {
