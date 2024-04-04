@@ -11,6 +11,7 @@ import {
 } from "react-native";
 
 import { useReactNavigationTheme } from "../../../../theme";
+import HeaderImage from "./HeaderImage";
 
 /**
  * Component for home screen in main navigation
@@ -29,7 +30,9 @@ const InfoScreen = () => {
           borderBottomColor="secondary.400"
           borderBottomWidth={2}
           borderBottomStyle="solid"
-        ></Box>
+        >
+          <HeaderImage />
+        </Box>
         {/* Placeholder "Welcome to DanceBlue 2024, we're getting things ready for you!\nPlease check back soon!" */}
         <Box
           flex={2}
@@ -38,7 +41,7 @@ const InfoScreen = () => {
           width={screenWidth}
         >
           <Text fontSize={fontScale * 40} marginX={"1/6"} textAlign="center">
-            Welcome to DanceBlue Marathon 2024!\nWe are so excited that you are
+            Welcome to DanceBlue Marathon 2024! We are so excited that you are
             here!
           </Text>
         </Box>
