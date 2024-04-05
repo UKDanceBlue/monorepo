@@ -1,4 +1,5 @@
 import { Logger } from "@common/logger/Logger";
+import { showMessage } from "@common/util/alertUtils";
 import { MaterialIcons } from "@expo/vector-icons";
 import type { CameraCapturedPicture } from "expo-camera";
 import type { View } from "native-base";
@@ -23,9 +24,9 @@ export const PreviewMoment = ({
 
   const { saveMoment, ask } = useSaveMoment();
 
-  const captureMoment = async () => {
+  const captureMoment = async (): Promise<void> => {
     if (ask) {
-      return ask();
+      return ask().then(() => captureMoment());
     }
     if (saveMoment) {
       console.log("Saving moment...");
@@ -44,6 +45,8 @@ export const PreviewMoment = ({
 
         // Implement logic to save or share the captured image URI
         await saveMoment(uri);
+
+        showMessage("Check your camera roll", "Moment saved!");
       } catch (error) {
         console.error("Capture failed:", error);
       }
