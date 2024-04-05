@@ -189,10 +189,10 @@ export class DeviceRepository {
           },
         });
       }
-    }
-
-    if (where.length === 0) {
-      throw new Error("Not implemented");
+      
+      if (where.length === 0) {
+        throw new Error("Not implemented");
+      }
     }
 
     const rows = await this.prisma.device.findMany({
