@@ -8,6 +8,7 @@ import { LogBox } from "react-native";
 import "react-native-url-polyfill/auto";
 
 import App from "./App";
+import { overrideApiBaseUrl } from "./src/common/apiUrl";
 import { Logger } from "./src/common/logger/Logger";
 
 Logger.debug("Starting app");
@@ -40,7 +41,16 @@ if (isDevelopmentBuild()) {
         console.log(values);
       },
     },
-  ]).catch(console.error);
+    {
+      name: "Override url",
+      callback: async () => {
+        Logger.log("Overriding url");
+        overrideApiBaseUrl(
+          prompt("Enter the url to override or blank for default")
+        );
+      },
+    },
+  ]).catch((error) => console.error(error));
 }
 
 // Configure the notifications handler to decide what to do when a notification is received if the app is open

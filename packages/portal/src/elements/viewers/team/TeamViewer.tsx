@@ -46,7 +46,9 @@ export function TeamViewer({
   const { TeamDeletePopup, showModal } = useTeamDeletePopup({
     uuid: teamData?.uuid ?? "",
     onDelete: () => {
-      navigate({ to: "/teams/" }).catch(console.error);
+      navigate({ to: "/teams/" }).catch((error: unknown) =>
+        console.error(error)
+      );
     },
   });
 
@@ -87,7 +89,7 @@ export function TeamViewer({
               navigate({
                 to: "/teams/$teamId/edit",
                 params: { teamId: teamData.uuid },
-              }).catch(console.error);
+              }).catch((error: unknown) => console.error(error));
             }}
             icon={<EditOutlined />}
             shape="round"

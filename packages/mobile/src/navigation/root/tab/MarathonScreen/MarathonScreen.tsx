@@ -1,8 +1,14 @@
+import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
-import { Text } from "native-base";
-import { useEffect } from "react";
+import { Button, Modal, Text, View } from "native-base";
+import { useEffect, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  TextInput,
+  useWindowDimensions,
+} from "react-native";
 import { useQuery } from "urql";
 
 import { HourScreenComponent } from "./HourScreenComponent";
@@ -13,65 +19,185 @@ const marathonScreenDocument = graphql(/* GraphQL */ `
     currentMarathonHour {
       ...HourScreenFragment
     }
-    currentMarathon {
-      year
-    }
     nextMarathon {
-      year
       startDate
       endDate
+      hours {
+        ...HourScreenFragment
+      }
     }
   }
 `);
 
 export const MarathonScreen = () => {
+  const { height: vpHeight, width: vpWidth } = useWindowDimensions();
+  const [{ isInternetReachable }] = useNetworkStatus();
+
   const [{ fetching, data, error }, refresh] = useQuery({
     query: marathonScreenDocument,
   });
+  const [lastGoodData, setLastGoodData] = useState(data);
+  useEffect(() => {
+    if (data?.currentMarathonHour || data?.nextMarathon) {
+      setLastGoodData(data);
+    }
+  }, [data]);
+
+  const [hourOverride, setHourOverride] = useState<number | undefined>(
+    undefined
+  );
+  const [showSecretMenu, setShowSecretMenu] = useState(false);
+  const [secretMenuText, setSecretMenuText] = useState("");
 
   useEffect(() => {
     // This is just a polling timer to refresh the data every minute
     // in case the server has updated the marathon hour
     const interval = setInterval(() => {
-      refresh({ requestPolicy: "network-only" });
-    }, 3000);
+      if (isInternetReachable) refresh({ requestPolicy: "network-only" });
+    }, 15_000);
 
     return () => {
       clearInterval(interval);
     };
-  }, [refresh]);
+  }, [isInternetReachable, refresh]);
 
-  if (error) {
-    Logger.error("A graphql error occurred", {
-      error,
-      source: "MarathonScreen",
-    });
-    return (
-      <Text width="full" height="full" textAlign="center">
-        Something went Wrong!
-      </Text>
-    );
-  }
+  useEffect(() => {
+    if (error) {
+      Logger.error("A graphql error occurred", {
+        error,
+        source: "MarathonScreen",
+        tags: ["graphql"],
+      });
+    }
+  }, [error]);
 
-  if (data?.currentMarathonHour) {
-    return (
-      <HourScreenComponent
-        hourScreenFragment={data.currentMarathonHour}
-        isLoading={fetching && !data.currentMarathonHour}
-        refresh={() => refresh({ requestPolicy: "network-only" })}
-      />
-    );
-  }
+  const component = useMemo(() => {
+    if (isInternetReachable === false) {
+      return (
+        <Text width="full" height="full" textAlign="center">
+          No Internet Connection, cannot load marathon information
+        </Text>
+      );
+    } else if (lastGoodData?.nextMarathon && hourOverride != null) {
+      if (hourOverride < 0) {
+        return (
+          <MarathonCountdownScreen
+            marathonStart={dateTimeFromSomething(
+              lastGoodData.nextMarathon.startDate
+            )}
+            marathonEnd={dateTimeFromSomething(
+              lastGoodData.nextMarathon.endDate
+            )}
+            showSecretMenu={() => setShowSecretMenu(true)}
+          />
+        );
+      } else {
+        return (
+          <HourScreenComponent
+            hourScreenFragment={lastGoodData.nextMarathon.hours[hourOverride]}
+            isLoading={fetching && !lastGoodData.nextMarathon}
+            refresh={() => refresh({ requestPolicy: "network-only" })}
+            showSecretMenu={() => setShowSecretMenu(true)}
+          />
+        );
+      }
+    } else if (lastGoodData?.currentMarathonHour) {
+      return (
+        <HourScreenComponent
+          hourScreenFragment={lastGoodData.currentMarathonHour}
+          isLoading={fetching && !lastGoodData.currentMarathonHour}
+          refresh={() => refresh({ requestPolicy: "network-only" })}
+          showSecretMenu={() => setShowSecretMenu(true)}
+        />
+      );
+    } else if (lastGoodData?.nextMarathon) {
+      return (
+        <MarathonCountdownScreen
+          marathonStart={dateTimeFromSomething(
+            lastGoodData.nextMarathon.startDate
+          )}
+          marathonEnd={dateTimeFromSomething(lastGoodData.nextMarathon.endDate)}
+          showSecretMenu={() => setShowSecretMenu(true)}
+        />
+      );
+    } else if (error) {
+      return (
+        <Text width="full" height="full" textAlign="center">
+          Something went Wrong!
+        </Text>
+      );
+    } else {
+      Logger.info("MarathonScreen has invalid data", {
+        source: "MarathonScreen",
+        context: {
+          nextMarathon: lastGoodData?.nextMarathon,
+          currentHour: lastGoodData?.currentMarathonHour,
+        },
+      });
+      return (
+        <View
+          flex={1}
+          height={vpHeight}
+          width={vpWidth}
+          justifyContent="center"
+          alignItems="center"
+        >
+          <ActivityIndicator size="large" />
+        </View>
+      );
+    }
+  }, [
+    error,
+    fetching,
+    hourOverride,
+    isInternetReachable,
+    lastGoodData?.currentMarathonHour,
+    lastGoodData?.nextMarathon,
+    refresh,
+    vpHeight,
+    vpWidth,
+  ]);
 
-  if (data?.nextMarathon?.year) {
-    return (
-      <MarathonCountdownScreen
-        marathonYear={data.nextMarathon.year}
-        marathonStart={dateTimeFromSomething(data.nextMarathon.startDate)}
-        marathonEnd={dateTimeFromSomething(data.nextMarathon.endDate)}
-      />
-    );
-  }
-
-  return <Text> {JSON.stringify(data)}</Text>;
+  return (
+    <>
+      <Modal
+        isOpen={showSecretMenu}
+        onClose={() => setShowSecretMenu(false)}
+        avoidKeyboard
+        background={"#fff6"}
+      >
+        <Text>Override</Text>
+        <TextInput
+          style={{
+            height: 40,
+            borderColor: "black",
+            borderWidth: 1,
+            width: 80,
+            backgroundColor: "white",
+          }}
+          value={secretMenuText || ""}
+          onChangeText={setSecretMenuText}
+        />
+        <Button
+          onPress={() => {
+            const parsedText = Number.parseInt(secretMenuText, 10);
+            if (
+              (!Number.isNaN(parsedText) && parsedText === -1) ||
+              (parsedText >= 0 &&
+                data?.nextMarathon &&
+                parsedText <= data.nextMarathon.hours.length)
+            ) {
+              setHourOverride(parsedText);
+            } else {
+              setHourOverride(undefined);
+            }
+            setShowSecretMenu(false);
+          }}
+        >
+          Confirm
+        </Button>
+      </Modal>
+      {component}
+    </>
+  );
 };

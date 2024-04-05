@@ -8,7 +8,12 @@ import {
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
 import { Heading, ScrollView, Text } from "native-base";
-import { RefreshControl, useWindowDimensions } from "react-native";
+import { useEffect, useState } from "react";
+import {
+  RefreshControl,
+  TouchableWithoutFeedback,
+  useWindowDimensions,
+} from "react-native";
 
 const HourScreenFragment = graphql(/* GraphQL */ `
   fragment HourScreenFragment on MarathonHourResource {
@@ -26,11 +31,22 @@ export const HourScreenComponent = ({
   hourScreenFragment,
   isLoading,
   refresh,
+  showSecretMenu,
 }: {
   hourScreenFragment: FragmentType<typeof HourScreenFragment>;
   isLoading: boolean;
   refresh: () => void;
+  showSecretMenu: () => void;
 }) => {
+  const [secretGestureState, setSecretGestureState] = useState<number>(0);
+
+  useEffect(() => {
+    if (secretGestureState === 15) {
+      setSecretGestureState(0);
+      showSecretMenu();
+    }
+  }, [secretGestureState, showSecretMenu]);
+
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
   const hourScreenData = getFragmentData(
@@ -50,17 +66,30 @@ export const HourScreenComponent = ({
         <RefreshControl refreshing={isLoading} onRefresh={refresh} />
       }
     >
-      <Heading textAlign="center" marginBottom={2}>
-        {hourScreenData.title}
-      </Heading>
-      <Text
-        textAlign="center"
-        marginBottom={2}
-        fontSize={18}
-        fontFamily={"lightbody"}
+      <TouchableWithoutFeedback
+        onPress={() =>
+          setSecretGestureState((old) => (old >= 5 && old < 10 ? old + 1 : 0))
+        }
       >
-        {hourScreenData.durationInfo}
-      </Text>
+        <Heading textAlign="center" marginBottom={2} suppressHighlighting>
+          {hourScreenData.title}
+        </Heading>
+      </TouchableWithoutFeedback>
+      <TouchableWithoutFeedback
+        onPress={() =>
+          setSecretGestureState((old) => (old < 5 || old >= 10 ? old + 1 : 0))
+        }
+      >
+        <Text
+          textAlign="center"
+          marginBottom={2}
+          fontSize={18}
+          fontFamily={"lightbody"}
+          suppressHighlighting
+        >
+          {hourScreenData.durationInfo}
+        </Text>
+      </TouchableWithoutFeedback>
       {hourScreenData.mapImages.length > 0 && (
         <ScrollView
           width="full"
@@ -76,7 +105,7 @@ export const HourScreenComponent = ({
         >
           {hourScreenData.mapImages.map((image, i) => (
             <ImageView
-              key={getFragmentData(ImageViewFragment, image).uuid + i}
+              key={`${getFragmentData(ImageViewFragment, image).uuid}-${i}`}
               imageFragment={image}
               contentFit="contain"
               renderHeight={screenHeight / 4}
@@ -85,7 +114,7 @@ export const HourScreenComponent = ({
           ))}
         </ScrollView>
       )}
-      <NativeBaseMarkdown>{hourScreenData.details}</NativeBaseMarkdown>
+      <NativeBaseMarkdown>{hourScreenData.details || ""}</NativeBaseMarkdown>
     </ScrollView>
   );
 };

@@ -10,5 +10,22 @@
 //     : "http://localhost:8000";
 // }
 
-export const API_BASE_URL =
+import { reloadAsync } from "expo-updates";
+
+import { Logger } from "./logger/Logger";
+
+export let API_BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL || "https://app.danceblue.org";
+
+export function overrideApiBaseUrl(newUrl: string) {
+  API_BASE_URL =
+    newUrl ||
+    process.env.EXPO_PUBLIC_API_BASE_URL ||
+    "https://app.danceblue.org";
+  reloadAsync().catch((error: unknown) => {
+    Logger.error("Failed to reload app", {
+      error,
+      source: "overrideApiBaseUrl",
+    });
+  });
+}

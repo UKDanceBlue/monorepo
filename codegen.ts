@@ -66,9 +66,7 @@ const codegenConfig: CodegenConfig = {
     "./packages/common/lib/graphql-client-public/": {
       preset: "client",
       presetConfig,
-      config: {
-        ...config,
-      },
+      config,
       documents: [
         "./packages/mobile/src/**/*.ts",
         "./packages/mobile/src/**/*.tsx",
@@ -77,9 +75,7 @@ const codegenConfig: CodegenConfig = {
     "./packages/common/lib/graphql-client-admin/": {
       preset: "client",
       presetConfig,
-      config: {
-        ...config,
-      },
+      config,
       documents: [
         "./packages/portal/src/**/*.ts",
         "./packages/portal/src/**/*.tsx",

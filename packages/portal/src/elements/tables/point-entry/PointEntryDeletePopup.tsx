@@ -65,7 +65,7 @@ export const usePointEntryDeletePopup = ({
                   });
                 }
               })
-              .catch(console.error);
+              .catch((error: unknown) => console.error(error));
           }
         }}
         confirmLoading={fetching}

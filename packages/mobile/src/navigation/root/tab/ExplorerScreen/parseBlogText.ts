@@ -20,6 +20,7 @@ export function parseBlogText(
     try {
       parser.write(text);
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
       reject(error);
     } finally {
       parser.end();

@@ -21,10 +21,11 @@ export type SpiritStackScreenProps<T extends keyof SpiritStackParamList> =
 export type TabNavigatorParamList = {
   "Home": undefined;
   "Events": undefined;
-  "Explorer": undefined;
+  "Explore": undefined;
   "Teams": NavigatorScreenParams<SpiritStackParamList>;
   "Marathon": undefined;
   "Scavenger Hunt": undefined;
+  "DB Moments": undefined;
   "Morale Cup": undefined;
   "Info": undefined;
 };

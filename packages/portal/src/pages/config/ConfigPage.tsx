@@ -16,7 +16,13 @@ export function ConfigPage() {
     <div style={{ maxWidth: "800px", margin: "0 auto" }}>
       <h1>Config</h1>
       <formApi.Provider>
-        <Form onFinish={() => formApi.handleSubmit().catch(console.error)}>
+        <Form
+          onFinish={() =>
+            formApi
+              .handleSubmit()
+              .catch((error: unknown) => console.error(error))
+          }
+        >
           <formApi.Subscribe selector={(state) => Object.keys(state.values)}>
             {(keys) =>
               keys.map((key) => (

@@ -84,7 +84,7 @@ export const ManageNotificationForm = ({
           ? showInfoMessage(`${operationText} successful`)
           : showErrorMessage(`${operationText} failed`));
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         console.error(error);
         void showErrorMessage(`${operationText} failed`);
       });
@@ -117,7 +117,7 @@ export const ManageNotificationForm = ({
               }
               onClick={() => {
                 if (sendAt) {
-                  showConfirmModal({
+                  void showConfirmModal({
                     ...confirmationModalProps,
                     title:
                       "Are you sure you would like to schedule the notification?",
@@ -143,7 +143,7 @@ export const ManageNotificationForm = ({
               type="primary"
               disabled={notification.startedSendingAt !== null}
               onClick={() => {
-                showWarningModal({
+                void showWarningModal({
                   ...confirmationModalProps,
                   title:
                     "Are you sure you would like to send the notification?",
@@ -167,7 +167,7 @@ export const ManageNotificationForm = ({
               type="primary"
               disabled={!notification.sendAt}
               onClick={() => {
-                showWarningModal({
+                void showWarningModal({
                   ...confirmationModalProps,
                   title:
                     "Are you sure you would like to cancel the scheduled notification?",
@@ -192,7 +192,7 @@ export const ManageNotificationForm = ({
               danger
               disabled={notification.startedSendingAt !== null}
               onClick={() => {
-                showWarningModal({
+                void showWarningModal({
                   ...confirmationModalProps,
                   title:
                     "Are you sure you would like to delete the notification?",

@@ -174,7 +174,7 @@ export const TeamsTable = () => {
                   navigate({
                     to: "/teams/$teamId/",
                     params: { teamId: record.uuid },
-                  }).catch(console.error)
+                  }).catch((error: unknown) => console.error(error))
                 }
                 icon={<EyeOutlined />}
               />
@@ -183,7 +183,7 @@ export const TeamsTable = () => {
                   navigate({
                     to: "/teams/$teamId/edit",
                     params: { teamId: record.uuid },
-                  }).catch(console.error)
+                  }).catch((error: unknown) => console.error(error))
                 }
                 icon={<EditOutlined />}
               />

@@ -15,7 +15,7 @@ export function TeamCreator() {
       navigate({
         to: "/teams/$teamId/",
         params: { teamId: ret.uuid },
-      }).catch(console.error);
+      }).catch((error: unknown) => console.error(error));
     }
   });
 
@@ -24,7 +24,7 @@ export function TeamCreator() {
       <formApi.Provider>
         <Form
           onFinish={() => {
-            formApi.handleSubmit().catch((error) => {
+            formApi.handleSubmit().catch((error: unknown) => {
               if (error instanceof Error) {
                 void message.error(error.message);
               } else {

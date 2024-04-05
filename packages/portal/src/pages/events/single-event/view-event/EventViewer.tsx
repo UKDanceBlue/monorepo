@@ -27,7 +27,6 @@ export const EventViewerFragment = graphql(/* GraphQL */ `
     }
     images {
       url
-      imageData
       width
       height
       thumbHash
@@ -65,7 +64,9 @@ export function EventViewer({
   const { EventDeletePopup, showModal } = useEventDeletePopup({
     uuid: eventData?.uuid ?? "",
     onDelete: () => {
-      navigate({ to: "/events" }).catch(console.error);
+      navigate({ to: "/events" }).catch((error: unknown) =>
+        console.error(error)
+      );
     },
   });
 
@@ -120,9 +121,7 @@ export function EventViewer({
 
               return (
                 <Image
-                  src={
-                    image.url?.toString() ?? image.imageData ?? "about:blank"
-                  }
+                  src={image.url?.toString() ?? "about:blank"}
                   fallback={thumbHash ?? "about:blank"}
                   loading="lazy"
                   placeholder={

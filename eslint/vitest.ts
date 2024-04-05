@@ -4,7 +4,11 @@ import eslintPluginVitest from "eslint-plugin-vitest";
 const vitestConfig: Linter.FlatConfig = {
   files: ["**/*.test.ts", "**/*.test.tsx"],
   plugins: {
-    vitest: eslintPluginVitest,
+    // THIS COULD BE AN ISSUE!!!
+    vitest: eslintPluginVitest as unknown as Exclude<
+      Linter.FlatConfig["plugins"],
+      undefined
+    >[string],
   },
   rules: {
     ...eslintPluginVitest.configs.recommended.rules,

@@ -34,7 +34,7 @@ export function EventEditor({
       <formApi.Provider>
         <Form
           onFinish={() => {
-            formApi.handleSubmit().catch((error) => {
+            formApi.handleSubmit().catch((error: unknown) => {
               if (error instanceof Error) {
                 void message.error(error.message);
               } else {
@@ -84,11 +84,7 @@ export function EventEditor({
 
                   return (
                     <Image
-                      src={
-                        image.url?.toString() ??
-                        image.imageData ??
-                        "about:blank"
-                      }
+                      src={image.url?.toString() ?? "about:blank"}
                       fallback={thumbHash ?? "about:blank"}
                       loading="lazy"
                       placeholder={

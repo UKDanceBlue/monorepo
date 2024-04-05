@@ -1,5 +1,5 @@
 import { SimpleConfigFragment } from "@common/fragments/Configuration";
-import { log, logError } from "@common/logging";
+import { Logger } from "@common/logger/Logger";
 import {
   getFragmentData,
   graphql,
@@ -14,6 +14,11 @@ const useTabBarConfigQuery = graphql(/* GraphQL */ `
         ...SimpleConfig
       }
     }
+    me {
+      data {
+        linkblue
+      }
+    }
   }
 `);
 
@@ -21,6 +26,7 @@ export function useTabBarConfig(): {
   tabConfigLoading: boolean;
   fancyTab: string | undefined;
   shownTabs: string[];
+  forceAll: boolean;
 } {
   const [{ data, fetching, error }] = useQuery({
     query: useTabBarConfigQuery,
@@ -32,7 +38,10 @@ export function useTabBarConfig(): {
 
   useEffect(() => {
     if (error) {
-      logError(error);
+      Logger.error("Failed to fetch tab bar configuration", {
+        error,
+        source: "useTabBarConfig",
+      });
     }
   });
 
@@ -50,7 +59,7 @@ export function useTabBarConfig(): {
                 ({ fancyTab } = parsed);
               }
             } else {
-              log(
+              Logger.warn(
                 `Invalid fancyTab value in tab bar configuration: ${String(
                   parsed.fancyTab
                 )}`
@@ -65,7 +74,7 @@ export function useTabBarConfig(): {
                     shownTabs.push(tab);
                   }
                 } else {
-                  log(
+                  Logger.warn(
                     `Invalid shownTabs value in tab bar configuration: ${String(
                       tab
                     )}`
@@ -73,7 +82,7 @@ export function useTabBarConfig(): {
                 }
               }
             } else {
-              log(
+              Logger.warn(
                 `Invalid shownTabs value in tab bar configuration: ${String(
                   parsed.shownTabs
                 )}`
@@ -81,15 +90,16 @@ export function useTabBarConfig(): {
             }
           }
         } else {
-          log(`Invalid allowed tab bar configuration: ${tabBarConfig.value}`);
+          Logger.warn(
+            `Invalid allowed tab bar configuration: ${tabBarConfig.value}`
+          );
         }
       }
     } catch (error) {
-      if (error instanceof Error) {
-        logError(error);
-      } else {
-        log(String(error), "error");
-      }
+      Logger.error("Failed to parse tab bar configuration", {
+        error,
+        source: "useTabBarConfig",
+      });
     }
 
     return { fancyTab, shownTabs };
@@ -99,5 +109,6 @@ export function useTabBarConfig(): {
     tabConfigLoading: fetching,
     fancyTab,
     shownTabs,
+    forceAll: data?.me.data?.linkblue === "demo-user",
   };
 }

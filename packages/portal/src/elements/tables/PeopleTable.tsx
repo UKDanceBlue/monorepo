@@ -267,7 +267,7 @@ export const PeopleTable = () => {
                       navigate({
                         to: "/people/$personId/",
                         params: { personId: record.uuid },
-                      }).catch(console.error)
+                      }).catch((error: unknown) => console.error(error))
                     }
                     icon={<EyeOutlined />}
                   />
@@ -276,7 +276,7 @@ export const PeopleTable = () => {
                       navigate({
                         to: "/people/$personId/edit",
                         params: { personId: record.uuid },
-                      }).catch(console.error)
+                      }).catch((error: unknown) => console.error(error))
                     }
                     icon={<EditOutlined />}
                   />

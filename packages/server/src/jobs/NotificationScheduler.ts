@@ -50,7 +50,7 @@ export class NotificationScheduler {
       // On startup, check for any scheduled notifications that need to be sent
       checkScheduledNotificationsJob
         .trigger()
-        .catch((error) =>
+        .catch((error: unknown) =>
           logger.error("Failed to check for scheduled notifications", error)
         );
     }

@@ -1,5 +1,6 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
+import type { TeamType } from "@ukdanceblue/common";
 import type { DocumentType } from "@ukdanceblue/common/graphql-client-admin";
 import { useMutation } from "urql";
 
@@ -27,10 +28,19 @@ export function useNotificationCreator(
   const Form = useForm<{
     title: string;
     body: string;
-    audience: {
-      // TODO: implement audience selection
-      all: true;
-    };
+    audience:
+      | {
+          all: true;
+          memberOfTeamType?: never;
+          memberOfTeams?: never;
+          users?: never;
+        }
+      | {
+          all?: never;
+          memberOfTeamType?: TeamType;
+          memberOfTeams?: string[];
+          users?: string[];
+        };
     url?: string;
   }>({
     defaultValues: {
@@ -49,14 +59,21 @@ export function useNotificationCreator(
         throw new Error("Title is required");
       } else if (!values.body) {
         throw new Error("Body is required");
-      } else if ((values.audience.all as unknown) !== true) {
-        throw new Error("Audience selection is not yet implemented");
       } else if (values.url) {
         try {
           new URL(values.url);
         } catch {
           throw new Error("Invalid URL");
         }
+      }
+
+      if (
+        !values.audience.all &&
+        !values.audience.memberOfTeamType &&
+        !values.audience.memberOfTeams?.length &&
+        !values.audience.users?.length
+      ) {
+        throw new Error("Audience is required");
       }
 
       const { data } = await createNotification({

@@ -217,7 +217,7 @@ export const NotificationsTable = () => {
                     navigate({
                       to: "/notifications/$notificationId/",
                       params: { notificationId: uuid },
-                    }).catch(console.error)
+                    }).catch((error: unknown) => console.error(error))
                   }
                   icon={<EyeOutlined />}
                 />
@@ -226,7 +226,7 @@ export const NotificationsTable = () => {
                     navigate({
                       to: "/notifications/$notificationId/manage",
                       params: { notificationId: uuid },
-                    }).catch(console.error)
+                    }).catch((error: unknown) => console.error(error))
                   }
                   icon={<SendOutlined />}
                 />

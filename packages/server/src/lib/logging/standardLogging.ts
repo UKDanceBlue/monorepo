@@ -95,7 +95,7 @@ export const logger = createLogger({
  */
 export function logFatal(content: unknown) {
   // Logs the error and then crashes the server
-  // eslint-disable-next-line no-process-exit -- This needs to bypass any try/catch blocks
+   
   logger.emerg(String(content), () => process.exit(1));
 }
 
