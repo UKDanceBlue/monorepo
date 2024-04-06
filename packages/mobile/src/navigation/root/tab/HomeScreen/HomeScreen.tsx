@@ -1,4 +1,3 @@
-import { SpinnablePinwheel } from "@common/components/Pinwheel";
 import { universalCatch } from "@common/logging";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { openURL } from "expo-linking";
@@ -10,7 +9,6 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
-import { G, Path } from "react-native-svg";
 
 import { useReactNavigationTheme } from "../../../../theme";
 
@@ -26,7 +24,7 @@ const HomeScreen = () => {
   return (
     <>
       <StatusBar hidden={false} />
-      <SpinnablePinwheel
+      {/* <SpinnablePinwheel
         getPosition={() => 3}
         cooldown={10}
         positions={[
@@ -256,7 +254,7 @@ const HomeScreen = () => {
             },
           },
         ]}
-      />
+      /> */}
       <VStack flexDirection="column" bgColor={bgColor} flex={1}>
         <Box
           flex={1}
