@@ -19,6 +19,6 @@
   "typescript.inlayHints.parameterNames.enabled": "all",
   "typescript.preferences.preferTypeOnlyAutoImports": true,
   "javascript.inlayHints.parameterNames.enabled": "all",
-  "cSpell.words": ["Spinnable", "Whatwg"],
+  "cSpell.words": ["cooldown", "Spinnable", "Whatwg"],
   "eslint.codeActionsOnSave.mode": "problems"
 }
