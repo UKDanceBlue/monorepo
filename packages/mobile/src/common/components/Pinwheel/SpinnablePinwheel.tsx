@@ -63,6 +63,7 @@ function SpinnablePinwheel<Values>({
       style={{
         transform: useDerivedValue(() => [{ rotate: `${spinValue.value}deg` }]),
         opacity: useDerivedValue(() => (disabled.value ? 0.5 : 1)),
+        paddingHorizontal: 40,
       }}
     >
       <TouchableOpacity onPress={spin} disabled={disabled.value}>
