@@ -49,16 +49,23 @@ function SpinnablePinwheel<Values>({
       }
     );
 
-    disabled.value = with
+    if (cooldown) {
+      console.log("disabled", disabled.value);
+      disabled.value = true;
+      setTimeout(() => {
+        disabled.value = false;
+      }, spinDuration + cooldown);
+    }
   };
 
   return (
     <Animated.View
       style={{
         transform: useDerivedValue(() => [{ rotate: `${spinValue.value}deg` }]),
+        opacity: useDerivedValue(() => (disabled.value ? 0.5 : 1)),
       }}
     >
-      <TouchableOpacity onPress={spin} disabled={disabled}>
+      <TouchableOpacity onPress={spin} disabled={disabled.value}>
         <Pinwheel positions={positions} />
       </TouchableOpacity>
     </Animated.View>
