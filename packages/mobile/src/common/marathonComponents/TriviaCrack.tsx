@@ -1,4 +1,5 @@
 import { SpinnablePinwheel } from "@common/components/Pinwheel";
+import type { PinwheelPosition } from "@common/components/Pinwheel/Pinwheel";
 import { SimpleConfigFragment } from "@common/fragments/Configuration";
 import { showMessage } from "@common/util/alertUtils";
 import { TeamType } from "@ukdanceblue/common";
@@ -9,6 +10,7 @@ import {
 import { Text, View } from "native-base";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator } from "react-native";
+import { runOnJS } from "react-native-reanimated";
 import { G, Path } from "react-native-svg";
 import { useQuery } from "urql";
 
@@ -134,6 +136,13 @@ export function TriviaCrack() {
     );
   }
 
+  function afterSpin(position: PinwheelPosition<number>) {
+    "worklet";
+    if (spins) {
+      runOnJS(setSpins)([...spins, position.value]);
+    }
+  }
+
   const nextStation = stationOrder[spins?.length ?? 0];
 
   return (
@@ -141,11 +150,7 @@ export function TriviaCrack() {
       <SpinnablePinwheel
         getPosition={() => nextStation}
         cooldown={1000}
-        afterSpin={(position) => {
-          // if (spins) {
-          //   runOnJS(setSpins)([...spins, position.value]);
-          // }
-        }}
+        afterSpin={afterSpin}
         positions={[
           {
             value: 1,
