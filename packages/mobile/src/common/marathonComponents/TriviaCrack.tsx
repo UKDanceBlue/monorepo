@@ -9,7 +9,6 @@ import {
 import { Text, View } from "native-base";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator } from "react-native";
-import { runOnJS } from "react-native-reanimated";
 import { G, Path } from "react-native-svg";
 import { useQuery } from "urql";
 
@@ -143,9 +142,9 @@ export function TriviaCrack() {
         getPosition={() => nextStation}
         cooldown={1000}
         afterSpin={(position) => {
-          if (spins) {
-            runOnJS(setSpins)([...spins, position.value]);
-          }
+          // if (spins) {
+          //   runOnJS(setSpins)([...spins, position.value]);
+          // }
         }}
         positions={[
           {
