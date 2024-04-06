@@ -6,16 +6,42 @@ import {
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
 import { Text, View } from "native-base";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { G, Path } from "react-native-svg";
 import { useQuery } from "urql";
 
+const stationNumberToName = (stationNumber: number) => {
+  switch (stationNumber) {
+    case 1: {
+      return "Sports";
+    }
+    case 2: {
+      return "Art";
+    }
+    case 3: {
+      return "Entertainment";
+    }
+    case 4: {
+      return "Geography";
+    }
+    case 5: {
+      return "History";
+    }
+    case 6: {
+      return "Science";
+    }
+    default: {
+      return "Unknown";
+    }
+  }
+};
+
 export function TriviaCrack() {
-  const [{ data, fetching }] = useQuery({
+  const [{ data }] = useQuery({
     query: graphql(/* GraphQL */ `
       query TriviaCrack {
-        activeConfiguration(key: "trivia-crack") {
+        activeConfiguration(key: "TRIVIA_CRACK") {
           data {
             ...SimpleConfig
           }
@@ -34,56 +60,65 @@ export function TriviaCrack() {
       }
     `),
   });
-  const [spins, setSpins] = useState<number[]>([]);
+  const [spins, setSpins] = useState<number[] | null>(null);
   const option = getFragmentData(
     SimpleConfigFragment,
     data?.activeConfiguration.data
   );
 
-  const value = JSON.parse(option?.value || "{}") as unknown;
-  let stationOrder: [number, number, number, number, number, number] | null =
-    null;
-  if (typeof value === "object" && value !== null) {
-    let moraleTeamNumber: number | undefined;
-    if ((data?.me.data?.teams.length ?? 0) > 0) {
-      const moraleTeams =
-        data?.me.data?.teams.filter(
-          (team) => team.team.type === TeamType.Morale
-        ) ?? [];
-      if (moraleTeams[0]?.team.name.startsWith("Morale Team")) {
-        const teamNumber = Number.parseInt(
-          moraleTeams[0].team.name.split(" ")[2],
-          10
-        );
-        if (!Number.isNaN(teamNumber)) {
-          moraleTeamNumber = teamNumber;
+  const stationOrder = useMemo(() => {
+    const value = JSON.parse(option?.value || "{}") as unknown;
+    let stationOrder: [number, number, number, number, number, number] | null =
+      null;
+    if (typeof value === "object" && value !== null) {
+      let moraleTeamNumber: number | undefined;
+      if ((data?.me.data?.teams.length ?? 0) > 0) {
+        const moraleTeams =
+          data?.me.data?.teams.filter(
+            (team) => team.team.type === TeamType.Morale
+          ) ?? [];
+        if (moraleTeams[0]?.team.name.startsWith("Morale Team")) {
+          const teamNumber = Number.parseInt(
+            moraleTeams[0].team.name.split(" ")[2],
+            10
+          );
+          if (!Number.isNaN(teamNumber)) {
+            moraleTeamNumber = teamNumber;
+          }
         }
       }
-    }
 
-    if (moraleTeamNumber) {
-      const moraleTeamNumberString = moraleTeamNumber.toString();
-      if (moraleTeamNumberString in value) {
-        const teamEntry = (value as Record<string, unknown>)[
-          moraleTeamNumberString
-        ];
-        if (
-          Array.isArray(teamEntry) &&
-          teamEntry.length === 6 &&
-          teamEntry.every((x) => typeof x === "number")
-        ) {
-          stationOrder = teamEntry as [
-            number,
-            number,
-            number,
-            number,
-            number,
-            number,
+      if (moraleTeamNumber) {
+        const moraleTeamNumberString = moraleTeamNumber.toString();
+        if (moraleTeamNumberString in value) {
+          const teamEntry = (value as Record<string, unknown>)[
+            moraleTeamNumberString
           ];
+          if (
+            Array.isArray(teamEntry) &&
+            teamEntry.length === 6 &&
+            teamEntry.every((x) => typeof x === "number")
+          ) {
+            stationOrder = teamEntry as [
+              number,
+              number,
+              number,
+              number,
+              number,
+              number,
+            ];
+          }
         }
       }
     }
-  }
+    return stationOrder;
+  }, [data?.me.data?.teams, option?.value]);
+
+  useEffect(() => {
+    if (stationOrder && spins == null) {
+      setSpins([stationOrder[0]]);
+    }
+  }, [spins, stationOrder]);
 
   if (!data) {
     return <ActivityIndicator size="large" />;
@@ -98,10 +133,12 @@ export function TriviaCrack() {
     );
   }
 
+  const nextStation = stationOrder[spins?.length ?? 0];
+
   return (
     <>
       <SpinnablePinwheel
-        getPosition={() => {}}
+        getPosition={() => nextStation}
         cooldown={1000}
         positions={[
           {
@@ -332,10 +369,10 @@ export function TriviaCrack() {
         ]}
       />
       <View>
-        {spins.map((spin, index) => (
+        {spins?.map((spin, index) => (
           <View key={index}>
             <Text>
-              Rotation {index + 1}: {spin}
+              Rotation {index + 1}: {stationNumberToName(spin)}
             </Text>
           </View>
         ))}
