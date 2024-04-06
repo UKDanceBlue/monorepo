@@ -149,11 +149,15 @@ export const FilledNavigationContainer = () => {
               Tab: {
                 path: "/",
                 screens: {
-                  Home: { path: "/" },
-                  Explore: { path: "/explore" },
-                  Events: { path: "/events" },
-                  Teams: { path: "/my-team" },
-                  Marathon: { path: "/scoreboard" },
+                  "Home": { path: "/" },
+                  "Explore": { path: "/explore" },
+                  "Events": { path: "/events" },
+                  "Teams": { path: "/my-team" },
+                  "Marathon": { path: "/scoreboard" },
+                  "DB Moments": { path: "/dbmoments" },
+                  "Info": {
+                    path: "/info",
+                  },
                 },
               },
             },
