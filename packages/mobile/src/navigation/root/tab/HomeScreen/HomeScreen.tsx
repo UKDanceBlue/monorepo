@@ -3,7 +3,7 @@ import { TriviaCrack } from "@common/marathonComponents/TriviaCrack";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { openURL } from "expo-linking";
 import { openBrowserAsync } from "expo-web-browser";
-import { Box, Button, HStack, Text, VStack } from "native-base";
+import { Box, Button, HStack, Text, VStack, View } from "native-base";
 import {
   PixelRatio,
   StatusBar,
@@ -25,7 +25,6 @@ const HomeScreen = () => {
   return (
     <>
       <StatusBar hidden={false} />
-      <TriviaCrack />
       <VStack flexDirection="column" bgColor={bgColor} flex={1}>
         <Box
           flex={1}
@@ -36,6 +35,9 @@ const HomeScreen = () => {
         >
           <HeaderImage />
         </Box>
+        <View width="1/2">
+          <TriviaCrack />
+        </View>
         {/* Placeholder "Welcome to DanceBlue 2024, we're getting things ready for you!\nPlease check back soon!" */}
         <Box
           flex={2}
