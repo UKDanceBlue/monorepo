@@ -1,4 +1,5 @@
 import { universalCatch } from "@common/logging";
+import { TriviaCrack } from "@common/marathonComponents/TriviaCrack";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { openURL } from "expo-linking";
 import { openBrowserAsync } from "expo-web-browser";
@@ -24,6 +25,7 @@ const HomeScreen = () => {
   return (
     <>
       <StatusBar hidden={false} />
+      <TriviaCrack />
       <VStack flexDirection="column" bgColor={bgColor} flex={1}>
         <Box
           flex={1}

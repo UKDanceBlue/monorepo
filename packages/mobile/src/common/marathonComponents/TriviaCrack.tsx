@@ -1,5 +1,6 @@
 import { SpinnablePinwheel } from "@common/components/Pinwheel";
 import { SimpleConfigFragment } from "@common/fragments/Configuration";
+import { showMessage } from "@common/util/alertUtils";
 import { TeamType } from "@ukdanceblue/common";
 import {
   getFragmentData,
@@ -8,6 +9,7 @@ import {
 import { Text, View } from "native-base";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator } from "react-native";
+import { runOnJS } from "react-native-reanimated";
 import { G, Path } from "react-native-svg";
 import { useQuery } from "urql";
 
@@ -36,7 +38,7 @@ const stationNumberToName = (stationNumber: number) => {
     }
   }
 };
-
+showMessage;
 export function TriviaCrack() {
   const [{ data }] = useQuery({
     query: graphql(/* GraphQL */ `
@@ -140,6 +142,11 @@ export function TriviaCrack() {
       <SpinnablePinwheel
         getPosition={() => nextStation}
         cooldown={1000}
+        afterSpin={(position) => {
+          if (spins) {
+            runOnJS(setSpins)([...spins, position.value]);
+          }
+        }}
         positions={[
           {
             value: 1,
