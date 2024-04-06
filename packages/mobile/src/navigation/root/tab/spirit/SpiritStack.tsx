@@ -48,9 +48,9 @@ const currentMarathonDocument = graphql(/* GraphQL */ `
 const SpiritStack = createNativeStackNavigator<SpiritStackParamList>();
 
 const SpiritScreen = () => {
-  const [spiritMode, setSpiritMode] = useState<
-    undefined | "spirit" | "morale"
-  >();
+  const [spiritMode, setSpiritMode] = useState<undefined | "spirit" | "morale">(
+    "morale"
+  );
   const [query, refresh] = useQuery({
     query: scoreBoardDocument,
     variables: {
@@ -64,14 +64,6 @@ const SpiritScreen = () => {
   const [currentMarathonQuery] = useQuery({
     query: currentMarathonDocument,
   });
-
-  useEffect(() => {
-    if (currentMarathonQuery.data) {
-      setSpiritMode(
-        currentMarathonQuery.data.currentMarathon ? "morale" : "spirit"
-      );
-    }
-  }, [currentMarathonQuery.data]);
 
   useEffect(() => {
     if (query.error) {
