@@ -141,12 +141,14 @@ export function useCameraState(): {
             setImages((prev) => ({ ...prev, [checking]: picture }));
 
             toggleFacing();
+            setTimeout(() => {
             setCurrentlyTaking((prev) => ({
               ...prev,
               [checking === CameraType.front
                 ? CameraType.back
                 : CameraType.front]: true,
             }));
+            }, 3000);
           })
           .catch((error: unknown) => {
             Logger.error("Failed to take picture", { error });
