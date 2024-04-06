@@ -1,7 +1,7 @@
-import { G, Path, Svg, Text } from "react-native-svg";
+import { G, Svg } from "react-native-svg";
 
 export interface PinwheelPosition<Value> {
-  text: string;
+  svgGroup: ({ transform }: { transform: string }) => JSX.Element;
   value: Value;
 }
 
@@ -25,29 +25,29 @@ interface Coordinate {
  * @returns The component for the segment
  */
 const PinwheelSegment = ({
-  text,
+  svgGroup,
   centerPoint,
   radius,
   angle,
   rotateBy,
 }: {
-  text: string;
+  svgGroup: ({ transform }: { transform: string }) => JSX.Element;
   centerPoint: Coordinate;
   radius: number;
   angle: number;
   rotateBy: number;
 }) => {
   const arcCoordinateA = {
+    x: centerPoint.x + radius * Math.sin((-(angle / 2) * Math.PI) / 180),
+    y: centerPoint.y - radius * Math.cos((-(angle / 2) * Math.PI) / 180),
+  };
+  const arcCoordinateMid = {
     x: centerPoint.x,
     y: centerPoint.y - radius,
   };
-  const arcCoordinateMid = {
+  const arcCoordinateB = {
     x: centerPoint.x + radius * Math.sin(((angle / 2) * Math.PI) / 180),
     y: centerPoint.y - radius * Math.cos(((angle / 2) * Math.PI) / 180),
-  };
-  const arcCoordinateB = {
-    x: centerPoint.x + radius * Math.sin((angle * Math.PI) / 180),
-    y: centerPoint.y - radius * Math.cos((angle * Math.PI) / 180),
   };
 
   if (
@@ -63,13 +63,11 @@ const PinwheelSegment = ({
   // Rotate the entire thing by rotateBy about the center point
   const groupTransform = `rotate(${rotateBy} ${centerPoint.x} ${centerPoint.y})`;
   // Rotate the content so that it is in line with the segment
-  const contentTransform = `rotate(${-angle} ${arcCoordinateMid.x} ${
-    arcCoordinateMid.y
-  })`;
+  const contentTransform = `translate(${centerPoint.x / 2} 0)`;
 
   return (
     <G transform={groupTransform}>
-      <Path
+      {/* <Path
         d={
           // Move the "stylus" to the center
           `M ${centerPoint.x} ${centerPoint.y} ` +
@@ -80,16 +78,8 @@ const PinwheelSegment = ({
         }
         fill="white"
         stroke="black"
-      />
-      <Text
-        x={arcCoordinateMid.x}
-        y={arcCoordinateMid.y}
-        textAnchor="end"
-        alignmentBaseline="middle"
-        transform={contentTransform}
-      >
-        {text}
-      </Text>
+      /> */}
+      {svgGroup({ transform: contentTransform })}
     </G>
   );
 };
@@ -105,14 +95,14 @@ function Pinwheel<Values>({
   positions: PinwheelPosition<Values>[];
 }) {
   return (
-    <Svg height="100%" width="100%" viewBox="0 0 110 110">
+    <Svg height="100%" width="100%" viewBox="0 0 2000 2000">
       {positions.map((position, index) => {
         return (
           <PinwheelSegment
             key={index}
-            text={position.text}
-            centerPoint={{ x: 55, y: 55 }}
-            radius={50}
+            svgGroup={position.svgGroup}
+            centerPoint={{ x: 1000, y: 1000 }}
+            radius={900}
             angle={360 / positions.length}
             rotateBy={(360 / positions.length) * index}
           />

@@ -17,26 +17,23 @@ function SpinnablePinwheel<Values>({
   positions,
   getPosition,
   afterSpin,
+  cooldown,
 }: {
   positions: PinwheelPosition<Values>[];
   getPosition: (positions: PinwheelPosition<Values>[]) => number;
   afterSpin?: (position: PinwheelPosition<Values>) => void;
+  cooldown?: number;
 }) {
   const spinValue = useSharedValue(0);
+  const disabled = useSharedValue(false);
 
   const spin = () => {
     const segmentAngle = 360 / positions.length;
     const selectedPosition = getPosition(positions);
-    // We need to go an extra 0.5 segments to make sure the pinwheel stops at the right position
-    const targetPosition = selectedPosition * segmentAngle - segmentAngle / 2;
+    const targetPosition = selectedPosition * segmentAngle - segmentAngle;
 
     const spinMagnitude = Math.floor(Math.random() * 4) + 2;
     const vanitySpin = 360 * spinMagnitude;
-
-    // spinValue.value = withTiming(targetSpin, {
-    //   duration: spinDuration,
-    //   easing: Easing.out(Easing.bezierFn(0, 0.09, 0.41, -0.46)),
-    // });
 
     const finalPosition = vanitySpin - targetPosition;
     const spinDuration = Math.abs(finalPosition - spinValue.value) / SPIN_SPEED;
@@ -51,6 +48,8 @@ function SpinnablePinwheel<Values>({
         if (afterSpin) runOnJS(afterSpin)(positions[selectedPosition]);
       }
     );
+
+    disabled.value = with
   };
 
   return (
@@ -59,7 +58,7 @@ function SpinnablePinwheel<Values>({
         transform: useDerivedValue(() => [{ rotate: `${spinValue.value}deg` }]),
       }}
     >
-      <TouchableOpacity onPress={spin}>
+      <TouchableOpacity onPress={spin} disabled={disabled}>
         <Pinwheel positions={positions} />
       </TouchableOpacity>
     </Animated.View>
