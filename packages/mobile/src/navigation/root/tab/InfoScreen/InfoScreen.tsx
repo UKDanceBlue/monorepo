@@ -1,16 +1,18 @@
 import { universalCatch } from "@common/logging";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { openURL } from "expo-linking";
-import { openBrowserAsync } from "expo-web-browser";
 import { Box, Button, HStack, Text, VStack } from "native-base";
 import {
   PixelRatio,
+  Share,
   StatusBar,
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
 
 import { useReactNavigationTheme } from "../../../../theme";
+
+import HeaderImage from "./HeaderImage";
 
 /**
  * Component for home screen in main navigation
@@ -29,7 +31,9 @@ const InfoScreen = () => {
           borderBottomColor="secondary.400"
           borderBottomWidth={2}
           borderBottomStyle="solid"
-        ></Box>
+        >
+          <HeaderImage />
+        </Box>
         {/* Placeholder "Welcome to DanceBlue 2024, we're getting things ready for you!\nPlease check back soon!" */}
         <Box
           flex={2}
@@ -38,8 +42,7 @@ const InfoScreen = () => {
           width={screenWidth}
         >
           <Text fontSize={fontScale * 40} marginX={"1/6"} textAlign="center">
-            Welcome to DanceBlue Marathon 2024!\nWe are so excited that you are
-            here!
+            Welcome to DanceBlue Marathon 2024!
           </Text>
         </Box>
         <Box flex={1} justifyContent="center">
@@ -59,16 +62,18 @@ const InfoScreen = () => {
             </Button>
             <Button
               onPress={() => {
-                openBrowserAsync("https://dancblue.org/db24-live").catch(
-                  universalCatch
-                );
+                Share.share({
+                  url: "https://dancblue.org/db24-live",
+                  message: "Click to view the 2024 DanceBlue Live Stream!",
+                  title: "DanceBlue '24 Live Stream",
+                }).catch(universalCatch);
               }}
               width="2/5"
               backgroundColor={"secondary.400"}
               _text={{ color: "primary.600" }}
               _pressed={{ opacity: 0.6 }}
             >
-              Link to the Live Stream!!
+              Share the Live Stream!
             </Button>
           </HStack>
           <HStack justifyContent="center">
