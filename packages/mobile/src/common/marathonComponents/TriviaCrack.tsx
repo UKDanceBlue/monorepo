@@ -65,12 +65,12 @@ export function TriviaCrack() {
     data?.activeConfiguration.data
   );
 
-  const stationOrder = useMemo(() => {
+  const { stationOrder, moraleTeamNumber } = useMemo(() => {
     const value = JSON.parse(option?.value || "{}") as unknown;
     let stationOrder: [number, number, number, number, number, number] | null =
       null;
+    let moraleTeamNumber: number | undefined;
     if (typeof value === "object" && value !== null) {
-      let moraleTeamNumber: number | undefined;
       if ((data?.me.data?.teams.length ?? 0) > 0) {
         const moraleTeams =
           data?.me.data?.teams.filter(
@@ -90,7 +90,7 @@ export function TriviaCrack() {
 
       alert(moraleTeamNumber);
 
-      if (moraleTeamNumber) {
+      if (moraleTeamNumber != null) {
         const moraleTeamNumberString = moraleTeamNumber.toString();
         if (moraleTeamNumberString in value) {
           const teamEntry = (value as Record<string, unknown>)[
@@ -114,7 +114,7 @@ export function TriviaCrack() {
         }
       }
     }
-    return stationOrder;
+    return { stationOrder, moraleTeamNumber };
   }, [data?.me.data?.teams, option?.value]);
 
   useEffect(() => {
@@ -138,6 +138,7 @@ export function TriviaCrack() {
 
   return (
     <View>
+      <Text>Morale Team {moraleTeamNumber} Stations:</Text>
       {spins?.map((spin, index) => (
         <View key={index}>
           <Text>
