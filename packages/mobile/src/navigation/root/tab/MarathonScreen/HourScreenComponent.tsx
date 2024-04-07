@@ -2,6 +2,7 @@ import ImageView, {
   ImageViewFragment,
 } from "@common/components/ImageView/ImageView";
 import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
+import { TriviaCrack } from "@common/marathonComponents/TriviaCrack";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import {
   getFragmentData,
@@ -114,6 +115,7 @@ export const HourScreenComponent = ({
           ))}
         </ScrollView>
       )}
+      {hourScreenData.title === "Trivia Crack" && <TriviaCrack />}
       <NativeBaseMarkdown>{hourScreenData.details || ""}</NativeBaseMarkdown>
     </ScrollView>
   );
