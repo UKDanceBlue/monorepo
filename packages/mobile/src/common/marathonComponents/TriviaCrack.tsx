@@ -13,22 +13,22 @@ import { useQuery } from "urql";
 const stationNumberToName = (stationNumber: number) => {
   switch (stationNumber) {
     case 1: {
-      return "Sports";
+      return "Art";
     }
     case 2: {
-      return "Art";
+      return "Sports";
     }
     case 3: {
       return "Entertainment";
     }
     case 4: {
-      return "Geography";
+      return "Science";
     }
     case 5: {
       return "History";
     }
     case 6: {
-      return "Science";
+      return "Geography";
     }
     default: {
       return "Unknown";
