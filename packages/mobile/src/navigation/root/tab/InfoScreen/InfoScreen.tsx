@@ -63,7 +63,7 @@ const InfoScreen = () => {
             <Button
               onPress={() => {
                 Share.share({
-                  url: "https://dancblue.org/db24-live",
+                  url: "https://db24.danceblue.org",
                   message: "Click to view the 2024 DanceBlue Live Stream!",
                   title: "DanceBlue '24 Live Stream",
                 }).catch(universalCatch);
