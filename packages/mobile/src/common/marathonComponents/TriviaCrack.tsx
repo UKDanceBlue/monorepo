@@ -59,7 +59,7 @@ export function TriviaCrack() {
       }
     `),
   });
-  alert(JSON.stringify(data));
+
   const [spins, setSpins] = useState<number[] | null>(null);
   const option = getFragmentData(
     SimpleConfigFragment,
@@ -78,7 +78,6 @@ export function TriviaCrack() {
             (team) => team.team.type === TeamType.Morale
           ) ?? [];
         if (moraleTeams[0]?.team.name.startsWith("Morale Team")) {
-          alert(moraleTeams[0].team.name);
           const teamNumber = Number.parseInt(
             moraleTeams[0].team.name.split(" ")[2],
             10
@@ -89,15 +88,12 @@ export function TriviaCrack() {
         }
       }
 
-      alert(moraleTeamNumber);
-
       if (moraleTeamNumber != null) {
         const moraleTeamNumberString = moraleTeamNumber.toString();
         if (moraleTeamNumberString in value) {
           const teamEntry = (value as Record<string, unknown>)[
             moraleTeamNumberString
           ];
-          alert(teamEntry);
           if (
             Array.isArray(teamEntry) &&
             teamEntry.length === 6 &&
