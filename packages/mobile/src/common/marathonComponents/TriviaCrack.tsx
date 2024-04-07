@@ -59,6 +59,7 @@ export function TriviaCrack() {
       }
     `),
   });
+  alert(JSON.stringify(data));
   const [spins, setSpins] = useState<number[] | null>(null);
   const option = getFragmentData(
     SimpleConfigFragment,
