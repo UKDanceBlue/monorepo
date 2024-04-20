@@ -75,23 +75,6 @@ enum AuthSource {
 }
 
 """
-The identifier for a committee
-"""
-enum CommitteeIdentifier {
-  communityDevelopmentCommittee
-  corporateCommittee
-  dancerRelationsCommittee
-  familyRelationsCommittee
-  fundraisingCommittee
-  marketingCommittee
-  miniMarathonsCommittee
-  operationsCommittee
-  programmingCommittee
-  techCommittee
-  viceCommittee
-}
-
-"""
 Roles within a committee
 """
 enum CommitteeRole {
@@ -142,6 +125,19 @@ enum PointType {
 
 enum ErrorCode {
   INTERNAL_ERROR
+}
+
+"""
+All the tabs the app can show
+"""
+enum MobileAppTab {
+  Home
+  Events
+  Explore
+  Teams
+  Marathon
+  DBMoments
+  Info
 }
 
 # Re-used Types
@@ -258,24 +254,35 @@ interface Result implements Errorable {
 
 type Configuration {
   uuid: UUID!
-  createdAt: DateTimeISO
+
   key: String!
-  updatedAt: DateTimeISO
+  value: String!
   validAfter: DateTimeISO
   validUntil: DateTimeISO
-  value: String!
+
+  setBy: Person
+
+  updatedAt: DateTimeISO
+  createdAt: DateTimeISO
+}
+
+type MobileAppConfiguration {
+  shownTabs: [MobileAppTab!]!
+  fancyTab: MobileAppTab
+  allowedLoginTypes: [AuthSource!]!
 }
 
 type Device {
   uuid: UUID!
-  createdAt: DateTimeISO
-  expoPushToken: String
+
   lastLoggedInUser: Person
   lastLogin: DateTimeISO
   notificationDeliveries(
     page: PositiveInt = 1
     pageSize: NonNegativeInt = 10
   ): [NotificationDelivery!]!
+
+  createdAt: DateTimeISO
   updatedAt: DateTimeISO
 }
 
@@ -289,7 +296,9 @@ type Event {
   location: String
   occurrences: [IntervalISO!]!
 
+  updatedBy: Person
   updatedAt: DateTimeISO
+  createdBy: Person
   createdAt: DateTimeISO
 }
 
@@ -300,7 +309,9 @@ type Feed {
   image: Image
   textContent: String
 
+  updatedBy: Person
   updatedAt: DateTimeISO
+  createdBy: Person
   createdAt: DateTimeISO
 }
 
@@ -314,8 +325,35 @@ type Image {
   height: NonNegativeInt!
   width: NonNegativeInt!
 
+  updatedBy: Person
   updatedAt: DateTimeISO
+  createdBy: Person
   createdAt: DateTimeISO
+}
+
+"""
+Describes a set of teams whose points are compared
+"""
+type Leaderboard {
+  uuid: UUID!
+
+  """
+  An ordered list of teams
+  """
+  teams: [Team!]!
+
+  # The filters applied to this leaderboard
+  legacyStatus: TeamLegacyStatus
+  """
+  If true: only committee teams are included, if false: only non-committee teams are included, if null: all teams are included
+  """
+  committee: Boolean
+  pointType: PointType!
+
+  """
+  A short user-friendly description of the leaderboard
+  """
+  description: String
 }
 
 type MarathonHour {
@@ -327,7 +365,9 @@ type MarathonHour {
 
   shownStartingAt: DateTimeISO!
 
+  updatedBy: Person
   createdAt: DateTimeISO
+  createdBy: Person
   updatedAt: DateTimeISO
 }
 
@@ -336,15 +376,38 @@ type Marathon {
 
   hours: [MarathonHour!]!
 
-  interval: IntervalISO!
-
-  updatedAt: DateTimeISO
-  createdAt: DateTimeISO
-
   """
   A four digit year
   """
   year: String!
+  interval: IntervalISO!
+
+  allSpiritTeamsLeaderboard: Leaderboard!
+  returningSpiritTeamsLeaderboard: Leaderboard!
+  newSpiritTeamsLeaderboard: Leaderboard!
+  committeeSpiritTeamsLeaderboard: Leaderboard!
+  nonCommitteeSpiritTeamsLeaderboard: Leaderboard!
+  moraleLeaderboard: Leaderboard!
+
+  communityDevelopmentCommittee: Committee!
+  corporateCommittee: Committee!
+  dancerRelationsCommittee: Committee!
+  familyRelationsCommittee: Committee!
+  fundraisingCommittee: Committee!
+  marketingCommittee: Committee!
+  miniMarathonsCommittee: Committee!
+  operationsCommittee: Committee!
+  programmingCommittee: Committee!
+  techCommittee: Committee!
+  viceCommittee: Committee!
+  overallCommittee: Committee!
+
+  teams: [Team!]!
+
+  updatedBy: Person
+  createdAt: DateTimeISO
+  createdBy: Person
+  updatedAt: DateTimeISO
 }
 
 type Membership {
@@ -355,8 +418,10 @@ type Membership {
 
   position: MembershipPositionType!
 
-  updatedAt: DateTimeISO
+  updatedBy: Person
   createdAt: DateTimeISO
+  createdBy: Person
+  updatedAt: DateTimeISO
 }
 
 type NotificationDelivery {
@@ -394,6 +459,7 @@ type Notification {
   title: String!
   body: String!
 
+  sentBy: Person
   """
   The time the notification is scheduled to be sent, if null it is either already sent or unscheduled.
   """
@@ -410,8 +476,10 @@ type Notification {
   deliveryIssueAcknowledgedAt: DateTimeISO
   deliveryIssueCount: NonNegativeInt!
 
-  updatedAt: DateTimeISO
+  updatedBy: Person
   createdAt: DateTimeISO
+  createdBy: Person
+  updatedAt: DateTimeISO
 }
 
 type Person {
@@ -419,12 +487,16 @@ type Person {
 
   role: Role!
   teams: [Membership!]!
+  primaryCommittee: Committee
+  committees: [Committee!]!
 
+  name: String
   email: String!
   linkblue: String
-  name: String
 
+  updatedBy: Person
   updatedAt: DateTimeISO
+  createdBy: Person
   createdAt: DateTimeISO
 }
 
@@ -438,7 +510,9 @@ type PointEntry {
   pointOpportunity: PointOpportunity
   points: NonNegativeInt!
 
+  updatedBy: Person
   updatedAt: DateTimeISO
+  createdBy: Person
   createdAt: DateTimeISO
 }
 
@@ -447,16 +521,20 @@ type PointOpportunity {
 
   event: Event
 
+  marathon: Marathon!
+
   name: String!
   opportunityDate: DateTimeISO
   type: PointType!
 
+  updatedBy: Person
   updatedAt: DateTimeISO
+  createdBy: Person
   createdAt: DateTimeISO
 }
 
 type Role {
-  committeeIdentifier: CommitteeIdentifier
+  committee: Committee
   committeeRole: CommitteeRole
   dbRole: DbRole!
 }
@@ -467,12 +545,16 @@ type Team {
   members: [Membership!]!
   pointEntries: [PointEntry!]!
 
+  marathon: Marathon!
+
   legacyStatus: TeamLegacyStatus!
   type: PointType!
   name: String!
   totalPoints: NonNegativeInt!
 
+  updatedBy: Person
   updatedAt: DateTimeISO
+  createdBy: Person
   createdAt: DateTimeISO
 }
 
@@ -481,36 +563,16 @@ type Committee {
 
   team: Team!
 
+  chairs: [Person!]!
+  coordinators: [Person!]!
+  members: [Person!]!
+  allMembers: [Person!]!
+
   parentCommittee: Committee
   subCommittees: [Committee!]!
 
-  committeeIdentifier: CommitteeIdentifier!
-
+  updatedBy: Person
   updatedAt: DateTimeISO
+  createdBy: Person
   createdAt: DateTimeISO
-}
-
-# Input types for mutations
-
-# Output types for mutations
-
-# Connection types
-
-# Output types for queries
-
-# Root types
-
-type Query {
-  me: Person
-
-  node(
-    """
-    The ID of the node to retrieve
-    """
-    id: NodeID!
-  ): Node
-}
-
-type Mutation {
-
 }
