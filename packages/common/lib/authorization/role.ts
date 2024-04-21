@@ -1,4 +1,4 @@
-import type { RoleResource } from "../api/resources/Role.js";
+import type { RoleResource } from "../api/types/Role.js";
 
 import type { Authorization } from "./structures.js";
 import {

@@ -12,8 +12,7 @@ import {
   isCommitteeIdentifier,
 } from "../../authorization/structures.js";
 import { roleToAccessLevel, roleToAuthorization } from "../../index.js";
-
-import { Resource } from "./Resource.js";
+import { Resource } from "../resources/Resource.js";
 
 @InputType("RoleResourceInput")
 @ObjectType()
