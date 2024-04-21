@@ -1,7 +1,8 @@
 import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
 
-import { TimestampedResource } from "./Resource.js";
+import { Node, createNodeClasses } from "../relay.js";
 
+import { TimestampedResource } from "./Resource.js";
 export const MembershipPositionType = {
   Member: "Member",
   Captain: "Captain",
@@ -15,7 +16,7 @@ registerEnumType(MembershipPositionType, {
 });
 
 @ObjectType()
-export class MembershipResource extends TimestampedResource {
+export class MembershipResource extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
 
@@ -30,3 +31,6 @@ export class MembershipResource extends TimestampedResource {
     return MembershipResource.doInit(init);
   }
 }
+
+export const { MembershipConnection, MembershipEdge, MembershipResult } =
+  createNodeClasses(MembershipResource, "Membership");

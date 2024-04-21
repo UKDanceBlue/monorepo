@@ -3,9 +3,9 @@ import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
 import { AccessControl } from "../../authorization/accessControl.js";
 import { AccessLevel } from "../../authorization/structures.js";
 import * as SimpleTypes from "../../utility/primitive/SimpleTypes.js";
+import { Node, createNodeClasses } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
-
 export const TeamType = {
   Spirit: "Spirit",
   Morale: "Morale",
@@ -34,7 +34,7 @@ registerEnumType(TeamLegacyStatus, {
 });
 
 @ObjectType()
-export class TeamResource extends TimestampedResource {
+export class TeamResource extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
   @Field(() => String)
@@ -58,3 +58,8 @@ export class TeamResource extends TimestampedResource {
     return TeamResource.doInit(init);
   }
 }
+
+export const { TeamConnection, TeamEdge, TeamResult } = createNodeClasses(
+  TeamResource,
+  "Team"
+);

@@ -1,10 +1,11 @@
 import { DateTimeISOResolver } from "graphql-scalars";
 import { Field, ID, ObjectType } from "type-graphql";
 
-import { TimestampedResource } from "./Resource.js";
+import { Node, createNodeClasses } from "../relay.js";
 
+import { TimestampedResource } from "./Resource.js";
 @ObjectType()
-export class MarathonResource extends TimestampedResource {
+export class MarathonResource extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
   @Field(() => String)
@@ -36,3 +37,6 @@ export class MarathonResource extends TimestampedResource {
     return this.id;
   }
 }
+
+export const { MarathonConnection, MarathonEdge, MarathonResult } =
+  createNodeClasses(MarathonResource, "Marathon");

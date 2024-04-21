@@ -1,10 +1,11 @@
 import { URLResolver } from "graphql-scalars";
 import { Field, ID, Int, ObjectType } from "type-graphql";
 
-import { TimestampedResource } from "./Resource.js";
+import { Node, createNodeClasses } from "../relay.js";
 
+import { TimestampedResource } from "./Resource.js";
 @ObjectType()
-export class ImageResource extends TimestampedResource {
+export class ImageResource extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
 
@@ -34,3 +35,8 @@ export class ImageResource extends TimestampedResource {
     return ImageResource.doInit(init);
   }
 }
+
+export const { ImageConnection, ImageEdge, ImageResult } = createNodeClasses(
+  ImageResource,
+  "Image"
+);

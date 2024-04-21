@@ -5,7 +5,6 @@ import { Field, ID, ObjectType } from "type-graphql";
 import { Node, createNodeClasses } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
-
 @ObjectType({ implements: [TimestampedResource, Node] })
 export class DeviceResource extends TimestampedResource implements Node {
   @Field(() => ID)
@@ -24,8 +23,7 @@ export class DeviceResource extends TimestampedResource implements Node {
   }
 }
 
-export const {
-  ConnectionClass: DeviceConnection,
-  EdgeClass: DeviceEdge,
-  ResultClass: DeviceResult,
-} = createNodeClasses(DeviceResource, "Device");
+export const { DeviceConnection, DeviceEdge, DeviceResult } = createNodeClasses(
+  DeviceResource,
+  "Device"
+);

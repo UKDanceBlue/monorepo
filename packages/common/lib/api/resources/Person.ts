@@ -1,11 +1,13 @@
 import { Field, ID, ObjectType } from "type-graphql";
 
+import { Node, createNodeClasses } from "../relay.js";
+
 import { AuthIdPairResource } from "./AuthIdPair.js";
 import { TimestampedResource } from "./Resource.js";
 import { RoleResource, defaultRole } from "./Role.js";
 
 @ObjectType()
-export class PersonResource extends TimestampedResource {
+export class PersonResource extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
   @Field(() => [AuthIdPairResource], {
@@ -50,3 +52,8 @@ export class PersonResource extends TimestampedResource {
     return resource;
   }
 }
+
+export const { PersonConnection, PersonEdge, PersonResult } = createNodeClasses(
+  PersonResource,
+  "Person"
+);

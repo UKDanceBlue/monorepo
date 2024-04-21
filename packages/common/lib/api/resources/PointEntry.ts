@@ -1,9 +1,10 @@
 import { Field, ID, Int, ObjectType } from "type-graphql";
 
-import { TimestampedResource } from "./Resource.js";
+import { Node, createNodeClasses } from "../relay.js";
 
+import { TimestampedResource } from "./Resource.js";
 @ObjectType()
-export class PointEntryResource extends TimestampedResource {
+export class PointEntryResource extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
   @Field(() => String, { nullable: true })
@@ -19,3 +20,6 @@ export class PointEntryResource extends TimestampedResource {
     return PointEntryResource.doInit(init);
   }
 }
+
+export const { PointEntryConnection, PointEntryEdge, PointEntryResult } =
+  createNodeClasses(PointEntryResource, "PointEntry");

@@ -1,7 +1,8 @@
 import { Field, ID, ObjectType } from "type-graphql";
 
-import { TimestampedResource } from "./Resource.js";
+import { Node, createNodeClasses } from "../relay.js";
 
+import { TimestampedResource } from "./Resource.js";
 // TODO: Expand this to include more types of feed items
 // export const FeedResourceType = {
 //   FeaturedImage: "FeaturedImage",
@@ -14,7 +15,7 @@ import { TimestampedResource } from "./Resource.js";
 // });
 
 @ObjectType()
-export class FeedResource extends TimestampedResource {
+export class FeedResource extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
 
@@ -38,3 +39,8 @@ export class FeedResource extends TimestampedResource {
     return FeedResource.doInit(init);
   }
 }
+
+export const { FeedConnection, FeedEdge, FeedResult } = createNodeClasses(
+  FeedResource,
+  "Feed"
+);

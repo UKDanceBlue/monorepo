@@ -47,36 +47,47 @@ export abstract class Result<N extends Node = Node> implements Errorable {
   errors!: ResourceError[];
 }
 
-export function createNodeClasses<T extends Node>(
+export function createNodeClasses<T extends Node, Name extends string>(
   cls: new () => T,
-  name: string
-): {
-  EdgeClass: new () => Edge<T>;
-  ConnectionClass: new () => Connection<Edge<T>>;
-  ResultClass: new () => Result<T>;
-} {
-  @ObjectType(`Node${name}`, { implements: Edge })
+  name: Name
+) {
+  const edgeClassName = `${name}Edge` as const;
+  @ObjectType(edgeClassName, { implements: Edge })
   class EdgeClass extends Edge {
     @Field(() => cls)
     node!: T;
   }
 
-  @ObjectType(`${name}Connection`, { implements: Connection })
+  const connectionClassName = `${name}Connection` as const;
+  @ObjectType(connectionClassName, { implements: Connection })
   class ConnectionClass extends Connection {
     @Field(() => [EdgeClass])
     edges!: EdgeClass[];
   }
 
-  @ObjectType(`${name}Result`, { implements: Result })
+  const resultClassName = `${name}Result` as const;
+  @ObjectType(resultClassName, { implements: Result })
   class ResultClass extends Result {
     @Field(() => cls, { nullable: true })
     node?: T;
   }
 
   return {
-    EdgeClass,
-    ConnectionClass,
-    ResultClass,
+    [edgeClassName]: EdgeClass,
+    [connectionClassName]: ConnectionClass,
+    [resultClassName]: ResultClass,
+  } as {
+    // Type magic to let autocomplete work
+    [K in
+      | `${Name}Edge`
+      | `${Name}Connection`
+      | `${Name}Result`]: K extends `${Name}Edge`
+      ? typeof EdgeClass
+      : K extends `${Name}Connection`
+        ? typeof ConnectionClass
+        : K extends `${Name}Result`
+          ? typeof ResultClass
+          : never;
   };
 }
 

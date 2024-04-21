@@ -2,6 +2,8 @@ import { DateTimeISOResolver } from "graphql-scalars";
 import { Interval } from "luxon";
 import { Field, ID, ObjectType } from "type-graphql";
 
+import { createNodeClasses } from "../relay.js";
+
 import { Resource, TimestampedResource } from "./Resource.js";
 
 @ObjectType()
@@ -45,3 +47,8 @@ export class EventOccurrenceResource extends Resource {
     return EventOccurrenceResource.doInit(init);
   }
 }
+
+export const { EventConnection, EventEdge, EventResult } = createNodeClasses(
+  EventResource,
+  "Event"
+);

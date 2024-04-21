@@ -5,7 +5,6 @@ import { AccessControl } from "../../authorization/accessControl.js";
 import { AccessLevel } from "../../index.js";
 
 import { TimestampedResource } from "./Resource.js";
-
 @ObjectType()
 export class NotificationResource extends TimestampedResource {
   @Field(() => ID)

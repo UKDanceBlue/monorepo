@@ -5,7 +5,6 @@ import { Field, ID, ObjectType } from "type-graphql";
 import { Node, createNodeClasses } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
-
 /*
 The way configurations work is that there can be n number of configurations,
 each with it's own UUID. When multiple configurations are created with the
@@ -44,7 +43,7 @@ export class ConfigurationResource extends TimestampedResource implements Node {
 }
 
 export const {
-  ConnectionClass: ConfigurationConnection,
-  EdgeClass: ConfigurationEdge,
-  ResultClass: ConfigurationResult,
+  ConfigurationConnection,
+  ConfigurationEdge,
+  ConfigurationResult,
 } = createNodeClasses(ConfigurationResource, "Configuration");
