@@ -26,7 +26,6 @@ export { PointOpportunityResource as PointOpportunityNode } from "./PointOpportu
 export {
   Resource as Node,
   TimestampedResource as TimestampedNode,
-  TrackedResource as TrackedNode,
 } from "./Resource.js";
 export {
   TeamLegacyStatus,

@@ -4,8 +4,6 @@ import type { Class } from "utility-types";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 
-import { PersonResource } from "./Person.js";
-
 @ObjectType()
 export abstract class Resource {
   /**
@@ -41,12 +39,4 @@ export abstract class TimestampedResource extends Resource {
   get updatedAtDateTime(): DateTime | null {
     return dateTimeFromSomething(this.updatedAt ?? null);
   }
-}
-
-@ObjectType()
-export abstract class TrackedResource extends TimestampedResource {
-  @Field(() => PersonResource, { nullable: true })
-  createdBy?: PersonResource | null;
-  @Field(() => PersonResource, { nullable: true })
-  updatedBy?: PersonResource | null;
 }

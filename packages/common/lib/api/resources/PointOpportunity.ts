@@ -2,6 +2,8 @@ import { DateTimeISOResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, ID, ObjectType } from "type-graphql";
 
+import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
+
 import { TimestampedResource } from "./Resource.js";
 import { TeamType } from "./Team.js";
 
@@ -14,7 +16,10 @@ export class PointOpportunityResource extends TimestampedResource {
   @Field(() => TeamType)
   type!: TeamType;
   @Field(() => DateTimeISOResolver, { nullable: true })
-  opportunityDate!: DateTime | null;
+  opportunityDate!: Date | null;
+  get opportunityDateTime(): DateTime | null {
+    return dateTimeFromSomething(this.opportunityDate ?? null);
+  }
 
   public getUniqueId(): string {
     return this.id;

@@ -1,6 +1,8 @@
 import { DateTimeISOResolver } from "graphql-scalars";
+import type { DateTime } from "luxon";
 import { Field, ID, ObjectType } from "type-graphql";
 
+import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { Node, createNodeClasses } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
@@ -13,7 +15,10 @@ export class MarathonHourResource extends TimestampedResource implements Node {
   @Field(() => String, { nullable: true })
   details?: string | null;
   @Field(() => DateTimeISOResolver)
-  shownStartingAt!: string;
+  shownStartingAt!: Date;
+  get shownStartingAtDateTime(): DateTime {
+    return dateTimeFromSomething(this.shownStartingAt);
+  }
   @Field(() => String)
   durationInfo!: string;
 

@@ -1,8 +1,7 @@
-import { DateTimeISOResolver } from "graphql-scalars";
-import { Interval } from "luxon";
 import { Field, ID, ObjectType } from "type-graphql";
 
 import { createNodeClasses } from "../relay.js";
+import { IntervalISO } from "../types/IntervalISO.js";
 
 import { Resource, TimestampedResource } from "./Resource.js";
 
@@ -34,8 +33,8 @@ export class EventResource extends TimestampedResource {
 export class EventOccurrenceResource extends Resource {
   @Field(() => ID)
   id!: string;
-  @Field(() => DateTimeISOResolver)
-  interval!: Interval;
+  @Field(() => IntervalISO)
+  interval!: IntervalISO;
   @Field(() => Boolean)
   fullDay!: boolean;
 
