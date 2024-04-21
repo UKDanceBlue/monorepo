@@ -36,10 +36,6 @@ export * from "./utility/time/intervalTools.js";
 export * from "./api/resources/index.js";
 export * from "./utility/errors/DetailedError.js";
 
-export * from "./api/scalars/DateRangeScalar.js";
-export * from "./api/scalars/DateTimeScalar.js";
-export * from "./api/scalars/DurationScalar.js";
-
 export * from "./api/filtering/list-query-args/FilterItem.js";
 export * from "./api/filtering/list-query-args/FilteredListQueryArgs.js";
 export * from "./api/filtering/list-query-args/UnfilteredListQueryArgs.js";

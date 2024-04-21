@@ -1,5 +1,7 @@
 export { AuthIdPairResource } from "../types/AuthIdPair.js";
+export { IntervalISO } from "../types/IntervalISO.js";
 export { RoleResource, defaultRole } from "../types/Role.js";
+
 export { ConfigurationResource } from "./Configuration.js";
 export { DeviceResource } from "./Device.js";
 export { EventOccurrenceResource, EventResource } from "./Event.js";
@@ -17,3 +19,6 @@ export { PointEntryResource } from "./PointEntry.js";
 export { PointOpportunityResource } from "./PointOpportunity.js";
 export { Resource, TimestampedResource } from "./Resource.js";
 export { TeamLegacyStatus, TeamResource, TeamType } from "./Team.js";
+
+export * from "../relay.js";
+export * from "../resourceError.js";
