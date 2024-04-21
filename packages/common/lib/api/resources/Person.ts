@@ -2,7 +2,7 @@ import { Field, ID, ObjectType } from "type-graphql";
 
 import { Node, createNodeClasses } from "../relay.js";
 import { AuthIdPairResource } from "../types/AuthIdPair.js";
-import { RoleResource, defaultRole } from "../types/Role.js";
+import { Role, defaultRole } from "../types/Role.js";
 
 import { TimestampedResource } from "./Resource.js";
 
@@ -20,8 +20,8 @@ export class PersonResource extends TimestampedResource implements Node {
   email!: string;
   @Field(() => String, { nullable: true })
   linkblue!: string | null;
-  @Field(() => RoleResource)
-  role!: RoleResource;
+  @Field(() => Role)
+  role!: Role;
 
   public getUniqueId(): string {
     return this.id;
@@ -33,7 +33,7 @@ export class PersonResource extends TimestampedResource implements Node {
     name?: string | null;
     email: string;
     linkblue?: string | null;
-    role?: RoleResource | null;
+    role?: Role | null;
     createdAt?: Date | null;
     updatedAt?: Date | null;
   }) {

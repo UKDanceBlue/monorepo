@@ -1,4 +1,4 @@
-import type { OptionalToNullable, Resource } from "@ukdanceblue/common";
+import type { Node, OptionalToNullable } from "@ukdanceblue/common";
 import { ArgsType, Field, Int } from "type-graphql";
 
 import type { ListQueryType } from "../ListQueryTypes.js";
@@ -8,7 +8,7 @@ import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./common.js";
 
 @ArgsType()
 export class UnfilteredListQueryArgs<SortByKeys extends string = never>
-  implements OptionalToNullable<Partial<ListQueryType<Resource>>>
+  implements OptionalToNullable<Partial<ListQueryType<Node>>>
 {
   @Field(() => Boolean, {
     nullable: true,

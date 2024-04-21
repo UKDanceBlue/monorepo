@@ -29,40 +29,50 @@ export function validateInterval(
 
 export function dateTimeFromSomething(
   something: string | number | Date | DateTime
-): DateTime;
+): DateTime<true>;
 export function dateTimeFromSomething(something: null): null;
 export function dateTimeFromSomething(something: undefined): undefined;
 export function dateTimeFromSomething(
   something: string | number | Date | DateTime | null
-): DateTime | null;
+): DateTime<true> | null;
 export function dateTimeFromSomething(
   something: string | number | Date | DateTime | undefined
-): DateTime | undefined;
+): DateTime<true> | undefined;
 export function dateTimeFromSomething(
   something: string | number | Date | DateTime | null | undefined
-): DateTime | null | undefined;
+): DateTime<true> | null | undefined;
 export function dateTimeFromSomething(
   something: string | number | Date | DateTime | null | undefined
-): DateTime | null | undefined {
+): DateTime<true> | null | undefined {
   if (something == null) {
     return something;
   }
+  let dateTime = null;
   switch (typeof something) {
     case "string": {
-      return DateTime.fromISO(something);
+      dateTime = DateTime.fromISO(something);
+      break;
     }
     case "number": {
-      return DateTime.fromMillis(something);
+      dateTime = DateTime.fromMillis(something);
+      break;
     }
     case "object": {
-      return something instanceof Date
-        ? DateTime.fromJSDate(something)
-        : DateTime.isDateTime(something)
-        ? something
-        : DateTime.invalid("Invalid input type for dateTimeFromSomething");
+      dateTime =
+        something instanceof Date
+          ? DateTime.fromJSDate(something)
+          : DateTime.isDateTime(something)
+            ? something
+            : DateTime.invalid("Invalid input type for dateTimeFromSomething");
+      break;
     }
     default: {
-      return DateTime.invalid("Invalid input type for dateTimeFromSomething");
+      dateTime = DateTime.invalid(
+        "Invalid input type for dateTimeFromSomething"
+      );
+      break;
     }
   }
+
+  return dateTime.isValid ? dateTime : null;
 }

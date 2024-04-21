@@ -16,7 +16,7 @@ import { Resource } from "../resources/Resource.js";
 
 @InputType("RoleResourceInput")
 @ObjectType()
-export class RoleResource extends Resource {
+export class Role extends Resource {
   @Field(() => DbRole, { defaultValue: DbRole.None })
   dbRole!: DbRole;
   @Field(() => CommitteeRole, { nullable: true })
@@ -24,14 +24,12 @@ export class RoleResource extends Resource {
   @Field(() => CommitteeIdentifier, { nullable: true })
   committeeIdentifier!: CommitteeIdentifier | null;
 
-  public static init(init: Partial<RoleResource>) {
-    return RoleResource.doInit(init);
+  public static init(init: Partial<Role>) {
+    return Role.doInit(init);
   }
 
-  static fromAuthorization(
-    authorization: Readonly<Authorization>
-  ): RoleResource {
-    const partial: Partial<RoleResource> = {};
+  static fromAuthorization(authorization: Readonly<Authorization>): Role {
+    const partial: Partial<Role> = {};
     partial.dbRole = authorization.dbRole;
     partial.committeeRole = authorization.committeeRole ?? null;
     if (isCommitteeIdentifier(authorization.committeeIdentifier)) {
@@ -50,4 +48,4 @@ export class RoleResource extends Resource {
   }
 }
 
-export const defaultRole = RoleResource.fromAuthorization(defaultAuthorization);
+export const defaultRole = Role.fromAuthorization(defaultAuthorization);

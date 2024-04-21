@@ -1,7 +1,8 @@
 import { DateTimeISOResolver } from "graphql-scalars";
-import type { DateTime } from "luxon";
+import { DateTime } from "luxon";
 import { Field, ID, ObjectType } from "type-graphql";
 
+import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { Node, createNodeClasses } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
@@ -17,7 +18,7 @@ to have additional validation logic in the future.
 */
 
 @ObjectType()
-export class ConfigurationResource extends TimestampedResource implements Node {
+export class ConfigurationNode extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
 
@@ -28,17 +29,23 @@ export class ConfigurationResource extends TimestampedResource implements Node {
   value!: string;
 
   @Field(() => DateTimeISOResolver, { nullable: true })
-  validAfter!: DateTime | null;
+  validAfter?: Date | null;
+  get validAfterDateTime(): DateTime | null {
+    return dateTimeFromSomething(this.validAfter ?? null);
+  }
 
   @Field(() => DateTimeISOResolver, { nullable: true })
-  validUntil!: DateTime | null;
+  validUntil?: Date | null;
+  get validUntilDateTime(): DateTime | null {
+    return dateTimeFromSomething(this.validUntil ?? null);
+  }
 
   public getUniqueId(): string {
     return this.key;
   }
 
-  public static init(init: Partial<ConfigurationResource>) {
-    return ConfigurationResource.doInit(init);
+  public static init(init: Partial<ConfigurationNode>) {
+    return ConfigurationNode.doInit(init);
   }
 }
 
@@ -46,4 +53,4 @@ export const {
   ConfigurationConnection,
   ConfigurationEdge,
   ConfigurationResult,
-} = createNodeClasses(ConfigurationResource, "Configuration");
+} = createNodeClasses(ConfigurationNode, "Configuration");

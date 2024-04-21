@@ -1,5 +1,10 @@
+import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 import type { Class } from "utility-types";
+
+import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
+
+import { PersonResource } from "./Person.js";
 
 @ObjectType()
 export abstract class Resource {
@@ -27,6 +32,21 @@ export abstract class Resource {
 export abstract class TimestampedResource extends Resource {
   @Field(() => Date, { nullable: true })
   createdAt?: Date | null;
+  get createdAtDateTime(): DateTime | null {
+    return dateTimeFromSomething(this.createdAt ?? null);
+  }
+
   @Field(() => Date, { nullable: true })
   updatedAt?: Date | null;
+  get updatedAtDateTime(): DateTime | null {
+    return dateTimeFromSomething(this.updatedAt ?? null);
+  }
+}
+
+@ObjectType()
+export abstract class TrackedResource extends TimestampedResource {
+  @Field(() => PersonResource, { nullable: true })
+  createdBy?: PersonResource | null;
+  @Field(() => PersonResource, { nullable: true })
+  updatedBy?: PersonResource | null;
 }

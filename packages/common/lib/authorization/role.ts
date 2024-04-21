@@ -1,4 +1,4 @@
-import type { RoleResource } from "../api/types/Role.js";
+import type { Role } from "../api/types/Role.js";
 
 import type { Authorization } from "./structures.js";
 import {
@@ -61,7 +61,7 @@ export function roleToAccessLevel(role: {
  * @return An Authorization object representing the same role
  * @throws Error if one of committee or committeeRole is set without the other
  */
-export function roleToAuthorization(role: RoleResource): Authorization {
+export function roleToAuthorization(role: Role): Authorization {
   const auth: Authorization = {
     dbRole: role.dbRole,
     accessLevel: roleToAccessLevel(role),

@@ -266,7 +266,7 @@ type Configuration {
   createdAt: DateTimeISO
 }
 
-type MobileAppConfiguration {
+type MobileAppConfiguration { # TODO
   shownTabs: [MobileAppTab!]!
   fancyTab: MobileAppTab
   allowedLoginTypes: [AuthSource!]!
@@ -485,10 +485,12 @@ type Notification {
 type Person {
   uuid: UUID!
 
-  role: Role!
   teams: [Membership!]!
   primaryCommittee: Committee
+  primaryCommitteeRole: CommitteeRole
   committees: [Committee!]!
+
+  dbRole: DbRole!
 
   name: String
   email: String!
@@ -531,12 +533,6 @@ type PointOpportunity {
   updatedAt: DateTimeISO
   createdBy: Person
   createdAt: DateTimeISO
-}
-
-type Role {
-  committee: Committee
-  committeeRole: CommitteeRole
-  dbRole: DbRole!
 }
 
 type Team {
