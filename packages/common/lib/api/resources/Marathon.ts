@@ -15,7 +15,7 @@ export class MarathonResource extends TimestampedResource {
   endDate!: string;
 
   static init({
-    uuid,
+    id,
     year,
     startDate,
     endDate,
@@ -23,7 +23,7 @@ export class MarathonResource extends TimestampedResource {
     updatedAt,
   }: Omit<MarathonResource, "getUniqueId">): MarathonResource {
     return this.doInit({
-      uuid,
+      id,
       year,
       startDate,
       endDate,

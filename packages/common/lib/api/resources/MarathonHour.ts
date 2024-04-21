@@ -17,7 +17,7 @@ export class MarathonHourResource extends TimestampedResource {
   durationInfo!: string;
 
   static init({
-    uuid,
+    id,
     title,
     details,
     shownStartingAt,
@@ -26,7 +26,7 @@ export class MarathonHourResource extends TimestampedResource {
     updatedAt,
   }: Omit<MarathonHourResource, "getUniqueId">): MarathonHourResource {
     return this.doInit({
-      uuid,
+      id,
       title,
       details,
       shownStartingAt,
