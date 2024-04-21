@@ -1,30 +1,28 @@
-import { Field, InterfaceType, ObjectType } from "type-graphql";
+import { Field, ID, InterfaceType, ObjectType } from "type-graphql";
 
 import { Errorable, ResourceError } from "./resourceError.js";
 import { CursorScalar } from "./scalars/Cursor.js";
-import { NodeIDScalar } from "./scalars/NodeID.js";
 
 @InterfaceType()
-export class Node {
-  @Field(() => NodeIDScalar)
+export abstract class Node {
+  @Field(() => ID)
   id!: string;
 }
 @InterfaceType()
-export class Edge {
+export abstract class Edge<N extends Node = Node> {
   @Field(() => CursorScalar)
   cursor!: string;
 
   @Field(() => Node)
-  node!: string;
+  node!: N;
 }
-
 @InterfaceType({ implements: [Errorable] })
-export class Connection implements Errorable {
+export abstract class Connection<E extends Edge = Edge> implements Errorable {
   @Field(() => Number, { name: "totalCount" })
   totalCount!: number;
 
   @Field(() => [Edge], { name: "edges" })
-  edges!: Edge[];
+  edges!: E[];
 
   @Field(() => PageInfo, { name: "pageInfo" })
   pageInfo!: PageInfo;
@@ -32,23 +30,54 @@ export class Connection implements Errorable {
   @Field(() => [ResourceError], { name: "errors" })
   errors!: ResourceError[];
 }
-
 @InterfaceType({ implements: [Errorable] })
-export class Resource implements Errorable {
+export abstract class Resource<N extends Node = Node> implements Errorable {
   @Field(() => Node, { name: "node" })
-  node!: Node;
+  node!: N;
+
+  @Field(() => [ResourceError], { name: "errors" })
+  errors!: ResourceError[];
+}
+@InterfaceType({ implements: [Errorable] })
+export abstract class Result<N extends Node = Node> implements Errorable {
+  @Field(() => Node, { name: "node", nullable: true })
+  node?: N;
 
   @Field(() => [ResourceError], { name: "errors" })
   errors!: ResourceError[];
 }
 
-@InterfaceType({ implements: [Errorable] })
-export class Result implements Errorable {
-  @Field(() => Node, { name: "node" })
-  node!: Node;
+export function createNodeClasses<T extends Node>(
+  cls: new () => T,
+  name: string
+): {
+  EdgeClass: new () => Edge<T>;
+  ConnectionClass: new () => Connection<Edge<T>>;
+  ResultClass: new () => Result<T>;
+} {
+  @ObjectType(`Node${name}`, { implements: Edge })
+  class EdgeClass extends Edge {
+    @Field(() => cls)
+    node!: T;
+  }
 
-  @Field(() => [ResourceError], { name: "errors" })
-  errors!: ResourceError[];
+  @ObjectType(`${name}Connection`, { implements: Connection })
+  class ConnectionClass extends Connection {
+    @Field(() => [EdgeClass])
+    edges!: EdgeClass[];
+  }
+
+  @ObjectType(`${name}Result`, { implements: Result })
+  class ResultClass extends Result {
+    @Field(() => cls, { nullable: true })
+    node?: T;
+  }
+
+  return {
+    EdgeClass,
+    ConnectionClass,
+    ResultClass,
+  };
 }
 
 @ObjectType()

@@ -17,13 +17,13 @@ registerEnumType(MembershipPositionType, {
 @ObjectType()
 export class MembershipResource extends TimestampedResource {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
 
   @Field(() => MembershipPositionType)
   position!: MembershipPositionType;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
   public static init(init: Partial<MembershipResource>) {

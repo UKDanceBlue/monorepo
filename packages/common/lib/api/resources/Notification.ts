@@ -9,7 +9,7 @@ import { TimestampedResource } from "./Resource.js";
 @ObjectType()
 export class NotificationResource extends TimestampedResource {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
 
   @Field(() => String)
   title!: string;
@@ -42,7 +42,7 @@ export class NotificationResource extends TimestampedResource {
   startedSendingAt?: Date | null;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
   public static init(init: Partial<NotificationResource>) {
@@ -53,7 +53,7 @@ export class NotificationResource extends TimestampedResource {
 @ObjectType()
 export class NotificationDeliveryResource extends TimestampedResource {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
 
   @Field(() => Date, {
     nullable: true,
@@ -87,7 +87,7 @@ export class NotificationDeliveryResource extends TimestampedResource {
   deliveryError?: string | null;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
   public static init(init: Partial<NotificationDeliveryResource>) {

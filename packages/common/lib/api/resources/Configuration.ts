@@ -2,6 +2,8 @@ import { DateTimeISOResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, ID, ObjectType } from "type-graphql";
 
+import { Node, createNodeClasses } from "../relay.js";
+
 import { TimestampedResource } from "./Resource.js";
 
 /*
@@ -16,9 +18,9 @@ to have additional validation logic in the future.
 */
 
 @ObjectType()
-export class ConfigurationResource extends TimestampedResource {
+export class ConfigurationResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
 
   @Field(() => String)
   key!: string;
@@ -40,3 +42,9 @@ export class ConfigurationResource extends TimestampedResource {
     return ConfigurationResource.doInit(init);
   }
 }
+
+export const {
+  ConnectionClass: ConfigurationConnection,
+  EdgeClass: ConfigurationEdge,
+  ResultClass: ConfigurationResult,
+} = createNodeClasses(ConfigurationResource, "Configuration");

@@ -1,14 +1,13 @@
+import { DateTimeISOResolver } from "graphql-scalars";
 import { Interval } from "luxon";
 import { Field, ID, ObjectType } from "type-graphql";
-
-import { DateRangeScalar } from "../scalars/DateRangeScalar.js";
 
 import { Resource, TimestampedResource } from "./Resource.js";
 
 @ObjectType()
 export class EventResource extends TimestampedResource {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
   @Field(() => [EventOccurrenceResource])
   occurrences!: EventOccurrenceResource[];
   @Field(() => String)
@@ -21,7 +20,7 @@ export class EventResource extends TimestampedResource {
   location!: string | null;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
   public static init(init: Partial<EventResource>) {
@@ -32,14 +31,14 @@ export class EventResource extends TimestampedResource {
 @ObjectType()
 export class EventOccurrenceResource extends Resource {
   @Field(() => ID)
-  uuid!: string;
-  @Field(() => DateRangeScalar)
+  id!: string;
+  @Field(() => DateTimeISOResolver)
   interval!: Interval;
   @Field(() => Boolean)
   fullDay!: boolean;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
   public static init(init: Partial<EventOccurrenceResource>) {

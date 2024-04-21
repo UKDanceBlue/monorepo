@@ -16,7 +16,7 @@ import { TimestampedResource } from "./Resource.js";
 @ObjectType()
 export class FeedResource extends TimestampedResource {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
 
   @Field(() => String)
   title!: string;
@@ -25,7 +25,7 @@ export class FeedResource extends TimestampedResource {
   textContent?: string | null | undefined;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
   public static init(init: {

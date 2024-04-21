@@ -7,7 +7,7 @@ import { RoleResource, defaultRole } from "./Role.js";
 @ObjectType()
 export class PersonResource extends TimestampedResource {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
   @Field(() => [AuthIdPairResource], {
     deprecationReason: "This is now provided on the AuthIdPair resource.",
   })
@@ -22,7 +22,7 @@ export class PersonResource extends TimestampedResource {
   role!: RoleResource;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
   public static init(init: {

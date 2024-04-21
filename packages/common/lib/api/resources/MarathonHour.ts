@@ -6,7 +6,7 @@ import { TimestampedResource } from "./Resource.js";
 @ObjectType()
 export class MarathonHourResource extends TimestampedResource {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
   @Field(() => String)
   title!: string;
   @Field(() => String, { nullable: true })
@@ -37,6 +37,6 @@ export class MarathonHourResource extends TimestampedResource {
   }
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 }
