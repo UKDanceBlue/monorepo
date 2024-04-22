@@ -73,7 +73,7 @@ jobs:
           path: eslint_report.json
           retention-days: 7
       - name: Annotate Code Linting Results
-        uses: ataylorme/eslint-annotate-action@v3-beta
+        uses: ataylorme/eslint-annotate-action@3.0.0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           report-json: "eslint_report.json"
