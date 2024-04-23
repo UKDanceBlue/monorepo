@@ -3,13 +3,20 @@ import type { DateTime } from "luxon";
 import { Field, ID, ObjectType } from "type-graphql";
 
 import { AccessControl } from "../../authorization/accessControl.js";
-import { AccessLevel, dateTimeFromSomething } from "../../index.js";
+import {
+  AccessLevel,
+  createNodeClasses,
+  dateTimeFromSomething,
+} from "../../index.js";
+import { Node } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
-@ObjectType()
-export class NotificationResource extends TimestampedResource {
+@ObjectType({
+  implements: [TimestampedResource, Node],
+})
+export class NotificationResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  id!: string;
+  uuid!: string;
 
   @Field(() => String)
   title!: string;
@@ -51,7 +58,7 @@ export class NotificationResource extends TimestampedResource {
   }
 
   public getUniqueId(): string {
-    return this.id;
+    return this.uuid;
   }
 
   public static init(init: Partial<NotificationResource>) {
@@ -59,10 +66,18 @@ export class NotificationResource extends TimestampedResource {
   }
 }
 
-@ObjectType()
-export class NotificationDeliveryResource extends TimestampedResource {
+export const { NotificationConnection, NotificationEdge, NotificationResult } =
+  createNodeClasses(NotificationResource, "Notification");
+
+@ObjectType({
+  implements: [TimestampedResource, Node],
+})
+export class NotificationDeliveryResource
+  extends TimestampedResource
+  implements Node
+{
   @Field(() => ID)
-  id!: string;
+  uuid!: string;
 
   @Field(() => Date, {
     nullable: true,
@@ -96,10 +111,16 @@ export class NotificationDeliveryResource extends TimestampedResource {
   deliveryError?: string | null;
 
   public getUniqueId(): string {
-    return this.id;
+    return this.uuid;
   }
 
   public static init(init: Partial<NotificationDeliveryResource>) {
     return NotificationDeliveryResource.doInit(init);
   }
 }
+
+export const {
+  NotificationDeliveryConnection,
+  NotificationDeliveryEdge,
+  NotificationDeliveryResult,
+} = createNodeClasses(NotificationDeliveryResource, "NotificationDelivery");

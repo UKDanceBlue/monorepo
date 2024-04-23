@@ -6,7 +6,7 @@ import { CursorScalar } from "./scalars/Cursor.js";
 @InterfaceType()
 export abstract class Node {
   @Field(() => ID)
-  id!: string;
+  uuid!: string;
 }
 @InterfaceType()
 export abstract class Edge<N extends Node = Node> {

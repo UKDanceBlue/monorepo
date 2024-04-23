@@ -9,7 +9,7 @@ import { TimestampedResource } from "./Resource.js";
 @ObjectType({ implements: [TimestampedResource, Node] })
 export class DeviceResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  id!: string;
+  uuid!: string;
 
   @Field(() => DateTimeISOResolver, { nullable: true })
   public lastLogin?: Date | null;
@@ -18,7 +18,7 @@ export class DeviceResource extends TimestampedResource implements Node {
   }
 
   public getUniqueId(): string {
-    return this.id;
+    return this.uuid;
   }
 
   public static init(init: Partial<DeviceResource>) {

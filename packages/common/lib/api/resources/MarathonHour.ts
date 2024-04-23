@@ -6,10 +6,12 @@ import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { Node, createNodeClasses } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
-@ObjectType()
+@ObjectType({
+  implements: [TimestampedResource, Node],
+})
 export class MarathonHourResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  id!: string;
+  uuid!: string;
   @Field(() => String)
   title!: string;
   @Field(() => String, { nullable: true })
@@ -23,7 +25,7 @@ export class MarathonHourResource extends TimestampedResource implements Node {
   durationInfo!: string;
 
   static init({
-    id,
+    uuid,
     title,
     details,
     shownStartingAt,
@@ -32,7 +34,7 @@ export class MarathonHourResource extends TimestampedResource implements Node {
     updatedAt,
   }: Omit<MarathonHourResource, "getUniqueId">): MarathonHourResource {
     return this.doInit({
-      id,
+      uuid,
       title,
       details,
       shownStartingAt,
@@ -43,7 +45,7 @@ export class MarathonHourResource extends TimestampedResource implements Node {
   }
 
   public getUniqueId(): string {
-    return this.id;
+    return this.uuid;
   }
 }
 

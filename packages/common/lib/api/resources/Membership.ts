@@ -15,16 +15,18 @@ registerEnumType(MembershipPositionType, {
   description: "The position of a member on a team",
 });
 
-@ObjectType()
+@ObjectType({
+  implements: [TimestampedResource, Node],
+})
 export class MembershipResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  id!: string;
+  uuid!: string;
 
   @Field(() => MembershipPositionType)
   position!: MembershipPositionType;
 
   public getUniqueId(): string {
-    return this.id;
+    return this.uuid;
   }
 
   public static init(init: Partial<MembershipResource>) {

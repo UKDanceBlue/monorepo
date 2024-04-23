@@ -1,8 +1,5 @@
 import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
 
-import { AccessControl } from "../../authorization/accessControl.js";
-import { AccessLevel } from "../../authorization/structures.js";
-import * as SimpleTypes from "../../utility/primitive/SimpleTypes.js";
 import { Node, createNodeClasses } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
@@ -33,25 +30,21 @@ registerEnumType(TeamLegacyStatus, {
   description: "New Team vs Returning Team",
 });
 
-@ObjectType()
+@ObjectType({
+  implements: [TimestampedResource, Node],
+})
 export class TeamResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  id!: string;
+  uuid!: string;
   @Field(() => String)
   name!: string;
   @Field(() => TeamType)
   type!: TeamType;
   @Field(() => TeamLegacyStatus)
   legacyStatus!: TeamLegacyStatus;
-  @Field(() => String)
-  marathonYear!: SimpleTypes.MarathonYearString;
-
-  @AccessControl({ accessLevel: AccessLevel.Committee })
-  @Field(() => String, { nullable: true })
-  persistentIdentifier!: string | null;
 
   public getUniqueId(): string {
-    return this.id;
+    return this.uuid;
   }
 
   public static init(init: Partial<TeamResource>) {

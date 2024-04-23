@@ -14,10 +14,12 @@ import { TimestampedResource } from "./Resource.js";
 //   description: "Dictates how to interpret the resource link",
 // });
 
-@ObjectType()
+@ObjectType({
+  implements: [TimestampedResource, Node],
+})
 export class FeedResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  id!: string;
+  uuid!: string;
 
   @Field(() => String)
   title!: string;
@@ -26,7 +28,7 @@ export class FeedResource extends TimestampedResource implements Node {
   textContent?: string | null | undefined;
 
   public getUniqueId(): string {
-    return this.id;
+    return this.uuid;
   }
 
   public static init(init: {

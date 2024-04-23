@@ -29,7 +29,7 @@ export function makeUserData(
       committeeIdentifier: person.role.committeeIdentifier ?? undefined,
       accessLevel: roleToAccessLevel(person.role),
     },
-    userId: person.id,
+    userId: person.uuid,
     teamIds,
     captainOfTeamIds,
     authSource,

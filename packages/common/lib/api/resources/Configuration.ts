@@ -17,10 +17,12 @@ This also means we have some of the logic we need for a configuration
 to have additional validation logic in the future.
 */
 
-@ObjectType()
+@ObjectType({
+  implements: [TimestampedResource, Node],
+})
 export class ConfigurationNode extends TimestampedResource implements Node {
   @Field(() => ID)
-  id!: string;
+  uuid!: string;
 
   @Field(() => String)
   key!: string;

@@ -4,10 +4,12 @@ import { Field, ID, Int, ObjectType } from "type-graphql";
 import { Node, createNodeClasses } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
-@ObjectType()
+@ObjectType({
+  implements: [TimestampedResource, Node],
+})
 export class ImageResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  id!: string;
+  uuid!: string;
 
   @Field(() => URLResolver, { nullable: true })
   url!: URL | null;
@@ -28,7 +30,7 @@ export class ImageResource extends TimestampedResource implements Node {
   height!: number;
 
   public getUniqueId(): string {
-    return this.id;
+    return this.uuid;
   }
 
   public static init(init: Partial<ImageResource>) {

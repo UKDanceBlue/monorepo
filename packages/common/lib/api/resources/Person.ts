@@ -1,39 +1,35 @@
 import { Field, ID, ObjectType } from "type-graphql";
 
+import { DbRole } from "../../authorization/structures.js";
 import { Node, createNodeClasses } from "../relay.js";
-import { AuthIdPairResource } from "../types/AuthIdPair.js";
-import { Role, defaultRole } from "../types/Role.js";
 
 import { TimestampedResource } from "./Resource.js";
 
-@ObjectType()
+@ObjectType({
+  implements: [TimestampedResource, Node],
+})
 export class PersonResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  id!: string;
-  @Field(() => [AuthIdPairResource], {
-    deprecationReason: "This is now provided on the AuthIdPair resource.",
-  })
-  authIds!: AuthIdPairResource[];
+  uuid!: string;
   @Field(() => String, { nullable: true })
   name!: string | null;
   @Field(() => String)
   email!: string;
   @Field(() => String, { nullable: true })
   linkblue!: string | null;
-  @Field(() => Role)
-  role!: Role;
+  @Field(() => DbRole)
+  dbRole!: DbRole;
 
   public getUniqueId(): string {
-    return this.id;
+    return this.uuid;
   }
 
   public static init(init: {
     uuid: string;
-    authIds?: AuthIdPairResource[] | null;
     name?: string | null;
     email: string;
     linkblue?: string | null;
-    role?: Role | null;
+    dbRole?: DbRole | null;
     createdAt?: Date | null;
     updatedAt?: Date | null;
   }) {
@@ -42,10 +38,9 @@ export class PersonResource extends TimestampedResource implements Node {
       email: init.email,
     });
 
-    resource.authIds = init.authIds ?? [];
     resource.name = init.name ?? null;
     resource.linkblue = init.linkblue ?? null;
-    resource.role = init.role ?? defaultRole;
+    resource.dbRole = init.dbRole ?? DbRole.None;
     resource.createdAt = init.createdAt ?? null;
     resource.updatedAt = init.updatedAt ?? null;
 

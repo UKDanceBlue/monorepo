@@ -8,7 +8,7 @@ export {
   EventResource as EventNode,
   EventOccurrenceResource as EventOccurrenceNode,
 } from "./Event.js";
-export { FeedResource as FeedNode } from "./FeedResource.js";
+export { FeedResource as FeedNode } from "./Feed.js";
 export { ImageResource as ImageNode } from "./Image.js";
 export * from "./Marathon.js";
 export * from "./MarathonHour.js";

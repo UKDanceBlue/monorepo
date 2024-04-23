@@ -3,14 +3,20 @@ import type { DateTime } from "luxon";
 import { Field, ID, ObjectType } from "type-graphql";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
+import { Node } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
 import { TeamType } from "./Team.js";
 
-@ObjectType()
-export class PointOpportunityResource extends TimestampedResource {
+@ObjectType({
+  implements: [TimestampedResource, Node],
+})
+export class PointOpportunityResource
+  extends TimestampedResource
+  implements Node
+{
   @Field(() => ID)
-  id!: string;
+  uuid!: string;
   @Field(() => String)
   name!: string;
   @Field(() => TeamType)
@@ -22,7 +28,7 @@ export class PointOpportunityResource extends TimestampedResource {
   }
 
   public getUniqueId(): string {
-    return this.id;
+    return this.uuid;
   }
 
   public static init(init: Partial<PointOpportunityResource>) {

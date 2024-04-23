@@ -1,14 +1,16 @@
 import { Field, ID, ObjectType } from "type-graphql";
 
-import { createNodeClasses } from "../relay.js";
+import { Node, createNodeClasses } from "../relay.js";
 import { IntervalISO } from "../types/IntervalISO.js";
 
 import { Resource, TimestampedResource } from "./Resource.js";
 
-@ObjectType()
-export class EventResource extends TimestampedResource {
+@ObjectType({
+  implements: [TimestampedResource, Node],
+})
+export class EventResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  id!: string;
+  uuid!: string;
   @Field(() => [EventOccurrenceResource])
   occurrences!: EventOccurrenceResource[];
   @Field(() => String)
@@ -21,7 +23,7 @@ export class EventResource extends TimestampedResource {
   location!: string | null;
 
   public getUniqueId(): string {
-    return this.id;
+    return this.uuid;
   }
 
   public static init(init: Partial<EventResource>) {
@@ -29,17 +31,19 @@ export class EventResource extends TimestampedResource {
   }
 }
 
-@ObjectType()
+@ObjectType({
+  implements: [Resource],
+})
 export class EventOccurrenceResource extends Resource {
   @Field(() => ID)
-  id!: string;
+  uuid!: string;
   @Field(() => IntervalISO)
   interval!: IntervalISO;
   @Field(() => Boolean)
   fullDay!: boolean;
 
   public getUniqueId(): string {
-    return this.id;
+    return this.uuid;
   }
 
   public static init(init: Partial<EventOccurrenceResource>) {
