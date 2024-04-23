@@ -38,6 +38,7 @@ export const demoLogin = async (ctx: Context) => {
     auth: {
       accessLevel: AccessLevel.UKY,
       dbRole: DbRole.UKY,
+      committees: [],
     },
     userId: person.uuid,
     teamIds: person.memberships.map((m) => m.team.uuid),

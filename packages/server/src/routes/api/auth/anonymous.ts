@@ -30,6 +30,7 @@ export const anonymousLogin = (ctx: Context) => {
     auth: {
       accessLevel: AccessLevel.Public,
       dbRole: DbRole.Public,
+      committees: [],
     },
     authSource: AuthSource.Anonymous,
   });
