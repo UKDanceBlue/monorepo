@@ -11,10 +11,8 @@ export function teamModelToResource(teamModel: Team): TeamNode {
   return TeamNode.init({
     uuid: teamModel.uuid,
     name: teamModel.name,
-    persistentIdentifier: teamModel.persistentIdentifier,
     type: teamModel.type,
     legacyStatus: teamModel.legacyStatus,
-    marathonYear: teamModel.marathonYear as `DB${number}`,
     createdAt: teamModel.createdAt,
     updatedAt: teamModel.updatedAt,
   });

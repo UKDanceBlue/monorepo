@@ -32,7 +32,14 @@ export class MarathonNode extends TimestampedResource implements Node {
     endDate,
     createdAt,
     updatedAt,
-  }: Omit<MarathonNode, "getUniqueId">): MarathonNode {
+  }: {
+    id: string;
+    year: string;
+    startDate: Date;
+    endDate: Date;
+    createdAt?: Date | null;
+    updatedAt?: Date | null;
+  }): MarathonNode {
     return this.doInit({
       id,
       year,

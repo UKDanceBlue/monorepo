@@ -1,10 +1,8 @@
 import type { Person } from "@prisma/client";
 import { AuthSource, Prisma, PrismaClient } from "@prisma/client";
 import type {
-  AuthIdPairResource,
   CommitteeIdentifier,
   CommitteeRole,
-  RoleResource,
   SortDirection,
 } from "@ukdanceblue/common";
 import { MembershipPositionType, TeamLegacyStatus } from "@ukdanceblue/common";

@@ -1,8 +1,7 @@
-import type { $1Node } from "@prisma/client";
 import { MembershipNode } from "@ukdanceblue/common";
 
 export function membershipModelToResource(
-  membershipModel: $1Node
+  membershipModel: MembershipNode
 ): MembershipNode {
   return MembershipNode.init({
     uuid: membershipModel.uuid,

@@ -1,6 +1,9 @@
 import type { Event, EventOccurrence } from "@prisma/client";
-import { EventNode, EventOccurrenceNode } from "@ukdanceblue/common";
-import { DateTime, Interval } from "luxon";
+import {
+  EventNode,
+  EventOccurrenceNode,
+  IntervalISO,
+} from "@ukdanceblue/common";
 
 export function eventModelToResource(
   eventModel: Event,
@@ -23,10 +26,7 @@ export function eventOccurrenceModelToResource(
 ): EventOccurrenceNode {
   return EventOccurrenceNode.init({
     uuid: occurrenceModel.uuid,
-    interval: Interval.fromDateTimes(
-      DateTime.fromJSDate(occurrenceModel.date),
-      DateTime.fromJSDate(occurrenceModel.endDate)
-    ),
+    interval: IntervalISO.init(occurrenceModel.date, occurrenceModel.endDate),
     fullDay: occurrenceModel.fullDay,
   });
 }

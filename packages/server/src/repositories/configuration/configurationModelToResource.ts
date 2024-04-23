@@ -1,14 +1,15 @@
 import type { Configuration } from "@prisma/client";
-import { ConfigurationResource } from "@ukdanceblue/common";
-import { DateTime } from "luxon";
+import { ConfigurationNode } from "@ukdanceblue/common";
 
-export function configurationModelToResource(configuration: Configuration): ConfigurationResource {
-  return ConfigurationResource.init({
+export function configurationModelToResource(
+  configuration: Configuration
+): ConfigurationNode {
+  return ConfigurationNode.init({
     uuid: configuration.uuid,
     key: configuration.key,
     value: configuration.value,
-    validAfter: configuration.validAfter ? DateTime.fromJSDate(configuration.validAfter) : null,
-    validUntil: configuration.validUntil ? DateTime.fromJSDate(configuration.validUntil) : null,
+    validAfter: configuration.validAfter,
+    validUntil: configuration.validUntil,
     createdAt: configuration.createdAt,
     updatedAt: configuration.updatedAt,
   });
