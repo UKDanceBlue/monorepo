@@ -1,5 +1,5 @@
 import type { File, Image } from "@prisma/client";
-import { ImageResource } from "@ukdanceblue/common";
+import { ImageNode } from "@ukdanceblue/common";
 
 import type { FileManager } from "../../lib/files/FileManager.js";
 import { combineMimePartsToString } from "../../lib/files/mime.js";
@@ -8,7 +8,7 @@ export async function imageModelToResource(
   imageModel: Image,
   fileModel: File | undefined | null,
   fileManager: FileManager
-): Promise<ImageResource> {
+): Promise<ImageNode> {
   let fileData:
     | {
         url: URL;
@@ -30,7 +30,7 @@ export async function imageModelToResource(
     }
   }
 
-  return ImageResource.init({
+  return ImageNode.init({
     uuid: imageModel.uuid,
     url: fileData?.url ?? null,
     mimeType: fileData?.mimeType ?? "application/octet-stream", // "application/octet-stream" is the default MIME type if the file is not found

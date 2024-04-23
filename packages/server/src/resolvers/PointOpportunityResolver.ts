@@ -2,9 +2,9 @@ import {
   DateTimeScalar,
   DetailedError,
   ErrorCode,
-  EventResource,
+  EventNode,
   FilteredListQueryArgs,
-  PointOpportunityResource,
+  PointOpportunityNode,
   SortDirection,
   TeamType,
 } from "@ukdanceblue/common";
@@ -36,25 +36,25 @@ import {
 } from "./ApiResponse.js";
 
 @ObjectType("SinglePointOpportunityResponse", {
-  implements: AbstractGraphQLOkResponse<PointOpportunityResource>,
+  implements: AbstractGraphQLOkResponse<PointOpportunityNode>,
 })
-class SinglePointOpportunityResponse extends AbstractGraphQLOkResponse<PointOpportunityResource> {
-  @Field(() => PointOpportunityResource)
-  data!: PointOpportunityResource;
+class SinglePointOpportunityResponse extends AbstractGraphQLOkResponse<PointOpportunityNode> {
+  @Field(() => PointOpportunityNode)
+  data!: PointOpportunityNode;
 }
 @ObjectType("ListPointOpportunitiesResponse", {
-  implements: AbstractGraphQLPaginatedResponse<PointOpportunityResource>,
+  implements: AbstractGraphQLPaginatedResponse<PointOpportunityNode>,
 })
-class ListPointOpportunitiesResponse extends AbstractGraphQLPaginatedResponse<PointOpportunityResource> {
-  @Field(() => [PointOpportunityResource])
-  data!: PointOpportunityResource[];
+class ListPointOpportunitiesResponse extends AbstractGraphQLPaginatedResponse<PointOpportunityNode> {
+  @Field(() => [PointOpportunityNode])
+  data!: PointOpportunityNode[];
 }
 @ObjectType("CreatePointOpportunityResponse", {
-  implements: AbstractGraphQLCreatedResponse<PointOpportunityResource>,
+  implements: AbstractGraphQLCreatedResponse<PointOpportunityNode>,
 })
-class CreatePointOpportunityResponse extends AbstractGraphQLCreatedResponse<PointOpportunityResource> {
-  @Field(() => PointOpportunityResource)
-  data!: PointOpportunityResource;
+class CreatePointOpportunityResponse extends AbstractGraphQLCreatedResponse<PointOpportunityNode> {
+  @Field(() => PointOpportunityNode)
+  data!: PointOpportunityNode;
 }
 @ObjectType("DeletePointOpportunityResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
@@ -106,7 +106,7 @@ class ListPointOpportunitiesArgs extends FilteredListQueryArgs<
   date: ["opportunityDate", "createdAt", "updatedAt"],
 }) {}
 
-@Resolver(() => PointOpportunityResource)
+@Resolver(() => PointOpportunityNode)
 @Service()
 export class PointOpportunityResolver {
   constructor(
@@ -223,10 +223,10 @@ export class PointOpportunityResolver {
     return DeletePointOpportunityResponse.newOk(true);
   }
 
-  @FieldResolver(() => EventResource, { nullable: true })
+  @FieldResolver(() => EventNode, { nullable: true })
   async event(
-    @Root() pointOpportunity: PointOpportunityResource
-  ): Promise<EventResource | null> {
+    @Root() pointOpportunity: PointOpportunityNode
+  ): Promise<EventNode | null> {
     const model =
       await this.pointOpportunityRepository.getEventForPointOpportunity({
         uuid: pointOpportunity.uuid,

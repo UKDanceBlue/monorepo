@@ -2,7 +2,7 @@ import {
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
-  ImageResource,
+  ImageNode,
   MarathonHourResource,
 } from "@ukdanceblue/common";
 import { DateTimeISOResolver, VoidResolver } from "graphql-scalars";
@@ -135,7 +135,7 @@ export class MarathonHourResolver {
     });
   }
 
-  @FieldResolver(() => [ImageResource])
+  @FieldResolver(() => [ImageNode])
   async mapImages(@Root() marathonHour: MarathonHourResource) {
     return this.marathonHourRepository.getMaps({ uuid: marathonHour.uuid });
   }

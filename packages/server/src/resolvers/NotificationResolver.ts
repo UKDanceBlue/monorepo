@@ -5,8 +5,8 @@ import {
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
-  NotificationDeliveryResource,
-  NotificationResource,
+  NotificationDeliveryNode,
+  NotificationNode,
   SortDirection,
   TeamType,
 } from "@ukdanceblue/common";
@@ -41,18 +41,18 @@ import {
 } from "./ApiResponse.js";
 
 @ObjectType("GetNotificationByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<NotificationResource>,
+  implements: AbstractGraphQLOkResponse<NotificationNode>,
 })
-class GetNotificationByUuidResponse extends AbstractGraphQLOkResponse<NotificationResource> {
-  @Field(() => NotificationResource)
-  data!: NotificationResource;
+class GetNotificationByUuidResponse extends AbstractGraphQLOkResponse<NotificationNode> {
+  @Field(() => NotificationNode)
+  data!: NotificationNode;
 }
 @ObjectType("ListNotificationsResponse", {
-  implements: AbstractGraphQLPaginatedResponse<NotificationResource>,
+  implements: AbstractGraphQLPaginatedResponse<NotificationNode>,
 })
-class ListNotificationsResponse extends AbstractGraphQLPaginatedResponse<NotificationResource> {
-  @Field(() => [NotificationResource])
-  data!: NotificationResource[];
+class ListNotificationsResponse extends AbstractGraphQLPaginatedResponse<NotificationNode> {
+  @Field(() => [NotificationNode])
+  data!: NotificationNode[];
 }
 
 @InputType()
@@ -86,11 +86,11 @@ class StageNotificationArgs {
 }
 
 @ObjectType("StageNotificationResponse", {
-  implements: AbstractGraphQLCreatedResponse<NotificationResource>,
+  implements: AbstractGraphQLCreatedResponse<NotificationNode>,
 })
-class StageNotificationResponse extends AbstractGraphQLCreatedResponse<NotificationResource> {
-  @Field(() => NotificationResource)
-  data!: NotificationResource;
+class StageNotificationResponse extends AbstractGraphQLCreatedResponse<NotificationNode> {
+  @Field(() => NotificationNode)
+  data!: NotificationNode;
 }
 
 @ObjectType("SendNotificationResponse", {
@@ -186,11 +186,11 @@ class ListNotificationDeliveriesArgs extends FilteredListQueryArgs<
 }
 
 @ObjectType("ListNotificationDeliveriesResponse", {
-  implements: AbstractGraphQLPaginatedResponse<NotificationDeliveryResource>,
+  implements: AbstractGraphQLPaginatedResponse<NotificationDeliveryNode>,
 })
-class ListNotificationDeliveriesResponse extends AbstractGraphQLPaginatedResponse<NotificationDeliveryResource> {
-  @Field(() => [NotificationDeliveryResource])
-  data!: NotificationDeliveryResource[];
+class ListNotificationDeliveriesResponse extends AbstractGraphQLPaginatedResponse<NotificationDeliveryNode> {
+  @Field(() => [NotificationDeliveryNode])
+  data!: NotificationDeliveryNode[];
 }
 
 @ObjectType("NotificationDeliveryIssueCount", {
@@ -214,7 +214,7 @@ class NotificationDeliveryIssueCount
   Unknown!: number;
 }
 
-@Resolver(() => NotificationResource)
+@Resolver(() => NotificationNode)
 @Service()
 export class NotificationResolver {
   constructor(
@@ -532,7 +532,7 @@ export class NotificationResolver {
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @FieldResolver(() => Int, { name: "deliveryCount" })
-  async deliveryCount(@Root() { uuid }: NotificationResource): Promise<number> {
+  async deliveryCount(@Root() { uuid }: NotificationNode): Promise<number> {
     return this.notificationRepository.countDeliveriesForNotification({ uuid });
   }
 
@@ -543,7 +543,7 @@ export class NotificationResolver {
     name: "deliveryIssueCount",
   })
   async deliveryIssueCount(
-    @Root() { uuid }: NotificationResource
+    @Root() { uuid }: NotificationNode
   ): Promise<NotificationDeliveryIssueCount> {
     const issues =
       await this.notificationRepository.countFailedDeliveriesForNotification({
@@ -557,19 +557,19 @@ export class NotificationResolver {
   }
 }
 
-@Resolver(() => NotificationDeliveryResource)
+@Resolver(() => NotificationDeliveryNode)
 @Service()
 export class NotificationDeliveryResolver {
   constructor(
     private readonly notificationDeliveryRepository: NotificationDeliveryRepository
   ) {}
 
-  @FieldResolver(() => NotificationResource, {
+  @FieldResolver(() => NotificationNode, {
     name: "notification",
   })
   async getNotificationForDelivery(
-    @Root() { uuid }: NotificationDeliveryResource
-  ): Promise<NotificationResource> {
+    @Root() { uuid }: NotificationDeliveryNode
+  ): Promise<NotificationNode> {
     const notification =
       await this.notificationDeliveryRepository.findNotificationForDelivery({
         uuid,

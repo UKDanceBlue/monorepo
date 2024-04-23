@@ -2,11 +2,11 @@ import {
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
-  PersonResource,
-  PointEntryResource,
-  PointOpportunityResource,
+  PersonNode,
+  PointEntryNode,
+  PointOpportunityNode,
   SortDirection,
-  TeamResource,
+  TeamNode,
 } from "@ukdanceblue/common";
 import {
   Arg,
@@ -37,25 +37,25 @@ import {
 } from "./ApiResponse.js";
 
 @ObjectType("GetPointEntryByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<PointEntryResource>,
+  implements: AbstractGraphQLOkResponse<PointEntryNode>,
 })
-class GetPointEntryByUuidResponse extends AbstractGraphQLOkResponse<PointEntryResource> {
-  @Field(() => PointEntryResource)
-  data!: PointEntryResource;
+class GetPointEntryByUuidResponse extends AbstractGraphQLOkResponse<PointEntryNode> {
+  @Field(() => PointEntryNode)
+  data!: PointEntryNode;
 }
 @ObjectType("ListPointEntriesResponse", {
-  implements: AbstractGraphQLPaginatedResponse<PointEntryResource>,
+  implements: AbstractGraphQLPaginatedResponse<PointEntryNode>,
 })
-class ListPointEntriesResponse extends AbstractGraphQLPaginatedResponse<PointEntryResource> {
-  @Field(() => [PointEntryResource])
-  data!: PointEntryResource[];
+class ListPointEntriesResponse extends AbstractGraphQLPaginatedResponse<PointEntryNode> {
+  @Field(() => [PointEntryNode])
+  data!: PointEntryNode[];
 }
 @ObjectType("CreatePointEntryResponse", {
-  implements: AbstractGraphQLCreatedResponse<PointEntryResource>,
+  implements: AbstractGraphQLCreatedResponse<PointEntryNode>,
 })
-class CreatePointEntryResponse extends AbstractGraphQLCreatedResponse<PointEntryResource> {
-  @Field(() => PointEntryResource)
-  data!: PointEntryResource;
+class CreatePointEntryResponse extends AbstractGraphQLCreatedResponse<PointEntryNode> {
+  @Field(() => PointEntryNode)
+  data!: PointEntryNode;
 }
 @ObjectType("DeletePointEntryResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
@@ -63,7 +63,7 @@ class CreatePointEntryResponse extends AbstractGraphQLCreatedResponse<PointEntry
 class DeletePointEntryResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
-class CreatePointEntryInput implements Partial<PointEntryResource> {
+class CreatePointEntryInput implements Partial<PointEntryNode> {
   @Field(() => String, { nullable: true })
   comment!: string | null;
 
@@ -93,7 +93,7 @@ class ListPointEntriesArgs extends FilteredListQueryArgs<
   date: ["createdAt", "updatedAt"],
 }) {}
 
-@Resolver(() => PointEntryResource)
+@Resolver(() => PointEntryNode)
 @Service()
 export class PointEntryResolver {
   constructor(private readonly pointEntryRepository: PointEntryRepository) {}
@@ -170,10 +170,10 @@ export class PointEntryResolver {
     return DeletePointEntryResponse.newOk(true);
   }
 
-  @FieldResolver(() => PersonResource, { nullable: true })
+  @FieldResolver(() => PersonNode, { nullable: true })
   async personFrom(
-    @Root() pointEntry: PointEntryResource
-  ): Promise<PersonResource | null> {
+    @Root() pointEntry: PointEntryNode
+  ): Promise<PersonNode | null> {
     const model = await this.pointEntryRepository.getPointEntryPersonFrom({
       uuid: pointEntry.uuid,
     });
@@ -181,8 +181,8 @@ export class PointEntryResolver {
     return model ? personModelToResource(model) : null;
   }
 
-  @FieldResolver(() => TeamResource)
-  async team(@Root() pointEntry: PointEntryResource): Promise<TeamResource> {
+  @FieldResolver(() => TeamNode)
+  async team(@Root() pointEntry: PointEntryNode): Promise<TeamNode> {
     const model = await this.pointEntryRepository.getPointEntryTeam({
       uuid: pointEntry.uuid,
     });
@@ -194,10 +194,10 @@ export class PointEntryResolver {
     return teamModelToResource(model);
   }
 
-  @FieldResolver(() => PointOpportunityResource, { nullable: true })
+  @FieldResolver(() => PointOpportunityNode, { nullable: true })
   async pointOpportunity(
-    @Root() pointEntry: PointEntryResource
-  ): Promise<PointOpportunityResource | null> {
+    @Root() pointEntry: PointEntryNode
+  ): Promise<PointOpportunityNode | null> {
     const model = await this.pointEntryRepository.getPointEntryOpportunity({
       uuid: pointEntry.uuid,
     });

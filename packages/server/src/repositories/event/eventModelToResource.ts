@@ -1,12 +1,12 @@
 import type { Event, EventOccurrence } from "@prisma/client";
-import { EventOccurrenceResource, EventResource } from "@ukdanceblue/common";
+import { EventNode, EventOccurrenceNode } from "@ukdanceblue/common";
 import { DateTime, Interval } from "luxon";
 
 export function eventModelToResource(
   eventModel: Event,
-  occurrences: EventOccurrenceResource[] = []
-): EventResource {
-  return EventResource.init({
+  occurrences: EventOccurrenceNode[] = []
+): EventNode {
+  return EventNode.init({
     uuid: eventModel.uuid,
     title: eventModel.title,
     summary: eventModel.summary,
@@ -20,8 +20,8 @@ export function eventModelToResource(
 
 export function eventOccurrenceModelToResource(
   occurrenceModel: EventOccurrence
-): EventOccurrenceResource {
-  return EventOccurrenceResource.init({
+): EventOccurrenceNode {
+  return EventOccurrenceNode.init({
     uuid: occurrenceModel.uuid,
     interval: Interval.fromDateTimes(
       DateTime.fromJSDate(occurrenceModel.date),

@@ -1,10 +1,10 @@
 import type { Notification } from "@prisma/client";
-import { NotificationResource } from "@ukdanceblue/common";
+import { NotificationNode } from "@ukdanceblue/common";
 
 export function notificationModelToResource(
   notificationModel: Notification
-): NotificationResource {
-  return NotificationResource.init({
+): NotificationNode {
+  return NotificationNode.init({
     uuid: notificationModel.uuid,
     title: notificationModel.title,
     body: notificationModel.body,

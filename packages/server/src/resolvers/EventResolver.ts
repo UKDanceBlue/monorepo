@@ -5,9 +5,9 @@ import {
   DateRangeScalar,
   DetailedError,
   ErrorCode,
-  EventResource,
+  EventNode,
   FilteredListQueryArgs,
-  ImageResource,
+  ImageNode,
   SortDirection,
 } from "@ukdanceblue/common";
 import { Interval } from "luxon";
@@ -43,25 +43,25 @@ import {
 } from "./ApiResponse.js";
 
 @ObjectType("GetEventByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<EventResource>,
+  implements: AbstractGraphQLOkResponse<EventNode>,
 })
-class GetEventByUuidResponse extends AbstractGraphQLOkResponse<EventResource> {
-  @Field(() => EventResource)
-  data!: EventResource;
+class GetEventByUuidResponse extends AbstractGraphQLOkResponse<EventNode> {
+  @Field(() => EventNode)
+  data!: EventNode;
 }
 @ObjectType("CreateEventResponse", {
-  implements: AbstractGraphQLCreatedResponse<EventResource>,
+  implements: AbstractGraphQLCreatedResponse<EventNode>,
 })
-class CreateEventResponse extends AbstractGraphQLCreatedResponse<EventResource> {
-  @Field(() => EventResource)
-  data!: EventResource;
+class CreateEventResponse extends AbstractGraphQLCreatedResponse<EventNode> {
+  @Field(() => EventNode)
+  data!: EventNode;
 }
 @ObjectType("SetEventResponse", {
-  implements: AbstractGraphQLOkResponse<EventResource>,
+  implements: AbstractGraphQLOkResponse<EventNode>,
 })
-class SetEventResponse extends AbstractGraphQLOkResponse<EventResource> {
-  @Field(() => EventResource)
-  data!: EventResource;
+class SetEventResponse extends AbstractGraphQLOkResponse<EventNode> {
+  @Field(() => EventNode)
+  data!: EventNode;
 }
 @ObjectType("DeleteEventResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
@@ -77,19 +77,19 @@ class RemoveEventImageResponse extends AbstractGraphQLOkResponse<boolean> {
 }
 
 @ObjectType("AddEventImageResponse", {
-  implements: AbstractGraphQLOkResponse<ImageResource>,
+  implements: AbstractGraphQLOkResponse<ImageNode>,
 })
-class AddEventImageResponse extends AbstractGraphQLOkResponse<ImageResource> {
-  @Field(() => ImageResource)
-  data!: ImageResource;
+class AddEventImageResponse extends AbstractGraphQLOkResponse<ImageNode> {
+  @Field(() => ImageNode)
+  data!: ImageNode;
 }
 
 @ObjectType("ListEventsResponse", {
-  implements: AbstractGraphQLPaginatedResponse<EventResource[]>,
+  implements: AbstractGraphQLPaginatedResponse<EventNode[]>,
 })
-class ListEventsResponse extends AbstractGraphQLPaginatedResponse<EventResource> {
-  @Field(() => [EventResource])
-  data!: EventResource[];
+class ListEventsResponse extends AbstractGraphQLPaginatedResponse<EventNode> {
+  @Field(() => [EventNode])
+  data!: EventNode[];
 }
 
 @InputType()
@@ -193,7 +193,7 @@ class ListEventsArgs extends FilteredListQueryArgs<
 }) {}
 
 @Service()
-@Resolver(() => EventResource)
+@Resolver(() => EventNode)
 export class EventResolver {
   constructor(
     private readonly eventRepository: EventRepository,
@@ -394,8 +394,8 @@ export class EventResolver {
     );
   }
 
-  @FieldResolver(() => [ImageResource])
-  async images(@Root() event: EventResource): Promise<ImageResource[]> {
+  @FieldResolver(() => [ImageNode])
+  async images(@Root() event: EventNode): Promise<ImageNode[]> {
     const rows = await this.eventImageRepository.findEventImagesByEventUnique({
       uuid: event.uuid,
     });

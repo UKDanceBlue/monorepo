@@ -1,14 +1,14 @@
 import type { Team } from "@prisma/client";
-import { TeamResource } from "@ukdanceblue/common";
+import { TeamNode } from "@ukdanceblue/common";
 
 const marathonYearRegex = /^DB\d{2}$/;
 
-export function teamModelToResource(teamModel: Team): TeamResource {
+export function teamModelToResource(teamModel: Team): TeamNode {
   if (!marathonYearRegex.test(teamModel.marathonYear)) {
     throw new Error(`Invalid marathon year: ${teamModel.marathonYear}`);
   }
 
-  return TeamResource.init({
+  return TeamNode.init({
     uuid: teamModel.uuid,
     name: teamModel.name,
     persistentIdentifier: teamModel.persistentIdentifier,

@@ -1,11 +1,11 @@
 import type { PointOpportunity } from "@prisma/client";
-import { PointOpportunityResource } from "@ukdanceblue/common";
+import { PointOpportunityNode } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 
 export function pointOpportunityModelToResource(
   pointOpportunityModel: PointOpportunity
-): PointOpportunityResource {
-  return PointOpportunityResource.init({
+): PointOpportunityNode {
+  return PointOpportunityNode.init({
     uuid: pointOpportunityModel.uuid,
     name: pointOpportunityModel.name,
     type: pointOpportunityModel.type,

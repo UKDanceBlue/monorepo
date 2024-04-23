@@ -12,11 +12,11 @@ import {
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
-  MembershipResource,
-  PointEntryResource,
+  MembershipNode,
+  PointEntryNode,
   SortDirection,
   TeamLegacyStatus,
-  TeamResource,
+  TeamNode,
   TeamType,
 } from "@ukdanceblue/common";
 import {
@@ -49,25 +49,25 @@ import {
 import * as Context from "./context.js";
 
 @ObjectType("SingleTeamResponse", {
-  implements: AbstractGraphQLOkResponse<TeamResource>,
+  implements: AbstractGraphQLOkResponse<TeamNode>,
 })
-class SingleTeamResponse extends AbstractGraphQLOkResponse<TeamResource> {
-  @Field(() => TeamResource)
-  data!: TeamResource;
+class SingleTeamResponse extends AbstractGraphQLOkResponse<TeamNode> {
+  @Field(() => TeamNode)
+  data!: TeamNode;
 }
 @ObjectType("ListTeamsResponse", {
-  implements: AbstractGraphQLPaginatedResponse<TeamResource>,
+  implements: AbstractGraphQLPaginatedResponse<TeamNode>,
 })
-class ListTeamsResponse extends AbstractGraphQLPaginatedResponse<TeamResource> {
-  @Field(() => [TeamResource])
-  data!: TeamResource[];
+class ListTeamsResponse extends AbstractGraphQLPaginatedResponse<TeamNode> {
+  @Field(() => [TeamNode])
+  data!: TeamNode[];
 }
 @ObjectType("CreateTeamResponse", {
-  implements: AbstractGraphQLCreatedResponse<TeamResource>,
+  implements: AbstractGraphQLCreatedResponse<TeamNode>,
 })
-class CreateTeamResponse extends AbstractGraphQLCreatedResponse<TeamResource> {
-  @Field(() => TeamResource)
-  data!: TeamResource;
+class CreateTeamResponse extends AbstractGraphQLCreatedResponse<TeamNode> {
+  @Field(() => TeamNode)
+  data!: TeamNode;
 }
 @ObjectType("DeleteTeamResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
@@ -75,7 +75,7 @@ class CreateTeamResponse extends AbstractGraphQLCreatedResponse<TeamResource> {
 class DeleteTeamResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
-class CreateTeamInput implements OptionalToNullable<Partial<TeamResource>> {
+class CreateTeamInput implements OptionalToNullable<Partial<TeamNode>> {
   @Field(() => String)
   name!: string;
 
@@ -93,7 +93,7 @@ class CreateTeamInput implements OptionalToNullable<Partial<TeamResource>> {
 }
 
 @InputType()
-class SetTeamInput implements OptionalToNullable<Partial<TeamResource>> {
+class SetTeamInput implements OptionalToNullable<Partial<TeamNode>> {
   @Field(() => String, { nullable: true })
   name!: string | null;
 
@@ -137,7 +137,7 @@ class ListTeamsArgs extends FilteredListQueryArgs<
   marathonYear!: [MarathonYearString] | null;
 }
 
-@Resolver(() => TeamResource)
+@Resolver(() => TeamNode)
 @Service()
 export class TeamResolver {
   constructor(private teamRepository: TeamRepository) {}
@@ -310,8 +310,8 @@ export class TeamResolver {
       ],
     }
   )
-  @FieldResolver(() => [MembershipResource])
-  async members(@Root() team: TeamResource): Promise<MembershipResource[]> {
+  @FieldResolver(() => [MembershipNode])
+  async members(@Root() team: TeamNode): Promise<MembershipNode[]> {
     const memberships = await this.teamRepository.findMembersOfTeam({
       uuid: team.uuid,
     });
@@ -320,10 +320,10 @@ export class TeamResolver {
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
-  @FieldResolver(() => [MembershipResource], {
+  @FieldResolver(() => [MembershipNode], {
     deprecationReason: "Just query the members field and filter by role",
   })
-  async captains(@Root() team: TeamResource): Promise<MembershipResource[]> {
+  async captains(@Root() team: TeamNode): Promise<MembershipNode[]> {
     const memberships = await this.teamRepository.findMembersOfTeam(
       { uuid: team.uuid },
       { captainsOnly: true }
@@ -343,10 +343,8 @@ export class TeamResolver {
       ],
     }
   )
-  @FieldResolver(() => [PointEntryResource])
-  async pointEntries(
-    @Root() team: TeamResource
-  ): Promise<PointEntryResource[]> {
+  @FieldResolver(() => [PointEntryNode])
+  async pointEntries(@Root() team: TeamNode): Promise<PointEntryNode[]> {
     const rows = await this.teamRepository.getTeamPointEntries({
       uuid: team.uuid,
     });
@@ -356,7 +354,7 @@ export class TeamResolver {
 
   @AccessControl({ accessLevel: AccessLevel.Public })
   @FieldResolver(() => Int)
-  async totalPoints(@Root() team: TeamResource): Promise<number> {
+  async totalPoints(@Root() team: TeamNode): Promise<number> {
     const result = await this.teamRepository.getTotalTeamPoints({
       uuid: team.uuid,
     });

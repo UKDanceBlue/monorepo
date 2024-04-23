@@ -4,9 +4,9 @@ import {
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
+  MembershipNode,
   MembershipPositionType,
-  MembershipResource,
-  PersonResource,
+  PersonNode,
   RoleResource,
   SortDirection,
 } from "@ukdanceblue/common";
@@ -41,32 +41,32 @@ import {
 import * as Context from "./context.js";
 
 @ObjectType("CreatePersonResponse", {
-  implements: AbstractGraphQLCreatedResponse<PersonResource>,
+  implements: AbstractGraphQLCreatedResponse<PersonNode>,
 })
-class CreatePersonResponse extends AbstractGraphQLCreatedResponse<PersonResource> {
-  @Field(() => PersonResource)
-  data!: PersonResource;
+class CreatePersonResponse extends AbstractGraphQLCreatedResponse<PersonNode> {
+  @Field(() => PersonNode)
+  data!: PersonNode;
 }
 @ObjectType("GetPersonResponse", {
-  implements: AbstractGraphQLOkResponse<PersonResource>,
+  implements: AbstractGraphQLOkResponse<PersonNode>,
 })
-class GetPersonResponse extends AbstractGraphQLOkResponse<PersonResource | null> {
-  @Field(() => PersonResource, { nullable: true })
-  data!: PersonResource | null;
+class GetPersonResponse extends AbstractGraphQLOkResponse<PersonNode | null> {
+  @Field(() => PersonNode, { nullable: true })
+  data!: PersonNode | null;
 }
 @ObjectType("GetPeopleResponse", {
-  implements: AbstractGraphQLArrayOkResponse<PersonResource>,
+  implements: AbstractGraphQLArrayOkResponse<PersonNode>,
 })
-class GetPeopleResponse extends AbstractGraphQLArrayOkResponse<PersonResource> {
-  @Field(() => [PersonResource])
-  data!: PersonResource[];
+class GetPeopleResponse extends AbstractGraphQLArrayOkResponse<PersonNode> {
+  @Field(() => [PersonNode])
+  data!: PersonNode[];
 }
 @ObjectType("ListPeopleResponse", {
-  implements: AbstractGraphQLPaginatedResponse<PersonResource>,
+  implements: AbstractGraphQLPaginatedResponse<PersonNode>,
 })
-class ListPeopleResponse extends AbstractGraphQLPaginatedResponse<PersonResource> {
-  @Field(() => [PersonResource])
-  data!: PersonResource[];
+class ListPeopleResponse extends AbstractGraphQLPaginatedResponse<PersonNode> {
+  @Field(() => [PersonNode])
+  data!: PersonNode[];
 }
 @ObjectType("DeletePersonResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
@@ -134,7 +134,7 @@ class SetPersonInput {
   captainOf?: string[];
 }
 
-@Resolver(() => PersonResource)
+@Resolver(() => PersonNode)
 @Service()
 export class PersonResolver {
   constructor(private personRepository: PersonRepository) {}
@@ -144,12 +144,12 @@ export class PersonResolver {
     const row = await this.personRepository.findPersonByUuid(uuid);
 
     if (row == null) {
-      return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+      return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
         null
       );
     }
 
-    return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+    return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
       personModelToResource(row)
     );
   }
@@ -162,12 +162,12 @@ export class PersonResolver {
     const row = await this.personRepository.findPersonByLinkblue(linkBlueId);
 
     if (row == null) {
-      return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+      return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
         null
       );
     }
 
-    return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+    return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
       personModelToResource(row)
     );
   }
@@ -204,7 +204,7 @@ export class PersonResolver {
 
   @Query(() => GetPersonResponse, { name: "me" })
   me(@Ctx() ctx: Context.GraphQLContext): GetPersonResponse | null {
-    return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+    return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
       ctx.authenticatedUser
     );
   }
@@ -259,12 +259,12 @@ export class PersonResolver {
     );
 
     if (row == null) {
-      return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+      return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
         null
       );
     }
 
-    return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
+    return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
       personModelToResource(row)
     );
   }
@@ -300,8 +300,8 @@ export class PersonResolver {
       ],
     }
   )
-  @FieldResolver(() => [MembershipResource])
-  async teams(@Root() person: PersonResource): Promise<MembershipResource[]> {
+  @FieldResolver(() => [MembershipNode])
+  async teams(@Root() person: PersonNode): Promise<MembershipNode[]> {
     const models = await this.personRepository.findMembershipsOfPerson({
       uuid: person.uuid,
     });
@@ -314,12 +314,10 @@ export class PersonResolver {
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
-  @FieldResolver(() => [MembershipResource], {
+  @FieldResolver(() => [MembershipNode], {
     deprecationReason: "Use teams instead and filter by position",
   })
-  async captaincies(
-    @Root() person: PersonResource
-  ): Promise<MembershipResource[]> {
+  async captaincies(@Root() person: PersonNode): Promise<MembershipNode[]> {
     const models = await this.personRepository.findMembershipsOfPerson(
       { uuid: person.uuid },
       { position: MembershipPositionType.Captain }
