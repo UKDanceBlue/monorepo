@@ -7,7 +7,7 @@ import type {
   Authorization,
   CommitteeRole,
   DbRole,
-  PersonResource,
+  PersonNode,
   UserData,
 } from "../index.js";
 import {
@@ -17,7 +17,11 @@ import {
   compareDbRole,
 } from "../index.js";
 
-export interface AuthorizationRule extends Partial<Authorization> {
+export interface AuthorizationRule {
+  /**
+   * The minimum access level required to access this resource
+   */
+  accessLevel?: AccessLevel;
   /**
    * Exact DanceBlue role, cannot be used with minDbRole
    */
@@ -57,18 +61,27 @@ export interface AuthorizationRule extends Partial<Authorization> {
 }
 
 export function checkAuthorization(
-  role: AuthorizationRule,
+  {
+    accessLevel,
+    committeeIdentifier,
+    committeeIdentifiers,
+    committeeRole,
+    custom,
+    dbRole,
+    minCommitteeRole,
+    minDbRole,
+  }: AuthorizationRule,
   authorization: Authorization
 ) {
-  if (role.minDbRole != null && role.dbRole != null) {
+  if (minDbRole != null && dbRole != null) {
     throw new TypeError(`Cannot specify both dbRole and minDbRole.`);
   }
-  if (role.minCommitteeRole != null && role.committeeRole != null) {
+  if (minCommitteeRole != null && committeeRole != null) {
     throw new TypeError(
       `Cannot specify both committeeRole and minCommitteeRole.`
     );
   }
-  if (role.committeeIdentifier != null && role.committeeIdentifiers != null) {
+  if (committeeIdentifier != null && committeeIdentifiers != null) {
     throw new TypeError(
       `Cannot specify both committeeIdentifier and committeeIdentifiers.`
     );
@@ -77,47 +90,52 @@ export function checkAuthorization(
   let matches = true;
 
   // Access Level
-  if (role.accessLevel != null) {
-    matches &&= authorization.accessLevel >= role.accessLevel;
+  if (accessLevel != null) {
+    matches &&= authorization.accessLevel >= accessLevel;
   }
 
   // DB role
-  if (role.dbRole != null) {
-    matches &&= authorization.dbRole === role.dbRole;
+  if (dbRole != null) {
+    matches &&= authorization.dbRole === dbRole;
   }
-  if (role.minDbRole != null) {
-    matches &&= compareDbRole(authorization.dbRole, role.minDbRole) >= 0;
+  if (minDbRole != null) {
+    matches &&= compareDbRole(authorization.dbRole, minDbRole) >= 0;
   }
 
   // Committee role
-  if (role.committeeRole != null) {
-    matches &&= authorization.committeeRole === role.committeeRole;
+  if (committeeRole != null) {
+    matches &&= authorization.committees.some(
+      (committee) =>
+        committee.role === committeeRole &&
+        committee.identifier === committeeIdentifier
+    );
   }
-  if (role.minCommitteeRole != null) {
-    if (authorization.committeeRole == null) {
+  if (minCommitteeRole != null) {
+    if (authorization.committees.length === 0) {
       matches = false;
     } else {
-      matches &&=
-        compareCommitteeRole(
-          authorization.committeeRole,
-          role.minCommitteeRole
-        ) >= 0;
+      matches &&= authorization.committees.some(
+        (committee) =>
+          compareCommitteeRole(committee.role, minCommitteeRole) >= 0
+      );
     }
   }
 
   // Committee identifier(s)
-  if (role.committeeIdentifier != null) {
-    matches &&= authorization.committeeIdentifier === role.committeeIdentifier;
+  if (committeeIdentifier != null) {
+    matches &&= authorization.committees.some(
+      (committee) => committee.identifier === committeeIdentifier
+    );
   }
-  if (role.committeeIdentifiers != null) {
-    matches &&= role.committeeIdentifiers.includes(
-      String(authorization.committeeIdentifier)
+  if (committeeIdentifiers != null) {
+    matches &&= authorization.committees.some((committee) =>
+      committeeIdentifiers.includes(committee.identifier)
     );
   }
 
   // Custom auth checker
-  if (role.custom != null) {
-    matches &&= role.custom(authorization);
+  if (custom != null) {
+    matches &&= custom(authorization);
   }
   return matches;
 }
@@ -138,20 +156,20 @@ export interface AccessControlParam<
     argument: string | ((args: ArgsDictionary) => Primitive | Primitive[]);
     extractor: (
       userData: UserData,
-      person: PersonResource | null
+      person: PersonNode | null
     ) => Primitive | Primitive[];
   }[];
   rootMatch?: {
     root: string | ((root: RootType) => Primitive | Primitive[]);
     extractor: (
       userData: UserData,
-      person: PersonResource | null
+      person: PersonNode | null
     ) => Primitive | Primitive[];
   }[];
 }
 
 export interface AuthorizationContext {
-  authenticatedUser: PersonResource | null;
+  authenticatedUser: PersonNode | null;
   userData: UserData;
 }
 

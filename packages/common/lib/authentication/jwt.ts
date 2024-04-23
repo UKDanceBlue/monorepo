@@ -4,6 +4,7 @@ import type {
   AccessLevel,
   AuthSource,
   Authorization,
+  CommitteeIdentifier,
   CommitteeRole,
   DbRole,
 } from "../authorization/structures.js";
@@ -20,14 +21,17 @@ export function makeUserData(
   person: PersonResource,
   authSource: AuthSource,
   teamIds?: string[],
-  captainOfTeamIds?: string[]
+  captainOfTeamIds?: string[],
+  committees: { identifier: CommitteeIdentifier; role: CommitteeRole }[] = []
 ): UserData {
   return {
     auth: {
-      dbRole: person.role.dbRole,
-      committeeRole: person.role.committeeRole ?? undefined,
-      committeeIdentifier: person.role.committeeIdentifier ?? undefined,
-      accessLevel: roleToAccessLevel(person.role),
+      dbRole: person.dbRole,
+      committees,
+      accessLevel: roleToAccessLevel({
+        dbRole: person.dbRole,
+        committees,
+      }),
     },
     userId: person.uuid,
     teamIds,

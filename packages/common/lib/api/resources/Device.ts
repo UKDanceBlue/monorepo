@@ -7,7 +7,7 @@ import { Node, createNodeClasses } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
 @ObjectType({ implements: [TimestampedResource, Node] })
-export class DeviceResource extends TimestampedResource implements Node {
+export class DeviceNode extends TimestampedResource implements Node {
   @Field(() => ID)
   uuid!: string;
 
@@ -21,12 +21,12 @@ export class DeviceResource extends TimestampedResource implements Node {
     return this.uuid;
   }
 
-  public static init(init: Partial<DeviceResource>) {
-    return DeviceResource.doInit(init);
+  public static init(init: Partial<DeviceNode>) {
+    return DeviceNode.doInit(init);
   }
 }
 
 export const { DeviceConnection, DeviceEdge, DeviceResult } = createNodeClasses(
-  DeviceResource,
+  DeviceNode,
   "Device"
 );

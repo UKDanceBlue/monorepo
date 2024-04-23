@@ -1,9 +1,8 @@
 export { AuthIdPairResource as AuthIdPairNode } from "../types/AuthIdPair.js";
 export { IntervalISO } from "../types/IntervalISO.js";
-export { Role as RoleResource, defaultRole } from "../types/Role.js";
 
 export { ConfigurationNode } from "./Configuration.js";
-export { DeviceResource as DeviceNode } from "./Device.js";
+export { DeviceNode as DeviceNode } from "./Device.js";
 export {
   EventResource as EventNode,
   EventOccurrenceResource as EventOccurrenceNode,

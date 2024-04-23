@@ -1,12 +1,14 @@
-import type { Role } from "../api/types/Role.js";
-
-import type { Authorization } from "./structures.js";
 import {
   AccessLevel,
   CommitteeIdentifier,
   CommitteeRole,
   DbRole,
 } from "./structures.js";
+
+export type Role = {
+  dbRole: DbRole;
+  committees?: { identifier: CommitteeIdentifier; role: CommitteeRole }[];
+};
 
 /**
  * Converts a DbRole to an AccessLevel
@@ -15,11 +17,7 @@ import {
  * @return The equivalent AccessLevel
  * @throws Error if the DbRole is not a valid member of the DbRole enum
  */
-export function roleToAccessLevel(role: {
-  dbRole: DbRole;
-  committeeRole?: CommitteeRole | null;
-  committeeIdentifier?: CommitteeIdentifier | null;
-}): AccessLevel {
+export function roleToAccessLevel(role: Role): AccessLevel {
   switch (role.dbRole) {
     case DbRole.None: {
       return AccessLevel.None;
@@ -31,18 +29,32 @@ export function roleToAccessLevel(role: {
       return AccessLevel.UKY;
     }
     case DbRole.Committee: {
-      if (role.committeeIdentifier === CommitteeIdentifier.techCommittee) {
-        return AccessLevel.Admin;
-      } else if (
-        role.committeeRole === CommitteeRole.Coordinator ||
-        role.committeeRole === CommitteeRole.Chair
-      ) {
-        return AccessLevel.CommitteeChairOrCoordinator;
-      } else {
-        return AccessLevel.Committee;
+      let maxLevel: AccessLevel | null = null;
+      for (const committee of role.committees ?? []) {
+        let thisLevel: AccessLevel;
+
+        if (committee.identifier === CommitteeIdentifier.techCommittee) {
+          thisLevel = AccessLevel.Admin;
+        } else if (
+          committee.role === CommitteeRole.Coordinator ||
+          committee.role === CommitteeRole.Chair
+        ) {
+          thisLevel = AccessLevel.CommitteeChairOrCoordinator;
+        } else {
+          thisLevel = AccessLevel.Committee;
+        }
+
+        if (maxLevel === null || thisLevel > maxLevel) {
+          maxLevel = thisLevel;
+        }
       }
+      if (maxLevel === null) {
+        throw new Error("No committee roles found when DbRole was Committee");
+      }
+      return maxLevel;
     }
     default: {
+      role.dbRole satisfies never;
       try {
         throw new Error(`Illegal DbRole: ${JSON.stringify(role.dbRole)}`);
       } catch (error) {
@@ -52,29 +64,4 @@ export function roleToAccessLevel(role: {
       }
     }
   }
-}
-
-/**
- * Convert a RoleResource to an Authorization object
- *
- * @param role A full RoleResource object
- * @return An Authorization object representing the same role
- * @throws Error if one of committee or committeeRole is set without the other
- */
-export function roleToAuthorization(role: Role): Authorization {
-  const auth: Authorization = {
-    dbRole: role.dbRole,
-    accessLevel: roleToAccessLevel(role),
-  };
-
-  if (role.committeeRole && role.committeeIdentifier) {
-    auth.committeeRole = role.committeeRole;
-    auth.committeeIdentifier = role.committeeIdentifier;
-  } else if (role.committeeIdentifier || role.committeeRole) {
-    throw new Error(
-      "Cannot have a committee role without a committee or vice versa"
-    );
-  }
-
-  return auth;
 }
