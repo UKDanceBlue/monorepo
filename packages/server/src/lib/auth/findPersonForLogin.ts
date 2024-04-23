@@ -1,5 +1,5 @@
 import type { AuthSource, Prisma, PrismaClient } from "@prisma/client";
-import type { UserData } from "@ukdanceblue/common";
+import type { DbRole } from "@ukdanceblue/common";
 import { MembershipPositionType } from "@ukdanceblue/common";
 
 import { logger } from "../logging/logger.js";
@@ -24,12 +24,18 @@ const include = {
  * Searches the database for a user with the given auth IDs or user data, or creates a new user if none is found
  *
  * @param authIds The auth IDs to search for
- * @param userData The user data to fall back on if no user is found with the given auth IDs
+ * @param userInfo The user data to fall back on if no user is found with the given auth IDs
  */
 export async function findPersonForLogin(
   client: PrismaClient,
   authIds: [AuthSource, string][],
-  userData: UserData,
+  userInfo: {
+    uuid?: string | null;
+    email?: string | null;
+    linkblue?: string | null;
+    name?: string | null;
+    dbRole?: DbRole | null;
+  },
   memberOf?: (string | number)[],
   captainOf?: (string | number)[]
 ) {
@@ -39,9 +45,9 @@ export async function findPersonForLogin(
   let created = false;
 
   // If we have a UUID, search for an existing person with that UUID
-  if (userData.uuid) {
+  if (userInfo.uuid) {
     currentPerson = await client.person.findUnique({
-      where: { uuid: userData.uuid },
+      where: { uuid: userInfo.uuid },
       include,
     });
     if (currentPerson) {
@@ -66,18 +72,18 @@ export async function findPersonForLogin(
   }
 
   // Search for an existing person with the given unique user data
-  if (!currentPerson && userData.linkblue) {
+  if (!currentPerson && userInfo.linkblue) {
     currentPerson = await client.person.findUnique({
-      where: { linkblue: userData.linkblue },
+      where: { linkblue: userInfo.linkblue },
       include,
     });
     if (currentPerson) {
       logger.trace(`Found person by linkblue: ${currentPerson.uuid}`);
     }
   }
-  if (!currentPerson && userData.email) {
+  if (!currentPerson && userInfo.email) {
     currentPerson = await client.person.findUnique({
-      where: { email: userData.email },
+      where: { email: userInfo.email },
       include,
     });
     if (currentPerson) {
@@ -87,7 +93,7 @@ export async function findPersonForLogin(
 
   if (!currentPerson) {
     logger.trace("No person found, creating new person");
-    if (!userData.email) {
+    if (!userInfo.email) {
       throw new Error("No email provided for new user");
     }
     // currentPerson = PersonModel.build({
@@ -153,11 +159,9 @@ export async function findPersonForLogin(
             })),
           },
         },
-        email: userData.email,
-        name: userData.name ?? null,
-        linkblue: userData.linkblue ?? null,
-        committeeRole: userData.role?.committeeRole ?? null,
-        committeeName: userData.role?.committeeIdentifier ?? null,
+        email: userInfo.email,
+        name: userInfo.name ?? null,
+        linkblue: userInfo.linkblue ?? null,
         memberships: {
           createMany: {
             data: [

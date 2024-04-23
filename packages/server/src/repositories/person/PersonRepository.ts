@@ -4,10 +4,10 @@ import {
   AuthSource,
   CommitteeIdentifier,
   CommitteeRole,
+  DbRole,
   MembershipPositionType,
   SortDirection,
   TeamLegacyStatus,
-  UserData,
 } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
@@ -52,14 +52,20 @@ export class PersonRepository {
 
   findPersonForLogin(
     authIds: [Exclude<AuthSource, "None">, string][],
-    userData: UserData,
+    userInfo: {
+      uuid?: string | null;
+      email?: string | null;
+      linkblue?: string | null;
+      name?: string | null;
+      dbRole?: DbRole | null;
+    },
     memberOf?: (string | number)[],
     captainOf?: (string | number)[]
   ) {
     return findPersonForLogin(
       this.prisma,
       authIds,
-      userData,
+      userInfo,
       memberOf,
       captainOf
     );

@@ -46,8 +46,7 @@ export interface JwtPayload {
   auth_source: AuthSource;
   // TODO: Replace these fields with either "roles" or "groups" (these are specified in the RFC 7643 Section 4.1.2)
   dbRole: DbRole;
-  committee_role?: CommitteeRole;
-  committee?: string;
+  committees?: { role: CommitteeRole; identifier: CommitteeIdentifier }[];
   access_level: AccessLevel;
   team_ids?: string[];
   captain_of_team_ids?: string[];
