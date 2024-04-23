@@ -1,5 +1,5 @@
 import type { AuthSource, Prisma, PrismaClient } from "@prisma/client";
-import type { RoleResource } from "@ukdanceblue/common";
+import type { UserData } from "@ukdanceblue/common";
 import { MembershipPositionType } from "@ukdanceblue/common";
 
 import { logger } from "../logging/logger.js";
@@ -29,13 +29,7 @@ const include = {
 export async function findPersonForLogin(
   client: PrismaClient,
   authIds: [AuthSource, string][],
-  userData: {
-    uuid?: string | null;
-    email?: string | null;
-    linkblue?: string | null;
-    name?: string | null;
-    role?: RoleResource | null;
-  },
+  userData: UserData,
   memberOf?: (string | number)[],
   captainOf?: (string | number)[]
 ) {

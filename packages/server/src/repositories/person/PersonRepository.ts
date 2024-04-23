@@ -1,11 +1,14 @@
 import type { Person } from "@prisma/client";
-import { AuthSource, Prisma, PrismaClient } from "@prisma/client";
-import type {
+import { Prisma, PrismaClient } from "@prisma/client";
+import {
+  AuthSource,
   CommitteeIdentifier,
   CommitteeRole,
+  MembershipPositionType,
   SortDirection,
+  TeamLegacyStatus,
+  UserData,
 } from "@ukdanceblue/common";
-import { MembershipPositionType, TeamLegacyStatus } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import { findPersonForLogin } from "../../lib/auth/findPersonForLogin.js";
@@ -48,14 +51,8 @@ export class PersonRepository {
   // Finders
 
   findPersonForLogin(
-    authIds: [AuthSource, string][],
-    userData: {
-      uuid?: string | null;
-      email?: string | null;
-      linkblue?: string | null;
-      name?: string | null;
-      role?: RoleResource | null;
-    },
+    authIds: [Exclude<AuthSource, "None">, string][],
+    userData: UserData,
     memberOf?: (string | number)[],
     captainOf?: (string | number)[]
   ) {
@@ -205,7 +202,7 @@ export class PersonRepository {
     linkblue?: string | null;
     committeeRole?: CommitteeRole | null;
     committeeName?: CommitteeIdentifier | null;
-    authIds?: AuthIdPairResource<Exclude<AuthSource, "None">>[] | null;
+    authIds?: { source: Exclude<AuthSource, "None">; value: string }[] | null;
   }): Promise<Person> {
     return this.prisma.person.create({
       data: {
