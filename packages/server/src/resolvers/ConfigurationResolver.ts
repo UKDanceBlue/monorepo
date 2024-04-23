@@ -1,8 +1,7 @@
 import {
   AccessControl,
   AccessLevel,
-  ConfigurationResource,
-  DateTimeScalar,
+  ConfigurationNode,
   DetailedError,
   ErrorCode,
   SortDirection,
@@ -30,39 +29,39 @@ import {
 } from "./ApiResponse.js";
 
 @ObjectType("GetConfigurationByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<ConfigurationResource>,
+  implements: AbstractGraphQLOkResponse<ConfigurationNode>,
 })
-class GetConfigurationResponse extends AbstractGraphQLOkResponse<ConfigurationResource> {
-  @Field(() => ConfigurationResource)
-  data!: ConfigurationResource;
+class GetConfigurationResponse extends AbstractGraphQLOkResponse<ConfigurationNode> {
+  @Field(() => ConfigurationNode)
+  data!: ConfigurationNode;
 }
 @ObjectType("GetAllConfigurationsResponse", {
-  implements: AbstractGraphQLArrayOkResponse<ConfigurationResource>,
+  implements: AbstractGraphQLArrayOkResponse<ConfigurationNode>,
 })
-class GetAllConfigurationsResponse extends AbstractGraphQLArrayOkResponse<ConfigurationResource> {
-  @Field(() => [ConfigurationResource])
-  data!: ConfigurationResource[];
+class GetAllConfigurationsResponse extends AbstractGraphQLArrayOkResponse<ConfigurationNode> {
+  @Field(() => [ConfigurationNode])
+  data!: ConfigurationNode[];
 }
 @ObjectType("CreateConfigurationResponse", {
-  implements: AbstractGraphQLCreatedResponse<ConfigurationResource>,
+  implements: AbstractGraphQLCreatedResponse<ConfigurationNode>,
 })
-class CreateConfigurationResponse extends AbstractGraphQLCreatedResponse<ConfigurationResource> {
-  @Field(() => ConfigurationResource)
-  data!: ConfigurationResource;
+class CreateConfigurationResponse extends AbstractGraphQLCreatedResponse<ConfigurationNode> {
+  @Field(() => ConfigurationNode)
+  data!: ConfigurationNode;
 }
 @ObjectType("CreateConfigurationsResponse", {
-  implements: AbstractGraphQLCreatedResponse<ConfigurationResource>,
+  implements: AbstractGraphQLCreatedResponse<ConfigurationNode>,
 })
-class CreateConfigurationsResponse extends AbstractGraphQLArrayOkResponse<ConfigurationResource> {
-  @Field(() => [ConfigurationResource])
-  data!: ConfigurationResource[];
+class CreateConfigurationsResponse extends AbstractGraphQLArrayOkResponse<ConfigurationNode> {
+  @Field(() => [ConfigurationNode])
+  data!: ConfigurationNode[];
 }
 @ObjectType("DeleteConfigurationResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
 class DeleteConfigurationResponse extends AbstractGraphQLOkResponse<never> {}
 @InputType()
-class CreateConfigurationInput implements Partial<ConfigurationResource> {
+class CreateConfigurationInput implements Partial<ConfigurationNode> {
   @Field()
   key!: string;
 
@@ -76,7 +75,7 @@ class CreateConfigurationInput implements Partial<ConfigurationResource> {
   validUntil!: DateTime | null;
 }
 
-@Resolver(() => ConfigurationResource)
+@Resolver(() => ConfigurationNode)
 @Service()
 export class ConfigurationResolver {
   constructor(

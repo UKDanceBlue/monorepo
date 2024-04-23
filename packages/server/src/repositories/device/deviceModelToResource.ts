@@ -1,14 +1,10 @@
 import type { Device } from "@prisma/client";
-import { DeviceResource } from "@ukdanceblue/common";
-import { DateTime } from "luxon";
+import { DeviceNode } from "@ukdanceblue/common";
 
-export function deviceModelToResource(deviceModel: Device): DeviceResource {
-  return DeviceResource.init({
+export function deviceModelToResource(deviceModel: Device): DeviceNode {
+  return DeviceNode.init({
     uuid: deviceModel.uuid,
-    expoPushToken: deviceModel.expoPushToken,
-    lastLogin: deviceModel.lastSeen
-      ? DateTime.fromJSDate(deviceModel.lastSeen)
-      : null,
+    lastLogin: deviceModel.lastSeen,
     createdAt: deviceModel.createdAt,
     updatedAt: deviceModel.updatedAt,
   });

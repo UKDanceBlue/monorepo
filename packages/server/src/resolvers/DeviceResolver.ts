@@ -1,10 +1,10 @@
 import {
   DetailedError,
-  DeviceResource,
+  DeviceNode,
   ErrorCode,
   FilteredListQueryArgs,
-  NotificationDeliveryResource,
-  PersonResource,
+  NotificationDeliveryNode,
+  PersonNode,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -35,25 +35,25 @@ import {
 } from "./ApiResponse.js";
 
 @ObjectType("GetDeviceByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<DeviceResource>,
+  implements: AbstractGraphQLOkResponse<DeviceNode>,
 })
-class GetDeviceByUuidResponse extends AbstractGraphQLOkResponse<DeviceResource> {
-  @Field(() => DeviceResource)
-  data!: DeviceResource;
+class GetDeviceByUuidResponse extends AbstractGraphQLOkResponse<DeviceNode> {
+  @Field(() => DeviceNode)
+  data!: DeviceNode;
 }
 @ObjectType("ListDevicesResponse", {
-  implements: AbstractGraphQLPaginatedResponse<DeviceResource>,
+  implements: AbstractGraphQLPaginatedResponse<DeviceNode>,
 })
-class ListDevicesResponse extends AbstractGraphQLPaginatedResponse<DeviceResource> {
-  @Field(() => [DeviceResource])
-  data!: DeviceResource[];
+class ListDevicesResponse extends AbstractGraphQLPaginatedResponse<DeviceNode> {
+  @Field(() => [DeviceNode])
+  data!: DeviceNode[];
 }
 @ObjectType("RegisterDeviceResponse", {
-  implements: AbstractGraphQLOkResponse<DeviceResource>,
+  implements: AbstractGraphQLOkResponse<DeviceNode>,
 })
-class RegisterDeviceResponse extends AbstractGraphQLOkResponse<DeviceResource> {
-  @Field(() => DeviceResource)
-  data!: DeviceResource;
+class RegisterDeviceResponse extends AbstractGraphQLOkResponse<DeviceNode> {
+  @Field(() => DeviceNode)
+  data!: DeviceNode;
 }
 @ObjectType("DeleteDeviceResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
@@ -61,7 +61,7 @@ class RegisterDeviceResponse extends AbstractGraphQLOkResponse<DeviceResource> {
 class DeleteDeviceResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
-class RegisterDeviceInput implements Partial<DeviceResource> {
+class RegisterDeviceInput {
   @Field(() => String)
   deviceId!: string;
 
@@ -114,7 +114,7 @@ class NotificationDeliveriesArgs {
   pageSize?: number;
 }
 
-@Resolver(() => DeviceResource)
+@Resolver(() => DeviceNode)
 @Service()
 export class DeviceResolver {
   constructor(private deviceRepository: DeviceRepository) {}
@@ -184,20 +184,20 @@ export class DeviceResolver {
     return DeleteDeviceResponse.newOk(true);
   }
 
-  @FieldResolver(() => PersonResource, { nullable: true })
+  @FieldResolver(() => PersonNode, { nullable: true })
   async lastLoggedInUser(
-    @Root() device: DeviceResource
-  ): Promise<PersonResource | null> {
+    @Root() device: DeviceNode
+  ): Promise<PersonNode | null> {
     const user = await this.deviceRepository.getLastLoggedInUser(device.uuid);
 
     return user == null ? null : personModelToResource(user);
   }
 
-  @FieldResolver(() => [NotificationDeliveryResource])
+  @FieldResolver(() => [NotificationDeliveryNode])
   async notificationDeliveries(
-    @Root() device: DeviceResource,
+    @Root() device: DeviceNode,
     @Args(() => NotificationDeliveriesArgs) query: NotificationDeliveriesArgs
-  ): Promise<NotificationDeliveryResource[]> {
+  ): Promise<NotificationDeliveryNode[]> {
     const row = await this.deviceRepository.getDeviceByUuid(device.uuid);
 
     if (row == null) {

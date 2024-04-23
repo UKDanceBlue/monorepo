@@ -1,7 +1,7 @@
 import type { Person } from "@prisma/client";
-import { DbRole, PersonResource, RoleResource } from "@ukdanceblue/common";
+import { DbRole, PersonNode } from "@ukdanceblue/common";
 
-export function personModelToResource(person: Person): PersonResource {
+export function personModelToResource(person: Person): PersonNode {
   let dbRole: DbRole = DbRole.None;
   if (person.committeeRole) {
     dbRole = DbRole.Committee;
@@ -11,16 +11,12 @@ export function personModelToResource(person: Person): PersonResource {
     dbRole = DbRole.Public;
   }
 
-  return PersonResource.init({
+  return PersonNode.init({
     uuid: person.uuid,
     name: person.name,
     email: person.email,
     linkblue: person.linkblue,
-    role: RoleResource.init({
-      dbRole,
-      committeeRole: person.committeeRole,
-      committeeIdentifier: person.committeeName,
-    }),
+    dbRole,
     createdAt: person.createdAt,
     updatedAt: person.updatedAt,
   });
