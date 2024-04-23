@@ -1,13 +1,13 @@
 import {
   AccessControl,
   AccessLevel,
+  DbRole,
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
   MembershipNode,
   MembershipPositionType,
   PersonNode,
-  RoleResource,
   SortDirection,
 } from "@ukdanceblue/common";
 import { EmailAddressResolver } from "graphql-scalars";
@@ -104,8 +104,8 @@ class CreatePersonInput {
   @Field(() => String, { nullable: true })
   linkblue?: string;
 
-  @Field(() => RoleResource, { nullable: true })
-  role?: RoleResource;
+  @Field(() => DbRole, { nullable: true })
+  dbRole?: DbRole;
 
   @Field(() => [String], { defaultValue: [] })
   memberOf?: string[];
@@ -124,8 +124,8 @@ class SetPersonInput {
   @Field(() => String, { nullable: true })
   linkblue?: string;
 
-  @Field(() => RoleResource, { nullable: true })
-  role?: RoleResource;
+  @Field(() => DbRole, { nullable: true })
+  dbRole?: DbRole;
 
   @Field(() => [String], { nullable: true })
   memberOf?: string[];

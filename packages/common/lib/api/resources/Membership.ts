@@ -16,7 +16,7 @@ registerEnumType(MembershipPositionType, {
 });
 
 @ObjectType({
-  implements: [TimestampedResource, Node],
+  implements: [Node],
 })
 export class MembershipNode extends TimestampedResource implements Node {
   @Field(() => ID)

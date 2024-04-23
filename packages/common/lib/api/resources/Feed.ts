@@ -15,7 +15,7 @@ import { TimestampedResource } from "./Resource.js";
 // });
 
 @ObjectType({
-  implements: [TimestampedResource, Node],
+  implements: [Node],
 })
 export class FeedNode extends TimestampedResource implements Node {
   @Field(() => ID)

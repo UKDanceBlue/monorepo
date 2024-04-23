@@ -6,7 +6,7 @@ import { IntervalISO } from "../types/IntervalISO.js";
 import { Resource, TimestampedResource } from "./Resource.js";
 
 @ObjectType({
-  implements: [TimestampedResource, Node],
+  implements: [Node],
 })
 export class EventNode extends TimestampedResource implements Node {
   @Field(() => ID)
@@ -32,7 +32,7 @@ export class EventNode extends TimestampedResource implements Node {
 }
 
 @ObjectType({
-  implements: [Resource],
+  implements: [],
 })
 export class EventOccurrenceNode extends Resource {
   @Field(() => ID)

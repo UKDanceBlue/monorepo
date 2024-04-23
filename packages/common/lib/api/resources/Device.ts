@@ -6,7 +6,7 @@ import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { Node, createNodeClasses } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
-@ObjectType({ implements: [TimestampedResource, Node] })
+@ObjectType({ implements: [Node] })
 export class DeviceNode extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;

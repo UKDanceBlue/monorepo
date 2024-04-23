@@ -2,15 +2,14 @@ import type { Prisma } from "@prisma/client";
 import {
   AccessControl,
   AccessLevel,
-  DateRangeScalar,
   DetailedError,
   ErrorCode,
   EventNode,
   FilteredListQueryArgs,
   ImageNode,
+  IntervalISO,
   SortDirection,
 } from "@ukdanceblue/common";
-import { Interval } from "luxon";
 import {
   Arg,
   Args,
@@ -94,8 +93,8 @@ class ListEventsResponse extends AbstractGraphQLPaginatedResponse<EventNode> {
 
 @InputType()
 export class CreateEventOccurrenceInput {
-  @Field(() => DateRangeScalar)
-  interval!: Interval;
+  @Field(() => IntervalISO)
+  interval!: IntervalISO;
   @Field(() => Boolean)
   fullDay!: boolean;
 }
@@ -126,8 +125,8 @@ export class SetEventOccurrenceInput {
       "If updating an existing occurrence, the UUID of the occurrence to update",
   })
   uuid!: string | null;
-  @Field(() => DateRangeScalar)
-  interval!: Interval;
+  @Field(() => IntervalISO)
+  interval!: IntervalISO;
   @Field(() => Boolean)
   fullDay!: boolean;
 }
@@ -259,8 +258,8 @@ export class EventResolver {
         createMany: {
           data: input.occurrences.map(
             (occurrence): Prisma.EventOccurrenceCreateManyEventInput => ({
-              date: occurrence.interval.start!.toJSDate(),
-              endDate: occurrence.interval.end!.toJSDate(),
+              date: occurrence.interval.start,
+              endDate: occurrence.interval.end,
               fullDay: occurrence.fullDay,
             })
           ),
@@ -312,8 +311,8 @@ export class EventResolver {
               .filter((occurrence) => occurrence.uuid == null)
               .map(
                 (occurrence): Prisma.EventOccurrenceCreateManyEventInput => ({
-                  date: occurrence.interval.start!.toJSDate(),
-                  endDate: occurrence.interval.end!.toJSDate(),
+                  date: occurrence.interval.start,
+                  endDate: occurrence.interval.end,
                   fullDay: occurrence.fullDay,
                 })
               ),
@@ -326,8 +325,8 @@ export class EventResolver {
               ): Prisma.EventOccurrenceUpdateManyWithWhereWithoutEventInput => ({
                 where: { uuid: occurrence.uuid! },
                 data: {
-                  date: occurrence.interval.start!.toJSDate(),
-                  endDate: occurrence.interval.end!.toJSDate(),
+                  date: occurrence.interval.start,
+                  endDate: occurrence.interval.end,
                   fullDay: occurrence.fullDay,
                 },
               })

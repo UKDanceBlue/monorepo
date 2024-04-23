@@ -9,7 +9,7 @@ import { TimestampedResource } from "./Resource.js";
 import { TeamType } from "./Team.js";
 
 @ObjectType({
-  implements: [TimestampedResource, Node],
+  implements: [Node],
 })
 export class PointOpportunityResource
   extends TimestampedResource

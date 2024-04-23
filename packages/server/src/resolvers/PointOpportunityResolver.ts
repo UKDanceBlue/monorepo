@@ -1,5 +1,4 @@
 import {
-  DateTimeScalar,
   DetailedError,
   ErrorCode,
   EventNode,
@@ -8,7 +7,7 @@ import {
   SortDirection,
   TeamType,
 } from "@ukdanceblue/common";
-import type { DateTime } from "luxon";
+import { DateTimeISOResolver } from "graphql-scalars";
 import {
   Arg,
   Args,
@@ -66,8 +65,8 @@ class CreatePointOpportunityInput {
   @Field(() => String)
   name!: string;
 
-  @Field(() => DateTimeScalar, { nullable: true })
-  opportunityDate!: DateTime | null;
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  opportunityDate!: Date | null;
 
   @Field(() => TeamType)
   type!: TeamType;
@@ -81,8 +80,8 @@ class SetPointOpportunityInput {
   @Field(() => String, { nullable: true })
   name!: string | null;
 
-  @Field(() => DateTimeScalar, { nullable: true })
-  opportunityDate!: DateTime | null;
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  opportunityDate!: Date | null;
 
   @Field(() => TeamType, { nullable: true })
   type!: TeamType | null;
@@ -172,7 +171,7 @@ export class PointOpportunityResolver {
       name: input.name,
       type: input.type,
       eventParam: input.eventUuid ? { uuid: input.eventUuid } : null,
-      opportunityDate: input.opportunityDate?.toJSDate() ?? null,
+      opportunityDate: input.opportunityDate ?? null,
     });
 
     return CreatePointOpportunityResponse.newOk(
@@ -193,7 +192,7 @@ export class PointOpportunityResolver {
         name: input.name ?? undefined,
         type: input.type ?? undefined,
         eventParam: input.eventUuid ? { uuid: input.eventUuid } : undefined,
-        opportunityDate: input.opportunityDate?.toJSDate() ?? undefined,
+        opportunityDate: input.opportunityDate ?? undefined,
       }
     );
 

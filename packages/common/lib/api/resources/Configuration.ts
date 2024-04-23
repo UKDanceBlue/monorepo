@@ -18,7 +18,7 @@ to have additional validation logic in the future.
 */
 
 @ObjectType({
-  implements: [TimestampedResource, Node],
+  implements: [Node],
 })
 export class ConfigurationNode extends TimestampedResource implements Node {
   @Field(() => ID)

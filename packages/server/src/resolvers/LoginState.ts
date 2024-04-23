@@ -1,4 +1,4 @@
-import { AuthSource, RoleResource } from "@ukdanceblue/common";
+import { AuthSource, DbRole } from "@ukdanceblue/common";
 import { Ctx, Field, ObjectType, Query, Resolver } from "type-graphql";
 import { Service } from "typedi";
 
@@ -9,8 +9,8 @@ export class LoginState {
   @Field(() => Boolean)
   loggedIn!: boolean;
 
-  @Field(() => RoleResource)
-  role!: RoleResource;
+  @Field(() => DbRole)
+  dbRole!: DbRole;
 
   @Field(() => AuthSource)
   authSource!: AuthSource;
@@ -23,7 +23,7 @@ export class LoginStateResolver {
   loginState(@Ctx() ctx: Context.GraphQLContext): LoginState {
     return {
       loggedIn: ctx.authenticatedUser != null,
-      role: RoleResource.fromAuthorization(ctx.userData.auth),
+      dbRole: ctx.userData.auth.dbRole,
       authSource: ctx.userData.authSource,
     };
   }

@@ -31,7 +31,7 @@ registerEnumType(TeamLegacyStatus, {
 });
 
 @ObjectType({
-  implements: [TimestampedResource, Node],
+  implements: [Node],
 })
 export class TeamNode extends TimestampedResource implements Node {
   @Field(() => ID)

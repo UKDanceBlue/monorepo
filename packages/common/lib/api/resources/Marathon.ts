@@ -7,7 +7,7 @@ import { Node, createNodeClasses } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
 @ObjectType({
-  implements: [TimestampedResource, Node],
+  implements: [Node],
 })
 export class MarathonNode extends TimestampedResource implements Node {
   @Field(() => ID)

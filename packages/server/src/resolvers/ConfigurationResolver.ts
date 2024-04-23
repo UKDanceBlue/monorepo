@@ -5,8 +5,9 @@ import {
   DetailedError,
   ErrorCode,
   SortDirection,
+  dateTimeFromSomething,
 } from "@ukdanceblue/common";
-import type { DateTime } from "luxon";
+import { DateTimeISOResolver } from "graphql-scalars";
 import {
   Arg,
   Field,
@@ -68,11 +69,11 @@ class CreateConfigurationInput implements Partial<ConfigurationNode> {
   @Field()
   value!: string;
 
-  @Field(() => DateTimeScalar, { nullable: true })
-  validAfter!: DateTime | null;
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  validAfter!: Date | null;
 
-  @Field(() => DateTimeScalar, { nullable: true })
-  validUntil!: DateTime | null;
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  validUntil!: Date | null;
 }
 
 @Resolver(() => ConfigurationNode)
@@ -118,8 +119,8 @@ export class ConfigurationResolver {
     const row = await this.configurationRepository.createConfiguration({
       key: input.key,
       value: input.value,
-      validAfter: input.validAfter ?? null,
-      validUntil: input.validUntil ?? null,
+      validAfter: dateTimeFromSomething(input.validAfter ?? null),
+      validUntil: dateTimeFromSomething(input.validUntil ?? null),
     });
 
     auditLogger.dangerous("Configuration created", { configuration: row });
@@ -142,8 +143,8 @@ export class ConfigurationResolver {
         this.configurationRepository.createConfiguration({
           key: i.key,
           value: i.value,
-          validAfter: i.validAfter ?? null,
-          validUntil: i.validUntil ?? null,
+          validAfter: dateTimeFromSomething(i.validAfter ?? null),
+          validUntil: dateTimeFromSomething(i.validUntil ?? null),
         })
       )
     );

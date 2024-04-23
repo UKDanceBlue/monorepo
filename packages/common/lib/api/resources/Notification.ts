@@ -9,7 +9,7 @@ import { Node, createNodeClasses } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
 @ObjectType({
-  implements: [TimestampedResource, Node],
+  implements: [Node],
 })
 export class NotificationNode extends TimestampedResource implements Node {
   @Field(() => ID)
@@ -67,7 +67,7 @@ export const { NotificationConnection, NotificationEdge, NotificationResult } =
   createNodeClasses(NotificationNode, "Notification");
 
 @ObjectType({
-  implements: [TimestampedResource, Node],
+  implements: [Node],
 })
 export class NotificationDeliveryNode
   extends TimestampedResource
