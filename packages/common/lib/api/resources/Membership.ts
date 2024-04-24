@@ -18,7 +18,7 @@ registerEnumType(MembershipPositionType, {
 @ObjectType({
   implements: [TimestampedResource, Node],
 })
-export class MembershipResource extends TimestampedResource implements Node {
+export class MembershipNode extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
 
@@ -29,10 +29,10 @@ export class MembershipResource extends TimestampedResource implements Node {
     return this.id;
   }
 
-  public static init(init: Partial<MembershipResource>) {
-    return MembershipResource.doInit(init);
+  public static init(init: Partial<MembershipNode>) {
+    return MembershipNode.doInit(init);
   }
 }
 
 export const { MembershipConnection, MembershipEdge, MembershipResult } =
-  createNodeClasses(MembershipResource, "Membership");
+  createNodeClasses(MembershipNode, "Membership");

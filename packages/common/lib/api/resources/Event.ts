@@ -8,11 +8,11 @@ import { Resource, TimestampedResource } from "./Resource.js";
 @ObjectType({
   implements: [TimestampedResource, Node],
 })
-export class EventResource extends TimestampedResource implements Node {
+export class EventNode extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
-  @Field(() => [EventOccurrenceResource])
-  occurrences!: EventOccurrenceResource[];
+  @Field(() => [EventOccurrenceNode])
+  occurrences!: EventOccurrenceNode[];
   @Field(() => String)
   title!: string;
   @Field(() => String, { nullable: true })
@@ -26,15 +26,15 @@ export class EventResource extends TimestampedResource implements Node {
     return this.id;
   }
 
-  public static init(init: Partial<EventResource>) {
-    return EventResource.doInit(init);
+  public static init(init: Partial<EventNode>) {
+    return EventNode.doInit(init);
   }
 }
 
 @ObjectType({
   implements: [Resource],
 })
-export class EventOccurrenceResource extends Resource {
+export class EventOccurrenceNode extends Resource {
   @Field(() => ID)
   uuid!: string;
   @Field(() => IntervalISO)
@@ -46,12 +46,12 @@ export class EventOccurrenceResource extends Resource {
     return this.uuid;
   }
 
-  public static init(init: Partial<EventOccurrenceResource>) {
-    return EventOccurrenceResource.doInit(init);
+  public static init(init: Partial<EventOccurrenceNode>) {
+    return EventOccurrenceNode.doInit(init);
   }
 }
 
 export const { EventConnection, EventEdge, EventResult } = createNodeClasses(
-  EventResource,
+  EventNode,
   "Event"
 );

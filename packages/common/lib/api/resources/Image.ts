@@ -7,7 +7,7 @@ import { TimestampedResource } from "./Resource.js";
 @ObjectType({
   implements: [TimestampedResource, Node],
 })
-export class ImageResource extends TimestampedResource implements Node {
+export class ImageNode extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
 
@@ -33,12 +33,12 @@ export class ImageResource extends TimestampedResource implements Node {
     return this.id;
   }
 
-  public static init(init: Partial<ImageResource>) {
-    return ImageResource.doInit(init);
+  public static init(init: Partial<ImageNode>) {
+    return ImageNode.doInit(init);
   }
 }
 
 export const { ImageConnection, ImageEdge, ImageResult } = createNodeClasses(
-  ImageResource,
+  ImageNode,
   "Image"
 );

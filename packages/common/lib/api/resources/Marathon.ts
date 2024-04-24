@@ -9,7 +9,7 @@ import { TimestampedResource } from "./Resource.js";
 @ObjectType({
   implements: [TimestampedResource, Node],
 })
-export class MarathonResource extends TimestampedResource implements Node {
+export class MarathonNode extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
   @Field(() => String)
@@ -32,7 +32,7 @@ export class MarathonResource extends TimestampedResource implements Node {
     endDate,
     createdAt,
     updatedAt,
-  }: Omit<MarathonResource, "getUniqueId">): MarathonResource {
+  }: Omit<MarathonNode, "getUniqueId">): MarathonNode {
     return this.doInit({
       id,
       year,
@@ -49,4 +49,4 @@ export class MarathonResource extends TimestampedResource implements Node {
 }
 
 export const { MarathonConnection, MarathonEdge, MarathonResult } =
-  createNodeClasses(MarathonResource, "Marathon");
+  createNodeClasses(MarathonNode, "Marathon");

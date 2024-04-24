@@ -17,7 +17,7 @@ import { TimestampedResource } from "./Resource.js";
 @ObjectType({
   implements: [TimestampedResource, Node],
 })
-export class FeedResource extends TimestampedResource implements Node {
+export class FeedNode extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
 
@@ -38,11 +38,11 @@ export class FeedResource extends TimestampedResource implements Node {
     createdAt?: Date;
     updatedAt?: Date;
   }) {
-    return FeedResource.doInit(init);
+    return FeedNode.doInit(init);
   }
 }
 
 export const { FeedConnection, FeedEdge, FeedResult } = createNodeClasses(
-  FeedResource,
+  FeedNode,
   "Feed"
 );

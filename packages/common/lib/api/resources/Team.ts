@@ -33,7 +33,7 @@ registerEnumType(TeamLegacyStatus, {
 @ObjectType({
   implements: [TimestampedResource, Node],
 })
-export class TeamResource extends TimestampedResource implements Node {
+export class TeamNode extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
   @Field(() => String)
@@ -47,12 +47,12 @@ export class TeamResource extends TimestampedResource implements Node {
     return this.id;
   }
 
-  public static init(init: Partial<TeamResource>) {
-    return TeamResource.doInit(init);
+  public static init(init: Partial<TeamNode>) {
+    return TeamNode.doInit(init);
   }
 }
 
 export const { TeamConnection, TeamEdge, TeamResult } = createNodeClasses(
-  TeamResource,
+  TeamNode,
   "Team"
 );
