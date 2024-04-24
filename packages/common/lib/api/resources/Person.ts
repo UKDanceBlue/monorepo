@@ -8,7 +8,7 @@ import { TimestampedResource } from "./Resource.js";
 @ObjectType({
   implements: [TimestampedResource, Node],
 })
-export class PersonResource extends TimestampedResource implements Node {
+export class PersonNode extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
   @Field(() => String, { nullable: true })
@@ -33,7 +33,7 @@ export class PersonResource extends TimestampedResource implements Node {
     createdAt?: Date | null;
     updatedAt?: Date | null;
   }) {
-    const resource = PersonResource.doInit({
+    const resource = PersonNode.doInit({
       id: init.uuid,
       email: init.email,
     });
@@ -49,6 +49,6 @@ export class PersonResource extends TimestampedResource implements Node {
 }
 
 export const { PersonConnection, PersonEdge, PersonResult } = createNodeClasses(
-  PersonResource,
+  PersonNode,
   "Person"
 );

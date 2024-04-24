@@ -1,4 +1,4 @@
-import type { PersonResource } from "../api/resources/Person.js";
+import type { PersonNode } from "../api/resources/Person.js";
 import { roleToAccessLevel } from "../authorization/role.js";
 import type {
   AccessLevel,
@@ -18,7 +18,7 @@ export interface UserData {
 }
 
 export function makeUserData(
-  person: PersonResource,
+  person: PersonNode,
   authSource: AuthSource,
   teamIds?: string[],
   captainOfTeamIds?: string[],
