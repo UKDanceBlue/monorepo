@@ -10,7 +10,7 @@ import { TimestampedResource } from "./Resource.js";
 })
 export class PersonResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
   @Field(() => String, { nullable: true })
   name!: string | null;
   @Field(() => String)
@@ -21,7 +21,7 @@ export class PersonResource extends TimestampedResource implements Node {
   dbRole!: DbRole;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
   public static init(init: {
@@ -34,7 +34,7 @@ export class PersonResource extends TimestampedResource implements Node {
     updatedAt?: Date | null;
   }) {
     const resource = PersonResource.doInit({
-      uuid: init.uuid,
+      id: init.uuid,
       email: init.email,
     });
 

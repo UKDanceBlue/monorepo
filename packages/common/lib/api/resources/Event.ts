@@ -10,7 +10,7 @@ import { Resource, TimestampedResource } from "./Resource.js";
 })
 export class EventResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
   @Field(() => [EventOccurrenceResource])
   occurrences!: EventOccurrenceResource[];
   @Field(() => String)
@@ -23,7 +23,7 @@ export class EventResource extends TimestampedResource implements Node {
   location!: string | null;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
   public static init(init: Partial<EventResource>) {

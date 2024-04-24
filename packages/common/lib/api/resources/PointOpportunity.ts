@@ -16,7 +16,7 @@ export class PointOpportunityResource
   implements Node
 {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
   @Field(() => String)
   name!: string;
   @Field(() => TeamType)
@@ -28,7 +28,7 @@ export class PointOpportunityResource
   }
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
   public static init(init: Partial<PointOpportunityResource>) {

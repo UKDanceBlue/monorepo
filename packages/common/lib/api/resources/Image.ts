@@ -9,7 +9,7 @@ import { TimestampedResource } from "./Resource.js";
 })
 export class ImageResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
 
   @Field(() => URLResolver, { nullable: true })
   url!: URL | null;
@@ -30,7 +30,7 @@ export class ImageResource extends TimestampedResource implements Node {
   height!: number;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
   public static init(init: Partial<ImageResource>) {

@@ -35,7 +35,7 @@ registerEnumType(TeamLegacyStatus, {
 })
 export class TeamResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
   @Field(() => String)
   name!: string;
   @Field(() => TeamType)
@@ -44,7 +44,7 @@ export class TeamResource extends TimestampedResource implements Node {
   legacyStatus!: TeamLegacyStatus;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
   public static init(init: Partial<TeamResource>) {

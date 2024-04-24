@@ -11,7 +11,7 @@ import { TimestampedResource } from "./Resource.js";
 })
 export class MarathonResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
   @Field(() => String)
   year!: string;
   @Field(() => DateTimeISOResolver)
@@ -26,7 +26,7 @@ export class MarathonResource extends TimestampedResource implements Node {
   }
 
   static init({
-    uuid: id,
+    id: id,
     year,
     startDate,
     endDate,
@@ -44,7 +44,7 @@ export class MarathonResource extends TimestampedResource implements Node {
   }
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 }
 

@@ -11,7 +11,7 @@ import { TimestampedResource } from "./Resource.js";
 })
 export class MarathonHourResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
   @Field(() => String)
   title!: string;
   @Field(() => String, { nullable: true })
@@ -25,7 +25,7 @@ export class MarathonHourResource extends TimestampedResource implements Node {
   durationInfo!: string;
 
   static init({
-    uuid,
+    id: uuid,
     title,
     details,
     shownStartingAt,
@@ -45,7 +45,7 @@ export class MarathonHourResource extends TimestampedResource implements Node {
   }
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 }
 

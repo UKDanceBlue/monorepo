@@ -22,7 +22,7 @@ to have additional validation logic in the future.
 })
 export class ConfigurationNode extends TimestampedResource implements Node {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
 
   @Field(() => String)
   key!: string;

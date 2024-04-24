@@ -16,7 +16,7 @@ import { TimestampedResource } from "./Resource.js";
 })
 export class NotificationResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
 
   @Field(() => String)
   title!: string;
@@ -58,7 +58,7 @@ export class NotificationResource extends TimestampedResource implements Node {
   }
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
   public static init(init: Partial<NotificationResource>) {
@@ -77,7 +77,7 @@ export class NotificationDeliveryResource
   implements Node
 {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
 
   @Field(() => Date, {
     nullable: true,
@@ -111,7 +111,7 @@ export class NotificationDeliveryResource
   deliveryError?: string | null;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
   public static init(init: Partial<NotificationDeliveryResource>) {

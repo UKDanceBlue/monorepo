@@ -37,7 +37,7 @@ export class PageInfo {
 @InterfaceType()
 export abstract class Node {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
 }
 @InterfaceType()
 export abstract class Edge<N extends Node = Node> {

@@ -8,14 +8,14 @@ import { TimestampedResource } from "./Resource.js";
 })
 export class PointEntryResource extends TimestampedResource implements Node {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
   @Field(() => String, { nullable: true })
   comment!: string | null;
   @Field(() => Int)
   points!: number;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
   public static init(init: Partial<PointEntryResource>) {

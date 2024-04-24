@@ -33,7 +33,7 @@ export function makeUserData(
         committees,
       }),
     },
-    userId: person.uuid,
+    userId: person.id,
     teamIds,
     captainOfTeamIds,
     authSource,
