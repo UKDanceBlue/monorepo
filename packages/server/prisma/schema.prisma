@@ -237,11 +237,13 @@ model Team {
   name                 String
   type                 TeamType
   legacyStatus         TeamLegacyStatus @map("legacy_status")
-  marathonYear         String           @map("marathon_year") @db.Char(4)
-  persistentIdentifier String?          @unique(map: "teams_persistent_identifier_unique") @map("persistent_identifier")
+  marathon             Marathon         @relation(fields: [marathonId], references: [id], onDelete: Cascade)
+  marathonId           Int              @map("marathon_id")
+  persistentIdentifier String?          @map("persistent_identifier")
   memberships          Membership[]
   pointEntries         PointEntry[]
 
+  @@unique([marathonId, persistentIdentifier], map: "teams_marathon_id_persistent_identifier_key")
   @@index([uuid], map: "teams_uuid")
   @@map("teams")
 }
@@ -253,7 +255,7 @@ view TeamsWithTotalPoints {
   type                 TeamType
   legacyStatus         TeamLegacyStatus @map("legacystatus")
   persistentIdentifier String?          @unique @map("persistentidentifier")
-  marathonYear         String           @map("marathonyear") @db.Char(4)
+  marathonId           Int              @map("marathonid")
   createdAt            DateTime         @map("createdat") @db.Timestamptz(6)
   updatedAt            DateTime         @map("updatedat") @db.Timestamptz(6)
   totalPoints          BigInt           @map("totalpoints")
@@ -320,11 +322,11 @@ model Marathon {
   uuid      String         @unique(map: "marathons_uuid_unique") @default(uuid()) @db.Uuid
   createdAt DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
-  // Same format as Team.marathonYear
   year      String         @unique
   startDate DateTime       @map("start_date") @db.Timestamptz(6)
   endDate   DateTime       @map("end_date") @db.Timestamptz(6)
   hours     MarathonHour[]
+  teams     Team[]
 
   @@index([uuid], map: "marathons_uuid")
   @@map("marathons")
