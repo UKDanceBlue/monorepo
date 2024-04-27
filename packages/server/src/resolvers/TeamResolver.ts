@@ -313,7 +313,7 @@ export class TeamResolver {
   @FieldResolver(() => [MembershipNode])
   async members(@Root() team: TeamNode): Promise<MembershipNode[]> {
     const memberships = await this.teamRepository.findMembersOfTeam({
-      uuid: team.uuid,
+      uuid: team.id,
     });
 
     return memberships.map((row) => membershipModelToResource(row));
@@ -325,7 +325,7 @@ export class TeamResolver {
   })
   async captains(@Root() team: TeamNode): Promise<MembershipNode[]> {
     const memberships = await this.teamRepository.findMembersOfTeam(
-      { uuid: team.uuid },
+      { uuid: team.id },
       { captainsOnly: true }
     );
 
@@ -346,7 +346,7 @@ export class TeamResolver {
   @FieldResolver(() => [PointEntryNode])
   async pointEntries(@Root() team: TeamNode): Promise<PointEntryNode[]> {
     const rows = await this.teamRepository.getTeamPointEntries({
-      uuid: team.uuid,
+      uuid: team.id,
     });
 
     return rows.map((row) => pointEntryModelToResource(row));
@@ -356,7 +356,7 @@ export class TeamResolver {
   @FieldResolver(() => Int)
   async totalPoints(@Root() team: TeamNode): Promise<number> {
     const result = await this.teamRepository.getTotalTeamPoints({
-      uuid: team.uuid,
+      uuid: team.id,
     });
 
     return result._sum.points ?? 0;

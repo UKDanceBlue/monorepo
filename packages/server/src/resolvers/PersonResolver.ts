@@ -303,7 +303,7 @@ export class PersonResolver {
   @FieldResolver(() => [MembershipNode])
   async teams(@Root() person: PersonNode): Promise<MembershipNode[]> {
     const models = await this.personRepository.findMembershipsOfPerson({
-      uuid: person.uuid,
+      uuid: person.id,
     });
 
     if (models == null) {
@@ -319,7 +319,7 @@ export class PersonResolver {
   })
   async captaincies(@Root() person: PersonNode): Promise<MembershipNode[]> {
     const models = await this.personRepository.findMembershipsOfPerson(
-      { uuid: person.uuid },
+      { uuid: person.id },
       { position: MembershipPositionType.Captain }
     );
 

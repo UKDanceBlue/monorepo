@@ -188,7 +188,7 @@ export class DeviceResolver {
   async lastLoggedInUser(
     @Root() device: DeviceNode
   ): Promise<PersonNode | null> {
-    const user = await this.deviceRepository.getLastLoggedInUser(device.uuid);
+    const user = await this.deviceRepository.getLastLoggedInUser(device.id);
 
     return user == null ? null : personModelToResource(user);
   }
@@ -198,7 +198,7 @@ export class DeviceResolver {
     @Root() device: DeviceNode,
     @Args(() => NotificationDeliveriesArgs) query: NotificationDeliveriesArgs
   ): Promise<NotificationDeliveryNode[]> {
-    const row = await this.deviceRepository.getDeviceByUuid(device.uuid);
+    const row = await this.deviceRepository.getDeviceByUuid(device.id);
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Device not found");
@@ -216,7 +216,7 @@ export class DeviceResolver {
 
     const rows =
       await this.deviceRepository.findNotificationDeliveriesForDevice(
-        device.uuid,
+        device.id,
         {
           skip:
             query.page != null && query.pageSize != null

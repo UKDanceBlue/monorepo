@@ -2,8 +2,8 @@ import {
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
-  MarathonHourResource,
-  MarathonResource,
+  MarathonHourNode,
+  MarathonNode,
   SortDirection,
 } from "@ukdanceblue/common";
 import { DateTimeISOResolver, VoidResolver } from "graphql-scalars";
@@ -29,11 +29,11 @@ import { marathonHourModelToResource } from "../repositories/marathonHour/marath
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 @ObjectType("ListMarathonsResponse", {
-  implements: AbstractGraphQLPaginatedResponse<MarathonResource[]>,
+  implements: AbstractGraphQLPaginatedResponse<MarathonNode[]>,
 })
-class ListMarathonsResponse extends AbstractGraphQLPaginatedResponse<MarathonResource> {
-  @Field(() => [MarathonResource])
-  data!: MarathonResource[];
+class ListMarathonsResponse extends AbstractGraphQLPaginatedResponse<MarathonNode> {
+  @Field(() => [MarathonNode])
+  data!: MarathonNode[];
 }
 
 @InputType()
@@ -74,12 +74,12 @@ class ListMarathonsArgs extends FilteredListQueryArgs<
   date: ["startDate", "endDate", "createdAt", "updatedAt"],
 }) {}
 
-@Resolver(() => MarathonResource)
+@Resolver(() => MarathonNode)
 @Service()
 export class MarathonResolver {
   constructor(private readonly marathonRepository: MarathonRepository) {}
 
-  @Query(() => MarathonResource)
+  @Query(() => MarathonNode)
   async marathon(@Arg("uuid") uuid: string) {
     const marathon = await this.marathonRepository.findMarathonByUnique({
       uuid,
@@ -90,7 +90,7 @@ export class MarathonResolver {
     return marathonModelToResource(marathon);
   }
 
-  @Query(() => MarathonResource)
+  @Query(() => MarathonNode)
   async marathonForYear(@Arg("year") year: string) {
     const marathon = await this.marathonRepository.findMarathonByUnique({
       year,
@@ -127,7 +127,7 @@ export class MarathonResolver {
     });
   }
 
-  @Query(() => MarathonResource, { nullable: true })
+  @Query(() => MarathonNode, { nullable: true })
   async currentMarathon() {
     const marathon = await this.marathonRepository.findCurrentMarathon();
     if (marathon == null) {
@@ -136,7 +136,7 @@ export class MarathonResolver {
     return marathonModelToResource(marathon);
   }
 
-  @Query(() => MarathonResource, { nullable: true })
+  @Query(() => MarathonNode, { nullable: true })
   async nextMarathon() {
     const marathon = await this.marathonRepository.findNextMarathon();
     if (marathon == null) {
@@ -145,13 +145,13 @@ export class MarathonResolver {
     return marathonModelToResource(marathon);
   }
 
-  @Mutation(() => MarathonResource)
+  @Mutation(() => MarathonNode)
   async createMarathon(@Arg("input") input: CreateMarathonInput) {
     const marathon = await this.marathonRepository.createMarathon(input);
     return marathonModelToResource(marathon);
   }
 
-  @Mutation(() => MarathonResource)
+  @Mutation(() => MarathonNode)
   async setMarathon(
     @Arg("uuid") uuid: string,
     @Arg("input") input: SetMarathonInput
@@ -174,10 +174,10 @@ export class MarathonResolver {
     }
   }
 
-  @FieldResolver(() => [MarathonHourResource])
-  async hours(@Root() marathon: MarathonResource) {
+  @FieldResolver(() => [MarathonHourNode])
+  async hours(@Root() marathon: MarathonNode) {
     const rows = await this.marathonRepository.getMarathonHours({
-      uuid: marathon.uuid,
+      uuid: marathon.id,
     });
     return rows.map(marathonHourModelToResource);
   }

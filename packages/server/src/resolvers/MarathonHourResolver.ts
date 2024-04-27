@@ -3,7 +3,7 @@ import {
   ErrorCode,
   FilteredListQueryArgs,
   ImageNode,
-  MarathonHourResource,
+  MarathonHourNode,
 } from "@ukdanceblue/common";
 import { DateTimeISOResolver, VoidResolver } from "graphql-scalars";
 import {
@@ -27,11 +27,11 @@ import { marathonHourModelToResource } from "../repositories/marathonHour/marath
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 @ObjectType("ListMarathonHoursResponse", {
-  implements: AbstractGraphQLPaginatedResponse<MarathonHourResource[]>,
+  implements: AbstractGraphQLPaginatedResponse<MarathonHourNode[]>,
 })
-class ListMarathonHoursResponse extends AbstractGraphQLPaginatedResponse<MarathonHourResource> {
-  @Field(() => [MarathonHourResource])
-  data!: MarathonHourResource[];
+class ListMarathonHoursResponse extends AbstractGraphQLPaginatedResponse<MarathonHourNode> {
+  @Field(() => [MarathonHourNode])
+  data!: MarathonHourNode[];
 }
 
 @InputType()
@@ -93,14 +93,14 @@ class ListMarathonHoursArgs extends FilteredListQueryArgs<
   date: ["shownStartingAt", "createdAt", "updatedAt"],
 }) {}
 
-@Resolver(() => MarathonHourResource)
+@Resolver(() => MarathonHourNode)
 @Service()
 export class MarathonHourResolver {
   constructor(
     private readonly marathonHourRepository: MarathonHourRepository
   ) {}
 
-  @Query(() => MarathonHourResource)
+  @Query(() => MarathonHourNode)
   async marathonHour(@Arg("uuid") uuid: string) {
     const marathonHour =
       await this.marathonHourRepository.findMarathonHourByUnique({
@@ -112,7 +112,7 @@ export class MarathonHourResolver {
     return marathonHourModelToResource(marathonHour);
   }
 
-  @Query(() => MarathonHourResource, { nullable: true })
+  @Query(() => MarathonHourNode, { nullable: true })
   async currentMarathonHour() {
     const marathonHour =
       await this.marathonHourRepository.findCurrentMarathonHour();
@@ -136,11 +136,11 @@ export class MarathonHourResolver {
   }
 
   @FieldResolver(() => [ImageNode])
-  async mapImages(@Root() marathonHour: MarathonHourResource) {
-    return this.marathonHourRepository.getMaps({ uuid: marathonHour.uuid });
+  async mapImages(@Root() marathonHour: MarathonHourNode) {
+    return this.marathonHourRepository.getMaps({ uuid: marathonHour.id });
   }
 
-  @Mutation(() => MarathonHourResource)
+  @Mutation(() => MarathonHourNode)
   async createMarathonHour(
     @Arg("input") input: CreateMarathonHourInput,
     @Arg("marathonUuid") marathonUuid: string
@@ -152,7 +152,7 @@ export class MarathonHourResolver {
     return marathonHourModelToResource(marathonHour);
   }
 
-  @Mutation(() => MarathonHourResource)
+  @Mutation(() => MarathonHourNode)
   async setMarathonHour(
     @Arg("uuid") uuid: string,
     @Arg("input") input: SetMarathonHourInput
@@ -177,7 +177,7 @@ export class MarathonHourResolver {
     }
   }
 
-  @Mutation(() => MarathonHourResource)
+  @Mutation(() => MarathonHourNode)
   async addMap(@Arg("uuid") uuid: string, @Arg("imageUuid") imageUuid: string) {
     const marathonHour = await this.marathonHourRepository.addMap(
       { uuid },

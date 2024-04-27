@@ -20,7 +20,7 @@ export class MembershipResolver {
   @FieldResolver(() => PersonNode)
   async person(@Root() membership: MembershipNode): Promise<PersonNode> {
     const row = await this.membershipRepository.findMembershipByUnique(
-      { uuid: membership.uuid },
+      { uuid: membership.id },
       {
         person: true,
       }
@@ -36,7 +36,7 @@ export class MembershipResolver {
   @FieldResolver(() => TeamNode)
   async team(@Root() membership: MembershipNode): Promise<TeamNode> {
     const row = await this.membershipRepository.findMembershipByUnique(
-      { uuid: membership.uuid },
+      { uuid: membership.id },
       {
         team: true,
       }

@@ -396,7 +396,7 @@ export class EventResolver {
   @FieldResolver(() => [ImageNode])
   async images(@Root() event: EventNode): Promise<ImageNode[]> {
     const rows = await this.eventImageRepository.findEventImagesByEventUnique({
-      uuid: event.uuid,
+      uuid: event.id,
     });
 
     return Promise.all(

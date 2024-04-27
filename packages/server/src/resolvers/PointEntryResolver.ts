@@ -175,7 +175,7 @@ export class PointEntryResolver {
     @Root() pointEntry: PointEntryNode
   ): Promise<PersonNode | null> {
     const model = await this.pointEntryRepository.getPointEntryPersonFrom({
-      uuid: pointEntry.uuid,
+      uuid: pointEntry.id,
     });
 
     return model ? personModelToResource(model) : null;
@@ -184,7 +184,7 @@ export class PointEntryResolver {
   @FieldResolver(() => TeamNode)
   async team(@Root() pointEntry: PointEntryNode): Promise<TeamNode> {
     const model = await this.pointEntryRepository.getPointEntryTeam({
-      uuid: pointEntry.uuid,
+      uuid: pointEntry.id,
     });
 
     if (model == null) {
@@ -199,7 +199,7 @@ export class PointEntryResolver {
     @Root() pointEntry: PointEntryNode
   ): Promise<PointOpportunityNode | null> {
     const model = await this.pointEntryRepository.getPointEntryOpportunity({
-      uuid: pointEntry.uuid,
+      uuid: pointEntry.id,
     });
 
     return model ? pointOpportunityModelToResource(model) : null;

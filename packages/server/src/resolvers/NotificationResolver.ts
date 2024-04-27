@@ -532,7 +532,7 @@ export class NotificationResolver {
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @FieldResolver(() => Int, { name: "deliveryCount" })
-  async deliveryCount(@Root() { uuid }: NotificationNode): Promise<number> {
+  async deliveryCount(@Root() { id: uuid }: NotificationNode): Promise<number> {
     return this.notificationRepository.countDeliveriesForNotification({ uuid });
   }
 
@@ -543,7 +543,7 @@ export class NotificationResolver {
     name: "deliveryIssueCount",
   })
   async deliveryIssueCount(
-    @Root() { uuid }: NotificationNode
+    @Root() { id: uuid }: NotificationNode
   ): Promise<NotificationDeliveryIssueCount> {
     const issues =
       await this.notificationRepository.countFailedDeliveriesForNotification({
@@ -568,7 +568,7 @@ export class NotificationDeliveryResolver {
     name: "notification",
   })
   async getNotificationForDelivery(
-    @Root() { uuid }: NotificationDeliveryNode
+    @Root() { id: uuid }: NotificationDeliveryNode
   ): Promise<NotificationNode> {
     const notification =
       await this.notificationDeliveryRepository.findNotificationForDelivery({

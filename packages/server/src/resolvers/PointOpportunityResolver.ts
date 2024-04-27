@@ -228,7 +228,7 @@ export class PointOpportunityResolver {
   ): Promise<EventNode | null> {
     const model =
       await this.pointOpportunityRepository.getEventForPointOpportunity({
-        uuid: pointOpportunity.uuid,
+        uuid: pointOpportunity.id,
       });
 
     return model ? eventModelToResource(model) : null;
