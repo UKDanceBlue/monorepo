@@ -47,7 +47,7 @@ FROM teams
                     GROUP BY entry.team_id) points ON teams.id = points.team_id;
 
 -- AddForeignKey
-ALTER TABLE "teams" ADD CONSTRAINT "teams_marathon_id_fkey" FOREIGN KEY ("marathon_id") REFERENCES "marathons"("id") ON DELETE CASCADE ON UPDATE CASCADE, DROP CONSTRAINT "teams_persistent_identifier_unique";
+ALTER TABLE "teams" ADD CONSTRAINT "teams_marathon_id_fkey" FOREIGN KEY ("marathon_id") REFERENCES "marathons"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- CreateIndex
 CREATE UNIQUE INDEX "teams_marathon_id_persistent_identifier_key" ON "teams"("marathon_id", "persistent_identifier");

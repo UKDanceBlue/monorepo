@@ -230,22 +230,42 @@ model PointOpportunity {
 }
 
 model Team {
-  id                   Int              @id @default(autoincrement())
-  uuid                 String           @unique(map: "teams_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt            DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt            DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
-  name                 String
-  type                 TeamType
-  legacyStatus         TeamLegacyStatus @map("legacy_status")
-  marathon             Marathon         @relation(fields: [marathonId], references: [id], onDelete: Cascade)
-  marathonId           Int              @map("marathon_id")
-  persistentIdentifier String?          @map("persistent_identifier")
-  memberships          Membership[]
-  pointEntries         PointEntry[]
+  id                       Int              @id @default(autoincrement())
+  uuid                     String           @unique(map: "teams_uuid_unique") @default(uuid()) @db.Uuid
+  name                     String
+  type                     TeamType
+  legacyStatus             TeamLegacyStatus @map("legacy_status")
+  marathon                 Marathon         @relation(fields: [marathonId], references: [id], onDelete: Cascade)
+  marathonId               Int              @map("marathon_id")
+  persistentIdentifier     String?          @map("persistent_identifier")
+  memberships              Membership[]
+  pointEntries             PointEntry[]
+  correspondingCommittee   Committee?       @relation(fields: [correspondingCommitteeId], references: [id])
+  correspondingCommitteeId Int?             @map("committee_id")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@unique([marathonId, persistentIdentifier], map: "teams_marathon_id_persistent_identifier_key")
+  @@unique([marathonId, correspondingCommitteeId], map: "teams_marathon_id_committee_id_key")
   @@index([uuid], map: "teams_uuid")
   @@map("teams")
+}
+
+model Committee {
+  id                 Int           @id @default(autoincrement())
+  uuid               String        @unique(map: "committees_uuid_unique") @default(uuid()) @db.Uuid
+  identifier         CommitteeName
+  correspondingTeams Team[]
+  parentCommittee    Committee?    @relation(fields: [parentCommitteeId], references: [id], name: "parent_committee")
+  childCommittees    Committee[]   @relation("parent_committee")
+  parentCommitteeId  Int?          @map("parent_committee_id")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([uuid], map: "committees_uuid")
+  @@map("committees")
 }
 
 view TeamsWithTotalPoints {
