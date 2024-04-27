@@ -60,7 +60,7 @@ export const graphqlContextFunction: ContextFunction<
     return {
       authenticatedUser: personResource,
       userData: {
-        auth: personResource.role.toAuthorization(),
+        auth,
         userId,
         teamIds: person.memberships.map((m) => m.team.uuid),
         captainOfTeamIds: person.memberships

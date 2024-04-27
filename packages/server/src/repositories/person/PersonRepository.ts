@@ -5,6 +5,8 @@ import {
   CommitteeIdentifier,
   CommitteeRole,
   DbRole,
+  DetailedError,
+  ErrorCode,
   MembershipPositionType,
   SortDirection,
   TeamLegacyStatus,
@@ -414,6 +416,39 @@ export class PersonRepository {
   }
 
   async getDemoUser() {
+    let demoTeam = await this.prisma.team.findFirst({
+      where: {
+        legacyStatus: TeamLegacyStatus.DemoTeam,
+      },
+    });
+
+    if (!demoTeam) {
+      const someMarathon = await this.prisma.marathon.findFirst({
+        orderBy: {
+          year: "asc",
+        },
+      });
+
+      if (!someMarathon) {
+        throw new DetailedError(
+          ErrorCode.NotFound,
+          "No marathons found for demo user"
+        );
+      }
+
+      demoTeam = await this.prisma.team.create({
+        data: {
+          name: "Demo Team",
+          type: "Spirit",
+          marathon: {
+            connect: someMarathon,
+          },
+          legacyStatus: TeamLegacyStatus.DemoTeam,
+          persistentIdentifier: "demo-team",
+        },
+      });
+    }
+
     return this.prisma.person.upsert({
       where: {
         authIdPairs: {
@@ -431,19 +466,7 @@ export class PersonRepository {
         memberships: {
           create: {
             team: {
-              connectOrCreate: {
-                where: {
-                  persistentIdentifier: "demo-team",
-                  legacyStatus: TeamLegacyStatus.DemoTeam,
-                },
-                create: {
-                  name: "Demo Team",
-                  type: "Spirit",
-                  marathonYear: "DB24",
-                  legacyStatus: TeamLegacyStatus.DemoTeam,
-                  persistentIdentifier: "demo-team",
-                },
-              },
+              connect: demoTeam,
             },
             position: MembershipPositionType.Captain,
           },
@@ -451,9 +474,7 @@ export class PersonRepository {
         pointEntries: {
           create: {
             team: {
-              connect: {
-                persistentIdentifier: "demo-team",
-              },
+              connect: demoTeam,
             },
             points: 1,
             comment: "Demo point",

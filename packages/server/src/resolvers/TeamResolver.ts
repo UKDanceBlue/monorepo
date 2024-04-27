@@ -175,7 +175,7 @@ export class TeamResolver {
         take: query.pageSize,
         onlyDemo: ctx.userData.authSource === AuthSource.Demo,
         legacyStatus: query.legacyStatus,
-        marathonYear: query.marathonYear,
+        marathon: query.marathonYear,
         type: query.type,
       }),
       this.teamRepository.countTeams({
