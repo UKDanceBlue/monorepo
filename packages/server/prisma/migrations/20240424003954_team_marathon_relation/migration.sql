@@ -10,14 +10,15 @@
 
 
 -- AlterTable
+ALTER TABLE "teams" ADD COLUMN "marathon_id" INTEGER;
+
 WITH Db24Id AS (
   SELECT "id"
   FROM "marathons"
   WHERE "year" = "DB24"
-) ALTER TABLE "teams" ADD COLUMN "marathon_id" INTEGER NOT NULL DEFAULT Db24Id;
+) UPDATE "teams" SET "marathon_id" = Db24Id."id" WHERE "marathon_year" = "DB24";
 
--- Remove the default value for the column `marathon_id` on the table `teams`
-ALTER TABLE "teams" ALTER COLUMN "marathon_id" DROP DEFAULT;
+ALTER TABLE "teams" ALTER COLUMN "marathon_id" SET NOT NULL;
 
 -- DropColumn
 ALTER TABLE "teams" DROP COLUMN "marathon_year";
