@@ -12,22 +12,42 @@
 -- AlterTable
 ALTER TABLE "teams" ADD COLUMN "marathon_id" INTEGER;
 
-WITH Db24Id AS (
+UPDATE "teams" SET "marathon_id" = (
   SELECT "id"
   FROM "marathons"
-  WHERE "year" = "DB24"
-) UPDATE "teams" SET "marathon_id" = Db24Id."id" WHERE "marathon_year" = "DB24";
+  WHERE "year" = 'DB24'
+) WHERE "marathon_year" = 'DB24';
 
 ALTER TABLE "teams" ALTER COLUMN "marathon_id" SET NOT NULL;
+
+-- Replace the view
+DROP VIEW "teams_with_total_points";
+
 
 -- DropColumn
 ALTER TABLE "teams" DROP COLUMN "marathon_year";
 
--- AddForeignKey
-ALTER TABLE "teams" ADD CONSTRAINT "teams_marathon_id_fkey" FOREIGN KEY ("marathon_id") REFERENCES "marathons"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+create view teams_with_total_points
+            (id, uuid, name, type, legacyStatus, persistentIdentifier, marathonId, createdAt, updatedAt,
+             totalPoints) as
+SELECT teams.id,
+       teams.uuid,
+       teams.name,
+       teams.type,
+       teams.legacy_status                     AS legacyStatus,
+       teams.persistent_identifier             AS persistentIdentifier,
+       teams.marathon_id                       AS marathonId,
+       teams.created_at                        AS createdAt,
+       teams.updated_at                        AS updatedAt,
+       COALESCE(points.totalPoints, 0::bigint) AS totalPoints
+FROM teams
+         LEFT JOIN (SELECT sum(entry.points) AS totalPoints,
+                           entry.team_id
+                    FROM point_entries entry
+                    GROUP BY entry.team_id) points ON teams.id = points.team_id;
 
--- DropIndex
-DROP INDEX "teams_persistent_identifier_unique";
+-- AddForeignKey
+ALTER TABLE "teams" ADD CONSTRAINT "teams_marathon_id_fkey" FOREIGN KEY ("marathon_id") REFERENCES "marathons"("id") ON DELETE CASCADE ON UPDATE CASCADE, DROP CONSTRAINT "teams_persistent_identifier_unique";
 
 -- CreateIndex
 CREATE UNIQUE INDEX "teams_marathon_id_persistent_identifier_key" ON "teams"("marathon_id", "persistent_identifier");

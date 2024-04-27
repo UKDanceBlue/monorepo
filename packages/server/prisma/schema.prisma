@@ -255,6 +255,7 @@ view TeamsWithTotalPoints {
   type                 TeamType
   legacyStatus         TeamLegacyStatus @map("legacystatus")
   persistentIdentifier String?          @unique @map("persistentidentifier")
+  marathon             Marathon         @relation(fields: [marathonId], references: [id])
   marathonId           Int              @map("marathonid")
   createdAt            DateTime         @map("createdat") @db.Timestamptz(6)
   updatedAt            DateTime         @map("updatedat") @db.Timestamptz(6)
@@ -318,15 +319,16 @@ model NotificationDelivery {
 }
 
 model Marathon {
-  id        Int            @id @default(autoincrement())
-  uuid      String         @unique(map: "marathons_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
-  year      String         @unique
-  startDate DateTime       @map("start_date") @db.Timestamptz(6)
-  endDate   DateTime       @map("end_date") @db.Timestamptz(6)
-  hours     MarathonHour[]
-  teams     Team[]
+  id                   Int                    @id @default(autoincrement())
+  uuid                 String                 @unique(map: "marathons_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt            DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  year                 String                 @unique
+  startDate            DateTime               @map("start_date") @db.Timestamptz(6)
+  endDate              DateTime               @map("end_date") @db.Timestamptz(6)
+  hours                MarathonHour[]
+  teams                Team[]
+  teamsWithTotalPoints TeamsWithTotalPoints[]
 
   @@index([uuid], map: "marathons_uuid")
   @@map("marathons")
