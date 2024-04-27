@@ -49,8 +49,13 @@ export function buildTeamWhere(
         where[filter.field] = dateFilterToPrisma(filter);
         break;
       }
+      case "marathonYear": {
+        where["marathon"] = {
+          year: oneOfFilterToPrisma(filter),
+        };
+        break;
+      }
       case "type":
-      case "marathonYear":
       case "legacyStatus": {
         where[filter.field] = oneOfFilterToPrisma(filter);
         break;

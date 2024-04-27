@@ -5,7 +5,7 @@ export function pointOpportunityModelToResource(
   pointOpportunityModel: PointOpportunity
 ): PointOpportunityNode {
   return PointOpportunityNode.init({
-    uuid: pointOpportunityModel.uuid,
+    id: pointOpportunityModel.uuid,
     name: pointOpportunityModel.name,
     type: pointOpportunityModel.type,
     opportunityDate: pointOpportunityModel.opportunityDate,

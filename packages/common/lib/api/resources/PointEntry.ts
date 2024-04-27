@@ -6,7 +6,7 @@ import { TimestampedResource } from "./Resource.js";
 @ObjectType({
   implements: [Node],
 })
-export class PointEntryResource extends TimestampedResource implements Node {
+export class PointEntryNode extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
   @Field(() => String, { nullable: true })
@@ -18,10 +18,10 @@ export class PointEntryResource extends TimestampedResource implements Node {
     return this.id;
   }
 
-  public static init(init: Partial<PointEntryResource>) {
-    return PointEntryResource.doInit(init);
+  public static init(init: Partial<PointEntryNode>) {
+    return PointEntryNode.doInit(init);
   }
 }
 
 export const { PointEntryConnection, PointEntryEdge, PointEntryResult } =
-  createNodeClasses(PointEntryResource, "PointEntry");
+  createNodeClasses(PointEntryNode, "PointEntry");

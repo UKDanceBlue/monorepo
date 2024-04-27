@@ -22,7 +22,7 @@ describe("deviceModelToResource", () => {
     expect(resource).toBeInstanceOf(DeviceNode);
     expect(resource).toStrictEqual(
       DeviceNode.init({
-        uuid: "uuid",
+        id: "uuid",
         lastLogin: new Date("2021-01-01T00:00:00Z"),
         createdAt: new Date("2021-01-01T00:00:00Z"),
         updatedAt: new Date("2021-01-01T00:00:00Z"),
@@ -46,7 +46,7 @@ describe("deviceModelToResource", () => {
 
     expect(resource).toStrictEqual(
       DeviceNode.init({
-        uuid: "uuid",
+        id: "uuid",
         lastLogin: null,
         createdAt: new Date("2021-01-01T00:00:00Z"),
         updatedAt: new Date("2021-01-01T00:00:00Z"),

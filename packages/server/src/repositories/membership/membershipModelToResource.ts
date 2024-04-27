@@ -1,10 +1,11 @@
+import type { Membership } from "@prisma/client";
 import { MembershipNode } from "@ukdanceblue/common";
 
 export function membershipModelToResource(
-  membershipModel: MembershipNode
+  membershipModel: Membership
 ): MembershipNode {
   return MembershipNode.init({
-    uuid: membershipModel.uuid,
+    id: membershipModel.uuid,
     position: membershipModel.position,
     createdAt: membershipModel.createdAt,
     updatedAt: membershipModel.updatedAt,

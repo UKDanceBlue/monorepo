@@ -5,7 +5,7 @@ export function pointEntryModelToResource(
   pointEntryModel: PointEntry
 ): PointEntryNode {
   return PointEntryNode.init({
-    uuid: pointEntryModel.uuid,
+    id: pointEntryModel.uuid,
     points: pointEntryModel.points,
     comment: pointEntryModel.comment,
     createdAt: pointEntryModel.createdAt,

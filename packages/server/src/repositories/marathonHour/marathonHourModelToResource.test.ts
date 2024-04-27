@@ -1,11 +1,11 @@
 import type { MarathonHour } from "@prisma/client";
-import { MarathonHourResource } from "@ukdanceblue/common";
+import { MarathonHourNode } from "@ukdanceblue/common";
 import { describe, expect, it } from "vitest";
 
 import { marathonHourModelToResource } from "./marathonHourModelToResource.js";
 
 describe("marathonHourModelToResource", () => {
-  it("should correctly transform MarathonHour to MarathonHourResource", () => {
+  it("should correctly transform MarathonHour to MarathonHourNode", () => {
     const now = new Date();
     const marathonHourModel: MarathonHour = {
       id: 0,
@@ -23,8 +23,8 @@ describe("marathonHourModelToResource", () => {
 
     const nowString = now.toISOString();
 
-    expect(result).toBeInstanceOf(MarathonHourResource);
-    expect(result.uuid).toBe("test-uuid");
+    expect(result).toBeInstanceOf(MarathonHourNode);
+    expect(result.id).toBe("test-uuid");
     expect(result.title).toBe("test-title");
     expect(result.details).toBe("test-details");
     expect(result.durationInfo).toBe("test-durationInfo");

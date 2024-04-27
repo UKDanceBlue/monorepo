@@ -5,7 +5,7 @@ export function notificationModelToResource(
   notificationModel: Notification
 ): NotificationNode {
   return NotificationNode.init({
-    uuid: notificationModel.uuid,
+    id: notificationModel.uuid,
     title: notificationModel.title,
     body: notificationModel.body,
     url: notificationModel.url ? new URL(notificationModel.url) : null,

@@ -11,10 +11,7 @@ import { TeamType } from "./Team.js";
 @ObjectType({
   implements: [Node],
 })
-export class PointOpportunityResource
-  extends TimestampedResource
-  implements Node
-{
+export class PointOpportunityNode extends TimestampedResource implements Node {
   @Field(() => ID)
   id!: string;
   @Field(() => String)
@@ -31,7 +28,7 @@ export class PointOpportunityResource
     return this.id;
   }
 
-  public static init(init: Partial<PointOpportunityResource>) {
-    return PointOpportunityResource.doInit(init);
+  public static init(init: Partial<PointOpportunityNode>) {
+    return PointOpportunityNode.doInit(init);
   }
 }

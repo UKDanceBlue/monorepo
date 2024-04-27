@@ -5,7 +5,7 @@ export function configurationModelToResource(
   configuration: Configuration
 ): ConfigurationNode {
   return ConfigurationNode.init({
-    uuid: configuration.uuid,
+    id: configuration.uuid,
     key: configuration.key,
     value: configuration.value,
     validAfter: configuration.validAfter,

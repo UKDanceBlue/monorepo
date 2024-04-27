@@ -31,7 +31,7 @@ export async function imageModelToResource(
   }
 
   return ImageNode.init({
-    uuid: imageModel.uuid,
+    id: imageModel.uuid,
     url: fileData?.url ?? null,
     mimeType: fileData?.mimeType ?? "application/octet-stream", // "application/octet-stream" is the default MIME type if the file is not found
     thumbHash: imageModel.thumbHash?.toString("base64"),

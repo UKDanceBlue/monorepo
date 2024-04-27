@@ -10,7 +10,7 @@ export function eventModelToResource(
   occurrences: EventOccurrenceNode[] = []
 ): EventNode {
   return EventNode.init({
-    uuid: eventModel.uuid,
+    id: eventModel.uuid,
     title: eventModel.title,
     summary: eventModel.summary,
     description: eventModel.description,

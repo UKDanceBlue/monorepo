@@ -29,7 +29,12 @@ export class MembershipNode extends TimestampedResource implements Node {
     return this.id;
   }
 
-  public static init(init: Partial<MembershipNode>) {
+  public static init(init: {
+    id: string;
+    position: MembershipPositionType;
+    createdAt?: Date | null;
+    updatedAt?: Date | null;
+  }) {
     return MembershipNode.doInit(init);
   }
 }
