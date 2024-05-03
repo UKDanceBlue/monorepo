@@ -255,7 +255,7 @@ model Team {
 model Committee {
   id                 Int           @id @default(autoincrement())
   uuid               String        @unique(map: "committees_uuid_unique") @default(uuid()) @db.Uuid
-  identifier         CommitteeName
+  identifier         CommitteeName @unique @map("identifier")
   correspondingTeams Team[]
   parentCommittee    Committee?    @relation(fields: [parentCommitteeId], references: [id], name: "parent_committee")
   childCommittees    Committee[]   @relation("parent_committee")
@@ -434,6 +434,7 @@ enum CommitteeName {
   corporateCommittee
   miniMarathonsCommittee
   viceCommittee
+  overallCommittee
 
   @@map("enum_people_committee_name")
 }

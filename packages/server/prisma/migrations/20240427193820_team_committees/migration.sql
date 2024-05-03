@@ -24,9 +24,11 @@ CREATE TABLE "committees" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "committees_uuid_unique" ON "committees"("uuid");
+CREATE UNIQUE INDEX "committees_identifier_unique" ON "committees"("identifier");
 
 -- CreateIndex
 CREATE INDEX "committees_uuid" ON "committees"("uuid");
+CREATE INDEX "committees_identifier" ON "committees"("identifier");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "teams_marathon_id_committee_id_key" ON "teams"("marathon_id", "committee_id");
