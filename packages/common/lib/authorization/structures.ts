@@ -230,6 +230,7 @@ export const CommitteeIdentifier = {
   corporateCommittee: "corporateCommittee",
   miniMarathonsCommittee: "miniMarathonsCommittee",
   viceCommittee: "viceCommittee",
+  overallCommittee: "overallCommittee",
 } as const;
 export type CommitteeIdentifier =
   (typeof CommitteeIdentifier)[keyof typeof CommitteeIdentifier];
@@ -257,6 +258,7 @@ export const committeeNames: Record<CommitteeIdentifier, string> = {
   corporateCommittee: "Corporate Committee",
   miniMarathonsCommittee: "Mini Marathons Committee",
   viceCommittee: "Vice Committee",
+  overallCommittee: "Overall Committee",
 };
 
 export interface Authorization {
