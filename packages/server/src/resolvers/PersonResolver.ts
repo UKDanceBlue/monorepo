@@ -28,6 +28,7 @@ import {
 import { Service } from "typedi";
 
 import { auditLogger } from "../lib/logging/auditLogging.js";
+import type { MembershipRepository } from "../repositories/membership/MembershipRepository.js";
 import { membershipModelToResource } from "../repositories/membership/membershipModelToResource.js";
 import { PersonRepository } from "../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
@@ -38,7 +39,7 @@ import {
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
-import * as Context from "./context.js";
+import type { GraphQLContext } from "./context.js";
 
 @ObjectType("CreatePersonResponse", {
   implements: AbstractGraphQLCreatedResponse<PersonNode>,
@@ -53,6 +54,13 @@ class CreatePersonResponse extends AbstractGraphQLCreatedResponse<PersonNode> {
 class GetPersonResponse extends AbstractGraphQLOkResponse<PersonNode | null> {
   @Field(() => PersonNode, { nullable: true })
   data!: PersonNode | null;
+}
+@ObjectType("GetMembershipResponse", {
+  implements: AbstractGraphQLOkResponse<MembershipNode>,
+})
+class GetMembershipResponse extends AbstractGraphQLOkResponse<MembershipNode | null> {
+  @Field(() => MembershipNode, { nullable: true })
+  data!: MembershipNode | null;
 }
 @ObjectType("GetPeopleResponse", {
   implements: AbstractGraphQLArrayOkResponse<PersonNode>,
@@ -137,7 +145,10 @@ class SetPersonInput {
 @Resolver(() => PersonNode)
 @Service()
 export class PersonResolver {
-  constructor(private personRepository: PersonRepository) {}
+  constructor(
+    private readonly personRepository: PersonRepository,
+    private readonly membershipRepository: MembershipRepository
+  ) {}
 
   @Query(() => GetPersonResponse, { name: "person" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetPersonResponse> {
@@ -203,12 +214,13 @@ export class PersonResolver {
   }
 
   @Query(() => GetPersonResponse, { name: "me" })
-  me(@Ctx() ctx: Context.GraphQLContext): GetPersonResponse | null {
+  me(@Ctx() ctx: GraphQLContext): GetPersonResponse | null {
     return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
       ctx.authenticatedUser
     );
   }
 
+  @AccessControl({ accessLevel: AccessLevel.Committee })
   @Query(() => GetPeopleResponse, { name: "searchPeopleByName" })
   async searchByName(@Arg("name") name: string): Promise<GetPeopleResponse> {
     const rows = await this.personRepository.searchByName(name);
@@ -218,7 +230,7 @@ export class PersonResolver {
     );
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => CreatePersonResponse, { name: "createPerson" })
   async create(
     @Arg("input") input: CreatePersonInput
@@ -227,8 +239,6 @@ export class PersonResolver {
       name: input.name,
       email: input.email,
       linkblue: input.linkblue,
-      committeeRole: input.role?.committeeRole,
-      committeeName: input.role?.committeeIdentifier,
     });
 
     return CreatePersonResponse.newCreated(
@@ -237,7 +247,7 @@ export class PersonResolver {
     );
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => GetPersonResponse, { name: "setPerson" })
   async set(
     @Arg("uuid") id: string,
@@ -251,8 +261,6 @@ export class PersonResolver {
         name: input.name,
         email: input.email,
         linkblue: input.linkblue,
-        committeeRole: input.role?.committeeRole,
-        committeeName: input.role?.committeeIdentifier,
         memberOf: input.memberOf?.map((uuid) => ({ uuid })),
         captainOf: input.captainOf?.map((uuid) => ({ uuid })),
       }
@@ -269,7 +277,36 @@ export class PersonResolver {
     );
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @Mutation(() => GetMembershipResponse, { name: "addPersonToTeam" })
+  async assignPersonToTeam(
+    @Arg("personUuid") personUuid: string,
+    @Arg("teamUuid") teamUuid: string
+  ): Promise<GetMembershipResponse> {
+    const membership = await this.membershipRepository.assignPersonToTeam(
+      {
+        uuid: personUuid,
+      },
+      {
+        uuid: teamUuid,
+      },
+      MembershipPositionType.Member
+    );
+
+    if (membership == null) {
+      return GetMembershipResponse.newOk<
+        MembershipNode | null,
+        GetMembershipResponse
+      >(null);
+    }
+
+    return GetMembershipResponse.newOk<
+      MembershipNode | null,
+      GetMembershipResponse
+    >(membershipModelToResource(membership));
+  }
+
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => DeletePersonResponse, { name: "deletePerson" })
   async delete(@Arg("uuid") uuid: string): Promise<DeletePersonResponse> {
     const result = await this.personRepository.deletePerson({ uuid });
@@ -313,7 +350,7 @@ export class PersonResolver {
     return models.map((row) => membershipModelToResource(row));
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @FieldResolver(() => [MembershipNode], {
     deprecationReason: "Use teams instead and filter by position",
   })

@@ -85,6 +85,25 @@ export class CommitteeRepository {
     return this.prisma.committee.upsert({
       ...CommitteeDescriptions[identifier],
       where: { identifier },
+      include: {
+        correspondingTeams: true,
+      },
     });
+  }
+
+  getChildCommittees(identifier: CommitteeUniqueParam) {
+    return this.prisma.committee
+      .findUnique({
+        where: identifier,
+      })
+      .childCommittees();
+  }
+
+  getParentCommittee(identifier: CommitteeUniqueParam) {
+    return this.prisma.committee
+      .findUnique({
+        where: identifier,
+      })
+      .parentCommittee();
   }
 }

@@ -1,8 +1,12 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
+import type {
+  MembershipPositionType,
+  SortDirection,
+} from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { SimpleUniqueParam } from "../shared.js";
 
 import {
   buildMembershipOrder,
@@ -103,6 +107,103 @@ export class MembershipRepository {
         throw error;
       }
     }
+  }
+
+  private async lookupPersonAndTeamId(
+    personParam: SimpleUniqueParam,
+    teamParam: SimpleUniqueParam
+  ) {
+    let personId, teamId;
+    if ("id" in personParam) {
+      personId = personParam.id;
+    } else if ("uuid" in personParam) {
+      const found = await this.prisma.person.findUnique({
+        where: { uuid: personParam.uuid },
+        select: { id: true },
+      });
+      if (found == null) {
+        return null;
+      }
+      personId = found.id;
+    } else {
+      // teamParam satisfies Record<string, never>;
+      throw new Error("Must provide either UUID or ID");
+    }
+    if ("id" in teamParam) {
+      teamId = teamParam.id;
+    } else if ("uuid" in teamParam) {
+      const found = await this.prisma.team.findUnique({
+        where: teamParam,
+        select: { id: true },
+      });
+      if (found == null) {
+        return null;
+      }
+      teamId = found.id;
+    } else {
+      teamParam satisfies Record<string, never>;
+      throw new Error("Must provide either UUID or ID");
+    }
+
+    return { personId, teamId };
+  }
+
+  async assignPersonToTeam(
+    personParam: SimpleUniqueParam,
+    teamParam: SimpleUniqueParam,
+    position: MembershipPositionType
+  ) {
+    const result = await this.lookupPersonAndTeamId(personParam, teamParam);
+    if (result == null) {
+      return null;
+    }
+    const { personId, teamId } = result;
+
+    return this.prisma.membership.upsert({
+      where: {
+        personId_teamId: {
+          personId,
+          teamId,
+        },
+        team: {
+          correspondingCommitteeId: null,
+        },
+      },
+      create: {
+        person: {
+          connect: {
+            id: personId,
+          },
+        },
+        team: {
+          connect: {
+            id: teamId,
+          },
+        },
+        position,
+      },
+      update: {},
+    });
+  }
+
+  async removePersonFromTeam(
+    personParam: SimpleUniqueParam,
+    teamParam: SimpleUniqueParam
+  ) {
+    const result = await this.lookupPersonAndTeamId(personParam, teamParam);
+    if (result == null) {
+      return null;
+    }
+    const { personId, teamId } = result;
+
+    return this.prisma.membership.delete({
+      where: {
+        personId_teamId: {
+          personId,
+          teamId,
+        },
+      },
+    });
   }
 
   deleteMembership(param: UniqueMembershipParam) {
