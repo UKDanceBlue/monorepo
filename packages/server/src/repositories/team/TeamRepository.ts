@@ -8,6 +8,7 @@ import { TeamLegacyStatus } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
 import type { SimpleUniqueParam } from "../shared.js";
 
 import { buildTeamOrder, buildTeamWhere } from "./teamRepositoryUtils.js";
@@ -204,8 +205,23 @@ export class TeamRepository {
     });
   }
 
-  createTeam(data: Prisma.TeamCreateInput) {
-    return this.prisma.team.create({ data });
+  createTeam(
+    data: {
+      name: string;
+      type: TeamType;
+      legacyStatus: TeamLegacyStatus;
+      persistentIdentifier?: string | null | undefined;
+    },
+    marathon: UniqueMarathonParam
+  ) {
+    return this.prisma.team.create({
+      data: {
+        ...data,
+        marathon: {
+          connect: marathon,
+        },
+      },
+    });
   }
 
   updateTeam(param: SimpleUniqueParam, data: Prisma.TeamUpdateInput) {

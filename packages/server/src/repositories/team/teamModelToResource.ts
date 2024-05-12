@@ -1,7 +1,14 @@
-import type { Team } from "@prisma/client";
+import type { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import { TeamNode } from "@ukdanceblue/common";
 
-export function teamModelToResource(teamModel: Team): TeamNode {
+export function teamModelToResource(teamModel: {
+  uuid: string;
+  name: string;
+  type: TeamType;
+  legacyStatus: TeamLegacyStatus;
+  createdAt: Date;
+  updatedAt: Date;
+}): TeamNode {
   return TeamNode.init({
     id: teamModel.uuid,
     name: teamModel.name,

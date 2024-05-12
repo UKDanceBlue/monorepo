@@ -134,7 +134,7 @@ class ListTeamsArgs extends FilteredListQueryArgs<
   visibility!: [DbRole] | null;
 
   @Field(() => [String], { nullable: true })
-  marathonYear!: [MarathonYearString] | null;
+  marathonYear!: MarathonYearString[] | null;
 }
 
 @Resolver(() => TeamNode)
@@ -175,14 +175,14 @@ export class TeamResolver {
         take: query.pageSize,
         onlyDemo: ctx.userData.authSource === AuthSource.Demo,
         legacyStatus: query.legacyStatus,
-        marathon: query.marathonYear,
+        marathon: query.marathonYear?.map((year) => ({ year })),
         type: query.type,
       }),
       this.teamRepository.countTeams({
         filters: query.filters,
         onlyDemo: ctx.userData.authSource === AuthSource.Demo,
         legacyStatus: query.legacyStatus,
-        marathonYear: query.marathonYear,
+        marathon: query.marathonYear?.map((year) => ({ year })),
         type: query.type,
       }),
     ]);
@@ -190,12 +190,9 @@ export class TeamResolver {
     return ListTeamsResponse.newPaginated({
       data: rows.map((row) =>
         teamModelToResource({
-          id: row.id,
           uuid: row.uuid,
           name: row.name,
-          persistentIdentifier: row.persistentIdentifier,
           legacyStatus: row.legacyStatus,
-          marathonYear: row.marathonYear,
           type: row.type,
           updatedAt: row.updatedAt,
           createdAt: row.createdAt,
@@ -223,15 +220,18 @@ export class TeamResolver {
   )
   @Mutation(() => CreateTeamResponse, { name: "createTeam" })
   async create(
-    @Arg("input") input: CreateTeamInput
+    @Arg("input") input: CreateTeamInput,
+    @Arg("marathon") marathonUuid: string
   ): Promise<CreateTeamResponse> {
-    const row = await this.teamRepository.createTeam({
-      name: input.name,
-      type: input.type,
-      legacyStatus: input.legacyStatus,
-      marathonYear: input.marathonYear,
-      persistentIdentifier: input.persistentIdentifier,
-    });
+    const row = await this.teamRepository.createTeam(
+      {
+        name: input.name,
+        type: input.type,
+        legacyStatus: input.legacyStatus,
+        persistentIdentifier: input.persistentIdentifier,
+      },
+      { uuid: marathonUuid }
+    );
 
     return CreateTeamResponse.newCreated(teamModelToResource(row), row.uuid);
   }
@@ -262,7 +262,6 @@ export class TeamResolver {
         name: input.name ?? undefined,
         type: input.type ?? undefined,
         legacyStatus: input.legacyStatus ?? undefined,
-        marathonYear: input.marathonYear ?? undefined,
         persistentIdentifier: input.persistentIdentifier,
       }
     );

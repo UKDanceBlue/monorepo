@@ -49,7 +49,10 @@ export type MarathonFilters = FilterItems<
 >;
 
 // type UniqueParam = { id: number } | { uuid: string };
-type UniqueMarathonParam = { id: number } | { uuid: string } | { year: string };
+export type UniqueMarathonParam =
+  | { id: number }
+  | { uuid: string }
+  | { year: string };
 
 @Service()
 export class MarathonRepository {
