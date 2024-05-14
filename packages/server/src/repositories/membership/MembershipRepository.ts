@@ -1,5 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import type {
+import {
+  CommitteeRole,
   MembershipPositionType,
   SortDirection,
 } from "@ukdanceblue/common";
@@ -148,16 +149,43 @@ export class MembershipRepository {
     return { personId, teamId };
   }
 
-  async assignPersonToTeam(
-    personParam: SimpleUniqueParam,
-    teamParam: SimpleUniqueParam,
-    position: MembershipPositionType
-  ) {
+  async assignPersonToTeam({
+    personParam,
+    teamParam,
+    ...additionalData
+  }: {
+    personParam: SimpleUniqueParam;
+    teamParam: SimpleUniqueParam;
+  } & (
+    | {
+        position: MembershipPositionType;
+      }
+    | {
+        committeeRole: CommitteeRole;
+      }
+  )) {
     const result = await this.lookupPersonAndTeamId(personParam, teamParam);
     if (result == null) {
       return null;
     }
     const { personId, teamId } = result;
+
+    let position: MembershipPositionType;
+    let committeeRole: CommitteeRole | undefined;
+    if ("position" in additionalData) {
+      // eslint-disable-next-line prefer-destructuring
+      position = additionalData.position;
+    } else if ("committeeRole" in additionalData) {
+      // eslint-disable-next-line prefer-destructuring
+      committeeRole = additionalData.committeeRole;
+      position =
+        additionalData.committeeRole === CommitteeRole.Chair
+          ? MembershipPositionType.Captain
+          : MembershipPositionType.Member;
+    } else {
+      additionalData satisfies Record<string, never>;
+      throw new Error("Must provide either position or committeeRole");
+    }
 
     return this.prisma.membership.upsert({
       where: {
@@ -181,6 +209,7 @@ export class MembershipRepository {
           },
         },
         position,
+        committeeRole,
       },
       update: {},
     });

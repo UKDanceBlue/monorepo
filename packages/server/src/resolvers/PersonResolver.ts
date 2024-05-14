@@ -283,15 +283,15 @@ export class PersonResolver {
     @Arg("personUuid") personUuid: string,
     @Arg("teamUuid") teamUuid: string
   ): Promise<GetMembershipResponse> {
-    const membership = await this.membershipRepository.assignPersonToTeam(
-      {
+    const membership = await this.membershipRepository.assignPersonToTeam({
+      personParam: {
         uuid: personUuid,
       },
-      {
+      teamParam: {
         uuid: teamUuid,
       },
-      MembershipPositionType.Member
-    );
+      position: MembershipPositionType.Member,
+    });
 
     if (membership == null) {
       return GetMembershipResponse.newOk<
