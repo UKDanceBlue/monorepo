@@ -2,7 +2,6 @@ import type { Person } from "@prisma/client";
 import { Prisma, PrismaClient } from "@prisma/client";
 import {
   AuthSource,
-  CommitteeIdentifier,
   CommitteeRole,
   DbRole,
   DetailedError,
@@ -177,17 +176,20 @@ export class PersonRepository {
 
   async findMembershipsOfPerson(
     param: { uuid: string } | { id: number },
-    opts: {
-      position?: MembershipPositionType;
-    } = {}
+    opts:
+      | {
+          position: MembershipPositionType;
+        }
+      | {
+          committeeRole: CommitteeRole;
+        }
+      | Record<string, never> = {}
   ) {
     const rows = await this.prisma.person.findUnique({
       where: param,
       select: {
         memberships: {
-          where: {
-            position: opts.position,
-          },
+          where: opts,
         },
       },
     });
@@ -201,15 +203,11 @@ export class PersonRepository {
     name,
     email,
     linkblue,
-    committeeRole,
-    committeeName,
     authIds,
   }: {
     name?: string | null;
     email: string;
     linkblue?: string | null;
-    committeeRole?: CommitteeRole | null;
-    committeeName?: CommitteeIdentifier | null;
     authIds?: { source: Exclude<AuthSource, "None">; value: string }[] | null;
   }): Promise<Person> {
     return this.prisma.person.create({
@@ -217,8 +215,6 @@ export class PersonRepository {
         name,
         email,
         linkblue,
-        committeeRole,
-        committeeName,
         authIdPairs: authIds
           ? {
               createMany: {
@@ -242,8 +238,6 @@ export class PersonRepository {
       name,
       email,
       linkblue,
-      committeeRole,
-      committeeName,
       authIds,
       memberOf,
       captainOf,
@@ -251,8 +245,6 @@ export class PersonRepository {
       name?: string | undefined | null;
       email?: string | undefined;
       linkblue?: string | undefined | null;
-      committeeRole?: CommitteeRole | undefined | null;
-      committeeName?: CommitteeIdentifier | undefined | null;
       authIds?:
         | { source: Exclude<AuthSource, "None">; value: string }[]
         | undefined
@@ -311,8 +303,6 @@ export class PersonRepository {
           name,
           email,
           linkblue,
-          committeeRole,
-          committeeName,
           authIdPairs: authIds
             ? {
                 upsert: authIds.map((authId) => {

@@ -44,13 +44,8 @@ type AcknowledgeDeliveryIssueResponse implements AbstractGraphQLOkResponse & Gra
 }
 
 type AddEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: ImageResource!
+  data: ImageNode!
   ok: Boolean!
-}
-
-type AuthIdPairResource {
-  source: AuthSource!
-  value: String!
 }
 
 """The source of authentication"""
@@ -61,47 +56,25 @@ enum AuthSource {
   None
 }
 
-"""The identifier for a committee"""
-enum CommitteeIdentifier {
-  communityDevelopmentCommittee
-  corporateCommittee
-  dancerRelationsCommittee
-  familyRelationsCommittee
-  fundraisingCommittee
-  marketingCommittee
-  miniMarathonsCommittee
-  operationsCommittee
-  programmingCommittee
-  techCommittee
-  viceCommittee
-}
-
-"""Roles within a committee"""
-enum CommitteeRole {
-  Chair
-  Coordinator
-  Member
-}
-
-type ConfigurationResource {
+type ConfigurationNode implements Node {
   createdAt: DateTimeISO
+  id: ID!
   key: String!
   updatedAt: DateTimeISO
-  uuid: ID!
-  validAfter: LuxonDateTime
-  validUntil: LuxonDateTime
+  validAfter: DateTimeISO
+  validUntil: DateTimeISO
   value: String!
 }
 
 input CreateConfigurationInput {
   key: String!
-  validAfter: LuxonDateTime
-  validUntil: LuxonDateTime
+  validAfter: DateTimeISO
+  validUntil: DateTimeISO
   value: String!
 }
 
 type CreateConfigurationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: ConfigurationResource!
+  data: ConfigurationNode!
   ok: Boolean!
   uuid: String!
 }
@@ -116,11 +89,11 @@ input CreateEventInput {
 
 input CreateEventOccurrenceInput {
   fullDay: Boolean!
-  interval: LuxonDateRange!
+  interval: IntervalISOInput!
 }
 
 type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: EventResource!
+  data: EventNode!
   ok: Boolean!
   uuid: String!
 }
@@ -151,15 +124,15 @@ input CreateMarathonInput {
 
 input CreatePersonInput {
   captainOf: [String!]! = []
+  dbRole: DbRole
   email: EmailAddress!
   linkblue: String
   memberOf: [String!]! = []
   name: String
-  role: RoleResourceInput
 }
 
 type CreatePersonResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: PersonResource!
+  data: PersonNode!
   ok: Boolean!
   uuid: String!
 }
@@ -173,7 +146,7 @@ input CreatePointEntryInput {
 }
 
 type CreatePointEntryResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: PointEntryResource!
+  data: PointEntryNode!
   ok: Boolean!
   uuid: String!
 }
@@ -181,12 +154,12 @@ type CreatePointEntryResponse implements AbstractGraphQLCreatedResponse & Abstra
 input CreatePointOpportunityInput {
   eventUuid: ID
   name: String!
-  opportunityDate: LuxonDateTime
+  opportunityDate: DateTimeISO
   type: TeamType!
 }
 
 type CreatePointOpportunityResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: PointOpportunityResource!
+  data: PointOpportunityNode!
   ok: Boolean!
   uuid: String!
 }
@@ -200,7 +173,7 @@ input CreateTeamInput {
 }
 
 type CreateTeamResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: TeamResource!
+  data: TeamNode!
   ok: Boolean!
   uuid: String!
 }
@@ -255,6 +228,23 @@ type DeleteTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseRespon
   ok: Boolean!
 }
 
+type DeviceNode implements Node {
+  createdAt: DateTimeISO
+  id: ID!
+  lastLoggedInUser: PersonNode
+  lastLogin: DateTimeISO
+  notificationDeliveries(
+    page: Int = 1
+    pageSize: Int = 10
+
+    """
+    The verifier code for this device, if it does not match then the query will be rejected
+    """
+    verifier: String
+  ): [NotificationDeliveryNode!]!
+  updatedAt: DateTimeISO
+}
+
 enum DeviceResolverAllKeys {
   createdAt
   expoPushToken
@@ -279,7 +269,7 @@ input DeviceResolverKeyedDateFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-  value: LuxonDateTime!
+  value: DateTimeISO!
 }
 
 input DeviceResolverKeyedIsNullFilterItem {
@@ -321,32 +311,26 @@ enum DeviceResolverStringFilterKeys {
   expoPushToken
 }
 
-type DeviceResource {
-  createdAt: DateTimeISO
-  expoPushToken: String
-  lastLoggedInUser: PersonResource
-  lastLogin: LuxonDateTime
-  notificationDeliveries(
-    page: Int = 1
-    pageSize: Int = 10
-
-    """
-    The verifier code for this device, if it does not match then the query will be rejected
-    """
-    verifier: String
-  ): [NotificationDeliveryResource!]!
-  updatedAt: DateTimeISO
-  uuid: ID!
-}
-
 """
 A field whose value conforms to the standard internet email address format as specified in HTML Spec: https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address.
 """
 scalar EmailAddress @specifiedBy(url: "https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address")
 
-type EventOccurrenceResource {
+type EventNode implements Node {
+  createdAt: DateTimeISO
+  description: String
+  id: ID!
+  images: [ImageNode!]!
+  location: String
+  occurrences: [EventOccurrenceNode!]!
+  summary: String
+  title: String!
+  updatedAt: DateTimeISO
+}
+
+type EventOccurrenceNode {
   fullDay: Boolean!
-  interval: LuxonDateRange!
+  interval: IntervalISO!
   uuid: ID!
 }
 
@@ -381,7 +365,7 @@ input EventResolverKeyedDateFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-  value: LuxonDateTime!
+  value: DateTimeISO!
 }
 
 input EventResolverKeyedIsNullFilterItem {
@@ -426,75 +410,80 @@ enum EventResolverStringFilterKeys {
   title
 }
 
-type EventResource {
+type FeedNode implements Node {
   createdAt: DateTimeISO
-  description: String
-  images: [ImageResource!]!
-  location: String
-  occurrences: [EventOccurrenceResource!]!
-  summary: String
-  title: String!
-  updatedAt: DateTimeISO
-  uuid: ID!
-}
-
-type FeedResource {
-  createdAt: DateTimeISO
-  image: ImageResource
+  id: ID!
+  image: ImageNode
   textContent: String
   title: String!
   updatedAt: DateTimeISO
-  uuid: ID!
 }
 
 type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
-  data: [ConfigurationResource!]!
+  data: [ConfigurationNode!]!
   ok: Boolean!
 }
 
 type GetConfigurationByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: ConfigurationResource!
+  data: ConfigurationNode!
   ok: Boolean!
 }
 
 type GetDeviceByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: DeviceResource!
+  data: DeviceNode!
   ok: Boolean!
 }
 
 type GetEventByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: EventResource!
+  data: EventNode!
   ok: Boolean!
 }
 
 type GetImageByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: ImageResource!
+  data: ImageNode!
+  ok: Boolean!
+}
+
+type GetMembershipResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+  data: MembershipNode
   ok: Boolean!
 }
 
 type GetNotificationByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: NotificationResource!
+  data: NotificationNode!
   ok: Boolean!
 }
 
 type GetPeopleResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
-  data: [PersonResource!]!
+  data: [PersonNode!]!
   ok: Boolean!
 }
 
 type GetPersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: PersonResource
+  data: PersonNode
   ok: Boolean!
 }
 
 type GetPointEntryByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: PointEntryResource!
+  data: PointEntryNode!
   ok: Boolean!
 }
 
 """API response"""
 interface GraphQLBaseResponse {
   ok: Boolean!
+}
+
+type ImageNode implements Node {
+  alt: String
+  createdAt: DateTimeISO
+  height: Int!
+  id: ID!
+  mimeType: String!
+  thumbHash: String
+  updatedAt: DateTimeISO
+  url: URL
+  width: Int!
 }
 
 enum ImageResolverAllKeys {
@@ -521,7 +510,7 @@ input ImageResolverKeyedDateFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-  value: LuxonDateTime!
+  value: DateTimeISO!
 }
 
 input ImageResolverKeyedIsNullFilterItem {
@@ -582,20 +571,18 @@ enum ImageResolverStringFilterKeys {
   alt
 }
 
-type ImageResource {
-  alt: String
-  createdAt: DateTimeISO
-  height: Int!
-  mimeType: String!
-  thumbHash: String
-  updatedAt: DateTimeISO
-  url: URL
-  uuid: ID!
-  width: Int!
+type IntervalISO {
+  end: DateTimeISO!
+  start: DateTimeISO!
+}
+
+input IntervalISOInput {
+  end: DateTimeISO!
+  start: DateTimeISO!
 }
 
 type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  data: [DeviceResource!]!
+  data: [DeviceNode!]!
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -609,7 +596,7 @@ type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGra
 }
 
 type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  data: [EventResource!]!
+  data: [EventNode!]!
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -623,7 +610,7 @@ type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
 }
 
 type ListImagesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  data: [ImageResource!]!
+  data: [ImageNode!]!
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -637,7 +624,7 @@ type ListImagesResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
 }
 
 type ListMarathonsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  data: [MarathonResource!]!
+  data: [MarathonNode!]!
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -651,7 +638,7 @@ type ListMarathonsResponse implements AbstractGraphQLArrayOkResponse & AbstractG
 }
 
 type ListNotificationDeliveriesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  data: [NotificationDeliveryResource!]!
+  data: [NotificationDeliveryNode!]!
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -665,7 +652,7 @@ type ListNotificationDeliveriesResponse implements AbstractGraphQLArrayOkRespons
 }
 
 type ListNotificationsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  data: [NotificationResource!]!
+  data: [NotificationNode!]!
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -679,7 +666,7 @@ type ListNotificationsResponse implements AbstractGraphQLArrayOkResponse & Abstr
 }
 
 type ListPeopleResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  data: [PersonResource!]!
+  data: [PersonNode!]!
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -693,7 +680,7 @@ type ListPeopleResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
 }
 
 type ListPointEntriesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  data: [PointEntryResource!]!
+  data: [PointEntryNode!]!
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -707,7 +694,7 @@ type ListPointEntriesResponse implements AbstractGraphQLArrayOkResponse & Abstra
 }
 
 type ListPointOpportunitiesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  data: [PointOpportunityResource!]!
+  data: [PointOpportunityNode!]!
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -721,7 +708,7 @@ type ListPointOpportunitiesResponse implements AbstractGraphQLArrayOkResponse & 
 }
 
 type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
-  data: [TeamResource!]!
+  data: [TeamNode!]!
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -736,25 +723,29 @@ type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraph
 
 type LoginState {
   authSource: AuthSource!
+  dbRole: DbRole!
   loggedIn: Boolean!
-  role: RoleResource!
 }
 
-"""Date range custom scalar type (just an ISO 8601 interval)"""
-scalar LuxonDateRange @specifiedBy(url: "https://www.iso.org/iso-8601-date-and-time-format.html")
-
-"""Luxon DateTime custom scalar type"""
-scalar LuxonDateTime
-
-type MarathonHourResource {
+type MarathonHourNode implements Node {
   createdAt: DateTimeISO
   details: String
   durationInfo: String!
-  mapImages: [ImageResource!]!
+  id: ID!
+  mapImages: [ImageNode!]!
   shownStartingAt: DateTimeISO!
   title: String!
   updatedAt: DateTimeISO
-  uuid: ID!
+}
+
+type MarathonNode implements Node {
+  createdAt: DateTimeISO
+  endDate: DateTimeISO!
+  hours: [MarathonHourNode!]!
+  id: ID!
+  startDate: DateTimeISO!
+  updatedAt: DateTimeISO
+  year: String!
 }
 
 enum MarathonResolverAllKeys {
@@ -783,7 +774,7 @@ input MarathonResolverKeyedDateFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-  value: LuxonDateTime!
+  value: DateTimeISO!
 }
 
 input MarathonResolverKeyedIsNullFilterItem {
@@ -796,14 +787,13 @@ input MarathonResolverKeyedIsNullFilterItem {
   negate: Boolean = false
 }
 
-type MarathonResource {
+type MembershipNode implements Node {
   createdAt: DateTimeISO
-  endDate: DateTimeISO!
-  hours: [MarathonHourResource!]!
-  startDate: DateTimeISO!
+  id: ID!
+  person: PersonNode!
+  position: MembershipPositionType!
+  team: TeamNode!
   updatedAt: DateTimeISO
-  uuid: ID!
-  year: String!
 }
 
 """The position of a member on a team"""
@@ -812,32 +802,24 @@ enum MembershipPositionType {
   Member
 }
 
-type MembershipResource {
-  createdAt: DateTimeISO
-  person: PersonResource!
-  position: MembershipPositionType!
-  team: TeamResource!
-  updatedAt: DateTimeISO
-  uuid: ID!
-}
-
 type Mutation {
   abortScheduledNotification(uuid: String!): AbortScheduledNotificationResponse!
   acknowledgeDeliveryIssue(uuid: String!): AcknowledgeDeliveryIssueResponse!
   addExistingImageToEvent(eventId: String!, imageId: String!): AddEventImageResponse!
-  addMap(imageUuid: String!, uuid: String!): MarathonHourResource!
-  attachImageToFeedItem(feedItemUuid: String!, imageUuid: String!): FeedResource!
+  addMap(imageUuid: String!, uuid: String!): MarathonHourNode!
+  addPersonToTeam(personUuid: String!, teamUuid: String!): GetMembershipResponse!
+  attachImageToFeedItem(feedItemUuid: String!, imageUuid: String!): FeedNode!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
   createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
   createEvent(input: CreateEventInput!): CreateEventResponse!
-  createFeedItem(input: CreateFeedInput!): FeedResource!
-  createImage(input: CreateImageInput!): ImageResource!
-  createMarathon(input: CreateMarathonInput!): MarathonResource!
-  createMarathonHour(input: CreateMarathonHourInput!, marathonUuid: String!): MarathonHourResource!
+  createFeedItem(input: CreateFeedInput!): FeedNode!
+  createImage(input: CreateImageInput!): ImageNode!
+  createMarathon(input: CreateMarathonInput!): MarathonNode!
+  createMarathonHour(input: CreateMarathonHourInput!, marathonUuid: String!): MarathonHourNode!
   createPerson(input: CreatePersonInput!): CreatePersonResponse!
   createPointEntry(input: CreatePointEntryInput!): CreatePointEntryResponse!
   createPointOpportunity(input: CreatePointOpportunityInput!): CreatePointOpportunityResponse!
-  createTeam(input: CreateTeamInput!): CreateTeamResponse!
+  createTeam(input: CreateTeamInput!, marathon: String!): CreateTeamResponse!
   deleteConfiguration(uuid: String!): DeleteConfigurationResponse!
   deleteDevice(uuid: String!): DeleteDeviceResponse!
   deleteEvent(uuid: String!): DeleteEventResponse!
@@ -858,22 +840,26 @@ type Mutation {
   deleteTeam(uuid: String!): DeleteTeamResponse!
   registerDevice(input: RegisterDeviceInput!): RegisterDeviceResponse!
   removeImageFromEvent(eventId: String!, imageId: String!): RemoveEventImageResponse!
-  removeImageFromFeedItem(feedItemUuid: String!): FeedResource!
+  removeImageFromFeedItem(feedItemUuid: String!): FeedNode!
   removeMap(imageUuid: String!, uuid: String!): Void!
   scheduleNotification(sendAt: DateTimeISO!, uuid: String!): ScheduleNotificationResponse!
 
   """Send a notification immediately."""
   sendNotification(uuid: String!): SendNotificationResponse!
   setEvent(input: SetEventInput!, uuid: String!): SetEventResponse!
-  setFeedItem(feedItemUuid: String!, input: SetFeedInput!): FeedResource!
-  setImageAltText(alt: String!, uuid: String!): ImageResource!
-  setImageUrl(uuid: String!): ImageResource!
-  setMarathon(input: SetMarathonInput!, uuid: String!): MarathonResource!
-  setMarathonHour(input: SetMarathonHourInput!, uuid: String!): MarathonHourResource!
+  setFeedItem(feedItemUuid: String!, input: SetFeedInput!): FeedNode!
+  setImageAltText(alt: String!, uuid: String!): ImageNode!
+  setImageUrl(uuid: String!): ImageNode!
+  setMarathon(input: SetMarathonInput!, uuid: String!): MarathonNode!
+  setMarathonHour(input: SetMarathonHourInput!, uuid: String!): MarathonHourNode!
   setPerson(input: SetPersonInput!, uuid: String!): GetPersonResponse!
   setPointOpportunity(input: SetPointOpportunityInput!, uuid: String!): SinglePointOpportunityResponse!
   setTeam(input: SetTeamInput!, uuid: String!): SingleTeamResponse!
   stageNotification(audience: NotificationAudienceInput!, body: String!, title: String!, url: String): StageNotificationResponse!
+}
+
+interface Node {
+  id: ID!
 }
 
 """Integers that will have a value of 0 or more."""
@@ -894,6 +880,26 @@ type NotificationDeliveryIssueCount {
   MessageTooBig: Int!
   MismatchSenderId: Int!
   Unknown: Int!
+}
+
+type NotificationDeliveryNode implements Node {
+  """
+  A unique identifier corresponding the group of notifications this was sent to Expo with.
+  """
+  chunkUuid: String
+  createdAt: DateTimeISO
+
+  """Any error message returned by Expo when sending the notification."""
+  deliveryError: String
+  id: ID!
+  notification: NotificationNode!
+
+  """The time the server received a delivery receipt from the user."""
+  receiptCheckedAt: DateTimeISO
+
+  """The time the server sent the notification to Expo for delivery."""
+  sentAt: DateTimeISO
+  updatedAt: DateTimeISO
 }
 
 enum NotificationDeliveryResolverAllKeys {
@@ -922,7 +928,7 @@ input NotificationDeliveryResolverKeyedDateFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-  value: LuxonDateTime!
+  value: DateTimeISO!
 }
 
 input NotificationDeliveryResolverKeyedIsNullFilterItem {
@@ -935,24 +941,25 @@ input NotificationDeliveryResolverKeyedIsNullFilterItem {
   negate: Boolean = false
 }
 
-type NotificationDeliveryResource {
-  """
-  A unique identifier corresponding the group of notifications this was sent to Expo with.
-  """
-  chunkUuid: String
+type NotificationNode implements Node {
+  body: String!
   createdAt: DateTimeISO
+  deliveryCount: Int!
+  deliveryIssue: String
+  deliveryIssueAcknowledgedAt: DateTimeISO
+  deliveryIssueCount: NotificationDeliveryIssueCount!
+  id: ID!
 
-  """Any error message returned by Expo when sending the notification."""
-  deliveryError: String
-  notification: NotificationResource!
+  """
+  The time the notification is scheduled to be sent, if null it is either already sent or unscheduled.
+  """
+  sendAt: DateTimeISO
 
-  """The time the server received a delivery receipt from the user."""
-  receiptCheckedAt: DateTimeISO
-
-  """The time the server sent the notification to Expo for delivery."""
-  sentAt: DateTimeISO
+  """The time the server started sending the notification."""
+  startedSendingAt: DateTimeISO
+  title: String!
   updatedAt: DateTimeISO
-  uuid: ID!
+  url: URL
 }
 
 enum NotificationResolverAllKeys {
@@ -983,7 +990,7 @@ input NotificationResolverKeyedDateFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-  value: LuxonDateTime!
+  value: DateTimeISO!
 }
 
 input NotificationResolverKeyedIsNullFilterItem {
@@ -1030,27 +1037,6 @@ enum NotificationResolverStringFilterKeys {
   title
 }
 
-type NotificationResource {
-  body: String!
-  createdAt: DateTimeISO
-  deliveryCount: Int!
-  deliveryIssue: String
-  deliveryIssueAcknowledgedAt: DateTimeISO
-  deliveryIssueCount: NotificationDeliveryIssueCount!
-
-  """
-  The time the notification is scheduled to be sent, if null it is either already sent or unscheduled.
-  """
-  sendAt: DateTimeISO
-
-  """The time the server started sending the notification."""
-  startedSendingAt: DateTimeISO
-  title: String!
-  updatedAt: DateTimeISO
-  url: URL
-  uuid: ID!
-}
-
 enum NumericComparator {
   EQUALS
   GREATER_THAN
@@ -1058,6 +1044,18 @@ enum NumericComparator {
   IS
   LESS_THAN
   LESS_THAN_OR_EQUAL_TO
+}
+
+type PersonNode implements Node {
+  captaincies: [MembershipNode!]! @deprecated(reason: "Use teams instead and filter by position")
+  createdAt: DateTimeISO
+  dbRole: DbRole!
+  email: String!
+  id: ID!
+  linkblue: String
+  name: String
+  teams: [MembershipNode!]!
+  updatedAt: DateTimeISO
 }
 
 enum PersonResolverAllKeys {
@@ -1116,17 +1114,15 @@ enum PersonResolverStringFilterKeys {
   name
 }
 
-type PersonResource {
-  authIds: [AuthIdPairResource!]! @deprecated(reason: "This is now provided on the AuthIdPair resource.")
-  captaincies: [MembershipResource!]! @deprecated(reason: "Use teams instead and filter by position")
+type PointEntryNode implements Node {
+  comment: String
   createdAt: DateTimeISO
-  email: String!
-  linkblue: String
-  name: String
-  role: RoleResource!
-  teams: [MembershipResource!]!
+  id: ID!
+  personFrom: PersonNode
+  pointOpportunity: PointOpportunityNode
+  points: Int!
+  team: TeamNode!
   updatedAt: DateTimeISO
-  uuid: ID!
 }
 
 enum PointEntryResolverAllKeys {
@@ -1150,7 +1146,7 @@ input PointEntryResolverKeyedDateFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-  value: LuxonDateTime!
+  value: DateTimeISO!
 }
 
 input PointEntryResolverKeyedIsNullFilterItem {
@@ -1163,15 +1159,14 @@ input PointEntryResolverKeyedIsNullFilterItem {
   negate: Boolean = false
 }
 
-type PointEntryResource {
-  comment: String
+type PointOpportunityNode implements Node {
   createdAt: DateTimeISO
-  personFrom: PersonResource
-  pointOpportunity: PointOpportunityResource
-  points: Int!
-  team: TeamResource!
+  event: EventNode
+  id: ID!
+  name: String!
+  opportunityDate: DateTimeISO
+  type: TeamType!
   updatedAt: DateTimeISO
-  uuid: ID!
 }
 
 enum PointOpportunityResolverAllKeys {
@@ -1199,7 +1194,7 @@ input PointOpportunityResolverKeyedDateFilterItem {
   Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
   """
   negate: Boolean = false
-  value: LuxonDateTime!
+  value: DateTimeISO!
 }
 
 input PointOpportunityResolverKeyedIsNullFilterItem {
@@ -1245,24 +1240,14 @@ enum PointOpportunityResolverStringFilterKeys {
   name
 }
 
-type PointOpportunityResource {
-  createdAt: DateTimeISO
-  event: EventResource
-  name: String!
-  opportunityDate: LuxonDateTime
-  type: TeamType!
-  updatedAt: DateTimeISO
-  uuid: ID!
-}
-
 """Integers that will have a value greater than 0."""
 scalar PositiveInt
 
 type Query {
   activeConfiguration(key: String!): GetConfigurationByUuidResponse!
   allConfigurations: GetAllConfigurationsResponse!
-  currentMarathon: MarathonResource
-  currentMarathonHour: MarathonHourResource
+  currentMarathon: MarathonNode
+  currentMarathonHour: MarathonHourNode
   device(uuid: String!): GetDeviceByUuidResponse!
   devices(
     """The boolean filters to apply to the query"""
@@ -1351,7 +1336,7 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
-  feed(limit: Int = 10): [FeedResource!]!
+  feed(limit: Int = 10): [FeedNode!]!
   image(uuid: String!): GetImageByUuidResponse!
   images(
     """The boolean filters to apply to the query"""
@@ -1440,9 +1425,9 @@ type Query {
     stringFilters: [PersonResolverKeyedStringFilterItem!]
   ): ListPeopleResponse!
   loginState: LoginState!
-  marathon(uuid: String!): MarathonResource!
-  marathonForYear(year: String!): MarathonResource!
-  marathonHour(uuid: String!): MarathonHourResource!
+  marathon(uuid: String!): MarathonNode!
+  marathonForYear(year: String!): MarathonNode!
+  marathonHour(uuid: String!): MarathonHourNode!
   marathons(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -1487,7 +1472,7 @@ type Query {
     stringFilters: Void
   ): ListMarathonsResponse!
   me: GetPersonResponse!
-  nextMarathon: MarathonResource
+  nextMarathon: MarathonNode
   notification(uuid: String!): GetNotificationByUuidResponse!
   notificationDeliveries(
     """The boolean filters to apply to the query"""
@@ -1731,25 +1716,13 @@ input RegisterDeviceInput {
 }
 
 type RegisterDeviceResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: DeviceResource!
+  data: DeviceNode!
   ok: Boolean!
 }
 
 type RemoveEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: Boolean!
   ok: Boolean!
-}
-
-type RoleResource {
-  committeeIdentifier: CommitteeIdentifier
-  committeeRole: CommitteeRole
-  dbRole: DbRole!
-}
-
-input RoleResourceInput {
-  committeeIdentifier: CommitteeIdentifier
-  committeeRole: CommitteeRole
-  dbRole: DbRole! = None
 }
 
 type ScheduleNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -1772,7 +1745,7 @@ input SetEventInput {
 
 input SetEventOccurrenceInput {
   fullDay: Boolean!
-  interval: LuxonDateRange!
+  interval: IntervalISOInput!
 
   """
   If updating an existing occurrence, the UUID of the occurrence to update
@@ -1781,7 +1754,7 @@ input SetEventOccurrenceInput {
 }
 
 type SetEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: EventResource!
+  data: EventNode!
   ok: Boolean!
 }
 
@@ -1805,17 +1778,17 @@ input SetMarathonInput {
 
 input SetPersonInput {
   captainOf: [String!]
+  dbRole: DbRole
   email: EmailAddress
   linkblue: String
   memberOf: [String!]
   name: String
-  role: RoleResourceInput
 }
 
 input SetPointOpportunityInput {
   eventUuid: ID
   name: String
-  opportunityDate: LuxonDateTime
+  opportunityDate: DateTimeISO
   type: TeamType
 }
 
@@ -1828,12 +1801,12 @@ input SetTeamInput {
 }
 
 type SinglePointOpportunityResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: PointOpportunityResource!
+  data: PointOpportunityNode!
   ok: Boolean!
 }
 
 type SingleTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: TeamResource!
+  data: TeamNode!
   ok: Boolean!
 }
 
@@ -1843,7 +1816,7 @@ enum SortDirection {
 }
 
 type StageNotificationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: NotificationResource!
+  data: NotificationNode!
   ok: Boolean!
   uuid: String!
 }
@@ -1861,6 +1834,19 @@ enum TeamLegacyStatus {
   DemoTeam
   NewTeam
   ReturningTeam
+}
+
+type TeamNode implements Node {
+  captains: [MembershipNode!]! @deprecated(reason: "Just query the members field and filter by role")
+  createdAt: DateTimeISO
+  id: ID!
+  legacyStatus: TeamLegacyStatus!
+  members: [MembershipNode!]!
+  name: String!
+  pointEntries: [PointEntryNode!]!
+  totalPoints: Int!
+  type: TeamType!
+  updatedAt: DateTimeISO
 }
 
 enum TeamResolverAllKeys {
@@ -1913,21 +1899,6 @@ enum TeamResolverOneOfFilterKeys {
 
 enum TeamResolverStringFilterKeys {
   name
-}
-
-type TeamResource {
-  captains: [MembershipResource!]! @deprecated(reason: "Just query the members field and filter by role")
-  createdAt: DateTimeISO
-  legacyStatus: TeamLegacyStatus!
-  marathonYear: String!
-  members: [MembershipResource!]!
-  name: String!
-  persistentIdentifier: String
-  pointEntries: [PointEntryResource!]!
-  totalPoints: Int!
-  type: TeamType!
-  updatedAt: DateTimeISO
-  uuid: ID!
 }
 
 """Types of teams"""

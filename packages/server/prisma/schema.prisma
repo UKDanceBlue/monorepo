@@ -150,15 +150,16 @@ model LoginFlowSession {
 }
 
 model Membership {
-  id        Int                @id @default(autoincrement())
-  uuid      String             @unique(map: "memberships_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
-  personId  Int                @map("person_id")
-  teamId    Int                @map("team_id")
-  position  MembershipPosition
-  person    Person             @relation(fields: [personId], references: [id], onDelete: Cascade)
-  team      Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  id            Int                @id @default(autoincrement())
+  uuid          String             @unique(map: "memberships_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt     DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  personId      Int                @map("person_id")
+  teamId        Int                @map("team_id")
+  committeeRole CommitteeRole?     @map("committee_role")
+  position      MembershipPosition
+  person        Person             @relation(fields: [personId], references: [id], onDelete: Cascade)
+  team          Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@unique([personId, teamId], map: "memberships_person_id_team_id_key")
   @@index([uuid], map: "memberships_uuid")
@@ -166,20 +167,18 @@ model Membership {
 }
 
 model Person {
-  id            Int            @id @default(autoincrement())
-  uuid          String         @unique(map: "people_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
-  name          String?
-  email         String         @unique(map: "people_email_unique")
-  linkblue      String?        @unique(map: "people_linkblue_unique")
-  committeeRole CommitteeRole? @map("committee_role")
-  committeeName CommitteeName? @map("committee_name")
-  authIdPairs   AuthIdPair[]
-  devices       Device[]
-  memberships   Membership[]
-  pointEntries  PointEntry[]
-  ownedFiles    File[]
+  id           Int          @id @default(autoincrement())
+  uuid         String       @unique(map: "people_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  name         String?
+  email        String       @unique(map: "people_email_unique")
+  linkblue     String?      @unique(map: "people_linkblue_unique")
+  authIdPairs  AuthIdPair[]
+  devices      Device[]
+  memberships  Membership[]
+  pointEntries PointEntry[]
+  ownedFiles   File[]
 
   @@index([uuid], map: "people_uuid")
   @@map("people")
@@ -344,8 +343,8 @@ model Marathon {
   createdAt            DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt            DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
   year                 String                 @unique
-  startDate            DateTime               @map("start_date") @db.Timestamptz(6)
-  endDate              DateTime               @map("end_date") @db.Timestamptz(6)
+  startDate            DateTime?              @map("start_date") @db.Timestamptz(6)
+  endDate              DateTime?              @map("end_date") @db.Timestamptz(6)
   hours                MarathonHour[]
   teams                Team[]
   teamsWithTotalPoints TeamsWithTotalPoints[]

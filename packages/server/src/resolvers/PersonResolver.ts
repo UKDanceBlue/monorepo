@@ -338,6 +338,30 @@ export class PersonResolver {
     }
   )
   @FieldResolver(() => [MembershipNode])
+  async committees(@Root() person: PersonNode): Promise<MembershipNode[]> {
+    const models = await this.personRepository.findMembershipsOfPerson({
+      uuid: person.id,
+    });
+
+    if (models == null) {
+      return [];
+    }
+
+    return models.map((row) => membershipModelToResource(row));
+  }
+
+  @AccessControl(
+    { accessLevel: AccessLevel.Committee },
+    {
+      rootMatch: [
+        {
+          root: "uuid",
+          extractor: (userData) => userData.userId,
+        },
+      ],
+    }
+  )
+  @FieldResolver(() => [MembershipNode])
   async teams(@Root() person: PersonNode): Promise<MembershipNode[]> {
     const models = await this.personRepository.findMembershipsOfPerson({
       uuid: person.id,
@@ -356,7 +380,9 @@ export class PersonResolver {
   })
   async captaincies(@Root() person: PersonNode): Promise<MembershipNode[]> {
     const models = await this.personRepository.findMembershipsOfPerson(
-      { uuid: person.id },
+      {
+        uuid: person.id,
+      },
       { position: MembershipPositionType.Captain }
     );
 
