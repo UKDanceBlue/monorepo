@@ -41,9 +41,7 @@ const rootScreenDocument = graphql(/* GraphQL */ `
 
 const RootScreenAuthFragment = graphql(/* GraphQL */ `
   fragment RootScreenAuthFragment on LoginState {
-    role {
-      dbRole
-    }
+    dbRole
   }
 `);
 
@@ -72,7 +70,7 @@ const RootScreen = () => {
     rootScreenData?.loginState ?? null
   );
   const isLoggedIn = useMemo(() => {
-    return authData?.role.dbRole !== DbRole.None;
+    return authData?.dbRole !== DbRole.None;
   }, [authData]);
 
   const { colors } = useTheme();

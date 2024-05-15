@@ -1,15 +1,18 @@
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 
 export const EventEditorFragment = graphql(/* GraphQL */ `
-  fragment EventEditorFragment on EventResource {
-    uuid
+  fragment EventEditorFragment on EventNode {
+    id
     title
     summary
     description
     location
     occurrences {
       uuid
-      interval
+      interval {
+        start
+        end
+      }
       fullDay
     }
     images {

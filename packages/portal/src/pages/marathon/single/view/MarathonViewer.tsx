@@ -10,13 +10,13 @@ import { DateTime } from "luxon";
 import { useMemo } from "react";
 
 export const MarathonViewerFragment = graphql(/* GraphQL */ `
-  fragment MarathonViewerFragment on MarathonResource {
-    uuid
+  fragment MarathonViewerFragment on MarathonNode {
+    id
     year
     startDate
     endDate
     hours {
-      uuid
+      id
       shownStartingAt
       title
     }

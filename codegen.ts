@@ -34,8 +34,8 @@ const config: TypeScriptPluginConfig = {
     AuthSource: "../index.js#AuthSource",
     // AccessLevel: "../index.js#AccessLevel",
     DbRole: "../index.js#DbRole",
-    CommitteeRole: "../index.js#CommitteeRole",
-    CommitteeIdentifier: "../index.js#CommitteeIdentifier",
+    // CommitteeRole: "../index.js#CommitteeRole",
+    // CommitteeIdentifier: "../index.js#CommitteeIdentifier",
     // ErrorCode: "../index.js#ErrorCode",
     MembershipPositionType: "../index.js#MembershipPositionType",
     TeamLegacyStatus: "../index.js#TeamLegacyStatus",
@@ -48,7 +48,6 @@ const config: TypeScriptPluginConfig = {
   },
   scalars: {
     LuxonDateRange: "string",
-    LuxonDateTime: "string",
     LuxonDuration: "string",
     ...graphqlScalarsClientDefs,
   },

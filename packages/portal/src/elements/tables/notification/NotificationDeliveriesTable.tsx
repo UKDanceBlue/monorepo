@@ -11,8 +11,8 @@ import { DateTime } from "luxon";
 import { useQuery } from "urql";
 
 const NotificationDeliveriesTableFragment = graphql(/* GraphQL */ `
-  fragment NotificationDeliveriesTableFragment on NotificationDeliveryResource {
-    uuid
+  fragment NotificationDeliveriesTableFragment on NotificationDeliveryNode {
+    id
     deliveryError
     receiptCheckedAt
     sentAt

@@ -8,8 +8,8 @@ import { useMemo } from "react";
 import { useQuery } from "urql";
 
 export const ConfigFragment = graphql(/* GraphQL */ `
-  fragment ConfigFragment on ConfigurationResource {
-    uuid
+  fragment ConfigFragment on ConfigurationNode {
+    id
     key
     value
     validAfter

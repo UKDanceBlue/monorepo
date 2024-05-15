@@ -740,10 +740,10 @@ type MarathonHourNode implements Node {
 
 type MarathonNode implements Node {
   createdAt: DateTimeISO
-  endDate: DateTimeISO!
+  endDate: DateTimeISO
   hours: [MarathonHourNode!]!
   id: ID!
-  startDate: DateTimeISO!
+  startDate: DateTimeISO
   updatedAt: DateTimeISO
   year: String!
 }
@@ -1048,6 +1048,7 @@ enum NumericComparator {
 
 type PersonNode implements Node {
   captaincies: [MembershipNode!]! @deprecated(reason: "Use teams instead and filter by position")
+  committees: [MembershipNode!]!
   createdAt: DateTimeISO
   dbRole: DbRole!
   email: String!

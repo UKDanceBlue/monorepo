@@ -17,8 +17,8 @@ import {
 } from "react-native";
 
 const HourScreenFragment = graphql(/* GraphQL */ `
-  fragment HourScreenFragment on MarathonHourResource {
-    uuid
+  fragment HourScreenFragment on MarathonHourNode {
+    id
     title
     details
     durationInfo

@@ -27,15 +27,11 @@ const authStateDocument = graphql(/* GraphQL */ `
   query AuthState {
     me {
       data {
-        uuid
+        id
       }
     }
     loginState {
-      role {
-        dbRole
-        committeeIdentifier
-        committeeRole
-      }
+      dbRole
       loggedIn
       authSource
     }
@@ -59,8 +55,8 @@ export function AuthStateProvider({ children }: { children: ReactNode }) {
         context: {
           loggedIn: data?.loginState.loggedIn,
           authSource: data?.loginState.authSource,
-          role: data?.loginState.role,
-          userUuid: data?.me.data?.uuid,
+          role: data?.loginState.dbRole,
+          userUuid: data?.me.data?.id,
         },
         tags: ["graphql"],
       });

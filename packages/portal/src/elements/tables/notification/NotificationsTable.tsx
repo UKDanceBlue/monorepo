@@ -13,8 +13,8 @@ import { DateTime } from "luxon";
 import { useQuery } from "urql";
 
 const NotificationsTableFragment = graphql(/* GraphQL */ `
-  fragment NotificationsTableFragment on NotificationResource {
-    uuid
+  fragment NotificationsTableFragment on NotificationNode {
+    id
     title
     body
     deliveryIssue

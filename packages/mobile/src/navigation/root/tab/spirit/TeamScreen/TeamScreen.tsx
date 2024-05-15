@@ -13,13 +13,13 @@ import { useWindowDimensions } from "react-native";
 import TeamInformation from "./TeamInformation";
 
 export const MyTeamFragment = graphql(/* GraphQL */ `
-  fragment MyTeamFragment on TeamResource {
-    uuid
+  fragment MyTeamFragment on TeamNode {
+    id
     name
     totalPoints
     pointEntries {
       personFrom {
-        uuid
+        id
         name
         linkblue
       }

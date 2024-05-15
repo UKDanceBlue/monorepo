@@ -11,8 +11,8 @@ import type { UseQueryExecute } from "urql";
 import { usePointEntryDeletePopup } from "./PointEntryDeletePopup";
 
 export const PointEntryTableFragment = graphql(/* GraphQL */ `
-  fragment PointEntryTableFragment on PointEntryResource {
-    uuid
+  fragment PointEntryTableFragment on PointEntryNode {
+    id
     personFrom {
       name
       linkblue

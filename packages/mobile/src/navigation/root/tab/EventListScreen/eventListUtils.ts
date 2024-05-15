@@ -246,8 +246,8 @@ export const useEvents = ({
   const [eventsQueryResult, refresh] = useQuery({
     query: graphql(/* GraphQL */ `
       query Events(
-        $earliestTimestamp: LuxonDateTime!
-        $lastTimestamp: LuxonDateTime!
+        $earliestTimestamp: DateTimeISO!
+        $lastTimestamp: DateTimeISO!
       ) {
         events(
           dateFilters: [
@@ -282,8 +282,9 @@ export const useEvents = ({
     if (lastFetchKey.current !== eventsQueryResult.operation?.key) {
       if (!eventsQueryResult.fetching && eventsQueryResult.error == null) {
         Logger.debug(
-          `successfully fetched ${eventsQueryResult.data?.events.data
-            .length} events for ${month.toFormat("yyyy-LL")} from ${
+          `successfully fetched ${
+            eventsQueryResult.data?.events.data.length
+          } events for ${month.toFormat("yyyy-LL")} from ${
             eventsQueryResult.operation?.context.meta?.cacheOutcome === "hit"
               ? "cache"
               : "network"

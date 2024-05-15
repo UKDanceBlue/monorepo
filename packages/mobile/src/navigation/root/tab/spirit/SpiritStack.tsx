@@ -15,7 +15,7 @@ const scoreBoardDocument = graphql(/* GraphQL */ `
   query ScoreBoardDocument($type: [TeamType!]) {
     me {
       data {
-        uuid
+        id
         teams {
           team {
             ...HighlightedTeamFragment
@@ -40,7 +40,7 @@ const scoreBoardDocument = graphql(/* GraphQL */ `
 const currentMarathonDocument = graphql(/* GraphQL */ `
   query ActiveMarathonDocument {
     currentMarathon {
-      uuid
+      id
     }
   }
 `);

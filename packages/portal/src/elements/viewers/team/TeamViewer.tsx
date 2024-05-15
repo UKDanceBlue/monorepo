@@ -10,8 +10,8 @@ import { Button, Descriptions, Empty, Flex } from "antd";
 import { useTeamDeletePopup } from "./TeamDeletePopup";
 
 export const TeamViewerFragment = graphql(/* GraphQL */ `
-  fragment TeamViewerFragment on TeamResource {
-    uuid
+  fragment TeamViewerFragment on TeamNode {
+    id
     name
     marathonYear
     legacyStatus
@@ -19,17 +19,11 @@ export const TeamViewerFragment = graphql(/* GraphQL */ `
     type
     members {
       person {
-        uuid
+        id
         name
         linkblue
       }
-    }
-    captains {
-      person {
-        uuid
-        name
-        linkblue
-      }
+      position
     }
   }
 `);

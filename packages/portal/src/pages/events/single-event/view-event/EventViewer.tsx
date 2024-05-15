@@ -15,14 +15,17 @@ import { thumbHashToDataURL } from "thumbhash";
 import { useEventDeletePopup } from "./EventDeletePopup";
 
 export const EventViewerFragment = graphql(/* GraphQL */ `
-  fragment EventViewerFragment on EventResource {
-    uuid
+  fragment EventViewerFragment on EventNode {
+    id
     title
     summary
     description
     location
     occurrences {
-      interval
+      interval {
+        start
+        end
+      }
       fullDay
     }
     images {

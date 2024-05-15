@@ -1,8 +1,8 @@
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 
 export const PersonEditorFragment = graphql(/* GraphQL */ `
-  fragment PersonEditorFragment on PersonResource {
-    uuid
+  fragment PersonEditorFragment on PersonNode {
+    id
     name
     linkblue
     email

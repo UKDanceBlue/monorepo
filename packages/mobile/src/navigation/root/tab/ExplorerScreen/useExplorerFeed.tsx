@@ -12,7 +12,7 @@ import { useQuery } from "urql";
 const serverFeedDocument = graphql(/* GraphQL */ `
   query ServerFeed {
     feed(limit: 20) {
-      uuid
+      id
       title
       createdAt
       textContent

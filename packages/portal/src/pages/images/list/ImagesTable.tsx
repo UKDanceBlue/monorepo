@@ -14,8 +14,8 @@ import { thumbHashToDataURL } from "thumbhash";
 import { useQuery } from "urql";
 
 const ImagesTableFragment = graphql(/* GraphQL */ `
-  fragment ImagesTableFragment on ImageResource {
-    uuid
+  fragment ImagesTableFragment on ImageNode {
+    id
     url
     thumbHash
     height

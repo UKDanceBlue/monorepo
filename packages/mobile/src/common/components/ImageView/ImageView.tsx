@@ -6,8 +6,8 @@ import {
 import { Image, type ImageProps } from "expo-image";
 
 export const ImageViewFragment = graphql(/* GraphQL */ `
-  fragment ImageViewFragment on ImageResource {
-    uuid
+  fragment ImageViewFragment on ImageNode {
+    id
     url
     thumbHash
     alt

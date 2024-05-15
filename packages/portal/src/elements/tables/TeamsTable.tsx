@@ -41,8 +41,8 @@ const teamsTableQueryDocument = graphql(/* GraphQL */ `
 `);
 
 export const TeamsTableFragment = graphql(/* GraphQL */ `
-  fragment TeamsTableFragment on TeamResource {
-    uuid
+  fragment TeamsTableFragment on TeamNode {
+    id
     type
     name
     legacyStatus

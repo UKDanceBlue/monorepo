@@ -31,17 +31,13 @@ import { ProfileFooter } from "./ProfileFooter";
 
 export const ProfileScreenAuthFragment = graphql(/* GraphQL */ `
   fragment ProfileScreenAuthFragment on LoginState {
-    role {
-      committeeIdentifier
-      committeeRole
-      dbRole
-    }
+    dbRole
     authSource
   }
 `);
 
 export const ProfileScreenUserFragment = graphql(/* GraphQL */ `
-  fragment ProfileScreenUserFragment on PersonResource {
+  fragment ProfileScreenUserFragment on PersonNode {
     name
     linkblue
     teams {

@@ -16,13 +16,16 @@ import { useCallback, useMemo } from "react";
 import { useQuery } from "urql";
 
 const EventsTableFragment = graphql(/* GraphQL */ `
-  fragment EventsTableFragment on EventResource {
-    uuid
+  fragment EventsTableFragment on EventNode {
+    id
     title
     description
     occurrences {
       uuid
-      interval
+      interval {
+        start
+        end
+      }
       fullDay
     }
     summary

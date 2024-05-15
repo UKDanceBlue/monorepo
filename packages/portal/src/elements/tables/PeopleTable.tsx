@@ -19,8 +19,8 @@ import { Button, Flex, Table } from "antd";
 import { useQuery } from "urql";
 
 const PeopleTableFragment = graphql(/* GraphQL */ `
-  fragment PeopleTableFragment on PersonResource {
-    uuid
+  fragment PeopleTableFragment on PersonNode {
+    id
     name
     linkblue
     email

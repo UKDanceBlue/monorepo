@@ -32,8 +32,8 @@ function addOrdinal(num: number) {
 }
 
 const ScoreBoardFragment = graphql(/* GraphQL */ `
-  fragment ScoreBoardFragment on TeamResource {
-    uuid
+  fragment ScoreBoardFragment on TeamNode {
+    id
     name
     totalPoints
     legacyStatus
@@ -42,8 +42,8 @@ const ScoreBoardFragment = graphql(/* GraphQL */ `
 `);
 
 const HighlightedTeamFragment = graphql(/* GraphQL */ `
-  fragment HighlightedTeamFragment on TeamResource {
-    uuid
+  fragment HighlightedTeamFragment on TeamNode {
+    id
     name
     legacyStatus
     type

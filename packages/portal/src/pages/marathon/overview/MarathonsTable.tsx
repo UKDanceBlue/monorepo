@@ -4,8 +4,8 @@ import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 import { Button, Empty, Table } from "antd";
 
 export const MarathonTableFragment = graphql(/* GraphQL */ `
-  fragment MarathonTableFragment on MarathonResource {
-    uuid
+  fragment MarathonTableFragment on MarathonNode {
+    id
     year
     startDate
     endDate

@@ -1,8 +1,8 @@
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 
 export const TeamEditorFragment = graphql(/* GraphQL */ `
-  fragment TeamEditorFragment on TeamResource {
-    uuid
+  fragment TeamEditorFragment on TeamNode {
+    id
     name
     marathonYear
     legacyStatus
