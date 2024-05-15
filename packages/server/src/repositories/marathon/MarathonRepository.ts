@@ -64,7 +64,7 @@ export class MarathonRepository {
 
   findCurrentMarathon() {
     return this.prisma.marathon.findFirst({
-      orderBy: { year: "desc" },
+      orderBy: { year: "asc" },
       where: { startDate: { lte: new Date() }, endDate: { gte: new Date() } },
     });
   }

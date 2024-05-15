@@ -14,15 +14,15 @@ export class MarathonNode extends TimestampedResource implements Node {
   id!: string;
   @Field(() => String)
   year!: string;
-  @Field(() => DateTimeISOResolver)
-  startDate!: Date;
-  get startDateDateTime(): DateTime {
-    return dateTimeFromSomething(this.startDate);
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  startDate?: Date | undefined | null;
+  get startDateDateTime(): DateTime | null {
+    return dateTimeFromSomething(this.startDate) ?? null;
   }
-  @Field(() => DateTimeISOResolver)
-  endDate!: Date;
-  get endDateDateTime(): DateTime {
-    return dateTimeFromSomething(this.endDate);
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  endDate?: Date | undefined | null;
+  get endDateDateTime(): DateTime | null {
+    return dateTimeFromSomething(this.endDate) ?? null;
   }
 
   static init({
@@ -35,8 +35,8 @@ export class MarathonNode extends TimestampedResource implements Node {
   }: {
     id: string;
     year: string;
-    startDate: Date;
-    endDate: Date;
+    startDate?: Date | null;
+    endDate?: Date | null;
     createdAt?: Date | null;
     updatedAt?: Date | null;
   }): MarathonNode {

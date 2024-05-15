@@ -121,8 +121,6 @@ export const oidcCallback = async (ctx: Context) => {
         name: currentPerson.name,
         email: currentPerson.email,
         linkblue: currentPerson.linkblue,
-        committeeName: currentPerson.committeeName,
-        committeeRole: currentPerson.committeeRole,
         authIds: currentPerson.authIdPairs.map((a) => ({
           source: a.source,
           value: a.value,

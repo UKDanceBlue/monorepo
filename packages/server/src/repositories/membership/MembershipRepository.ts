@@ -1,18 +1,9 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import {
-  CommitteeRole,
-  MembershipPositionType,
-  SortDirection,
-} from "@ukdanceblue/common";
+import { CommitteeRole, MembershipPositionType } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { SimpleUniqueParam } from "../shared.js";
-
-import {
-  buildMembershipOrder,
-  buildMembershipWhere,
-} from "./membershipRepositoryUtils.js";
 
 const membershipBooleanKeys = [] as const;
 type MembershipBooleanKey = (typeof membershipBooleanKeys)[number];
@@ -52,62 +43,6 @@ export class MembershipRepository {
     include: Prisma.MembershipInclude
   ) {
     return this.prisma.membership.findUnique({ where: param, include });
-  }
-
-  listMemberships({
-    filters,
-    order,
-    skip,
-    take,
-  }: {
-    filters?: readonly MembershipFilters[] | undefined | null;
-    order?: readonly [key: string, sort: SortDirection][] | undefined | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }) {
-    const where = buildMembershipWhere(filters);
-    const orderBy = buildMembershipOrder(order);
-
-    return this.prisma.membership.findMany({
-      where,
-      orderBy,
-      skip: skip ?? undefined,
-      take: take ?? undefined,
-    });
-  }
-
-  countMemberships({
-    filters,
-  }: {
-    filters?: readonly MembershipFilters[] | undefined | null;
-  }) {
-    const where = buildMembershipWhere(filters);
-
-    return this.prisma.membership.count({
-      where,
-    });
-  }
-
-  createMembership(data: Prisma.MembershipCreateInput) {
-    return this.prisma.membership.create({ data });
-  }
-
-  updateMembership(
-    param: UniqueMembershipParam,
-    data: Prisma.MembershipUpdateInput
-  ) {
-    try {
-      return this.prisma.membership.update({ where: param, data });
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return null;
-      } else {
-        throw error;
-      }
-    }
   }
 
   private async lookupPersonAndTeamId(
@@ -233,20 +168,5 @@ export class MembershipRepository {
         },
       },
     });
-  }
-
-  deleteMembership(param: UniqueMembershipParam) {
-    try {
-      return this.prisma.membership.delete({ where: param });
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return null;
-      } else {
-        throw error;
-      }
-    }
   }
 }

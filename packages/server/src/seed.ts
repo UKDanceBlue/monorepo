@@ -2,6 +2,7 @@ import { CommitteeIdentifier, CommitteeRole } from "@ukdanceblue/common";
 import { Container } from "typedi";
 
 import { isDevelopment } from "./environment.js";
+import { CommitteeRepository } from "./repositories/committee/CommitteeRepository.js";
 import { ConfigurationRepository } from "./repositories/configuration/ConfigurationRepository.js";
 import { PersonRepository } from "./repositories/person/PersonRepository.js";
 
@@ -13,11 +14,10 @@ const { prisma } = await import("./prisma.js");
 
 try {
   const personRepository = Container.get(PersonRepository);
+  const committeeRepository = Container.get(CommitteeRepository);
 
   const techCommittee: [string, string][] = [
     ["jtho264@uky.edu", "jtho264"],
-    ["jp.huse@uky.edu", "jphu235"],
-    ["bartholomai@uky.edu", "mdba238"],
     ["Camille.Dyer@uky.edu", "chdy223"],
     ["str249@uky.edu", "str249"],
   ];
@@ -33,9 +33,19 @@ try {
       personRepository.createPerson({
         email,
         linkblue,
-        committeeRole: CommitteeRole.Coordinator,
-        committeeName: CommitteeIdentifier.techCommittee,
       })
+    )
+  );
+
+  await Promise.all(
+    techPeople.flatMap((person) =>
+      committeeRepository.assignPersonToCommittee(
+        {
+          id: person.id,
+        },
+        CommitteeIdentifier.techCommittee,
+        CommitteeRole.Coordinator
+      )
     )
   );
 

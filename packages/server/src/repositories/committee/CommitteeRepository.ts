@@ -1,8 +1,19 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import { CommitteeIdentifier, SortDirection } from "@ukdanceblue/common";
+import {
+  CommitteeIdentifier,
+  CommitteeRole,
+  DetailedError,
+  ErrorCode,
+  SortDirection,
+} from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type {
+  MarathonRepository,
+  UniqueMarathonParam,
+} from "../marathon/MarathonRepository.js";
+import type { MembershipRepository } from "../membership/MembershipRepository.js";
 import type { SimpleUniqueParam } from "../shared.js";
 
 import * as CommitteeDescriptions from "./committeeDescriptions.js";
@@ -37,7 +48,11 @@ type CommitteeUniqueParam =
 
 @Service()
 export class CommitteeRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(
+    private readonly prisma: PrismaClient,
+    private readonly membershipRepository: MembershipRepository,
+    private readonly marathonRepository: MarathonRepository
+  ) {}
 
   // Finders
 
@@ -62,6 +77,49 @@ export class CommitteeRepository {
     return this.prisma.committee.findUnique({ where: param });
   }
 
+  async assignPersonToCommittee(
+    personParam: SimpleUniqueParam,
+    committeeParam: CommitteeIdentifier,
+    committeeRole: CommitteeRole,
+    marathonParam?: UniqueMarathonParam
+  ) {
+    const person = await this.prisma.person.findUnique({ where: personParam });
+    if (!person) {
+      throw new DetailedError(ErrorCode.NotFound, "Person not found");
+    }
+
+    if (!marathonParam) {
+      const nextMarathon = await this.marathonRepository.findNextMarathon();
+      if (!nextMarathon) {
+        throw new DetailedError(
+          ErrorCode.NotFound,
+          "No upcoming marathon found and no marathon provided"
+        );
+      }
+      marathonParam = { id: nextMarathon.id };
+    } else {
+      // Check if the marathon exists
+      const val =
+        await this.marathonRepository.findMarathonByUnique(marathonParam);
+      if (!val) {
+        throw new DetailedError(ErrorCode.NotFound, "Marathon not found");
+      }
+    }
+
+    const committee = await this.getCommittee(committeeParam, {
+      forMarathon: marathonParam,
+    });
+
+    for (const team of committee.correspondingTeams) {
+      // eslint-disable-next-line no-await-in-loop
+      await this.membershipRepository.assignPersonToTeam({
+        personParam: { id: person.id },
+        teamParam: { id: team.id },
+        committeeRole,
+      });
+    }
+  }
+
   // Mutators
 
   deleteCommittee(uuid: string) {
@@ -81,12 +139,23 @@ export class CommitteeRepository {
 
   // Committee getter
 
-  getCommittee(identifier: CommitteeIdentifier) {
+  getCommittee(
+    identifier: CommitteeIdentifier,
+    opts: {
+      forMarathon?: UniqueMarathonParam;
+    } = {}
+  ) {
     return this.prisma.committee.upsert({
       ...CommitteeDescriptions[identifier],
       where: { identifier },
       include: {
-        correspondingTeams: true,
+        correspondingTeams: opts.forMarathon
+          ? {
+              where: {
+                marathon: opts.forMarathon,
+              },
+            }
+          : undefined,
       },
     });
   }
