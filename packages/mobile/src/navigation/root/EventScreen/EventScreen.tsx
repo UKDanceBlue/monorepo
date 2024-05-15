@@ -2,9 +2,11 @@ import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
 import { log } from "@common/logging";
 import { showMessage } from "@common/util/alertUtils";
 import { useRoute } from "@react-navigation/native";
+import { intervalFromSomething } from "@ukdanceblue/common";
 import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
 import { setStringAsync } from "expo-clipboard";
-import { DateTime, Interval } from "luxon";
+import type { Interval } from "luxon";
+import { DateTime } from "luxon";
 import {
   Badge,
   Box,
@@ -151,7 +153,7 @@ const EventScreen = () => {
           {eventData.occurrences.map((occurrence) => {
             const highlighted = occurrence.uuid === occurrenceId;
 
-            const interval = Interval.fromISO(occurrence.interval);
+            const interval = intervalFromSomething(occurrence.interval);
             const { whenString, allDay } = stringifyInterval(interval);
 
             return (

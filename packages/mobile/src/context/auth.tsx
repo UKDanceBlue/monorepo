@@ -1,5 +1,5 @@
 import { Logger } from "@common/logger/Logger";
-import { AuthSource, RoleResource, defaultRole } from "@ukdanceblue/common";
+import { AuthSource } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect } from "react";
@@ -8,7 +8,6 @@ import { useQuery } from "urql";
 export interface AuthState {
   personUuid: string | null;
   loggedIn: boolean;
-  role: RoleResource;
   authSource: AuthSource;
 
   ready: boolean;
@@ -17,7 +16,6 @@ export interface AuthState {
 const authStateContext = createContext<AuthState>({
   personUuid: null,
   loggedIn: false,
-  role: defaultRole,
   authSource: AuthSource.None,
 
   ready: false,
@@ -66,11 +64,8 @@ export function AuthStateProvider({ children }: { children: ReactNode }) {
   return (
     <authStateContext.Provider
       value={{
-        personUuid: data?.me.data?.uuid ?? null,
+        personUuid: data?.me.data?.id ?? null,
         loggedIn: data?.loginState.loggedIn ?? false,
-        role: data?.loginState.role
-          ? RoleResource.init(data.loginState.role)
-          : defaultRole,
         authSource: data?.loginState.authSource ?? AuthSource.None,
 
         ready: !fetching && !error,

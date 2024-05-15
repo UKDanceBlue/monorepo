@@ -1,8 +1,9 @@
 import { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
+import { intervalFromSomething } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
 import { Platform } from "expo-modules-core";
-import { DateTime, Interval } from "luxon";
+import { DateTime } from "luxon";
 import { Box, Column, Heading, Row } from "native-base";
 import type { MutableRefObject } from "react";
 import { useCallback, useMemo } from "react";
@@ -44,7 +45,7 @@ export const EventListRenderItem = ({
     }
     return {
       ...occurrence,
-      interval: Interval.fromISO(occurrence.interval),
+      interval: intervalFromSomething(occurrence.interval),
     };
   }, [occurrenceUuid, eventData.occurrences]);
 
@@ -110,7 +111,7 @@ export const EventListRenderItem = ({
             }
           >
             <EventRow
-              key={`${eventData.uuid}:${occurrenceUuid}`}
+              key={`${eventData.id}:${occurrenceUuid}`}
               title={eventData.title}
               interval={occurrence?.interval}
               location={eventData.location ?? undefined}
@@ -123,7 +124,7 @@ export const EventListRenderItem = ({
       dayIndexesRef,
       eventData.location,
       eventData.title,
-      eventData.uuid,
+      eventData.id,
       eventDate,
       index,
       now,

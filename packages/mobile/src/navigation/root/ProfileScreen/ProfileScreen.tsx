@@ -90,7 +90,7 @@ const ProfileScreen = ({
   }
 
   const committeeString = useMemo(() => {
-    if (authData?.role.dbRole === DbRole.Committee) {
+    if (authData?.dbRole === DbRole.Committee) {
       if (
         authData.role.committeeIdentifier ===
           CommitteeIdentifier.viceCommittee &&

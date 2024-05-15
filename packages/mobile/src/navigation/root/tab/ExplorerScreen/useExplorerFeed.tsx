@@ -68,7 +68,7 @@ export function useExplorerFeed(): {
 
     if (serverFeedResult.data) {
       for (const {
-        uuid,
+        id,
         title,
         textContent,
         createdAt,
@@ -94,7 +94,7 @@ export function useExplorerFeed(): {
         }
 
         parsedFeed.push({
-          uuid,
+          uuid: id,
           title,
           textContent: textContent ?? undefined,
           sortByDate: dateTimeFromSomething(createdAt),

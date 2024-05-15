@@ -117,7 +117,7 @@ const SpiritScreen = () => {
         {() => (
           <TeamScreen
             myTeamFragment={query.data?.me.data?.teams[0]?.team ?? null}
-            userUuid={query.data?.me.data?.uuid ?? ""}
+            userUuid={query.data?.me.data?.id ?? ""}
             loading={query.fetching}
             refresh={refresh}
           />

@@ -114,11 +114,11 @@ const ScoreBoardScreen = ({
     for (const team of filteredData) {
       newStandingData.push({
         name: team.name,
-        id: team.uuid,
+        id: team.id,
         points: team.totalPoints,
-        highlighted: team.uuid === userTeamData?.uuid,
+        highlighted: team.id === userTeamData?.id,
       });
-      if (team.uuid === userTeamData?.uuid) {
+      if (team.id === userTeamData?.id) {
         setUserTeamRank(newStandingData.length);
       }
     }
@@ -129,7 +129,7 @@ const ScoreBoardScreen = ({
   return (
     <View flex={1}>
       {mode === "spirit" ? (
-        userTeamData?.uuid == null ? (
+        userTeamData?.id == null ? (
           <Jumbotron
             title="You are not part of a team"
             subTitle=""
@@ -198,7 +198,7 @@ const ScoreBoardScreen = ({
         data={standingData}
         refreshing={loading}
         onRefresh={refresh}
-        onTeamClick={userTeamData?.uuid ? () => navigate("MyTeam") : undefined}
+        onTeamClick={userTeamData?.id ? () => navigate("MyTeam") : undefined}
       />
     </View>
   );

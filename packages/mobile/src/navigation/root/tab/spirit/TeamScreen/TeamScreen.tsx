@@ -58,7 +58,7 @@ const TeamScreen = ({
       const entriesRecord = new Map<string, StandingType>();
       for (const entry of team.pointEntries) {
         const { personFrom, points } = entry;
-        const { uuid, name, linkblue } = personFrom ?? {};
+        const { id: uuid, name, linkblue } = personFrom ?? {};
         if (uuid) {
           const existing = entriesRecord.get(uuid);
           if (existing == null) {

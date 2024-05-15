@@ -82,12 +82,12 @@ export const MarathonScreen = () => {
       if (hourOverride < 0) {
         return (
           <MarathonCountdownScreen
-            marathonStart={dateTimeFromSomething(
-              lastGoodData.nextMarathon.startDate
-            )}
-            marathonEnd={dateTimeFromSomething(
-              lastGoodData.nextMarathon.endDate
-            )}
+            marathonStart={
+              dateTimeFromSomething(lastGoodData.nextMarathon.startDate) ?? null
+            }
+            marathonEnd={
+              dateTimeFromSomething(lastGoodData.nextMarathon.endDate) ?? null
+            }
             showSecretMenu={() => setShowSecretMenu(true)}
           />
         );
@@ -113,10 +113,12 @@ export const MarathonScreen = () => {
     } else if (lastGoodData?.nextMarathon) {
       return (
         <MarathonCountdownScreen
-          marathonStart={dateTimeFromSomething(
-            lastGoodData.nextMarathon.startDate
-          )}
-          marathonEnd={dateTimeFromSomething(lastGoodData.nextMarathon.endDate)}
+          marathonStart={
+            dateTimeFromSomething(lastGoodData.nextMarathon.startDate) ?? null
+          }
+          marathonEnd={
+            dateTimeFromSomething(lastGoodData.nextMarathon.endDate) ?? null
+          }
           showSecretMenu={() => setShowSecretMenu(true)}
         />
       );

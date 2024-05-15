@@ -1,12 +1,14 @@
 import { Logger } from "@common/logger/Logger";
 import { showMessage } from "@common/util/alertUtils";
 import { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
+import { intervalFromSomething } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/dist/graphql-client-public";
-import { DateTime, Interval } from "luxon";
+import type { Interval } from "luxon";
+import { DateTime } from "luxon";
 import { useEffect, useMemo, useRef } from "react";
 import type { DateData } from "react-native-calendars";
 import type { MarkedDates } from "react-native-calendars/src/types";
@@ -114,7 +116,7 @@ export const splitEvents = (
             event,
             {
               ...occurrence,
-              interval: Interval.fromISO(occurrence.interval),
+              interval: intervalFromSomething(occurrence.interval),
             },
           ] as const
       );
@@ -172,7 +174,7 @@ export const markEvents = (
     const eventData = getFragmentData(EventScreenFragment, event);
 
     for (const occurrence of eventData.occurrences) {
-      const interval = Interval.fromISO(occurrence.interval);
+      const interval = intervalFromSomething(occurrence.interval);
 
       if (!interval.isValid) {
         continue;

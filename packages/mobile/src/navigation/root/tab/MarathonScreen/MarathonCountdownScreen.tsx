@@ -15,8 +15,8 @@ export const MarathonCountdownScreen = ({
   marathonEnd,
   showSecretMenu,
 }: {
-  marathonStart: DateTime;
-  marathonEnd: DateTime;
+  marathonStart: DateTime | null;
+  marathonEnd: DateTime | null;
   showSecretMenu: () => void;
 }) => {
   const [secretGestureState, setSecretGestureState] = useState<0 | 1 | 2 | 3>(
@@ -27,19 +27,27 @@ export const MarathonCountdownScreen = ({
   const { primary } = useThemeColors();
 
   const ordinals = ["th", "st", "nd", "rd"]; // s
-  const startOrdinal =
-    ordinals[((marathonStart.day % 100) - 20) % 10] ||
-    ordinals[marathonStart.day % 100] ||
-    ordinals[0];
-  const endOrdinal =
-    ordinals[((marathonEnd.day % 100) - 20) % 10] ||
-    ordinals[marathonEnd.day % 100] ||
-    ordinals[0];
+  const startOrdinal = marathonStart
+    ? ordinals[((marathonStart.day % 100) - 20) % 10] ||
+      ordinals[marathonStart.day % 100] ||
+      ordinals[0]
+    : null;
+  const endOrdinal = marathonEnd
+    ? ordinals[((marathonEnd.day % 100) - 20) % 10] ||
+      ordinals[marathonEnd.day % 100] ||
+      ordinals[0]
+    : null;
 
   // technically this isn't the best way of doing the date but idrc atm
-  const dateString = `${marathonStart.toFormat("LLLL d")}${startOrdinal} - ${marathonEnd.toFormat("d, yyyy").replace(",", `${endOrdinal},`)}`;
+  const dateString =
+    marathonStart && marathonEnd
+      ? `${marathonStart.toFormat("LLLL d")}${startOrdinal} - ${marathonEnd.toFormat("d, yyyy").replace(",", `${endOrdinal},`)}`
+      : null;
 
-  const timeString = `${marathonStart.toFormat("h:mm a")} - ${marathonEnd.toFormat("h:mm a")}`;
+  const timeString =
+    marathonStart && marathonEnd
+      ? `${marathonStart.toFormat("h:mm a")} - ${marathonEnd.toFormat("h:mm a")}`
+      : null;
 
   return (
     <ImageBackground
@@ -62,7 +70,9 @@ export const MarathonCountdownScreen = ({
             {"Countdown 'til Marathon"}
           </Text>
         </TouchableWithoutFeedback>
-        <CountdownViewNew endTime={marathonStart.toMillis()} />
+        {marathonStart && (
+          <CountdownViewNew endTime={marathonStart.toMillis()} />
+        )}
       </View>
       <View flex={2}>
         <TouchableWithoutFeedback

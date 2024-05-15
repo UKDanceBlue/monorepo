@@ -37,25 +37,28 @@ export function useMarathonTime(): {
   });
 
   const marathonInterval = useMemo(() => {
-    let startTime: DateTime = DateTime.fromMillis(0);
-    let endTime: DateTime = DateTime.fromMillis(0);
-
     try {
       if (data?.nextMarathon) {
-        startTime = dateTimeFromSomething(data.nextMarathon.startDate);
-        if (!startTime.isValid) {
+        const startTime = dateTimeFromSomething(data.nextMarathon.startDate);
+        if (!startTime?.isValid) {
           Logger.warn(
-            `Unrecognized marathon start time: ${startTime.toString()}`,
+            `Unrecognized marathon start time: ${startTime?.toString()}`,
             {
               source: "useMarathonTime",
             }
           );
         }
-        endTime = dateTimeFromSomething(data.nextMarathon.endDate);
-        if (!endTime.isValid) {
-          Logger.warn(`Unrecognized marathon end time: ${endTime.toString()}`, {
-            source: "useMarathonTime",
-          });
+        const endTime = dateTimeFromSomething(data.nextMarathon.endDate);
+        if (!endTime?.isValid) {
+          Logger.warn(
+            `Unrecognized marathon end time: ${endTime?.toString()}`,
+            {
+              source: "useMarathonTime",
+            }
+          );
+        }
+        if (startTime && endTime) {
+          return { startTime, endTime };
         }
       }
     } catch (error) {
@@ -65,7 +68,11 @@ export function useMarathonTime(): {
       });
     }
 
-    return { startTime, endTime } as MarathonTime;
+    // TODO: find a better indicator of "no marathon"
+    return {
+      startTime: DateTime.fromMillis(0),
+      endTime: DateTime.fromMillis(0),
+    };
   }, [data?.nextMarathon]);
 
   return {

@@ -1,6 +1,7 @@
 import { universalCatch } from "@common/logging";
 import { showMessage, showPrompt } from "@common/util/alertUtils";
 import { discoverDefaultCalendar } from "@common/util/calendar";
+import { intervalFromSomething } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
 import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
 import type { Event } from "expo-calendar";
@@ -10,7 +11,6 @@ import {
   getCalendarPermissionsAsync,
   requestCalendarPermissionsAsync,
 } from "expo-calendar";
-import { Interval } from "luxon";
 
 import { EventScreenFragment } from "./EventScreenFragment";
 
@@ -60,7 +60,7 @@ export async function onAddToCalendar(
         const eventDataToExpoEvent = (
           occurrence: (typeof eventData.occurrences)[number]
         ): Partial<Event> => {
-          const interval = Interval.fromISO(occurrence.interval);
+          const interval = intervalFromSomething(occurrence.interval);
           if (!interval.isValid) {
             throw new Error("Invalid interval");
           }
@@ -78,7 +78,7 @@ export async function onAddToCalendar(
             endTimeZone: interval.end.zoneName,
             organizer: "UK DanceBlue",
             organizerEmail: "community@danceblue.org",
-            id: `${eventData.uuid}:${occurrence.uuid}`,
+            id: `${eventData.id}:${occurrence.uuid}`,
           };
         };
 
