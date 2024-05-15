@@ -14,6 +14,7 @@ import { Service } from "typedi";
 
 import { findPersonForLogin } from "../../lib/auth/findPersonForLogin.js";
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { SimpleUniqueParam } from "../shared.js";
 
 import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
 
@@ -44,6 +45,20 @@ export type PersonOrderKeys =
   | "dbRole"
   | "createdAt"
   | "updatedAt";
+
+export type UniquePersonParam =
+  | {
+      uuid: string;
+    }
+  | {
+      id: number;
+    }
+  | {
+      email: string;
+    }
+  | {
+      linkblue: string;
+    };
 
 @Service()
 export class PersonRepository {
@@ -87,23 +102,11 @@ export class PersonRepository {
     return this.prisma.person.findUnique({ where: { linkblue } });
   }
 
-  async findPersonByUnique(
-    param:
-      | { uuid: string }
-      | { id: number }
-      | { email: string }
-      | { linkblue: string }
-  ) {
+  async findPersonByUnique(param: UniquePersonParam) {
     return this.prisma.person.findUnique({ where: param });
   }
 
-  async findPersonAndTeamsByUnique(
-    param:
-      | { uuid: string }
-      | { id: number }
-      | { email: string }
-      | { linkblue: string }
-  ) {
+  async findPersonAndTeamsByUnique(param: UniquePersonParam) {
     return this.prisma.person.findUnique({
       where: param,
       include: {
@@ -114,6 +117,31 @@ export class PersonRepository {
         },
       },
     });
+  }
+
+  async getDbRoleOfPerson(param: UniquePersonParam) {
+    const person = await this.prisma.person.findUnique({
+      where: param,
+      select: {
+        linkblue: true,
+        memberships: {
+          select: {
+            committeeRole: true,
+          },
+        },
+      },
+    });
+
+    if (!person) {
+      return null;
+    }
+    if (person.memberships.some((m) => m.committeeRole != null)) {
+      return DbRole.Committee;
+    }
+    if (person.linkblue) {
+      return DbRole.UKY;
+    }
+    return DbRole.Public;
   }
 
   listPeople({
@@ -175,7 +203,7 @@ export class PersonRepository {
   }
 
   async findMembershipsOfPerson(
-    param: { uuid: string } | { id: number },
+    param: UniquePersonParam,
     opts:
       | {
           position: MembershipPositionType;
@@ -233,7 +261,7 @@ export class PersonRepository {
   }
 
   async updatePerson(
-    param: { uuid: string } | { id: number },
+    param: UniquePersonParam,
     {
       name,
       email,
@@ -249,8 +277,8 @@ export class PersonRepository {
         | { source: Exclude<AuthSource, "None">; value: string }[]
         | undefined
         | null;
-      memberOf?: ({ uuid: string } | { id: number })[] | undefined | null;
-      captainOf?: ({ uuid: string } | { id: number })[] | undefined | null;
+      memberOf?: SimpleUniqueParam[] | undefined | null;
+      captainOf?: SimpleUniqueParam[] | undefined | null;
     }
   ) {
     let personId: number;
@@ -388,9 +416,7 @@ export class PersonRepository {
     }
   }
 
-  async deletePerson(
-    identifier: { uuid: string } | { id: number }
-  ): Promise<Person | null> {
+  async deletePerson(identifier: UniquePersonParam): Promise<Person | null> {
     try {
       return await this.prisma.person.delete({ where: identifier });
     } catch (error) {

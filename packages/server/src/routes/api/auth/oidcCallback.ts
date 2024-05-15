@@ -134,7 +134,7 @@ export const oidcCallback = async (ctx: Context) => {
 
     const jwt = makeUserJwt(
       makeUserData(
-        personModelToResource(updatedPerson),
+        await personModelToResource(updatedPerson, personRepository),
         AuthSource.LinkBlue,
         currentPerson.memberships.map((m) => m.team.uuid),
         currentPerson.memberships

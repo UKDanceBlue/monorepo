@@ -3,7 +3,6 @@ import { SortDirection } from "@ukdanceblue/common";
 
 import {
   dateFilterToPrisma,
-  oneOfFilterToPrisma,
   stringFilterToPrisma,
 } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
@@ -22,8 +21,6 @@ export function buildPersonOrder(
       case "name":
       case "email":
       case "linkblue":
-      case "committeeRole":
-      case "committeeName":
       case "createdAt":
       case "updatedAt": {
         orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
@@ -47,14 +44,6 @@ export function buildPersonWhere(
       case "email":
       case "linkblue": {
         where[filter.field] = stringFilterToPrisma(filter);
-        break;
-      }
-      case "committeeRole": {
-        where[filter.field] = oneOfFilterToPrisma(filter);
-        break;
-      }
-      case "committeeName": {
-        where[filter.field] = oneOfFilterToPrisma(filter);
         break;
       }
       case "createdAt":

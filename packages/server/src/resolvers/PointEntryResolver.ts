@@ -24,6 +24,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import type { PersonRepository } from "../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
 import { PointEntryRepository } from "../repositories/pointEntry/PointEntryRepository.js";
 import { pointEntryModelToResource } from "../repositories/pointEntry/pointEntryModelToResource.js";
@@ -96,7 +97,10 @@ class ListPointEntriesArgs extends FilteredListQueryArgs<
 @Resolver(() => PointEntryNode)
 @Service()
 export class PointEntryResolver {
-  constructor(private readonly pointEntryRepository: PointEntryRepository) {}
+  constructor(
+    private readonly pointEntryRepository: PointEntryRepository,
+    private readonly personRepository: PersonRepository
+  ) {}
 
   @Query(() => GetPointEntryByUuidResponse, { name: "pointEntry" })
   async getByUuid(
@@ -178,7 +182,7 @@ export class PointEntryResolver {
       uuid: pointEntry.id,
     });
 
-    return model ? personModelToResource(model) : null;
+    return model ? personModelToResource(model, this.personRepository) : null;
   }
 
   @FieldResolver(() => TeamNode)

@@ -152,7 +152,7 @@ export class PersonResolver {
 
   @Query(() => GetPersonResponse, { name: "person" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetPersonResponse> {
-    const row = await this.personRepository.findPersonByUuid(uuid);
+    const row = await this.personRepository.findPersonByUnique({ uuid });
 
     if (row == null) {
       return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
@@ -161,7 +161,7 @@ export class PersonResolver {
     }
 
     return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
-      personModelToResource(row)
+      await personModelToResource(row, this.personRepository)
     );
   }
 
@@ -170,7 +170,9 @@ export class PersonResolver {
   async getByLinkBlueId(
     @Arg("linkBlueId") linkBlueId: string
   ): Promise<GetPersonResponse> {
-    const row = await this.personRepository.findPersonByLinkblue(linkBlueId);
+    const row = await this.personRepository.findPersonByUnique({
+      linkblue: linkBlueId,
+    });
 
     if (row == null) {
       return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
@@ -179,7 +181,7 @@ export class PersonResolver {
     }
 
     return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
-      personModelToResource(row)
+      await personModelToResource(row, this.personRepository)
     );
   }
 
@@ -206,7 +208,9 @@ export class PersonResolver {
     ]);
 
     return ListPeopleResponse.newPaginated({
-      data: rows.map((row) => personModelToResource(row)),
+      data: await Promise.all(
+        rows.map((row) => personModelToResource(row, this.personRepository))
+      ),
       total,
       page: args.page,
       pageSize: args.pageSize,
@@ -226,7 +230,9 @@ export class PersonResolver {
     const rows = await this.personRepository.searchByName(name);
 
     return GetPeopleResponse.newOk(
-      rows.map((row) => personModelToResource(row))
+      await Promise.all(
+        rows.map((row) => personModelToResource(row, this.personRepository))
+      )
     );
   }
 
@@ -242,7 +248,7 @@ export class PersonResolver {
     });
 
     return CreatePersonResponse.newCreated(
-      personModelToResource(person),
+      await personModelToResource(person, this.personRepository),
       person.uuid
     );
   }
@@ -273,7 +279,7 @@ export class PersonResolver {
     }
 
     return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
-      personModelToResource(row)
+      await personModelToResource(row, this.personRepository)
     );
   }
 

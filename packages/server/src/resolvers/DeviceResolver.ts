@@ -27,6 +27,7 @@ import { auditLogger } from "../lib/logging/auditLogging.js";
 import { DeviceRepository } from "../repositories/device/DeviceRepository.js";
 import { deviceModelToResource } from "../repositories/device/deviceModelToResource.js";
 import { notificationDeliveryModelToResource } from "../repositories/notificationDelivery/notificationDeliveryModelToResource.js";
+import type { PersonRepository } from "../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
 
 import {
@@ -117,7 +118,10 @@ class NotificationDeliveriesArgs {
 @Resolver(() => DeviceNode)
 @Service()
 export class DeviceResolver {
-  constructor(private deviceRepository: DeviceRepository) {}
+  constructor(
+    private readonly deviceRepository: DeviceRepository,
+    private readonly personRepository: PersonRepository
+  ) {}
 
   @Query(() => GetDeviceByUuidResponse, { name: "device" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetDeviceByUuidResponse> {
@@ -190,7 +194,9 @@ export class DeviceResolver {
   ): Promise<PersonNode | null> {
     const user = await this.deviceRepository.getLastLoggedInUser(device.id);
 
-    return user == null ? null : personModelToResource(user);
+    return user == null
+      ? null
+      : personModelToResource(user, this.personRepository);
   }
 
   @FieldResolver(() => [NotificationDeliveryNode])
