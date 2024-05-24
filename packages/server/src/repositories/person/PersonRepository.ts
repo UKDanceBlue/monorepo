@@ -1,19 +1,23 @@
-import type { Person } from "@prisma/client";
+import type { Committee, Membership, Person } from "@prisma/client";
 import { Prisma, PrismaClient } from "@prisma/client";
 import {
   AuthSource,
+  CommitteeIdentifier,
   CommitteeRole,
   DbRole,
   DetailedError,
+  EffectiveCommitteeRole,
   ErrorCode,
   MembershipPositionType,
   SortDirection,
   TeamLegacyStatus,
+  TeamType,
 } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
 import { findPersonForLogin } from "../../lib/auth/findPersonForLogin.js";
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
 import type { SimpleUniqueParam } from "../shared.js";
 
 import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
@@ -87,21 +91,6 @@ export class PersonRepository {
     );
   }
 
-  /** @deprecated Use findPersonByUnique directly */
-  findPersonByUuid(uuid: string): Promise<Person | null> {
-    return this.prisma.person.findUnique({ where: { uuid } });
-  }
-
-  /** @deprecated Use findPersonByUnique directly */
-  findPersonById(id: number): Promise<Person | null> {
-    return this.prisma.person.findUnique({ where: { id } });
-  }
-
-  /** @deprecated Use findPersonByUnique directly */
-  findPersonByLinkblue(linkblue: string): Promise<Person | null> {
-    return this.prisma.person.findUnique({ where: { linkblue } });
-  }
-
   async findPersonByUnique(param: UniquePersonParam) {
     return this.prisma.person.findUnique({ where: param });
   }
@@ -142,6 +131,73 @@ export class PersonRepository {
       return DbRole.UKY;
     }
     return DbRole.Public;
+  }
+
+  async getEffectiveCommitteeRolesOfPerson(
+    param: UniquePersonParam
+  ): Promise<EffectiveCommitteeRole[]> {
+    const effectiveCommitteeRoles: EffectiveCommitteeRole[] = [];
+
+    const committees = await this.prisma.membership.findMany({
+      where: {
+        person: param,
+        team: {
+          type: TeamType.Committee,
+        },
+      },
+      select: {
+        team: {
+          select: {
+            correspondingCommittee: {
+              select: {
+                identifier: true,
+                parentCommittee: {
+                  select: {
+                    identifier: true,
+                  },
+                },
+                childCommittees: {
+                  select: {
+                    identifier: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        committeeRole: true,
+      },
+    });
+
+    for (const committee of committees) {
+      if (committee.team.correspondingCommittee) {
+        if (!committee.committeeRole) {
+          throw new DetailedError(ErrorCode.InternalFailure, "No role found");
+        }
+        const role = EffectiveCommitteeRole.init(
+          committee.team.correspondingCommittee.identifier,
+          committee.committeeRole
+        );
+        effectiveCommitteeRoles.push(role);
+        if (committee.team.correspondingCommittee.parentCommittee) {
+          const parentRole = EffectiveCommitteeRole.init(
+            committee.team.correspondingCommittee.parentCommittee.identifier,
+            CommitteeRole.Member
+          );
+          effectiveCommitteeRoles.push(parentRole);
+        }
+        const childRoles =
+          committee.team.correspondingCommittee.childCommittees.map((child) =>
+            EffectiveCommitteeRole.init(
+              child.identifier,
+              committee.committeeRole!
+            )
+          );
+        effectiveCommitteeRoles.push(...childRoles);
+      }
+    }
+
+    return effectiveCommitteeRoles;
   }
 
   listPeople({
@@ -510,5 +566,97 @@ export class PersonRepository {
         },
       },
     });
+  }
+
+  public async getPrimaryCommitteeOfPerson(
+    person: UniquePersonParam,
+    marathon?: UniqueMarathonParam
+  ): Promise<[Membership, Committee] | null> {
+    const committees = await this.prisma.membership.findMany({
+      where: {
+        person,
+        team: {
+          marathon,
+          type: TeamType.Committee,
+        },
+      },
+      include: {
+        team: {
+          include: {
+            correspondingCommittee: true,
+          },
+        },
+      },
+    });
+
+    if (committees.length === 0) {
+      return null;
+    }
+
+    let bestCommittee = undefined;
+    let fallbackCommittee = undefined;
+
+    for (let i = 1; i <= committees.length; i++) {
+      const committee = committees[i];
+      if (committee) {
+        // We don't want to return the overall committee or vice committee if we have a better option
+        if (
+          committee.team.correspondingCommittee?.identifier ===
+            CommitteeIdentifier.overallCommittee ||
+          committee.team.correspondingCommittee?.identifier ===
+            CommitteeIdentifier.viceCommittee
+        ) {
+          fallbackCommittee = committee;
+          continue;
+        }
+
+        if (bestCommittee) {
+          if (
+            committee.committeeRole === CommitteeRole.Chair &&
+            bestCommittee.committeeRole !== CommitteeRole.Chair
+          ) {
+            bestCommittee = committee;
+            continue;
+          } else if (
+            committee.committeeRole === CommitteeRole.Coordinator &&
+            !(
+              bestCommittee.committeeRole === CommitteeRole.Coordinator ||
+              bestCommittee.committeeRole === CommitteeRole.Chair
+            )
+          ) {
+            bestCommittee = committee;
+            continue;
+          }
+        } else {
+          bestCommittee = committee;
+        }
+      }
+    }
+
+    if (bestCommittee) {
+      if (
+        !bestCommittee.team.correspondingCommittee ||
+        !bestCommittee.committeeRole
+      ) {
+        throw new DetailedError(
+          ErrorCode.InternalFailure,
+          "Invalid committee assignment"
+        );
+      }
+      return [bestCommittee, bestCommittee.team.correspondingCommittee];
+    } else if (fallbackCommittee) {
+      if (
+        !fallbackCommittee.team.correspondingCommittee ||
+        !fallbackCommittee.committeeRole
+      ) {
+        throw new DetailedError(
+          ErrorCode.InternalFailure,
+          "Invalid committee assignment"
+        );
+      }
+      return [fallbackCommittee, fallbackCommittee.team.correspondingCommittee];
+    } else {
+      return null;
+    }
   }
 }

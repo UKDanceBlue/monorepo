@@ -28,6 +28,7 @@ export const graphqlContextFunction: ContextFunction<
   if (!token) {
     return {
       authenticatedUser: null,
+      effectiveCommitteeRoles: [],
       userData: {
         auth: defaultAuthorization,
         authSource: AuthSource.None,
@@ -40,6 +41,7 @@ export const graphqlContextFunction: ContextFunction<
     logger.trace("graphqlContextFunction No userId found");
     return {
       authenticatedUser: null,
+      effectiveCommitteeRoles: [],
       userData: {
         auth,
         authSource,
@@ -59,9 +61,15 @@ export const graphqlContextFunction: ContextFunction<
       personRepository
     );
 
+    const effectiveCommitteeRoles =
+      await personRepository.getEffectiveCommitteeRolesOfPerson({
+        id: person.id,
+      });
+
     logger.trace("graphqlContextFunction Found user", personResource);
     return {
       authenticatedUser: personResource,
+      effectiveCommitteeRoles,
       userData: {
         auth,
         userId,
@@ -77,6 +85,7 @@ export const graphqlContextFunction: ContextFunction<
     logger.trace("graphqlContextFunction User not found");
     return {
       authenticatedUser: null,
+      effectiveCommitteeRoles: [],
       userData: {
         auth: defaultAuthorization,
         authSource: AuthSource.None,

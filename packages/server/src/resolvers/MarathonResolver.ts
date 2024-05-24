@@ -1,10 +1,12 @@
 import {
+  CommitteeIdentifier,
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
   MarathonHourNode,
   MarathonNode,
   SortDirection,
+  TeamNode,
 } from "@ukdanceblue/common";
 import { DateTimeISOResolver, VoidResolver } from "graphql-scalars";
 import {
@@ -22,9 +24,11 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import type { CommitteeRepository } from "../repositories/committee/CommitteeRepository.js";
 import { MarathonRepository } from "../repositories/marathon/MarathonRepository.js";
 import { marathonModelToResource } from "../repositories/marathon/marathonModelToResource.js";
 import { marathonHourModelToResource } from "../repositories/marathonHour/marathonHourModelToResource.js";
+import { teamModelToResource } from "../repositories/team/teamModelToResource.js";
 
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
@@ -76,8 +80,17 @@ class ListMarathonsArgs extends FilteredListQueryArgs<
 
 @Resolver(() => MarathonNode)
 @Service()
-export class MarathonResolver {
-  constructor(private readonly marathonRepository: MarathonRepository) {}
+export class MarathonResolver
+  implements
+    Record<
+      `${CommitteeIdentifier}Team`,
+      (marathon: MarathonNode) => Promise<TeamNode>
+    >
+{
+  constructor(
+    private readonly marathonRepository: MarathonRepository,
+    private readonly committeeRepository: CommitteeRepository
+  ) {}
 
   @Query(() => MarathonNode)
   async marathon(@Arg("uuid") uuid: string) {
@@ -180,5 +193,106 @@ export class MarathonResolver {
       uuid: marathon.id,
     });
     return rows.map(marathonHourModelToResource);
+  }
+
+  async #committeeTeam(committee: CommitteeIdentifier, marathon: MarathonNode) {
+    const result = await this.committeeRepository.getCommitteeTeam(committee, {
+      uuid: marathon.id,
+    });
+    if (result == null) {
+      throw new DetailedError(
+        ErrorCode.NotFound,
+        "No team found for the given committee and marathon"
+      );
+    }
+    return teamModelToResource(result);
+  }
+
+  // Committees
+  @FieldResolver(() => TeamNode)
+  async communityDevelopmentCommitteeTeam(marathon: MarathonNode) {
+    return this.#committeeTeam(
+      CommitteeIdentifier.communityDevelopmentCommittee,
+      marathon
+    );
+  }
+
+  @FieldResolver(() => TeamNode)
+  async programmingCommitteeTeam(marathon: MarathonNode) {
+    return this.#committeeTeam(
+      CommitteeIdentifier.programmingCommittee,
+      marathon
+    );
+  }
+
+  @FieldResolver(() => TeamNode)
+  async fundraisingCommitteeTeam(marathon: MarathonNode) {
+    return this.#committeeTeam(
+      CommitteeIdentifier.fundraisingCommittee,
+      marathon
+    );
+  }
+
+  @FieldResolver(() => TeamNode)
+  async dancerRelationsCommitteeTeam(marathon: MarathonNode) {
+    return this.#committeeTeam(
+      CommitteeIdentifier.dancerRelationsCommittee,
+      marathon
+    );
+  }
+
+  @FieldResolver(() => TeamNode)
+  async familyRelationsCommitteeTeam(marathon: MarathonNode) {
+    return this.#committeeTeam(
+      CommitteeIdentifier.familyRelationsCommittee,
+      marathon
+    );
+  }
+
+  @FieldResolver(() => TeamNode)
+  async techCommitteeTeam(marathon: MarathonNode) {
+    return this.#committeeTeam(CommitteeIdentifier.techCommittee, marathon);
+  }
+
+  @FieldResolver(() => TeamNode)
+  async operationsCommitteeTeam(marathon: MarathonNode) {
+    return this.#committeeTeam(
+      CommitteeIdentifier.operationsCommittee,
+      marathon
+    );
+  }
+
+  @FieldResolver(() => TeamNode)
+  async marketingCommitteeTeam(marathon: MarathonNode) {
+    return this.#committeeTeam(
+      CommitteeIdentifier.marketingCommittee,
+      marathon
+    );
+  }
+
+  @FieldResolver(() => TeamNode)
+  async corporateCommitteeTeam(marathon: MarathonNode) {
+    return this.#committeeTeam(
+      CommitteeIdentifier.corporateCommittee,
+      marathon
+    );
+  }
+
+  @FieldResolver(() => TeamNode)
+  async miniMarathonsCommitteeTeam(marathon: MarathonNode) {
+    return this.#committeeTeam(
+      CommitteeIdentifier.miniMarathonsCommittee,
+      marathon
+    );
+  }
+
+  @FieldResolver(() => TeamNode)
+  async viceCommitteeTeam(marathon: MarathonNode) {
+    return this.#committeeTeam(CommitteeIdentifier.viceCommittee, marathon);
+  }
+
+  @FieldResolver(() => TeamNode)
+  async overallCommitteeTeam(marathon: MarathonNode) {
+    return this.#committeeTeam(CommitteeIdentifier.overallCommittee, marathon);
   }
 }

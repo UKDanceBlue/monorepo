@@ -56,6 +56,39 @@ enum AuthSource {
   None
 }
 
+"""The identifier for a committee"""
+enum CommitteeIdentifier {
+  communityDevelopmentCommittee
+  corporateCommittee
+  dancerRelationsCommittee
+  familyRelationsCommittee
+  fundraisingCommittee
+  marketingCommittee
+  miniMarathonsCommittee
+  operationsCommittee
+  overallCommittee
+  programmingCommittee
+  techCommittee
+  viceCommittee
+}
+
+type CommitteeMembershipNode implements Node {
+  createdAt: DateTimeISO
+  id: ID!
+  person: PersonNode!
+  position: MembershipPositionType!
+  role: CommitteeRole!
+  team: TeamNode!
+  updatedAt: DateTimeISO
+}
+
+"""Roles within a committee"""
+enum CommitteeRole {
+  Chair
+  Coordinator
+  Member
+}
+
 type ConfigurationNode implements Node {
   createdAt: DateTimeISO
   id: ID!
@@ -309,6 +342,11 @@ input DeviceResolverKeyedStringFilterItem {
 
 enum DeviceResolverStringFilterKeys {
   expoPushToken
+}
+
+type EffectiveCommitteeRole {
+  committee: CommitteeIdentifier!
+  role: CommitteeRole!
 }
 
 """
@@ -724,7 +762,9 @@ type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraph
 type LoginState {
   authSource: AuthSource!
   dbRole: DbRole!
+  effectiveCommitteeRoles: [EffectiveCommitteeRole!]!
   loggedIn: Boolean!
+  person: PersonNode
 }
 
 type MarathonHourNode implements Node {
@@ -739,12 +779,24 @@ type MarathonHourNode implements Node {
 }
 
 type MarathonNode implements Node {
+  communityDevelopmentCommitteeTeam: TeamNode!
+  corporateCommitteeTeam: TeamNode!
   createdAt: DateTimeISO
+  dancerRelationsCommitteeTeam: TeamNode!
   endDate: DateTimeISO
+  familyRelationsCommitteeTeam: TeamNode!
+  fundraisingCommitteeTeam: TeamNode!
   hours: [MarathonHourNode!]!
   id: ID!
+  marketingCommitteeTeam: TeamNode!
+  miniMarathonsCommitteeTeam: TeamNode!
+  operationsCommitteeTeam: TeamNode!
+  overallCommitteeTeam: TeamNode!
+  programmingCommitteeTeam: TeamNode!
   startDate: DateTimeISO
+  techCommitteeTeam: TeamNode!
   updatedAt: DateTimeISO
+  viceCommitteeTeam: TeamNode!
   year: String!
 }
 
@@ -1047,7 +1099,6 @@ enum NumericComparator {
 }
 
 type PersonNode implements Node {
-  captaincies: [MembershipNode!]! @deprecated(reason: "Use teams instead and filter by position")
   committees: [MembershipNode!]!
   createdAt: DateTimeISO
   dbRole: DbRole!
@@ -1055,6 +1106,7 @@ type PersonNode implements Node {
   id: ID!
   linkblue: String
   name: String
+  primaryCommittee: CommitteeMembershipNode!
   teams: [MembershipNode!]!
   updatedAt: DateTimeISO
 }

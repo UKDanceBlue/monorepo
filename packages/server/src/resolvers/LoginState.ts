@@ -1,4 +1,9 @@
-import { AuthSource, DbRole } from "@ukdanceblue/common";
+import {
+  AuthSource,
+  DbRole,
+  EffectiveCommitteeRole,
+  PersonNode,
+} from "@ukdanceblue/common";
 import { Ctx, Field, ObjectType, Query, Resolver } from "type-graphql";
 import { Service } from "typedi";
 
@@ -14,6 +19,12 @@ export class LoginState {
 
   @Field(() => AuthSource)
   authSource!: AuthSource;
+
+  @Field(() => [EffectiveCommitteeRole])
+  effectiveCommitteeRoles!: EffectiveCommitteeRole[];
+
+  @Field(() => PersonNode, { nullable: true })
+  person?: PersonNode;
 }
 
 @Resolver(() => LoginState)
@@ -23,6 +34,7 @@ export class LoginStateResolver {
   loginState(@Ctx() ctx: Context.GraphQLContext): LoginState {
     return {
       loggedIn: ctx.authenticatedUser != null,
+      effectiveCommitteeRoles: ctx.effectiveCommitteeRoles,
       dbRole: ctx.userData.auth.dbRole,
       authSource: ctx.userData.authSource,
     };

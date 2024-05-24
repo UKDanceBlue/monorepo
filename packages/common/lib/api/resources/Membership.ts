@@ -1,5 +1,9 @@
 import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
 
+import {
+  CommitteeIdentifier,
+  CommitteeRole,
+} from "../../authorization/structures.js";
 import { Node, createNodeClasses } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
@@ -39,5 +43,32 @@ export class MembershipNode extends TimestampedResource implements Node {
   }
 }
 
+@ObjectType({
+  implements: [Node],
+})
+export class CommitteeMembershipNode extends MembershipNode implements Node {
+  @Field(() => CommitteeRole)
+  role!: CommitteeRole;
+
+  @Field(() => CommitteeIdentifier)
+  identifier!: CommitteeIdentifier;
+
+  public static init(init: {
+    id: string;
+    position: MembershipPositionType;
+    identifier: CommitteeIdentifier;
+    role: CommitteeRole;
+    createdAt?: Date | null;
+    updatedAt?: Date | null;
+  }) {
+    return CommitteeMembershipNode.doInit(init);
+  }
+}
+
 export const { MembershipConnection, MembershipEdge, MembershipResult } =
   createNodeClasses(MembershipNode, "Membership");
+export const {
+  CommitteeMembershipConnection,
+  CommitteeMembershipEdge,
+  CommitteeMembershipResult,
+} = createNodeClasses(CommitteeMembershipNode, "CommitteeMembership");

@@ -7,6 +7,7 @@ import type {
   Authorization,
   CommitteeRole,
   DbRole,
+  EffectiveCommitteeRole,
   PersonNode,
   UserData,
 } from "../index.js";
@@ -170,6 +171,7 @@ export interface AccessControlParam<
 
 export interface AuthorizationContext {
   authenticatedUser: PersonNode | null;
+  effectiveCommitteeRoles: EffectiveCommitteeRole[];
   userData: UserData;
 }
 

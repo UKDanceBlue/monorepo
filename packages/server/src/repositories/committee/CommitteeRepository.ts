@@ -160,6 +160,32 @@ export class CommitteeRepository {
     });
   }
 
+  async getCommitteeTeam(
+    committee: CommitteeIdentifier,
+    marathon: UniqueMarathonParam
+  ) {
+    const result = await this.prisma.committee
+      .findUnique({ where: { identifier: committee } })
+      .correspondingTeams({
+        where: {
+          marathon,
+        },
+      });
+    if (result?.length === 1) {
+      return result[0];
+    } else if (result?.length === 0) {
+      throw new DetailedError(
+        ErrorCode.NotFound,
+        "No team found for the given committee and marathon"
+      );
+    } else {
+      throw new DetailedError(
+        ErrorCode.InternalFailure,
+        "Multiple teams found for the given committee and marathon"
+      );
+    }
+  }
+
   getChildCommittees(identifier: CommitteeUniqueParam) {
     return this.prisma.committee
       .findUnique({

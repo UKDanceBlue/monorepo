@@ -1,6 +1,7 @@
 import {
   AccessControl,
   AccessLevel,
+  CommitteeMembershipNode,
   DbRole,
   DetailedError,
   ErrorCode,
@@ -29,7 +30,10 @@ import { Service } from "typedi";
 
 import { auditLogger } from "../lib/logging/auditLogging.js";
 import type { MembershipRepository } from "../repositories/membership/MembershipRepository.js";
-import { membershipModelToResource } from "../repositories/membership/membershipModelToResource.js";
+import {
+  committeeMembershipModelToResource,
+  membershipModelToResource,
+} from "../repositories/membership/membershipModelToResource.js";
 import { PersonRepository } from "../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
 
@@ -380,22 +384,31 @@ export class PersonResolver {
     return models.map((row) => membershipModelToResource(row));
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
-  @FieldResolver(() => [MembershipNode], {
-    deprecationReason: "Use teams instead and filter by position",
-  })
-  async captaincies(@Root() person: PersonNode): Promise<MembershipNode[]> {
-    const models = await this.personRepository.findMembershipsOfPerson(
-      {
-        uuid: person.id,
-      },
-      { position: MembershipPositionType.Captain }
-    );
+  @AccessControl(
+    { accessLevel: AccessLevel.Committee },
+    {
+      rootMatch: [
+        {
+          root: "uuid",
+          extractor: (userData) => userData.userId,
+        },
+      ],
+    }
+  )
+  @FieldResolver(() => CommitteeMembershipNode)
+  async primaryCommittee(
+    @Root() person: PersonNode
+  ): Promise<CommitteeMembershipNode | null> {
+    const models = await this.personRepository.getPrimaryCommitteeOfPerson({
+      uuid: person.id,
+    });
 
     if (models == null) {
-      return [];
+      return null;
     }
 
-    return models.map((row) => membershipModelToResource(row));
+    const [membership, committee] = models;
+
+    return committeeMembershipModelToResource(membership, committee.identifier);
   }
 }

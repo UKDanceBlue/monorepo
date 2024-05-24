@@ -42,7 +42,9 @@ export class DeviceRepository {
 
     return device?.lastSeenPersonId == null
       ? null
-      : this.personRepository.findPersonById(device.lastSeenPersonId);
+      : this.personRepository.findPersonByUnique({
+          id: device.lastSeenPersonId,
+        });
   }
 
   async listDevices({
@@ -98,7 +100,9 @@ export class DeviceRepository {
     let user: Person | null = null;
 
     if (lastUserId != null) {
-      user = await this.personRepository.findPersonByUuid(lastUserId);
+      user = await this.personRepository.findPersonByUnique({
+        uuid: lastUserId,
+      });
       if (user == null) {
         throw new Error("Last user not found");
       }
@@ -189,7 +193,7 @@ export class DeviceRepository {
           },
         });
       }
-      
+
       if (where.length === 0) {
         throw new Error("Not implemented");
       }
