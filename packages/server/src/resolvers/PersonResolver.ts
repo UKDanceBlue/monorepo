@@ -348,7 +348,7 @@ export class PersonResolver {
       ],
     }
   )
-  @FieldResolver(() => [MembershipNode])
+  @FieldResolver(() => [CommitteeMembershipNode])
   async committees(
     @Root() person: PersonNode
   ): Promise<CommitteeMembershipNode[]> {

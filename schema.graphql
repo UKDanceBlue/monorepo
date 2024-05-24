@@ -1100,12 +1100,13 @@ enum NumericComparator {
 }
 
 type PersonNode implements Node {
-  committees: [MembershipNode!]!
+  committees: [CommitteeMembershipNode!]!
   createdAt: DateTimeISO
   dbRole: DbRole!
   email: String!
   id: ID!
   linkblue: String
+  moraleTeams: [MembershipNode!]!
   name: String
   primaryCommittee: CommitteeMembershipNode!
   teams: [MembershipNode!]!
