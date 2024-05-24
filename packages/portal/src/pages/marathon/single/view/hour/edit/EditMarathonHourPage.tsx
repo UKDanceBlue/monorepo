@@ -26,7 +26,7 @@ const editMarathonHourDataDocument = graphql(/* GraphQL */ `
 const editMarathonHourDocument = graphql(/* GraphQL */ `
   mutation EditMarathonHour($input: SetMarathonHourInput!, $uuid: String!) {
     setMarathonHour(input: $input, uuid: $uuid) {
-      uuid
+      id
     }
   }
 `);

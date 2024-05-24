@@ -8,14 +8,14 @@ const personSearchDocument = graphql(/* GraphQL */ `
   query PersonSearch($search: String!) {
     searchPeopleByName(name: $search) {
       data {
-        uuid
+        id
         name
         linkblue
       }
     }
     personByLinkBlue(linkBlueId: $search) {
       data {
-        uuid
+        id
         name
         linkblue
       }
@@ -56,7 +56,7 @@ export function PersonSearch({
 
   if (data?.personByLinkBlue.data) {
     options.push({
-      value: data.personByLinkBlue.data.uuid,
+      value: data.personByLinkBlue.data.id,
       label: data.personByLinkBlue.data.linkblue
         ? `${data.personByLinkBlue.data.name} (${data.personByLinkBlue.data.linkblue})`
         : data.personByLinkBlue.data.name,
@@ -76,7 +76,7 @@ export function PersonSearch({
         const option = options.find((option) => option.value === value);
         if (option) {
           onSelect?.({
-            uuid: option.person.uuid,
+            uuid: option.person.id,
             name: option.person.name ?? undefined,
             linkblue: option.person.linkblue ?? undefined,
           });

@@ -4,9 +4,11 @@ export const TeamEditorFragment = graphql(/* GraphQL */ `
   fragment TeamEditorFragment on TeamNode {
     id
     name
-    marathonYear
+    marathon {
+      id
+      year
+    }
     legacyStatus
-    persistentIdentifier
     type
   }
 `);

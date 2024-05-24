@@ -1817,6 +1817,7 @@ export type TeamNode = Node & {
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly id: Scalars['ID']['output'];
   readonly legacyStatus: TeamLegacyStatus;
+  readonly marathon: MarathonNode;
   readonly members: ReadonlyArray<MembershipNode>;
   readonly name: Scalars['String']['output'];
   readonly pointEntries: ReadonlyArray<PointEntryNode>;

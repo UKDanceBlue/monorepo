@@ -24,11 +24,7 @@ const PeopleTableFragment = graphql(/* GraphQL */ `
     name
     linkblue
     email
-    role {
-      dbRole
-      committeeRole
-      committeeIdentifier
-    }
+    dbRole
   }
 `);
 
@@ -179,7 +175,7 @@ export const PeopleTable = () => {
               }
             : false
         }
-        rowKey={({ uuid }) => uuid}
+        rowKey={({ id }) => id}
         sortDirections={["ascend", "descend"]}
         columns={[
           {
@@ -219,7 +215,7 @@ export const PeopleTable = () => {
             title: "Role",
             dataIndex: "dbRole",
             render: (_, record) => {
-              return stringifyDbRole(record.role.dbRole);
+              return stringifyDbRole(record.dbRole);
             },
             sorter: true,
             sortDirections: ["ascend", "descend"],
@@ -232,6 +228,7 @@ export const PeopleTable = () => {
             title: "Committee Role",
             dataIndex: "committeeRole",
             render: (_, record) => {
+              // TODO: fix
               return record.role.committeeRole ?? "None";
             },
             sorter: true,
@@ -245,6 +242,7 @@ export const PeopleTable = () => {
             title: "Committee Name",
             dataIndex: "committeeName",
             render: (_, record) => {
+              // TODO: fix
               return record.role.committeeIdentifier
                 ? committeeNames[record.role.committeeIdentifier]
                 : "None";
@@ -266,7 +264,7 @@ export const PeopleTable = () => {
                     onClick={() =>
                       navigate({
                         to: "/people/$personId/",
-                        params: { personId: record.uuid },
+                        params: { personId: record.id },
                       }).catch((error: unknown) => console.error(error))
                     }
                     icon={<EyeOutlined />}
@@ -275,7 +273,7 @@ export const PeopleTable = () => {
                     onClick={() =>
                       navigate({
                         to: "/people/$personId/edit",
-                        params: { personId: record.uuid },
+                        params: { personId: record.id },
                       }).catch((error: unknown) => console.error(error))
                     }
                     icon={<EditOutlined />}

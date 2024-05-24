@@ -8,7 +8,7 @@ import { useClient } from "urql";
 const createImageDocument = graphql(/* GraphQL */ `
   mutation CreateImage($input: CreateImageInput!) {
     createImage(input: $input) {
-      uuid
+      id
     }
   }
 `);
@@ -42,7 +42,7 @@ export function CreateImagePopup({
         if (error) {
           void showErrorMessage(error.message);
         }
-        onClose(data.createImage.uuid);
+        onClose(data.createImage.id);
       } else {
         void showErrorMessage(error?.message ?? "An unknown error occurred");
       }

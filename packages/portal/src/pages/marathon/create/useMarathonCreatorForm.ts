@@ -11,7 +11,7 @@ export function useMarathonCreatorForm() {
     graphql(/* GraphQL */ `
       mutation CreateMarathon($input: CreateMarathonInput!) {
         createMarathon(input: $input) {
-          uuid
+          id
         }
       }
     `)
@@ -67,7 +67,7 @@ export function useMarathonCreatorForm() {
         resetWatcher();
         await navigate({
           to: "/marathon/$marathonId/",
-          params: { marathonId: data.createMarathon.uuid },
+          params: { marathonId: data.createMarathon.id },
         });
       }
     },

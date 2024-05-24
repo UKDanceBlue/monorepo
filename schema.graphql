@@ -1842,6 +1842,7 @@ type TeamNode implements Node {
   createdAt: DateTimeISO
   id: ID!
   legacyStatus: TeamLegacyStatus!
+  marathon: MarathonNode!
   members: [MembershipNode!]!
   name: String!
   pointEntries: [PointEntryNode!]!

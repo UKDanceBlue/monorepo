@@ -4,7 +4,7 @@ export const createPointEntryDocument = graphql(/* GraphQL */ `
   mutation CreatePointEntry($input: CreatePointEntryInput!) {
     createPointEntry(input: $input) {
       data {
-        uuid
+        id
       }
     }
   }
@@ -14,7 +14,7 @@ export const getPersonByUuidDocument = graphql(/* GraphQL */ `
   query GetPersonByUuid($uuid: String!) {
     person(uuid: $uuid) {
       data {
-        uuid
+        id
         name
         linkblue
       }
@@ -26,7 +26,7 @@ export const getPersonByLinkBlueDocument = graphql(/* GraphQL */ `
   query GetPersonByLinkBlue($linkBlue: String!) {
     personByLinkBlue(linkBlueId: $linkBlue) {
       data {
-        uuid
+        id
         name
       }
     }
@@ -37,7 +37,7 @@ export const searchPersonByNameDocument = graphql(/* GraphQL */ `
   query SearchPersonByName($name: String!) {
     searchPeopleByName(name: $name) {
       data {
-        uuid
+        id
         name
       }
     }

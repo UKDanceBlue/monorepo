@@ -36,6 +36,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import { marathonModelToResource } from "../repositories/marathon/marathonModelToResource.js";
 import { membershipModelToResource } from "../repositories/membership/membershipModelToResource.js";
 import { pointEntryModelToResource } from "../repositories/pointEntry/pointEntryModelToResource.js";
 import { TeamRepository } from "../repositories/team/TeamRepository.js";
@@ -359,5 +360,17 @@ export class TeamResolver {
     });
 
     return result._sum.points ?? 0;
+  }
+
+  @AccessControl({ accessLevel: AccessLevel.Public })
+  @FieldResolver(() => Common.MarathonNode)
+  async marathon(@Root() team: TeamNode): Promise<Common.MarathonNode> {
+    const result = await this.teamRepository.getMarathon({ uuid: team.id });
+
+    if (result == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+    }
+
+    return marathonModelToResource(result);
   }
 }

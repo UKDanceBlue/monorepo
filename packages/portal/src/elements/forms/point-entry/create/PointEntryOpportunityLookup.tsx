@@ -27,7 +27,7 @@ const pointEntryOpportunityLookup = graphql(/* GraphQL */ `
     ) {
       data {
         name
-        uuid
+        id
       }
     }
   }
@@ -81,7 +81,7 @@ export function PointEntryOpportunityLookup({
         .data) {
         if (opportunity.name) {
           newNameAutocomplete.push({
-            value: opportunity.uuid,
+            value: opportunity.id,
             label: opportunity.name,
           });
         }

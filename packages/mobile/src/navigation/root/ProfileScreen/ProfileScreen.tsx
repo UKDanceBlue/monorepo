@@ -92,6 +92,7 @@ const ProfileScreen = ({
   const committeeString = useMemo(() => {
     if (authData?.dbRole === DbRole.Committee) {
       if (
+        // TODO: Add a way to query committee info
         authData.role.committeeIdentifier ===
           CommitteeIdentifier.viceCommittee &&
         authData.role.committeeRole === CommitteeRole.Chair

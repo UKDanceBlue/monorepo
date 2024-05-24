@@ -6,14 +6,10 @@ export const PersonEditorFragment = graphql(/* GraphQL */ `
     name
     linkblue
     email
-    role {
-      committeeRole
-      committeeIdentifier
-    }
     teams {
       position
       team {
-        uuid
+        id
         name
       }
     }

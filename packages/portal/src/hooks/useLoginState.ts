@@ -1,5 +1,5 @@
 import type { Authorization } from "@ukdanceblue/common";
-import { RoleResource, defaultAuthorization } from "@ukdanceblue/common";
+import { AccessLevel, defaultAuthorization } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 import { useQuery } from "urql";
 
@@ -7,11 +7,7 @@ const loginStateDocument = graphql(/* GraphQL */ `
   query LoginState {
     loginState {
       loggedIn
-      role {
-        dbRole
-        committeeRole
-        committeeIdentifier
-      }
+      dbRole
     }
   }
 `);
@@ -41,6 +37,11 @@ export function useLoginState(): {
 
   return {
     loggedIn: data.loginState.loggedIn,
-    authorization: RoleResource.init(data.loginState.role).toAuthorization(),
+    authorization: {
+      dbRole: data.loginState.dbRole,
+      // TODO: Add committee info back here
+      accessLevel: AccessLevel.Public,
+      committees: [],
+    },
   };
 }

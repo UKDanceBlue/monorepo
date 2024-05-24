@@ -13,7 +13,7 @@ export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
       graphql(/* GraphQL */ `
         mutation EditMarathon($input: SetMarathonInput!, $marathonId: String!) {
           setMarathon(input: $input, uuid: $marathonId) {
-            uuid
+            id
           }
         }
       `)
@@ -55,8 +55,10 @@ export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
   }>({
     defaultValues: {
       year: existingData?.marathon.year,
-      startDate: dateTimeFromSomething(existingData?.marathon.startDate),
-      endDate: dateTimeFromSomething(existingData?.marathon.endDate),
+      startDate:
+        dateTimeFromSomething(existingData?.marathon.startDate) ?? undefined,
+      endDate:
+        dateTimeFromSomething(existingData?.marathon.endDate) ?? undefined,
     },
     onChange: ({ startDate, endDate }) => {
       if (startDate && endDate && startDate.toMillis() > endDate.toMillis()) {
@@ -94,7 +96,7 @@ export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
         resetExistingWatcher();
         await navigate({
           to: "/marathon/$marathonId/",
-          params: { marathonId: data.setMarathon.uuid },
+          params: { marathonId: data.setMarathon.id },
         });
       }
     },

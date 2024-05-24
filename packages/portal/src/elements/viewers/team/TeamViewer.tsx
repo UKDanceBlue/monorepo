@@ -1,5 +1,6 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { MembershipPositionType } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import {
   getFragmentData,
@@ -13,7 +14,10 @@ export const TeamViewerFragment = graphql(/* GraphQL */ `
   fragment TeamViewerFragment on TeamNode {
     id
     name
-    marathonYear
+    marathon {
+      id
+      year
+    }
     legacyStatus
     totalPoints
     type
@@ -38,7 +42,7 @@ export function TeamViewer({
 
   const navigate = useNavigate();
   const { TeamDeletePopup, showModal } = useTeamDeletePopup({
-    uuid: teamData?.uuid ?? "",
+    uuid: teamData?.id ?? "",
     onDelete: () => {
       navigate({ to: "/teams/" }).catch((error: unknown) =>
         console.error(error)
@@ -57,7 +61,7 @@ export function TeamViewer({
         <Descriptions bordered column={1} size="small" title="Team Overview">
           <Descriptions.Item label="Name">{teamData.name}</Descriptions.Item>
           <Descriptions.Item label="Marathon Year">
-            {teamData.marathonYear}
+            {teamData.marathon.year}
           </Descriptions.Item>
           <Descriptions.Item label="Legacy Status">
             {teamData.legacyStatus}
@@ -82,7 +86,7 @@ export function TeamViewer({
             onClick={() => {
               navigate({
                 to: "/teams/$teamId/edit",
-                params: { teamId: teamData.uuid },
+                params: { teamId: teamData.id },
               }).catch((error: unknown) => console.error(error));
             }}
             icon={<EditOutlined />}
@@ -101,29 +105,33 @@ export function TeamViewer({
       >
         <Descriptions.Item label="Captains">
           <ul>
-            {teamData.captains.map((captain) => (
-              <li key={captain.person.uuid}>
-                <Link
-                  to="/people/$personId/"
-                  params={{
-                    personId: captain.person.uuid,
-                  }}
-                >
-                  {captain.person.name ?? "Never logged in"} (
-                  {captain.person.linkblue ?? "No linkblue"})
-                </Link>
-              </li>
-            ))}
+            {teamData.members
+              .filter(
+                ({ position }) => position === MembershipPositionType.Captain
+              )
+              .map((captain) => (
+                <li key={captain.person.id}>
+                  <Link
+                    to="/people/$personId/"
+                    params={{
+                      personId: captain.person.id,
+                    }}
+                  >
+                    {captain.person.name ?? "Never logged in"} (
+                    {captain.person.linkblue ?? "No linkblue"})
+                  </Link>
+                </li>
+              ))}
           </ul>
         </Descriptions.Item>
         <Descriptions.Item label="Members">
           <ul>
             {teamData.members.map((member) => (
-              <li key={member.person.uuid}>
+              <li key={member.person.id}>
                 <Link
                   to="/people/$personId/"
                   params={{
-                    personId: member.person.uuid,
+                    personId: member.person.id,
                   }}
                 >
                   {member.person.name ?? "Never logged in"} (

@@ -205,6 +205,14 @@ export class TeamRepository {
     });
   }
 
+  getMarathon(team: SimpleUniqueParam) {
+    return this.prisma.team
+      .findUnique({
+        where: team,
+      })
+      .marathon();
+  }
+
   createTeam(
     data: {
       name: string;

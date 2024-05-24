@@ -46,7 +46,10 @@ export const TeamsTableFragment = graphql(/* GraphQL */ `
     type
     name
     legacyStatus
-    marathonYear
+    marathon {
+      id
+      year
+    }
     totalPoints
   }
 `);
@@ -173,7 +176,7 @@ export const TeamsTable = () => {
                 onClick={() =>
                   navigate({
                     to: "/teams/$teamId/",
-                    params: { teamId: record.uuid },
+                    params: { teamId: record.id },
                   }).catch((error: unknown) => console.error(error))
                 }
                 icon={<EyeOutlined />}
@@ -182,7 +185,7 @@ export const TeamsTable = () => {
                 onClick={() =>
                   navigate({
                     to: "/teams/$teamId/edit",
-                    params: { teamId: record.uuid },
+                    params: { teamId: record.id },
                   }).catch((error: unknown) => console.error(error))
                 }
                 icon={<EditOutlined />}
@@ -195,7 +198,7 @@ export const TeamsTable = () => {
         getFragmentData(TeamsTableFragment, data?.teams.data) ?? undefined
       }
       loading={fetching}
-      rowKey={({ uuid }) => uuid}
+      rowKey={({ id }) => id}
       pagination={
         data
           ? {

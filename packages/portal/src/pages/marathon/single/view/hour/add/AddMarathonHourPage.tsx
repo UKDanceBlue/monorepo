@@ -19,7 +19,7 @@ export function AddMarathonHourPage() {
         $marathonUuid: String!
       ) {
         createMarathonHour(input: $input, marathonUuid: $marathonUuid) {
-          uuid
+          id
         }
       }
     `)
