@@ -75,6 +75,7 @@ enum CommitteeIdentifier {
 type CommitteeMembershipNode implements Node {
   createdAt: DateTimeISO
   id: ID!
+  identifier: CommitteeIdentifier!
   person: PersonNode!
   position: MembershipPositionType!
   role: CommitteeRole!

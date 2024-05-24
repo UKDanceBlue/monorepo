@@ -1,3 +1,4 @@
+import { TeamType } from "@prisma/client";
 import {
   AccessControl,
   AccessLevel,
@@ -348,10 +349,47 @@ export class PersonResolver {
     }
   )
   @FieldResolver(() => [MembershipNode])
-  async committees(@Root() person: PersonNode): Promise<MembershipNode[]> {
-    const models = await this.personRepository.findMembershipsOfPerson({
-      uuid: person.id,
-    });
+  async committees(
+    @Root() person: PersonNode
+  ): Promise<CommitteeMembershipNode[]> {
+    const models = await this.personRepository.findCommitteeMembershipsOfPerson(
+      {
+        uuid: person.id,
+      }
+    );
+
+    if (models == null) {
+      return [];
+    }
+
+    return models.map((row) =>
+      committeeMembershipModelToResource(
+        row,
+        row.team.correspondingCommittee!.identifier
+      )
+    );
+  }
+
+  @AccessControl(
+    { accessLevel: AccessLevel.Committee },
+    {
+      rootMatch: [
+        {
+          root: "uuid",
+          extractor: (userData) => userData.userId,
+        },
+      ],
+    }
+  )
+  @FieldResolver(() => [MembershipNode])
+  async teams(@Root() person: PersonNode): Promise<MembershipNode[]> {
+    const models = await this.personRepository.findMembershipsOfPerson(
+      {
+        uuid: person.id,
+      },
+      {},
+      [TeamType.Spirit]
+    );
 
     if (models == null) {
       return [];
@@ -372,10 +410,14 @@ export class PersonResolver {
     }
   )
   @FieldResolver(() => [MembershipNode])
-  async teams(@Root() person: PersonNode): Promise<MembershipNode[]> {
-    const models = await this.personRepository.findMembershipsOfPerson({
-      uuid: person.id,
-    });
+  async moraleTeams(@Root() person: PersonNode): Promise<MembershipNode[]> {
+    const models = await this.personRepository.findMembershipsOfPerson(
+      {
+        uuid: person.id,
+      },
+      {},
+      [TeamType.Morale]
+    );
 
     if (models == null) {
       return [];

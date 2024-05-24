@@ -258,6 +258,30 @@ export class PersonRepository {
     });
   }
 
+  async findCommitteeMembershipsOfPerson(param: UniquePersonParam) {
+    const rows = await this.prisma.person.findUnique({
+      where: param,
+      select: {
+        memberships: {
+          where: {
+            team: {
+              type: TeamType.Committee,
+            },
+          },
+          include: {
+            team: {
+              select: {
+                correspondingCommittee: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return rows?.memberships ?? null;
+  }
+
   async findMembershipsOfPerson(
     param: UniquePersonParam,
     opts:
@@ -267,13 +291,27 @@ export class PersonRepository {
       | {
           committeeRole: CommitteeRole;
         }
-      | Record<string, never> = {}
+      | Record<string, never> = {},
+    types: TeamType[] | undefined = undefined
   ) {
     const rows = await this.prisma.person.findUnique({
       where: param,
       select: {
         memberships: {
-          where: opts,
+          where: {
+            AND: [
+              opts,
+              types
+                ? {
+                    team: {
+                      type: {
+                        in: types,
+                      },
+                    },
+                  }
+                : {},
+            ],
+          },
         },
       },
     });
