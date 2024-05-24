@@ -1,4 +1,5 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
+import { dateTimeFromSomething } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
@@ -78,10 +79,10 @@ export function useConfig(): {
       const configValue = {
         value: config.value,
         validAfter: config.validAfter
-          ? DateTime.fromISO(config.validAfter)
+          ? dateTimeFromSomething(config.validAfter)
           : null,
         validUntil: config.validUntil
-          ? DateTime.fromISO(config.validUntil)
+          ? dateTimeFromSomething(config.validUntil)
           : null,
         createdAt: config.createdAt
           ? typeof config.createdAt === "string"

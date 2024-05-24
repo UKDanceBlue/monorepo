@@ -47,7 +47,10 @@ export function useEventCreatorForm() {
             const retVal: Parameters<
               typeof createEvent
             >[0]["input"]["occurrences"][number] = {
-              interval: occurrence.interval.toISO(),
+              interval: {
+                start: occurrence.interval.start!.toISO(),
+                end: occurrence.interval.end!.toISO(),
+              },
               fullDay: occurrence.fullDay,
             };
             return retVal;

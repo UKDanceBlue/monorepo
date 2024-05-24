@@ -1,6 +1,9 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { base64StringToArray } from "@ukdanceblue/common";
+import {
+  base64StringToArray,
+  intervalFromSomething,
+} from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import {
   getFragmentData,
@@ -8,7 +11,8 @@ import {
 } from "@ukdanceblue/common/graphql-client-admin";
 import { Button, Descriptions, Flex, Image, List, Typography } from "antd";
 import DescriptionsItem from "antd/es/descriptions/Item";
-import { DateTime, Interval } from "luxon";
+import type { Interval } from "luxon";
+import { DateTime } from "luxon";
 import { useMemo } from "react";
 import { thumbHashToDataURL } from "thumbhash";
 
@@ -53,7 +57,7 @@ export function EventViewer({
     () =>
       eventData?.occurrences
         ? eventData.occurrences.map((occurrence) => {
-            const interval = Interval.fromISO(occurrence.interval);
+            const interval = intervalFromSomething(occurrence.interval);
             return {
               interval,
               fullDay: occurrence.fullDay,

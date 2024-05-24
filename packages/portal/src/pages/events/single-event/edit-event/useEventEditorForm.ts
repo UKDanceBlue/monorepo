@@ -1,12 +1,13 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
+import { intervalFromSomething } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
 import type {
   SetEventInput,
   SetEventOccurrenceInput,
 } from "@ukdanceblue/common/graphql-client-admin/raw-types";
-import { Interval } from "luxon";
+import type { Interval } from "luxon";
 import type { UseQueryExecute } from "urql";
 import { useMutation } from "urql";
 
@@ -43,7 +44,7 @@ export function useEventEditorForm(
       occurrences:
         eventData?.occurrences.map((occurrence) => ({
           uuid: occurrence.uuid,
-          interval: Interval.fromISO(occurrence.interval),
+          interval: intervalFromSomething(occurrence.interval),
           fullDay: occurrence.fullDay,
         })) ?? [],
     },
@@ -63,7 +64,10 @@ export function useEventEditorForm(
             let retVal: Parameters<
               typeof setEvent
             >[0]["input"]["occurrences"][number] = {
-              interval: occurrence.interval.toISO(),
+              interval: {
+                start: occurrence.interval.start!.toISO(),
+                end: occurrence.interval.end!.toISO(),
+              },
               fullDay: occurrence.fullDay,
             };
             if (occurrence.uuid) {

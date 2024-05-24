@@ -46,12 +46,12 @@ export const MarathonViewer = ({
       <Descriptions title="Marathon" bordered>
         <Descriptions.Item label="Year">{marathonData.year}</Descriptions.Item>
         <Descriptions.Item label="Start Date">
-          {dateTimeFromSomething(marathonData.startDate).toLocaleString(
+          {dateTimeFromSomething(marathonData.startDate)?.toLocaleString(
             DateTime.DATETIME_MED
           )}
         </Descriptions.Item>
         <Descriptions.Item label="End Date">
-          {dateTimeFromSomething(marathonData.endDate).toLocaleString(
+          {dateTimeFromSomething(marathonData.endDate)?.toLocaleString(
             DateTime.DATETIME_MED
           )}
         </Descriptions.Item>
