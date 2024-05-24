@@ -200,7 +200,6 @@ type CreatePointOpportunityResponse implements AbstractGraphQLCreatedResponse & 
 
 input CreateTeamInput {
   legacyStatus: TeamLegacyStatus!
-  marathonYear: String!
   name: String!
   persistentIdentifier: String
   type: TeamType!
@@ -1108,7 +1107,7 @@ type PersonNode implements Node {
   linkblue: String
   moraleTeams: [MembershipNode!]!
   name: String
-  primaryCommittee: CommitteeMembershipNode!
+  primaryCommittee: CommitteeMembershipNode
   teams: [MembershipNode!]!
   updatedAt: DateTimeISO
 }
@@ -1833,7 +1832,6 @@ input SetMarathonInput {
 
 input SetPersonInput {
   captainOf: [String!]
-  dbRole: DbRole
   email: EmailAddress
   linkblue: String
   memberOf: [String!]

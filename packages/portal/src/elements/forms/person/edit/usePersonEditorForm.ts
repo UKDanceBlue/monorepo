@@ -1,6 +1,6 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
-import { DbRole, MembershipPositionType } from "@ukdanceblue/common";
+import { MembershipPositionType } from "@ukdanceblue/common";
 import type {
   DocumentType,
   FragmentType,
@@ -34,11 +34,6 @@ export function usePersonEditorForm(
       name: personData?.name ?? "",
       linkblue: personData?.linkblue ?? "",
       email: personData?.email ?? "",
-      role: {
-        dbRole: DbRole.None,
-        committeeRole: personData?.role.committeeRole ?? null,
-        committeeIdentifier: personData?.role.committeeIdentifier ?? null,
-      },
       captainOf:
         personData?.teams
           .filter(
@@ -81,10 +76,6 @@ export function usePersonEditorForm(
         }
       }
 
-      if (values.role?.committeeIdentifier && !values.role.committeeRole) {
-        return "Committee role is required if a committee is selected";
-      }
-
       return undefined;
     },
     onSubmit: async (values) => {
@@ -96,21 +87,12 @@ export function usePersonEditorForm(
         throw new Error("Email is required");
       }
 
-      // TODO: This is actually ignored on the server, we need to find a way to
-      // remove it here
-      const dbRole: DbRole = DbRole.None;
-
       const { data } = await setPerson({
         uuid: personData.id,
         input: {
           name: values.name || null,
           linkblue: values.linkblue || null,
           email: values.email,
-          role: {
-            dbRole,
-            committeeRole: values.role?.committeeRole ?? null,
-            committeeIdentifier: values.role?.committeeIdentifier ?? null,
-          },
           captainOf: values.captainOf ?? [],
           memberOf: values.memberOf ?? [],
         },

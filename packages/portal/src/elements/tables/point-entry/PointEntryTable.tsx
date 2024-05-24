@@ -1,11 +1,11 @@
 import { DeleteOutlined } from "@ant-design/icons";
+import { dateTimeFromSomething } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
 import { Button, Table } from "antd";
-import { DateTime } from "luxon";
 import type { UseQueryExecute } from "urql";
 
 import { usePointEntryDeletePopup } from "./PointEntryDeletePopup";
@@ -86,7 +86,7 @@ export function PointEntryTable({
               const { name, opportunityDate } = record.pointOpportunity;
               let str = name;
               if (opportunityDate) {
-                str += ` (${DateTime.fromISO(opportunityDate).toFormat(
+                str += ` (${dateTimeFromSomething(opportunityDate).toFormat(
                   "yyyy-MM-dd"
                 )})`;
               }

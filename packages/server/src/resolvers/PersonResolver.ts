@@ -137,9 +137,6 @@ class SetPersonInput {
   @Field(() => String, { nullable: true })
   linkblue?: string;
 
-  @Field(() => DbRole, { nullable: true })
-  dbRole?: DbRole;
-
   @Field(() => [String], { nullable: true })
   memberOf?: string[];
 
@@ -437,7 +434,7 @@ export class PersonResolver {
       ],
     }
   )
-  @FieldResolver(() => CommitteeMembershipNode)
+  @FieldResolver(() => CommitteeMembershipNode, { nullable: true })
   async primaryCommittee(
     @Root() person: PersonNode
   ): Promise<CommitteeMembershipNode | null> {

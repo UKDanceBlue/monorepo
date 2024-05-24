@@ -34,8 +34,7 @@ export function useTeamEditorForm(
       name: teamData?.name ?? "",
       legacyStatus: teamData?.legacyStatus ?? null,
       // TODO: Make this dynamic
-      marathonYear: teamData?.marathonYear ?? "DB24",
-      persistentIdentifier: teamData?.persistentIdentifier ?? null,
+      marathonYear: teamData?.marathon.year ?? "DB24",
       type: teamData?.type ?? TeamType.Spirit,
     },
     onSubmit: async (values) => {

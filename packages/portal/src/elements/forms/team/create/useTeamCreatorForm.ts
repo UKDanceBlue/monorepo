@@ -26,7 +26,6 @@ export function useTeamCreatorForm(
     defaultValues: {
       name: "",
       legacyStatus: TeamLegacyStatus.NewTeam,
-      marathonYear: "DB24",
       persistentIdentifier: null,
       type: TeamType.Spirit,
     },
@@ -35,9 +34,6 @@ export function useTeamCreatorForm(
         input: {
           name: values.name,
           legacyStatus: values.legacyStatus,
-          // TODO: Make this dynamic
-          marathonYear: "DB24",
-          persistentIdentifier: values.persistentIdentifier ?? null,
           type: values.type,
         },
       });

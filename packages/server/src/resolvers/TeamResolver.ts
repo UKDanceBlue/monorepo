@@ -86,9 +86,6 @@ class CreateTeamInput implements OptionalToNullable<Partial<TeamNode>> {
   @Field(() => TeamLegacyStatus)
   legacyStatus!: TeamLegacyStatus;
 
-  @Field(() => String)
-  marathonYear!: Common.MarathonYearString;
-
   @Field(() => String, { nullable: true })
   persistentIdentifier!: string | null;
 }

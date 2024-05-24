@@ -24,6 +24,10 @@ export const PersonViewerFragment = graphql(/* GraphQL */ `
         name
       }
     }
+    committees {
+      identifier
+      role
+    }
   }
 `);
 
@@ -84,22 +88,12 @@ export function PersonViewer({
           },
           {
             label: "Role",
-            children: stringifyDbRole(personData.role.dbRole),
+            children: stringifyDbRole(personData.dbRole),
           },
-          ...(personData.role.committeeRole
-            ? [
-                {
-                  label: "Committee",
-                  children: personData.role.committeeIdentifier
-                    ? committeeNames[personData.role.committeeIdentifier]
-                    : "N/A",
-                },
-                {
-                  label: "Committee Position",
-                  children: personData.role.committeeRole,
-                },
-              ]
-            : []),
+          ...personData.committees.map((committee) => ({
+            label: committeeNames[committee.identifier],
+            children: stringifyDbRole(committee.role),
+          })),
           {
             label: "Teams",
             children:

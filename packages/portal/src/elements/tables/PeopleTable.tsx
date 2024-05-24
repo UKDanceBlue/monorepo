@@ -25,6 +25,10 @@ const PeopleTableFragment = graphql(/* GraphQL */ `
     linkblue
     email
     dbRole
+    primaryCommittee {
+      identifier
+      role
+    }
   }
 `);
 
@@ -229,7 +233,7 @@ export const PeopleTable = () => {
             dataIndex: "committeeRole",
             render: (_, record) => {
               // TODO: fix
-              return record.role.committeeRole ?? "None";
+              return record.primaryCommittee?.role ?? "None";
             },
             sorter: true,
             sortDirections: ["ascend", "descend"],
@@ -243,8 +247,8 @@ export const PeopleTable = () => {
             dataIndex: "committeeName",
             render: (_, record) => {
               // TODO: fix
-              return record.role.committeeIdentifier
-                ? committeeNames[record.role.committeeIdentifier]
+              return record.primaryCommittee?.identifier
+                ? committeeNames[record.primaryCommittee.identifier]
                 : "None";
             },
             sorter: true,

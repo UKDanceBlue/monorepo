@@ -35,7 +35,7 @@ const documents = {
     "\n  mutation TeamCreator($input: CreateTeamInput!, $marathonUuid: String!) {\n    createTeam(input: $input, marathon: $marathonUuid) {\n      ok\n      uuid\n    }\n  }\n": types.TeamCreatorDocument,
     "\n  fragment TeamEditorFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    type\n  }\n": types.TeamEditorFragmentFragmentDoc,
     "\n  mutation TeamEditor($uuid: String!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n": types.TeamEditorDocument,
-    "\n  fragment PeopleTableFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n  }\n": types.PeopleTableFragmentFragmentDoc,
+    "\n  fragment PeopleTableFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    primaryCommittee {\n      identifier\n      role\n    }\n  }\n": types.PeopleTableFragmentFragmentDoc,
     "\n  query PeopleTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [PersonResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [PersonResolverKeyedOneOfFilterItem!]\n    $stringFilters: [PersonResolverKeyedStringFilterItem!]\n  ) {\n    listPeople(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...PeopleTableFragment\n      }\n    }\n  }\n": types.PeopleTableDocument,
     "\n  query TeamsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [TeamResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]\n    $stringFilters: [TeamResolverKeyedStringFilterItem!]\n  ) {\n    teams(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...TeamsTableFragment\n      }\n    }\n  }\n": types.TeamsTableDocument,
     "\n  fragment TeamsTableFragment on TeamNode {\n    id\n    type\n    name\n    legacyStatus\n    marathon {\n      id\n      year\n    }\n    totalPoints\n  }\n": types.TeamsTableFragmentFragmentDoc,
@@ -46,7 +46,7 @@ const documents = {
     "\n  mutation DeletePointEntry($uuid: String!) {\n    deletePointEntry(uuid: $uuid) {\n      ok\n    }\n  }\n": types.DeletePointEntryDocument,
     "\n  fragment PointEntryTableFragment on PointEntryNode {\n    id\n    personFrom {\n      name\n      linkblue\n    }\n    points\n    pointOpportunity {\n      name\n      opportunityDate\n    }\n    comment\n  }\n": types.PointEntryTableFragmentFragmentDoc,
     "\n  mutation DeletePerson($uuid: String!) {\n    deletePerson(uuid: $uuid) {\n      ok\n    }\n  }\n": types.DeletePersonDocument,
-    "\n  fragment PersonViewerFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    teams {\n      position\n      team {\n        id\n        name\n      }\n    }\n  }\n": types.PersonViewerFragmentFragmentDoc,
+    "\n  fragment PersonViewerFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    teams {\n      position\n      team {\n        id\n        name\n      }\n    }\n    committees {\n      identifier\n      role\n    }\n  }\n": types.PersonViewerFragmentFragmentDoc,
     "\n  mutation DeleteTeam($uuid: String!) {\n    deleteTeam(uuid: $uuid) {\n      ok\n    }\n  }\n": types.DeleteTeamDocument,
     "\n  fragment TeamViewerFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    totalPoints\n    type\n    members {\n      person {\n        id\n        name\n        linkblue\n      }\n      position\n    }\n  }\n": types.TeamViewerFragmentFragmentDoc,
     "\n  query LoginState {\n    loginState {\n      loggedIn\n      dbRole\n    }\n  }\n": types.LoginStateDocument,
@@ -192,7 +192,7 @@ export function graphql(source: "\n  mutation TeamEditor($uuid: String!, $input:
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment PeopleTableFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n  }\n"): (typeof documents)["\n  fragment PeopleTableFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n  }\n"];
+export function graphql(source: "\n  fragment PeopleTableFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    primaryCommittee {\n      identifier\n      role\n    }\n  }\n"): (typeof documents)["\n  fragment PeopleTableFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    primaryCommittee {\n      identifier\n      role\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -236,7 +236,7 @@ export function graphql(source: "\n  mutation DeletePerson($uuid: String!) {\n  
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment PersonViewerFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    teams {\n      position\n      team {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  fragment PersonViewerFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    teams {\n      position\n      team {\n        id\n        name\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  fragment PersonViewerFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    teams {\n      position\n      team {\n        id\n        name\n      }\n    }\n    committees {\n      identifier\n      role\n    }\n  }\n"): (typeof documents)["\n  fragment PersonViewerFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    teams {\n      position\n      team {\n        id\n        name\n      }\n    }\n    committees {\n      identifier\n      role\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

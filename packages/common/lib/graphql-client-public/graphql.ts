@@ -83,6 +83,43 @@ export type AddEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseRespo
 
 export { AuthSource };
 
+/** The identifier for a committee */
+export const CommitteeIdentifier = {
+  CommunityDevelopmentCommittee: 'communityDevelopmentCommittee',
+  CorporateCommittee: 'corporateCommittee',
+  DancerRelationsCommittee: 'dancerRelationsCommittee',
+  FamilyRelationsCommittee: 'familyRelationsCommittee',
+  FundraisingCommittee: 'fundraisingCommittee',
+  MarketingCommittee: 'marketingCommittee',
+  MiniMarathonsCommittee: 'miniMarathonsCommittee',
+  OperationsCommittee: 'operationsCommittee',
+  OverallCommittee: 'overallCommittee',
+  ProgrammingCommittee: 'programmingCommittee',
+  TechCommittee: 'techCommittee',
+  ViceCommittee: 'viceCommittee'
+} as const;
+
+export type CommitteeIdentifier = typeof CommitteeIdentifier[keyof typeof CommitteeIdentifier];
+export type CommitteeMembershipNode = Node & {
+  readonly __typename?: 'CommitteeMembershipNode';
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly id: Scalars['ID']['output'];
+  readonly identifier: CommitteeIdentifier;
+  readonly person: PersonNode;
+  readonly position: MembershipPositionType;
+  readonly role: CommitteeRole;
+  readonly team: TeamNode;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+};
+
+/** Roles within a committee */
+export const CommitteeRole = {
+  Chair: 'Chair',
+  Coordinator: 'Coordinator',
+  Member: 'Member'
+} as const;
+
+export type CommitteeRole = typeof CommitteeRole[keyof typeof CommitteeRole];
 export type ConfigurationNode = Node & {
   readonly __typename?: 'ConfigurationNode';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -199,7 +236,6 @@ export type CreatePointOpportunityResponse = AbstractGraphQlCreatedResponse & Ab
 
 export type CreateTeamInput = {
   readonly legacyStatus: TeamLegacyStatus;
-  readonly marathonYear: Scalars['String']['input'];
   readonly name: Scalars['String']['input'];
   readonly persistentIdentifier?: InputMaybe<Scalars['String']['input']>;
   readonly type: TeamType;
@@ -332,6 +368,12 @@ export const DeviceResolverStringFilterKeys = {
 } as const;
 
 export type DeviceResolverStringFilterKeys = typeof DeviceResolverStringFilterKeys[keyof typeof DeviceResolverStringFilterKeys];
+export type EffectiveCommitteeRole = {
+  readonly __typename?: 'EffectiveCommitteeRole';
+  readonly committee: CommitteeIdentifier;
+  readonly role: CommitteeRole;
+};
+
 export type EventNode = Node & {
   readonly __typename?: 'EventNode';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -711,7 +753,9 @@ export type LoginState = {
   readonly __typename?: 'LoginState';
   readonly authSource: AuthSource;
   readonly dbRole: DbRole;
+  readonly effectiveCommitteeRoles: ReadonlyArray<EffectiveCommitteeRole>;
   readonly loggedIn: Scalars['Boolean']['output'];
+  readonly person?: Maybe<PersonNode>;
 };
 
 export type MarathonHourNode = Node & {
@@ -728,12 +772,24 @@ export type MarathonHourNode = Node & {
 
 export type MarathonNode = Node & {
   readonly __typename?: 'MarathonNode';
+  readonly communityDevelopmentCommitteeTeam: TeamNode;
+  readonly corporateCommitteeTeam: TeamNode;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly dancerRelationsCommitteeTeam: TeamNode;
   readonly endDate?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly familyRelationsCommitteeTeam: TeamNode;
+  readonly fundraisingCommitteeTeam: TeamNode;
   readonly hours: ReadonlyArray<MarathonHourNode>;
   readonly id: Scalars['ID']['output'];
+  readonly marketingCommitteeTeam: TeamNode;
+  readonly miniMarathonsCommitteeTeam: TeamNode;
+  readonly operationsCommitteeTeam: TeamNode;
+  readonly overallCommitteeTeam: TeamNode;
+  readonly programmingCommitteeTeam: TeamNode;
   readonly startDate?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly techCommitteeTeam: TeamNode;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly viceCommitteeTeam: TeamNode;
   readonly year: Scalars['String']['output'];
 };
 
@@ -1238,15 +1294,15 @@ export { NumericComparator };
 
 export type PersonNode = Node & {
   readonly __typename?: 'PersonNode';
-  /** @deprecated Use teams instead and filter by position */
-  readonly captaincies: ReadonlyArray<MembershipNode>;
-  readonly committees: ReadonlyArray<MembershipNode>;
+  readonly committees: ReadonlyArray<CommitteeMembershipNode>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly dbRole: DbRole;
   readonly email: Scalars['String']['output'];
   readonly id: Scalars['ID']['output'];
   readonly linkblue?: Maybe<Scalars['String']['output']>;
+  readonly moraleTeams: ReadonlyArray<MembershipNode>;
   readonly name?: Maybe<Scalars['String']['output']>;
+  readonly primaryCommittee?: Maybe<CommitteeMembershipNode>;
   readonly teams: ReadonlyArray<MembershipNode>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
@@ -1763,7 +1819,6 @@ export type SetMarathonInput = {
 
 export type SetPersonInput = {
   readonly captainOf?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
-  readonly dbRole?: InputMaybe<DbRole>;
   readonly email?: InputMaybe<Scalars['EmailAddress']['input']>;
   readonly linkblue?: InputMaybe<Scalars['String']['input']>;
   readonly memberOf?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
