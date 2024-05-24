@@ -109,7 +109,7 @@ export const NotificationsTable = () => {
     <>
       <Table
         dataSource={listEventsData ?? undefined}
-        rowKey={({ uuid }) => uuid}
+        rowKey={({ id }) => id}
         loading={fetching}
         pagination={
           notificationsDocument

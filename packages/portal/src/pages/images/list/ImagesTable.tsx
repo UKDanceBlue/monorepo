@@ -124,7 +124,7 @@ export const ImagesTable = () => {
         <Upload.Dragger
           accept="image/*"
           action={new URL(
-            `/api/upload/image/${uploadingImage?.uuid}`,
+            `/api/upload/image/${uploadingImage?.id}`,
             API_BASE_URL
           ).toString()}
           maxCount={1}
@@ -154,7 +154,7 @@ export const ImagesTable = () => {
       </Modal>
       <Table
         dataSource={listImagesData ?? undefined}
-        rowKey={({ uuid }) => uuid}
+        rowKey={({ id }) => id}
         loading={fetching}
         pagination={
           imagesDocument

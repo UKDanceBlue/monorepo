@@ -65,7 +65,7 @@ export function EventViewer({
 
   const navigate = useNavigate();
   const { EventDeletePopup, showModal } = useEventDeletePopup({
-    uuid: eventData?.uuid ?? "",
+    uuid: eventData?.id ?? "",
     onDelete: () => {
       navigate({ to: "/events" }).catch((error: unknown) =>
         console.error(error)
@@ -96,7 +96,7 @@ export function EventViewer({
         {eventData.title}
         <Link
           to="/events/$eventId/edit"
-          params={{ eventId: eventData.uuid }}
+          params={{ eventId: eventData.id }}
           color="#efefef"
         >
           <EditOutlined style={{ marginLeft: "1em" }} />

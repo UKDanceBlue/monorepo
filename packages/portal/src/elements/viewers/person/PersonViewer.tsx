@@ -36,7 +36,7 @@ export function PersonViewer({
 
   const navigate = useNavigate();
   const { PersonDeletePopup, showModal } = usePersonDeletePopup({
-    uuid: personData?.uuid ?? "",
+    uuid: personData?.id ?? "",
     onDelete: () => {
       navigate({ to: "/people/" }).catch((error: unknown) =>
         console.error(error)
@@ -56,7 +56,7 @@ export function PersonViewer({
         {personData.name}
         <Link
           to="/people/$personId/edit"
-          params={{ personId: personData.uuid }}
+          params={{ personId: personData.id }}
           color="#efefef"
         >
           <EditOutlined style={{ marginLeft: "1em" }} />
@@ -112,11 +112,11 @@ export function PersonViewer({
                   size="small"
                   items={personData.teams.map((team) => ({
                     label: team.team.name,
-                    key: team.team.uuid,
+                    key: team.team.id,
                     children: (
                       <Link
                         to="/teams/$teamId"
-                        params={{ teamId: team.team.uuid }}
+                        params={{ teamId: team.team.id }}
                       >
                         {team.position}
                       </Link>

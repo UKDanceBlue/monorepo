@@ -136,7 +136,7 @@ export const EventsTable = () => {
       </div>
       <Table
         dataSource={listEventsData ?? undefined}
-        rowKey={({ uuid }) => uuid}
+        rowKey={({ id }) => id}
         loading={fetching}
         pagination={
           eventsDocument

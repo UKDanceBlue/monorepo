@@ -53,7 +53,7 @@ export function useEventEditorForm(
       }
 
       await setEvent({
-        uuid: eventData.uuid,
+        uuid: eventData.id,
         input: {
           title: values.title,
           summary: values.summary ?? eventData.summary ?? null,

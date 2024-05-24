@@ -39,12 +39,12 @@ export function useTeamEditorForm(
       type: teamData?.type ?? TeamType.Spirit,
     },
     onSubmit: async (values) => {
-      if (!teamData?.uuid) {
+      if (!teamData?.id) {
         throw new Error("Team UUID is required");
       }
 
       const { data } = await setTeam({
-        uuid: teamData.uuid,
+        uuid: teamData.id,
         input: {
           name: values.name ?? null,
           legacyStatus: values.legacyStatus ?? null,

@@ -62,7 +62,7 @@ export const MarathonViewer = ({
             <span>Hours</span>
             <Link
               to="/marathon/$marathonId/hours/add"
-              params={{ marathonId: marathonData.uuid }}
+              params={{ marathonId: marathonData.id }}
             >
               Add
             </Link>
@@ -72,12 +72,12 @@ export const MarathonViewer = ({
       >
         {sortedHours.map((hour) => (
           <Descriptions.Item
-            key={hour.uuid}
+            key={hour.id}
             label={hour.shownStartingAt.toLocaleString(DateTime.DATETIME_MED)}
           >
             <Link
               to="/marathon/$marathonId/hours/$hourId"
-              params={{ marathonId: marathonData.uuid, hourId: hour.uuid }}
+              params={{ marathonId: marathonData.id, hourId: hour.id }}
             >
               {hour.title}
             </Link>

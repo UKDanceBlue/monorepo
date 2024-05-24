@@ -49,13 +49,13 @@ export function PersonEditor({
     for (const team of teamNamesData ?? []) {
       captaincyOptions.push({
         label: team.name,
-        value: team.uuid,
-        disabled: formMemberOf.includes(team.uuid),
+        value: team.id,
+        disabled: formMemberOf.includes(team.id),
       });
       membershipOptions.push({
         label: team.name,
-        value: team.uuid,
-        disabled: formCaptainOf.includes(team.uuid),
+        value: team.id,
+        disabled: formCaptainOf.includes(team.id),
       });
     }
     return { captaincyOptions, membershipOptions };

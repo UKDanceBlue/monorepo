@@ -36,7 +36,7 @@ export const ManageNotificationForm = ({
     notificationFragment
   );
   const actions = useNotificationManagerForm({
-    uuid: notification?.uuid ?? "",
+    uuid: notification?.id ?? "",
   });
 
   const [sendAt, setSendAt] = useState<DateTime | null>(

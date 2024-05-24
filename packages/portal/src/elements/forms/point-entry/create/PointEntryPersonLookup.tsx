@@ -73,13 +73,11 @@ export function PointEntryPersonLookup({
 
   useEffect(() => {
     if (getPersonByLinkBlueQuery.data?.personByLinkBlue.data) {
-      setPersonFromUuid(
-        getPersonByLinkBlueQuery.data.personByLinkBlue.data.uuid
-      );
+      setPersonFromUuid(getPersonByLinkBlueQuery.data.personByLinkBlue.data.id);
     }
   }, [
     getPersonByLinkBlueQuery.data?.personByLinkBlue.data,
-    getPersonByLinkBlueQuery.data?.personByLinkBlue.data?.uuid,
+    getPersonByLinkBlueQuery.data?.personByLinkBlue.data?.id,
     setPersonFromUuid,
   ]);
 
@@ -133,7 +131,7 @@ export function PointEntryPersonLookup({
       for (const person of searchByNameQuery.data.searchPeopleByName.data) {
         if (person.name) {
           newNameAutocomplete.push({
-            value: person.uuid,
+            value: person.id,
             label: person.name,
           });
         }

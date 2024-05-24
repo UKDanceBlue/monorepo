@@ -45,14 +45,14 @@ export function usePersonEditorForm(
             (membership) =>
               membership.position === MembershipPositionType.Captain
           )
-          .map((membership) => membership.team.uuid) ?? [],
+          .map((membership) => membership.team.id) ?? [],
       memberOf:
         personData?.teams
           .filter(
             (membership) =>
               membership.position === MembershipPositionType.Member
           )
-          .map((membership) => membership.team.uuid) ?? [],
+          .map((membership) => membership.team.id) ?? [],
     },
     onChange: (values) => {
       const memberOfCount: Record<string, number> = {};
@@ -101,7 +101,7 @@ export function usePersonEditorForm(
       const dbRole: DbRole = DbRole.None;
 
       const { data } = await setPerson({
-        uuid: personData.uuid,
+        uuid: personData.id,
         input: {
           name: values.name || null,
           linkblue: values.linkblue || null,

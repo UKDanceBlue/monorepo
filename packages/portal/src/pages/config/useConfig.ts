@@ -91,7 +91,7 @@ export function useConfig(): {
       };
 
       // Add the config value
-      configs.find((c) => c.key === config.key)!.values[config.uuid] =
+      configs.find((c) => c.key === config.key)!.values[config.id] =
         configValue;
 
       // Decide if this is an active value

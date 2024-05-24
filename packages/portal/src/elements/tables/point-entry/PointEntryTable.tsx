@@ -99,7 +99,7 @@ export function PointEntryTable({
             render: (_, record) => (
               <Button
                 icon={<DeleteOutlined />}
-                onClick={() => openDeletePopup(record.uuid)}
+                onClick={() => openDeletePopup(record.id)}
               />
             ),
           },
