@@ -46,6 +46,10 @@ export const ProfileScreenUserFragment = graphql(/* GraphQL */ `
         name
       }
     }
+    primaryCommittee {
+      identifier
+      role
+    }
   }
 `);
 
@@ -90,24 +94,22 @@ const ProfileScreen = ({
   }
 
   const committeeString = useMemo(() => {
-    if (authData?.dbRole === DbRole.Committee) {
+    if (userData?.primaryCommittee) {
       if (
         // TODO: Add a way to query committee info
-        authData.role.committeeIdentifier ===
-          CommitteeIdentifier.viceCommittee &&
-        authData.role.committeeRole === CommitteeRole.Chair
+        userData.primaryCommittee.identifier ===
+          CommitteeIdentifier.overallCommittee &&
+        userData.primaryCommittee.role === CommitteeRole.Chair
       ) {
         return "✨ Overall Chair ✨";
       }
       return `Committee: ${
-        authData.role.committeeIdentifier
-          ? committeeNames[authData.role.committeeIdentifier]
-          : "Unknown"
-      } ${authData.role.committeeRole}`;
+        committeeNames[userData.primaryCommittee.identifier]
+      } ${userData.primaryCommittee.role}`;
     } else {
       return null;
     }
-  }, [authData]);
+  }, [userData?.primaryCommittee]);
 
   if (loading) {
     return (
@@ -115,7 +117,7 @@ const ProfileScreen = ({
         <Spinner />
       </Center>
     );
-  } else if (authData?.role.dbRole !== DbRole.None) {
+  } else if (authData?.dbRole !== DbRole.None) {
     return (
       <>
         <JumbotronGeometric title={jumboText()} />

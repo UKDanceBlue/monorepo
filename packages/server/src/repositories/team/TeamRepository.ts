@@ -218,7 +218,6 @@ export class TeamRepository {
       name: string;
       type: TeamType;
       legacyStatus: TeamLegacyStatus;
-      persistentIdentifier?: string | null | undefined;
     },
     marathon: UniqueMarathonParam
   ) {

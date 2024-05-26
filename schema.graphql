@@ -201,7 +201,6 @@ type CreatePointOpportunityResponse implements AbstractGraphQLCreatedResponse & 
 input CreateTeamInput {
   legacyStatus: TeamLegacyStatus!
   name: String!
-  persistentIdentifier: String
   type: TeamType!
 }
 

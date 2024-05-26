@@ -26,7 +26,6 @@ export function useTeamCreatorForm(
     defaultValues: {
       name: "",
       legacyStatus: TeamLegacyStatus.NewTeam,
-      persistentIdentifier: null,
       type: TeamType.Spirit,
     },
     onSubmit: async (values) => {

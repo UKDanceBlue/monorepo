@@ -85,9 +85,6 @@ class CreateTeamInput implements OptionalToNullable<Partial<TeamNode>> {
 
   @Field(() => TeamLegacyStatus)
   legacyStatus!: TeamLegacyStatus;
-
-  @Field(() => String, { nullable: true })
-  persistentIdentifier!: string | null;
 }
 
 @InputType()
@@ -226,7 +223,6 @@ export class TeamResolver {
         name: input.name,
         type: input.type,
         legacyStatus: input.legacyStatus,
-        persistentIdentifier: input.persistentIdentifier,
       },
       { uuid: marathonUuid }
     );

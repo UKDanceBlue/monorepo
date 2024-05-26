@@ -237,7 +237,6 @@ export type CreatePointOpportunityResponse = AbstractGraphQlCreatedResponse & Ab
 export type CreateTeamInput = {
   readonly legacyStatus: TeamLegacyStatus;
   readonly name: Scalars['String']['input'];
-  readonly persistentIdentifier?: InputMaybe<Scalars['String']['input']>;
   readonly type: TeamType;
 };
 

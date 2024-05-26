@@ -86,12 +86,6 @@ export function TeamCreator() {
               />
             )}
           </TanAntFormItem>
-          {formApi.getFieldValue("persistentIdentifier") ? (
-            <p>
-              Special Identifier:{" "}
-              {formApi.getFieldValue("persistentIdentifier")}
-            </p>
-          ) : null}
           <formApi.Field name="legacyStatus">
             {(field) => (
               <Form.Item
