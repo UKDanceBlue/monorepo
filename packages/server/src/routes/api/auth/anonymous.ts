@@ -1,4 +1,4 @@
-import { AccessLevel, AuthSource, DbRole } from "@ukdanceblue/common";
+import { AuthSource } from "@ukdanceblue/common";
 import type { Context } from "koa";
 import { DateTime } from "luxon";
 
@@ -27,11 +27,6 @@ export const anonymousLogin = (ctx: Context) => {
   }
 
   const jwt = makeUserJwt({
-    auth: {
-      accessLevel: AccessLevel.Public,
-      dbRole: DbRole.Public,
-      committees: [],
-    },
     authSource: AuthSource.Anonymous,
   });
   if (setCookie) {

@@ -340,7 +340,7 @@ export class PersonResolver {
       rootMatch: [
         {
           root: "uuid",
-          extractor: (userData) => userData.userId,
+          extractor: ({ userData }) => userData.userId,
         },
       ],
     }
@@ -373,7 +373,7 @@ export class PersonResolver {
       rootMatch: [
         {
           root: "uuid",
-          extractor: (userData) => userData.userId,
+          extractor: ({ userData }) => userData.userId,
         },
       ],
     }
@@ -401,7 +401,7 @@ export class PersonResolver {
       rootMatch: [
         {
           root: "uuid",
-          extractor: (userData) => userData.userId,
+          extractor: ({ userData }) => userData.userId,
         },
       ],
     }
@@ -429,7 +429,7 @@ export class PersonResolver {
       rootMatch: [
         {
           root: "uuid",
-          extractor: (userData) => userData.userId,
+          extractor: ({ userData }) => userData.userId,
         },
       ],
     }

@@ -1,9 +1,4 @@
-import {
-  AccessLevel,
-  AuthSource,
-  DbRole,
-  MembershipPositionType,
-} from "@ukdanceblue/common";
+import { AuthSource } from "@ukdanceblue/common";
 import type { Context } from "koa";
 import { DateTime } from "luxon";
 
@@ -35,16 +30,7 @@ export const demoLogin = async (ctx: Context) => {
   const person = await getOrMakeDemoUser();
 
   const jwt = makeUserJwt({
-    auth: {
-      accessLevel: AccessLevel.UKY,
-      dbRole: DbRole.UKY,
-      committees: [],
-    },
     userId: person.uuid,
-    teamIds: person.memberships.map((m) => m.team.uuid),
-    captainOfTeamIds: person.memberships
-      .filter((m) => m.position === MembershipPositionType.Captain)
-      .map((m) => m.team.uuid),
     authSource: AuthSource.Demo,
   });
   if (setCookie) {

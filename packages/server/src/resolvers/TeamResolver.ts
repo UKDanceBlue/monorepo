@@ -298,7 +298,8 @@ export class TeamResolver {
       rootMatch: [
         {
           root: "uuid",
-          extractor: ({ teamIds }) => teamIds,
+          extractor: ({ teamMemberships }) =>
+            teamMemberships.map(({ teamId }) => teamId),
         },
       ],
     }
@@ -331,7 +332,8 @@ export class TeamResolver {
       rootMatch: [
         {
           root: "uuid",
-          extractor: ({ teamIds }) => teamIds,
+          extractor: ({ teamMemberships }) =>
+            teamMemberships.map(({ teamId }) => teamId),
         },
       ],
     }

@@ -8,7 +8,9 @@ import type {
   CommitteeRole,
   DbRole,
   EffectiveCommitteeRole,
+  MembershipPositionType,
   PersonNode,
+  TeamType,
   UserData,
 } from "../index.js";
 import {
@@ -163,6 +165,14 @@ export function checkAuthorization(
   return matches;
 }
 
+interface ExtractorData {
+  authenticatedUser: PersonNode | null;
+  effectiveCommitteeRoles: EffectiveCommitteeRole[];
+  teamMemberships: SimpleTeamMembership[];
+  userData: UserData;
+  authorization: Authorization;
+}
+
 /**
  * An AccessControlParam accepts a user if:
  *
@@ -177,23 +187,24 @@ export interface AccessControlParam<
   accessLevel?: AccessLevel;
   argumentMatch?: {
     argument: string | ((args: ArgsDictionary) => Primitive | Primitive[]);
-    extractor: (
-      userData: UserData,
-      person: PersonNode | null
-    ) => Primitive | Primitive[];
+    extractor: (param: ExtractorData) => Primitive | Primitive[];
   }[];
   rootMatch?: {
     root: string | ((root: RootType) => Primitive | Primitive[]);
-    extractor: (
-      userData: UserData,
-      person: PersonNode | null
-    ) => Primitive | Primitive[];
+    extractor: (param: ExtractorData) => Primitive | Primitive[];
   }[];
+}
+
+export interface SimpleTeamMembership {
+  teamType: TeamType;
+  teamId: string;
+  position: MembershipPositionType;
 }
 
 export interface AuthorizationContext {
   authenticatedUser: PersonNode | null;
   effectiveCommitteeRoles: EffectiveCommitteeRole[];
+  teamMemberships: SimpleTeamMembership[];
   userData: UserData;
   authorization: Authorization;
 }
@@ -209,7 +220,7 @@ export function AccessControl<
   ) => {
     const { context, args } = resolverData;
     const root = resolverData.root as RootType;
-    const { userData, authenticatedUser, authorization } = context;
+    const { authorization } = context;
 
     let ok = false;
 
@@ -247,7 +258,7 @@ export function AccessControl<
               "FieldMatchAuthorized argument is null or undefined."
             );
           }
-          const expectedValue = match.extractor(userData, authenticatedUser);
+          const expectedValue = match.extractor(context);
 
           if (Array.isArray(expectedValue)) {
             if (Array.isArray(argValue)) {
@@ -279,7 +290,7 @@ export function AccessControl<
               "FieldMatchAuthorized root is null or undefined."
             );
           }
-          const expectedValue = match.extractor(userData, authenticatedUser);
+          const expectedValue = match.extractor(context);
 
           if (Array.isArray(expectedValue)) {
             if (Array.isArray(rootValue)) {

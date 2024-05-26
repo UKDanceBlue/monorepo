@@ -34,6 +34,7 @@ export const graphqlContextFunction: ContextFunction<
     return {
       authenticatedUser: null,
       effectiveCommitteeRoles: [],
+      teamMemberships: [],
       userData: {
         authSource: AuthSource.None,
       },
@@ -47,6 +48,7 @@ export const graphqlContextFunction: ContextFunction<
     return {
       authenticatedUser: null,
       effectiveCommitteeRoles: [],
+      teamMemberships: [],
       userData: {
         authSource,
       },
@@ -86,6 +88,14 @@ export const graphqlContextFunction: ContextFunction<
         ) ?? [];
     logger.trace("graphqlContextFunction Found committees", committees);
 
+    const teamMemberships = await personRepository.findMembershipsOfPerson({
+      id: person.id,
+    });
+    logger.trace(
+      "graphqlContextFunction Found team memberships",
+      teamMemberships
+    );
+
     const effectiveCommitteeRoles =
       await personRepository.getEffectiveCommitteeRolesOfPerson({
         id: person.id,
@@ -111,6 +121,12 @@ export const graphqlContextFunction: ContextFunction<
     return {
       authenticatedUser: personResource,
       effectiveCommitteeRoles,
+      teamMemberships:
+        teamMemberships?.map((membership) => ({
+          teamType: membership.team.type,
+          position: membership.position,
+          teamId: membership.team.uuid,
+        })) ?? [],
       userData: {
         userId,
         authSource,
@@ -127,6 +143,7 @@ export const graphqlContextFunction: ContextFunction<
     return {
       authenticatedUser: null,
       effectiveCommitteeRoles: [],
+      teamMemberships: [],
       userData: {
         authSource: AuthSource.None,
       },

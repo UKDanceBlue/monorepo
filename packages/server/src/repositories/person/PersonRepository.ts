@@ -292,12 +292,16 @@ export class PersonRepository {
           committeeRole: CommitteeRole;
         }
       | Record<string, never> = {},
-    types: TeamType[] | undefined = undefined
+    types: TeamType[] | undefined = undefined,
+    includeTeam: boolean = false
   ) {
     const rows = await this.prisma.person.findUnique({
       where: param,
       select: {
         memberships: {
+          include: {
+            team: includeTeam,
+          },
           where: {
             AND: [
               opts,

@@ -1,10 +1,6 @@
 import type { IncomingMessage } from "node:http";
 
-import {
-  AuthSource,
-  MembershipPositionType,
-  makeUserData,
-} from "@ukdanceblue/common";
+import { AuthSource, makeUserData } from "@ukdanceblue/common";
 import createHttpError from "http-errors";
 import jsonwebtoken from "jsonwebtoken";
 import type { Context } from "koa";
@@ -135,11 +131,7 @@ export const oidcCallback = async (ctx: Context) => {
     const jwt = makeUserJwt(
       makeUserData(
         await personModelToResource(updatedPerson, personRepository),
-        AuthSource.LinkBlue,
-        currentPerson.memberships.map((m) => m.team.uuid),
-        currentPerson.memberships
-          .filter((m) => m.position === MembershipPositionType.Captain)
-          .map((m) => m.team.uuid)
+        AuthSource.LinkBlue
       )
     );
     let redirectTo = session.redirectToAfterLogin;

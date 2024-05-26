@@ -1,5 +1,5 @@
 import type { Authorization } from "@ukdanceblue/common";
-import { AccessLevel, defaultAuthorization } from "@ukdanceblue/common";
+import { defaultAuthorization, roleToAccessLevel } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 import { useQuery } from "urql";
 
@@ -8,6 +8,10 @@ const loginStateDocument = graphql(/* GraphQL */ `
     loginState {
       loggedIn
       dbRole
+      effectiveCommitteeRoles {
+        role
+        committee
+      }
     }
   }
 `);
@@ -35,13 +39,19 @@ export function useLoginState(): {
     };
   }
 
+  const committees = data.loginState.effectiveCommitteeRoles.map(
+    ({ committee, role }) => ({ identifier: committee, role })
+  );
+
   return {
     loggedIn: data.loginState.loggedIn,
     authorization: {
+      committees,
       dbRole: data.loginState.dbRole,
-      // TODO: Add committee info back here
-      accessLevel: AccessLevel.Public,
-      committees: [],
+      accessLevel: roleToAccessLevel({
+        dbRole: data.loginState.dbRole,
+        committees,
+      }),
     },
   };
 }
