@@ -15,11 +15,6 @@
       "node": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./react": {
-      "node": null,
-      "types": "./dist/react.d.ts",
-      "default": "./dist/react/index.js"
-    },
     "./client-parsers": {
       "node": null,
       "default": "./dist/client-parsers/index.js"

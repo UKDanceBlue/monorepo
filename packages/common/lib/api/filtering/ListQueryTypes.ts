@@ -68,8 +68,8 @@ export interface PaginationOptions {
 }
 
 export const SortDirection = {
-  ASCENDING: "ASCENDING",
-  DESCENDING: "DESCENDING",
+  ASCENDING: "ASC",
+  DESCENDING: "DESC",
 } as const;
 
 export type SortDirection = (typeof SortDirection)[keyof typeof SortDirection];

@@ -44,10 +44,6 @@ export * from "./api/filtering/list-query-args/registerFilterKeyEnums.js";
 
 export * from "./ui/color.js";
 
-// React specific code:
-export * from "./ui/formReducer.js";
-export { initializeReact } from "./ui/reactLib.js";
-
 /*
 Note:
 If the .js is missing in a bunch of places, use this regex to replace:
