@@ -2,7 +2,6 @@ import {
   AuthSource,
   DbRole,
   EffectiveCommitteeRole,
-  PersonNode,
 } from "@ukdanceblue/common";
 import { Ctx, Field, ObjectType, Query, Resolver } from "type-graphql";
 import { Service } from "typedi";
@@ -22,9 +21,6 @@ export class LoginState {
 
   @Field(() => [EffectiveCommitteeRole])
   effectiveCommitteeRoles!: EffectiveCommitteeRole[];
-
-  @Field(() => PersonNode, { nullable: true })
-  person?: PersonNode;
 }
 
 @Resolver(() => LoginState)

@@ -152,6 +152,7 @@ export class PersonResolver {
     private readonly membershipRepository: MembershipRepository
   ) {}
 
+  @AccessControl({ accessLevel: AccessLevel.Committee })
   @Query(() => GetPersonResponse, { name: "person" })
   async getByUuid(@Arg("uuid") uuid: string): Promise<GetPersonResponse> {
     const row = await this.personRepository.findPersonByUnique({ uuid });
@@ -220,7 +221,7 @@ export class PersonResolver {
   }
 
   @Query(() => GetPersonResponse, { name: "me" })
-  me(@Ctx() ctx: GraphQLContext): GetPersonResponse | null {
+  me(@Ctx() ctx: GraphQLContext): GetPersonResponse {
     return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
       ctx.authenticatedUser
     );

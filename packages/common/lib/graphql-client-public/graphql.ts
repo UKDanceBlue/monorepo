@@ -754,7 +754,6 @@ export type LoginState = {
   readonly dbRole: DbRole;
   readonly effectiveCommitteeRoles: ReadonlyArray<EffectiveCommitteeRole>;
   readonly loggedIn: Scalars['Boolean']['output'];
-  readonly person?: Maybe<PersonNode>;
 };
 
 export type MarathonHourNode = Node & {

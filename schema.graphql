@@ -763,7 +763,6 @@ type LoginState {
   dbRole: DbRole!
   effectiveCommitteeRoles: [EffectiveCommitteeRole!]!
   loggedIn: Boolean!
-  person: PersonNode
 }
 
 type MarathonHourNode implements Node {

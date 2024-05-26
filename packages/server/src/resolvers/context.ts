@@ -86,14 +86,20 @@ export const graphqlContextFunction: ContextFunction<
           (committee): committee is NonNullable<typeof committee> =>
             committee != null
         ) ?? [];
-    logger.trace("graphqlContextFunction Found committees", committees);
+    logger.trace("graphqlContextFunction Found committees", ...committees);
 
-    const teamMemberships = await personRepository.findMembershipsOfPerson({
-      id: person.id,
-    });
+    const teamMemberships =
+      (await personRepository.findMembershipsOfPerson(
+        {
+          id: person.id,
+        },
+        {},
+        undefined,
+        true
+      )) ?? [];
     logger.trace(
       "graphqlContextFunction Found team memberships",
-      teamMemberships
+      ...teamMemberships
     );
 
     const effectiveCommitteeRoles =
@@ -102,7 +108,7 @@ export const graphqlContextFunction: ContextFunction<
       });
     logger.trace(
       "graphqlContextFunction Effective committee roles",
-      effectiveCommitteeRoles
+      ...effectiveCommitteeRoles
     );
 
     let dbRole: DbRole;
@@ -118,15 +124,17 @@ export const graphqlContextFunction: ContextFunction<
     } else {
       dbRole = DbRole.None;
     }
+
+    logger.trace("graphqlContextFunction", { dbRole });
+
     return {
       authenticatedUser: personResource,
       effectiveCommitteeRoles,
-      teamMemberships:
-        teamMemberships?.map((membership) => ({
-          teamType: membership.team.type,
-          position: membership.position,
-          teamId: membership.team.uuid,
-        })) ?? [],
+      teamMemberships: teamMemberships.map((membership) => ({
+        teamType: membership.team.type,
+        position: membership.position,
+        teamId: membership.team.uuid,
+      })),
       userData: {
         userId,
         authSource,
