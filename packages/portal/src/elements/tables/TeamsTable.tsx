@@ -3,7 +3,7 @@ import { useListQuery } from "@hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useNavigate } from "@tanstack/react-router";
-import { SortDirection } from "@ukdanceblue/common";
+import { SortDirection, TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
@@ -112,31 +112,41 @@ export const TeamsTable = () => {
           title: "Type",
           dataIndex: "type",
           sorter: true,
-          filters: [
-            {
-              text: "Committee",
-              value: "Committee",
-            },
-            {
-              text: "Spirit",
-              value: "Spirit",
-            },
-          ],
+          filters: Object.entries(TeamType).map(([key, value]) => ({
+            text: key,
+            value,
+          })),
         },
         {
           title: "Legacy Status",
           dataIndex: "legacyStatus",
           sorter: true,
-          filters: [
-            {
-              text: "New Team",
-              value: "NewTeam",
-            },
-            {
-              text: "Returning Team",
-              value: "ReturningTeam",
-            },
-          ],
+          filters: Object.values(TeamLegacyStatus).map((value) => {
+            let text: string;
+            switch (value) {
+              case TeamLegacyStatus.NewTeam: {
+                text = "New Team";
+                break;
+              }
+              case TeamLegacyStatus.ReturningTeam: {
+                text = "Returning Team";
+                break;
+              }
+              case TeamLegacyStatus.DemoTeam: {
+                text = "Demo Team";
+                break;
+              }
+              default: {
+                value satisfies never;
+                text = String(value);
+                break;
+              }
+            }
+            return {
+              text,
+              value,
+            };
+          }),
           render: (value) => {
             switch (value) {
               case "NewTeam": {
