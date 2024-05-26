@@ -1,8 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
+import { DetailedError, ErrorCode } from "@ukdanceblue/common";
 import { Service } from "typedi";
-
-import { InvariantError } from "../../../lib/InvariantError.js";
 
 type UniqueParam =
   | {
@@ -113,7 +112,8 @@ export class EventImagesRepository {
     } else if (count === 1) {
       return true;
     } else {
-      throw new InvariantError(
+      throw new DetailedError(
+        ErrorCode.InternalFailure,
         "Expected to remove at most one event-image relationship, but removed more than one."
       );
     }

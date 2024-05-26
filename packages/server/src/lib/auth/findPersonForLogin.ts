@@ -96,33 +96,6 @@ export async function findPersonForLogin(
     if (!userInfo.email) {
       throw new Error("No email provided for new user");
     }
-    // currentPerson = PersonModel.build({
-    //   authIds,
-    //   email: userData.email,
-    // });
-
-    // const { name, linkblue, role } = userData;
-
-    // if (name) {
-    //   currentPerson.name = name;
-    // }
-    // if (linkblue) {
-    //   currentPerson.linkblue = linkblue;
-    // }
-    // if (role) {
-    //   currentPerson.committeeRole = role.committeeRole;
-    //   currentPerson.committeeName = role.committeeIdentifier;
-    // }
-
-    // const savedPerson = await currentPerson.save({
-    //   transaction: t,
-    //   returning: ["id"],
-    // });
-
-    // const { uuid: finalPersonUuid } = await savedPerson.save({
-    //   transaction: t,
-    //   returning: ["uuid"],
-    // });
 
     const memberOfIds = await Promise.all(
       memberOf?.map(async (teamId) => {
