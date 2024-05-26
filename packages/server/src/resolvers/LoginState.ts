@@ -35,7 +35,7 @@ export class LoginStateResolver {
     return {
       loggedIn: ctx.authenticatedUser != null,
       effectiveCommitteeRoles: ctx.effectiveCommitteeRoles,
-      dbRole: ctx.userData.auth.dbRole,
+      dbRole: ctx.authorization.dbRole,
       authSource: ctx.userData.authSource,
     };
   }

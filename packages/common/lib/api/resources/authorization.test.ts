@@ -275,25 +275,6 @@ describe("checkAuthorization", () => {
     ).toBe(false);
   });
 
-  it("should work with exact committeeRole matching", () => {
-    expect(
-      checkAuthorization(
-        {
-          committeeRole: CommitteeRole.Chair,
-        },
-        techChair
-      )
-    ).toBe(true);
-    expect(
-      checkAuthorization(
-        {
-          committeeRole: CommitteeRole.Chair,
-        },
-        none
-      )
-    ).toBe(false);
-  });
-
   it("should work with minimum dbRole matching", () => {
     expect(
       checkAuthorization(
@@ -339,7 +320,6 @@ describe("checkAuthorization", () => {
           accessLevel: AccessLevel.Admin,
           dbRole: DbRole.Committee,
           committeeIdentifier: CommitteeIdentifier.techCommittee,
-          committeeRole: CommitteeRole.Chair,
         },
         techChair
       )

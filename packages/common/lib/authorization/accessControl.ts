@@ -32,10 +32,10 @@ export interface AuthorizationRule {
    * Committee > TeamCaptain > TeamMember > Public > None
    */
   minDbRole?: DbRole;
-  /**
-   * Exact committee role, cannot be used with minCommitteeRole
-   */
-  committeeRole?: CommitteeRole;
+  // /**
+  //  * Exact committee role, cannot be used with minCommitteeRole
+  //  */
+  // committeeRole?: CommitteeRole;
   /**
    * Minimum committee role, cannot be used with committeeRole
    */
@@ -66,7 +66,7 @@ export function checkAuthorization(
     accessLevel,
     committeeIdentifier,
     committeeIdentifiers,
-    committeeRole,
+    // committeeRole,
     custom,
     dbRole,
     minCommitteeRole,
@@ -77,11 +77,11 @@ export function checkAuthorization(
   if (minDbRole != null && dbRole != null) {
     throw new TypeError(`Cannot specify both dbRole and minDbRole.`);
   }
-  if (minCommitteeRole != null && committeeRole != null) {
-    throw new TypeError(
-      `Cannot specify both committeeRole and minCommitteeRole.`
-    );
-  }
+  // if (minCommitteeRole != null && committeeRole != null) {
+  //   throw new TypeError(
+  //     `Cannot specify both committeeRole and minCommitteeRole.`
+  //   );
+  // }
   if (committeeIdentifier != null && committeeIdentifiers != null) {
     throw new TypeError(
       `Cannot specify both committeeIdentifier and committeeIdentifiers.`
@@ -93,31 +93,42 @@ export function checkAuthorization(
   // Access Level
   if (accessLevel != null) {
     matches &&= authorization.accessLevel >= accessLevel;
+    console.log(
+      `Access level ${authorization.accessLevel} >= ${accessLevel}: ${matches}`
+    );
   }
 
   // DB role
   if (dbRole != null) {
     matches &&= authorization.dbRole === dbRole;
+    console.log(`DB role ${authorization.dbRole} === ${dbRole}: ${matches}`);
   }
   if (minDbRole != null) {
     matches &&= compareDbRole(authorization.dbRole, minDbRole) >= 0;
+    console.log(`DB role ${authorization.dbRole} >= ${minDbRole}: ${matches}`);
   }
 
   // Committee role
-  if (committeeRole != null) {
-    matches &&= authorization.committees.some(
-      (committee) =>
-        committee.role === committeeRole &&
-        committee.identifier === committeeIdentifier
-    );
-  }
+  // if (committeeRole != null) {
+  //   matches &&= authorization.committees.some(
+  //     (committee) =>
+  //       committee.role === committeeRole &&
+  //       committee.identifier === committeeIdentifier
+  //   );
+  // }
   if (minCommitteeRole != null) {
     if (authorization.committees.length === 0) {
       matches = false;
+      console.log(`No committee roles: ${matches}`);
     } else {
       matches &&= authorization.committees.some(
         (committee) =>
           compareCommitteeRole(committee.role, minCommitteeRole) >= 0
+      );
+      console.log(
+        `Committee role ${authorization.committees
+          .map((c) => c.role)
+          .join(", ")} >= ${minCommitteeRole}: ${matches}`
       );
     }
   }
@@ -127,16 +138,27 @@ export function checkAuthorization(
     matches &&= authorization.committees.some(
       (committee) => committee.identifier === committeeIdentifier
     );
+    console.log(
+      `Committee identifier ${authorization.committees
+        .map((c) => c.identifier)
+        .join(", ")} === ${committeeIdentifier}: ${matches}`
+    );
   }
   if (committeeIdentifiers != null) {
     matches &&= authorization.committees.some((committee) =>
       committeeIdentifiers.includes(committee.identifier)
+    );
+    console.log(
+      `Committee identifier ${authorization.committees
+        .map((c) => c.identifier)
+        .join(", ")} in ${committeeIdentifiers.join(", ")}: ${matches}`
     );
   }
 
   // Custom auth checker
   if (custom != null) {
     matches &&= custom(authorization);
+    console.log(`Custom auth check: ${matches}`);
   }
   return matches;
 }
@@ -173,6 +195,7 @@ export interface AuthorizationContext {
   authenticatedUser: PersonNode | null;
   effectiveCommitteeRoles: EffectiveCommitteeRole[];
   userData: UserData;
+  authorization: Authorization;
 }
 
 export function AccessControl<
@@ -186,13 +209,13 @@ export function AccessControl<
   ) => {
     const { context, args } = resolverData;
     const root = resolverData.root as RootType;
-    const { userData, authenticatedUser } = context;
+    const { userData, authenticatedUser, authorization } = context;
 
     let ok = false;
 
     for (const rule of params) {
       if (rule.accessLevel != null) {
-        if (rule.accessLevel > userData.auth.accessLevel) {
+        if (rule.accessLevel > authorization.accessLevel) {
           continue;
         }
       }
@@ -205,7 +228,7 @@ export function AccessControl<
           );
         }
         const matches = rule.authRules.some((rule) =>
-          checkAuthorization(rule, userData.auth)
+          checkAuthorization(rule, authorization)
         );
         if (!matches) {
           continue;

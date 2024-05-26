@@ -1,10 +1,5 @@
 import type { JwtPayload, UserData } from "@ukdanceblue/common";
-import {
-  AccessLevel,
-  AuthSource,
-  CommitteeRole,
-  DbRole,
-} from "@ukdanceblue/common";
+import { AuthSource } from "@ukdanceblue/common";
 import type { Request } from "express";
 import jsonwebtoken from "jsonwebtoken";
 
@@ -20,15 +15,7 @@ export function isValidJwtPayload(payload: unknown): payload is JwtPayload {
   if (typeof payload !== "object" || payload === null) {
     return false;
   }
-  const {
-    sub,
-    auth_source,
-    dbRole,
-    committees,
-    access_level,
-    team_ids,
-    captain_of_team_ids,
-  } = payload as Record<keyof JwtPayload, unknown>;
+  const { sub, auth_source } = payload as Record<keyof JwtPayload, unknown>;
   if (sub !== undefined && typeof sub !== "string") {
     return false;
   }
@@ -36,55 +23,6 @@ export function isValidJwtPayload(payload: unknown): payload is JwtPayload {
     ![...Object.values(AuthSource), "UkyLinkblue"].includes(
       auth_source as AuthSource
     )
-  ) {
-    return false;
-  }
-  if (
-    typeof dbRole !== "string" ||
-    !Object.values(DbRole).includes(dbRole as DbRole)
-  ) {
-    return false;
-  }
-  // if (
-  //   committee_role !== undefined &&
-  //   (typeof committee_role !== "string" ||
-  //     !Object.values(CommitteeRole).includes(committee_role as CommitteeRole))
-  // ) {
-  //   return false;
-  // }
-  // if (committee !== undefined && typeof committee !== "string") {
-  //   return false;
-  // }
-  if (committees) {
-    if (!Array.isArray(committees)) {
-      return false;
-    }
-    for (const committee of committees as unknown[]) {
-      if (
-        typeof committee !== "object" ||
-        committee === null ||
-        typeof (committee as { role?: unknown }).role !== "string" ||
-        !Object.values(CommitteeRole).includes(
-          (committee as { role?: unknown }).role as CommitteeRole
-        ) ||
-        typeof (committee as { identifier?: unknown }).identifier !== "string"
-      ) {
-        return false;
-      }
-    }
-  }
-  if (
-    typeof access_level !== "number" ||
-    !Object.values(AccessLevel).includes(access_level as AccessLevel)
-  ) {
-    return false;
-  }
-  if (team_ids !== undefined && !Array.isArray(team_ids)) {
-    return false;
-  }
-  if (
-    captain_of_team_ids !== undefined &&
-    !Array.isArray(captain_of_team_ids)
   ) {
     return false;
   }
@@ -105,21 +43,10 @@ export function makeUserJwt(user: UserData): string {
       (user.authSource as string) === "UkyLinkblue"
         ? AuthSource.LinkBlue
         : user.authSource,
-    dbRole: user.auth.dbRole,
-    access_level: user.auth.accessLevel,
   };
 
   if (user.userId) {
     payload.sub = user.userId;
-  }
-  if (user.auth.committees.length > 0) {
-    payload.committees = user.auth.committees;
-  }
-  if (user.teamIds) {
-    payload.team_ids = user.teamIds;
-  }
-  if (user.captainOfTeamIds) {
-    payload.captain_of_team_ids = user.captainOfTeamIds;
   }
 
   return jsonwebtoken.sign(payload, jwtSecret, {
@@ -147,32 +74,12 @@ export function parseUserJwt(token: string): UserData {
     throw new Error("Invalid JWT payload");
   }
 
-  if (
-    payload.auth_source === AuthSource.Anonymous &&
-    payload.access_level > AccessLevel.Public
-  ) {
-    throw new jsonwebtoken.JsonWebTokenError(
-      "Anonymous users cannot have access levels greater than public"
-    );
-  }
-
   const userData: UserData = {
-    auth: {
-      accessLevel: payload.access_level,
-      dbRole: payload.dbRole,
-      committees: payload.committees || [],
-    },
     authSource: payload.auth_source,
   };
 
   if (payload.sub) {
     userData.userId = payload.sub;
-  }
-  if (payload.team_ids) {
-    userData.teamIds = payload.team_ids;
-  }
-  if (payload.captain_of_team_ids) {
-    userData.captainOfTeamIds = payload.captain_of_team_ids;
   }
 
   return userData;

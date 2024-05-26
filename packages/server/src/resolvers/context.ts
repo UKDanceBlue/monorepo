@@ -1,7 +1,12 @@
 import type { ContextFunction } from "@apollo/server";
 import type { KoaContextFunctionArgument } from "@as-integrations/koa";
 import type { AuthorizationContext } from "@ukdanceblue/common";
-import { AuthSource, MembershipPositionType } from "@ukdanceblue/common";
+import {
+  AuthSource,
+  CommitteeRole,
+  DbRole,
+  roleToAccessLevel,
+} from "@ukdanceblue/common";
 import type { DefaultState } from "koa";
 import { Container } from "typedi";
 
@@ -30,22 +35,22 @@ export const graphqlContextFunction: ContextFunction<
       authenticatedUser: null,
       effectiveCommitteeRoles: [],
       userData: {
-        auth: defaultAuthorization,
         authSource: AuthSource.None,
       },
+      authorization: defaultAuthorization,
       contextErrors: [],
     };
   }
-  const { userId, auth, authSource } = parseUserJwt(token);
+  const { userId, authSource } = parseUserJwt(token);
   if (!userId) {
     logger.trace("graphqlContextFunction No userId found");
     return {
       authenticatedUser: null,
       effectiveCommitteeRoles: [],
       userData: {
-        auth,
         authSource,
       },
+      authorization: defaultAuthorization,
       contextErrors: [],
     };
   }
@@ -60,24 +65,60 @@ export const graphqlContextFunction: ContextFunction<
       person,
       personRepository
     );
+    logger.trace("graphqlContextFunction Found user", personResource);
+
+    const memberships = await personRepository.findCommitteeMembershipsOfPerson(
+      { id: person.id }
+    );
+    const committees =
+      memberships
+        ?.map((membership) =>
+          membership.team.correspondingCommittee
+            ? {
+                identifier: membership.team.correspondingCommittee.identifier,
+                role: membership.committeeRole ?? CommitteeRole.Member,
+              }
+            : undefined
+        )
+        .filter(
+          (committee): committee is NonNullable<typeof committee> =>
+            committee != null
+        ) ?? [];
+    logger.trace("graphqlContextFunction Found committees", committees);
 
     const effectiveCommitteeRoles =
       await personRepository.getEffectiveCommitteeRolesOfPerson({
         id: person.id,
       });
+    logger.trace(
+      "graphqlContextFunction Effective committee roles",
+      effectiveCommitteeRoles
+    );
 
-    logger.trace("graphqlContextFunction Found user", personResource);
+    let dbRole: DbRole;
+    if (effectiveCommitteeRoles.length > 0) {
+      dbRole = DbRole.Committee;
+    } else if (
+      authSource === AuthSource.LinkBlue ||
+      authSource === AuthSource.Demo
+    ) {
+      dbRole = DbRole.UKY;
+    } else if (authSource === AuthSource.Anonymous) {
+      dbRole = DbRole.Public;
+    } else {
+      dbRole = DbRole.None;
+    }
     return {
       authenticatedUser: personResource,
       effectiveCommitteeRoles,
       userData: {
-        auth,
         userId,
-        teamIds: person.memberships.map((m) => m.team.uuid),
-        captainOfTeamIds: person.memberships
-          .filter((m) => m.position === MembershipPositionType.Captain)
-          .map((m) => m.team.uuid),
         authSource,
+      },
+      authorization: {
+        committees,
+        dbRole,
+        accessLevel: roleToAccessLevel({ dbRole, committees }),
       },
       contextErrors: [],
     };
@@ -87,9 +128,9 @@ export const graphqlContextFunction: ContextFunction<
       authenticatedUser: null,
       effectiveCommitteeRoles: [],
       userData: {
-        auth: defaultAuthorization,
         authSource: AuthSource.None,
       },
+      authorization: defaultAuthorization,
       contextErrors: ["User not found"],
     };
   }
