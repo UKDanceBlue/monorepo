@@ -9,6 +9,7 @@ import {
   graphql,
 } from "@ukdanceblue/common/graphql-client-admin";
 import { Button, Flex, Table } from "antd";
+import { useEffect } from "react";
 import { useQuery } from "urql";
 
 const teamsTableQueryDocument = graphql(/* GraphQL */ `
@@ -96,6 +97,19 @@ export const TeamsTable = () => {
     error,
     loadingMessage: "Loading teams...",
   });
+
+  useEffect(() => {
+    if (
+      queryOptions.oneOfFilters.filter((f) => f.field === "marathonYear")
+        .length === 0
+    ) {
+      // TODO: Extract the marathon filter from the table and integrate it with a global setting for marathon
+      updateFilter("marathonYear", {
+        field: "marathonYear",
+        value: ["DB24"],
+      });
+    }
+  }, [queryOptions.oneOfFilters, updateFilter]);
 
   return (
     <Table
