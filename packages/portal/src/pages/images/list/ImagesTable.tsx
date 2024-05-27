@@ -65,9 +65,7 @@ export const ImagesTable = () => {
       {
         initPage: 1,
         initPageSize: 10,
-        initSorting: [
-          { field: "createdAt", direction: SortDirection.DESCENDING },
-        ],
+        initSorting: [{ field: "createdAt", direction: SortDirection.desc }],
       },
       {
         allFields: ["alt", "width", "height", "createdAt", "updatedAt"],
@@ -186,8 +184,8 @@ export const ImagesTable = () => {
                 | "updatedAt",
               direction:
                 sort.order === "ascend"
-                  ? SortDirection.ASCENDING
-                  : SortDirection.DESCENDING,
+                  ? SortDirection.asc
+                  : SortDirection.desc,
             });
           }
         }}

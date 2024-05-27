@@ -161,7 +161,7 @@ export class TeamResolver {
         order:
           query.sortBy?.map((key, i) => [
             key,
-            query.sortDirection?.[i] ?? SortDirection.DESCENDING,
+            query.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
           query.page != null && query.pageSize != null

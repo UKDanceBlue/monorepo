@@ -11,7 +11,7 @@ const viewPersonPageDocument = graphql(/* GraphQL */ `
         ...PersonEditorFragment
       }
     }
-    teams(sendAll: true, sortBy: ["name"], sortDirection: [ASCENDING]) {
+    teams(sendAll: true, sortBy: ["name"], sortDirection: [asc]) {
       data {
         ...TeamNameFragment
       }

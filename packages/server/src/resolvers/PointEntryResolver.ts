@@ -24,7 +24,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import type { PersonRepository } from "../repositories/person/PersonRepository.js";
+import { PersonRepository } from "../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
 import { PointEntryRepository } from "../repositories/pointEntry/PointEntryRepository.js";
 import { pointEntryModelToResource } from "../repositories/pointEntry/pointEntryModelToResource.js";
@@ -127,7 +127,7 @@ export class PointEntryResolver {
         order:
           query.sortBy?.map((key, i) => [
             key,
-            query.sortDirection?.[i] ?? SortDirection.DESCENDING,
+            query.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
           query.page != null && query.pageSize != null

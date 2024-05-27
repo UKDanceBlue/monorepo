@@ -264,7 +264,7 @@ export const useEvents = ({
               value: $lastTimestamp
             }
           ]
-          sortDirection: ASCENDING
+          sortDirection: asc
           sortBy: "occurrence"
         ) {
           data {

@@ -69,9 +69,7 @@ export const TeamsTable = () => {
     {
       initPage: 1,
       initPageSize: 20,
-      initSorting: [
-        { field: "totalPoints", direction: SortDirection.DESCENDING },
-      ],
+      initSorting: [{ field: "totalPoints", direction: SortDirection.desc }],
     },
     {
       allFields: [
@@ -238,9 +236,7 @@ export const TeamsTable = () => {
               | "legacyStatus"
               | "marathonYear",
             direction:
-              sort.order === "ascend"
-                ? SortDirection.ASCENDING
-                : SortDirection.DESCENDING,
+              sort.order === "ascend" ? SortDirection.asc : SortDirection.desc,
           });
         }
         clearFilters();

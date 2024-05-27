@@ -24,7 +24,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import type { CommitteeRepository } from "../repositories/committee/CommitteeRepository.js";
+import { CommitteeRepository } from "../repositories/committee/CommitteeRepository.js";
 import { MarathonRepository } from "../repositories/marathon/MarathonRepository.js";
 import { marathonModelToResource } from "../repositories/marathon/marathonModelToResource.js";
 import { marathonHourModelToResource } from "../repositories/marathonHour/marathonHourModelToResource.js";
@@ -121,7 +121,7 @@ export class MarathonResolver
       order:
         args.sortBy?.map((key, i) => [
           key,
-          args.sortDirection?.[i] ?? SortDirection.DESCENDING,
+          args.sortDirection?.[i] ?? SortDirection.desc,
         ]) ?? [],
       skip:
         args.page != null && args.pageSize != null

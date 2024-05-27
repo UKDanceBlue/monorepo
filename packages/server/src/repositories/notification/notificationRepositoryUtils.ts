@@ -30,7 +30,7 @@ export function buildNotificationOrder(
       case "deliveryIssueAcknowledgedAt":
       case "sendAt":
       case "startedSendingAt": {
-        orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
+        orderBy[key] = sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
       default: {

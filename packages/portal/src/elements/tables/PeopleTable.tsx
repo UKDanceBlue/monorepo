@@ -134,8 +134,8 @@ export const PeopleTable = () => {
                 | "committeeName",
               direction:
                 sort.order === "ascend"
-                  ? SortDirection.ASCENDING
-                  : SortDirection.DESCENDING,
+                  ? SortDirection.asc
+                  : SortDirection.desc,
             });
           }
           clearFilters();

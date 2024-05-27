@@ -25,7 +25,7 @@ export function buildTeamOrder(
       case "createdAt":
       case "updatedAt": {
         orderBy.push({
-          [key]: sort === SortDirection.ASCENDING ? "asc" : "desc",
+          [key]: sort === SortDirection.asc ? "asc" : "desc",
         });
         break;
       }

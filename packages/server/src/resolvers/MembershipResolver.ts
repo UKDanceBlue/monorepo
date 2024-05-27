@@ -9,7 +9,7 @@ import { FieldResolver, Resolver, Root } from "type-graphql";
 import { Service } from "typedi";
 
 import { MembershipRepository } from "../repositories/membership/MembershipRepository.js";
-import type { PersonRepository } from "../repositories/person/PersonRepository.js";
+import { PersonRepository } from "../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
 import { teamModelToResource } from "../repositories/team/teamModelToResource.js";
 

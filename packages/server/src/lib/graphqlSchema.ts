@@ -37,24 +37,40 @@ const errorHandlingMiddleware: MiddlewareFn = async (_, next) => {
   }
 };
 
+const resolvers = [
+  ConfigurationResolver,
+  DeviceResolver,
+  EventResolver,
+  ImageResolver,
+  PersonResolver,
+  MembershipResolver,
+  NotificationResolver,
+  NotificationDeliveryResolver,
+  TeamResolver,
+  LoginStateResolver,
+  PointEntryResolver,
+  PointOpportunityResolver,
+  MarathonHourResolver,
+  MarathonResolver,
+  FeedResolver,
+] as const;
+
+for (const service of resolvers) {
+  // @ts-expect-error Typedi doesn't seem to like it, but it works
+  if (!Container.has(service)) {
+    logger.crit(`Failed to resolve service: "${service.name}"`);
+  } else {
+    try {
+      // @ts-expect-error Typedi doesn't seem to like it, but it works
+      Container.get(service);
+    } catch (error) {
+      logger.crit(`Failed to resolve service: "${service.name}"`, error);
+    }
+  }
+}
+
 export default await buildSchema({
-  resolvers: [
-    ConfigurationResolver,
-    DeviceResolver,
-    EventResolver,
-    ImageResolver,
-    PersonResolver,
-    MembershipResolver,
-    NotificationResolver,
-    NotificationDeliveryResolver,
-    TeamResolver,
-    LoginStateResolver,
-    PointEntryResolver,
-    PointOpportunityResolver,
-    MarathonHourResolver,
-    MarathonResolver,
-    FeedResolver,
-  ],
+  resolvers,
   emitSchemaFile: schemaPath,
   globalMiddlewares: [errorHandlingMiddleware],
   container: Container,

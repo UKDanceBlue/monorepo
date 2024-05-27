@@ -5,7 +5,7 @@ import { useQuery } from "urql";
 
 const createPersonPageDocument = graphql(/* GraphQL */ `
   query CreatePersonPage {
-    teams(sendAll: true, sortBy: ["name"], sortDirection: [ASCENDING]) {
+    teams(sendAll: true, sortBy: ["name"], sortDirection: [asc]) {
       data {
         ...TeamNameFragment
       }

@@ -141,8 +141,8 @@ export const NotificationDeliveriesTable = ({
                 | "deliveryError",
               direction:
                 sort.order === "ascend"
-                  ? SortDirection.ASCENDING
-                  : SortDirection.DESCENDING,
+                  ? SortDirection.asc
+                  : SortDirection.desc,
             });
           }
 

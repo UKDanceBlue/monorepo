@@ -21,7 +21,7 @@ export function buildImageOrder(
       case "createdAt":
       case "alt":
       case "updatedAt": {
-        orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
+        orderBy[key] = sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
       default: {

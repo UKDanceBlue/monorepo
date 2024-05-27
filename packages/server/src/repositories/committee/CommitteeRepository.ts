@@ -9,11 +9,9 @@ import {
 import { Service } from "typedi";
 
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type {
-  MarathonRepository,
-  UniqueMarathonParam,
-} from "../marathon/MarathonRepository.js";
-import type { MembershipRepository } from "../membership/MembershipRepository.js";
+import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
+import { MarathonRepository } from "../marathon/MarathonRepository.js";
+import { MembershipRepository } from "../membership/MembershipRepository.js";
 import type { SimpleUniqueParam } from "../shared.js";
 
 import * as CommitteeDescriptions from "./committeeDescriptions.js";

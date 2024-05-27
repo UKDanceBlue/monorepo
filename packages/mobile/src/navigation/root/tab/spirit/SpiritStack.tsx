@@ -27,7 +27,7 @@ const scoreBoardDocument = graphql(/* GraphQL */ `
     teams(
       sendAll: true
       sortBy: ["totalPoints", "name"]
-      sortDirection: [DESCENDING, ASCENDING]
+      sortDirection: [desc, asc]
       type: $type
     ) {
       data {

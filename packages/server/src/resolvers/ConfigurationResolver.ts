@@ -103,7 +103,7 @@ export class ConfigurationResolver {
   @Query(() => GetAllConfigurationsResponse, { name: "allConfigurations" })
   async getAll(): Promise<GetAllConfigurationsResponse> {
     const rows = await this.configurationRepository.findConfigurations(null, [
-      ["createdAt", SortDirection.DESCENDING],
+      ["createdAt", SortDirection.desc],
     ]);
 
     return GetAllConfigurationsResponse.newOk(

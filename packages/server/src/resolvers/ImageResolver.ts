@@ -108,7 +108,7 @@ export class ImageResolver {
       order:
         args.sortBy?.map((key, i) => [
           key,
-          args.sortDirection?.[i] ?? SortDirection.DESCENDING,
+          args.sortDirection?.[i] ?? SortDirection.desc,
         ]) ?? [],
       skip:
         args.page != null && args.pageSize != null

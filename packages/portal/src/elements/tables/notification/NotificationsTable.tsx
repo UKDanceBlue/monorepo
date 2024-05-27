@@ -136,8 +136,8 @@ export const NotificationsTable = () => {
               field: sort.field as "title" | "body" | "createdAt" | "updatedAt",
               direction:
                 sort.order === "ascend"
-                  ? SortDirection.ASCENDING
-                  : SortDirection.DESCENDING,
+                  ? SortDirection.asc
+                  : SortDirection.desc,
             });
           }
         }}

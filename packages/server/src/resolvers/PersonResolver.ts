@@ -30,7 +30,7 @@ import {
 import { Service } from "typedi";
 
 import { auditLogger } from "../lib/logging/auditLogging.js";
-import type { MembershipRepository } from "../repositories/membership/MembershipRepository.js";
+import { MembershipRepository } from "../repositories/membership/MembershipRepository.js";
 import {
   committeeMembershipModelToResource,
   membershipModelToResource,
@@ -199,7 +199,7 @@ export class PersonResolver {
         order:
           args.sortBy?.map((key, i) => [
             key,
-            args.sortDirection?.[i] ?? SortDirection.DESCENDING,
+            args.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
           args.page != null && args.pageSize != null

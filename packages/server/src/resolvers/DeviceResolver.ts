@@ -27,7 +27,7 @@ import { auditLogger } from "../lib/logging/auditLogging.js";
 import { DeviceRepository } from "../repositories/device/DeviceRepository.js";
 import { deviceModelToResource } from "../repositories/device/deviceModelToResource.js";
 import { notificationDeliveryModelToResource } from "../repositories/notificationDelivery/notificationDeliveryModelToResource.js";
-import type { PersonRepository } from "../repositories/person/PersonRepository.js";
+import { PersonRepository } from "../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
 
 import {
@@ -144,7 +144,7 @@ export class DeviceResolver {
         orderBy:
           query.sortBy?.map((key, i) => [
             key,
-            query.sortDirection?.[i] ?? SortDirection.DESCENDING,
+            query.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
           query.page != null && query.pageSize != null
