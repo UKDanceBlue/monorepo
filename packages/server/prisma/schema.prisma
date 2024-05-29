@@ -351,6 +351,7 @@ model Marathon {
   hours                MarathonHour[]
   teams                Team[]
   teamsWithTotalPoints TeamsWithTotalPoints[]
+  dbFundsTeams         DBFundsTeam[]
 
   @@index([uuid], map: "marathons_uuid")
   @@map("marathons")
@@ -406,7 +407,7 @@ model DBFundsTeam {
   // Unrelated to the 'id' field in the DBFunds API
   id                 Int                       @id @default(autoincrement())
   // The team's DbNum from the DBFunds API
-  dbNum              Int                       @unique @map("db_num")
+  dbNum              Int                       @map("db_num")
   // The team's name from the DBFunds API
   name               String
   // The team's total fundraising amount from the DBFunds API
@@ -416,27 +417,32 @@ model DBFundsTeam {
   // All fundraising entries for the team
   fundraisingEntries DBFundsFundraisingEntry[]
 
+  // The marathon the team is associated with
+  marathon   Marathon? @relation(fields: [marathonId], references: [id])
+  marathonId Int?      @map("marathon_id")
+
   // The corresponding team in our database
   team Team?
 
+  @@unique([dbNum, marathonId], map: "db_funds_teams_db_num_marathon_id_key")
   @@map("db_funds_teams")
 }
 
 // This table is kept in sync with the DBFunds API and should not be modified
 model DBFundsFundraisingEntry {
   // Unrelated to the 'id' field in the DBFunds API
-  id        Int         @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   // The amount of the entry
-  amount    Decimal
+  amount        Decimal
   // Who made the donation
-  donatedBy String      @map("donated_by")
+  donatedBy     String      @map("donated_by")
   // Who the donation was made for
-  donatedTo String      @map("donated_to")
+  donatedTo     String      @map("donated_to")
   // The date of the donation
-  date      DateTime
+  date          DateTime
   // The team's DbNum from the DBFunds API
-  teamDbNum Int         @map("team_db_num")
-  team      DBFundsTeam @relation(fields: [teamDbNum], references: [dbNum])
+  dbFundsTeamId Int         @map("team_db_num")
+  dbFundsTeam   DBFundsTeam @relation(fields: [dbFundsTeamId], references: [id])
 
   // The corresponding fundraising entry in our database
   fundraisingEntry FundraisingEntry?
