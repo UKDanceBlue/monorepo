@@ -580,7 +580,9 @@ export class PersonRepository {
         memberships: {
           create: {
             team: {
-              connect: demoTeam,
+              connect: {
+                id: demoTeam.id,
+              },
             },
             position: MembershipPositionType.Captain,
           },
@@ -588,7 +590,9 @@ export class PersonRepository {
         pointEntries: {
           create: {
             team: {
-              connect: demoTeam,
+              connect: {
+                id: demoTeam.id,
+              },
             },
             points: 1,
             comment: "Demo point",
