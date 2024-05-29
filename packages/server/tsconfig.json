@@ -12,23 +12,7 @@
     "allowJs": true,
     "checkJs": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "types": [
-      "body-parser",
-      "cookie-parser",
-      "cors",
-      "ejs",
-      "express",
-      "express-session",
-      "http-errors",
-      "jsonwebtoken",
-      "luxon",
-      "multer",
-      "node-fetch",
-      "normalize-path",
-      "qs",
-      "ws"
-    ]
+    "experimentalDecorators": true
   },
   "include": ["src"],
   "extends": "../../tsconfig.json"
