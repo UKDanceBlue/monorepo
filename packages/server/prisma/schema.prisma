@@ -167,18 +167,19 @@ model Membership {
 }
 
 model Person {
-  id           Int          @id @default(autoincrement())
-  uuid         String       @unique(map: "people_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt    DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
-  name         String?
-  email        String       @unique(map: "people_email_unique")
-  linkblue     String?      @unique(map: "people_linkblue_unique")
-  authIdPairs  AuthIdPair[]
-  devices      Device[]
-  memberships  Membership[]
-  pointEntries PointEntry[]
-  ownedFiles   File[]
+  id                         Int                     @id @default(autoincrement())
+  uuid                       String                  @unique(map: "people_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt                  DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                  DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
+  name                       String?
+  email                      String                  @unique(map: "people_email_unique")
+  linkblue                   String?                 @unique(map: "people_linkblue_unique")
+  authIdPairs                AuthIdPair[]
+  devices                    Device[]
+  memberships                Membership[]
+  pointEntries               PointEntry[]
+  ownedFiles                 File[]
+  assignedFundraisingEntries FundraisingAssignment[]
 
   @@index([uuid], map: "people_uuid")
   @@map("people")
@@ -241,6 +242,8 @@ model Team {
   pointEntries             PointEntry[]
   correspondingCommittee   Committee?       @relation(fields: [correspondingCommitteeId], references: [id])
   correspondingCommitteeId Int?             @map("committee_id")
+  dbFundsTeam              DBFundsTeam?     @relation(fields: [dbFundsTeamId], references: [id])
+  dbFundsTeamId            Int?             @unique @map("db_funds_team_id")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -396,6 +399,84 @@ model FeedItem {
 
   @@index([uuid], map: "feed_items_uuid")
   @@map("feed_items")
+}
+
+// This table is kept in sync with the DBFunds API and should not be modified
+model DBFundsTeam {
+  // Unrelated to the 'id' field in the DBFunds API
+  id                 Int                       @id @default(autoincrement())
+  // The team's DbNum from the DBFunds API
+  dbNum              Int                       @unique @map("db_num")
+  // The team's name from the DBFunds API
+  name               String
+  // The team's total fundraising amount from the DBFunds API
+  totalAmount        Float                     @map("total_amount")
+  // Whether the team is active in DBFunds
+  active             Boolean
+  // All fundraising entries for the team
+  fundraisingEntries DBFundsFundraisingEntry[]
+
+  // The corresponding team in our database
+  team Team?
+
+  @@map("db_funds_teams")
+}
+
+// This table is kept in sync with the DBFunds API and should not be modified
+model DBFundsFundraisingEntry {
+  // Unrelated to the 'id' field in the DBFunds API
+  id        Int         @id @default(autoincrement())
+  // The amount of the entry
+  amount    Decimal
+  // Who made the donation
+  donatedBy String      @map("donated_by")
+  // Who the donation was made for
+  donatedTo String      @map("donated_to")
+  // The date of the donation
+  date      DateTime
+  // The team's DbNum from the DBFunds API
+  teamDbNum Int         @map("team_db_num")
+  team      DBFundsTeam @relation(fields: [teamDbNum], references: [dbNum])
+
+  // The corresponding fundraising entry in our database
+  fundraisingEntry FundraisingEntry?
+
+  @@unique([donatedBy, date], map: "db_funds_team_entries_donated_by_date_key")
+  @@map("db_funds_team_entries")
+}
+
+model FundraisingEntry {
+  id          Int      @id @default(autoincrement())
+  uuid        String   @unique(map: "fundraising_entries_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  totalAmount Decimal  @map("total_amount")
+
+  dbFundsEntry          DBFundsFundraisingEntry? @relation(references: [donatedBy, date], fields: [dbFundsEntryDonatedBy, dbFundsEntryDate])
+  dbFundsEntryDonatedBy String?                  @map("db_funds_entry_donated_by")
+  dbFundsEntryDate      DateTime?                @map("db_funds_entry_date")
+
+  assignments FundraisingAssignment[]
+
+  @@unique([dbFundsEntryDonatedBy, dbFundsEntryDate], map: "fundraising_entries_db_funds_entry_donated_by_date_key")
+  @@index([uuid], map: "fundraising_entries_uuid")
+  @@map("fundraising_entries")
+}
+
+model FundraisingAssignment {
+  id            Int              @id @default(autoincrement())
+  uuid          String           @unique(map: "fundraising_assignments_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  amount        Decimal
+  personId      Int              @map("person_id")
+  person        Person           @relation(fields: [personId], references: [id])
+  parentEntry   FundraisingEntry @relation(fields: [fundraisingId], references: [id])
+  fundraisingId Int              @map("fundraising_id")
+
+  @@unique([fundraisingId, personId], map: "fundraising_assignments_fundraising_id_person_id_key")
+  @@index([uuid], map: "fundraising_assignments_uuid")
+  @@map("fundraising_assignments")
 }
 
 // Potential errors after sending a notification to Expo (see https://docs.expo.dev/push-notifications/sending-notifications/#individual-errors)
