@@ -8708,6 +8708,7 @@ __metadata:
     croner: "npm:^8.0.1"
     dotenv: "npm:^16.0.3"
     dree: "npm:^4.5.2"
+    effect: "npm:^3.2.5"
     ejs: "npm:^3.1.9"
     expo-server-sdk: "npm:^3.7.0"
     express: "npm:^4.18.2"
@@ -12765,6 +12766,13 @@ __metadata:
   version: 1.1.1
   resolution: "ee-first@npm:1.1.1"
   checksum: 10/1b4cac778d64ce3b582a7e26b218afe07e207a0f9bfe13cc7395a6d307849cfe361e65033c3251e00c27dd060cab43014c2d6b2647676135e18b77d2d05b3f4f
+  languageName: node
+  linkType: hard
+
+"effect@npm:^3.2.5":
+  version: 3.2.5
+  resolution: "effect@npm:3.2.5"
+  checksum: 10/7d5c92f102f87de13ce6c689981a98c78b0ef2cbe5ea370732c60a8049995d9ddda77943ae3049216db29eb9f307b09bccaaee05e40b04b77a6ecf1648544163
   languageName: node
   linkType: hard
 
