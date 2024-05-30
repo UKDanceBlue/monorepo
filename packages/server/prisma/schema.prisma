@@ -437,12 +437,12 @@ model DBFundsFundraisingEntry {
   // Who made the donation
   donatedBy     String      @map("donated_by")
   // Who the donation was made for
-  donatedTo     String      @map("donated_to")
+  donatedTo     String?     @map("donated_to")
   // The date of the donation
   date          DateTime
   // The team's DbNum from the DBFunds API
   dbFundsTeamId Int         @map("team_db_num")
-  dbFundsTeam   DBFundsTeam @relation(fields: [dbFundsTeamId], references: [id])
+  dbFundsTeam   DBFundsTeam @relation(fields: [dbFundsTeamId], references: [id], onDelete: Cascade)
 
   // The corresponding fundraising entry in our database
   fundraisingEntry FundraisingEntry?
@@ -458,7 +458,7 @@ model FundraisingEntry {
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
   totalAmount Decimal  @map("total_amount")
 
-  dbFundsEntry          DBFundsFundraisingEntry? @relation(references: [donatedBy, date], fields: [dbFundsEntryDonatedBy, dbFundsEntryDate])
+  dbFundsEntry          DBFundsFundraisingEntry? @relation(references: [donatedBy, date], fields: [dbFundsEntryDonatedBy, dbFundsEntryDate], onDelete: SetNull)
   dbFundsEntryDonatedBy String?                  @map("db_funds_entry_donated_by")
   dbFundsEntryDate      DateTime?                @map("db_funds_entry_date")
 
