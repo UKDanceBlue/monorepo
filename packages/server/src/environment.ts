@@ -3,7 +3,7 @@ import path, { isAbsolute } from "path";
 
 import dotenv from "dotenv";
 import { Expo } from "expo-server-sdk";
-import { Container } from "typedi";
+import { Container, Token } from "typedi";
 
 import type { SyslogLevels } from "./lib/logging/standardLogging.js";
 
@@ -100,6 +100,20 @@ if (!EXPO_ACCESS_TOKEN) {
 export const expoAccessToken = EXPO_ACCESS_TOKEN;
 
 Container.set(Expo, new Expo({ accessToken: expoAccessToken }));
+
+// DBFunds
+const { DBFUNDS_API_KEY, DBFUNDS_API_ORIGIN } = process.env;
+if (!DBFUNDS_API_KEY) {
+  throw new Error("DBFUNDS_API_KEY is not set");
+}
+if (!DBFUNDS_API_ORIGIN) {
+  throw new Error("DBFUNDS_API_ORIGIN is not set");
+}
+export const dbFundsApiKeyToken = new Token<string>("DBFUNDS_API_KEY");
+export const dbFundsApiOriginToken = new Token<string>("DBFUNDS_API_ORIGIN");
+
+Container.set(dbFundsApiKeyToken, DBFUNDS_API_KEY);
+Container.set(dbFundsApiOriginToken, DBFUNDS_API_ORIGIN);
 
 // File upload settings
 const { MAX_FILE_SIZE, SERVE_PATH, UPLOAD_PATH, SERVE_ORIGIN } = process.env;
