@@ -1,6 +1,6 @@
 import type { MarathonYearString } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
-import { Result } from "true-myth";
+import { Maybe, Result } from "true-myth";
 import { Inject, Service } from "typedi";
 import { z } from "zod";
 
@@ -8,9 +8,9 @@ import {
   dbFundsApiKeyToken,
   dbFundsApiOriginToken,
 } from "../../environment.js";
-import { JsError, UnknownError } from "../error/error.js";
+import { JsError, UnknownError, asBasicError } from "../error/error.js";
 import { HttpError } from "../error/http.js";
-import { ConcreteResult, resultFromJsError } from "../error/result.js";
+import { ConcreteResult } from "../error/result.js";
 import { ZodError } from "../error/zod.js";
 
 import type {
@@ -18,10 +18,6 @@ import type {
   FundraisingProvider,
   FundraisingTeam,
 } from "./FundraisingProvider.js";
-
-export interface DbFundsFundraisingTeam extends FundraisingTeam {
-  dbNum: number;
-}
 
 const dbFundsFundraisingTeamSchema = z.object({
   dbNum: z.number().int().nonnegative().describe("The team's dbNum"),
@@ -34,8 +30,6 @@ const dbFundsFundraisingTeamSchema = z.object({
     .nonnegative()
     .multipleOf(0.01, "Must be a whole number of cents"),
 });
-
-export interface DbFundsFundraisingEntry extends FundraisingEntry {}
 
 const dbFundsFundraisingEntrySchema = z.object({
   dbNum: z
@@ -83,7 +77,7 @@ function teamEntriesPath(
 }
 
 @Service()
-export class DBFundsFundraisingProvider implements FundraisingProvider {
+export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
   constructor(
     @Inject(dbFundsApiOriginToken)
     private readonly dbFundsApiOrigin: string,
@@ -103,7 +97,7 @@ export class DBFundsFundraisingProvider implements FundraisingProvider {
         },
       });
     } catch (error) {
-      return resultFromJsError(error);
+      return Result.err(asBasicError(error));
     }
 
     if (!response.ok) {
@@ -117,7 +111,7 @@ export class DBFundsFundraisingProvider implements FundraisingProvider {
     marathonYear: MarathonYearString
   ): Promise<
     ConcreteResult<
-      DbFundsFundraisingTeam[],
+      FundraisingTeam<number>[],
       HttpError | JsError | UnknownError | ZodError
     >
   > {
@@ -133,7 +127,7 @@ export class DBFundsFundraisingProvider implements FundraisingProvider {
       return Result.ok(
         teams.data.map((team) => ({
           name: team.name,
-          dbNum: team.dbNum,
+          identifier: team.dbNum,
           total: team.total,
         }))
       );
@@ -146,7 +140,7 @@ export class DBFundsFundraisingProvider implements FundraisingProvider {
     dbNum: number
   ): Promise<
     ConcreteResult<
-      DbFundsFundraisingEntry[],
+      FundraisingEntry[],
       HttpError | JsError | UnknownError | ZodError
     >
   > {
@@ -166,7 +160,7 @@ export class DBFundsFundraisingProvider implements FundraisingProvider {
         entries.data.flatMap((team) =>
           team.entries.map((entry) => ({
             donatedBy: entry.donatedBy,
-            donatedTo: entry.donatedTo,
+            donatedTo: Maybe.of(entry.donatedTo),
             // donatedOn is in Eastern time
             donatedOn: DateTime.fromISO(entry.donatedOn, {
               zone: "America/New_York",
