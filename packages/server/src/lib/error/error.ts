@@ -28,8 +28,18 @@ export class JsError extends ConcreteError {
 }
 
 export class UnknownError extends ConcreteError {
+  readonly #message: string = "Unknown error";
+
+  // We use a rest parameter here to detect when undefined is passed. If we just allowed an optional parameter, we wouldn't be able to distinguish between `new UnknownError()` and `new UnknownError(undefined)`.
+  constructor(...message: unknown[]) {
+    super();
+    if (message.length > 0) {
+      this.#message = String(message[0]);
+    }
+  }
+
   get message(): string {
-    return "Unknown error";
+    return this.#message;
   }
 
   get expose(): boolean {

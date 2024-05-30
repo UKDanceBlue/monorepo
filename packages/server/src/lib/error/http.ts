@@ -3,12 +3,11 @@ import { getReasonPhrase } from "http-status-codes";
 
 import { ConcreteError } from "./error.js";
 
-export class HttpError extends ConcreteError {
-  readonly code: StatusCodes;
-
-  constructor(code: StatusCodes | Response) {
+export class HttpError<
+  Code extends StatusCodes = StatusCodes,
+> extends ConcreteError {
+  constructor(readonly code: Code) {
     super();
-    this.code = code instanceof Response ? code.status : code;
   }
 
   get message(): string {
