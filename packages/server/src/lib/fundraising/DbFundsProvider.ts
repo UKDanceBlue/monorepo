@@ -20,9 +20,10 @@ import type {
 } from "./FundraisingProvider.js";
 
 const dbFundsFundraisingTeamSchema = z.object({
-  dbNum: z.number().int().nonnegative().describe("The team's dbNum"),
-  name: z.string().describe("The name of the team"),
-  total: z
+  DbNum: z.number().int().nonnegative().describe("The team's dbNum"),
+  Team: z.string().describe("The name of the team"),
+  Active: z.boolean().describe("Whether the team is active"),
+  Total: z
     .number()
     .describe(
       "The amount donated in dollars, with two decimal places for cents"
@@ -126,9 +127,10 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
     if (teams.success) {
       return Result.ok(
         teams.data.map((team) => ({
-          name: team.name,
-          identifier: team.dbNum,
-          total: team.total,
+          name: team.Team,
+          active: team.Active,
+          identifier: team.DbNum,
+          total: team.Total,
         }))
       );
     } else {

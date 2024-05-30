@@ -8,6 +8,7 @@ import type { ConcreteResult } from "../error/result.js";
 
 export interface FundraisingTeam<IDType> {
   name: string;
+  active: boolean;
   identifier: IDType;
   total: number;
 }

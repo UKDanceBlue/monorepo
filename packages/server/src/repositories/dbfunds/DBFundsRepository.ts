@@ -5,7 +5,7 @@ import { Service } from "typedi";
 
 import { NotFoundError } from "../../lib/error/direct.js";
 import { asBasicError } from "../../lib/error/error.js";
-import { toPrismaError, type PrismaError } from "../../lib/error/prisma.js";
+import { PrismaError, toPrismaError } from "../../lib/error/prisma.js";
 import { type JsResult } from "../../lib/error/result.js";
 import type {
   MarathonRepository,
@@ -20,8 +20,12 @@ export class DBFundsRepository {
   ) {}
 
   async overwriteTeamForFiscalYear(
-    dbNum: number,
-    total: number,
+    team: {
+      total: number;
+      dbNum: number;
+      active: boolean;
+      name: string;
+    },
     marathonParam: UniqueMarathonParam,
     entries: {
       donatedBy: string;
@@ -29,7 +33,7 @@ export class DBFundsRepository {
       donatedOn: DateTime;
       amount: number;
     }[]
-  ): Promise<JsResult<never, PrismaError | NotFoundError>> {
+  ): Promise<JsResult<void, PrismaError | NotFoundError>> {
     try {
       const marathon =
         await this.marathonRepository.findMarathonByUnique(marathonParam);
@@ -39,40 +43,44 @@ export class DBFundsRepository {
       await this.prisma.dBFundsTeam.upsert({
         where: {
           dbNum_marathonId: {
-            dbNum,
+            dbNum: team.dbNum,
             marathonId: marathon.id,
           },
         },
         create: {
-          dbNum,
-          totalAmount: total,
+          dbNum: team.dbNum,
+          totalAmount: team.total,
+          active: team.active,
+          name: team.name,
           marathon: {
             connect: { id: marathon.id },
           },
-          entries: {
+          fundraisingEntries: {
             create: entries.map((entry) => ({
               donatedBy: entry.donatedBy,
               donatedTo: entry.donatedTo.unwrapOr(null),
-              donatedOn: entry.donatedOn.toJSDate(),
+              date: entry.donatedOn.toJSDate(),
               amount: entry.amount,
             })),
           },
         },
         update: {
-          totalAmount: total,
+          totalAmount: team.total,
+          name: team.name,
+          active: team.active,
           fundraisingEntries: {
             deleteMany: {},
-            createMany: {
-              data: entries.map((entry) => ({
-                donatedBy: entry.donatedBy,
-                donatedTo: entry.donatedTo.unwrapOr(null),
-                date: entry.donatedOn.toJSDate(),
-                amount: entry.amount,
-              })),
-            },
+            create: entries.map((entry) => ({
+              donatedBy: entry.donatedBy,
+              donatedTo: entry.donatedTo.unwrapOr(null),
+              date: entry.donatedOn.toJSDate(),
+              amount: entry.amount,
+            })),
           },
         },
       });
+
+      return Result.ok(undefined);
     } catch (error) {
       return Result.err(
         toPrismaError(error).unwrapOrElse(() => asBasicError(error))
