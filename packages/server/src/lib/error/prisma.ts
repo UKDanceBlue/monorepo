@@ -1,10 +1,11 @@
-import type {
+import {
   PrismaClientInitializationError,
   PrismaClientKnownRequestError,
   PrismaClientRustPanicError,
   PrismaClientUnknownRequestError,
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
+import { Maybe } from "true-myth";
 
 import { ConcreteError } from "./error.js";
 
@@ -79,4 +80,31 @@ export class PrismaValidationError extends PrismaError {
     super(error);
     this.error = error;
   }
+}
+
+export function toPrismaError(
+  error: unknown
+): Maybe<
+  | PrismaInitializationError
+  | PrismaKnownRequestError
+  | PrismaRustPanicError
+  | PrismaUnknownRequestError
+  | PrismaValidationError
+> {
+  if (error instanceof PrismaClientInitializationError) {
+    return Maybe.of(new PrismaInitializationError(error));
+  }
+  if (error instanceof PrismaClientKnownRequestError) {
+    return Maybe.of(new PrismaKnownRequestError(error));
+  }
+  if (error instanceof PrismaClientRustPanicError) {
+    return Maybe.of(new PrismaRustPanicError(error));
+  }
+  if (error instanceof PrismaClientUnknownRequestError) {
+    return Maybe.of(new PrismaUnknownRequestError(error));
+  }
+  if (error instanceof PrismaClientValidationError) {
+    return Maybe.of(new PrismaValidationError(error));
+  }
+  return Maybe.nothing();
 }

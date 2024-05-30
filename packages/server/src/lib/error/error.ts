@@ -1,5 +1,8 @@
 export abstract class ConcreteError {
   abstract get message(): string;
+  get detailedMessage(): string {
+    return this.message;
+  }
   abstract get expose(): boolean;
   get stack(): string | undefined {
     return undefined;
@@ -45,4 +48,10 @@ export class UnknownError extends ConcreteError {
   get expose(): boolean {
     return false;
   }
+}
+
+export type BasicError = JsError | UnknownError;
+
+export function asBasicError(error: unknown): BasicError {
+  return error instanceof Error ? new JsError(error) : new UnknownError(error);
 }
