@@ -8,7 +8,7 @@ import {
   dbFundsApiKeyToken,
   dbFundsApiOriginToken,
 } from "../../environment.js";
-import { JsError, UnknownError, asBasicError } from "../error/error.js";
+import { BasicError, toBasicError } from "../error/error.js";
 import { HttpError } from "../error/http.js";
 import { ConcreteResult } from "../error/result.js";
 import { ZodError } from "../error/zod.js";
@@ -77,6 +77,8 @@ function teamEntriesPath(
   return `/api/report/teamentries/${dbNum}/${year}`;
 }
 
+export type DBFundsFundraisingProviderError = HttpError | ZodError | BasicError;
+
 @Service()
 export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
   constructor(
@@ -88,7 +90,7 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
 
   private async fetchJson(
     path: string | URL
-  ): Promise<ConcreteResult<unknown, HttpError | JsError | UnknownError>> {
+  ): Promise<ConcreteResult<unknown, DBFundsFundraisingProviderError>> {
     let response: Response;
     try {
       const url = new URL(path, this.dbFundsApiOrigin);
@@ -98,7 +100,7 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
         },
       });
     } catch (error) {
-      return Result.err(asBasicError(error));
+      return Result.err(toBasicError(error));
     }
 
     if (!response.ok) {
@@ -111,10 +113,7 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
   async getTeams(
     marathonYear: MarathonYearString
   ): Promise<
-    ConcreteResult<
-      FundraisingTeam<number>[],
-      HttpError | JsError | UnknownError | ZodError
-    >
+    ConcreteResult<FundraisingTeam<number>[], DBFundsFundraisingProviderError>
   > {
     const calendarYear = `20${marathonYear.substring(2)}`;
     const path = teamTotalPath(calendarYear);
@@ -141,10 +140,7 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
     marathonYear: MarathonYearString,
     dbNum: number
   ): Promise<
-    ConcreteResult<
-      FundraisingEntry[],
-      HttpError | JsError | UnknownError | ZodError
-    >
+    ConcreteResult<FundraisingEntry[], DBFundsFundraisingProviderError>
   > {
     const calendarYear = `20${marathonYear.substring(2)}`;
     const path = teamEntriesPath(dbNum, calendarYear);

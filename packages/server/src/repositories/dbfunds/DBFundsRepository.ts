@@ -4,7 +4,7 @@ import { Maybe, Result } from "true-myth";
 import { Service } from "typedi";
 
 import { NotFoundError } from "../../lib/error/direct.js";
-import { asBasicError } from "../../lib/error/error.js";
+import { toBasicError } from "../../lib/error/error.js";
 import { PrismaError, toPrismaError } from "../../lib/error/prisma.js";
 import { type JsResult } from "../../lib/error/result.js";
 import type {
@@ -35,16 +35,22 @@ export class DBFundsRepository {
     }[]
   ): Promise<JsResult<void, PrismaError | NotFoundError>> {
     try {
-      const marathon =
-        await this.marathonRepository.findMarathonByUnique(marathonParam);
-      if (!marathon) {
-        return Result.err(new NotFoundError({ what: "Marathon" }));
+      let marathonId: number;
+      if ("id" in marathonParam) {
+        marathonId = marathonParam.id;
+      } else {
+        const marathon =
+          await this.marathonRepository.findMarathonByUnique(marathonParam);
+        if (!marathon) {
+          return Result.err(new NotFoundError({ what: "Marathon" }));
+        }
+        marathonId = marathon.id;
       }
       await this.prisma.dBFundsTeam.upsert({
         where: {
           dbNum_marathonId: {
             dbNum: team.dbNum,
-            marathonId: marathon.id,
+            marathonId,
           },
         },
         create: {
@@ -53,7 +59,7 @@ export class DBFundsRepository {
           active: team.active,
           name: team.name,
           marathon: {
-            connect: { id: marathon.id },
+            connect: { id: marathonId },
           },
           fundraisingEntries: {
             create: entries.map((entry) => ({
@@ -83,7 +89,7 @@ export class DBFundsRepository {
       return Result.ok(undefined);
     } catch (error) {
       return Result.err(
-        toPrismaError(error).unwrapOrElse(() => asBasicError(error))
+        toPrismaError(error).unwrapOrElse(() => toBasicError(error))
       );
     }
   }
