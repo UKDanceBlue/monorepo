@@ -435,7 +435,7 @@ model DBFundsFundraisingEntry {
   // The amount of the entry
   amount        Decimal
   // Who made the donation
-  donatedBy     String      @map("donated_by")
+  donatedBy     String?     @map("donated_by")
   // Who the donation was made for
   donatedTo     String?     @map("donated_to")
   // The date of the donation

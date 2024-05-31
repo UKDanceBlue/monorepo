@@ -14,7 +14,7 @@ export interface FundraisingTeam<IDType> {
 }
 
 export interface FundraisingEntry {
-  donatedBy: string;
+  donatedBy: Maybe<string>;
   donatedTo: Maybe<string>;
   donatedOn: DateTime;
   amount: number;

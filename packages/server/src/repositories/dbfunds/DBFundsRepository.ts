@@ -26,7 +26,7 @@ export class DBFundsRepository {
     },
     marathonParam: UniqueMarathonParam,
     entries: {
-      donatedBy: string;
+      donatedBy: Maybe<string>;
       donatedTo: Maybe<string>;
       donatedOn: DateTime;
       amount: number;
@@ -61,7 +61,7 @@ export class DBFundsRepository {
           },
           fundraisingEntries: {
             create: entries.map((entry) => ({
-              donatedBy: entry.donatedBy,
+              donatedBy: entry.donatedBy.unwrapOr(null),
               donatedTo: entry.donatedTo.unwrapOr(null),
               date: entry.donatedOn.toJSDate(),
               amount: entry.amount,
@@ -77,7 +77,7 @@ export class DBFundsRepository {
             // If it ever becomes desired to keep this data, simple filter the delete to only entries from the current marathon
             deleteMany: {},
             create: entries.map((entry) => ({
-              donatedBy: entry.donatedBy,
+              donatedBy: entry.donatedBy.unwrapOr(null),
               donatedTo: entry.donatedTo.unwrapOr(null),
               date: entry.donatedOn.toJSDate(),
               amount: entry.amount,

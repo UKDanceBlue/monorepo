@@ -46,7 +46,11 @@ const dbFundsFundraisingEntrySchema = z.object({
     .describe("The name of the team to which these entries belong"),
   entries: z.array(
     z.object({
-      donatedBy: z.string().describe("The name of the person who donated"),
+      donatedBy: z
+        .string()
+        .describe("The name of the person who donated")
+        .transform((v) => (isNA.test(v) ? null : v))
+        .nullable(),
       donatedTo: z
         .string()
         .describe("The name of the person or team who received the donation")
@@ -165,7 +169,7 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
     if (entries.success) {
       return Result.ok(
         entries.data.entries.map((entry) => ({
-          donatedBy: entry.donatedBy,
+          donatedBy: Maybe.of(entry.donatedBy),
           donatedTo: Maybe.of(entry.donatedTo),
           // donatedOn is in Eastern time
           donatedOn: entry.donatedOn,
