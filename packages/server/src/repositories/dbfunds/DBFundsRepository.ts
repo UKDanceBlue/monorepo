@@ -1,4 +1,4 @@
-import type { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import type { DateTime } from "luxon";
 import { Maybe, Result } from "true-myth";
 import { Service } from "typedi";
@@ -7,10 +7,8 @@ import { NotFoundError } from "../../lib/error/direct.js";
 import { toBasicError } from "../../lib/error/error.js";
 import { PrismaError, toPrismaError } from "../../lib/error/prisma.js";
 import { type JsResult } from "../../lib/error/result.js";
-import type {
-  MarathonRepository,
-  UniqueMarathonParam,
-} from "../marathon/MarathonRepository.js";
+import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
+import { MarathonRepository } from "../marathon/MarathonRepository.js";
 
 @Service()
 export class DBFundsRepository {
@@ -75,6 +73,8 @@ export class DBFundsRepository {
           name: team.name,
           active: team.active,
           fundraisingEntries: {
+            // This deletes all existing entries, including ones from past years. This is intentional as it means we aren't persisting sensitive data that we won't be using anyways
+            // If it ever becomes desired to keep this data, simple filter the delete to only entries from the current marathon
             deleteMany: {},
             create: entries.map((entry) => ({
               donatedBy: entry.donatedBy,

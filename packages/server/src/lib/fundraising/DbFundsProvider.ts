@@ -32,8 +32,11 @@ const dbFundsFundraisingTeamSchema = z.object({
     .multipleOf(0.01, "Must be a whole number of cents"),
 });
 
+// Checks for any variation of "n/a" or "na" (case-insensitive)
+const isNA = /^n\/?a$/i;
+
 const dbFundsFundraisingEntrySchema = z.object({
-  dbNum: z
+  dbnum: z
     .number()
     .describe("The dbNum of the team to which these entries belong")
     .int()
@@ -47,12 +50,20 @@ const dbFundsFundraisingEntrySchema = z.object({
       donatedTo: z
         .string()
         .describe("The name of the person or team who received the donation")
-        .transform((v) => (v === "N/A" ? null : v))
+        .transform((v) => (isNA.test(v) ? null : v))
         .nullable(),
       donatedOn: z
         .string()
         .describe("The date and time the donation was made, in Eastern time")
-        .datetime(),
+        // Checks for what passes for an ISO date in the DBFunds API
+        .transform((v) =>
+          DateTime.fromISO(v, {
+            zone: "America/New_York",
+          })
+        )
+        .refine((v) => v.isValid, {
+          message: "Must be a valid ISO 8601 date",
+        }),
       // NOTE: Currently the API sends the amount as a number of cents (i.e. it sends 100.00 for $1.00) even though the total is
       // in dollars (i.e. it sends 1.00 for $1.00). This is a bit inconsistent, but it's not a big deal. We can just convert the
       // amount to dollars when we use it and this has already taken long enough to get going that I don't want to spend time
@@ -150,22 +161,17 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
       return result.cast<never>();
     }
 
-    const entries = dbFundsFundraisingEntrySchema
-      .array()
-      .safeParse(result.value);
+    const entries = dbFundsFundraisingEntrySchema.safeParse(result.value);
     if (entries.success) {
       return Result.ok(
-        entries.data.flatMap((team) =>
-          team.entries.map((entry) => ({
-            donatedBy: entry.donatedBy,
-            donatedTo: Maybe.of(entry.donatedTo),
-            // donatedOn is in Eastern time
-            donatedOn: DateTime.fromISO(entry.donatedOn, {
-              zone: "America/New_York",
-            }),
-            amount: entry.amount,
-          }))
-        )
+        entries.data.entries.map((entry) => ({
+          donatedBy: entry.donatedBy,
+          donatedTo: Maybe.of(entry.donatedTo),
+          // donatedOn is in Eastern time
+          donatedOn: entry.donatedOn,
+          // Convert the amount from cents to dollars
+          amount: entry.amount / 100,
+        }))
       );
     } else {
       return Result.err(new ZodError(entries.error));

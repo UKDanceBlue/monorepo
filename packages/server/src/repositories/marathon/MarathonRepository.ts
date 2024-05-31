@@ -69,10 +69,9 @@ export class MarathonRepository {
     });
   }
 
-  findNextMarathon() {
+  findActiveMarathon() {
     return this.prisma.marathon.findFirst({
       orderBy: { year: "asc" },
-      where: { endDate: { gte: new Date() } },
     });
   }
 

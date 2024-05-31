@@ -87,7 +87,7 @@ export class CommitteeRepository {
     }
 
     if (!marathonParam) {
-      const nextMarathon = await this.marathonRepository.findNextMarathon();
+      const nextMarathon = await this.marathonRepository.findActiveMarathon();
       if (!nextMarathon) {
         throw new DetailedError(
           ErrorCode.NotFound,

@@ -27,23 +27,23 @@ async function doSync(): Promise<
   const marathonRepository = Container.get(MarathonRepository);
   const fundraisingRepository = Container.get(DBFundsRepository);
   const fundraisingProvider = Container.get(DBFundsFundraisingProvider);
-  let currentMarathon: Marathon | null = null;
+  let activeMarathon: Marathon | null = null;
   try {
     logger.trace("Finding current marathon for DBFunds sync");
-    currentMarathon = await marathonRepository.findCurrentMarathon();
-    logger.trace("Found current marathon for DBFunds sync", currentMarathon);
+    activeMarathon = await marathonRepository.findActiveMarathon();
+    logger.trace("Found current marathon for DBFunds sync", activeMarathon);
   } catch (error) {
     return Result.err(
       toPrismaError(error).unwrapOrElse(() => toBasicError(error))
     );
   }
-  if (!currentMarathon) {
+  if (!activeMarathon) {
     return Result.err(
       new NotFoundError({ what: "Current Marathon", where: "syncDbFunds job" })
     );
   }
   const teams = await fundraisingProvider.getTeams(
-    currentMarathon.year as MarathonYearString
+    activeMarathon.year as MarathonYearString
   );
   if (teams.isErr) {
     return Result.err(teams.error);
@@ -52,7 +52,7 @@ async function doSync(): Promise<
 
   const promises = teams.value.map(async (team) => {
     const entries = await fundraisingProvider.getTeamEntries(
-      currentMarathon.year as MarathonYearString,
+      activeMarathon.year as MarathonYearString,
       team.identifier
     );
     if (entries.isErr) {
@@ -65,7 +65,7 @@ async function doSync(): Promise<
         name: team.name,
         total: team.total,
       },
-      { id: currentMarathon.id },
+      { id: activeMarathon.id },
       entries.value
     );
   });
