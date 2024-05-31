@@ -52,6 +52,6 @@ export class UnknownError extends ConcreteError {
 
 export type BasicError = JsError | UnknownError;
 
-export function asBasicError(error: unknown): BasicError {
+export function toBasicError(error: unknown): BasicError {
   return error instanceof Error ? new JsError(error) : new UnknownError(error);
 }
