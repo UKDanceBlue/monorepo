@@ -14,7 +14,7 @@ import {
   type DBFundsFundraisingProviderError,
 } from "../lib/fundraising/DbFundsProvider.js";
 import { logger } from "../lib/logging/standardLogging.js";
-import { DBFundsRepository } from "../repositories/dbfunds/DBFundsRepository.js";
+import { DBFundsRepository } from "../repositories/fundraising/DBFundsRepository.js";
 import { MarathonRepository } from "../repositories/marathon/MarathonRepository.js";
 
 type DoSyncError =
