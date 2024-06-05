@@ -17,7 +17,6 @@
   },
   "remote.localPortHost": "allInterfaces",
   "typescript.inlayHints.parameterNames.enabled": "all",
-  "typescript.preferences.preferTypeOnlyAutoImports": true,
   "javascript.inlayHints.parameterNames.enabled": "all",
   "cSpell.words": [
     "cooldown",
