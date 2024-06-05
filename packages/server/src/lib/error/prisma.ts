@@ -82,15 +82,14 @@ export class PrismaValidationError extends PrismaError {
   }
 }
 
-export function toPrismaError(
-  error: unknown
-): Maybe<
+export type SomePrismaError =
   | PrismaInitializationError
   | PrismaKnownRequestError
   | PrismaRustPanicError
   | PrismaUnknownRequestError
-  | PrismaValidationError
-> {
+  | PrismaValidationError;
+
+export function toPrismaError(error: unknown): Maybe<SomePrismaError> {
   if (error instanceof PrismaClientInitializationError) {
     return Maybe.of(new PrismaInitializationError(error));
   }
