@@ -7,6 +7,7 @@ export * from "./Configuration.js";
 export * from "./Device.js";
 export * from "./Event.js";
 export * from "./Feed.js";
+export * from "./Fundraising.js";
 export * from "./Image.js";
 export * from "./Marathon.js";
 export * from "./MarathonHour.js";
