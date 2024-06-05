@@ -447,24 +447,20 @@ model DBFundsFundraisingEntry {
   // The corresponding fundraising entry in our database
   fundraisingEntry FundraisingEntry?
 
-  @@unique([donatedBy, date], map: "db_funds_team_entries_donated_by_date_key")
   @@map("db_funds_team_entries")
 }
 
 model FundraisingEntry {
-  id          Int      @id @default(autoincrement())
-  uuid        String   @unique(map: "fundraising_entries_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  totalAmount Decimal  @map("total_amount")
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique(map: "fundraising_entries_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  dbFundsEntry          DBFundsFundraisingEntry? @relation(references: [donatedBy, date], fields: [dbFundsEntryDonatedBy, dbFundsEntryDate], onDelete: SetNull)
-  dbFundsEntryDonatedBy String?                  @map("db_funds_entry_donated_by")
-  dbFundsEntryDate      DateTime?                @map("db_funds_entry_date")
+  dbFundsEntry   DBFundsFundraisingEntry? @relation(fields: [dbFundsEntryId], references: [id], onDelete: SetNull)
+  dbFundsEntryId Int?                     @unique @map("db_funds_entry_id")
 
   assignments FundraisingAssignment[]
 
-  @@unique([dbFundsEntryDonatedBy, dbFundsEntryDate], map: "fundraising_entries_db_funds_entry_donated_by_date_key")
   @@index([uuid], map: "fundraising_entries_uuid")
   @@map("fundraising_entries")
 }

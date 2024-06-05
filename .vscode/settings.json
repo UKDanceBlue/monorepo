@@ -19,6 +19,7 @@
   "typescript.inlayHints.parameterNames.enabled": "all",
   "javascript.inlayHints.parameterNames.enabled": "all",
   "cSpell.words": [
+    "Catchable",
     "cooldown",
     "Errorable",
     "Leaderboards",

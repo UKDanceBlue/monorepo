@@ -13,17 +13,19 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import { FundraisingEntryRepository } from "../repositories/fundraising/FundraisingEntryRepository.js";
+
 @Resolver(() => FundraisingAssignmentNode)
 @Service()
 export class FundraisingAssignmentResolver {
-  constructor(private readonly fundraisingRepository: FundraisingRepository) {}
+  constructor(
+    private readonly fundraisingEntryRepository: FundraisingEntryRepository
+  ) {}
 
   @Query(() => FundraisingAssignmentNode)
   async fundraisingAssignment(
     @Arg("id") id: string
-  ): Promise<FundraisingAssignmentNode> {
-    // TODO
-  }
+  ): Promise<FundraisingAssignmentNode> {}
 
   @Mutation(() => FundraisingAssignmentNode)
   async createFundraisingAssignment(

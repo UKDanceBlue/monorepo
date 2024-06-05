@@ -6,7 +6,7 @@ import {
   PrismaClient,
 } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
-import Maybe, { just, nothing, of } from "true-myth/maybe";
+import Maybe, { just, nothing } from "true-myth/maybe";
 import Result, { err, ok } from "true-myth/result";
 import { Service } from "typedi";
 
@@ -76,20 +76,24 @@ export class FundraisingEntryRepository {
     param: FundraisingEntryUniqueParam
   ): Promise<
     Result<
-      Maybe<
-        FundraisingEntry & { dbFundsEntry: DBFundsFundraisingEntry | null }
-      >,
-      SomePrismaError | BasicError
+      FundraisingEntry & { dbFundsEntry: DBFundsFundraisingEntry },
+      SomePrismaError | BasicError | NotFoundError
     >
   > {
     try {
+      const row = await this.prisma.fundraisingEntry.findUnique({
+        where: param,
+        include: defaultInclude,
+      });
+      if (!row?.dbFundsEntry) {
+        return err(
+          new NotFoundError({ what: "FundraisingEntry.dbFundsEntry" })
+        );
+      }
       return ok(
-        of(
-          await this.prisma.fundraisingEntry.findUnique({
-            where: param,
-            include: defaultInclude,
-          })
-        )
+        row as typeof row & {
+          dbFundsEntry: NonNullable<typeof row.dbFundsEntry>;
+        }
       );
     } catch (error: unknown) {
       return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
@@ -100,8 +104,8 @@ export class FundraisingEntryRepository {
     param: FundraisingEntryUniqueParam
   ): Promise<
     Result<
-      Maybe<readonly FundraisingAssignment[]>,
-      SomePrismaError | BasicError
+      readonly FundraisingAssignment[],
+      SomePrismaError | BasicError | NotFoundError
     >
   > {
     try {
@@ -109,7 +113,10 @@ export class FundraisingEntryRepository {
         where: param,
         select: { assignments: true },
       });
-      return ok(of(entry?.assignments));
+      if (!entry) {
+        return err(new NotFoundError({ what: "FundraisingEntry" }));
+      }
+      return ok(entry.assignments);
     } catch (error: unknown) {
       return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
     }
@@ -226,32 +233,18 @@ export class FundraisingEntryRepository {
       const entry = await this.findFundraisingEntryByUnique(entryParam);
       if (entry.isErr) {
         return err(entry.error);
-      } else if (entry.value.isNothing) {
-        return err(new NotFoundError({ what: "FundraisingEntry" }));
       }
       const assignments =
         await this.getFundraisingAssignmentsForEntry(entryParam);
       if (assignments.isErr) {
         return err(assignments.error);
-      } else if (assignments.value.isNothing) {
-        return err(new NotFoundError({ what: "FundraisingEntry" }));
       }
 
-      if (!entry.value.value.dbFundsEntry) {
-        return err(
-          new ActionDeniedError("Entry is not connected to a DBFunds entry")
-        );
-      }
-
-      const totalAssigned = assignments.value.value.reduce(
+      const totalAssigned = assignments.value.reduce(
         (acc, assignment) => acc.add(assignment.amount),
         new Prisma.Decimal(0)
       );
-      if (
-        entry.value.value.dbFundsEntry.amount.lessThan(
-          totalAssigned.add(amount)
-        )
-      ) {
+      if (entry.value.dbFundsEntry.amount.lessThan(totalAssigned.add(amount))) {
         return err(
           new ActionDeniedError("Total assigned amount exceeds entry amount")
         );
@@ -314,8 +307,6 @@ export class FundraisingEntryRepository {
       });
       if (assignments.isErr) {
         return err(assignments.error);
-      } else if (assignments.value.isNothing) {
-        return err(new NotFoundError({ what: "FundraisingEntry" }));
       }
 
       if (!assignment.parentEntry.dbFundsEntry) {
@@ -324,7 +315,7 @@ export class FundraisingEntryRepository {
         );
       }
 
-      const totalAssigned = assignments.value.value
+      const totalAssigned = assignments.value
         .filter((a) => a.id !== assignment.id)
         .reduce(
           (acc, assignment) => acc.add(assignment.amount),

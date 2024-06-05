@@ -14,10 +14,21 @@ import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
 import type { Writable } from "utility-types";
 
+import type { ConcreteError } from "./error/error.js";
+
 export interface DbGraphQLFormattedErrorExtensions
   extends Omit<ApiError, "cause" | "message"> {
   internalDetails?: Record<string, string>;
   stacktrace?: string[];
+}
+
+export class CatchableConcreteError extends Error {
+  declare cause: ConcreteError;
+  constructor(error: ConcreteError) {
+    super(error.message);
+    this.cause = error;
+    this.stack = error.stack;
+  }
 }
 
 /**
@@ -59,7 +70,22 @@ export function formatError(
       formattedError.extensions.stacktrace = error.stack?.split("\n") ?? [];
     }
 
-    if (error instanceof DetailedError) {
+    if (error instanceof CatchableConcreteError) {
+      const { message, detailedMessage, expose, stack } = error.cause;
+      formattedError.message = message;
+      if (expose) {
+        formattedError.extensions.stacktrace = stack?.split("\n") ?? [];
+      } else {
+        delete formattedError.extensions.stacktrace;
+      }
+      if (detailedMessage !== message) {
+        if (!formattedError.extensions.internalDetails) {
+          formattedError.extensions.internalDetails = {};
+        }
+        formattedError.extensions.internalDetails.detailedMessage =
+          detailedMessage;
+      }
+    } else if (error instanceof DetailedError) {
       formattedError.extensions.code = error.code;
       if (error.details) {
         formattedError.extensions.details = error.details;
