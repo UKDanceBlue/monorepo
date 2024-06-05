@@ -63,6 +63,37 @@ export interface AuthorizationRule {
   custom?: (authorization: Authorization) => boolean;
 }
 
+export function prettyPrintAuthorizationRule(rule: AuthorizationRule): string {
+  const parts: string[] = [];
+  if (rule.accessLevel != null) {
+    parts.push(`accessLevel >= ${rule.accessLevel}`);
+  }
+  if (rule.dbRole != null) {
+    parts.push(`dbRole === ${rule.dbRole}`);
+  }
+  if (rule.minDbRole != null) {
+    parts.push(`dbRole >= ${rule.minDbRole}`);
+  }
+  // if (rule.committeeRole != null) {
+  //   parts.push(`committeeRole === ${rule.committeeRole}`);
+  // }
+  if (rule.minCommitteeRole != null) {
+    parts.push(`committeeRole >= ${rule.minCommitteeRole}`);
+  }
+  if (rule.committeeIdentifier != null) {
+    parts.push(`committeeIdentifier === ${rule.committeeIdentifier}`);
+  }
+  if (rule.committeeIdentifiers != null) {
+    parts.push(
+      `committeeIdentifier in ${rule.committeeIdentifiers.join(", ")}`
+    );
+  }
+  if (rule.custom != null) {
+    parts.push(`[custom]`);
+  }
+  return parts.join(", ");
+}
+
 export function checkAuthorization(
   {
     accessLevel,
