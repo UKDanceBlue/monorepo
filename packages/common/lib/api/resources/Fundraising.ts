@@ -3,7 +3,7 @@ import type { DateTime } from "luxon";
 import { Field, Float, ID, ObjectType } from "type-graphql";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
-import { Node } from "../relay.js";
+import { Node, createNodeClasses } from "../relay.js";
 
 import { TimestampedResource } from "./Resource.js";
 
@@ -34,6 +34,12 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   }
 }
 
+export const {
+  FundraisingEntryConnection,
+  FundraisingEntryEdge,
+  FundraisingEntryResult,
+} = createNodeClasses(FundraisingEntryNode, "FundraisingEntry");
+
 @ObjectType({
   implements: [Node],
 })
@@ -54,3 +60,9 @@ export class FundraisingAssignmentNode
     return FundraisingAssignmentNode.doInit(init);
   }
 }
+
+export const {
+  FundraisingAssignmentConnection,
+  FundraisingAssignmentEdge,
+  FundraisingAssignmentResult,
+} = createNodeClasses(FundraisingAssignmentNode, "FundraisingAssignment");
