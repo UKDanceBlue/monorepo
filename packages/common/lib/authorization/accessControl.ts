@@ -209,11 +209,13 @@ interface ExtractorData {
  * 1. The user's access level is greater than or equal to the access level specified (AccessLevel.None by default)
  * 2. The user's role matches one of the specified authorization rules
  * 3. The resolver arguments match ALL of the specified argument matchers
+ * 4. The root object matches ALL of the specified root matchers
+ * 5. The custom authorization rule returns true
  */
-export interface AccessControlParam<
-  RootType extends Record<string, unknown> = Record<string, unknown>,
-> {
-  authRules?: readonly AuthorizationRule[];
+export interface AccessControlParam<RootType extends object = never> {
+  authRules?:
+    | readonly AuthorizationRule[]
+    | ((root: RootType) => readonly AuthorizationRule[]);
   accessLevel?: AccessLevel;
   argumentMatch?: {
     argument: string | ((args: ArgsDictionary) => Primitive | Primitive[]);
@@ -223,6 +225,15 @@ export interface AccessControlParam<
     root: string | ((root: RootType) => Primitive | Primitive[]);
     extractor: (param: ExtractorData) => Primitive | Primitive[];
   }[];
+  /**
+   * Custom authorization rule
+   *
+   * Should usually be avoided, but can be used for more complex authorization rules
+   */
+  custom?: (
+    root: RootType,
+    authorization: ExtractorData
+  ) => boolean | Promise<boolean>;
 }
 
 export interface SimpleTeamMembership {
@@ -239,9 +250,7 @@ export interface AuthorizationContext {
   authorization: Authorization;
 }
 
-export function AccessControl<
-  RootType extends Record<string, unknown> = Record<string, unknown>,
->(
+export function AccessControl<RootType extends object = never>(
   ...params: AccessControlParam<RootType>[]
 ): MethodDecorator & PropertyDecorator {
   const middleware: MiddlewareFn<AuthorizationContext> = async (
@@ -262,14 +271,18 @@ export function AccessControl<
       }
 
       if (rule.authRules != null) {
-        if (rule.authRules.length === 0) {
+        const authRules =
+          typeof rule.authRules === "function"
+            ? rule.authRules(root)
+            : rule.authRules;
+        if (authRules.length === 0) {
           throw new DetailedError(
             ErrorCode.InternalFailure,
             "Resource has no allowed authorization rules."
           );
         }
         let matches = false;
-        for (const authRule of rule.authRules) {
+        for (const authRule of authRules) {
           // eslint-disable-next-line no-await-in-loop
           matches = await checkAuthorization(authRule, authorization);
           if (matches) {
@@ -342,6 +355,13 @@ export function AccessControl<
           } else if (rootValue !== expectedValue) {
             continue;
           }
+        }
+      }
+
+      if (rule.custom != null) {
+        // eslint-disable-next-line no-await-in-loop
+        if (!(await rule.custom(root, context))) {
+          continue;
         }
       }
 

@@ -1,7 +1,12 @@
+import { CommitteeRole } from "@prisma/client";
 import {
+  AccessControl,
+  AccessControlParam,
+  CommitteeIdentifier,
   FilteredListQueryArgs,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
+  MembershipPositionType,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -15,9 +20,10 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Container, Service } from "typedi";
 
 import { CatchableConcreteError } from "../lib/formatError.js";
+import { DBFundsRepository } from "../repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "../repositories/fundraising/FundraisingRepository.js";
 import { fundraisingAssignmentModelToNode } from "../repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "../repositories/fundraising/fundraisingEntryModelToNode.js";
@@ -25,7 +31,7 @@ import { fundraisingEntryModelToNode } from "../repositories/fundraising/fundrai
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 @ArgsType()
-class ListFundraisingEntriesArgs extends FilteredListQueryArgs<
+export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<
   | "donatedOn"
   | "amount"
   | "donatedTo"
@@ -56,10 +62,19 @@ class ListFundraisingEntriesArgs extends FilteredListQueryArgs<
 @ObjectType("ListFundraisingEntriesResponse", {
   implements: AbstractGraphQLPaginatedResponse<FundraisingEntryNode[]>,
 })
-class ListFundraisingEntriesResponse extends AbstractGraphQLPaginatedResponse<FundraisingEntryNode> {
+export class ListFundraisingEntriesResponse extends AbstractGraphQLPaginatedResponse<FundraisingEntryNode> {
   @Field(() => [FundraisingEntryNode])
   data!: FundraisingEntryNode[];
 }
+
+const fundraisingAccess: AccessControlParam<FundraisingEntryNode> = {
+  authRules: [
+    {
+      minCommitteeRole: CommitteeRole.Coordinator,
+      committeeIdentifiers: [CommitteeIdentifier.fundraisingCommittee],
+    },
+  ],
+};
 
 @Resolver(() => FundraisingEntryNode)
 @Service()
@@ -68,6 +83,7 @@ export class FundraisingEntryResolver {
     private readonly fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
+  @AccessControl(fundraisingAccess)
   @Query(() => FundraisingEntryNode)
   async fundraisingEntry(@Arg("id") id: string): Promise<FundraisingEntryNode> {
     const entry = await this.fundraisingEntryRepository.findEntryByUnique({
@@ -79,6 +95,7 @@ export class FundraisingEntryResolver {
     return fundraisingEntryModelToNode(entry.value);
   }
 
+  @AccessControl(fundraisingAccess)
   @Query(() => ListFundraisingEntriesResponse)
   async fundraisingEntries(
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
@@ -116,6 +133,50 @@ export class FundraisingEntryResolver {
       pageSize: args.pageSize,
     });
   }
+
+  @AccessControl<FundraisingEntryNode>(
+    // You can view assignments for an entry if you are:
+    // 1. A fundraising coordinator or chair
+    fundraisingAccess,
+    // 2. The captain of the team the entry is associated with
+    {
+      custom: async (
+        { id },
+        { teamMemberships, userData: { userId } }
+      ): Promise<boolean> => {
+        if (userId == null) {
+          return false;
+        }
+        const captainOf = teamMemberships
+          .filter(
+            (membership) =>
+              membership.position === MembershipPositionType.Captain
+          )
+          .map((membership) => membership.teamId);
+        if (captainOf.length === 0) {
+          return false;
+        }
+
+        const fundraisingEntryRepository = Container.get(
+          FundraisingEntryRepository
+        );
+        const entry = await fundraisingEntryRepository.findEntryByUnique({
+          uuid: id,
+        });
+        if (entry.isErr) {
+          return false;
+        }
+        const dbFundsRepository = Container.get(DBFundsRepository);
+        const team = await dbFundsRepository.getTeamForDbFundsTeam({
+          id: entry.value.dbFundsEntry.dbFundsTeamId,
+        });
+        if (team.isErr) {
+          return false;
+        }
+        return captainOf.includes(team.value.uuid);
+      },
+    }
+  )
   @FieldResolver(() => [FundraisingAssignmentNode])
   async assignments(
     @Root() entry: FundraisingEntryNode

@@ -1,11 +1,16 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Team } from "@prisma/client";
 import type { DateTime } from "luxon";
 import { Maybe, Result } from "true-myth";
+import { err, ok } from "true-myth/result";
 import { Service } from "typedi";
 
 import { NotFoundError } from "../../lib/error/direct.js";
-import { toBasicError } from "../../lib/error/error.js";
-import { PrismaError, toPrismaError } from "../../lib/error/prisma.js";
+import { BasicError, toBasicError } from "../../lib/error/error.js";
+import {
+  PrismaError,
+  SomePrismaError,
+  toPrismaError,
+} from "../../lib/error/prisma.js";
 import { type JsResult } from "../../lib/error/result.js";
 import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
 import { MarathonRepository } from "../marathon/MarathonRepository.js";
@@ -91,6 +96,23 @@ export class DBFundsRepository {
       return Result.err(
         toPrismaError(error).unwrapOrElse(() => toBasicError(error))
       );
+    }
+  }
+
+  async getTeamForDbFundsTeam(dbFundsTeamParam: {
+    id: number;
+  }): Promise<Result<Team, NotFoundError | SomePrismaError | BasicError>> {
+    try {
+      const team = await this.prisma.dBFundsTeam.findUnique({
+        where: dbFundsTeamParam,
+        include: { team: true },
+      });
+      if (!team?.team) {
+        return err(new NotFoundError({ what: "Team" }));
+      }
+      return ok(team.team);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
     }
   }
 }
