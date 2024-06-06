@@ -6,7 +6,6 @@ import {
   FilteredListQueryArgs,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
-  MembershipPositionType,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -20,10 +19,9 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Container, Service } from "typedi";
+import { Service } from "typedi";
 
 import { CatchableConcreteError } from "../lib/formatError.js";
-import { DBFundsRepository } from "../repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "../repositories/fundraising/FundraisingRepository.js";
 import { fundraisingAssignmentModelToNode } from "../repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "../repositories/fundraising/fundraisingEntryModelToNode.js";
@@ -134,49 +132,51 @@ export class FundraisingEntryResolver {
     });
   }
 
-  @AccessControl<FundraisingEntryNode>(
-    // You can view assignments for an entry if you are:
-    // 1. A fundraising coordinator or chair
-    fundraisingAccess,
-    // 2. The captain of the team the entry is associated with
-    {
-      custom: async (
-        { id },
-        { teamMemberships, userData: { userId } }
-      ): Promise<boolean> => {
-        if (userId == null) {
-          return false;
-        }
-        const captainOf = teamMemberships
-          .filter(
-            (membership) =>
-              membership.position === MembershipPositionType.Captain
-          )
-          .map((membership) => membership.teamId);
-        if (captainOf.length === 0) {
-          return false;
-        }
+  // I think this is actually unnecessary, as the only way to get to this resolver is through an
+  // already secured query
+  // @AccessControl<FundraisingEntryNode>(
+  //   // You can view assignments for an entry if you are:
+  //   // 1. A fundraising coordinator or chair
+  //   fundraisingAccess,
+  //   // 2. The captain of the team the entry is associated with
+  //   {
+  //     custom: async (
+  //       { id },
+  //       { teamMemberships, userData: { userId } }
+  //     ): Promise<boolean> => {
+  //       if (userId == null) {
+  //         return false;
+  //       }
+  //       const captainOf = teamMemberships
+  //         .filter(
+  //           (membership) =>
+  //             membership.position === MembershipPositionType.Captain
+  //         )
+  //         .map((membership) => membership.teamId);
+  //       if (captainOf.length === 0) {
+  //         return false;
+  //       }
 
-        const fundraisingEntryRepository = Container.get(
-          FundraisingEntryRepository
-        );
-        const entry = await fundraisingEntryRepository.findEntryByUnique({
-          uuid: id,
-        });
-        if (entry.isErr) {
-          return false;
-        }
-        const dbFundsRepository = Container.get(DBFundsRepository);
-        const team = await dbFundsRepository.getTeamForDbFundsTeam({
-          id: entry.value.dbFundsEntry.dbFundsTeamId,
-        });
-        if (team.isErr) {
-          return false;
-        }
-        return captainOf.includes(team.value.uuid);
-      },
-    }
-  )
+  //       const fundraisingEntryRepository = Container.get(
+  //         FundraisingEntryRepository
+  //       );
+  //       const entry = await fundraisingEntryRepository.findEntryByUnique({
+  //         uuid: id,
+  //       });
+  //       if (entry.isErr) {
+  //         return false;
+  //       }
+  //       const dbFundsRepository = Container.get(DBFundsRepository);
+  //       const team = await dbFundsRepository.getTeamForDbFundsTeam({
+  //         id: entry.value.dbFundsEntry.dbFundsTeamId,
+  //       });
+  //       if (team.isErr) {
+  //         return false;
+  //       }
+  //       return captainOf.includes(team.value.uuid);
+  //     },
+  //   }
+  // )
   @FieldResolver(() => [FundraisingAssignmentNode])
   async assignments(
     @Root() entry: FundraisingEntryNode

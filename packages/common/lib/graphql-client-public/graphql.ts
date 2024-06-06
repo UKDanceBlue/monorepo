@@ -2033,6 +2033,7 @@ export type TeamNode = Node & {
   /** @deprecated Just query the members field and filter by role */
   readonly captains: ReadonlyArray<MembershipNode>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly fundraisingEntries: ListFundraisingEntriesResponse;
   readonly id: Scalars['ID']['output'];
   readonly legacyStatus: TeamLegacyStatus;
   readonly marathon: MarathonNode;
@@ -2042,6 +2043,22 @@ export type TeamNode = Node & {
   readonly totalPoints: Scalars['Int']['output'];
   readonly type: TeamType;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+};
+
+
+export type TeamNodeFundraisingEntriesArgs = {
+  booleanFilters?: InputMaybe<Scalars['Void']['input']>;
+  dateFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedDateFilterItem>>;
+  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  isNullFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedIsNullFilterItem>>;
+  numericFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedNumericFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedOneOfFilterItem>>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sendAll?: InputMaybe<Scalars['Boolean']['input']>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedStringFilterItem>>;
 };
 
 export const TeamResolverAllKeys = {

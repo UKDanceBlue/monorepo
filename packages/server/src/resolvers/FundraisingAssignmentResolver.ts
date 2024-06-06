@@ -1,4 +1,11 @@
-import { FundraisingAssignmentNode, PersonNode } from "@ukdanceblue/common";
+import {
+  AccessControl,
+  AccessControlParam,
+  CommitteeIdentifier,
+  CommitteeRole,
+  FundraisingAssignmentNode,
+  PersonNode,
+} from "@ukdanceblue/common";
 import {
   Arg,
   Field,
@@ -29,6 +36,15 @@ class UpdateFundraisingAssignmentInput {
   amount!: number;
 }
 
+const fundraisingAccess: AccessControlParam<FundraisingAssignmentNode> = {
+  authRules: [
+    {
+      minCommitteeRole: CommitteeRole.Coordinator,
+      committeeIdentifiers: [CommitteeIdentifier.fundraisingCommittee],
+    },
+  ],
+};
+
 @Resolver(() => FundraisingAssignmentNode)
 @Service()
 export class FundraisingAssignmentResolver {
@@ -37,6 +53,7 @@ export class FundraisingAssignmentResolver {
     private readonly personRepository: PersonRepository
   ) {}
 
+  @AccessControl(fundraisingAccess)
   @Query(() => FundraisingAssignmentNode)
   async fundraisingAssignment(
     @Arg("id") id: string
@@ -53,6 +70,7 @@ export class FundraisingAssignmentResolver {
     return fundraisingAssignmentModelToNode(assignment.value);
   }
 
+  @AccessControl(fundraisingAccess)
   @Mutation(() => FundraisingAssignmentNode)
   async assignEntryToPerson(
     @Arg("entryId") entryId: string,
@@ -73,6 +91,7 @@ export class FundraisingAssignmentResolver {
     return fundraisingAssignmentModelToNode(assignment.value);
   }
 
+  @AccessControl(fundraisingAccess)
   @Mutation(() => FundraisingAssignmentNode)
   async updateFundraisingAssignment(
     @Arg("id") id: string,
@@ -90,6 +109,7 @@ export class FundraisingAssignmentResolver {
     return fundraisingAssignmentModelToNode(assignment.value);
   }
 
+  @AccessControl(fundraisingAccess)
   @Mutation(() => FundraisingAssignmentNode)
   async deleteFundraisingAssignment(
     @Arg("id") id: string
@@ -105,6 +125,8 @@ export class FundraisingAssignmentResolver {
     return fundraisingAssignmentModelToNode(assignment.value);
   }
 
+  // I'm fairly certain this is safe to leave without an access control check as anyone with
+  // access to the assignment should have access to the person
   @FieldResolver(() => PersonNode)
   async person(
     @Root() assignment: FundraisingAssignmentNode

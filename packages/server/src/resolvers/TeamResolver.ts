@@ -36,6 +36,9 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import { CatchableConcreteError } from "../lib/formatError.js";
+import { FundraisingEntryRepository } from "../repositories/fundraising/FundraisingRepository.js";
+import { fundraisingEntryModelToNode } from "../repositories/fundraising/fundraisingEntryModelToNode.js";
 import { marathonModelToResource } from "../repositories/marathon/marathonModelToResource.js";
 import { membershipModelToResource } from "../repositories/membership/membershipModelToResource.js";
 import { pointEntryModelToResource } from "../repositories/pointEntry/pointEntryModelToResource.js";
@@ -47,6 +50,10 @@ import {
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
+import {
+  ListFundraisingEntriesArgs,
+  ListFundraisingEntriesResponse,
+} from "./FundraisingEntryResolver.js";
 import * as Context from "./context.js";
 
 @ObjectType("SingleTeamResponse", {
@@ -135,7 +142,10 @@ class ListTeamsArgs extends FilteredListQueryArgs<
 @Resolver(() => TeamNode)
 @Service()
 export class TeamResolver {
-  constructor(private teamRepository: TeamRepository) {}
+  constructor(
+    private teamRepository: TeamRepository,
+    private fundraisingEntryRepository: FundraisingEntryRepository
+  ) {}
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
   @Query(() => SingleTeamResponse, { name: "team" })
@@ -367,5 +377,67 @@ export class TeamResolver {
     }
 
     return marathonModelToResource(result);
+  }
+
+  @AccessControl(
+    { accessLevel: AccessLevel.Committee },
+    {
+      rootMatch: [
+        {
+          root: "uuid",
+          extractor: ({ teamMemberships }) =>
+            teamMemberships
+              .filter(
+                ({ position }) =>
+                  position === Common.MembershipPositionType.Captain
+              )
+              .map(({ teamId }) => teamId),
+        },
+      ],
+    }
+  )
+  @FieldResolver(() => ListFundraisingEntriesResponse)
+  async fundraisingEntries(
+    @Root() team: TeamNode,
+    @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
+  ): Promise<ListFundraisingEntriesResponse> {
+    const entries = await this.fundraisingEntryRepository.listEntries(
+      {
+        filters: args.filters,
+        order:
+          args.sortBy?.map((key, i) => [
+            key,
+            args.sortDirection?.[i] ?? SortDirection.desc,
+          ]) ?? [],
+        skip:
+          args.page != null && args.pageSize != null
+            ? (args.page - 1) * args.pageSize
+            : null,
+        take: args.pageSize,
+      },
+      {
+        // EXTREMELY IMPORTANT FOR SECURITY
+        forTeam: { uuid: team.id },
+      }
+    );
+    const count = await this.fundraisingEntryRepository.countEntries({
+      filters: args.filters,
+    });
+
+    if (entries.isErr) {
+      throw new CatchableConcreteError(entries.error);
+    }
+    if (count.isErr) {
+      throw new CatchableConcreteError(count.error);
+    }
+
+    return ListFundraisingEntriesResponse.newPaginated({
+      data: await Promise.all(
+        entries.value.map((model) => fundraisingEntryModelToNode(model))
+      ),
+      total: count.value,
+      page: args.page,
+      pageSize: args.pageSize,
+    });
   }
 }
