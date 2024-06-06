@@ -60,7 +60,7 @@ export interface AuthorizationRule {
    *
    * Should usually be avoided, but can be used for more complex authorization rules
    */
-  custom?: (authorization: Authorization) => boolean;
+  custom?: (authorization: Authorization) => boolean | Promise<boolean>;
 }
 
 export function prettyPrintAuthorizationRule(rule: AuthorizationRule): string {
@@ -94,7 +94,7 @@ export function prettyPrintAuthorizationRule(rule: AuthorizationRule): string {
   return parts.join(", ");
 }
 
-export function checkAuthorization(
+export async function checkAuthorization(
   {
     accessLevel,
     committeeIdentifier,
@@ -190,8 +190,7 @@ export function checkAuthorization(
 
   // Custom auth checker
   if (custom != null) {
-    matches &&= custom(authorization);
-    console.log(`Custom auth check: ${matches}`);
+    matches &&= await custom(authorization);
   }
   return matches;
 }
@@ -245,7 +244,7 @@ export function AccessControl<
 >(
   ...params: AccessControlParam<RootType>[]
 ): MethodDecorator & PropertyDecorator {
-  const middleware: MiddlewareFn<AuthorizationContext> = (
+  const middleware: MiddlewareFn<AuthorizationContext> = async (
     resolverData,
     next
   ) => {
@@ -269,9 +268,14 @@ export function AccessControl<
             "Resource has no allowed authorization rules."
           );
         }
-        const matches = rule.authRules.some((rule) =>
-          checkAuthorization(rule, authorization)
-        );
+        let matches = false;
+        for (const authRule of rule.authRules) {
+          // eslint-disable-next-line no-await-in-loop
+          matches = await checkAuthorization(authRule, authorization);
+          if (matches) {
+            break;
+          }
+        }
         if (!matches) {
           continue;
         }

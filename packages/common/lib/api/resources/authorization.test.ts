@@ -108,89 +108,96 @@ const none: Authorization = {
   committees: [],
 };
 describe("checkAuthorization", () => {
-  it("should return true when the user's access level matches the required access level", () => {
-    expect(
+  it("should return true when the user's access level matches the required access level", async () => {
+    expect.hasAssertions();
+
+    await expect(
       checkAuthorization({ accessLevel: AccessLevel.Admin }, techChair)
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization({ accessLevel: AccessLevel.Admin }, techCoordinator)
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization({ accessLevel: AccessLevel.Admin }, techMember)
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization(
         { accessLevel: AccessLevel.CommitteeChairOrCoordinator },
         overallChair
       )
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization(
         { accessLevel: AccessLevel.CommitteeChairOrCoordinator },
         dancerRelationsChair
       )
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization(
         { accessLevel: AccessLevel.CommitteeChairOrCoordinator },
         dancerRelationsCoordinator
       )
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization(
         { accessLevel: AccessLevel.Committee },
         dancerRelationsMember
       )
-    ).toBe(true);
-    expect(checkAuthorization({ accessLevel: AccessLevel.UKY }, member)).toBe(
-      true
-    );
-    expect(
+    ).resolves.toBe(true);
+    await expect(
+      checkAuthorization({ accessLevel: AccessLevel.UKY }, member)
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization({ accessLevel: AccessLevel.Public }, publicAuth)
-    ).toBe(true);
-    expect(checkAuthorization({ accessLevel: AccessLevel.None }, none)).toBe(
-      true
-    );
+    ).resolves.toBe(true);
+    await expect(
+      checkAuthorization({ accessLevel: AccessLevel.None }, none)
+    ).resolves.toBe(true);
   });
 
-  it("should return true when the user's access level is higher than the required access level", () => {
-    expect(
+  // TODO: Make the rest of these async
+
+  it("should return true when the user's access level is higher than the required access level", async () => {
+    expect.assertions(3);
+    await expect(
       checkAuthorization({ accessLevel: AccessLevel.Committee }, techChair)
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization(
         { accessLevel: AccessLevel.Committee },
         techCoordinator
       )
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization({ accessLevel: AccessLevel.Committee }, techMember)
-    ).toBe(true);
+    ).resolves.toBe(true);
   });
 
-  it("should return false when the user's access level is lower than the required access level", () => {
-    expect(
+  it("should return false when the user's access level is lower than the required access level", async () => {
+    expect.assertions(4);
+    await expect(
       checkAuthorization(
         { accessLevel: AccessLevel.CommitteeChairOrCoordinator },
         dancerRelationsMember
       )
-    ).toBe(false);
-    expect(
+    ).resolves.toBe(false);
+    await expect(
       checkAuthorization({ accessLevel: AccessLevel.UKY }, publicAuth)
-    ).toBe(false);
-    expect(checkAuthorization({ accessLevel: AccessLevel.Public }, none)).toBe(
-      false
-    );
-    expect(
+    ).resolves.toBe(false);
+    await expect(
+      checkAuthorization({ accessLevel: AccessLevel.Public }, none)
+    ).resolves.toBe(false);
+    await expect(
       checkAuthorization(
         { accessLevel: AccessLevel.CommitteeChairOrCoordinator },
         none
       )
-    ).toBe(false);
+    ).resolves.toBe(false);
   });
 
-  it("should work with a custom check function", () => {
-    expect(
+  it("should work with a custom check function", async () => {
+    expect.assertions(2);
+    await expect(
       checkAuthorization(
         {
           custom() {
@@ -199,8 +206,8 @@ describe("checkAuthorization", () => {
         },
         { accessLevel: AccessLevel.None, dbRole: DbRole.None, committees: [] }
       )
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization(
         {
           custom() {
@@ -209,30 +216,32 @@ describe("checkAuthorization", () => {
         },
         { accessLevel: AccessLevel.None, dbRole: DbRole.None, committees: [] }
       )
-    ).toBe(false);
+    ).resolves.toBe(false);
   });
 
-  it("should work with committeeIdentifier matching", () => {
-    expect(
+  it("should work with committeeIdentifier matching", async () => {
+    expect.assertions(2);
+    await expect(
       checkAuthorization(
         {
           committeeIdentifier: CommitteeIdentifier.techCommittee,
         },
         techChair
       )
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization(
         {
           committeeIdentifier: CommitteeIdentifier.techCommittee,
         },
         none
       )
-    ).toBe(false);
+    ).resolves.toBe(false);
   });
 
-  it("should work with committeeIdentifiers matching", () => {
-    expect(
+  it("should work with committeeIdentifiers matching", async () => {
+    expect.assertions(2);
+    await expect(
       checkAuthorization(
         {
           committeeIdentifiers: [
@@ -242,8 +251,8 @@ describe("checkAuthorization", () => {
         },
         techChair
       )
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization(
         {
           committeeIdentifiers: [
@@ -253,68 +262,72 @@ describe("checkAuthorization", () => {
         },
         none
       )
-    ).toBe(false);
+    ).resolves.toBe(false);
   });
 
-  it("should work with exact dbRole matching", () => {
-    expect(
+  it("should work with exact dbRole matching", async () => {
+    expect.assertions(2);
+    await expect(
       checkAuthorization(
         {
           dbRole: DbRole.Committee,
         },
         techChair
       )
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization(
         {
           dbRole: DbRole.Committee,
         },
         none
       )
-    ).toBe(false);
+    ).resolves.toBe(false);
   });
 
-  it("should work with minimum dbRole matching", () => {
-    expect(
+  it("should work with minimum dbRole matching", async () => {
+    expect.assertions(1);
+    await expect(
       checkAuthorization(
         {
           minDbRole: DbRole.Committee,
         },
         techChair
       )
-    ).toBe(true);
+    ).resolves.toBe(true);
   });
 
-  it("should work with minimum committeeRole matching", () => {
-    expect(
+  it("should work with minimum committeeRole matching", async () => {
+    expect.assertions(3);
+    await expect(
       checkAuthorization(
         {
           minCommitteeRole: CommitteeRole.Chair,
         },
         techChair
       )
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization(
         {
           minCommitteeRole: CommitteeRole.Coordinator,
         },
         techChair
       )
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization(
         {
           minCommitteeRole: CommitteeRole.Coordinator,
         },
         none
       )
-    ).toBe(false);
+    ).resolves.toBe(false);
   });
 
-  it("should work with all of the above", () => {
-    expect(
+  it("should work with all of the above", async () => {
+    expect.assertions(3);
+    await expect(
       checkAuthorization(
         {
           accessLevel: AccessLevel.Admin,
@@ -323,8 +336,8 @@ describe("checkAuthorization", () => {
         },
         techChair
       )
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization(
         {
           accessLevel: AccessLevel.Admin,
@@ -334,8 +347,8 @@ describe("checkAuthorization", () => {
         },
         techChair
       )
-    ).toBe(true);
-    expect(
+    ).resolves.toBe(true);
+    await expect(
       checkAuthorization(
         {
           accessLevel: AccessLevel.Admin,
@@ -344,6 +357,6 @@ describe("checkAuthorization", () => {
         },
         none
       )
-    ).toBe(false);
+    ).resolves.toBe(false);
   });
 });

@@ -9,6 +9,8 @@ import {
 
 import { roleToAccessLevel } from "./role.js";
 
+// TODO test the committee hierarchy system (i.e. overall and vice roles vs other committees)
+
 describe("roleToAccessLevel", () => {
   it("returns the correct access level for a given role normally", () => {
     const chairRole = {
