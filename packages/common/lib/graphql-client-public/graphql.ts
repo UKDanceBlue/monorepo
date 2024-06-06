@@ -81,6 +81,10 @@ export type AddEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseRespo
   readonly ok: Scalars['Boolean']['output'];
 };
 
+export type AssignEntryToPersonInput = {
+  readonly amount: Scalars['Float']['input'];
+};
+
 export { AuthSource };
 
 /** The identifier for a committee */
@@ -468,6 +472,105 @@ export type FeedNode = Node & {
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
+export type FundraisingAssignmentNode = Node & {
+  readonly __typename?: 'FundraisingAssignmentNode';
+  readonly amount: Scalars['Float']['output'];
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly id: Scalars['ID']['output'];
+  readonly person: PersonNode;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+};
+
+export type FundraisingEntryNode = Node & {
+  readonly __typename?: 'FundraisingEntryNode';
+  readonly amount: Scalars['Float']['output'];
+  readonly assignments: ReadonlyArray<FundraisingAssignmentNode>;
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly donatedByText?: Maybe<Scalars['String']['output']>;
+  readonly donatedOn: Scalars['DateTimeISO']['output'];
+  readonly donatedToText?: Maybe<Scalars['String']['output']>;
+  readonly id: Scalars['ID']['output'];
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+};
+
+export const FundraisingEntryResolverAllKeys = {
+  Amount: 'amount',
+  CreatedAt: 'createdAt',
+  DonatedBy: 'donatedBy',
+  DonatedOn: 'donatedOn',
+  DonatedTo: 'donatedTo',
+  UpdatedAt: 'updatedAt'
+} as const;
+
+export type FundraisingEntryResolverAllKeys = typeof FundraisingEntryResolverAllKeys[keyof typeof FundraisingEntryResolverAllKeys];
+export const FundraisingEntryResolverDateFilterKeys = {
+  CreatedAt: 'createdAt',
+  DonatedOn: 'donatedOn',
+  UpdatedAt: 'updatedAt'
+} as const;
+
+export type FundraisingEntryResolverDateFilterKeys = typeof FundraisingEntryResolverDateFilterKeys[keyof typeof FundraisingEntryResolverDateFilterKeys];
+export type FundraisingEntryResolverKeyedDateFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: NumericComparator;
+  /** The field to filter on */
+  readonly field: FundraisingEntryResolverDateFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['DateTimeISO']['input'];
+};
+
+export type FundraisingEntryResolverKeyedIsNullFilterItem = {
+  /** The field to filter on */
+  readonly field: FundraisingEntryResolverAllKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type FundraisingEntryResolverKeyedNumericFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: NumericComparator;
+  /** The field to filter on */
+  readonly field: FundraisingEntryResolverNumericFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['Float']['input'];
+};
+
+export type FundraisingEntryResolverKeyedOneOfFilterItem = {
+  /** The field to filter on */
+  readonly field: FundraisingEntryResolverOneOfFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
+};
+
+export type FundraisingEntryResolverKeyedStringFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: StringComparator;
+  /** The field to filter on */
+  readonly field: FundraisingEntryResolverStringFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
+};
+
+export const FundraisingEntryResolverNumericFilterKeys = {
+  Amount: 'amount'
+} as const;
+
+export type FundraisingEntryResolverNumericFilterKeys = typeof FundraisingEntryResolverNumericFilterKeys[keyof typeof FundraisingEntryResolverNumericFilterKeys];
+export const FundraisingEntryResolverOneOfFilterKeys = {
+  TeamId: 'teamId'
+} as const;
+
+export type FundraisingEntryResolverOneOfFilterKeys = typeof FundraisingEntryResolverOneOfFilterKeys[keyof typeof FundraisingEntryResolverOneOfFilterKeys];
+export const FundraisingEntryResolverStringFilterKeys = {
+  DonatedBy: 'donatedBy',
+  DonatedTo: 'donatedTo'
+} as const;
+
+export type FundraisingEntryResolverStringFilterKeys = typeof FundraisingEntryResolverStringFilterKeys[keyof typeof FundraisingEntryResolverStringFilterKeys];
 export type GetAllConfigurationsResponse = AbstractGraphQlArrayOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'GetAllConfigurationsResponse';
   readonly data: ReadonlyArray<ConfigurationNode>;
@@ -643,6 +746,18 @@ export type ListDevicesResponse = AbstractGraphQlArrayOkResponse & AbstractGraph
 export type ListEventsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListEventsResponse';
   readonly data: ReadonlyArray<EventNode>;
+  readonly ok: Scalars['Boolean']['output'];
+  /** The current page number (1-indexed) */
+  readonly page: Scalars['PositiveInt']['output'];
+  /** The number of items per page */
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
+  /** The total number of items */
+  readonly total: Scalars['NonNegativeInt']['output'];
+};
+
+export type ListFundraisingEntriesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'ListFundraisingEntriesResponse';
+  readonly data: ReadonlyArray<FundraisingEntryNode>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -844,6 +959,7 @@ export type Mutation = {
   readonly addExistingImageToEvent: AddEventImageResponse;
   readonly addMap: MarathonHourNode;
   readonly addPersonToTeam: GetMembershipResponse;
+  readonly assignEntryToPerson: FundraisingAssignmentNode;
   readonly attachImageToFeedItem: FeedNode;
   readonly createConfiguration: CreateConfigurationResponse;
   readonly createConfigurations: CreateConfigurationResponse;
@@ -860,6 +976,7 @@ export type Mutation = {
   readonly deleteDevice: DeleteDeviceResponse;
   readonly deleteEvent: DeleteEventResponse;
   readonly deleteFeedItem: Scalars['Boolean']['output'];
+  readonly deleteFundraisingAssignment: FundraisingAssignmentNode;
   readonly deleteImage: DeleteImageResponse;
   readonly deleteMarathon: Scalars['Void']['output'];
   readonly deleteMarathonHour: Scalars['Void']['output'];
@@ -885,6 +1002,7 @@ export type Mutation = {
   readonly setPointOpportunity: SinglePointOpportunityResponse;
   readonly setTeam: SingleTeamResponse;
   readonly stageNotification: StageNotificationResponse;
+  readonly updateFundraisingAssignment: FundraisingAssignmentNode;
 };
 
 
@@ -913,6 +1031,13 @@ export type MutationAddMapArgs = {
 export type MutationAddPersonToTeamArgs = {
   personUuid: Scalars['String']['input'];
   teamUuid: Scalars['String']['input'];
+};
+
+
+export type MutationAssignEntryToPersonArgs = {
+  entryId: Scalars['String']['input'];
+  input: AssignEntryToPersonInput;
+  personId: Scalars['String']['input'];
 };
 
 
@@ -996,6 +1121,11 @@ export type MutationDeleteEventArgs = {
 
 export type MutationDeleteFeedItemArgs = {
   feedItemUuid: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteFundraisingAssignmentArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -1131,6 +1261,12 @@ export type MutationStageNotificationArgs = {
   body: Scalars['String']['input'];
   title: Scalars['String']['input'];
   url?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationUpdateFundraisingAssignmentArgs = {
+  id: Scalars['String']['input'];
+  input: UpdateFundraisingAssignmentInput;
 };
 
 export type Node = {
@@ -1478,6 +1614,9 @@ export type Query = {
   readonly event: GetEventByUuidResponse;
   readonly events: ListEventsResponse;
   readonly feed: ReadonlyArray<FeedNode>;
+  readonly fundraisingAssignment: FundraisingAssignmentNode;
+  readonly fundraisingEntries: ListFundraisingEntriesResponse;
+  readonly fundraisingEntry: FundraisingEntryNode;
   readonly image: GetImageByUuidResponse;
   readonly images: ListImagesResponse;
   readonly listPeople: ListPeopleResponse;
@@ -1552,6 +1691,32 @@ export type QueryEventsArgs = {
 
 export type QueryFeedArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryFundraisingAssignmentArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryFundraisingEntriesArgs = {
+  booleanFilters?: InputMaybe<Scalars['Void']['input']>;
+  dateFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedDateFilterItem>>;
+  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  isNullFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedIsNullFilterItem>>;
+  numericFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedNumericFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedOneOfFilterItem>>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sendAll?: InputMaybe<Scalars['Boolean']['input']>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedStringFilterItem>>;
+};
+
+
+export type QueryFundraisingEntryArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -1925,6 +2090,10 @@ export const TeamResolverStringFilterKeys = {
 
 export type TeamResolverStringFilterKeys = typeof TeamResolverStringFilterKeys[keyof typeof TeamResolverStringFilterKeys];
 export { TeamType };
+
+export type UpdateFundraisingAssignmentInput = {
+  readonly amount: Scalars['Float']['input'];
+};
 
 export type ImageViewFragmentFragment = { readonly __typename?: 'ImageNode', readonly id: string, readonly url?: URL | string | null, readonly thumbHash?: string | null, readonly alt?: string | null, readonly width: number, readonly height: number, readonly mimeType: string } & { ' $fragmentName'?: 'ImageViewFragmentFragment' };
 

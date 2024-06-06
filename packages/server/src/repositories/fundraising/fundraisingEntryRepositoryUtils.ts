@@ -1,23 +1,27 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
+import type { Result } from "true-myth";
+import { err, ok } from "true-myth/result";
 
+import { ActionDeniedError } from "../../lib/error/control.js";
 import {
   dateFilterToPrisma,
   numericFilterToPrisma,
+  oneOfFilterToPrisma,
   stringFilterToPrisma,
 } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 import type {
   FundraisingEntryFilters,
   FundraisingEntryOrderKeys,
-} from "./FundraisingEntryRepository.ts";
+} from "./FundraisingRepository.js";
 
 export function buildFundraisingEntryOrder(
   order:
     | readonly [key: FundraisingEntryOrderKeys, sort: SortDirection][]
     | null
     | undefined
-) {
+): Result<Prisma.FundraisingEntryOrderByWithRelationInput, ActionDeniedError> {
   const orderBy: Prisma.FundraisingEntryOrderByWithRelationInput = {};
   const dbFundsEntryOrderBy: Prisma.FundraisingEntryOrderByWithRelationInput["dbFundsEntry"] =
     {};
@@ -40,9 +44,14 @@ export function buildFundraisingEntryOrder(
         orderBy[key] = sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
+      case "teamId": {
+        return err(new ActionDeniedError("Cannot sort by teamId"));
+      }
       default: {
         key satisfies never;
-        throw new Error(`Unsupported sort key: ${String(key)}`);
+        return err(
+          new ActionDeniedError(`Unsupported sort key: ${String(key)}`)
+        );
       }
     }
   }
@@ -51,12 +60,12 @@ export function buildFundraisingEntryOrder(
     orderBy["dbFundsEntry"] = dbFundsEntryOrderBy;
   }
 
-  return orderBy;
+  return ok(orderBy);
 }
 
 export function buildFundraisingEntryWhere(
   filters: readonly FundraisingEntryFilters[] | null | undefined
-) {
+): Result<Prisma.FundraisingEntryWhereInput, ActionDeniedError> {
   const where: Prisma.FundraisingEntryWhereInput = {};
   const dbFundsEntryWhere: Prisma.FundraisingEntryWhereInput["dbFundsEntry"] =
     {};
@@ -81,12 +90,18 @@ export function buildFundraisingEntryWhere(
         dbFundsEntryWhere[filter.field] = stringFilterToPrisma(filter);
         break;
       }
+      case "teamId": {
+        dbFundsEntryWhere.dbFundsTeam = {
+          team: { uuid: oneOfFilterToPrisma(filter) },
+        };
+        break;
+      }
       default: {
         filter satisfies never;
-        throw new Error(
-          `Unsupported filter key: ${String(
-            (filter as { field?: string } | undefined)?.field
-          )}`
+        return err(
+          new ActionDeniedError(
+            `Unsupported filter key: ${String((filter as { field?: string } | undefined)?.field)}`
+          )
         );
       }
     }
@@ -96,5 +111,5 @@ export function buildFundraisingEntryWhere(
     where["dbFundsEntry"] = dbFundsEntryWhere;
   }
 
-  return where;
+  return ok(where);
 }

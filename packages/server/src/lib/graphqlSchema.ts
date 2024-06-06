@@ -8,6 +8,8 @@ import { ConfigurationResolver } from "../resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "../resolvers/DeviceResolver.js";
 import { EventResolver } from "../resolvers/EventResolver.js";
 import { FeedResolver } from "../resolvers/FeedResolver.js";
+import { FundraisingAssignmentResolver } from "../resolvers/FundraisingAssignmentResolver.js";
+import { FundraisingEntryResolver } from "../resolvers/FundraisingEntryResolver.js";
 import { ImageResolver } from "../resolvers/ImageResolver.js";
 import { LoginStateResolver } from "../resolvers/LoginState.js";
 import { MarathonHourResolver } from "../resolvers/MarathonHourResolver.js";
@@ -53,6 +55,8 @@ const resolvers = [
   MarathonHourResolver,
   MarathonResolver,
   FeedResolver,
+  FundraisingAssignmentResolver,
+  FundraisingEntryResolver,
 ] as const;
 
 for (const service of resolvers) {

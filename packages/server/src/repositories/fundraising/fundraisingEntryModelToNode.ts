@@ -2,19 +2,19 @@ import type { DBFundsFundraisingEntry, FundraisingEntry } from "@prisma/client";
 import { FundraisingEntryNode } from "@ukdanceblue/common";
 
 export function fundraisingEntryModelToNode(
-  marathonHourModel: FundraisingEntry & {
+  entryModel: FundraisingEntry & {
     dbFundsEntry: DBFundsFundraisingEntry;
   }
 ): Promise<FundraisingEntryNode> {
   return Promise.resolve(
     FundraisingEntryNode.init({
-      id: marathonHourModel.uuid,
-      amount: marathonHourModel.dbFundsEntry.amount.toNumber(),
-      donatedByText: marathonHourModel.dbFundsEntry.donatedBy,
-      donatedToText: marathonHourModel.dbFundsEntry.donatedTo,
-      donatedOn: marathonHourModel.dbFundsEntry.date,
-      createdAt: marathonHourModel.createdAt,
-      updatedAt: marathonHourModel.updatedAt,
+      id: entryModel.uuid,
+      amount: entryModel.dbFundsEntry.amount.toNumber(),
+      donatedByText: entryModel.dbFundsEntry.donatedBy,
+      donatedToText: entryModel.dbFundsEntry.donatedTo,
+      donatedOn: entryModel.dbFundsEntry.date,
+      createdAt: entryModel.createdAt,
+      updatedAt: entryModel.updatedAt,
     })
   );
 }

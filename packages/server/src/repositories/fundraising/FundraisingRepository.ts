@@ -2,6 +2,7 @@ import {
   DBFundsFundraisingEntry,
   FundraisingAssignment,
   FundraisingEntry,
+  Person,
   Prisma,
   PrismaClient,
 } from "@prisma/client";
@@ -38,13 +39,14 @@ type FundraisingEntryIsNullKey = (typeof fundraisingEntryIsNullKeys)[number];
 const fundraisingEntryNumericKeys = ["amount"] as const;
 type FundraisingEntryNumericKey = (typeof fundraisingEntryNumericKeys)[number];
 
-const fundraisingEntryOneOfKeys = [] as const;
+const fundraisingEntryOneOfKeys = ["teamId"] as const;
 type FundraisingEntryOneOfKey = (typeof fundraisingEntryOneOfKeys)[number];
 
 const fundraisingEntryStringKeys = ["donatedTo", "donatedBy"] as const;
 type FundraisingEntryStringKey = (typeof fundraisingEntryStringKeys)[number];
 
 export type FundraisingEntryOrderKeys =
+  | "teamId"
   | "donatedOn"
   | "amount"
   | "donatedTo"
@@ -72,7 +74,7 @@ export type FundraisingAssignmentUniqueParam = SimpleUniqueParam;
 export class FundraisingEntryRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async findFundraisingEntryByUnique(
+  async findEntryByUnique(
     param: FundraisingEntryUniqueParam
   ): Promise<
     Result<
@@ -100,7 +102,25 @@ export class FundraisingEntryRepository {
     }
   }
 
-  async getFundraisingAssignmentsForEntry(
+  async findAssignmentByUnique(
+    param: FundraisingAssignmentUniqueParam
+  ): Promise<
+    Result<FundraisingAssignment, SomePrismaError | BasicError | NotFoundError>
+  > {
+    try {
+      const row = await this.prisma.fundraisingAssignment.findUnique({
+        where: param,
+      });
+      if (!row) {
+        return err(new NotFoundError({ what: "FundraisingAssignment" }));
+      }
+      return ok(row);
+    } catch (error: unknown) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
+  }
+
+  async getAssignmentsForEntry(
     param: FundraisingEntryUniqueParam
   ): Promise<
     Result<
@@ -122,60 +142,109 @@ export class FundraisingEntryRepository {
     }
   }
 
-  async listFundraisingEntries({
-    filters,
-    order,
-    skip,
-    take,
-  }: {
-    filters?: readonly FundraisingEntryFilters[] | undefined | null;
-    order?:
-      | readonly [key: FundraisingEntryOrderKeys, sort: SortDirection][]
-      | undefined
-      | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }): Promise<
+  async listEntries(
+    {
+      filters,
+      order,
+      skip,
+      take,
+    }: {
+      filters?: readonly FundraisingEntryFilters[] | undefined | null;
+      order?:
+        | readonly [key: FundraisingEntryOrderKeys, sort: SortDirection][]
+        | undefined
+        | null;
+      skip?: number | undefined | null;
+      take?: number | undefined | null;
+    },
+    limits: {
+      assignedToPerson?: SimpleUniqueParam | undefined | null;
+      forTeam?: SimpleUniqueParam | undefined | null;
+    } = {}
+  ): Promise<
     Result<
       readonly (FundraisingEntry & {
-        dbFundsEntry: DBFundsFundraisingEntry | null;
+        dbFundsEntry: DBFundsFundraisingEntry;
       })[],
-      SomePrismaError | BasicError
+      SomePrismaError | BasicError | ActionDeniedError
     >
   > {
     try {
-      const where = buildFundraisingEntryWhere(filters);
-      const orderBy = buildFundraisingEntryOrder(order);
+      const whereResult = buildFundraisingEntryWhere(filters);
+      const orderByResult = buildFundraisingEntryOrder(order);
+      if (whereResult.isErr) {
+        return err(whereResult.error);
+      }
+      if (orderByResult.isErr) {
+        return err(orderByResult.error);
+      }
+      const where = whereResult.value;
+      const orderBy = orderByResult.value;
+
+      if (limits.assignedToPerson) {
+        where.assignments = {
+          ...where.assignments,
+          every: {
+            ...where.assignments?.every,
+            person: limits.assignedToPerson,
+          },
+        };
+      }
+      if (limits.forTeam) {
+        where.dbFundsEntry = {
+          ...where.dbFundsEntry,
+          // @ts-expect-error Don't know why this is causing an error, but I'm not going to worry about it
+          dbFundsTeam: {
+            // This 'satisfies' is to make sure that we don't accidentally ignore errors due to the ts-expect-error above
+            team: limits.forTeam satisfies Prisma.TeamWhereUniqueInput,
+          },
+        };
+      }
+
+      const rows = await this.prisma.fundraisingEntry.findMany({
+        include: defaultInclude,
+        where,
+        orderBy,
+        skip: skip ?? undefined,
+        take: take ?? undefined,
+      });
 
       return ok(
-        await this.prisma.fundraisingEntry.findMany({
-          include: defaultInclude,
-          where,
-          orderBy,
-          skip: skip ?? undefined,
-          take: take ?? undefined,
-        })
+        rows.filter(
+          (
+            row
+          ): row is typeof row & {
+            dbFundsEntry: NonNullable<typeof row.dbFundsEntry>;
+          } => Boolean(row.dbFundsEntry)
+        )
       );
     } catch (error: unknown) {
       return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
     }
   }
 
-  async countFundraisingEntries({
+  async countEntries({
     filters,
   }: {
     filters?: readonly FundraisingEntryFilters[] | undefined | null;
-  }): Promise<Result<number, SomePrismaError | BasicError>> {
+  }): Promise<
+    Result<number, SomePrismaError | BasicError | ActionDeniedError>
+  > {
     try {
       const where = buildFundraisingEntryWhere(filters);
+      if (where.isErr) {
+        return err(where.error);
+      }
 
-      return ok(await this.prisma.fundraisingEntry.count({ where }));
+      return ok(
+        await this.prisma.fundraisingEntry.count({ where: where.value })
+      );
     } catch (error: unknown) {
       return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
     }
   }
 
-  async connectFundraisingEntry(
+  async connectEntry(
     dbFundsEntry: DBFundsFundraisingEntry
   ): Promise<
     Result<FundraisingEntryUniqueParam, SomePrismaError | BasicError>
@@ -198,7 +267,7 @@ export class FundraisingEntryRepository {
     }
   }
 
-  async deleteFundraisingEntry(
+  async deleteEntry(
     param: FundraisingEntryUniqueParam
   ): Promise<Result<Maybe<FundraisingEntry>, SomePrismaError | BasicError>> {
     try {
@@ -219,7 +288,7 @@ export class FundraisingEntryRepository {
     }
   }
 
-  async addAssignmentToFundraisingEntry(
+  async addAssignmentToEntry(
     entryParam: FundraisingEntryUniqueParam,
     personParam: SimpleUniqueParam,
     { amount }: { amount: number }
@@ -230,12 +299,11 @@ export class FundraisingEntryRepository {
     >
   > {
     try {
-      const entry = await this.findFundraisingEntryByUnique(entryParam);
+      const entry = await this.findEntryByUnique(entryParam);
       if (entry.isErr) {
         return err(entry.error);
       }
-      const assignments =
-        await this.getFundraisingAssignmentsForEntry(entryParam);
+      const assignments = await this.getAssignmentsForEntry(entryParam);
       if (assignments.isErr) {
         return err(assignments.error);
       }
@@ -264,7 +332,7 @@ export class FundraisingEntryRepository {
     }
   }
 
-  async removeAssignmentFromFundraisingEntry(
+  async deleteAssignment(
     assignmentParam: FundraisingAssignmentUniqueParam
   ): Promise<
     Result<FundraisingAssignment, SomePrismaError | BasicError | NotFoundError>
@@ -302,7 +370,7 @@ export class FundraisingEntryRepository {
       if (!assignment) {
         return err(new NotFoundError({ what: "FundraisingEntry" }));
       }
-      const assignments = await this.getFundraisingAssignmentsForEntry({
+      const assignments = await this.getAssignmentsForEntry({
         id: assignment.parentEntry.id,
       });
       if (assignments.isErr) {
@@ -337,6 +405,23 @@ export class FundraisingEntryRepository {
           data: { amount },
         })
       );
+    } catch (error: unknown) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
+  }
+
+  async getPersonForAssignment(
+    assignmentParam: FundraisingAssignmentUniqueParam
+  ): Promise<Result<Person, SomePrismaError | BasicError | NotFoundError>> {
+    try {
+      const assignment = await this.prisma.fundraisingAssignment.findUnique({
+        where: assignmentParam,
+        select: { person: true },
+      });
+      if (!assignment) {
+        return err(new NotFoundError({ what: "FundraisingAssignment" }));
+      }
+      return ok(assignment.person);
     } catch (error: unknown) {
       return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
     }

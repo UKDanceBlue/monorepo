@@ -48,6 +48,10 @@ type AddEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseRes
   ok: Boolean!
 }
 
+input AssignEntryToPersonInput {
+  amount: Float!
+}
+
 """The source of authentication"""
 enum AuthSource {
   Anonymous
@@ -456,6 +460,116 @@ type FeedNode implements Node {
   updatedAt: DateTimeISO
 }
 
+type FundraisingAssignmentNode implements Node {
+  amount: Float!
+  createdAt: DateTimeISO
+  id: ID!
+  person: PersonNode!
+  updatedAt: DateTimeISO
+}
+
+type FundraisingEntryNode implements Node {
+  amount: Float!
+  assignments: [FundraisingAssignmentNode!]!
+  createdAt: DateTimeISO
+  donatedByText: String
+  donatedOn: DateTimeISO!
+  donatedToText: String
+  id: ID!
+  updatedAt: DateTimeISO
+}
+
+enum FundraisingEntryResolverAllKeys {
+  amount
+  createdAt
+  donatedBy
+  donatedOn
+  donatedTo
+  updatedAt
+}
+
+enum FundraisingEntryResolverDateFilterKeys {
+  createdAt
+  donatedOn
+  updatedAt
+}
+
+input FundraisingEntryResolverKeyedDateFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: FundraisingEntryResolverDateFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: DateTimeISO!
+}
+
+input FundraisingEntryResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: FundraisingEntryResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+input FundraisingEntryResolverKeyedNumericFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: FundraisingEntryResolverNumericFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: Float!
+}
+
+input FundraisingEntryResolverKeyedOneOfFilterItem {
+  """The field to filter on"""
+  field: FundraisingEntryResolverOneOfFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: [String!]!
+}
+
+input FundraisingEntryResolverKeyedStringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The field to filter on"""
+  field: FundraisingEntryResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: String!
+}
+
+enum FundraisingEntryResolverNumericFilterKeys {
+  amount
+}
+
+enum FundraisingEntryResolverOneOfFilterKeys {
+  teamId
+}
+
+enum FundraisingEntryResolverStringFilterKeys {
+  donatedBy
+  donatedTo
+}
+
 type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
   data: [ConfigurationNode!]!
   ok: Boolean!
@@ -634,6 +748,20 @@ type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGra
 
 type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
   data: [EventNode!]!
+  ok: Boolean!
+
+  """The current page number (1-indexed)"""
+  page: PositiveInt!
+
+  """The number of items per page"""
+  pageSize: NonNegativeInt!
+
+  """The total number of items"""
+  total: NonNegativeInt!
+}
+
+type ListFundraisingEntriesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+  data: [FundraisingEntryNode!]!
   ok: Boolean!
 
   """The current page number (1-indexed)"""
@@ -858,6 +986,7 @@ type Mutation {
   addExistingImageToEvent(eventId: String!, imageId: String!): AddEventImageResponse!
   addMap(imageUuid: String!, uuid: String!): MarathonHourNode!
   addPersonToTeam(personUuid: String!, teamUuid: String!): GetMembershipResponse!
+  assignEntryToPerson(entryId: String!, input: AssignEntryToPersonInput!, personId: String!): FundraisingAssignmentNode!
   attachImageToFeedItem(feedItemUuid: String!, imageUuid: String!): FeedNode!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
   createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
@@ -874,6 +1003,7 @@ type Mutation {
   deleteDevice(uuid: String!): DeleteDeviceResponse!
   deleteEvent(uuid: String!): DeleteEventResponse!
   deleteFeedItem(feedItemUuid: String!): Boolean!
+  deleteFundraisingAssignment(id: String!): FundraisingAssignmentNode!
   deleteImage(uuid: String!): DeleteImageResponse!
   deleteMarathon(uuid: String!): Void!
   deleteMarathonHour(uuid: String!): Void!
@@ -906,6 +1036,7 @@ type Mutation {
   setPointOpportunity(input: SetPointOpportunityInput!, uuid: String!): SinglePointOpportunityResponse!
   setTeam(input: SetTeamInput!, uuid: String!): SingleTeamResponse!
   stageNotification(audience: NotificationAudienceInput!, body: String!, title: String!, url: String): StageNotificationResponse!
+  updateFundraisingAssignment(id: String!, input: UpdateFundraisingAssignmentInput!): FundraisingAssignmentNode!
 }
 
 interface Node {
@@ -1389,6 +1520,51 @@ type Query {
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
   feed(limit: Int = 10): [FeedNode!]!
+  fundraisingAssignment(id: String!): FundraisingAssignmentNode!
+  fundraisingEntries(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
+
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [FundraisingEntryResolverKeyedIsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
+  ): ListFundraisingEntriesResponse!
+  fundraisingEntry(id: String!): FundraisingEntryNode!
   image(uuid: String!): GetImageByUuidResponse!
   images(
     """The boolean filters to apply to the query"""
@@ -1964,6 +2140,10 @@ enum TeamType {
 A field whose value conforms to the standard URL format as specified in RFC3986: https://www.ietf.org/rfc/rfc3986.txt.
 """
 scalar URL
+
+input UpdateFundraisingAssignmentInput {
+  amount: Float!
+}
 
 """Represents NULL values"""
 scalar Void
