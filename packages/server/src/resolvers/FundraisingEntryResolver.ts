@@ -65,14 +65,18 @@ export class ListFundraisingEntriesResponse extends AbstractGraphQLPaginatedResp
   data!: FundraisingEntryNode[];
 }
 
-const fundraisingAccess: AccessControlParam<FundraisingEntryNode> = {
-  authRules: [
-    {
-      minCommitteeRole: CommitteeRole.Coordinator,
-      committeeIdentifiers: [CommitteeIdentifier.fundraisingCommittee],
-    },
-  ],
-};
+/**
+ * Access control param for granting access to all fundraising entries.
+ */
+export const globalFundraisingAccessParam: AccessControlParam<FundraisingEntryNode> =
+  {
+    authRules: [
+      {
+        minCommitteeRole: CommitteeRole.Coordinator,
+        committeeIdentifiers: [CommitteeIdentifier.fundraisingCommittee],
+      },
+    ],
+  };
 
 @Resolver(() => FundraisingEntryNode)
 @Service()
@@ -81,7 +85,7 @@ export class FundraisingEntryResolver {
     private readonly fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
-  @AccessControl(fundraisingAccess)
+  @AccessControl(globalFundraisingAccessParam)
   @Query(() => FundraisingEntryNode)
   async fundraisingEntry(@Arg("id") id: string): Promise<FundraisingEntryNode> {
     const entry = await this.fundraisingEntryRepository.findEntryByUnique({
@@ -93,7 +97,7 @@ export class FundraisingEntryResolver {
     return fundraisingEntryModelToNode(entry.value);
   }
 
-  @AccessControl(fundraisingAccess)
+  @AccessControl(globalFundraisingAccessParam)
   @Query(() => ListFundraisingEntriesResponse)
   async fundraisingEntries(
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs

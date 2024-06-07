@@ -53,6 +53,7 @@ import {
 import {
   ListFundraisingEntriesArgs,
   ListFundraisingEntriesResponse,
+  globalFundraisingAccessParam,
 } from "./FundraisingEntryResolver.js";
 import * as Context from "./context.js";
 
@@ -379,23 +380,20 @@ export class TeamResolver {
     return marathonModelToResource(result);
   }
 
-  @AccessControl(
-    { accessLevel: AccessLevel.Committee },
-    {
-      rootMatch: [
-        {
-          root: "id",
-          extractor: ({ teamMemberships }) =>
-            teamMemberships
-              .filter(
-                ({ position }) =>
-                  position === Common.MembershipPositionType.Captain
-              )
-              .map(({ teamId }) => teamId),
-        },
-      ],
-    }
-  )
+  @AccessControl(globalFundraisingAccessParam, {
+    rootMatch: [
+      {
+        root: "id",
+        extractor: ({ teamMemberships }) =>
+          teamMemberships
+            .filter(
+              ({ position }) =>
+                position === Common.MembershipPositionType.Captain
+            )
+            .map(({ teamId }) => teamId),
+      },
+    ],
+  })
   @FieldResolver(() => ListFundraisingEntriesResponse)
   async fundraisingEntries(
     @Root() team: TeamNode,
