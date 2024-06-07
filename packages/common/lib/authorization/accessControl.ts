@@ -327,6 +327,7 @@ export function AccessControl<RootType extends object = never>(
       }
 
       if (rule.rootMatch != null) {
+        let shouldContinue = false;
         for (const match of rule.rootMatch) {
           const rootValue =
             typeof match.root === "string"
@@ -343,18 +344,25 @@ export function AccessControl<RootType extends object = never>(
           if (Array.isArray(expectedValue)) {
             if (Array.isArray(rootValue)) {
               if (!rootValue.some((v) => expectedValue.includes(v))) {
-                continue;
+                shouldContinue = true;
+                break;
               }
             } else if (!expectedValue.includes(rootValue)) {
-              continue;
+              shouldContinue = true;
+              break;
             }
           } else if (Array.isArray(rootValue)) {
             if (!rootValue.includes(expectedValue)) {
-              continue;
+              shouldContinue = true;
+              break;
             }
           } else if (rootValue !== expectedValue) {
-            continue;
+            shouldContinue = true;
+            break;
           }
+        }
+        if (shouldContinue) {
+          continue;
         }
       }
 

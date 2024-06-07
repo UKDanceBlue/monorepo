@@ -76,6 +76,7 @@ export const graphqlContextFunction: ContextFunction<
       );
       logger.trace("graphqlContextFunction Found user", personResource);
       context.authenticatedUser = personResource;
+      context.userData.userId = userId;
 
       // Set the committees the user is on
       const committeeMemberships =

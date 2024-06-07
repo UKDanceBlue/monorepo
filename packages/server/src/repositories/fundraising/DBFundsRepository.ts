@@ -1,9 +1,10 @@
 import { PrismaClient, Team } from "@prisma/client";
-import type { DateTime } from "luxon";
-import { Maybe, Result } from "true-myth";
+import { DateTime } from "luxon";
+import { Maybe, Result, Unit } from "true-myth";
 import { err, ok } from "true-myth/result";
 import { Service } from "typedi";
 
+import { CompositeError } from "../../lib/error/composite.js";
 import { NotFoundError } from "../../lib/error/direct.js";
 import { BasicError, toBasicError } from "../../lib/error/error.js";
 import {
@@ -11,15 +12,17 @@ import {
   SomePrismaError,
   toPrismaError,
 } from "../../lib/error/prisma.js";
-import { type JsResult } from "../../lib/error/result.js";
 import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
 import { MarathonRepository } from "../marathon/MarathonRepository.js";
+
+import { FundraisingEntryRepository } from "./FundraisingRepository.js";
 
 @Service()
 export class DBFundsRepository {
   constructor(
     private readonly prisma: PrismaClient,
-    private readonly marathonRepository: MarathonRepository
+    private readonly marathonRepository: MarathonRepository,
+    private readonly fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
   async overwriteTeamForFiscalYear(
@@ -36,7 +39,15 @@ export class DBFundsRepository {
       donatedOn: DateTime;
       amount: number;
     }[]
-  ): Promise<JsResult<void, PrismaError | NotFoundError>> {
+  ): Promise<
+    Result<
+      Unit,
+      | PrismaError
+      | NotFoundError
+      | CompositeError<PrismaError | BasicError>
+      | BasicError
+    >
+  > {
     try {
       let marathonId: number;
       if ("id" in marathonParam) {
@@ -49,7 +60,7 @@ export class DBFundsRepository {
         }
         marathonId = marathon.id;
       }
-      await this.prisma.dBFundsTeam.upsert({
+      const rows = await this.prisma.dBFundsTeam.upsert({
         where: {
           dbNum_marathonId: {
             dbNum: team.dbNum,
@@ -89,9 +100,33 @@ export class DBFundsRepository {
             })),
           },
         },
+        select: {
+          fundraisingEntries: true,
+        },
       });
 
-      return Result.ok(undefined);
+      const results = await Promise.allSettled(
+        rows.fundraisingEntries.map(async (entry) => {
+          return this.fundraisingEntryRepository.connectEntry(entry);
+        })
+      );
+
+      const errors: (PrismaError | BasicError)[] = [];
+      for (const result of results) {
+        if (result.status === "rejected") {
+          errors.push(
+            toPrismaError(result.reason).unwrapOrElse(() =>
+              toBasicError(result.reason)
+            )
+          );
+        } else if (result.value.isErr) {
+          errors.push(result.value.error);
+        }
+      }
+
+      return errors.length > 0
+        ? Result.err(new CompositeError(errors))
+        : Result.ok();
     } catch (error) {
       return Result.err(
         toPrismaError(error).unwrapOrElse(() => toBasicError(error))

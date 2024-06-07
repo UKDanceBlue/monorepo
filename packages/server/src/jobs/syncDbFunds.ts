@@ -77,7 +77,11 @@ async function doSync(): Promise<
     if (result.status === "rejected") {
       errors.push(toBasicError(result.reason));
     } else if (result.value.isErr) {
-      errors.push(result.value.error);
+      if (result.value.error instanceof CompositeError) {
+        errors.push(...result.value.error.errors);
+      } else {
+        errors.push(result.value.error);
+      }
     }
   }
 
