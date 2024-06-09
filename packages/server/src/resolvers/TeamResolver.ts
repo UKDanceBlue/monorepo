@@ -19,6 +19,7 @@ import {
   TeamNode,
   TeamType,
 } from "@ukdanceblue/common";
+import { VoidResolver } from "graphql-scalars";
 import {
   Arg,
   Args,
@@ -480,5 +481,23 @@ export class TeamResolver {
       teamInfoInstance.name = row.name;
       return teamInfoInstance;
     });
+  }
+
+  @AccessControl(globalFundraisingAccessParam)
+  @Mutation(() => VoidResolver, { name: "assignTeamToDbFundsTeam" })
+  async assignTeamToDbFundsTeam(
+    @Arg("teamId") teamId: string,
+    @Arg("dbFundsTeamId") dbFundsTeamId: number
+  ): Promise<void> {
+    const result = await this.dbFundsRepository.assignTeamToDbFundsTeam(
+      { uuid: teamId },
+      { dbNum: dbFundsTeamId }
+    );
+
+    if (result.isErr) {
+      throw new CatchableConcreteError(result.error);
+    }
+
+    return undefined;
   }
 }

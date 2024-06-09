@@ -14,8 +14,18 @@ import {
 } from "../../lib/error/prisma.js";
 import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
 import { MarathonRepository } from "../marathon/MarathonRepository.js";
+import { SimpleUniqueParam } from "../shared.js";
 
 import { FundraisingEntryRepository } from "./FundraisingRepository.js";
+
+export type UniqueDbFundsTeamParam =
+  | {
+      id: number;
+    }
+  | {
+      dbNum: number;
+      marathon: { id: number };
+    };
 
 @Service()
 export class DBFundsRepository {
@@ -134,18 +144,66 @@ export class DBFundsRepository {
     }
   }
 
-  async getTeamsForDbFundsTeam(dbFundsTeamParam: {
-    id: number;
-  }): Promise<Result<Team[], NotFoundError | SomePrismaError | BasicError>> {
+  async getTeamsForDbFundsTeam(
+    dbFundsTeamParam: UniqueDbFundsTeamParam
+  ): Promise<Result<Team[], NotFoundError | SomePrismaError | BasicError>> {
     try {
       const team = await this.prisma.dBFundsTeam.findUnique({
-        where: dbFundsTeamParam,
+        where:
+          "marathon" in dbFundsTeamParam
+            ? {
+                dbNum_marathonId: {
+                  dbNum: dbFundsTeamParam.dbNum,
+                  marathonId: dbFundsTeamParam.marathon.id,
+                },
+              }
+            : dbFundsTeamParam,
         include: { teams: true },
       });
       if (!team) {
         return err(new NotFoundError({ what: "Team" }));
       }
       return ok(team.teams);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
+  }
+
+  async assignTeamToDbFundsTeam(
+    teamParam: SimpleUniqueParam,
+    dbFundsTeamParam:
+      | UniqueDbFundsTeamParam
+      | {
+          dbNum: number;
+        }
+  ): Promise<Result<Unit, NotFoundError | SomePrismaError | BasicError>> {
+    try {
+      const team = await this.prisma.team.findUnique({
+        where: teamParam,
+      });
+      if (!team) {
+        return err(new NotFoundError({ what: "Team" }));
+      }
+      await this.prisma.dBFundsTeam.update({
+        where:
+          "dbNum" in dbFundsTeamParam
+            ? {
+                dbNum_marathonId: {
+                  dbNum: dbFundsTeamParam.dbNum,
+                  marathonId:
+                    "marathon" in dbFundsTeamParam
+                      ? dbFundsTeamParam.marathon.id
+                      : team.marathonId,
+                },
+              }
+            : dbFundsTeamParam,
+        data: {
+          teams: {
+            connect: { id: team.id },
+          },
+        },
+      });
+      return ok();
     } catch (error) {
       return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
     }
