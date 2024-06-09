@@ -4,6 +4,7 @@ import {
   CommitteeIdentifier,
   CommitteeRole,
   FundraisingAssignmentNode,
+  FundraisingEntryNode,
   PersonNode,
 } from "@ukdanceblue/common";
 import {
@@ -21,6 +22,7 @@ import { Service } from "typedi";
 import { CatchableConcreteError } from "../lib/formatError.js";
 import { FundraisingEntryRepository } from "../repositories/fundraising/FundraisingRepository.js";
 import { fundraisingAssignmentModelToNode } from "../repositories/fundraising/fundraisingAssignmentModelToNode.js";
+import { fundraisingEntryModelToNode } from "../repositories/fundraising/fundraisingEntryModelToNode.js";
 import { PersonRepository } from "../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
 
@@ -138,5 +140,18 @@ export class FundraisingAssignmentResolver {
       throw new CatchableConcreteError(person.error);
     }
     return personModelToResource(person.value, this.personRepository);
+  }
+
+  @FieldResolver(() => FundraisingEntryNode)
+  async entry(
+    @Root() assignment: FundraisingAssignmentNode
+  ): Promise<FundraisingEntryNode> {
+    const entry = await this.fundraisingEntryRepository.getEntryForAssignment({
+      uuid: assignment.id,
+    });
+    if (entry.isErr) {
+      throw new CatchableConcreteError(entry.error);
+    }
+    return fundraisingEntryModelToNode(entry.value);
   }
 }

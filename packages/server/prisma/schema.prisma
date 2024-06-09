@@ -243,7 +243,7 @@ model Team {
   correspondingCommittee   Committee?       @relation(fields: [correspondingCommitteeId], references: [id])
   correspondingCommitteeId Int?             @map("committee_id")
   dbFundsTeam              DBFundsTeam?     @relation(fields: [dbFundsTeamId], references: [id])
-  dbFundsTeamId            Int?             @unique @map("db_funds_team_id")
+  dbFundsTeamId            Int?             @map("db_funds_team_id")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -421,8 +421,8 @@ model DBFundsTeam {
   marathon   Marathon? @relation(fields: [marathonId], references: [id])
   marathonId Int?      @map("marathon_id")
 
-  // The corresponding team in our database
-  team Team?
+  // The corresponding teams in our database
+  teams Team[]
 
   @@unique([dbNum, marathonId], map: "db_funds_teams_db_num_marathon_id_key")
   @@map("db_funds_teams")

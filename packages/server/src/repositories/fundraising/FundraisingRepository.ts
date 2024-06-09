@@ -16,6 +16,7 @@ import { NotFoundError } from "../../lib/error/direct.js";
 import { BasicError, toBasicError } from "../../lib/error/error.js";
 import { SomePrismaError, toPrismaError } from "../../lib/error/prisma.js";
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import { UniquePersonParam } from "../person/PersonRepository.js";
 import type { SimpleUniqueParam } from "../shared.js";
 
 import {
@@ -422,6 +423,61 @@ export class FundraisingEntryRepository {
         return err(new NotFoundError({ what: "FundraisingAssignment" }));
       }
       return ok(assignment.person);
+    } catch (error: unknown) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
+  }
+
+  async getEntryForAssignment(
+    assignmentParam: FundraisingAssignmentUniqueParam
+  ): Promise<
+    Result<
+      FundraisingEntry & {
+        dbFundsEntry: DBFundsFundraisingEntry;
+      },
+      SomePrismaError | BasicError | NotFoundError
+    >
+  > {
+    try {
+      const assignment = await this.prisma.fundraisingAssignment.findUnique({
+        where: assignmentParam,
+        select: {
+          parentEntry: {
+            include: defaultInclude,
+          },
+        },
+      });
+      if (!assignment) {
+        return err(new NotFoundError({ what: "FundraisingAssignment" }));
+      }
+      if (!assignment.parentEntry.dbFundsEntry) {
+        return err(
+          new NotFoundError({ what: "FundraisingEntry.dbFundsEntry" })
+        );
+      }
+      return ok(
+        assignment.parentEntry as typeof assignment.parentEntry & {
+          dbFundsEntry: NonNullable<typeof assignment.parentEntry.dbFundsEntry>;
+        }
+      );
+    } catch (error: unknown) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
+  }
+
+  async getAssignmentsForPerson(
+    personParam: UniquePersonParam
+  ): Promise<
+    Result<
+      readonly FundraisingAssignment[],
+      SomePrismaError | BasicError | NotFoundError
+    >
+  > {
+    try {
+      const assignments = await this.prisma.fundraisingAssignment.findMany({
+        where: { person: personParam },
+      });
+      return ok(assignments);
     } catch (error: unknown) {
       return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
     }

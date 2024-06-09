@@ -1428,6 +1428,7 @@ export { NumericComparator };
 
 export type PersonNode = Node & {
   readonly __typename?: 'PersonNode';
+  readonly assignedDonations?: Maybe<CommitteeMembershipNode>;
   readonly committees: ReadonlyArray<CommitteeMembershipNode>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly dbRole: DbRole;
@@ -1439,6 +1440,22 @@ export type PersonNode = Node & {
   readonly primaryCommittee?: Maybe<CommitteeMembershipNode>;
   readonly teams: ReadonlyArray<MembershipNode>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+};
+
+
+export type PersonNodeAssignedDonationsArgs = {
+  booleanFilters?: InputMaybe<Scalars['Void']['input']>;
+  dateFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedDateFilterItem>>;
+  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  isNullFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedIsNullFilterItem>>;
+  numericFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedNumericFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedOneOfFilterItem>>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sendAll?: InputMaybe<Scalars['Boolean']['input']>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedStringFilterItem>>;
 };
 
 export const PersonResolverAllKeys = {

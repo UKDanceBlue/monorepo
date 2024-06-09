@@ -7,6 +7,8 @@ import {
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
+  FundraisingAssignmentNode,
+  FundraisingEntryNode,
   MembershipNode,
   MembershipPositionType,
   PersonNode,
@@ -27,11 +29,13 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Container, Service } from "typedi";
 
 import { CatchableConcreteError } from "../lib/formatError.js";
 import { auditLogger } from "../lib/logging/auditLogging.js";
+import { DBFundsRepository } from "../repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "../repositories/fundraising/FundraisingRepository.js";
+import { fundraisingAssignmentModelToNode } from "../repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "../repositories/fundraising/fundraisingEntryModelToNode.js";
 import { MembershipRepository } from "../repositories/membership/MembershipRepository.js";
 import {
@@ -461,16 +465,51 @@ export class PersonResolver {
     return committeeMembershipModelToResource(membership, committee.identifier);
   }
 
-  @AccessControl(globalFundraisingAccessParam, {
-    rootMatch: [
-      {
-        root: "id",
-        extractor: ({ userData }) => userData.userId,
+  @AccessControl<FundraisingEntryNode>(
+    // We can't grant blanket access as otherwise people would see who else was assigned to an entry
+    // You can view all assignments for an entry if you are:
+    // 1. A fundraising coordinator or chair
+    globalFundraisingAccessParam,
+    // 2. The captain of the team the entry is associated with
+    {
+      custom: async (
+        { id },
+        { teamMemberships, userData: { userId } }
+      ): Promise<boolean> => {
+        if (userId == null) {
+          return false;
+        }
+        const captainOf = teamMemberships.filter(
+          (membership) => membership.position === MembershipPositionType.Captain
+        );
+        if (captainOf.length === 0) {
+          return false;
+        }
+
+        const fundraisingEntryRepository = Container.get(
+          FundraisingEntryRepository
+        );
+        const entry = await fundraisingEntryRepository.findEntryByUnique({
+          uuid: id,
+        });
+        if (entry.isErr) {
+          return false;
+        }
+        const dbFundsRepository = Container.get(DBFundsRepository);
+        const teams = await dbFundsRepository.getTeamsForDbFundsTeam({
+          id: entry.value.dbFundsEntry.dbFundsTeamId,
+        });
+        if (teams.isErr) {
+          return false;
+        }
+        return captainOf.some(({ teamId }) =>
+          teams.value.some((team) => team.uuid === teamId)
+        );
       },
-    ],
-  })
+    }
+  )
   @FieldResolver(() => CommitteeMembershipNode, { nullable: true })
-  async assignedDonations(
+  async assignedDonationEntries(
     @Root() person: PersonNode,
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
   ): Promise<ListFundraisingEntriesResponse> {
@@ -512,5 +551,34 @@ export class PersonResolver {
       page: args.page,
       pageSize: args.pageSize,
     });
+  }
+
+  // This is the only way normal dancers or committee members can access fundraising info
+  // as it will only grant them the individual assignment they are associated with plus
+  // shallow access to the entry itself
+  @AccessControl<FundraisingAssignmentNode>({
+    rootMatch: [
+      {
+        root: "id",
+        extractor: ({ userData }) => userData.userId,
+      },
+    ],
+  })
+  @FieldResolver(() => [FundraisingAssignmentNode])
+  async fundraisingAssignments(
+    @Root() person: PersonNode
+  ): Promise<FundraisingAssignmentNode[]> {
+    const models =
+      await this.fundraisingEntryRepository.getAssignmentsForPerson({
+        uuid: person.id,
+      });
+
+    if (models.isErr) {
+      throw new CatchableConcreteError(models.error);
+    }
+
+    return Promise.all(
+      models.value.map((row) => fundraisingAssignmentModelToNode(row))
+    );
   }
 }

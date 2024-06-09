@@ -92,7 +92,7 @@ export function buildFundraisingEntryWhere(
       }
       case "teamId": {
         dbFundsEntryWhere.dbFundsTeam = {
-          team: { uuid: oneOfFilterToPrisma(filter) },
+          teams: { some: { uuid: oneOfFilterToPrisma(filter) } },
         };
         break;
       }

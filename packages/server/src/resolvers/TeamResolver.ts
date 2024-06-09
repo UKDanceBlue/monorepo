@@ -37,6 +37,7 @@ import {
 import { Service } from "typedi";
 
 import { CatchableConcreteError } from "../lib/formatError.js";
+import { DBFundsRepository } from "../repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "../repositories/fundraising/FundraisingRepository.js";
 import { fundraisingEntryModelToNode } from "../repositories/fundraising/fundraisingEntryModelToNode.js";
 import { marathonModelToResource } from "../repositories/marathon/marathonModelToResource.js";
@@ -140,12 +141,22 @@ class ListTeamsArgs extends FilteredListQueryArgs<
   marathonYear!: MarathonYearString[] | null;
 }
 
+@ObjectType("DbFundsTeamInfo", { implements: [Common.Node] })
+class DbFundsTeamInfo {
+  @Field(() => Int)
+  dbNum!: number;
+
+  @Field(() => String)
+  name!: string;
+}
+
 @Resolver(() => TeamNode)
 @Service()
 export class TeamResolver {
   constructor(
     private teamRepository: TeamRepository,
-    private fundraisingEntryRepository: FundraisingEntryRepository
+    private fundraisingEntryRepository: FundraisingEntryRepository,
+    private dbFundsRepository: DBFundsRepository
   ) {}
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
@@ -436,6 +447,38 @@ export class TeamResolver {
       total: count.value,
       page: args.page,
       pageSize: args.pageSize,
+    });
+  }
+
+  @AccessControl(globalFundraisingAccessParam)
+  @Query(() => [DbFundsTeamInfo], { name: "dbFundsTeams" })
+  async dbFundsTeams(
+    @Arg("search") search: string
+  ): Promise<DbFundsTeamInfo[]> {
+    const searchParam: {
+      byDbNum?: number;
+      byName?: string;
+    } = {};
+    const searchAsNum = Number.parseInt(search, 10);
+    if (Number.isInteger(searchAsNum)) {
+      searchParam.byDbNum = searchAsNum;
+    } else {
+      searchParam.byName = search;
+    }
+    const rows = await this.dbFundsRepository.listDbFundsTeams({
+      ...searchParam,
+      onlyActive: true,
+    });
+
+    if (rows.isErr) {
+      throw new CatchableConcreteError(rows.error);
+    }
+
+    return rows.value.map((row) => {
+      const teamInfoInstance = new DbFundsTeamInfo();
+      teamInfoInstance.dbNum = row.dbNum;
+      teamInfoInstance.name = row.name;
+      return teamInfoInstance;
     });
   }
 }

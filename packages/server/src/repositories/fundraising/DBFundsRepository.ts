@@ -1,4 +1,4 @@
-import { PrismaClient, Team } from "@prisma/client";
+import { DBFundsTeam, PrismaClient, Team } from "@prisma/client";
 import { DateTime } from "luxon";
 import { Maybe, Result, Unit } from "true-myth";
 import { err, ok } from "true-myth/result";
@@ -134,18 +134,43 @@ export class DBFundsRepository {
     }
   }
 
-  async getTeamForDbFundsTeam(dbFundsTeamParam: {
+  async getTeamsForDbFundsTeam(dbFundsTeamParam: {
     id: number;
-  }): Promise<Result<Team, NotFoundError | SomePrismaError | BasicError>> {
+  }): Promise<Result<Team[], NotFoundError | SomePrismaError | BasicError>> {
     try {
       const team = await this.prisma.dBFundsTeam.findUnique({
         where: dbFundsTeamParam,
-        include: { team: true },
+        include: { teams: true },
       });
-      if (!team?.team) {
+      if (!team) {
         return err(new NotFoundError({ what: "Team" }));
       }
-      return ok(team.team);
+      return ok(team.teams);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
+  }
+
+  async listDbFundsTeams(search: {
+    byDbNum?: number;
+    byName?: string;
+    onlyActive?: boolean;
+  }): Promise<Result<DBFundsTeam[], SomePrismaError | BasicError>> {
+    try {
+      return ok(
+        await this.prisma.dBFundsTeam.findMany({
+          where: {
+            active: search.onlyActive ? true : undefined,
+            dbNum: search.byDbNum,
+            name: {
+              contains: search.byName,
+            },
+          },
+          orderBy: {
+            name: "asc",
+          },
+        })
+      );
     } catch (error) {
       return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
     }
