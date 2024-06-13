@@ -142,7 +142,12 @@ export class PersonRepository {
       where: {
         person: param,
         team: {
-          type: TeamType.Committee,
+          correspondingCommittee: {
+            isNot: null,
+          },
+        },
+        committeeRole: {
+          not: null,
         },
       },
       select: {

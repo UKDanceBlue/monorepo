@@ -219,6 +219,12 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTimeISO
 
+type DbFundsTeamInfo implements Node {
+  dbNum: Int!
+  id: ID!
+  name: String!
+}
+
 """DanceBlue roles"""
 enum DbRole {
   Committee
@@ -348,7 +354,7 @@ enum DeviceResolverStringFilterKeys {
 }
 
 type EffectiveCommitteeRole {
-  committee: CommitteeIdentifier!
+  identifier: CommitteeIdentifier!
   role: CommitteeRole!
 }
 
@@ -463,6 +469,7 @@ type FeedNode implements Node {
 type FundraisingAssignmentNode implements Node {
   amount: Float!
   createdAt: DateTimeISO
+  entry: FundraisingEntryNode!
   id: ID!
   person: PersonNode!
   updatedAt: DateTimeISO
@@ -987,6 +994,7 @@ type Mutation {
   addMap(imageUuid: String!, uuid: String!): MarathonHourNode!
   addPersonToTeam(personUuid: String!, teamUuid: String!): GetMembershipResponse!
   assignEntryToPerson(entryId: String!, input: AssignEntryToPersonInput!, personId: String!): FundraisingAssignmentNode!
+  assignTeamToDbFundsTeam(dbFundsTeamId: Float!, teamId: String!): Void!
   attachImageToFeedItem(feedItemUuid: String!, imageUuid: String!): FeedNode!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
   createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
@@ -1228,7 +1236,7 @@ enum NumericComparator {
 }
 
 type PersonNode implements Node {
-  assignedDonations(
+  assignedDonationEntries(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
 
@@ -1275,6 +1283,7 @@ type PersonNode implements Node {
   createdAt: DateTimeISO
   dbRole: DbRole!
   email: String!
+  fundraisingAssignments: [FundraisingAssignmentNode!]!
   id: ID!
   linkblue: String
   moraleTeams: [MembershipNode!]!
@@ -1474,6 +1483,7 @@ type Query {
   allConfigurations: GetAllConfigurationsResponse!
   currentMarathon: MarathonNode
   currentMarathonHour: MarathonHourNode
+  dbFundsTeams(search: String!): [DbFundsTeamInfo!]!
   device(uuid: String!): GetDeviceByUuidResponse!
   devices(
     """The boolean filters to apply to the query"""

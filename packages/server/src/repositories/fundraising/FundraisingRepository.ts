@@ -196,9 +196,11 @@ export class FundraisingEntryRepository {
           ...where.dbFundsEntry,
           // @ts-expect-error Don't know why this is causing an error, but I'm not going to worry about it
           dbFundsTeam: {
+            teams: {
+              some: limits.forTeam,
+            },
             // This 'satisfies' is to make sure that we don't accidentally ignore errors due to the ts-expect-error above
-            team: limits.forTeam satisfies Prisma.TeamWhereUniqueInput,
-          },
+          } satisfies Prisma.DBFundsTeamWhereInput,
         };
       }
 

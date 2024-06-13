@@ -5,11 +5,6 @@ import {
   DbRole,
 } from "./structures.js";
 
-export type Role = {
-  dbRole: DbRole;
-  committees?: { identifier: CommitteeIdentifier; role: CommitteeRole }[];
-};
-
 /**
  * Converts a DbRole to an AccessLevel
  *
@@ -17,8 +12,14 @@ export type Role = {
  * @return The equivalent AccessLevel
  * @throws Error if the DbRole is not a valid member of the DbRole enum
  */
-export function roleToAccessLevel(role: Role): AccessLevel {
-  switch (role.dbRole) {
+export function roleToAccessLevel({
+  dbRole,
+  committees,
+}: {
+  dbRole: DbRole;
+  committees?: { identifier: CommitteeIdentifier; role: CommitteeRole }[];
+}): AccessLevel {
+  switch (dbRole) {
     case DbRole.None: {
       return AccessLevel.None;
     }
@@ -30,7 +31,7 @@ export function roleToAccessLevel(role: Role): AccessLevel {
     }
     case DbRole.Committee: {
       let maxLevel: AccessLevel | null = null;
-      for (const committee of role.committees ?? []) {
+      for (const committee of committees ?? []) {
         let thisLevel: AccessLevel;
 
         if (committee.identifier === CommitteeIdentifier.techCommittee) {
@@ -54,12 +55,12 @@ export function roleToAccessLevel(role: Role): AccessLevel {
       return maxLevel;
     }
     default: {
-      role.dbRole satisfies never;
+      dbRole satisfies never;
       try {
-        throw new Error(`Illegal DbRole: ${JSON.stringify(role.dbRole)}`);
+        throw new Error(`Illegal DbRole: ${JSON.stringify(dbRole)}`);
       } catch (error) {
         throw new Error(
-          `Illegal DbRole: [Parsing of '${String(role.dbRole)}' failed]`
+          `Illegal DbRole: [Parsing of '${String(dbRole)}' failed]`
         );
       }
     }

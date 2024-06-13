@@ -251,6 +251,13 @@ export type CreateTeamResponse = AbstractGraphQlCreatedResponse & AbstractGraphQ
   readonly uuid: Scalars['String']['output'];
 };
 
+export type DbFundsTeamInfo = Node & {
+  readonly __typename?: 'DbFundsTeamInfo';
+  readonly dbNum: Scalars['Int']['output'];
+  readonly id: Scalars['ID']['output'];
+  readonly name: Scalars['String']['output'];
+};
+
 export { DbRole };
 
 export type DeleteConfigurationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
@@ -476,6 +483,7 @@ export type FundraisingAssignmentNode = Node & {
   readonly __typename?: 'FundraisingAssignmentNode';
   readonly amount: Scalars['Float']['output'];
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly entry: FundraisingEntryNode;
   readonly id: Scalars['ID']['output'];
   readonly person: PersonNode;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -960,6 +968,7 @@ export type Mutation = {
   readonly addMap: MarathonHourNode;
   readonly addPersonToTeam: GetMembershipResponse;
   readonly assignEntryToPerson: FundraisingAssignmentNode;
+  readonly assignTeamToDbFundsTeam: Scalars['Void']['output'];
   readonly attachImageToFeedItem: FeedNode;
   readonly createConfiguration: CreateConfigurationResponse;
   readonly createConfigurations: CreateConfigurationResponse;
@@ -1038,6 +1047,12 @@ export type MutationAssignEntryToPersonArgs = {
   entryId: Scalars['String']['input'];
   input: AssignEntryToPersonInput;
   personId: Scalars['String']['input'];
+};
+
+
+export type MutationAssignTeamToDbFundsTeamArgs = {
+  dbFundsTeamId: Scalars['Float']['input'];
+  teamId: Scalars['String']['input'];
 };
 
 
@@ -1428,11 +1443,12 @@ export { NumericComparator };
 
 export type PersonNode = Node & {
   readonly __typename?: 'PersonNode';
-  readonly assignedDonations?: Maybe<CommitteeMembershipNode>;
+  readonly assignedDonationEntries?: Maybe<CommitteeMembershipNode>;
   readonly committees: ReadonlyArray<CommitteeMembershipNode>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly dbRole: DbRole;
   readonly email: Scalars['String']['output'];
+  readonly fundraisingAssignments: ReadonlyArray<FundraisingAssignmentNode>;
   readonly id: Scalars['ID']['output'];
   readonly linkblue?: Maybe<Scalars['String']['output']>;
   readonly moraleTeams: ReadonlyArray<MembershipNode>;
@@ -1443,7 +1459,7 @@ export type PersonNode = Node & {
 };
 
 
-export type PersonNodeAssignedDonationsArgs = {
+export type PersonNodeAssignedDonationEntriesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
   dateFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1626,6 +1642,7 @@ export type Query = {
   readonly allConfigurations: GetAllConfigurationsResponse;
   readonly currentMarathon?: Maybe<MarathonNode>;
   readonly currentMarathonHour?: Maybe<MarathonHourNode>;
+  readonly dbFundsTeams: ReadonlyArray<DbFundsTeamInfo>;
   readonly device: GetDeviceByUuidResponse;
   readonly devices: ListDevicesResponse;
   readonly event: GetEventByUuidResponse;
@@ -1661,6 +1678,11 @@ export type Query = {
 
 export type QueryActiveConfigurationArgs = {
   key: Scalars['String']['input'];
+};
+
+
+export type QueryDbFundsTeamsArgs = {
+  search: Scalars['String']['input'];
 };
 
 

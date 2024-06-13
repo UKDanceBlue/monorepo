@@ -7,7 +7,6 @@ import type {
   Authorization,
   CommitteeRole,
   DbRole,
-  EffectiveCommitteeRole,
   MembershipPositionType,
   PersonNode,
   TeamType,
@@ -126,19 +125,14 @@ export async function checkAuthorization(
   // Access Level
   if (accessLevel != null) {
     matches &&= authorization.accessLevel >= accessLevel;
-    console.log(
-      `Access level ${authorization.accessLevel} >= ${accessLevel}: ${matches}`
-    );
   }
 
   // DB role
   if (dbRole != null) {
     matches &&= authorization.dbRole === dbRole;
-    console.log(`DB role ${authorization.dbRole} === ${dbRole}: ${matches}`);
   }
   if (minDbRole != null) {
     matches &&= compareDbRole(authorization.dbRole, minDbRole) >= 0;
-    console.log(`DB role ${authorization.dbRole} >= ${minDbRole}: ${matches}`);
   }
 
   // Committee role
@@ -152,16 +146,10 @@ export async function checkAuthorization(
   if (minCommitteeRole != null) {
     if (authorization.committees.length === 0) {
       matches = false;
-      console.log(`No committee roles: ${matches}`);
     } else {
       matches &&= authorization.committees.some(
         (committee) =>
           compareCommitteeRole(committee.role, minCommitteeRole) >= 0
-      );
-      console.log(
-        `Committee role ${authorization.committees
-          .map((c) => c.role)
-          .join(", ")} >= ${minCommitteeRole}: ${matches}`
       );
     }
   }
@@ -171,20 +159,10 @@ export async function checkAuthorization(
     matches &&= authorization.committees.some(
       (committee) => committee.identifier === committeeIdentifier
     );
-    console.log(
-      `Committee identifier ${authorization.committees
-        .map((c) => c.identifier)
-        .join(", ")} === ${committeeIdentifier}: ${matches}`
-    );
   }
   if (committeeIdentifiers != null) {
     matches &&= authorization.committees.some((committee) =>
       committeeIdentifiers.includes(committee.identifier)
-    );
-    console.log(
-      `Committee identifier ${authorization.committees
-        .map((c) => c.identifier)
-        .join(", ")} in ${committeeIdentifiers.join(", ")}: ${matches}`
     );
   }
 
@@ -197,7 +175,6 @@ export async function checkAuthorization(
 
 interface ExtractorData {
   authenticatedUser: PersonNode | null;
-  effectiveCommitteeRoles: EffectiveCommitteeRole[];
   teamMemberships: SimpleTeamMembership[];
   userData: UserData;
   authorization: Authorization;
@@ -244,7 +221,6 @@ export interface SimpleTeamMembership {
 
 export interface AuthorizationContext {
   authenticatedUser: PersonNode | null;
-  effectiveCommitteeRoles: EffectiveCommitteeRole[];
   teamMemberships: SimpleTeamMembership[];
   userData: UserData;
   authorization: Authorization;

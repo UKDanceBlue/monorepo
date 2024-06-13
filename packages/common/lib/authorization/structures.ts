@@ -1,5 +1,7 @@
 import { registerEnumType } from "type-graphql";
 
+import type { EffectiveCommitteeRole } from "../api/types/EffectiveCommitteeRole.js";
+
 export const AuthSource = {
   LinkBlue: "LinkBlue",
   Anonymous: "Anonymous",
@@ -28,7 +30,8 @@ export const AccessLevel = {
   UKY: 1,
   Committee: 3,
   CommitteeChairOrCoordinator: 3.5,
-  Admin: 4, // Tech committee
+  Admin: 4,
+  SuperAdmin: 5, // App & Web Coordinators and Tech chair - master override access
 } as const;
 export type AccessLevel = (typeof AccessLevel)[keyof typeof AccessLevel];
 
@@ -76,7 +79,8 @@ export function stringifyAccessLevel(val: unknown): string {
     case AccessLevel.CommitteeChairOrCoordinator: {
       return "Committee Chair/Coordinator";
     }
-    case AccessLevel.Admin: {
+    case AccessLevel.Admin:
+    case AccessLevel.SuperAdmin: {
       return "Admin";
     }
   }
@@ -263,10 +267,7 @@ export const committeeNames: Record<CommitteeIdentifier, string> = {
 
 export interface Authorization {
   dbRole: DbRole;
-  committees: {
-    identifier: CommitteeIdentifier;
-    role: CommitteeRole;
-  }[];
+  committees: EffectiveCommitteeRole[];
   accessLevel: AccessLevel;
 }
 

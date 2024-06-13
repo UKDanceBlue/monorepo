@@ -26,7 +26,6 @@ export const graphqlContextFunction: ContextFunction<
   // Set up the context object
   const context: GraphQLContext = {
     authenticatedUser: null,
-    effectiveCommitteeRoles: [],
     teamMemberships: [],
     userData: {
       authSource: AuthSource.None,
@@ -129,7 +128,7 @@ export const graphqlContextFunction: ContextFunction<
         "graphqlContextFunction Effective committee roles",
         ...effectiveCommitteeRoles
       );
-      context.effectiveCommitteeRoles = effectiveCommitteeRoles;
+      context.authorization.committees = effectiveCommitteeRoles;
 
       // If the user is on a committee, override the dbRole
       if (effectiveCommitteeRoles.length > 0) {

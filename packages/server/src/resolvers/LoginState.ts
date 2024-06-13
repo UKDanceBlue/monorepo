@@ -30,7 +30,7 @@ export class LoginStateResolver {
   loginState(@Ctx() ctx: Context.GraphQLContext): LoginState {
     return {
       loggedIn: ctx.userData.authSource !== AuthSource.None,
-      effectiveCommitteeRoles: ctx.effectiveCommitteeRoles,
+      effectiveCommitteeRoles: ctx.authorization.committees,
       dbRole: ctx.authorization.dbRole,
       authSource: ctx.userData.authSource,
     };

@@ -8,17 +8,17 @@ import {
 @ObjectType("EffectiveCommitteeRole")
 export class EffectiveCommitteeRole {
   @Field(() => CommitteeIdentifier)
-  committee!: CommitteeIdentifier;
+  identifier!: CommitteeIdentifier;
 
   @Field(() => CommitteeRole)
   role!: CommitteeRole;
 
   public static init(
-    committee: CommitteeIdentifier,
+    identifier: CommitteeIdentifier,
     role: CommitteeRole
   ): EffectiveCommitteeRole {
     const effectiveCommitteeRole = new this();
-    effectiveCommitteeRole.committee = committee;
+    effectiveCommitteeRole.identifier = identifier;
     effectiveCommitteeRole.role = role;
     return effectiveCommitteeRole;
   }
