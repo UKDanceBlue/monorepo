@@ -362,6 +362,7 @@ export class FundraisingEntryRepository {
           new Prisma.Decimal(0)
         );
       if (
+        assignment.parentEntry.dbFundsEntry &&
         assignment.parentEntry.dbFundsEntry.amount.lessThan(
           totalAssigned.add(amount)
         )
