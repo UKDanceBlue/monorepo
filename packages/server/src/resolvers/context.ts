@@ -56,24 +56,14 @@ async function withUserInfo(
     outputContext.userData.userId = userId;
 
     // Set the committees the user is on
-    const committeeMemberships =
-      await personRepository.findCommitteeMembershipsOfPerson({
+    const committeeRoles =
+      await personRepository.getEffectiveCommitteeRolesOfPerson({
         id: person.id,
       });
-    const committees =
-      committeeMemberships
-        ?.map((membership) =>
-          membership.team.correspondingCommittee
-            ? {
-                identifier: membership.team.correspondingCommittee.identifier,
-                role: membership.committeeRole ?? CommitteeRole.Member,
-              }
-            : undefined
-        )
-        .filter(
-          (committee): committee is NonNullable<typeof committee> =>
-            committee != null
-        ) ?? [];
+    const committees = committeeRoles.map(({ committee, role }) => ({
+      identifier: committee,
+      role,
+    }));
     logger.trace("graphqlContextFunction Found committees", ...committees);
     outputContext.authorization.committees = committees;
 
@@ -106,7 +96,7 @@ async function withUserInfo(
       "graphqlContextFunction Effective committee roles",
       ...effectiveCommitteeRoles
     );
-    outputContext.authorization.committees = effectiveCommitteeRoles;
+    outputContext.authorization.committees = effectiveCommitteeRoles.map(({committee,role}) => ({identifier: committee, role}))
 
     // If the user is on a committee, override the dbRole
     if (effectiveCommitteeRoles.length > 0) {
