@@ -1,5 +1,6 @@
 import { fileURLToPath } from "url";
 
+import { isInstance } from "true-myth/result";
 import type { MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
 import { Container } from "typedi";
@@ -24,18 +25,39 @@ import { PointEntryResolver } from "../resolvers/PointEntryResolver.js";
 import { PointOpportunityResolver } from "../resolvers/PointOpportunityResolver.js";
 import { TeamResolver } from "../resolvers/TeamResolver.js";
 
+import { ConcreteError, toBasicError } from "./error/error.js";
+import { CatchableConcreteError } from "./formatError.js";
 import { logger } from "./logging/logger.js";
 
 const schemaPath = fileURLToPath(
   new URL("../../../../schema.graphql", import.meta.url)
 );
 
+/**
+ * Logs errors, as well as allowing us to return a result from a resolver
+ */
 const errorHandlingMiddleware: MiddlewareFn = async (_, next) => {
+  let result;
   try {
-    return void (await next());
+    result = (await next()) as unknown;
   } catch (error) {
     logger.error("An error occurred in a resolver", error);
     throw error;
+  }
+
+  if (isInstance(result)) {
+    if (result.isErr) {
+      logger.error("An error occurred in a resolver", result.error);
+      throw new CatchableConcreteError(
+        result.error instanceof ConcreteError
+          ? result.error
+          : toBasicError(result.error)
+      );
+    } else {
+      return result.value;
+    }
+  } else {
+    return result;
   }
 };
 

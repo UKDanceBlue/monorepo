@@ -12,7 +12,10 @@ export type ConcreteErrorTypes =
   | PrismaError
   | ZodError;
 
-export type ConcreteResult<T, E extends ConcreteError> = Result<T, E>;
+export type ConcreteResult<T, E extends ConcreteError = ConcreteError> = Result<
+  T,
+  E
+>;
 
 export type JsResult<T, E extends ConcreteError> = ConcreteResult<
   T,

@@ -20,7 +20,7 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
-import { CatchableConcreteError } from "../lib/formatError.js";
+import { ConcreteResult } from "../lib/error/result.js";
 import { FundraisingEntryRepository } from "../repositories/fundraising/FundraisingRepository.js";
 import { fundraisingAssignmentModelToNode } from "../repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "../repositories/fundraising/fundraisingEntryModelToNode.js";
@@ -62,17 +62,13 @@ export class FundraisingAssignmentResolver {
   @Query(() => FundraisingAssignmentNode)
   async fundraisingAssignment(
     @Arg("id") id: string
-  ): Promise<FundraisingAssignmentNode> {
+  ): Promise<ConcreteResult<Promise<FundraisingAssignmentNode>>> {
     const assignment =
       await this.fundraisingEntryRepository.findAssignmentByUnique({
         uuid: id,
       });
 
-    if (assignment.isErr) {
-      throw new CatchableConcreteError(assignment.error);
-    }
-
-    return fundraisingAssignmentModelToNode(assignment.value);
+    return assignment.map(fundraisingAssignmentModelToNode);
   }
 
   @AccessControl(fundraisingAccess)
@@ -81,7 +77,7 @@ export class FundraisingAssignmentResolver {
     @Arg("entryId") entryId: string,
     @Arg("personId") personId: string,
     @Arg("input") { amount }: AssignEntryToPersonInput
-  ): Promise<FundraisingAssignmentNode> {
+  ): Promise<ConcreteResult<Promise<FundraisingAssignmentNode>>> {
     const assignment =
       await this.fundraisingEntryRepository.addAssignmentToEntry(
         { uuid: entryId },
@@ -89,11 +85,7 @@ export class FundraisingAssignmentResolver {
         { amount }
       );
 
-    if (assignment.isErr) {
-      throw new CatchableConcreteError(assignment.error);
-    }
-
-    return fundraisingAssignmentModelToNode(assignment.value);
+    return assignment.map(fundraisingAssignmentModelToNode);
   }
 
   @AccessControl(fundraisingAccess)
@@ -101,33 +93,25 @@ export class FundraisingAssignmentResolver {
   async updateFundraisingAssignment(
     @Arg("id") id: string,
     @Arg("input") { amount }: UpdateFundraisingAssignmentInput
-  ): Promise<FundraisingAssignmentNode> {
+  ): Promise<ConcreteResult<Promise<FundraisingAssignmentNode>>> {
     const assignment = await this.fundraisingEntryRepository.updateAssignment(
       { uuid: id },
       { amount }
     );
 
-    if (assignment.isErr) {
-      throw new CatchableConcreteError(assignment.error);
-    }
-
-    return fundraisingAssignmentModelToNode(assignment.value);
+    return assignment.map(fundraisingAssignmentModelToNode);
   }
 
   @AccessControl(fundraisingAccess)
   @Mutation(() => FundraisingAssignmentNode)
   async deleteFundraisingAssignment(
     @Arg("id") id: string
-  ): Promise<FundraisingAssignmentNode> {
+  ): Promise<ConcreteResult<Promise<FundraisingAssignmentNode>>> {
     const assignment = await this.fundraisingEntryRepository.deleteAssignment({
       uuid: id,
     });
 
-    if (assignment.isErr) {
-      throw new CatchableConcreteError(assignment.error);
-    }
-
-    return fundraisingAssignmentModelToNode(assignment.value);
+    return assignment.map(fundraisingAssignmentModelToNode);
   }
 
   @AccessControl<never, PersonNode>(globalFundraisingAccessParam, {
@@ -163,26 +147,22 @@ export class FundraisingAssignmentResolver {
   })
   async person(
     @Root() assignment: FundraisingAssignmentNode
-  ): Promise<PersonNode> {
+  ): Promise<ConcreteResult<Promise<PersonNode>>> {
     const person = await this.fundraisingEntryRepository.getPersonForAssignment(
       { uuid: assignment.id }
     );
-    if (person.isErr) {
-      throw new CatchableConcreteError(person.error);
-    }
-    return personModelToResource(person.value, this.personRepository);
+    return person.map((person) =>
+      personModelToResource(person, this.personRepository)
+    );
   }
 
   @FieldResolver(() => FundraisingEntryNode)
   async entry(
     @Root() assignment: FundraisingAssignmentNode
-  ): Promise<FundraisingEntryNode> {
+  ): Promise<ConcreteResult<Promise<FundraisingEntryNode>>> {
     const entry = await this.fundraisingEntryRepository.getEntryForAssignment({
       uuid: assignment.id,
     });
-    if (entry.isErr) {
-      throw new CatchableConcreteError(entry.error);
-    }
-    return fundraisingEntryModelToNode(entry.value);
+    return entry.map(fundraisingEntryModelToNode);
   }
 }
