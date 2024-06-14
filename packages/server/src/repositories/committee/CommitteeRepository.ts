@@ -87,14 +87,14 @@ export class CommitteeRepository {
     }
 
     if (!marathonParam) {
-      const nextMarathon = await this.marathonRepository.findActiveMarathon();
-      if (!nextMarathon) {
+      const latestMarathon = await this.marathonRepository.findActiveMarathon();
+      if (!latestMarathon) {
         throw new DetailedError(
           ErrorCode.NotFound,
           "No upcoming marathon found and no marathon provided"
         );
       }
-      marathonParam = { id: nextMarathon.id };
+      marathonParam = { id: latestMarathon.id };
     } else {
       // Check if the marathon exists
       const val =

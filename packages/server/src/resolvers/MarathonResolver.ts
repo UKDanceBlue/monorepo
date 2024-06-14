@@ -150,7 +150,7 @@ export class MarathonResolver
   }
 
   @Query(() => MarathonNode, { nullable: true })
-  async nextMarathon() {
+  async latestMarathon() {
     const marathon = await this.marathonRepository.findActiveMarathon();
     if (marathon == null) {
       return null;

@@ -19,7 +19,7 @@ const documents = {
     "\n  fragment NotificationFragment on NotificationNode {\n    id\n    title\n    body\n    url\n  }\n": types.NotificationFragmentFragmentDoc,
     "\n  fragment NotificationDeliveryFragment on NotificationDeliveryNode {\n    id\n    sentAt\n    notification {\n      ...NotificationFragment\n    }\n  }\n": types.NotificationDeliveryFragmentFragmentDoc,
     "\n  query useAllowedLoginTypes {\n    activeConfiguration(key: \"ALLOWED_LOGIN_TYPES\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n  }\n": types.UseAllowedLoginTypesDocument,
-    "\n  query MarathonTime {\n    nextMarathon {\n      startDate\n      endDate\n    }\n  }\n": types.MarathonTimeDocument,
+    "\n  query MarathonTime {\n    latestMarathon {\n      startDate\n      endDate\n    }\n  }\n": types.MarathonTimeDocument,
     "\n  query useTabBarConfig {\n    activeConfiguration(key: \"TAB_BAR_CONFIG\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n    me {\n      data {\n        linkblue\n      }\n    }\n  }\n": types.UseTabBarConfigDocument,
     "\n      query TriviaCrack {\n        activeConfiguration(key: \"TRIVIA_CRACK\") {\n          data {\n            ...SimpleConfig\n          }\n        }\n\n        me {\n          data {\n            teams {\n              team {\n                type\n                name\n              }\n            }\n          }\n        }\n      }\n    ": types.TriviaCrackDocument,
     "\n  query AuthState {\n    me {\n      data {\n        id\n      }\n    }\n    loginState {\n      dbRole\n      loggedIn\n      authSource\n    }\n  }\n": types.AuthStateDocument,
@@ -33,7 +33,7 @@ const documents = {
     "\n      query Events(\n        $earliestTimestamp: DateTimeISO!\n        $lastTimestamp: DateTimeISO!\n      ) {\n        events(\n          dateFilters: [\n            {\n              comparison: GREATER_THAN_OR_EQUAL_TO\n              field: occurrenceStart\n              value: $earliestTimestamp\n            }\n            {\n              comparison: LESS_THAN_OR_EQUAL_TO\n              field: occurrenceStart\n              value: $lastTimestamp\n            }\n          ]\n          sortDirection: asc\n          sortBy: \"occurrence\"\n        ) {\n          data {\n            ...EventScreenFragment\n          }\n        }\n      }\n    ": types.EventsDocument,
     "\n  query ServerFeed {\n    feed(limit: 20) {\n      id\n      title\n      createdAt\n      textContent\n      image {\n        url\n        alt\n        width\n        height\n        thumbHash\n      }\n    }\n  }\n": types.ServerFeedDocument,
     "\n  fragment HourScreenFragment on MarathonHourNode {\n    id\n    title\n    details\n    durationInfo\n    mapImages {\n      ...ImageViewFragment\n    }\n  }\n": types.HourScreenFragmentFragmentDoc,
-    "\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    nextMarathon {\n      startDate\n      endDate\n      hours {\n        ...HourScreenFragment\n      }\n    }\n  }\n": types.MarathonScreenDocument,
+    "\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    latestMarathon {\n      startDate\n      endDate\n      hours {\n        ...HourScreenFragment\n      }\n    }\n  }\n": types.MarathonScreenDocument,
     "\n  fragment ScoreBoardFragment on TeamNode {\n    id\n    name\n    totalPoints\n    legacyStatus\n    type\n  }\n": types.ScoreBoardFragmentFragmentDoc,
     "\n  fragment HighlightedTeamFragment on TeamNode {\n    id\n    name\n    legacyStatus\n    type\n  }\n": types.HighlightedTeamFragmentFragmentDoc,
     "\n  query ScoreBoardDocument($type: [TeamType!]) {\n    me {\n      data {\n        id\n        teams {\n          team {\n            ...HighlightedTeamFragment\n            ...MyTeamFragment\n          }\n        }\n      }\n    }\n    teams(\n      sendAll: true\n      sortBy: [\"totalPoints\", \"name\"]\n      sortDirection: [desc, asc]\n      type: $type\n    ) {\n      data {\n        ...ScoreBoardFragment\n      }\n    }\n  }\n": types.ScoreBoardDocumentDocument,
@@ -82,7 +82,7 @@ export function graphql(source: "\n  query useAllowedLoginTypes {\n    activeCon
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query MarathonTime {\n    nextMarathon {\n      startDate\n      endDate\n    }\n  }\n"): (typeof documents)["\n  query MarathonTime {\n    nextMarathon {\n      startDate\n      endDate\n    }\n  }\n"];
+export function graphql(source: "\n  query MarathonTime {\n    latestMarathon {\n      startDate\n      endDate\n    }\n  }\n"): (typeof documents)["\n  query MarathonTime {\n    latestMarathon {\n      startDate\n      endDate\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -138,7 +138,7 @@ export function graphql(source: "\n  fragment HourScreenFragment on MarathonHour
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    nextMarathon {\n      startDate\n      endDate\n      hours {\n        ...HourScreenFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    nextMarathon {\n      startDate\n      endDate\n      hours {\n        ...HourScreenFragment\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    latestMarathon {\n      startDate\n      endDate\n      hours {\n        ...HourScreenFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    latestMarathon {\n      startDate\n      endDate\n      hours {\n        ...HourScreenFragment\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

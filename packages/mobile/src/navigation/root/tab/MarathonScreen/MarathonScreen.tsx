@@ -19,7 +19,7 @@ const marathonScreenDocument = graphql(/* GraphQL */ `
     currentMarathonHour {
       ...HourScreenFragment
     }
-    nextMarathon {
+    latestMarathon {
       startDate
       endDate
       hours {
@@ -38,7 +38,7 @@ export const MarathonScreen = () => {
   });
   const [lastGoodData, setLastGoodData] = useState(data);
   useEffect(() => {
-    if (data?.currentMarathonHour || data?.nextMarathon) {
+    if (data?.currentMarathonHour || data?.latestMarathon) {
       setLastGoodData(data);
     }
   }, [data]);
@@ -78,15 +78,16 @@ export const MarathonScreen = () => {
           No Internet Connection, cannot load marathon information
         </Text>
       );
-    } else if (lastGoodData?.nextMarathon && hourOverride != null) {
+    } else if (lastGoodData?.latestMarathon && hourOverride != null) {
       if (hourOverride < 0) {
         return (
           <MarathonCountdownScreen
             marathonStart={
-              dateTimeFromSomething(lastGoodData.nextMarathon.startDate) ?? null
+              dateTimeFromSomething(lastGoodData.latestMarathon.startDate) ??
+              null
             }
             marathonEnd={
-              dateTimeFromSomething(lastGoodData.nextMarathon.endDate) ?? null
+              dateTimeFromSomething(lastGoodData.latestMarathon.endDate) ?? null
             }
             showSecretMenu={() => setShowSecretMenu(true)}
           />
@@ -94,8 +95,8 @@ export const MarathonScreen = () => {
       } else {
         return (
           <HourScreenComponent
-            hourScreenFragment={lastGoodData.nextMarathon.hours[hourOverride]}
-            isLoading={fetching && !lastGoodData.nextMarathon}
+            hourScreenFragment={lastGoodData.latestMarathon.hours[hourOverride]}
+            isLoading={fetching && !lastGoodData.latestMarathon}
             refresh={() => refresh({ requestPolicy: "network-only" })}
             showSecretMenu={() => setShowSecretMenu(true)}
           />
@@ -110,14 +111,14 @@ export const MarathonScreen = () => {
           showSecretMenu={() => setShowSecretMenu(true)}
         />
       );
-    } else if (lastGoodData?.nextMarathon) {
+    } else if (lastGoodData?.latestMarathon) {
       return (
         <MarathonCountdownScreen
           marathonStart={
-            dateTimeFromSomething(lastGoodData.nextMarathon.startDate) ?? null
+            dateTimeFromSomething(lastGoodData.latestMarathon.startDate) ?? null
           }
           marathonEnd={
-            dateTimeFromSomething(lastGoodData.nextMarathon.endDate) ?? null
+            dateTimeFromSomething(lastGoodData.latestMarathon.endDate) ?? null
           }
           showSecretMenu={() => setShowSecretMenu(true)}
         />
@@ -132,7 +133,7 @@ export const MarathonScreen = () => {
       Logger.info("MarathonScreen has invalid data", {
         source: "MarathonScreen",
         context: {
-          nextMarathon: lastGoodData?.nextMarathon,
+          latestMarathon: lastGoodData?.latestMarathon,
           currentHour: lastGoodData?.currentMarathonHour,
         },
       });
@@ -154,7 +155,7 @@ export const MarathonScreen = () => {
     hourOverride,
     isInternetReachable,
     lastGoodData?.currentMarathonHour,
-    lastGoodData?.nextMarathon,
+    lastGoodData?.latestMarathon,
     refresh,
     vpHeight,
     vpWidth,
@@ -186,8 +187,8 @@ export const MarathonScreen = () => {
             if (
               (!Number.isNaN(parsedText) && parsedText === -1) ||
               (parsedText >= 0 &&
-                data?.nextMarathon &&
-                parsedText <= data.nextMarathon.hours.length)
+                data?.latestMarathon &&
+                parsedText <= data.latestMarathon.hours.length)
             ) {
               setHourOverride(parsedText);
             } else {

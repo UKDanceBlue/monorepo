@@ -12,7 +12,7 @@ export interface MarathonTime {
 
 const marathonTimeQuery = graphql(/* GraphQL */ `
   query MarathonTime {
-    nextMarathon {
+    latestMarathon {
       startDate
       endDate
     }
@@ -38,8 +38,8 @@ export function useMarathonTime(): {
 
   const marathonInterval = useMemo(() => {
     try {
-      if (data?.nextMarathon) {
-        const startTime = dateTimeFromSomething(data.nextMarathon.startDate);
+      if (data?.latestMarathon) {
+        const startTime = dateTimeFromSomething(data.latestMarathon.startDate);
         if (!startTime?.isValid) {
           Logger.warn(
             `Unrecognized marathon start time: ${startTime?.toString()}`,
@@ -48,7 +48,7 @@ export function useMarathonTime(): {
             }
           );
         }
-        const endTime = dateTimeFromSomething(data.nextMarathon.endDate);
+        const endTime = dateTimeFromSomething(data.latestMarathon.endDate);
         if (!endTime?.isValid) {
           Logger.warn(
             `Unrecognized marathon end time: ${endTime?.toString()}`,
@@ -73,7 +73,7 @@ export function useMarathonTime(): {
       startTime: DateTime.fromMillis(0),
       endTime: DateTime.fromMillis(0),
     };
-  }, [data?.nextMarathon]);
+  }, [data?.latestMarathon]);
 
   return {
     timesLoading: fetching,
