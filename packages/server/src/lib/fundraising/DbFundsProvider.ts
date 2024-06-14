@@ -49,12 +49,12 @@ const dbFundsFundraisingEntrySchema = z.object({
       donatedBy: z
         .string()
         .describe("The name of the person who donated")
-        .transform((v) => (isNA.test(v) ? null : v))
+        .transform((v) => (isNA.test(v) || v.length === 0 ? null : v))
         .nullable(),
       donatedTo: z
         .string()
         .describe("The name of the person or team who received the donation")
-        .transform((v) => (isNA.test(v) ? null : v))
+        .transform((v) => (isNA.test(v) || v.length === 0 ? null : v))
         .nullable(),
       donatedOn: z
         .string()

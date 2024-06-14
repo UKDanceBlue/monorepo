@@ -3,7 +3,6 @@ import { UseMiddleware } from "type-graphql";
 import type { Primitive } from "utility-types";
 
 import type {
-  AccessLevel,
   Authorization,
   CommitteeRole,
   DbRole,
@@ -13,6 +12,7 @@ import type {
   UserData,
 } from "../index.js";
 import {
+  AccessLevel,
   DetailedError,
   ErrorCode,
   compareCommitteeRole,
@@ -189,7 +189,7 @@ interface ExtractorData {
  * 4. The root object matches ALL of the specified root matchers
  * 5. The custom authorization rule returns true
  */
-export interface AccessControlParam<RootType extends object = never> {
+export interface AccessControlParam<RootType = never, ResultType = never> {
   authRules?:
     | readonly AuthorizationRule[]
     | ((root: RootType) => readonly AuthorizationRule[]);
@@ -206,11 +206,16 @@ export interface AccessControlParam<RootType extends object = never> {
    * Custom authorization rule
    *
    * Should usually be avoided, but can be used for more complex authorization rules
+   *
+   * If the custom rule returns a boolean the user is allowed access if the rule returns true and an error is thrown if the rule returns false.
+   * If the custom rule returns null the field is set to null (make sure the field is nullable in the schema)
+   * If one param returns false and another returns null, an error will be thrown and the null ignored.
    */
   custom?: (
     root: RootType,
-    authorization: ExtractorData
-  ) => boolean | Promise<boolean>;
+    context: ExtractorData,
+    result: ResultType
+  ) => boolean | null | Promise<boolean | null>;
 }
 
 export interface SimpleTeamMembership {
@@ -226,8 +231,11 @@ export interface AuthorizationContext {
   authorization: Authorization;
 }
 
-export function AccessControl<RootType extends object = never>(
-  ...params: AccessControlParam<RootType>[]
+export function AccessControl<
+  RootType extends object = never,
+  ResultType extends object = never,
+>(
+  ...params: AccessControlParam<RootType, ResultType>[]
 ): MethodDecorator & PropertyDecorator {
   const middleware: MiddlewareFn<AuthorizationContext> = async (
     resolverData,
@@ -236,6 +244,11 @@ export function AccessControl<RootType extends object = never>(
     const { context, args } = resolverData;
     const root = resolverData.root as RootType;
     const { authorization } = context;
+
+    if (authorization.accessLevel === AccessLevel.SuperAdmin) {
+      // Super admins have access to everything
+      return next();
+    }
 
     let ok = false;
 
@@ -342,13 +355,6 @@ export function AccessControl<RootType extends object = never>(
         }
       }
 
-      if (rule.custom != null) {
-        // eslint-disable-next-line no-await-in-loop
-        if (!(await rule.custom(root, context))) {
-          continue;
-        }
-      }
-
       ok = true;
       break;
     }
@@ -358,9 +364,31 @@ export function AccessControl<RootType extends object = never>(
         ErrorCode.Unauthorized,
         "You are not authorized to access this resource."
       );
-    } else {
-      return next();
     }
+
+    const result = (await next()) as ResultType;
+
+    let customResult: boolean | null = true;
+    for (const rule of params) {
+      if (rule.custom != null) {
+        // eslint-disable-next-line no-await-in-loop
+        customResult = await rule.custom(root, context, result);
+        if (customResult === true) {
+          break;
+        }
+      }
+    }
+
+    if (customResult === false) {
+      throw new DetailedError(
+        ErrorCode.Unauthorized,
+        "You are not authorized to access this resource."
+      );
+    } else if (customResult === null) {
+      return null;
+    }
+
+    return result;
   };
 
   return UseMiddleware(middleware);

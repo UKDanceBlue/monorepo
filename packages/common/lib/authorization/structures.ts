@@ -79,9 +79,11 @@ export function stringifyAccessLevel(val: unknown): string {
     case AccessLevel.CommitteeChairOrCoordinator: {
       return "Committee Chair/Coordinator";
     }
-    case AccessLevel.Admin:
-    case AccessLevel.SuperAdmin: {
+    case AccessLevel.Admin: {
       return "Admin";
+    }
+    case AccessLevel.SuperAdmin: {
+      return "God Emperor of DanceBlue";
     }
   }
 }

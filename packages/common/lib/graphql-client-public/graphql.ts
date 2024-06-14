@@ -380,7 +380,7 @@ export const DeviceResolverStringFilterKeys = {
 export type DeviceResolverStringFilterKeys = typeof DeviceResolverStringFilterKeys[keyof typeof DeviceResolverStringFilterKeys];
 export type EffectiveCommitteeRole = {
   readonly __typename?: 'EffectiveCommitteeRole';
-  readonly committee: CommitteeIdentifier;
+  readonly identifier: CommitteeIdentifier;
   readonly role: CommitteeRole;
 };
 
@@ -485,7 +485,8 @@ export type FundraisingAssignmentNode = Node & {
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly entry: FundraisingEntryNode;
   readonly id: Scalars['ID']['output'];
-  readonly person: PersonNode;
+  /** The person assigned to this assignment, only null when access is denied */
+  readonly person?: Maybe<PersonNode>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 

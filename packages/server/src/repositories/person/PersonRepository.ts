@@ -300,32 +300,31 @@ export class PersonRepository {
     types: TeamType[] | undefined = undefined,
     includeTeam: boolean = false
   ) {
-    const rows = await this.prisma.person.findUnique({
-      where: param,
-      select: {
-        memberships: {
-          include: {
-            team: includeTeam,
-          },
-          where: {
-            AND: [
-              opts,
-              types
-                ? {
-                    team: {
-                      type: {
-                        in: types,
-                      },
-                    },
-                  }
-                : {},
-            ],
-          },
+    const rows = await this.prisma.person
+      .findUnique({
+        where: param,
+      })
+      .memberships({
+        include: {
+          team: includeTeam,
         },
-      },
-    });
+        where: {
+          AND: [
+            opts,
+            types
+              ? {
+                  team: {
+                    type: {
+                      in: types,
+                    },
+                  },
+                }
+              : {},
+          ],
+        },
+      });
 
-    return rows?.memberships ?? null;
+    return rows ?? null;
   }
 
   // Mutators

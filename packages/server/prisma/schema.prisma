@@ -447,6 +447,7 @@ model DBFundsFundraisingEntry {
   // The corresponding fundraising entry in our database
   fundraisingEntry FundraisingEntry?
 
+  @@unique([donatedTo, donatedBy, date])
   @@map("db_funds_team_entries")
 }
 
@@ -456,8 +457,8 @@ model FundraisingEntry {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  dbFundsEntry   DBFundsFundraisingEntry? @relation(fields: [dbFundsEntryId], references: [id], onDelete: SetNull)
-  dbFundsEntryId Int?                     @unique @map("db_funds_entry_id")
+  dbFundsEntry   DBFundsFundraisingEntry @relation(fields: [dbFundsEntryId], references: [id], onDelete: Cascade)
+  dbFundsEntryId Int                     @unique @map("db_funds_entry_id")
 
   assignments FundraisingAssignment[]
 
@@ -472,8 +473,8 @@ model FundraisingAssignment {
   updatedAt     DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
   amount        Decimal
   personId      Int              @map("person_id")
-  person        Person           @relation(fields: [personId], references: [id])
-  parentEntry   FundraisingEntry @relation(fields: [fundraisingId], references: [id])
+  person        Person           @relation(fields: [personId], references: [id], onDelete: Cascade)
+  parentEntry   FundraisingEntry @relation(fields: [fundraisingId], references: [id], onDelete: Cascade)
   fundraisingId Int              @map("fundraising_id")
 
   @@unique([fundraisingId, personId], map: "fundraising_assignments_fundraising_id_person_id_key")

@@ -70,15 +70,17 @@ export class ListFundraisingEntriesResponse extends AbstractGraphQLPaginatedResp
 /**
  * Access control param for granting access to all fundraising entries.
  */
-export const globalFundraisingAccessParam: AccessControlParam<FundraisingEntryNode> =
-  {
-    authRules: [
-      {
-        minCommitteeRole: CommitteeRole.Coordinator,
-        committeeIdentifiers: [CommitteeIdentifier.fundraisingCommittee],
-      },
-    ],
-  };
+export const globalFundraisingAccessParam: AccessControlParam<
+  unknown,
+  unknown
+> = {
+  authRules: [
+    {
+      minCommitteeRole: CommitteeRole.Coordinator,
+      committeeIdentifiers: [CommitteeIdentifier.fundraisingCommittee],
+    },
+  ],
+};
 
 @Resolver(() => FundraisingEntryNode)
 @Service()

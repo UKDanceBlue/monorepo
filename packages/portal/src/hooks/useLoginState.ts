@@ -10,7 +10,7 @@ const loginStateDocument = graphql(/* GraphQL */ `
       dbRole
       effectiveCommitteeRoles {
         role
-        committee
+        identifier
       }
     }
   }
@@ -40,7 +40,7 @@ export function useLoginState(): {
   }
 
   const committees = data.loginState.effectiveCommitteeRoles.map(
-    ({ committee, role }) => ({ identifier: committee, role })
+    ({ identifier, role }) => ({ identifier, role })
   );
 
   return {

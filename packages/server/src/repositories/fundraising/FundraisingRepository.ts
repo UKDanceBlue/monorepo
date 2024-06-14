@@ -88,10 +88,8 @@ export class FundraisingEntryRepository {
         where: param,
         include: defaultInclude,
       });
-      if (!row?.dbFundsEntry) {
-        return err(
-          new NotFoundError({ what: "FundraisingEntry.dbFundsEntry" })
-        );
+      if (!row) {
+        return err(new NotFoundError({ what: "FundraisingEntry" }));
       }
       return ok(
         row as typeof row & {
@@ -247,29 +245,6 @@ export class FundraisingEntryRepository {
     }
   }
 
-  async connectEntry(
-    dbFundsEntry: DBFundsFundraisingEntry
-  ): Promise<
-    Result<FundraisingEntryUniqueParam, SomePrismaError | BasicError>
-  > {
-    try {
-      const row = await this.prisma.fundraisingEntry.upsert({
-        where: { id: dbFundsEntry.id },
-        update: {},
-        create: {
-          dbFundsEntry: {
-            connect: { id: dbFundsEntry.id },
-          },
-        },
-      });
-      return ok({
-        id: row.id,
-      });
-    } catch (error: unknown) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
-    }
-  }
-
   async deleteEntry(
     param: FundraisingEntryUniqueParam
   ): Promise<Result<Maybe<FundraisingEntry>, SomePrismaError | BasicError>> {
@@ -380,12 +355,6 @@ export class FundraisingEntryRepository {
         return err(assignments.error);
       }
 
-      if (!assignment.parentEntry.dbFundsEntry) {
-        return err(
-          new ActionDeniedError("Entry is not connected to a DBFunds entry")
-        );
-      }
-
       const totalAssigned = assignments.value
         .filter((a) => a.id !== assignment.id)
         .reduce(
@@ -451,11 +420,6 @@ export class FundraisingEntryRepository {
       });
       if (!assignment) {
         return err(new NotFoundError({ what: "FundraisingAssignment" }));
-      }
-      if (!assignment.parentEntry.dbFundsEntry) {
-        return err(
-          new NotFoundError({ what: "FundraisingEntry.dbFundsEntry" })
-        );
       }
       return ok(
         assignment.parentEntry as typeof assignment.parentEntry & {

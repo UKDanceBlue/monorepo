@@ -5,6 +5,7 @@ import {
   CommitteeRole,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
+  MembershipPositionType,
   PersonNode,
 } from "@ukdanceblue/common";
 import {
@@ -17,7 +18,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Container, Service } from "typedi";
 
 import { CatchableConcreteError } from "../lib/formatError.js";
 import { FundraisingEntryRepository } from "../repositories/fundraising/FundraisingRepository.js";
@@ -25,6 +26,8 @@ import { fundraisingAssignmentModelToNode } from "../repositories/fundraising/fu
 import { fundraisingEntryModelToNode } from "../repositories/fundraising/fundraisingEntryModelToNode.js";
 import { PersonRepository } from "../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
+
+import { globalFundraisingAccessParam } from "./FundraisingEntryResolver.js";
 
 @InputType()
 class AssignEntryToPersonInput {
@@ -127,9 +130,37 @@ export class FundraisingAssignmentResolver {
     return fundraisingAssignmentModelToNode(assignment.value);
   }
 
-  // I'm fairly certain this is safe to leave without an access control check as anyone with
-  // access to the assignment should have access to the person
-  @FieldResolver(() => PersonNode)
+  @AccessControl<never, PersonNode>(globalFundraisingAccessParam, {
+    custom: async (_, { teamMemberships }, { id }) => {
+      const personRepository = Container.get(PersonRepository);
+      const memberships =
+        (await personRepository.findMembershipsOfPerson(
+          { uuid: id },
+          undefined,
+          undefined,
+          true
+        )) ?? [];
+      const userCaptaincies = teamMemberships.filter(
+        (membership) => membership.position === MembershipPositionType.Captain
+      );
+      for (const targetPersonMembership of memberships) {
+        if (
+          userCaptaincies.some(
+            (userCaptaincy) =>
+              userCaptaincy.teamId === targetPersonMembership.team.uuid
+          )
+        ) {
+          return true;
+        }
+      }
+      return null;
+    },
+  })
+  @FieldResolver(() => PersonNode, {
+    nullable: true,
+    description:
+      "The person assigned to this assignment, only null when access is denied",
+  })
   async person(
     @Root() assignment: FundraisingAssignmentNode
   ): Promise<PersonNode> {

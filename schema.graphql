@@ -471,7 +471,11 @@ type FundraisingAssignmentNode implements Node {
   createdAt: DateTimeISO
   entry: FundraisingEntryNode!
   id: ID!
-  person: PersonNode!
+
+  """
+  The person assigned to this assignment, only null when access is denied
+  """
+  person: PersonNode
   updatedAt: DateTimeISO
 }
 
