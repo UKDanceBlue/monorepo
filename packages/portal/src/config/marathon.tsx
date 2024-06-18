@@ -1,6 +1,6 @@
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "urql";
 
 import { marathonContext } from "./marathonContext";
@@ -42,6 +42,14 @@ export const MarathonConfigProvider = ({
   const [marathonId, setMarathonId] = useState(
     localStorage.getItem(LocalStorageKeys.SelectedMarathon) || null
   );
+
+  useEffect(() => {
+    if (marathonId) {
+      localStorage.setItem(LocalStorageKeys.SelectedMarathon, marathonId);
+    } else {
+      localStorage.removeItem(LocalStorageKeys.SelectedMarathon);
+    }
+  }, [marathonId]);
 
   const [latestMarathonResult] = useQuery({ query: latestMarathonDocument });
   const [selectedMarathonResult] = useQuery({
