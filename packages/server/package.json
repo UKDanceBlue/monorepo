@@ -90,7 +90,7 @@
     "utility-types": "^3.10.0",
     "validator": "^13.9.0",
     "winston": "^3.8.2",
-    "ws": "^8.13.0"
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "@types/koa": "^2.13.6",
