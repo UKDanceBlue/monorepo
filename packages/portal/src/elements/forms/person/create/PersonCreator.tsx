@@ -1,5 +1,4 @@
 import { useNavigate } from "@tanstack/react-router";
-import { CommitteeRole, committeeNames } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
 import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
@@ -171,7 +170,7 @@ export function PersonCreator({
               </Form.Item>
             )}
           />
-          <formApi.Field
+          {/* <formApi.Field
             name="role.committeeRole"
             children={(field) => (
               <Form.Item
@@ -234,7 +233,7 @@ export function PersonCreator({
                 />
               </Form.Item>
             )}
-          />
+          /> */}
           <p>
             Note: If someone is captain of a team that also means they are a
             member of that team, so you don't need to select both.
