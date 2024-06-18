@@ -1,6 +1,6 @@
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "urql";
 
 import { marathonContext } from "./marathonContext";
@@ -13,6 +13,12 @@ const latestMarathonDocument = graphql(/* GraphQL */ `
       year
       startDate
       endDate
+    }
+    marathons(sendAll: true) {
+      data {
+        id
+        year
+      }
     }
   }
 `);
@@ -51,6 +57,13 @@ export const MarathonConfigProvider = ({
     marathon = latestMarathonResult.data.latestMarathon;
   }
 
+  const startDate = useMemo(() => {
+    return dateTimeFromSomething(marathon?.startDate) ?? null;
+  }, [marathon?.startDate]);
+  const endDate = useMemo(() => {
+    return dateTimeFromSomething(marathon?.endDate) ?? null;
+  }, [marathon?.endDate]);
+
   return (
     <marathonContext.Provider
       value={{
@@ -59,10 +72,13 @@ export const MarathonConfigProvider = ({
           ? {
               id: marathon.id,
               year: marathon.year,
-              startDate: dateTimeFromSomething(marathon.startDate) ?? null,
-              endDate: dateTimeFromSomething(marathon.endDate) ?? null,
+              startDate,
+              endDate,
             }
           : null,
+        marathons: latestMarathonResult.data?.marathons.data ?? [],
+        loading:
+          latestMarathonResult.fetching || selectedMarathonResult.fetching,
       }}
     >
       {children}

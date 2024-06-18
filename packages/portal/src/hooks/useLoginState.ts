@@ -1,6 +1,7 @@
 import type { Authorization } from "@ukdanceblue/common";
 import { defaultAuthorization, roleToAccessLevel } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { useMemo } from "react";
 import { useQuery } from "urql";
 
 const loginStateDocument = graphql(/* GraphQL */ `
@@ -25,33 +26,34 @@ export function useLoginState(): {
     requestPolicy: "network-only",
   });
 
-  if (fetching) {
+  return useMemo(() => {
+    if (fetching) {
+      return {
+        loggedIn: undefined,
+        authorization: undefined,
+      };
+    }
+
+    if (data == null) {
+      return {
+        loggedIn: false,
+        authorization: defaultAuthorization,
+      };
+    }
+
+    const committees = data.loginState.effectiveCommitteeRoles.map(
+      ({ identifier, role }) => ({ identifier, role })
+    );
     return {
-      loggedIn: undefined,
-      authorization: undefined,
-    };
-  }
-
-  if (data == null) {
-    return {
-      loggedIn: false,
-      authorization: defaultAuthorization,
-    };
-  }
-
-  const committees = data.loginState.effectiveCommitteeRoles.map(
-    ({ identifier, role }) => ({ identifier, role })
-  );
-
-  return {
-    loggedIn: data.loginState.loggedIn,
-    authorization: {
-      committees,
-      dbRole: data.loginState.dbRole,
-      accessLevel: roleToAccessLevel({
-        dbRole: data.loginState.dbRole,
+      loggedIn: data.loginState.loggedIn,
+      authorization: {
         committees,
-      }),
-    },
-  };
+        dbRole: data.loginState.dbRole,
+        accessLevel: roleToAccessLevel({
+          dbRole: data.loginState.dbRole,
+          committees,
+        }),
+      },
+    };
+  }, [data, fetching]);
 }
