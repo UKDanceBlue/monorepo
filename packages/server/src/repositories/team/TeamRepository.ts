@@ -25,7 +25,7 @@ type TeamIsNullKey = (typeof teamIsNullKeys)[number];
 const teamNumericKeys = ["totalPoints"] as const;
 type TeamNumericKey = (typeof teamNumericKeys)[number];
 
-const teamOneOfKeys = ["type", "marathonYear", "legacyStatus"] as const;
+const teamOneOfKeys = ["type", "marathonId", "legacyStatus"] as const;
 type TeamOneOfKey = (typeof teamOneOfKeys)[number];
 
 const teamStringKeys = ["name"] as const;
@@ -44,7 +44,7 @@ export type TeamOrderKeys =
   | "createdAt"
   | "updatedAt"
   | "type"
-  | "marathonYear"
+  | "marathonId"
   | "legacyStatus"
   | "name"
   | "totalPoints";

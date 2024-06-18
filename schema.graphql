@@ -1951,7 +1951,7 @@ type Query {
     """The is-null filters to apply to the query"""
     isNullFilters: [TeamResolverKeyedIsNullFilterItem!]
     legacyStatus: [TeamLegacyStatus!]
-    marathonYear: [String!]
+    marathonId: [String!]
 
     """The numeric filters to apply to the query"""
     numericFilters: Void
@@ -2078,7 +2078,6 @@ input SetPointOpportunityInput {
 
 input SetTeamInput {
   legacyStatus: TeamLegacyStatus
-  marathonYear: String
   name: String
   persistentIdentifier: String
   type: TeamType
@@ -2179,7 +2178,7 @@ type TeamNode implements Node {
 
 enum TeamResolverAllKeys {
   legacyStatus
-  marathonYear
+  marathonId
   name
   type
 }
@@ -2221,7 +2220,7 @@ input TeamResolverKeyedStringFilterItem {
 
 enum TeamResolverOneOfFilterKeys {
   legacyStatus
-  marathonYear
+  marathonId
   type
 }
 

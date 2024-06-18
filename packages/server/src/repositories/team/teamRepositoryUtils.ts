@@ -19,7 +19,7 @@ export function buildTeamOrder(
     switch (key) {
       case "totalPoints":
       case "type":
-      case "marathonYear":
+      case "marathonId":
       case "legacyStatus":
       case "name":
       case "createdAt":
@@ -49,7 +49,7 @@ export function buildTeamWhere(
         where[filter.field] = dateFilterToPrisma(filter);
         break;
       }
-      case "marathonYear": {
+      case "marathonId": {
         where["marathon"] = {
           year: oneOfFilterToPrisma(filter),
         };

@@ -1,4 +1,5 @@
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { useMarathon } from "@config/marathonContext";
 import { useListQuery } from "@hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
@@ -47,10 +48,6 @@ export const TeamsTableFragment = graphql(/* GraphQL */ `
     type
     name
     legacyStatus
-    marathon {
-      id
-      year
-    }
     totalPoints
   }
 `);
@@ -73,17 +70,11 @@ export const TeamsTable = () => {
       initSorting: [{ field: "totalPoints", direction: SortDirection.desc }],
     },
     {
-      allFields: [
-        "name",
-        "type",
-        "legacyStatus",
-        "marathonYear",
-        "totalPoints",
-      ],
+      allFields: ["name", "type", "legacyStatus", "marathonId", "totalPoints"],
       dateFields: [],
       isNullFields: [],
       numericFields: ["totalPoints"],
-      oneOfFields: ["type", "marathonYear", "legacyStatus"],
+      oneOfFields: ["type", "marathonId", "legacyStatus"],
       stringFields: ["name"],
     }
   );
@@ -98,18 +89,21 @@ export const TeamsTable = () => {
     loadingMessage: "Loading teams...",
   });
 
+  const marathonId = useMarathon()?.id;
+
   useEffect(() => {
     if (
-      queryOptions.oneOfFilters.filter((f) => f.field === "marathonYear")
+      queryOptions.oneOfFilters.filter((f) => f.field === "marathonId")
         .length === 0
     ) {
-      // TODO: Extract the marathon filter from the table and integrate it with a global setting for marathon
-      updateFilter("marathonYear", {
-        field: "marathonYear",
-        value: ["DB24"],
-      });
+      if (marathonId) {
+        updateFilter("marathonId", {
+          field: "marathonId",
+          value: [marathonId],
+        });
+      }
     }
-  }, [queryOptions.oneOfFilters, updateFilter]);
+  }, [marathonId, queryOptions.oneOfFilters, updateFilter]);
 
   return (
     <Table
@@ -172,17 +166,6 @@ export const TeamsTable = () => {
               }
             }
           },
-        },
-        {
-          title: "Marathon Year",
-          dataIndex: "marathonYear",
-          sorter: true,
-          filters: [
-            {
-              text: "DanceBlue 2024",
-              value: "DB24",
-            },
-          ],
         },
         {
           title: "Total Points",
@@ -248,7 +231,7 @@ export const TeamsTable = () => {
               | "name"
               | "type"
               | "legacyStatus"
-              | "marathonYear",
+              | "marathonId",
             direction:
               sort.order === "ascend" ? SortDirection.asc : SortDirection.desc,
           });
@@ -274,9 +257,9 @@ export const TeamsTable = () => {
               });
               break;
             }
-            case "marathonYear": {
-              updateFilter("marathonYear", {
-                field: "marathonYear",
+            case "marathonId": {
+              updateFilter("marathonId", {
+                field: "marathonId",
                 value: value.map((v) => v.toString()),
               });
               break;

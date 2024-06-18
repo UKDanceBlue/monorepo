@@ -1934,7 +1934,7 @@ export type QueryTeamsArgs = {
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
   isNullFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedIsNullFilterItem>>;
   legacyStatus?: InputMaybe<ReadonlyArray<TeamLegacyStatus>>;
-  marathonYear?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  marathonId?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
   oneOfFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -2037,7 +2037,6 @@ export type SetPointOpportunityInput = {
 
 export type SetTeamInput = {
   readonly legacyStatus?: InputMaybe<TeamLegacyStatus>;
-  readonly marathonYear?: InputMaybe<Scalars['String']['input']>;
   readonly name?: InputMaybe<Scalars['String']['input']>;
   readonly persistentIdentifier?: InputMaybe<Scalars['String']['input']>;
   readonly type?: InputMaybe<TeamType>;
@@ -2103,7 +2102,7 @@ export type TeamNodeFundraisingEntriesArgs = {
 
 export const TeamResolverAllKeys = {
   LegacyStatus: 'legacyStatus',
-  MarathonYear: 'marathonYear',
+  MarathonId: 'marathonId',
   Name: 'name',
   Type: 'type'
 } as const;
@@ -2136,7 +2135,7 @@ export type TeamResolverKeyedStringFilterItem = {
 
 export const TeamResolverOneOfFilterKeys = {
   LegacyStatus: 'legacyStatus',
-  MarathonYear: 'marathonYear',
+  MarathonId: 'marathonId',
   Type: 'type'
 } as const;
 

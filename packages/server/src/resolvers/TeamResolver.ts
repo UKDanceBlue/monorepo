@@ -1,7 +1,4 @@
-import type {
-  MarathonYearString,
-  OptionalToNullable,
-} from "@ukdanceblue/common";
+import type { OptionalToNullable } from "@ukdanceblue/common";
 import * as Common from "@ukdanceblue/common";
 import {
   AccessControl,
@@ -109,25 +106,22 @@ class SetTeamInput implements OptionalToNullable<Partial<TeamNode>> {
   legacyStatus!: TeamLegacyStatus | null;
 
   @Field(() => String, { nullable: true })
-  marathonYear!: MarathonYearString | null;
-
-  @Field(() => String, { nullable: true })
   persistentIdentifier!: string | null;
 }
 
 @ArgsType()
 class ListTeamsArgs extends FilteredListQueryArgs<
-  "name" | "type" | "legacyStatus" | "marathonYear",
+  "name" | "type" | "legacyStatus" | "marathonId",
   "name",
-  "type" | "legacyStatus" | "marathonYear",
+  "type" | "legacyStatus" | "marathonId",
   never,
   never,
   never
 >("TeamResolver", {
-  all: ["name", "type", "legacyStatus", "marathonYear"],
+  all: ["name", "type", "legacyStatus", "marathonId"],
   string: ["name"],
   numeric: [],
-  oneOf: ["type", "marathonYear", "legacyStatus"],
+  oneOf: ["type", "marathonId", "legacyStatus"],
 }) {
   @Field(() => [TeamType], { nullable: true })
   type!: [TeamType] | null;
@@ -139,7 +133,7 @@ class ListTeamsArgs extends FilteredListQueryArgs<
   visibility!: [DbRole] | null;
 
   @Field(() => [String], { nullable: true })
-  marathonYear!: MarathonYearString[] | null;
+  marathonId!: string[] | null;
 }
 
 @ObjectType("DbFundsTeamInfo", { implements: [Common.Node] })
@@ -193,14 +187,14 @@ export class TeamResolver {
         take: query.pageSize,
         onlyDemo: ctx.userData.authSource === AuthSource.Demo,
         legacyStatus: query.legacyStatus,
-        marathon: query.marathonYear?.map((year) => ({ year })),
+        marathon: query.marathonId?.map((marathonId) => ({ uuid: marathonId })),
         type: query.type,
       }),
       this.teamRepository.countTeams({
         filters: query.filters,
         onlyDemo: ctx.userData.authSource === AuthSource.Demo,
         legacyStatus: query.legacyStatus,
-        marathon: query.marathonYear?.map((year) => ({ year })),
+        marathon: query.marathonId?.map((marathonId) => ({ uuid: marathonId })),
         type: query.type,
       }),
     ]);
