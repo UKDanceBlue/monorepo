@@ -1,3 +1,4 @@
+import { useMarathon } from "@config/marathonContext";
 import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
 import { useNavigate } from "@tanstack/react-router";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
@@ -58,7 +59,7 @@ export function TeamCreator() {
               </Form.Item>
             )}
           </formApi.Field>
-          <p>Marathon Year: DB24</p>
+          <p>Marathon Year: {useMarathon()?.year}</p>
           <TanAntFormItem
             formApi={formApi}
             fieldProps={{

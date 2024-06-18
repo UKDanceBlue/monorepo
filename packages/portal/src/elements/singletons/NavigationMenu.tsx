@@ -13,6 +13,8 @@ import {
 import { Button, Menu, Select } from "antd";
 import { useContext, useEffect, useState } from "react";
 
+import "./NavigationMenu.css";
+
 interface NavItemType {
   slug: string;
   title: string;
@@ -239,6 +241,7 @@ export const NavigationMenu = () => {
           onChange={(value) => setMarathon(value)}
           loading={loading}
           value={marathon?.id}
+          variant="borderless"
         >
           {marathons
             ? marathons.map((marathon) => (

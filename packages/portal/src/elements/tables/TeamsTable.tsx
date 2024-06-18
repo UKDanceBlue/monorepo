@@ -93,8 +93,8 @@ export const TeamsTable = () => {
 
   useEffect(() => {
     if (
-      queryOptions.oneOfFilters.filter((f) => f.field === "marathonId")
-        .length === 0
+      queryOptions.oneOfFilters.find((f) => f.field === "marathonId")
+        ?.value[0] !== marathonId
     ) {
       if (marathonId) {
         updateFilter("marathonId", {

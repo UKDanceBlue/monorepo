@@ -51,7 +51,7 @@ export function buildTeamWhere(
       }
       case "marathonId": {
         where["marathon"] = {
-          year: oneOfFilterToPrisma(filter),
+          uuid: oneOfFilterToPrisma(filter),
         };
         break;
       }
