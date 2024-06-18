@@ -32,7 +32,7 @@ export class FeedNode extends TimestampedResource implements Node {
   }
 
   public static init(init: {
-    uuid: string;
+    id: string;
     title: string;
     textContent?: string | null | undefined;
     createdAt?: Date;
