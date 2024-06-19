@@ -18,8 +18,8 @@ import {
 import { Service } from "typedi";
 
 import { FileManager } from "../lib/files/FileManager.js";
+import { FeedRepository } from "../repositories/feed/FeedRepository.js";
 import { feedItemModelToResource } from "../repositories/feed/feedModelToResource.js";
-import { FeedRepository } from "../repositories/feed/feedRepository.js";
 import { imageModelToResource } from "../repositories/image/imageModelToResource.js";
 
 @InputType()
