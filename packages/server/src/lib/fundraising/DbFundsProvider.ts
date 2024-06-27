@@ -1,6 +1,7 @@
 import type { MarathonYearString } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 import { Maybe, Result } from "true-myth";
+import { err } from "true-myth/result";
 import { Inject, Service } from "typedi";
 import { z } from "zod";
 
@@ -8,6 +9,7 @@ import {
   dbFundsApiKeyToken,
   dbFundsApiOriginToken,
 } from "../../environment.js";
+import { TimeoutError } from "../error/direct.js";
 import { BasicError, toBasicError } from "../error/error.js";
 import { HttpError } from "../error/http.js";
 import { ConcreteResult } from "../error/result.js";
@@ -92,7 +94,11 @@ function teamEntriesPath(
   return `/api/report/teamentries/${dbNum}/${year}`;
 }
 
-export type DBFundsFundraisingProviderError = HttpError | ZodError | BasicError;
+export type DBFundsFundraisingProviderError =
+  | HttpError
+  | ZodError
+  | BasicError
+  | TimeoutError;
 
 @Service()
 export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
@@ -107,19 +113,31 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
     path: string | URL
   ): Promise<ConcreteResult<unknown, DBFundsFundraisingProviderError>> {
     let response: Response;
+    let timeout: ReturnType<typeof setTimeout> | undefined = undefined;
     try {
       const url = new URL(path, this.dbFundsApiOrigin);
+      const abort = new AbortController();
+      timeout = setTimeout(() => {
+        abort.abort();
+      }, 2500);
       response = await fetch(url, {
         headers: {
           "X-AuthToken": this.dbFundsApiKey,
         },
+        signal: abort.signal,
       });
     } catch (error) {
-      return Result.err(toBasicError(error));
+      return err(
+        error instanceof Error && error.name === "AbortError"
+          ? new TimeoutError("Fetching data from DbFunds")
+          : toBasicError(error)
+      );
+    } finally {
+      clearTimeout(timeout);
     }
 
     if (!response.ok) {
-      return Result.err<never, HttpError>(new HttpError(response.status));
+      return err<never, HttpError>(new HttpError(response.status));
     }
 
     return Result.ok<unknown, never>(await response.json());

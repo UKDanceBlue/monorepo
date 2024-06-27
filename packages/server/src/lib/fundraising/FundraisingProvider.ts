@@ -2,6 +2,7 @@ import type { MarathonYearString } from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
 import type { Maybe } from "true-myth";
 
+import type { TimeoutError } from "../error/direct.js";
 import type { JsError, UnknownError } from "../error/error.js";
 import type { HttpError } from "../error/http.js";
 import type { ConcreteResult } from "../error/result.js";
@@ -26,13 +27,16 @@ export interface FundraisingProvider<IDType> {
   ): Promise<
     ConcreteResult<
       FundraisingTeam<IDType>[],
-      HttpError | JsError | UnknownError
+      HttpError | JsError | UnknownError | TimeoutError
     >
   >;
   getTeamEntries(
     marathonYear: MarathonYearString,
     identifier: unknown
   ): Promise<
-    ConcreteResult<FundraisingEntry[], HttpError | JsError | UnknownError>
+    ConcreteResult<
+      FundraisingEntry[],
+      HttpError | JsError | UnknownError | TimeoutError
+    >
   >;
 }

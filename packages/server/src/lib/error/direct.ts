@@ -48,3 +48,20 @@ export class NotFoundError extends ConcreteError {
     return undefined;
   }
 }
+
+export class TimeoutError extends ConcreteError {
+  readonly #what: string | null;
+
+  constructor(what?: string) {
+    super();
+    this.#what = what ?? null;
+  }
+
+  get message(): string {
+    return `${this.#what ?? "A task"} took too long`;
+  }
+
+  get expose() {
+    return false;
+  }
+}
