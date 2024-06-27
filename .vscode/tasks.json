@@ -104,7 +104,7 @@
       "problemMatcher": [],
       "label": "Server: Build",
       "detail": "yarn workspace @ukdanceblue/server run build",
-      "dependsOn": ["Server: Prisma Generate", "Common: Build"]
+      "dependsOn": ["Common: Build"]
     }
   ]
 }
