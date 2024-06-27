@@ -17,8 +17,6 @@ services:
     build:
       context: .
       dockerfile: ./packages/server/Dockerfile
-    ports:
-      - 8080:8000
     networks:
       - danceblue
     depends_on:
@@ -32,6 +30,11 @@ services:
       NODE_ENV: development
       APPLICATION_HOST: server
       DATABASE_URL: postgres://danceblue:danceblue@postgres:5432/danceblue
+  portal:
+    container_name: portal
+    build:
+      context: ./packages/portal
+      dockerfile: ./packages/portal/Dockerfile
 
 networks:
   danceblue:
