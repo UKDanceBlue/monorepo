@@ -1,12 +1,13 @@
 import type winston from "winston";
 import { createLogger, format, transports } from "winston";
 
-import { isDevelopment } from "../../environment.js";
+import { isDevelopment, logDir } from "../../environment.js";
 
 const databaseLogTransport = new transports.File({
   filename: "database.log",
   maxsize: 1_000_000,
-  maxFiles: 3,
+  maxFiles: 1,
+  dirname: logDir,
 });
 
 interface SqlLogger extends winston.Logger {

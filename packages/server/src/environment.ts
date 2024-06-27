@@ -170,3 +170,10 @@ export const uploadPath = UPLOAD_PATH;
 // Disable all authorization checks
 const { OVERRIDE_AUTH } = process.env;
 export const authorizationOverride = OVERRIDE_AUTH === "THIS IS DANGEROUS";
+
+// Log directory
+const { LOG_DIR } = process.env;
+if (!LOG_DIR) {
+  throw new Error("LOG_DIR is not set");
+}
+export const logDir = LOG_DIR;

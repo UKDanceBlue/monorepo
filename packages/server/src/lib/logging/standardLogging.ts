@@ -1,7 +1,7 @@
 import type winston from "winston";
 import { createLogger, format, transports } from "winston";
 
-import { loggingLevel } from "../../environment.js";
+import { logDir, loggingLevel } from "../../environment.js";
 
 export const SyslogLevels = {
   emerg: 0,
@@ -64,6 +64,7 @@ const combinedLogTransport = new transports.File({
   filename: "combined.log",
   maxsize: 1_000_000,
   maxFiles: 3,
+  dirname: logDir,
 });
 
 export const logger = createLogger({
@@ -95,7 +96,7 @@ export const logger = createLogger({
  */
 export function logFatal(content: unknown) {
   // Logs the error and then crashes the server
-   
+
   logger.emerg(String(content), () => process.exit(1));
 }
 

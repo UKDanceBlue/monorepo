@@ -57,7 +57,8 @@
     "MS_OIDC_URL": "https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0/.well-known/openid-configuration",
     "SERVE_PATH": "/workspaces/monorepo/local-uploads",
     "UPLOAD_PATH": "/workspaces/monorepo/local-uploads",
-    "MAX_FILE_SIZE": "200"
+    "MAX_FILE_SIZE": "200",
+    "LOG_DIR": "/workspaces/monorepo/packages/server/logs"
   },
 
   "customizations": {
