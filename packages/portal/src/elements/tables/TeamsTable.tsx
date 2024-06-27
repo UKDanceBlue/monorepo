@@ -1,4 +1,4 @@
-import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { DollarOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useMarathon } from "@config/marathonContext";
 import { useListQuery } from "@hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
@@ -180,11 +180,20 @@ export const TeamsTable = () => {
               <Button
                 onClick={() =>
                   navigate({
-                    to: "/teams/$teamId/",
+                    to: "/teams/$teamId/points",
                     params: { teamId: record.id },
                   }).catch((error: unknown) => console.error(error))
                 }
                 icon={<EyeOutlined />}
+              />
+              <Button
+                onClick={() =>
+                  navigate({
+                    to: "/teams/$teamId/fundraising",
+                    params: { teamId: record.id },
+                  }).catch((error: unknown) => console.error(error))
+                }
+                icon={<DollarOutlined />}
               />
               <Button
                 onClick={() =>
