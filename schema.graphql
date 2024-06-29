@@ -78,12 +78,19 @@ enum CommitteeIdentifier {
 
 type CommitteeMembershipNode implements Node {
   createdAt: DateTimeISO
-  id: ID!
+  id: GlobalId!
   identifier: CommitteeIdentifier!
   person: PersonNode!
   position: MembershipPositionType!
   role: CommitteeRole!
   team: TeamNode!
+  updatedAt: DateTimeISO
+}
+
+type CommitteeNode implements Node {
+  createdAt: DateTimeISO
+  id: GlobalId!
+  identifier: CommitteeIdentifier!
   updatedAt: DateTimeISO
 }
 
@@ -96,7 +103,7 @@ enum CommitteeRole {
 
 type ConfigurationNode implements Node {
   createdAt: DateTimeISO
-  id: ID!
+  id: GlobalId!
   key: String!
   updatedAt: DateTimeISO
   validAfter: DateTimeISO
@@ -221,7 +228,7 @@ scalar DateTimeISO
 
 type DbFundsTeamInfo implements Node {
   dbNum: Int!
-  id: ID!
+  id: GlobalId!
   name: String!
 }
 
@@ -272,7 +279,7 @@ type DeleteTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseRespon
 
 type DeviceNode implements Node {
   createdAt: DateTimeISO
-  id: ID!
+  id: GlobalId!
   lastLoggedInUser: PersonNode
   lastLogin: DateTimeISO
   notificationDeliveries(
@@ -366,7 +373,7 @@ scalar EmailAddress @specifiedBy(url: "https://html.spec.whatwg.org/multipage/in
 type EventNode implements Node {
   createdAt: DateTimeISO
   description: String
-  id: ID!
+  id: GlobalId!
   images: [ImageNode!]!
   location: String
   occurrences: [EventOccurrenceNode!]!
@@ -377,8 +384,8 @@ type EventNode implements Node {
 
 type EventOccurrenceNode {
   fullDay: Boolean!
+  id: ID!
   interval: IntervalISO!
-  uuid: ID!
 }
 
 enum EventResolverAllKeys {
@@ -459,7 +466,7 @@ enum EventResolverStringFilterKeys {
 
 type FeedNode implements Node {
   createdAt: DateTimeISO
-  id: ID!
+  id: GlobalId!
   image: ImageNode
   textContent: String
   title: String!
@@ -470,7 +477,7 @@ type FundraisingAssignmentNode implements Node {
   amount: Float!
   createdAt: DateTimeISO
   entry: FundraisingEntryNode!
-  id: ID!
+  id: GlobalId!
 
   """
   The person assigned to this assignment, only null when access is denied
@@ -486,7 +493,7 @@ type FundraisingEntryNode implements Node {
   donatedByText: String
   donatedOn: DateTimeISO!
   donatedToText: String
-  id: ID!
+  id: GlobalId!
   updatedAt: DateTimeISO
 }
 
@@ -631,6 +638,9 @@ type GetPointEntryByUuidResponse implements AbstractGraphQLOkResponse & GraphQLB
   ok: Boolean!
 }
 
+"""GlobalId custom scalar type"""
+scalar GlobalId
+
 """API response"""
 interface GraphQLBaseResponse {
   ok: Boolean!
@@ -640,7 +650,7 @@ type ImageNode implements Node {
   alt: String
   createdAt: DateTimeISO
   height: Int!
-  id: ID!
+  id: GlobalId!
   mimeType: String!
   thumbHash: String
   updatedAt: DateTimeISO
@@ -908,7 +918,7 @@ type MarathonHourNode implements Node {
   createdAt: DateTimeISO
   details: String
   durationInfo: String!
-  id: ID!
+  id: GlobalId!
   mapImages: [ImageNode!]!
   shownStartingAt: DateTimeISO!
   title: String!
@@ -924,7 +934,7 @@ type MarathonNode implements Node {
   familyRelationsCommitteeTeam: TeamNode!
   fundraisingCommitteeTeam: TeamNode!
   hours: [MarathonHourNode!]!
-  id: ID!
+  id: GlobalId!
   marketingCommitteeTeam: TeamNode!
   miniMarathonsCommitteeTeam: TeamNode!
   operationsCommitteeTeam: TeamNode!
@@ -978,7 +988,7 @@ input MarathonResolverKeyedIsNullFilterItem {
 
 type MembershipNode implements Node {
   createdAt: DateTimeISO
-  id: ID!
+  id: GlobalId!
   person: PersonNode!
   position: MembershipPositionType!
   team: TeamNode!
@@ -992,10 +1002,10 @@ enum MembershipPositionType {
 }
 
 type Mutation {
-  abortScheduledNotification(uuid: String!): AbortScheduledNotificationResponse!
-  acknowledgeDeliveryIssue(uuid: String!): AcknowledgeDeliveryIssueResponse!
+  abortScheduledNotification(uuid: GlobalId!): AbortScheduledNotificationResponse!
+  acknowledgeDeliveryIssue(uuid: GlobalId!): AcknowledgeDeliveryIssueResponse!
   addExistingImageToEvent(eventId: String!, imageId: String!): AddEventImageResponse!
-  addMap(imageUuid: String!, uuid: String!): MarathonHourNode!
+  addMap(imageUuid: String!, uuid: GlobalId!): MarathonHourNode!
   addPersonToTeam(personUuid: String!, teamUuid: String!): GetMembershipResponse!
   assignEntryToPerson(entryId: String!, input: AssignEntryToPersonInput!, personId: String!): FundraisingAssignmentNode!
   assignTeamToDbFundsTeam(dbFundsTeamId: Float!, teamId: String!): Void!
@@ -1011,48 +1021,48 @@ type Mutation {
   createPointEntry(input: CreatePointEntryInput!): CreatePointEntryResponse!
   createPointOpportunity(input: CreatePointOpportunityInput!): CreatePointOpportunityResponse!
   createTeam(input: CreateTeamInput!, marathon: String!): CreateTeamResponse!
-  deleteConfiguration(uuid: String!): DeleteConfigurationResponse!
-  deleteDevice(uuid: String!): DeleteDeviceResponse!
-  deleteEvent(uuid: String!): DeleteEventResponse!
+  deleteConfiguration(uuid: GlobalId!): DeleteConfigurationResponse!
+  deleteDevice(uuid: GlobalId!): DeleteDeviceResponse!
+  deleteEvent(uuid: GlobalId!): DeleteEventResponse!
   deleteFeedItem(feedItemUuid: String!): Boolean!
-  deleteFundraisingAssignment(id: String!): FundraisingAssignmentNode!
-  deleteImage(uuid: String!): DeleteImageResponse!
-  deleteMarathon(uuid: String!): Void!
-  deleteMarathonHour(uuid: String!): Void!
+  deleteFundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
+  deleteImage(uuid: GlobalId!): DeleteImageResponse!
+  deleteMarathon(uuid: GlobalId!): Void!
+  deleteMarathonHour(uuid: GlobalId!): Void!
   deleteNotification(
     """
     If true, the notification will be deleted even if it has already been sent, which will also delete the delivery records.
     """
     force: Boolean
-    uuid: String!
+    uuid: GlobalId!
   ): DeleteNotificationResponse!
-  deletePerson(uuid: String!): DeletePersonResponse!
-  deletePointEntry(uuid: String!): DeletePointEntryResponse!
-  deletePointOpportunity(uuid: String!): DeletePointOpportunityResponse!
-  deleteTeam(uuid: String!): DeleteTeamResponse!
+  deletePerson(uuid: GlobalId!): DeletePersonResponse!
+  deletePointEntry(uuid: GlobalId!): DeletePointEntryResponse!
+  deletePointOpportunity(uuid: GlobalId!): DeletePointOpportunityResponse!
+  deleteTeam(uuid: GlobalId!): DeleteTeamResponse!
   registerDevice(input: RegisterDeviceInput!): RegisterDeviceResponse!
   removeImageFromEvent(eventId: String!, imageId: String!): RemoveEventImageResponse!
   removeImageFromFeedItem(feedItemUuid: String!): FeedNode!
-  removeMap(imageUuid: String!, uuid: String!): Void!
-  scheduleNotification(sendAt: DateTimeISO!, uuid: String!): ScheduleNotificationResponse!
+  removeMap(imageUuid: String!, uuid: GlobalId!): Void!
+  scheduleNotification(sendAt: DateTimeISO!, uuid: GlobalId!): ScheduleNotificationResponse!
 
   """Send a notification immediately."""
-  sendNotification(uuid: String!): SendNotificationResponse!
-  setEvent(input: SetEventInput!, uuid: String!): SetEventResponse!
+  sendNotification(uuid: GlobalId!): SendNotificationResponse!
+  setEvent(input: SetEventInput!, uuid: GlobalId!): SetEventResponse!
   setFeedItem(feedItemUuid: String!, input: SetFeedInput!): FeedNode!
-  setImageAltText(alt: String!, uuid: String!): ImageNode!
-  setImageUrl(uuid: String!): ImageNode!
-  setMarathon(input: SetMarathonInput!, uuid: String!): MarathonNode!
-  setMarathonHour(input: SetMarathonHourInput!, uuid: String!): MarathonHourNode!
-  setPerson(input: SetPersonInput!, uuid: String!): GetPersonResponse!
-  setPointOpportunity(input: SetPointOpportunityInput!, uuid: String!): SinglePointOpportunityResponse!
-  setTeam(input: SetTeamInput!, uuid: String!): SingleTeamResponse!
+  setImageAltText(alt: String!, uuid: GlobalId!): ImageNode!
+  setImageUrl(uuid: GlobalId!): ImageNode!
+  setMarathon(input: SetMarathonInput!, uuid: GlobalId!): MarathonNode!
+  setMarathonHour(input: SetMarathonHourInput!, uuid: GlobalId!): MarathonHourNode!
+  setPerson(input: SetPersonInput!, uuid: GlobalId!): GetPersonResponse!
+  setPointOpportunity(input: SetPointOpportunityInput!, uuid: GlobalId!): SinglePointOpportunityResponse!
+  setTeam(input: SetTeamInput!, uuid: GlobalId!): SingleTeamResponse!
   stageNotification(audience: NotificationAudienceInput!, body: String!, title: String!, url: String): StageNotificationResponse!
-  updateFundraisingAssignment(id: String!, input: UpdateFundraisingAssignmentInput!): FundraisingAssignmentNode!
+  updateFundraisingAssignment(id: GlobalId!, input: UpdateFundraisingAssignmentInput!): FundraisingAssignmentNode!
 }
 
 interface Node {
-  id: ID!
+  id: GlobalId!
 }
 
 """Integers that will have a value of 0 or more."""
@@ -1084,7 +1094,7 @@ type NotificationDeliveryNode implements Node {
 
   """Any error message returned by Expo when sending the notification."""
   deliveryError: String
-  id: ID!
+  id: GlobalId!
   notification: NotificationNode!
 
   """The time the server received a delivery receipt from the user."""
@@ -1141,7 +1151,7 @@ type NotificationNode implements Node {
   deliveryIssue: String
   deliveryIssueAcknowledgedAt: DateTimeISO
   deliveryIssueCount: NotificationDeliveryIssueCount!
-  id: ID!
+  id: GlobalId!
 
   """
   The time the notification is scheduled to be sent, if null it is either already sent or unscheduled.
@@ -1288,7 +1298,7 @@ type PersonNode implements Node {
   dbRole: DbRole!
   email: String!
   fundraisingAssignments: [FundraisingAssignmentNode!]!
-  id: ID!
+  id: GlobalId!
   linkblue: String
   moraleTeams: [MembershipNode!]!
   name: String
@@ -1356,7 +1366,7 @@ enum PersonResolverStringFilterKeys {
 type PointEntryNode implements Node {
   comment: String
   createdAt: DateTimeISO
-  id: ID!
+  id: GlobalId!
   personFrom: PersonNode
   pointOpportunity: PointOpportunityNode
   points: Int!
@@ -1401,7 +1411,7 @@ input PointEntryResolverKeyedIsNullFilterItem {
 type PointOpportunityNode implements Node {
   createdAt: DateTimeISO
   event: EventNode
-  id: ID!
+  id: GlobalId!
   name: String!
   opportunityDate: DateTimeISO
   type: TeamType!
@@ -1485,10 +1495,11 @@ scalar PositiveInt
 type Query {
   activeConfiguration(key: String!): GetConfigurationByUuidResponse!
   allConfigurations: GetAllConfigurationsResponse!
+  configuration(id: GlobalId!): GetConfigurationByUuidResponse!
   currentMarathon: MarathonNode
   currentMarathonHour: MarathonHourNode
   dbFundsTeams(search: String!): [DbFundsTeamInfo!]!
-  device(uuid: String!): GetDeviceByUuidResponse!
+  device(uuid: GlobalId!): GetDeviceByUuidResponse!
   devices(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -1532,7 +1543,7 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [DeviceResolverKeyedStringFilterItem!]
   ): ListDevicesResponse!
-  event(uuid: String!): GetEventByUuidResponse!
+  event(uuid: GlobalId!): GetEventByUuidResponse!
   events(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -1577,7 +1588,7 @@ type Query {
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
   feed(limit: Int = 10): [FeedNode!]!
-  fundraisingAssignment(id: String!): FundraisingAssignmentNode!
+  fundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
   fundraisingEntries(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -1621,8 +1632,8 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
   ): ListFundraisingEntriesResponse!
-  fundraisingEntry(id: String!): FundraisingEntryNode!
-  image(uuid: String!): GetImageByUuidResponse!
+  fundraisingEntry(id: GlobalId!): FundraisingEntryNode!
+  image(uuid: GlobalId!): GetImageByUuidResponse!
   images(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -1711,9 +1722,9 @@ type Query {
     stringFilters: [PersonResolverKeyedStringFilterItem!]
   ): ListPeopleResponse!
   loginState: LoginState!
-  marathon(uuid: String!): MarathonNode!
+  marathon(uuid: GlobalId!): MarathonNode!
   marathonForYear(year: String!): MarathonNode!
-  marathonHour(uuid: String!): MarathonHourNode!
+  marathonHour(uuid: GlobalId!): MarathonHourNode!
   marathons(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -1758,7 +1769,8 @@ type Query {
     stringFilters: Void
   ): ListMarathonsResponse!
   me: GetPersonResponse!
-  notification(uuid: String!): GetNotificationByUuidResponse!
+  node(id: GlobalId!): Node!
+  notification(uuid: GlobalId!): GetNotificationByUuidResponse!
   notificationDeliveries(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -1846,7 +1858,7 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [NotificationResolverKeyedStringFilterItem!]
   ): ListNotificationsResponse!
-  person(uuid: String!): GetPersonResponse!
+  person(uuid: GlobalId!): GetPersonResponse!
   personByLinkBlue(linkBlueId: String!): GetPersonResponse!
   pointEntries(
     """The boolean filters to apply to the query"""
@@ -1891,7 +1903,7 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: Void
   ): ListPointEntriesResponse!
-  pointEntry(uuid: String!): GetPointEntryByUuidResponse!
+  pointEntry(uuid: GlobalId!): GetPointEntryByUuidResponse!
   pointOpportunities(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -1935,9 +1947,9 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [PointOpportunityResolverKeyedStringFilterItem!]
   ): ListPointOpportunitiesResponse!
-  pointOpportunity(uuid: String!): SinglePointOpportunityResponse!
+  pointOpportunity(uuid: GlobalId!): SinglePointOpportunityResponse!
   searchPeopleByName(name: String!): GetPeopleResponse!
-  team(uuid: String!): SingleTeamResponse!
+  team(uuid: GlobalId!): SingleTeamResponse!
   teams(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -2165,7 +2177,7 @@ type TeamNode implements Node {
     """The string filters to apply to the query"""
     stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
   ): ListFundraisingEntriesResponse!
-  id: ID!
+  id: GlobalId!
   legacyStatus: TeamLegacyStatus!
   marathon: MarathonNode!
   members: [MembershipNode!]!
