@@ -1,6 +1,8 @@
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 
 import { Node, createNodeClasses } from "../relay.js";
+import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
 import { TimestampedResource } from "./Resource.js";
 // TODO: Expand this to include more types of feed items
@@ -18,8 +20,8 @@ import { TimestampedResource } from "./Resource.js";
   implements: [Node],
 })
 export class FeedNode extends TimestampedResource implements Node {
-  @Field(() => ID)
-  id!: string;
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
 
   @Field(() => String)
   title!: string;
@@ -28,7 +30,7 @@ export class FeedNode extends TimestampedResource implements Node {
   textContent?: string | null | undefined;
 
   public getUniqueId(): string {
-    return this.id;
+    return this.id.id;
   }
 
   public static init(init: {
@@ -38,7 +40,7 @@ export class FeedNode extends TimestampedResource implements Node {
     createdAt?: Date;
     updatedAt?: Date;
   }) {
-    return FeedNode.doInit(init);
+    return FeedNode.createInstance().withValues(init);
   }
 }
 

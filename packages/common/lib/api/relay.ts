@@ -1,7 +1,9 @@
-import { Field, ID, InterfaceType, ObjectType } from "type-graphql";
+import { Field, InterfaceType, ObjectType } from "type-graphql";
 
 import { Errorable, ResourceError } from "./resourceError.js";
 import { CursorScalar } from "./scalars/Cursor.js";
+import type { GlobalId } from "./scalars/GlobalId.js";
+import { GlobalIdScalar } from "./scalars/GlobalId.js";
 
 @ObjectType()
 export class PageInfo {
@@ -36,8 +38,8 @@ export class PageInfo {
 
 @InterfaceType()
 export abstract class Node {
-  @Field(() => ID)
-  id!: string;
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
 }
 @InterfaceType()
 export abstract class Edge<N extends Node = Node> {

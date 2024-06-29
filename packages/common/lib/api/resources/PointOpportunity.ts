@@ -1,9 +1,11 @@
 import { DateTimeISOResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { Node } from "../relay.js";
+import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
 import { TimestampedResource } from "./Resource.js";
 import { TeamType } from "./Team.js";
@@ -12,8 +14,8 @@ import { TeamType } from "./Team.js";
   implements: [Node],
 })
 export class PointOpportunityNode extends TimestampedResource implements Node {
-  @Field(() => ID)
-  id!: string;
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
   @Field(() => String)
   name!: string;
   @Field(() => TeamType)
@@ -25,10 +27,17 @@ export class PointOpportunityNode extends TimestampedResource implements Node {
   }
 
   public getUniqueId(): string {
-    return this.id;
+    return this.id.id;
   }
 
-  public static init(init: Partial<PointOpportunityNode>) {
-    return PointOpportunityNode.doInit(init);
+  public static init(init: {
+    id: string;
+    name: string;
+    type: TeamType;
+    opportunityDate: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }) {
+    return this.createInstance().withValues(init);
   }
 }

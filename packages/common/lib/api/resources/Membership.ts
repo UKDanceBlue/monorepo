@@ -1,10 +1,12 @@
-import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
+import { Field, ObjectType, registerEnumType } from "type-graphql";
 
 import {
   CommitteeIdentifier,
   CommitteeRole,
 } from "../../authorization/structures.js";
 import { Node, createNodeClasses } from "../relay.js";
+import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
 import { TimestampedResource } from "./Resource.js";
 export const MembershipPositionType = {
@@ -23,14 +25,14 @@ registerEnumType(MembershipPositionType, {
   implements: [Node],
 })
 export class MembershipNode extends TimestampedResource implements Node {
-  @Field(() => ID)
-  id!: string;
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
 
   @Field(() => MembershipPositionType)
   position!: MembershipPositionType;
 
   public getUniqueId(): string {
-    return this.id;
+    return this.id.id;
   }
 
   public static init(init: {
@@ -39,7 +41,7 @@ export class MembershipNode extends TimestampedResource implements Node {
     createdAt?: Date | null;
     updatedAt?: Date | null;
   }) {
-    return MembershipNode.doInit(init);
+    return MembershipNode.createInstance().withValues(init);
   }
 }
 
@@ -61,7 +63,7 @@ export class CommitteeMembershipNode extends MembershipNode implements Node {
     createdAt?: Date | null;
     updatedAt?: Date | null;
   }) {
-    return CommitteeMembershipNode.doInit(init);
+    return CommitteeMembershipNode.createInstance().withValues(init);
   }
 }
 

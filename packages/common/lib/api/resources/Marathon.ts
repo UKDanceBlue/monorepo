@@ -1,17 +1,19 @@
 import { DateTimeISOResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { Node, createNodeClasses } from "../relay.js";
+import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
 import { TimestampedResource } from "./Resource.js";
 @ObjectType({
   implements: [Node],
 })
 export class MarathonNode extends TimestampedResource implements Node {
-  @Field(() => ID)
-  id!: string;
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
   @Field(() => String)
   year!: string;
   @Field(() => DateTimeISOResolver, { nullable: true })
@@ -40,7 +42,7 @@ export class MarathonNode extends TimestampedResource implements Node {
     createdAt?: Date | null;
     updatedAt?: Date | null;
   }): MarathonNode {
-    return this.doInit({
+    return this.createInstance().withValues({
       id,
       year,
       startDate,
@@ -51,7 +53,7 @@ export class MarathonNode extends TimestampedResource implements Node {
   }
 
   public getUniqueId(): string {
-    return this.id;
+    return this.id.id;
   }
 }
 

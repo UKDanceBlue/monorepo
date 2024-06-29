@@ -1,9 +1,11 @@
 import { DateTimeISOResolver } from "graphql-scalars";
 import { DateTime } from "luxon";
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { Node, createNodeClasses } from "../relay.js";
+import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
 import { TimestampedResource } from "./Resource.js";
 /*
@@ -21,8 +23,8 @@ to have additional validation logic in the future.
   implements: [Node],
 })
 export class ConfigurationNode extends TimestampedResource implements Node {
-  @Field(() => ID)
-  id!: string;
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
 
   @Field(() => String)
   key!: string;
@@ -46,8 +48,16 @@ export class ConfigurationNode extends TimestampedResource implements Node {
     return this.key;
   }
 
-  public static init(init: Partial<ConfigurationNode>) {
-    return ConfigurationNode.doInit(init);
+  public static init(init: {
+    id: string;
+    key: string;
+    value: string;
+    validAfter?: Date | null;
+    validUntil?: Date | null;
+    createdAt?: Date | null;
+    updatedAt?: Date | null;
+  }) {
+    return this.createInstance().withValues(init);
   }
 }
 

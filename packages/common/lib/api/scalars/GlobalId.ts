@@ -7,6 +7,11 @@ import {
   strToUTF8Arr,
 } from "../../utility/primitive/base64.js";
 
+export interface GlobalId {
+  typename: string;
+  id: string;
+}
+
 export const GlobalIdScalar = new GraphQLScalarType<
   { typename: string; id: string },
   string

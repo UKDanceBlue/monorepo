@@ -2,10 +2,12 @@ import { DateTimeISOResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Maybe } from "true-myth";
 import { nothing, of } from "true-myth/maybe";
-import { Field, Float, ID, ObjectType } from "type-graphql";
+import { Field, Float, ObjectType } from "type-graphql";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { Node, createNodeClasses } from "../relay.js";
+import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
 import { TimestampedResource } from "./Resource.js";
 
@@ -13,8 +15,8 @@ import { TimestampedResource } from "./Resource.js";
   implements: [Node],
 })
 export class FundraisingEntryNode extends TimestampedResource implements Node {
-  @Field(() => ID)
-  id!: string;
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
   @Field(() => String, { nullable: true, name: "donatedByText" })
   private _donatedByText!: string | null;
   get donatedByText(): Maybe<string> {
@@ -40,7 +42,7 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   amount!: number;
 
   public getUniqueId(): string {
-    return this.id;
+    return this.id.id;
   }
 
   public static init(init: {
@@ -53,7 +55,10 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
     updatedAt: Date;
   }) {
     const node = new FundraisingEntryNode();
-    node.id = init.id;
+    node.id = {
+      id: init.id,
+      typename: "FundraisingEntryNode",
+    };
     node.donatedByText =
       init.donatedByText == null
         ? nothing()
@@ -88,13 +93,13 @@ export class FundraisingAssignmentNode
   extends TimestampedResource
   implements Node
 {
-  @Field(() => ID)
-  id!: string;
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
   @Field(() => Float)
   amount!: number;
 
   public getUniqueId(): string {
-    return this.id;
+    return this.id.id;
   }
 
   public static init(init: {
@@ -103,7 +108,7 @@ export class FundraisingAssignmentNode
     createdAt: Date;
     updatedAt: Date;
   }) {
-    return FundraisingAssignmentNode.doInit(init);
+    return FundraisingAssignmentNode.createInstance().withValues(init);
   }
 }
 

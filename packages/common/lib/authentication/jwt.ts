@@ -11,7 +11,7 @@ export function makeUserData(
   authSource: AuthSource
 ): UserData {
   return {
-    userId: person.id,
+    userId: person.id.id,
     authSource,
   };
 }

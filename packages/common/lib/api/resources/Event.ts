@@ -1,6 +1,8 @@
 import { Field, ID, ObjectType } from "type-graphql";
 
 import { Node, createNodeClasses } from "../relay.js";
+import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { IntervalISO } from "../types/IntervalISO.js";
 
 import { Resource, TimestampedResource } from "./Resource.js";
@@ -9,8 +11,8 @@ import { Resource, TimestampedResource } from "./Resource.js";
   implements: [Node],
 })
 export class EventNode extends TimestampedResource implements Node {
-  @Field(() => ID)
-  id!: string;
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
   @Field(() => [EventOccurrenceNode])
   occurrences!: EventOccurrenceNode[];
   @Field(() => String)
@@ -23,11 +25,19 @@ export class EventNode extends TimestampedResource implements Node {
   location!: string | null;
 
   public getUniqueId(): string {
-    return this.id;
+    return this.id.id;
   }
 
-  public static init(init: Partial<EventNode>) {
-    return EventNode.doInit(init);
+  public static init(init: {
+    id: string;
+    title: string;
+    summary?: string | null;
+    description?: string | null;
+    location?: string | null;
+    updatedAt?: Date | null;
+    createdAt?: Date | null;
+  }) {
+    return this.createInstance().withValues(init);
   }
 }
 
@@ -36,18 +46,26 @@ export class EventNode extends TimestampedResource implements Node {
 })
 export class EventOccurrenceNode extends Resource {
   @Field(() => ID)
-  uuid!: string;
+  id!: string;
   @Field(() => IntervalISO)
   interval!: IntervalISO;
   @Field(() => Boolean)
   fullDay!: boolean;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
-  public static init(init: Partial<EventOccurrenceNode>) {
-    return EventOccurrenceNode.doInit(init);
+  public static init(init: {
+    id: string;
+    interval: IntervalISO;
+    fullDay: boolean;
+  }) {
+    const resource = this.createInstance();
+    resource.id = init.id;
+    resource.interval = init.interval;
+    resource.fullDay = init.fullDay;
+    return resource;
   }
 }
 

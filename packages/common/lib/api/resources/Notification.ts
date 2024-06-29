@@ -1,19 +1,21 @@
 import { DateTimeISOResolver, URLResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 
 import { AccessControl } from "../../authorization/accessControl.js";
 import { AccessLevel } from "../../authorization/structures.js";
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { Node, createNodeClasses } from "../relay.js";
+import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
 import { TimestampedResource } from "./Resource.js";
 @ObjectType({
   implements: [Node],
 })
 export class NotificationNode extends TimestampedResource implements Node {
-  @Field(() => ID)
-  id!: string;
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
 
   @Field(() => String)
   title!: string;
@@ -55,11 +57,22 @@ export class NotificationNode extends TimestampedResource implements Node {
   }
 
   public getUniqueId(): string {
-    return this.id;
+    return this.id.id;
   }
 
-  public static init(init: Partial<NotificationNode>) {
-    return NotificationNode.doInit(init);
+  public static init(init: {
+    id: string;
+    title: string;
+    body: string;
+    url?: URL | null;
+    deliveryIssue?: string | null;
+    deliveryIssueAcknowledgedAt?: Date | null;
+    sendAt?: Date | null;
+    startedSendingAt?: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }) {
+    return NotificationNode.createInstance().withValues(init);
   }
 }
 
@@ -73,8 +86,8 @@ export class NotificationDeliveryNode
   extends TimestampedResource
   implements Node
 {
-  @Field(() => ID)
-  id!: string;
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
 
   @Field(() => Date, {
     nullable: true,
@@ -108,11 +121,19 @@ export class NotificationDeliveryNode
   deliveryError?: string | null;
 
   public getUniqueId(): string {
-    return this.id;
+    return this.id.id;
   }
 
-  public static init(init: Partial<NotificationDeliveryNode>) {
-    return NotificationDeliveryNode.doInit(init);
+  public static init(init: {
+    id: string;
+    sentAt?: Date | null;
+    receiptCheckedAt?: Date | null;
+    chunkUuid?: string | null;
+    deliveryError?: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }) {
+    return NotificationDeliveryNode.createInstance().withValues(init);
   }
 }
 

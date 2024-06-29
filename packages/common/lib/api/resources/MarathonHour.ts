@@ -1,17 +1,19 @@
 import { DateTimeISOResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { Node, createNodeClasses } from "../relay.js";
+import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
 import { TimestampedResource } from "./Resource.js";
 @ObjectType({
   implements: [Node],
 })
 export class MarathonHourNode extends TimestampedResource implements Node {
-  @Field(() => ID)
-  id!: string;
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
   @Field(() => String)
   title!: string;
   @Field(() => String, { nullable: true })
@@ -25,7 +27,7 @@ export class MarathonHourNode extends TimestampedResource implements Node {
   durationInfo!: string;
 
   static init({
-    id: uuid,
+    id,
     title,
     details,
     shownStartingAt,
@@ -41,8 +43,8 @@ export class MarathonHourNode extends TimestampedResource implements Node {
     createdAt?: Date | null;
     updatedAt?: Date | null;
   }): MarathonHourNode {
-    return this.doInit({
-      uuid,
+    return this.createInstance().withValues({
+      id,
       title,
       details,
       shownStartingAt,
@@ -53,7 +55,7 @@ export class MarathonHourNode extends TimestampedResource implements Node {
   }
 
   public getUniqueId(): string {
-    return this.id;
+    return this.id.id;
   }
 }
 

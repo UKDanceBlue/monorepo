@@ -1,7 +1,9 @@
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 
 import { DbRole } from "../../authorization/structures.js";
 import { Node, createNodeClasses } from "../relay.js";
+import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
 import { TimestampedResource } from "./Resource.js";
 
@@ -9,8 +11,8 @@ import { TimestampedResource } from "./Resource.js";
   implements: [Node],
 })
 export class PersonNode extends TimestampedResource implements Node {
-  @Field(() => ID)
-  id!: string;
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
   @Field(() => String, { nullable: true })
   name!: string | null;
   @Field(() => String)
@@ -21,11 +23,11 @@ export class PersonNode extends TimestampedResource implements Node {
   dbRole!: DbRole;
 
   public getUniqueId(): string {
-    return this.id;
+    return this.id.id;
   }
 
   public static init(init: {
-    uuid: string;
+    id: string;
     name?: string | null;
     email: string;
     linkblue?: string | null;
@@ -33,18 +35,7 @@ export class PersonNode extends TimestampedResource implements Node {
     createdAt?: Date | null;
     updatedAt?: Date | null;
   }) {
-    const resource = PersonNode.doInit({
-      id: init.uuid,
-      email: init.email,
-    });
-
-    resource.name = init.name ?? null;
-    resource.linkblue = init.linkblue ?? null;
-    resource.dbRole = init.dbRole ?? DbRole.None;
-    resource.createdAt = init.createdAt ?? null;
-    resource.updatedAt = init.updatedAt ?? null;
-
-    return resource;
+    return this.createInstance().withValues(init);
   }
 }
 
