@@ -1,9 +1,11 @@
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessLevel,
   ConfigurationNode,
   DetailedError,
   ErrorCode,
+  GlobalIdScalar,
   SortDirection,
   dateTimeFromSomething,
 } from "@ukdanceblue/common";
@@ -161,9 +163,9 @@ export class ConfigurationResolver {
   @AccessControl({ accessLevel: AccessLevel.Admin })
   @Mutation(() => DeleteConfigurationResponse, { name: "deleteConfiguration" })
   async delete(
-    @Arg("uuid") uuid: string
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<DeleteConfigurationResponse> {
-    const row = await this.configurationRepository.deleteConfiguration(uuid);
+    const row = await this.configurationRepository.deleteConfiguration(id);
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Configuration not found");

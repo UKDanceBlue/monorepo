@@ -1,8 +1,10 @@
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   CommitteeIdentifier,
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
+  GlobalIdScalar,
   MarathonHourNode,
   MarathonNode,
   SortDirection,
@@ -93,9 +95,9 @@ export class MarathonResolver
   ) {}
 
   @Query(() => MarathonNode)
-  async marathon(@Arg("uuid") uuid: string) {
+  async marathon(@Arg("uuid", () => GlobalIdScalar) { id }: GlobalId) {
     const marathon = await this.marathonRepository.findMarathonByUnique({
-      uuid,
+      uuid: id,
     });
     if (marathon == null) {
       throw new DetailedError(ErrorCode.NotFound, "Marathon not found");
@@ -166,11 +168,11 @@ export class MarathonResolver
 
   @Mutation(() => MarathonNode)
   async setMarathon(
-    @Arg("uuid") uuid: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetMarathonInput
   ) {
     const marathon = await this.marathonRepository.updateMarathon(
-      { uuid },
+      { uuid: id },
       input
     );
     if (marathon == null) {
@@ -180,24 +182,27 @@ export class MarathonResolver
   }
 
   @Mutation(() => VoidResolver)
-  async deleteMarathon(@Arg("uuid") uuid: string) {
-    const marathon = await this.marathonRepository.deleteMarathon({ uuid });
+  async deleteMarathon(@Arg("uuid", () => GlobalIdScalar) { id }: GlobalId) {
+    const marathon = await this.marathonRepository.deleteMarathon({ uuid: id });
     if (marathon == null) {
       throw new DetailedError(ErrorCode.NotFound, "Marathon not found");
     }
   }
 
   @FieldResolver(() => [MarathonHourNode])
-  async hours(@Root() marathon: MarathonNode) {
+  async hours(@Root() { id: { id } }: MarathonNode) {
     const rows = await this.marathonRepository.getMarathonHours({
-      uuid: marathon.id,
+      uuid: id,
     });
     return rows.map(marathonHourModelToResource);
   }
 
-  async #committeeTeam(committee: CommitteeIdentifier, marathon: MarathonNode) {
+  async #committeeTeam(
+    committee: CommitteeIdentifier,
+    { id: { id } }: MarathonNode
+  ) {
     const result = await this.committeeRepository.getCommitteeTeam(committee, {
-      uuid: marathon.id,
+      uuid: id,
     });
     if (result == null) {
       throw new DetailedError(

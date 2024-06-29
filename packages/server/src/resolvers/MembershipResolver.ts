@@ -12,7 +12,6 @@ import { MembershipRepository } from "../repositories/membership/MembershipRepos
 import { PersonRepository } from "../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
 import { teamModelToResource } from "../repositories/team/teamModelToResource.js";
-
 @Resolver(() => MembershipNode)
 @Service()
 export class MembershipResolver {
@@ -22,9 +21,9 @@ export class MembershipResolver {
   ) {}
 
   @FieldResolver(() => PersonNode)
-  async person(@Root() membership: MembershipNode): Promise<PersonNode> {
+  async person(@Root() { id: { id } }: MembershipNode): Promise<PersonNode> {
     const row = await this.membershipRepository.findMembershipByUnique(
-      { uuid: membership.id },
+      { uuid: id },
       {
         person: true,
       }
@@ -38,9 +37,9 @@ export class MembershipResolver {
   }
 
   @FieldResolver(() => TeamNode)
-  async team(@Root() membership: MembershipNode): Promise<TeamNode> {
+  async team(@Root() { id: { id } }: MembershipNode): Promise<TeamNode> {
     const row = await this.membershipRepository.findMembershipByUnique(
-      { uuid: membership.id },
+      { uuid: id },
       {
         team: true,
       }

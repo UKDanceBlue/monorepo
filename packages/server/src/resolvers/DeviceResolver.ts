@@ -1,8 +1,10 @@
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   DetailedError,
   DeviceNode,
   ErrorCode,
   FilteredListQueryArgs,
+  GlobalIdScalar,
   NotificationDeliveryNode,
   PersonNode,
   SortDirection,
@@ -124,8 +126,10 @@ export class DeviceResolver {
   ) {}
 
   @Query(() => GetDeviceByUuidResponse, { name: "device" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<GetDeviceByUuidResponse> {
-    const row = await this.deviceRepository.getDeviceByUuid(uuid);
+  async getByUuid(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<GetDeviceByUuidResponse> {
+    const row = await this.deviceRepository.getDeviceByUuid(id);
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Device not found");
@@ -180,19 +184,21 @@ export class DeviceResolver {
   }
 
   @Mutation(() => DeleteDeviceResponse, { name: "deleteDevice" })
-  async delete(@Arg("uuid") uuid: string): Promise<DeleteDeviceResponse> {
-    await this.deviceRepository.deleteDevice({ uuid });
+  async delete(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<DeleteDeviceResponse> {
+    await this.deviceRepository.deleteDevice({ uuid: id });
 
-    auditLogger.normal("Device deleted", { uuid });
+    auditLogger.normal("Device deleted", { uuid: id });
 
     return DeleteDeviceResponse.newOk(true);
   }
 
   @FieldResolver(() => PersonNode, { nullable: true })
   async lastLoggedInUser(
-    @Root() device: DeviceNode
+    @Root() { id: { id } }: DeviceNode
   ): Promise<PersonNode | null> {
-    const user = await this.deviceRepository.getLastLoggedInUser(device.id);
+    const user = await this.deviceRepository.getLastLoggedInUser(id);
 
     return user == null
       ? null
@@ -201,10 +207,10 @@ export class DeviceResolver {
 
   @FieldResolver(() => [NotificationDeliveryNode])
   async notificationDeliveries(
-    @Root() device: DeviceNode,
+    @Root() { id: { id } }: DeviceNode,
     @Args(() => NotificationDeliveriesArgs) query: NotificationDeliveriesArgs
   ): Promise<NotificationDeliveryNode[]> {
-    const row = await this.deviceRepository.getDeviceByUuid(device.id);
+    const row = await this.deviceRepository.getDeviceByUuid(id);
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Device not found");
@@ -221,16 +227,13 @@ export class DeviceResolver {
     }
 
     const rows =
-      await this.deviceRepository.findNotificationDeliveriesForDevice(
-        device.id,
-        {
-          skip:
-            query.page != null && query.pageSize != null
-              ? (query.page - 1) * query.pageSize
-              : undefined,
-          take: query.pageSize,
-        }
-      );
+      await this.deviceRepository.findNotificationDeliveriesForDevice(id, {
+        skip:
+          query.page != null && query.pageSize != null
+            ? (query.page - 1) * query.pageSize
+            : undefined,
+        take: query.pageSize,
+      });
 
     return rows.map(notificationDeliveryModelToResource);
   }

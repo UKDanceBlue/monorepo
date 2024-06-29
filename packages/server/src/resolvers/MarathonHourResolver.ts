@@ -1,7 +1,9 @@
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
+  GlobalIdScalar,
   ImageNode,
   MarathonHourNode,
 } from "@ukdanceblue/common";
@@ -101,10 +103,10 @@ export class MarathonHourResolver {
   ) {}
 
   @Query(() => MarathonHourNode)
-  async marathonHour(@Arg("uuid") uuid: string) {
+  async marathonHour(@Arg("uuid", () => GlobalIdScalar) { id }: GlobalId) {
     const marathonHour =
       await this.marathonHourRepository.findMarathonHourByUnique({
-        uuid,
+        uuid: id,
       });
     if (marathonHour == null) {
       throw new DetailedError(ErrorCode.NotFound, "MarathonHour not found");
@@ -136,8 +138,8 @@ export class MarathonHourResolver {
   }
 
   @FieldResolver(() => [ImageNode])
-  async mapImages(@Root() marathonHour: MarathonHourNode) {
-    return this.marathonHourRepository.getMaps({ uuid: marathonHour.id });
+  async mapImages(@Root() { id: { id } }: MarathonHourNode) {
+    return this.marathonHourRepository.getMaps({ uuid: id });
   }
 
   @Mutation(() => MarathonHourNode)
@@ -154,11 +156,11 @@ export class MarathonHourResolver {
 
   @Mutation(() => MarathonHourNode)
   async setMarathonHour(
-    @Arg("uuid") uuid: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetMarathonHourInput
   ) {
     const marathonHour = await this.marathonHourRepository.updateMarathonHour(
-      { uuid },
+      { uuid: id },
       input
     );
     if (marathonHour == null) {
@@ -168,9 +170,11 @@ export class MarathonHourResolver {
   }
 
   @Mutation(() => VoidResolver)
-  async deleteMarathonHour(@Arg("uuid") uuid: string) {
+  async deleteMarathonHour(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ) {
     const marathonHour = await this.marathonHourRepository.deleteMarathonHour({
-      uuid,
+      uuid: id,
     });
     if (marathonHour == null) {
       throw new DetailedError(ErrorCode.NotFound, "MarathonHour not found");
@@ -178,9 +182,12 @@ export class MarathonHourResolver {
   }
 
   @Mutation(() => MarathonHourNode)
-  async addMap(@Arg("uuid") uuid: string, @Arg("imageUuid") imageUuid: string) {
+  async addMap(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("imageUuid") imageUuid: string
+  ) {
     const marathonHour = await this.marathonHourRepository.addMap(
-      { uuid },
+      { uuid: id },
       { uuid: imageUuid }
     );
     if (marathonHour == null) {
@@ -191,11 +198,11 @@ export class MarathonHourResolver {
 
   @Mutation(() => VoidResolver)
   async removeMap(
-    @Arg("uuid") uuid: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("imageUuid") imageUuid: string
   ) {
     const marathonHour = await this.marathonHourRepository.removeMap(
-      { uuid },
+      { uuid: id },
       { uuid: imageUuid }
     );
     if (marathonHour == null) {

@@ -12,7 +12,7 @@ export async function personModelToResource(
   });
 
   return PersonNode.init({
-    uuid: person.uuid,
+    id: person.uuid,
     name: person.name,
     email: person.email,
     linkblue: person.linkblue,

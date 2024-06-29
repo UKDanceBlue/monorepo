@@ -25,7 +25,7 @@ export function eventOccurrenceModelToResource(
   occurrenceModel: EventOccurrence
 ): EventOccurrenceNode {
   return EventOccurrenceNode.init({
-    uuid: occurrenceModel.uuid,
+    id: occurrenceModel.uuid,
     interval: IntervalISO.init(occurrenceModel.date, occurrenceModel.endDate),
     fullDay: occurrenceModel.fullDay,
   });

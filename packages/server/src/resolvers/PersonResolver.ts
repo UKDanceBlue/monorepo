@@ -1,4 +1,5 @@
 import { TeamType } from "@prisma/client";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessLevel,
@@ -9,6 +10,7 @@ import {
   FilteredListQueryArgs,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
+  GlobalIdScalar,
   MembershipNode,
   MembershipPositionType,
   PersonNode,
@@ -167,8 +169,10 @@ export class PersonResolver {
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
   @Query(() => GetPersonResponse, { name: "person" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<GetPersonResponse> {
-    const row = await this.personRepository.findPersonByUnique({ uuid });
+  async getByUuid(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<GetPersonResponse> {
+    const row = await this.personRepository.findPersonByUnique({ uuid: id });
 
     if (row == null) {
       return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
@@ -272,7 +276,7 @@ export class PersonResolver {
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => GetPersonResponse, { name: "setPerson" })
   async set(
-    @Arg("uuid") id: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPersonInput
   ): Promise<GetPersonResponse> {
     const row = await this.personRepository.updatePerson(
@@ -330,8 +334,10 @@ export class PersonResolver {
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => DeletePersonResponse, { name: "deletePerson" })
-  async delete(@Arg("uuid") uuid: string): Promise<DeletePersonResponse> {
-    const result = await this.personRepository.deletePerson({ uuid });
+  async delete(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<DeletePersonResponse> {
+    const result = await this.personRepository.deletePerson({ uuid: id });
 
     if (result == null) {
       throw new DetailedError(ErrorCode.DatabaseFailure, "Failed to delete");
@@ -361,11 +367,11 @@ export class PersonResolver {
   )
   @FieldResolver(() => [CommitteeMembershipNode])
   async committees(
-    @Root() person: PersonNode
+    @Root() { id: { id } }: PersonNode
   ): Promise<CommitteeMembershipNode[]> {
     const models = await this.personRepository.findCommitteeMembershipsOfPerson(
       {
-        uuid: person.id,
+        uuid: id,
       }
     );
 
@@ -393,10 +399,10 @@ export class PersonResolver {
     }
   )
   @FieldResolver(() => [MembershipNode])
-  async teams(@Root() person: PersonNode): Promise<MembershipNode[]> {
+  async teams(@Root() { id: { id } }: PersonNode): Promise<MembershipNode[]> {
     const models = await this.personRepository.findMembershipsOfPerson(
       {
-        uuid: person.id,
+        uuid: id,
       },
       {},
       [TeamType.Spirit]
@@ -421,10 +427,12 @@ export class PersonResolver {
     }
   )
   @FieldResolver(() => [MembershipNode])
-  async moraleTeams(@Root() person: PersonNode): Promise<MembershipNode[]> {
+  async moraleTeams(
+    @Root() { id: { id } }: PersonNode
+  ): Promise<MembershipNode[]> {
     const models = await this.personRepository.findMembershipsOfPerson(
       {
-        uuid: person.id,
+        uuid: id,
       },
       {},
       [TeamType.Morale]
@@ -450,10 +458,10 @@ export class PersonResolver {
   )
   @FieldResolver(() => CommitteeMembershipNode, { nullable: true })
   async primaryCommittee(
-    @Root() person: PersonNode
+    @Root() { id: { id } }: PersonNode
   ): Promise<CommitteeMembershipNode | null> {
     const models = await this.personRepository.getPrimaryCommitteeOfPerson({
-      uuid: person.id,
+      uuid: id,
     });
 
     if (models == null) {
@@ -473,7 +481,7 @@ export class PersonResolver {
     // 2. The captain of the team the entry is associated with
     {
       custom: async (
-        { id },
+        { id: { id } },
         { teamMemberships, userData: { userId } }
       ): Promise<boolean> => {
         if (userId == null) {
@@ -510,7 +518,7 @@ export class PersonResolver {
   )
   @FieldResolver(() => CommitteeMembershipNode, { nullable: true })
   async assignedDonationEntries(
-    @Root() person: PersonNode,
+    @Root() { id: { id } }: PersonNode,
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
   ): Promise<ListFundraisingEntriesResponse> {
     const entries = await this.fundraisingEntryRepository.listEntries(
@@ -529,7 +537,7 @@ export class PersonResolver {
       },
       {
         // EXTREMELY IMPORTANT FOR SECURITY
-        assignedToPerson: { uuid: person.id },
+        assignedToPerson: { uuid: id },
       }
     );
     const count = await this.fundraisingEntryRepository.countEntries({
@@ -566,11 +574,11 @@ export class PersonResolver {
   })
   @FieldResolver(() => [FundraisingAssignmentNode])
   async fundraisingAssignments(
-    @Root() person: PersonNode
+    @Root() { id: { id } }: PersonNode
   ): Promise<FundraisingAssignmentNode[]> {
     const models =
       await this.fundraisingEntryRepository.getAssignmentsForPerson({
-        uuid: person.id,
+        uuid: id,
       });
 
     if (models.isErr) {

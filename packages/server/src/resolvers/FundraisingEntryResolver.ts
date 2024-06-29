@@ -1,4 +1,5 @@
 import { CommitteeRole } from "@prisma/client";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessControlParam,
@@ -6,6 +7,7 @@ import {
   FilteredListQueryArgs,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
+  GlobalIdScalar,
   MembershipPositionType,
   SortDirection,
 } from "@ukdanceblue/common";
@@ -91,7 +93,9 @@ export class FundraisingEntryResolver {
 
   @AccessControl(globalFundraisingAccessParam)
   @Query(() => FundraisingEntryNode)
-  async fundraisingEntry(@Arg("id") id: string): Promise<FundraisingEntryNode> {
+  async fundraisingEntry(
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<FundraisingEntryNode> {
     const entry = await this.fundraisingEntryRepository.findEntryByUnique({
       uuid: id,
     });
@@ -148,7 +152,7 @@ export class FundraisingEntryResolver {
     // 2. The captain of the team the entry is associated with
     {
       custom: async (
-        { id },
+        { id: { id } },
         { teamMemberships, userData: { userId } }
       ): Promise<boolean> => {
         if (userId == null) {
@@ -185,11 +189,11 @@ export class FundraisingEntryResolver {
   )
   @FieldResolver(() => [FundraisingAssignmentNode])
   async assignments(
-    @Root() entry: FundraisingEntryNode
+    @Root() { id: { id } }: FundraisingEntryNode
   ): Promise<FundraisingAssignmentNode[]> {
     const assignments =
       await this.fundraisingEntryRepository.getAssignmentsForEntry({
-        uuid: entry.id,
+        uuid: id,
       });
     if (assignments.isErr) {
       throw new CatchableConcreteError(assignments.error);

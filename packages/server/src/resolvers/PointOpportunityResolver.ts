@@ -1,8 +1,10 @@
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   DetailedError,
   ErrorCode,
   EventNode,
   FilteredListQueryArgs,
+  GlobalIdScalar,
   PointOpportunityNode,
   SortDirection,
   TeamType,
@@ -114,11 +116,11 @@ export class PointOpportunityResolver {
 
   @Query(() => SinglePointOpportunityResponse, { name: "pointOpportunity" })
   async getByUuid(
-    @Arg("uuid") uuid: string
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<SinglePointOpportunityResponse> {
     const row =
       await this.pointOpportunityRepository.findPointOpportunityByUnique({
-        uuid,
+        uuid: id,
       });
 
     if (row == null) {
@@ -183,11 +185,11 @@ export class PointOpportunityResolver {
     name: "setPointOpportunity",
   })
   async set(
-    @Arg("uuid") uuid: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPointOpportunityInput
   ): Promise<SinglePointOpportunityResponse> {
     const row = await this.pointOpportunityRepository.updatePointOpportunity(
-      { uuid },
+      { uuid: id },
       {
         name: input.name ?? undefined,
         type: input.type ?? undefined,
@@ -209,7 +211,7 @@ export class PointOpportunityResolver {
     name: "deletePointOpportunity",
   })
   async delete(
-    @Arg("uuid") id: string
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<DeletePointOpportunityResponse> {
     const row = await this.pointOpportunityRepository.deletePointOpportunity({
       uuid: id,
@@ -224,11 +226,11 @@ export class PointOpportunityResolver {
 
   @FieldResolver(() => EventNode, { nullable: true })
   async event(
-    @Root() pointOpportunity: PointOpportunityNode
+    @Root() { id: { id } }: PointOpportunityNode
   ): Promise<EventNode | null> {
     const model =
       await this.pointOpportunityRepository.getEventForPointOpportunity({
-        uuid: pointOpportunity.id,
+        uuid: id,
       });
 
     return model ? eventModelToResource(model) : null;

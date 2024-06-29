@@ -36,6 +36,7 @@ export class EventNode extends TimestampedResource implements Node {
     location?: string | null;
     updatedAt?: Date | null;
     createdAt?: Date | null;
+    occurrences: EventOccurrenceNode[];
   }) {
     return this.createInstance().withValues(init);
   }

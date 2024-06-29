@@ -1,11 +1,13 @@
 import { MIMEType } from "node:util";
 
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessLevel,
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
+  GlobalIdScalar,
   ImageNode,
   SortDirection,
 } from "@ukdanceblue/common";
@@ -87,8 +89,10 @@ export class ImageResolver {
   ) {}
 
   @Query(() => GetImageByUuidResponse, { name: "image" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<GetImageByUuidResponse> {
-    const result = await this.imageRepository.findImageByUnique({ uuid });
+  async getByUuid(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<GetImageByUuidResponse> {
+    const result = await this.imageRepository.findImageByUnique({ uuid: id });
 
     if (result == null) {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");
@@ -175,12 +179,12 @@ export class ImageResolver {
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => ImageNode, { name: "setImageAltText" })
   async setAltText(
-    @Arg("uuid") uuid: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("alt") alt: string
   ): Promise<ImageNode> {
     const result = await this.imageRepository.updateImage(
       {
-        uuid,
+        uuid: id,
       },
       {
         alt,
@@ -199,13 +203,13 @@ export class ImageResolver {
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => ImageNode, { name: "setImageUrl" })
   async setImageUrl(
-    @Arg("uuid") uuid: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("url", () => URLResolver) url: URL
   ): Promise<ImageNode> {
     const { mime, thumbHash, width, height } = await handleImageUrl(url);
     const result = await this.imageRepository.updateImage(
       {
-        uuid,
+        uuid: id,
       },
       {
         width,
@@ -243,8 +247,10 @@ export class ImageResolver {
   @Mutation(() => ImageNode, { name: "setImageUrl" })
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => DeleteImageResponse, { name: "deleteImage" })
-  async delete(@Arg("uuid") uuid: string): Promise<DeleteImageResponse> {
-    const result = await this.imageRepository.deleteImage({ uuid });
+  async delete(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<DeleteImageResponse> {
+    const result = await this.imageRepository.deleteImage({ uuid: id });
 
     if (result == null) {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");

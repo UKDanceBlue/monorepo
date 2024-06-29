@@ -130,8 +130,8 @@ export class FeedResolver {
   }
 
   @FieldResolver(() => ImageNode, { nullable: true })
-  async image(@Root() { id: uuid }: FeedNode) {
-    const row = await this.feedRepository.getFeedItemImage({ uuid });
+  async image(@Root() { id: { id } }: FeedNode) {
+    const row = await this.feedRepository.getFeedItemImage({ uuid: id });
     if (row == null) {
       return null;
     }

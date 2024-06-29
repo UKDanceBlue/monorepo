@@ -1,10 +1,12 @@
 import type { NotificationError } from "@prisma/client";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessLevel,
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
+  GlobalIdScalar,
   NotificationDeliveryNode,
   NotificationNode,
   SortDirection,
@@ -230,10 +232,10 @@ export class NotificationResolver {
   })
   @Query(() => GetNotificationByUuidResponse, { name: "notification" })
   async getByUuid(
-    @Arg("uuid") uuid: string
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<GetNotificationByUuidResponse> {
     const row = await this.notificationRepository.findNotificationByUnique({
-      uuid,
+      uuid: id,
     });
 
     if (row == null) {
@@ -369,9 +371,11 @@ export class NotificationResolver {
     name: "sendNotification",
     description: "Send a notification immediately.",
   })
-  async send(@Arg("uuid") uuid: string): Promise<SendNotificationResponse> {
+  async send(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<SendNotificationResponse> {
     const databaseNotification =
-      await this.notificationRepository.findNotificationByUnique({ uuid });
+      await this.notificationRepository.findNotificationByUnique({ uuid: id });
 
     if (databaseNotification == null) {
       throw new DetailedError(ErrorCode.NotFound, "Notification not found");
@@ -398,11 +402,11 @@ export class NotificationResolver {
     name: "scheduleNotification",
   })
   async schedule(
-    @Arg("uuid") uuid: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("sendAt") sendAt: Date
   ): Promise<ScheduleNotificationResponse> {
     const notification =
-      await this.notificationRepository.findNotificationByUnique({ uuid });
+      await this.notificationRepository.findNotificationByUnique({ uuid: id });
 
     if (notification == null) {
       throw new DetailedError(ErrorCode.NotFound, "Notification not found");
@@ -432,10 +436,10 @@ export class NotificationResolver {
     name: "acknowledgeDeliveryIssue",
   })
   async acknowledgeDeliveryIssue(
-    @Arg("uuid") uuid: string
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<AcknowledgeDeliveryIssueResponse> {
     const notification =
-      await this.notificationRepository.findNotificationByUnique({ uuid });
+      await this.notificationRepository.findNotificationByUnique({ uuid: id });
 
     if (notification == null) {
       throw new DetailedError(ErrorCode.NotFound, "Notification not found");
@@ -463,10 +467,10 @@ export class NotificationResolver {
     name: "abortScheduledNotification",
   })
   async abortScheduled(
-    @Arg("uuid") uuid: string
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<AbortScheduledNotificationResponse> {
     const notification =
-      await this.notificationRepository.findNotificationByUnique({ uuid });
+      await this.notificationRepository.findNotificationByUnique({ uuid: id });
 
     if (notification == null) {
       throw new DetailedError(ErrorCode.NotFound, "Notification not found");
@@ -499,7 +503,7 @@ export class NotificationResolver {
   })
   @Mutation(() => DeleteNotificationResponse, { name: "deleteNotification" })
   async delete(
-    @Arg("uuid") uuid: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("force", {
       nullable: true,
       description:
@@ -508,7 +512,7 @@ export class NotificationResolver {
     force?: boolean
   ): Promise<DeleteNotificationResponse> {
     const notification =
-      await this.notificationRepository.findNotificationByUnique({ uuid });
+      await this.notificationRepository.findNotificationByUnique({ uuid: id });
 
     if (notification == null) {
       throw new DetailedError(ErrorCode.NotFound, "Notification not found");
@@ -532,8 +536,12 @@ export class NotificationResolver {
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @FieldResolver(() => Int, { name: "deliveryCount" })
-  async deliveryCount(@Root() { id: uuid }: NotificationNode): Promise<number> {
-    return this.notificationRepository.countDeliveriesForNotification({ uuid });
+  async deliveryCount(
+    @Root() { id: { id } }: NotificationNode
+  ): Promise<number> {
+    return this.notificationRepository.countDeliveriesForNotification({
+      uuid: id,
+    });
   }
 
   @AccessControl({
@@ -543,11 +551,11 @@ export class NotificationResolver {
     name: "deliveryIssueCount",
   })
   async deliveryIssueCount(
-    @Root() { id: uuid }: NotificationNode
+    @Root() { id: { id } }: NotificationNode
   ): Promise<NotificationDeliveryIssueCount> {
     const issues =
       await this.notificationRepository.countFailedDeliveriesForNotification({
-        uuid,
+        uuid: id,
       });
 
     const retVal = new NotificationDeliveryIssueCount();
@@ -568,11 +576,11 @@ export class NotificationDeliveryResolver {
     name: "notification",
   })
   async getNotificationForDelivery(
-    @Root() { id: uuid }: NotificationDeliveryNode
+    @Root() { id: { id } }: NotificationDeliveryNode
   ): Promise<NotificationNode> {
     const notification =
       await this.notificationDeliveryRepository.findNotificationForDelivery({
-        uuid,
+        uuid: id,
       });
 
     if (notification == null) {

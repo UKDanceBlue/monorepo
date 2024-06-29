@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessLevel,
@@ -6,6 +7,7 @@ import {
   ErrorCode,
   EventNode,
   FilteredListQueryArgs,
+  GlobalIdScalar,
   ImageNode,
   IntervalISO,
   SortDirection,
@@ -200,8 +202,10 @@ export class EventResolver {
     private readonly fileManager: FileManager
   ) {}
   @Query(() => GetEventByUuidResponse, { name: "event" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<GetEventByUuidResponse> {
-    const row = await this.eventRepository.findEventByUnique({ uuid });
+  async getByUuid(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<GetEventByUuidResponse> {
+    const row = await this.eventRepository.findEventByUnique({ uuid: id });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
@@ -280,14 +284,16 @@ export class EventResolver {
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => DeleteEventResponse, { name: "deleteEvent" })
-  async delete(@Arg("uuid") uuid: string): Promise<DeleteEventResponse> {
-    const row = await this.eventRepository.deleteEvent({ uuid });
+  async delete(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<DeleteEventResponse> {
+    const row = await this.eventRepository.deleteEvent({ uuid: id });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
 
-    auditLogger.sensitive("Event deleted", { uuid });
+    auditLogger.sensitive("Event deleted", { uuid: id });
 
     return DeleteEventResponse.newOk(true);
   }
@@ -295,11 +301,11 @@ export class EventResolver {
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => SetEventResponse, { name: "setEvent" })
   async set(
-    @Arg("uuid") uuid: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetEventInput
   ): Promise<SetEventResponse> {
     const row = await this.eventRepository.updateEvent(
-      { uuid },
+      { uuid: id },
       {
         title: input.title,
         summary: input.summary,
@@ -396,7 +402,7 @@ export class EventResolver {
   @FieldResolver(() => [ImageNode])
   async images(@Root() event: EventNode): Promise<ImageNode[]> {
     const rows = await this.eventImageRepository.findEventImagesByEventUnique({
-      uuid: event.id,
+      uuid: event.id.id,
     });
 
     return Promise.all(

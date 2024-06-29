@@ -1,3 +1,4 @@
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessControlParam,
@@ -5,6 +6,7 @@ import {
   CommitteeRole,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
+  GlobalIdScalar,
   MembershipPositionType,
   PersonNode,
 } from "@ukdanceblue/common";
@@ -61,7 +63,7 @@ export class FundraisingAssignmentResolver {
   @AccessControl(fundraisingAccess)
   @Query(() => FundraisingAssignmentNode)
   async fundraisingAssignment(
-    @Arg("id") id: string
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<Promise<FundraisingAssignmentNode>>> {
     const assignment =
       await this.fundraisingEntryRepository.findAssignmentByUnique({
@@ -91,7 +93,7 @@ export class FundraisingAssignmentResolver {
   @AccessControl(fundraisingAccess)
   @Mutation(() => FundraisingAssignmentNode)
   async updateFundraisingAssignment(
-    @Arg("id") id: string,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") { amount }: UpdateFundraisingAssignmentInput
   ): Promise<ConcreteResult<Promise<FundraisingAssignmentNode>>> {
     const assignment = await this.fundraisingEntryRepository.updateAssignment(
@@ -105,7 +107,7 @@ export class FundraisingAssignmentResolver {
   @AccessControl(fundraisingAccess)
   @Mutation(() => FundraisingAssignmentNode)
   async deleteFundraisingAssignment(
-    @Arg("id") id: string
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<Promise<FundraisingAssignmentNode>>> {
     const assignment = await this.fundraisingEntryRepository.deleteAssignment({
       uuid: id,
@@ -115,7 +117,7 @@ export class FundraisingAssignmentResolver {
   }
 
   @AccessControl<never, PersonNode>(globalFundraisingAccessParam, {
-    custom: async (_, { teamMemberships }, { id }) => {
+    custom: async (_, { teamMemberships }, { id: { id } }) => {
       const personRepository = Container.get(PersonRepository);
       const memberships =
         (await personRepository.findMembershipsOfPerson(
@@ -146,10 +148,10 @@ export class FundraisingAssignmentResolver {
       "The person assigned to this assignment, only null when access is denied",
   })
   async person(
-    @Root() assignment: FundraisingAssignmentNode
+    @Root() { id: { id } }: FundraisingAssignmentNode
   ): Promise<ConcreteResult<Promise<PersonNode>>> {
     const person = await this.fundraisingEntryRepository.getPersonForAssignment(
-      { uuid: assignment.id }
+      { uuid: id }
     );
     return person.map((person) =>
       personModelToResource(person, this.personRepository)
@@ -158,10 +160,10 @@ export class FundraisingAssignmentResolver {
 
   @FieldResolver(() => FundraisingEntryNode)
   async entry(
-    @Root() assignment: FundraisingAssignmentNode
+    @Root() { id: { id } }: FundraisingAssignmentNode
   ): Promise<ConcreteResult<Promise<FundraisingEntryNode>>> {
     const entry = await this.fundraisingEntryRepository.getEntryForAssignment({
-      uuid: assignment.id,
+      uuid: id,
     });
     return entry.map(fundraisingEntryModelToNode);
   }

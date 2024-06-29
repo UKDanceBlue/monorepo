@@ -1,4 +1,4 @@
-import type { OptionalToNullable } from "@ukdanceblue/common";
+import type { GlobalId, OptionalToNullable } from "@ukdanceblue/common";
 import * as Common from "@ukdanceblue/common";
 import {
   AccessControl,
@@ -9,6 +9,7 @@ import {
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
+  GlobalIdScalar,
   MembershipNode,
   PointEntryNode,
   SortDirection,
@@ -156,8 +157,10 @@ export class TeamResolver {
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
   @Query(() => SingleTeamResponse, { name: "team" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<SingleTeamResponse> {
-    const row = await this.teamRepository.findTeamByUnique({ uuid });
+  async getByUuid(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<SingleTeamResponse> {
+    const row = await this.teamRepository.findTeamByUnique({ uuid: id });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Team not found");
@@ -263,13 +266,13 @@ export class TeamResolver {
   )
   @Mutation(() => SingleTeamResponse, { name: "setTeam" })
   async set(
-    @Arg("uuid") uuid: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetTeamInput
   ): Promise<SingleTeamResponse> {
     const row = await this.teamRepository.updateTeam(
-      { uuid },
+      { uuid: id },
       {
-        uuid,
+        uuid: id,
         name: input.name ?? undefined,
         type: input.type ?? undefined,
         legacyStatus: input.legacyStatus ?? undefined,
@@ -299,8 +302,10 @@ export class TeamResolver {
     }
   )
   @Mutation(() => DeleteTeamResponse, { name: "deleteTeam" })
-  async delete(@Arg("uuid") uuid: string): Promise<DeleteTeamResponse> {
-    const row = await this.teamRepository.deleteTeam({ uuid });
+  async delete(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<DeleteTeamResponse> {
+    const row = await this.teamRepository.deleteTeam({ uuid: id });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Team not found");
@@ -322,9 +327,9 @@ export class TeamResolver {
     }
   )
   @FieldResolver(() => [MembershipNode])
-  async members(@Root() team: TeamNode): Promise<MembershipNode[]> {
+  async members(@Root() { id: { id } }: TeamNode): Promise<MembershipNode[]> {
     const memberships = await this.teamRepository.findMembersOfTeam({
-      uuid: team.id,
+      uuid: id,
     });
 
     return memberships.map((row) => membershipModelToResource(row));
@@ -334,9 +339,9 @@ export class TeamResolver {
   @FieldResolver(() => [MembershipNode], {
     deprecationReason: "Just query the members field and filter by role",
   })
-  async captains(@Root() team: TeamNode): Promise<MembershipNode[]> {
+  async captains(@Root() { id: { id } }: TeamNode): Promise<MembershipNode[]> {
     const memberships = await this.teamRepository.findMembersOfTeam(
-      { uuid: team.id },
+      { uuid: id },
       { captainsOnly: true }
     );
 
@@ -356,9 +361,11 @@ export class TeamResolver {
     }
   )
   @FieldResolver(() => [PointEntryNode])
-  async pointEntries(@Root() team: TeamNode): Promise<PointEntryNode[]> {
+  async pointEntries(
+    @Root() { id: { id } }: TeamNode
+  ): Promise<PointEntryNode[]> {
     const rows = await this.teamRepository.getTeamPointEntries({
-      uuid: team.id,
+      uuid: id,
     });
 
     return rows.map((row) => pointEntryModelToResource(row));
@@ -366,9 +373,9 @@ export class TeamResolver {
 
   @AccessControl({ accessLevel: AccessLevel.Public })
   @FieldResolver(() => Int)
-  async totalPoints(@Root() team: TeamNode): Promise<number> {
+  async totalPoints(@Root() { id: { id } }: TeamNode): Promise<number> {
     const result = await this.teamRepository.getTotalTeamPoints({
-      uuid: team.id,
+      uuid: id,
     });
 
     return result._sum.points ?? 0;
@@ -376,8 +383,10 @@ export class TeamResolver {
 
   @AccessControl({ accessLevel: AccessLevel.Public })
   @FieldResolver(() => Common.MarathonNode)
-  async marathon(@Root() team: TeamNode): Promise<Common.MarathonNode> {
-    const result = await this.teamRepository.getMarathon({ uuid: team.id });
+  async marathon(
+    @Root() { id: { id } }: TeamNode
+  ): Promise<Common.MarathonNode> {
+    const result = await this.teamRepository.getMarathon({ uuid: id });
 
     if (result == null) {
       throw new DetailedError(ErrorCode.NotFound, "Team not found");
@@ -402,7 +411,7 @@ export class TeamResolver {
   })
   @FieldResolver(() => ListFundraisingEntriesResponse)
   async fundraisingEntries(
-    @Root() team: TeamNode,
+    @Root() { id: { id } }: TeamNode,
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
   ): Promise<ListFundraisingEntriesResponse> {
     const entries = await this.fundraisingEntryRepository.listEntries(
@@ -421,7 +430,7 @@ export class TeamResolver {
       },
       {
         // EXTREMELY IMPORTANT FOR SECURITY
-        forTeam: { uuid: team.id },
+        forTeam: { uuid: id },
       }
     );
     const count = await this.fundraisingEntryRepository.countEntries({

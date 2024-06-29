@@ -1,7 +1,9 @@
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
+  GlobalIdScalar,
   PersonNode,
   PointEntryNode,
   PointOpportunityNode,
@@ -104,10 +106,10 @@ export class PointEntryResolver {
 
   @Query(() => GetPointEntryByUuidResponse, { name: "pointEntry" })
   async getByUuid(
-    @Arg("uuid") uuid: string
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<GetPointEntryByUuidResponse> {
     const model = await this.pointEntryRepository.findPointEntryByUnique({
-      uuid,
+      uuid: id,
     });
 
     if (model == null) {
@@ -168,7 +170,9 @@ export class PointEntryResolver {
   }
 
   @Mutation(() => DeletePointEntryResponse, { name: "deletePointEntry" })
-  async delete(@Arg("uuid") id: string): Promise<DeletePointEntryResponse> {
+  async delete(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<DeletePointEntryResponse> {
     await this.pointEntryRepository.deletePointEntry({ uuid: id });
 
     return DeletePointEntryResponse.newOk(true);
@@ -176,19 +180,19 @@ export class PointEntryResolver {
 
   @FieldResolver(() => PersonNode, { nullable: true })
   async personFrom(
-    @Root() pointEntry: PointEntryNode
+    @Root() { id: { id } }: PointEntryNode
   ): Promise<PersonNode | null> {
     const model = await this.pointEntryRepository.getPointEntryPersonFrom({
-      uuid: pointEntry.id,
+      uuid: id,
     });
 
     return model ? personModelToResource(model, this.personRepository) : null;
   }
 
   @FieldResolver(() => TeamNode)
-  async team(@Root() pointEntry: PointEntryNode): Promise<TeamNode> {
+  async team(@Root() { id: { id } }: PointEntryNode): Promise<TeamNode> {
     const model = await this.pointEntryRepository.getPointEntryTeam({
-      uuid: pointEntry.id,
+      uuid: id,
     });
 
     if (model == null) {
@@ -200,10 +204,10 @@ export class PointEntryResolver {
 
   @FieldResolver(() => PointOpportunityNode, { nullable: true })
   async pointOpportunity(
-    @Root() pointEntry: PointEntryNode
+    @Root() { id: { id } }: PointEntryNode
   ): Promise<PointOpportunityNode | null> {
     const model = await this.pointEntryRepository.getPointEntryOpportunity({
-      uuid: pointEntry.id,
+      uuid: id,
     });
 
     return model ? pointOpportunityModelToResource(model) : null;
