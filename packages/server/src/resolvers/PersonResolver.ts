@@ -33,6 +33,7 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
+import { NotFoundError } from "../lib/error/direct.js";
 import { CatchableConcreteError } from "../lib/formatError.js";
 import { auditLogger } from "../lib/logging/auditLogging.js";
 import { DBFundsRepository } from "../repositories/fundraising/DBFundsRepository.js";
@@ -70,9 +71,9 @@ class CreatePersonResponse extends AbstractGraphQLCreatedResponse<PersonNode> {
 @ObjectType("GetPersonResponse", {
   implements: AbstractGraphQLOkResponse<PersonNode>,
 })
-class GetPersonResponse extends AbstractGraphQLOkResponse<PersonNode | null> {
+class GetPersonResponse extends AbstractGraphQLOkResponse<PersonNode> {
   @Field(() => PersonNode, { nullable: true })
-  data!: PersonNode | null;
+  data!: PersonNode;
 }
 @ObjectType("GetMembershipResponse", {
   implements: AbstractGraphQLOkResponse<MembershipNode>,
@@ -175,12 +176,10 @@ export class PersonResolver {
     const row = await this.personRepository.findPersonByUnique({ uuid: id });
 
     if (row == null) {
-      return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
-        null
-      );
+      throw new CatchableConcreteError(new NotFoundError({ what: "Person" }));
     }
 
-    return GetPersonResponse.newOk<PersonNode | null, GetPersonResponse>(
+    return GetPersonResponse.newOk<PersonNode, GetPersonResponse>(
       await personModelToResource(row, this.personRepository)
     );
   }

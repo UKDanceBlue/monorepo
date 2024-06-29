@@ -1,3 +1,6 @@
+import type { Result } from "true-myth";
+import { err, ok } from "true-myth/result";
+
 export abstract class ConcreteError {
   abstract get message(): string;
   get detailedMessage(): string {
@@ -54,4 +57,14 @@ export type BasicError = JsError | UnknownError;
 
 export function toBasicError(error: unknown): BasicError {
   return error instanceof Error ? new JsError(error) : new UnknownError(error);
+}
+
+export async function flipPromise<T, E>(
+  r:
+    | Result<Promise<T>, Promise<E>>
+    | Result<T, Promise<E>>
+    | Result<Promise<T>, E>
+    | Result<T, E>
+): Promise<Result<T, E>> {
+  return r.isOk ? ok<T, E>(await r.value) : err<T, E>(await r.error);
 }

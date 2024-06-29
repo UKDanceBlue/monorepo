@@ -10,6 +10,7 @@ import {
   MembershipPositionType,
   PersonNode,
 } from "@ukdanceblue/common";
+import { map } from "true-myth/result";
 import {
   Arg,
   Field,
@@ -22,6 +23,7 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
+import { flipPromise } from "../lib/error/error.js";
 import { ConcreteResult } from "../lib/error/result.js";
 import { FundraisingEntryRepository } from "../repositories/fundraising/FundraisingRepository.js";
 import { fundraisingAssignmentModelToNode } from "../repositories/fundraising/fundraisingAssignmentModelToNode.js";
@@ -64,13 +66,13 @@ export class FundraisingAssignmentResolver {
   @Query(() => FundraisingAssignmentNode)
   async fundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<Promise<FundraisingAssignmentNode>>> {
+  ): Promise<ConcreteResult<FundraisingAssignmentNode>> {
     const assignment =
       await this.fundraisingEntryRepository.findAssignmentByUnique({
         uuid: id,
       });
 
-    return assignment.map(fundraisingAssignmentModelToNode);
+    return flipPromise(map(fundraisingAssignmentModelToNode, assignment));
   }
 
   @AccessControl(fundraisingAccess)

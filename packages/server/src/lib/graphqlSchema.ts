@@ -16,6 +16,7 @@ import { LoginStateResolver } from "../resolvers/LoginState.js";
 import { MarathonHourResolver } from "../resolvers/MarathonHourResolver.js";
 import { MarathonResolver } from "../resolvers/MarathonResolver.js";
 import { MembershipResolver } from "../resolvers/MembershipResolver.js";
+import { NodeResolver } from "../resolvers/NodeResolver.js";
 import {
   NotificationDeliveryResolver,
   NotificationResolver,
@@ -79,6 +80,7 @@ const resolvers = [
   FeedResolver,
   FundraisingAssignmentResolver,
   FundraisingEntryResolver,
+  NodeResolver,
 ] as const;
 
 for (const service of resolvers) {

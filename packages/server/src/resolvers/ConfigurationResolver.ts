@@ -102,6 +102,23 @@ export class ConfigurationResolver {
     return GetConfigurationResponse.newOk(configurationModelToResource(row));
   }
 
+  @Query(() => GetConfigurationResponse, {
+    name: "configuration",
+  })
+  async getByUuid(
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<GetConfigurationResponse> {
+    const row = await this.configurationRepository.findConfigurationByUnique({
+      uuid: id,
+    });
+
+    if (row == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
+    }
+
+    return GetConfigurationResponse.newOk(configurationModelToResource(row));
+  }
+
   @Query(() => GetAllConfigurationsResponse, { name: "allConfigurations" })
   async getAll(): Promise<GetAllConfigurationsResponse> {
     const rows = await this.configurationRepository.findConfigurations(null, [

@@ -4,6 +4,7 @@ import type { DateTime } from "luxon";
 import { Service } from "typedi";
 
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import { SimpleUniqueParam } from "../shared.js";
 
 import {
   buildConfigurationOrder,
@@ -35,6 +36,9 @@ export class ConfigurationRepository {
   constructor(private prisma: PrismaClient) {}
 
   // Finders
+  findConfigurationByUnique(param: SimpleUniqueParam) {
+    return this.prisma.configuration.findUnique({ where: param });
+  }
 
   findConfigurations(
     filters: readonly ConfigurationFilters[] | null | undefined,

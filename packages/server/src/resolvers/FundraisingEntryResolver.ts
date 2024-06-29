@@ -11,6 +11,7 @@ import {
   MembershipPositionType,
   SortDirection,
 } from "@ukdanceblue/common";
+import { map } from "true-myth/result";
 import {
   Arg,
   Args,
@@ -24,6 +25,8 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
+import { flipPromise } from "../lib/error/error.js";
+import { ConcreteResult } from "../lib/error/result.js";
 import { CatchableConcreteError } from "../lib/formatError.js";
 import { DBFundsRepository } from "../repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "../repositories/fundraising/FundraisingRepository.js";
@@ -95,14 +98,11 @@ export class FundraisingEntryResolver {
   @Query(() => FundraisingEntryNode)
   async fundraisingEntry(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<FundraisingEntryNode> {
+  ): Promise<ConcreteResult<FundraisingEntryNode>> {
     const entry = await this.fundraisingEntryRepository.findEntryByUnique({
       uuid: id,
     });
-    if (entry.isErr) {
-      throw new CatchableConcreteError(entry.error);
-    }
-    return fundraisingEntryModelToNode(entry.value);
+    return flipPromise(map(fundraisingEntryModelToNode, entry));
   }
 
   @AccessControl(globalFundraisingAccessParam)
