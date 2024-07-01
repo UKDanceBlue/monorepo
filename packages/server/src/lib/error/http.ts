@@ -3,6 +3,8 @@ import { getReasonPhrase } from "http-status-codes";
 
 import { ConcreteError } from "./error.js";
 
+const HttpErrorTag = Symbol("HttpError");
+type HttpErrorTag = typeof HttpErrorTag;
 export class HttpError<
   Code extends StatusCodes = StatusCodes,
 > extends ConcreteError {
@@ -16,5 +18,12 @@ export class HttpError<
 
   get expose(): boolean {
     return true;
+  }
+
+  static get Tag(): HttpErrorTag {
+    return HttpErrorTag;
+  }
+  get tag(): HttpErrorTag {
+    return HttpErrorTag;
   }
 }

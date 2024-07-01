@@ -6,6 +6,7 @@ import {
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
 import { Maybe } from "true-myth";
+import type { Just } from "true-myth/maybe";
 
 import { ConcreteError } from "./error.js";
 
@@ -16,6 +17,8 @@ type RawPrismaError =
   | PrismaClientInitializationError
   | PrismaClientValidationError;
 
+const PrismaErrorTag = Symbol("PrismaError");
+type PrismaErrorTag = typeof PrismaErrorTag;
 export abstract class PrismaError extends ConcreteError {
   readonly error: RawPrismaError;
 
@@ -34,6 +37,13 @@ export abstract class PrismaError extends ConcreteError {
 
   get expose(): boolean {
     return false;
+  }
+
+  static get Tag(): PrismaErrorTag {
+    return PrismaErrorTag;
+  }
+  get tag(): PrismaErrorTag {
+    return PrismaErrorTag;
   }
 }
 
@@ -89,6 +99,8 @@ export type SomePrismaError =
   | PrismaUnknownRequestError
   | PrismaValidationError;
 
+export function toPrismaError(error: RawPrismaError): Just<SomePrismaError>;
+export function toPrismaError(error: unknown): Maybe<SomePrismaError>;
 export function toPrismaError(error: unknown): Maybe<SomePrismaError> {
   if (error instanceof PrismaClientInitializationError) {
     return Maybe.of(new PrismaInitializationError(error));

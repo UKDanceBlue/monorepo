@@ -10,8 +10,11 @@ export abstract class ConcreteError {
   get stack(): string | undefined {
     return undefined;
   }
+  abstract get tag(): unknown;
 }
 
+const JsErrorTag = Symbol("JsError");
+type JsErrorTag = typeof JsErrorTag;
 export class JsError extends ConcreteError {
   readonly error: Error;
 
@@ -31,8 +34,18 @@ export class JsError extends ConcreteError {
   get stack(): string | undefined {
     return this.error.stack;
   }
+
+  static get Tag(): JsErrorTag {
+    return JsErrorTag;
+  }
+
+  get tag(): JsErrorTag {
+    return JsErrorTag;
+  }
 }
 
+const UnknownErrorTag = Symbol("UnknownError");
+type UnknownErrorTag = typeof UnknownErrorTag;
 export class UnknownError extends ConcreteError {
   readonly #message: string = "Unknown error";
 
@@ -50,6 +63,13 @@ export class UnknownError extends ConcreteError {
 
   get expose(): boolean {
     return false;
+  }
+
+  static get Tag(): UnknownErrorTag {
+    return UnknownErrorTag;
+  }
+  get tag(): UnknownErrorTag {
+    return UnknownErrorTag;
   }
 }
 
