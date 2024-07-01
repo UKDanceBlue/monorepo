@@ -8,7 +8,7 @@ export const EventEditorFragment = graphql(/* GraphQL */ `
     description
     location
     occurrences {
-      uuid
+      id
       interval {
         start
         end
@@ -26,7 +26,7 @@ export const EventEditorFragment = graphql(/* GraphQL */ `
 `);
 
 export const eventEditorDocument = graphql(/* GraphQL */ `
-  mutation SaveEvent($uuid: String!, $input: SetEventInput!) {
+  mutation SaveEvent($uuid: GlobalId!, $input: SetEventInput!) {
     setEvent(uuid: $uuid, input: $input) {
       data {
         ...EventEditorFragment

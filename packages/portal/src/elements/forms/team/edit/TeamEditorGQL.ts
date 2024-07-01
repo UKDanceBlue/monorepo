@@ -14,7 +14,7 @@ export const TeamEditorFragment = graphql(/* GraphQL */ `
 `);
 
 export const teamEditorDocument = graphql(/* GraphQL */ `
-  mutation TeamEditor($uuid: String!, $input: SetTeamInput!) {
+  mutation TeamEditor($uuid: GlobalId!, $input: SetTeamInput!) {
     setTeam(uuid: $uuid, input: $input) {
       ok
     }

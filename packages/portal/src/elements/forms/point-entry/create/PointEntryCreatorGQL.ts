@@ -11,7 +11,7 @@ export const createPointEntryDocument = graphql(/* GraphQL */ `
 `);
 
 export const getPersonByUuidDocument = graphql(/* GraphQL */ `
-  query GetPersonByUuid($uuid: String!) {
+  query GetPersonByUuid($uuid: GlobalId!) {
     person(uuid: $uuid) {
       data {
         id

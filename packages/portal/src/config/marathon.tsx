@@ -24,7 +24,7 @@ const latestMarathonDocument = graphql(/* GraphQL */ `
 `);
 
 const selectedMarathonDocument = graphql(/* GraphQL */ `
-  query SelectedMarathon($marathonId: String!) {
+  query SelectedMarathon($marathonId: GlobalId!) {
     marathon(uuid: $marathonId) {
       id
       year

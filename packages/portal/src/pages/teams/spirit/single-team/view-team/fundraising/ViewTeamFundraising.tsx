@@ -5,7 +5,7 @@ import { Flex } from "antd";
 import { useQuery } from "urql";
 
 const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
-  query ViewTeamFundraisingDocument($teamUuid: String!) {
+  query ViewTeamFundraisingDocument($teamUuid: GlobalId!) {
     team(uuid: $teamUuid) {
       data {
         # TODO: Add filtering and pagination

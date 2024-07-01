@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useMutation } from "urql";
 
 const deleteTeamDocument = graphql(/* GraphQL */ `
-  mutation DeleteTeam($uuid: String!) {
+  mutation DeleteTeam($uuid: GlobalId!) {
     deleteTeam(uuid: $uuid) {
       ok
     }

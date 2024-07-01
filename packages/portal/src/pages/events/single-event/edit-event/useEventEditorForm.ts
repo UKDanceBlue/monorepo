@@ -43,7 +43,7 @@ export function useEventEditorForm(
       description: eventData?.description || null,
       occurrences:
         eventData?.occurrences.map((occurrence) => ({
-          uuid: occurrence.uuid,
+          uuid: occurrence.id,
           interval: intervalFromSomething(occurrence.interval),
           fullDay: occurrence.fullDay,
         })) ?? [],

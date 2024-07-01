@@ -5,7 +5,7 @@ import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 import { useQuery } from "urql";
 
 const viewPersonPageDocument = graphql(/* GraphQL */ `
-  query ViewPersonPage($uuid: String!) {
+  query ViewPersonPage($uuid: GlobalId!) {
     person(uuid: $uuid) {
       data {
         ...PersonViewerFragment

@@ -13,7 +13,7 @@ import type { DateTime } from "luxon";
 import { useMutation, useQuery } from "urql";
 
 const editMarathonHourDataDocument = graphql(/* GraphQL */ `
-  query EditMarathonHourData($marathonHourUuid: String!) {
+  query EditMarathonHourData($marathonHourUuid: GlobalId!) {
     marathonHour(uuid: $marathonHourUuid) {
       details
       durationInfo
@@ -24,7 +24,7 @@ const editMarathonHourDataDocument = graphql(/* GraphQL */ `
 `);
 
 const editMarathonHourDocument = graphql(/* GraphQL */ `
-  mutation EditMarathonHour($input: SetMarathonHourInput!, $uuid: String!) {
+  mutation EditMarathonHour($input: SetMarathonHourInput!, $uuid: GlobalId!) {
     setMarathonHour(input: $input, uuid: $uuid) {
       id
     }

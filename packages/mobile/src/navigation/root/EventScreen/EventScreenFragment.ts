@@ -8,7 +8,7 @@ export const EventScreenFragment = graphql(/* GraphQL */ `
     description
     location
     occurrences {
-      uuid
+      id
       interval {
         start
         end

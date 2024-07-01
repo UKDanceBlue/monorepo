@@ -151,14 +151,14 @@ const EventScreen = () => {
         )}
         <Text textAlign="center" mx={2} mb={2}>
           {eventData.occurrences.map((occurrence) => {
-            const highlighted = occurrence.uuid === occurrenceId;
+            const highlighted = occurrence.id === occurrenceId;
 
             const interval = intervalFromSomething(occurrence.interval);
             const { whenString, allDay } = stringifyInterval(interval);
 
             return (
               <Text
-                key={occurrence.uuid}
+                key={occurrence.id}
                 color={highlighted ? "darkBlue.700" : "darkBlue.500"}
                 fontWeight={highlighted ? "bold" : "normal"}
               >

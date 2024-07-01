@@ -11,7 +11,10 @@ export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
   const [{ fetching: editFetching, error: editError }, editMarathon] =
     useMutation(
       graphql(/* GraphQL */ `
-        mutation EditMarathon($input: SetMarathonInput!, $marathonId: String!) {
+        mutation EditMarathon(
+          $input: SetMarathonInput!
+          $marathonId: GlobalId!
+        ) {
           setMarathon(input: $input, uuid: $marathonId) {
             id
           }
@@ -29,7 +32,7 @@ export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
     { data: existingData, fetching: existingFetching, error: existingError },
   ] = useQuery({
     query: graphql(/* GraphQL */ `
-      query GetMarathon($marathonId: String!) {
+      query GetMarathon($marathonId: GlobalId!) {
         marathon(uuid: $marathonId) {
           year
           startDate

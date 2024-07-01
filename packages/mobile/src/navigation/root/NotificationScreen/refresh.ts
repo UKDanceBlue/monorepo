@@ -15,7 +15,7 @@ const INCOMPLETE_PAGE_TIMEOUT = 10_000;
 
 export const deviceNotificationsQuery = graphql(/* GraphQL */ `
   query DeviceNotifications(
-    $deviceUuid: String!
+    $deviceUuid: GlobalId!
     $page: Int
     $pageSize: Int
     $verifier: String!

@@ -21,7 +21,7 @@ const EventsTableFragment = graphql(/* GraphQL */ `
     title
     description
     occurrences {
-      uuid
+      id
       interval {
         start
         end
@@ -198,7 +198,7 @@ export const EventsTable = () => {
                         parseEventOccurrence(occurrence)
                       );
                     return (
-                      <li key={occurrence.uuid} style={{ listStyle: "none" }}>
+                      <li key={occurrence.id} style={{ listStyle: "none" }}>
                         <i>{startString}</i> to <i>{endString}</i>
                       </li>
                     );

@@ -14,7 +14,7 @@ import EventRow from "./EventRow";
 import { RNCAL_DATE_FORMAT } from "./constants";
 
 export const EventListRenderItem = ({
-  item: [event, occurrenceUuid],
+  item: [event, occurrenceId],
   index,
   dayIndexesRef,
   tryToNavigate,
@@ -38,7 +38,7 @@ export const EventListRenderItem = ({
 
   const occurrence = useMemo(() => {
     const occurrence = eventData.occurrences.find(
-      (occurrence) => occurrence.uuid === occurrenceUuid
+      (occurrence) => occurrence.id === occurrenceId
     );
     if (!occurrence) {
       return undefined;
@@ -47,7 +47,7 @@ export const EventListRenderItem = ({
       ...occurrence,
       interval: intervalFromSomething(occurrence.interval),
     };
-  }, [occurrenceUuid, eventData.occurrences]);
+  }, [occurrenceId, eventData.occurrences]);
 
   const eventDate = useMemo(() => {
     return occurrence?.interval.start?.toFormat(RNCAL_DATE_FORMAT);
@@ -60,8 +60,8 @@ export const EventListRenderItem = ({
   }
 
   const onPress = useCallback(() => {
-    tryToNavigate(event, occurrenceUuid);
-  }, [event, occurrenceUuid, tryToNavigate]);
+    tryToNavigate(event, occurrenceId);
+  }, [event, occurrenceId, tryToNavigate]);
 
   return useMemo(
     () => (
@@ -111,7 +111,7 @@ export const EventListRenderItem = ({
             }
           >
             <EventRow
-              key={`${eventData.id}:${occurrenceUuid}`}
+              key={`${eventData.id}:${occurrenceId}`}
               title={eventData.title}
               interval={occurrence?.interval}
               location={eventData.location ?? undefined}
@@ -129,7 +129,7 @@ export const EventListRenderItem = ({
       index,
       now,
       occurrence?.interval,
-      occurrenceUuid,
+      occurrenceId,
       onPress,
     ]
   );

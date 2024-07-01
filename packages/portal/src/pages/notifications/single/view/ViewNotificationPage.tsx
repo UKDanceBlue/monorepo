@@ -8,7 +8,7 @@ import { Button, Flex, Typography } from "antd";
 import { useQuery } from "urql";
 
 const notificationViewerDocument = graphql(/* GraphQL */ `
-  query NotificationViewer($uuid: String!) {
+  query NotificationViewer($uuid: GlobalId!) {
     notification(uuid: $uuid) {
       data {
         ...SingleNotificationFragment

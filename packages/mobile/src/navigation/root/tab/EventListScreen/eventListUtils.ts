@@ -136,7 +136,7 @@ export const splitEvents = (
     }
     const monthString = luxonDateTimeToMonthString(occurrence.interval.start);
     const existingEvents = newEvents[monthString] ?? [];
-    newEvents[monthString] = [...existingEvents, [event, occurrence.uuid]];
+    newEvents[monthString] = [...existingEvents, [event, occurrence.id]];
   }
 
   return newEvents;

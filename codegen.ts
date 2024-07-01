@@ -49,6 +49,7 @@ const config: TypeScriptPluginConfig = {
   scalars: {
     LuxonDateRange: "string",
     LuxonDuration: "string",
+    GlobalId: "string",
     ...graphqlScalarsClientDefs,
   },
   strictScalars: true,

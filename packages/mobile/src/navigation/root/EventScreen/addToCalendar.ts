@@ -78,7 +78,7 @@ export async function onAddToCalendar(
             endTimeZone: interval.end.zoneName,
             organizer: "UK DanceBlue",
             organizerEmail: "community@danceblue.org",
-            id: `${eventData.id}:${occurrence.uuid}`,
+            id: `${eventData.id}:${occurrence.id}`,
           };
         };
 
@@ -86,7 +86,7 @@ export async function onAddToCalendar(
           expoEvents.push(...eventData.occurrences.map(eventDataToExpoEvent));
         } else {
           const occurrence = eventData.occurrences.find(
-            (o) => o.uuid === occurrenceId
+            (o) => o.id === occurrenceId
           );
 
           if (!occurrence) {

@@ -5,7 +5,7 @@ import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 import { useQuery } from "urql";
 
 const notificationManagerDocument = graphql(/* GraphQL */ `
-  query NotificationManager($uuid: String!) {
+  query NotificationManager($uuid: GlobalId!) {
     notification(uuid: $uuid) {
       data {
         ...SingleNotificationFragment

@@ -5,7 +5,7 @@ import { graphql } from "@ukdanceblue/common/graphql-client-admin";
 import { useQuery } from "urql";
 
 const viewTeamPageDocument = graphql(/* GraphQL */ `
-  query EditTeamPage($uuid: String!) {
+  query EditTeamPage($uuid: GlobalId!) {
     team(uuid: $uuid) {
       data {
         ...TeamEditorFragment

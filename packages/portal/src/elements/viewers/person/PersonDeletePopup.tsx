@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useMutation } from "urql";
 
 const deletePersonDocument = graphql(/* GraphQL */ `
-  mutation DeletePerson($uuid: String!) {
+  mutation DeletePerson($uuid: GlobalId!) {
     deletePerson(uuid: $uuid) {
       ok
     }
