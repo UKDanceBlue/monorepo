@@ -1,8 +1,6 @@
 import type { GlobalId } from "@ukdanceblue/common";
 import {
   CommitteeIdentifier,
-  DetailedError,
-  ErrorCode,
   FilteredListQueryArgs,
   GlobalIdScalar,
   MarathonHourNode,
@@ -26,6 +24,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import { ConcreteResult } from "../lib/error/result.js";
 import { CommitteeRepository } from "../repositories/committee/CommitteeRepository.js";
 import { MarathonRepository } from "../repositories/marathon/MarathonRepository.js";
 import { marathonModelToResource } from "../repositories/marathon/marathonModelToResource.js";
@@ -86,7 +85,7 @@ export class MarathonResolver
   implements
     Record<
       `${CommitteeIdentifier}Team`,
-      (marathon: MarathonNode) => Promise<TeamNode>
+      (marathon: MarathonNode) => Promise<ConcreteResult<TeamNode>>
     >
 {
   constructor(
@@ -99,10 +98,7 @@ export class MarathonResolver
     const marathon = await this.marathonRepository.findMarathonByUnique({
       uuid: id,
     });
-    if (marathon == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Marathon not found");
-    }
-    return marathonModelToResource(marathon);
+    return marathon.map(marathonModelToResource);
   }
 
   @Query(() => MarathonNode)
@@ -110,10 +106,7 @@ export class MarathonResolver
     const marathon = await this.marathonRepository.findMarathonByUnique({
       year,
     });
-    if (marathon == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Marathon not found");
-    }
-    return marathonModelToResource(marathon);
+    return marathon.map(marathonModelToResource);
   }
 
   @Query(() => ListMarathonsResponse)
@@ -145,25 +138,19 @@ export class MarathonResolver
   @Query(() => MarathonNode, { nullable: true })
   async currentMarathon() {
     const marathon = await this.marathonRepository.findCurrentMarathon();
-    if (marathon == null) {
-      return null;
-    }
-    return marathonModelToResource(marathon);
+    return marathon.map(marathonModelToResource);
   }
 
   @Query(() => MarathonNode, { nullable: true })
   async latestMarathon() {
     const marathon = await this.marathonRepository.findActiveMarathon();
-    if (marathon == null) {
-      return null;
-    }
-    return marathonModelToResource(marathon);
+    return marathon.map(marathonModelToResource);
   }
 
   @Mutation(() => MarathonNode)
   async createMarathon(@Arg("input") input: CreateMarathonInput) {
     const marathon = await this.marathonRepository.createMarathon(input);
-    return marathonModelToResource(marathon);
+    return marathon.map(marathonModelToResource);
   }
 
   @Mutation(() => MarathonNode)
@@ -175,18 +162,13 @@ export class MarathonResolver
       { uuid: id },
       input
     );
-    if (marathon == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Marathon not found");
-    }
-    return marathonModelToResource(marathon);
+    return marathon.map(marathonModelToResource);
   }
 
   @Mutation(() => VoidResolver)
   async deleteMarathon(@Arg("uuid", () => GlobalIdScalar) { id }: GlobalId) {
     const marathon = await this.marathonRepository.deleteMarathon({ uuid: id });
-    if (marathon == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Marathon not found");
-    }
+    return marathon.map(marathonModelToResource);
   }
 
   @FieldResolver(() => [MarathonHourNode])
@@ -194,7 +176,7 @@ export class MarathonResolver
     const rows = await this.marathonRepository.getMarathonHours({
       uuid: id,
     });
-    return rows.map(marathonHourModelToResource);
+    return rows.map((hours) => hours.map(marathonHourModelToResource));
   }
 
   async #committeeTeam(
@@ -204,13 +186,7 @@ export class MarathonResolver
     const result = await this.committeeRepository.getCommitteeTeam(committee, {
       uuid: id,
     });
-    if (result == null) {
-      throw new DetailedError(
-        ErrorCode.NotFound,
-        "No team found for the given committee and marathon"
-      );
-    }
-    return teamModelToResource(result);
+    return result.map(teamModelToResource);
   }
 
   // Committees

@@ -34,6 +34,7 @@ import {
 import { Container, Service } from "typedi";
 
 import { NotFoundError } from "../lib/error/direct.js";
+import { ConcreteResult } from "../lib/error/result.js";
 import { CatchableConcreteError } from "../lib/formatError.js";
 import { auditLogger } from "../lib/logging/auditLogging.js";
 import { DBFundsRepository } from "../repositories/fundraising/DBFundsRepository.js";
@@ -74,13 +75,6 @@ class CreatePersonResponse extends AbstractGraphQLCreatedResponse<PersonNode> {
 class GetPersonResponse extends AbstractGraphQLOkResponse<PersonNode> {
   @Field(() => PersonNode, { nullable: true })
   data!: PersonNode;
-}
-@ObjectType("GetMembershipResponse", {
-  implements: AbstractGraphQLOkResponse<MembershipNode>,
-})
-class GetMembershipResponse extends AbstractGraphQLOkResponse<MembershipNode | null> {
-  @Field(() => MembershipNode, { nullable: true })
-  data!: MembershipNode | null;
 }
 @ObjectType("GetPeopleResponse", {
   implements: AbstractGraphQLArrayOkResponse<PersonNode>,
@@ -303,11 +297,11 @@ export class PersonResolver {
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
-  @Mutation(() => GetMembershipResponse, { name: "addPersonToTeam" })
+  @Mutation(() => MembershipNode, { name: "addPersonToTeam" })
   async assignPersonToTeam(
     @Arg("personUuid") personUuid: string,
     @Arg("teamUuid") teamUuid: string
-  ): Promise<GetMembershipResponse> {
+  ): Promise<ConcreteResult<MembershipNode>> {
     const membership = await this.membershipRepository.assignPersonToTeam({
       personParam: {
         uuid: personUuid,
@@ -318,17 +312,7 @@ export class PersonResolver {
       position: MembershipPositionType.Member,
     });
 
-    if (membership == null) {
-      return GetMembershipResponse.newOk<
-        MembershipNode | null,
-        GetMembershipResponse
-      >(null);
-    }
-
-    return GetMembershipResponse.newOk<
-      MembershipNode | null,
-      GetMembershipResponse
-    >(membershipModelToResource(membership));
+    return membership.map(membershipModelToResource);
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })

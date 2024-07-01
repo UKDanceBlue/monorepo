@@ -1,18 +1,22 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Committee, Prisma, PrismaClient, Team } from "@prisma/client";
 import {
   CommitteeIdentifier,
   CommitteeRole,
-  DetailedError,
-  ErrorCode,
   SortDirection,
 } from "@ukdanceblue/common";
+import { Result, Unit } from "true-myth";
+import { err, ok } from "true-myth/result";
 import { Service } from "typedi";
 
+import { CompositeError } from "../../lib/error/composite.js";
+import { InvariantError, NotFoundError } from "../../lib/error/direct.js";
+import { toBasicError } from "../../lib/error/error.js";
+import { toPrismaError } from "../../lib/error/prisma.js";
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
 import { MarathonRepository } from "../marathon/MarathonRepository.js";
 import { MembershipRepository } from "../membership/MembershipRepository.js";
-import type { SimpleUniqueParam } from "../shared.js";
+import type { RepositoryError, SimpleUniqueParam } from "../shared.js";
 
 import * as CommitteeDescriptions from "./committeeDescriptions.js";
 import {
@@ -54,25 +58,40 @@ export class CommitteeRepository {
 
   // Finders
 
-  findCommittees(
+  async findCommittees(
     filters: readonly CommitteeFilters[] | null | undefined,
     order: readonly [key: string, sort: SortDirection][] | null | undefined,
     limit?: number | undefined,
     offset?: number | undefined
-  ) {
-    const where = buildCommitteeWhere(filters);
-    const orderBy = buildCommitteeOrder(order);
+  ): Promise<Result<Committee[], RepositoryError>> {
+    try {
+      const where = buildCommitteeWhere(filters);
+      const orderBy = buildCommitteeOrder(order);
 
-    return this.prisma.committee.findMany({
-      where,
-      orderBy,
-      take: limit,
-      skip: offset,
-    });
+      const committees = await this.prisma.committee.findMany({
+        where,
+        orderBy,
+        take: limit,
+        skip: offset,
+      });
+
+      return ok(committees);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
   }
 
-  findCommitteeByUnique(param: CommitteeUniqueParam) {
-    return this.prisma.committee.findUnique({ where: param });
+  async findCommitteeByUnique(
+    param: CommitteeUniqueParam
+  ): Promise<Result<Committee | null, RepositoryError>> {
+    try {
+      const committee = await this.prisma.committee.findUnique({
+        where: param,
+      });
+      return ok(committee);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
   }
 
   async assignPersonToCommittee(
@@ -80,123 +99,202 @@ export class CommitteeRepository {
     committeeParam: CommitteeIdentifier,
     committeeRole: CommitteeRole,
     marathonParam?: UniqueMarathonParam
-  ) {
-    const person = await this.prisma.person.findUnique({ where: personParam });
-    if (!person) {
-      throw new DetailedError(ErrorCode.NotFound, "Person not found");
-    }
-
-    if (!marathonParam) {
-      const latestMarathon = await this.marathonRepository.findActiveMarathon();
-      if (!latestMarathon) {
-        throw new DetailedError(
-          ErrorCode.NotFound,
-          "No upcoming marathon found and no marathon provided"
-        );
-      }
-      marathonParam = { id: latestMarathon.id };
-    } else {
-      // Check if the marathon exists
-      const val =
-        await this.marathonRepository.findMarathonByUnique(marathonParam);
-      if (!val) {
-        throw new DetailedError(ErrorCode.NotFound, "Marathon not found");
-      }
-    }
-
-    const committee = await this.getCommittee(committeeParam, {
-      forMarathon: marathonParam,
-    });
-
-    for (const team of committee.correspondingTeams) {
-      // eslint-disable-next-line no-await-in-loop
-      await this.membershipRepository.assignPersonToTeam({
-        personParam: { id: person.id },
-        teamParam: { id: team.id },
-        committeeRole,
+  ): Promise<Result<Unit, RepositoryError | CompositeError<RepositoryError>>> {
+    try {
+      const person = await this.prisma.person.findUnique({
+        where: personParam,
       });
+      if (!person) {
+        return err(new NotFoundError({ what: "Person" }));
+      }
+
+      if (!marathonParam) {
+        const latestMarathon =
+          await this.marathonRepository.findActiveMarathon();
+        if (latestMarathon.isErr) {
+          return err(latestMarathon.error);
+        }
+        marathonParam = { id: latestMarathon.value.id };
+      } else {
+        const val =
+          await this.marathonRepository.findMarathonByUnique(marathonParam);
+        if (val.isErr) {
+          return err(val.error);
+        }
+      }
+
+      const committee = await this.getCommittee(committeeParam, {
+        forMarathon: marathonParam,
+      });
+
+      if (committee.isErr) {
+        return err(committee.error);
+      }
+
+      // for (const team of committee.value.correspondingTeams) {
+      //   // eslint-disable-next-line no-await-in-loop
+      //   await this.membershipRepository.assignPersonToTeam({
+      //     personParam: { id: person.id },
+      //     teamParam: { id: team.id },
+      //     committeeRole,
+      //   });
+      // }
+      const results = await Promise.allSettled(
+        committee.value.correspondingTeams.map((team) =>
+          this.membershipRepository.assignPersonToTeam({
+            personParam: { id: person.id },
+            teamParam: { id: team.id },
+            committeeRole,
+          })
+        )
+      );
+
+      const errors: RepositoryError[] = [];
+
+      for (const result of results) {
+        if (result.status === "fulfilled") {
+          if (result.value.isErr) {
+            errors.push(result.value.error);
+          }
+        } else {
+          errors.push(toBasicError(result.reason));
+        }
+      }
+
+      if (errors.length > 0) {
+        return err(new CompositeError(errors));
+      }
+
+      return ok();
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
     }
   }
 
   // Mutators
 
-  deleteCommittee(uuid: string) {
+  async deleteCommittee(
+    uuid: string
+  ): Promise<Result<Unit | null, RepositoryError>> {
     try {
-      return this.prisma.committee.delete({ where: { uuid } });
+      await this.prisma.committee.delete({ where: { uuid } });
+      return ok();
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return null;
+        return ok(null);
       } else {
-        throw error;
+        return err(
+          toPrismaError(error).unwrapOrElse(() => toBasicError(error))
+        );
       }
     }
   }
 
   // Committee getter
 
-  getCommittee(
+  async getCommittee(
     identifier: CommitteeIdentifier,
     opts: {
       forMarathon?: UniqueMarathonParam;
     } = {}
-  ) {
-    return this.prisma.committee.upsert({
-      ...CommitteeDescriptions[identifier],
-      where: { identifier },
-      include: {
-        correspondingTeams: opts.forMarathon
-          ? {
-              where: {
-                marathon: opts.forMarathon,
-              },
-            }
-          : undefined,
+  ): Promise<
+    Result<
+      Committee & {
+        correspondingTeams: Team[];
       },
-    });
+      RepositoryError
+    >
+  > {
+    try {
+      const committee = await this.prisma.committee.upsert({
+        ...CommitteeDescriptions[identifier],
+        where: { identifier },
+        include: {
+          correspondingTeams: opts.forMarathon
+            ? {
+                where: {
+                  marathon: opts.forMarathon,
+                },
+              }
+            : undefined,
+        },
+      });
+
+      return ok(committee);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
   }
 
   async getCommitteeTeam(
     committee: CommitteeIdentifier,
     marathon: UniqueMarathonParam
-  ) {
-    const result = await this.prisma.committee
-      .findUnique({ where: { identifier: committee } })
-      .correspondingTeams({
-        where: {
-          marathon,
-        },
-      });
-    if (result?.length === 1) {
-      return result[0];
-    } else if (result?.length === 0) {
-      throw new DetailedError(
-        ErrorCode.NotFound,
-        "No team found for the given committee and marathon"
-      );
-    } else {
-      throw new DetailedError(
-        ErrorCode.InternalFailure,
-        "Multiple teams found for the given committee and marathon"
-      );
+  ): Promise<Result<Team, RepositoryError | InvariantError>> {
+    try {
+      const result = await this.prisma.committee
+        .findUnique({ where: { identifier: committee } })
+        .correspondingTeams({
+          where: {
+            marathon,
+          },
+        });
+
+      if (result?.length === 1) {
+        return ok(result[0]!);
+      } else if (result?.length === 0) {
+        return err(
+          new NotFoundError({
+            what: "Team",
+            where: `Committee: ${committee}, Marathon: ${JSON.stringify(marathon)}`,
+          })
+        );
+      } else {
+        return err(
+          new InvariantError(
+            "Multiple teams found for the given committee and marathon"
+          )
+        );
+      }
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
     }
   }
 
-  getChildCommittees(identifier: CommitteeUniqueParam) {
-    return this.prisma.committee
-      .findUnique({
-        where: identifier,
-      })
-      .childCommittees();
+  async getChildCommittees(
+    identifier: CommitteeUniqueParam
+  ): Promise<Result<Committee[], RepositoryError>> {
+    try {
+      const childCommittees = await this.prisma.committee
+        .findUnique({
+          where: identifier,
+        })
+        .childCommittees();
+      if (!childCommittees) {
+        return err(new NotFoundError({ what: "Committee" }));
+      }
+
+      return ok(childCommittees);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
   }
 
-  getParentCommittee(identifier: CommitteeUniqueParam) {
-    return this.prisma.committee
-      .findUnique({
-        where: identifier,
-      })
-      .parentCommittee();
+  async getParentCommittee(
+    identifier: CommitteeUniqueParam
+  ): Promise<Result<Committee | null, RepositoryError>> {
+    try {
+      const parentCommittee = await this.prisma.committee
+        .findUnique({
+          where: identifier,
+        })
+        .parentCommittee();
+
+      return ok(parentCommittee);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
   }
 }

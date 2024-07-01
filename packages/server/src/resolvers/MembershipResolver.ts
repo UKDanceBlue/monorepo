@@ -1,13 +1,9 @@
-import {
-  DetailedError,
-  ErrorCode,
-  MembershipNode,
-  PersonNode,
-  TeamNode,
-} from "@ukdanceblue/common";
+import { MembershipNode, PersonNode, TeamNode } from "@ukdanceblue/common";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 import { Service } from "typedi";
 
+import { flipPromise } from "../lib/error/error.js";
+import { ConcreteResult } from "../lib/error/result.js";
 import { MembershipRepository } from "../repositories/membership/MembershipRepository.js";
 import { PersonRepository } from "../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
@@ -21,7 +17,9 @@ export class MembershipResolver {
   ) {}
 
   @FieldResolver(() => PersonNode)
-  async person(@Root() { id: { id } }: MembershipNode): Promise<PersonNode> {
+  async person(
+    @Root() { id: { id } }: MembershipNode
+  ): Promise<ConcreteResult<PersonNode>> {
     const row = await this.membershipRepository.findMembershipByUnique(
       { uuid: id },
       {
@@ -29,15 +27,15 @@ export class MembershipResolver {
       }
     );
 
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "$1Node not found");
-    }
-
-    return personModelToResource(row.person, this.personRepository);
+    return flipPromise(
+      row.map((row) => personModelToResource(row.person, this.personRepository))
+    );
   }
 
   @FieldResolver(() => TeamNode)
-  async team(@Root() { id: { id } }: MembershipNode): Promise<TeamNode> {
+  async team(
+    @Root() { id: { id } }: MembershipNode
+  ): Promise<ConcreteResult<TeamNode>> {
     const row = await this.membershipRepository.findMembershipByUnique(
       { uuid: id },
       {
@@ -45,10 +43,6 @@ export class MembershipResolver {
       }
     );
 
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "$1Node not found");
-    }
-
-    return teamModelToResource(row.team);
+    return row.map((row) => teamModelToResource(row.team));
   }
 }

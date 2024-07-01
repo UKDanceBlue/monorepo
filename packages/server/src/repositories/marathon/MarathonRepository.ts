@@ -1,8 +1,14 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Marathon, MarathonHour, Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
+import { Result } from "true-myth";
+import { err, ok } from "true-myth/result";
 import { Service } from "typedi";
 
+import { NotFoundError } from "../../lib/error/direct.js";
+import { toBasicError } from "../../lib/error/error.js";
+import { toPrismaError } from "../../lib/error/prisma.js";
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { RepositoryError } from "../shared.js";
 
 import {
   buildMarathonOrder,
@@ -58,21 +64,47 @@ export type UniqueMarathonParam =
 export class MarathonRepository {
   constructor(private prisma: PrismaClient) {}
 
-  findMarathonByUnique(param: UniqueMarathonParam) {
-    return this.prisma.marathon.findUnique({ where: param });
+  async findMarathonByUnique(
+    param: UniqueMarathonParam
+  ): Promise<Result<Marathon, RepositoryError>> {
+    try {
+      const row = await this.prisma.marathon.findUnique({ where: param });
+      if (!row) {
+        return err(new NotFoundError({ what: "Marathon" }));
+      }
+      return ok(row);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
   }
 
-  findCurrentMarathon() {
-    return this.prisma.marathon.findFirst({
-      orderBy: { year: "asc" },
-      where: { startDate: { lte: new Date() }, endDate: { gte: new Date() } },
-    });
+  async findCurrentMarathon(): Promise<Result<Marathon, RepositoryError>> {
+    try {
+      const marathon = await this.prisma.marathon.findFirst({
+        orderBy: { year: "asc" },
+        where: { startDate: { lte: new Date() }, endDate: { gte: new Date() } },
+      });
+      if (!marathon) {
+        return err(new NotFoundError({ what: "Marathon" }));
+      }
+      return ok(marathon);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
   }
 
-  findActiveMarathon() {
-    return this.prisma.marathon.findFirst({
-      orderBy: { year: "asc" },
-    });
+  async findActiveMarathon(): Promise<Result<Marathon, RepositoryError>> {
+    try {
+      const marathon = await this.prisma.marathon.findFirst({
+        orderBy: { year: "asc" },
+      });
+      if (!marathon) {
+        return err(new NotFoundError({ what: "Marathon" }));
+      }
+      return ok(marathon);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
   }
 
   listMarathons({
@@ -110,15 +142,21 @@ export class MarathonRepository {
     return this.prisma.marathon.count({ where });
   }
 
-  async getMarathonHours(param: UniqueMarathonParam) {
-    const rows = await this.prisma.marathon.findUnique({
-      where: param,
-      include: { hours: true },
-    });
-    return rows?.hours ?? [];
+  async getMarathonHours(
+    param: UniqueMarathonParam
+  ): Promise<Result<MarathonHour[], RepositoryError>> {
+    try {
+      const rows = await this.prisma.marathon.findUnique({
+        where: param,
+        include: { hours: true },
+      });
+      return ok(rows?.hours ?? []);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
   }
 
-  createMarathon({
+  async createMarathon({
     year,
     startDate,
     endDate,
@@ -126,17 +164,22 @@ export class MarathonRepository {
     year: string;
     startDate: string;
     endDate: string;
-  }) {
-    return this.prisma.marathon.create({
-      data: {
-        year,
-        startDate,
-        endDate,
-      },
-    });
+  }): Promise<Result<Marathon, RepositoryError>> {
+    try {
+      const marathon = await this.prisma.marathon.create({
+        data: {
+          year,
+          startDate,
+          endDate,
+        },
+      });
+      return ok(marathon);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
   }
 
-  updateMarathon(
+  async updateMarathon(
     param: UniqueMarathonParam,
     {
       year,
@@ -147,9 +190,9 @@ export class MarathonRepository {
       startDate?: string;
       endDate?: string;
     }
-  ) {
+  ): Promise<Result<Marathon, RepositoryError>> {
     try {
-      return this.prisma.marathon.update({
+      const marathon = await this.prisma.marathon.update({
         where: param,
         data: {
           year,
@@ -157,29 +200,37 @@ export class MarathonRepository {
           endDate,
         },
       });
+      return ok(marathon);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return null;
+        return err(new NotFoundError({ what: "Marathon" }));
       } else {
-        throw error;
+        return err(
+          toPrismaError(error).unwrapOrElse(() => toBasicError(error))
+        );
       }
     }
   }
 
-  deleteMarathon(param: UniqueMarathonParam) {
+  async deleteMarathon(
+    param: UniqueMarathonParam
+  ): Promise<Result<Marathon, RepositoryError>> {
     try {
-      return this.prisma.marathon.delete({ where: param });
+      const marathon = await this.prisma.marathon.delete({ where: param });
+      return ok(marathon);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return null;
+        return err(new NotFoundError({ what: "Marathon" }));
       } else {
-        throw error;
+        return err(
+          toPrismaError(error).unwrapOrElse(() => toBasicError(error))
+        );
       }
     }
   }

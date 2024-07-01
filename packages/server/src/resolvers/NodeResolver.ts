@@ -94,8 +94,7 @@ export class NodeResolver {
         return ok(data);
       }
       case MarathonNode.constructor.name: {
-        const data = await this.marathonResolver.marathon(id);
-        return ok(data);
+        return this.marathonResolver.marathon(id);
       }
       case NotificationNode.constructor.name: {
         const { data } = await this.notificationResolver.getByUuid(id);

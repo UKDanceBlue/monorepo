@@ -1,9 +1,14 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Membership, Person, PrismaClient, Team } from "@prisma/client";
 import { CommitteeRole, MembershipPositionType } from "@ukdanceblue/common";
+import { Result } from "true-myth";
+import { err, ok } from "true-myth/result";
 import { Service } from "typedi";
 
+import { NotFoundError } from "../../lib/error/direct.js";
+import { toBasicError } from "../../lib/error/error.js";
+import { toPrismaError } from "../../lib/error/prisma.js";
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type { SimpleUniqueParam } from "../shared.js";
+import type { RepositoryError, SimpleUniqueParam } from "../shared.js";
 
 const membershipBooleanKeys = [] as const;
 type MembershipBooleanKey = (typeof membershipBooleanKeys)[number];
@@ -38,50 +43,111 @@ type UniqueMembershipParam = { id: number } | { uuid: string };
 export class MembershipRepository {
   constructor(private prisma: PrismaClient) {}
 
-  findMembershipByUnique(
+  async findMembershipByUnique(
     param: UniqueMembershipParam,
-    include: Prisma.MembershipInclude
-  ) {
-    return this.prisma.membership.findUnique({ where: param, include });
+    include?: {
+      person?: false;
+      team?: false;
+    }
+  ): Promise<Result<Membership, RepositoryError>>;
+  async findMembershipByUnique(
+    param: UniqueMembershipParam,
+    include: {
+      person: true;
+      team?: false;
+    }
+  ): Promise<Result<Membership & { person: Person }, RepositoryError>>;
+  async findMembershipByUnique(
+    param: UniqueMembershipParam,
+    include: {
+      person?: false;
+      team: true;
+    }
+  ): Promise<Result<Membership & { team: Team }, RepositoryError>>;
+  async findMembershipByUnique(
+    param: UniqueMembershipParam,
+    include: {
+      person: true;
+      team: true;
+    }
+  ): Promise<
+    Result<Membership & { person: Person; team: Team }, RepositoryError>
+  >;
+  async findMembershipByUnique(
+    param: UniqueMembershipParam,
+    include?: {
+      person?: boolean;
+      team?: boolean;
+    }
+  ): Promise<
+    Result<
+      | Membership
+      | (Membership & {
+          person: Person;
+        })
+      | (Membership & {
+          team: Team;
+        })
+      | (Membership & {
+          person: Person;
+          team: Team;
+        }),
+      RepositoryError
+    >
+  > {
+    try {
+      const membership = await this.prisma.membership.findUnique({
+        where: param,
+        include,
+      });
+      if (!membership) {
+        return err(new NotFoundError({ what: "Membership" }));
+      }
+      return ok(membership);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
   }
 
   private async lookupPersonAndTeamId(
     personParam: SimpleUniqueParam,
     teamParam: SimpleUniqueParam
-  ) {
-    let personId, teamId;
-    if ("id" in personParam) {
-      personId = personParam.id;
-    } else if ("uuid" in personParam) {
-      const found = await this.prisma.person.findUnique({
-        where: { uuid: personParam.uuid },
-        select: { id: true },
-      });
-      if (found == null) {
-        return null;
+  ): Promise<Result<{ personId: number; teamId: number }, RepositoryError>> {
+    try {
+      let personId, teamId;
+      if ("id" in personParam) {
+        personId = personParam.id;
+      } else if ("uuid" in personParam) {
+        const found = await this.prisma.person.findUnique({
+          where: { uuid: personParam.uuid },
+          select: { id: true },
+        });
+        if (found == null) {
+          return err(new NotFoundError({ what: "Person" }));
+        }
+        personId = found.id;
+      } else {
+        throw new Error("Must provide either UUID or ID");
       }
-      personId = found.id;
-    } else {
-      // teamParam satisfies Record<string, never>;
-      throw new Error("Must provide either UUID or ID");
-    }
-    if ("id" in teamParam) {
-      teamId = teamParam.id;
-    } else if ("uuid" in teamParam) {
-      const found = await this.prisma.team.findUnique({
-        where: teamParam,
-        select: { id: true },
-      });
-      if (found == null) {
-        return null;
+      if ("id" in teamParam) {
+        teamId = teamParam.id;
+      } else if ("uuid" in teamParam) {
+        const found = await this.prisma.team.findUnique({
+          where: teamParam,
+          select: { id: true },
+        });
+        if (found == null) {
+          return err(new NotFoundError({ what: "Team" }));
+        }
+        teamId = found.id;
+      } else {
+        throw new Error("Must provide either UUID or ID");
       }
-      teamId = found.id;
-    } else {
-      teamParam satisfies Record<string, never>;
-      throw new Error("Must provide either UUID or ID");
-    }
 
-    return { personId, teamId };
+      return ok({ personId, teamId });
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
   }
 
   async assignPersonToTeam({
@@ -98,75 +164,84 @@ export class MembershipRepository {
     | {
         committeeRole: CommitteeRole;
       }
-  )) {
-    const result = await this.lookupPersonAndTeamId(personParam, teamParam);
-    if (result == null) {
-      return null;
-    }
-    const { personId, teamId } = result;
+  )): Promise<Result<Membership, RepositoryError>> {
+    try {
+      const result = await this.lookupPersonAndTeamId(personParam, teamParam);
+      if (result.isErr) {
+        return err(result.error);
+      }
+      const { personId, teamId } = result.value;
 
-    let position: MembershipPositionType;
-    let committeeRole: CommitteeRole | undefined;
-    if ("position" in additionalData) {
-      // eslint-disable-next-line prefer-destructuring
-      position = additionalData.position;
-    } else if ("committeeRole" in additionalData) {
-      // eslint-disable-next-line prefer-destructuring
-      committeeRole = additionalData.committeeRole;
-      position =
-        additionalData.committeeRole === CommitteeRole.Chair
-          ? MembershipPositionType.Captain
-          : MembershipPositionType.Member;
-    } else {
-      additionalData satisfies Record<string, never>;
-      throw new Error("Must provide either position or committeeRole");
-    }
+      let position: MembershipPositionType;
+      let committeeRole: CommitteeRole | undefined;
+      if ("position" in additionalData) {
+        position = additionalData.position;
+      } else if ("committeeRole" in additionalData) {
+        committeeRole = additionalData.committeeRole;
+        position =
+          additionalData.committeeRole === CommitteeRole.Chair
+            ? MembershipPositionType.Captain
+            : MembershipPositionType.Member;
+      } else {
+        throw new Error("Must provide either position or committeeRole");
+      }
 
-    return this.prisma.membership.upsert({
-      where: {
-        personId_teamId: {
-          personId,
-          teamId,
-        },
-        team: {
-          correspondingCommitteeId: null,
-        },
-      },
-      create: {
-        person: {
-          connect: {
-            id: personId,
+      const membership = await this.prisma.membership.upsert({
+        where: {
+          personId_teamId: {
+            personId,
+            teamId,
+          },
+          team: {
+            correspondingCommitteeId: null,
           },
         },
-        team: {
-          connect: {
-            id: teamId,
+        create: {
+          person: {
+            connect: {
+              id: personId,
+            },
           },
+          team: {
+            connect: {
+              id: teamId,
+            },
+          },
+          position,
+          committeeRole,
         },
-        position,
-        committeeRole,
-      },
-      update: {},
-    });
+        update: {},
+      });
+
+      return ok(membership);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
   }
 
   async removePersonFromTeam(
     personParam: SimpleUniqueParam,
     teamParam: SimpleUniqueParam
-  ) {
-    const result = await this.lookupPersonAndTeamId(personParam, teamParam);
-    if (result == null) {
-      return null;
-    }
-    const { personId, teamId } = result;
+  ): Promise<Result<Membership, RepositoryError>> {
+    try {
+      const result = await this.lookupPersonAndTeamId(personParam, teamParam);
+      if (result.isErr) {
+        return err(result.error);
+      }
+      const { personId, teamId } = result.value;
 
-    return this.prisma.membership.delete({
-      where: {
-        personId_teamId: {
-          personId,
-          teamId,
+      const membership = await this.prisma.membership.delete({
+        where: {
+          personId_teamId: {
+            personId,
+            teamId,
+          },
         },
-      },
-    });
+      });
+
+      return ok(membership);
+    } catch (error) {
+      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+    }
   }
 }

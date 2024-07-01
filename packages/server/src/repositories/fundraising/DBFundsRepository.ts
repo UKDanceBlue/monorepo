@@ -63,10 +63,10 @@ export class DBFundsRepository {
       } else {
         const marathon =
           await this.marathonRepository.findMarathonByUnique(marathonParam);
-        if (!marathon) {
-          return Result.err(new NotFoundError({ what: "Marathon" }));
+        if (marathon.isErr) {
+          return marathon.cast<Unit>();
         }
-        marathonId = marathon.id;
+        marathonId = marathon.value.id;
       }
 
       let dBFundsTeam = await this.prisma.dBFundsTeam.findUnique({
