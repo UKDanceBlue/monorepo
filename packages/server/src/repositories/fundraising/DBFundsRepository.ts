@@ -3,11 +3,11 @@ import { DateTime } from "luxon";
 import { Err, None, Ok, Option, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-import { CompositeError } from "../../lib/error/composite.js";
-import { NotFoundError } from "../../lib/error/direct.js";
-import { BasicError } from "../../lib/error/error.js";
-import { PrismaError, SomePrismaError } from "../../lib/error/prisma.js";
-import { logger } from "../../lib/logging/standardLogging.js";
+import { CompositeError } from "#error/composite.js";
+import { NotFoundError } from "#error/direct.js";
+import { BasicError } from "#error/error.js";
+import { PrismaError, SomePrismaError } from "#error/prisma.js";
+import { logger } from "#logging/standardLogging.js";
 import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
 import { MarathonRepository } from "../marathon/MarathonRepository.js";
 import { SimpleUniqueParam, handleRepositoryError } from "../shared.js";

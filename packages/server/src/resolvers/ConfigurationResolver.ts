@@ -21,9 +21,9 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { auditLogger } from "../lib/logging/auditLogging.js";
-import { ConfigurationRepository } from "../repositories/configuration/ConfigurationRepository.js";
-import { configurationModelToResource } from "../repositories/configuration/configurationModelToResource.js";
+import { auditLogger } from "#logging/auditLogging.js";
+import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
+import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
 
 import {
   AbstractGraphQLArrayOkResponse,

@@ -7,10 +7,10 @@ import {
 import { Err, None, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-import { CompositeError } from "../../lib/error/composite.js";
-import { InvariantError, NotFoundError } from "../../lib/error/direct.js";
-import { toBasicError } from "../../lib/error/error.js";
-import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import { CompositeError } from "#error/composite.js";
+import { InvariantError, NotFoundError } from "#error/direct.js";
+import { toBasicError } from "#error/error.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
 import { MarathonRepository } from "../marathon/MarathonRepository.js";
 import { MembershipRepository } from "../membership/MembershipRepository.js";

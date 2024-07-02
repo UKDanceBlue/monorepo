@@ -24,12 +24,12 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
-import { ConcreteResult } from "../lib/error/result.js";
-import { CatchableConcreteError } from "../lib/formatError.js";
-import { DBFundsRepository } from "../repositories/fundraising/DBFundsRepository.js";
-import { FundraisingEntryRepository } from "../repositories/fundraising/FundraisingRepository.js";
-import { fundraisingAssignmentModelToNode } from "../repositories/fundraising/fundraisingAssignmentModelToNode.js";
-import { fundraisingEntryModelToNode } from "../repositories/fundraising/fundraisingEntryModelToNode.js";
+import { ConcreteResult } from "#error/result.js";
+import { CatchableConcreteError } from "#lib/formatError.js";
+import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
+import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
+import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
+import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 

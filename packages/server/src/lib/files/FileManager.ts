@@ -3,8 +3,8 @@ import { MIMEType } from "util";
 import type { File } from "@prisma/client";
 import { Service } from "typedi";
 
+import { FileRepository } from "#repositories/file/fileRepository.js";
 import { serveOrigin } from "../../environment.js";
-import { FileRepository } from "../../repositories/file/fileRepository.js";
 import { logger } from "../logging/standardLogging.js";
 
 import { LocalStorageProvider } from "./storage/LocalStorageProvider.js";

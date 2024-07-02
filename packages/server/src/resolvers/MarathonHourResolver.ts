@@ -23,8 +23,8 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { MarathonHourRepository } from "../repositories/marathonHour/MarathonHourRepository.js";
-import { marathonHourModelToResource } from "../repositories/marathonHour/marathonHourModelToResource.js";
+import { MarathonHourRepository } from "#repositories/marathonHour/MarathonHourRepository.js";
+import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
 
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 

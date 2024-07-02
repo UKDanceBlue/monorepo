@@ -1,4 +1,4 @@
-import { SyslogLevels } from "./lib/logging/standardLogging.ts";
+import { SyslogLevels } from "#logging/standardLogging.ts";
 
 declare global {
   namespace NodeJS {

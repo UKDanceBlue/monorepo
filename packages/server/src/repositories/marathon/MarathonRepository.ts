@@ -3,8 +3,8 @@ import type { SortDirection } from "@ukdanceblue/common";
 import { Err, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-import { NotFoundError } from "../../lib/error/direct.js";
-import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import { NotFoundError } from "#error/direct.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import { handleRepositoryError, type RepositoryError } from "../shared.js";
 
 import {

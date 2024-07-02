@@ -28,13 +28,13 @@ import {
 } from "type-graphql";
 import { Inject, Service } from "typedi";
 
-import { NotificationScheduler } from "../jobs/NotificationScheduler.js";
-import { ExpoNotificationProvider } from "../lib/notification/ExpoNotificationProvider.js";
-import * as NotificationProviderJs from "../lib/notification/NotificationProvider.js";
-import { NotificationRepository } from "../repositories/notification/NotificationRepository.js";
-import { notificationModelToResource } from "../repositories/notification/notificationModelToResource.js";
-import { NotificationDeliveryRepository } from "../repositories/notificationDelivery/NotificationDeliveryRepository.js";
-import { notificationDeliveryModelToResource } from "../repositories/notificationDelivery/notificationDeliveryModelToResource.js";
+import { NotificationScheduler } from "#jobs/NotificationScheduler.js";
+import { ExpoNotificationProvider } from "#notification/ExpoNotificationProvider.js";
+import * as NotificationProviderJs from "#notification/NotificationProvider.js";
+import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
+import { notificationModelToResource } from "#repositories/notification/notificationModelToResource.js";
+import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
+import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
 
 import {
   AbstractGraphQLCreatedResponse,

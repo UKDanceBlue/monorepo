@@ -3,17 +3,17 @@ import Cron from "croner";
 import { Err, None, Ok, type Result } from "ts-results-es";
 import { Container } from "typedi";
 
-import { CompositeError } from "../lib/error/composite.js";
-import type { NotFoundError } from "../lib/error/direct.js";
-import { toBasicError } from "../lib/error/error.js";
-import type { PrismaError } from "../lib/error/prisma.js";
+import { CompositeError } from "#error/composite.js";
+import type { NotFoundError } from "#error/direct.js";
+import { toBasicError } from "#error/error.js";
+import type { PrismaError } from "#error/prisma.js";
 import {
   DBFundsFundraisingProvider,
   type DBFundsFundraisingProviderError,
-} from "../lib/fundraising/DbFundsProvider.js";
-import { logger } from "../lib/logging/standardLogging.js";
-import { DBFundsRepository } from "../repositories/fundraising/DBFundsRepository.js";
-import { MarathonRepository } from "../repositories/marathon/MarathonRepository.js";
+} from "#lib/fundraising/DbFundsProvider.js";
+import { logger } from "#logging/standardLogging.js";
+import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
+import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
 
 type DoSyncError =
   | NotFoundError

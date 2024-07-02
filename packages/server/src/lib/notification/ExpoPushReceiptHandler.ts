@@ -3,8 +3,8 @@ import type { ExpoPushReceipt } from "expo-server-sdk";
 import { Expo } from "expo-server-sdk";
 import { Service } from "typedi";
 
-import { DeviceRepository } from "../../repositories/device/DeviceRepository.js";
-import { NotificationDeliveryRepository } from "../../repositories/notificationDelivery/NotificationDeliveryRepository.js";
+import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
+import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
 
 @Service()
 export class ExpoPushReceiptHandler {

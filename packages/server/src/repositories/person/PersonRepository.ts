@@ -16,14 +16,13 @@ import {
 import { Err, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-import { findPersonForLogin } from "../../lib/auth/findPersonForLogin.js";
-import { ActionDeniedError } from "../../lib/error/control.js";
+import { ActionDeniedError } from "#error/control.js";
 import {
   InvalidArgumentError,
   InvariantError,
   NotFoundError,
-} from "../../lib/error/direct.js";
-import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+} from "#error/direct.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
 import {
   handleRepositoryError,
@@ -32,6 +31,8 @@ import {
 } from "../shared.js";
 
 import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
+
+import { findPersonForLogin } from "#auth/findPersonForLogin.js";
 
 const personStringKeys = ["name", "email", "linkblue"] as const;
 type PersonStringKey = (typeof personStringKeys)[number];

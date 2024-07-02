@@ -2,7 +2,7 @@ import type { Context } from "koa";
 import { generators } from "openid-client";
 import { Container } from "typedi";
 
-import { LoginFlowSessionRepository } from "../../../repositories/LoginFlowSession.js";
+import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
 
 import { makeOidcClient } from "./oidcClient.js";
 

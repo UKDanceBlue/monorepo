@@ -6,10 +6,10 @@ import type { Context } from "koa";
 import { DateTime } from "luxon";
 import { Container } from "typedi";
 
-import { makeUserJwt } from "../../../lib/auth/index.js";
-import { LoginFlowSessionRepository } from "../../../repositories/LoginFlowSession.js";
-import { PersonRepository } from "../../../repositories/person/PersonRepository.js";
-import { personModelToResource } from "../../../repositories/person/personModelToResource.js";
+import { makeUserJwt } from "#auth/index.js";
+import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
 
 import { makeOidcClient } from "./oidcClient.js";
 

@@ -9,10 +9,10 @@ import { Expo } from "expo-server-sdk";
 import { DateTime } from "luxon";
 import { Service } from "typedi";
 
+import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
+import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
+import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
 import { isDevelopment } from "../../environment.js";
-import { DeviceRepository } from "../../repositories/device/DeviceRepository.js";
-import { NotificationRepository } from "../../repositories/notification/NotificationRepository.js";
-import { NotificationDeliveryRepository } from "../../repositories/notificationDelivery/NotificationDeliveryRepository.js";
 import { logger } from "../logging/standardLogging.js";
 
 import type {

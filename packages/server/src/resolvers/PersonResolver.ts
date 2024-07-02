@@ -32,21 +32,21 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
-import { ConcreteError } from "../lib/error/error.js";
-import { ConcreteResult } from "../lib/error/result.js";
-import { CatchableConcreteError } from "../lib/formatError.js";
-import { auditLogger } from "../lib/logging/auditLogging.js";
-import { DBFundsRepository } from "../repositories/fundraising/DBFundsRepository.js";
-import { FundraisingEntryRepository } from "../repositories/fundraising/FundraisingRepository.js";
-import { fundraisingAssignmentModelToNode } from "../repositories/fundraising/fundraisingAssignmentModelToNode.js";
-import { fundraisingEntryModelToNode } from "../repositories/fundraising/fundraisingEntryModelToNode.js";
-import { MembershipRepository } from "../repositories/membership/MembershipRepository.js";
+import { ConcreteError } from "#error/error.js";
+import { ConcreteResult } from "#error/result.js";
+import { CatchableConcreteError } from "#lib/formatError.js";
+import { auditLogger } from "#logging/auditLogging.js";
+import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
+import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
+import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
+import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
+import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
 import {
   committeeMembershipModelToResource,
   membershipModelToResource,
-} from "../repositories/membership/membershipModelToResource.js";
-import { PersonRepository } from "../repositories/person/PersonRepository.js";
-import { personModelToResource } from "../repositories/person/personModelToResource.js";
+} from "#repositories/membership/membershipModelToResource.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
 
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 import {

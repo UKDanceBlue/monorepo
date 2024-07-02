@@ -20,7 +20,7 @@ import { Ok } from "ts-results-es";
 import { Arg, Query, Resolver } from "type-graphql";
 import { Service } from "typedi";
 
-import { ConcreteResult } from "../lib/error/result.js";
+import { ConcreteResult } from "#error/result.js";
 
 import { ConfigurationResolver } from "./ConfigurationResolver.js";
 import { DeviceResolver } from "./DeviceResolver.js";

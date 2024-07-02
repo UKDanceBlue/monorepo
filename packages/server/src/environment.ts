@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import { Expo } from "expo-server-sdk";
 import { Container, Token } from "typedi";
 
-import type { SyslogLevels } from "./lib/logging/standardLogging.js";
+import type { SyslogLevels } from "#logging/standardLogging.js";
 
 dotenv.config();
 

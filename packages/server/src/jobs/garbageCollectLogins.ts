@@ -1,8 +1,8 @@
 import Cron from "croner";
 import { Container } from "typedi";
 
-import { logger } from "../lib/logging/standardLogging.js";
-import { LoginFlowSessionRepository } from "../repositories/LoginFlowSession.js";
+import { logger } from "#logging/standardLogging.js";
+import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
 
 export const garbageCollectLoginFlowSessions = new Cron(
   "0 0 */6 * * *",

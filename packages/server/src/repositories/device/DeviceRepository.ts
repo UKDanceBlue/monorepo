@@ -4,10 +4,10 @@ import type { SortDirection } from "@ukdanceblue/common";
 import { Err, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-import { NotFoundError } from "../../lib/error/direct.js";
-import { CatchableConcreteError } from "../../lib/formatError.js";
-import type { NotificationAudience } from "../../lib/notification/NotificationProvider.js";
-import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import { NotFoundError } from "#error/direct.js";
+import { CatchableConcreteError } from "#lib/formatError.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { NotificationAudience } from "#notification/NotificationProvider.js";
 import { PersonRepository } from "../person/PersonRepository.js";
 import { RepositoryError } from "../shared.js";
 

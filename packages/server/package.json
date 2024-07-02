@@ -84,5 +84,17 @@
   "prisma": {
     "seed": "node ./dist/seed.js"
   },
+  "imports": {
+    "#auth/*.js": "./dist/lib/auth/*.js",
+    "#error/*.js": "./dist/lib/error/*.js",
+    "#files/*.js": "./dist/lib/files/*.js",
+    "#logging/*.js": "./dist/lib/logging/*.js",
+    "#notification/*.js": "./dist/lib/notification/*.js",
+    "#lib/*.js": "./dist/lib/*.js",
+    "#jobs/*.js": "./dist/jobs/*.js",
+    "#repositories/*.js": "./dist/repositories/*.js",
+    "#resolvers/*.js": "./dist/resolvers/*.js",
+    "#routes/*.js": "./dist/routes/*.js"
+  },
   "packageManager": "yarn@4.1.1+sha256.f3cc0eda8e5560e529c7147565b30faa43b4e472d90e8634d7134a37c7f59781"
 }

@@ -4,7 +4,7 @@ import { SortDirection } from "@ukdanceblue/common";
 import {
   dateFilterToPrisma,
   oneOfFilterToPrisma,
-} from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 import type {
   NotificationDeliveryFilters,

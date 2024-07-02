@@ -16,12 +16,12 @@ import type { DefaultState } from "koa";
 import { Ok } from "ts-results-es";
 import { Container } from "typedi";
 
-import { defaultAuthorization, parseUserJwt } from "../lib/auth/index.js";
-import { NotFoundError } from "../lib/error/direct.js";
-import type { ConcreteResult } from "../lib/error/result.js";
-import { logger } from "../lib/logging/logger.js";
-import { PersonRepository } from "../repositories/person/PersonRepository.js";
-import { personModelToResource } from "../repositories/person/personModelToResource.js";
+import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
+import { NotFoundError } from "#error/direct.js";
+import type { ConcreteResult } from "#error/result.js";
+import { logger } from "#logging/logger.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
 
 export interface GraphQLContext extends AuthorizationContext {
   contextErrors: string[];

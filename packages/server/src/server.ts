@@ -13,17 +13,17 @@ import type { DefaultState } from "koa";
 import Koa from "koa";
 import { koaBody } from "koa-body";
 
+import { logger } from "#logging/logger.js";
+import type { GraphQLContext } from "#resolvers/context.js";
+import eventsApiRouter from "#routes/api/events/index.js";
+import fileRouter from "#routes/api/file/index.js";
+import healthCheckRouter from "#routes/api/healthcheck/index.js";
+import uploadRouter from "#routes/api/upload/index.js";
 import {
   applicationHost,
   applicationPort,
   loggingLevel,
 } from "./environment.js";
-import { logger } from "./lib/logging/logger.js";
-import type { GraphQLContext } from "./resolvers/context.js";
-import eventsApiRouter from "./routes/api/events/index.js";
-import fileRouter from "./routes/api/file/index.js";
-import healthCheckRouter from "./routes/api/healthcheck/index.js";
-import uploadRouter from "./routes/api/upload/index.js";
 
 const basicLoggingPlugin: ApolloServerPlugin = {
   requestDidStart(requestContext) {

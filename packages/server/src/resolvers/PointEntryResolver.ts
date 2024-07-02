@@ -27,14 +27,14 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { NotFoundError } from "../lib/error/direct.js";
-import { ConcreteResult } from "../lib/error/result.js";
-import { PersonRepository } from "../repositories/person/PersonRepository.js";
-import { personModelToResource } from "../repositories/person/personModelToResource.js";
-import { PointEntryRepository } from "../repositories/pointEntry/PointEntryRepository.js";
-import { pointEntryModelToResource } from "../repositories/pointEntry/pointEntryModelToResource.js";
-import { pointOpportunityModelToResource } from "../repositories/pointOpportunity/pointOpportunityModelToResource.js";
-import { teamModelToResource } from "../repositories/team/teamModelToResource.js";
+import { NotFoundError } from "#error/direct.js";
+import { ConcreteResult } from "#error/result.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
+import { PointEntryRepository } from "#repositories/pointEntry/PointEntryRepository.js";
+import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
+import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
+import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
 import {
   AbstractGraphQLCreatedResponse,

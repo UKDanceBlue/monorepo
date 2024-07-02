@@ -1,8 +1,8 @@
 import Cron from "croner";
 import { Container } from "typedi";
 
-import { logger } from "../lib/logging/standardLogging.js";
-import { ExpoPushReceiptHandler } from "../lib/notification/ExpoPushReceiptHandler.js";
+import { logger } from "#logging/standardLogging.js";
+import { ExpoPushReceiptHandler } from "#notification/ExpoPushReceiptHandler.js";
 
 export const fetchPushReceipts = new Cron(
   "0 */8 * * * *",

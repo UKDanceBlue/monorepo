@@ -26,12 +26,12 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { FileManager } from "../lib/files/FileManager.js";
-import { auditLogger } from "../lib/logging/auditLogging.js";
-import { logger } from "../lib/logging/standardLogging.js";
-import { generateThumbHash } from "../lib/thumbHash.js";
-import { ImageRepository } from "../repositories/image/ImageRepository.js";
-import { imageModelToResource } from "../repositories/image/imageModelToResource.js";
+import { FileManager } from "#files/FileManager.js";
+import { generateThumbHash } from "#lib/thumbHash.js";
+import { auditLogger } from "#logging/auditLogging.js";
+import { logger } from "#logging/standardLogging.js";
+import { ImageRepository } from "#repositories/image/ImageRepository.js";
+import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
 import {
   AbstractGraphQLOkResponse,

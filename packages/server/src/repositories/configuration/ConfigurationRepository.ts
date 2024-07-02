@@ -3,7 +3,7 @@ import type { SortDirection } from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
 import { Service } from "typedi";
 
-import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import { SimpleUniqueParam } from "../shared.js";
 
 import {

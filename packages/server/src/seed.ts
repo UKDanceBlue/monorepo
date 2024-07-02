@@ -1,10 +1,10 @@
 import { CommitteeIdentifier, CommitteeRole } from "@ukdanceblue/common";
 import { Container } from "typedi";
 
+import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
+import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { isDevelopment } from "./environment.js";
-import { CommitteeRepository } from "./repositories/committee/CommitteeRepository.js";
-import { ConfigurationRepository } from "./repositories/configuration/ConfigurationRepository.js";
-import { PersonRepository } from "./repositories/person/PersonRepository.js";
 
 if (!isDevelopment) {
   throw new Error("Seeding is only allowed in development mode");

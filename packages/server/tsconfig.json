@@ -12,7 +12,19 @@
     "allowJs": true,
     "checkJs": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "paths": {
+      "#auth/*": ["./src/lib/auth/*"],
+      "#error/*": ["./src/lib/error/*"],
+      "#files/*": ["./src/lib/files/*"],
+      "#logging/*": ["./src/lib/logging/*"],
+      "#notification/*": ["./src/lib/notification/*"],
+      "#lib/*": ["./src/lib/*"],
+      "#jobs/*": ["./src/jobs/*"],
+      "#repositories/*": ["./src/repositories/*"],
+      "#resolvers/*": ["./src/resolvers/*"],
+      "#routes/*": ["./src/routes/*"]
+    }
   },
   "include": ["src"],
   "extends": "../../tsconfig.json"

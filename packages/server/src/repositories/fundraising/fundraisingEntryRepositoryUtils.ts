@@ -3,13 +3,13 @@ import { SortDirection } from "@ukdanceblue/common";
 import type { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 
-import { ActionDeniedError } from "../../lib/error/control.js";
+import { ActionDeniedError } from "#error/control.js";
 import {
   dateFilterToPrisma,
   numericFilterToPrisma,
   oneOfFilterToPrisma,
   stringFilterToPrisma,
-} from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 import type {
   FundraisingEntryFilters,
