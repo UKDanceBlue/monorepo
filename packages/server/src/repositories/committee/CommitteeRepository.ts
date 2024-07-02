@@ -7,10 +7,6 @@ import {
 import { Err, None, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-import { CompositeError } from "#error/composite.js";
-import { InvariantError, NotFoundError } from "#error/direct.js";
-import { toBasicError } from "#error/error.js";
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
 import { MarathonRepository } from "../marathon/MarathonRepository.js";
 import { MembershipRepository } from "../membership/MembershipRepository.js";
@@ -25,6 +21,10 @@ import {
   buildCommitteeOrder,
   buildCommitteeWhere,
 } from "./committeeRepositoryUtils.js";
+import { CompositeError } from "#error/composite.js";
+import { InvariantError, NotFoundError } from "#error/direct.js";
+import { toBasicError } from "#error/error.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 // Make sure that we are exporting a description for every committee
 CommitteeDescriptions[

@@ -32,6 +32,13 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
+import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import {
+  ListFundraisingEntriesArgs,
+  ListFundraisingEntriesResponse,
+  globalFundraisingAccessParam,
+} from "./FundraisingEntryResolver.js";
+import type { GraphQLContext } from "./context.js";
 import { ConcreteError } from "#error/error.js";
 import { ConcreteResult } from "#error/result.js";
 import { CatchableConcreteError } from "#lib/formatError.js";
@@ -48,13 +55,6 @@ import {
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
-import {
-  ListFundraisingEntriesArgs,
-  ListFundraisingEntriesResponse,
-  globalFundraisingAccessParam,
-} from "./FundraisingEntryResolver.js";
-import type { GraphQLContext } from "./context.js";
 
 @ObjectType("ListPeopleResponse", {
   implements: AbstractGraphQLPaginatedResponse<PersonNode>,

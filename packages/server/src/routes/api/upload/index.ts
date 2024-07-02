@@ -5,11 +5,11 @@ import type { File } from "@prisma/client";
 import { koaBody } from "koa-body";
 import { Container } from "typedi";
 
+import { maxFileSize } from "../../../environment.js";
 import { FileManager } from "#files/FileManager.js";
 import { generateThumbHash } from "#lib/thumbHash.js";
 import { logger } from "#logging/standardLogging.js";
 import { ImageRepository } from "#repositories/image/ImageRepository.js";
-import { maxFileSize } from "../../../environment.js";
 
 const uploadRouter = new Router({ prefix: "/upload" }).post(
   "/image/:uuid",

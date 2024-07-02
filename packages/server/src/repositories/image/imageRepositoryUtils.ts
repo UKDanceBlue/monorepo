@@ -1,13 +1,13 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
+import type { ImageFilters } from "./ImageRepository.ts";
 import {
   dateFilterToPrisma,
   numericFilterToPrisma,
   stringFilterToPrisma,
 } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import type { ImageFilters } from "./ImageRepository.ts";
 
 export function buildImageOrder(
   order: readonly [key: string, sort: SortDirection][] | null | undefined

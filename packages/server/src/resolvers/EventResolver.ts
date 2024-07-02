@@ -27,6 +27,11 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import {
+  AbstractGraphQLCreatedResponse,
+  AbstractGraphQLOkResponse,
+  AbstractGraphQLPaginatedResponse,
+} from "./ApiResponse.js";
 import { FileManager } from "#files/FileManager.js";
 import { auditLogger } from "#logging/auditLogging.js";
 import { EventRepository } from "#repositories/event/EventRepository.js";
@@ -37,11 +42,6 @@ import {
 import { EventImagesRepository } from "#repositories/event/images/EventImagesRepository.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
-import {
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
 
 @ObjectType("GetEventByUuidResponse", {
   implements: AbstractGraphQLOkResponse<EventNode>,

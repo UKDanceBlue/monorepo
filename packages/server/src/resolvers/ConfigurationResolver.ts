@@ -21,15 +21,15 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { auditLogger } from "#logging/auditLogging.js";
-import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
-import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
-
 import {
   AbstractGraphQLArrayOkResponse,
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
 } from "./ApiResponse.js";
+import { auditLogger } from "#logging/auditLogging.js";
+import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
+import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
+
 
 @ObjectType("GetConfigurationByUuidResponse", {
   implements: AbstractGraphQLOkResponse<ConfigurationNode>,

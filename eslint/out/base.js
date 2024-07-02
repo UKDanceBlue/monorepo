@@ -60,19 +60,18 @@ const rules = {
     "import/order": [
         "error",
         {
-            "groups": ["builtin", "external", "parent", "sibling", "index"],
-            "pathGroups": [
+            groups: ["builtin", "external", "parent", "sibling", "index"],
+            pathGroups: [
                 {
                     pattern: "@custom-lib/**",
                     group: "external",
                     position: "after",
                 },
             ],
-            "pathGroupsExcludedImportTypes": ["builtin"],
-            "alphabetize": {
+            pathGroupsExcludedImportTypes: ["builtin"],
+            alphabetize: {
                 order: "asc",
             },
-            "newlines-between": "always",
         },
     ],
     "sort-imports": ["off"],

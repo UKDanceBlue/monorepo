@@ -1,16 +1,16 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
+import type {
+  PointOpportunityFilters,
+  PointOpportunityOrderKeys,
+} from "./PointOpportunityRepository.ts";
 import {
   dateFilterToPrisma,
   oneOfFilterToPrisma,
   stringFilterToPrisma,
 } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import type {
-  PointOpportunityFilters,
-  PointOpportunityOrderKeys,
-} from "./PointOpportunityRepository.ts";
 
 export function buildPointOpportunityOrder(
   order:

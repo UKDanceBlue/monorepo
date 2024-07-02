@@ -24,6 +24,7 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
+import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 import { ConcreteResult } from "#error/result.js";
 import { CatchableConcreteError } from "#lib/formatError.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
@@ -31,7 +32,6 @@ import { FundraisingEntryRepository } from "#repositories/fundraising/Fundraisin
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 @ArgsType()
 export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<

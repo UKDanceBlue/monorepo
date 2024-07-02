@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
+import type { TeamFilters, TeamOrderKeys } from "./TeamRepository.ts";
 import {
   dateFilterToPrisma,
   numericFilterToPrisma,
@@ -8,7 +9,6 @@ import {
   stringFilterToPrisma,
 } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import type { TeamFilters, TeamOrderKeys } from "./TeamRepository.ts";
 
 export function buildTeamOrder(
   order: readonly [key: TeamOrderKeys, sort: SortDirection][] | null | undefined

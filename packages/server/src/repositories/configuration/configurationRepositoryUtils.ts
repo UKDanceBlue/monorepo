@@ -1,12 +1,12 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
+import type { ConfigurationFilters } from "./ConfigurationRepository.js";
 import {
   dateFilterToPrisma,
   stringFilterToPrisma,
 } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import type { ConfigurationFilters } from "./ConfigurationRepository.js";
 
 export function buildConfigurationOrder(
   order: readonly [key: string, sort: SortDirection][] | null | undefined

@@ -1,9 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
+import type { MembershipFilters } from "./MembershipRepository.ts";
 import { dateFilterToPrisma } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import type { MembershipFilters } from "./MembershipRepository.ts";
 
 export function buildMembershipOrder(
   order: readonly [key: string, sort: SortDirection][] | null | undefined

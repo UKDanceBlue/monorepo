@@ -3,6 +3,10 @@ import { SortDirection } from "@ukdanceblue/common";
 import type { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 
+import type {
+  FundraisingEntryFilters,
+  FundraisingEntryOrderKeys,
+} from "./FundraisingRepository.js";
 import { ActionDeniedError } from "#error/control.js";
 import {
   dateFilterToPrisma,
@@ -11,10 +15,6 @@ import {
   stringFilterToPrisma,
 } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import type {
-  FundraisingEntryFilters,
-  FundraisingEntryOrderKeys,
-} from "./FundraisingRepository.js";
 
 export function buildFundraisingEntryOrder(
   order:

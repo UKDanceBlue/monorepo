@@ -22,6 +22,7 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
+import { globalFundraisingAccessParam } from "./FundraisingEntryResolver.js";
 import { ConcreteResult } from "#error/result.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
@@ -29,7 +30,6 @@ import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisi
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 
-import { globalFundraisingAccessParam } from "./FundraisingEntryResolver.js";
 
 @InputType()
 class AssignEntryToPersonInput {

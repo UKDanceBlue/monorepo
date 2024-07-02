@@ -1,12 +1,12 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
+import type { CommitteeFilters } from "./CommitteeRepository.js";
 import {
   dateFilterToPrisma,
   oneOfFilterToPrisma,
 } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import type { CommitteeFilters } from "./CommitteeRepository.js";
 
 export function buildCommitteeOrder(
   order: readonly [key: string, sort: SortDirection][] | null | undefined

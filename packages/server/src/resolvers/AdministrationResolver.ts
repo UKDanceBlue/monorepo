@@ -4,8 +4,8 @@ import { join } from "path";
 import { AccessControl, AccessLevel } from "@ukdanceblue/common";
 import { FieldResolver, ObjectType, Query, Resolver } from "type-graphql";
 
-import { auditLoggerFileName } from "#logging/auditLogging.js";
 import { logDir } from "../environment.js";
+import { auditLoggerFileName } from "#logging/auditLogging.js";
 
 @ObjectType()
 export class Administration {

@@ -35,16 +35,6 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { CatchableConcreteError } from "#lib/formatError.js";
-import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
-import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
-import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
-import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
-import { membershipModelToResource } from "#repositories/membership/membershipModelToResource.js";
-import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
-import { TeamRepository } from "#repositories/team/TeamRepository.js";
-import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
-
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
@@ -56,6 +46,16 @@ import {
   globalFundraisingAccessParam,
 } from "./FundraisingEntryResolver.js";
 import * as Context from "./context.js";
+import { CatchableConcreteError } from "#lib/formatError.js";
+import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
+import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
+import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
+import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
+import { membershipModelToResource } from "#repositories/membership/membershipModelToResource.js";
+import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
+import { TeamRepository } from "#repositories/team/TeamRepository.js";
+import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
+
 
 @ObjectType("SingleTeamResponse", {
   implements: AbstractGraphQLOkResponse<TeamNode>,

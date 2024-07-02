@@ -16,13 +16,6 @@ import {
 import { Err, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-import { ActionDeniedError } from "#error/control.js";
-import {
-  InvalidArgumentError,
-  InvariantError,
-  NotFoundError,
-} from "#error/direct.js";
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
 import {
   handleRepositoryError,
@@ -33,6 +26,13 @@ import {
 import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
 
 import { findPersonForLogin } from "#auth/findPersonForLogin.js";
+import { ActionDeniedError } from "#error/control.js";
+import {
+  InvalidArgumentError,
+  InvariantError,
+  NotFoundError,
+} from "#error/direct.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 const personStringKeys = ["name", "email", "linkblue"] as const;
 type PersonStringKey = (typeof personStringKeys)[number];

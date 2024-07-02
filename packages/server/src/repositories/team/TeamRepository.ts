@@ -7,11 +7,11 @@ import type {
 import { TeamLegacyStatus } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
 import type { SimpleUniqueParam } from "../shared.js";
 
 import { buildTeamOrder, buildTeamWhere } from "./teamRepositoryUtils.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 const teamBooleanKeys = [] as const;
 type TeamBooleanKey = (typeof teamBooleanKeys)[number];

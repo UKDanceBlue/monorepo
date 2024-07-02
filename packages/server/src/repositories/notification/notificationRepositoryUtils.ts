@@ -1,16 +1,16 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
+import type {
+  NotificationFilters,
+  NotificationOrderKeys,
+} from "./NotificationRepository.ts";
 import {
   dateFilterToPrisma,
   oneOfFilterToPrisma,
   stringFilterToPrisma,
 } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import type {
-  NotificationFilters,
-  NotificationOrderKeys,
-} from "./NotificationRepository.ts";
 
 export function buildNotificationOrder(
   order:

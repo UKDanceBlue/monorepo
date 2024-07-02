@@ -62,12 +62,21 @@ const rules: Linter.RulesRecord = {
   "import/order": [
     "error",
     {
-      "groups": ["builtin", "external", "parent", "sibling", "index"],
+      "groups": [
+        "index",
+        "sibling",
+        "parent",
+        "internal",
+        "external",
+        "builtin",
+        "object",
+        "type",
+      ],
       "pathGroups": [
         {
-          pattern: "@custom-lib/**",
-          group: "external",
-          position: "after",
+          pattern: "#**",
+          group: "internal",
+          position: "before",
         },
       ],
       "pathGroupsExcludedImportTypes": ["builtin"],

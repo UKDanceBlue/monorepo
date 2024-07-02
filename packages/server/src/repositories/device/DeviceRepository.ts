@@ -4,14 +4,14 @@ import type { SortDirection } from "@ukdanceblue/common";
 import { Err, Result } from "ts-results-es";
 import { Service } from "typedi";
 
+import { PersonRepository } from "../person/PersonRepository.js";
+import { RepositoryError } from "../shared.js";
+import { buildDeviceOrder, buildDeviceWhere } from "./deviceRepositoryUtils.js";
 import { NotFoundError } from "#error/direct.js";
 import { CatchableConcreteError } from "#lib/formatError.js";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { NotificationAudience } from "#notification/NotificationProvider.js";
-import { PersonRepository } from "../person/PersonRepository.js";
-import { RepositoryError } from "../shared.js";
 
-import { buildDeviceOrder, buildDeviceWhere } from "./deviceRepositoryUtils.js";
 
 const deviceStringKeys = ["expoPushToken"] as const;
 type DeviceStringKey = (typeof deviceStringKeys)[number];

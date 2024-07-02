@@ -25,6 +25,10 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import {
+  AbstractGraphQLOkResponse,
+  AbstractGraphQLPaginatedResponse,
+} from "./ApiResponse.js";
 import { ConcreteResult } from "#error/result.js";
 import { auditLogger } from "#logging/auditLogging.js";
 import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
@@ -33,10 +37,6 @@ import { notificationDeliveryModelToResource } from "#repositories/notificationD
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 
-import {
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
 
 @ObjectType("GetDeviceByUuidResponse", {
   implements: AbstractGraphQLOkResponse<DeviceNode>,
