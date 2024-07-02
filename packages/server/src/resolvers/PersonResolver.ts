@@ -15,7 +15,7 @@ import {
   SortDirection,
 } from "@ukdanceblue/common";
 import { EmailAddressResolver } from "graphql-scalars";
-import { Err, Ok } from "ts-results-es";
+import { Ok, Result } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -32,7 +32,7 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
-import { flipPromise } from "../lib/error/error.js";
+import { ConcreteError } from "../lib/error/error.js";
 import { ConcreteResult } from "../lib/error/result.js";
 import { CatchableConcreteError } from "../lib/formatError.js";
 import { auditLogger } from "../lib/logging/auditLogging.js";
@@ -138,7 +138,10 @@ export class PersonResolver {
   ): Promise<ConcreteResult<PersonNode>> {
     const row = await this.personRepository.findPersonByUnique({ uuid: id });
 
-    return row.map((row) => personModelToResource(row, this.personRepository));
+    return row
+      .toAsyncResult()
+      .andThen((row) => personModelToResource(row, this.personRepository))
+      .promise;
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
@@ -150,9 +153,10 @@ export class PersonResolver {
       linkblue: linkBlueId,
     });
 
-    return row.andThen((row) =>
-      personModelToResource(row, this.personRepository)
-    );
+    return row
+      .toAsyncResult()
+      .andThen((row) => personModelToResource(row, this.personRepository))
+      .promise;
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
@@ -177,25 +181,30 @@ export class PersonResolver {
       this.personRepository.countPeople({ filters: args.filters }),
     ]);
 
-    if (rows.isErr()) {
-      return Err(rows.error);
-    }
-    if (total.isErr()) {
-      return Err(total.error);
-    }
-
-    return Ok(
-      ListPeopleResponse.newPaginated({
-        data: await Promise.all(
-          rows.value.map((row) =>
-            personModelToResource(row, this.personRepository)
+    return Result.all([
+      await rows
+        .toAsyncResult()
+        .andThen(async (rows) =>
+          Result.all(
+            await Promise.all(
+              rows.map(
+                (row) =>
+                  personModelToResource(row, this.personRepository).promise
+              )
+            )
           )
-        ),
-        total: total.value,
-        page: args.page,
-        pageSize: args.pageSize,
-      })
-    );
+        ).promise,
+      total,
+    ]).andThen<ListPeopleResponse, ConcreteError>(([rows, total]) => {
+      return Ok(
+        ListPeopleResponse.newPaginated({
+          data: rows,
+          total,
+          page: args.page,
+          pageSize: args.pageSize,
+        })
+      );
+    });
   }
 
   @Query(() => PersonNode, { name: "me", nullable: true })
@@ -210,13 +219,17 @@ export class PersonResolver {
   ): Promise<ConcreteResult<PersonNode[]>> {
     const rows = await this.personRepository.searchByName(name);
 
-    return flipPromise(
-      rows.map((rows) => {
-        return Promise.all(
-          rows.map((row) => personModelToResource(row, this.personRepository))
-        );
-      })
-    );
+    return rows
+      .toAsyncResult()
+      .andThen(async (rows) =>
+        Result.all(
+          await Promise.all(
+            rows.map(
+              (row) => personModelToResource(row, this.personRepository).promise
+            )
+          )
+        )
+      ).promise;
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
@@ -230,11 +243,10 @@ export class PersonResolver {
       linkblue: input.linkblue,
     });
 
-    return flipPromise(
-      person.map((person) =>
-        personModelToResource(person, this.personRepository)
-      )
-    );
+    return person
+      .toAsyncResult()
+      .andThen((person) => personModelToResource(person, this.personRepository))
+      .promise;
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
@@ -256,9 +268,10 @@ export class PersonResolver {
       }
     );
 
-    return flipPromise(
-      row.map((row) => personModelToResource(row, this.personRepository))
-    );
+    return row
+      .toAsyncResult()
+      .andThen((row) => personModelToResource(row, this.personRepository))
+      .promise;
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
@@ -287,10 +300,10 @@ export class PersonResolver {
   ): Promise<ConcreteResult<PersonNode>> {
     const result = await this.personRepository.deletePerson({ uuid: id });
 
-    return flipPromise(
-      result.map((row) => personModelToResource(row, this.personRepository))
-    ).then((result) =>
-      result.andThen((person) => {
+    return result
+      .toAsyncResult()
+      .andThen((row) => personModelToResource(row, this.personRepository))
+      .map((person) => {
         auditLogger.sensitive("Person deleted", {
           person: {
             name: person.name,
@@ -299,9 +312,8 @@ export class PersonResolver {
           },
         });
 
-        return Ok(person);
-      })
-    );
+        return person;
+      }).promise;
   }
 
   @AccessControl(

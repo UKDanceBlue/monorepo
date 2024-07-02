@@ -1,6 +1,3 @@
-import type { Result } from "ts-results-es";
-import { Err, Ok } from "ts-results-es";
-
 export abstract class ConcreteError {
   abstract get message(): string;
   get detailedMessage(): string {
@@ -78,4 +75,3 @@ export type BasicError = JsError | UnknownError;
 export function toBasicError(error: unknown): BasicError {
   return error instanceof Error ? new JsError(error) : new UnknownError(error);
 }
-

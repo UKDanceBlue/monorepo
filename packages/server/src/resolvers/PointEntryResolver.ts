@@ -190,7 +190,7 @@ export class PointEntryResolver {
     });
 
     return model
-      ? personModelToResource(model, this.personRepository)
+      ? personModelToResource(model, this.personRepository).promise
       : Err(new NotFoundError({ what: "Person" }));
   }
 

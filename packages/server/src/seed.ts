@@ -37,11 +37,15 @@ try {
     )
   );
 
+  if (techPeople.some((p) => p.isErr())) {
+    throw new Error("Failed to create all tech committee people");
+  }
+
   await Promise.all(
     techPeople.flatMap((person) =>
       committeeRepository.assignPersonToCommittee(
         {
-          id: person.id,
+          id: person.unwrap().id,
         },
         CommitteeIdentifier.techCommittee,
         CommitteeRole.Coordinator

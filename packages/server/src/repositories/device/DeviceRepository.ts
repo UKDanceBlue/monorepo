@@ -1,11 +1,15 @@
 import type { Person } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
+import { Err, Result } from "ts-results-es";
 import { Service } from "typedi";
 
+import { NotFoundError } from "../../lib/error/direct.js";
+import { CatchableConcreteError } from "../../lib/formatError.js";
 import type { NotificationAudience } from "../../lib/notification/NotificationProvider.js";
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import { PersonRepository } from "../person/PersonRepository.js";
+import { RepositoryError } from "../shared.js";
 
 import { buildDeviceOrder, buildDeviceWhere } from "./deviceRepositoryUtils.js";
 
@@ -37,14 +41,16 @@ export class DeviceRepository {
     });
   }
 
-  async getLastLoggedInUser(deviceUuid: string) {
+  async getLastLoggedInUser(
+    deviceUuid: string
+  ): Promise<Result<Person, RepositoryError>> {
     const device = await this.getDeviceByUuid(deviceUuid);
-
-    return device?.lastSeenPersonId == null
-      ? null
-      : this.personRepository.findPersonByUnique({
-          id: device.lastSeenPersonId,
-        });
+    if (device?.lastSeenPersonId == null) {
+      return Err(new NotFoundError({ what: "Person" }));
+    }
+    return this.personRepository.findPersonByUnique({
+      id: device.lastSeenPersonId,
+    });
   }
 
   async listDevices({
@@ -100,11 +106,13 @@ export class DeviceRepository {
     let user: Person | null = null;
 
     if (lastUserId != null) {
-      user = await this.personRepository.findPersonByUnique({
+      const userResult = await this.personRepository.findPersonByUnique({
         uuid: lastUserId,
       });
-      if (user == null) {
-        throw new Error("Last user not found");
+      if (userResult.isErr()) {
+        throw new CatchableConcreteError(userResult.error);
+      } else {
+        user = userResult.value;
       }
     }
 

@@ -1,7 +1,6 @@
 import type { IncomingMessage } from "node:http";
 
 import { AuthSource, makeUserData } from "@ukdanceblue/common";
-import createHttpError from "http-errors";
 import jsonwebtoken from "jsonwebtoken";
 import type { Context } from "koa";
 import { DateTime } from "luxon";
@@ -38,7 +37,7 @@ export const oidcCallback = async (ctx: Context) => {
         uuid: flowSessionId,
       });
     if (!session?.codeVerifier) {
-      throw new createHttpError.InternalServerError(
+      throw new Error(
         `No ${session == null ? "session" : "codeVerifier"} found`
       );
     }
@@ -54,14 +53,14 @@ export const oidcCallback = async (ctx: Context) => {
     });
     sessionDeleted = true;
     if (!tokenSet.access_token) {
-      throw new createHttpError.InternalServerError("Missing access token");
+      throw new Error("Missing access token");
     }
     const { oid: objectId, email } = tokenSet.claims();
     const decodedJwt = jsonwebtoken.decode(tokenSet.access_token, {
       json: true,
     });
     if (!decodedJwt) {
-      throw new createHttpError.InternalServerError("Error decoding JWT");
+      throw new Error("Error decoding JWT");
     }
     const {
       given_name: firstName,
@@ -78,10 +77,20 @@ export const oidcCallback = async (ctx: Context) => {
     if (typeof objectId !== "string") {
       return ctx.throw("Missing OID", 500);
     }
-    const [currentPerson] = await personRepository.findPersonForLogin(
+    const findPersonForLoginResult = await personRepository.findPersonForLogin(
       [[AuthSource.LinkBlue, objectId]],
       { email, linkblue }
     );
+
+    if (findPersonForLoginResult.isErr()) {
+      return ctx.throw(
+        findPersonForLoginResult.error.expose
+          ? findPersonForLoginResult.error.message
+          : "Error finding person",
+        500
+      );
+    }
+    const { currentPerson } = findPersonForLoginResult.value;
 
     if (
       !currentPerson.authIdPairs.some(
@@ -124,15 +133,24 @@ export const oidcCallback = async (ctx: Context) => {
       }
     );
 
-    if (!updatedPerson) {
+    if (updatedPerson.isErr()) {
       return ctx.throw("Failed to update database entry", 500);
     }
 
+    const personNode = await personModelToResource(
+      updatedPerson.value,
+      personRepository
+    ).promise;
+    if (personNode.isErr()) {
+      return ctx.throw(
+        personNode.error.expose
+          ? personNode.error.message
+          : "Error creating person node",
+        500
+      );
+    }
     const jwt = makeUserJwt(
-      makeUserData(
-        await personModelToResource(updatedPerson, personRepository),
-        AuthSource.LinkBlue
-      )
+      makeUserData(personNode.value, AuthSource.LinkBlue)
     );
     let redirectTo = session.redirectToAfterLogin;
     if (session.sendToken) {

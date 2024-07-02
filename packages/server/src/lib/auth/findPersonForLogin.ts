@@ -175,5 +175,5 @@ export async function findPersonForLogin(
 
     created = true;
   }
-  return [currentPerson, created] as const;
+  return { currentPerson, created } as const;
 }

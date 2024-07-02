@@ -13,9 +13,12 @@ import {
   roleToAccessLevel,
 } from "@ukdanceblue/common";
 import type { DefaultState } from "koa";
+import { Ok } from "ts-results-es";
 import { Container } from "typedi";
 
 import { defaultAuthorization, parseUserJwt } from "../lib/auth/index.js";
+import { NotFoundError } from "../lib/error/direct.js";
+import type { ConcreteResult } from "../lib/error/result.js";
 import { logger } from "../lib/logging/logger.js";
 import { PersonRepository } from "../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
@@ -37,71 +40,94 @@ function isSuperAdmin(committeeRoles: EffectiveCommitteeRole[]): boolean {
 async function withUserInfo(
   inputContext: GraphQLContext,
   userId: string
-): Promise<GraphQLContext> {
+): Promise<ConcreteResult<GraphQLContext>> {
   const outputContext = structuredClone(inputContext);
   const personRepository = Container.get(PersonRepository);
   const person = await personRepository.findPersonAndTeamsByUnique({
     uuid: userId,
   });
 
-  // If we found a user, set the authenticated user
-  if (person) {
-    // Convert the user to a resource and set it on the context
-    const personResource = await personModelToResource(
-      person,
-      personRepository
-    );
-    logger.trace("graphqlContextFunction Found user", personResource);
-    outputContext.authenticatedUser = personResource;
-    outputContext.userData.userId = userId;
-
-    // Set the committees the user is on
-    const committeeRoles =
-      await personRepository.getEffectiveCommitteeRolesOfPerson({
-        id: person.id,
-      });
-    const committees = committeeRoles;
-    logger.trace("graphqlContextFunction Found committees", ...committees);
-    outputContext.authorization.committees = committees;
-
-    // Set the teams the user is on
-    const teamMemberships =
-      (await personRepository.findMembershipsOfPerson(
-        {
-          id: person.id,
-        },
-        {},
-        undefined,
-        true
-      )) ?? [];
-    logger.trace(
-      "graphqlContextFunction Found team memberships",
-      ...teamMemberships
-    );
-    outputContext.teamMemberships = teamMemberships.map((membership) => ({
-      teamType: membership.team.type,
-      position: membership.position,
-      teamId: membership.team.uuid,
-    }));
-
-    // Set the effective committee roles the user has
-    const effectiveCommitteeRoles =
-      await personRepository.getEffectiveCommitteeRolesOfPerson({
-        id: person.id,
-      });
-    logger.trace(
-      "graphqlContextFunction Effective committee roles",
-      ...effectiveCommitteeRoles
-    );
-    outputContext.authorization.committees = effectiveCommitteeRoles;
-
-    // If the user is on a committee, override the dbRole
-    if (effectiveCommitteeRoles.length > 0) {
-      outputContext.authorization.dbRole = DbRole.Committee;
+  if (person.isErr()) {
+    if (person.error.tag === NotFoundError.Tag) {
+      // Short-circuit if the user is not found
+      return Ok(outputContext);
     }
+    return person;
   }
 
-  return outputContext;
+  // If we found a user, set the authenticated user
+  // Convert the user to a resource and set it on the context
+  const personResource = await personModelToResource(
+    person.value,
+    personRepository
+  ).promise;
+  if (personResource.isErr()) {
+    return personResource;
+  }
+  logger.trace("graphqlContextFunction Found user", personResource.value);
+  outputContext.authenticatedUser = personResource.value;
+  outputContext.userData.userId = userId;
+
+  // Set the committees the user is on
+  const committeeRoles =
+    await personRepository.getEffectiveCommitteeRolesOfPerson({
+      id: person.value.id,
+    });
+  if (committeeRoles.isErr()) {
+    return committeeRoles;
+  }
+  logger.trace(
+    "graphqlContextFunction Found committees",
+    ...committeeRoles.value
+  );
+  outputContext.authorization.committees = committeeRoles.value;
+
+  // Set the teams the user is on
+  let teamMemberships = await personRepository.findMembershipsOfPerson(
+    {
+      id: person.value.id,
+    },
+    {},
+    undefined,
+    true
+  );
+  if (teamMemberships.isErr()) {
+    if (teamMemberships.error.tag === NotFoundError.Tag) {
+      teamMemberships = Ok([]);
+    } else {
+      return teamMemberships;
+    }
+  }
+  logger.trace(
+    "graphqlContextFunction Found team memberships",
+    ...teamMemberships.value
+  );
+  outputContext.teamMemberships = teamMemberships.value.map((membership) => ({
+    teamType: membership.team.type,
+    position: membership.position,
+    teamId: membership.team.uuid,
+  }));
+
+  // Set the effective committee roles the user has
+  const effectiveCommitteeRoles =
+    await personRepository.getEffectiveCommitteeRolesOfPerson({
+      id: person.value.id,
+    });
+  if (effectiveCommitteeRoles.isErr()) {
+    return effectiveCommitteeRoles;
+  }
+  logger.trace(
+    "graphqlContextFunction Effective committee roles",
+    ...effectiveCommitteeRoles.value
+  );
+  outputContext.authorization.committees = effectiveCommitteeRoles.value;
+
+  // If the user is on a committee, override the dbRole
+  if (effectiveCommitteeRoles.value.length > 0) {
+    outputContext.authorization.dbRole = DbRole.Committee;
+  }
+
+  return Ok(outputContext);
 }
 
 const defaultContext: Readonly<GraphQLContext> = Object.freeze({
@@ -160,7 +186,14 @@ export const graphqlContextFunction: ContextFunction<
     },
     userId
   );
-  let superAdmin = isSuperAdmin(contextWithUser.authorization.committees);
+  if (contextWithUser.isErr()) {
+    logger.error(
+      "graphqlContextFunction Error looking up user",
+      contextWithUser.error
+    );
+    return structuredClone(defaultContext);
+  }
+  let superAdmin = isSuperAdmin(contextWithUser.value.authorization.committees);
   if (
     superAdmin &&
     ctx.request.headers["x-ukdb-masquerade"] &&
@@ -177,16 +210,23 @@ export const graphqlContextFunction: ContextFunction<
       },
       ctx.request.headers["x-ukdb-masquerade"]
     );
+    if (contextWithUser.isErr()) {
+      logger.error(
+        "graphqlContextFunction Error looking up user",
+        contextWithUser.error
+      );
+      return structuredClone(defaultContext);
+    }
     superAdmin = false;
   }
 
   const finalContext: GraphQLContext = {
-    ...contextWithUser,
+    ...contextWithUser.value,
     authorization: {
-      ...contextWithUser.authorization,
+      ...contextWithUser.value.authorization,
       accessLevel: superAdmin
         ? AccessLevel.SuperAdmin
-        : roleToAccessLevel(contextWithUser.authorization),
+        : roleToAccessLevel(contextWithUser.value.authorization),
     },
   };
 

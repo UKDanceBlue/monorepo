@@ -25,6 +25,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import { ConcreteResult } from "../lib/error/result.js";
 import { auditLogger } from "../lib/logging/auditLogging.js";
 import { DeviceRepository } from "../repositories/device/DeviceRepository.js";
 import { deviceModelToResource } from "../repositories/device/deviceModelToResource.js";
@@ -197,12 +198,13 @@ export class DeviceResolver {
   @FieldResolver(() => PersonNode, { nullable: true })
   async lastLoggedInUser(
     @Root() { id: { id } }: DeviceNode
-  ): Promise<PersonNode | null> {
+  ): Promise<ConcreteResult<PersonNode>> {
     const user = await this.deviceRepository.getLastLoggedInUser(id);
 
-    return user == null
-      ? null
-      : personModelToResource(user, this.personRepository);
+    return user
+      .toAsyncResult()
+      .andThen((person) => personModelToResource(person, this.personRepository))
+      .promise;
   }
 
   @FieldResolver(() => [NotificationDeliveryNode])

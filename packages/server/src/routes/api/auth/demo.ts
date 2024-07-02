@@ -28,9 +28,15 @@ export const demoLogin = async (ctx: Context) => {
   }
 
   const person = await getOrMakeDemoUser();
+  if (person.isErr()) {
+    return ctx.throw(
+      person.error.expose ? person.error.message : "Error creating demo user",
+      500
+    );
+  }
 
   const jwt = makeUserJwt({
-    userId: person.uuid,
+    userId: person.value.uuid,
     authSource: AuthSource.Demo,
   });
   if (setCookie) {

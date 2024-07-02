@@ -1,14 +1,12 @@
-import type { Marathon } from "@prisma/client";
 import type { MarathonYearString } from "@ukdanceblue/common";
 import Cron from "croner";
-import type { Result, type None } from "ts-results-es";
+import { Err, None, Ok, type Result } from "ts-results-es";
 import { Container } from "typedi";
 
 import { CompositeError } from "../lib/error/composite.js";
-import { NotFoundError } from "../lib/error/direct.js";
+import type { NotFoundError } from "../lib/error/direct.js";
 import { toBasicError } from "../lib/error/error.js";
 import type { PrismaError } from "../lib/error/prisma.js";
-import { toPrismaError } from "../lib/error/prisma.js";
 import {
   DBFundsFundraisingProvider,
   type DBFundsFundraisingProviderError,
@@ -27,21 +25,13 @@ async function doSync(): Promise<
   const marathonRepository = Container.get(MarathonRepository);
   const fundraisingRepository = Container.get(DBFundsRepository);
   const fundraisingProvider = Container.get(DBFundsFundraisingProvider);
-  let activeMarathon: Marathon | null = null;
-  try {
-    logger.trace("Finding current marathon for DBFunds sync");
-    activeMarathon = await marathonRepository.findActiveMarathon();
-    logger.trace("Found current marathon for DBFunds sync", activeMarathon);
-  } catch (error) {
-    return Err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
-  }
-  if (!activeMarathon) {
-    return Err(
-      new NotFoundError({ what: "Current Marathon", where: "syncDbFunds job" })
-    );
+  const activeMarathon = await marathonRepository.findActiveMarathon();
+  logger.trace("Found current marathon for DBFunds sync", activeMarathon);
+  if (activeMarathon.isErr()) {
+    return activeMarathon;
   }
   const teams = await fundraisingProvider.getTeams(
-    activeMarathon.year as MarathonYearString
+    activeMarathon.value.year as MarathonYearString
   );
   if (teams.isErr()) {
     return Err(teams.error);
@@ -50,7 +40,7 @@ async function doSync(): Promise<
 
   const promises = teams.value.map(async (team) => {
     const entries = await fundraisingProvider.getTeamEntries(
-      activeMarathon.year as MarathonYearString,
+      activeMarathon.value.year as MarathonYearString,
       team.identifier
     );
     if (entries.isErr()) {
@@ -63,7 +53,7 @@ async function doSync(): Promise<
         name: team.name,
         total: team.total,
       },
-      { id: activeMarathon.id },
+      { id: activeMarathon.value.id },
       entries.value
     );
   });
