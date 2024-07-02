@@ -1,6 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
+import type Result from "true-myth/result";
+import { err, ok } from "true-myth/result";
 
+import { ActionDeniedError } from "../../lib/error/control.js";
 import {
   dateFilterToPrisma,
   stringFilterToPrisma,
@@ -13,7 +16,7 @@ export function buildPersonOrder(
     | readonly [key: PersonOrderKeys, sort: SortDirection][]
     | null
     | undefined
-) {
+): Result<Prisma.PersonOrderByWithRelationInput, ActionDeniedError> {
   const orderBy: Prisma.PersonOrderByWithRelationInput = {};
 
   for (const [key, sort] of order ?? []) {
@@ -26,12 +29,20 @@ export function buildPersonOrder(
         orderBy[key] = sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
+      case "committeeRole":
+      case "committeeName":
+      case "dbRole":
       default: {
-        throw new Error(`Unsupported sort key: ${key}`);
+        key satisfies "committeeRole" | "committeeName" | "dbRole";
+        return err(
+          new ActionDeniedError(
+            `Unsupported filter key: ${String((key as { field?: string } | undefined)?.field)}`
+          )
+        );
       }
     }
   }
-  return orderBy;
+  return ok(orderBy);
 }
 export function buildPersonWhere(
   filters: readonly PersonFilters[] | null | undefined
