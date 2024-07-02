@@ -1,10 +1,7 @@
 import type { MarathonYearString } from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
-import type { Maybe } from "true-myth";
+import type { Option } from "ts-results-es";
 
-import type { TimeoutError } from "../error/direct.js";
-import type { JsError, UnknownError } from "../error/error.js";
-import type { HttpError } from "../error/http.js";
 import type { ConcreteResult } from "../error/result.js";
 
 export interface FundraisingTeam<IDType> {
@@ -15,8 +12,8 @@ export interface FundraisingTeam<IDType> {
 }
 
 export interface FundraisingEntry {
-  donatedBy: Maybe<string>;
-  donatedTo: Maybe<string>;
+  donatedBy: Option<string>;
+  donatedTo: Option<string>;
   donatedOn: DateTime;
   amount: number;
 }
@@ -24,19 +21,9 @@ export interface FundraisingEntry {
 export interface FundraisingProvider<IDType> {
   getTeams(
     marathonYear: MarathonYearString
-  ): Promise<
-    ConcreteResult<
-      FundraisingTeam<IDType>[],
-      HttpError | JsError | UnknownError | TimeoutError
-    >
-  >;
+  ): Promise<ConcreteResult<FundraisingTeam<IDType>[]>>;
   getTeamEntries(
     marathonYear: MarathonYearString,
     identifier: unknown
-  ): Promise<
-    ConcreteResult<
-      FundraisingEntry[],
-      HttpError | JsError | UnknownError | TimeoutError
-    >
-  >;
+  ): Promise<ConcreteResult<FundraisingEntry[]>>;
 }

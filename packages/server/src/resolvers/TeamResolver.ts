@@ -437,10 +437,10 @@ export class TeamResolver {
       filters: args.filters,
     });
 
-    if (entries.isErr) {
+    if (entries.isErr()) {
       throw new CatchableConcreteError(entries.error);
     }
-    if (count.isErr) {
+    if (count.isErr()) {
       throw new CatchableConcreteError(count.error);
     }
 
@@ -474,7 +474,7 @@ export class TeamResolver {
       onlyActive: true,
     });
 
-    if (rows.isErr) {
+    if (rows.isErr()) {
       throw new CatchableConcreteError(rows.error);
     }
 
@@ -497,7 +497,7 @@ export class TeamResolver {
       { dbNum: dbFundsTeamId }
     );
 
-    if (result.isErr) {
+    if (result.isErr()) {
       throw new CatchableConcreteError(result.error);
     }
 

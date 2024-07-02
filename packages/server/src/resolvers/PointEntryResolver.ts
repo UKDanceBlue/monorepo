@@ -10,6 +10,7 @@ import {
   SortDirection,
   TeamNode,
 } from "@ukdanceblue/common";
+import { Err } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -26,6 +27,8 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import { NotFoundError } from "../lib/error/direct.js";
+import { ConcreteResult } from "../lib/error/result.js";
 import { PersonRepository } from "../repositories/person/PersonRepository.js";
 import { personModelToResource } from "../repositories/person/personModelToResource.js";
 import { PointEntryRepository } from "../repositories/pointEntry/PointEntryRepository.js";
@@ -181,12 +184,14 @@ export class PointEntryResolver {
   @FieldResolver(() => PersonNode, { nullable: true })
   async personFrom(
     @Root() { id: { id } }: PointEntryNode
-  ): Promise<PersonNode | null> {
+  ): Promise<ConcreteResult<PersonNode>> {
     const model = await this.pointEntryRepository.getPointEntryPersonFrom({
       uuid: id,
     });
 
-    return model ? personModelToResource(model, this.personRepository) : null;
+    return model
+      ? personModelToResource(model, this.personRepository)
+      : Err(new NotFoundError({ what: "Person" }));
   }
 
   @FieldResolver(() => TeamNode)

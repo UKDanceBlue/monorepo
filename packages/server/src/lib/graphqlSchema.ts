@@ -1,6 +1,6 @@
 import { fileURLToPath } from "url";
 
-import { isInstance } from "true-myth/result";
+import { Result } from "ts-results-es";
 import type { MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
 import { Container } from "typedi";
@@ -46,8 +46,8 @@ const errorHandlingMiddleware: MiddlewareFn = async (_, next) => {
     throw error;
   }
 
-  if (isInstance(result)) {
-    if (result.isErr) {
+  if (Result.isResult(result)) {
+    if (result.isErr()) {
       logger.error("An error occurred in a resolver", result.error);
       throw new CatchableConcreteError(
         result.error instanceof ConcreteError
@@ -55,7 +55,7 @@ const errorHandlingMiddleware: MiddlewareFn = async (_, next) => {
           : toBasicError(result.error)
       );
     } else {
-      return result.value;
+      return result.value as unknown;
     }
   } else {
     return result;

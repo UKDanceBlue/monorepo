@@ -4,19 +4,21 @@ import {
   CommitteeRole,
   SortDirection,
 } from "@ukdanceblue/common";
-import { Result, Unit } from "true-myth";
-import { err, ok } from "true-myth/result";
+import { Err, None, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
 import { CompositeError } from "../../lib/error/composite.js";
 import { InvariantError, NotFoundError } from "../../lib/error/direct.js";
 import { toBasicError } from "../../lib/error/error.js";
-import { toPrismaError } from "../../lib/error/prisma.js";
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
 import { MarathonRepository } from "../marathon/MarathonRepository.js";
 import { MembershipRepository } from "../membership/MembershipRepository.js";
-import type { RepositoryError, SimpleUniqueParam } from "../shared.js";
+import {
+  RepositoryError,
+  SimpleUniqueParam,
+  handleRepositoryError,
+} from "../shared.js";
 
 import * as CommitteeDescriptions from "./committeeDescriptions.js";
 import {
@@ -75,9 +77,9 @@ export class CommitteeRepository {
         skip: offset,
       });
 
-      return ok(committees);
+      return Ok(committees);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -88,9 +90,9 @@ export class CommitteeRepository {
       const committee = await this.prisma.committee.findUnique({
         where: param,
       });
-      return ok(committee);
+      return Ok(committee);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -99,27 +101,27 @@ export class CommitteeRepository {
     committeeParam: CommitteeIdentifier,
     committeeRole: CommitteeRole,
     marathonParam?: UniqueMarathonParam
-  ): Promise<Result<Unit, RepositoryError | CompositeError<RepositoryError>>> {
+  ): Promise<Result<None, RepositoryError | CompositeError<RepositoryError>>> {
     try {
       const person = await this.prisma.person.findUnique({
         where: personParam,
       });
       if (!person) {
-        return err(new NotFoundError({ what: "Person" }));
+        return Err(new NotFoundError({ what: "Person" }));
       }
 
       if (!marathonParam) {
         const latestMarathon =
           await this.marathonRepository.findActiveMarathon();
-        if (latestMarathon.isErr) {
-          return err(latestMarathon.error);
+        if (latestMarathon.isErr()) {
+          return Err(latestMarathon.error);
         }
         marathonParam = { id: latestMarathon.value.id };
       } else {
         const val =
           await this.marathonRepository.findMarathonByUnique(marathonParam);
-        if (val.isErr) {
-          return err(val.error);
+        if (val.isErr()) {
+          return Err(val.error);
         }
       }
 
@@ -127,8 +129,8 @@ export class CommitteeRepository {
         forMarathon: marathonParam,
       });
 
-      if (committee.isErr) {
-        return err(committee.error);
+      if (committee.isErr()) {
+        return Err(committee.error);
       }
 
       // for (const team of committee.value.correspondingTeams) {
@@ -153,7 +155,7 @@ export class CommitteeRepository {
 
       for (const result of results) {
         if (result.status === "fulfilled") {
-          if (result.value.isErr) {
+          if (result.value.isErr()) {
             errors.push(result.value.error);
           }
         } else {
@@ -162,33 +164,29 @@ export class CommitteeRepository {
       }
 
       if (errors.length > 0) {
-        return err(new CompositeError(errors));
+        return Err(new CompositeError(errors));
       }
 
-      return ok();
+      return Ok(None);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
   // Mutators
 
-  async deleteCommittee(
-    uuid: string
-  ): Promise<Result<Unit | null, RepositoryError>> {
+  async deleteCommittee(uuid: string): Promise<Result<None, RepositoryError>> {
     try {
       await this.prisma.committee.delete({ where: { uuid } });
-      return ok();
+      return Ok(None);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return ok(null);
+        return Err(new NotFoundError({ what: "Committee" }));
       } else {
-        return err(
-          toPrismaError(error).unwrapOrElse(() => toBasicError(error))
-        );
+        return handleRepositoryError(error);
       }
     }
   }
@@ -223,9 +221,9 @@ export class CommitteeRepository {
         },
       });
 
-      return ok(committee);
+      return Ok(committee);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -243,23 +241,23 @@ export class CommitteeRepository {
         });
 
       if (result?.length === 1) {
-        return ok(result[0]!);
+        return Ok(result[0]!);
       } else if (result?.length === 0) {
-        return err(
+        return Err(
           new NotFoundError({
             what: "Team",
             where: `Committee: ${committee}, Marathon: ${JSON.stringify(marathon)}`,
           })
         );
       } else {
-        return err(
+        return Err(
           new InvariantError(
             "Multiple teams found for the given committee and marathon"
           )
         );
       }
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -273,12 +271,12 @@ export class CommitteeRepository {
         })
         .childCommittees();
       if (!childCommittees) {
-        return err(new NotFoundError({ what: "Committee" }));
+        return Err(new NotFoundError({ what: "Committee" }));
       }
 
-      return ok(childCommittees);
+      return Ok(childCommittees);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -292,9 +290,9 @@ export class CommitteeRepository {
         })
         .parentCommittee();
 
-      return ok(parentCommittee);
+      return Ok(parentCommittee);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 }

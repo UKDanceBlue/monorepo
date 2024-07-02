@@ -1,13 +1,14 @@
-import { Maybe } from "true-myth";
+import type { Option } from "ts-results-es";
 
 import { ConcreteError } from "./error.js";
+import { optionOf } from "./option.js";
 
 const NotFoundErrorTag = Symbol("NotFoundError");
 type NotFoundErrorTag = typeof NotFoundErrorTag;
 export class NotFoundError extends ConcreteError {
-  readonly #what: Maybe<string>;
-  readonly #where: Maybe<string>;
-  readonly #why: Maybe<string>;
+  readonly #what: Option<string>;
+  readonly #where: Option<string>;
+  readonly #why: Option<string>;
   readonly #sensitive: boolean;
 
   constructor({
@@ -22,9 +23,9 @@ export class NotFoundError extends ConcreteError {
     sensitive?: boolean;
   }) {
     super();
-    this.#what = Maybe.of(what);
-    this.#where = Maybe.of(where);
-    this.#why = Maybe.of(why);
+    this.#what = optionOf(what);
+    this.#where = optionOf(where);
+    this.#why = optionOf(why);
     this.#sensitive = sensitive;
   }
 
@@ -33,13 +34,10 @@ export class NotFoundError extends ConcreteError {
   }
 
   get detailedMessage(): string {
-    return `Not found: ${this.#what.unwrapOr("unknown")}${this.#where.match({
-      Just: (where) => ` at ${where}`,
-      Nothing: () => "",
-    })}${this.#why.match({
-      Just: (why) => ` because ${why}`,
-      Nothing: () => "",
-    })}`;
+    const what = this.#what.unwrapOr("unknown");
+    const where = this.#where.mapOr("", (where) => ` at ${where}`);
+    const why = this.#why.mapOr("", (why) => ` because ${why}`);
+    return `Not found: ${what}${where}${why}`;
   }
 
   get expose(): boolean {

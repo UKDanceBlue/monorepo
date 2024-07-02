@@ -1,7 +1,7 @@
 import { DateTimeISOResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Maybe } from "true-myth";
-import { nothing, of } from "true-myth/maybe";
+import { nothing, of } from "ts-results-es";
 import { Field, Float, ObjectType } from "type-graphql";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";

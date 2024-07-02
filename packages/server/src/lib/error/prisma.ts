@@ -5,8 +5,8 @@ import {
   PrismaClientUnknownRequestError,
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
-import { Maybe } from "true-myth";
-import type { Just } from "true-myth/maybe";
+import type { Option } from "ts-results-es";
+import { None, Some } from "ts-results-es";
 
 import { ConcreteError } from "./error.js";
 
@@ -99,23 +99,23 @@ export type SomePrismaError =
   | PrismaUnknownRequestError
   | PrismaValidationError;
 
-export function toPrismaError(error: RawPrismaError): Just<SomePrismaError>;
-export function toPrismaError(error: unknown): Maybe<SomePrismaError>;
-export function toPrismaError(error: unknown): Maybe<SomePrismaError> {
+export function toPrismaError(error: RawPrismaError): Some<SomePrismaError>;
+export function toPrismaError(error: unknown): Option<SomePrismaError>;
+export function toPrismaError(error: unknown): Option<SomePrismaError> {
   if (error instanceof PrismaClientInitializationError) {
-    return Maybe.of(new PrismaInitializationError(error));
+    return Some(new PrismaInitializationError(error));
   }
   if (error instanceof PrismaClientKnownRequestError) {
-    return Maybe.of(new PrismaKnownRequestError(error));
+    return Some(new PrismaKnownRequestError(error));
   }
   if (error instanceof PrismaClientRustPanicError) {
-    return Maybe.of(new PrismaRustPanicError(error));
+    return Some(new PrismaRustPanicError(error));
   }
   if (error instanceof PrismaClientUnknownRequestError) {
-    return Maybe.of(new PrismaUnknownRequestError(error));
+    return Some(new PrismaUnknownRequestError(error));
   }
   if (error instanceof PrismaClientValidationError) {
-    return Maybe.of(new PrismaValidationError(error));
+    return Some(new PrismaValidationError(error));
   }
-  return Maybe.nothing();
+  return None;
 }

@@ -1,5 +1,5 @@
-import type { Result } from "true-myth";
-import { err, ok } from "true-myth/result";
+import type { Result } from "ts-results-es";
+import { Err, Ok } from "ts-results-es";
 
 export abstract class ConcreteError {
   abstract get message(): string;
@@ -79,12 +79,3 @@ export function toBasicError(error: unknown): BasicError {
   return error instanceof Error ? new JsError(error) : new UnknownError(error);
 }
 
-export async function flipPromise<T, E>(
-  r:
-    | Result<Promise<T>, Promise<E>>
-    | Result<T, Promise<E>>
-    | Result<Promise<T>, E>
-    | Result<T, E>
-): Promise<Result<T, E>> {
-  return r.isOk ? ok<T, E>(await r.value) : err<T, E>(await r.error);
-}

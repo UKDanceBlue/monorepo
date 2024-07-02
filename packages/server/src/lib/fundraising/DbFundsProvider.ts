@@ -1,7 +1,6 @@
 import type { MarathonYearString } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
-import { Maybe, Result } from "true-myth";
-import { err } from "true-myth/result";
+import { Err, Ok } from "ts-results-es";
 import { Inject, Service } from "typedi";
 import { z } from "zod";
 
@@ -12,6 +11,7 @@ import {
 import { TimeoutError } from "../error/direct.js";
 import { BasicError, toBasicError } from "../error/error.js";
 import { HttpError } from "../error/http.js";
+import { optionOf } from "../error/option.js";
 import { ConcreteResult } from "../error/result.js";
 import { ZodError } from "../error/zod.js";
 
@@ -127,7 +127,7 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
         signal: abort.signal,
       });
     } catch (error) {
-      return err(
+      return Err(
         error instanceof Error && error.name === "AbortError"
           ? new TimeoutError("Fetching data from DbFunds")
           : toBasicError(error)
@@ -137,10 +137,10 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
     }
 
     if (!response.ok) {
-      return err<never, HttpError>(new HttpError(response.status));
+      return Err<HttpError>(new HttpError(response.status));
     }
 
-    return Result.ok<unknown, never>(await response.json());
+    return Ok<unknown>(await response.json());
   }
 
   async getTeams(
@@ -151,13 +151,13 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
     const calendarYear = `20${marathonYear.substring(2)}`;
     const path = teamTotalPath(calendarYear);
     const result = await this.fetchJson(path);
-    if (result.isErr) {
-      return result.cast<never>();
+    if (result.isErr()) {
+      return result;
     }
 
     const teams = dbFundsFundraisingTeamSchema.array().safeParse(result.value);
     if (teams.success) {
-      return Result.ok(
+      return Ok(
         teams.data.map((team) => ({
           name: team.Team,
           active: team.Active,
@@ -166,7 +166,7 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
         }))
       );
     } else {
-      return Result.err(new ZodError(teams.error));
+      return Err(new ZodError(teams.error));
     }
   }
   async getTeamEntries(
@@ -179,16 +179,16 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
     const path = teamEntriesPath(dbNum, calendarYear);
 
     const result = await this.fetchJson(path);
-    if (result.isErr) {
-      return result.cast<never>();
+    if (result.isErr()) {
+      return result;
     }
 
     const entries = dbFundsFundraisingEntrySchema.safeParse(result.value);
     if (entries.success) {
-      return Result.ok(
+      return Ok(
         entries.data.entries.map((entry) => ({
-          donatedBy: Maybe.of(entry.donatedBy),
-          donatedTo: Maybe.of(entry.donatedTo),
+          donatedBy: optionOf(entry.donatedBy),
+          donatedTo: optionOf(entry.donatedTo),
           // donatedOn is in Eastern time
           donatedOn: entry.donatedOn,
           // Convert the amount from cents to dollars
@@ -196,7 +196,7 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
         }))
       );
     } else {
-      return Result.err(new ZodError(entries.error));
+      return Err(new ZodError(entries.error));
     }
   }
 }

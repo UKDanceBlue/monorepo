@@ -2,7 +2,6 @@ import { MembershipNode, PersonNode, TeamNode } from "@ukdanceblue/common";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 import { Service } from "typedi";
 
-import { flipPromise } from "../lib/error/error.js";
 import { ConcreteResult } from "../lib/error/result.js";
 import { MembershipRepository } from "../repositories/membership/MembershipRepository.js";
 import { PersonRepository } from "../repositories/person/PersonRepository.js";
@@ -27,9 +26,11 @@ export class MembershipResolver {
       }
     );
 
-    return flipPromise(
-      row.map((row) => personModelToResource(row.person, this.personRepository))
-    );
+    return row
+      .toAsyncResult()
+      .andThen((row) =>
+        personModelToResource(row.person, this.personRepository)
+      ).promise;
   }
 
   @FieldResolver(() => TeamNode)

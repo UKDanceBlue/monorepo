@@ -1,6 +1,6 @@
 import type { Person } from "@prisma/client";
 import { PersonNode } from "@ukdanceblue/common";
-import type { Result } from "true-myth";
+import type { Result } from "ts-results-es";
 
 import type { RepositoryError } from "../shared.js";
 

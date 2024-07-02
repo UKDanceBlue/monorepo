@@ -77,13 +77,7 @@ const rules: Linter.RulesRecord = {
       "newlines-between": "always",
     },
   ],
-  "sort-imports": [
-    "error",
-    {
-      allowSeparatedGroups: true,
-      ignoreDeclarationSort: true,
-    },
-  ],
+  "sort-imports": ["off"],
   // Unicorn Plugin
   "unicorn/better-regex": "error",
   "unicorn/catch-error-name": "error",

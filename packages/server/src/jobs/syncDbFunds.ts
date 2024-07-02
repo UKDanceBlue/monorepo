@@ -1,7 +1,7 @@
 import type { Marathon } from "@prisma/client";
 import type { MarathonYearString } from "@ukdanceblue/common";
 import Cron from "croner";
-import { Result, type Unit } from "true-myth";
+import type { Result, type None } from "ts-results-es";
 import { Container } from "typedi";
 
 import { CompositeError } from "../lib/error/composite.js";
@@ -22,7 +22,7 @@ type DoSyncError =
   | PrismaError
   | DBFundsFundraisingProviderError;
 async function doSync(): Promise<
-  Result<Unit, DoSyncError | CompositeError<DoSyncError>>
+  Result<None, DoSyncError | CompositeError<DoSyncError>>
 > {
   const marathonRepository = Container.get(MarathonRepository);
   const fundraisingRepository = Container.get(DBFundsRepository);
@@ -33,20 +33,18 @@ async function doSync(): Promise<
     activeMarathon = await marathonRepository.findActiveMarathon();
     logger.trace("Found current marathon for DBFunds sync", activeMarathon);
   } catch (error) {
-    return Result.err(
-      toPrismaError(error).unwrapOrElse(() => toBasicError(error))
-    );
+    return Err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
   }
   if (!activeMarathon) {
-    return Result.err(
+    return Err(
       new NotFoundError({ what: "Current Marathon", where: "syncDbFunds job" })
     );
   }
   const teams = await fundraisingProvider.getTeams(
     activeMarathon.year as MarathonYearString
   );
-  if (teams.isErr) {
-    return Result.err(teams.error);
+  if (teams.isErr()) {
+    return Err(teams.error);
   }
   logger.trace("Got teams for DBFunds sync", { teamCount: teams.value.length });
 
@@ -55,8 +53,8 @@ async function doSync(): Promise<
       activeMarathon.year as MarathonYearString,
       team.identifier
     );
-    if (entries.isErr) {
-      return Result.err(entries.error);
+    if (entries.isErr()) {
+      return Err(entries.error);
     }
     return fundraisingRepository.overwriteTeamForFiscalYear(
       {
@@ -76,7 +74,7 @@ async function doSync(): Promise<
   for (const result of results) {
     if (result.status === "rejected") {
       errors.push(toBasicError(result.reason));
-    } else if (result.value.isErr) {
+    } else if (result.value.isErr()) {
       if (result.value.error instanceof CompositeError) {
         errors.push(...result.value.error.errors);
       } else {
@@ -85,9 +83,7 @@ async function doSync(): Promise<
     }
   }
 
-  return errors.length > 0
-    ? Result.err(new CompositeError(errors))
-    : Result.ok();
+  return errors.length > 0 ? Err(new CompositeError(errors)) : Ok(None);
 }
 
 export const syncDbFunds = new Cron(
@@ -101,7 +97,7 @@ export const syncDbFunds = new Cron(
   async () => {
     logger.info("Syncing DBFunds");
     const result = await doSync();
-    if (result.isErr) {
+    if (result.isErr()) {
       logger.error("Failed to sync DBFunds", result.error);
     } else {
       logger.info("DBFunds sync complete");

@@ -7,17 +7,16 @@ import {
   PrismaClient,
 } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
-import Maybe, { just, nothing } from "true-myth/maybe";
-import Result, { err, ok } from "true-myth/result";
+import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 import { Service } from "typedi";
 
 import { ActionDeniedError } from "../../lib/error/control.js";
 import { NotFoundError } from "../../lib/error/direct.js";
-import { BasicError, toBasicError } from "../../lib/error/error.js";
-import { SomePrismaError, toPrismaError } from "../../lib/error/prisma.js";
+import { BasicError } from "../../lib/error/error.js";
+import { SomePrismaError } from "../../lib/error/prisma.js";
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import { UniquePersonParam } from "../person/PersonRepository.js";
-import type { SimpleUniqueParam } from "../shared.js";
+import { SimpleUniqueParam, handleRepositoryError } from "../shared.js";
 
 import {
   buildFundraisingEntryOrder,
@@ -89,15 +88,15 @@ export class FundraisingEntryRepository {
         include: defaultInclude,
       });
       if (!row) {
-        return err(new NotFoundError({ what: "FundraisingEntry" }));
+        return Err(new NotFoundError({ what: "FundraisingEntry" }));
       }
-      return ok(
+      return Ok(
         row as typeof row & {
           dbFundsEntry: NonNullable<typeof row.dbFundsEntry>;
         }
       );
     } catch (error: unknown) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -111,11 +110,11 @@ export class FundraisingEntryRepository {
         where: param,
       });
       if (!row) {
-        return err(new NotFoundError({ what: "FundraisingAssignment" }));
+        return Err(new NotFoundError({ what: "FundraisingAssignment" }));
       }
-      return ok(row);
+      return Ok(row);
     } catch (error: unknown) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -133,11 +132,11 @@ export class FundraisingEntryRepository {
         select: { assignments: true },
       });
       if (!entry) {
-        return err(new NotFoundError({ what: "FundraisingEntry" }));
+        return Err(new NotFoundError({ what: "FundraisingEntry" }));
       }
-      return ok(entry.assignments);
+      return Ok(entry.assignments);
     } catch (error: unknown) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -171,11 +170,11 @@ export class FundraisingEntryRepository {
     try {
       const whereResult = buildFundraisingEntryWhere(filters);
       const orderByResult = buildFundraisingEntryOrder(order);
-      if (whereResult.isErr) {
-        return err(whereResult.error);
+      if (whereResult.isErr()) {
+        return Err(whereResult.error);
       }
-      if (orderByResult.isErr) {
-        return err(orderByResult.error);
+      if (orderByResult.isErr()) {
+        return Err(orderByResult.error);
       }
       const where = whereResult.value;
       const orderBy = orderByResult.value;
@@ -210,7 +209,7 @@ export class FundraisingEntryRepository {
         take: take ?? undefined,
       });
 
-      return ok(
+      return Ok(
         rows.filter(
           (
             row
@@ -220,7 +219,7 @@ export class FundraisingEntryRepository {
         )
       );
     } catch (error: unknown) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -233,35 +232,33 @@ export class FundraisingEntryRepository {
   > {
     try {
       const where = buildFundraisingEntryWhere(filters);
-      if (where.isErr) {
-        return err(where.error);
+      if (where.isErr()) {
+        return Err(where.error);
       }
 
-      return ok(
+      return Ok(
         await this.prisma.fundraisingEntry.count({ where: where.value })
       );
     } catch (error: unknown) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
   async deleteEntry(
     param: FundraisingEntryUniqueParam
-  ): Promise<Result<Maybe<FundraisingEntry>, SomePrismaError | BasicError>> {
+  ): Promise<Result<Option<FundraisingEntry>, SomePrismaError | BasicError>> {
     try {
-      return ok(
-        just(await this.prisma.fundraisingEntry.delete({ where: param }))
+      return Ok(
+        Some(await this.prisma.fundraisingEntry.delete({ where: param }))
       );
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return ok(nothing());
+        return Ok(None);
       } else {
-        return err(
-          toPrismaError(error).unwrapOrElse(() => toBasicError(error))
-        );
+        return handleRepositoryError(error);
       }
     }
   }
@@ -278,12 +275,12 @@ export class FundraisingEntryRepository {
   > {
     try {
       const entry = await this.findEntryByUnique(entryParam);
-      if (entry.isErr) {
-        return err(entry.error);
+      if (entry.isErr()) {
+        return Err(entry.error);
       }
       const assignments = await this.getAssignmentsForEntry(entryParam);
-      if (assignments.isErr) {
-        return err(assignments.error);
+      if (assignments.isErr()) {
+        return Err(assignments.error);
       }
 
       const totalAssigned = assignments.value.reduce(
@@ -291,12 +288,12 @@ export class FundraisingEntryRepository {
         new Prisma.Decimal(0)
       );
       if (entry.value.dbFundsEntry.amount.lessThan(totalAssigned.add(amount))) {
-        return err(
+        return Err(
           new ActionDeniedError("Total assigned amount exceeds entry amount")
         );
       }
 
-      return ok(
+      return Ok(
         await this.prisma.fundraisingAssignment.create({
           data: {
             amount,
@@ -306,7 +303,7 @@ export class FundraisingEntryRepository {
         })
       );
     } catch (error: unknown) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -316,13 +313,13 @@ export class FundraisingEntryRepository {
     Result<FundraisingAssignment, SomePrismaError | BasicError | NotFoundError>
   > {
     try {
-      return ok(
+      return Ok(
         await this.prisma.fundraisingAssignment.delete({
           where: assignmentParam,
         })
       );
     } catch (error: unknown) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -346,13 +343,13 @@ export class FundraisingEntryRepository {
         },
       });
       if (!assignment) {
-        return err(new NotFoundError({ what: "FundraisingEntry" }));
+        return Err(new NotFoundError({ what: "FundraisingEntry" }));
       }
       const assignments = await this.getAssignmentsForEntry({
         id: assignment.parentEntry.id,
       });
-      if (assignments.isErr) {
-        return err(assignments.error);
+      if (assignments.isErr()) {
+        return Err(assignments.error);
       }
 
       const totalAssigned = assignments.value
@@ -366,19 +363,19 @@ export class FundraisingEntryRepository {
           totalAssigned.add(amount)
         )
       ) {
-        return err(
+        return Err(
           new ActionDeniedError("Total assigned amount exceeds entry amount")
         );
       }
 
-      return ok(
+      return Ok(
         await this.prisma.fundraisingAssignment.update({
           where: assignmentParam,
           data: { amount },
         })
       );
     } catch (error: unknown) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -391,11 +388,11 @@ export class FundraisingEntryRepository {
         select: { person: true },
       });
       if (!assignment) {
-        return err(new NotFoundError({ what: "FundraisingAssignment" }));
+        return Err(new NotFoundError({ what: "FundraisingAssignment" }));
       }
-      return ok(assignment.person);
+      return Ok(assignment.person);
     } catch (error: unknown) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -419,15 +416,15 @@ export class FundraisingEntryRepository {
         },
       });
       if (!assignment) {
-        return err(new NotFoundError({ what: "FundraisingAssignment" }));
+        return Err(new NotFoundError({ what: "FundraisingAssignment" }));
       }
-      return ok(
+      return Ok(
         assignment.parentEntry as typeof assignment.parentEntry & {
           dbFundsEntry: NonNullable<typeof assignment.parentEntry.dbFundsEntry>;
         }
       );
     } catch (error: unknown) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -443,9 +440,9 @@ export class FundraisingEntryRepository {
       const assignments = await this.prisma.fundraisingAssignment.findMany({
         where: { person: personParam },
       });
-      return ok(assignments);
+      return Ok(assignments);
     } catch (error: unknown) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 }

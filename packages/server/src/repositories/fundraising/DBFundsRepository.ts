@@ -1,21 +1,16 @@
 import { DBFundsTeam, Prisma, PrismaClient, Team } from "@prisma/client";
 import { DateTime } from "luxon";
-import { Maybe, Result, Unit } from "true-myth";
-import { err, ok } from "true-myth/result";
+import { Err, None, Ok, Option, Result } from "ts-results-es";
 import { Service } from "typedi";
 
 import { CompositeError } from "../../lib/error/composite.js";
 import { NotFoundError } from "../../lib/error/direct.js";
-import { BasicError, toBasicError } from "../../lib/error/error.js";
-import {
-  PrismaError,
-  SomePrismaError,
-  toPrismaError,
-} from "../../lib/error/prisma.js";
+import { BasicError } from "../../lib/error/error.js";
+import { PrismaError, SomePrismaError } from "../../lib/error/prisma.js";
 import { logger } from "../../lib/logging/standardLogging.js";
 import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
 import { MarathonRepository } from "../marathon/MarathonRepository.js";
-import { SimpleUniqueParam } from "../shared.js";
+import { SimpleUniqueParam, handleRepositoryError } from "../shared.js";
 
 export type UniqueDbFundsTeamParam =
   | {
@@ -42,14 +37,14 @@ export class DBFundsRepository {
     },
     marathonParam: UniqueMarathonParam,
     dbFundsEntries: {
-      donatedBy: Maybe<string>;
-      donatedTo: Maybe<string>;
+      donatedBy: Option<string>;
+      donatedTo: Option<string>;
       donatedOn: DateTime;
       amount: number;
     }[]
   ): Promise<
     Result<
-      Unit,
+      None,
       | PrismaError
       | NotFoundError
       | CompositeError<PrismaError | BasicError>
@@ -63,8 +58,8 @@ export class DBFundsRepository {
       } else {
         const marathon =
           await this.marathonRepository.findMarathonByUnique(marathonParam);
-        if (marathon.isErr) {
-          return marathon.cast<Unit>();
+        if (marathon.isErr()) {
+          return marathon;
         }
         marathonId = marathon.value.id;
       }
@@ -190,11 +185,9 @@ export class DBFundsRepository {
         });
       }
 
-      return Result.ok();
+      return Ok(None);
     } catch (error) {
-      return Result.err(
-        toPrismaError(error).unwrapOrElse(() => toBasicError(error))
-      );
+      return handleRepositoryError(error);
     }
   }
 
@@ -215,11 +208,11 @@ export class DBFundsRepository {
         include: { teams: true },
       });
       if (!team) {
-        return err(new NotFoundError({ what: "Team" }));
+        return Err(new NotFoundError({ what: "Team" }));
       }
-      return ok(team.teams);
+      return Ok(team.teams);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -230,13 +223,13 @@ export class DBFundsRepository {
       | {
           dbNum: number;
         }
-  ): Promise<Result<Unit, NotFoundError | SomePrismaError | BasicError>> {
+  ): Promise<Result<None, NotFoundError | SomePrismaError | BasicError>> {
     try {
       const team = await this.prisma.team.findUnique({
         where: teamParam,
       });
       if (!team) {
-        return err(new NotFoundError({ what: "Team" }));
+        return Err(new NotFoundError({ what: "Team" }));
       }
       await this.prisma.dBFundsTeam.update({
         where:
@@ -257,9 +250,9 @@ export class DBFundsRepository {
           },
         },
       });
-      return ok();
+      return Ok(None);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -269,7 +262,7 @@ export class DBFundsRepository {
     onlyActive?: boolean;
   }): Promise<Result<DBFundsTeam[], SomePrismaError | BasicError>> {
     try {
-      return ok(
+      return Ok(
         await this.prisma.dBFundsTeam.findMany({
           where: {
             active: search.onlyActive ? true : undefined,
@@ -284,7 +277,7 @@ export class DBFundsRepository {
         })
       );
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 }

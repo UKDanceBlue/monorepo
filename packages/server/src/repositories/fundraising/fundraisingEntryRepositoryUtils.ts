@@ -1,7 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
-import type { Result } from "true-myth";
-import { err, ok } from "true-myth/result";
+import type { Result } from "ts-results-es";
+import { Err, Ok } from "ts-results-es";
 
 import { ActionDeniedError } from "../../lib/error/control.js";
 import {
@@ -45,11 +45,11 @@ export function buildFundraisingEntryOrder(
         break;
       }
       case "teamId": {
-        return err(new ActionDeniedError("Cannot sort by teamId"));
+        return Err(new ActionDeniedError("Cannot sort by teamId"));
       }
       default: {
         key satisfies never;
-        return err(
+        return Err(
           new ActionDeniedError(`Unsupported sort key: ${String(key)}`)
         );
       }
@@ -60,7 +60,7 @@ export function buildFundraisingEntryOrder(
     orderBy["dbFundsEntry"] = dbFundsEntryOrderBy;
   }
 
-  return ok(orderBy);
+  return Ok(orderBy);
 }
 
 export function buildFundraisingEntryWhere(
@@ -98,7 +98,7 @@ export function buildFundraisingEntryWhere(
       }
       default: {
         filter satisfies never;
-        return err(
+        return Err(
           new ActionDeniedError(
             `Unsupported filter key: ${String((filter as { field?: string } | undefined)?.field)}`
           )
@@ -111,5 +111,5 @@ export function buildFundraisingEntryWhere(
     where["dbFundsEntry"] = dbFundsEntryWhere;
   }
 
-  return ok(where);
+  return Ok(where);
 }

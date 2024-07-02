@@ -1,14 +1,15 @@
 import { Membership, Person, PrismaClient, Team } from "@prisma/client";
 import { CommitteeRole, MembershipPositionType } from "@ukdanceblue/common";
-import { Result } from "true-myth";
-import { err, ok } from "true-myth/result";
+import { Err, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
 import { NotFoundError } from "../../lib/error/direct.js";
-import { toBasicError } from "../../lib/error/error.js";
-import { toPrismaError } from "../../lib/error/prisma.js";
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type { RepositoryError, SimpleUniqueParam } from "../shared.js";
+import {
+  handleRepositoryError,
+  type RepositoryError,
+  type SimpleUniqueParam,
+} from "../shared.js";
 
 const membershipBooleanKeys = [] as const;
 type MembershipBooleanKey = (typeof membershipBooleanKeys)[number];
@@ -101,11 +102,11 @@ export class MembershipRepository {
         include,
       });
       if (!membership) {
-        return err(new NotFoundError({ what: "Membership" }));
+        return Err(new NotFoundError({ what: "Membership" }));
       }
-      return ok(membership);
+      return Ok(membership);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -123,7 +124,7 @@ export class MembershipRepository {
           select: { id: true },
         });
         if (found == null) {
-          return err(new NotFoundError({ what: "Person" }));
+          return Err(new NotFoundError({ what: "Person" }));
         }
         personId = found.id;
       } else {
@@ -137,16 +138,16 @@ export class MembershipRepository {
           select: { id: true },
         });
         if (found == null) {
-          return err(new NotFoundError({ what: "Team" }));
+          return Err(new NotFoundError({ what: "Team" }));
         }
         teamId = found.id;
       } else {
         throw new Error("Must provide either UUID or ID");
       }
 
-      return ok({ personId, teamId });
+      return Ok({ personId, teamId });
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -167,8 +168,8 @@ export class MembershipRepository {
   )): Promise<Result<Membership, RepositoryError>> {
     try {
       const result = await this.lookupPersonAndTeamId(personParam, teamParam);
-      if (result.isErr) {
-        return err(result.error);
+      if (result.isErr()) {
+        return Err(result.error);
       }
       const { personId, teamId } = result.value;
 
@@ -213,9 +214,9 @@ export class MembershipRepository {
         update: {},
       });
 
-      return ok(membership);
+      return Ok(membership);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -225,8 +226,8 @@ export class MembershipRepository {
   ): Promise<Result<Membership, RepositoryError>> {
     try {
       const result = await this.lookupPersonAndTeamId(personParam, teamParam);
-      if (result.isErr) {
-        return err(result.error);
+      if (result.isErr()) {
+        return Err(result.error);
       }
       const { personId, teamId } = result.value;
 
@@ -239,9 +240,9 @@ export class MembershipRepository {
         },
       });
 
-      return ok(membership);
+      return Ok(membership);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 }

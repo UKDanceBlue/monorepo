@@ -1,14 +1,11 @@
 import { Marathon, MarathonHour, Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
-import { Result } from "true-myth";
-import { err, ok } from "true-myth/result";
+import { Err, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
 import { NotFoundError } from "../../lib/error/direct.js";
-import { toBasicError } from "../../lib/error/error.js";
-import { toPrismaError } from "../../lib/error/prisma.js";
 import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type { RepositoryError } from "../shared.js";
+import { handleRepositoryError, type RepositoryError } from "../shared.js";
 
 import {
   buildMarathonOrder,
@@ -70,11 +67,11 @@ export class MarathonRepository {
     try {
       const row = await this.prisma.marathon.findUnique({ where: param });
       if (!row) {
-        return err(new NotFoundError({ what: "Marathon" }));
+        return Err(new NotFoundError({ what: "Marathon" }));
       }
-      return ok(row);
+      return Ok(row);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -85,11 +82,11 @@ export class MarathonRepository {
         where: { startDate: { lte: new Date() }, endDate: { gte: new Date() } },
       });
       if (!marathon) {
-        return err(new NotFoundError({ what: "Marathon" }));
+        return Err(new NotFoundError({ what: "Marathon" }));
       }
-      return ok(marathon);
+      return Ok(marathon);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -99,11 +96,11 @@ export class MarathonRepository {
         orderBy: { year: "asc" },
       });
       if (!marathon) {
-        return err(new NotFoundError({ what: "Marathon" }));
+        return Err(new NotFoundError({ what: "Marathon" }));
       }
-      return ok(marathon);
+      return Ok(marathon);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -150,9 +147,9 @@ export class MarathonRepository {
         where: param,
         include: { hours: true },
       });
-      return ok(rows?.hours ?? []);
+      return Ok(rows?.hours ?? []);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -173,9 +170,9 @@ export class MarathonRepository {
           endDate,
         },
       });
-      return ok(marathon);
+      return Ok(marathon);
     } catch (error) {
-      return err(toPrismaError(error).unwrapOrElse(() => toBasicError(error)));
+      return handleRepositoryError(error);
     }
   }
 
@@ -200,17 +197,15 @@ export class MarathonRepository {
           endDate,
         },
       });
-      return ok(marathon);
+      return Ok(marathon);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return err(new NotFoundError({ what: "Marathon" }));
+        return Err(new NotFoundError({ what: "Marathon" }));
       } else {
-        return err(
-          toPrismaError(error).unwrapOrElse(() => toBasicError(error))
-        );
+        return handleRepositoryError(error);
       }
     }
   }
@@ -220,17 +215,15 @@ export class MarathonRepository {
   ): Promise<Result<Marathon, RepositoryError>> {
     try {
       const marathon = await this.prisma.marathon.delete({ where: param });
-      return ok(marathon);
+      return Ok(marathon);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return err(new NotFoundError({ what: "Marathon" }));
+        return Err(new NotFoundError({ what: "Marathon" }));
       } else {
-        return err(
-          toPrismaError(error).unwrapOrElse(() => toBasicError(error))
-        );
+        return handleRepositoryError(error);
       }
     }
   }

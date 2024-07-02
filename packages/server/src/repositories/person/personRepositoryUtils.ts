@@ -1,7 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
-import type Result from "true-myth/result";
-import { err, ok } from "true-myth/result";
+import type { Result } from "ts-results-es";
+import { Err, Ok } from "ts-results-es";
 
 import { ActionDeniedError } from "../../lib/error/control.js";
 import {
@@ -34,7 +34,7 @@ export function buildPersonOrder(
       case "dbRole":
       default: {
         key satisfies "committeeRole" | "committeeName" | "dbRole";
-        return err(
+        return Err(
           new ActionDeniedError(
             `Unsupported filter key: ${String((key as { field?: string } | undefined)?.field)}`
           )
@@ -42,7 +42,7 @@ export function buildPersonOrder(
       }
     }
   }
-  return ok(orderBy);
+  return Ok(orderBy);
 }
 export function buildPersonWhere(
   filters: readonly PersonFilters[] | null | undefined

@@ -15,7 +15,7 @@ import {
   SortDirection,
 } from "@ukdanceblue/common";
 import { EmailAddressResolver } from "graphql-scalars";
-import { err, ok } from "true-myth/result";
+import { Err, Ok } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -177,14 +177,14 @@ export class PersonResolver {
       this.personRepository.countPeople({ filters: args.filters }),
     ]);
 
-    if (rows.isErr) {
-      return err(rows.error);
+    if (rows.isErr()) {
+      return Err(rows.error);
     }
-    if (total.isErr) {
-      return err(total.error);
+    if (total.isErr()) {
+      return Err(total.error);
     }
 
-    return ok(
+    return Ok(
       ListPeopleResponse.newPaginated({
         data: await Promise.all(
           rows.value.map((row) =>
@@ -299,7 +299,7 @@ export class PersonResolver {
           },
         });
 
-        return ok(person);
+        return Ok(person);
       })
     );
   }
@@ -438,14 +438,14 @@ export class PersonResolver {
         const entry = await fundraisingEntryRepository.findEntryByUnique({
           uuid: id,
         });
-        if (entry.isErr) {
+        if (entry.isErr()) {
           return false;
         }
         const dbFundsRepository = Container.get(DBFundsRepository);
         const teams = await dbFundsRepository.getTeamsForDbFundsTeam({
           id: entry.value.dbFundsEntry.dbFundsTeamId,
         });
-        if (teams.isErr) {
+        if (teams.isErr()) {
           return false;
         }
         return captainOf.some(({ teamId }) =>
@@ -482,10 +482,10 @@ export class PersonResolver {
       filters: args.filters,
     });
 
-    if (entries.isErr) {
+    if (entries.isErr()) {
       throw new CatchableConcreteError(entries.error);
     }
-    if (count.isErr) {
+    if (count.isErr()) {
       throw new CatchableConcreteError(count.error);
     }
 
@@ -519,7 +519,7 @@ export class PersonResolver {
         uuid: id,
       });
 
-    if (models.isErr) {
+    if (models.isErr()) {
       throw new CatchableConcreteError(models.error);
     }
 

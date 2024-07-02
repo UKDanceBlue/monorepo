@@ -10,7 +10,6 @@ import {
   MembershipPositionType,
   PersonNode,
 } from "@ukdanceblue/common";
-import { map } from "true-myth/result";
 import {
   Arg,
   Field,
@@ -23,7 +22,6 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
-import { flipPromise } from "../lib/error/error.js";
 import { ConcreteResult } from "../lib/error/result.js";
 import { FundraisingEntryRepository } from "../repositories/fundraising/FundraisingRepository.js";
 import { fundraisingAssignmentModelToNode } from "../repositories/fundraising/fundraisingAssignmentModelToNode.js";
@@ -72,7 +70,8 @@ export class FundraisingAssignmentResolver {
         uuid: id,
       });
 
-    return flipPromise(map(fundraisingAssignmentModelToNode, assignment));
+    return assignment.toAsyncResult().map(fundraisingAssignmentModelToNode)
+      .promise;
   }
 
   @AccessControl(fundraisingAccess)
@@ -121,13 +120,12 @@ export class FundraisingAssignmentResolver {
   @AccessControl<never, PersonNode>(globalFundraisingAccessParam, {
     custom: async (_, { teamMemberships }, { id: { id } }) => {
       const personRepository = Container.get(PersonRepository);
-      const memberships =
-        (await personRepository.findMembershipsOfPerson(
-          { uuid: id },
-          undefined,
-          undefined,
-          true
-        )) ?? [];
+      const memberships = await personRepository.findMembershipsOfPerson(
+        { uuid: id },
+        undefined,
+        undefined,
+        true
+      );
       const userCaptaincies = teamMemberships.filter(
         (membership) => membership.position === MembershipPositionType.Captain
       );
@@ -151,13 +149,14 @@ export class FundraisingAssignmentResolver {
   })
   async person(
     @Root() { id: { id } }: FundraisingAssignmentNode
-  ): Promise<ConcreteResult<Promise<PersonNode>>> {
+  ): Promise<ConcreteResult<PersonNode>> {
     const person = await this.fundraisingEntryRepository.getPersonForAssignment(
       { uuid: id }
     );
-    return person.map((person) =>
-      personModelToResource(person, this.personRepository)
-    );
+    return person
+      .toAsyncResult()
+      .andThen((person) => personModelToResource(person, this.personRepository))
+      .promise;
   }
 
   @FieldResolver(() => FundraisingEntryNode)

@@ -11,7 +11,6 @@ import {
   MembershipPositionType,
   SortDirection,
 } from "@ukdanceblue/common";
-import { map } from "true-myth/result";
 import {
   Arg,
   Args,
@@ -25,7 +24,6 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
-import { flipPromise } from "../lib/error/error.js";
 import { ConcreteResult } from "../lib/error/result.js";
 import { CatchableConcreteError } from "../lib/formatError.js";
 import { DBFundsRepository } from "../repositories/fundraising/DBFundsRepository.js";
@@ -102,7 +100,7 @@ export class FundraisingEntryResolver {
     const entry = await this.fundraisingEntryRepository.findEntryByUnique({
       uuid: id,
     });
-    return flipPromise(map(fundraisingEntryModelToNode, entry));
+    return entry.toAsyncResult().map(fundraisingEntryModelToNode).promise;
   }
 
   @AccessControl(globalFundraisingAccessParam)
@@ -127,10 +125,10 @@ export class FundraisingEntryResolver {
       filters: args.filters,
     });
 
-    if (entries.isErr) {
+    if (entries.isErr()) {
       throw new CatchableConcreteError(entries.error);
     }
-    if (count.isErr) {
+    if (count.isErr()) {
       throw new CatchableConcreteError(count.error);
     }
 
@@ -171,14 +169,14 @@ export class FundraisingEntryResolver {
         const entry = await fundraisingEntryRepository.findEntryByUnique({
           uuid: id,
         });
-        if (entry.isErr) {
+        if (entry.isErr()) {
           return false;
         }
         const dbFundsRepository = Container.get(DBFundsRepository);
         const teams = await dbFundsRepository.getTeamsForDbFundsTeam({
           id: entry.value.dbFundsEntry.dbFundsTeamId,
         });
-        if (teams.isErr) {
+        if (teams.isErr()) {
           return false;
         }
         return captainOf.some(({ teamId }) =>
@@ -195,7 +193,7 @@ export class FundraisingEntryResolver {
       await this.fundraisingEntryRepository.getAssignmentsForEntry({
         uuid: id,
       });
-    if (assignments.isErr) {
+    if (assignments.isErr()) {
       throw new CatchableConcreteError(assignments.error);
     }
     return Promise.all(

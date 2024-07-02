@@ -16,7 +16,7 @@ import {
   PointOpportunityNode,
   TeamNode,
 } from "@ukdanceblue/common";
-import { ok } from "true-myth/result";
+import { Ok } from "ts-results-es";
 import { Arg, Query, Resolver } from "type-graphql";
 import { Service } from "typedi";
 
@@ -64,20 +64,20 @@ export class NodeResolver {
     switch (id.typename) {
       case ConfigurationNode.constructor.name: {
         const { data } = await this.configurationResolver.getByUuid(id);
-        return ok(data);
+        return Ok(data);
       }
       case DeviceNode.constructor.name: {
         const { data } = await this.deviceResolver.getByUuid(id);
-        return ok(data);
+        return Ok(data);
       }
       case EventNode.constructor.name: {
         const { data } = await this.eventResolver.getByUuid(id);
-        return ok(data);
+        return Ok(data);
       }
       // TODO: fix this
       // case FeedResolver.constructor.name: {
       //   const { data } = await this.feedResolver.getByUuid(id);
-      //   return ok(data);
+      //   return Ok(data);
       // }
       case FundraisingAssignmentNode.constructor.name: {
         return this.fundraisingAssignmentResolver.fundraisingAssignment(id);
@@ -87,34 +87,33 @@ export class NodeResolver {
       }
       case ImageNode.constructor.name: {
         const { data } = await this.imageResolver.getByUuid(id);
-        return ok(data);
+        return Ok(data);
       }
       case MarathonHourNode.constructor.name: {
         const data = await this.marathonHourResolver.marathonHour(id);
-        return ok(data);
+        return Ok(data);
       }
       case MarathonNode.constructor.name: {
         return this.marathonResolver.marathon(id);
       }
       case NotificationNode.constructor.name: {
         const { data } = await this.notificationResolver.getByUuid(id);
-        return ok(data);
+        return Ok(data);
       }
       case PersonNode.constructor.name: {
-        const { data } = await this.personResolver.getByUuid(id);
-        return ok(data);
+        return this.personResolver.getByUuid(id);
       }
       case PointOpportunityNode.constructor.name: {
         const { data } = await this.pointOpportunityResolver.getByUuid(id);
-        return ok(data);
+        return Ok(data);
       }
       case PointEntryNode.constructor.name: {
         const { data } = await this.pointEntryResolver.getByUuid(id);
-        return ok(data);
+        return Ok(data);
       }
       case TeamNode.constructor.name: {
         const { data } = await this.teamResolver.getByUuid(id);
-        return ok(data);
+        return Ok(data);
       }
       default: {
         throw new Error(`Unknown typename: ${id.typename}`);

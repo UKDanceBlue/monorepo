@@ -1,4 +1,4 @@
-import type { Result } from "true-myth";
+import type { Result } from "ts-results-es";
 
 import type { ConcreteError, JsError, UnknownError } from "./error.js";
 import type { HttpError } from "./http.js";
