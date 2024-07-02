@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
+import { ActionDeniedError } from "@ukdanceblue/common/error";
 import type { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 
@@ -7,14 +8,12 @@ import type {
   FundraisingEntryFilters,
   FundraisingEntryOrderKeys,
 } from "./FundraisingRepository.js";
-import { ActionDeniedError } from "#error/control.js";
 import {
   dateFilterToPrisma,
   numericFilterToPrisma,
   oneOfFilterToPrisma,
   stringFilterToPrisma,
 } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 
 export function buildFundraisingEntryOrder(
   order:

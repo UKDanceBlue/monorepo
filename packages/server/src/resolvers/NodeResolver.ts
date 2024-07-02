@@ -16,11 +16,11 @@ import {
   PointOpportunityNode,
   TeamNode,
 } from "@ukdanceblue/common";
+import { ConcreteResult } from "@ukdanceblue/common/error";
 import { Ok } from "ts-results-es";
 import { Arg, Query, Resolver } from "type-graphql";
 import { Service } from "typedi";
 
-import { ConcreteResult } from "#error/result.js";
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "#resolvers/DeviceResolver.js";
 import { EventResolver } from "#resolvers/EventResolver.js";

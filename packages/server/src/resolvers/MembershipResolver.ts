@@ -1,8 +1,8 @@
 import { MembershipNode, PersonNode, TeamNode } from "@ukdanceblue/common";
+import { ConcreteResult } from "@ukdanceblue/common/error";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 import { Service } from "typedi";
 
-import { ConcreteResult } from "#error/result.js";
 import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";

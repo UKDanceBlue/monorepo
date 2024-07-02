@@ -9,12 +9,12 @@ import {
   UnionValidationError,
   isErrorCode,
 } from "@ukdanceblue/common";
+import type { ConcreteError } from "@ukdanceblue/common/error";
 import type { GraphQLFormattedError } from "graphql";
 import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
 import type { Writable } from "utility-types";
 
-import type { ConcreteError } from "#error/error.js";
 
 export interface DbGraphQLFormattedErrorExtensions
   extends Omit<ApiError, "cause" | "message"> {

@@ -7,20 +7,18 @@ import {
   PrismaClient,
 } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
+
+import { ActionDeniedError, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 import { Service } from "typedi";
-
 import {
   buildFundraisingEntryOrder,
   buildFundraisingEntryWhere,
 } from "./fundraisingEntryRepositoryUtils.js";
-import { ActionDeniedError } from "#error/control.js";
-import { NotFoundError } from "#error/direct.js";
-import { BasicError } from "#error/error.js";
-import { SomePrismaError } from "#error/prisma.js";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
 import {
+  RepositoryError,
   SimpleUniqueParam,
   handleRepositoryError,
 } from "#repositories/shared.js";
@@ -81,7 +79,7 @@ export class FundraisingEntryRepository {
   ): Promise<
     Result<
       FundraisingEntry & { dbFundsEntry: DBFundsFundraisingEntry },
-      SomePrismaError | BasicError | NotFoundError
+      RepositoryError
     >
   > {
     try {
@@ -104,9 +102,7 @@ export class FundraisingEntryRepository {
 
   async findAssignmentByUnique(
     param: FundraisingAssignmentUniqueParam
-  ): Promise<
-    Result<FundraisingAssignment, SomePrismaError | BasicError | NotFoundError>
-  > {
+  ): Promise<Result<FundraisingAssignment, RepositoryError>> {
     try {
       const row = await this.prisma.fundraisingAssignment.findUnique({
         where: param,
@@ -122,12 +118,7 @@ export class FundraisingEntryRepository {
 
   async getAssignmentsForEntry(
     param: FundraisingEntryUniqueParam
-  ): Promise<
-    Result<
-      readonly FundraisingAssignment[],
-      SomePrismaError | BasicError | NotFoundError
-    >
-  > {
+  ): Promise<Result<readonly FundraisingAssignment[], RepositoryError>> {
     try {
       const entry = await this.prisma.fundraisingEntry.findUnique({
         where: param,
@@ -166,7 +157,7 @@ export class FundraisingEntryRepository {
       readonly (FundraisingEntry & {
         dbFundsEntry: DBFundsFundraisingEntry;
       })[],
-      SomePrismaError | BasicError | ActionDeniedError
+      RepositoryError | ActionDeniedError
     >
   > {
     try {
@@ -229,9 +220,7 @@ export class FundraisingEntryRepository {
     filters,
   }: {
     filters?: readonly FundraisingEntryFilters[] | undefined | null;
-  }): Promise<
-    Result<number, SomePrismaError | BasicError | ActionDeniedError>
-  > {
+  }): Promise<Result<number, RepositoryError | ActionDeniedError>> {
     try {
       const where = buildFundraisingEntryWhere(filters);
       if (where.isErr()) {
@@ -248,7 +237,7 @@ export class FundraisingEntryRepository {
 
   async deleteEntry(
     param: FundraisingEntryUniqueParam
-  ): Promise<Result<Option<FundraisingEntry>, SomePrismaError | BasicError>> {
+  ): Promise<Result<Option<FundraisingEntry>, RepositoryError>> {
     try {
       return Ok(
         Some(await this.prisma.fundraisingEntry.delete({ where: param }))
@@ -270,10 +259,7 @@ export class FundraisingEntryRepository {
     personParam: SimpleUniqueParam,
     { amount }: { amount: number }
   ): Promise<
-    Result<
-      FundraisingAssignment,
-      SomePrismaError | BasicError | NotFoundError | ActionDeniedError
-    >
+    Result<FundraisingAssignment, RepositoryError | ActionDeniedError>
   > {
     try {
       const entry = await this.findEntryByUnique(entryParam);
@@ -311,9 +297,7 @@ export class FundraisingEntryRepository {
 
   async deleteAssignment(
     assignmentParam: FundraisingAssignmentUniqueParam
-  ): Promise<
-    Result<FundraisingAssignment, SomePrismaError | BasicError | NotFoundError>
-  > {
+  ): Promise<Result<FundraisingAssignment, RepositoryError>> {
     try {
       return Ok(
         await this.prisma.fundraisingAssignment.delete({
@@ -329,10 +313,7 @@ export class FundraisingEntryRepository {
     assignmentParam: FundraisingAssignmentUniqueParam,
     { amount }: { amount: number }
   ): Promise<
-    Result<
-      FundraisingAssignment,
-      SomePrismaError | BasicError | NotFoundError | ActionDeniedError
-    >
+    Result<FundraisingAssignment, RepositoryError | ActionDeniedError>
   > {
     try {
       const assignment = await this.prisma.fundraisingAssignment.findUnique({
@@ -383,7 +364,7 @@ export class FundraisingEntryRepository {
 
   async getPersonForAssignment(
     assignmentParam: FundraisingAssignmentUniqueParam
-  ): Promise<Result<Person, SomePrismaError | BasicError | NotFoundError>> {
+  ): Promise<Result<Person, RepositoryError>> {
     try {
       const assignment = await this.prisma.fundraisingAssignment.findUnique({
         where: assignmentParam,
@@ -405,7 +386,7 @@ export class FundraisingEntryRepository {
       FundraisingEntry & {
         dbFundsEntry: DBFundsFundraisingEntry;
       },
-      SomePrismaError | BasicError | NotFoundError
+      RepositoryError
     >
   > {
     try {
@@ -432,12 +413,7 @@ export class FundraisingEntryRepository {
 
   async getAssignmentsForPerson(
     personParam: UniquePersonParam
-  ): Promise<
-    Result<
-      readonly FundraisingAssignment[],
-      SomePrismaError | BasicError | NotFoundError
-    >
-  > {
+  ): Promise<Result<readonly FundraisingAssignment[], RepositoryError>> {
     try {
       const assignments = await this.prisma.fundraisingAssignment.findMany({
         where: { person: personParam },

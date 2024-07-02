@@ -11,6 +11,7 @@ import {
   MembershipPositionType,
   SortDirection,
 } from "@ukdanceblue/common";
+import { ConcreteResult } from "@ukdanceblue/common/error";
 import {
   Arg,
   Args,
@@ -24,7 +25,6 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
-import { ConcreteResult } from "#error/result.js";
 import { CatchableConcreteError } from "#lib/formatError.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";

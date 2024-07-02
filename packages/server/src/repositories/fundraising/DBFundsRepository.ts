@@ -1,16 +1,18 @@
 import { DBFundsTeam, Prisma, PrismaClient, Team } from "@prisma/client";
+
+import {
+  CompositeError,
+  NotFoundError,
+  BasicError,
+} from "@ukdanceblue/common/error";
 import { DateTime } from "luxon";
 import { Err, None, Ok, Option, Result } from "ts-results-es";
 import { Service } from "typedi";
-
-import { CompositeError } from "#error/composite.js";
-import { NotFoundError } from "#error/direct.js";
-import { BasicError } from "#error/error.js";
-import { PrismaError, SomePrismaError } from "#error/prisma.js";
 import { logger } from "#logging/standardLogging.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
 import {
+  RepositoryError,
   SimpleUniqueParam,
   handleRepositoryError,
 } from "#repositories/shared.js";
@@ -46,13 +48,7 @@ export class DBFundsRepository {
       amount: number;
     }[]
   ): Promise<
-    Result<
-      None,
-      | PrismaError
-      | NotFoundError
-      | CompositeError<PrismaError | BasicError>
-      | BasicError
-    >
+    Result<None, RepositoryError | CompositeError<BasicError | NotFoundError>>
   > {
     try {
       let marathonId: number;
@@ -196,7 +192,7 @@ export class DBFundsRepository {
 
   async getTeamsForDbFundsTeam(
     dbFundsTeamParam: UniqueDbFundsTeamParam
-  ): Promise<Result<Team[], NotFoundError | SomePrismaError | BasicError>> {
+  ): Promise<Result<Team[], RepositoryError>> {
     try {
       const team = await this.prisma.dBFundsTeam.findUnique({
         where:
@@ -226,7 +222,7 @@ export class DBFundsRepository {
       | {
           dbNum: number;
         }
-  ): Promise<Result<None, NotFoundError | SomePrismaError | BasicError>> {
+  ): Promise<Result<None, RepositoryError>> {
     try {
       const team = await this.prisma.team.findUnique({
         where: teamParam,
@@ -263,7 +259,7 @@ export class DBFundsRepository {
     byDbNum?: number;
     byName?: string;
     onlyActive?: boolean;
-  }): Promise<Result<DBFundsTeam[], SomePrismaError | BasicError>> {
+  }): Promise<Result<DBFundsTeam[], RepositoryError>> {
     try {
       return Ok(
         await this.prisma.dBFundsTeam.findMany({

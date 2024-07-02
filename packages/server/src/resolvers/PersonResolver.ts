@@ -14,6 +14,7 @@ import {
   PersonNode,
   SortDirection,
 } from "@ukdanceblue/common";
+import { ConcreteError , ConcreteResult } from "@ukdanceblue/common/error";
 import { EmailAddressResolver } from "graphql-scalars";
 import { Ok, Result } from "ts-results-es";
 import {
@@ -32,8 +33,6 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
-import { ConcreteError } from "#error/error.js";
-import { ConcreteResult } from "#error/result.js";
 import { CatchableConcreteError } from "#lib/formatError.js";
 import { auditLogger } from "#logging/auditLogging.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";

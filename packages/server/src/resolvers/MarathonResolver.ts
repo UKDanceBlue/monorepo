@@ -8,6 +8,7 @@ import {
   SortDirection,
   TeamNode,
 } from "@ukdanceblue/common";
+import { ConcreteResult } from "@ukdanceblue/common/error";
 import { DateTimeISOResolver, VoidResolver } from "graphql-scalars";
 import {
   Arg,
@@ -24,7 +25,6 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { ConcreteResult } from "#error/result.js";
 import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
 import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";

@@ -1,11 +1,11 @@
 import type { Person } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
+import { NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Result } from "ts-results-es";
 import { Service } from "typedi";
 
 import { buildDeviceOrder, buildDeviceWhere } from "./deviceRepositoryUtils.js";
-import { NotFoundError } from "#error/direct.js";
 import { CatchableConcreteError } from "#lib/formatError.js";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { NotificationAudience } from "#notification/NotificationProvider.js";

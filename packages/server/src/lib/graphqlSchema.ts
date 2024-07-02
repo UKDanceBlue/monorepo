@@ -1,12 +1,12 @@
 import { fileURLToPath } from "url";
 
+import { ConcreteError, toBasicError } from "@ukdanceblue/common/error";
 import { Result } from "ts-results-es";
 import type { MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
 import { Container } from "typedi";
 
 import { CatchableConcreteError } from "./formatError.js";
-import { ConcreteError, toBasicError } from "#error/error.js";
 import { logger } from "#logging/logger.js";
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "#resolvers/DeviceResolver.js";

@@ -10,6 +10,7 @@ import {
   SortDirection,
   TeamNode,
 } from "@ukdanceblue/common";
+import { NotFoundError , ConcreteResult } from "@ukdanceblue/common/error";
 import { Err } from "ts-results-es";
 import {
   Arg,
@@ -27,8 +28,6 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { NotFoundError } from "#error/direct.js";
-import { ConcreteResult } from "#error/result.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PointEntryRepository } from "#repositories/pointEntry/PointEntryRepository.js";

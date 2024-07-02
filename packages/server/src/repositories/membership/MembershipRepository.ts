@@ -1,9 +1,9 @@
 import { Membership, Person, PrismaClient, Team } from "@prisma/client";
 import { CommitteeRole, MembershipPositionType } from "@ukdanceblue/common";
+import { NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-import { NotFoundError } from "#error/direct.js";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import {
   handleRepositoryError,

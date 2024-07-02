@@ -10,6 +10,7 @@ import {
   MembershipPositionType,
   PersonNode,
 } from "@ukdanceblue/common";
+import { ConcreteResult } from "@ukdanceblue/common/error";
 import {
   Arg,
   Field,
@@ -22,7 +23,6 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
-import { ConcreteResult } from "#error/result.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";

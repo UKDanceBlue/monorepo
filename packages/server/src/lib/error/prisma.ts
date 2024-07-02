@@ -5,10 +5,9 @@ import {
   PrismaClientUnknownRequestError,
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
+import { ConcreteError } from "@ukdanceblue/common/error";
 import type { Option } from "ts-results-es";
 import { None, Some } from "ts-results-es";
-
-import { ConcreteError } from "./error.js";
 
 type RawPrismaError =
   | PrismaClientKnownRequestError

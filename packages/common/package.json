@@ -19,6 +19,11 @@
       "node": null,
       "default": "./dist/client-parsers/index.js"
     },
+    "./error": {
+      "types": "./dist/error/index.d.ts",
+      "node": "./dist/error/index.js",
+      "default": null
+    },
     "./graphql-client-admin": {
       "node": null,
       "react-native": null,

@@ -9,6 +9,7 @@ import {
   PersonNode,
   SortDirection,
 } from "@ukdanceblue/common";
+import { ConcreteResult } from "@ukdanceblue/common/error";
 import {
   Arg,
   Args,
@@ -25,7 +26,6 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { ConcreteResult } from "#error/result.js";
 import { auditLogger } from "#logging/auditLogging.js";
 import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
 import { deviceModelToResource } from "#repositories/device/deviceModelToResource.js";

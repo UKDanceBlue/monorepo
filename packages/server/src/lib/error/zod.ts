@@ -1,6 +1,5 @@
+import { ConcreteError } from "@ukdanceblue/common/error";
 import type { ZodError as RawZodError } from "zod";
-
-import { ConcreteError } from "./error.js";
 
 const ZodErrorTag = Symbol("ZodError");
 type ZodErrorTag = typeof ZodErrorTag;

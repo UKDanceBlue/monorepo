@@ -1,4 +1,12 @@
 import type { MarathonYearString } from "@ukdanceblue/common";
+import {
+  TimeoutError,
+  BasicError,
+  toBasicError,
+  HttpError,
+  optionOf,
+  ConcreteResult,
+} from "@ukdanceblue/common/error";
 import { DateTime } from "luxon";
 import { Err, Ok } from "ts-results-es";
 import { Inject, Service } from "typedi";
@@ -10,11 +18,6 @@ import type {
   FundraisingTeam,
 } from "./FundraisingProvider.js";
 import { dbFundsApiKeyToken, dbFundsApiOriginToken } from "#environment";
-import { TimeoutError } from "#error/direct.js";
-import { BasicError, toBasicError } from "#error/error.js";
-import { HttpError } from "#error/http.js";
-import { optionOf } from "#error/option.js";
-import { ConcreteResult } from "#error/result.js";
 import { ZodError } from "#error/zod.js";
 
 const dbFundsFundraisingTeamSchema = z.object({

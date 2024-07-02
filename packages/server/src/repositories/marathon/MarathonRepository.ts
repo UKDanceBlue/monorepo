@@ -1,5 +1,6 @@
 import { Marathon, MarathonHour, Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
+import { NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
@@ -7,7 +8,6 @@ import {
   buildMarathonOrder,
   buildMarathonWhere,
 } from "./marathonRepositoryUtils.js";
-import { NotFoundError } from "#error/direct.js";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import {
   handleRepositoryError,
