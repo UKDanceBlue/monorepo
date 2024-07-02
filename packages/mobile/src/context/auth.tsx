@@ -52,7 +52,7 @@ export function AuthStateProvider({ children }: { children: ReactNode }) {
           loggedIn: data?.loginState.loggedIn,
           authSource: data?.loginState.authSource,
           role: data?.loginState.dbRole,
-          userUuid: data?.me.data?.id,
+          userUuid: data?.me?.id,
         },
         tags: ["graphql"],
       });
@@ -62,7 +62,7 @@ export function AuthStateProvider({ children }: { children: ReactNode }) {
   return (
     <authStateContext.Provider
       value={{
-        personUuid: data?.me.data?.id ?? null,
+        personUuid: data?.me?.id ?? null,
         loggedIn: data?.loginState.loggedIn ?? false,
         authSource: data?.loginState.authSource ?? AuthSource.None,
 

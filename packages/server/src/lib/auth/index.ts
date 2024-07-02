@@ -1,7 +1,7 @@
 import type { JwtPayload, UserData } from "@ukdanceblue/common";
 import { AuthSource } from "@ukdanceblue/common";
-import type { Request } from "express";
 import jsonwebtoken from "jsonwebtoken";
+import type { Request } from "koa";
 
 import { jwtSecret } from "../../environment.js";
 
@@ -97,7 +97,7 @@ export function tokenFromRequest(
   try {
     // Prefer cookie
     let jsonWebToken: string | undefined = undefined;
-    const cookies = req.cookies as unknown;
+    const cookies = req.ctx.cookies as unknown;
     if (
       typeof cookies === "object" &&
       cookies &&

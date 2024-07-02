@@ -101,9 +101,7 @@ const SpiritScreen = () => {
       <SpiritStack.Screen name="Scoreboard">
         {() => (
           <ScoreboardScreen
-            highlightedTeamFragment={
-              query.data?.me.data?.teams[0]?.team ?? null
-            }
+            highlightedTeamFragment={query.data?.me?.teams[0]?.team ?? null}
             scoreBoardFragment={query.data?.teams.data ?? null}
             loading={query.fetching}
             refresh={() => refresh({ requestPolicy: "network-only" })}
@@ -114,8 +112,8 @@ const SpiritScreen = () => {
       <SpiritStack.Screen name="MyTeam">
         {() => (
           <TeamScreen
-            myTeamFragment={query.data?.me.data?.teams[0]?.team ?? null}
-            userUuid={query.data?.me.data?.id ?? ""}
+            myTeamFragment={query.data?.me?.teams[0]?.team ?? null}
+            userUuid={query.data?.me?.id ?? ""}
             loading={query.fetching}
             refresh={refresh}
           />

@@ -107,6 +107,6 @@ export function useTabBarConfig(): {
     tabConfigLoading: fetching,
     fancyTab,
     shownTabs,
-    forceAll: data?.me.data?.linkblue === "demo-user",
+    forceAll: data?.me?.linkblue === "demo-user",
   };
 }

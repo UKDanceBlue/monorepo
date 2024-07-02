@@ -65,14 +65,14 @@ export function TriviaCrack() {
   );
 
   const { stationOrder, moraleTeamNumber } = useMemo(() => {
-    const value = JSON.parse(option.value || "{}") as unknown;
+    const value = JSON.parse(option?.value || "{}") as unknown;
     let stationOrder: [number, number, number, number, number, number] | null =
       null;
     let moraleTeamNumber: number | undefined;
     if (typeof value === "object" && value !== null) {
-      if ((data?.me.data?.teams.length ?? 0) > 0) {
+      if ((data?.me?.teams.length ?? 0) > 0) {
         const moraleTeams =
-          data?.me.data?.teams.filter(
+          data?.me?.teams.filter(
             (team) => team.team.type === TeamType.Morale
           ) ?? [];
         if (moraleTeams[0]?.team.name.startsWith("Morale Team")) {
@@ -110,7 +110,7 @@ export function TriviaCrack() {
       }
     }
     return { stationOrder, moraleTeamNumber };
-  }, [data?.me.data?.teams, option.value]);
+  }, [data?.me?.teams, option?.value]);
 
   useEffect(() => {
     if (stationOrder && spins == null) {

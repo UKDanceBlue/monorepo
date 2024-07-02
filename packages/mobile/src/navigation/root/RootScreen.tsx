@@ -119,7 +119,7 @@ const RootScreen = () => {
                     profileScreenAuthFragment={
                       rootScreenData?.loginState ?? null
                     }
-                    profileScreenUserFragment={rootScreenData?.me.data ?? null}
+                    profileScreenUserFragment={rootScreenData?.me ?? null}
                   />
                 )}
               </RootStack.Screen>
