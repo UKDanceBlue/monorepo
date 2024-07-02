@@ -8,7 +8,7 @@
   "editor.formatOnSave": true,
   "editor.tabSize": 2,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit",
+    "source.organizeImports": "never",
     "source.fixAll": "explicit"
   },
   "search.exclude": {

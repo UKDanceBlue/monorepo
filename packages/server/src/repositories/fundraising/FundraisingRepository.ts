@@ -10,8 +10,6 @@ import type { SortDirection } from "@ukdanceblue/common";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 import { Service } from "typedi";
 
-import { UniquePersonParam } from "../person/PersonRepository.js";
-import { SimpleUniqueParam, handleRepositoryError } from "../shared.js";
 import {
   buildFundraisingEntryOrder,
   buildFundraisingEntryWhere,
@@ -21,7 +19,11 @@ import { NotFoundError } from "#error/direct.js";
 import { BasicError } from "#error/error.js";
 import { SomePrismaError } from "#error/prisma.js";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
+import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
+import {
+  SimpleUniqueParam,
+  handleRepositoryError,
+} from "#repositories/shared.js";
 
 const fundraisingEntryBooleanKeys = [] as const;
 type FundraisingEntryBooleanKey = (typeof fundraisingEntryBooleanKeys)[number];

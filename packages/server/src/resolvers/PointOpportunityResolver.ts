@@ -26,15 +26,14 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
+import { eventModelToResource } from "#repositories/event/eventModelToResource.js";
+import { PointOpportunityRepository } from "#repositories/pointOpportunity/PointOpportunityRepository.js";
+import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
-import { eventModelToResource } from "#repositories/event/eventModelToResource.js";
-import { PointOpportunityRepository } from "#repositories/pointOpportunity/PointOpportunityRepository.js";
-import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
-
+} from "#resolvers/ApiResponse.js";
 
 @ObjectType("SinglePointOpportunityResponse", {
   implements: AbstractGraphQLOkResponse<PointOpportunityNode>,

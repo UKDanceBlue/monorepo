@@ -1,7 +1,7 @@
 import type { LeveledLogMethod, Logger } from "winston";
 import { createLogger, format, transports } from "winston";
 
-import { isDevelopment, logDir } from "../../environment.js";
+import { isDevelopment, logDir } from "#environment";
 
 export interface AuditLogger extends Logger {
   /**

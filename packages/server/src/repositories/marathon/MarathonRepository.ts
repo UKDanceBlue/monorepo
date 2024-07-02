@@ -3,14 +3,16 @@ import type { SortDirection } from "@ukdanceblue/common";
 import { Err, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-import { handleRepositoryError, type RepositoryError } from "../shared.js";
 import {
   buildMarathonOrder,
   buildMarathonWhere,
 } from "./marathonRepositoryUtils.js";
 import { NotFoundError } from "#error/direct.js";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
+import {
+  handleRepositoryError,
+  type RepositoryError,
+} from "#repositories/shared.js";
 
 const marathonBooleanKeys = [] as const;
 type MarathonBooleanKey = (typeof marathonBooleanKeys)[number];

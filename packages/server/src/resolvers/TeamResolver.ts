@@ -35,17 +35,6 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import {
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
-import {
-  ListFundraisingEntriesArgs,
-  ListFundraisingEntriesResponse,
-  globalFundraisingAccessParam,
-} from "./FundraisingEntryResolver.js";
-import * as Context from "./context.js";
 import { CatchableConcreteError } from "#lib/formatError.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
@@ -55,7 +44,17 @@ import { membershipModelToResource } from "#repositories/membership/membershipMo
 import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
 import { TeamRepository } from "#repositories/team/TeamRepository.js";
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
-
+import {
+  AbstractGraphQLCreatedResponse,
+  AbstractGraphQLOkResponse,
+  AbstractGraphQLPaginatedResponse,
+} from "#resolvers/ApiResponse.js";
+import {
+  ListFundraisingEntriesArgs,
+  ListFundraisingEntriesResponse,
+  globalFundraisingAccessParam,
+} from "#resolvers/FundraisingEntryResolver.js";
+import * as Context from "#resolvers/context.js";
 
 @ObjectType("SingleTeamResponse", {
   implements: AbstractGraphQLOkResponse<TeamNode>,

@@ -6,7 +6,7 @@ import {
 import { Ctx, Field, ObjectType, Query, Resolver } from "type-graphql";
 import { Service } from "typedi";
 
-import * as Context from "./context.js";
+import * as Context from "#resolvers/context.js";
 
 @ObjectType("LoginState")
 export class LoginState {

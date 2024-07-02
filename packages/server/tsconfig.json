@@ -23,7 +23,8 @@
       "#jobs/*": ["./src/jobs/*"],
       "#repositories/*": ["./src/repositories/*"],
       "#resolvers/*": ["./src/resolvers/*"],
-      "#routes/*": ["./src/routes/*"]
+      "#routes/*": ["./src/routes/*"],
+      "#environment": ["./src/environment.ts"]
     }
   },
   "include": ["src"],

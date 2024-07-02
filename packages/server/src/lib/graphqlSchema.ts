@@ -5,9 +5,9 @@ import type { MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
 import { Container } from "typedi";
 
-import { ConcreteError, toBasicError } from "./error/error.js";
 import { CatchableConcreteError } from "./formatError.js";
-import { logger } from "./logging/logger.js";
+import { ConcreteError, toBasicError } from "#error/error.js";
+import { logger } from "#logging/logger.js";
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "#resolvers/DeviceResolver.js";
 import { EventResolver } from "#resolvers/EventResolver.js";
@@ -28,7 +28,6 @@ import { PersonResolver } from "#resolvers/PersonResolver.js";
 import { PointEntryResolver } from "#resolvers/PointEntryResolver.js";
 import { PointOpportunityResolver } from "#resolvers/PointOpportunityResolver.js";
 import { TeamResolver } from "#resolvers/TeamResolver.js";
-
 
 const schemaPath = fileURLToPath(
   new URL("../../../../schema.graphql", import.meta.url)

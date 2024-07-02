@@ -16,12 +16,6 @@ import {
 import { Err, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-import type { UniqueMarathonParam } from "../marathon/MarathonRepository.js";
-import {
-  handleRepositoryError,
-  type RepositoryError,
-  type SimpleUniqueParam,
-} from "../shared.js";
 
 import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
 
@@ -33,6 +27,12 @@ import {
   NotFoundError,
 } from "#error/direct.js";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
+import {
+  handleRepositoryError,
+  type RepositoryError,
+  type SimpleUniqueParam,
+} from "#repositories/shared.js";
 
 const personStringKeys = ["name", "email", "linkblue"] as const;
 type PersonStringKey = (typeof personStringKeys)[number];

@@ -23,10 +23,9 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 import { MarathonHourRepository } from "#repositories/marathonHour/MarathonHourRepository.js";
 import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
-
+import { AbstractGraphQLPaginatedResponse } from "#resolvers/ApiResponse.js";
 
 @ObjectType("ListMarathonHoursResponse", {
   implements: AbstractGraphQLPaginatedResponse<MarathonHourNode[]>,

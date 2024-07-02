@@ -14,7 +14,7 @@ import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
 import type { Writable } from "utility-types";
 
-import type { ConcreteError } from "./error/error.js";
+import type { ConcreteError } from "#error/error.js";
 
 export interface DbGraphQLFormattedErrorExtensions
   extends Omit<ApiError, "cause" | "message"> {

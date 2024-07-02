@@ -3,7 +3,7 @@ import { AuthSource } from "@ukdanceblue/common";
 import jsonwebtoken from "jsonwebtoken";
 import type { Request } from "koa";
 
-import { jwtSecret } from "../../environment.js";
+import { jwtSecret } from "#environment";
 
 const jwtIssuer = "https://app.danceblue.org";
 

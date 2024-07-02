@@ -27,11 +27,6 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import {
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
 import { NotFoundError } from "#error/direct.js";
 import { ConcreteResult } from "#error/result.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
@@ -40,7 +35,11 @@ import { PointEntryRepository } from "#repositories/pointEntry/PointEntryReposit
 import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
 import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
-
+import {
+  AbstractGraphQLCreatedResponse,
+  AbstractGraphQLOkResponse,
+  AbstractGraphQLPaginatedResponse,
+} from "#resolvers/ApiResponse.js";
 
 @ObjectType("GetPointEntryByUuidResponse", {
   implements: AbstractGraphQLOkResponse<PointEntryNode>,

@@ -13,11 +13,7 @@ import type { DefaultState } from "koa";
 import Koa from "koa";
 import { koaBody } from "koa-body";
 
-import {
-  applicationHost,
-  applicationPort,
-  loggingLevel,
-} from "./environment.js";
+import { applicationHost, applicationPort, loggingLevel } from "#environment";
 import { logger } from "#logging/logger.js";
 import type { GraphQLContext } from "#resolvers/context.js";
 import eventsApiRouter from "#routes/api/events/index.js";

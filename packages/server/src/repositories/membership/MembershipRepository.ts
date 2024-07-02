@@ -3,13 +3,13 @@ import { CommitteeRole, MembershipPositionType } from "@ukdanceblue/common";
 import { Err, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
+import { NotFoundError } from "#error/direct.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import {
   handleRepositoryError,
   type RepositoryError,
   type SimpleUniqueParam,
-} from "../shared.js";
-import { NotFoundError } from "#error/direct.js";
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+} from "#repositories/shared.js";
 
 const membershipBooleanKeys = [] as const;
 type MembershipBooleanKey = (typeof membershipBooleanKeys)[number];

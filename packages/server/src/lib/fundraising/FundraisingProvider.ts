@@ -2,7 +2,7 @@ import type { MarathonYearString } from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
 import type { Option } from "ts-results-es";
 
-import type { ConcreteResult } from "../error/result.js";
+import type { ConcreteResult } from "#error/result.js";
 
 export interface FundraisingTeam<IDType> {
   name: string;

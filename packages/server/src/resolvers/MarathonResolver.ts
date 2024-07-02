@@ -24,14 +24,13 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 import { ConcreteResult } from "#error/result.js";
 import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
 import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
 import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
-
+import { AbstractGraphQLPaginatedResponse } from "#resolvers/ApiResponse.js";
 
 @ObjectType("ListMarathonsResponse", {
   implements: AbstractGraphQLPaginatedResponse<MarathonNode[]>,

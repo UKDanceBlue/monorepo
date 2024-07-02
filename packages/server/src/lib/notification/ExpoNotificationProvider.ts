@@ -9,17 +9,16 @@ import { Expo } from "expo-server-sdk";
 import { DateTime } from "luxon";
 import { Service } from "typedi";
 
-import { isDevelopment } from "../../environment.js";
-import { logger } from "../logging/standardLogging.js";
 import type {
   NotificationAudience,
   NotificationProvider,
   SendableNotification,
 } from "./NotificationProvider.js";
+import { isDevelopment } from "#environment";
+import { logger } from "#logging/standardLogging.js";
 import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
 import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
 import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
-
 
 function makeExpoNotifications(
   content: {
