@@ -1,16 +1,16 @@
 {
   "eslint.workingDirectories": ["."],
-  "eslint.experimental.useFlatConfig": true,
+  "eslint.useFlatConfig": true,
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.tsserver.experimental.enableProjectDiagnostics": true,
   "npm.packageManager": "yarn",
-  "editor.formatOnSave": true,
+  // "editor.formatOnSave": true,
   "editor.tabSize": 2,
-  "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit",
-    "source.fixAll": "explicit"
-  },
+  // "editor.codeActionsOnSave": {
+  //   "source.organizeImports": "explicit",
+  //   "source.fixAll": "explicit"
+  // },
   "search.exclude": {
     "package-lock.json": true,
     "yarn.lock": true
@@ -25,6 +25,6 @@
     "Leaderboards",
     "Spinnable",
     "Whatwg"
-  ],
-  "eslint.codeActionsOnSave.mode": "problems"
+  ]
+  // "eslint.codeActionsOnSave.mode": "problems"
 }
