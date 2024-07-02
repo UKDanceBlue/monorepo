@@ -8362,6 +8362,7 @@ __metadata:
     jest: "npm:^29.5.0"
     ts-jest: "npm:^29.1.0"
     ts-node: "npm:^10.9.1"
+    ts-results-es: "npm:^4.2.0"
     typescript: "npm:^5.4.3"
     vitest: "npm:^1.4.0"
   peerDependencies:

@@ -1,7 +1,6 @@
 import { DateTimeISOResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
-import { Maybe } from "true-myth";
-import { nothing, of } from "ts-results-es";
+import { None, Option, Some } from "ts-results-es";
 import { Field, Float, ObjectType } from "type-graphql";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
@@ -19,18 +18,18 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   id!: GlobalId;
   @Field(() => String, { nullable: true, name: "donatedByText" })
   private _donatedByText!: string | null;
-  get donatedByText(): Maybe<string> {
-    return of(this._donatedByText);
+  get donatedByText(): Option<string> {
+    return this._donatedByText ? Some(this._donatedByText) : None;
   }
-  set donatedByText(value: Maybe<string>) {
+  set donatedByText(value: Option<string>) {
     this._donatedByText = value.unwrapOr(null);
   }
   @Field(() => String, { nullable: true, name: "donatedToText" })
   private _donatedToText!: string | null;
-  get donatedToText(): Maybe<string> {
-    return of(this._donatedToText);
+  get donatedToText(): Option<string> {
+    return this._donatedToText ? Some(this._donatedToText) : None;
   }
-  set donatedToText(value: Maybe<string>) {
+  set donatedToText(value: Option<string>) {
     this._donatedToText = value.unwrapOr(null);
   }
   @Field(() => DateTimeISOResolver)
@@ -47,8 +46,8 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
 
   public static init(init: {
     id: string;
-    donatedByText: Maybe<string> | string | null;
-    donatedToText: Maybe<string> | string | null;
+    donatedByText: Option<string> | string | null;
+    donatedToText: Option<string> | string | null;
     donatedOn: Date;
     amount: number;
     createdAt: Date;
@@ -61,15 +60,15 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
     };
     node.donatedByText =
       init.donatedByText == null
-        ? nothing()
+        ? None
         : typeof init.donatedByText === "string"
-          ? of(init.donatedByText)
+          ? Some(init.donatedByText)
           : init.donatedByText;
     node.donatedToText =
       init.donatedToText == null
-        ? nothing()
+        ? None
         : typeof init.donatedToText === "string"
-          ? of(init.donatedToText)
+          ? Some(init.donatedToText)
           : init.donatedToText;
     node.donatedOn = init.donatedOn;
     node.amount = init.amount;

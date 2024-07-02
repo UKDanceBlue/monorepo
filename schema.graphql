@@ -176,12 +176,6 @@ input CreatePersonInput {
   name: String
 }
 
-type CreatePersonResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: PersonNode!
-  ok: Boolean!
-  uuid: String!
-}
-
 input CreatePointEntryInput {
   comment: String
   opportunityUuid: String
@@ -258,10 +252,6 @@ type DeleteImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseRespo
 
 type DeleteNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: Boolean!
-  ok: Boolean!
-}
-
-type DeletePersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   ok: Boolean!
 }
 
@@ -613,23 +603,8 @@ type GetImageByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseRe
   ok: Boolean!
 }
 
-type GetMembershipResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: MembershipNode
-  ok: Boolean!
-}
-
 type GetNotificationByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: NotificationNode!
-  ok: Boolean!
-}
-
-type GetPeopleResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
-  data: [PersonNode!]!
-  ok: Boolean!
-}
-
-type GetPersonResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: PersonNode
   ok: Boolean!
 }
 
@@ -1006,7 +981,7 @@ type Mutation {
   acknowledgeDeliveryIssue(uuid: GlobalId!): AcknowledgeDeliveryIssueResponse!
   addExistingImageToEvent(eventId: String!, imageId: String!): AddEventImageResponse!
   addMap(imageUuid: String!, uuid: GlobalId!): MarathonHourNode!
-  addPersonToTeam(personUuid: String!, teamUuid: String!): GetMembershipResponse!
+  addPersonToTeam(personUuid: String!, teamUuid: String!): MembershipNode!
   assignEntryToPerson(entryId: String!, input: AssignEntryToPersonInput!, personId: String!): FundraisingAssignmentNode!
   assignTeamToDbFundsTeam(dbFundsTeamId: Float!, teamId: String!): Void!
   attachImageToFeedItem(feedItemUuid: String!, imageUuid: String!): FeedNode!
@@ -1017,7 +992,7 @@ type Mutation {
   createImage(input: CreateImageInput!): ImageNode!
   createMarathon(input: CreateMarathonInput!): MarathonNode!
   createMarathonHour(input: CreateMarathonHourInput!, marathonUuid: String!): MarathonHourNode!
-  createPerson(input: CreatePersonInput!): CreatePersonResponse!
+  createPerson(input: CreatePersonInput!): PersonNode!
   createPointEntry(input: CreatePointEntryInput!): CreatePointEntryResponse!
   createPointOpportunity(input: CreatePointOpportunityInput!): CreatePointOpportunityResponse!
   createTeam(input: CreateTeamInput!, marathon: String!): CreateTeamResponse!
@@ -1036,7 +1011,7 @@ type Mutation {
     force: Boolean
     uuid: GlobalId!
   ): DeleteNotificationResponse!
-  deletePerson(uuid: GlobalId!): DeletePersonResponse!
+  deletePerson(uuid: GlobalId!): PersonNode!
   deletePointEntry(uuid: GlobalId!): DeletePointEntryResponse!
   deletePointOpportunity(uuid: GlobalId!): DeletePointOpportunityResponse!
   deleteTeam(uuid: GlobalId!): DeleteTeamResponse!
@@ -1054,7 +1029,7 @@ type Mutation {
   setImageUrl(uuid: GlobalId!): ImageNode!
   setMarathon(input: SetMarathonInput!, uuid: GlobalId!): MarathonNode!
   setMarathonHour(input: SetMarathonHourInput!, uuid: GlobalId!): MarathonHourNode!
-  setPerson(input: SetPersonInput!, uuid: GlobalId!): GetPersonResponse!
+  setPerson(input: SetPersonInput!, uuid: GlobalId!): PersonNode!
   setPointOpportunity(input: SetPointOpportunityInput!, uuid: GlobalId!): SinglePointOpportunityResponse!
   setTeam(input: SetTeamInput!, uuid: GlobalId!): SingleTeamResponse!
   stageNotification(audience: NotificationAudienceInput!, body: String!, title: String!, url: String): StageNotificationResponse!
@@ -1768,7 +1743,7 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: Void
   ): ListMarathonsResponse!
-  me: GetPersonResponse!
+  me: PersonNode
   node(id: GlobalId!): Node!
   notification(uuid: GlobalId!): GetNotificationByUuidResponse!
   notificationDeliveries(
@@ -1858,8 +1833,8 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [NotificationResolverKeyedStringFilterItem!]
   ): ListNotificationsResponse!
-  person(uuid: GlobalId!): GetPersonResponse!
-  personByLinkBlue(linkBlueId: String!): GetPersonResponse!
+  person(uuid: GlobalId!): PersonNode!
+  personByLinkBlue(linkBlueId: String!): PersonNode!
   pointEntries(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -1948,7 +1923,7 @@ type Query {
     stringFilters: [PointOpportunityResolverKeyedStringFilterItem!]
   ): ListPointOpportunitiesResponse!
   pointOpportunity(uuid: GlobalId!): SinglePointOpportunityResponse!
-  searchPeopleByName(name: String!): GetPeopleResponse!
+  searchPeopleByName(name: String!): [PersonNode!]!
   team(uuid: GlobalId!): SingleTeamResponse!
   teams(
     """The boolean filters to apply to the query"""
