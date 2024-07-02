@@ -15,9 +15,7 @@ const useTabBarConfigQuery = graphql(/* GraphQL */ `
       }
     }
     me {
-      data {
-        linkblue
-      }
+      linkblue
     }
   }
 `);

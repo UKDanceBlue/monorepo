@@ -14,13 +14,11 @@ import TeamScreen from "./TeamScreen";
 const scoreBoardDocument = graphql(/* GraphQL */ `
   query ScoreBoardDocument($type: [TeamType!]) {
     me {
-      data {
-        id
-        teams {
-          team {
-            ...HighlightedTeamFragment
-            ...MyTeamFragment
-          }
+      id
+      teams {
+        team {
+          ...HighlightedTeamFragment
+          ...MyTeamFragment
         }
       }
     }

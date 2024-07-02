@@ -7,18 +7,14 @@ import { useQuery } from "urql";
 const personSearchDocument = graphql(/* GraphQL */ `
   query PersonSearch($search: String!) {
     searchPeopleByName(name: $search) {
-      data {
-        id
-        name
-        linkblue
-      }
+      id
+      name
+      linkblue
     }
     personByLinkBlue(linkBlueId: $search) {
-      data {
-        id
-        name
-        linkblue
-      }
+      id
+      name
+      linkblue
     }
   }
 `);
@@ -48,19 +44,19 @@ export function PersonSearch({
   });
 
   const options =
-    data?.searchPeopleByName.data.map((person) => ({
+    data?.searchPeopleByName.map((person) => ({
       value: person.name,
       label: person.name,
       person,
     })) || [];
 
-  if (data?.personByLinkBlue.data) {
+  if (data?.personByLinkBlue) {
     options.push({
-      value: data.personByLinkBlue.data.id,
-      label: data.personByLinkBlue.data.linkblue
-        ? `${data.personByLinkBlue.data.name} (${data.personByLinkBlue.data.linkblue})`
-        : data.personByLinkBlue.data.name,
-      person: data.personByLinkBlue.data,
+      value: data.personByLinkBlue.id,
+      label: data.personByLinkBlue.linkblue
+        ? `${data.personByLinkBlue.name} (${data.personByLinkBlue.linkblue})`
+        : data.personByLinkBlue.name,
+      person: data.personByLinkBlue,
     });
   }
 

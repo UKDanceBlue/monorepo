@@ -47,12 +47,10 @@ export function TriviaCrack() {
         }
 
         me {
-          data {
-            teams {
-              team {
-                type
-                name
-              }
+          teams {
+            team {
+              type
+              name
             }
           }
         }
@@ -67,7 +65,7 @@ export function TriviaCrack() {
   );
 
   const { stationOrder, moraleTeamNumber } = useMemo(() => {
-    const value = JSON.parse(option?.value || "{}") as unknown;
+    const value = JSON.parse(option.value || "{}") as unknown;
     let stationOrder: [number, number, number, number, number, number] | null =
       null;
     let moraleTeamNumber: number | undefined;
@@ -112,7 +110,7 @@ export function TriviaCrack() {
       }
     }
     return { stationOrder, moraleTeamNumber };
-  }, [data?.me.data?.teams, option?.value]);
+  }, [data?.me.data?.teams, option.value]);
 
   useEffect(() => {
     if (stationOrder && spins == null) {

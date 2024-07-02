@@ -21,10 +21,10 @@ export function PersonCreator({
   const { message } = App.useApp();
 
   const { formApi } = usePersonCreatorForm((ret) => {
-    if (ret?.uuid) {
+    if (ret?.id) {
       navigate({
         to: "/people/$personId/",
-        params: { personId: ret.uuid },
+        params: { personId: ret.id },
       }).catch((error: unknown) => console.error(error));
     }
   });

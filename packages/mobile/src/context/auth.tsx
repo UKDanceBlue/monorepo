@@ -24,9 +24,7 @@ const authStateContext = createContext<AuthState>({
 const authStateDocument = graphql(/* GraphQL */ `
   query AuthState {
     me {
-      data {
-        id
-      }
+      id
     }
     loginState {
       dbRole

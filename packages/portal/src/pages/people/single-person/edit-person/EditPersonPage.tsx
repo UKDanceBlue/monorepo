@@ -7,9 +7,7 @@ import { useQuery } from "urql";
 const viewPersonPageDocument = graphql(/* GraphQL */ `
   query EditPersonPage($uuid: GlobalId!) {
     person(uuid: $uuid) {
-      data {
-        ...PersonEditorFragment
-      }
+      ...PersonEditorFragment
     }
     teams(sendAll: true, sortBy: ["name"], sortDirection: [asc]) {
       data {
@@ -36,7 +34,7 @@ export function EditPersonPage() {
   return (
     <div>
       <PersonEditor
-        personFragment={data?.person.data}
+        personFragment={data?.person}
         teamNamesFragment={data?.teams.data}
         refetchPerson={refetchPerson}
       />

@@ -7,9 +7,7 @@ import { useQuery } from "urql";
 const viewPersonPageDocument = graphql(/* GraphQL */ `
   query ViewPersonPage($uuid: GlobalId!) {
     person(uuid: $uuid) {
-      data {
-        ...PersonViewerFragment
-      }
+      ...PersonViewerFragment
     }
   }
 `);
@@ -30,7 +28,7 @@ export function ViewPersonPage() {
 
   return (
     <div>
-      <PersonViewer personFragment={data?.person.data} />
+      <PersonViewer personFragment={data?.person} />
     </div>
   );
 }
