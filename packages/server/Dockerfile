@@ -1,4 +1,12 @@
-# Needs to be run with the context set to project root, i.e. docker build -t app-server ../.. -f Dockerfile
+FROM ../build.Dockerfile as build
+
+WORKDIR /builddir/packages/server
+
+RUN yarn workspaces focus @ukdanceblue/server
+
+RUN yarn build
+
+RUN yarn workspaces focus @ukdanceblue/server --production
 
 FROM node:22
 
@@ -19,11 +27,14 @@ RUN mkdir -p /app/packages/server
 RUN mkdir -p /app/packages/common
 RUN mkdir -p /app/node_modules
 
-COPY yarn.lock /app/yarn.lock
-COPY package.json /app/package.json
-COPY node_modules /app/node_modules/
-COPY packages/server /app/packages/server/
-COPY packages/common /app/packages/common/
+COPY --from=build /builddir/packages/server/dist /app/packages/server/dist
+COPY --from=build /builddir/packages/server/package.json /app/packages/server/package.json
+COPY --from=build /builddir/packages/server/yarn.lock /app/packages/server/yarn.lock
+COPY --from=build /builddir/packages/server/node_modules /app/packages/server/node_modules
+COPY --from=build /builddir/packages/common/dist /app/packages/common/dist
+COPY --from=build /builddir/packages/common/package.json /app/packages/common/package.json
+COPY --from=build /builddir/packages/common/yarn.lock /app/packages/common/yarn.lock
+COPY --from=build /builddir/node_modules /app/node_modules
 
 WORKDIR /app/packages/server
 
