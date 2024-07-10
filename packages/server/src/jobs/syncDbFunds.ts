@@ -78,7 +78,7 @@ async function doSync(): Promise<
 }
 
 export const syncDbFunds = new Cron(
-  "0 */11 * * * *",
+  "0 */31 * * * *",
   {
     name: "sync-db-funds",
     paused: true,

@@ -8,7 +8,7 @@ export class JobStateRepository {
 
   async logCompletedJob(job: Cron) {
     const jobName = job.name;
-    const previousRun = job.previousRun();
+    const previousRun = job.currentRun();
     if (jobName && previousRun) {
       await this.prisma.jobState.upsert({
         where: { jobName },

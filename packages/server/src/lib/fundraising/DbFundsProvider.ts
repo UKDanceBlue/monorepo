@@ -118,7 +118,7 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
       const abort = new AbortController();
       timeout = setTimeout(() => {
         abort.abort();
-      }, 2500);
+      }, 5000);
       response = await fetch(url, {
         headers: {
           "X-AuthToken": this.dbFundsApiKey,
