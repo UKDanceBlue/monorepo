@@ -161,8 +161,8 @@ export class MarathonRepository {
     endDate,
   }: {
     year: string;
-    startDate: string;
-    endDate: string;
+    startDate?: string;
+    endDate?: string;
   }): Promise<Result<Marathon, RepositoryError>> {
     try {
       const marathon = await this.prisma.marathon.create({

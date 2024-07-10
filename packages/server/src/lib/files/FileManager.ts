@@ -17,8 +17,6 @@ const FILE_API = new URL("/api/file/download/", serveOrigin);
 
 logger.info(`Serving files from ${FILE_API.href}`);
 
-logger.info(`Serving files from ${FILE_API.href}`);
-
 @Service()
 export class FileManager {
   constructor(

@@ -12,12 +12,6 @@ declare global {
       COOKIE_SECRET?: string;
       JWT_SECRET?: string;
 
-      DB_HOST?: string;
-      DB_PORT?: string;
-      DB_UNAME?: string;
-      DB_PWD?: string;
-      DB_NAME?: string;
-
       // These don't need to be optional because they are checked in index.ts
       MS_OIDC_URL?: string;
       MS_CLIENT_ID?: string;

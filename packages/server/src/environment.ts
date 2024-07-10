@@ -11,8 +11,6 @@ dotenv.config();
 
 // Core env
 export const isDevelopment = process.env.NODE_ENV === "development";
-export const isProduction = process.env.NODE_ENV === "production";
-export const nodeEnvironment = process.env.NODE_ENV || "development";
 
 export const loggingLevel: SyslogLevels =
   (process.env.LOGGING_LEVEL as SyslogLevels | undefined) ??
@@ -34,10 +32,9 @@ if (process.env.APPLICATION_PORT) {
 }
 export { applicationPort };
 export const applicationHost = process.env.APPLICATION_HOST || "localhost";
-export const applicationProtocol = process.env.APPLICATION_PROTOCOL || "http";
 
 // Secrets
-const { COOKIE_SECRET, JWT_SECRET, ASSET_PATH } = process.env;
+const { COOKIE_SECRET, JWT_SECRET } = process.env;
 if (!JWT_SECRET) {
   throw new Error("JWT_SECRET is not set");
 }
@@ -46,36 +43,6 @@ if (!COOKIE_SECRET) {
 }
 export const cookieSecret = COOKIE_SECRET;
 export const jwtSecret = JWT_SECRET;
-
-// System Paths
-export const assetPath = ASSET_PATH;
-
-// Database
-const { DB_HOST, DB_PORT, DB_UNAME, DB_PWD, DB_NAME } = process.env;
-if (!DB_HOST) {
-  throw new Error("DB_HOST is not set");
-}
-if (!DB_PORT) {
-  throw new Error("DB_PORT is not set");
-}
-if (!DB_UNAME) {
-  throw new Error("DB_UNAME is not set");
-}
-if (!DB_PWD) {
-  throw new Error("DB_PWD is not set");
-}
-if (!DB_NAME) {
-  throw new Error("DB_NAME is not set");
-}
-export const databaseHost = DB_HOST;
-export const databasePort = DB_PORT;
-export const databaseUsername = DB_UNAME;
-export const databasePassword = DB_PWD;
-export const databaseName = DB_NAME;
-
-// This check is used to try and prevent any chance of resetting the production database
-// Obviously not foolproof, but it's better than nothing
-export const isDatabaseLocal = databaseHost === "localhost" && isDevelopment;
 
 // MS Auth
 const { MS_OIDC_URL, MS_CLIENT_ID, MS_CLIENT_SECRET } = process.env;

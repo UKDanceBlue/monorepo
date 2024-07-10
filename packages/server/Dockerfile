@@ -1,6 +1,6 @@
 # Needs to be run with the context set to project root, i.e. docker build -t app-server ../.. -f Dockerfile
 
-FROM node:18
+FROM node:22
 
 ENV NODE_ENV="production"
 ENV APPLICATION_PORT="8000"
@@ -10,12 +10,6 @@ EXPOSE ${APPLICATION_PORT}
 
 # ENV COOKIE_SECRET=""
 # ENV JWT_SECRET=""
-
-ENV DB_HOST="app-database"
-ENV DB_PORT="5432"
-ENV DB_NAME="danceblue"
-ENV DB_UNAME="danceblue"
-# ENV DB_PWD=""
 
 ENV MS_OIDC_URL="https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0/.well-known/openid-configuration"
 # ENV MS_CLIENT_ID=""

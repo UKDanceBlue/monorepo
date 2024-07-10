@@ -5,15 +5,14 @@
   "main": "dist/index.js",
   "type": "module",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "start": "node .",
     "build": "tsc",
     "bs": "yarn run build && yarn run start",
-    "this-is-bullshit": "yarn run bs",
+    "dev": "tsc --watch & node --watch . --watch-path=./dist",
     "migrate-and-start": "yarn dlx prisma migrate deploy && yarn run start",
-    "dev": "nodemon -w ./dist ./dist/index.js ../common/dist --",
     "test": "jest",
     "start-seed": "node . --seed-db --reset-db",
     "start-reset": "node . --reset-db",

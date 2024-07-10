@@ -4,6 +4,7 @@ import { CompositeError, toBasicError } from "@ukdanceblue/common/error";
 import Cron from "croner";
 import { Err, None, Ok, type Result } from "ts-results-es";
 import { Container } from "typedi";
+const jobStateRepository = Container.get(JobStateRepository);
 
 import type { PrismaError } from "#error/prisma.js";
 import {
@@ -11,6 +12,7 @@ import {
   type DBFundsFundraisingProviderError,
 } from "#lib/fundraising/DbFundsProvider.js";
 import { logger } from "#logging/standardLogging.js";
+import { JobStateRepository } from "#repositories/JobState.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
 
@@ -79,6 +81,7 @@ export const syncDbFunds = new Cron(
   "0 */11 * * * *",
   {
     name: "sync-db-funds",
+    paused: true,
     catch: (error) => {
       console.error("Failed to sync DBFunds", error);
     },
@@ -86,10 +89,16 @@ export const syncDbFunds = new Cron(
   async () => {
     logger.info("Syncing DBFunds");
     const result = await doSync();
+
     if (result.isErr()) {
       logger.error("Failed to sync DBFunds", result.error);
     } else {
       logger.info("DBFunds sync complete");
+      await jobStateRepository.logCompletedJob(syncDbFunds);
     }
   }
 );
+
+syncDbFunds.options.startAt =
+  await jobStateRepository.getNextJobDate(syncDbFunds);
+syncDbFunds.resume();

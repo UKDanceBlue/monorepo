@@ -1,7 +1,3 @@
-FROM steebchen/nginx-spa:stable
+FROM nginx:stable-alpine
 
-COPY dist/ /app
-
-EXPOSE 80
-
-CMD ["nginx"]
+COPY dist/ /usr/share/nginx/html

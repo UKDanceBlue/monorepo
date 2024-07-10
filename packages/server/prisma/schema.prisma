@@ -482,6 +482,13 @@ model FundraisingAssignment {
   @@map("fundraising_assignments")
 }
 
+model JobState {
+  jobName String   @id @map("job_name")
+  lastRun DateTime @map("last_run") @db.Timestamptz(6)
+
+  @@map("job_states")
+}
+
 // Potential errors after sending a notification to Expo (see https://docs.expo.dev/push-notifications/sending-notifications/#individual-errors)
 enum NotificationError {
   // The device cannot receive push notifications anymore and you should stop sending messages to the corresponding Expo push token.
