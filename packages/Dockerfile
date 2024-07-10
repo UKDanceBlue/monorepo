@@ -1,12 +1,12 @@
 # Dockerfile to clone and prepare to build the project
 FROM node:22
 
-ARG REPO_URL
+ARG BRANCH
 
 RUN mkdir -p /builddir
 WORKDIR /builddir
 
-RUN git clone ${REPO_URL} .
+RUN git clone --single-branch --branch ${BRANCH} .
 
 RUN corepack enable
 

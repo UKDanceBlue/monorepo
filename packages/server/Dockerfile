@@ -1,4 +1,4 @@
-FROM ../build.Dockerfile as build
+FROM build as build
 
 WORKDIR /builddir/packages/server
 
