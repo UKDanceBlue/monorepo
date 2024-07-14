@@ -1,8 +1,20 @@
-FROM build as build
+FROM node:22 as build
+
+RUN corepack enable
+
+RUN mkdir -p /builddir
+ADD . /builddir
+WORKDIR /builddir
+
+RUN yarn install --immutable
+
+RUN yarn run gql:build
+
+WORKDIR /builddir/packages/common
+
+RUN yarn build
 
 WORKDIR /builddir/packages/server
-
-RUN yarn workspaces focus @ukdanceblue/server
 
 RUN yarn build
 

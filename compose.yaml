@@ -2,7 +2,7 @@
 
 services:
   postgres:
-    container_name: danceblue-app-database-${SUBDOMAIN:?error}
+    container_name: danceblue-database-${SUBDOMAIN:?error}
     image: postgres:16
     environment:
       POSTGRES_USER: danceblue
@@ -10,9 +10,9 @@ services:
       POSTGRES_DB: danceblue
     attach: false
     volumes:
-      - danceblue-app-server-${SUBDOMAIN:?error}-database:/var/lib/postgresql/data
+      - database:/var/lib/postgresql/data
   server:
-    container_name: danceblue-app-server-${SUBDOMAIN:?error}
+    container_name: danceblue-server-${SUBDOMAIN:?error}
     build:
       context: .
       dockerfile: ./packages/server/Dockerfile
@@ -31,16 +31,18 @@ services:
       UPLOAD_PATH: /data/local-uploads
       MAX_FILE_SIZE: 200
       LOG_DIR: /data/logs
-      APPLICATION_HOST: danceblue-app-server-${SUBDOMAIN:?error}
-      DATABASE_URL: postgres://danceblue:danceblue@postgres:5432/danceblue
+      LOGGING_LEVEL: debug
+      APPLICATION_HOST: "0.0.0.0"
+      DATABASE_URL: postgres://danceblue:danceblue@postgres:5432/danceblue,
+      SERVE_ORIGIN: http://localhost:8000
     volumes:
-      - danceblue-app-server-${SUBDOMAIN:?error}-content:/data/local-uploads
+      - content:/data/local-uploads
   portal:
-    container_name: danceblue-app-portal-${SUBDOMAIN:?error}
+    container_name: danceblue-portal-${SUBDOMAIN:?error}
     networks:
       - proxy
     build:
-      context: ./packages/portal
+      context: .
       dockerfile: ./packages/portal/Dockerfile
 
 networks:
@@ -51,7 +53,9 @@ networks:
     name: proxy
 
 volumes:
-  "danceblue-app-server-${SUBDOMAIN:?error}-content":
+  content:
     driver: local
-  "danceblue-app-server-${SUBDOMAIN:?error}-database":
+    name: danceblue-server-${SUBDOMAIN:?error}-content
+  database:
     driver: local
+    name: danceblue-server-${SUBDOMAIN:?error}-database

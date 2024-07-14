@@ -4,9 +4,9 @@ FROM node:22
 ARG BRANCH
 
 RUN mkdir -p /builddir
-WORKDIR /builddir
 
-RUN git clone --single-branch --branch ${BRANCH} .
+COPY .. /builddir/
+WORKDIR /builddir
 
 RUN corepack enable
 
