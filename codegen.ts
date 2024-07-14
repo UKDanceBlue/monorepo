@@ -1,3 +1,4 @@
+import { readdirSync } from "fs";
 import type { CodegenConfig } from "@graphql-codegen/cli";
 import type { ClientPresetConfig } from "@graphql-codegen/client-preset";
 import type { TypeScriptPluginConfig } from "@graphql-codegen/typescript";
@@ -54,6 +55,31 @@ const config: TypeScriptPluginConfig = {
   },
   strictScalars: true,
 };
+
+const generates: CodegenConfig["generates"] = {};
+const packages = readdirSync("./packages");
+if (packages.includes("mobile")) {
+  generates["./packages/common/lib/graphql-client-public/"] = {
+    preset: "client",
+    presetConfig,
+    config,
+    documents: [
+      "./packages/mobile/src/**/*.ts",
+      "./packages/mobile/src/**/*.tsx",
+    ],
+  };
+}
+if (packages.includes("portal")) {
+  generates["./packages/common/lib/graphql-client-internal/"] = {
+    preset: "client",
+    presetConfig,
+    config,
+    documents: [
+      "./packages/portal/src/**/*.ts",
+      "./packages/portal/src/**/*.tsx",
+    ],
+  };
+}
 const codegenConfig: CodegenConfig = {
   schema: "schema.graphql",
   hooks: {
@@ -62,26 +88,7 @@ const codegenConfig: CodegenConfig = {
     },
   },
   emitLegacyCommonJSImports: false,
-  generates: {
-    "./packages/common/lib/graphql-client-public/": {
-      preset: "client",
-      presetConfig,
-      config,
-      documents: [
-        "./packages/mobile/src/**/*.ts",
-        "./packages/mobile/src/**/*.tsx",
-      ],
-    },
-    "./packages/common/lib/graphql-client-admin/": {
-      preset: "client",
-      presetConfig,
-      config,
-      documents: [
-        "./packages/portal/src/**/*.ts",
-        "./packages/portal/src/**/*.tsx",
-      ],
-    },
-  },
+  generates,
 };
 
 export default codegenConfig;

@@ -4,6 +4,8 @@ services:
   postgres:
     container_name: danceblue-database-${SUBDOMAIN:?error}
     image: postgres:16
+    networks:
+      - database
     environment:
       POSTGRES_USER: danceblue
       POSTGRES_PASSWORD: danceblue
@@ -13,37 +15,35 @@ services:
       - database:/var/lib/postgresql/data
   server:
     container_name: danceblue-server-${SUBDOMAIN:?error}
+    pull_policy: build
     build:
       context: .
-      dockerfile: ./packages/server/Dockerfile
+      target: server
     networks:
       - proxy
-    links:
-      - postgres
+      - database
     depends_on:
       - postgres
-    env_file: ./packages/server/.env
+    env_file: ${ENV_PATH:-./packages/server/.env}
     environment:
       NODE_ENV: ${NODE_ENV:-production}
-      APPLICATION_PORT: 8000
       MS_OIDC_URL: https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0/.well-known/openid-configuration
       SERVE_PATH: /data/local-uploads
       UPLOAD_PATH: /data/local-uploads
       MAX_FILE_SIZE: 200
       LOG_DIR: /data/logs
-      LOGGING_LEVEL: debug
-      APPLICATION_HOST: "0.0.0.0"
-      DATABASE_URL: postgres://danceblue:danceblue@postgres:5432/danceblue,
+      DATABASE_URL: postgres://danceblue:danceblue@danceblue-database-${SUBDOMAIN:?error}:5432/danceblue
       SERVE_ORIGIN: http://localhost:8000
     volumes:
       - content:/data/local-uploads
   portal:
     container_name: danceblue-portal-${SUBDOMAIN:?error}
+    pull_policy: build
     networks:
       - proxy
     build:
       context: .
-      dockerfile: ./packages/portal/Dockerfile
+      target: portal
 
 networks:
   database:
