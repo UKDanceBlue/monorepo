@@ -1,4 +1,5 @@
 import { statSync } from "fs";
+import { readFile } from "fs/promises";
 import path, { isAbsolute } from "path";
 
 import dotenv from "dotenv";
@@ -6,7 +7,6 @@ import { Expo } from "expo-server-sdk";
 import { Container, Token } from "typedi";
 
 import type { SyslogLevels } from "#logging/standardLogging.js";
-import { readFile } from "fs/promises";
 
 dotenv.config();
 
@@ -63,11 +63,10 @@ const MS_CLIENT_SECRET = getEnv("MS_CLIENT_SECRET", null);
 const EXPO_ACCESS_TOKEN = getEnv("EXPO_ACCESS_TOKEN", null);
 const DBFUNDS_API_KEY = getEnv("DBFUNDS_API_KEY", null);
 const DBFUNDS_API_ORIGIN = getEnv("DBFUNDS_API_ORIGIN", null);
-const MAX_FILE_SIZE = getEnv("MAX_FILE_SIZE", null);
+const MAX_FILE_SIZE = getEnv("MAX_FILE_SIZE", "10");
 const SERVE_PATH = getEnv("SERVE_PATH", null);
 const UPLOAD_PATH = getEnv("UPLOAD_PATH", null);
 const SERVE_ORIGIN = getEnv("SERVE_ORIGIN", null);
-const OVERRIDE_AUTH = getEnv("OVERRIDE_AUTH", null);
 const LOG_DIR = getEnv("LOG_DIR", null);
 
 // Core env
@@ -144,12 +143,5 @@ if (!isUploadInServe) {
   throw new Error("UPLOAD_PATH must be a subdirectory of SERVE_PATH");
 }
 
-// Disable all authorization checks
-export const authorizationOverride =
-  isDevelopment && (await OVERRIDE_AUTH) === "THIS IS DANGEROUS";
-
 // Log directory
 export const logDir = await LOG_DIR;
-if (!logDir) {
-  throw new Error("LOG_DIR is not set");
-}
