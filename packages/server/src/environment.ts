@@ -22,14 +22,14 @@ async function getEnv(
   let value;
   if (process.env[`${name}_FILE`]) {
     try {
-      value = await readFile(process.env[`${name}_FILE`]!, "utf-8");
+      value = await readFile(process.env[`${name}_FILE`]!, "utf8");
     } catch {
       value = process.env[name];
     }
   } else {
     const lowercaseName = name.toLowerCase();
     try {
-      value = await readFile(`/run/secrets/${lowercaseName}`, "utf-8");
+      value = await readFile(`/run/secrets/${lowercaseName}`, "utf8");
     } catch {
       value = process.env[name];
     }
@@ -44,7 +44,7 @@ async function getEnv(
     }
   }
 
-  return value;
+  return value?.trim();
 }
 
 export const isDevelopment = process.env.NODE_ENV === "development";
