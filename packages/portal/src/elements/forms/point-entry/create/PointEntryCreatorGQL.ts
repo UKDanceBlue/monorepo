@@ -1,23 +1,21 @@
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 
 export const createPointEntryDocument = graphql(/* GraphQL */ `
   mutation CreatePointEntry($input: CreatePointEntryInput!) {
     createPointEntry(input: $input) {
       data {
-        uuid
+        id
       }
     }
   }
 `);
 
 export const getPersonByUuidDocument = graphql(/* GraphQL */ `
-  query GetPersonByUuid($uuid: String!) {
+  query GetPersonByUuid($uuid: GlobalId!) {
     person(uuid: $uuid) {
-      data {
-        uuid
-        name
-        linkblue
-      }
+      id
+      name
+      linkblue
     }
   }
 `);
@@ -25,10 +23,8 @@ export const getPersonByUuidDocument = graphql(/* GraphQL */ `
 export const getPersonByLinkBlueDocument = graphql(/* GraphQL */ `
   query GetPersonByLinkBlue($linkBlue: String!) {
     personByLinkBlue(linkBlueId: $linkBlue) {
-      data {
-        uuid
-        name
-      }
+      id
+      name
     }
   }
 `);
@@ -36,10 +32,8 @@ export const getPersonByLinkBlueDocument = graphql(/* GraphQL */ `
 export const searchPersonByNameDocument = graphql(/* GraphQL */ `
   query SearchPersonByName($name: String!) {
     searchPeopleByName(name: $name) {
-      data {
-        uuid
-        name
-      }
+      id
+      name
     }
   }
 `);
@@ -53,7 +47,7 @@ export const createPersonByLinkBlue = graphql(/* GraphQL */ `
     createPerson(
       input: { email: $email, linkblue: $linkBlue, memberOf: [$teamUuid] }
     ) {
-      uuid
+      id
     }
   }
 `);

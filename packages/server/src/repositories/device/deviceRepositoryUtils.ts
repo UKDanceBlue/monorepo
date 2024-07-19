@@ -1,12 +1,12 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
+import type { DeviceFilters } from "./DeviceRepository.js";
 import {
   dateFilterToPrisma,
   stringFilterToPrisma,
-} from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import type { DeviceFilters } from "./DeviceRepository.js";
 
 export function buildDeviceOrder(
   order: readonly [key: string, sort: SortDirection][] | null | undefined
@@ -19,7 +19,7 @@ export function buildDeviceOrder(
       case "lastSeen":
       case "createdAt":
       case "updatedAt": {
-        orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
+        orderBy[key] = sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
       default: {

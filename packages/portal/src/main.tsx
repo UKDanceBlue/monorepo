@@ -1,3 +1,4 @@
+import { MarathonConfigProvider } from "@config/marathon.tsx";
 import { RouterProvider } from "@tanstack/react-router";
 import { App as AntApp } from "antd";
 import { StrictMode } from "react";
@@ -23,7 +24,9 @@ createRoot(document.getElementById("root")!).render(
       <AntConfigProvider>
         <AntApp style={{ height: "100%" }}>
           <UrqlProvider value={urqlClient}>
-            <RouterProvider router={router} />
+            <MarathonConfigProvider>
+              <RouterProvider router={router} />
+            </MarathonConfigProvider>
           </UrqlProvider>
         </AntApp>
       </AntConfigProvider>

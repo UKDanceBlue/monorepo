@@ -1,16 +1,22 @@
+import { TeamType } from "@prisma/client";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessLevel,
-  DetailedError,
-  ErrorCode,
+  CommitteeMembershipNode,
+  DbRole,
   FilteredListQueryArgs,
+  FundraisingAssignmentNode,
+  FundraisingEntryNode,
+  GlobalIdScalar,
+  MembershipNode,
   MembershipPositionType,
-  MembershipResource,
-  PersonResource,
-  RoleResource,
+  PersonNode,
   SortDirection,
 } from "@ukdanceblue/common";
+import { ConcreteError , ConcreteResult } from "@ukdanceblue/common/error";
 import { EmailAddressResolver } from "graphql-scalars";
+import { Ok, Result } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -25,53 +31,36 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Container, Service } from "typedi";
 
-import { auditLogger } from "../lib/logging/auditLogging.js";
-import { membershipModelToResource } from "../repositories/membership/membershipModelToResource.js";
-import { PersonRepository } from "../repositories/person/PersonRepository.js";
-import { personModelToResource } from "../repositories/person/personModelToResource.js";
-
+import { CatchableConcreteError } from "#lib/formatError.js";
+import { auditLogger } from "#logging/auditLogging.js";
+import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
+import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
+import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
+import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
+import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
 import {
-  AbstractGraphQLArrayOkResponse,
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
-import * as Context from "./context.js";
+  committeeMembershipModelToResource,
+  membershipModelToResource,
+} from "#repositories/membership/membershipModelToResource.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
+import { AbstractGraphQLPaginatedResponse } from "#resolvers/ApiResponse.js";
+import {
+  ListFundraisingEntriesArgs,
+  ListFundraisingEntriesResponse,
+  globalFundraisingAccessParam,
+} from "#resolvers/FundraisingEntryResolver.js";
+import type { GraphQLContext } from "#resolvers/context.js";
 
-@ObjectType("CreatePersonResponse", {
-  implements: AbstractGraphQLCreatedResponse<PersonResource>,
-})
-class CreatePersonResponse extends AbstractGraphQLCreatedResponse<PersonResource> {
-  @Field(() => PersonResource)
-  data!: PersonResource;
-}
-@ObjectType("GetPersonResponse", {
-  implements: AbstractGraphQLOkResponse<PersonResource>,
-})
-class GetPersonResponse extends AbstractGraphQLOkResponse<PersonResource | null> {
-  @Field(() => PersonResource, { nullable: true })
-  data!: PersonResource | null;
-}
-@ObjectType("GetPeopleResponse", {
-  implements: AbstractGraphQLArrayOkResponse<PersonResource>,
-})
-class GetPeopleResponse extends AbstractGraphQLArrayOkResponse<PersonResource> {
-  @Field(() => [PersonResource])
-  data!: PersonResource[];
-}
 @ObjectType("ListPeopleResponse", {
-  implements: AbstractGraphQLPaginatedResponse<PersonResource>,
+  implements: AbstractGraphQLPaginatedResponse<PersonNode>,
 })
-class ListPeopleResponse extends AbstractGraphQLPaginatedResponse<PersonResource> {
-  @Field(() => [PersonResource])
-  data!: PersonResource[];
+class ListPeopleResponse extends AbstractGraphQLPaginatedResponse<PersonNode> {
+  @Field(() => [PersonNode])
+  data!: PersonNode[];
 }
-@ObjectType("DeletePersonResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-class DeletePersonResponse extends AbstractGraphQLOkResponse<never> {}
 
 @ArgsType()
 class ListPeopleArgs extends FilteredListQueryArgs<
@@ -104,8 +93,8 @@ class CreatePersonInput {
   @Field(() => String, { nullable: true })
   linkblue?: string;
 
-  @Field(() => RoleResource, { nullable: true })
-  role?: RoleResource;
+  @Field(() => DbRole, { nullable: true })
+  dbRole?: DbRole;
 
   @Field(() => [String], { defaultValue: [] })
   memberOf?: string[];
@@ -124,9 +113,6 @@ class SetPersonInput {
   @Field(() => String, { nullable: true })
   linkblue?: string;
 
-  @Field(() => RoleResource, { nullable: true })
-  role?: RoleResource;
-
   @Field(() => [String], { nullable: true })
   memberOf?: string[];
 
@@ -134,56 +120,55 @@ class SetPersonInput {
   captainOf?: string[];
 }
 
-@Resolver(() => PersonResource)
+@Resolver(() => PersonNode)
 @Service()
 export class PersonResolver {
-  constructor(private personRepository: PersonRepository) {}
+  constructor(
+    private readonly personRepository: PersonRepository,
+    private readonly membershipRepository: MembershipRepository,
+    private readonly fundraisingEntryRepository: FundraisingEntryRepository
+  ) {}
 
-  @Query(() => GetPersonResponse, { name: "person" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<GetPersonResponse> {
-    const row = await this.personRepository.findPersonByUuid(uuid);
+  @AccessControl({ accessLevel: AccessLevel.Committee })
+  @Query(() => PersonNode, { name: "person" })
+  async getByUuid(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<ConcreteResult<PersonNode>> {
+    const row = await this.personRepository.findPersonByUnique({ uuid: id });
 
-    if (row == null) {
-      return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-        null
-      );
-    }
-
-    return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-      personModelToResource(row)
-    );
+    return row
+      .toAsyncResult()
+      .andThen((row) => personModelToResource(row, this.personRepository))
+      .promise;
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
-  @Query(() => GetPersonResponse, { name: "personByLinkBlue" })
+  @Query(() => PersonNode, { name: "personByLinkBlue" })
   async getByLinkBlueId(
     @Arg("linkBlueId") linkBlueId: string
-  ): Promise<GetPersonResponse> {
-    const row = await this.personRepository.findPersonByLinkblue(linkBlueId);
+  ): Promise<ConcreteResult<PersonNode>> {
+    const row = await this.personRepository.findPersonByUnique({
+      linkblue: linkBlueId,
+    });
 
-    if (row == null) {
-      return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-        null
-      );
-    }
-
-    return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-      personModelToResource(row)
-    );
+    return row
+      .toAsyncResult()
+      .andThen((row) => personModelToResource(row, this.personRepository))
+      .promise;
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
   @Query(() => ListPeopleResponse, { name: "listPeople" })
   async list(
     @Args(() => ListPeopleArgs) args: ListPeopleArgs
-  ): Promise<ListPeopleResponse> {
+  ): Promise<ConcreteResult<ListPeopleResponse>> {
     const [rows, total] = await Promise.all([
       this.personRepository.listPeople({
         filters: args.filters,
         order:
           args.sortBy?.map((key, i) => [
             key,
-            args.sortDirection?.[i] ?? SortDirection.DESCENDING,
+            args.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
           args.page != null && args.pageSize != null
@@ -194,55 +179,80 @@ export class PersonResolver {
       this.personRepository.countPeople({ filters: args.filters }),
     ]);
 
-    return ListPeopleResponse.newPaginated({
-      data: rows.map((row) => personModelToResource(row)),
+    return Result.all([
+      await rows
+        .toAsyncResult()
+        .andThen(async (rows) =>
+          Result.all(
+            await Promise.all(
+              rows.map(
+                (row) =>
+                  personModelToResource(row, this.personRepository).promise
+              )
+            )
+          )
+        ).promise,
       total,
-      page: args.page,
-      pageSize: args.pageSize,
+    ]).andThen<ListPeopleResponse, ConcreteError>(([rows, total]) => {
+      return Ok(
+        ListPeopleResponse.newPaginated({
+          data: rows,
+          total,
+          page: args.page,
+          pageSize: args.pageSize,
+        })
+      );
     });
   }
 
-  @Query(() => GetPersonResponse, { name: "me" })
-  me(@Ctx() ctx: Context.GraphQLContext): GetPersonResponse | null {
-    return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-      ctx.authenticatedUser
-    );
-  }
-
-  @Query(() => GetPeopleResponse, { name: "searchPeopleByName" })
-  async searchByName(@Arg("name") name: string): Promise<GetPeopleResponse> {
-    const rows = await this.personRepository.searchByName(name);
-
-    return GetPeopleResponse.newOk(
-      rows.map((row) => personModelToResource(row))
-    );
+  @Query(() => PersonNode, { name: "me", nullable: true })
+  me(@Ctx() ctx: GraphQLContext): PersonNode | null {
+    return ctx.authenticatedUser;
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
-  @Mutation(() => CreatePersonResponse, { name: "createPerson" })
+  @Query(() => [PersonNode], { name: "searchPeopleByName" })
+  async searchByName(
+    @Arg("name") name: string
+  ): Promise<ConcreteResult<PersonNode[]>> {
+    const rows = await this.personRepository.searchByName(name);
+
+    return rows
+      .toAsyncResult()
+      .andThen(async (rows) =>
+        Result.all(
+          await Promise.all(
+            rows.map(
+              (row) => personModelToResource(row, this.personRepository).promise
+            )
+          )
+        )
+      ).promise;
+  }
+
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @Mutation(() => PersonNode, { name: "createPerson" })
   async create(
     @Arg("input") input: CreatePersonInput
-  ): Promise<CreatePersonResponse> {
+  ): Promise<ConcreteResult<PersonNode>> {
     const person = await this.personRepository.createPerson({
       name: input.name,
       email: input.email,
       linkblue: input.linkblue,
-      committeeRole: input.role?.committeeRole,
-      committeeName: input.role?.committeeIdentifier,
     });
 
-    return CreatePersonResponse.newCreated(
-      personModelToResource(person),
-      person.uuid
-    );
+    return person
+      .toAsyncResult()
+      .andThen((person) => personModelToResource(person, this.personRepository))
+      .promise;
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Committee })
-  @Mutation(() => GetPersonResponse, { name: "setPerson" })
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @Mutation(() => PersonNode, { name: "setPerson" })
   async set(
-    @Arg("uuid") id: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPersonInput
-  ): Promise<GetPersonResponse> {
+  ): Promise<ConcreteResult<PersonNode>> {
     const row = await this.personRepository.updatePerson(
       {
         uuid: id,
@@ -251,42 +261,57 @@ export class PersonResolver {
         name: input.name,
         email: input.email,
         linkblue: input.linkblue,
-        committeeRole: input.role?.committeeRole,
-        committeeName: input.role?.committeeIdentifier,
         memberOf: input.memberOf?.map((uuid) => ({ uuid })),
         captainOf: input.captainOf?.map((uuid) => ({ uuid })),
       }
     );
 
-    if (row == null) {
-      return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-        null
-      );
-    }
-
-    return GetPersonResponse.newOk<PersonResource | null, GetPersonResponse>(
-      personModelToResource(row)
-    );
+    return row
+      .toAsyncResult()
+      .andThen((row) => personModelToResource(row, this.personRepository))
+      .promise;
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Committee })
-  @Mutation(() => DeletePersonResponse, { name: "deletePerson" })
-  async delete(@Arg("uuid") uuid: string): Promise<DeletePersonResponse> {
-    const result = await this.personRepository.deletePerson({ uuid });
-
-    if (result == null) {
-      throw new DetailedError(ErrorCode.DatabaseFailure, "Failed to delete");
-    }
-
-    auditLogger.sensitive("Person deleted", {
-      person: {
-        name: result.name,
-        email: result.email,
-        uuid: result.uuid,
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @Mutation(() => MembershipNode, { name: "addPersonToTeam" })
+  async assignPersonToTeam(
+    @Arg("personUuid") personUuid: string,
+    @Arg("teamUuid") teamUuid: string
+  ): Promise<ConcreteResult<MembershipNode>> {
+    const membership = await this.membershipRepository.assignPersonToTeam({
+      personParam: {
+        uuid: personUuid,
       },
+      teamParam: {
+        uuid: teamUuid,
+      },
+      position: MembershipPositionType.Member,
     });
 
-    return DeletePersonResponse.newOk(true);
+    return membership.map(membershipModelToResource);
+  }
+
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @Mutation(() => PersonNode, { name: "deletePerson" })
+  async delete(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<ConcreteResult<PersonNode>> {
+    const result = await this.personRepository.deletePerson({ uuid: id });
+
+    return result
+      .toAsyncResult()
+      .andThen((row) => personModelToResource(row, this.personRepository))
+      .map((person) => {
+        auditLogger.sensitive("Person deleted", {
+          person: {
+            name: person.name,
+            email: person.email,
+            uuid: person.id,
+          },
+        });
+
+        return person;
+      }).promise;
   }
 
   @AccessControl(
@@ -294,41 +319,222 @@ export class PersonResolver {
     {
       rootMatch: [
         {
-          root: "uuid",
-          extractor: (userData) => userData.userId,
+          root: "id",
+          extractor: ({ userData }) => userData.userId,
         },
       ],
     }
   )
-  @FieldResolver(() => [MembershipResource])
-  async teams(@Root() person: PersonResource): Promise<MembershipResource[]> {
-    const models = await this.personRepository.findMembershipsOfPerson({
-      uuid: person.uuid,
-    });
-
-    if (models == null) {
-      return [];
-    }
-
-    return models.map((row) => membershipModelToResource(row));
-  }
-
-  @AccessControl({ accessLevel: AccessLevel.Committee })
-  @FieldResolver(() => [MembershipResource], {
-    deprecationReason: "Use teams instead and filter by position",
-  })
-  async captaincies(
-    @Root() person: PersonResource
-  ): Promise<MembershipResource[]> {
-    const models = await this.personRepository.findMembershipsOfPerson(
-      { uuid: person.uuid },
-      { position: MembershipPositionType.Captain }
+  @FieldResolver(() => [CommitteeMembershipNode])
+  async committees(
+    @Root() { id: { id } }: PersonNode
+  ): Promise<ConcreteResult<CommitteeMembershipNode[]>> {
+    const models = await this.personRepository.findCommitteeMembershipsOfPerson(
+      {
+        uuid: id,
+      }
     );
 
-    if (models == null) {
-      return [];
+    return models.map((models) =>
+      models.map((membership) => {
+        return committeeMembershipModelToResource(
+          membership,
+          membership.team.correspondingCommittee.identifier
+        );
+      })
+    );
+  }
+
+  @AccessControl(
+    { accessLevel: AccessLevel.Committee },
+    {
+      rootMatch: [
+        {
+          root: "id",
+          extractor: ({ userData }) => userData.userId,
+        },
+      ],
+    }
+  )
+  @FieldResolver(() => [MembershipNode])
+  async teams(
+    @Root() { id: { id } }: PersonNode
+  ): Promise<ConcreteResult<MembershipNode[]>> {
+    const models = await this.personRepository.findMembershipsOfPerson(
+      {
+        uuid: id,
+      },
+      {},
+      [TeamType.Spirit]
+    );
+
+    return models.map((models) => models.map(membershipModelToResource));
+  }
+
+  @AccessControl(
+    { accessLevel: AccessLevel.Committee },
+    {
+      rootMatch: [
+        {
+          root: "id",
+          extractor: ({ userData }) => userData.userId,
+        },
+      ],
+    }
+  )
+  @FieldResolver(() => [MembershipNode])
+  async moraleTeams(
+    @Root() { id: { id } }: PersonNode
+  ): Promise<ConcreteResult<MembershipNode[]>> {
+    const models = await this.personRepository.findMembershipsOfPerson(
+      {
+        uuid: id,
+      },
+      {},
+      [TeamType.Morale]
+    );
+
+    return models.map((models) => models.map(membershipModelToResource));
+  }
+
+  @AccessControl(
+    { accessLevel: AccessLevel.Committee },
+    {
+      rootMatch: [
+        {
+          root: "id",
+          extractor: ({ userData }) => userData.userId,
+        },
+      ],
+    }
+  )
+  @FieldResolver(() => CommitteeMembershipNode, { nullable: true })
+  async primaryCommittee(
+    @Root() { id: { id } }: PersonNode
+  ): Promise<ConcreteResult<CommitteeMembershipNode>> {
+    const models = await this.personRepository.getPrimaryCommitteeOfPerson({
+      uuid: id,
+    });
+
+    return models.map(([membership, committee]) =>
+      committeeMembershipModelToResource(membership, committee.identifier)
+    );
+  }
+
+  @AccessControl<FundraisingEntryNode>(
+    // We can't grant blanket access as otherwise people would see who else was assigned to an entry
+    // You can view all assignments for an entry if you are:
+    // 1. A fundraising coordinator or chair
+    globalFundraisingAccessParam,
+    // 2. The captain of the team the entry is associated with
+    {
+      custom: async (
+        { id: { id } },
+        { teamMemberships, userData: { userId } }
+      ): Promise<boolean> => {
+        if (userId == null) {
+          return false;
+        }
+        const captainOf = teamMemberships.filter(
+          (membership) => membership.position === MembershipPositionType.Captain
+        );
+        if (captainOf.length === 0) {
+          return false;
+        }
+
+        const fundraisingEntryRepository = Container.get(
+          FundraisingEntryRepository
+        );
+        const entry = await fundraisingEntryRepository.findEntryByUnique({
+          uuid: id,
+        });
+        if (entry.isErr()) {
+          return false;
+        }
+        const dbFundsRepository = Container.get(DBFundsRepository);
+        const teams = await dbFundsRepository.getTeamsForDbFundsTeam({
+          id: entry.value.dbFundsEntry.dbFundsTeamId,
+        });
+        if (teams.isErr()) {
+          return false;
+        }
+        return captainOf.some(({ teamId }) =>
+          teams.value.some((team) => team.uuid === teamId)
+        );
+      },
+    }
+  )
+  @FieldResolver(() => CommitteeMembershipNode, { nullable: true })
+  async assignedDonationEntries(
+    @Root() { id: { id } }: PersonNode,
+    @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
+  ): Promise<ListFundraisingEntriesResponse> {
+    const entries = await this.fundraisingEntryRepository.listEntries(
+      {
+        filters: args.filters,
+        order:
+          args.sortBy?.map((key, i) => [
+            key,
+            args.sortDirection?.[i] ?? SortDirection.desc,
+          ]) ?? [],
+        skip:
+          args.page != null && args.pageSize != null
+            ? (args.page - 1) * args.pageSize
+            : null,
+        take: args.pageSize,
+      },
+      {
+        // EXTREMELY IMPORTANT FOR SECURITY
+        assignedToPerson: { uuid: id },
+      }
+    );
+    const count = await this.fundraisingEntryRepository.countEntries({
+      filters: args.filters,
+    });
+
+    if (entries.isErr()) {
+      throw new CatchableConcreteError(entries.error);
+    }
+    if (count.isErr()) {
+      throw new CatchableConcreteError(count.error);
     }
 
-    return models.map((row) => membershipModelToResource(row));
+    return ListFundraisingEntriesResponse.newPaginated({
+      data: await Promise.all(
+        entries.value.map((model) => fundraisingEntryModelToNode(model))
+      ),
+      total: count.value,
+      page: args.page,
+      pageSize: args.pageSize,
+    });
+  }
+
+  // This is the only way normal dancers or committee members can access fundraising info
+  // as it will only grant them the individual assignment they are associated with plus
+  // shallow access to the entry itself
+  @AccessControl<FundraisingAssignmentNode>({
+    rootMatch: [
+      {
+        root: "id",
+        extractor: ({ userData }) => userData.userId,
+      },
+    ],
+  })
+  @FieldResolver(() => [FundraisingAssignmentNode])
+  async fundraisingAssignments(
+    @Root() { id: { id } }: PersonNode
+  ): Promise<FundraisingAssignmentNode[]> {
+    const models =
+      await this.fundraisingEntryRepository.getAssignmentsForPerson({
+        uuid: id,
+      });
+
+    if (models.isErr()) {
+      throw new CatchableConcreteError(models.error);
+    }
+
+    return Promise.all(
+      models.value.map((row) => fundraisingAssignmentModelToNode(row))
+    );
   }
 }

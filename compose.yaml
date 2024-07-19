@@ -2,37 +2,120 @@
 
 services:
   postgres:
-    image: postgres:latest
+    container_name: danceblue-database-${SUBDOMAIN:?error}
+    image: postgres:16
+    networks:
+      - database
     environment:
       POSTGRES_USER: danceblue
       POSTGRES_PASSWORD: danceblue
       POSTGRES_DB: danceblue
-    networks:
-      - danceblue
     attach: false
     volumes:
-      - ./compose-volumes/postgres:/var/lib/postgresql/data
+      - database:/var/lib/postgresql/data
   server:
-    container_name: server
+    container_name: danceblue-server-${SUBDOMAIN:?error}
     build:
       context: .
-      dockerfile: ./packages/server/Dockerfile
-    ports:
-      - 8080:8000
+      target: server
+    image: ghcr.io/ukdanceblue/app-server:${VERSION:-latest}
     networks:
-      - danceblue
+      - proxy
+      - database
     depends_on:
       - postgres
-    env_file: ./packages/server/.env
     environment:
-      DB_HOST: postgres
-      DB_NAME: danceblue
-      DB_UNAME: danceblue
-      DB_PWD: danceblue
-      NODE_ENV: development
-      APPLICATION_HOST: server
-      DATABASE_URL: postgres://danceblue:danceblue@postgres:5432/danceblue
+      NODE_ENV: ${NODE_ENV:-production}
+      SERVE_PATH: /data/local-uploads
+      UPLOAD_PATH: /data/local-uploads
+      MAX_FILE_SIZE: 200
+      LOG_DIR: /data/logs
+      DATABASE_URL: postgres://danceblue:danceblue@danceblue-database-${SUBDOMAIN:?error}:5432/danceblue
+      SERVE_ORIGIN: http://localhost:8000
+    secrets:
+      - application_port
+      - application_host
+      - cookie_secret
+      - jwt_secret
+      - db_host
+      - db_port
+      - db_uname
+      - db_pwd
+      - db_name
+      - database_url
+      - ms_client_id
+      - ms_client_secret
+      - expo_access_token
+      - serve_origin
+      - logging_level
+      - dbfunds_api_origin
+      - dbfunds_api_key
+      - log_dir
+    volumes:
+      - content:/data/local-uploads
+  portal:
+    container_name: danceblue-portal-${SUBDOMAIN:?error}
+    image: ghcr.io/ukdanceblue/app-portal:${VERSION:-latest}
+    networks:
+      - proxy
+    build:
+      context: .
+      target: portal
 
 networks:
-  danceblue:
-    driver: bridge
+  database:
+    internal: true
+  proxy:
+    external: true
+    name: proxy
+
+volumes:
+  content:
+    driver: local
+    name: danceblue-server-${SUBDOMAIN:?error}-content
+  database:
+    driver: local
+    name: danceblue-server-${SUBDOMAIN:?error}-database
+
+# Secrets from environment variables (i.e. var: environment: VAR)
+# secrets:
+#   token:
+#     environment: "OAUTH_TOKEN"
+
+secrets:
+  application_port:
+    environment: "APPLICATION_PORT"
+  application_host:
+    environment: "APPLICATION_HOST"
+  cookie_secret:
+    environment: "COOKIE_SECRET"
+  jwt_secret:
+    environment: "JWT_SECRET"
+  db_host:
+    environment: "DB_HOST"
+  db_port:
+    environment: "DB_PORT"
+  db_uname:
+    environment: "DB_UNAME"
+  db_pwd:
+    environment: "DB_PWD"
+  db_name:
+    environment: "DB_NAME"
+  database_url:
+    environment: "DATABASE_URL"
+  ms_client_id:
+    environment: "MS_CLIENT_ID"
+  ms_client_secret:
+    environment: "MS_CLIENT_SECRET"
+  expo_access_token:
+    environment: "EXPO_ACCESS_TOKEN"
+  serve_origin:
+    environment: "SERVE_ORIGIN"
+  logging_level:
+    environment: "LOGGING_LEVEL"
+  dbfunds_api_origin:
+    environment: "DBFUNDS_API_ORIGIN"
+  dbfunds_api_key:
+    environment: "DBFUNDS_API_KEY"
+  log_dir:
+    environment: "LOG_DIR"

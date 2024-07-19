@@ -2,10 +2,10 @@ import type { Notification } from "@prisma/client";
 import Cron, { scheduledJobs } from "croner";
 import { Inject, Service } from "typedi";
 
-import { logger } from "../lib/logging/standardLogging.js";
-import { ExpoNotificationProvider } from "../lib/notification/ExpoNotificationProvider.js";
-import * as NotificationProviderJs from "../lib/notification/NotificationProvider.js";
-import { NotificationRepository } from "../repositories/notification/NotificationRepository.js";
+import { logger } from "#logging/standardLogging.js";
+import { ExpoNotificationProvider } from "#notification/ExpoNotificationProvider.js";
+import * as NotificationProviderJs from "#notification/NotificationProvider.js";
+import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
 
 function scheduleId(notificationUuid: string) {
   return `scheduled-notification:${notificationUuid}`;

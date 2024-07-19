@@ -1,15 +1,16 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
+import { dateTimeFromSomething } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/graphql-client-admin";
+} from "@ukdanceblue/common/graphql-client-portal";
 import { DateTime, Interval } from "luxon";
 import { useMemo } from "react";
 import { useQuery } from "urql";
 
 export const ConfigFragment = graphql(/* GraphQL */ `
-  fragment ConfigFragment on ConfigurationResource {
-    uuid
+  fragment ConfigFragment on ConfigurationNode {
+    id
     key
     value
     validAfter
@@ -78,10 +79,10 @@ export function useConfig(): {
       const configValue = {
         value: config.value,
         validAfter: config.validAfter
-          ? DateTime.fromISO(config.validAfter)
+          ? dateTimeFromSomething(config.validAfter)
           : null,
         validUntil: config.validUntil
-          ? DateTime.fromISO(config.validUntil)
+          ? dateTimeFromSomething(config.validUntil)
           : null,
         createdAt: config.createdAt
           ? typeof config.createdAt === "string"
@@ -91,7 +92,7 @@ export function useConfig(): {
       };
 
       // Add the config value
-      configs.find((c) => c.key === config.key)!.values[config.uuid] =
+      configs.find((c) => c.key === config.key)!.values[config.id] =
         configValue;
 
       // Decide if this is an active value

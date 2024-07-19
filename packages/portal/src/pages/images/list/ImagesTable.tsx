@@ -7,15 +7,15 @@ import { SortDirection, base64StringToArray } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/graphql-client-admin";
+} from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Flex, Image, Modal, Table, Typography, Upload } from "antd";
 import { useState } from "react";
 import { thumbHashToDataURL } from "thumbhash";
 import { useQuery } from "urql";
 
 const ImagesTableFragment = graphql(/* GraphQL */ `
-  fragment ImagesTableFragment on ImageResource {
-    uuid
+  fragment ImagesTableFragment on ImageNode {
+    id
     url
     thumbHash
     height
@@ -65,9 +65,7 @@ export const ImagesTable = () => {
       {
         initPage: 1,
         initPageSize: 10,
-        initSorting: [
-          { field: "createdAt", direction: SortDirection.DESCENDING },
-        ],
+        initSorting: [{ field: "createdAt", direction: SortDirection.desc }],
       },
       {
         allFields: ["alt", "width", "height", "createdAt", "updatedAt"],
@@ -124,7 +122,7 @@ export const ImagesTable = () => {
         <Upload.Dragger
           accept="image/*"
           action={new URL(
-            `/api/upload/image/${uploadingImage?.uuid}`,
+            `/api/upload/image/${uploadingImage?.id}`,
             API_BASE_URL
           ).toString()}
           maxCount={1}
@@ -154,7 +152,7 @@ export const ImagesTable = () => {
       </Modal>
       <Table
         dataSource={listImagesData ?? undefined}
-        rowKey={({ uuid }) => uuid}
+        rowKey={({ id }) => id}
         loading={fetching}
         pagination={
           imagesDocument
@@ -186,8 +184,8 @@ export const ImagesTable = () => {
                 | "updatedAt",
               direction:
                 sort.order === "ascend"
-                  ? SortDirection.ASCENDING
-                  : SortDirection.DESCENDING,
+                  ? SortDirection.asc
+                  : SortDirection.desc,
             });
           }
         }}

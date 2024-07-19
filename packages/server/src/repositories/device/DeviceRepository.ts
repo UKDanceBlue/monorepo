@@ -1,13 +1,16 @@
 import type { Person } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
+import { NotFoundError } from "@ukdanceblue/common/error";
+import { Err, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-import type { NotificationAudience } from "../../lib/notification/NotificationProvider.js";
-import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import { PersonRepository } from "../person/PersonRepository.js";
-
 import { buildDeviceOrder, buildDeviceWhere } from "./deviceRepositoryUtils.js";
+import { CatchableConcreteError } from "#lib/formatError.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { NotificationAudience } from "#notification/NotificationProvider.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { RepositoryError } from "#repositories/shared.js";
 
 const deviceStringKeys = ["expoPushToken"] as const;
 type DeviceStringKey = (typeof deviceStringKeys)[number];
@@ -37,12 +40,16 @@ export class DeviceRepository {
     });
   }
 
-  async getLastLoggedInUser(deviceUuid: string) {
+  async getLastLoggedInUser(
+    deviceUuid: string
+  ): Promise<Result<Person, RepositoryError>> {
     const device = await this.getDeviceByUuid(deviceUuid);
-
-    return device?.lastSeenPersonId == null
-      ? null
-      : this.personRepository.findPersonById(device.lastSeenPersonId);
+    if (device?.lastSeenPersonId == null) {
+      return Err(new NotFoundError({ what: "Person" }));
+    }
+    return this.personRepository.findPersonByUnique({
+      id: device.lastSeenPersonId,
+    });
   }
 
   async listDevices({
@@ -98,9 +105,13 @@ export class DeviceRepository {
     let user: Person | null = null;
 
     if (lastUserId != null) {
-      user = await this.personRepository.findPersonByUuid(lastUserId);
-      if (user == null) {
-        throw new Error("Last user not found");
+      const userResult = await this.personRepository.findPersonByUnique({
+        uuid: lastUserId,
+      });
+      if (userResult.isErr()) {
+        throw new CatchableConcreteError(userResult.error);
+      } else {
+        user = userResult.value;
       }
     }
 
@@ -189,7 +200,7 @@ export class DeviceRepository {
           },
         });
       }
-      
+
       if (where.length === 0) {
         throw new Error("Not implemented");
       }

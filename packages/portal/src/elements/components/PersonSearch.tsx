@@ -1,5 +1,5 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { AutoComplete, type AutoCompleteProps } from "antd";
 import { useState } from "react";
 import { useQuery } from "urql";
@@ -7,18 +7,14 @@ import { useQuery } from "urql";
 const personSearchDocument = graphql(/* GraphQL */ `
   query PersonSearch($search: String!) {
     searchPeopleByName(name: $search) {
-      data {
-        uuid
-        name
-        linkblue
-      }
+      id
+      name
+      linkblue
     }
     personByLinkBlue(linkBlueId: $search) {
-      data {
-        uuid
-        name
-        linkblue
-      }
+      id
+      name
+      linkblue
     }
   }
 `);
@@ -48,19 +44,19 @@ export function PersonSearch({
   });
 
   const options =
-    data?.searchPeopleByName.data.map((person) => ({
+    data?.searchPeopleByName.map((person) => ({
       value: person.name,
       label: person.name,
       person,
     })) || [];
 
-  if (data?.personByLinkBlue.data) {
+  if (data?.personByLinkBlue) {
     options.push({
-      value: data.personByLinkBlue.data.uuid,
-      label: data.personByLinkBlue.data.linkblue
-        ? `${data.personByLinkBlue.data.name} (${data.personByLinkBlue.data.linkblue})`
-        : data.personByLinkBlue.data.name,
-      person: data.personByLinkBlue.data,
+      value: data.personByLinkBlue.id,
+      label: data.personByLinkBlue.linkblue
+        ? `${data.personByLinkBlue.name} (${data.personByLinkBlue.linkblue})`
+        : data.personByLinkBlue.name,
+      person: data.personByLinkBlue,
     });
   }
 
@@ -76,7 +72,7 @@ export function PersonSearch({
         const option = options.find((option) => option.value === value);
         if (option) {
           onSelect?.({
-            uuid: option.person.uuid,
+            uuid: option.person.id,
             name: option.person.name ?? undefined,
             linkblue: option.person.linkblue ?? undefined,
           });

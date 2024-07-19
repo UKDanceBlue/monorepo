@@ -1,7 +1,7 @@
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 
 export const cancelNotificationScheduleDocument = graphql(/* GraphQL */ `
-  mutation CancelNotificationSchedule($uuid: String!) {
+  mutation CancelNotificationSchedule($uuid: GlobalId!) {
     abortScheduledNotification(uuid: $uuid) {
       ok
     }
@@ -9,7 +9,7 @@ export const cancelNotificationScheduleDocument = graphql(/* GraphQL */ `
 `);
 
 export const deleteNotificationDocument = graphql(/* GraphQL */ `
-  mutation DeleteNotification($uuid: String!, $force: Boolean) {
+  mutation DeleteNotification($uuid: GlobalId!, $force: Boolean) {
     deleteNotification(uuid: $uuid, force: $force) {
       ok
     }
@@ -17,7 +17,7 @@ export const deleteNotificationDocument = graphql(/* GraphQL */ `
 `);
 
 export const sendNotificationDocument = graphql(/* GraphQL */ `
-  mutation SendNotification($uuid: String!) {
+  mutation SendNotification($uuid: GlobalId!) {
     sendNotification(uuid: $uuid) {
       ok
     }
@@ -25,7 +25,7 @@ export const sendNotificationDocument = graphql(/* GraphQL */ `
 `);
 
 export const scheduleNotificationDocument = graphql(/* GraphQL */ `
-  mutation ScheduleNotification($uuid: String!, $sendAt: DateTimeISO!) {
+  mutation ScheduleNotification($uuid: GlobalId!, $sendAt: DateTimeISO!) {
     scheduleNotification(uuid: $uuid, sendAt: $sendAt) {
       ok
     }

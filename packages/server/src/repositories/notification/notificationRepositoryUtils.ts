@@ -1,16 +1,16 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
-import {
-  dateFilterToPrisma,
-  oneOfFilterToPrisma,
-  stringFilterToPrisma,
-} from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 import type {
   NotificationFilters,
   NotificationOrderKeys,
 } from "./NotificationRepository.ts";
+import {
+  dateFilterToPrisma,
+  oneOfFilterToPrisma,
+  stringFilterToPrisma,
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
 
 export function buildNotificationOrder(
   order:
@@ -30,7 +30,7 @@ export function buildNotificationOrder(
       case "deliveryIssueAcknowledgedAt":
       case "sendAt":
       case "startedSendingAt": {
-        orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
+        orderBy[key] = sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
       default: {

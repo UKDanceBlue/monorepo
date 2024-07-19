@@ -1,6 +1,6 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { useLinkProps } from "@tanstack/react-router";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Empty, Flex } from "antd";
 import { useQuery } from "urql";
 
@@ -10,7 +10,7 @@ import { MarathonsTable } from "./MarathonsTable";
 
 const marathonOverviewPageDocument = graphql(/* GraphQL */ `
   query MarathonOverviewPage {
-    nextMarathon {
+    latestMarathon {
       ...MarathonViewerFragment
     }
     marathons(sendAll: true) {
@@ -41,10 +41,10 @@ export function MarathonOverviewPage() {
           Create New Marathon
         </Button>
       </Flex>
-      {result.data?.nextMarathon || result.data?.marathons.data.length ? (
+      {result.data?.latestMarathon || result.data?.marathons.data.length ? (
         <div>
           <h2>Current Marathon</h2>
-          <MarathonViewer marathon={result.data.nextMarathon} />
+          <MarathonViewer marathon={result.data.latestMarathon} />
           <h2>All Marathons</h2>
           <MarathonsTable marathons={result.data.marathons.data} />
         </div>

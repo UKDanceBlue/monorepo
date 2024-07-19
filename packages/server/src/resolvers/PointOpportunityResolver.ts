@@ -1,14 +1,15 @@
+import type { GlobalId } from "@ukdanceblue/common";
 import {
-  DateTimeScalar,
   DetailedError,
   ErrorCode,
-  EventResource,
+  EventNode,
   FilteredListQueryArgs,
-  PointOpportunityResource,
+  GlobalIdScalar,
+  PointOpportunityNode,
   SortDirection,
   TeamType,
 } from "@ukdanceblue/common";
-import type { DateTime } from "luxon";
+import { DateTimeISOResolver } from "graphql-scalars";
 import {
   Arg,
   Args,
@@ -25,36 +26,35 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { eventModelToResource } from "../repositories/event/eventModelToResource.js";
-import { PointOpportunityRepository } from "../repositories/pointOpportunity/PointOpportunityRepository.js";
-import { pointOpportunityModelToResource } from "../repositories/pointOpportunity/pointOpportunityModelToResource.js";
-
+import { eventModelToResource } from "#repositories/event/eventModelToResource.js";
+import { PointOpportunityRepository } from "#repositories/pointOpportunity/PointOpportunityRepository.js";
+import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
+} from "#resolvers/ApiResponse.js";
 
 @ObjectType("SinglePointOpportunityResponse", {
-  implements: AbstractGraphQLOkResponse<PointOpportunityResource>,
+  implements: AbstractGraphQLOkResponse<PointOpportunityNode>,
 })
-class SinglePointOpportunityResponse extends AbstractGraphQLOkResponse<PointOpportunityResource> {
-  @Field(() => PointOpportunityResource)
-  data!: PointOpportunityResource;
+class SinglePointOpportunityResponse extends AbstractGraphQLOkResponse<PointOpportunityNode> {
+  @Field(() => PointOpportunityNode)
+  data!: PointOpportunityNode;
 }
 @ObjectType("ListPointOpportunitiesResponse", {
-  implements: AbstractGraphQLPaginatedResponse<PointOpportunityResource>,
+  implements: AbstractGraphQLPaginatedResponse<PointOpportunityNode>,
 })
-class ListPointOpportunitiesResponse extends AbstractGraphQLPaginatedResponse<PointOpportunityResource> {
-  @Field(() => [PointOpportunityResource])
-  data!: PointOpportunityResource[];
+class ListPointOpportunitiesResponse extends AbstractGraphQLPaginatedResponse<PointOpportunityNode> {
+  @Field(() => [PointOpportunityNode])
+  data!: PointOpportunityNode[];
 }
 @ObjectType("CreatePointOpportunityResponse", {
-  implements: AbstractGraphQLCreatedResponse<PointOpportunityResource>,
+  implements: AbstractGraphQLCreatedResponse<PointOpportunityNode>,
 })
-class CreatePointOpportunityResponse extends AbstractGraphQLCreatedResponse<PointOpportunityResource> {
-  @Field(() => PointOpportunityResource)
-  data!: PointOpportunityResource;
+class CreatePointOpportunityResponse extends AbstractGraphQLCreatedResponse<PointOpportunityNode> {
+  @Field(() => PointOpportunityNode)
+  data!: PointOpportunityNode;
 }
 @ObjectType("DeletePointOpportunityResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
@@ -66,8 +66,8 @@ class CreatePointOpportunityInput {
   @Field(() => String)
   name!: string;
 
-  @Field(() => DateTimeScalar, { nullable: true })
-  opportunityDate!: DateTime | null;
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  opportunityDate!: Date | null;
 
   @Field(() => TeamType)
   type!: TeamType;
@@ -81,8 +81,8 @@ class SetPointOpportunityInput {
   @Field(() => String, { nullable: true })
   name!: string | null;
 
-  @Field(() => DateTimeScalar, { nullable: true })
-  opportunityDate!: DateTime | null;
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  opportunityDate!: Date | null;
 
   @Field(() => TeamType, { nullable: true })
   type!: TeamType | null;
@@ -106,7 +106,7 @@ class ListPointOpportunitiesArgs extends FilteredListQueryArgs<
   date: ["opportunityDate", "createdAt", "updatedAt"],
 }) {}
 
-@Resolver(() => PointOpportunityResource)
+@Resolver(() => PointOpportunityNode)
 @Service()
 export class PointOpportunityResolver {
   constructor(
@@ -115,11 +115,11 @@ export class PointOpportunityResolver {
 
   @Query(() => SinglePointOpportunityResponse, { name: "pointOpportunity" })
   async getByUuid(
-    @Arg("uuid") uuid: string
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<SinglePointOpportunityResponse> {
     const row =
       await this.pointOpportunityRepository.findPointOpportunityByUnique({
-        uuid,
+        uuid: id,
       });
 
     if (row == null) {
@@ -141,7 +141,7 @@ export class PointOpportunityResolver {
         order:
           query.sortBy?.map((key, i) => [
             key,
-            query.sortDirection?.[i] ?? SortDirection.DESCENDING,
+            query.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
           query.page != null && query.pageSize != null
@@ -172,7 +172,7 @@ export class PointOpportunityResolver {
       name: input.name,
       type: input.type,
       eventParam: input.eventUuid ? { uuid: input.eventUuid } : null,
-      opportunityDate: input.opportunityDate?.toJSDate() ?? null,
+      opportunityDate: input.opportunityDate ?? null,
     });
 
     return CreatePointOpportunityResponse.newOk(
@@ -184,16 +184,16 @@ export class PointOpportunityResolver {
     name: "setPointOpportunity",
   })
   async set(
-    @Arg("uuid") uuid: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPointOpportunityInput
   ): Promise<SinglePointOpportunityResponse> {
     const row = await this.pointOpportunityRepository.updatePointOpportunity(
-      { uuid },
+      { uuid: id },
       {
         name: input.name ?? undefined,
         type: input.type ?? undefined,
         eventParam: input.eventUuid ? { uuid: input.eventUuid } : undefined,
-        opportunityDate: input.opportunityDate?.toJSDate() ?? undefined,
+        opportunityDate: input.opportunityDate ?? undefined,
       }
     );
 
@@ -210,7 +210,7 @@ export class PointOpportunityResolver {
     name: "deletePointOpportunity",
   })
   async delete(
-    @Arg("uuid") id: string
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<DeletePointOpportunityResponse> {
     const row = await this.pointOpportunityRepository.deletePointOpportunity({
       uuid: id,
@@ -223,13 +223,13 @@ export class PointOpportunityResolver {
     return DeletePointOpportunityResponse.newOk(true);
   }
 
-  @FieldResolver(() => EventResource, { nullable: true })
+  @FieldResolver(() => EventNode, { nullable: true })
   async event(
-    @Root() pointOpportunity: PointOpportunityResource
-  ): Promise<EventResource | null> {
+    @Root() { id: { id } }: PointOpportunityNode
+  ): Promise<EventNode | null> {
     const model =
       await this.pointOpportunityRepository.getEventForPointOpportunity({
-        uuid: pointOpportunity.uuid,
+        uuid: id,
       });
 
     return model ? eventModelToResource(model) : null;

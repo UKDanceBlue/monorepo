@@ -20,6 +20,7 @@
     "server:bs": "yarn workspace @ukdanceblue/server run bs",
     "server:build": "yarn workspace @ukdanceblue/server run build",
     "server:start": "yarn workspace @ukdanceblue/server run start",
+    "server:dev": "yarn workspace @ukdanceblue/server run dev",
     "server:prisma": "yarn workspace @ukdanceblue/server prisma",
     "server:prisma-generate": "yarn workspace @ukdanceblue/server prisma generate",
     "portal:dev": "yarn workspace @ukdanceblue/portal dev",
@@ -55,7 +56,7 @@
     "graphql": "^16.8.1",
     "graphql-scalars": "^1.23.0",
     "prettier": "^3.2.5",
-    "typescript": "^5.4.3",
+    "typescript": "^5.5.3",
     "vitest": "^1.4.0"
   },
   "workspaces": [

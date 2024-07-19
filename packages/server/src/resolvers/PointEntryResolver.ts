@@ -1,13 +1,17 @@
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
-  PersonResource,
-  PointEntryResource,
-  PointOpportunityResource,
+  GlobalIdScalar,
+  PersonNode,
+  PointEntryNode,
+  PointOpportunityNode,
   SortDirection,
-  TeamResource,
+  TeamNode,
 } from "@ukdanceblue/common";
+import { NotFoundError , ConcreteResult } from "@ukdanceblue/common/error";
+import { Err } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -24,38 +28,38 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { personModelToResource } from "../repositories/person/personModelToResource.js";
-import { PointEntryRepository } from "../repositories/pointEntry/PointEntryRepository.js";
-import { pointEntryModelToResource } from "../repositories/pointEntry/pointEntryModelToResource.js";
-import { pointOpportunityModelToResource } from "../repositories/pointOpportunity/pointOpportunityModelToResource.js";
-import { teamModelToResource } from "../repositories/team/teamModelToResource.js";
-
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
+import { PointEntryRepository } from "#repositories/pointEntry/PointEntryRepository.js";
+import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
+import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
+import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
+} from "#resolvers/ApiResponse.js";
 
 @ObjectType("GetPointEntryByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<PointEntryResource>,
+  implements: AbstractGraphQLOkResponse<PointEntryNode>,
 })
-class GetPointEntryByUuidResponse extends AbstractGraphQLOkResponse<PointEntryResource> {
-  @Field(() => PointEntryResource)
-  data!: PointEntryResource;
+class GetPointEntryByUuidResponse extends AbstractGraphQLOkResponse<PointEntryNode> {
+  @Field(() => PointEntryNode)
+  data!: PointEntryNode;
 }
 @ObjectType("ListPointEntriesResponse", {
-  implements: AbstractGraphQLPaginatedResponse<PointEntryResource>,
+  implements: AbstractGraphQLPaginatedResponse<PointEntryNode>,
 })
-class ListPointEntriesResponse extends AbstractGraphQLPaginatedResponse<PointEntryResource> {
-  @Field(() => [PointEntryResource])
-  data!: PointEntryResource[];
+class ListPointEntriesResponse extends AbstractGraphQLPaginatedResponse<PointEntryNode> {
+  @Field(() => [PointEntryNode])
+  data!: PointEntryNode[];
 }
 @ObjectType("CreatePointEntryResponse", {
-  implements: AbstractGraphQLCreatedResponse<PointEntryResource>,
+  implements: AbstractGraphQLCreatedResponse<PointEntryNode>,
 })
-class CreatePointEntryResponse extends AbstractGraphQLCreatedResponse<PointEntryResource> {
-  @Field(() => PointEntryResource)
-  data!: PointEntryResource;
+class CreatePointEntryResponse extends AbstractGraphQLCreatedResponse<PointEntryNode> {
+  @Field(() => PointEntryNode)
+  data!: PointEntryNode;
 }
 @ObjectType("DeletePointEntryResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
@@ -63,7 +67,7 @@ class CreatePointEntryResponse extends AbstractGraphQLCreatedResponse<PointEntry
 class DeletePointEntryResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
-class CreatePointEntryInput implements Partial<PointEntryResource> {
+class CreatePointEntryInput implements Partial<PointEntryNode> {
   @Field(() => String, { nullable: true })
   comment!: string | null;
 
@@ -93,17 +97,20 @@ class ListPointEntriesArgs extends FilteredListQueryArgs<
   date: ["createdAt", "updatedAt"],
 }) {}
 
-@Resolver(() => PointEntryResource)
+@Resolver(() => PointEntryNode)
 @Service()
 export class PointEntryResolver {
-  constructor(private readonly pointEntryRepository: PointEntryRepository) {}
+  constructor(
+    private readonly pointEntryRepository: PointEntryRepository,
+    private readonly personRepository: PersonRepository
+  ) {}
 
   @Query(() => GetPointEntryByUuidResponse, { name: "pointEntry" })
   async getByUuid(
-    @Arg("uuid") uuid: string
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<GetPointEntryByUuidResponse> {
     const model = await this.pointEntryRepository.findPointEntryByUnique({
-      uuid,
+      uuid: id,
     });
 
     if (model == null) {
@@ -123,7 +130,7 @@ export class PointEntryResolver {
         order:
           query.sortBy?.map((key, i) => [
             key,
-            query.sortDirection?.[i] ?? SortDirection.DESCENDING,
+            query.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
           query.page != null && query.pageSize != null
@@ -164,27 +171,31 @@ export class PointEntryResolver {
   }
 
   @Mutation(() => DeletePointEntryResponse, { name: "deletePointEntry" })
-  async delete(@Arg("uuid") id: string): Promise<DeletePointEntryResponse> {
+  async delete(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<DeletePointEntryResponse> {
     await this.pointEntryRepository.deletePointEntry({ uuid: id });
 
     return DeletePointEntryResponse.newOk(true);
   }
 
-  @FieldResolver(() => PersonResource, { nullable: true })
+  @FieldResolver(() => PersonNode, { nullable: true })
   async personFrom(
-    @Root() pointEntry: PointEntryResource
-  ): Promise<PersonResource | null> {
+    @Root() { id: { id } }: PointEntryNode
+  ): Promise<ConcreteResult<PersonNode>> {
     const model = await this.pointEntryRepository.getPointEntryPersonFrom({
-      uuid: pointEntry.uuid,
+      uuid: id,
     });
 
-    return model ? personModelToResource(model) : null;
+    return model
+      ? personModelToResource(model, this.personRepository).promise
+      : Err(new NotFoundError({ what: "Person" }));
   }
 
-  @FieldResolver(() => TeamResource)
-  async team(@Root() pointEntry: PointEntryResource): Promise<TeamResource> {
+  @FieldResolver(() => TeamNode)
+  async team(@Root() { id: { id } }: PointEntryNode): Promise<TeamNode> {
     const model = await this.pointEntryRepository.getPointEntryTeam({
-      uuid: pointEntry.uuid,
+      uuid: id,
     });
 
     if (model == null) {
@@ -194,12 +205,12 @@ export class PointEntryResolver {
     return teamModelToResource(model);
   }
 
-  @FieldResolver(() => PointOpportunityResource, { nullable: true })
+  @FieldResolver(() => PointOpportunityNode, { nullable: true })
   async pointOpportunity(
-    @Root() pointEntry: PointEntryResource
-  ): Promise<PointOpportunityResource | null> {
+    @Root() { id: { id } }: PointEntryNode
+  ): Promise<PointOpportunityNode | null> {
     const model = await this.pointEntryRepository.getPointEntryOpportunity({
-      uuid: pointEntry.uuid,
+      uuid: id,
     });
 
     return model ? pointOpportunityModelToResource(model) : null;

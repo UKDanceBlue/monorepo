@@ -19,7 +19,7 @@ env:
   SERVER_IMAGE_NAME: ukdanceblue/app-server
 
 jobs:
-  build-and-push-portal-image:
+  build-and-push-images:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -27,126 +27,54 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Enable Corepack before setting up Node
-        run: corepack enable
-      - name: Set up node 18.x
-        uses: actions/setup-node@v4.0.2
-        with:
-          node-version: 18
-          cache: yarn
-      - name: Install dependencies
-        working-directory: ./packages/portal
-        run:
-          yarn workspaces focus @ukdanceblue/common @ukdanceblue/portal
-          @ukdanceblue/monorepo
-      - name: Build GraphQL
-        run: yarn run gql:build
-        working-directory: .
-      - name: Build common
-        run: yarn run build
-        working-directory: ./packages/common
-      - name: Build portal
-        run: yarn run build
-        working-directory: ./packages/portal
       # Uses the `docker/login-action` action to log in to the Container registry registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
       - name: Log in to the Container registry
-        uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
       - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
+        id: portalMeta
+        uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.PORTAL_IMAGE_NAME }}
-      # This step uses the `docker/build-push-action` action to build the image, based on your repository's `Dockerfile`. If the build succeeds, it pushes the image to GitHub Packages.
-      # It uses the `context` parameter to define the build's context as the set of files located in the specified path. For more information, see "[Usage](https://github.com/docker/build-push-action#usage)" in the README of the `docker/build-push-action` repository.
-      # It uses the `tags` and `labels` parameters to tag and label the image with the output from the "meta" step.
-      - name: Build and push Docker image
-        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0
-        with:
-          context: ./packages/portal
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-  build-and-push-server-image:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Enable Corepack before setting up Node
-        run: corepack enable
-      - name: Set up node 18.x
-        uses: actions/setup-node@v4.0.2
-        with:
-          node-version: 18
-          cache: yarn
-      - name: Install dependencies
-        working-directory: ./packages/server
-        run:
-          yarn workspaces focus @ukdanceblue/common @ukdanceblue/server
-          @ukdanceblue/monorepo
-      - name: Build common
-        run: yarn run build
-        working-directory: ./packages/common
-      - name: Generate prisma client
-        run: yarn dlx prisma generate
-        working-directory: ./packages/server
-      - name: Build server
-        run: yarn run build
-        working-directory: ./packages/server
-      - name: Focus on server
-        run:
-          yarn workspaces focus --production @ukdanceblue/server
-          @ukdanceblue/common
-      # Uses the `docker/login-action` action to log in to the Container registry registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
-      - name: Log in to the Container registry
-        uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
       - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
+        id: serverMeta
+        uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.SERVER_IMAGE_NAME }}
       # This step uses the `docker/build-push-action` action to build the image, based on your repository's `Dockerfile`. If the build succeeds, it pushes the image to GitHub Packages.
       # It uses the `context` parameter to define the build's context as the set of files located in the specified path. For more information, see "[Usage](https://github.com/docker/build-push-action#usage)" in the README of the `docker/build-push-action` repository.
       # It uses the `tags` and `labels` parameters to tag and label the image with the output from the "meta" step.
-      - name: Build and push Docker image
-        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0
+      - name: Build and push Portal image
+        uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./packages/server/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-  trigger-recreate-release:
-    runs-on: ubuntu-latest
-    needs: [build-and-push-portal-image, build-and-push-server-image]
-    if: github.ref == 'refs/heads/release'
-    steps:
-      - name: Trigger container recreate
-        shell: bash
-        run: |
-          ((curl --insecure -X POST ${{ secrets.DANCEBLUE_APP_PORTAL_RECREATE_WEBHOOK }} -H "CF-Access-Client-Id: ${{ secrets.CLOUDFLARE_ACCESS_SERVICE_TOKEN_CLIENT_ID }}" -H "CF-Access-Client-Secret: ${{ secrets.CLOUDFLARE_ACCESS_SERVICE_TOKEN_CLIENT_SECRET }}") || exit 1)
-          ((curl --insecure -X POST ${{ secrets.DANCEBLUE_APP_SERVER_RECREATE_WEBHOOK }} -H "CF-Access-Client-Id: ${{ secrets.CLOUDFLARE_ACCESS_SERVICE_TOKEN_CLIENT_ID }}" -H "CF-Access-Client-Secret: ${{ secrets.CLOUDFLARE_ACCESS_SERVICE_TOKEN_CLIENT_SECRET }}") || exit 1)
-  trigger-recreate-main:
-    runs-on: ubuntu-latest
-    needs: [build-and-push-portal-image, build-and-push-server-image]
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Trigger container recreate
-        shell: bash
-        run: |
-          ((curl --insecure -X POST ${{ secrets.DANCEBLUE_APP_DEV_PORTAL_RECREATE_WEBHOOK }} -H "CF-Access-Client-Id: ${{ secrets.CLOUDFLARE_ACCESS_SERVICE_TOKEN_CLIENT_ID }}" -H "CF-Access-Client-Secret: ${{ secrets.CLOUDFLARE_ACCESS_SERVICE_TOKEN_CLIENT_SECRET }}") || exit 1)
-          ((curl --insecure -X POST ${{ secrets.DANCEBLUE_APP_DEV_SERVER_RECREATE_WEBHOOK }} -H "CF-Access-Client-Id: ${{ secrets.CLOUDFLARE_ACCESS_SERVICE_TOKEN_CLIENT_ID }}" -H "CF-Access-Client-Secret: ${{ secrets.CLOUDFLARE_ACCESS_SERVICE_TOKEN_CLIENT_SECRET }}") || exit 1)
+          tags: ${{ steps.portalMeta.outputs.tags }}
+          labels: ${{ steps.portalMeta.outputs.labels }}
+          target: portal
+      - name: Build and push Server image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.serverMeta.outputs.tags }}
+          labels: ${{ steps.serverMeta.outputs.labels }}
+          target: server
+      - name: Remove old Portal images
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: ${{ env.PORTAL_IMAGE_NAME }}
+          package-type: "container"
+          min-versions-to-keep: 2
+          delete-only-untagged-versions: "true"
+      - name: Remove old Server images
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: ${{ env.SERVER_IMAGE_NAME }}
+          package-type: "container"
+          min-versions-to-keep: 2
+          delete-only-untagged-versions: "true"

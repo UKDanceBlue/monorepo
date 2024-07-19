@@ -1,12 +1,13 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
-import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
+import { intervalFromSomething } from "@ukdanceblue/common";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
+import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
 import type {
   SetEventInput,
   SetEventOccurrenceInput,
-} from "@ukdanceblue/common/graphql-client-admin/raw-types";
-import { Interval } from "luxon";
+} from "@ukdanceblue/common/graphql-client-portal/raw-types";
+import type { Interval } from "luxon";
 import type { UseQueryExecute } from "urql";
 import { useMutation } from "urql";
 
@@ -42,8 +43,8 @@ export function useEventEditorForm(
       description: eventData?.description || null,
       occurrences:
         eventData?.occurrences.map((occurrence) => ({
-          uuid: occurrence.uuid,
-          interval: Interval.fromISO(occurrence.interval),
+          uuid: occurrence.id,
+          interval: intervalFromSomething(occurrence.interval),
           fullDay: occurrence.fullDay,
         })) ?? [],
     },
@@ -53,7 +54,7 @@ export function useEventEditorForm(
       }
 
       await setEvent({
-        uuid: eventData.uuid,
+        uuid: eventData.id,
         input: {
           title: values.title,
           summary: values.summary ?? eventData.summary ?? null,
@@ -63,7 +64,10 @@ export function useEventEditorForm(
             let retVal: Parameters<
               typeof setEvent
             >[0]["input"]["occurrences"][number] = {
-              interval: occurrence.interval.toISO(),
+              interval: {
+                start: occurrence.interval.start!.toISO(),
+                end: occurrence.interval.end!.toISO(),
+              },
               fullDay: occurrence.fullDay,
             };
             if (occurrence.uuid) {

@@ -1,15 +1,15 @@
 import type { MarathonHour } from "@prisma/client";
-import { MarathonHourResource } from "@ukdanceblue/common";
+import { MarathonHourNode } from "@ukdanceblue/common";
 
 export function marathonHourModelToResource(
   marathonHourModel: MarathonHour
-): MarathonHourResource {
-  return MarathonHourResource.init({
-    uuid: marathonHourModel.uuid,
+): MarathonHourNode {
+  return MarathonHourNode.init({
+    id: marathonHourModel.uuid,
     title: marathonHourModel.title,
     details: marathonHourModel.details,
     durationInfo: marathonHourModel.durationInfo,
-    shownStartingAt: marathonHourModel.shownStartingAt.toISOString(),
+    shownStartingAt: marathonHourModel.shownStartingAt,
     createdAt: marathonHourModel.createdAt,
     updatedAt: marathonHourModel.updatedAt,
   });

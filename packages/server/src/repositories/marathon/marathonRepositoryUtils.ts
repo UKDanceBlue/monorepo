@@ -1,15 +1,15 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
-import {
-  dateFilterToPrisma,
-  oneOfFilterToPrisma,
-} from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 import type {
   MarathonFilters,
   MarathonOrderKeys,
 } from "./MarathonRepository.ts";
+import {
+  dateFilterToPrisma,
+  oneOfFilterToPrisma,
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
 
 export function buildMarathonOrder(
   order:
@@ -26,7 +26,7 @@ export function buildMarathonOrder(
       case "endDate":
       case "createdAt":
       case "updatedAt": {
-        orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
+        orderBy[key] = sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
       default: {

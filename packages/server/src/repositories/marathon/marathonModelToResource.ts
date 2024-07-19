@@ -1,14 +1,12 @@
 import type { Marathon } from "@prisma/client";
-import { MarathonResource } from "@ukdanceblue/common";
+import { MarathonNode } from "@ukdanceblue/common";
 
-export function marathonModelToResource(
-  marathonModel: Marathon
-): MarathonResource {
-  return MarathonResource.init({
-    uuid: marathonModel.uuid,
+export function marathonModelToResource(marathonModel: Marathon): MarathonNode {
+  return MarathonNode.init({
+    id: marathonModel.uuid,
     year: marathonModel.year,
-    startDate: marathonModel.startDate.toISOString(),
-    endDate: marathonModel.endDate.toISOString(),
+    startDate: marathonModel.startDate,
+    endDate: marathonModel.endDate,
     createdAt: marathonModel.createdAt,
     updatedAt: marathonModel.updatedAt,
   });

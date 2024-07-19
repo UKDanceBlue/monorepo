@@ -2,9 +2,11 @@ import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
 import { log } from "@common/logging";
 import { showMessage } from "@common/util/alertUtils";
 import { useRoute } from "@react-navigation/native";
-import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
+import { intervalFromSomething } from "@ukdanceblue/common";
+import { getFragmentData } from "@ukdanceblue/common/graphql-client-mobile";
 import { setStringAsync } from "expo-clipboard";
-import { DateTime, Interval } from "luxon";
+import type { Interval } from "luxon";
+import { DateTime } from "luxon";
 import {
   Badge,
   Box,
@@ -149,14 +151,14 @@ const EventScreen = () => {
         )}
         <Text textAlign="center" mx={2} mb={2}>
           {eventData.occurrences.map((occurrence) => {
-            const highlighted = occurrence.uuid === occurrenceId;
+            const highlighted = occurrence.id === occurrenceId;
 
-            const interval = Interval.fromISO(occurrence.interval);
+            const interval = intervalFromSomething(occurrence.interval);
             const { whenString, allDay } = stringifyInterval(interval);
 
             return (
               <Text
-                key={occurrence.uuid}
+                key={occurrence.id}
                 color={highlighted ? "darkBlue.700" : "darkBlue.500"}
                 fontWeight={highlighted ? "bold" : "normal"}
               >

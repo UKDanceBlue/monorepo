@@ -5,14 +5,14 @@ import { SortDirection } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/graphql-client-admin";
+} from "@ukdanceblue/common/graphql-client-portal";
 import { Table } from "antd";
 import { DateTime } from "luxon";
 import { useQuery } from "urql";
 
 const NotificationDeliveriesTableFragment = graphql(/* GraphQL */ `
-  fragment NotificationDeliveriesTableFragment on NotificationDeliveryResource {
-    uuid
+  fragment NotificationDeliveriesTableFragment on NotificationDeliveryNode {
+    id
     deliveryError
     receiptCheckedAt
     sentAt
@@ -105,7 +105,7 @@ export const NotificationDeliveriesTable = ({
     <>
       <Table
         dataSource={listEventsData ?? undefined}
-        rowKey={({ uuid }) => uuid}
+        rowKey={({ id }) => id}
         loading={fetching}
         pagination={
           notificationDeliveriesDocument
@@ -141,8 +141,8 @@ export const NotificationDeliveriesTable = ({
                 | "deliveryError",
               direction:
                 sort.order === "ascend"
-                  ? SortDirection.ASCENDING
-                  : SortDirection.DESCENDING,
+                  ? SortDirection.asc
+                  : SortDirection.desc,
             });
           }
 

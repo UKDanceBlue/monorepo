@@ -4,8 +4,8 @@ import {
   NotificationFragment,
 } from "@common/fragments/NotificationScreenGQL";
 import { Logger } from "@common/logger/Logger";
-import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
-import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
+import { getFragmentData } from "@ukdanceblue/common/graphql-client-mobile";
 import { openURL } from "expo-linking";
 import { isEqual } from "lodash";
 import { DateTime } from "luxon";
@@ -54,8 +54,8 @@ const NonMemoizedNotificationRowContent = ({
     deliveryFragmentData?.sentAt == null
       ? null
       : typeof deliveryFragmentData.sentAt === "string"
-      ? DateTime.fromISO(deliveryFragmentData.sentAt)
-      : DateTime.fromJSDate(deliveryFragmentData.sentAt);
+        ? DateTime.fromISO(deliveryFragmentData.sentAt)
+        : DateTime.fromJSDate(deliveryFragmentData.sentAt);
 
   return (
     <Pressable

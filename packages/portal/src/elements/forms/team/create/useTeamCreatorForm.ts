@@ -1,8 +1,10 @@
+import { useMarathon } from "@config/marathonContext";
+import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
-import type { DocumentType } from "@ukdanceblue/common/graphql-client-admin";
-import { type CreateTeamInput } from "@ukdanceblue/common/graphql-client-admin/raw-types";
+import type { DocumentType } from "@ukdanceblue/common/graphql-client-portal";
+import { type CreateTeamInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
 import { useMutation } from "urql";
 
 import { teamCreatorDocument } from "./TeamCreatorGQL";
@@ -22,24 +24,27 @@ export function useTeamCreatorForm(
     loadingMessage: "Saving team...",
   });
 
+  const marathonId = useMarathon()?.id;
+  const { showErrorMessage } = useAntFeedback();
+
   const Form = useForm<CreateTeamInput>({
     defaultValues: {
       name: "",
       legacyStatus: TeamLegacyStatus.NewTeam,
-      marathonYear: "DB24",
-      persistentIdentifier: null,
       type: TeamType.Spirit,
     },
     onSubmit: async (values) => {
+      if (!marathonId) {
+        void showErrorMessage("No marathon selected");
+        return;
+      }
       const { data } = await createTeam({
         input: {
           name: values.name,
           legacyStatus: values.legacyStatus,
-          // TODO: Make this dynamic
-          marathonYear: "DB24",
-          persistentIdentifier: values.persistentIdentifier ?? null,
           type: values.type,
         },
+        marathonUuid: marathonId,
       });
 
       return afterSubmit?.(data?.createTeam);

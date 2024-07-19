@@ -4,7 +4,7 @@ import { TeamType } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/dist/graphql-client-public";
+} from "@ukdanceblue/common/graphql-client-mobile";
 import { Text, View } from "native-base";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator } from "react-native";
@@ -47,12 +47,10 @@ export function TriviaCrack() {
         }
 
         me {
-          data {
-            teams {
-              team {
-                type
-                name
-              }
+          teams {
+            team {
+              type
+              name
             }
           }
         }
@@ -72,9 +70,9 @@ export function TriviaCrack() {
       null;
     let moraleTeamNumber: number | undefined;
     if (typeof value === "object" && value !== null) {
-      if ((data?.me.data?.teams.length ?? 0) > 0) {
+      if ((data?.me?.teams.length ?? 0) > 0) {
         const moraleTeams =
-          data?.me.data?.teams.filter(
+          data?.me?.teams.filter(
             (team) => team.team.type === TeamType.Morale
           ) ?? [];
         if (moraleTeams[0]?.team.name.startsWith("Morale Team")) {
@@ -112,7 +110,7 @@ export function TriviaCrack() {
       }
     }
     return { stationOrder, moraleTeamNumber };
-  }, [data?.me.data?.teams, option?.value]);
+  }, [data?.me?.teams, option?.value]);
 
   useEffect(() => {
     if (stationOrder && spins == null) {

@@ -3,9 +3,9 @@ import { DateTime } from "luxon";
 import type { NextFn } from "type-graphql";
 import { Container } from "typedi";
 
-import { FileManager } from "../../../lib/files/FileManager.js";
-import { combineMimePartsToString } from "../../../lib/files/mime.js";
-import { EventRepository } from "../../../repositories/event/EventRepository.js";
+import { FileManager } from "#files/FileManager.js";
+import { combineMimePartsToString } from "#files/mime.js";
+import { EventRepository } from "#repositories/event/EventRepository.js";
 
 const EMPTY_PNG_URL =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIW2NgAAIAAAUAAR4f7BQAAAAASUVORK5CYII=";

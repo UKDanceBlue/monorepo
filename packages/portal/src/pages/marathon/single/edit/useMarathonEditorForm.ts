@@ -2,7 +2,7 @@ import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import type { DateTime } from "luxon";
 import { useMutation, useQuery } from "urql";
 
@@ -11,9 +11,12 @@ export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
   const [{ fetching: editFetching, error: editError }, editMarathon] =
     useMutation(
       graphql(/* GraphQL */ `
-        mutation EditMarathon($input: SetMarathonInput!, $marathonId: String!) {
+        mutation EditMarathon(
+          $input: SetMarathonInput!
+          $marathonId: GlobalId!
+        ) {
           setMarathon(input: $input, uuid: $marathonId) {
-            uuid
+            id
           }
         }
       `)
@@ -29,7 +32,7 @@ export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
     { data: existingData, fetching: existingFetching, error: existingError },
   ] = useQuery({
     query: graphql(/* GraphQL */ `
-      query GetMarathon($marathonId: String!) {
+      query GetMarathon($marathonId: GlobalId!) {
         marathon(uuid: $marathonId) {
           year
           startDate
@@ -55,8 +58,10 @@ export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
   }>({
     defaultValues: {
       year: existingData?.marathon.year,
-      startDate: dateTimeFromSomething(existingData?.marathon.startDate),
-      endDate: dateTimeFromSomething(existingData?.marathon.endDate),
+      startDate:
+        dateTimeFromSomething(existingData?.marathon.startDate) ?? undefined,
+      endDate:
+        dateTimeFromSomething(existingData?.marathon.endDate) ?? undefined,
     },
     onChange: ({ startDate, endDate }) => {
       if (startDate && endDate && startDate.toMillis() > endDate.toMillis()) {
@@ -94,7 +99,7 @@ export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
         resetExistingWatcher();
         await navigate({
           to: "/marathon/$marathonId/",
-          params: { marathonId: data.setMarathon.uuid },
+          params: { marathonId: data.setMarathon.id },
         });
       }
     },

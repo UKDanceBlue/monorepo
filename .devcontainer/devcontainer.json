@@ -45,19 +45,16 @@
 
   "containerEnv": {
     "HOME": "/home/node",
-    "DB_HOST": "localhost",
-    "DB_PORT": "5432",
-    "DB_NAME": "danceblue",
-    "DB_UNAME": "danceblue",
-    "DB_PWD": "danceblue",
     "DATABASE_URL": "postgres://danceblue:danceblue@localhost:5432/danceblue?schema=danceblue",
     "NODE_ENV": "development",
     "APPLICATION_HOST": "localhost",
     "APPLICATION_PORT": "8000",
     "MS_OIDC_URL": "https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0/.well-known/openid-configuration",
+    "SERVE_ORIGIN": "http://localhost:8000",
     "SERVE_PATH": "/workspaces/monorepo/local-uploads",
     "UPLOAD_PATH": "/workspaces/monorepo/local-uploads",
-    "MAX_FILE_SIZE": "200"
+    "MAX_FILE_SIZE": "200",
+    "LOG_DIR": "/workspaces/monorepo/packages/server/logs"
   },
 
   "customizations": {

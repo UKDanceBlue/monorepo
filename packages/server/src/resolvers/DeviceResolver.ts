@@ -1,12 +1,15 @@
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   DetailedError,
-  DeviceResource,
+  DeviceNode,
   ErrorCode,
   FilteredListQueryArgs,
-  NotificationDeliveryResource,
-  PersonResource,
+  GlobalIdScalar,
+  NotificationDeliveryNode,
+  PersonNode,
   SortDirection,
 } from "@ukdanceblue/common";
+import { ConcreteResult } from "@ukdanceblue/common/error";
 import {
   Arg,
   Args,
@@ -23,37 +26,37 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { auditLogger } from "../lib/logging/auditLogging.js";
-import { DeviceRepository } from "../repositories/device/DeviceRepository.js";
-import { deviceModelToResource } from "../repositories/device/deviceModelToResource.js";
-import { notificationDeliveryModelToResource } from "../repositories/notificationDelivery/notificationDeliveryModelToResource.js";
-import { personModelToResource } from "../repositories/person/personModelToResource.js";
-
+import { auditLogger } from "#logging/auditLogging.js";
+import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
+import { deviceModelToResource } from "#repositories/device/deviceModelToResource.js";
+import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import {
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
+} from "#resolvers/ApiResponse.js";
 
 @ObjectType("GetDeviceByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<DeviceResource>,
+  implements: AbstractGraphQLOkResponse<DeviceNode>,
 })
-class GetDeviceByUuidResponse extends AbstractGraphQLOkResponse<DeviceResource> {
-  @Field(() => DeviceResource)
-  data!: DeviceResource;
+class GetDeviceByUuidResponse extends AbstractGraphQLOkResponse<DeviceNode> {
+  @Field(() => DeviceNode)
+  data!: DeviceNode;
 }
 @ObjectType("ListDevicesResponse", {
-  implements: AbstractGraphQLPaginatedResponse<DeviceResource>,
+  implements: AbstractGraphQLPaginatedResponse<DeviceNode>,
 })
-class ListDevicesResponse extends AbstractGraphQLPaginatedResponse<DeviceResource> {
-  @Field(() => [DeviceResource])
-  data!: DeviceResource[];
+class ListDevicesResponse extends AbstractGraphQLPaginatedResponse<DeviceNode> {
+  @Field(() => [DeviceNode])
+  data!: DeviceNode[];
 }
 @ObjectType("RegisterDeviceResponse", {
-  implements: AbstractGraphQLOkResponse<DeviceResource>,
+  implements: AbstractGraphQLOkResponse<DeviceNode>,
 })
-class RegisterDeviceResponse extends AbstractGraphQLOkResponse<DeviceResource> {
-  @Field(() => DeviceResource)
-  data!: DeviceResource;
+class RegisterDeviceResponse extends AbstractGraphQLOkResponse<DeviceNode> {
+  @Field(() => DeviceNode)
+  data!: DeviceNode;
 }
 @ObjectType("DeleteDeviceResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
@@ -61,7 +64,7 @@ class RegisterDeviceResponse extends AbstractGraphQLOkResponse<DeviceResource> {
 class DeleteDeviceResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
-class RegisterDeviceInput implements Partial<DeviceResource> {
+class RegisterDeviceInput {
   @Field(() => String)
   deviceId!: string;
 
@@ -114,14 +117,19 @@ class NotificationDeliveriesArgs {
   pageSize?: number;
 }
 
-@Resolver(() => DeviceResource)
+@Resolver(() => DeviceNode)
 @Service()
 export class DeviceResolver {
-  constructor(private deviceRepository: DeviceRepository) {}
+  constructor(
+    private readonly deviceRepository: DeviceRepository,
+    private readonly personRepository: PersonRepository
+  ) {}
 
   @Query(() => GetDeviceByUuidResponse, { name: "device" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<GetDeviceByUuidResponse> {
-    const row = await this.deviceRepository.getDeviceByUuid(uuid);
+  async getByUuid(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<GetDeviceByUuidResponse> {
+    const row = await this.deviceRepository.getDeviceByUuid(id);
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Device not found");
@@ -140,7 +148,7 @@ export class DeviceResolver {
         orderBy:
           query.sortBy?.map((key, i) => [
             key,
-            query.sortDirection?.[i] ?? SortDirection.DESCENDING,
+            query.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
           query.page != null && query.pageSize != null
@@ -176,29 +184,34 @@ export class DeviceResolver {
   }
 
   @Mutation(() => DeleteDeviceResponse, { name: "deleteDevice" })
-  async delete(@Arg("uuid") uuid: string): Promise<DeleteDeviceResponse> {
-    await this.deviceRepository.deleteDevice({ uuid });
+  async delete(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<DeleteDeviceResponse> {
+    await this.deviceRepository.deleteDevice({ uuid: id });
 
-    auditLogger.normal("Device deleted", { uuid });
+    auditLogger.normal("Device deleted", { uuid: id });
 
     return DeleteDeviceResponse.newOk(true);
   }
 
-  @FieldResolver(() => PersonResource, { nullable: true })
+  @FieldResolver(() => PersonNode, { nullable: true })
   async lastLoggedInUser(
-    @Root() device: DeviceResource
-  ): Promise<PersonResource | null> {
-    const user = await this.deviceRepository.getLastLoggedInUser(device.uuid);
+    @Root() { id: { id } }: DeviceNode
+  ): Promise<ConcreteResult<PersonNode>> {
+    const user = await this.deviceRepository.getLastLoggedInUser(id);
 
-    return user == null ? null : personModelToResource(user);
+    return user
+      .toAsyncResult()
+      .andThen((person) => personModelToResource(person, this.personRepository))
+      .promise;
   }
 
-  @FieldResolver(() => [NotificationDeliveryResource])
+  @FieldResolver(() => [NotificationDeliveryNode])
   async notificationDeliveries(
-    @Root() device: DeviceResource,
+    @Root() { id: { id } }: DeviceNode,
     @Args(() => NotificationDeliveriesArgs) query: NotificationDeliveriesArgs
-  ): Promise<NotificationDeliveryResource[]> {
-    const row = await this.deviceRepository.getDeviceByUuid(device.uuid);
+  ): Promise<NotificationDeliveryNode[]> {
+    const row = await this.deviceRepository.getDeviceByUuid(id);
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Device not found");
@@ -215,16 +228,13 @@ export class DeviceResolver {
     }
 
     const rows =
-      await this.deviceRepository.findNotificationDeliveriesForDevice(
-        device.uuid,
-        {
-          skip:
-            query.page != null && query.pageSize != null
-              ? (query.page - 1) * query.pageSize
-              : undefined,
-          take: query.pageSize,
-        }
-      );
+      await this.deviceRepository.findNotificationDeliveriesForDevice(id, {
+        skip:
+          query.page != null && query.pageSize != null
+            ? (query.page - 1) * query.pageSize
+            : undefined,
+        take: query.pageSize,
+      });
 
     return rows.map(notificationDeliveryModelToResource);
   }

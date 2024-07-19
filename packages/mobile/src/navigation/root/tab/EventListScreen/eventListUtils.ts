@@ -1,12 +1,14 @@
 import { Logger } from "@common/logger/Logger";
 import { showMessage } from "@common/util/alertUtils";
 import { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
-import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import { intervalFromSomething } from "@ukdanceblue/common";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/dist/graphql-client-public";
-import { DateTime, Interval } from "luxon";
+} from "@ukdanceblue/common/graphql-client-mobile";
+import type { Interval } from "luxon";
+import { DateTime } from "luxon";
 import { useEffect, useMemo, useRef } from "react";
 import type { DateData } from "react-native-calendars";
 import type { MarkedDates } from "react-native-calendars/src/types";
@@ -114,7 +116,7 @@ export const splitEvents = (
             event,
             {
               ...occurrence,
-              interval: Interval.fromISO(occurrence.interval),
+              interval: intervalFromSomething(occurrence.interval),
             },
           ] as const
       );
@@ -134,7 +136,7 @@ export const splitEvents = (
     }
     const monthString = luxonDateTimeToMonthString(occurrence.interval.start);
     const existingEvents = newEvents[monthString] ?? [];
-    newEvents[monthString] = [...existingEvents, [event, occurrence.uuid]];
+    newEvents[monthString] = [...existingEvents, [event, occurrence.id]];
   }
 
   return newEvents;
@@ -172,7 +174,7 @@ export const markEvents = (
     const eventData = getFragmentData(EventScreenFragment, event);
 
     for (const occurrence of eventData.occurrences) {
-      const interval = Interval.fromISO(occurrence.interval);
+      const interval = intervalFromSomething(occurrence.interval);
 
       if (!interval.isValid) {
         continue;
@@ -246,8 +248,8 @@ export const useEvents = ({
   const [eventsQueryResult, refresh] = useQuery({
     query: graphql(/* GraphQL */ `
       query Events(
-        $earliestTimestamp: LuxonDateTime!
-        $lastTimestamp: LuxonDateTime!
+        $earliestTimestamp: DateTimeISO!
+        $lastTimestamp: DateTimeISO!
       ) {
         events(
           dateFilters: [
@@ -262,7 +264,7 @@ export const useEvents = ({
               value: $lastTimestamp
             }
           ]
-          sortDirection: ASCENDING
+          sortDirection: asc
           sortBy: "occurrence"
         ) {
           data {
@@ -282,8 +284,9 @@ export const useEvents = ({
     if (lastFetchKey.current !== eventsQueryResult.operation?.key) {
       if (!eventsQueryResult.fetching && eventsQueryResult.error == null) {
         Logger.debug(
-          `successfully fetched ${eventsQueryResult.data?.events.data
-            .length} events for ${month.toFormat("yyyy-LL")} from ${
+          `successfully fetched ${
+            eventsQueryResult.data?.events.data.length
+          } events for ${month.toFormat("yyyy-LL")} from ${
             eventsQueryResult.operation?.context.meta?.cacheOutcome === "hit"
               ? "cache"
               : "network"

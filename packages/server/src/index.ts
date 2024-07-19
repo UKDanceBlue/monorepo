@@ -1,4 +1,4 @@
-import { logger } from "./lib/logging/logger.js";
+import { logger } from "#logging/logger.js";
 
 import "reflect-metadata";
 
@@ -7,7 +7,7 @@ import "reflect-metadata";
 
 logger.info("DanceBlue Server Starting");
 
-await import("./environment.js");
+await import("#environment");
 logger.info("Loaded environment variables");
 
 await import("./prisma.js");
@@ -37,4 +37,4 @@ logger.info("API started");
 logger.info("DanceBlue Server Started");
 
 // Start any manual cron jobs
-await import("./jobs/index.js");
+await import("#jobs/index.js");

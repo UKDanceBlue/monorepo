@@ -1,27 +1,31 @@
 import type { Person } from "@prisma/client";
-import { DbRole, PersonResource, RoleResource } from "@ukdanceblue/common";
+import { PersonNode } from "@ukdanceblue/common";
+import { AsyncResult } from "ts-results-es";
 
-export function personModelToResource(person: Person): PersonResource {
-  let dbRole: DbRole = DbRole.None;
-  if (person.committeeRole) {
-    dbRole = DbRole.Committee;
-  } else if (person.linkblue) {
-    dbRole = DbRole.UKY;
-  } else {
-    dbRole = DbRole.Public;
-  }
+import type { PersonRepository } from "./PersonRepository.js";
+import type { RepositoryError } from "#repositories/shared.js";
 
-  return PersonResource.init({
-    uuid: person.uuid,
-    name: person.name,
-    email: person.email,
-    linkblue: person.linkblue,
-    role: RoleResource.init({
+
+export function personModelToResource(
+  person: Person,
+  personRepository: PersonRepository
+): AsyncResult<PersonNode, RepositoryError> {
+  return new AsyncResult(
+    personRepository.getDbRoleOfPerson({
+      uuid: person.uuid,
+    })
+  ).map((dbRole) =>
+    PersonNode.init({
+      id: person.uuid,
+      name: person.name,
+      email: person.email,
+      linkblue: person.linkblue,
+      createdAt: person.createdAt,
+      updatedAt: person.updatedAt,
+
+      // !!! Potential source of issues !!!
       dbRole,
-      committeeRole: person.committeeRole,
-      committeeIdentifier: person.committeeName,
-    }),
-    createdAt: person.createdAt,
-    updatedAt: person.updatedAt,
-  });
+      // !!! Potential source of issues !!!
+    })
+  );
 }

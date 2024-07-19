@@ -1,6 +1,6 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { StringComparator } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Flex, Image, Input } from "antd";
 import { useState } from "react";
 import { useQuery } from "urql";
@@ -9,7 +9,7 @@ const imagePickerDocument = graphql(/* GraphQL */ `
   query ImagePicker($stringFilters: [ImageResolverKeyedStringFilterItem!]) {
     images(stringFilters: $stringFilters, pageSize: 9) {
       data {
-        uuid
+        id
         alt
         url
       }
@@ -87,7 +87,7 @@ export function ImagePicker({
             {group.map((image) =>
               image ? (
                 <Image
-                  key={image.uuid}
+                  key={image.id}
                   src={image.url?.toString()}
                   width={100}
                   height={100}
@@ -96,7 +96,7 @@ export function ImagePicker({
                       <Flex gap="small" vertical align="center">
                         <Button
                           type="primary"
-                          onClick={() => onSelect(image.uuid, image.url)}
+                          onClick={() => onSelect(image.id, image.url)}
                         >
                           Select
                         </Button>

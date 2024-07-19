@@ -13,22 +13,19 @@
     "checkJs": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "types": [
-      "body-parser",
-      "cookie-parser",
-      "cors",
-      "ejs",
-      "express",
-      "express-session",
-      "http-errors",
-      "jsonwebtoken",
-      "luxon",
-      "multer",
-      "node-fetch",
-      "normalize-path",
-      "qs",
-      "ws"
-    ]
+    "paths": {
+      "#auth/*": ["./src/lib/auth/*"],
+      "#error/*": ["./src/lib/error/*"],
+      "#files/*": ["./src/lib/files/*"],
+      "#logging/*": ["./src/lib/logging/*"],
+      "#notification/*": ["./src/lib/notification/*"],
+      "#lib/*": ["./src/lib/*"],
+      "#jobs/*": ["./src/jobs/*"],
+      "#repositories/*": ["./src/repositories/*"],
+      "#resolvers/*": ["./src/resolvers/*"],
+      "#routes/*": ["./src/routes/*"],
+      "#environment": ["./src/environment.ts"]
+    }
   },
   "include": ["src"],
   "extends": "../../tsconfig.json"

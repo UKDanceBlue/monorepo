@@ -1,6 +1,6 @@
 {
   "eslint.workingDirectories": ["."],
-  "eslint.experimental.useFlatConfig": true,
+  "eslint.useFlatConfig": true,
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.tsserver.experimental.enableProjectDiagnostics": true,
@@ -8,7 +8,7 @@
   "editor.formatOnSave": true,
   "editor.tabSize": 2,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit",
+    "source.organizeImports": "never",
     "source.fixAll": "explicit"
   },
   "search.exclude": {
@@ -17,8 +17,14 @@
   },
   "remote.localPortHost": "allInterfaces",
   "typescript.inlayHints.parameterNames.enabled": "all",
-  "typescript.preferences.preferTypeOnlyAutoImports": true,
   "javascript.inlayHints.parameterNames.enabled": "all",
-  "cSpell.words": ["cooldown", "Spinnable", "Whatwg"],
+  "cSpell.words": [
+    "Catchable",
+    "cooldown",
+    "Errorable",
+    "Leaderboards",
+    "Spinnable",
+    "Whatwg"
+  ],
   "eslint.codeActionsOnSave.mode": "problems"
 }

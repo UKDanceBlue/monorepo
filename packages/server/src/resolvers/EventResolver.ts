@@ -1,16 +1,17 @@
 import type { Prisma } from "@prisma/client";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessLevel,
-  DateRangeScalar,
   DetailedError,
   ErrorCode,
-  EventResource,
+  EventNode,
   FilteredListQueryArgs,
-  ImageResource,
+  GlobalIdScalar,
+  ImageNode,
+  IntervalISO,
   SortDirection,
 } from "@ukdanceblue/common";
-import { Interval } from "luxon";
 import {
   Arg,
   Args,
@@ -26,42 +27,41 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { FileManager } from "../lib/files/FileManager.js";
-import { auditLogger } from "../lib/logging/auditLogging.js";
-import { EventRepository } from "../repositories/event/EventRepository.js";
+import { FileManager } from "#files/FileManager.js";
+import { auditLogger } from "#logging/auditLogging.js";
+import { EventRepository } from "#repositories/event/EventRepository.js";
 import {
   eventModelToResource,
   eventOccurrenceModelToResource,
-} from "../repositories/event/eventModelToResource.js";
-import { EventImagesRepository } from "../repositories/event/images/EventImagesRepository.js";
-import { imageModelToResource } from "../repositories/image/imageModelToResource.js";
-
+} from "#repositories/event/eventModelToResource.js";
+import { EventImagesRepository } from "#repositories/event/images/EventImagesRepository.js";
+import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
+} from "#resolvers/ApiResponse.js";
 
 @ObjectType("GetEventByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<EventResource>,
+  implements: AbstractGraphQLOkResponse<EventNode>,
 })
-class GetEventByUuidResponse extends AbstractGraphQLOkResponse<EventResource> {
-  @Field(() => EventResource)
-  data!: EventResource;
+class GetEventByUuidResponse extends AbstractGraphQLOkResponse<EventNode> {
+  @Field(() => EventNode)
+  data!: EventNode;
 }
 @ObjectType("CreateEventResponse", {
-  implements: AbstractGraphQLCreatedResponse<EventResource>,
+  implements: AbstractGraphQLCreatedResponse<EventNode>,
 })
-class CreateEventResponse extends AbstractGraphQLCreatedResponse<EventResource> {
-  @Field(() => EventResource)
-  data!: EventResource;
+class CreateEventResponse extends AbstractGraphQLCreatedResponse<EventNode> {
+  @Field(() => EventNode)
+  data!: EventNode;
 }
 @ObjectType("SetEventResponse", {
-  implements: AbstractGraphQLOkResponse<EventResource>,
+  implements: AbstractGraphQLOkResponse<EventNode>,
 })
-class SetEventResponse extends AbstractGraphQLOkResponse<EventResource> {
-  @Field(() => EventResource)
-  data!: EventResource;
+class SetEventResponse extends AbstractGraphQLOkResponse<EventNode> {
+  @Field(() => EventNode)
+  data!: EventNode;
 }
 @ObjectType("DeleteEventResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
@@ -77,25 +77,25 @@ class RemoveEventImageResponse extends AbstractGraphQLOkResponse<boolean> {
 }
 
 @ObjectType("AddEventImageResponse", {
-  implements: AbstractGraphQLOkResponse<ImageResource>,
+  implements: AbstractGraphQLOkResponse<ImageNode>,
 })
-class AddEventImageResponse extends AbstractGraphQLOkResponse<ImageResource> {
-  @Field(() => ImageResource)
-  data!: ImageResource;
+class AddEventImageResponse extends AbstractGraphQLOkResponse<ImageNode> {
+  @Field(() => ImageNode)
+  data!: ImageNode;
 }
 
 @ObjectType("ListEventsResponse", {
-  implements: AbstractGraphQLPaginatedResponse<EventResource[]>,
+  implements: AbstractGraphQLPaginatedResponse<EventNode[]>,
 })
-class ListEventsResponse extends AbstractGraphQLPaginatedResponse<EventResource> {
-  @Field(() => [EventResource])
-  data!: EventResource[];
+class ListEventsResponse extends AbstractGraphQLPaginatedResponse<EventNode> {
+  @Field(() => [EventNode])
+  data!: EventNode[];
 }
 
 @InputType()
 export class CreateEventOccurrenceInput {
-  @Field(() => DateRangeScalar)
-  interval!: Interval;
+  @Field(() => IntervalISO)
+  interval!: IntervalISO;
   @Field(() => Boolean)
   fullDay!: boolean;
 }
@@ -126,8 +126,8 @@ export class SetEventOccurrenceInput {
       "If updating an existing occurrence, the UUID of the occurrence to update",
   })
   uuid!: string | null;
-  @Field(() => DateRangeScalar)
-  interval!: Interval;
+  @Field(() => IntervalISO)
+  interval!: IntervalISO;
   @Field(() => Boolean)
   fullDay!: boolean;
 }
@@ -193,7 +193,7 @@ class ListEventsArgs extends FilteredListQueryArgs<
 }) {}
 
 @Service()
-@Resolver(() => EventResource)
+@Resolver(() => EventNode)
 export class EventResolver {
   constructor(
     private readonly eventRepository: EventRepository,
@@ -201,8 +201,10 @@ export class EventResolver {
     private readonly fileManager: FileManager
   ) {}
   @Query(() => GetEventByUuidResponse, { name: "event" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<GetEventByUuidResponse> {
-    const row = await this.eventRepository.findEventByUnique({ uuid });
+  async getByUuid(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<GetEventByUuidResponse> {
+    const row = await this.eventRepository.findEventByUnique({ uuid: id });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
@@ -223,7 +225,7 @@ export class EventResolver {
       order:
         query.sortBy?.map((key, i) => [
           key,
-          query.sortDirection?.[i] ?? SortDirection.DESCENDING,
+          query.sortDirection?.[i] ?? SortDirection.desc,
         ]) ?? [],
       skip:
         query.page != null && query.pageSize != null
@@ -259,8 +261,8 @@ export class EventResolver {
         createMany: {
           data: input.occurrences.map(
             (occurrence): Prisma.EventOccurrenceCreateManyEventInput => ({
-              date: occurrence.interval.start!.toJSDate(),
-              endDate: occurrence.interval.end!.toJSDate(),
+              date: occurrence.interval.start,
+              endDate: occurrence.interval.end,
               fullDay: occurrence.fullDay,
             })
           ),
@@ -281,14 +283,16 @@ export class EventResolver {
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => DeleteEventResponse, { name: "deleteEvent" })
-  async delete(@Arg("uuid") uuid: string): Promise<DeleteEventResponse> {
-    const row = await this.eventRepository.deleteEvent({ uuid });
+  async delete(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<DeleteEventResponse> {
+    const row = await this.eventRepository.deleteEvent({ uuid: id });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
 
-    auditLogger.sensitive("Event deleted", { uuid });
+    auditLogger.sensitive("Event deleted", { uuid: id });
 
     return DeleteEventResponse.newOk(true);
   }
@@ -296,11 +300,11 @@ export class EventResolver {
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => SetEventResponse, { name: "setEvent" })
   async set(
-    @Arg("uuid") uuid: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetEventInput
   ): Promise<SetEventResponse> {
     const row = await this.eventRepository.updateEvent(
-      { uuid },
+      { uuid: id },
       {
         title: input.title,
         summary: input.summary,
@@ -312,8 +316,8 @@ export class EventResolver {
               .filter((occurrence) => occurrence.uuid == null)
               .map(
                 (occurrence): Prisma.EventOccurrenceCreateManyEventInput => ({
-                  date: occurrence.interval.start!.toJSDate(),
-                  endDate: occurrence.interval.end!.toJSDate(),
+                  date: occurrence.interval.start,
+                  endDate: occurrence.interval.end,
                   fullDay: occurrence.fullDay,
                 })
               ),
@@ -326,8 +330,8 @@ export class EventResolver {
               ): Prisma.EventOccurrenceUpdateManyWithWhereWithoutEventInput => ({
                 where: { uuid: occurrence.uuid! },
                 data: {
-                  date: occurrence.interval.start!.toJSDate(),
-                  endDate: occurrence.interval.end!.toJSDate(),
+                  date: occurrence.interval.start,
+                  endDate: occurrence.interval.end,
                   fullDay: occurrence.fullDay,
                 },
               })
@@ -394,10 +398,10 @@ export class EventResolver {
     );
   }
 
-  @FieldResolver(() => [ImageResource])
-  async images(@Root() event: EventResource): Promise<ImageResource[]> {
+  @FieldResolver(() => [ImageNode])
+  async images(@Root() event: EventNode): Promise<ImageNode[]> {
     const rows = await this.eventImageRepository.findEventImagesByEventUnique({
-      uuid: event.uuid,
+      uuid: event.id.id,
     });
 
     return Promise.all(

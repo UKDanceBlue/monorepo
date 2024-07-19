@@ -1,14 +1,9 @@
-import {
-  AccessLevel,
-  AuthSource,
-  DbRole,
-  MembershipPositionType,
-} from "@ukdanceblue/common";
+import { AuthSource } from "@ukdanceblue/common";
 import type { Context } from "koa";
 import { DateTime } from "luxon";
 
-import { makeUserJwt } from "../../../lib/auth/index.js";
-import { getOrMakeDemoUser } from "../../../lib/demo.js";
+import { makeUserJwt } from "#auth/index.js";
+import { getOrMakeDemoUser } from "#lib/demo.js";
 
 export const demoLogin = async (ctx: Context) => {
   let redirectTo = "/";
@@ -33,17 +28,15 @@ export const demoLogin = async (ctx: Context) => {
   }
 
   const person = await getOrMakeDemoUser();
+  if (person.isErr()) {
+    return ctx.throw(
+      person.error.expose ? person.error.message : "Error creating demo user",
+      500
+    );
+  }
 
   const jwt = makeUserJwt({
-    auth: {
-      accessLevel: AccessLevel.UKY,
-      dbRole: DbRole.UKY,
-    },
-    userId: person.uuid,
-    teamIds: person.memberships.map((m) => m.team.uuid),
-    captainOfTeamIds: person.memberships
-      .filter((m) => m.position === MembershipPositionType.Captain)
-      .map((m) => m.team.uuid),
+    userId: person.value.uuid,
     authSource: AuthSource.Demo,
   });
   if (setCookie) {

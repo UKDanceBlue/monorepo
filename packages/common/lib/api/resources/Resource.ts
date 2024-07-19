@@ -1,5 +1,9 @@
+import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 import type { Class } from "utility-types";
+
+import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
+import { GlobalId } from "../scalars/GlobalId.js";
 
 @ObjectType()
 export abstract class Resource {
@@ -16,17 +20,30 @@ export abstract class Resource {
     throw new Error(`Method not implemented by subclass.`);
   }
 
-  protected static doInit<R extends object>(this: Class<R>, init: object): R {
-    const instance = new this();
-    Object.assign(instance, init);
-    return instance;
+  protected static createInstance<R extends object>(this: Class<R>): R {
+    return new this();
+  }
+
+  protected withValues<R extends { id: GlobalId }, D extends { id: string }>(
+    this: R,
+    values: D
+  ): R {
+    this.id = { id: values.id, typename: this.constructor.name };
+    return this;
   }
 }
 
 @ObjectType()
 export abstract class TimestampedResource extends Resource {
   @Field(() => Date, { nullable: true })
-  createdAt?: Date | null;
+  createdAt!: Date;
+  get createdAtDateTime(): DateTime {
+    return dateTimeFromSomething(this.createdAt);
+  }
+
   @Field(() => Date, { nullable: true })
-  updatedAt?: Date | null;
+  updatedAt!: Date;
+  get updatedAtDateTime(): DateTime {
+    return dateTimeFromSomething(this.updatedAt);
+  }
 }

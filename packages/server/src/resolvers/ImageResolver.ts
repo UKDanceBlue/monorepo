@@ -1,12 +1,14 @@
 import { MIMEType } from "node:util";
 
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessLevel,
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
-  ImageResource,
+  GlobalIdScalar,
+  ImageNode,
   SortDirection,
 } from "@ukdanceblue/common";
 import { URLResolver } from "graphql-scalars";
@@ -24,22 +26,21 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { FileManager } from "../lib/files/FileManager.js";
-import { auditLogger } from "../lib/logging/auditLogging.js";
-import { logger } from "../lib/logging/standardLogging.js";
-import { generateThumbHash } from "../lib/thumbHash.js";
-import { ImageRepository } from "../repositories/image/ImageRepository.js";
-import { imageModelToResource } from "../repositories/image/imageModelToResource.js";
-
+import { FileManager } from "#files/FileManager.js";
+import { generateThumbHash } from "#lib/thumbHash.js";
+import { auditLogger } from "#logging/auditLogging.js";
+import { logger } from "#logging/standardLogging.js";
+import { ImageRepository } from "#repositories/image/ImageRepository.js";
+import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 import {
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
+} from "#resolvers/ApiResponse.js";
 
 @ObjectType("GetImageByUuidResponse", { implements: AbstractGraphQLOkResponse })
-class GetImageByUuidResponse extends AbstractGraphQLOkResponse<ImageResource> {
-  @Field(() => ImageResource)
-  data!: ImageResource;
+class GetImageByUuidResponse extends AbstractGraphQLOkResponse<ImageNode> {
+  @Field(() => ImageNode)
+  data!: ImageNode;
 }
 
 @ObjectType("DeleteImageResponse", {
@@ -47,7 +48,7 @@ class GetImageByUuidResponse extends AbstractGraphQLOkResponse<ImageResource> {
 })
 class DeleteImageResponse extends AbstractGraphQLOkResponse<never> {}
 @InputType()
-class CreateImageInput implements Partial<ImageResource> {
+class CreateImageInput implements Partial<ImageNode> {
   @Field(() => String, { nullable: true })
   alt?: string | null;
 
@@ -71,14 +72,14 @@ class ListImagesArgs extends FilteredListQueryArgs<
 }) {}
 
 @ObjectType("ListImagesResponse", {
-  implements: AbstractGraphQLPaginatedResponse<ImageResource[]>,
+  implements: AbstractGraphQLPaginatedResponse<ImageNode[]>,
 })
-class ListImagesResponse extends AbstractGraphQLPaginatedResponse<ImageResource> {
-  @Field(() => [ImageResource])
-  data!: ImageResource[];
+class ListImagesResponse extends AbstractGraphQLPaginatedResponse<ImageNode> {
+  @Field(() => [ImageNode])
+  data!: ImageNode[];
 }
 
-@Resolver(() => ImageResource)
+@Resolver(() => ImageNode)
 @Service()
 export class ImageResolver {
   constructor(
@@ -87,8 +88,10 @@ export class ImageResolver {
   ) {}
 
   @Query(() => GetImageByUuidResponse, { name: "image" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<GetImageByUuidResponse> {
-    const result = await this.imageRepository.findImageByUnique({ uuid });
+  async getByUuid(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<GetImageByUuidResponse> {
+    const result = await this.imageRepository.findImageByUnique({ uuid: id });
 
     if (result == null) {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");
@@ -108,7 +111,7 @@ export class ImageResolver {
       order:
         args.sortBy?.map((key, i) => [
           key,
-          args.sortDirection?.[i] ?? SortDirection.DESCENDING,
+          args.sortDirection?.[i] ?? SortDirection.desc,
         ]) ?? [],
       skip:
         args.page != null && args.pageSize != null
@@ -133,8 +136,8 @@ export class ImageResolver {
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
-  @Mutation(() => ImageResource, { name: "createImage" })
-  async create(@Arg("input") input: CreateImageInput): Promise<ImageResource> {
+  @Mutation(() => ImageNode, { name: "createImage" })
+  async create(@Arg("input") input: CreateImageInput): Promise<ImageNode> {
     const { mime, thumbHash, width, height } = await handleImageUrl(input.url);
     const result = await this.imageRepository.createImage({
       width,
@@ -173,14 +176,14 @@ export class ImageResolver {
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
-  @Mutation(() => ImageResource, { name: "setImageAltText" })
+  @Mutation(() => ImageNode, { name: "setImageAltText" })
   async setAltText(
-    @Arg("uuid") uuid: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("alt") alt: string
-  ): Promise<ImageResource> {
+  ): Promise<ImageNode> {
     const result = await this.imageRepository.updateImage(
       {
-        uuid,
+        uuid: id,
       },
       {
         alt,
@@ -197,15 +200,15 @@ export class ImageResolver {
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
-  @Mutation(() => ImageResource, { name: "setImageUrl" })
+  @Mutation(() => ImageNode, { name: "setImageUrl" })
   async setImageUrl(
-    @Arg("uuid") uuid: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("url", () => URLResolver) url: URL
-  ): Promise<ImageResource> {
+  ): Promise<ImageNode> {
     const { mime, thumbHash, width, height } = await handleImageUrl(url);
     const result = await this.imageRepository.updateImage(
       {
-        uuid,
+        uuid: id,
       },
       {
         width,
@@ -240,11 +243,13 @@ export class ImageResolver {
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
-  @Mutation(() => ImageResource, { name: "setImageUrl" })
+  @Mutation(() => ImageNode, { name: "setImageUrl" })
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => DeleteImageResponse, { name: "deleteImage" })
-  async delete(@Arg("uuid") uuid: string): Promise<DeleteImageResponse> {
-    const result = await this.imageRepository.deleteImage({ uuid });
+  async delete(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<DeleteImageResponse> {
+    const result = await this.imageRepository.deleteImage({ uuid: id });
 
     if (result == null) {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");

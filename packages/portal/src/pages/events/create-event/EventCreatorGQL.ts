@@ -1,10 +1,10 @@
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 
 export const eventCreatorDocument = graphql(/* GraphQL */ `
   mutation CreateEvent($input: CreateEventInput!) {
     createEvent(input: $input) {
       data {
-        uuid
+        id
       }
     }
   }

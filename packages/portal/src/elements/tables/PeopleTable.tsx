@@ -14,20 +14,20 @@ import {
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/graphql-client-admin";
+} from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Flex, Table } from "antd";
 import { useQuery } from "urql";
 
 const PeopleTableFragment = graphql(/* GraphQL */ `
-  fragment PeopleTableFragment on PersonResource {
-    uuid
+  fragment PeopleTableFragment on PersonNode {
+    id
     name
     linkblue
     email
-    role {
-      dbRole
-      committeeRole
-      committeeIdentifier
+    dbRole
+    primaryCommittee {
+      identifier
+      role
     }
   }
 `);
@@ -134,8 +134,8 @@ export const PeopleTable = () => {
                 | "committeeName",
               direction:
                 sort.order === "ascend"
-                  ? SortDirection.ASCENDING
-                  : SortDirection.DESCENDING,
+                  ? SortDirection.asc
+                  : SortDirection.desc,
             });
           }
           clearFilters();
@@ -179,7 +179,7 @@ export const PeopleTable = () => {
               }
             : false
         }
-        rowKey={({ uuid }) => uuid}
+        rowKey={({ id }) => id}
         sortDirections={["ascend", "descend"]}
         columns={[
           {
@@ -219,7 +219,7 @@ export const PeopleTable = () => {
             title: "Role",
             dataIndex: "dbRole",
             render: (_, record) => {
-              return stringifyDbRole(record.role.dbRole);
+              return stringifyDbRole(record.dbRole);
             },
             sorter: true,
             sortDirections: ["ascend", "descend"],
@@ -232,7 +232,8 @@ export const PeopleTable = () => {
             title: "Committee Role",
             dataIndex: "committeeRole",
             render: (_, record) => {
-              return record.role.committeeRole ?? "None";
+              // TODO: fix
+              return record.primaryCommittee?.role ?? "None";
             },
             sorter: true,
             sortDirections: ["ascend", "descend"],
@@ -245,8 +246,9 @@ export const PeopleTable = () => {
             title: "Committee Name",
             dataIndex: "committeeName",
             render: (_, record) => {
-              return record.role.committeeIdentifier
-                ? committeeNames[record.role.committeeIdentifier]
+              // TODO: fix
+              return record.primaryCommittee?.identifier
+                ? committeeNames[record.primaryCommittee.identifier]
                 : "None";
             },
             sorter: true,
@@ -266,7 +268,7 @@ export const PeopleTable = () => {
                     onClick={() =>
                       navigate({
                         to: "/people/$personId/",
-                        params: { personId: record.uuid },
+                        params: { personId: record.id },
                       }).catch((error: unknown) => console.error(error))
                     }
                     icon={<EyeOutlined />}
@@ -275,7 +277,7 @@ export const PeopleTable = () => {
                     onClick={() =>
                       navigate({
                         to: "/people/$personId/edit",
-                        params: { personId: record.uuid },
+                        params: { personId: record.id },
                       }).catch((error: unknown) => console.error(error))
                     }
                     icon={<EditOutlined />}

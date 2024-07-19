@@ -7,14 +7,14 @@ import { SortDirection } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/graphql-client-admin";
+} from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Flex, Table } from "antd";
 import { DateTime } from "luxon";
 import { useQuery } from "urql";
 
 const NotificationsTableFragment = graphql(/* GraphQL */ `
-  fragment NotificationsTableFragment on NotificationResource {
-    uuid
+  fragment NotificationsTableFragment on NotificationNode {
+    id
     title
     body
     deliveryIssue
@@ -109,7 +109,7 @@ export const NotificationsTable = () => {
     <>
       <Table
         dataSource={listEventsData ?? undefined}
-        rowKey={({ uuid }) => uuid}
+        rowKey={({ id }) => id}
         loading={fetching}
         pagination={
           notificationsDocument
@@ -136,8 +136,8 @@ export const NotificationsTable = () => {
               field: sort.field as "title" | "body" | "createdAt" | "updatedAt",
               direction:
                 sort.order === "ascend"
-                  ? SortDirection.ASCENDING
-                  : SortDirection.DESCENDING,
+                  ? SortDirection.asc
+                  : SortDirection.desc,
             });
           }
         }}

@@ -1,8 +1,8 @@
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 
 export const TeamNameFragment = graphql(/* GraphQL */ `
-  fragment TeamNameFragment on TeamResource {
-    uuid
+  fragment TeamNameFragment on TeamNode {
+    id
     name
   }
 `);

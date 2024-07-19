@@ -1,8 +1,10 @@
-import { Interval } from "luxon";
+import type { Interval } from "luxon";
+
+import { intervalFromSomething } from "../utility/time/intervalTools.js";
 
 interface EventOccurrence {
   fullDay: boolean;
-  interval: string;
+  interval: { readonly start: Date | string; readonly end: Date | string };
 }
 
 interface ParsedEventOccurrence {
@@ -15,7 +17,7 @@ export function parseEventOccurrence(
 ): ParsedEventOccurrence {
   return {
     fullDay: occurrence.fullDay,
-    interval: Interval.fromISO(occurrence.interval),
+    interval: intervalFromSomething(occurrence.interval),
   };
 }
 

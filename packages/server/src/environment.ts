@@ -3,143 +3,138 @@ import path, { isAbsolute } from "path";
 
 import dotenv from "dotenv";
 import { Expo } from "expo-server-sdk";
-import { Container } from "typedi";
+import { Container, Token } from "typedi";
 
-import type { SyslogLevels } from "./lib/logging/standardLogging.js";
+import type { SyslogLevels } from "#logging/standardLogging.js";
+import { readFile } from "fs/promises";
 
 dotenv.config();
 
-// Core env
-export const isDevelopment = process.env.NODE_ENV === "development";
-export const isProduction = process.env.NODE_ENV === "production";
-export const nodeEnvironment = process.env.NODE_ENV || "development";
+async function getEnv(
+  name: string,
+  def?: undefined
+): Promise<string | undefined>;
+async function getEnv(name: string, def: string | null): Promise<string>;
+async function getEnv(
+  name: string,
+  def?: string | null
+): Promise<string | undefined> {
+  let value;
+  if (process.env[`${name}_FILE`]) {
+    try {
+      value = await readFile(process.env[`${name}_FILE`]!, "utf-8");
+    } catch {
+      value = process.env[name];
+    }
+  } else {
+    const lowercaseName = name.toLowerCase();
+    try {
+      value = await readFile(`/run/secrets/${lowercaseName}`, "utf-8");
+    } catch {
+      value = process.env[name];
+    }
+  }
 
-export const loggingLevel: SyslogLevels =
-  (process.env.LOGGING_LEVEL as SyslogLevels | undefined) ??
-  (isDevelopment ? "debug" : "notice");
+  if (!value) {
+    if (def === null) {
+      throw new Error(`Env variable '${name}' is not set`);
+    }
+    if (def !== undefined) {
+      return def;
+    }
+  }
+
+  return value;
+}
+
+export const isDevelopment = process.env.NODE_ENV === "development";
+
+const LOGGING_LEVEL = getEnv(
+  "LOGGING_LEVEL",
+  isDevelopment ? "debug" : "notice"
+);
+const APPLICATION_PORT = getEnv("APPLICATION_PORT", "8000");
+const APPLICATION_HOST = getEnv("APPLICATION_HOST", "localhost");
+const COOKIE_SECRET = getEnv("COOKIE_SECRET", null);
+const JWT_SECRET = getEnv("JWT_SECRET", null);
+const MS_OIDC_URL = getEnv("MS_OIDC_URL", null);
+const MS_CLIENT_ID = getEnv("MS_CLIENT_ID", null);
+const MS_CLIENT_SECRET = getEnv("MS_CLIENT_SECRET", null);
+const EXPO_ACCESS_TOKEN = getEnv("EXPO_ACCESS_TOKEN", null);
+const DBFUNDS_API_KEY = getEnv("DBFUNDS_API_KEY", null);
+const DBFUNDS_API_ORIGIN = getEnv("DBFUNDS_API_ORIGIN", null);
+const MAX_FILE_SIZE = getEnv("MAX_FILE_SIZE", null);
+const SERVE_PATH = getEnv("SERVE_PATH", null);
+const UPLOAD_PATH = getEnv("UPLOAD_PATH", null);
+const SERVE_ORIGIN = getEnv("SERVE_ORIGIN", null);
+const OVERRIDE_AUTH = getEnv("OVERRIDE_AUTH", null);
+const LOG_DIR = getEnv("LOG_DIR", null);
+
+// Core env
+export const loggingLevel: SyslogLevels = (await LOGGING_LEVEL) as SyslogLevels;
 
 // Port, Host, and Protocol
-let applicationPort: number = 8000;
-if (process.env.APPLICATION_PORT) {
-  const envApplicationPort = Number.parseInt(process.env.APPLICATION_PORT, 10);
-  if (Number.isNaN(envApplicationPort)) {
-    throw new TypeError("Env variable 'APPLICATION_PORT' is not a number");
-  }
-  if (envApplicationPort < 0 || envApplicationPort > 65_535) {
-    throw new RangeError(
-      "Env variable 'APPLICATION_PORT' is not a valid port number"
-    );
-  }
-  applicationPort = envApplicationPort;
+export const applicationPort = Number.parseInt(await APPLICATION_PORT, 10);
+if (Number.isNaN(applicationPort)) {
+  throw new TypeError("Env variable 'APPLICATION_PORT' is not a number");
 }
-export { applicationPort };
-export const applicationHost = process.env.APPLICATION_HOST || "localhost";
-export const applicationProtocol = process.env.APPLICATION_PROTOCOL || "http";
+if (applicationPort < 0 || applicationPort > 65_535) {
+  throw new RangeError(
+    "Env variable 'APPLICATION_PORT' is not a valid port number"
+  );
+}
+
+export const applicationHost = await APPLICATION_HOST;
 
 // Secrets
-const { COOKIE_SECRET, JWT_SECRET, ASSET_PATH } = process.env;
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET is not set");
-}
-if (!COOKIE_SECRET) {
-  throw new Error("COOKIE_SECRET is not set");
-}
-export const cookieSecret = COOKIE_SECRET;
-export const jwtSecret = JWT_SECRET;
-
-// System Paths
-export const assetPath = ASSET_PATH;
-
-// Database
-const { DB_HOST, DB_PORT, DB_UNAME, DB_PWD, DB_NAME } = process.env;
-if (!DB_HOST) {
-  throw new Error("DB_HOST is not set");
-}
-if (!DB_PORT) {
-  throw new Error("DB_PORT is not set");
-}
-if (!DB_UNAME) {
-  throw new Error("DB_UNAME is not set");
-}
-if (!DB_PWD) {
-  throw new Error("DB_PWD is not set");
-}
-if (!DB_NAME) {
-  throw new Error("DB_NAME is not set");
-}
-export const databaseHost = DB_HOST;
-export const databasePort = DB_PORT;
-export const databaseUsername = DB_UNAME;
-export const databasePassword = DB_PWD;
-export const databaseName = DB_NAME;
-
-// This check is used to try and prevent any chance of resetting the production database
-// Obviously not foolproof, but it's better than nothing
-export const isDatabaseLocal = databaseHost === "localhost" && isDevelopment;
+export const cookieSecret = await COOKIE_SECRET;
+export const jwtSecret = await JWT_SECRET;
 
 // MS Auth
-const { MS_OIDC_URL, MS_CLIENT_ID, MS_CLIENT_SECRET } = process.env;
-if (!MS_OIDC_URL) {
-  throw new Error("MS_OIDC_URL is not set");
-}
-if (!MS_CLIENT_ID) {
-  throw new Error("MS_CLIENT_ID is not set");
-}
-if (!MS_CLIENT_SECRET) {
-  throw new Error("MS_CLIENT_SECRET is not set");
-}
-export const msOidcUrl = MS_OIDC_URL;
-export const msClientId = MS_CLIENT_ID;
-export const msClientSecret = MS_CLIENT_SECRET;
+export const msOidcUrl = await MS_OIDC_URL;
+export const msClientId = await MS_CLIENT_ID;
+export const msClientSecret = await MS_CLIENT_SECRET;
 
 // Expo access token
-const { EXPO_ACCESS_TOKEN } = process.env;
-if (!EXPO_ACCESS_TOKEN) {
-  throw new Error("EXPO_ACCESS_TOKEN is not set");
-}
-export const expoAccessToken = EXPO_ACCESS_TOKEN;
+export const expoAccessToken = await EXPO_ACCESS_TOKEN;
 
 Container.set(Expo, new Expo({ accessToken: expoAccessToken }));
 
+// DBFunds
+export const dbFundsApiKeyToken = new Token<string>("DBFUNDS_API_KEY");
+export const dbFundsApiOriginToken = new Token<string>("DBFUNDS_API_ORIGIN");
+
+Container.set(dbFundsApiKeyToken, await DBFUNDS_API_KEY);
+Container.set(dbFundsApiOriginToken, await DBFUNDS_API_ORIGIN);
+
 // File upload settings
-const { MAX_FILE_SIZE, SERVE_PATH, UPLOAD_PATH, SERVE_ORIGIN } = process.env;
-if (!MAX_FILE_SIZE) {
-  throw new Error("MAX_FILE_SIZE is not set");
-}
-if (!SERVE_PATH) {
-  throw new Error("SERVE_PATH is not set");
-}
-if (!UPLOAD_PATH) {
-  throw new Error("UPLOAD_PATH is not set");
-}
-if (!SERVE_ORIGIN) {
-  throw new Error("SERVE_ORIGIN is not set");
-}
+export const serveOrigin = await SERVE_ORIGIN;
 try {
-  new URL(SERVE_ORIGIN);
+  new URL(serveOrigin);
 } catch {
   throw new Error("SERVE_ORIGIN is not a valid URL");
 }
+export const servePath = await SERVE_PATH;
+export const uploadPath = await UPLOAD_PATH;
 
-const maxFileSize = Number.parseInt(MAX_FILE_SIZE, 10);
+export const maxFileSize = Number.parseInt(await MAX_FILE_SIZE, 10);
 if (Number.isNaN(maxFileSize)) {
   throw new TypeError("MAX_FILE_SIZE is not a number");
 }
 if (maxFileSize < 10) {
   throw new RangeError("MAX_FILE_SIZE must be at least 10 (MB)");
 }
-export { maxFileSize };
 
-if (!isAbsolute(SERVE_PATH) || !isAbsolute(UPLOAD_PATH)) {
+if (!isAbsolute(servePath) || !isAbsolute(uploadPath)) {
   throw new Error("SERVE_PATH and UPLOAD_PATH must be absolute paths");
 }
-if (statSync(SERVE_PATH).isFile() || statSync(UPLOAD_PATH).isFile()) {
+if (statSync(servePath).isFile() || statSync(uploadPath).isFile()) {
   throw new Error("SERVE_PATH and UPLOAD_PATH must be directories");
 }
-let uploadParentPath = UPLOAD_PATH;
+let uploadParentPath = uploadPath;
 let isUploadInServe = false;
 while (path.dirname(uploadParentPath) !== uploadParentPath) {
-  if (uploadParentPath === SERVE_PATH) {
+  if (uploadParentPath === servePath) {
     isUploadInServe = true;
     break;
   }
@@ -149,10 +144,12 @@ if (!isUploadInServe) {
   throw new Error("UPLOAD_PATH must be a subdirectory of SERVE_PATH");
 }
 
-export const serveOrigin = SERVE_ORIGIN;
-export const servePath = SERVE_PATH;
-export const uploadPath = UPLOAD_PATH;
-
 // Disable all authorization checks
-const { OVERRIDE_AUTH } = process.env;
-export const authorizationOverride = OVERRIDE_AUTH === "THIS IS DANGEROUS";
+export const authorizationOverride =
+  isDevelopment && (await OVERRIDE_AUTH) === "THIS IS DANGEROUS";
+
+// Log directory
+export const logDir = await LOG_DIR;
+if (!logDir) {
+  throw new Error("LOG_DIR is not set");
+}

@@ -1,7 +1,7 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import type { DateTime } from "luxon";
 import { useMutation } from "urql";
 
@@ -11,7 +11,7 @@ export function useMarathonCreatorForm() {
     graphql(/* GraphQL */ `
       mutation CreateMarathon($input: CreateMarathonInput!) {
         createMarathon(input: $input) {
-          uuid
+          id
         }
       }
     `)
@@ -67,7 +67,7 @@ export function useMarathonCreatorForm() {
         resetWatcher();
         await navigate({
           to: "/marathon/$marathonId/",
-          params: { marathonId: data.createMarathon.uuid },
+          params: { marathonId: data.createMarathon.id },
         });
       }
     },

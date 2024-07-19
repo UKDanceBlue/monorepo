@@ -1,13 +1,13 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
+import type { ImageFilters } from "./ImageRepository.ts";
 import {
   dateFilterToPrisma,
   numericFilterToPrisma,
   stringFilterToPrisma,
-} from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import type { ImageFilters } from "./ImageRepository.ts";
 
 export function buildImageOrder(
   order: readonly [key: string, sort: SortDirection][] | null | undefined
@@ -21,7 +21,7 @@ export function buildImageOrder(
       case "createdAt":
       case "alt":
       case "updatedAt": {
-        orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
+        orderBy[key] = sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
       default: {

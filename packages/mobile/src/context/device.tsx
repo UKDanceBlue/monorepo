@@ -1,7 +1,7 @@
 import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
 import { arrayToBase64String } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
+import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
 import {
   CryptoDigestAlgorithm,
   CryptoEncoding,

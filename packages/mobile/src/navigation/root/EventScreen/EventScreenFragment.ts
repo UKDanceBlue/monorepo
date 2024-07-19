@@ -1,15 +1,18 @@
-import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
+import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
 
 export const EventScreenFragment = graphql(/* GraphQL */ `
-  fragment EventScreenFragment on EventResource {
-    uuid
+  fragment EventScreenFragment on EventNode {
+    id
     title
     summary
     description
     location
     occurrences {
-      uuid
-      interval
+      id
+      interval {
+        start
+        end
+      }
       fullDay
     }
     images {

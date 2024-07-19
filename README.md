@@ -172,6 +172,9 @@ Project Link:
   DB22, DB23, DB24
 - [Jackson Huse](https://github.com/jphuse) - App Design Coordinator - DB23,
   DB24
+- [Skyler Trowel](https://github.com/smtrowel) - App Development Coordinator -
+  DB25
+- [Camille Dyer](https://github.com/cdyer8) - App Design Coordinator - DB25
 - [Everyone on the DanceBlue committee](http://www.danceblue.org/meet-the-team)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
