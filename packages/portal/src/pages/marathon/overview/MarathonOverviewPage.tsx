@@ -1,6 +1,6 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { useLinkProps } from "@tanstack/react-router";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Empty, Flex } from "antd";
 import { useQuery } from "urql";
 

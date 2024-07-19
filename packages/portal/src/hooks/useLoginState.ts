@@ -1,6 +1,6 @@
 import type { Authorization } from "@ukdanceblue/common";
 import { defaultAuthorization, roleToAccessLevel } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useMemo } from "react";
 import { useQuery } from "urql";
 

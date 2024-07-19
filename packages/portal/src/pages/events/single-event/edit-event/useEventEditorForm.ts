@@ -1,12 +1,12 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { intervalFromSomething } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
-import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
+import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
 import type {
   SetEventInput,
   SetEventOccurrenceInput,
-} from "@ukdanceblue/common/graphql-client-admin/raw-types";
+} from "@ukdanceblue/common/graphql-client-portal/raw-types";
 import type { Interval } from "luxon";
 import type { UseQueryExecute } from "urql";
 import { useMutation } from "urql";

@@ -4,7 +4,7 @@ import { DbRole } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/dist/graphql-client-public";
+} from "@ukdanceblue/common/graphql-client-mobile";
 import { Center, Text, useTheme } from "native-base";
 import { useEffect, useMemo } from "react";
 import { useWindowDimensions } from "react-native";

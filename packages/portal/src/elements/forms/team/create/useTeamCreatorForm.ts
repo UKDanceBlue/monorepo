@@ -3,8 +3,8 @@ import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
-import type { DocumentType } from "@ukdanceblue/common/graphql-client-admin";
-import { type CreateTeamInput } from "@ukdanceblue/common/graphql-client-admin/raw-types";
+import type { DocumentType } from "@ukdanceblue/common/graphql-client-portal";
+import { type CreateTeamInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
 import { useMutation } from "urql";
 
 import { teamCreatorDocument } from "./TeamCreatorGQL";

@@ -1,6 +1,6 @@
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Empty, Table } from "antd";
 
 export const MarathonTableFragment = graphql(/* GraphQL */ `

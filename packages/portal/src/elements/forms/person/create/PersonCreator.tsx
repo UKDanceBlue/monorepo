@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
-import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
+import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
 import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
 import type { BaseOptionType } from "antd/es/select";
 import { useMemo, useState } from "react";

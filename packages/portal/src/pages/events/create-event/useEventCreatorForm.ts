@@ -4,7 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import type {
   SetEventInput,
   SetEventOccurrenceInput,
-} from "@ukdanceblue/common/graphql-client-admin/raw-types";
+} from "@ukdanceblue/common/graphql-client-portal/raw-types";
 import type { Interval } from "luxon";
 import { useMutation } from "urql";
 

@@ -59,7 +59,7 @@ const config: TypeScriptPluginConfig = {
 const generates: CodegenConfig["generates"] = {};
 const packages = readdirSync("./packages");
 if (packages.includes("mobile")) {
-  generates["./packages/common/lib/graphql-client-public/"] = {
+  generates["./packages/common/lib/graphql-client-mobile/"] = {
     preset: "client",
     presetConfig,
     config,
@@ -70,7 +70,7 @@ if (packages.includes("mobile")) {
   };
 }
 if (packages.includes("portal")) {
-  generates["./packages/common/lib/graphql-client-internal/"] = {
+  generates["./packages/common/lib/graphql-client-portal/"] = {
     preset: "client",
     presetConfig,
     config,

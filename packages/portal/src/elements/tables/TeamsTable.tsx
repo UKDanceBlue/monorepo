@@ -8,7 +8,7 @@ import { SortDirection, TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/graphql-client-admin";
+} from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Flex, Table } from "antd";
 import { useEffect } from "react";
 import { useQuery } from "urql";

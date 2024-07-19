@@ -1,7 +1,7 @@
 import { useImagePicker } from "@hooks/useImagePicker";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import {
   Button,
   Card,

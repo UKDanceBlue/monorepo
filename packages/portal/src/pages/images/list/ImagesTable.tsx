@@ -7,7 +7,7 @@ import { SortDirection, base64StringToArray } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/graphql-client-admin";
+} from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Flex, Image, Modal, Table, Typography, Upload } from "antd";
 import { useState } from "react";
 import { thumbHashToDataURL } from "thumbhash";

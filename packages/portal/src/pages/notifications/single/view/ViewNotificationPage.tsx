@@ -3,7 +3,7 @@ import { NotificationDeliveriesTable } from "@elements/tables/notification/Notif
 import { NotificationViewer } from "@elements/viewers/notification/NotificationViewer";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Flex, Typography } from "antd";
 import { useQuery } from "urql";
 

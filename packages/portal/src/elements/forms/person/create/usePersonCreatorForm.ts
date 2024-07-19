@@ -1,7 +1,7 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
-import type { DocumentType } from "@ukdanceblue/common/graphql-client-admin";
-import { type CreatePersonInput } from "@ukdanceblue/common/graphql-client-admin/raw-types";
+import type { DocumentType } from "@ukdanceblue/common/graphql-client-portal";
+import { type CreatePersonInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
 import { useMutation } from "urql";
 
 import { personCreatorDocument } from "./PersonCreatorGQL";

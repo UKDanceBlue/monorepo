@@ -2,8 +2,8 @@ import { universalCatch } from "@common/logging";
 import { showMessage, showPrompt } from "@common/util/alertUtils";
 import { discoverDefaultCalendar } from "@common/util/calendar";
 import { intervalFromSomething } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
-import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
+import { getFragmentData } from "@ukdanceblue/common/graphql-client-mobile";
 import type { Event } from "expo-calendar";
 import {
   PermissionStatus,

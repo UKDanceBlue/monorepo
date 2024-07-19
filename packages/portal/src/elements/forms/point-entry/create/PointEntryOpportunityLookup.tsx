@@ -1,8 +1,8 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { TeamType } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
-import type { CreatePointOpportunityInput } from "@ukdanceblue/common/graphql-client-admin/raw-types";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
+import type { CreatePointOpportunityInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
 import {
   App,
   AutoComplete,

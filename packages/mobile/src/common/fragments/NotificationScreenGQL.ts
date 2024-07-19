@@ -1,4 +1,4 @@
-import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
+import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
 
 export const NotificationFragment = graphql(/* GraphQL */ `
   fragment NotificationFragment on NotificationNode {

@@ -3,7 +3,7 @@ import { Logger } from "@common/logger/Logger";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/dist/graphql-client-public";
+} from "@ukdanceblue/common/graphql-client-mobile";
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 

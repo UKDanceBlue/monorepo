@@ -2,7 +2,7 @@ import { Logger } from "@common/logger/Logger";
 import { showMessage } from "@common/util/alertUtils";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { TeamType } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
+import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
 import { useEffect, useState } from "react";
 import { useQuery } from "urql";
 

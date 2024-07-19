@@ -24,23 +24,24 @@
       "node": "./dist/error/index.js",
       "default": null
     },
-    "./graphql-client-admin": {
+    "./graphql-client-portal": {
       "node": null,
       "react-native": null,
-      "types": "./dist/graphql-client-admin/index.d.ts",
-      "default": "./dist/graphql-client-admin/index.js"
+      "types": "./dist/graphql-client-portal/index.d.ts",
+      "default": "./dist/graphql-client-portal/index.js"
     },
-    "./graphql-client-public": {
+    "./graphql-client-mobile": {
       "node": null,
-      "react-native": "./dist/graphql-client-public/index.js",
-      "types": "./dist/graphql-client-public/index.d.ts",
-      "default": "./dist/graphql-client-public/index.js"
+      "browser": null,
+      "react-native": "./dist/graphql-client-mobile/index.js",
+      "types": "./dist/graphql-client-mobile/index.d.ts",
+      "default": "./dist/graphql-client-mobile/index.js"
     },
-    "./graphql-client-admin/raw-types": {
-      "types": "./dist/graphql-client-admin/graphql.d.ts"
+    "./graphql-client-portal/raw-types": {
+      "types": "./dist/graphql-client-portal/graphql.d.ts"
     },
-    "./graphql-client-public/raw-types": {
-      "types": "./dist/graphql-client-public/graphql.d.ts"
+    "./graphql-client-mobile/raw-types": {
+      "types": "./dist/graphql-client-mobile/graphql.d.ts"
     }
   },
   "main": "./dist/index.js",

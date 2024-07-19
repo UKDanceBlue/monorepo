@@ -5,7 +5,7 @@ import { SortDirection } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/graphql-client-admin";
+} from "@ukdanceblue/common/graphql-client-portal";
 import { Table } from "antd";
 import { DateTime } from "luxon";
 import { useQuery } from "urql";
