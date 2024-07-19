@@ -33,8 +33,6 @@ services:
       DATABASE_URL: postgres://danceblue:danceblue@danceblue-database-${SUBDOMAIN:?error}:5432/danceblue
       SERVE_ORIGIN: http://localhost:8000
       LOGGING_LEVEL: ${LOGGING_LEVEL:-info}
-      APPLICATION_PORT: ${APPLICATION_PORT}
-      APPLICATION_HOST: ${APPLICATION_HOST}
     secrets:
       - cookie_secret
       - jwt_secret
@@ -82,10 +80,10 @@ secrets:
   ms_client_id:
     environment: "MS_CLIENT_ID"
   ms_client_secret:
-    environment: "MS_CLIENT_SECRET"
+    file: ${MS_CLIENT_SECRET_FILE:?error}
   expo_access_token:
-    environment: "EXPO_ACCESS_TOKEN"
+    file: ${EXPO_ACCESS_TOKEN_FILE:?error}
   dbfunds_api_origin:
     environment: "DBFUNDS_API_ORIGIN"
   dbfunds_api_key:
-    environment: "DBFUNDS_API_KEY"
+    file: ${DBFUNDS_API_KEY_FILE:?error}
