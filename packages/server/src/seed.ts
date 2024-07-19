@@ -76,6 +76,8 @@ try {
     throw new Error("Failed to create marathon");
   }
 
+  await committeeRepository.getCommittee(CommitteeIdentifier.techCommittee);
+
   const techCommitteeTeam = await teamRepository.createTeam(
     {
       name: "Tech Committee",
