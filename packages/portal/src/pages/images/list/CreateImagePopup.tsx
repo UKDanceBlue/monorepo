@@ -1,14 +1,14 @@
 import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useForm } from "@tanstack/react-form";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { Form, Input, Modal } from "antd";
 import { useClient } from "urql";
 
 const createImageDocument = graphql(/* GraphQL */ `
   mutation CreateImage($input: CreateImageInput!) {
     createImage(input: $input) {
-      uuid
+      id
     }
   }
 `);
@@ -42,7 +42,7 @@ export function CreateImagePopup({
         if (error) {
           void showErrorMessage(error.message);
         }
-        onClose(data.createImage.uuid);
+        onClose(data.createImage.id);
       } else {
         void showErrorMessage(error?.message ?? "An unknown error occurred");
       }

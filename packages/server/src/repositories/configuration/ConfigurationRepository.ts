@@ -3,12 +3,13 @@ import type { SortDirection } from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
 import { Service } from "typedi";
 
-import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 import {
   buildConfigurationOrder,
   buildConfigurationWhere,
 } from "./configurationRepositoryUtils.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import { SimpleUniqueParam } from "#repositories/shared.js";
+
 
 const configurationStringKeys = ["key", "value"] as const;
 type ConfigurationStringKey = (typeof configurationStringKeys)[number];
@@ -35,6 +36,9 @@ export class ConfigurationRepository {
   constructor(private prisma: PrismaClient) {}
 
   // Finders
+  findConfigurationByUnique(param: SimpleUniqueParam) {
+    return this.prisma.configuration.findUnique({ where: param });
+  }
 
   findConfigurations(
     filters: readonly ConfigurationFilters[] | null | undefined,

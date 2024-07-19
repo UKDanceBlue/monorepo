@@ -1,8 +1,8 @@
 import Router from "@koa/router";
 import { Container } from "typedi";
 
-import { FileManager } from "../../../lib/files/FileManager.js";
-import { combineMimePartsToString } from "../../../lib/files/mime.js";
+import { FileManager } from "#files/FileManager.js";
+import { combineMimePartsToString } from "#files/mime.js";
 
 const fileRouter = new Router({ prefix: "/file" });
 

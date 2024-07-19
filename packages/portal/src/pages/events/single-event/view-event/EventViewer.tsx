@@ -1,28 +1,35 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { base64StringToArray } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
+import {
+  base64StringToArray,
+  intervalFromSomething,
+} from "@ukdanceblue/common";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/graphql-client-admin";
+} from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Descriptions, Flex, Image, List, Typography } from "antd";
 import DescriptionsItem from "antd/es/descriptions/Item";
-import { DateTime, Interval } from "luxon";
+import type { Interval } from "luxon";
+import { DateTime } from "luxon";
 import { useMemo } from "react";
 import { thumbHashToDataURL } from "thumbhash";
 
 import { useEventDeletePopup } from "./EventDeletePopup";
 
 export const EventViewerFragment = graphql(/* GraphQL */ `
-  fragment EventViewerFragment on EventResource {
-    uuid
+  fragment EventViewerFragment on EventNode {
+    id
     title
     summary
     description
     location
     occurrences {
-      interval
+      interval {
+        start
+        end
+      }
       fullDay
     }
     images {
@@ -50,7 +57,7 @@ export function EventViewer({
     () =>
       eventData?.occurrences
         ? eventData.occurrences.map((occurrence) => {
-            const interval = Interval.fromISO(occurrence.interval);
+            const interval = intervalFromSomething(occurrence.interval);
             return {
               interval,
               fullDay: occurrence.fullDay,
@@ -62,7 +69,7 @@ export function EventViewer({
 
   const navigate = useNavigate();
   const { EventDeletePopup, showModal } = useEventDeletePopup({
-    uuid: eventData?.uuid ?? "",
+    uuid: eventData?.id ?? "",
     onDelete: () => {
       navigate({ to: "/events" }).catch((error: unknown) =>
         console.error(error)
@@ -93,7 +100,7 @@ export function EventViewer({
         {eventData.title}
         <Link
           to="/events/$eventId/edit"
-          params={{ eventId: eventData.uuid }}
+          params={{ eventId: eventData.id }}
           color="#efefef"
         >
           <EditOutlined style={{ marginLeft: "1em" }} />

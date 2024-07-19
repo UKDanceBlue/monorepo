@@ -2,12 +2,12 @@ import type { Prisma } from "@prisma/client";
 import type { FilterItem } from "@ukdanceblue/common";
 import { SortDirection } from "@ukdanceblue/common";
 
+import type { EventFilters, EventOrderKeys } from "./EventRepository.ts";
 import {
   dateFilterToPrisma,
   stringFilterToPrisma,
-} from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import type { EventFilters, EventOrderKeys } from "./EventRepository.ts";
 
 export function buildEventOrder(
   order:
@@ -25,7 +25,7 @@ export function buildEventOrder(
       case "location":
       case "createdAt":
       case "updatedAt": {
-        orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
+        orderBy[key] = sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
       case "occurrence":

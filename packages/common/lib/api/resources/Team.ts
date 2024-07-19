@@ -1,11 +1,10 @@
-import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
+import { Field, ObjectType, registerEnumType } from "type-graphql";
 
-import { AccessControl } from "../../authorization/accessControl.js";
-import { AccessLevel } from "../../authorization/structures.js";
-import * as SimpleTypes from "../../utility/primitive/SimpleTypes.js";
+import { Node, createNodeClasses } from "../relay.js";
+import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
 import { TimestampedResource } from "./Resource.js";
-
 export const TeamType = {
   Spirit: "Spirit",
   Morale: "Morale",
@@ -33,28 +32,36 @@ registerEnumType(TeamLegacyStatus, {
   description: "New Team vs Returning Team",
 });
 
-@ObjectType()
-export class TeamResource extends TimestampedResource {
-  @Field(() => ID)
-  uuid!: string;
+@ObjectType({
+  implements: [Node],
+})
+export class TeamNode extends TimestampedResource implements Node {
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
   @Field(() => String)
   name!: string;
   @Field(() => TeamType)
   type!: TeamType;
   @Field(() => TeamLegacyStatus)
   legacyStatus!: TeamLegacyStatus;
-  @Field(() => String)
-  marathonYear!: SimpleTypes.MarathonYearString;
-
-  @AccessControl({ accessLevel: AccessLevel.Committee })
-  @Field(() => String, { nullable: true })
-  persistentIdentifier!: string | null;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id.id;
   }
 
-  public static init(init: Partial<TeamResource>) {
-    return TeamResource.doInit(init);
+  public static init(init: {
+    id: string;
+    name: string;
+    type: TeamType;
+    legacyStatus: TeamLegacyStatus;
+    createdAt?: Date | null;
+    updatedAt?: Date | null;
+  }) {
+    return TeamNode.createInstance().withValues(init);
   }
 }
+
+export const { TeamConnection, TeamEdge, TeamResult } = createNodeClasses(
+  TeamNode,
+  "Team"
+);

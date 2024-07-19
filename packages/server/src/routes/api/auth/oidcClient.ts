@@ -7,7 +7,7 @@ import {
   msClientId,
   msClientSecret,
   msOidcUrl,
-} from "../../../environment.js";
+} from "#environment";
 
 export async function makeOidcClient(req: Request): Promise<Client> {
   const forwardedProto = req.get("x-forwarded-proto");

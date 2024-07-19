@@ -1,17 +1,14 @@
 import type { PointOpportunity } from "@prisma/client";
-import { PointOpportunityResource } from "@ukdanceblue/common";
-import { DateTime } from "luxon";
+import { PointOpportunityNode } from "@ukdanceblue/common";
 
 export function pointOpportunityModelToResource(
   pointOpportunityModel: PointOpportunity
-): PointOpportunityResource {
-  return PointOpportunityResource.init({
-    uuid: pointOpportunityModel.uuid,
+): PointOpportunityNode {
+  return PointOpportunityNode.init({
+    id: pointOpportunityModel.uuid,
     name: pointOpportunityModel.name,
     type: pointOpportunityModel.type,
-    opportunityDate: pointOpportunityModel.opportunityDate
-      ? DateTime.fromJSDate(pointOpportunityModel.opportunityDate)
-      : undefined,
+    opportunityDate: pointOpportunityModel.opportunityDate,
     createdAt: pointOpportunityModel.createdAt,
     updatedAt: pointOpportunityModel.updatedAt,
   });

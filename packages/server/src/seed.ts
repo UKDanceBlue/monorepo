@@ -1,9 +1,17 @@
-import { CommitteeIdentifier, CommitteeRole } from "@ukdanceblue/common";
+import {
+  CommitteeIdentifier,
+  CommitteeRole,
+  TeamLegacyStatus,
+  TeamType,
+} from "@ukdanceblue/common";
 import { Container } from "typedi";
 
-import { isDevelopment } from "./environment.js";
-import { ConfigurationRepository } from "./repositories/configuration/ConfigurationRepository.js";
-import { PersonRepository } from "./repositories/person/PersonRepository.js";
+import { isDevelopment } from "#environment";
+import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
+import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
+import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { TeamRepository } from "#repositories/team/TeamRepository.js";
 
 if (!isDevelopment) {
   throw new Error("Seeding is only allowed in development mode");
@@ -13,11 +21,13 @@ const { prisma } = await import("./prisma.js");
 
 try {
   const personRepository = Container.get(PersonRepository);
+  const committeeRepository = Container.get(CommitteeRepository);
+  const teamRepository = Container.get(TeamRepository);
+  const configurationRepository = Container.get(ConfigurationRepository);
+  const marathonRepository = Container.get(MarathonRepository);
 
   const techCommittee: [string, string][] = [
     ["jtho264@uky.edu", "jtho264"],
-    ["jp.huse@uky.edu", "jphu235"],
-    ["bartholomai@uky.edu", "mdba238"],
     ["Camille.Dyer@uky.edu", "chdy223"],
     ["str249@uky.edu", "str249"],
   ];
@@ -33,11 +43,13 @@ try {
       personRepository.createPerson({
         email,
         linkblue,
-        committeeRole: CommitteeRole.Coordinator,
-        committeeName: CommitteeIdentifier.techCommittee,
       })
     )
   );
+
+  if (techPeople.some((p) => p.isErr())) {
+    throw new Error("Failed to create all tech committee people");
+  }
 
   const randomPeople = await Promise.all(
     randoms.map(([email, linkblue, name]) =>
@@ -56,30 +68,55 @@ try {
     throw new Error("Failed to create all tech committee people");
   }
 
-  // const teamRepository = Container.get(TeamRepository);
+  const marathon = await marathonRepository.createMarathon({
+    year: "DB24",
+  });
 
-  // await teamRepository.createTeam({
-  //   name: "Tech Committee",
-  //   legacyStatus: TeamLegacyStatus.ReturningTeam,
-  //   marathonYear: "DB24",
-  //   type: TeamType.Committee,
-  //   memberships: {
-  //     connect: techPeople,
-  //   },
-  //   persistentIdentifier: CommitteeIdentifier.techCommittee,
-  // });
+  if (marathon.isErr()) {
+    throw new Error("Failed to create marathon");
+  }
 
-  // await teamRepository.createTeam({
-  //   name: "Random People",
-  //   legacyStatus: TeamLegacyStatus.NewTeam,
-  //   marathonYear: "DB24",
-  //   type: TeamType.Spirit,
-  //   memberships: {
-  //     connect: randomPeople,
-  //   },
-  // });
+  const techCommitteeTeam = await teamRepository.createTeam(
+    {
+      name: "Tech Committee",
+      legacyStatus: TeamLegacyStatus.ReturningTeam,
+      type: TeamType.Spirit,
+    },
+    { id: marathon.value.id }
+  );
 
-  const configurationRepository = Container.get(ConfigurationRepository);
+  await teamRepository.createTeam(
+    {
+      name: "Random People",
+      legacyStatus: TeamLegacyStatus.NewTeam,
+      type: TeamType.Spirit,
+    },
+    { id: marathon.value.id }
+  );
+
+  await teamRepository.updateTeam(
+    { id: techCommitteeTeam.id },
+    {
+      correspondingCommittee: {
+        connect: {
+          identifier: CommitteeIdentifier.techCommittee,
+        },
+      },
+    }
+  );
+
+  await Promise.all(
+    techPeople.flatMap((person) =>
+      committeeRepository.assignPersonToCommittee(
+        {
+          id: person.unwrap().id,
+        },
+        CommitteeIdentifier.techCommittee,
+        CommitteeRole.Coordinator,
+        { id: marathon.value.id }
+      )
+    )
+  );
 
   await configurationRepository.createConfiguration({
     key: "TAB_BAR_CONFIG",

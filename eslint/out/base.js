@@ -26,8 +26,14 @@ const rules = {
     "prefer-destructuring": [
         "error",
         {
-            array: false,
-            object: true,
+            VariableDeclarator: {
+                array: false,
+                object: true,
+            },
+            AssignmentExpression: {
+                array: false,
+                object: false,
+            },
         },
         {
             enforceForRenamedProperties: false,
@@ -54,28 +60,21 @@ const rules = {
     "import/order": [
         "error",
         {
-            "groups": ["builtin", "external", "parent", "sibling", "index"],
-            "pathGroups": [
+            groups: ["builtin", "external", "parent", "sibling", "index"],
+            pathGroups: [
                 {
                     pattern: "@custom-lib/**",
                     group: "external",
                     position: "after",
                 },
             ],
-            "pathGroupsExcludedImportTypes": ["builtin"],
-            "alphabetize": {
+            pathGroupsExcludedImportTypes: ["builtin"],
+            alphabetize: {
                 order: "asc",
             },
-            "newlines-between": "always",
         },
     ],
-    "sort-imports": [
-        "error",
-        {
-            allowSeparatedGroups: true,
-            ignoreDeclarationSort: true,
-        },
-    ],
+    "sort-imports": ["off"],
     // Unicorn Plugin
     "unicorn/better-regex": "error",
     "unicorn/catch-error-name": "error",

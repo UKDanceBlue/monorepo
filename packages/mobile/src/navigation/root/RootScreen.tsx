@@ -4,7 +4,7 @@ import { DbRole } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/dist/graphql-client-public";
+} from "@ukdanceblue/common/graphql-client-mobile";
 import { Center, Text, useTheme } from "native-base";
 import { useEffect, useMemo } from "react";
 import { useWindowDimensions } from "react-native";
@@ -32,18 +32,14 @@ const rootScreenDocument = graphql(/* GraphQL */ `
       ...RootScreenAuthFragment
     }
     me {
-      data {
-        ...ProfileScreenUserFragment
-      }
+      ...ProfileScreenUserFragment
     }
   }
 `);
 
 const RootScreenAuthFragment = graphql(/* GraphQL */ `
   fragment RootScreenAuthFragment on LoginState {
-    role {
-      dbRole
-    }
+    dbRole
   }
 `);
 
@@ -72,7 +68,7 @@ const RootScreen = () => {
     rootScreenData?.loginState ?? null
   );
   const isLoggedIn = useMemo(() => {
-    return authData?.role.dbRole !== DbRole.None;
+    return authData.dbRole !== DbRole.None;
   }, [authData]);
 
   const { colors } = useTheme();
@@ -123,7 +119,7 @@ const RootScreen = () => {
                     profileScreenAuthFragment={
                       rootScreenData?.loginState ?? null
                     }
-                    profileScreenUserFragment={rootScreenData?.me.data ?? null}
+                    profileScreenUserFragment={rootScreenData?.me ?? null}
                   />
                 )}
               </RootStack.Screen>

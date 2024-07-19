@@ -1,7 +1,7 @@
 import type { LeveledLogMethod, Logger } from "winston";
 import { createLogger, format, transports } from "winston";
 
-import { isDevelopment } from "../../environment.js";
+import { isDevelopment, logDir } from "#environment";
 
 export interface AuditLogger extends Logger {
   /**
@@ -52,10 +52,14 @@ export interface AuditLogger extends Logger {
   notice: never;
 }
 
+export const auditLoggerFileName = "audit.log.json";
+
 const auditLogTransport = new transports.File({
-  filename: "audit.log.json",
+  filename: auditLoggerFileName,
+  dirname: logDir,
   maxsize: 1_000_000,
   maxFiles: 3,
+  format: format.combine(format.timestamp(), format.json()),
 });
 
 const dangerousConsoleTransport = new transports.Console({
@@ -76,9 +80,8 @@ const dangerousConsoleTransport = new transports.Console({
 
 export const auditLogger = createLogger({
   level: "secure",
-  silent: isDevelopment,
+  silent: false,
   transports: [auditLogTransport, dangerousConsoleTransport],
-  format: format.combine(format.timestamp(), format.json()),
   levels: {
     info: 0,
     dangerous: 2,

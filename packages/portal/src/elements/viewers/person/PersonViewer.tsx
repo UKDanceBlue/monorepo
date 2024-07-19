@@ -1,32 +1,32 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { committeeNames, stringifyDbRole } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/graphql-client-admin";
+} from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Descriptions, Empty, Flex, Typography } from "antd";
 
 import { usePersonDeletePopup } from "./PersonDeletePopup";
 
 export const PersonViewerFragment = graphql(/* GraphQL */ `
-  fragment PersonViewerFragment on PersonResource {
-    uuid
+  fragment PersonViewerFragment on PersonNode {
+    id
     name
     linkblue
     email
-    role {
-      dbRole
-      committeeRole
-      committeeIdentifier
-    }
+    dbRole
     teams {
       position
       team {
-        uuid
+        id
         name
       }
+    }
+    committees {
+      identifier
+      role
     }
   }
 `);
@@ -40,7 +40,7 @@ export function PersonViewer({
 
   const navigate = useNavigate();
   const { PersonDeletePopup, showModal } = usePersonDeletePopup({
-    uuid: personData?.uuid ?? "",
+    uuid: personData?.id ?? "",
     onDelete: () => {
       navigate({ to: "/people/" }).catch((error: unknown) =>
         console.error(error)
@@ -60,7 +60,7 @@ export function PersonViewer({
         {personData.name}
         <Link
           to="/people/$personId/edit"
-          params={{ personId: personData.uuid }}
+          params={{ personId: personData.id }}
           color="#efefef"
         >
           <EditOutlined style={{ marginLeft: "1em" }} />
@@ -88,22 +88,12 @@ export function PersonViewer({
           },
           {
             label: "Role",
-            children: stringifyDbRole(personData.role.dbRole),
+            children: stringifyDbRole(personData.dbRole),
           },
-          ...(personData.role.committeeRole
-            ? [
-                {
-                  label: "Committee",
-                  children: personData.role.committeeIdentifier
-                    ? committeeNames[personData.role.committeeIdentifier]
-                    : "N/A",
-                },
-                {
-                  label: "Committee Position",
-                  children: personData.role.committeeRole,
-                },
-              ]
-            : []),
+          ...personData.committees.map((committee) => ({
+            label: committeeNames[committee.identifier],
+            children: stringifyDbRole(committee.role),
+          })),
           {
             label: "Teams",
             children:
@@ -116,11 +106,11 @@ export function PersonViewer({
                   size="small"
                   items={personData.teams.map((team) => ({
                     label: team.team.name,
-                    key: team.team.uuid,
+                    key: team.team.id,
                     children: (
                       <Link
                         to="/teams/$teamId"
-                        params={{ teamId: team.team.uuid }}
+                        params={{ teamId: team.team.id }}
                       >
                         {team.position}
                       </Link>

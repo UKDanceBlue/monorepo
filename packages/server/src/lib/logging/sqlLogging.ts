@@ -1,12 +1,36 @@
+import type winston from "winston";
 import { createLogger, format, transports } from "winston";
 
-import { isDevelopment } from "../../environment.js";
+import { isDevelopment, logDir } from "#environment";
 
 const databaseLogTransport = new transports.File({
   filename: "database.log",
   maxsize: 1_000_000,
-  maxFiles: 3,
+  maxFiles: 1,
+  dirname: logDir,
 });
+
+interface SqlLogger extends winston.Logger {
+  error: winston.LeveledLogMethod;
+  warning: winston.LeveledLogMethod;
+  info: winston.LeveledLogMethod;
+  sql: winston.LeveledLogMethod;
+
+  emerg: never;
+  alert: never;
+  crit: never;
+  notice: never;
+  debug: never;
+  trace: never;
+  warn: never;
+  help: never;
+  data: never;
+  prompt: never;
+  http: never;
+  verbose: never;
+  input: never;
+  silly: never;
+}
 
 export const sqlLogger = createLogger({
   exitOnError: false,
@@ -20,7 +44,7 @@ export const sqlLogger = createLogger({
   transports: isDevelopment ? databaseLogTransport : [],
   silent: !isDevelopment,
   format: format.combine(format.timestamp(), format.simple()),
-});
+}) as SqlLogger;
 
 if (isDevelopment) {
   sqlLogger.info("SQL Logger initialized");

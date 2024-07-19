@@ -1,8 +1,9 @@
 import { universalCatch } from "@common/logging";
 import { showMessage, showPrompt } from "@common/util/alertUtils";
 import { discoverDefaultCalendar } from "@common/util/calendar";
-import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
-import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
+import { intervalFromSomething } from "@ukdanceblue/common";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
+import { getFragmentData } from "@ukdanceblue/common/graphql-client-mobile";
 import type { Event } from "expo-calendar";
 import {
   PermissionStatus,
@@ -10,7 +11,6 @@ import {
   getCalendarPermissionsAsync,
   requestCalendarPermissionsAsync,
 } from "expo-calendar";
-import { Interval } from "luxon";
 
 import { EventScreenFragment } from "./EventScreenFragment";
 
@@ -60,7 +60,7 @@ export async function onAddToCalendar(
         const eventDataToExpoEvent = (
           occurrence: (typeof eventData.occurrences)[number]
         ): Partial<Event> => {
-          const interval = Interval.fromISO(occurrence.interval);
+          const interval = intervalFromSomething(occurrence.interval);
           if (!interval.isValid) {
             throw new Error("Invalid interval");
           }
@@ -78,7 +78,7 @@ export async function onAddToCalendar(
             endTimeZone: interval.end.zoneName,
             organizer: "UK DanceBlue",
             organizerEmail: "community@danceblue.org",
-            id: `${eventData.uuid}:${occurrence.uuid}`,
+            id: `${eventData.id}:${occurrence.id}`,
           };
         };
 
@@ -86,7 +86,7 @@ export async function onAddToCalendar(
           expoEvents.push(...eventData.occurrences.map(eventDataToExpoEvent));
         } else {
           const occurrence = eventData.occurrences.find(
-            (o) => o.uuid === occurrenceId
+            (o) => o.id === occurrenceId
           );
 
           if (!occurrence) {

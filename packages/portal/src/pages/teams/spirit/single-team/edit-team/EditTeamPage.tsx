@@ -1,11 +1,11 @@
 import { TeamEditor } from "@elements/forms/team/edit/TeamEditor";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useParams } from "@tanstack/react-router";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useQuery } from "urql";
 
 const viewTeamPageDocument = graphql(/* GraphQL */ `
-  query EditTeamPage($uuid: String!) {
+  query EditTeamPage($uuid: GlobalId!) {
     team(uuid: $uuid) {
       data {
         ...TeamEditorFragment

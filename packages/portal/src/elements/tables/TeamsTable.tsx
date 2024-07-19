@@ -1,14 +1,16 @@
-import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { DollarOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { useMarathon } from "@config/marathonContext";
 import { useListQuery } from "@hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useNavigate } from "@tanstack/react-router";
-import { SortDirection } from "@ukdanceblue/common";
+import { SortDirection, TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/graphql-client-admin";
+} from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Flex, Table } from "antd";
+import { useEffect } from "react";
 import { useQuery } from "urql";
 
 const teamsTableQueryDocument = graphql(/* GraphQL */ `
@@ -41,12 +43,11 @@ const teamsTableQueryDocument = graphql(/* GraphQL */ `
 `);
 
 export const TeamsTableFragment = graphql(/* GraphQL */ `
-  fragment TeamsTableFragment on TeamResource {
-    uuid
+  fragment TeamsTableFragment on TeamNode {
+    id
     type
     name
     legacyStatus
-    marathonYear
     totalPoints
   }
 `);
@@ -66,22 +67,14 @@ export const TeamsTable = () => {
     {
       initPage: 1,
       initPageSize: 20,
-      initSorting: [
-        { field: "totalPoints", direction: SortDirection.DESCENDING },
-      ],
+      initSorting: [{ field: "totalPoints", direction: SortDirection.desc }],
     },
     {
-      allFields: [
-        "name",
-        "type",
-        "legacyStatus",
-        "marathonYear",
-        "totalPoints",
-      ],
+      allFields: ["name", "type", "legacyStatus", "marathonId", "totalPoints"],
       dateFields: [],
       isNullFields: [],
       numericFields: ["totalPoints"],
-      oneOfFields: ["type", "marathonYear", "legacyStatus"],
+      oneOfFields: ["type", "marathonId", "legacyStatus"],
       stringFields: ["name"],
     }
   );
@@ -96,6 +89,22 @@ export const TeamsTable = () => {
     loadingMessage: "Loading teams...",
   });
 
+  const marathonId = useMarathon()?.id;
+
+  useEffect(() => {
+    if (
+      queryOptions.oneOfFilters.find((f) => f.field === "marathonId")
+        ?.value[0] !== marathonId
+    ) {
+      if (marathonId) {
+        updateFilter("marathonId", {
+          field: "marathonId",
+          value: [marathonId],
+        });
+      }
+    }
+  }, [marathonId, queryOptions.oneOfFilters, updateFilter]);
+
   return (
     <Table
       columns={[
@@ -109,31 +118,41 @@ export const TeamsTable = () => {
           title: "Type",
           dataIndex: "type",
           sorter: true,
-          filters: [
-            {
-              text: "Committee",
-              value: "Committee",
-            },
-            {
-              text: "Spirit",
-              value: "Spirit",
-            },
-          ],
+          filters: Object.entries(TeamType).map(([key, value]) => ({
+            text: key,
+            value,
+          })),
         },
         {
           title: "Legacy Status",
           dataIndex: "legacyStatus",
           sorter: true,
-          filters: [
-            {
-              text: "New Team",
-              value: "NewTeam",
-            },
-            {
-              text: "Returning Team",
-              value: "ReturningTeam",
-            },
-          ],
+          filters: Object.values(TeamLegacyStatus).map((value) => {
+            let text: string;
+            switch (value) {
+              case TeamLegacyStatus.NewTeam: {
+                text = "New Team";
+                break;
+              }
+              case TeamLegacyStatus.ReturningTeam: {
+                text = "Returning Team";
+                break;
+              }
+              case TeamLegacyStatus.DemoTeam: {
+                text = "Demo Team";
+                break;
+              }
+              default: {
+                value satisfies never;
+                text = String(value);
+                break;
+              }
+            }
+            return {
+              text,
+              value,
+            };
+          }),
           render: (value) => {
             switch (value) {
               case "NewTeam": {
@@ -149,17 +168,6 @@ export const TeamsTable = () => {
           },
         },
         {
-          title: "Marathon Year",
-          dataIndex: "marathonYear",
-          sorter: true,
-          filters: [
-            {
-              text: "DanceBlue 2024",
-              value: "DB24",
-            },
-          ],
-        },
-        {
           title: "Total Points",
           dataIndex: "totalPoints",
           sorter: true,
@@ -172,8 +180,8 @@ export const TeamsTable = () => {
               <Button
                 onClick={() =>
                   navigate({
-                    to: "/teams/$teamId/",
-                    params: { teamId: record.uuid },
+                    to: "/teams/$teamId/points",
+                    params: { teamId: record.id },
                   }).catch((error: unknown) => console.error(error))
                 }
                 icon={<EyeOutlined />}
@@ -181,8 +189,17 @@ export const TeamsTable = () => {
               <Button
                 onClick={() =>
                   navigate({
+                    to: "/teams/$teamId/fundraising",
+                    params: { teamId: record.id },
+                  }).catch((error: unknown) => console.error(error))
+                }
+                icon={<DollarOutlined />}
+              />
+              <Button
+                onClick={() =>
+                  navigate({
                     to: "/teams/$teamId/edit",
-                    params: { teamId: record.uuid },
+                    params: { teamId: record.id },
                   }).catch((error: unknown) => console.error(error))
                 }
                 icon={<EditOutlined />}
@@ -195,7 +212,7 @@ export const TeamsTable = () => {
         getFragmentData(TeamsTableFragment, data?.teams.data) ?? undefined
       }
       loading={fetching}
-      rowKey={({ uuid }) => uuid}
+      rowKey={({ id }) => id}
       pagination={
         data
           ? {
@@ -223,11 +240,9 @@ export const TeamsTable = () => {
               | "name"
               | "type"
               | "legacyStatus"
-              | "marathonYear",
+              | "marathonId",
             direction:
-              sort.order === "ascend"
-                ? SortDirection.ASCENDING
-                : SortDirection.DESCENDING,
+              sort.order === "ascend" ? SortDirection.asc : SortDirection.desc,
           });
         }
         clearFilters();
@@ -251,9 +266,9 @@ export const TeamsTable = () => {
               });
               break;
             }
-            case "marathonYear": {
-              updateFilter("marathonYear", {
-                field: "marathonYear",
+            case "marathonId": {
+              updateFilter("marathonId", {
+                field: "marathonId",
                 value: value.map((v) => v.toString()),
               });
               break;

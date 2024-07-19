@@ -10,19 +10,22 @@ import {
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/graphql-client-admin";
+} from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Flex, Table } from "antd";
 import { useCallback, useMemo } from "react";
 import { useQuery } from "urql";
 
 const EventsTableFragment = graphql(/* GraphQL */ `
-  fragment EventsTableFragment on EventResource {
-    uuid
+  fragment EventsTableFragment on EventNode {
+    id
     title
     description
     occurrences {
-      uuid
-      interval
+      id
+      interval {
+        start
+        end
+      }
       fullDay
     }
     summary
@@ -133,7 +136,7 @@ export const EventsTable = () => {
       </div>
       <Table
         dataSource={listEventsData ?? undefined}
-        rowKey={({ uuid }) => uuid}
+        rowKey={({ id }) => id}
         loading={fetching}
         pagination={
           eventsDocument
@@ -165,8 +168,8 @@ export const EventsTable = () => {
                 | "summary",
               direction:
                 sort.order === "ascend"
-                  ? SortDirection.ASCENDING
-                  : SortDirection.DESCENDING,
+                  ? SortDirection.asc
+                  : SortDirection.desc,
             });
           }
         }}
@@ -195,7 +198,7 @@ export const EventsTable = () => {
                         parseEventOccurrence(occurrence)
                       );
                     return (
-                      <li key={occurrence.uuid} style={{ listStyle: "none" }}>
+                      <li key={occurrence.id} style={{ listStyle: "none" }}>
                         <i>{startString}</i> to <i>{endString}</i>
                       </li>
                     );

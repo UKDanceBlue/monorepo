@@ -3,11 +3,11 @@ import ImageView, {
 } from "@common/components/ImageView/ImageView";
 import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
 import { TriviaCrack } from "@common/marathonComponents/TriviaCrack";
-import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/dist/graphql-client-public";
+} from "@ukdanceblue/common/graphql-client-mobile";
 import { Heading, ScrollView, Text } from "native-base";
 import { useEffect, useState } from "react";
 import {
@@ -17,8 +17,8 @@ import {
 } from "react-native";
 
 const HourScreenFragment = graphql(/* GraphQL */ `
-  fragment HourScreenFragment on MarathonHourResource {
-    uuid
+  fragment HourScreenFragment on MarathonHourNode {
+    id
     title
     details
     durationInfo
@@ -106,7 +106,7 @@ export const HourScreenComponent = ({
         >
           {hourScreenData.mapImages.map((image, i) => (
             <ImageView
-              key={`${getFragmentData(ImageViewFragment, image).uuid}-${i}`}
+              key={`${getFragmentData(ImageViewFragment, image).id}-${i}`}
               imageFragment={image}
               contentFit="contain"
               renderHeight={screenHeight / 4}

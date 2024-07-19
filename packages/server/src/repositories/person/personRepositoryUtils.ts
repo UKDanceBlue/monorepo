@@ -1,20 +1,21 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
-
-import {
-  dateFilterToPrisma,
-  oneOfFilterToPrisma,
-  stringFilterToPrisma,
-} from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import { ActionDeniedError } from "@ukdanceblue/common/error";
+import type { Result } from "ts-results-es";
+import { Err, Ok } from "ts-results-es";
 
 import type { PersonFilters, PersonOrderKeys } from "./PersonRepository.js";
+import {
+  dateFilterToPrisma,
+  stringFilterToPrisma,
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 export function buildPersonOrder(
   order:
     | readonly [key: PersonOrderKeys, sort: SortDirection][]
     | null
     | undefined
-) {
+): Result<Prisma.PersonOrderByWithRelationInput, ActionDeniedError> {
   const orderBy: Prisma.PersonOrderByWithRelationInput = {};
 
   for (const [key, sort] of order ?? []) {
@@ -22,19 +23,25 @@ export function buildPersonOrder(
       case "name":
       case "email":
       case "linkblue":
-      case "committeeRole":
-      case "committeeName":
       case "createdAt":
       case "updatedAt": {
-        orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
+        orderBy[key] = sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
+      case "committeeRole":
+      case "committeeName":
+      case "dbRole":
       default: {
-        throw new Error(`Unsupported sort key: ${key}`);
+        key satisfies "committeeRole" | "committeeName" | "dbRole";
+        return Err(
+          new ActionDeniedError(
+            `Unsupported filter key: ${String((key as { field?: string } | undefined)?.field)}`
+          )
+        );
       }
     }
   }
-  return orderBy;
+  return Ok(orderBy);
 }
 export function buildPersonWhere(
   filters: readonly PersonFilters[] | null | undefined
@@ -47,14 +54,6 @@ export function buildPersonWhere(
       case "email":
       case "linkblue": {
         where[filter.field] = stringFilterToPrisma(filter);
-        break;
-      }
-      case "committeeRole": {
-        where[filter.field] = oneOfFilterToPrisma(filter);
-        break;
-      }
-      case "committeeName": {
-        where[filter.field] = oneOfFilterToPrisma(filter);
         break;
       }
       case "createdAt":

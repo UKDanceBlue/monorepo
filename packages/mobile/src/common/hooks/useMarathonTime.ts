@@ -1,6 +1,6 @@
 import { Logger } from "@common/logger/Logger";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
+import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
 import { DateTime } from "luxon";
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
@@ -12,7 +12,7 @@ export interface MarathonTime {
 
 const marathonTimeQuery = graphql(/* GraphQL */ `
   query MarathonTime {
-    nextMarathon {
+    latestMarathon {
       startDate
       endDate
     }
@@ -37,25 +37,28 @@ export function useMarathonTime(): {
   });
 
   const marathonInterval = useMemo(() => {
-    let startTime: DateTime = DateTime.fromMillis(0);
-    let endTime: DateTime = DateTime.fromMillis(0);
-
     try {
-      if (data?.nextMarathon) {
-        startTime = dateTimeFromSomething(data.nextMarathon.startDate);
-        if (!startTime.isValid) {
+      if (data?.latestMarathon) {
+        const startTime = dateTimeFromSomething(data.latestMarathon.startDate);
+        if (!startTime?.isValid) {
           Logger.warn(
-            `Unrecognized marathon start time: ${startTime.toString()}`,
+            `Unrecognized marathon start time: ${startTime?.toString()}`,
             {
               source: "useMarathonTime",
             }
           );
         }
-        endTime = dateTimeFromSomething(data.nextMarathon.endDate);
-        if (!endTime.isValid) {
-          Logger.warn(`Unrecognized marathon end time: ${endTime.toString()}`, {
-            source: "useMarathonTime",
-          });
+        const endTime = dateTimeFromSomething(data.latestMarathon.endDate);
+        if (!endTime?.isValid) {
+          Logger.warn(
+            `Unrecognized marathon end time: ${endTime?.toString()}`,
+            {
+              source: "useMarathonTime",
+            }
+          );
+        }
+        if (startTime && endTime) {
+          return { startTime, endTime };
         }
       }
     } catch (error) {
@@ -65,8 +68,12 @@ export function useMarathonTime(): {
       });
     }
 
-    return { startTime, endTime } as MarathonTime;
-  }, [data?.nextMarathon]);
+    // TODO: find a better indicator of "no marathon"
+    return {
+      startTime: DateTime.fromMillis(0),
+      endTime: DateTime.fromMillis(0),
+    };
+  }, [data?.latestMarathon]);
 
   return {
     timesLoading: fetching,

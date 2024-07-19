@@ -1,11 +1,11 @@
 import { useParams } from "@tanstack/react-router";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useQuery } from "urql";
 
 import { MarathonViewer } from "./MarathonViewer";
 
 const marathonPageDocument = graphql(/* GraphQL */ `
-  query MarathonPage($marathonUuid: String!) {
+  query MarathonPage($marathonUuid: GlobalId!) {
     marathon(uuid: $marathonUuid) {
       ...MarathonViewerFragment
     }

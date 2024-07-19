@@ -1,18 +1,18 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
+import { dateTimeFromSomething } from "@ukdanceblue/common";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/graphql-client-admin";
+} from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Table } from "antd";
-import { DateTime } from "luxon";
 import type { UseQueryExecute } from "urql";
 
 import { usePointEntryDeletePopup } from "./PointEntryDeletePopup";
 
 export const PointEntryTableFragment = graphql(/* GraphQL */ `
-  fragment PointEntryTableFragment on PointEntryResource {
-    uuid
+  fragment PointEntryTableFragment on PointEntryNode {
+    id
     personFrom {
       name
       linkblue
@@ -86,7 +86,7 @@ export function PointEntryTable({
               const { name, opportunityDate } = record.pointOpportunity;
               let str = name;
               if (opportunityDate) {
-                str += ` (${DateTime.fromISO(opportunityDate).toFormat(
+                str += ` (${dateTimeFromSomething(opportunityDate).toFormat(
                   "yyyy-MM-dd"
                 )})`;
               }
@@ -99,7 +99,7 @@ export function PointEntryTable({
             render: (_, record) => (
               <Button
                 icon={<DeleteOutlined />}
-                onClick={() => openDeletePopup(record.uuid)}
+                onClick={() => openDeletePopup(record.id)}
               />
             ),
           },

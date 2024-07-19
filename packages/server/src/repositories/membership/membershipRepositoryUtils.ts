@@ -1,9 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
-import { dateFilterToPrisma } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 import type { MembershipFilters } from "./MembershipRepository.ts";
+import { dateFilterToPrisma } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
 
 export function buildMembershipOrder(
   order: readonly [key: string, sort: SortDirection][] | null | undefined
@@ -14,7 +14,7 @@ export function buildMembershipOrder(
     switch (key) {
       case "createdAt":
       case "updatedAt": {
-        orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
+        orderBy[key] = sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
       default: {

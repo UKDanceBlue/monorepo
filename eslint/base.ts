@@ -28,8 +28,14 @@ const rules: Linter.RulesRecord = {
   "prefer-destructuring": [
     "error",
     {
-      array: false,
-      object: true,
+      VariableDeclarator: {
+        array: false,
+        object: true,
+      },
+      AssignmentExpression: {
+        array: false,
+        object: false,
+      },
     },
     {
       enforceForRenamedProperties: false,
@@ -56,12 +62,21 @@ const rules: Linter.RulesRecord = {
   "import/order": [
     "error",
     {
-      "groups": ["builtin", "external", "parent", "sibling", "index"],
+      "groups": [
+        "index",
+        "sibling",
+        "parent",
+        "internal",
+        "external",
+        "builtin",
+        "object",
+        "type",
+      ],
       "pathGroups": [
         {
-          pattern: "@custom-lib/**",
-          group: "external",
-          position: "after",
+          pattern: "#**",
+          group: "internal",
+          position: "before",
         },
       ],
       "pathGroupsExcludedImportTypes": ["builtin"],
@@ -71,13 +86,7 @@ const rules: Linter.RulesRecord = {
       "newlines-between": "always",
     },
   ],
-  "sort-imports": [
-    "error",
-    {
-      allowSeparatedGroups: true,
-      ignoreDeclarationSort: true,
-    },
-  ],
+  "sort-imports": ["off"],
   // Unicorn Plugin
   "unicorn/better-regex": "error",
   "unicorn/catch-error-name": "error",

@@ -4,9 +4,9 @@ import { TeamType } from "@ukdanceblue/common";
 import type {
   DocumentType,
   FragmentType,
-} from "@ukdanceblue/common/graphql-client-admin";
-import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
-import { type SetTeamInput } from "@ukdanceblue/common/graphql-client-admin/raw-types";
+} from "@ukdanceblue/common/graphql-client-portal";
+import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
+import { type SetTeamInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
 import { useMutation } from "urql";
 
 import { TeamEditorFragment, teamEditorDocument } from "./TeamEditorGQL";
@@ -33,18 +33,15 @@ export function useTeamEditorForm(
     defaultValues: {
       name: teamData?.name ?? "",
       legacyStatus: teamData?.legacyStatus ?? null,
-      // TODO: Make this dynamic
-      marathonYear: teamData?.marathonYear ?? "DB24",
-      persistentIdentifier: teamData?.persistentIdentifier ?? null,
       type: teamData?.type ?? TeamType.Spirit,
     },
     onSubmit: async (values) => {
-      if (!teamData?.uuid) {
+      if (!teamData?.id) {
         throw new Error("Team UUID is required");
       }
 
       const { data } = await setTeam({
-        uuid: teamData.uuid,
+        uuid: teamData.id,
         input: {
           name: values.name ?? null,
           legacyStatus: values.legacyStatus ?? null,

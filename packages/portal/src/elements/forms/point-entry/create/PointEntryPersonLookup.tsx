@@ -72,14 +72,12 @@ export function PointEntryPersonLookup({
   });
 
   useEffect(() => {
-    if (getPersonByLinkBlueQuery.data?.personByLinkBlue.data) {
-      setPersonFromUuid(
-        getPersonByLinkBlueQuery.data.personByLinkBlue.data.uuid
-      );
+    if (getPersonByLinkBlueQuery.data?.personByLinkBlue) {
+      setPersonFromUuid(getPersonByLinkBlueQuery.data.personByLinkBlue.id);
     }
   }, [
-    getPersonByLinkBlueQuery.data?.personByLinkBlue.data,
-    getPersonByLinkBlueQuery.data?.personByLinkBlue.data?.uuid,
+    getPersonByLinkBlueQuery.data?.personByLinkBlue,
+    getPersonByLinkBlueQuery.data?.personByLinkBlue.id,
     setPersonFromUuid,
   ]);
 
@@ -96,7 +94,7 @@ export function PointEntryPersonLookup({
     if (linkblueFieldValue) {
       if (
         linkblueFieldValue === searchedForLinkblue &&
-        !getPersonByLinkBlueQuery.data?.personByLinkBlue.data
+        !getPersonByLinkBlueQuery.data?.personByLinkBlue
       ) {
         setLinkblueKnownDoesNotExist(linkblueFieldValue);
       } else {
@@ -104,7 +102,7 @@ export function PointEntryPersonLookup({
       }
     }
   }, [
-    getPersonByLinkBlueQuery.data?.personByLinkBlue.data,
+    getPersonByLinkBlueQuery.data?.personByLinkBlue,
     linkblueFieldValue,
     searchedForLinkblue,
   ]);
@@ -128,19 +126,19 @@ export function PointEntryPersonLookup({
     { value: string; label: string }[]
   >([]);
   useEffect(() => {
-    if (searchByNameQuery.data?.searchPeopleByName.data) {
+    if (searchByNameQuery.data?.searchPeopleByName) {
       const newNameAutocomplete: typeof nameAutocomplete = [];
-      for (const person of searchByNameQuery.data.searchPeopleByName.data) {
+      for (const person of searchByNameQuery.data.searchPeopleByName) {
         if (person.name) {
           newNameAutocomplete.push({
-            value: person.uuid,
+            value: person.id,
             label: person.name,
           });
         }
       }
       setNameAutocomplete(newNameAutocomplete);
     }
-  }, [searchByNameQuery.data?.searchPeopleByName.data]);
+  }, [searchByNameQuery.data?.searchPeopleByName]);
 
   const updateAutocomplete = useDebouncedCallback(
     (name: string) => {
@@ -194,7 +192,7 @@ export function PointEntryPersonLookup({
                     placeholder="Search by Name"
                     value={
                       (personFromUuid &&
-                        selectedPersonQuery.data?.person.data?.name) ||
+                        selectedPersonQuery.data?.person.name) ||
                       searchByNameField
                     }
                     onBlur={field.handleBlur}
@@ -220,7 +218,7 @@ export function PointEntryPersonLookup({
                   name={`${field.name}-linkblue-field`}
                   value={
                     (personFromUuid &&
-                      selectedPersonQuery.data?.person.data?.linkblue) ||
+                      selectedPersonQuery.data?.person.linkblue) ||
                     linkblueFieldValue
                   }
                   onChange={(e) => {
@@ -271,8 +269,8 @@ export function PointEntryPersonLookup({
                             email: `${linkblueFieldValue}@uky.edu`,
                             teamUuid,
                           });
-                          if (result.data?.createPerson.uuid) {
-                            setPersonFromUuid(result.data.createPerson.uuid);
+                          if (result.data?.createPerson.id) {
+                            setPersonFromUuid(result.data.createPerson.id);
                           }
                         } catch (error) {
                           showErrorMessage(error);
@@ -293,10 +291,10 @@ export function PointEntryPersonLookup({
                 {field.state.value ? (
                   <>
                     <span>Selected Person:</span>{" "}
-                    {selectedPersonQuery.data?.person.data ? (
+                    {selectedPersonQuery.data?.person ? (
                       <i>
-                        {selectedPersonQuery.data.person.data.name ??
-                          selectedPersonQuery.data.person.data.linkblue}
+                        {selectedPersonQuery.data.person.name ??
+                          selectedPersonQuery.data.person.linkblue}
                       </i>
                     ) : (
                       "No name or linkblue found"

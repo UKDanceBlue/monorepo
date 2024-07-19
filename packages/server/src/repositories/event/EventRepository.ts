@@ -2,9 +2,9 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
-import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 import { buildEventOrder, buildEventWhere } from "./eventRepositoryUtils.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
 
 const eventBooleanKeys = [] as const;
 type EventBooleanKey = (typeof eventBooleanKeys)[number];
@@ -107,7 +107,7 @@ export class EventRepository {
           rows.sort((a, b) => {
             const aDate = a.eventOccurrences[0]?.date ?? new Date(0);
             const bDate = b.eventOccurrences[0]?.date ?? new Date(0);
-            return sort === SortDirection.ASCENDING
+            return sort === SortDirection.asc
               ? aDate.getTime() - bDate.getTime()
               : bDate.getTime() - aDate.getTime();
           });
@@ -117,7 +117,7 @@ export class EventRepository {
           rows.sort((a, b) => {
             const aDate = a.eventOccurrences.at(-1)?.date ?? new Date(0);
             const bDate = b.eventOccurrences.at(-1)?.date ?? new Date(0);
-            return sort === SortDirection.ASCENDING
+            return sort === SortDirection.asc
               ? aDate.getTime() - bDate.getTime()
               : bDate.getTime() - aDate.getTime();
           });

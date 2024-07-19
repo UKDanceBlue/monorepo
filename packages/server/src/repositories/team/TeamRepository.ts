@@ -7,9 +7,11 @@ import type {
 import { TeamLegacyStatus } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
-import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 import { buildTeamOrder, buildTeamWhere } from "./teamRepositoryUtils.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
+import type { SimpleUniqueParam } from "#repositories/shared.js";
+
 
 const teamBooleanKeys = [] as const;
 type TeamBooleanKey = (typeof teamBooleanKeys)[number];
@@ -23,7 +25,7 @@ type TeamIsNullKey = (typeof teamIsNullKeys)[number];
 const teamNumericKeys = ["totalPoints"] as const;
 type TeamNumericKey = (typeof teamNumericKeys)[number];
 
-const teamOneOfKeys = ["type", "marathonYear", "legacyStatus"] as const;
+const teamOneOfKeys = ["type", "marathonId", "legacyStatus"] as const;
 type TeamOneOfKey = (typeof teamOneOfKeys)[number];
 
 const teamStringKeys = ["name"] as const;
@@ -42,18 +44,42 @@ export type TeamOrderKeys =
   | "createdAt"
   | "updatedAt"
   | "type"
-  | "marathonYear"
+  | "marathonId"
   | "legacyStatus"
   | "name"
   | "totalPoints";
 
-type UniqueTeamParam = { id: number } | { uuid: string };
+type MarathonParam = SimpleUniqueParam | { year: MarathonYearString };
+
+function makeMarathonWhere(param: MarathonParam[]) {
+  const marathonIds: number[] = [];
+  const marathonUuids: string[] = [];
+  const marathonYears: MarathonYearString[] = [];
+  for (const m of param) {
+    if ("id" in m) {
+      marathonIds.push(m.id);
+    } else if ("uuid" in m) {
+      marathonUuids.push(m.uuid);
+    } else if ("year" in m) {
+      marathonYears.push(m.year);
+    } else {
+      m satisfies never;
+    }
+  }
+  return {
+    OR: [
+      { id: { in: marathonIds } },
+      { uuid: { in: marathonUuids } },
+      { year: { in: marathonYears } },
+    ],
+  };
+}
 
 @Service()
 export class TeamRepository {
   constructor(private prisma: PrismaClient) {}
 
-  findTeamByUnique(param: UniqueTeamParam) {
+  findTeamByUnique(param: SimpleUniqueParam) {
     return this.prisma.team.findUnique({ where: param });
   }
 
@@ -64,7 +90,7 @@ export class TeamRepository {
     take,
     onlyDemo,
     legacyStatus,
-    marathonYear,
+    marathon,
     type,
   }: {
     filters?: readonly TeamFilters[] | undefined | null;
@@ -76,7 +102,7 @@ export class TeamRepository {
     take?: number | undefined | null;
     onlyDemo?: boolean;
     legacyStatus?: TeamLegacyStatus[] | undefined | null;
-    marathonYear?: MarathonYearString[] | undefined | null;
+    marathon: MarathonParam[] | undefined | null;
     type?: TeamType[] | undefined | null;
   }) {
     const where = buildTeamWhere(filters);
@@ -85,7 +111,7 @@ export class TeamRepository {
     return this.prisma.teamsWithTotalPoints.findMany({
       where: {
         type: type ? { in: type } : undefined,
-        marathonYear: marathonYear ? { in: marathonYear } : undefined,
+        marathon: makeMarathonWhere(marathon ?? []),
 
         ...where,
         legacyStatus: legacyStatus
@@ -109,13 +135,13 @@ export class TeamRepository {
     filters,
     onlyDemo,
     legacyStatus,
-    marathonYear,
+    marathon,
     type,
   }: {
     filters?: readonly TeamFilters[] | undefined | null;
     onlyDemo?: boolean;
     legacyStatus?: TeamLegacyStatus[] | undefined | null;
-    marathonYear?: MarathonYearString[] | undefined | null;
+    marathon: MarathonParam[] | undefined | null;
     type?: TeamType[] | undefined | null;
   }) {
     const where = buildTeamWhere(filters);
@@ -123,7 +149,7 @@ export class TeamRepository {
     return this.prisma.teamsWithTotalPoints.count({
       where: {
         type: type ? { in: type } : undefined,
-        marathonYear: marathonYear ? { in: marathonYear } : undefined,
+        marathon: makeMarathonWhere(marathon ?? []),
 
         ...where,
         legacyStatus: legacyStatus
@@ -160,7 +186,7 @@ export class TeamRepository {
     });
   }
 
-  getTotalTeamPoints(param: UniqueTeamParam) {
+  getTotalTeamPoints(param: SimpleUniqueParam) {
     return this.prisma.pointEntry.aggregate({
       _sum: {
         points: true,
@@ -171,7 +197,7 @@ export class TeamRepository {
     });
   }
 
-  getTeamPointEntries(param: UniqueTeamParam) {
+  getTeamPointEntries(param: SimpleUniqueParam) {
     return this.prisma.pointEntry.findMany({
       where: {
         team: param,
@@ -179,11 +205,33 @@ export class TeamRepository {
     });
   }
 
-  createTeam(data: Prisma.TeamCreateInput) {
-    return this.prisma.team.create({ data });
+  getMarathon(team: SimpleUniqueParam) {
+    return this.prisma.team
+      .findUnique({
+        where: team,
+      })
+      .marathon();
   }
 
-  updateTeam(param: UniqueTeamParam, data: Prisma.TeamUpdateInput) {
+  createTeam(
+    data: {
+      name: string;
+      type: TeamType;
+      legacyStatus: TeamLegacyStatus;
+    },
+    marathon: UniqueMarathonParam
+  ) {
+    return this.prisma.team.create({
+      data: {
+        ...data,
+        marathon: {
+          connect: marathon,
+        },
+      },
+    });
+  }
+
+  updateTeam(param: SimpleUniqueParam, data: Prisma.TeamUpdateInput) {
     try {
       return this.prisma.team.update({ where: param, data });
     } catch (error) {
@@ -198,7 +246,7 @@ export class TeamRepository {
     }
   }
 
-  deleteTeam(param: UniqueTeamParam) {
+  deleteTeam(param: SimpleUniqueParam) {
     try {
       return this.prisma.team.delete({ where: param });
     } catch (error) {

@@ -1,69 +1,9 @@
-import type { Authorization, JwtPayload, UserData } from "@ukdanceblue/common";
-import {
-  AccessLevel,
-  AuthSource,
-  CommitteeRole,
-  DbRole,
-  defaultAuthorization,
-} from "@ukdanceblue/common";
-import type { Request } from "express";
+import type { JwtPayload, UserData } from "@ukdanceblue/common";
+import { AuthSource } from "@ukdanceblue/common";
 import jsonwebtoken from "jsonwebtoken";
+import type { Request } from "koa";
 
-import { jwtSecret } from "../../environment.js";
-
-/**
- * Compares an authorization object to a minimum authorization object
- * and returns true if the authorization object satisfies the minimum
- * authorization object (i.e. the authorization object has at least
- * the same authorization as the minimum authorization object)
- *
- * @param minAuth The minimum authorization object
- * @param auth The authorization object to compare to the minimum authorization object
- * @return True if the authorization object satisfies the minimum authorization object
- *        and false otherwise
- */
-export function isMinAuthSatisfied(
-  minAuth: Authorization,
-  auth: Authorization
-): boolean {
-  if (auth.accessLevel < minAuth.accessLevel) {
-    return false;
-  }
-  if (minAuth.committeeRole && auth.committeeRole !== minAuth.committeeRole) {
-    return false;
-  }
-  if (
-    minAuth.committeeIdentifier &&
-    auth.committeeIdentifier !== minAuth.committeeIdentifier
-  ) {
-    return false;
-  }
-  return true;
-}
-
-export const simpleAuthorizations: Record<AccessLevel, Authorization> = {
-  [AccessLevel.None]: defaultAuthorization,
-  [AccessLevel.Public]: {
-    dbRole: DbRole.Public,
-    accessLevel: AccessLevel.Public,
-  },
-  [AccessLevel.UKY]: {
-    dbRole: DbRole.UKY,
-    accessLevel: AccessLevel.UKY,
-  },
-  [AccessLevel.Committee]: {
-    dbRole: DbRole.Committee,
-    accessLevel: AccessLevel.Committee,
-  },
-  [AccessLevel.CommitteeChairOrCoordinator]: {
-    dbRole: DbRole.Committee,
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  },
-  [AccessLevel.Admin]: {
-    dbRole: DbRole.Committee,
-    accessLevel: AccessLevel.Admin,
-  },
-};
+import { jwtSecret } from "#environment";
 
 const jwtIssuer = "https://app.danceblue.org";
 
@@ -75,16 +15,7 @@ export function isValidJwtPayload(payload: unknown): payload is JwtPayload {
   if (typeof payload !== "object" || payload === null) {
     return false;
   }
-  const {
-    sub,
-    auth_source,
-    dbRole,
-    committee_role,
-    committee,
-    access_level,
-    team_ids,
-    captain_of_team_ids,
-  } = payload as Record<keyof JwtPayload, unknown>;
+  const { sub, auth_source } = payload as Record<keyof JwtPayload, unknown>;
   if (sub !== undefined && typeof sub !== "string") {
     return false;
   }
@@ -92,37 +23,6 @@ export function isValidJwtPayload(payload: unknown): payload is JwtPayload {
     ![...Object.values(AuthSource), "UkyLinkblue"].includes(
       auth_source as AuthSource
     )
-  ) {
-    return false;
-  }
-  if (
-    typeof dbRole !== "string" ||
-    !Object.values(DbRole).includes(dbRole as DbRole)
-  ) {
-    return false;
-  }
-  if (
-    committee_role !== undefined &&
-    (typeof committee_role !== "string" ||
-      !Object.values(CommitteeRole).includes(committee_role as CommitteeRole))
-  ) {
-    return false;
-  }
-  if (committee !== undefined && typeof committee !== "string") {
-    return false;
-  }
-  if (
-    typeof access_level !== "number" ||
-    !Object.values(AccessLevel).includes(access_level as AccessLevel)
-  ) {
-    return false;
-  }
-  if (team_ids !== undefined && !Array.isArray(team_ids)) {
-    return false;
-  }
-  if (
-    captain_of_team_ids !== undefined &&
-    !Array.isArray(captain_of_team_ids)
   ) {
     return false;
   }
@@ -143,24 +43,10 @@ export function makeUserJwt(user: UserData): string {
       (user.authSource as string) === "UkyLinkblue"
         ? AuthSource.LinkBlue
         : user.authSource,
-    dbRole: user.auth.dbRole,
-    access_level: user.auth.accessLevel,
   };
 
   if (user.userId) {
     payload.sub = user.userId;
-  }
-  if (user.auth.committeeRole) {
-    payload.committee_role = user.auth.committeeRole;
-  }
-  if (user.auth.committeeIdentifier) {
-    payload.committee = user.auth.committeeIdentifier;
-  }
-  if (user.teamIds) {
-    payload.team_ids = user.teamIds;
-  }
-  if (user.captainOfTeamIds) {
-    payload.captain_of_team_ids = user.captainOfTeamIds;
   }
 
   return jsonwebtoken.sign(payload, jwtSecret, {
@@ -188,37 +74,12 @@ export function parseUserJwt(token: string): UserData {
     throw new Error("Invalid JWT payload");
   }
 
-  if (
-    payload.auth_source === AuthSource.Anonymous &&
-    payload.access_level > AccessLevel.Public
-  ) {
-    throw new jsonwebtoken.JsonWebTokenError(
-      "Anonymous users cannot have access levels greater than public"
-    );
-  }
-
   const userData: UserData = {
-    auth: {
-      accessLevel: payload.access_level,
-      dbRole: payload.dbRole,
-    },
     authSource: payload.auth_source,
   };
 
   if (payload.sub) {
     userData.userId = payload.sub;
-  }
-  if (payload.committee_role) {
-    userData.auth.committeeRole = payload.committee_role;
-  }
-  if (payload.committee) {
-    userData.auth.committeeIdentifier = payload.committee;
-  }
-  if (payload.team_ids) {
-    userData.teamIds = payload.team_ids;
-  }
-  if (payload.captain_of_team_ids) {
-    userData.captainOfTeamIds = payload.captain_of_team_ids;
   }
 
   return userData;
@@ -236,7 +97,7 @@ export function tokenFromRequest(
   try {
     // Prefer cookie
     let jsonWebToken: string | undefined = undefined;
-    const cookies = req.cookies as unknown;
+    const cookies = req.ctx.cookies as unknown;
     if (
       typeof cookies === "object" &&
       cookies &&

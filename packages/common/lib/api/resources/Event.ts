@@ -1,16 +1,20 @@
-import { Interval } from "luxon";
 import { Field, ID, ObjectType } from "type-graphql";
 
-import { DateRangeScalar } from "../scalars/DateRangeScalar.js";
+import { Node, createNodeClasses } from "../relay.js";
+import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
+import { IntervalISO } from "../types/IntervalISO.js";
 
 import { Resource, TimestampedResource } from "./Resource.js";
 
-@ObjectType()
-export class EventResource extends TimestampedResource {
-  @Field(() => ID)
-  uuid!: string;
-  @Field(() => [EventOccurrenceResource])
-  occurrences!: EventOccurrenceResource[];
+@ObjectType({
+  implements: [Node],
+})
+export class EventNode extends TimestampedResource implements Node {
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
+  @Field(() => [EventOccurrenceNode])
+  occurrences!: EventOccurrenceNode[];
   @Field(() => String)
   title!: string;
   @Field(() => String, { nullable: true })
@@ -21,28 +25,52 @@ export class EventResource extends TimestampedResource {
   location!: string | null;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id.id;
   }
 
-  public static init(init: Partial<EventResource>) {
-    return EventResource.doInit(init);
+  public static init(init: {
+    id: string;
+    title: string;
+    summary?: string | null;
+    description?: string | null;
+    location?: string | null;
+    updatedAt?: Date | null;
+    createdAt?: Date | null;
+    occurrences: EventOccurrenceNode[];
+  }) {
+    return this.createInstance().withValues(init);
   }
 }
 
-@ObjectType()
-export class EventOccurrenceResource extends Resource {
+@ObjectType({
+  implements: [],
+})
+export class EventOccurrenceNode extends Resource {
   @Field(() => ID)
-  uuid!: string;
-  @Field(() => DateRangeScalar)
-  interval!: Interval;
+  id!: string;
+  @Field(() => IntervalISO)
+  interval!: IntervalISO;
   @Field(() => Boolean)
   fullDay!: boolean;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id;
   }
 
-  public static init(init: Partial<EventOccurrenceResource>) {
-    return EventOccurrenceResource.doInit(init);
+  public static init(init: {
+    id: string;
+    interval: IntervalISO;
+    fullDay: boolean;
+  }) {
+    const resource = this.createInstance();
+    resource.id = init.id;
+    resource.interval = init.interval;
+    resource.fullDay = init.fullDay;
+    return resource;
   }
 }
+
+export const { EventConnection, EventEdge, EventResult } = createNodeClasses(
+  EventNode,
+  "Event"
+);

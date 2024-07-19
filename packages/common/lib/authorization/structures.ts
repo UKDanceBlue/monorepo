@@ -1,5 +1,7 @@
 import { registerEnumType } from "type-graphql";
 
+import type { EffectiveCommitteeRole } from "../api/types/EffectiveCommitteeRole.js";
+
 export const AuthSource = {
   LinkBlue: "LinkBlue",
   Anonymous: "Anonymous",
@@ -28,7 +30,8 @@ export const AccessLevel = {
   UKY: 1,
   Committee: 3,
   CommitteeChairOrCoordinator: 3.5,
-  Admin: 4, // Tech committee
+  Admin: 4,
+  SuperAdmin: 5, // App & Web Coordinators and Tech chair - master override access
 } as const;
 export type AccessLevel = (typeof AccessLevel)[keyof typeof AccessLevel];
 
@@ -78,6 +81,9 @@ export function stringifyAccessLevel(val: unknown): string {
     }
     case AccessLevel.Admin: {
       return "Admin";
+    }
+    case AccessLevel.SuperAdmin: {
+      return "God Emperor of DanceBlue";
     }
   }
 }
@@ -230,6 +236,7 @@ export const CommitteeIdentifier = {
   corporateCommittee: "corporateCommittee",
   miniMarathonsCommittee: "miniMarathonsCommittee",
   viceCommittee: "viceCommittee",
+  overallCommittee: "overallCommittee",
 } as const;
 export type CommitteeIdentifier =
   (typeof CommitteeIdentifier)[keyof typeof CommitteeIdentifier];
@@ -257,12 +264,12 @@ export const committeeNames: Record<CommitteeIdentifier, string> = {
   corporateCommittee: "Corporate Committee",
   miniMarathonsCommittee: "Mini Marathons Committee",
   viceCommittee: "Vice Committee",
+  overallCommittee: "Overall Committee",
 };
 
 export interface Authorization {
   dbRole: DbRole;
-  committeeRole?: CommitteeRole;
-  committeeIdentifier?: string;
+  committees: EffectiveCommitteeRole[];
   accessLevel: AccessLevel;
 }
 
@@ -274,6 +281,7 @@ export interface Authorization {
 export const defaultAuthorization = {
   dbRole: DbRole.None,
   accessLevel: AccessLevel.None,
+  committees: [],
 } satisfies Authorization;
 
 // Registering the enum types with TypeGraphQL

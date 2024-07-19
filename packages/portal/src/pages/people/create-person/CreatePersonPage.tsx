@@ -1,11 +1,11 @@
 import { PersonCreator } from "@elements/forms/person/create/PersonCreator";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useQuery } from "urql";
 
 const createPersonPageDocument = graphql(/* GraphQL */ `
   query CreatePersonPage {
-    teams(sendAll: true, sortBy: ["name"], sortDirection: [ASCENDING]) {
+    teams(sendAll: true, sortBy: ["name"], sortDirection: [asc]) {
       data {
         ...TeamNameFragment
       }

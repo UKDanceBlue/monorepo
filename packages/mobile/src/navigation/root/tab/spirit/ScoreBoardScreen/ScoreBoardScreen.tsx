@@ -2,11 +2,11 @@ import Jumbotron from "@common/components/Jumbotron";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/dist/graphql-client-public";
+} from "@ukdanceblue/common/graphql-client-mobile";
 import { Box, CheckIcon, HStack, Select, Text, View } from "native-base";
 import { Pressable } from "native-base/src/components/primitives";
 import { useEffect, useMemo, useState } from "react";
@@ -32,8 +32,8 @@ function addOrdinal(num: number) {
 }
 
 const ScoreBoardFragment = graphql(/* GraphQL */ `
-  fragment ScoreBoardFragment on TeamResource {
-    uuid
+  fragment ScoreBoardFragment on TeamNode {
+    id
     name
     totalPoints
     legacyStatus
@@ -42,8 +42,8 @@ const ScoreBoardFragment = graphql(/* GraphQL */ `
 `);
 
 const HighlightedTeamFragment = graphql(/* GraphQL */ `
-  fragment HighlightedTeamFragment on TeamResource {
-    uuid
+  fragment HighlightedTeamFragment on TeamNode {
+    id
     name
     legacyStatus
     type
@@ -114,11 +114,11 @@ const ScoreBoardScreen = ({
     for (const team of filteredData) {
       newStandingData.push({
         name: team.name,
-        id: team.uuid,
+        id: team.id,
         points: team.totalPoints,
-        highlighted: team.uuid === userTeamData?.uuid,
+        highlighted: team.id === userTeamData?.id,
       });
-      if (team.uuid === userTeamData?.uuid) {
+      if (team.id === userTeamData?.id) {
         setUserTeamRank(newStandingData.length);
       }
     }
@@ -129,7 +129,7 @@ const ScoreBoardScreen = ({
   return (
     <View flex={1}>
       {mode === "spirit" ? (
-        userTeamData?.uuid == null ? (
+        userTeamData?.id == null ? (
           <Jumbotron
             title="You are not part of a team"
             subTitle=""
@@ -198,7 +198,7 @@ const ScoreBoardScreen = ({
         data={standingData}
         refreshing={loading}
         onRefresh={refresh}
-        onTeamClick={userTeamData?.uuid ? () => navigate("MyTeam") : undefined}
+        onTeamClick={userTeamData?.id ? () => navigate("MyTeam") : undefined}
       />
     </View>
   );

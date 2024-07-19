@@ -9,11 +9,11 @@ import {
   DbRole,
   committeeNames,
 } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/dist/graphql-client-public";
+} from "@ukdanceblue/common/graphql-client-mobile";
 import { openURL } from "expo-linking";
 import {
   Box,
@@ -31,17 +31,13 @@ import { ProfileFooter } from "./ProfileFooter";
 
 export const ProfileScreenAuthFragment = graphql(/* GraphQL */ `
   fragment ProfileScreenAuthFragment on LoginState {
-    role {
-      committeeIdentifier
-      committeeRole
-      dbRole
-    }
+    dbRole
     authSource
   }
 `);
 
 export const ProfileScreenUserFragment = graphql(/* GraphQL */ `
-  fragment ProfileScreenUserFragment on PersonResource {
+  fragment ProfileScreenUserFragment on PersonNode {
     name
     linkblue
     teams {
@@ -49,6 +45,10 @@ export const ProfileScreenUserFragment = graphql(/* GraphQL */ `
       team {
         name
       }
+    }
+    primaryCommittee {
+      identifier
+      role
     }
   }
 `);
@@ -94,23 +94,22 @@ const ProfileScreen = ({
   }
 
   const committeeString = useMemo(() => {
-    if (authData?.role.dbRole === DbRole.Committee) {
+    if (userData?.primaryCommittee) {
       if (
-        authData.role.committeeIdentifier ===
-          CommitteeIdentifier.viceCommittee &&
-        authData.role.committeeRole === CommitteeRole.Chair
+        // TODO: Add a way to query committee info
+        userData.primaryCommittee.identifier ===
+          CommitteeIdentifier.overallCommittee &&
+        userData.primaryCommittee.role === CommitteeRole.Chair
       ) {
         return "✨ Overall Chair ✨";
       }
       return `Committee: ${
-        authData.role.committeeIdentifier
-          ? committeeNames[authData.role.committeeIdentifier]
-          : "Unknown"
-      } ${authData.role.committeeRole}`;
+        committeeNames[userData.primaryCommittee.identifier]
+      } ${userData.primaryCommittee.role}`;
     } else {
       return null;
     }
-  }, [authData]);
+  }, [userData?.primaryCommittee]);
 
   if (loading) {
     return (
@@ -118,7 +117,7 @@ const ProfileScreen = ({
         <Spinner />
       </Center>
     );
-  } else if (authData?.role.dbRole !== DbRole.None) {
+  } else if (authData?.dbRole !== DbRole.None) {
     return (
       <>
         <JumbotronGeometric title={jumboText()} />

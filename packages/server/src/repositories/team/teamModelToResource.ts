@@ -1,20 +1,19 @@
-import type { Team } from "@prisma/client";
-import { TeamResource } from "@ukdanceblue/common";
+import type { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
+import { TeamNode } from "@ukdanceblue/common";
 
-const marathonYearRegex = /^DB\d{2}$/;
-
-export function teamModelToResource(teamModel: Team): TeamResource {
-  if (!marathonYearRegex.test(teamModel.marathonYear)) {
-    throw new Error(`Invalid marathon year: ${teamModel.marathonYear}`);
-  }
-
-  return TeamResource.init({
-    uuid: teamModel.uuid,
+export function teamModelToResource(teamModel: {
+  uuid: string;
+  name: string;
+  type: TeamType;
+  legacyStatus: TeamLegacyStatus;
+  createdAt: Date;
+  updatedAt: Date;
+}): TeamNode {
+  return TeamNode.init({
+    id: teamModel.uuid,
     name: teamModel.name,
-    persistentIdentifier: teamModel.persistentIdentifier,
     type: teamModel.type,
     legacyStatus: teamModel.legacyStatus,
-    marathonYear: teamModel.marathonYear as `DB${number}`,
     createdAt: teamModel.createdAt,
     updatedAt: teamModel.updatedAt,
   });

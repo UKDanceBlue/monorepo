@@ -1,13 +1,15 @@
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessLevel,
-  ConfigurationResource,
-  DateTimeScalar,
+  ConfigurationNode,
   DetailedError,
   ErrorCode,
+  GlobalIdScalar,
   SortDirection,
+  dateTimeFromSomething,
 } from "@ukdanceblue/common";
-import type { DateTime } from "luxon";
+import { DateTimeISOResolver } from "graphql-scalars";
 import {
   Arg,
   Field,
@@ -19,64 +21,63 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { auditLogger } from "../lib/logging/auditLogging.js";
-import { ConfigurationRepository } from "../repositories/configuration/ConfigurationRepository.js";
-import { configurationModelToResource } from "../repositories/configuration/configurationModelToResource.js";
-
+import { auditLogger } from "#logging/auditLogging.js";
+import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
+import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
 import {
   AbstractGraphQLArrayOkResponse,
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
-} from "./ApiResponse.js";
+} from "#resolvers/ApiResponse.js";
 
 @ObjectType("GetConfigurationByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<ConfigurationResource>,
+  implements: AbstractGraphQLOkResponse<ConfigurationNode>,
 })
-class GetConfigurationResponse extends AbstractGraphQLOkResponse<ConfigurationResource> {
-  @Field(() => ConfigurationResource)
-  data!: ConfigurationResource;
+class GetConfigurationResponse extends AbstractGraphQLOkResponse<ConfigurationNode> {
+  @Field(() => ConfigurationNode)
+  data!: ConfigurationNode;
 }
 @ObjectType("GetAllConfigurationsResponse", {
-  implements: AbstractGraphQLArrayOkResponse<ConfigurationResource>,
+  implements: AbstractGraphQLArrayOkResponse<ConfigurationNode>,
 })
-class GetAllConfigurationsResponse extends AbstractGraphQLArrayOkResponse<ConfigurationResource> {
-  @Field(() => [ConfigurationResource])
-  data!: ConfigurationResource[];
+class GetAllConfigurationsResponse extends AbstractGraphQLArrayOkResponse<ConfigurationNode> {
+  @Field(() => [ConfigurationNode])
+  data!: ConfigurationNode[];
 }
 @ObjectType("CreateConfigurationResponse", {
-  implements: AbstractGraphQLCreatedResponse<ConfigurationResource>,
+  implements: AbstractGraphQLCreatedResponse<ConfigurationNode>,
 })
-class CreateConfigurationResponse extends AbstractGraphQLCreatedResponse<ConfigurationResource> {
-  @Field(() => ConfigurationResource)
-  data!: ConfigurationResource;
+class CreateConfigurationResponse extends AbstractGraphQLCreatedResponse<ConfigurationNode> {
+  @Field(() => ConfigurationNode)
+  data!: ConfigurationNode;
 }
 @ObjectType("CreateConfigurationsResponse", {
-  implements: AbstractGraphQLCreatedResponse<ConfigurationResource>,
+  implements: AbstractGraphQLCreatedResponse<ConfigurationNode>,
 })
-class CreateConfigurationsResponse extends AbstractGraphQLArrayOkResponse<ConfigurationResource> {
-  @Field(() => [ConfigurationResource])
-  data!: ConfigurationResource[];
+class CreateConfigurationsResponse extends AbstractGraphQLArrayOkResponse<ConfigurationNode> {
+  @Field(() => [ConfigurationNode])
+  data!: ConfigurationNode[];
 }
 @ObjectType("DeleteConfigurationResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
 })
 class DeleteConfigurationResponse extends AbstractGraphQLOkResponse<never> {}
 @InputType()
-class CreateConfigurationInput implements Partial<ConfigurationResource> {
+class CreateConfigurationInput implements Partial<ConfigurationNode> {
   @Field()
   key!: string;
 
   @Field()
   value!: string;
 
-  @Field(() => DateTimeScalar, { nullable: true })
-  validAfter!: DateTime | null;
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  validAfter!: Date | null;
 
-  @Field(() => DateTimeScalar, { nullable: true })
-  validUntil!: DateTime | null;
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  validUntil!: Date | null;
 }
 
-@Resolver(() => ConfigurationResource)
+@Resolver(() => ConfigurationNode)
 @Service()
 export class ConfigurationResolver {
   constructor(
@@ -100,10 +101,27 @@ export class ConfigurationResolver {
     return GetConfigurationResponse.newOk(configurationModelToResource(row));
   }
 
+  @Query(() => GetConfigurationResponse, {
+    name: "configuration",
+  })
+  async getByUuid(
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<GetConfigurationResponse> {
+    const row = await this.configurationRepository.findConfigurationByUnique({
+      uuid: id,
+    });
+
+    if (row == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
+    }
+
+    return GetConfigurationResponse.newOk(configurationModelToResource(row));
+  }
+
   @Query(() => GetAllConfigurationsResponse, { name: "allConfigurations" })
   async getAll(): Promise<GetAllConfigurationsResponse> {
     const rows = await this.configurationRepository.findConfigurations(null, [
-      ["createdAt", SortDirection.DESCENDING],
+      ["createdAt", SortDirection.desc],
     ]);
 
     return GetAllConfigurationsResponse.newOk(
@@ -119,8 +137,8 @@ export class ConfigurationResolver {
     const row = await this.configurationRepository.createConfiguration({
       key: input.key,
       value: input.value,
-      validAfter: input.validAfter ?? null,
-      validUntil: input.validUntil ?? null,
+      validAfter: dateTimeFromSomething(input.validAfter ?? null),
+      validUntil: dateTimeFromSomething(input.validUntil ?? null),
     });
 
     auditLogger.dangerous("Configuration created", { configuration: row });
@@ -143,8 +161,8 @@ export class ConfigurationResolver {
         this.configurationRepository.createConfiguration({
           key: i.key,
           value: i.value,
-          validAfter: i.validAfter ?? null,
-          validUntil: i.validUntil ?? null,
+          validAfter: dateTimeFromSomething(i.validAfter ?? null),
+          validUntil: dateTimeFromSomething(i.validUntil ?? null),
         })
       )
     );
@@ -161,9 +179,9 @@ export class ConfigurationResolver {
   @AccessControl({ accessLevel: AccessLevel.Admin })
   @Mutation(() => DeleteConfigurationResponse, { name: "deleteConfiguration" })
   async delete(
-    @Arg("uuid") uuid: string
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<DeleteConfigurationResponse> {
-    const row = await this.configurationRepository.deleteConfiguration(uuid);
+    const row = await this.configurationRepository.deleteConfiguration(id);
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Configuration not found");

@@ -1,12 +1,12 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
+import type { ConfigurationFilters } from "./ConfigurationRepository.js";
 import {
   dateFilterToPrisma,
   stringFilterToPrisma,
-} from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import type { ConfigurationFilters } from "./ConfigurationRepository.js";
 
 export function buildConfigurationOrder(
   order: readonly [key: string, sort: SortDirection][] | null | undefined
@@ -21,7 +21,7 @@ export function buildConfigurationOrder(
       case "validUntil":
       case "createdAt":
       case "updatedAt": {
-        orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
+        orderBy[key] = sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
       default: {

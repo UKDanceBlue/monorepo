@@ -1,14 +1,14 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
+import type { TeamFilters, TeamOrderKeys } from "./TeamRepository.ts";
 import {
   dateFilterToPrisma,
   numericFilterToPrisma,
   oneOfFilterToPrisma,
   stringFilterToPrisma,
-} from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import type { TeamFilters, TeamOrderKeys } from "./TeamRepository.ts";
 
 export function buildTeamOrder(
   order: readonly [key: TeamOrderKeys, sort: SortDirection][] | null | undefined
@@ -19,13 +19,13 @@ export function buildTeamOrder(
     switch (key) {
       case "totalPoints":
       case "type":
-      case "marathonYear":
+      case "marathonId":
       case "legacyStatus":
       case "name":
       case "createdAt":
       case "updatedAt": {
         orderBy.push({
-          [key]: sort === SortDirection.ASCENDING ? "asc" : "desc",
+          [key]: sort === SortDirection.asc ? "asc" : "desc",
         });
         break;
       }
@@ -49,8 +49,13 @@ export function buildTeamWhere(
         where[filter.field] = dateFilterToPrisma(filter);
         break;
       }
+      case "marathonId": {
+        where["marathon"] = {
+          uuid: oneOfFilterToPrisma(filter),
+        };
+        break;
+      }
       case "type":
-      case "marathonYear":
       case "legacyStatus": {
         where[filter.field] = oneOfFilterToPrisma(filter);
         break;

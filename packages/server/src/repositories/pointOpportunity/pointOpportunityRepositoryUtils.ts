@@ -1,16 +1,16 @@
 import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
-import {
-  dateFilterToPrisma,
-  oneOfFilterToPrisma,
-  stringFilterToPrisma,
-} from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 import type {
   PointOpportunityFilters,
   PointOpportunityOrderKeys,
 } from "./PointOpportunityRepository.ts";
+import {
+  dateFilterToPrisma,
+  oneOfFilterToPrisma,
+  stringFilterToPrisma,
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
 
 export function buildPointOpportunityOrder(
   order:
@@ -27,7 +27,7 @@ export function buildPointOpportunityOrder(
       case "type":
       case "createdAt":
       case "updatedAt": {
-        orderBy[key] = sort === SortDirection.ASCENDING ? "asc" : "desc";
+        orderBy[key] = sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
       default: {

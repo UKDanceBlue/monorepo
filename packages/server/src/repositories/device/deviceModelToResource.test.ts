@@ -1,6 +1,5 @@
 import type { Device } from "@prisma/client";
-import { DeviceResource } from "@ukdanceblue/common";
-import { DateTime } from "luxon";
+import { DeviceNode } from "@ukdanceblue/common";
 import { describe, expect, it } from "vitest";
 
 import { deviceModelToResource } from "./deviceModelToResource.js";
@@ -20,12 +19,11 @@ describe("deviceModelToResource", () => {
 
     const resource = deviceModelToResource(deviceModel);
 
-    expect(resource).toBeInstanceOf(DeviceResource);
+    expect(resource).toBeInstanceOf(DeviceNode);
     expect(resource).toStrictEqual(
-      DeviceResource.init({
-        uuid: "uuid",
-        expoPushToken: "token",
-        lastLogin: DateTime.fromISO("2021-01-01T00:00:00Z"),
+      DeviceNode.init({
+        id: "uuid",
+        lastLogin: new Date("2021-01-01T00:00:00Z"),
         createdAt: new Date("2021-01-01T00:00:00Z"),
         updatedAt: new Date("2021-01-01T00:00:00Z"),
       })
@@ -47,9 +45,8 @@ describe("deviceModelToResource", () => {
     const resource = deviceModelToResource(deviceModel);
 
     expect(resource).toStrictEqual(
-      DeviceResource.init({
-        uuid: "uuid",
-        expoPushToken: "token",
+      DeviceNode.init({
+        id: "uuid",
         lastLogin: null,
         createdAt: new Date("2021-01-01T00:00:00Z"),
         updatedAt: new Date("2021-01-01T00:00:00Z"),

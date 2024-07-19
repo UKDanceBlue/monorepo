@@ -1,29 +1,49 @@
 import { DateTimeISOResolver } from "graphql-scalars";
-import { Field, ID, ObjectType } from "type-graphql";
+import type { DateTime } from "luxon";
+import { Field, ObjectType } from "type-graphql";
+
+import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
+import { Node, createNodeClasses } from "../relay.js";
+import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
 import { TimestampedResource } from "./Resource.js";
-
-@ObjectType()
-export class MarathonResource extends TimestampedResource {
-  @Field(() => ID)
-  uuid!: string;
+@ObjectType({
+  implements: [Node],
+})
+export class MarathonNode extends TimestampedResource implements Node {
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
   @Field(() => String)
   year!: string;
-  @Field(() => DateTimeISOResolver)
-  startDate!: string;
-  @Field(() => DateTimeISOResolver)
-  endDate!: string;
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  startDate?: Date | undefined | null;
+  get startDateDateTime(): DateTime | null {
+    return dateTimeFromSomething(this.startDate) ?? null;
+  }
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  endDate?: Date | undefined | null;
+  get endDateDateTime(): DateTime | null {
+    return dateTimeFromSomething(this.endDate) ?? null;
+  }
 
   static init({
-    uuid,
+    id: id,
     year,
     startDate,
     endDate,
     createdAt,
     updatedAt,
-  }: Omit<MarathonResource, "getUniqueId">): MarathonResource {
-    return this.doInit({
-      uuid,
+  }: {
+    id: string;
+    year: string;
+    startDate?: Date | null;
+    endDate?: Date | null;
+    createdAt?: Date | null;
+    updatedAt?: Date | null;
+  }): MarathonNode {
+    return this.createInstance().withValues({
+      id,
       year,
       startDate,
       endDate,
@@ -33,6 +53,9 @@ export class MarathonResource extends TimestampedResource {
   }
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id.id;
   }
 }
+
+export const { MarathonConnection, MarathonEdge, MarathonResult } =
+  createNodeClasses(MarathonNode, "Marathon");

@@ -4,12 +4,12 @@ import type { ExpoPushReceipt, ExpoPushTicket } from "expo-server-sdk";
 import type { DateTime } from "luxon";
 import { Service } from "typedi";
 
-import type { FilterItems } from "../../lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 import {
   buildNotificationDeliveryOrder,
   buildNotificationDeliveryWhere,
 } from "./notificationDeliveryRepositoryUtils.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
 
 const notificationDeliveryBooleanKeys = [] as const;
 type NotificationDeliveryBooleanKey =

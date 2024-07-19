@@ -6,14 +6,14 @@ import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { Editable, useEditor } from "@wysimark/react";
 import { Button, Input } from "antd";
 import type { DateTime } from "luxon";
 import { useMutation, useQuery } from "urql";
 
 const editMarathonHourDataDocument = graphql(/* GraphQL */ `
-  query EditMarathonHourData($marathonHourUuid: String!) {
+  query EditMarathonHourData($marathonHourUuid: GlobalId!) {
     marathonHour(uuid: $marathonHourUuid) {
       details
       durationInfo
@@ -24,9 +24,9 @@ const editMarathonHourDataDocument = graphql(/* GraphQL */ `
 `);
 
 const editMarathonHourDocument = graphql(/* GraphQL */ `
-  mutation EditMarathonHour($input: SetMarathonHourInput!, $uuid: String!) {
+  mutation EditMarathonHour($input: SetMarathonHourInput!, $uuid: GlobalId!) {
     setMarathonHour(input: $input, uuid: $uuid) {
-      uuid
+      id
     }
   }
 `);

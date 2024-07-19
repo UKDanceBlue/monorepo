@@ -1,13 +1,13 @@
-import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/dist/graphql-client-public";
+} from "@ukdanceblue/common/graphql-client-mobile";
 import { Image, type ImageProps } from "expo-image";
 
 export const ImageViewFragment = graphql(/* GraphQL */ `
-  fragment ImageViewFragment on ImageResource {
-    uuid
+  fragment ImageViewFragment on ImageNode {
+    id
     url
     thumbHash
     alt

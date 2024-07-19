@@ -1,22 +1,22 @@
 import { Link } from "@tanstack/react-router";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/graphql-client-admin";
+} from "@ukdanceblue/common/graphql-client-portal";
 import { Descriptions, Empty, Flex } from "antd";
 import { DateTime } from "luxon";
 import { useMemo } from "react";
 
 export const MarathonViewerFragment = graphql(/* GraphQL */ `
-  fragment MarathonViewerFragment on MarathonResource {
-    uuid
+  fragment MarathonViewerFragment on MarathonNode {
+    id
     year
     startDate
     endDate
     hours {
-      uuid
+      id
       shownStartingAt
       title
     }
@@ -46,12 +46,12 @@ export const MarathonViewer = ({
       <Descriptions title="Marathon" bordered>
         <Descriptions.Item label="Year">{marathonData.year}</Descriptions.Item>
         <Descriptions.Item label="Start Date">
-          {dateTimeFromSomething(marathonData.startDate).toLocaleString(
+          {dateTimeFromSomething(marathonData.startDate)?.toLocaleString(
             DateTime.DATETIME_MED
           )}
         </Descriptions.Item>
         <Descriptions.Item label="End Date">
-          {dateTimeFromSomething(marathonData.endDate).toLocaleString(
+          {dateTimeFromSomething(marathonData.endDate)?.toLocaleString(
             DateTime.DATETIME_MED
           )}
         </Descriptions.Item>
@@ -62,7 +62,7 @@ export const MarathonViewer = ({
             <span>Hours</span>
             <Link
               to="/marathon/$marathonId/hours/add"
-              params={{ marathonId: marathonData.uuid }}
+              params={{ marathonId: marathonData.id }}
             >
               Add
             </Link>
@@ -72,12 +72,12 @@ export const MarathonViewer = ({
       >
         {sortedHours.map((hour) => (
           <Descriptions.Item
-            key={hour.uuid}
+            key={hour.id}
             label={hour.shownStartingAt.toLocaleString(DateTime.DATETIME_MED)}
           >
             <Link
               to="/marathon/$marathonId/hours/$hourId"
-              params={{ marathonId: marathonData.uuid, hourId: hour.uuid }}
+              params={{ marathonId: marathonData.id, hourId: hour.id }}
             >
               {hour.title}
             </Link>

@@ -46,6 +46,8 @@ import {
 } from "./personRouter";
 import { rootRoute } from "./rootRoute";
 import {
+  ViewTeamFundraisingRoute,
+  ViewTeamPointsRoute,
   createTeamRoute,
   editTeamRoute,
   singleTeamRoute,
@@ -63,7 +65,13 @@ const routeTree = rootRoute.addChildren([
   teamsRoute.addChildren([
     teamsTableRoute,
     createTeamRoute,
-    singleTeamRoute.addChildren([editTeamRoute, viewTeamRoute]),
+    singleTeamRoute.addChildren([
+      editTeamRoute,
+      viewTeamRoute.addChildren([
+        ViewTeamFundraisingRoute,
+        ViewTeamPointsRoute,
+      ]),
+    ]),
   ]),
   peopleRoute.addChildren([
     peopleTableRoute,

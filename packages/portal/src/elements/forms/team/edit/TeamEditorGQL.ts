@@ -1,18 +1,20 @@
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 
 export const TeamEditorFragment = graphql(/* GraphQL */ `
-  fragment TeamEditorFragment on TeamResource {
-    uuid
+  fragment TeamEditorFragment on TeamNode {
+    id
     name
-    marathonYear
+    marathon {
+      id
+      year
+    }
     legacyStatus
-    persistentIdentifier
     type
   }
 `);
 
 export const teamEditorDocument = graphql(/* GraphQL */ `
-  mutation TeamEditor($uuid: String!, $input: SetTeamInput!) {
+  mutation TeamEditor($uuid: GlobalId!, $input: SetTeamInput!) {
     setTeam(uuid: $uuid, input: $input) {
       ok
     }

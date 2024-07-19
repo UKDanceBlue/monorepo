@@ -1,11 +1,11 @@
 import type { PointEntry } from "@prisma/client";
-import { PointEntryResource } from "@ukdanceblue/common";
+import { PointEntryNode } from "@ukdanceblue/common";
 
 export function pointEntryModelToResource(
   pointEntryModel: PointEntry
-): PointEntryResource {
-  return PointEntryResource.init({
-    uuid: pointEntryModel.uuid,
+): PointEntryNode {
+  return PointEntryNode.init({
+    id: pointEntryModel.uuid,
     points: pointEntryModel.points,
     comment: pointEntryModel.comment,
     createdAt: pointEntryModel.createdAt,

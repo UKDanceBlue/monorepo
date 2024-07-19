@@ -1,7 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
-import { CommitteeRole, committeeNames } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-admin";
-import { getFragmentData } from "@ukdanceblue/common/graphql-client-admin";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
+import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
 import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
 import type { BaseOptionType } from "antd/es/select";
 import { useMemo, useState } from "react";
@@ -22,10 +21,10 @@ export function PersonCreator({
   const { message } = App.useApp();
 
   const { formApi } = usePersonCreatorForm((ret) => {
-    if (ret?.uuid) {
+    if (ret?.id) {
       navigate({
         to: "/people/$personId/",
-        params: { personId: ret.uuid },
+        params: { personId: ret.id },
       }).catch((error: unknown) => console.error(error));
     }
   });
@@ -49,13 +48,13 @@ export function PersonCreator({
     for (const team of teamNamesData ?? []) {
       captaincyOptions.push({
         label: team.name,
-        value: team.uuid,
-        disabled: formMemberOf.includes(team.uuid),
+        value: team.id,
+        disabled: formMemberOf.includes(team.id),
       });
       membershipOptions.push({
         label: team.name,
-        value: team.uuid,
-        disabled: formCaptainOf.includes(team.uuid),
+        value: team.id,
+        disabled: formCaptainOf.includes(team.id),
       });
     }
     return { captaincyOptions, membershipOptions };
@@ -171,7 +170,7 @@ export function PersonCreator({
               </Form.Item>
             )}
           />
-          <formApi.Field
+          {/* <formApi.Field
             name="role.committeeRole"
             children={(field) => (
               <Form.Item
@@ -234,7 +233,7 @@ export function PersonCreator({
                 />
               </Form.Item>
             )}
-          />
+          /> */}
           <p>
             Note: If someone is captain of a team that also means they are a
             member of that team, so you don't need to select both.

@@ -1,11 +1,11 @@
 import type { StandingType } from "@common-types/StandingType";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { MembershipPositionType } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import {
   getFragmentData,
   graphql,
-} from "@ukdanceblue/common/dist/graphql-client-public";
+} from "@ukdanceblue/common/graphql-client-mobile";
 import { Center, Text } from "native-base";
 import { useEffect, useState } from "react";
 import { useWindowDimensions } from "react-native";
@@ -13,13 +13,13 @@ import { useWindowDimensions } from "react-native";
 import TeamInformation from "./TeamInformation";
 
 export const MyTeamFragment = graphql(/* GraphQL */ `
-  fragment MyTeamFragment on TeamResource {
-    uuid
+  fragment MyTeamFragment on TeamNode {
+    id
     name
     totalPoints
     pointEntries {
       personFrom {
-        uuid
+        id
         name
         linkblue
       }
@@ -58,7 +58,7 @@ const TeamScreen = ({
       const entriesRecord = new Map<string, StandingType>();
       for (const entry of team.pointEntries) {
         const { personFrom, points } = entry;
-        const { uuid, name, linkblue } = personFrom ?? {};
+        const { id: uuid, name, linkblue } = personFrom ?? {};
         if (uuid) {
           const existing = entriesRecord.get(uuid);
           if (existing == null) {

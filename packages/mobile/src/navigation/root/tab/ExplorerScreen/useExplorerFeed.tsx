@@ -2,7 +2,7 @@ import { API_BASE_URL } from "@common/apiUrl";
 import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
+import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
 import type { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FeedItem } from "react-native-rss-parser";
@@ -12,7 +12,7 @@ import { useQuery } from "urql";
 const serverFeedDocument = graphql(/* GraphQL */ `
   query ServerFeed {
     feed(limit: 20) {
-      uuid
+      id
       title
       createdAt
       textContent
@@ -68,7 +68,7 @@ export function useExplorerFeed(): {
 
     if (serverFeedResult.data) {
       for (const {
-        uuid,
+        id,
         title,
         textContent,
         createdAt,
@@ -94,7 +94,7 @@ export function useExplorerFeed(): {
         }
 
         parsedFeed.push({
-          uuid,
+          uuid: id,
           title,
           textContent: textContent ?? undefined,
           sortByDate: dateTimeFromSomething(createdAt),

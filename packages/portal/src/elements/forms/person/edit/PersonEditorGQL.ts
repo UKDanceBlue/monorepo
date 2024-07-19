@@ -1,19 +1,15 @@
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 
 export const PersonEditorFragment = graphql(/* GraphQL */ `
-  fragment PersonEditorFragment on PersonResource {
-    uuid
+  fragment PersonEditorFragment on PersonNode {
+    id
     name
     linkblue
     email
-    role {
-      committeeRole
-      committeeIdentifier
-    }
     teams {
       position
       team {
-        uuid
+        id
         name
       }
     }
@@ -21,9 +17,9 @@ export const PersonEditorFragment = graphql(/* GraphQL */ `
 `);
 
 export const personEditorDocument = graphql(/* GraphQL */ `
-  mutation PersonEditor($uuid: String!, $input: SetPersonInput!) {
+  mutation PersonEditor($uuid: GlobalId!, $input: SetPersonInput!) {
     setPerson(uuid: $uuid, input: $input) {
-      ok
+      id
     }
   }
 `);

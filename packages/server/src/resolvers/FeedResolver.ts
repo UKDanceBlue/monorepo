@@ -1,8 +1,8 @@
 import {
   DetailedError,
   ErrorCode,
-  FeedResource,
-  ImageResource,
+  FeedNode,
+  ImageNode,
 } from "@ukdanceblue/common";
 import {
   Arg,
@@ -17,10 +17,10 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { FileManager } from "../lib/files/FileManager.js";
-import { feedItemModelToResource } from "../repositories/feed/feedModelToResource.js";
-import { FeedRepository } from "../repositories/feed/feedRepository.js";
-import { imageModelToResource } from "../repositories/image/imageModelToResource.js";
+import { FileManager } from "#files/FileManager.js";
+import { FeedRepository } from "#repositories/feed/FeedRepository.js";
+import { feedItemModelToResource } from "#repositories/feed/feedModelToResource.js";
+import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
 @InputType()
 export class CreateFeedInput {
@@ -40,7 +40,7 @@ export class SetFeedInput {
   textContent?: string | null | undefined;
 }
 
-@Resolver(() => FeedResource)
+@Resolver(() => FeedNode)
 @Service()
 export class FeedResolver {
   constructor(
@@ -48,19 +48,19 @@ export class FeedResolver {
     private readonly fileManager: FileManager
   ) {}
 
-  @Query(() => [FeedResource])
+  @Query(() => [FeedNode])
   async feed(
     @Arg("limit", () => Int, { defaultValue: 10, nullable: true })
     limit: number | null
-  ): Promise<FeedResource[]> {
+  ): Promise<FeedNode[]> {
     const rows = await this.feedRepository.getCompleteFeed({ limit });
     return rows.map(feedItemModelToResource);
   }
 
-  @Mutation(() => FeedResource)
+  @Mutation(() => FeedNode)
   async createFeedItem(
     @Arg("input") input: CreateFeedInput
-  ): Promise<FeedResource> {
+  ): Promise<FeedNode> {
     const feedItem = await this.feedRepository.createFeedItem({
       title: input.title,
       textContent: input.textContent,
@@ -69,11 +69,11 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @Mutation(() => FeedResource)
+  @Mutation(() => FeedNode)
   async attachImageToFeedItem(
     @Arg("feedItemUuid") feedItemUuid: string,
     @Arg("imageUuid") imageUuid: string
-  ): Promise<FeedResource> {
+  ): Promise<FeedNode> {
     const feedItem = await this.feedRepository.attachImageToFeedItem(
       {
         uuid: feedItemUuid,
@@ -88,10 +88,10 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @Mutation(() => FeedResource)
+  @Mutation(() => FeedNode)
   async removeImageFromFeedItem(
     @Arg("feedItemUuid") feedItemUuid: string
-  ): Promise<FeedResource> {
+  ): Promise<FeedNode> {
     const feedItem = await this.feedRepository.removeImageFromFeedItem({
       uuid: feedItemUuid,
     });
@@ -101,11 +101,11 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @Mutation(() => FeedResource)
+  @Mutation(() => FeedNode)
   async setFeedItem(
     @Arg("feedItemUuid") feedItemUuid: string,
     @Arg("input") input: SetFeedInput
-  ): Promise<FeedResource> {
+  ): Promise<FeedNode> {
     const feedItem = await this.feedRepository.updateFeedItem(
       { uuid: feedItemUuid },
       {
@@ -129,9 +129,9 @@ export class FeedResolver {
     return feedItem != null;
   }
 
-  @FieldResolver(() => ImageResource, { nullable: true })
-  async image(@Root() { uuid }: FeedResource) {
-    const row = await this.feedRepository.getFeedItemImage({ uuid });
+  @FieldResolver(() => ImageNode, { nullable: true })
+  async image(@Root() { id: { id } }: FeedNode) {
+    const row = await this.feedRepository.getFeedItemImage({ uuid: id });
     if (row == null) {
       return null;
     }

@@ -1,8 +1,9 @@
 import { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
-import type { FragmentType } from "@ukdanceblue/common/dist/graphql-client-public";
-import { getFragmentData } from "@ukdanceblue/common/dist/graphql-client-public";
+import { intervalFromSomething } from "@ukdanceblue/common";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
+import { getFragmentData } from "@ukdanceblue/common/graphql-client-mobile";
 import { Platform } from "expo-modules-core";
-import { DateTime, Interval } from "luxon";
+import { DateTime } from "luxon";
 import { Box, Column, Heading, Row } from "native-base";
 import type { MutableRefObject } from "react";
 import { useCallback, useMemo } from "react";
@@ -13,7 +14,7 @@ import EventRow from "./EventRow";
 import { RNCAL_DATE_FORMAT } from "./constants";
 
 export const EventListRenderItem = ({
-  item: [event, occurrenceUuid],
+  item: [event, occurrenceId],
   index,
   dayIndexesRef,
   tryToNavigate,
@@ -37,16 +38,16 @@ export const EventListRenderItem = ({
 
   const occurrence = useMemo(() => {
     const occurrence = eventData.occurrences.find(
-      (occurrence) => occurrence.uuid === occurrenceUuid
+      (occurrence) => occurrence.id === occurrenceId
     );
     if (!occurrence) {
       return undefined;
     }
     return {
       ...occurrence,
-      interval: Interval.fromISO(occurrence.interval),
+      interval: intervalFromSomething(occurrence.interval),
     };
-  }, [occurrenceUuid, eventData.occurrences]);
+  }, [occurrenceId, eventData.occurrences]);
 
   const eventDate = useMemo(() => {
     return occurrence?.interval.start?.toFormat(RNCAL_DATE_FORMAT);
@@ -59,8 +60,8 @@ export const EventListRenderItem = ({
   }
 
   const onPress = useCallback(() => {
-    tryToNavigate(event, occurrenceUuid);
-  }, [event, occurrenceUuid, tryToNavigate]);
+    tryToNavigate(event, occurrenceId);
+  }, [event, occurrenceId, tryToNavigate]);
 
   return useMemo(
     () => (
@@ -110,7 +111,7 @@ export const EventListRenderItem = ({
             }
           >
             <EventRow
-              key={`${eventData.uuid}:${occurrenceUuid}`}
+              key={`${eventData.id}:${occurrenceId}`}
               title={eventData.title}
               interval={occurrence?.interval}
               location={eventData.location ?? undefined}
@@ -123,12 +124,12 @@ export const EventListRenderItem = ({
       dayIndexesRef,
       eventData.location,
       eventData.title,
-      eventData.uuid,
+      eventData.id,
       eventDate,
       index,
       now,
       occurrence?.interval,
-      occurrenceUuid,
+      occurrenceId,
       onPress,
     ]
   );

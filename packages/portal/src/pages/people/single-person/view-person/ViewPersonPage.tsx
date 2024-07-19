@@ -1,15 +1,13 @@
 import { PersonViewer } from "@elements/viewers/person/PersonViewer";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useParams } from "@tanstack/react-router";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useQuery } from "urql";
 
 const viewPersonPageDocument = graphql(/* GraphQL */ `
-  query ViewPersonPage($uuid: String!) {
+  query ViewPersonPage($uuid: GlobalId!) {
     person(uuid: $uuid) {
-      data {
-        ...PersonViewerFragment
-      }
+      ...PersonViewerFragment
     }
   }
 `);
@@ -30,7 +28,7 @@ export function ViewPersonPage() {
 
   return (
     <div>
-      <PersonViewer personFragment={data?.person.data} />
+      <PersonViewer personFragment={data?.person} />
     </div>
   );
 }

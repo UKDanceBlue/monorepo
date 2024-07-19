@@ -1,6 +1,6 @@
 import { Logger } from "@common/logger/Logger";
-import { AuthSource, RoleResource, defaultRole } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/dist/graphql-client-public";
+import { AuthSource } from "@ukdanceblue/common";
+import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect } from "react";
 import { useQuery } from "urql";
@@ -8,7 +8,6 @@ import { useQuery } from "urql";
 export interface AuthState {
   personUuid: string | null;
   loggedIn: boolean;
-  role: RoleResource;
   authSource: AuthSource;
 
   ready: boolean;
@@ -17,7 +16,6 @@ export interface AuthState {
 const authStateContext = createContext<AuthState>({
   personUuid: null,
   loggedIn: false,
-  role: defaultRole,
   authSource: AuthSource.None,
 
   ready: false,
@@ -26,16 +24,10 @@ const authStateContext = createContext<AuthState>({
 const authStateDocument = graphql(/* GraphQL */ `
   query AuthState {
     me {
-      data {
-        uuid
-      }
+      id
     }
     loginState {
-      role {
-        dbRole
-        committeeIdentifier
-        committeeRole
-      }
+      dbRole
       loggedIn
       authSource
     }
@@ -59,8 +51,8 @@ export function AuthStateProvider({ children }: { children: ReactNode }) {
         context: {
           loggedIn: data?.loginState.loggedIn,
           authSource: data?.loginState.authSource,
-          role: data?.loginState.role,
-          userUuid: data?.me.data?.uuid,
+          role: data?.loginState.dbRole,
+          userUuid: data?.me?.id,
         },
         tags: ["graphql"],
       });
@@ -70,11 +62,8 @@ export function AuthStateProvider({ children }: { children: ReactNode }) {
   return (
     <authStateContext.Provider
       value={{
-        personUuid: data?.me.data?.uuid ?? null,
+        personUuid: data?.me?.id ?? null,
         loggedIn: data?.loginState.loggedIn ?? false,
-        role: data?.loginState.role
-          ? RoleResource.init(data.loginState.role)
-          : defaultRole,
         authSource: data?.loginState.authSource ?? AuthSource.None,
 
         ready: !fetching && !error,

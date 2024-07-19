@@ -1,17 +1,15 @@
 import { PersonEditor } from "@elements/forms/person/edit/PersonEditor";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useParams } from "@tanstack/react-router";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useQuery } from "urql";
 
 const viewPersonPageDocument = graphql(/* GraphQL */ `
-  query EditPersonPage($uuid: String!) {
+  query EditPersonPage($uuid: GlobalId!) {
     person(uuid: $uuid) {
-      data {
-        ...PersonEditorFragment
-      }
+      ...PersonEditorFragment
     }
-    teams(sendAll: true, sortBy: ["name"], sortDirection: [ASCENDING]) {
+    teams(sendAll: true, sortBy: ["name"], sortDirection: [asc]) {
       data {
         ...TeamNameFragment
       }
@@ -36,7 +34,7 @@ export function EditPersonPage() {
   return (
     <div>
       <PersonEditor
-        personFragment={data?.person.data}
+        personFragment={data?.person}
         teamNamesFragment={data?.teams.data}
         refetchPerson={refetchPerson}
       />

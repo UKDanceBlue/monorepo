@@ -1,7 +1,4 @@
-import type {
-  MarathonYearString,
-  OptionalToNullable,
-} from "@ukdanceblue/common";
+import type { GlobalId, OptionalToNullable } from "@ukdanceblue/common";
 import * as Common from "@ukdanceblue/common";
 import {
   AccessControl,
@@ -12,13 +9,15 @@ import {
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
-  MembershipResource,
-  PointEntryResource,
+  GlobalIdScalar,
+  MembershipNode,
+  PointEntryNode,
   SortDirection,
   TeamLegacyStatus,
-  TeamResource,
+  TeamNode,
   TeamType,
 } from "@ukdanceblue/common";
+import { VoidResolver } from "graphql-scalars";
 import {
   Arg,
   Args,
@@ -36,38 +35,47 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { membershipModelToResource } from "../repositories/membership/membershipModelToResource.js";
-import { pointEntryModelToResource } from "../repositories/pointEntry/pointEntryModelToResource.js";
-import { TeamRepository } from "../repositories/team/TeamRepository.js";
-import { teamModelToResource } from "../repositories/team/teamModelToResource.js";
-
+import { CatchableConcreteError } from "#lib/formatError.js";
+import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
+import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
+import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
+import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
+import { membershipModelToResource } from "#repositories/membership/membershipModelToResource.js";
+import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
+import { TeamRepository } from "#repositories/team/TeamRepository.js";
+import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
-import * as Context from "./context.js";
+} from "#resolvers/ApiResponse.js";
+import {
+  ListFundraisingEntriesArgs,
+  ListFundraisingEntriesResponse,
+  globalFundraisingAccessParam,
+} from "#resolvers/FundraisingEntryResolver.js";
+import * as Context from "#resolvers/context.js";
 
 @ObjectType("SingleTeamResponse", {
-  implements: AbstractGraphQLOkResponse<TeamResource>,
+  implements: AbstractGraphQLOkResponse<TeamNode>,
 })
-class SingleTeamResponse extends AbstractGraphQLOkResponse<TeamResource> {
-  @Field(() => TeamResource)
-  data!: TeamResource;
+class SingleTeamResponse extends AbstractGraphQLOkResponse<TeamNode> {
+  @Field(() => TeamNode)
+  data!: TeamNode;
 }
 @ObjectType("ListTeamsResponse", {
-  implements: AbstractGraphQLPaginatedResponse<TeamResource>,
+  implements: AbstractGraphQLPaginatedResponse<TeamNode>,
 })
-class ListTeamsResponse extends AbstractGraphQLPaginatedResponse<TeamResource> {
-  @Field(() => [TeamResource])
-  data!: TeamResource[];
+class ListTeamsResponse extends AbstractGraphQLPaginatedResponse<TeamNode> {
+  @Field(() => [TeamNode])
+  data!: TeamNode[];
 }
 @ObjectType("CreateTeamResponse", {
-  implements: AbstractGraphQLCreatedResponse<TeamResource>,
+  implements: AbstractGraphQLCreatedResponse<TeamNode>,
 })
-class CreateTeamResponse extends AbstractGraphQLCreatedResponse<TeamResource> {
-  @Field(() => TeamResource)
-  data!: TeamResource;
+class CreateTeamResponse extends AbstractGraphQLCreatedResponse<TeamNode> {
+  @Field(() => TeamNode)
+  data!: TeamNode;
 }
 @ObjectType("DeleteTeamResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,
@@ -75,7 +83,7 @@ class CreateTeamResponse extends AbstractGraphQLCreatedResponse<TeamResource> {
 class DeleteTeamResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
-class CreateTeamInput implements OptionalToNullable<Partial<TeamResource>> {
+class CreateTeamInput implements OptionalToNullable<Partial<TeamNode>> {
   @Field(() => String)
   name!: string;
 
@@ -84,16 +92,10 @@ class CreateTeamInput implements OptionalToNullable<Partial<TeamResource>> {
 
   @Field(() => TeamLegacyStatus)
   legacyStatus!: TeamLegacyStatus;
-
-  @Field(() => String)
-  marathonYear!: Common.MarathonYearString;
-
-  @Field(() => String, { nullable: true })
-  persistentIdentifier!: string | null;
 }
 
 @InputType()
-class SetTeamInput implements OptionalToNullable<Partial<TeamResource>> {
+class SetTeamInput implements OptionalToNullable<Partial<TeamNode>> {
   @Field(() => String, { nullable: true })
   name!: string | null;
 
@@ -104,25 +106,22 @@ class SetTeamInput implements OptionalToNullable<Partial<TeamResource>> {
   legacyStatus!: TeamLegacyStatus | null;
 
   @Field(() => String, { nullable: true })
-  marathonYear!: MarathonYearString | null;
-
-  @Field(() => String, { nullable: true })
   persistentIdentifier!: string | null;
 }
 
 @ArgsType()
 class ListTeamsArgs extends FilteredListQueryArgs<
-  "name" | "type" | "legacyStatus" | "marathonYear",
+  "name" | "type" | "legacyStatus" | "marathonId",
   "name",
-  "type" | "legacyStatus" | "marathonYear",
+  "type" | "legacyStatus" | "marathonId",
   never,
   never,
   never
 >("TeamResolver", {
-  all: ["name", "type", "legacyStatus", "marathonYear"],
+  all: ["name", "type", "legacyStatus", "marathonId"],
   string: ["name"],
   numeric: [],
-  oneOf: ["type", "marathonYear", "legacyStatus"],
+  oneOf: ["type", "marathonId", "legacyStatus"],
 }) {
   @Field(() => [TeamType], { nullable: true })
   type!: [TeamType] | null;
@@ -134,18 +133,33 @@ class ListTeamsArgs extends FilteredListQueryArgs<
   visibility!: [DbRole] | null;
 
   @Field(() => [String], { nullable: true })
-  marathonYear!: [MarathonYearString] | null;
+  marathonId!: string[] | null;
 }
 
-@Resolver(() => TeamResource)
+@ObjectType("DbFundsTeamInfo", { implements: [Common.Node] })
+class DbFundsTeamInfo {
+  @Field(() => Int)
+  dbNum!: number;
+
+  @Field(() => String)
+  name!: string;
+}
+
+@Resolver(() => TeamNode)
 @Service()
 export class TeamResolver {
-  constructor(private teamRepository: TeamRepository) {}
+  constructor(
+    private teamRepository: TeamRepository,
+    private fundraisingEntryRepository: FundraisingEntryRepository,
+    private dbFundsRepository: DBFundsRepository
+  ) {}
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
   @Query(() => SingleTeamResponse, { name: "team" })
-  async getByUuid(@Arg("uuid") uuid: string): Promise<SingleTeamResponse> {
-    const row = await this.teamRepository.findTeamByUnique({ uuid });
+  async getByUuid(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<SingleTeamResponse> {
+    const row = await this.teamRepository.findTeamByUnique({ uuid: id });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Team not found");
@@ -166,7 +180,7 @@ export class TeamResolver {
         order:
           query.sortBy?.map((key, i) => [
             key,
-            query.sortDirection?.[i] ?? SortDirection.DESCENDING,
+            query.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
           query.page != null && query.pageSize != null
@@ -175,14 +189,14 @@ export class TeamResolver {
         take: query.pageSize,
         onlyDemo: ctx.userData.authSource === AuthSource.Demo,
         legacyStatus: query.legacyStatus,
-        marathonYear: query.marathonYear,
+        marathon: query.marathonId?.map((marathonId) => ({ uuid: marathonId })),
         type: query.type,
       }),
       this.teamRepository.countTeams({
         filters: query.filters,
         onlyDemo: ctx.userData.authSource === AuthSource.Demo,
         legacyStatus: query.legacyStatus,
-        marathonYear: query.marathonYear,
+        marathon: query.marathonId?.map((marathonId) => ({ uuid: marathonId })),
         type: query.type,
       }),
     ]);
@@ -190,12 +204,9 @@ export class TeamResolver {
     return ListTeamsResponse.newPaginated({
       data: rows.map((row) =>
         teamModelToResource({
-          id: row.id,
           uuid: row.uuid,
           name: row.name,
-          persistentIdentifier: row.persistentIdentifier,
           legacyStatus: row.legacyStatus,
-          marathonYear: row.marathonYear,
           type: row.type,
           updatedAt: row.updatedAt,
           createdAt: row.createdAt,
@@ -223,15 +234,17 @@ export class TeamResolver {
   )
   @Mutation(() => CreateTeamResponse, { name: "createTeam" })
   async create(
-    @Arg("input") input: CreateTeamInput
+    @Arg("input") input: CreateTeamInput,
+    @Arg("marathon") marathonUuid: string
   ): Promise<CreateTeamResponse> {
-    const row = await this.teamRepository.createTeam({
-      name: input.name,
-      type: input.type,
-      legacyStatus: input.legacyStatus,
-      marathonYear: input.marathonYear,
-      persistentIdentifier: input.persistentIdentifier,
-    });
+    const row = await this.teamRepository.createTeam(
+      {
+        name: input.name,
+        type: input.type,
+        legacyStatus: input.legacyStatus,
+      },
+      { uuid: marathonUuid }
+    );
 
     return CreateTeamResponse.newCreated(teamModelToResource(row), row.uuid);
   }
@@ -252,17 +265,16 @@ export class TeamResolver {
   )
   @Mutation(() => SingleTeamResponse, { name: "setTeam" })
   async set(
-    @Arg("uuid") uuid: string,
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetTeamInput
   ): Promise<SingleTeamResponse> {
     const row = await this.teamRepository.updateTeam(
-      { uuid },
+      { uuid: id },
       {
-        uuid,
+        uuid: id,
         name: input.name ?? undefined,
         type: input.type ?? undefined,
         legacyStatus: input.legacyStatus ?? undefined,
-        marathonYear: input.marathonYear ?? undefined,
         persistentIdentifier: input.persistentIdentifier,
       }
     );
@@ -289,8 +301,10 @@ export class TeamResolver {
     }
   )
   @Mutation(() => DeleteTeamResponse, { name: "deleteTeam" })
-  async delete(@Arg("uuid") uuid: string): Promise<DeleteTeamResponse> {
-    const row = await this.teamRepository.deleteTeam({ uuid });
+  async delete(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<DeleteTeamResponse> {
+    const row = await this.teamRepository.deleteTeam({ uuid: id });
 
     if (row == null) {
       throw new DetailedError(ErrorCode.NotFound, "Team not found");
@@ -304,28 +318,29 @@ export class TeamResolver {
     {
       rootMatch: [
         {
-          root: "uuid",
-          extractor: ({ teamIds }) => teamIds,
+          root: "id",
+          extractor: ({ teamMemberships }) =>
+            teamMemberships.map(({ teamId }) => teamId),
         },
       ],
     }
   )
-  @FieldResolver(() => [MembershipResource])
-  async members(@Root() team: TeamResource): Promise<MembershipResource[]> {
+  @FieldResolver(() => [MembershipNode])
+  async members(@Root() { id: { id } }: TeamNode): Promise<MembershipNode[]> {
     const memberships = await this.teamRepository.findMembersOfTeam({
-      uuid: team.uuid,
+      uuid: id,
     });
 
     return memberships.map((row) => membershipModelToResource(row));
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
-  @FieldResolver(() => [MembershipResource], {
+  @FieldResolver(() => [MembershipNode], {
     deprecationReason: "Just query the members field and filter by role",
   })
-  async captains(@Root() team: TeamResource): Promise<MembershipResource[]> {
+  async captains(@Root() { id: { id } }: TeamNode): Promise<MembershipNode[]> {
     const memberships = await this.teamRepository.findMembersOfTeam(
-      { uuid: team.uuid },
+      { uuid: id },
       { captainsOnly: true }
     );
 
@@ -337,18 +352,19 @@ export class TeamResolver {
     {
       rootMatch: [
         {
-          root: "uuid",
-          extractor: ({ teamIds }) => teamIds,
+          root: "id",
+          extractor: ({ teamMemberships }) =>
+            teamMemberships.map(({ teamId }) => teamId),
         },
       ],
     }
   )
-  @FieldResolver(() => [PointEntryResource])
+  @FieldResolver(() => [PointEntryNode])
   async pointEntries(
-    @Root() team: TeamResource
-  ): Promise<PointEntryResource[]> {
+    @Root() { id: { id } }: TeamNode
+  ): Promise<PointEntryNode[]> {
     const rows = await this.teamRepository.getTeamPointEntries({
-      uuid: team.uuid,
+      uuid: id,
     });
 
     return rows.map((row) => pointEntryModelToResource(row));
@@ -356,11 +372,134 @@ export class TeamResolver {
 
   @AccessControl({ accessLevel: AccessLevel.Public })
   @FieldResolver(() => Int)
-  async totalPoints(@Root() team: TeamResource): Promise<number> {
+  async totalPoints(@Root() { id: { id } }: TeamNode): Promise<number> {
     const result = await this.teamRepository.getTotalTeamPoints({
-      uuid: team.uuid,
+      uuid: id,
     });
 
     return result._sum.points ?? 0;
+  }
+
+  @AccessControl({ accessLevel: AccessLevel.Public })
+  @FieldResolver(() => Common.MarathonNode)
+  async marathon(
+    @Root() { id: { id } }: TeamNode
+  ): Promise<Common.MarathonNode> {
+    const result = await this.teamRepository.getMarathon({ uuid: id });
+
+    if (result == null) {
+      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+    }
+
+    return marathonModelToResource(result);
+  }
+
+  @AccessControl(globalFundraisingAccessParam, {
+    rootMatch: [
+      {
+        root: "id",
+        extractor: ({ teamMemberships }) =>
+          teamMemberships
+            .filter(
+              ({ position }) =>
+                position === Common.MembershipPositionType.Captain
+            )
+            .map(({ teamId }) => teamId),
+      },
+    ],
+  })
+  @FieldResolver(() => ListFundraisingEntriesResponse)
+  async fundraisingEntries(
+    @Root() { id: { id } }: TeamNode,
+    @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
+  ): Promise<ListFundraisingEntriesResponse> {
+    const entries = await this.fundraisingEntryRepository.listEntries(
+      {
+        filters: args.filters,
+        order:
+          args.sortBy?.map((key, i) => [
+            key,
+            args.sortDirection?.[i] ?? SortDirection.desc,
+          ]) ?? [],
+        skip:
+          args.page != null && args.pageSize != null
+            ? (args.page - 1) * args.pageSize
+            : null,
+        take: args.pageSize,
+      },
+      {
+        // EXTREMELY IMPORTANT FOR SECURITY
+        forTeam: { uuid: id },
+      }
+    );
+    const count = await this.fundraisingEntryRepository.countEntries({
+      filters: args.filters,
+    });
+
+    if (entries.isErr()) {
+      throw new CatchableConcreteError(entries.error);
+    }
+    if (count.isErr()) {
+      throw new CatchableConcreteError(count.error);
+    }
+
+    return ListFundraisingEntriesResponse.newPaginated({
+      data: await Promise.all(
+        entries.value.map((model) => fundraisingEntryModelToNode(model))
+      ),
+      total: count.value,
+      page: args.page,
+      pageSize: args.pageSize,
+    });
+  }
+
+  @AccessControl(globalFundraisingAccessParam)
+  @Query(() => [DbFundsTeamInfo], { name: "dbFundsTeams" })
+  async dbFundsTeams(
+    @Arg("search") search: string
+  ): Promise<DbFundsTeamInfo[]> {
+    const searchParam: {
+      byDbNum?: number;
+      byName?: string;
+    } = {};
+    const searchAsNum = Number.parseInt(search, 10);
+    if (Number.isInteger(searchAsNum)) {
+      searchParam.byDbNum = searchAsNum;
+    } else {
+      searchParam.byName = search;
+    }
+    const rows = await this.dbFundsRepository.listDbFundsTeams({
+      ...searchParam,
+      onlyActive: true,
+    });
+
+    if (rows.isErr()) {
+      throw new CatchableConcreteError(rows.error);
+    }
+
+    return rows.value.map((row) => {
+      const teamInfoInstance = new DbFundsTeamInfo();
+      teamInfoInstance.dbNum = row.dbNum;
+      teamInfoInstance.name = row.name;
+      return teamInfoInstance;
+    });
+  }
+
+  @AccessControl(globalFundraisingAccessParam)
+  @Mutation(() => VoidResolver, { name: "assignTeamToDbFundsTeam" })
+  async assignTeamToDbFundsTeam(
+    @Arg("teamId") teamId: string,
+    @Arg("dbFundsTeamId") dbFundsTeamId: number
+  ): Promise<void> {
+    const result = await this.dbFundsRepository.assignTeamToDbFundsTeam(
+      { uuid: teamId },
+      { dbNum: dbFundsTeamId }
+    );
+
+    if (result.isErr()) {
+      throw new CatchableConcreteError(result.error);
+    }
+
+    return undefined;
   }
 }

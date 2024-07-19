@@ -1,10 +1,13 @@
-import type { DateTime } from "luxon";
-import { Field, ID, ObjectType } from "type-graphql";
+import { DateTimeISOResolver } from "graphql-scalars";
+import { DateTime } from "luxon";
+import { Field, ObjectType } from "type-graphql";
 
-import { DateTimeScalar } from "../scalars/DateTimeScalar.js";
+import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
+import { Node, createNodeClasses } from "../relay.js";
+import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
 import { TimestampedResource } from "./Resource.js";
-
 /*
 The way configurations work is that there can be n number of configurations,
 each with it's own UUID. When multiple configurations are created with the
@@ -16,10 +19,12 @@ This also means we have some of the logic we need for a configuration
 to have additional validation logic in the future.
 */
 
-@ObjectType()
-export class ConfigurationResource extends TimestampedResource {
-  @Field(() => ID)
-  uuid!: string;
+@ObjectType({
+  implements: [Node],
+})
+export class ConfigurationNode extends TimestampedResource implements Node {
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
 
   @Field(() => String)
   key!: string;
@@ -27,17 +32,37 @@ export class ConfigurationResource extends TimestampedResource {
   @Field(() => String)
   value!: string;
 
-  @Field(() => DateTimeScalar, { nullable: true })
-  validAfter!: DateTime | null;
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  validAfter?: Date | null;
+  get validAfterDateTime(): DateTime | null {
+    return dateTimeFromSomething(this.validAfter ?? null);
+  }
 
-  @Field(() => DateTimeScalar, { nullable: true })
-  validUntil!: DateTime | null;
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  validUntil?: Date | null;
+  get validUntilDateTime(): DateTime | null {
+    return dateTimeFromSomething(this.validUntil ?? null);
+  }
 
   public getUniqueId(): string {
     return this.key;
   }
 
-  public static init(init: Partial<ConfigurationResource>) {
-    return ConfigurationResource.doInit(init);
+  public static init(init: {
+    id: string;
+    key: string;
+    value: string;
+    validAfter?: Date | null;
+    validUntil?: Date | null;
+    createdAt?: Date | null;
+    updatedAt?: Date | null;
+  }) {
+    return this.createInstance().withValues(init);
   }
 }
+
+export const {
+  ConfigurationConnection,
+  ConfigurationEdge,
+  ConfigurationResult,
+} = createNodeClasses(ConfigurationNode, "Configuration");

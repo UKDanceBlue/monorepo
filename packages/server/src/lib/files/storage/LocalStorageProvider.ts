@@ -7,15 +7,14 @@ import type { MIMEType } from "util";
 import { DateTime } from "luxon";
 import { Service } from "typedi";
 
-import { servePath, uploadPath } from "../../../environment.js";
-import { logger } from "../../logging/standardLogging.js";
-
 import type {
   StorableFile,
   StorageProvider,
   UnsupportedAccessMethod,
 } from "./StorageProvider.js";
 import { BaseStorageProvider } from "./StorageProvider.js";
+import { servePath, uploadPath } from "#environment";
+import { logger } from "#logging/standardLogging.js";
 
 /**
  * Determines if the location a path refers to is within `servePath`

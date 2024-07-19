@@ -1,7 +1,7 @@
 import { useImagePicker } from "@hooks/useImagePicker";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-admin";
+import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import {
   Button,
   Card,
@@ -19,7 +19,7 @@ import { useClient, useQuery } from "urql";
 const feedPageDocument = graphql(/* GraphQL */ `
   query FeedPage {
     feed(limit: null) {
-      uuid
+      id
       title
       createdAt
       textContent
@@ -34,7 +34,7 @@ const feedPageDocument = graphql(/* GraphQL */ `
 const createFeedItemDocument = graphql(/* GraphQL */ `
   mutation CreateFeedItem($input: CreateFeedInput!) {
     createFeedItem(input: $input) {
-      uuid
+      id
     }
   }
 `);
@@ -155,7 +155,7 @@ export function FeedPage() {
       </Form>
       <Row gutter={16} style={{ rowGap: 16 }}>
         {result.data?.feed.map((feedItem) => (
-          <Col key={feedItem.uuid} span={8}>
+          <Col key={feedItem.id} span={8}>
             <Card
               title={feedItem.title}
               extra={dateTimeFromSomething(
@@ -181,7 +181,7 @@ export function FeedPage() {
                   onClick={async () => {
                     await client
                       .mutation(deleteFeedItemDocument, {
-                        uuid: feedItem.uuid,
+                        uuid: feedItem.id,
                       })
                       .toPromise();
                     setTimeout(

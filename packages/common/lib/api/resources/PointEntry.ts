@@ -1,21 +1,35 @@
-import { Field, ID, Int, ObjectType } from "type-graphql";
+import { Field, Int, ObjectType } from "type-graphql";
+
+import { Node, createNodeClasses } from "../relay.js";
+import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
 import { TimestampedResource } from "./Resource.js";
-
-@ObjectType()
-export class PointEntryResource extends TimestampedResource {
-  @Field(() => ID)
-  uuid!: string;
+@ObjectType({
+  implements: [Node],
+})
+export class PointEntryNode extends TimestampedResource implements Node {
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
   @Field(() => String, { nullable: true })
   comment!: string | null;
   @Field(() => Int)
   points!: number;
 
   public getUniqueId(): string {
-    return this.uuid;
+    return this.id.id;
   }
 
-  public static init(init: Partial<PointEntryResource>) {
-    return PointEntryResource.doInit(init);
+  public static init(init: {
+    id: string;
+    comment?: string | null;
+    points: number;
+    createdAt?: Date | null;
+    updatedAt?: Date | null;
+  }) {
+    return this.createInstance().withValues(init);
   }
 }
+
+export const { PointEntryConnection, PointEntryEdge, PointEntryResult } =
+  createNodeClasses(PointEntryNode, "PointEntry");
