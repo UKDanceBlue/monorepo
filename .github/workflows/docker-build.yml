@@ -67,11 +67,11 @@ jobs:
           tags: ${{ steps.serverMeta.outputs.tags }}
           labels: ${{ steps.serverMeta.outputs.labels }}
           target: server
-      - uses: snok/container-retention-policy@v3.0.0
-        with:
-          account: UKDanceBlue
-          token: ${{ secrets.GITHUB_TOKEN }}
-          image-names:
-            "${{ env.PORTAL_IMAGE_NAME }} ${{ env.SERVER_IMAGE_NAME }}"
-          tag-selection: untagged
-          cut-off: 2w
+      # - uses: snok/container-retention-policy@v3.0.0
+      #   with:
+      #     account: UKDanceBlue
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     image-names:
+      #       "${{ env.PORTAL_IMAGE_NAME }} ${{ env.SERVER_IMAGE_NAME }}"
+      #     tag-selection: untagged
+      #     cut-off: 2w
