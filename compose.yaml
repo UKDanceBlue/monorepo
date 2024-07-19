@@ -32,25 +32,17 @@ services:
       LOG_DIR: /data/logs
       DATABASE_URL: postgres://danceblue:danceblue@danceblue-database-${SUBDOMAIN:?error}:5432/danceblue
       SERVE_ORIGIN: http://localhost:8000
+      LOGGING_LEVEL: ${LOGGING_LEVEL:-info}
+      APPLICATION_PORT: ${APPLICATION_PORT}
+      APPLICATION_HOST: ${APPLICATION_HOST}
     secrets:
-      - application_port
-      - application_host
       - cookie_secret
       - jwt_secret
-      - db_host
-      - db_port
-      - db_uname
-      - db_pwd
-      - db_name
-      - database_url
       - ms_client_id
       - ms_client_secret
       - expo_access_token
-      - serve_origin
-      - logging_level
       - dbfunds_api_origin
       - dbfunds_api_key
-      - log_dir
     volumes:
       - content:/data/local-uploads
   portal:
@@ -83,39 +75,17 @@ volumes:
 #     environment: "OAUTH_TOKEN"
 
 secrets:
-  application_port:
-    environment: "APPLICATION_PORT"
-  application_host:
-    environment: "APPLICATION_HOST"
   cookie_secret:
     environment: "COOKIE_SECRET"
   jwt_secret:
     environment: "JWT_SECRET"
-  db_host:
-    environment: "DB_HOST"
-  db_port:
-    environment: "DB_PORT"
-  db_uname:
-    environment: "DB_UNAME"
-  db_pwd:
-    environment: "DB_PWD"
-  db_name:
-    environment: "DB_NAME"
-  database_url:
-    environment: "DATABASE_URL"
   ms_client_id:
     environment: "MS_CLIENT_ID"
   ms_client_secret:
     environment: "MS_CLIENT_SECRET"
   expo_access_token:
     environment: "EXPO_ACCESS_TOKEN"
-  serve_origin:
-    environment: "SERVE_ORIGIN"
-  logging_level:
-    environment: "LOGGING_LEVEL"
   dbfunds_api_origin:
     environment: "DBFUNDS_API_ORIGIN"
   dbfunds_api_key:
     environment: "DBFUNDS_API_KEY"
-  log_dir:
-    environment: "LOG_DIR"
