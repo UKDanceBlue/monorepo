@@ -1,10 +1,18 @@
 import type { Prisma } from "@prisma/client";
-import { CommitteeIdentifier } from "@ukdanceblue/common";
-export const createCommittee = (
+import {
+  CommitteeIdentifier,
+  committeeNames,
+  TeamLegacyStatus,
+  TeamType,
+} from "@ukdanceblue/common";
+
+const DEFAULT_MARATHON_YEAR = "DB24";
+
+const createCommittee = (
   identifier: CommitteeIdentifier,
   parentIdentifier?: CommitteeIdentifier
-): Prisma.CommitteeUpsertWithoutChildCommitteesInput => {
-  const committee: Prisma.CommitteeUpsertWithoutChildCommitteesInput = {
+) => {
+  const committee = {
     create: {
       identifier,
       parentCommittee: parentIdentifier
@@ -14,6 +22,25 @@ export const createCommittee = (
             },
           }
         : undefined,
+      correspondingTeams: {
+        create: [
+          {
+            name: committeeNames[identifier],
+            marathon: {
+              connectOrCreate: {
+                create: {
+                  year: DEFAULT_MARATHON_YEAR,
+                },
+                where: {
+                  year: DEFAULT_MARATHON_YEAR,
+                },
+              },
+            },
+            legacyStatus: TeamLegacyStatus.ReturningTeam,
+            type: TeamType.Spirit,
+          },
+        ],
+      },
     },
     update: {
       parentCommittee: parentIdentifier
@@ -27,7 +54,7 @@ export const createCommittee = (
     where: {
       identifier,
     },
-  };
+  } satisfies Prisma.CommitteeUpsertWithoutChildCommitteesInput;
 
   return committee;
 };

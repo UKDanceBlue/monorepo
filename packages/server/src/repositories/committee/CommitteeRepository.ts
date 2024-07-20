@@ -4,7 +4,12 @@ import {
   CommitteeRole,
   SortDirection,
 } from "@ukdanceblue/common";
-import { CompositeError , InvariantError, NotFoundError , toBasicError } from "@ukdanceblue/common/error";
+import {
+  CompositeError,
+  InvariantError,
+  NotFoundError,
+  toBasicError,
+} from "@ukdanceblue/common/error";
 import { Err, None, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
@@ -219,6 +224,23 @@ export class CommitteeRepository {
       });
 
       return Ok(committee);
+    } catch (error) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async ensureCommittees(): Promise<Result<None, RepositoryError>> {
+    try {
+      const { overallCommittee, viceCommittee, ...childCommittees } =
+        CommitteeDescriptions;
+      await this.prisma.committee.upsert(overallCommittee);
+      await this.prisma.committee.upsert(viceCommittee);
+      for (const committee of Object.values(childCommittees)) {
+        // eslint-disable-next-line no-await-in-loop
+        await this.prisma.committee.upsert(committee);
+      }
+
+      return Ok(None);
     } catch (error) {
       return handleRepositoryError(error);
     }

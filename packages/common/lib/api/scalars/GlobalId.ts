@@ -1,5 +1,8 @@
 import { GraphQLScalarType, Kind } from "graphql";
 
+import type { Result } from "ts-results-es";
+import { Err, Ok } from "ts-results-es";
+import { InvalidArgumentError } from "../../error/direct.js";
 import {
   UTF8ArrToStr,
   arrayToBase64String,
@@ -10,6 +13,28 @@ import {
 export interface GlobalId {
   typename: string;
   id: string;
+}
+
+export function parseGlobalId(
+  value: string
+): Result<GlobalId, InvalidArgumentError> {
+  const plain = UTF8ArrToStr(base64StringToArray(value));
+  const [typename, id, ...rest] = plain.split(":");
+  if (rest.length > 0) {
+    return Err(
+      new InvalidArgumentError("GlobalId can only parse strings with one colon")
+    );
+  }
+  if (!typename || !id) {
+    return Err(
+      new InvalidArgumentError("GlobalId can only parse strings with a colon")
+    );
+  }
+  return Ok({ typename, id });
+}
+
+export function serializeGlobalId(value: GlobalId): string {
+  return arrayToBase64String(strToUTF8Arr(`${value.typename}:${value.id}`));
 }
 
 export const GlobalIdScalar = new GraphQLScalarType<
@@ -40,19 +65,11 @@ export const GlobalIdScalar = new GraphQLScalarType<
         );
       }
     } else if (typeof value === "string") {
-      const plain = UTF8ArrToStr(base64StringToArray(value));
-      const [typename, id, ...rest] = plain.split(":");
-      if (rest.length > 0) {
-        throw new TypeError(
-          "GlobalIdScalar can only parse strings with one colon"
-        );
+      const parsed = parseGlobalId(value);
+      if (parsed.isErr()) {
+        throw new TypeError(parsed.error.message);
       }
-      if (!typename || !id) {
-        throw new TypeError(
-          "GlobalIdScalar can only parse strings with a colon"
-        );
-      }
-      return { typename, id };
+      return parsed.value;
     } else {
       throw new TypeError("GlobalIdScalar can only parse strings or objects");
     }
@@ -71,7 +88,7 @@ export const GlobalIdScalar = new GraphQLScalarType<
             "GlobalIdScalar can only serialize objects with typename and id as strings"
           );
         }
-        return arrayToBase64String(strToUTF8Arr(`${typename}:${id}`));
+        return serializeGlobalId({ typename, id });
       } else {
         throw new TypeError(
           "GlobalIdScalar can only serialize objects with typename and id"

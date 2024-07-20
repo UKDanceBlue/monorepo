@@ -12,7 +12,6 @@ import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import type { SimpleUniqueParam } from "#repositories/shared.js";
 
-
 const teamBooleanKeys = [] as const;
 type TeamBooleanKey = (typeof teamBooleanKeys)[number];
 
@@ -111,7 +110,7 @@ export class TeamRepository {
     return this.prisma.teamsWithTotalPoints.findMany({
       where: {
         type: type ? { in: type } : undefined,
-        marathon: makeMarathonWhere(marathon ?? []),
+        marathon: marathon ? makeMarathonWhere(marathon) : undefined,
 
         ...where,
         legacyStatus: legacyStatus

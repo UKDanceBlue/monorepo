@@ -1,9 +1,12 @@
 import type { PointOpportunity } from "@prisma/client";
-import { PointOpportunityNode } from "@ukdanceblue/common";
+import { PointOpportunityNode, TeamType } from "@ukdanceblue/common";
 
 export function pointOpportunityModelToResource(
   pointOpportunityModel: PointOpportunity
 ): PointOpportunityNode {
+  if (pointOpportunityModel.type === "Committee") {
+    pointOpportunityModel.type = TeamType.Spirit;
+  }
   return PointOpportunityNode.init({
     id: pointOpportunityModel.uuid,
     name: pointOpportunityModel.name,

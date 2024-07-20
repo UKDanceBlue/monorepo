@@ -1,14 +1,17 @@
-import type { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
-import { TeamNode } from "@ukdanceblue/common";
+import type { TeamLegacyStatus } from "@ukdanceblue/common";
+import { TeamType, TeamNode } from "@ukdanceblue/common";
 
 export function teamModelToResource(teamModel: {
   uuid: string;
   name: string;
-  type: TeamType;
+  type: TeamType | "Committee";
   legacyStatus: TeamLegacyStatus;
   createdAt: Date;
   updatedAt: Date;
 }): TeamNode {
+  if (teamModel.type === "Committee") {
+    teamModel.type = TeamType.Spirit;
+  }
   return TeamNode.init({
     id: teamModel.uuid,
     name: teamModel.name,

@@ -1,5 +1,6 @@
 import type { ApiError } from "./ApiError.js";
 
+/** @deprecated */
 export const ErrorCode = {
   // Our codes
   Unknown: "UNKNOWN",
@@ -22,12 +23,15 @@ export const ErrorCode = {
   GQLBadRequest: "GQLBadRequest",
   GQLInternalServerError: "GQLInternalServerError",
 } as const;
+/** @deprecated */
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
 
+/** @deprecated */
 export function isErrorCode(code: unknown): code is ErrorCode {
   return Object.values(ErrorCode).includes(code as ErrorCode);
 }
 
+/** @deprecated */
 export function lookupErrorCode(error: Error | string | ApiError): ErrorCode {
   if (typeof error === "string") {
     if (isErrorCode(error)) {
@@ -43,6 +47,7 @@ export function lookupErrorCode(error: Error | string | ApiError): ErrorCode {
   }
 }
 
+/** @deprecated */
 export class DetailedError extends Error {
   code: ErrorCode;
   details?: string;
