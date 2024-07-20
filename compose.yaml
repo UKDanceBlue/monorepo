@@ -12,6 +12,7 @@ services:
       database:
         aliases:
           - postgres
+    restart: unless-stopped
   server:
     build:
       context: .
@@ -43,6 +44,7 @@ services:
       - dbfunds_api_key
     volumes:
       - content:/data/local-uploads
+    restart: unless-stopped
   portal:
     image: ghcr.io/ukdanceblue/app-portal:${VERSION:-latest}
     networks:
@@ -52,6 +54,7 @@ services:
     build:
       context: .
       target: portal
+    restart: unless-stopped
 
 networks:
   proxy:
