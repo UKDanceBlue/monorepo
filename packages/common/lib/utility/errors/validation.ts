@@ -1,9 +1,11 @@
 import type { DateTime, Duration, Interval } from "luxon";
 
+/** @deprecated */
 export class ValidationError extends TypeError {
   readonly name: string = "ValidationError";
 }
 
+/** @deprecated */
 export class TypeMismatchError extends ValidationError {
   readonly name: string = "TypeMismatchError";
 
@@ -16,6 +18,7 @@ export class TypeMismatchError extends ValidationError {
   }
 }
 
+/** @deprecated */
 export class NaNError extends ValidationError {
   readonly name: string = "NaNError";
 
@@ -24,6 +27,7 @@ export class NaNError extends ValidationError {
   }
 }
 
+/** @deprecated */
 export class UnionValidationError extends ValidationError {
   readonly name: string = "UnionValidationError";
 
@@ -35,6 +39,7 @@ export class UnionValidationError extends ValidationError {
   }
 }
 
+/** @deprecated */
 export class LuxonError extends ValidationError {
   cause: Duration | Interval | DateTime;
   explanation: string | null;
@@ -52,6 +57,7 @@ export class LuxonError extends ValidationError {
   }
 }
 
+/** @deprecated */
 export class ParsingError extends ValidationError {
   cause?: object;
 

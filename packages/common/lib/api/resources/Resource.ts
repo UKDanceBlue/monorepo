@@ -28,6 +28,7 @@ export abstract class Resource {
     this: R,
     values: D
   ): R {
+    Object.assign(this, values);
     this.id = { id: values.id, typename: this.constructor.name };
     return this;
   }

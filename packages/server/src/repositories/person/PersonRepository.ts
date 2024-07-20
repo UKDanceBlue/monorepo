@@ -13,7 +13,8 @@ import {
   TeamLegacyStatus,
   TeamType,
 } from "@ukdanceblue/common";
-import { ActionDeniedError ,
+import {
+  ActionDeniedError,
   InvalidArgumentError,
   InvariantError,
   NotFoundError,
@@ -360,7 +361,6 @@ export class PersonRepository {
           memberships: {
             where: {
               team: {
-                type: TeamType.Committee,
                 correspondingCommittee: {
                   isNot: null,
                 },
@@ -775,7 +775,9 @@ export class PersonRepository {
           person,
           team: {
             marathon,
-            type: TeamType.Committee,
+            correspondingCommittee: {
+              isNot: null,
+            },
           },
         },
         include: {
@@ -794,15 +796,21 @@ export class PersonRepository {
       let bestCommittee = undefined;
       let fallbackCommittee = undefined;
 
-      for (let i = 1; i <= committees.length; i++) {
+      for (let i = 0; i <= committees.length; i++) {
         const committee = committees[i];
         if (committee) {
           // We don't want to return the overall committee or vice committee if we have a better option
           if (
+            !fallbackCommittee ||
             committee.team.correspondingCommittee?.identifier ===
-              CommitteeIdentifier.overallCommittee ||
+              CommitteeIdentifier.overallCommittee
+          ) {
+            fallbackCommittee = committee;
+            continue;
+          }
+          if (
             committee.team.correspondingCommittee?.identifier ===
-              CommitteeIdentifier.viceCommittee
+            CommitteeIdentifier.viceCommittee
           ) {
             fallbackCommittee = committee;
             continue;

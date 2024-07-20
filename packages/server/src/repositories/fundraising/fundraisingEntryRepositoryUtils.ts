@@ -1,8 +1,8 @@
 import type { Prisma } from "@prisma/client";
-import { SortDirection } from "@ukdanceblue/common";
+import { parseGlobalId, SortDirection } from "@ukdanceblue/common";
+import type { InvalidArgumentError } from "@ukdanceblue/common/error";
 import { ActionDeniedError } from "@ukdanceblue/common/error";
-import type { Result } from "ts-results-es";
-import { Err, Ok } from "ts-results-es";
+import { Result, Err, Ok } from "ts-results-es";
 
 import type {
   FundraisingEntryFilters,
@@ -64,7 +64,10 @@ export function buildFundraisingEntryOrder(
 
 export function buildFundraisingEntryWhere(
   filters: readonly FundraisingEntryFilters[] | null | undefined
-): Result<Prisma.FundraisingEntryWhereInput, ActionDeniedError> {
+): Result<
+  Prisma.FundraisingEntryWhereInput,
+  ActionDeniedError | InvalidArgumentError
+> {
   const where: Prisma.FundraisingEntryWhereInput = {};
   const dbFundsEntryWhere: Prisma.FundraisingEntryWhereInput["dbFundsEntry"] =
     {};
@@ -90,8 +93,21 @@ export function buildFundraisingEntryWhere(
         break;
       }
       case "teamId": {
+        const parsed = Result.all(
+          filter.value.map((val) => parseGlobalId(val).map(({ id }) => id))
+        );
+        if (parsed.isErr()) {
+          return parsed;
+        }
         dbFundsEntryWhere.dbFundsTeam = {
-          teams: { some: { uuid: oneOfFilterToPrisma(filter) } },
+          teams: {
+            some: {
+              uuid: oneOfFilterToPrisma({
+                ...filter,
+                value: parsed.value,
+              }),
+            },
+          },
         };
         break;
       }

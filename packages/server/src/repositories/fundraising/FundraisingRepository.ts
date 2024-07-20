@@ -8,7 +8,11 @@ import {
 } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 
-import { ActionDeniedError, NotFoundError } from "@ukdanceblue/common/error";
+import {
+  ActionDeniedError,
+  InvalidArgumentError,
+  NotFoundError,
+} from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 import { Service } from "typedi";
 import {
@@ -157,7 +161,7 @@ export class FundraisingEntryRepository {
       readonly (FundraisingEntry & {
         dbFundsEntry: DBFundsFundraisingEntry;
       })[],
-      RepositoryError | ActionDeniedError
+      RepositoryError | ActionDeniedError | InvalidArgumentError
     >
   > {
     try {
@@ -220,7 +224,9 @@ export class FundraisingEntryRepository {
     filters,
   }: {
     filters?: readonly FundraisingEntryFilters[] | undefined | null;
-  }): Promise<Result<number, RepositoryError | ActionDeniedError>> {
+  }): Promise<
+    Result<number, RepositoryError | ActionDeniedError | InvalidArgumentError>
+  > {
     try {
       const where = buildFundraisingEntryWhere(filters);
       if (where.isErr()) {

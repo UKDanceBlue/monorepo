@@ -11,6 +11,7 @@ import {
   CommitteeRole,
   DbRole,
   roleToAccessLevel,
+  TeamType,
 } from "@ukdanceblue/common";
 import { NotFoundError } from "@ukdanceblue/common/error";
 import type { ConcreteResult } from "@ukdanceblue/common/error";
@@ -103,7 +104,10 @@ async function withUserInfo(
     ...teamMemberships.value
   );
   outputContext.teamMemberships = teamMemberships.value.map((membership) => ({
-    teamType: membership.team.type,
+    teamType:
+      membership.team.type === "Committee"
+        ? TeamType.Spirit
+        : membership.team.type,
     position: membership.position,
     teamId: membership.team.uuid,
   }));

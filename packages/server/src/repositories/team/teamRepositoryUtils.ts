@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
-import { SortDirection } from "@ukdanceblue/common";
+import { parseGlobalId, SortDirection } from "@ukdanceblue/common";
+import { Result } from "ts-results-es";
 
 import type { TeamFilters, TeamOrderKeys } from "./TeamRepository.ts";
 import {
@@ -8,7 +9,6 @@ import {
   oneOfFilterToPrisma,
   stringFilterToPrisma,
 } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 
 export function buildTeamOrder(
   order: readonly [key: TeamOrderKeys, sort: SortDirection][] | null | undefined
@@ -50,8 +50,17 @@ export function buildTeamWhere(
         break;
       }
       case "marathonId": {
+        const parsed = Result.all(
+          filter.value.map((val) => parseGlobalId(val).map(({ id }) => id))
+        );
+        if (parsed.isErr()) {
+          throw new Error(parsed.error.message);
+        }
         where["marathon"] = {
-          uuid: oneOfFilterToPrisma(filter),
+          uuid: oneOfFilterToPrisma({
+            ...filter,
+            value: parsed.value,
+          }),
         };
         break;
       }

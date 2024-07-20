@@ -8,7 +8,6 @@ import { TimestampedResource } from "./Resource.js";
 export const TeamType = {
   Spirit: "Spirit",
   Morale: "Morale",
-  Committee: "Committee",
 } as const;
 export type TeamType = (typeof TeamType)[keyof typeof TeamType];
 
