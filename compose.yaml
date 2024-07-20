@@ -1,11 +1,6 @@
-# For now this compose file is strictly for testing the server locally
-
 services:
   postgres:
-    container_name: danceblue-database-${SUBDOMAIN:?error}
     image: postgres:16
-    networks:
-      - database
     environment:
       POSTGRES_USER: danceblue
       POSTGRES_PASSWORD: danceblue
@@ -14,14 +9,16 @@ services:
     volumes:
       - database:/var/lib/postgresql/data
   server:
-    container_name: danceblue-server-${SUBDOMAIN:?error}
     build:
       context: .
       target: server
+    links:
+      - postgres
     image: ghcr.io/ukdanceblue/app-server:${VERSION:-latest}
     networks:
-      - proxy
-      - database
+      proxy:
+        aliases:
+          - ${HOST_PREFIX:-}-server
     depends_on:
       - postgres
     environment:
@@ -30,7 +27,7 @@ services:
       UPLOAD_PATH: /data/local-uploads
       MAX_FILE_SIZE: 200
       LOG_DIR: /data/logs
-      DATABASE_URL: postgres://danceblue:danceblue@danceblue-database-${SUBDOMAIN:?error}:5432/danceblue
+      DATABASE_URL: postgres://danceblue:danceblue@postgres:5432/danceblue
       SERVE_ORIGIN: http://localhost:8000
       LOGGING_LEVEL: ${LOGGING_LEVEL:-info}
     secrets:
@@ -44,17 +41,16 @@ services:
     volumes:
       - content:/data/local-uploads
   portal:
-    container_name: danceblue-portal-${SUBDOMAIN:?error}
     image: ghcr.io/ukdanceblue/app-portal:${VERSION:-latest}
     networks:
-      - proxy
+      proxy:
+        aliases:
+          - ${HOST_PREFIX:-}-portal
     build:
       context: .
       target: portal
 
 networks:
-  database:
-    internal: true
   proxy:
     external: true
     name: proxy
@@ -62,10 +58,8 @@ networks:
 volumes:
   content:
     driver: local
-    name: danceblue-server-${SUBDOMAIN:?error}-content
   database:
     driver: local
-    name: danceblue-server-${SUBDOMAIN:?error}-database
 
 # Secrets from environment variables (i.e. var: environment: VAR)
 # secrets:
