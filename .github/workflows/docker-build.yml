@@ -14,7 +14,6 @@ on:
       - "yarn.lock"
       - ".yarnrc.yml"
       - "Dockerfile"
-      - "compose.yaml"
 
 env:
   REGISTRY: ghcr.io

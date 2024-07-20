@@ -8,17 +8,20 @@ services:
     attach: false
     volumes:
       - database:/var/lib/postgresql/data
+    networks:
+      database:
+        aliases:
+          - postgres
   server:
     build:
       context: .
       target: server
-    links:
-      - postgres
     image: ghcr.io/ukdanceblue/app-server:${VERSION:-latest}
     networks:
       proxy:
         aliases:
           - ${HOST_PREFIX:-}-server
+      database:
     depends_on:
       - postgres
     environment:
@@ -54,6 +57,8 @@ networks:
   proxy:
     external: true
     name: proxy
+  database:
+    internal: true
 
 volumes:
   content:
