@@ -4,16 +4,18 @@ import {
   TeamLegacyStatus,
   TeamType,
 } from "@ukdanceblue/common";
+import { NotFoundError } from "@ukdanceblue/common/error";
+import { Ok } from "ts-results-es";
 import { Container } from "typedi";
 
-import { isDevelopment } from "#environment";
+import { CatchableConcreteError } from "#lib/formatError.js";
 import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
 import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { TeamRepository } from "#repositories/team/TeamRepository.js";
 
-if (!isDevelopment) {
+if (process.env.NODE_ENV !== "development") {
   throw new Error("Seeding is only allowed in development mode");
 }
 
@@ -26,7 +28,7 @@ try {
   const configurationRepository = Container.get(ConfigurationRepository);
   const marathonRepository = Container.get(MarathonRepository);
 
-  const techCommittee: [string, string][] = [
+  const techCommitteeMembers: [string, string][] = [
     ["jtho264@uky.edu", "jtho264"],
     ["Camille.Dyer@uky.edu", "chdy223"],
     ["str249@uky.edu", "str249"],
@@ -38,8 +40,20 @@ try {
     ["mike@uky.edu", "mike123", "Mike"],
   ];
 
-  const techPeople = await Promise.all(
-    techCommittee.map(([email, linkblue]) =>
+  const peopleToCreate: [string, string][] = [];
+
+  for (const person of [...techCommitteeMembers, ...randoms]) {
+    // eslint-disable-next-line no-await-in-loop
+    const existing = await personRepository.findPersonByUnique({
+      linkblue: person[1],
+    });
+    if (existing.isErr() && existing.error.tag === NotFoundError.Tag) {
+      peopleToCreate.push([person[0], person[1]]);
+    }
+  }
+
+  const allPeople = await Promise.all(
+    peopleToCreate.map(([email, linkblue]) =>
       personRepository.createPerson({
         email,
         linkblue,
@@ -47,57 +61,86 @@ try {
     )
   );
 
-  if (techPeople.some((p) => p.isErr())) {
-    throw new Error("Failed to create all tech committee people");
+  if (allPeople.some((p) => p.isErr())) {
+    throw new Error(`Failed to create all people ${JSON.stringify(allPeople)}`);
   }
 
-  const randomPeople = await Promise.all(
-    randoms.map(([email, linkblue, name]) =>
-      personRepository.createPerson({
-        email,
-        linkblue,
-        name,
-      })
+  const techCommitteePeople = await Promise.all(
+    techCommitteeMembers.map(([_, linkblue]) =>
+      personRepository.findPersonByUnique({ linkblue })
     )
   );
 
-  if (randomPeople.length !== randoms.length) {
-    throw new Error("Failed to create all random people");
-  }
-  if (techPeople.length !== techCommittee.length) {
+  if (techCommitteePeople.length !== techCommitteeMembers.length) {
     throw new Error("Failed to create all tech committee people");
   }
 
-  const marathon = await marathonRepository.createMarathon({
+  let marathon = await marathonRepository.findMarathonByUnique({
     year: "DB24",
   });
 
   if (marathon.isErr()) {
+    marathon = await marathonRepository.createMarathon({
+      year: "DB24",
+    });
+  }
+  if (marathon.isErr()) {
     throw new Error("Failed to create marathon");
   }
 
-  await committeeRepository.getCommittee(CommitteeIdentifier.techCommittee);
-
-  const techCommitteeTeam = await teamRepository.createTeam(
-    {
-      name: "Tech Committee",
-      legacyStatus: TeamLegacyStatus.ReturningTeam,
-      type: TeamType.Spirit,
-    },
-    { id: marathon.value.id }
+  const overallCommittee = await committeeRepository.getCommittee(
+    CommitteeIdentifier.overallCommittee
   );
 
-  await teamRepository.createTeam(
-    {
-      name: "Random People",
-      legacyStatus: TeamLegacyStatus.NewTeam,
-      type: TeamType.Spirit,
-    },
-    { id: marathon.value.id }
+  if (overallCommittee.isErr()) {
+    throw new CatchableConcreteError(overallCommittee.error);
+  }
+
+  const techCommittee = await committeeRepository.getCommittee(
+    CommitteeIdentifier.techCommittee
   );
+
+  if (techCommittee.isErr()) {
+    throw new CatchableConcreteError(techCommittee.error);
+  }
+
+  let techCommitteeTeam = await committeeRepository.getCommitteeTeam(
+    CommitteeIdentifier.techCommittee,
+    { year: "DB24" }
+  );
+  if (techCommitteeTeam.isErr()) {
+    techCommitteeTeam = Ok(
+      await teamRepository.createTeam(
+        {
+          name: "Tech Committee",
+          legacyStatus: TeamLegacyStatus.ReturningTeam,
+          type: TeamType.Spirit,
+        },
+        { id: marathon.value.id }
+      )
+    );
+  }
+  if (techCommitteeTeam.isErr()) {
+    throw new CatchableConcreteError(techCommitteeTeam.error);
+  }
+
+  const [randomPeopleTeam] = await teamRepository.listTeams({
+    filters: [{ comparison: "EQUALS", field: "name", value: "Random People" }],
+    marathon: [{ year: "DB24" }],
+  });
+  if (!randomPeopleTeam) {
+    await teamRepository.createTeam(
+      {
+        name: "Random People",
+        legacyStatus: TeamLegacyStatus.NewTeam,
+        type: TeamType.Spirit,
+      },
+      { id: marathon.value.id }
+    );
+  }
 
   await teamRepository.updateTeam(
-    { id: techCommitteeTeam.id },
+    { id: techCommitteeTeam.value.id },
     {
       correspondingCommittee: {
         connect: {
@@ -108,7 +151,7 @@ try {
   );
 
   await Promise.all(
-    techPeople.flatMap((person) =>
+    techCommitteePeople.flatMap((person) =>
       committeeRepository.assignPersonToCommittee(
         {
           id: person.unwrap().id,
