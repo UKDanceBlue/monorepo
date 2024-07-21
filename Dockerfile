@@ -7,8 +7,6 @@ WORKDIR /builddir
 
 RUN corepack yarn install --immutable
 
-RUN corepack yarn run gql:build
-
 WORKDIR /builddir/packages/common
 
 RUN corepack yarn build
