@@ -5,7 +5,7 @@ ADD --link --exclude=packages/mobile . /builddir
 
 WORKDIR /builddir
 
-RUN corepack yarn install --immutable
+RUN corepack yarn install
 
 WORKDIR /builddir/packages/common
 

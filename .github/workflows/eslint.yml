@@ -42,10 +42,10 @@ jobs:
       - name: Enable Corepack before setting up Node
         run: corepack enable
 
-      - name: Set up node 18.x
+      - name: Set up node 22.x
         uses: actions/setup-node@v4.0.3
         with:
-          node-version: 18
+          node-version: 22
           cache: yarn
 
       - name: Install dependencies
@@ -53,9 +53,6 @@ jobs:
 
       - name: Generate Prisma Client
         run: yarn run server:prisma generate
-
-      - name: Build GraphQL
-        run: yarn run gql:build
 
       - name: Build common
         run: yarn run common:build
