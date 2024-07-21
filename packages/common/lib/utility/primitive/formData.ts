@@ -23,9 +23,9 @@ export function formDataToJson(
     }
 
     if (!Array.isArray(json[key])) {
-      json[key] = [json[key] as Primitive];
+      json[key] = [json[key]];
     }
-    (json[key] as Primitive[]).push(value);
+    (json[key]).push(value);
   }
 
   return json;

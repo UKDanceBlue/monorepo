@@ -5,10 +5,12 @@ import { Button, SafeAreaView, ScrollView, Text, View } from "react-native";
 
 import { logError, universalCatch } from "../logging";
 
+type ErrorWithCause = Error & { cause?: unknown };
+
 class ErrorBoundary extends Component<
   { children: ReactNode },
   {
-    error?: Error | null;
+    error?: ErrorWithCause | null;
     untypedError?: unknown;
     componentStack?: string | null;
     isComponentError?: boolean | null;

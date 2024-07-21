@@ -38,6 +38,8 @@ async function config() {
     },
   });
 
+  config.resolver.unstable_enablePackageExports = true;
+
   return config;
 }
 
