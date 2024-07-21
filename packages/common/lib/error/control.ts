@@ -2,6 +2,7 @@ import type { AuthorizationRule } from "@ukdanceblue/common";
 import { prettyPrintAuthorizationRule } from "@ukdanceblue/common";
 
 import { ConcreteError } from "./error.js";
+import * as ErrorCode from "./errorCode.js";
 
 /**
  * These errors are caused when the server can do something, but doesn't want to. For example
@@ -23,8 +24,6 @@ export abstract class ControlError extends ConcreteError {
   }
 }
 
-const UnauthorizedErrorTag = Symbol("UnauthorizedError");
-type UnauthorizedErrorTag = typeof UnauthorizedErrorTag;
 export class UnauthorizedError extends ControlError {
   get message() {
     return "Unauthorized";
@@ -38,31 +37,21 @@ export class UnauthorizedError extends ControlError {
     return `Unauthorized: ${this.requiredAuthorization.map(prettyPrintAuthorizationRule).join(", ")}`;
   }
 
-  static get Tag(): UnauthorizedErrorTag {
-    return UnauthorizedErrorTag;
-  }
-  get tag(): UnauthorizedErrorTag {
-    return UnauthorizedErrorTag;
+  get tag(): ErrorCode.Unauthorized {
+    return ErrorCode.Unauthorized;
   }
 }
 
-const UnauthenticatedErrorTag = Symbol("UnauthenticatedError");
-type UnauthenticatedErrorTag = typeof UnauthenticatedErrorTag;
 export class UnauthenticatedError extends ControlError {
   get message() {
     return "Unauthenticated";
   }
 
-  static get Tag(): UnauthenticatedErrorTag {
-    return UnauthenticatedErrorTag;
-  }
-  get tag(): UnauthenticatedErrorTag {
-    return UnauthenticatedErrorTag;
+  get tag(): ErrorCode.Unauthenticated {
+    return ErrorCode.Unauthenticated;
   }
 }
 
-const ActionDeniedErrorTag = Symbol("ActionDeniedError");
-type ActionDeniedErrorTag = typeof ActionDeniedErrorTag;
 export class ActionDeniedError extends ControlError {
   constructor(protected readonly action: string) {
     super();
@@ -72,10 +61,7 @@ export class ActionDeniedError extends ControlError {
     return `Action denied: ${this.action}`;
   }
 
-  static get Tag(): ActionDeniedErrorTag {
-    return ActionDeniedErrorTag;
-  }
-  get tag(): ActionDeniedErrorTag {
-    return ActionDeniedErrorTag;
+  get tag(): ErrorCode.ActionDenied {
+    return ErrorCode.ActionDenied;
   }
 }

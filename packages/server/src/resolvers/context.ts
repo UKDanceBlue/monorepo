@@ -13,7 +13,7 @@ import {
   roleToAccessLevel,
   TeamType,
 } from "@ukdanceblue/common";
-import { NotFoundError } from "@ukdanceblue/common/error";
+import { ErrorCode } from "@ukdanceblue/common/error";
 import type { ConcreteResult } from "@ukdanceblue/common/error";
 import type { DefaultState } from "koa";
 import { Ok } from "ts-results-es";
@@ -49,7 +49,7 @@ async function withUserInfo(
   });
 
   if (person.isErr()) {
-    if (person.error.tag === NotFoundError.Tag) {
+    if (person.error.tag === ErrorCode.NotFound) {
       // Short-circuit if the user is not found
       return Ok(outputContext);
     }
@@ -93,7 +93,7 @@ async function withUserInfo(
     true
   );
   if (teamMemberships.isErr()) {
-    if (teamMemberships.error.tag === NotFoundError.Tag) {
+    if (teamMemberships.error.tag === ErrorCode.NotFound) {
       teamMemberships = Ok([]);
     } else {
       return teamMemberships;

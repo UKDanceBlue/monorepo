@@ -1,12 +1,15 @@
 import { fileURLToPath } from "url";
 
-import { ConcreteError, toBasicError } from "@ukdanceblue/common/error";
+import {
+  ConcreteError,
+  FormattedConcreteError,
+  toBasicError,
+} from "@ukdanceblue/common/error";
 import { Result } from "ts-results-es";
 import type { MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
 import { Container } from "typedi";
 
-import { CatchableConcreteError } from "./formatError.js";
 import { logger } from "#logging/logger.js";
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "#resolvers/DeviceResolver.js";
@@ -48,7 +51,7 @@ const errorHandlingMiddleware: MiddlewareFn = async (_, next) => {
   if (Result.isResult(result)) {
     if (result.isErr()) {
       logger.error("An error occurred in a resolver", result.error);
-      throw new CatchableConcreteError(
+      throw new FormattedConcreteError(
         result.error instanceof ConcreteError
           ? result.error
           : toBasicError(result.error)
@@ -101,4 +104,5 @@ export default await buildSchema({
   emitSchemaFile: schemaPath,
   globalMiddlewares: [errorHandlingMiddleware],
   container: Container,
+  validate: true,
 });

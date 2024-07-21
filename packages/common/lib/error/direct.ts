@@ -1,10 +1,9 @@
 import type { Option } from "ts-results-es";
 
 import { ConcreteError } from "./error.js";
+import * as ErrorCode from "./errorCode.js";
 import { optionOf } from "./option.js";
 
-const NotFoundErrorTag = Symbol("NotFoundError");
-type NotFoundErrorTag = typeof NotFoundErrorTag;
 export class NotFoundError extends ConcreteError {
   readonly #what: Option<string>;
   readonly #where: Option<string>;
@@ -48,16 +47,11 @@ export class NotFoundError extends ConcreteError {
     return undefined;
   }
 
-  static get Tag(): NotFoundErrorTag {
-    return NotFoundErrorTag;
-  }
-  get tag(): NotFoundErrorTag {
-    return NotFoundErrorTag;
+  get tag(): ErrorCode.NotFound {
+    return ErrorCode.NotFound;
   }
 }
 
-const TimeoutErrorTag = Symbol("TimeoutError");
-type TimeoutErrorTag = typeof TimeoutErrorTag;
 export class TimeoutError extends ConcreteError {
   readonly #what: string | null;
 
@@ -74,16 +68,11 @@ export class TimeoutError extends ConcreteError {
     return false;
   }
 
-  static get Tag(): TimeoutErrorTag {
-    return TimeoutErrorTag;
-  }
-  get tag(): TimeoutErrorTag {
-    return TimeoutErrorTag;
+  get tag(): ErrorCode.Timeout {
+    return ErrorCode.Timeout;
   }
 }
 
-const NotImplementedErrorTag = Symbol("NotImplementedError");
-type NotImplementedErrorTag = typeof NotImplementedErrorTag;
 export class InvalidOperationError extends ConcreteError {
   readonly #what: string;
 
@@ -100,16 +89,11 @@ export class InvalidOperationError extends ConcreteError {
     return false;
   }
 
-  static get Tag(): NotImplementedErrorTag {
-    return NotImplementedErrorTag;
-  }
-  get tag(): NotImplementedErrorTag {
-    return NotImplementedErrorTag;
+  get tag(): ErrorCode.InvalidOperation {
+    return ErrorCode.InvalidOperation;
   }
 }
 
-const InvalidArgumentErrorTag = Symbol("InvalidArgumentError");
-type InvalidArgumentErrorTag = typeof InvalidArgumentErrorTag;
 export class InvalidArgumentError extends ConcreteError {
   readonly #what: string;
 
@@ -126,16 +110,11 @@ export class InvalidArgumentError extends ConcreteError {
     return false;
   }
 
-  static get Tag(): InvalidArgumentErrorTag {
-    return InvalidArgumentErrorTag;
-  }
-  get tag(): InvalidArgumentErrorTag {
-    return InvalidArgumentErrorTag;
+  get tag(): ErrorCode.InvalidArgument {
+    return ErrorCode.InvalidArgument;
   }
 }
 
-const InvalidStateErrorTag = Symbol("InvalidStateError");
-type InvalidStateErrorTag = typeof InvalidStateErrorTag;
 export class InvalidStateError extends ConcreteError {
   readonly #what: string;
 
@@ -152,16 +131,11 @@ export class InvalidStateError extends ConcreteError {
     return false;
   }
 
-  static get Tag(): InvalidStateErrorTag {
-    return InvalidStateErrorTag;
-  }
-  get tag(): InvalidStateErrorTag {
-    return InvalidStateErrorTag;
+  get tag(): ErrorCode.InvalidState {
+    return ErrorCode.InvalidState;
   }
 }
 
-const InvariantErrorTag = Symbol("InvariantError");
-type InvariantErrorTag = typeof InvariantErrorTag;
 export class InvariantError extends ConcreteError {
   readonly #what: string;
 
@@ -178,10 +152,7 @@ export class InvariantError extends ConcreteError {
     return false;
   }
 
-  static get Tag(): InvariantErrorTag {
-    return InvariantErrorTag;
-  }
-  get tag(): InvariantErrorTag {
-    return InvariantErrorTag;
+  get tag(): ErrorCode.InvariantViolation {
+    return ErrorCode.InvariantViolation;
   }
 }

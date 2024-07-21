@@ -17,6 +17,7 @@ import {
   TeamNode,
   TeamType,
 } from "@ukdanceblue/common";
+import { FormattedConcreteError } from "@ukdanceblue/common/error";
 import { VoidResolver } from "graphql-scalars";
 import {
   Arg,
@@ -35,7 +36,6 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { CatchableConcreteError } from "#lib/formatError.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
@@ -437,10 +437,10 @@ export class TeamResolver {
     });
 
     if (entries.isErr()) {
-      throw new CatchableConcreteError(entries.error);
+      throw new FormattedConcreteError(entries.error);
     }
     if (count.isErr()) {
-      throw new CatchableConcreteError(count.error);
+      throw new FormattedConcreteError(count.error);
     }
 
     return ListFundraisingEntriesResponse.newPaginated({
@@ -474,7 +474,7 @@ export class TeamResolver {
     });
 
     if (rows.isErr()) {
-      throw new CatchableConcreteError(rows.error);
+      throw new FormattedConcreteError(rows.error);
     }
 
     return rows.value.map((row) => {
@@ -497,7 +497,7 @@ export class TeamResolver {
     );
 
     if (result.isErr()) {
-      throw new CatchableConcreteError(result.error);
+      throw new FormattedConcreteError(result.error);
     }
 
     return undefined;

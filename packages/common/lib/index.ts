@@ -17,7 +17,6 @@ export type {
 
 export * from "./authorization/accessControl.js";
 export * from "./utility/errors/ApiError.js";
-export * from "./utility/errors/validation.js";
 
 export * from "./utility/primitive/SimpleTypes.js";
 

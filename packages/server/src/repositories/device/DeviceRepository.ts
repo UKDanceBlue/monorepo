@@ -1,12 +1,14 @@
 import type { Person } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
-import { NotFoundError } from "@ukdanceblue/common/error";
+import {
+  NotFoundError,
+  FormattedConcreteError,
+} from "@ukdanceblue/common/error";
 import { Err, Result } from "ts-results-es";
 import { Service } from "typedi";
 
 import { buildDeviceOrder, buildDeviceWhere } from "./deviceRepositoryUtils.js";
-import { CatchableConcreteError } from "#lib/formatError.js";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { NotificationAudience } from "#notification/NotificationProvider.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
@@ -109,7 +111,7 @@ export class DeviceRepository {
         uuid: lastUserId,
       });
       if (userResult.isErr()) {
-        throw new CatchableConcreteError(userResult.error);
+        throw new FormattedConcreteError(userResult.error);
       } else {
         user = userResult.value;
       }

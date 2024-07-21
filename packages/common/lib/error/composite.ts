@@ -1,7 +1,6 @@
 import { ConcreteError } from "./error.js";
+import * as ErrorCode from "./errorCode.js";
 
-const CompositeErrorTag = Symbol("CompositeError");
-type CompositeErrorTag = typeof CompositeErrorTag;
 export class CompositeError<E extends ConcreteError> extends ConcreteError {
   readonly errors: E[];
 
@@ -22,10 +21,7 @@ export class CompositeError<E extends ConcreteError> extends ConcreteError {
     return this.errors.every((error) => error.expose);
   }
 
-  static get Tag() {
-    return CompositeErrorTag;
-  }
-  get tag(): CompositeErrorTag {
-    return CompositeErrorTag;
+  get tag(): ErrorCode.CompositeError {
+    return ErrorCode.CompositeError;
   }
 }
