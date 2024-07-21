@@ -3618,7 +3618,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/client-preset@npm:^4.2.2, @graphql-codegen/client-preset@npm:^4.3.2":
+"@graphql-codegen/client-preset@npm:4.3.2":
   version: 4.3.2
   resolution: "@graphql-codegen/client-preset@npm:4.3.2"
   dependencies:
@@ -3638,6 +3638,29 @@ __metadata:
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
   checksum: 10/52c66f1f0de4a1537726d2d6915f307aa650ab425a9b6ba5e24718a412f5b2aa7b27c706074d7fa086cbede7c0a0fb74ff1016ba378cc729a40e301d207a42f8
+  languageName: node
+  linkType: hard
+
+"@graphql-codegen/client-preset@patch:@graphql-codegen/client-preset@npm%3A4.3.2#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.3.2-fb874ac9d8.patch":
+  version: 4.3.2
+  resolution: "@graphql-codegen/client-preset@patch:@graphql-codegen/client-preset@npm%3A4.3.2#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.3.2-fb874ac9d8.patch::version=4.3.2&hash=b3a653"
+  dependencies:
+    "@babel/helper-plugin-utils": "npm:^7.20.2"
+    "@babel/template": "npm:^7.20.7"
+    "@graphql-codegen/add": "npm:^5.0.3"
+    "@graphql-codegen/gql-tag-operations": "npm:4.0.9"
+    "@graphql-codegen/plugin-helpers": "npm:^5.0.4"
+    "@graphql-codegen/typed-document-node": "npm:^5.0.9"
+    "@graphql-codegen/typescript": "npm:^4.0.9"
+    "@graphql-codegen/typescript-operations": "npm:^4.2.3"
+    "@graphql-codegen/visitor-plugin-common": "npm:^5.3.1"
+    "@graphql-tools/documents": "npm:^1.0.0"
+    "@graphql-tools/utils": "npm:^10.0.0"
+    "@graphql-typed-document-node/core": "npm:3.2.0"
+    tslib: "npm:~2.6.0"
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: 10/eca3d743cc40336f73d836c0d0247112fb7791fe23782ae9d5992a2d3951dc0e9c84e36e984b0a74bdff66e20492984c364879997c5f636bfa820b6dbd94ca0c
   languageName: node
   linkType: hard
 
@@ -8511,7 +8534,7 @@ __metadata:
     "@eslint/js": "npm:^8.57.0"
     "@expo/ngrok": "npm:^4.1.0"
     "@graphql-codegen/cli": "npm:^5.0.2"
-    "@graphql-codegen/client-preset": "npm:^4.3.2"
+    "@graphql-codegen/client-preset": "patch:@graphql-codegen/client-preset@npm%3A4.3.2#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.3.2-fb874ac9d8.patch"
     "@types/eslint-config-prettier": "npm:^6.11.3"
     "@types/eslint__js": "npm:^8.42.3"
     "@typescript-eslint/eslint-plugin": "npm:^7.16.1"

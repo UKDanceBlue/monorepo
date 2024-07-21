@@ -44,10 +44,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: yarn install
-
-      - name: Build GraphQL
-        run: yarn run gql:build
+        run: yarn install --immutable
 
       - name: Build common
         run: yarn workspace @ukdanceblue/common run build
