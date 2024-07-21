@@ -7,7 +7,6 @@ import { EventListPage } from "./EventListPage";
 
 describe("<EventListPage />", () => {
   it("renders correctly", () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const tree = renderWithNativeBase(
       <EventListPage
         refreshing={false}

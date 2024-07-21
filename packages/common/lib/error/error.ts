@@ -1,4 +1,26 @@
+import type { GraphQLFormattedError, SourceLocation } from "graphql";
+import { GraphQLError } from "graphql";
+import * as ErrorCode from "./errorCode.js";
+
 export abstract class ConcreteError {
+  #graphQlError: GraphQLError;
+
+  constructor() {
+    this.#graphQlError = new GraphQLError("");
+  }
+
+  get graphQlError() {
+    const formatted = this.#graphQlError.toJSON();
+    return {
+      ...formatted,
+      message: this.message,
+      extensions: {
+        ...formatted.extensions,
+        code: this.tag.description,
+      },
+    } satisfies GraphQLFormattedErrorWithExtensions;
+  }
+
   abstract get message(): string;
   get detailedMessage(): string {
     return this.message;
@@ -7,11 +29,47 @@ export abstract class ConcreteError {
   get stack(): string | undefined {
     return undefined;
   }
-  abstract get tag(): unknown;
+  abstract get tag(): (typeof ErrorCode)[keyof typeof ErrorCode];
 }
 
-const JsErrorTag = Symbol("JsError");
-type JsErrorTag = typeof JsErrorTag;
+export interface GraphQLFormattedErrorExtensions {
+  code?: string;
+  stacktrace?: string[];
+  [key: string]: unknown;
+}
+export type GraphQLFormattedErrorWithExtensions = GraphQLFormattedError & {
+  extensions: GraphQLFormattedErrorExtensions;
+};
+
+export class FormattedConcreteError
+  extends Error
+  implements GraphQLFormattedErrorWithExtensions
+{
+  readonly cause: ConcreteError;
+  readonly graphQlError: GraphQLFormattedErrorWithExtensions;
+  constructor(error: ConcreteError) {
+    super(error.message);
+    this.cause = error;
+    this.graphQlError = error.graphQlError;
+  }
+
+  get extensions(): GraphQLFormattedErrorExtensions {
+    return this.graphQlError.extensions;
+  }
+
+  get locations(): ReadonlyArray<SourceLocation> | undefined {
+    return this.graphQlError.locations;
+  }
+
+  get path(): ReadonlyArray<string | number> | undefined {
+    return this.graphQlError.path;
+  }
+
+  get stack(): string | undefined {
+    return this.cause.expose ? this.cause.stack : undefined;
+  }
+}
+
 export class JsError extends ConcreteError {
   readonly error: Error;
 
@@ -32,17 +90,11 @@ export class JsError extends ConcreteError {
     return this.error.stack;
   }
 
-  static get Tag(): JsErrorTag {
-    return JsErrorTag;
-  }
-
-  get tag(): JsErrorTag {
-    return JsErrorTag;
+  get tag(): ErrorCode.JsError {
+    return ErrorCode.JsError;
   }
 }
 
-const UnknownErrorTag = Symbol("UnknownError");
-type UnknownErrorTag = typeof UnknownErrorTag;
 export class UnknownError extends ConcreteError {
   readonly #message: string = "Unknown error";
 
@@ -62,11 +114,8 @@ export class UnknownError extends ConcreteError {
     return false;
   }
 
-  static get Tag(): UnknownErrorTag {
-    return UnknownErrorTag;
-  }
-  get tag(): UnknownErrorTag {
-    return UnknownErrorTag;
+  get tag(): ErrorCode.Unknown {
+    return ErrorCode.Unknown;
   }
 }
 

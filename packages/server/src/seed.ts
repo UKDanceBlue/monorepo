@@ -4,9 +4,9 @@ import {
   TeamLegacyStatus,
   TeamType,
 } from "@ukdanceblue/common";
+import { FormattedConcreteError } from "@ukdanceblue/common/error";
 import { Container } from "typedi";
 
-import { CatchableConcreteError } from "#lib/formatError.js";
 import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
 import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
@@ -44,7 +44,7 @@ try {
 
   const ensureCommitteesResult = await committeeRepository.ensureCommittees();
   if (ensureCommitteesResult.isErr()) {
-    throw new CatchableConcreteError(ensureCommitteesResult.error);
+    throw new FormattedConcreteError(ensureCommitteesResult.error);
   }
 
   const techChair = await personRepository.createPerson({
@@ -52,12 +52,12 @@ try {
     linkblue: "jtho264",
   });
   if (techChair.isErr()) {
-    throw new CatchableConcreteError(techChair.error);
+    throw new FormattedConcreteError(techChair.error);
   }
 
   const marathon = await marathonRepository.findActiveMarathon();
   if (marathon.isErr()) {
-    throw new CatchableConcreteError(marathon.error);
+    throw new FormattedConcreteError(marathon.error);
   }
 
   await teamRepository.createTeam(

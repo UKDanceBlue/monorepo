@@ -14,7 +14,11 @@ import {
   PersonNode,
   SortDirection,
 } from "@ukdanceblue/common";
-import { ConcreteError , ConcreteResult } from "@ukdanceblue/common/error";
+import {
+  ConcreteError,
+  ConcreteResult,
+  FormattedConcreteError,
+} from "@ukdanceblue/common/error";
 import { EmailAddressResolver } from "graphql-scalars";
 import { Ok, Result } from "ts-results-es";
 import {
@@ -33,7 +37,6 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
-import { CatchableConcreteError } from "#lib/formatError.js";
 import { auditLogger } from "#logging/auditLogging.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
@@ -493,10 +496,10 @@ export class PersonResolver {
     });
 
     if (entries.isErr()) {
-      throw new CatchableConcreteError(entries.error);
+      throw new FormattedConcreteError(entries.error);
     }
     if (count.isErr()) {
-      throw new CatchableConcreteError(count.error);
+      throw new FormattedConcreteError(count.error);
     }
 
     return ListFundraisingEntriesResponse.newPaginated({
@@ -530,7 +533,7 @@ export class PersonResolver {
       });
 
     if (models.isErr()) {
-      throw new CatchableConcreteError(models.error);
+      throw new FormattedConcreteError(models.error);
     }
 
     return Promise.all(
