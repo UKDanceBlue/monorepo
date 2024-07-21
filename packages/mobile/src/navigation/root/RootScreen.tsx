@@ -68,7 +68,7 @@ const RootScreen = () => {
     rootScreenData?.loginState ?? null
   );
   const isLoggedIn = useMemo(() => {
-    return authData.dbRole !== DbRole.None;
+    return authData && authData.dbRole !== DbRole.None;
   }, [authData]);
 
   const { colors } = useTheme();

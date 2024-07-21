@@ -5,7 +5,7 @@ ADD --link --exclude=packages/mobile . /builddir
 
 WORKDIR /builddir
 
-RUN corepack yarn install
+RUN corepack yarn install --immutable
 
 RUN corepack yarn run gql:build
 
@@ -21,8 +21,6 @@ WORKDIR /builddir/packages/server
 RUN corepack yarn prisma generate
 
 RUN corepack yarn build
-
-RUN corepack yarn workspaces focus --production -A
 
 # Portal build
 FROM build as portal-build

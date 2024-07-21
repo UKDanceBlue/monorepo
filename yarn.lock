@@ -8471,7 +8471,7 @@ __metadata:
     luxon: "npm:^3.4.4"
     lz-string: "npm:^1.4.4"
     metro-babel-register: "npm:^0.71.1"
-    native-base: "npm:^3.4.13"
+    native-base: "patch:native-base@npm%3A3.4.28#~/.yarn/patches/native-base-npm-3.4.28-a8ecceae4d.patch"
     react: "npm:18.2.0"
     react-native: "npm:0.73.6"
     react-native-bundle-visualizer: "npm:^3.1.1"
@@ -20447,7 +20447,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"native-base@npm:^3.4.13":
+"native-base@npm:3.4.28":
   version: 3.4.28
   resolution: "native-base@npm:3.4.28"
   dependencies:
@@ -20495,6 +20495,57 @@ __metadata:
     react-native-safe-area-context: "*"
     react-native-svg: "*"
   checksum: 10/ad6c1cd86545abf38b696844db749f70c8483efa9897bc9db39747229f8f162dfd80dcf61ee2dbe98962dc3e234b859c7d96151d3e61c346b7bd76bbde14c83d
+  languageName: node
+  linkType: hard
+
+"native-base@patch:native-base@npm%3A3.4.28#~/.yarn/patches/native-base-npm-3.4.28-a8ecceae4d.patch":
+  version: 3.4.28
+  resolution: "native-base@patch:native-base@npm%3A3.4.28#~/.yarn/patches/native-base-npm-3.4.28-a8ecceae4d.patch::version=3.4.28&hash=f9b4f1"
+  dependencies:
+    "@react-aria/visually-hidden": "npm:^3.2.1"
+    "@react-native-aria/button": "npm:^0.2.4"
+    "@react-native-aria/checkbox": "npm:^0.2.3"
+    "@react-native-aria/combobox": "npm:^0.2.4-alpha.0"
+    "@react-native-aria/focus": "npm:^0.2.6"
+    "@react-native-aria/interactions": "npm:^0.2.2"
+    "@react-native-aria/listbox": "npm:^0.2.4-alpha.3"
+    "@react-native-aria/overlays": "npm:^0.3.3"
+    "@react-native-aria/radio": "npm:^0.2.4"
+    "@react-native-aria/slider": "npm:^0.2.5-alpha.1"
+    "@react-native-aria/tabs": "npm:^0.2.7"
+    "@react-native-aria/utils": "npm:^0.2.8"
+    "@react-stately/checkbox": "npm:3.0.3"
+    "@react-stately/collections": "npm:3.3.0"
+    "@react-stately/combobox": "npm:3.0.0-alpha.1"
+    "@react-stately/radio": "npm:3.2.1"
+    "@react-stately/slider": "npm:3.0.1"
+    "@react-stately/tabs": "npm:3.0.0-alpha.1"
+    "@react-stately/toggle": "npm:3.2.1"
+    inline-style-prefixer: "npm:^6.0.1"
+    lodash.clonedeep: "npm:^4.5.0"
+    lodash.get: "npm:^4.4.2"
+    lodash.has: "npm:^4.5.2"
+    lodash.isempty: "npm:^4.4.0"
+    lodash.isequal: "npm:^4.5.0"
+    lodash.isnil: "npm:^4.0.0"
+    lodash.merge: "npm:^4.6.2"
+    lodash.mergewith: "npm:^4.6.2"
+    lodash.omit: "npm:^4.5.0"
+    lodash.omitby: "npm:^4.6.0"
+    lodash.pick: "npm:^4.4.0"
+    lodash.uniqueid: "npm:^4.0.1"
+    stable-hash: "npm:^0.0.2"
+    tinycolor2: "npm:^1.4.2"
+    use-sync-external-store: "npm:^1.2.0"
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-native": "*"
+    react: "*"
+    react-dom: "*"
+    react-native: "*"
+    react-native-safe-area-context: "*"
+    react-native-svg: "*"
+  checksum: 10/4be6ececca7cd89631233dd9ca6a000039fc4f6745afb734b00479658d9f4e0f31d7b56a9c4804b505a12bdda4c18c7941dc90aac8d8313a8d0286fa747ca863
   languageName: node
   linkType: hard
 

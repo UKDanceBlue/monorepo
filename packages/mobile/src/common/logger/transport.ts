@@ -83,8 +83,9 @@ export abstract class LoggerTransport {
                   extra.error instanceof Error
                     ? extra.error
                     : typeof extra.error === "string"
-                    ? new Error(extra.error)
-                    : new Error("Nonstandard error", { cause: extra.error }),
+                      ? new Error(extra.error)
+                      : // @ts-expect-error Allowing error.cause
+                        new Error("Nonstandard error", { cause: extra.error }),
               }
             : (extra as Omit<typeof extra, "error">),
       });
