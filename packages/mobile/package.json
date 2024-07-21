@@ -46,7 +46,7 @@
     "@ukdanceblue/common": "workspace:^",
     "@ukdanceblue/db-app-common": "latest",
     "@urql/exchange-auth": "^2.1.6",
-    "class-validator": "0.14.0",
+    "class-validator": "^0.14.0",
     "expo": "~50.0.14",
     "expo-application": "~5.8.3",
     "expo-asset": "~9.0.2",
@@ -102,7 +102,8 @@
     "react-native-vector-icons": "^9.2.0",
     "react-native-view-shot": "^3.8.0",
     "react-native-webview": "13.6.4",
-    "reflect-metadata": "^0.1.13",
+    "react-test-renderer": "^18.3.1",
+    "reflect-metadata": "^0.2.0",
     "type-graphql": "^2.0.0-beta.3",
     "typedi": "^0.10.0",
     "typescript": "^5.5.3",
@@ -113,6 +114,11 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "*",
+    "@babel/plugin-proposal-optional-chaining": "*",
+    "@babel/plugin-transform-arrow-functions": "*",
+    "@babel/plugin-transform-shorthand-properties": "*",
+    "@babel/plugin-transform-template-literals": "*",
     "@expo/config": "~8.5.0",
     "@faker-js/faker": "^7.6.0",
     "@graphql-typed-document-node/core": "^3.2.0",
@@ -125,6 +131,7 @@
     "@types/markdown-it": "^12.2.3",
     "@types/react": "~18.2.45",
     "@types/react-native-rss-parser": "^1.4.0",
+    "@types/react-test-renderer": "^18",
     "@types/uuid": "^8.3.4",
     "@types/xdate": "^0.8.32",
     "babel-cli": "^6.26.0",
@@ -136,8 +143,7 @@
     "jest-expo": "~50.0.1",
     "metro-babel-register": "^0.71.1",
     "react-native-bundle-visualizer": "^3.1.1",
-    "ts-jest": "^29.0.3",
-    "ts-node": "^10.9.1"
+    "ts-jest": "^29.0.3"
   },
   "packageManager": "yarn@4.1.1+sha256.f3cc0eda8e5560e529c7147565b30faa43b4e472d90e8634d7134a37c7f59781",
   "private": true

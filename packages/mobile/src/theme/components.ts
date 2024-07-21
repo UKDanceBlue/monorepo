@@ -1,5 +1,5 @@
-import type { ComponentTheme, Theme } from "native-base/src/theme";
-import originalComponentThemes from "native-base/src/theme/components";
+import type { ComponentTheme, Theme } from "native-base";
+import originalComponentThemes from "native-base/components";
 
 const {
   Button: originalButtonTheme,
@@ -11,7 +11,7 @@ const {
 type BaseStyleProp<
   T extends { baseStyle: BaseStyle },
   BaseStyle extends (arg: Param) => unknown = T["baseStyle"],
-  Param = Parameters<BaseStyle>[0]
+  Param = Parameters<BaseStyle>[0],
 > = Param;
 
 // We are going to want a ton of component presets here, take a look around the project and look for frequently repeated styles

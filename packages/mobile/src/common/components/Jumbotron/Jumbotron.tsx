@@ -1,14 +1,13 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import type { Icon as IconType } from "@expo/vector-icons/build/createIconSet";
 import { Icon, Text, View } from "native-base";
-import type { ThemeComponentSizeType } from "native-base/src/components/types";
 
 import { useThemeColors } from "../../customHooks";
 
 const JumbotronIcon = <
   PossibleIconNames extends string,
   IconFontName extends string,
-  IconName extends PossibleIconNames
+  IconName extends PossibleIconNames,
 >({
   icon,
   iconColor,
@@ -18,7 +17,7 @@ const JumbotronIcon = <
   icon: IconName;
   iconColor: string;
   iconType: IconType<PossibleIconNames, IconFontName>;
-  iconSize: ThemeComponentSizeType<"Icon">;
+  iconSize: number;
 }) => {
   const colors = useThemeColors();
   if (iconType === FontAwesome5) {
@@ -40,7 +39,7 @@ const JumbotronIcon = <
 const Jumbotron = <
   PossibleIconNames extends string,
   IconFontName extends string,
-  IconName extends PossibleIconNames
+  IconName extends PossibleIconNames,
 >({
   icon,
   iconColor,
@@ -56,7 +55,7 @@ const Jumbotron = <
   title?: string;
   subTitle?: string;
   bodyText?: string;
-  iconSize?: ThemeComponentSizeType<"Icon">;
+  iconSize?: number;
 }) => {
   return (
     <View

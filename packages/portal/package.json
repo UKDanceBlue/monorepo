@@ -26,7 +26,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.47.0",
-    "reflect-metadata": "^0.1.13",
+    "reflect-metadata": "^0.2.0",
     "thumbhash": "^0.1.1",
     "type-graphql": "^2.0.0-beta.3",
     "typedi": "^0.10.0",
