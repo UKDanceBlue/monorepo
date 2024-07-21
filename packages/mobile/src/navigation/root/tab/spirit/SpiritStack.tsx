@@ -55,7 +55,7 @@ const SpiritScreen = () => {
       type: !spiritMode
         ? []
         : spiritMode === "spirit"
-          ? [TeamType.Spirit, TeamType.Committee]
+          ? [TeamType.Spirit]
           : [TeamType.Morale],
     },
   });

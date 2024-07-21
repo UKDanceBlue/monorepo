@@ -82,7 +82,7 @@
     "lodash": "^4.17.21",
     "luxon": "^3.4.4",
     "lz-string": "^1.4.4",
-    "native-base": "^3.4.13",
+    "native-base": "patch:native-base@npm%3A3.4.28#~/.yarn/patches/native-base-npm-3.4.28-a8ecceae4d.patch",
     "react": "18.2.0",
     "react-native": "0.73.6",
     "react-native-calendars": "^1.1303.0",

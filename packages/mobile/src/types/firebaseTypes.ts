@@ -31,10 +31,7 @@ export function isFirebaseError(error: unknown): error is NativeFirebaseError {
   ) {
     return false;
   }
-  return !(
-    typeof (error as NativeFirebaseError).cause !== "string" &&
-    (error as NativeFirebaseError).cause != null
-  );
+  return true;
 }
 
 export interface FirestoreHour {

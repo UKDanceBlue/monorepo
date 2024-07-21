@@ -1,0 +1,54 @@
+diff --git a/src/core/NativeBaseProvider.tsx b/src/core/NativeBaseProvider.tsx
+index 43b4bd14b648f19227dbfb8caa37fe230a06c983..5e7b01a3f893fec7663575fa751d6fc687e46846 100644
+--- a/src/core/NativeBaseProvider.tsx
++++ b/src/core/NativeBaseProvider.tsx
+@@ -1,27 +1,25 @@
++import { OverlayProvider } from '@react-native-aria/overlays';
+ import React from 'react';
++import { Platform, useWindowDimensions } from 'react-native';
+ import {
+-  SafeAreaProvider,
+-  Metrics,
+   initialWindowMetrics as defaultInitialWindowMetrics,
++  Metrics,
++  SafeAreaProvider,
+ } from 'react-native-safe-area-context';
+-import { SSRProvider } from '@react-native-aria/utils';
++import { ToastProvider, ToastRef, useToast } from '../components/composites/Toast';
++import {
++  getClosestBreakpoint,
++  platformSpecificSpaceUnits,
++} from '../theme/tools/utils';
++import { ResponsiveQueryProvider } from '../utils/useResponsiveQuery';
+ import { theme as defaultTheme, ITheme } from './../theme';
+ import type { IColorModeProviderProps } from './color-mode';
+ import HybridProvider from './hybrid-overlay/HybridProvider';
+-import { OverlayProvider } from '@react-native-aria/overlays';
+-import { ToastProvider, ToastRef } from '../components/composites/Toast';
+ import {
+   defaultConfig,
+   INativebaseConfig,
+   NativeBaseConfigProvider,
+ } from './NativeBaseContext';
+-import { useToast } from '../components/composites/Toast';
+-import { Platform, useWindowDimensions } from 'react-native';
+-import {
+-  getClosestBreakpoint,
+-  platformSpecificSpaceUnits,
+-} from '../theme/tools/utils';
+-import { ResponsiveQueryProvider } from '../utils/useResponsiveQuery';
+
+ // For SSR to work, we need to pass initial insets as 0 values on web.
+
+@@ -94,8 +92,9 @@ const NativeBaseProvider = (props: NativeBaseProviderProps) => {
+             <OverlayProvider isSSR>
+               <ToastProvider>
+                 <InitializeToastRef />
+-                <SSRProvider>{children}</SSRProvider>
+-              </ToastProvider>
++                {
++                  React.version >= '18' ? children : <SSRProvider>{children}</SSRProvider>;
++}              </ToastProvider>
+             </OverlayProvider>
+           </HybridProvider>
+         </ResponsiveQueryProvider>

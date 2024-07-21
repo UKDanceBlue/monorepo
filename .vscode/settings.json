@@ -20,10 +20,14 @@
   "javascript.inlayHints.parameterNames.enabled": "all",
   "cSpell.words": [
     "Catchable",
+    "codegen",
     "cooldown",
     "Errorable",
     "Leaderboards",
     "Spinnable",
+    "tanstack",
+    "typecheck",
+    "urql",
     "Whatwg"
   ],
   "eslint.codeActionsOnSave.mode": "problems"

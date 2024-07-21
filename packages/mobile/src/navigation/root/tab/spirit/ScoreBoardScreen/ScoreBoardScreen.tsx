@@ -97,9 +97,9 @@ const ScoreBoardScreen = ({
           case "returning": {
             return teamLegacyStatus === TeamLegacyStatus.ReturningTeam;
           }
-          case "committee": {
-            return teamType === TeamType.Committee;
-          }
+          // case "committee": {
+          //   return teamType === TeamType.Committee;
+          // }
           default: {
             return true;
           } // Show all teams for "All" filter
