@@ -1,54 +1,72 @@
+diff --git a/lib/commonjs/core/NativeBaseProvider.js b/lib/commonjs/core/NativeBaseProvider.js
+index 5009f3e72e6ec7bb1e20eaba4ae344543b8de89c..3884cd9ed4792733e8a3a4134c937373ec9a1742 100644
+--- a/lib/commonjs/core/NativeBaseProvider.js
++++ b/lib/commonjs/core/NativeBaseProvider.js
+@@ -90,7 +90,7 @@ const NativeBaseProvider = props => {
+     options: theme.config
+   }, /*#__PURE__*/_react.default.createElement(_overlays.OverlayProvider, {
+     isSSR: true
+-  }, /*#__PURE__*/_react.default.createElement(_Toast.ToastProvider, null, /*#__PURE__*/_react.default.createElement(InitializeToastRef, null), /*#__PURE__*/_react.default.createElement(_utils.SSRProvider, null, children)))))));
++  }, /*#__PURE__*/_react.default.createElement(_Toast.ToastProvider, null, /*#__PURE__*/_react.default.createElement(InitializeToastRef, null), children))))));
+ };
+
+ exports.NativeBaseProvider = NativeBaseProvider;
+diff --git a/lib/module/core/NativeBaseProvider.js b/lib/module/core/NativeBaseProvider.js
+index 9873462916a51ea529e6642f8d05f8a4932c48f8..0cbea4905310bb601728a0af5d52f0fb026ac089 100644
+--- a/lib/module/core/NativeBaseProvider.js
++++ b/lib/module/core/NativeBaseProvider.js
+@@ -67,7 +65,7 @@ const NativeBaseProvider = props => {
+     options: theme.config
+   }, /*#__PURE__*/React.createElement(OverlayProvider, {
+     isSSR: true
+-  }, /*#__PURE__*/React.createElement(ToastProvider, null, /*#__PURE__*/React.createElement(InitializeToastRef, null), /*#__PURE__*/React.createElement(SSRProvider, null, children)))))));
++  }, /*#__PURE__*/React.createElement(ToastProvider, null, /*#__PURE__*/React.createElement(InitializeToastRef, null), children))))));
+ };
+
+ const InitializeToastRef = () => {
+diff --git a/package.json b/package.json
+index aec4e9f671d227536b91e305819426d751c87816..80bf2caf54481c1a550caa1955ecf226b162762a 100644
+--- a/package.json
++++ b/package.json
+@@ -45,6 +45,18 @@
+   "react-native": "src/index",
+   "source": "src/index",
+   "typings": "lib/typescript/index.d.ts",
++  "exports": {
++    ".": {
++      "types": "./lib/typescript/index.d.ts",
++      "default": "./lib/commonjs/index.js",
++      "import": "./lib/module/index.js"
++    },
++    "./components": {
++      "types": "./lib/typescript/theme/components/index.d.ts",
++      "default": "./lib/commonjs/theme/components/index.js",
++      "import": "./lib/module/theme/components/index.js"
++    }
++  },
+   "devDependencies": {
+     "@commitlint/config-conventional": "^8.3.4",
+     "@react-native-community/bob": "^0.16.2",
+@@ -97,9 +104,7 @@
+   },
+   "peerDependencies": {
+     "@types/react": "*",
+-    "@types/react-native": "*",
+     "react": "*",
+-    "react-dom": "*",
+     "react-native": "*",
+     "react-native-safe-area-context": "*",
+     "react-native-svg": "*"
 diff --git a/src/core/NativeBaseProvider.tsx b/src/core/NativeBaseProvider.tsx
-index 43b4bd14b648f19227dbfb8caa37fe230a06c983..5e7b01a3f893fec7663575fa751d6fc687e46846 100644
+index 43b4bd14b648f19227dbfb8caa37fe230a06c983..e3f3c9c7099c23ef887af5a1b7033ec3efe81452 100644
 --- a/src/core/NativeBaseProvider.tsx
 +++ b/src/core/NativeBaseProvider.tsx
-@@ -1,27 +1,25 @@
-+import { OverlayProvider } from '@react-native-aria/overlays';
- import React from 'react';
-+import { Platform, useWindowDimensions } from 'react-native';
- import {
--  SafeAreaProvider,
--  Metrics,
-   initialWindowMetrics as defaultInitialWindowMetrics,
-+  Metrics,
-+  SafeAreaProvider,
- } from 'react-native-safe-area-context';
--import { SSRProvider } from '@react-native-aria/utils';
-+import { ToastProvider, ToastRef, useToast } from '../components/composites/Toast';
-+import {
-+  getClosestBreakpoint,
-+  platformSpecificSpaceUnits,
-+} from '../theme/tools/utils';
-+import { ResponsiveQueryProvider } from '../utils/useResponsiveQuery';
- import { theme as defaultTheme, ITheme } from './../theme';
- import type { IColorModeProviderProps } from './color-mode';
- import HybridProvider from './hybrid-overlay/HybridProvider';
--import { OverlayProvider } from '@react-native-aria/overlays';
--import { ToastProvider, ToastRef } from '../components/composites/Toast';
- import {
-   defaultConfig,
-   INativebaseConfig,
-   NativeBaseConfigProvider,
- } from './NativeBaseContext';
--import { useToast } from '../components/composites/Toast';
--import { Platform, useWindowDimensions } from 'react-native';
--import {
--  getClosestBreakpoint,
--  platformSpecificSpaceUnits,
--} from '../theme/tools/utils';
--import { ResponsiveQueryProvider } from '../utils/useResponsiveQuery';
-
- // For SSR to work, we need to pass initial insets as 0 values on web.
-
-@@ -94,8 +92,9 @@ const NativeBaseProvider = (props: NativeBaseProviderProps) => {
+@@ -94,7 +94,7 @@ const NativeBaseProvider = (props: NativeBaseProviderProps) => {
              <OverlayProvider isSSR>
                <ToastProvider>
                  <InitializeToastRef />
 -                <SSRProvider>{children}</SSRProvider>
--              </ToastProvider>
-+                {
-+                  React.version >= '18' ? children : <SSRProvider>{children}</SSRProvider>;
-+}              </ToastProvider>
++                {children}
+               </ToastProvider>
              </OverlayProvider>
            </HybridProvider>
-         </ResponsiveQueryProvider>

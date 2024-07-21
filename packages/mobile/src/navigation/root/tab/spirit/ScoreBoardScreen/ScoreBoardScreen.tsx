@@ -7,8 +7,15 @@ import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-mobile";
-import { Box, CheckIcon, HStack, Select, Text, View } from "native-base";
-import { Pressable } from "native-base/src/components/primitives";
+import {
+  Box,
+  CheckIcon,
+  HStack,
+  Select,
+  Text,
+  View,
+  Pressable,
+} from "native-base";
 import { useEffect, useMemo, useState } from "react";
 
 import type { StandingType } from "../../../../../types/StandingType";

@@ -9,8 +9,7 @@ import type {
   TabNavigationState,
 } from "@react-navigation/native";
 import { colors } from "@theme/colors";
-import { Box, VStack, View, useTheme } from "native-base";
-import { ZStack } from "native-base/src/components/primitives";
+import { Box, VStack, View, useTheme, ZStack } from "native-base";
 import { Text, TouchableOpacity, useWindowDimensions } from "react-native";
 
 import BackgroundCutout from "../../../../assets/screens/navigation/background-cutout";
