@@ -78,7 +78,6 @@ export function TeamCreator() {
                 status={status}
                 options={[
                   { label: "Spirit", value: TeamType.Spirit },
-                  { label: "Committee", value: TeamType.Committee },
                   { label: "Morale", value: TeamType.Morale },
                 ]}
                 value={value}
