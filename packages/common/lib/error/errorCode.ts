@@ -24,3 +24,7 @@ export const InvariantViolation = Symbol("InvariantViolation");
 export type InvariantViolation = typeof InvariantViolation;
 export const HttpError = Symbol("HttpError");
 export type HttpError = typeof HttpError;
+export const PrismaError = Symbol("PrimaError");
+export type PrismaError = typeof PrismaError;
+export const ZodError = Symbol("ZodError");
+export type ZodError = typeof ZodError;

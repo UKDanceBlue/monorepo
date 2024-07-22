@@ -1,8 +1,5 @@
-import { ConcreteError } from "@ukdanceblue/common/error";
+import { ConcreteError, ErrorCode } from "@ukdanceblue/common/error";
 import type { ZodError as RawZodError } from "zod";
-
-const ZodErrorTag = Symbol("ZodError");
-type ZodErrorTag = typeof ZodErrorTag;
 export class ZodError extends ConcreteError {
   readonly error: RawZodError;
   constructor(error: RawZodError) {
@@ -16,10 +13,7 @@ export class ZodError extends ConcreteError {
     return false;
   }
 
-  static get Tag() {
-    return ZodErrorTag;
-  }
-  get tag(): ZodErrorTag {
-    return ZodErrorTag;
+  get tag(): ErrorCode.ZodError {
+    return ErrorCode.ZodError;
   }
 }
