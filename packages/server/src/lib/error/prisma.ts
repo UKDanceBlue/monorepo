@@ -5,7 +5,7 @@ import {
   PrismaClientUnknownRequestError,
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
-import { ConcreteError } from "@ukdanceblue/common/error";
+import { ConcreteError, ErrorCode } from "@ukdanceblue/common/error";
 import type { Option } from "ts-results-es";
 import { None, Some } from "ts-results-es";
 
@@ -16,8 +16,6 @@ type RawPrismaError =
   | PrismaClientInitializationError
   | PrismaClientValidationError;
 
-const PrismaErrorTag = Symbol("PrismaError");
-type PrismaErrorTag = typeof PrismaErrorTag;
 export abstract class PrismaError extends ConcreteError {
   readonly error: RawPrismaError;
 
@@ -38,11 +36,8 @@ export abstract class PrismaError extends ConcreteError {
     return false;
   }
 
-  static get Tag(): PrismaErrorTag {
-    return PrismaErrorTag;
-  }
-  get tag(): PrismaErrorTag {
-    return PrismaErrorTag;
+  get tag(): ErrorCode.PrismaError {
+    return ErrorCode.PrismaError;
   }
 }
 

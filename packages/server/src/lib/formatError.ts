@@ -29,14 +29,12 @@ export function formatError(
     ...originalFormattedError,
     extensions: {
       ...originalFormattedError.extensions,
-      code: ErrorCode.Unknown,
+      code: ErrorCode.Unknown.description,
       stacktrace:
         shouldIncludeSensitiveInfo &&
         Array.isArray(originalFormattedError.extensions?.stacktrace)
           ? originalFormattedError.extensions.stacktrace.map(String)
           : [],
-      clientActions: [],
-      internalDetails: {},
     },
   };
 
@@ -44,7 +42,7 @@ export function formatError(
     error instanceof jwt.NotBeforeError ||
     error instanceof jwt.TokenExpiredError
   ) {
-    formattedError.extensions.code = ErrorCode.Unauthenticated;
+    formattedError.extensions.code = ErrorCode.Unauthenticated.description;
   } else if (typeof error === "string") {
     formattedError.message = error;
   } else if (typeof error === "object" && error != null) {
