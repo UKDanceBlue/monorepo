@@ -56,15 +56,15 @@
   "author": "UKDanceBlue",
   "license": "ISC",
   "devDependencies": {
-    "@parcel/watcher": "^2.3.0",
+    "@parcel/watcher": "^2.4.1",
     "@types/luxon": "^3.4.2",
-    "@types/react": "~18.2.45",
-    "@types/validator": "^13.7.17",
-    "typescript": "^5.5.3",
-    "vitest": "^2.0.3"
+    "@types/react": "~18.2.79",
+    "@types/validator": "^13.12.0",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
   },
   "peerDependencies": {
-    "class-validator": "^1.14.0",
+    "class-validator": "^0.14.0",
     "graphql": "^16.9.0",
     "graphql-scalars": "^1.23.0",
     "luxon": "^3.4.4",

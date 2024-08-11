@@ -19,8 +19,14 @@
       "backgroundColor": "#ffffff"
     },
     "plugins": [
-      "@react-native-firebase/app",
-      "@react-native-firebase/crashlytics",
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "ukdanceblue",
+          "project": "mobile",
+          "url": "https://sentry.danceblue.org/"
+        }
+      ],
       [
         "expo-calendar",
         {
@@ -48,20 +54,12 @@
       "expo-splash-screen",
       "expo-dev-client",
       "expo-updates",
+      "expo-asset",
       [
         "expo-notifications",
         {
           "icon": "./assets/app/icon-2.png",
           "color": "#ffffff"
-        }
-      ],
-      "./config-plugins/rnf-disable-ai-id-support.plugin",
-      [
-        "expo-build-properties",
-        {
-          "ios": {
-            "useFrameworks": "static"
-          }
         }
       ]
       // TODO: Use this to load fonts instead of loading them at runtime

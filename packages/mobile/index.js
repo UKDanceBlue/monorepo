@@ -11,6 +11,8 @@ import App from "./App";
 import { overrideApiBaseUrl } from "./src/common/apiUrl";
 import { Logger } from "./src/common/logger/Logger";
 
+import * as Sentry from "@sentry/react-native";
+
 Logger.debug("Starting app");
 
 void preventAutoHideAsync();
@@ -21,6 +23,11 @@ LogBox.ignoreLogs([
 LogBox.ignoreLogs([
   "Constants.platform.ios.model has been deprecated in favor of expo-device's Device.modelName property. This API will be removed in SDK 45.",
 ]);
+
+Sentry.init({
+  dsn: "https://b8251316fa38b51b8e7d768b076fb8f9@sentry.danceblue.org/2",
+  debug: true,
+});
 
 if (isDevelopmentBuild()) {
   DevMenu.registerDevMenuItems([
@@ -64,7 +71,7 @@ setNotificationHandler({
 });
 
 try {
-  registerRootComponent(App);
+  registerRootComponent(Sentry.wrap(App));
 } catch (error) {
   Logger.error("Error registering root component", { error });
   throw error;
