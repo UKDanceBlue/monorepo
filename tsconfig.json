@@ -25,6 +25,7 @@
   "include": [
     "./*.ts",
     "./packages/portal/vite.config.ts",
-    "packages/common/jest.config.ts"
+    "packages/common/jest.config.ts",
+    "yarn.config.cjs"
   ]
 }

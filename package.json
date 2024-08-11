@@ -27,7 +27,8 @@
     "portal:build": "yarn workspace @ukdanceblue/portal build",
     "mobile:start": "yarn workspace @ukdanceblue/mobile start",
     "docker:server:start": "docker-compose up -d --build",
-    "docker:server:stop": "docker-compose down"
+    "docker:server:stop": "docker-compose down",
+    "postinstall": "yarn constraints"
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
@@ -70,6 +71,7 @@
     "@graphql-codegen/client-preset@npm:^4.2.2": "patch:@graphql-codegen/client-preset@npm%3A4.3.2#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.3.2-fb874ac9d8.patch"
   },
   "dependencies": {
+    "@yarnpkg/types": "^4.0.0",
     "babel-cli": "^6.26.0"
   }
 }
