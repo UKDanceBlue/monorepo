@@ -6,14 +6,6 @@ declare module "eslint-plugin-import" {
   export default Plugin;
 }
 
-declare module "eslint-plugin-jest" {
-  import { ESLint } from "eslint";
-
-  declare const Plugin: ESLint.Plugin;
-
-  export default Plugin;
-}
-
 declare module "eslint-plugin-jsdoc" {
   import { ESLint } from "eslint";
 
@@ -55,14 +47,6 @@ declare module "eslint-plugin-react-native" {
 }
 
 declare module "eslint-plugin-react-refresh" {
-  import { ESLint } from "eslint";
-
-  declare const Plugin: ESLint.Plugin;
-
-  export default Plugin;
-}
-
-declare module "eslint-plugin-unicorn" {
   import { ESLint } from "eslint";
 
   declare const Plugin: ESLint.Plugin;

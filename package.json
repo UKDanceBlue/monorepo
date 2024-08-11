@@ -31,22 +31,24 @@
     "postinstall": "yarn constraints"
   },
   "devDependencies": {
+    "@eslint/compat": "^1.1.1",
+    "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.9.0",
     "@expo/ngrok": "^4.1.3",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/client-preset": "patch:@graphql-codegen/client-preset@npm%3A4.3.2#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.3.2-fb874ac9d8.patch",
     "@types/eslint-config-prettier": "^6.11.3",
+    "@types/eslint__eslintrc": "^2.1.2",
     "@types/eslint__js": "^8.42.3",
-    "@typescript-eslint/eslint-plugin": "^8.0.1",
-    "@typescript-eslint/parser": "^8.0.1",
     "@vitest/coverage-v8": "^2.0.5",
     "@vitest/ui": "^2.0.5",
+    "@yarnpkg/types": "^4.0.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.5",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsdoc": "^50.0.1",
-    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-n": "^17.10.2",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-native": "^4.1.0",
@@ -58,6 +60,7 @@
     "graphql-scalars": "^1.23.0",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4",
+    "typescript-eslint": "^8.0.1",
     "vitest": "^2.0.5"
   },
   "workspaces": [
@@ -72,7 +75,6 @@
     "urijs": "npm:uri-js-replace"
   },
   "dependencies": {
-    "@yarnpkg/types": "^4.0.0",
     "babel-cli": "^6.26.0"
   }
 }
