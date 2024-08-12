@@ -1,19 +1,20 @@
-import { ClearOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { useAskConfirm, useUnknownErrorHandler } from "@hooks/useAntFeedback";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { AutoComplete, Button, Descriptions, Flex, Form, Input } from "antd";
-import type { LegacyRef } from "react";
-import { useEffect, useState } from "react";
-import { useMutation, useQuery } from "urql";
-import { useDebouncedCallback } from "use-debounce";
-
 import {
   createPersonByLinkBlue,
   getPersonByLinkBlueDocument,
   getPersonByUuidDocument,
   searchPersonByNameDocument,
 } from "./PointEntryCreatorGQL";
+
+import { ClearOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { useAskConfirm, useUnknownErrorHandler } from "@hooks/useAntFeedback";
+import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
+import { AutoComplete, Button, Descriptions, Flex, Form, Input } from "antd";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "urql";
+import { useDebouncedCallback } from "use-debounce";
+
 import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
+import type { LegacyRef } from "react";
 
 const generalLinkblueRegex = new RegExp(/^[A-Za-z]{3,4}\d{3}$/);
 export function PointEntryPersonLookup({

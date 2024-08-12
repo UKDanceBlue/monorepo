@@ -1,6 +1,7 @@
+import { Heading, View } from "native-base";
+
 import type { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
-import { Heading, View } from "native-base";
 import type { SectionListProps } from "react-native";
 
 type NotificationSectionHeaderType = NonNullable<

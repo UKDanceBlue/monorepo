@@ -11,9 +11,9 @@ import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import eslintPluginVitest from "eslint-plugin-vitest";
 import globals from "globals";
+import eslintTs from "typescript-eslint";
 import { fileURLToPath } from "node:url";
 import { dirname } from "path";
-import eslintTs from "typescript-eslint";
 const project = "./tsconfig.json";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -204,6 +204,13 @@ export default eslintTs.config({
     },
 }, {
     files: ["packages/**/*.tsx", "packages/**/*.jsx"],
+    languageOptions: {
+        parserOptions: {
+            ecmaFeatures: {
+                jsx: true,
+            },
+        },
+    },
     plugins: {
         "react-refresh": eslintPluginReactRefresh,
         "react-hooks": eslintPluginReactHooks,
@@ -251,7 +258,10 @@ export default eslintTs.config({
     languageOptions: {
         ecmaVersion: 2020,
         sourceType: "module",
-        globals: { ...globals.es2019 },
+        globals: {
+            ...globals.es2019,
+            ...eslintPluginReactNative.environments?.["react-native"]?.globals,
+        },
     },
     rules: {
         "react-native/no-unused-styles": 2,
@@ -282,12 +292,7 @@ export default eslintTs.config({
         "node/no-unpublished-require": "error",
         "node/process-exit-as-throw": "error",
         "node/shebang": "error",
-        "node/no-unpublished-import": [
-            "error",
-            {
-                allowModules: ["vitest"],
-            },
-        ],
+        "node/no-unpublished-import": "off",
     },
 }, eslintConfigPrettier, {
     files: ["**/*.ts", "**/*.tsx"],

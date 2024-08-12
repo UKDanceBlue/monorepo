@@ -1,4 +1,13 @@
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import EventScreen from "./EventScreen";
+import { EventScreenFragment } from "./EventScreen/EventScreenFragment";
+import SplashLogin from "./Modals/SplashLogin";
+import NotificationScreen from "./NotificationScreen";
+import ProfileScreen from "./ProfileScreen";
+import TabBar from "./tab/TabBar";
+
+import { useColorModeValue } from "../../common/customHooks";
+
+import { log } from "../../common/logging";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DbRole } from "@ukdanceblue/common";
 import {
@@ -10,18 +19,17 @@ import { useEffect, useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 import { useQuery } from "urql";
 
-import { useColorModeValue } from "../../common/customHooks";
-import { log } from "../../common/logging";
 import { useLoading } from "../../context";
-import type { RootStackParamList } from "../../types/navigationTypes";
-import HeaderIcons from "../HeaderIcons";
 
-import EventScreen from "./EventScreen";
-import { EventScreenFragment } from "./EventScreen/EventScreenFragment";
-import SplashLogin from "./Modals/SplashLogin";
-import NotificationScreen from "./NotificationScreen";
-import ProfileScreen from "./ProfileScreen";
-import TabBar from "./tab/TabBar";
+import type { RootStackParamList } from "../../types/navigationTypes";
+
+import HeaderIcons from "../HeaderIcons";
+import { routingInstrumentation } from "../routingInstrumentation";
+
+
+import { useNavigationContainerRef } from "@react-navigation/core";
+
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 // import HourScreen from "./tab/HoursScreen/HourScreen";
 
@@ -74,6 +82,14 @@ const RootScreen = () => {
   const { colors } = useTheme();
   const headerBgColor = useColorModeValue(colors.white, colors.gray[800]);
   const headerFgColor = useColorModeValue(colors.gray[800], colors.light[600]);
+
+  const ref = useNavigationContainerRef();
+
+  useEffect(() => {
+    if (ref as unknown) {
+      routingInstrumentation.registerNavigationContainer(ref);
+    }
+  }, [ref]);
 
   return (
     <>

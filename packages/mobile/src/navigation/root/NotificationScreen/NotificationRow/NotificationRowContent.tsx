@@ -1,10 +1,11 @@
+import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
+
 import { useThemeFonts } from "@common/customHooks";
 import {
   NotificationDeliveryFragment,
   NotificationFragment,
 } from "@common/fragments/NotificationScreenGQL";
 import { Logger } from "@common/logger/Logger";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-mobile";
 import { openURL } from "expo-linking";
 import { isEqual } from "lodash";
@@ -22,7 +23,8 @@ import {
 import { memo } from "react";
 import { useWindowDimensions } from "react-native";
 
-import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
+
 
 const NonMemoizedNotificationRowContent = ({
   loading,

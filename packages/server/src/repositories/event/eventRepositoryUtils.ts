@@ -1,8 +1,10 @@
-import type { Prisma } from "@prisma/client";
-import type { FilterItem } from "@ukdanceblue/common";
 import { SortDirection } from "@ukdanceblue/common";
 
 import type { EventFilters, EventOrderKeys } from "./EventRepository.ts";
+import type { Prisma } from "@prisma/client";
+import type { FilterItem } from "@ukdanceblue/common";
+
+
 import {
   dateFilterToPrisma,
   stringFilterToPrisma,

@@ -1,14 +1,16 @@
+import { usePersonDeletePopup } from "./PersonDeletePopup";
+
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { committeeNames, stringifyDbRole } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Descriptions, Empty, Flex, Typography } from "antd";
 
-import { usePersonDeletePopup } from "./PersonDeletePopup";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
+
 
 export const PersonViewerFragment = graphql(/* GraphQL */ `
   fragment PersonViewerFragment on PersonNode {

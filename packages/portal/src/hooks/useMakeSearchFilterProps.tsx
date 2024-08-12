@@ -1,12 +1,13 @@
 import { NumberOutlined, SearchOutlined } from "@ant-design/icons";
 import { FilterSearchDropdown } from "@elements/components/FilterDropdown";
+import { NumericComparator } from "@ukdanceblue/common";
+import { Input, type InputRef } from "antd";
+import { useRef } from "react";
+
 import type {
   NumericFilterItemInterface,
   StringFilterItemInterface,
 } from "@ukdanceblue/common";
-import { NumericComparator } from "@ukdanceblue/common";
-import { Input, type InputRef } from "antd";
-import { useRef } from "react";
 
 export function useMakeStringSearchFilterProps<Field extends string>(
   field: Field,
@@ -49,7 +50,7 @@ export function useMakeNumberSearchFilterProps<Field extends string>(
     filter: NumericFilterItemInterface<Field>
   ) => void,
   clearFilter: (field: Field) => void,
-  integerOnly: boolean = false
+  integerOnly = false
 ) {
   const focusRef = useRef<InputRef | undefined>(undefined);
 

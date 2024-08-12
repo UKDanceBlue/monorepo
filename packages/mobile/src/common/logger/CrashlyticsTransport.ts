@@ -1,14 +1,12 @@
-import type { FirebaseCrashlyticsTypes } from "@react-native-firebase/crashlytics";
-
-import type { ExtraLogArgs, LogLevel } from "./transport";
 import { LoggerTransport, logLevelToString } from "./transport";
 
-export class CrashlyticsTransport extends LoggerTransport {
-  #crashlytics: FirebaseCrashlyticsTypes.Module;
+import { captureException, captureMessage } from "@sentry/react-native";
 
-  constructor(level: LogLevel, crashlytics: FirebaseCrashlyticsTypes.Module) {
-    super("Crashlytics", level);
-    this.#crashlytics = crashlytics;
+import type { ExtraLogArgs, LogLevel } from "./transport";
+
+export class SentryTransport extends LoggerTransport {
+  constructor(level: LogLevel) {
+    super("Sentry", level);
   }
 
   protected writeLog({
@@ -20,30 +18,43 @@ export class CrashlyticsTransport extends LoggerTransport {
     messageString: string;
     extra: ExtraLogArgs<true>;
   }) {
-    let logString = `[${logLevelToString(level)}]`;
-    if (extra.source) {
-      logString += ` - ${extra.source}] -`;
-    }
-    if (extra.tags) {
-      logString += ` [${extra.tags.join(", ")}]`;
-    }
-    logString += ` ${messageString}`;
+    const levelString = logLevelToString(level);
+    let contextString: string | undefined = undefined;
     if (extra.context) {
       try {
-        logString += `\n${JSON.stringify(extra.context, null, 2)}`;
-      } catch (error) {
-        logString += ` [context (${String(
-          extra.context
-        )}) could not be stringified due to ${String(error)}]`;
+        contextString = JSON.stringify(extra.context, null, 2);
+      } catch {
+        contextString = String(extra.context);
       }
     }
-    if (extra.error) {
-      logString += `\nerror: (${String(extra.error)})`;
+    const tagsObject: Record<string, boolean> = {};
+    for (const tag of extra.tags ?? []) {
+      tagsObject[tag] = true;
     }
-    this.#crashlytics.log(logString);
 
-    if (extra.error) {
-      this.#crashlytics.recordError(extra.error);
+    if (!extra.error) {
+      captureMessage(messageString, {
+        level: levelString,
+        tags: {
+          ...tagsObject,
+          source: extra.source,
+        },
+        extra: {
+          context: contextString,
+        },
+      });
+    } else {
+      captureException(extra.error, {
+        level: levelString,
+        tags: {
+          ...tagsObject,
+          source: extra.source,
+        },
+        extra: {
+          message: messageString,
+          context: contextString,
+        },
+      });
     }
   }
 }

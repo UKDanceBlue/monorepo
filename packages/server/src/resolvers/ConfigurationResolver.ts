@@ -1,4 +1,3 @@
-import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessLevel,
@@ -20,6 +19,8 @@ import {
   Resolver,
 } from "type-graphql";
 import { Service } from "typedi";
+
+import type { GlobalId } from "@ukdanceblue/common";
 
 import { auditLogger } from "#logging/auditLogging.js";
 import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";

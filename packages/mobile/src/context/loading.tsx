@@ -1,5 +1,4 @@
 import { Center, Spinner, ZStack } from "native-base";
-import type { ReactNode } from "react";
 import {
   createContext,
   useCallback,
@@ -7,6 +6,8 @@ import {
   useId,
   useReducer,
 } from "react";
+
+import type { ReactNode } from "react";
 
 const LoadingContext = createContext<
   [Partial<Record<string, boolean>>, (state: boolean, id: string) => void]

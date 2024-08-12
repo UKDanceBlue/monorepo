@@ -1,5 +1,4 @@
 import { TeamType } from "@prisma/client";
-import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessLevel,
@@ -37,6 +36,9 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
+import type { GraphQLContext } from "#resolvers/context.js";
+import type { GlobalId } from "@ukdanceblue/common";
+
 import { auditLogger } from "#logging/auditLogging.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
@@ -55,7 +57,7 @@ import {
   ListFundraisingEntriesResponse,
   globalFundraisingAccessParam,
 } from "#resolvers/FundraisingEntryResolver.js";
-import type { GraphQLContext } from "#resolvers/context.js";
+
 
 @ObjectType("ListPeopleResponse", {
   implements: AbstractGraphQLPaginatedResponse<PersonNode>,

@@ -1,7 +1,8 @@
 import { Box, HStack } from "native-base";
 import { useWindowDimensions } from "react-native";
-import type { SvgProps } from "react-native-svg";
 import Svg, { G, Path } from "react-native-svg";
+
+import type { SvgProps } from "react-native-svg";
 
 const ratio = { x: 1920, y: 440 };
 /**

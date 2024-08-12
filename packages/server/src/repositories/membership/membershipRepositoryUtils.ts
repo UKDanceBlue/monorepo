@@ -1,7 +1,8 @@
-import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
 import type { MembershipFilters } from "./MembershipRepository.ts";
+import type { Prisma } from "@prisma/client";
+
 import { dateFilterToPrisma } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 

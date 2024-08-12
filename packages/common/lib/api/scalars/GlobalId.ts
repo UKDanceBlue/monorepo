@@ -1,7 +1,3 @@
-import { GraphQLScalarType, Kind } from "graphql";
-
-import type { Result } from "ts-results-es";
-import { Err, Ok } from "ts-results-es";
 import { InvalidArgumentError } from "../../error/direct.js";
 import {
   UTF8ArrToStr,
@@ -9,6 +5,11 @@ import {
   base64StringToArray,
   strToUTF8Arr,
 } from "../../utility/primitive/base64.js";
+
+import { GraphQLScalarType, Kind } from "graphql";
+import { Err, Ok } from "ts-results-es";
+
+import type { Result } from "ts-results-es";
 
 export interface GlobalId {
   typename: string;

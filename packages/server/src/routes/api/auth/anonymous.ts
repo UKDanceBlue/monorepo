@@ -1,6 +1,7 @@
 import { AuthSource } from "@ukdanceblue/common";
-import type { Context } from "koa";
 import { DateTime } from "luxon";
+
+import type { Context } from "koa";
 
 import { makeUserJwt } from "#auth/index.js";
 

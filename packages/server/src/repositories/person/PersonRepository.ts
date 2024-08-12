@@ -1,4 +1,5 @@
-import type { Committee, Membership, Person, Team } from "@prisma/client";
+import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
+
 import { Prisma, PrismaClient } from "@prisma/client";
 import {
   AuthSource,
@@ -22,11 +23,12 @@ import {
 import { Err, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
 
-import { findPersonForLogin } from "#auth/findPersonForLogin.js";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
+import type { Committee, Membership, Person, Team } from "@prisma/client";
+
+import { findPersonForLogin } from "#auth/findPersonForLogin.js";
 import {
   handleRepositoryError,
   type RepositoryError,
@@ -249,7 +251,7 @@ export class PersonRepository {
             committee.team.correspondingCommittee.childCommittees.map((child) =>
               EffectiveCommitteeRole.init(
                 child.identifier,
-                committee.committeeRole!
+                committee.committeeRole
               )
             );
           effectiveCommitteeRoles.push(...childRoles);
@@ -408,7 +410,7 @@ export class PersonRepository {
         }
       | Record<string, never> = {},
     types: TeamType[] | undefined = undefined,
-    includeTeam: boolean = false
+    includeTeam = false
   ): Promise<Result<(Membership & { team: Team })[], RepositoryError>> {
     try {
       const rows = await this.prisma.person

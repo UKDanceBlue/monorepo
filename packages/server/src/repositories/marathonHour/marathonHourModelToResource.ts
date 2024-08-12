@@ -1,5 +1,6 @@
-import type { MarathonHour } from "@prisma/client";
 import { MarathonHourNode } from "@ukdanceblue/common";
+
+import type { MarathonHour } from "@prisma/client";
 
 export function marathonHourModelToResource(
   marathonHourModel: MarathonHour

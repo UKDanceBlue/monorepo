@@ -1,6 +1,7 @@
 import * as React from "react";
-import type { SvgProps } from "react-native-svg";
 import Svg, { ClipPath, Defs, G, Path } from "react-native-svg";
+
+import type { SvgProps } from "react-native-svg";
 const DBMomentsLogo = ({ svgProps }: { svgProps?: SvgProps }) => (
   <Svg {...svgProps} viewBox="0 0 375 324">
     <Defs>

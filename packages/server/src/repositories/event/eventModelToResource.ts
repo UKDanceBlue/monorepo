@@ -1,9 +1,10 @@
-import type { Event, EventOccurrence } from "@prisma/client";
 import {
   EventNode,
   EventOccurrenceNode,
   IntervalISO,
 } from "@ukdanceblue/common";
+
+import type { Event, EventOccurrence } from "@prisma/client";
 
 export function eventModelToResource(
   eventModel: Event,

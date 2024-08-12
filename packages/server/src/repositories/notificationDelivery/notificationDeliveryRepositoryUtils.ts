@@ -1,10 +1,11 @@
-import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
 import type {
   NotificationDeliveryFilters,
   NotificationDeliveryOrderKeys,
 } from "./NotificationDeliveryRepository.js";
+import type { Prisma } from "@prisma/client";
+
 import {
   dateFilterToPrisma,
   oneOfFilterToPrisma,

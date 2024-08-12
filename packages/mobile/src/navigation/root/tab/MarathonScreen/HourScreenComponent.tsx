@@ -3,7 +3,6 @@ import ImageView, {
 } from "@common/components/ImageView/ImageView";
 import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
 import { TriviaCrack } from "@common/marathonComponents/TriviaCrack";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import {
   getFragmentData,
   graphql,
@@ -15,6 +14,8 @@ import {
   TouchableWithoutFeedback,
   useWindowDimensions,
 } from "react-native";
+
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 
 const HourScreenFragment = graphql(/* GraphQL */ `
   fragment HourScreenFragment on MarathonHourNode {

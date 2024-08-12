@@ -1,10 +1,11 @@
-import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
 import type {
   PointOpportunityFilters,
   PointOpportunityOrderKeys,
 } from "./PointOpportunityRepository.ts";
+import type { Prisma } from "@prisma/client";
+
 import {
   dateFilterToPrisma,
   oneOfFilterToPrisma,

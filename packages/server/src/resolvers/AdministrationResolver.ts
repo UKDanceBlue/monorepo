@@ -1,10 +1,13 @@
-import { readFile } from "fs/promises";
-import { join } from "path";
+import { logDir } from "#environment";
 
 import { AccessControl, AccessLevel } from "@ukdanceblue/common";
 import { FieldResolver, ObjectType, Query, Resolver } from "type-graphql";
 
-import { logDir } from "#environment";
+import { readFile } from "fs/promises";
+import { join } from "path";
+
+
+
 import { auditLoggerFileName } from "#logging/auditLogging.js";
 
 @ObjectType()

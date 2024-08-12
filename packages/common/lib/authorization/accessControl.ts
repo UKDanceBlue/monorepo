@@ -1,6 +1,12 @@
-import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
+import {
+  AccessLevel,
+  DetailedError,
+  ErrorCode,
+  compareCommitteeRole,
+  compareDbRole,
+} from "../index.js";
+
 import { UseMiddleware } from "type-graphql";
-import type { Primitive } from "utility-types";
 
 import type {
   Authorization,
@@ -11,13 +17,9 @@ import type {
   TeamType,
   UserData,
 } from "../index.js";
-import {
-  AccessLevel,
-  DetailedError,
-  ErrorCode,
-  compareCommitteeRole,
-  compareDbRole,
-} from "../index.js";
+import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
+import type { Primitive } from "utility-types";
+
 
 export interface AuthorizationRule {
   /**
@@ -272,7 +274,7 @@ export function AccessControl<
         }
         let matches = false;
         for (const authRule of authRules) {
-          // eslint-disable-next-line no-await-in-loop
+           
           matches = await checkAuthorization(authRule, authorization);
           if (matches) {
             break;
@@ -371,7 +373,7 @@ export function AccessControl<
     let customResult: boolean | null = true;
     for (const rule of params) {
       if (rule.custom != null) {
-        // eslint-disable-next-line no-await-in-loop
+         
         customResult = await rule.custom(root, context, result);
         if (customResult === true) {
           break;

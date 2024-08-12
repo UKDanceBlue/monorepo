@@ -1,5 +1,3 @@
-import type { NotificationError } from "@prisma/client";
-import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessLevel,
@@ -27,6 +25,9 @@ import {
   Root,
 } from "type-graphql";
 import { Inject, Service } from "typedi";
+
+import type { NotificationError } from "@prisma/client";
+import type { GlobalId } from "@ukdanceblue/common";
 
 import { NotificationScheduler } from "#jobs/NotificationScheduler.js";
 import { ExpoNotificationProvider } from "#notification/ExpoNotificationProvider.js";

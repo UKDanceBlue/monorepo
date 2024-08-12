@@ -1,4 +1,3 @@
-import type { GlobalId } from "@ukdanceblue/common";
 import {
   DetailedError,
   ErrorCode,
@@ -25,6 +24,8 @@ import {
   Root,
 } from "type-graphql";
 import { Service } from "typedi";
+
+import type { GlobalId } from "@ukdanceblue/common";
 
 import { eventModelToResource } from "#repositories/event/eventModelToResource.js";
 import { PointOpportunityRepository } from "#repositories/pointOpportunity/PointOpportunityRepository.js";

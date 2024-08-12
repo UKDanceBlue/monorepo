@@ -1,4 +1,3 @@
-import type { GlobalId, OptionalToNullable } from "@ukdanceblue/common";
 import * as Common from "@ukdanceblue/common";
 import {
   AccessControl,
@@ -35,6 +34,8 @@ import {
   Root,
 } from "type-graphql";
 import { Service } from "typedi";
+
+import type { GlobalId, OptionalToNullable } from "@ukdanceblue/common";
 
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
@@ -226,7 +227,7 @@ export class TeamResolver {
       authRules: [
         {
           committeeIdentifier:
-            Common.CommitteeIdentifier["dancerRelationsCommittee"],
+            Common.CommitteeIdentifier.dancerRelationsCommittee,
           minCommitteeRole: CommitteeRole.Coordinator,
         },
       ],
@@ -257,7 +258,7 @@ export class TeamResolver {
       authRules: [
         {
           committeeIdentifier:
-            Common.CommitteeIdentifier["dancerRelationsCommittee"],
+            Common.CommitteeIdentifier.dancerRelationsCommittee,
           minCommitteeRole: CommitteeRole.Coordinator,
         },
       ],
@@ -294,7 +295,7 @@ export class TeamResolver {
       authRules: [
         {
           committeeIdentifier:
-            Common.CommitteeIdentifier["dancerRelationsCommittee"],
+            Common.CommitteeIdentifier.dancerRelationsCommittee,
           minCommitteeRole: CommitteeRole.Coordinator,
         },
       ],

@@ -1,7 +1,8 @@
-import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
 import type { ConfigurationFilters } from "./ConfigurationRepository.js";
+import type { Prisma } from "@prisma/client";
+
 import {
   dateFilterToPrisma,
   stringFilterToPrisma,

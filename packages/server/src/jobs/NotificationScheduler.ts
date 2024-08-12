@@ -1,6 +1,7 @@
-import type { Notification } from "@prisma/client";
 import Cron, { scheduledJobs } from "croner";
 import { Inject, Service } from "typedi";
+
+import type { Notification } from "@prisma/client";
 
 import { logger } from "#logging/standardLogging.js";
 import { ExpoNotificationProvider } from "#notification/ExpoNotificationProvider.js";

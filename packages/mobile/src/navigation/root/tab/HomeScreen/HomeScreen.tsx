@@ -1,3 +1,7 @@
+import HeaderImage from "./HeaderImage";
+
+import { useReactNavigationTheme } from "../../../../theme";
+
 import { universalCatch } from "@common/logging";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { openURL } from "expo-linking";
@@ -10,9 +14,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 
-import { useReactNavigationTheme } from "../../../../theme";
 
-import HeaderImage from "./HeaderImage";
 
 /**
  * Component for home screen in main navigation

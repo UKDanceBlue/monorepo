@@ -1,4 +1,3 @@
-import type { GlobalId } from "@ukdanceblue/common";
 import {
   DetailedError,
   DeviceNode,
@@ -25,6 +24,8 @@ import {
   Root,
 } from "type-graphql";
 import { Service } from "typedi";
+
+import type { GlobalId } from "@ukdanceblue/common";
 
 import { auditLogger } from "#logging/auditLogging.js";
 import { DeviceRepository } from "#repositories/device/DeviceRepository.js";

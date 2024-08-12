@@ -1,10 +1,11 @@
-import type { Prisma } from "@prisma/client";
 import {
   CommitteeIdentifier,
   committeeNames,
   TeamLegacyStatus,
   TeamType,
 } from "@ukdanceblue/common";
+
+import type { Prisma } from "@prisma/client";
 
 const DEFAULT_MARATHON_YEAR = "DB24";
 

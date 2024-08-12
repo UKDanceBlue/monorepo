@@ -1,6 +1,4 @@
-import type { Prisma } from "@prisma/client";
 import { parseGlobalId, SortDirection } from "@ukdanceblue/common";
-import type { InvalidArgumentError } from "@ukdanceblue/common/error";
 import { ActionDeniedError } from "@ukdanceblue/common/error";
 import { Result, Err, Ok } from "ts-results-es";
 
@@ -8,6 +6,9 @@ import type {
   FundraisingEntryFilters,
   FundraisingEntryOrderKeys,
 } from "./FundraisingRepository.js";
+import type { Prisma } from "@prisma/client";
+import type { InvalidArgumentError } from "@ukdanceblue/common/error";
+
 import {
   dateFilterToPrisma,
   numericFilterToPrisma,
@@ -28,7 +29,7 @@ export function buildFundraisingEntryOrder(
   for (const [key, sort] of order ?? []) {
     switch (key) {
       case "donatedOn": {
-        dbFundsEntryOrderBy["date"] =
+        dbFundsEntryOrderBy.date =
           sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
@@ -56,7 +57,7 @@ export function buildFundraisingEntryOrder(
   }
 
   if (Object.keys(dbFundsEntryOrderBy).length > 0) {
-    orderBy["dbFundsEntry"] = dbFundsEntryOrderBy;
+    orderBy.dbFundsEntry = dbFundsEntryOrderBy;
   }
 
   return Ok(orderBy);
@@ -84,7 +85,7 @@ export function buildFundraisingEntryWhere(
         break;
       }
       case "donatedOn": {
-        dbFundsEntryWhere["date"] = dateFilterToPrisma(filter);
+        dbFundsEntryWhere.date = dateFilterToPrisma(filter);
         break;
       }
       case "donatedTo":
@@ -123,7 +124,7 @@ export function buildFundraisingEntryWhere(
   }
 
   if (Object.keys(dbFundsEntryWhere).length > 0) {
-    where["dbFundsEntry"] = dbFundsEntryWhere;
+    where.dbFundsEntry = dbFundsEntryWhere;
   }
 
   return Ok(where);

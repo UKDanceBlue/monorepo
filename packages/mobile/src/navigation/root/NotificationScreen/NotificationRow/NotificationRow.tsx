@@ -1,8 +1,7 @@
-import type { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
+import { NotificationRowContent } from "./NotificationRowContent";
+
 import { showMessage } from "@common/util/alertUtils";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import { Box, Button, Row, useTheme } from "native-base";
-import type { SectionListRenderItem } from "react-native";
 import { useWindowDimensions } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import Animated, {
@@ -12,7 +11,10 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
-import { NotificationRowContent } from "./NotificationRowContent";
+import type { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
+import type { SectionListRenderItem } from "react-native";
+
 
 export const AnimatedNotificationRow: SectionListRenderItem<
   FragmentType<typeof NotificationDeliveryFragment> | undefined,

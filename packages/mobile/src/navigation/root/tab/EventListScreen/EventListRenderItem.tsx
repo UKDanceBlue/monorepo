@@ -1,17 +1,19 @@
+import EventRow from "./EventRow";
+import { RNCAL_DATE_FORMAT } from "./constants";
+
 import { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
 import { intervalFromSomething } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-mobile";
 import { Platform } from "expo-modules-core";
 import { DateTime } from "luxon";
 import { Box, Column, Heading, Row } from "native-base";
-import type { MutableRefObject } from "react";
 import { useCallback, useMemo } from "react";
-import type { ListRenderItem } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import EventRow from "./EventRow";
-import { RNCAL_DATE_FORMAT } from "./constants";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
+import type { MutableRefObject } from "react";
+import type { ListRenderItem } from "react-native";
+
 
 export const EventListRenderItem = ({
   item: [event, occurrenceId],

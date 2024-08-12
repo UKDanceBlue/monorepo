@@ -1,9 +1,11 @@
-import type { JwtPayload, UserData } from "@ukdanceblue/common";
+import { jwtSecret } from "#environment";
+
 import { AuthSource } from "@ukdanceblue/common";
 import jsonwebtoken from "jsonwebtoken";
+
+import type { JwtPayload, UserData } from "@ukdanceblue/common";
 import type { Request } from "koa";
 
-import { jwtSecret } from "#environment";
 
 const jwtIssuer = "https://app.danceblue.org";
 

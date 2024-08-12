@@ -1,15 +1,17 @@
+import { PersonEditorFragment, personEditorDocument } from "./PersonEditorGQL";
+
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { MembershipPositionType } from "@ukdanceblue/common";
-import type {
-  DocumentType,
-  FragmentType,
-} from "@ukdanceblue/common/graphql-client-portal";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
 import { type SetPersonInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
 import { useMutation } from "urql";
 
-import { PersonEditorFragment, personEditorDocument } from "./PersonEditorGQL";
+import type {
+  DocumentType,
+  FragmentType,
+} from "@ukdanceblue/common/graphql-client-portal";
+
 
 export function usePersonEditorForm(
   personFragment: FragmentType<typeof PersonEditorFragment> | undefined | null,

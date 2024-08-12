@@ -1,3 +1,6 @@
+import { EventScreenFragment } from "./EventScreenFragment";
+import { onAddToCalendar } from "./addToCalendar";
+
 import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
 import { log } from "@common/logging";
 import { showMessage } from "@common/util/alertUtils";
@@ -5,7 +8,6 @@ import { useRoute } from "@react-navigation/native";
 import { intervalFromSomething } from "@ukdanceblue/common";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-mobile";
 import { setStringAsync } from "expo-clipboard";
-import type { Interval } from "luxon";
 import { DateTime } from "luxon";
 import {
   Badge,
@@ -27,9 +29,8 @@ import openMaps from "react-native-open-maps";
 import { WebView } from "react-native-webview";
 
 import type { RootStackScreenProps } from "../../../types/navigationTypes";
+import type { Interval } from "luxon";
 
-import { EventScreenFragment } from "./EventScreenFragment";
-import { onAddToCalendar } from "./addToCalendar";
 
 const EventScreen = () => {
   const {

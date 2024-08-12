@@ -1,3 +1,7 @@
+import CommitteeHoldingSign from "../../../../../../../assets/svgs/CommitteeHoldingSign";
+import DanceBlueRibbon from "../../../../../../../assets/svgs/DBRibbon";
+import Scoreboard from "../../ScoreBoardScreen/Scoreboard";
+
 import Breadcrumbs from "@common/components/Breadcrumbs";
 import { useThemeFonts } from "@common/customHooks";
 import { universalCatch } from "@common/logging";
@@ -7,10 +11,9 @@ import { Flex, HStack, Text, View } from "native-base";
 import { useWindowDimensions } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import CommitteeHoldingSign from "../../../../../../../assets/svgs/CommitteeHoldingSign";
-import DanceBlueRibbon from "../../../../../../../assets/svgs/DBRibbon";
+
 import type { StandingType } from "../../../../../../types/StandingType";
-import Scoreboard from "../../ScoreBoardScreen/Scoreboard";
+
 
 const TeamInformation = ({
   name,

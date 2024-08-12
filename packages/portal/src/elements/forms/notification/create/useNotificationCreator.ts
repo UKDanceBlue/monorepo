@@ -1,10 +1,12 @@
+import { createNotificationDocument } from "./CreateNotificationGQL";
+
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
-import type { TeamType } from "@ukdanceblue/common";
-import type { DocumentType } from "@ukdanceblue/common/graphql-client-portal";
 import { useMutation } from "urql";
 
-import { createNotificationDocument } from "./CreateNotificationGQL";
+import type { TeamType } from "@ukdanceblue/common";
+import type { DocumentType } from "@ukdanceblue/common/graphql-client-portal";
+
 
 export function useNotificationCreator(
   afterSubmit:

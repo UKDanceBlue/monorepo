@@ -1,3 +1,4 @@
+import type { EventScreenFragment } from "../navigation/root/EventScreen/EventScreenFragment";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import type {
   CompositeScreenProps,
@@ -6,29 +7,24 @@ import type {
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 
-import type { EventScreenFragment } from "../navigation/root/EventScreen/EventScreenFragment";
 
-import type { FirestoreHour } from "./firebaseTypes";
-
-export type SpiritStackParamList = {
+export interface SpiritStackParamList {
   MyTeam: undefined;
   Scoreboard: undefined;
-};
+}
 
 export type SpiritStackScreenProps<T extends keyof SpiritStackParamList> =
   NativeStackScreenProps<SpiritStackParamList, T>;
 
-export type TabNavigatorParamList = {
+export interface TabNavigatorParamList {
   "Home": undefined;
   "Events": undefined;
   "Explore": undefined;
   "Teams": NavigatorScreenParams<SpiritStackParamList>;
   "Marathon": undefined;
-  "Scavenger Hunt": undefined;
   "DB Moments": undefined;
-  "Morale Cup": undefined;
   "Info": undefined;
-};
+}
 
 export type TabNavigatorProps<T extends keyof TabNavigatorParamList> =
   CompositeScreenProps<
@@ -36,7 +32,7 @@ export type TabNavigatorProps<T extends keyof TabNavigatorParamList> =
     RootStackScreenProps<keyof RootStackParamList>
   >;
 
-export type RootStackParamList = {
+export interface RootStackParamList {
   "Main": undefined;
   "SplashLogin": undefined;
   "Tab": NavigatorScreenParams<TabNavigatorParamList>;
@@ -47,8 +43,8 @@ export type RootStackParamList = {
     occurrenceId: string;
   };
   "Explorer": undefined;
-  "Hour Details": { firestoreHour: FirestoreHour };
-};
+  "Hour Details": undefined; // { firestoreHour: FirestoreHour };
+}
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, T>;

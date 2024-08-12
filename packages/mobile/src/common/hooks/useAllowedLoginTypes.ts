@@ -1,12 +1,13 @@
 import { SimpleConfigFragment } from "@common/fragments/Configuration";
 import { log, logError } from "@common/logging";
-import type { UserLoginType } from "@context/user";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-mobile";
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
+
+import type { UserLoginType } from "@context/user";
 
 const useAllowedLoginTypesQuery = graphql(/* GraphQL */ `
   query useAllowedLoginTypes {

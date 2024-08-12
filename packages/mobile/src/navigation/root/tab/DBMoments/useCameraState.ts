@@ -1,13 +1,15 @@
 import { Logger } from "@common/logger/Logger";
 import { asyncWait } from "@common/util/wait";
+import { Camera, CameraType, FlashMode, PermissionStatus } from "expo-camera";
+import { useEffect, useRef, useState } from "react";
+
 import type {
   CameraCapturedPicture,
   CameraPictureOptions,
   CameraProps,
 } from "expo-camera";
-import { Camera, CameraType, FlashMode, PermissionStatus } from "expo-camera";
 import type { RefObject } from "react";
-import { useEffect, useRef, useState } from "react";
+
 
 type CameraState =
   | "permission-blocked"
@@ -76,7 +78,7 @@ export function useCameraState(): {
       break;
     }
     default: {
-      // eslint-disable-next-line unicorn/prefer-ternary
+       
       if (images[CameraType.front] && images[CameraType.back]) {
         state = "captured";
       } else {

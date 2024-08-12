@@ -43,6 +43,8 @@ declare module "eslint-plugin-react-native" {
 
   declare const Plugin: ESLint.Plugin;
 
+  declare const environments: ESLint.Linter.Config["environments"];
+
   export default Plugin;
 }
 

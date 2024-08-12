@@ -1,3 +1,7 @@
+import { AntConfigProvider, ThemeConfigProvider } from "./config/ant.tsx";
+import { urqlClient } from "./config/urql.ts";
+import { router } from "./routing/router.ts";
+
 import { MarathonConfigProvider } from "@config/marathon.tsx";
 import { RouterProvider } from "@tanstack/react-router";
 import { App as AntApp } from "antd";
@@ -5,9 +9,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider as UrqlProvider } from "urql";
 
-import { AntConfigProvider, ThemeConfigProvider } from "./config/ant.tsx";
-import { urqlClient } from "./config/urql.ts";
-import { router } from "./routing/router.ts";
 
 import "normalize.css";
 

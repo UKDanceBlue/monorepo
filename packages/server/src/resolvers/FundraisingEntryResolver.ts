@@ -1,5 +1,4 @@
 import { CommitteeRole } from "@prisma/client";
-import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessControlParam,
@@ -27,6 +26,8 @@ import {
   Root,
 } from "type-graphql";
 import { Container, Service } from "typedi";
+
+import type { GlobalId } from "@ukdanceblue/common";
 
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";

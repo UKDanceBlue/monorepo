@@ -1,10 +1,11 @@
+import { teamPageDocument } from "./teamPageDocument";
+
 import { TeamViewer } from "@elements/viewers/team/TeamViewer";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { Outlet, useParams } from "@tanstack/react-router";
 import { Flex } from "antd";
 import { useQuery } from "urql";
 
-import { teamPageDocument } from "./teamPageDocument";
 
 export function ViewTeamPage() {
   const { teamId: teamUuid } = useParams({ from: "/teams/$teamId/" });

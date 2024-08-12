@@ -1,4 +1,3 @@
-import type { GlobalId } from "@ukdanceblue/common";
 import {
   CommitteeIdentifier,
   FilteredListQueryArgs,
@@ -24,6 +23,8 @@ import {
   Root,
 } from "type-graphql";
 import { Service } from "typedi";
+
+import type { GlobalId } from "@ukdanceblue/common";
 
 import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";

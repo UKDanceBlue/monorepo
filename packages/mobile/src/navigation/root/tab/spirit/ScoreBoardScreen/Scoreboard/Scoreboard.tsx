@@ -1,3 +1,5 @@
+import ScoreboardItem from "../ScoreboardItem";
+
 import { useThemeColors } from "@common/customHooks";
 import { colors } from "@theme/colors";
 import { Box, Flex, Text } from "native-base";
@@ -5,7 +7,6 @@ import { FlatList, RefreshControl } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 import type { StandingType } from "../../../../../../types/StandingType";
-import ScoreboardItem from "../ScoreboardItem";
 
 const Scoreboard = ({
   title,

@@ -3,7 +3,6 @@ import { useListQuery } from "@hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useNavigate } from "@tanstack/react-router";
-import type { CommitteeIdentifier } from "@ukdanceblue/common";
 import {
   CommitteeRole,
   DbRole,
@@ -17,6 +16,8 @@ import {
 } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Flex, Table } from "antd";
 import { useQuery } from "urql";
+
+import type { CommitteeIdentifier } from "@ukdanceblue/common";
 
 const PeopleTableFragment = graphql(/* GraphQL */ `
   fragment PeopleTableFragment on PersonNode {

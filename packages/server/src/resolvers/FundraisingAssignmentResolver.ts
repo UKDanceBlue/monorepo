@@ -1,4 +1,3 @@
-import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessControlParam,
@@ -22,6 +21,8 @@ import {
   Root,
 } from "type-graphql";
 import { Container, Service } from "typedi";
+
+import type { GlobalId } from "@ukdanceblue/common";
 
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";

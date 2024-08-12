@@ -1,6 +1,4 @@
-import { MIMEType } from "node:util";
 
-import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessLevel,
@@ -25,6 +23,10 @@ import {
   Resolver,
 } from "type-graphql";
 import { Service } from "typedi";
+
+import { MIMEType } from "node:util";
+
+import type { GlobalId } from "@ukdanceblue/common";
 
 import { FileManager } from "#files/FileManager.js";
 import { generateThumbHash } from "#lib/thumbHash.js";

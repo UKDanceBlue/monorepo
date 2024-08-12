@@ -1,10 +1,11 @@
-import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
 import type {
   MarathonFilters,
   MarathonOrderKeys,
 } from "./MarathonRepository.ts";
+import type { Prisma } from "@prisma/client";
+
 import {
   dateFilterToPrisma,
   oneOfFilterToPrisma,

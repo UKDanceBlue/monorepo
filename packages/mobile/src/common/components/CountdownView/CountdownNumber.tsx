@@ -41,7 +41,7 @@ export const CountdownNumber = ({
   const cy = canvasHeight / 2;
 
   const fontSizeValue = fontSizes["4xl"] ?? 0;
-  const fontSizeUnit = fontSizes["xl"];
+  const fontSizeUnit = fontSizes.xl;
 
   const viewBox = `0 0 ${canvasWidth} ${canvasHeight}`;
 

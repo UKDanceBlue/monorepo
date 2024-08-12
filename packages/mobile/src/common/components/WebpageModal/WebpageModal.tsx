@@ -1,6 +1,7 @@
 import { Center, Modal, Spinner } from "native-base";
 import { useWindowDimensions } from "react-native";
 import WebView from "react-native-webview";
+
 import type { WebViewSource } from "react-native-webview/lib/WebViewTypes";
 
 export default function WebpageModal({

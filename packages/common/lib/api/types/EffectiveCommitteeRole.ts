@@ -1,9 +1,10 @@
-import { Field, ObjectType } from "type-graphql";
-
 import {
   CommitteeIdentifier,
   CommitteeRole,
 } from "../../authorization/structures.js";
+
+import { Field, ObjectType } from "type-graphql";
+
 
 @ObjectType("EffectiveCommitteeRole")
 export class EffectiveCommitteeRole {

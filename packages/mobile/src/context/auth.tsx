@@ -1,9 +1,11 @@
 import { Logger } from "@common/logger/Logger";
+import { setUser as setSentryUser } from "@sentry/react-native";
 import { AuthSource } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
-import type { ReactNode } from "react";
 import { createContext, useContext, useEffect } from "react";
 import { useQuery } from "urql";
+
+import type { ReactNode } from "react";
 
 export interface AuthState {
   personUuid: string | null;
@@ -41,12 +43,21 @@ export function AuthStateProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (error) {
+      setSentryUser(null);
       Logger.error("Error fetching auth state", { error });
     }
   }, [error]);
 
   useEffect(() => {
     if (!fetching && !error) {
+      setSentryUser(
+        data?.me
+          ? {
+              id: data.me.id,
+              email: data.me.id,
+            }
+          : null
+      );
       Logger.debug("Auth state fetched", {
         context: {
           loggedIn: data?.loginState.loggedIn,
@@ -74,6 +85,7 @@ export function AuthStateProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuthState() {
   return useContext(authStateContext);
 }

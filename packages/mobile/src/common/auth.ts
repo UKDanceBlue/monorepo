@@ -1,3 +1,6 @@
+import { API_BASE_URL } from "./apiUrl";
+import { Logger } from "./logger/Logger";
+
 import { useLoading } from "@context/loading";
 import { useInvalidateCache } from "@context/urql";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,8 +12,6 @@ import {
   openAuthSessionAsync,
 } from "expo-web-browser";
 
-import { API_BASE_URL } from "./apiUrl";
-import { Logger } from "./logger/Logger";
 
 export const DANCEBLUE_TOKEN_KEY = "danceblue-auth-token";
 

@@ -1,8 +1,9 @@
 import { FontAwesome } from "@expo/vector-icons";
-import type { Interval } from "luxon";
 import { DateTime } from "luxon";
 import { Heading, Icon, Row, Text } from "native-base";
 import { useMemo } from "react";
+
+import type { Interval } from "luxon";
 
 /**
  * A simple row of *Event*s from *startDate* to *endDate*

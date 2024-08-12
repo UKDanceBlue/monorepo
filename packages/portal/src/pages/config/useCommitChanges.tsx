@@ -1,3 +1,5 @@
+import { ConfigChangeView } from "./ConfigChangeView";
+
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
@@ -5,7 +7,6 @@ import { List } from "antd";
 import { useCallback } from "react";
 import { useMutation } from "urql";
 
-import { ConfigChangeView } from "./ConfigChangeView";
 import type { ConfigValue } from "./useConfig";
 
 const commitConfigChangesMutation = graphql(/* GraphQL */ `

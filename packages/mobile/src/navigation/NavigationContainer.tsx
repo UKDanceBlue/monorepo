@@ -1,5 +1,11 @@
-import analytics from "@react-native-firebase/analytics";
-import type { NavigationContainerRef } from "@react-navigation/native";
+
+import NotificationInfoModal from "../common/components/NotificationInfoModal";
+import WebpageModal from "../common/components/WebpageModal";
+import { useColorModeValue } from "../common/customHooks";
+import { universalCatch } from "../common/logging";
+import RootScreen from "../navigation/root/RootScreen";
+import { useReactNavigationTheme } from "../theme";
+
 import { NavigationContainer } from "@react-navigation/native";
 import {
   addEventListener as addLinkingEventListener,
@@ -12,16 +18,11 @@ import { addNotificationResponseReceivedListener } from "expo-notifications";
 import { useDisclose } from "native-base";
 import { useRef, useState } from "react";
 import { StatusBar } from "react-native";
-import type { WebViewSource } from "react-native-webview/lib/WebViewTypes";
 
-import NotificationInfoModal from "../common/components/NotificationInfoModal";
-import WebpageModal from "../common/components/WebpageModal";
-import { useColorModeValue } from "../common/customHooks";
-import { universalCatch } from "../common/logging";
-import RootScreen from "../navigation/root/RootScreen";
-import { useReactNavigationTheme } from "../theme";
 import type { NotificationInfoPopup } from "../types/NotificationPayload";
 import type { RootStackParamList } from "../types/navigationTypes";
+import type { NavigationContainerRef } from "@react-navigation/native";
+import type { WebViewSource } from "react-native-webview/lib/WebViewTypes";
 
 const linkingPrefixes = [
   createLinkingURL("/"),
@@ -30,7 +31,6 @@ const linkingPrefixes = [
 ];
 
 export const FilledNavigationContainer = () => {
-  const routeNameRef = useRef<string>();
   const navigationRef =
     useRef<NavigationContainerRef<RootStackParamList>>(null);
 
@@ -59,27 +59,6 @@ export const FilledNavigationContainer = () => {
       <NavigationContainer
         theme={useReactNavigationTheme()}
         ref={navigationRef}
-        onReady={() => {
-          routeNameRef.current = navigationRef.current?.getCurrentRoute()?.name;
-        }}
-        onStateChange={async () => {
-          try {
-            const lastRouteName = routeNameRef.current;
-            const currentRouteName =
-              navigationRef.current?.getCurrentRoute()?.name;
-
-            routeNameRef.current = currentRouteName;
-
-            if (lastRouteName !== currentRouteName) {
-              await analytics().logScreenView({
-                screen_name: currentRouteName,
-                screen_class: currentRouteName,
-              });
-            }
-          } catch (error) {
-            universalCatch(error);
-          }
-        }}
         linking={{
           prefixes: linkingPrefixes,
           getInitialURL: getInitialLinkingURL,

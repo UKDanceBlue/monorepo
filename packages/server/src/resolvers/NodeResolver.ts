@@ -1,4 +1,3 @@
-import type { GlobalId } from "@ukdanceblue/common";
 import {
   ConfigurationNode,
   DeviceNode,
@@ -20,6 +19,8 @@ import { ConcreteResult } from "@ukdanceblue/common/error";
 import { Ok } from "ts-results-es";
 import { Arg, Query, Resolver } from "type-graphql";
 import { Service } from "typedi";
+
+import type { GlobalId } from "@ukdanceblue/common";
 
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "#resolvers/DeviceResolver.js";

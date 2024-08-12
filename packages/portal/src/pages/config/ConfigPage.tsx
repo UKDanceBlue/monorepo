@@ -1,8 +1,9 @@
+import { ConfigItem } from "./ConfigItem";
+import { useConfigForm } from "./useConfigForm";
+
 import { Button, Collapse, Divider, Flex, Form, Input, Space } from "antd";
 import { useState } from "react";
 
-import { ConfigItem } from "./ConfigItem";
-import { useConfigForm } from "./useConfigForm";
 
 // Form keys can only contain uppercase letters and underscores
 const FORM_KEY_REGEX = /^[A-Z_]+$/;

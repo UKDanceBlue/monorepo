@@ -1,4 +1,3 @@
-import type { GlobalId } from "@ukdanceblue/common";
 import {
   DetailedError,
   ErrorCode,
@@ -22,6 +21,8 @@ import {
   Root,
 } from "type-graphql";
 import { Service } from "typedi";
+
+import type { GlobalId } from "@ukdanceblue/common";
 
 import { MarathonHourRepository } from "#repositories/marathonHour/MarathonHourRepository.js";
 import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";

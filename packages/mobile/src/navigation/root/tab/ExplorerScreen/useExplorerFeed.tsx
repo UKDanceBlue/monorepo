@@ -3,11 +3,12 @@ import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
-import type { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { FeedItem } from "react-native-rss-parser";
 import { parse } from "react-native-rss-parser";
 import { useQuery } from "urql";
+
+import type { DateTime } from "luxon";
+import type { FeedItem } from "react-native-rss-parser";
 
 const serverFeedDocument = graphql(/* GraphQL */ `
   query ServerFeed {

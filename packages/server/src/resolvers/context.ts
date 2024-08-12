@@ -1,9 +1,3 @@
-import type { ContextFunction } from "@apollo/server";
-import type { KoaContextFunctionArgument } from "@as-integrations/koa";
-import type {
-  AuthorizationContext,
-  EffectiveCommitteeRole,
-} from "@ukdanceblue/common";
 import {
   AccessLevel,
   AuthSource,
@@ -14,10 +8,18 @@ import {
   TeamType,
 } from "@ukdanceblue/common";
 import { ErrorCode } from "@ukdanceblue/common/error";
-import type { ConcreteResult } from "@ukdanceblue/common/error";
-import type { DefaultState } from "koa";
 import { Ok } from "ts-results-es";
 import { Container } from "typedi";
+
+import type { ContextFunction } from "@apollo/server";
+import type { KoaContextFunctionArgument } from "@as-integrations/koa";
+import type {
+  AuthorizationContext,
+  EffectiveCommitteeRole,
+} from "@ukdanceblue/common";
+import type { ConcreteResult } from "@ukdanceblue/common/error";
+import type { DefaultState } from "koa";
+
 
 import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
 import { logger } from "#logging/logger.js";

@@ -1,9 +1,11 @@
-import { DateTime } from "luxon";
-import { describe, expect, it } from "vitest";
+import { EventListPage } from "./EventListPage";
 
 import { renderWithNativeBase } from "../../../../../test-helpers/NativeBase";
 
-import { EventListPage } from "./EventListPage";
+import { DateTime } from "luxon";
+import { describe, expect, it } from "vitest";
+
+
 
 describe("<EventListPage />", () => {
   it("renders correctly", () => {

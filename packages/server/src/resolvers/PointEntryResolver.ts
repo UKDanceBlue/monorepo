@@ -1,4 +1,3 @@
-import type { GlobalId } from "@ukdanceblue/common";
 import {
   DetailedError,
   ErrorCode,
@@ -27,6 +26,8 @@ import {
   Root,
 } from "type-graphql";
 import { Service } from "typedi";
+
+import type { GlobalId } from "@ukdanceblue/common";
 
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";

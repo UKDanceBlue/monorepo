@@ -1,4 +1,3 @@
-import { fileURLToPath } from "url";
 
 import {
   ConcreteError,
@@ -6,9 +5,12 @@ import {
   toBasicError,
 } from "@ukdanceblue/common/error";
 import { Result } from "ts-results-es";
-import type { MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
 import { Container } from "typedi";
+
+import { fileURLToPath } from "url";
+
+import type { MiddlewareFn } from "type-graphql";
 
 import { logger } from "#logging/logger.js";
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";

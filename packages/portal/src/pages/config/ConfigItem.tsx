@@ -1,10 +1,10 @@
 import { LuxonDatePicker } from "@elements/components/antLuxonComponents";
-import type { Updater, ValidationError } from "@tanstack/react-form";
 import { Form, Input, Space } from "antd";
 import { DateTime } from "luxon";
 import { useMemo } from "react";
 
 import type { ConfigValue } from "./useConfig";
+import type { Updater, ValidationError } from "@tanstack/react-form";
 
 export function ConfigItem<Key extends string, Editable extends boolean>({
   editable,

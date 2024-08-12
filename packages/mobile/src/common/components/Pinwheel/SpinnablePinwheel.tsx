@@ -1,3 +1,5 @@
+import Pinwheel from "./Pinwheel";
+
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Animated, {
   Easing,
@@ -8,7 +10,6 @@ import Animated, {
 } from "react-native-reanimated";
 
 import type { PinwheelPosition } from "./Pinwheel";
-import Pinwheel from "./Pinwheel";
 
 // Speed in degrees per ms
 const SPIN_SPEED = 0.5;

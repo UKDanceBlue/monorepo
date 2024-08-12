@@ -1,3 +1,5 @@
+import { teamPageDocument } from "../teamPageDocument";
+
 import { PointEntryCreator } from "@elements/forms/point-entry/create/PointEntryCreator";
 import { PointEntryTable } from "@elements/tables/point-entry/PointEntryTable";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
@@ -5,7 +7,6 @@ import { useParams } from "@tanstack/react-router";
 import { Flex } from "antd";
 import { useQuery } from "urql";
 
-import { teamPageDocument } from "../teamPageDocument";
 
 export function ViewTeamPoints() {
   const { teamId: teamUuid } = useParams({ from: "/teams/$teamId/" });

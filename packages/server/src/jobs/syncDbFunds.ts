@@ -1,5 +1,6 @@
 import type { MarathonYearString } from "@ukdanceblue/common";
 import type { NotFoundError } from "@ukdanceblue/common/error";
+
 import { CompositeError, toBasicError } from "@ukdanceblue/common/error";
 import Cron from "croner";
 import { Err, None, Ok, type Result } from "ts-results-es";
@@ -7,6 +8,7 @@ import { Container } from "typedi";
 const jobStateRepository = Container.get(JobStateRepository);
 
 import type { PrismaError } from "#error/prisma.js";
+
 import {
   DBFundsFundraisingProvider,
   type DBFundsFundraisingProviderError,

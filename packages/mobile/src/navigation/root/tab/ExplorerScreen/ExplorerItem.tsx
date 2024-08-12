@@ -1,4 +1,9 @@
 // import DBLogoCondensed from "../../../../../assets/svgs/DBLogoCondensed";
+import { YoutubeEmbedWebView } from "./YoutubeEmbedWebView";
+import { parseBlogText } from "./parseBlogText";
+
+import DBRibbon from "../../../../../assets/svgs/DBRibbon";
+
 import AudioPlayer from "@common/components/AudioPlayer";
 import { universalCatch } from "@common/logging";
 import { showMessage } from "@common/util/alertUtils";
@@ -9,10 +14,7 @@ import { Box, Button, HStack, Image, Text, View } from "native-base";
 import { useEffect, useState } from "react";
 import { PixelRatio, useWindowDimensions } from "react-native";
 
-import DBRibbon from "../../../../../assets/svgs/DBRibbon";
 
-import { YoutubeEmbedWebView } from "./YoutubeEmbedWebView";
-import { parseBlogText } from "./parseBlogText";
 
 function cleanupTextContent(textContent: string) {
   let completedText = "";

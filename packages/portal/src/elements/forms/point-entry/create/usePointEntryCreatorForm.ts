@@ -1,9 +1,11 @@
+import { createPointEntryDocument } from "./PointEntryCreatorGQL";
+
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
-import type { CreatePointEntryInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
 import { useMutation } from "urql";
 
-import { createPointEntryDocument } from "./PointEntryCreatorGQL";
+import type { CreatePointEntryInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
+
 
 export function usePointEntryCreatorForm({
   teamUuid,

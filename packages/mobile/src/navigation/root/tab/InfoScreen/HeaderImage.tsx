@@ -1,8 +1,9 @@
+import CutsForTheClinic from "../../../../../assets/screens/info/Cutsfortheclinic.jpg";
+
 import { Image, ZStack } from "native-base";
 
 // import dbLogo from "../../../../../assets/logo/big-words.png";
 // import ribbon from "../../../../../assets/screens/home/2020-ribbon.jpg";
-import CutsForTheClinic from "../../../../../assets/screens/info/Cutsfortheclinic.jpg";
 /**
  * A header image container used on the home screen
  */

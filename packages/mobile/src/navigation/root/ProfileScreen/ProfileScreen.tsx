@@ -1,3 +1,5 @@
+import { ProfileFooter } from "./ProfileFooter";
+
 import { useLogin } from "@common/auth";
 import JumbotronGeometric from "@common/components/JumbotronGeometric";
 import { useThemeFonts } from "@common/customHooks";
@@ -9,7 +11,6 @@ import {
   DbRole,
   committeeNames,
 } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import {
   getFragmentData,
   graphql,
@@ -27,7 +28,8 @@ import {
 } from "native-base";
 import { useMemo } from "react";
 
-import { ProfileFooter } from "./ProfileFooter";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
+
 
 export const ProfileScreenAuthFragment = graphql(/* GraphQL */ `
   fragment ProfileScreenAuthFragment on LoginState {

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { vi } from "vitest";
+
 import type { PrismaClient } from "@prisma/client";
 import type { Mock } from "vitest";
-import { vi } from "vitest";
 
 export function makePrismaMock() {
   const mocksToClear: Mock[] = [];

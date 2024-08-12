@@ -1,9 +1,10 @@
+import { CreateImagePopup } from "./CreateImagePopup";
+import { ImagesTable } from "./ImagesTable";
+
 import { PlusOutlined } from "@ant-design/icons";
 import { Button, Flex, Typography } from "antd";
 import { useState } from "react";
 
-import { CreateImagePopup } from "./CreateImagePopup";
-import { ImagesTable } from "./ImagesTable";
 
 export function ListImagesPage() {
   const [createImageOpen, setCreateImageOpen] = useState(false);

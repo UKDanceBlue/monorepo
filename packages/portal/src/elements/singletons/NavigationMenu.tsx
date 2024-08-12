@@ -4,7 +4,6 @@ import { API_BASE_URL } from "@config/api";
 import { marathonContext } from "@config/marathonContext";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useLoginState } from "@hooks/useLoginState";
-import type { AuthorizationRule } from "@ukdanceblue/common";
 import {
   AccessLevel,
   checkAuthorization,
@@ -12,6 +11,8 @@ import {
 } from "@ukdanceblue/common";
 import { Button, Menu, Select } from "antd";
 import { useContext, useEffect, useState } from "react";
+
+import type { AuthorizationRule } from "@ukdanceblue/common";
 
 import "./NavigationMenu.css";
 
@@ -142,7 +143,7 @@ export const NavigationMenu = () => {
           let isAuthorized = false;
           for (const authorizationRule of item.authorizationRules) {
             if (
-              // eslint-disable-next-line no-await-in-loop
+               
               await checkAuthorization(
                 authorizationRule,
                 authorization ?? defaultAuthorization

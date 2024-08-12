@@ -1,24 +1,25 @@
-import type {
-  ASTNode,
-  RenderRules,
-} from "@jonasmerlin/react-native-markdown-display";
+import { Logger } from "./logger/Logger";
+
 import {
   hasParents,
   renderRules,
 } from "@jonasmerlin/react-native-markdown-display";
+
 // @ts-expect-error - this is a private type
 import { openUrl } from "@jonasmerlin/react-native-markdown-display/src/lib/util/openUrl";
 import { Platform } from "expo-modules-core";
 import { Box, Divider, Heading, Link, Row, Text, VStack } from "native-base";
 import React, { useEffect, useState } from "react";
-import type { FlexAlignType, TextStyle } from "react-native";
 import { StyleSheet } from "react-native";
-import type { IFitImageProps } from "react-native-fit-image";
 import FitImage from "react-native-fit-image";
 
-import { useFirebase } from "../context";
+import type {
+  ASTNode,
+  RenderRules,
+} from "@jonasmerlin/react-native-markdown-display";
+import type { FlexAlignType, TextStyle } from "react-native";
+import type { IFitImageProps } from "react-native-fit-image";
 
-import { universalCatch } from "./logging";
 
 export interface MarkdownRuleStyle {
   flexDirection: "column" | "row" | "column-reverse" | "row-reverse";
@@ -57,7 +58,7 @@ export interface MarkdownRuleStyle {
   width: string;
 }
 
-const markdownTextStyleKeys: Set<keyof Partial<TextStyle>> = new Set([
+const markdownTextStyleKeys = new Set<keyof Partial<TextStyle>>([
   "textShadowOffset",
   "color",
   "fontSize",
@@ -148,8 +149,6 @@ const CustomImageRenderer = ({
   const [imageProps, setImageProps] = useState<
     (IFitImageProps & { key?: React.Key }) | null
   >(null);
-  const { fbStorage } = useFirebase();
-
   useEffect(() => {
     // we check that the source starts with at least one of the elements in allowedImageHandlers
     const show = allowedImageHandlers.some((value) => {
@@ -160,18 +159,11 @@ const CustomImageRenderer = ({
       if (defaultImageHandler == null) {
         return;
       } else if (src?.startsWith("gs://")) {
-        fbStorage
-          .refFromURL(src)
-          .getDownloadURL()
-          .then((downloadUrl) =>
-            setImageProps({
-              // @ts-expect-error - TODO: Fix these errors, seems ok for now
-              style: styles._VIEW_SAFE_image,
-              accessibilityLabel: alt ?? title,
-              source: { uri: downloadUrl },
-            })
-          )
-          .catch(universalCatch);
+        Logger.error("Firebase storage is no longer supported", {
+          context: {
+            src,
+          },
+        });
       } else {
         let srcWithoutProtocol = src ?? "";
         if (srcWithoutProtocol.includes("://")) {
@@ -198,7 +190,6 @@ const CustomImageRenderer = ({
     allowedImageHandlers,
     alt,
     defaultImageHandler,
-    fbStorage,
     src,
     styles._VIEW_SAFE_image,
     title,
@@ -210,7 +201,7 @@ const CustomImageRenderer = ({
     return (
       <FitImage
         {...imageProps}
-        {...(alt ?? title
+        {...((alt ?? title)
           ? {
               accessible: true,
               accessibilityLabel: alt ?? title,

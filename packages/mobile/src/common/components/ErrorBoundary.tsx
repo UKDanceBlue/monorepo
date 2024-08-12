@@ -1,9 +1,11 @@
+import { logError, universalCatch } from "../logging";
+
 import { openURL } from "expo-linking";
-import type { ReactNode } from "react";
 import { Component } from "react";
 import { Button, SafeAreaView, ScrollView, Text, View } from "react-native";
 
-import { logError, universalCatch } from "../logging";
+import type { ReactNode } from "react";
+
 
 type ErrorWithCause = Error & { cause?: unknown };
 

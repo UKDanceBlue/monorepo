@@ -1,5 +1,3 @@
-import type { Prisma } from "@prisma/client";
-import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessLevel,
@@ -26,6 +24,9 @@ import {
   Root,
 } from "type-graphql";
 import { Service } from "typedi";
+
+import type { Prisma } from "@prisma/client";
+import type { GlobalId } from "@ukdanceblue/common";
 
 import { FileManager } from "#files/FileManager.js";
 import { auditLogger } from "#logging/auditLogging.js";

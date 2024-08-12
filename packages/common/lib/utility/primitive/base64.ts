@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/prefer-code-point */
+ 
 
 /*
 This file is adapted from MDN's page on Base64 encoding and decoding:

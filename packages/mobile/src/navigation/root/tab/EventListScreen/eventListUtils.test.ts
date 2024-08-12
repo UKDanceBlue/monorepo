@@ -1,13 +1,14 @@
-import { faker } from "@faker-js/faker";
-import { DateTime } from "luxon";
-import { describe, expect, it } from "vitest";
-
 import {
   dateDataToLuxonDateTime,
   luxonDateTimeToDateData,
   luxonDateTimeToDateString,
   luxonDateTimeToMonthString,
 } from "./eventListUtils";
+
+import { faker } from "@faker-js/faker";
+import { DateTime } from "luxon";
+import { describe, expect, it } from "vitest";
+
 
 describe("luxon <-> React Native Calendars date conversion (random data)", () => {
   const fakeDate = faker.date.future();

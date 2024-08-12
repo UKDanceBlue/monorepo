@@ -1,8 +1,9 @@
-import type { Prisma } from "@prisma/client";
 import { parseGlobalId, SortDirection } from "@ukdanceblue/common";
 import { Result } from "ts-results-es";
 
 import type { TeamFilters, TeamOrderKeys } from "./TeamRepository.ts";
+import type { Prisma } from "@prisma/client";
+
 import {
   dateFilterToPrisma,
   numericFilterToPrisma,
@@ -56,7 +57,7 @@ export function buildTeamWhere(
         if (parsed.isErr()) {
           throw new Error(parsed.error.message);
         }
-        where["marathon"] = {
+        where.marathon = {
           uuid: oneOfFilterToPrisma({
             ...filter,
             value: parsed.value,

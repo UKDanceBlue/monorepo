@@ -1,20 +1,23 @@
 // We allow awaits in loops here because we actually do want to slow down processing
-/* eslint-disable no-await-in-loop */
-import { randomUUID } from "crypto";
+ 
+import { isDevelopment } from "#environment";
 
-import type { Notification, Prisma } from "@prisma/client";
 import { DetailedError, ErrorCode } from "@ukdanceblue/common";
-import type { ExpoPushMessage, ExpoPushTicket } from "expo-server-sdk";
 import { Expo } from "expo-server-sdk";
 import { DateTime } from "luxon";
 import { Service } from "typedi";
+
+import { randomUUID } from "crypto";
 
 import type {
   NotificationAudience,
   NotificationProvider,
   SendableNotification,
 } from "./NotificationProvider.js";
-import { isDevelopment } from "#environment";
+import type { Notification, Prisma } from "@prisma/client";
+import type { ExpoPushMessage, ExpoPushTicket } from "expo-server-sdk";
+
+
 import { logger } from "#logging/standardLogging.js";
 import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
 import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";

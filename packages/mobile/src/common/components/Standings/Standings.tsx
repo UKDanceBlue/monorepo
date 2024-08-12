@@ -1,10 +1,11 @@
+import Place from "../Place";
+
 import { Text, View } from "native-base";
-import type { ReactElement } from "react";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
 
 import type { StandingType } from "../../../types/StandingType";
-import Place from "../Place";
+import type { ReactElement } from "react";
 
 /**
  * Standings implementation for the a generic leaderboard

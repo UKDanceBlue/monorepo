@@ -1,3 +1,7 @@
+import { InfoModal } from "./InfoModal";
+import { PreviewMoment } from "./PreviewMoment";
+import { useCameraState } from "./useCameraState";
+
 import DBMomentsLogo from "@assets/svgs/DBMomentsLogo";
 import { Logger } from "@common/logger/Logger";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
@@ -5,9 +9,6 @@ import { Camera, FlashMode } from "expo-camera";
 import { Box, Button, Fab, Icon, Text, View } from "native-base";
 import { useState } from "react";
 
-import { InfoModal } from "./InfoModal";
-import { PreviewMoment } from "./PreviewMoment";
-import { useCameraState } from "./useCameraState";
 
 export const DBMomentsScreen = () => {
   const {

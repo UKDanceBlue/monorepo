@@ -1,14 +1,16 @@
+import { useTeamDeletePopup } from "./TeamDeletePopup";
+
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { MembershipPositionType } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Descriptions, Empty, Flex } from "antd";
 
-import { useTeamDeletePopup } from "./TeamDeletePopup";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
+
 
 export const TeamViewerFragment = graphql(/* GraphQL */ `
   fragment TeamViewerFragment on TeamNode {
