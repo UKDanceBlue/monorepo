@@ -1,10 +1,10 @@
-import { marathonContext } from "./marathonContext";
-import { LocalStorageKeys } from "./storage";
-
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "urql";
+
+import { marathonContext } from "./marathonContext";
+import { LocalStorageKeys } from "./storage";
 
 
 const latestMarathonDocument = graphql(/* GraphQL */ `

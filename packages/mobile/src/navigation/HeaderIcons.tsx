@@ -1,4 +1,5 @@
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { View } from "native-base";
 import {
   PixelRatio,
@@ -7,7 +8,6 @@ import {
 } from "react-native";
 
 import type { RootStackParamList } from "../types/navigationTypes";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 const HeaderIcons = ({
   navigation,

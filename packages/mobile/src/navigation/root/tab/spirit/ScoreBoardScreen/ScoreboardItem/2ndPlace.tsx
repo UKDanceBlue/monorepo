@@ -1,7 +1,6 @@
 import { memo } from "react";
-import Svg, { Path } from "react-native-svg";
-
 import type { SvgProps } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 /* SVGR has dropped some elements not supported by react-native-svg: style */
 
 const SecondPlaceMedal = (props: SvgProps) => (

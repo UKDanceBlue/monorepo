@@ -1,13 +1,5 @@
-import EventScreen from "./EventScreen";
-import { EventScreenFragment } from "./EventScreen/EventScreenFragment";
-import SplashLogin from "./Modals/SplashLogin";
-import NotificationScreen from "./NotificationScreen";
-import ProfileScreen from "./ProfileScreen";
-import TabBar from "./tab/TabBar";
-
-import { useColorModeValue } from "../../common/customHooks";
-
-import { log } from "../../common/logging";
+import { useNavigationContainerRef } from "@react-navigation/core";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DbRole } from "@ukdanceblue/common";
 import {
@@ -19,17 +11,18 @@ import { useEffect, useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 import { useQuery } from "urql";
 
+import { useColorModeValue } from "../../common/customHooks";
+import { log } from "../../common/logging";
 import { useLoading } from "../../context";
-
 import type { RootStackParamList } from "../../types/navigationTypes";
-
 import HeaderIcons from "../HeaderIcons";
 import { routingInstrumentation } from "../routingInstrumentation";
-
-
-import { useNavigationContainerRef } from "@react-navigation/core";
-
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import EventScreen from "./EventScreen";
+import { EventScreenFragment } from "./EventScreen/EventScreenFragment";
+import SplashLogin from "./Modals/SplashLogin";
+import NotificationScreen from "./NotificationScreen";
+import ProfileScreen from "./ProfileScreen";
+import TabBar from "./tab/TabBar";
 
 // import HourScreen from "./tab/HoursScreen/HourScreen";
 

@@ -5,6 +5,9 @@ import { UnsupportedAccessMethod } from "./storage/StorageProvider.js";
 
 import { serveOrigin } from "#environment";
 
+import { logger } from "#logging/standardLogging.js";
+import { FileRepository } from "#repositories/file/fileRepository.js";
+
 import { Service } from "typedi";
 
 import { MIMEType } from "util";
@@ -15,8 +18,6 @@ import type {
 } from "./storage/StorageProvider.js";
 import type { File } from "@prisma/client";
 
-import { logger } from "#logging/standardLogging.js";
-import { FileRepository } from "#repositories/file/fileRepository.js";
 
 const FILE_API = new URL("/api/file/download/", serveOrigin);
 

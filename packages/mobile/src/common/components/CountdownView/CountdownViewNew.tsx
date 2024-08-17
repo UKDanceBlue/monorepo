@@ -1,10 +1,9 @@
-import { CountdownNumber } from "./CountdownNumber";
-
-import { useThemeColors } from "../../customHooks";
-
 import { DateTime, Duration, Interval } from "luxon";
 import { View } from "native-base";
 import { useEffect, useState } from "react";
+
+import { useThemeColors } from "../../customHooks";
+import { CountdownNumber } from "./CountdownNumber";
 
 
 

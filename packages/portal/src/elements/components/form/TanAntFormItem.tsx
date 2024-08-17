@@ -1,5 +1,3 @@
-import FormItem from "antd/es/form/FormItem";
-
 import type {
   DeepKeys,
   DeepValue,
@@ -8,6 +6,7 @@ import type {
   UpdaterFn,
 } from "@tanstack/react-form";
 import type { FormItemProps } from "antd";
+import FormItem from "antd/es/form/FormItem";
 
 export interface TanAntChildInputProps<TData> {
   onChange: (data: TData | UpdaterFn<TData, TData>) => void;

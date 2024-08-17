@@ -1,15 +1,13 @@
-import { PersonEditorFragment } from "./PersonEditorGQL";
-import { usePersonEditorForm } from "./usePersonEditorForm";
-
-import { TeamNameFragment } from "../PersonFormsGQL";
-
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
 import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
-import { useMemo, useState } from "react";
-
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import type { BaseOptionType } from "antd/es/select";
+import { useMemo, useState } from "react";
 import type { UseQueryExecute } from "urql";
+
+import { TeamNameFragment } from "../PersonFormsGQL";
+import { PersonEditorFragment } from "./PersonEditorGQL";
+import { usePersonEditorForm } from "./usePersonEditorForm";
 
 
 

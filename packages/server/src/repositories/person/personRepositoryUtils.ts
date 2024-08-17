@@ -1,3 +1,8 @@
+import {
+  dateFilterToPrisma,
+  stringFilterToPrisma,
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
 import { SortDirection } from "@ukdanceblue/common";
 import { ActionDeniedError } from "@ukdanceblue/common/error";
 import { Err, Ok } from "ts-results-es";
@@ -6,10 +11,6 @@ import type { PersonFilters, PersonOrderKeys } from "./PersonRepository.js";
 import type { Prisma } from "@prisma/client";
 import type { Result } from "ts-results-es";
 
-import {
-  dateFilterToPrisma,
-  stringFilterToPrisma,
-} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 export function buildPersonOrder(
   order:

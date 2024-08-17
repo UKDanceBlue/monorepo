@@ -1,7 +1,6 @@
 import { render } from "@testing-library/react-native";
-import { NativeBaseProvider } from "native-base";
-
 import type { NativeBaseProviderProps } from "native-base";
+import { NativeBaseProvider } from "native-base";
 import type { ReactElement } from "react";
 
 const inset = {

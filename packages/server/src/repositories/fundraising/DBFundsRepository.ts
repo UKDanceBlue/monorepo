@@ -1,3 +1,11 @@
+import { logger } from "#logging/standardLogging.js";
+import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
+import {
+  RepositoryError,
+  SimpleUniqueParam,
+  handleRepositoryError,
+} from "#repositories/shared.js";
+
 import { DBFundsTeam, Prisma, PrismaClient, Team } from "@prisma/client";
 import {
   CompositeError,
@@ -10,13 +18,6 @@ import { Service } from "typedi";
 
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 
-import { logger } from "#logging/standardLogging.js";
-import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
-import {
-  RepositoryError,
-  SimpleUniqueParam,
-  handleRepositoryError,
-} from "#repositories/shared.js";
 
 export type UniqueDbFundsTeamParam =
   | {

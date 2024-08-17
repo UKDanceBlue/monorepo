@@ -4,6 +4,14 @@ import {
   buildCommitteeWhere,
 } from "./committeeRepositoryUtils.js";
 
+import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
+import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
+import {
+  RepositoryError,
+  SimpleUniqueParam,
+  handleRepositoryError,
+} from "#repositories/shared.js";
+
 import { Committee, Prisma, PrismaClient, Team } from "@prisma/client";
 import {
   CommitteeIdentifier,
@@ -23,13 +31,6 @@ import { Service } from "typedi";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 
-import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
-import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
-import {
-  RepositoryError,
-  SimpleUniqueParam,
-  handleRepositoryError,
-} from "#repositories/shared.js";
 
 // Make sure that we are exporting a description for every committee
 CommitteeDescriptions[

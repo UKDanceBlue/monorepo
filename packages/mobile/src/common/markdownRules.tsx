@@ -1,24 +1,22 @@
-import { Logger } from "./logger/Logger";
-
+import type {
+  ASTNode,
+  RenderRules,
+} from "@jonasmerlin/react-native-markdown-display";
 import {
   hasParents,
   renderRules,
 } from "@jonasmerlin/react-native-markdown-display";
-
 // @ts-expect-error - this is a private type
 import { openUrl } from "@jonasmerlin/react-native-markdown-display/src/lib/util/openUrl";
 import { Platform } from "expo-modules-core";
 import { Box, Divider, Heading, Link, Row, Text, VStack } from "native-base";
 import React, { useEffect, useState } from "react";
+import type { FlexAlignType, TextStyle } from "react-native";
 import { StyleSheet } from "react-native";
+import type { IFitImageProps } from "react-native-fit-image";
 import FitImage from "react-native-fit-image";
 
-import type {
-  ASTNode,
-  RenderRules,
-} from "@jonasmerlin/react-native-markdown-display";
-import type { FlexAlignType, TextStyle } from "react-native";
-import type { IFitImageProps } from "react-native-fit-image";
+import { Logger } from "./logger/Logger";
 
 
 export interface MarkdownRuleStyle {

@@ -9,7 +9,7 @@ const { defineConfig } = require(`@yarnpkg/types`);
  *
  * @param {import('@yarnpkg/types').Yarn.Constraints.Context} context
  */
-function enforceConsistentDependenciesAcrossTheProject({ Yarn }) {
+const enforceConsistentDependenciesAcrossTheProject = ({ Yarn }) => {
   for (const dependency of Yarn.dependencies()) {
     if (dependency.type === `peerDependencies`) continue;
 
@@ -21,10 +21,11 @@ function enforceConsistentDependenciesAcrossTheProject({ Yarn }) {
       dependency.update(otherDependency.range);
     }
   }
-}
+};
 
 module.exports = defineConfig({
-  constraints: async (ctx) => {
+  constraints: (ctx) => {
     enforceConsistentDependenciesAcrossTheProject(ctx);
+    return Promise.resolve();
   },
 });

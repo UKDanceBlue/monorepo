@@ -1,13 +1,12 @@
-import { getRandomSplashLoginBackground } from "./SplashLoginBackgrounds";
-
 import { useLogin } from "@common/auth";
 import { useAllowedLoginTypes } from "@common/hooks/useAllowedLoginTypes";
 import { AuthSource } from "@ukdanceblue/common";
 import { Button, Center, Image, Text, View, ZStack } from "native-base";
 import { useEffect, useState } from "react";
+import type { ImageSourcePropType } from "react-native";
 import { ActivityIndicator, Dimensions, StatusBar } from "react-native";
 
-import type { ImageSourcePropType } from "react-native";
+import { getRandomSplashLoginBackground } from "./SplashLoginBackgrounds";
 
 
 const SplashLoginScreen = () => {

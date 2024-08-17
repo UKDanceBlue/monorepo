@@ -3,10 +3,9 @@ import { DANCEBLUE_TOKEN_KEY } from "@common/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ErrorCode } from "@ukdanceblue/common";
 import { authExchange } from "@urql/exchange-auth";
-import { createContext, useContext, useMemo, useReducer } from "react";
-import { Client, Provider, cacheExchange, fetchExchange } from "urql";
-
 import type { ReactNode } from "react";
+import { createContext, useContext, useMemo, useReducer } from "react";
+import { cacheExchange, Client, fetchExchange,Provider } from "urql";
 
 const invalidateCacheContext = createContext<() => void>(() => {});
 

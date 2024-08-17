@@ -1,10 +1,11 @@
+import { makeUserJwt } from "#auth/index.js";
+import { getOrMakeDemoUser } from "#lib/demo.js";
+
 import { AuthSource } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 
 import type { Context } from "koa";
 
-import { makeUserJwt } from "#auth/index.js";
-import { getOrMakeDemoUser } from "#lib/demo.js";
 
 export const demoLogin = async (ctx: Context) => {
   let redirectTo = "/";

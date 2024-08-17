@@ -1,8 +1,7 @@
-import Badge from "./Badge";
+import { describe, expect, it } from "vitest";
 
 import { renderWithNativeBase } from "../../../../test-helpers/NativeBase";
-
-import { describe, expect, it } from "vitest";
+import Badge from "./Badge";
 
 
 

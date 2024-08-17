@@ -1,8 +1,3 @@
-import { useAuthState } from "./auth";
-import { useLoading } from "./loading";
-
-import { universalCatch } from "../common/logging";
-
 import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
 import { setTag as setSentryTag } from "@sentry/react-native";
@@ -16,11 +11,12 @@ import {
   randomUUID,
 } from "expo-crypto";
 import { isDevice, osName } from "expo-device";
+import type { PermissionStatus } from "expo-notifications";
 import {
   AndroidImportance,
-  IosAuthorizationStatus,
   getExpoPushTokenAsync,
   getPermissionsAsync,
+  IosAuthorizationStatus,
   requestPermissionsAsync,
   setNotificationChannelAsync,
 } from "expo-notifications";
@@ -32,7 +28,9 @@ import {
 import { createContext, useContext, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
-import type { PermissionStatus } from "expo-notifications";
+import { universalCatch } from "../common/logging";
+import { useAuthState } from "./auth";
+import { useLoading } from "./loading";
 
 const setDeviceQuery = graphql(/* GraphQL */ `
   mutation SetDevice($input: RegisterDeviceInput!) {

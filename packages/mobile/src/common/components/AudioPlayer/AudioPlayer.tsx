@@ -1,8 +1,6 @@
 // Import third-party dependencies
-import { universalCatch } from "../../logging";
-import { showMessage } from "../../util/alertUtils";
-
 import { FontAwesome5 } from "@expo/vector-icons";
+import type { Audio } from "expo-av";
 import { canOpenURL, openURL } from "expo-linking";
 import {
   AspectRatio,
@@ -13,12 +11,13 @@ import {
   Slider,
   Spinner,
   Text,
-  VStack,
   useTheme,
+  VStack,
 } from "native-base";
 import { useEffect, useRef, useState } from "react";
 
-import type { Audio } from "expo-av";
+import { universalCatch } from "../../logging";
+import { showMessage } from "../../util/alertUtils";
 
 
 /**

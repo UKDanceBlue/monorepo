@@ -1,5 +1,11 @@
 import { applicationHost, applicationPort, loggingLevel } from "#environment";
 
+import { logger } from "#logging/logger.js";
+import eventsApiRouter from "#routes/api/events/index.js";
+import fileRouter from "#routes/api/file/index.js";
+import healthCheckRouter from "#routes/api/healthcheck/index.js";
+import uploadRouter from "#routes/api/upload/index.js";
+
 import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { koaMiddleware } from "@as-integrations/koa";
@@ -19,11 +25,6 @@ import type {
 } from "@apollo/server";
 import type { DefaultState } from "koa";
 
-import { logger } from "#logging/logger.js";
-import eventsApiRouter from "#routes/api/events/index.js";
-import fileRouter from "#routes/api/file/index.js";
-import healthCheckRouter from "#routes/api/healthcheck/index.js";
-import uploadRouter from "#routes/api/upload/index.js";
 
 const basicLoggingPlugin: ApolloServerPlugin = {
   requestDidStart(requestContext) {

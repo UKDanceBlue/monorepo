@@ -1,6 +1,6 @@
-import CutsForTheClinic from "../../../../../assets/screens/info/Cutsfortheclinic.jpg";
-
 import { Image, ZStack } from "native-base";
+
+import CutsForTheClinic from "../../../../../assets/screens/info/Cutsfortheclinic.jpg";
 
 // import dbLogo from "../../../../../assets/logo/big-words.png";
 // import ribbon from "../../../../../assets/screens/home/2020-ribbon.jpg";

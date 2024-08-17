@@ -1,10 +1,10 @@
-import { useThemeColors } from "../../customHooks";
-import TimeUnit from "../TimeUnit";
-
 import { DateTime, Duration, Interval } from "luxon";
 import { View } from "native-base";
 import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
+
+import { useThemeColors } from "../../customHooks";
+import TimeUnit from "../TimeUnit";
 
 
 const CountdownView = ({ endTime }: { endTime: number }) => {

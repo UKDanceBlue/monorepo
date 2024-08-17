@@ -1,3 +1,16 @@
+
+
+import { auditLogger } from "#logging/auditLogging.js";
+import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
+import { deviceModelToResource } from "#repositories/device/deviceModelToResource.js";
+import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
+import {
+  AbstractGraphQLOkResponse,
+  AbstractGraphQLPaginatedResponse,
+} from "#resolvers/ApiResponse.js";
+
 import {
   DetailedError,
   DeviceNode,
@@ -26,17 +39,6 @@ import {
 import { Service } from "typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
-
-import { auditLogger } from "#logging/auditLogging.js";
-import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
-import { deviceModelToResource } from "#repositories/device/deviceModelToResource.js";
-import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
-import {
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "#resolvers/ApiResponse.js";
 
 @ObjectType("GetDeviceByUuidResponse", {
   implements: AbstractGraphQLOkResponse<DeviceNode>,

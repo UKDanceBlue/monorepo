@@ -1,14 +1,13 @@
-import { EventListPage } from "./EventListPage";
-import { useEvents } from "./eventListUtils";
-
 import { useNetworkStatus } from "@common/customHooks";
 import { useNavigation } from "@react-navigation/native";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
+import type { InfinitePagerPageComponent } from "react-native-infinite-pager";
 import InfinitePager from "react-native-infinite-pager";
 
-import type { InfinitePagerPageComponent } from "react-native-infinite-pager";
+import { EventListPage } from "./EventListPage";
+import { useEvents } from "./eventListUtils";
 
 
 // const DummyView = (

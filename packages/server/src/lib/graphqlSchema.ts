@@ -1,16 +1,6 @@
 
-import {
-  ConcreteError,
-  FormattedConcreteError,
-  toBasicError,
-} from "@ukdanceblue/common/error";
-import { Result } from "ts-results-es";
-import { buildSchema } from "type-graphql";
-import { Container } from "typedi";
 
-import { fileURLToPath } from "url";
 
-import type { MiddlewareFn } from "type-graphql";
 
 import { logger } from "#logging/logger.js";
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
@@ -33,6 +23,19 @@ import { PersonResolver } from "#resolvers/PersonResolver.js";
 import { PointEntryResolver } from "#resolvers/PointEntryResolver.js";
 import { PointOpportunityResolver } from "#resolvers/PointOpportunityResolver.js";
 import { TeamResolver } from "#resolvers/TeamResolver.js";
+
+import {
+  ConcreteError,
+  FormattedConcreteError,
+  toBasicError,
+} from "@ukdanceblue/common/error";
+import { Result } from "ts-results-es";
+import { buildSchema } from "type-graphql";
+import { Container } from "typedi";
+
+import { fileURLToPath } from "url";
+
+import type { MiddlewareFn } from "type-graphql";
 
 const schemaPath = fileURLToPath(
   new URL("../../../../schema.graphql", import.meta.url)

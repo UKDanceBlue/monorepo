@@ -2,6 +2,11 @@
  
 import { isDevelopment } from "#environment";
 
+import { logger } from "#logging/standardLogging.js";
+import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
+import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
+import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
+
 import { DetailedError, ErrorCode } from "@ukdanceblue/common";
 import { Expo } from "expo-server-sdk";
 import { DateTime } from "luxon";
@@ -18,10 +23,6 @@ import type { Notification, Prisma } from "@prisma/client";
 import type { ExpoPushMessage, ExpoPushTicket } from "expo-server-sdk";
 
 
-import { logger } from "#logging/standardLogging.js";
-import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
-import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
-import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
 
 function makeExpoNotifications(
   content: {

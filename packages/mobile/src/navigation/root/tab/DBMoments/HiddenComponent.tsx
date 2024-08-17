@@ -3,17 +3,16 @@ import {
   type MarathonTime,
   useMarathonTime,
 } from "@common/hooks/useMarathonTime";
+import type { CameraCapturedPicture } from "expo-camera";
 import { DateTime } from "luxon";
 import { Box, HStack, Image, Text, View } from "native-base";
+import type { Ref } from "react";
 import React, { useEffect, useState } from "react";
 import {
-  ImageBackground,
   Image as RNImage,
+  ImageBackground,
   useWindowDimensions,
 } from "react-native";
-
-import type { CameraCapturedPicture } from "expo-camera";
-import type { Ref } from "react";
 
 function calculateDBYear() {
   const currentYear = DateTime.now().year.toString().slice(-2);

@@ -1,5 +1,7 @@
 import { dbFundsApiKeyToken, dbFundsApiOriginToken } from "#environment";
 
+import { ZodError } from "#error/zod.js";
+
 import {
   TimeoutError,
   BasicError,
@@ -21,7 +23,6 @@ import type {
 import type { MarathonYearString } from "@ukdanceblue/common";
 
 
-import { ZodError } from "#error/zod.js";
 
 const dbFundsFundraisingTeamSchema = z.object({
   DbNum: z.number().int().nonnegative().describe("The team's dbNum"),

@@ -1,24 +1,22 @@
-import { NotificationRow } from "./NotificationRow";
-import { NotificationSectionHeader } from "./NotificationSectionHeader";
-import { useLoadNotifications } from "./refresh";
-
-import { useDeviceData, useLoading, useUserData } from "../../../context";
-
 import JumbotronGeometric from "@common/components/JumbotronGeometric";
 import { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
 import { Logger } from "@common/logger/Logger";
 import { universalCatch } from "@common/logging";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-mobile";
 import { manufacturer as deviceManufacturer } from "expo-device";
 import { openSettings } from "expo-linking";
 import { setBadgeCountAsync } from "expo-notifications";
 import { DateTime } from "luxon";
-import { Button, SectionList, Text, View, useTheme } from "native-base";
+import { Button, SectionList, Text, useTheme,View } from "native-base";
 import { useEffect, useMemo } from "react";
 import { RefreshControl } from "react-native";
 
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
+import { useDeviceData, useLoading, useUserData } from "../../../context";
+import { NotificationRow } from "./NotificationRow";
+import { NotificationSectionHeader } from "./NotificationSectionHeader";
+import { useLoadNotifications } from "./refresh";
 
 
 

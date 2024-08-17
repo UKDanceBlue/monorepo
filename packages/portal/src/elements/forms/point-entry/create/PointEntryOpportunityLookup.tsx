@@ -2,6 +2,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { TeamType } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
+import type { CreatePointOpportunityInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
 import {
   App,
   AutoComplete,
@@ -17,7 +18,6 @@ import { useMutation, useQuery } from "urql";
 import { useDebouncedCallback } from "use-debounce";
 
 import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
-import type { CreatePointOpportunityInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
 
 const pointEntryOpportunityLookup = graphql(/* GraphQL */ `
   query PointEntryOpportunityLookup($name: String!) {

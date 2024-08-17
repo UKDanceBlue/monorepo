@@ -1,3 +1,8 @@
+import {
+  dateFilterToPrisma,
+  oneOfFilterToPrisma,
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
 import { SortDirection } from "@ukdanceblue/common";
 
 import type {
@@ -6,10 +11,6 @@ import type {
 } from "./NotificationDeliveryRepository.js";
 import type { Prisma } from "@prisma/client";
 
-import {
-  dateFilterToPrisma,
-  oneOfFilterToPrisma,
-} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 
 export function buildNotificationDeliveryOrder(

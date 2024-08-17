@@ -1,3 +1,9 @@
+
+import { FileManager } from "#files/FileManager.js";
+import { FeedRepository } from "#repositories/feed/FeedRepository.js";
+import { feedItemModelToResource } from "#repositories/feed/feedModelToResource.js";
+import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
+
 import {
   DetailedError,
   ErrorCode,
@@ -16,11 +22,6 @@ import {
   Root,
 } from "type-graphql";
 import { Service } from "typedi";
-
-import { FileManager } from "#files/FileManager.js";
-import { FeedRepository } from "#repositories/feed/FeedRepository.js";
-import { feedItemModelToResource } from "#repositories/feed/feedModelToResource.js";
-import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
 @InputType()
 export class CreateFeedInput {

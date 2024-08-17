@@ -1,5 +1,12 @@
 import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
 
+import { findPersonForLogin } from "#auth/findPersonForLogin.js";
+import {
+  handleRepositoryError,
+  type RepositoryError,
+  type SimpleUniqueParam,
+} from "#repositories/shared.js";
+
 import { Prisma, PrismaClient } from "@prisma/client";
 import {
   AuthSource,
@@ -28,12 +35,6 @@ import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import type { Committee, Membership, Person, Team } from "@prisma/client";
 
-import { findPersonForLogin } from "#auth/findPersonForLogin.js";
-import {
-  handleRepositoryError,
-  type RepositoryError,
-  type SimpleUniqueParam,
-} from "#repositories/shared.js";
 
 const personStringKeys = ["name", "email", "linkblue"] as const;
 type PersonStringKey = (typeof personStringKeys)[number];

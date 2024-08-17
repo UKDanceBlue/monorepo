@@ -1,5 +1,3 @@
-import { ProfileFooter } from "./ProfileFooter";
-
 import { useLogin } from "@common/auth";
 import JumbotronGeometric from "@common/components/JumbotronGeometric";
 import { useThemeFonts } from "@common/customHooks";
@@ -7,10 +5,11 @@ import { universalCatch } from "@common/logging";
 import {
   AuthSource,
   CommitteeIdentifier,
+  committeeNames,
   CommitteeRole,
   DbRole,
-  committeeNames,
 } from "@ukdanceblue/common";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import {
   getFragmentData,
   graphql,
@@ -23,12 +22,12 @@ import {
   Container,
   Spinner,
   Text,
-  VStack,
   theme,
+  VStack,
 } from "native-base";
 import { useMemo } from "react";
 
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
+import { ProfileFooter } from "./ProfileFooter";
 
 
 export const ProfileScreenAuthFragment = graphql(/* GraphQL */ `

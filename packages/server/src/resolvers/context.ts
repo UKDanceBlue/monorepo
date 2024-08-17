@@ -1,3 +1,8 @@
+import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
+import { logger } from "#logging/logger.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
+
 import {
   AccessLevel,
   AuthSource,
@@ -21,10 +26,6 @@ import type { ConcreteResult } from "@ukdanceblue/common/error";
 import type { DefaultState } from "koa";
 
 
-import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
-import { logger } from "#logging/logger.js";
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
 
 export interface GraphQLContext extends AuthorizationContext {
   contextErrors: string[];

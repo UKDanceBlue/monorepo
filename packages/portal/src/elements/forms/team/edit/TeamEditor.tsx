@@ -1,12 +1,11 @@
-import { TeamEditorFragment } from "./TeamEditorGQL";
-import { useTeamEditorForm } from "./useTeamEditorForm";
-
 import { TeamLegacyStatus } from "@ukdanceblue/common";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
 import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
-
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import type { UseQueryExecute } from "urql";
+
+import { TeamEditorFragment } from "./TeamEditorGQL";
+import { useTeamEditorForm } from "./useTeamEditorForm";
 
 
 export function TeamEditor({

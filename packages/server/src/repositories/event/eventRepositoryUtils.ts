@@ -1,3 +1,8 @@
+import {
+  dateFilterToPrisma,
+  stringFilterToPrisma,
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
 import { SortDirection } from "@ukdanceblue/common";
 
 import type { EventFilters, EventOrderKeys } from "./EventRepository.ts";
@@ -5,10 +10,6 @@ import type { Prisma } from "@prisma/client";
 import type { FilterItem } from "@ukdanceblue/common";
 
 
-import {
-  dateFilterToPrisma,
-  stringFilterToPrisma,
-} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 
 export function buildEventOrder(

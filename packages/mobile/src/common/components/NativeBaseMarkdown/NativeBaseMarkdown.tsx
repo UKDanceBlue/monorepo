@@ -1,13 +1,11 @@
-import { log } from "../../logging";
-import { rules as defaultRules } from "../../markdownRules";
-
+import type { MarkdownProps } from "@jonasmerlin/react-native-markdown-display";
 import Markdown, {
   MarkdownIt,
 } from "@jonasmerlin/react-native-markdown-display";
 import { canOpenURL, openURL } from "expo-linking";
 
-
-import type { MarkdownProps } from "@jonasmerlin/react-native-markdown-display";
+import { log } from "../../logging";
+import { rules as defaultRules } from "../../markdownRules";
 
 const NativeBaseMarkdown = ({
   children,

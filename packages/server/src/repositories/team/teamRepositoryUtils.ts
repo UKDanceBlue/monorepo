@@ -1,15 +1,16 @@
-import { parseGlobalId, SortDirection } from "@ukdanceblue/common";
-import { Result } from "ts-results-es";
-
-import type { TeamFilters, TeamOrderKeys } from "./TeamRepository.ts";
-import type { Prisma } from "@prisma/client";
-
 import {
   dateFilterToPrisma,
   numericFilterToPrisma,
   oneOfFilterToPrisma,
   stringFilterToPrisma,
 } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
+import { parseGlobalId, SortDirection } from "@ukdanceblue/common";
+import { Result } from "ts-results-es";
+
+import type { TeamFilters, TeamOrderKeys } from "./TeamRepository.ts";
+import type { Prisma } from "@prisma/client";
+
 
 export function buildTeamOrder(
   order: readonly [key: TeamOrderKeys, sort: SortDirection][] | null | undefined

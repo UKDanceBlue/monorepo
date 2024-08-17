@@ -1,6 +1,3 @@
-import ScoreboardScreen from "./ScoreBoardScreen";
-import TeamScreen from "./TeamScreen";
-
 import { Logger } from "@common/logger/Logger";
 import { showMessage } from "@common/util/alertUtils";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -10,6 +7,8 @@ import { useEffect, useState } from "react";
 import { useQuery } from "urql";
 
 import type { SpiritStackParamList } from "../../../../types/navigationTypes";
+import ScoreboardScreen from "./ScoreBoardScreen";
+import TeamScreen from "./TeamScreen";
 
 
 const scoreBoardDocument = graphql(/* GraphQL */ `

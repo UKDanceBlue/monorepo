@@ -1,13 +1,10 @@
 // @ts-check
-import App from "./App";
-import { overrideApiBaseUrl } from "./src/common/apiUrl";
-import { Logger } from "./src/common/logger/Logger";
-import { routingInstrumentation } from "./src/navigation/routingInstrumentation";
+import "react-native-url-polyfill/auto";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  init as initSentry,
   configureScope as configureSentryScope,
+  init as initSentry,
   ReactNativeTracing,
   wrap as wrapWithSentry,
 } from "@sentry/react-native";
@@ -15,10 +12,13 @@ import { isRunningInExpoGo, registerRootComponent } from "expo";
 import { DevMenu, isDevelopmentBuild } from "expo-dev-client";
 import { setNotificationHandler } from "expo-notifications";
 import { preventAutoHideAsync } from "expo-splash-screen";
-import { manifest, updateId, isEmbeddedLaunch, channel } from "expo-updates";
+import { channel,isEmbeddedLaunch, manifest, updateId } from "expo-updates";
 import { Alert, LogBox } from "react-native";
 
-import "react-native-url-polyfill/auto";
+import App from "./App";
+import { overrideApiBaseUrl } from "./src/common/apiUrl";
+import { Logger } from "./src/common/logger/Logger";
+import { routingInstrumentation } from "./src/navigation/routingInstrumentation";
 
 const metadata = "metadata" in manifest ? manifest.metadata : undefined;
 const extra = "extra" in manifest ? manifest.extra : undefined;
@@ -40,11 +40,11 @@ initSentry({
   dsn: "https://f8d08f6f2a9dd8d627a9ed4b99fb4ba4@o4507762130681856.ingest.us.sentry.io/4507762137825280",
   // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
   // We recommend adjusting this value in production.
-  tracesSampleRate: __DEV__ ? 1.0 : 0.2,
+  tracesSampleRate: __DEV__ ? 1 : 0.2,
   _experiments: {
     // profilesSampleRate is relative to tracesSampleRate.
     // Here, we'll capture profiles for 100% of transactions.
-    profilesSampleRate: __DEV__ ? 1.0 : 0.2,
+    profilesSampleRate: __DEV__ ? 1 : 0.2,
   },
   debug: true,
   integrations: [
@@ -82,7 +82,7 @@ if (isDevelopmentBuild()) {
       callback: async () => {
         Logger.log("Clearing AsyncStorage");
         await AsyncStorage.clear();
-        alert("AsyncStorage cleared successfully");
+        Alert.alert("AsyncStorage cleared successfully");
       },
     },
     {
@@ -96,16 +96,18 @@ if (isDevelopmentBuild()) {
     },
     {
       name: "Override url",
-      callback: async () => {
+      callback: () => {
         Logger.log("Overriding url");
         Alert.prompt(
           "Enter the url to override or blank for default",
           "",
           overrideApiBaseUrl
         );
+
+        return Promise.resolve();
       },
     },
-  ]).catch((error) => console.error(error));
+  ]).catch(/** @param {unknown} error */ (error) => console.error(error));
 }
 
 // Configure the notifications handler to decide what to do when a notification is received if the app is open

@@ -1,6 +1,3 @@
-import { HourScreenComponent } from "./HourScreenComponent";
-import { MarathonCountdownScreen } from "./MarathonCountdownScreen";
-
 import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
@@ -13,6 +10,9 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { useQuery } from "urql";
+
+import { HourScreenComponent } from "./HourScreenComponent";
+import { MarathonCountdownScreen } from "./MarathonCountdownScreen";
 
 
 const marathonScreenDocument = graphql(/* GraphQL */ `

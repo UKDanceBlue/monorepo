@@ -1,7 +1,7 @@
-import TeamInformation from "./TeamInformation";
-
+import type { StandingType } from "@common-types/StandingType";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { MembershipPositionType } from "@ukdanceblue/common";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import {
   getFragmentData,
   graphql,
@@ -10,8 +10,7 @@ import { Center, Text } from "native-base";
 import { useEffect, useState } from "react";
 import { useWindowDimensions } from "react-native";
 
-import type { StandingType } from "@common-types/StandingType";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
+import TeamInformation from "./TeamInformation";
 
 
 export const MyTeamFragment = graphql(/* GraphQL */ `

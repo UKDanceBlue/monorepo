@@ -1,9 +1,8 @@
-import { useCombinedFeed } from "./combineFeeds";
-
 import { Text, VStack } from "native-base";
 import { RefreshControl, ScrollView } from "react-native-gesture-handler";
 
 import type { FeedSortingItem } from "./combineFeeds";
+import { useCombinedFeed } from "./combineFeeds";
 
 export const ExplorerScreen = () => {
   const { feed, loading, refresh } = useCombinedFeed();

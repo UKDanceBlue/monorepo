@@ -1,10 +1,10 @@
-import { useTeamCreatorForm } from "./useTeamCreatorForm";
-
 import { useMarathon } from "@config/marathonContext";
 import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
 import { useNavigate } from "@tanstack/react-router";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import { App, Button, Flex, Form, Input, Select } from "antd";
+
+import { useTeamCreatorForm } from "./useTeamCreatorForm";
 
 
 export function TeamCreator() {

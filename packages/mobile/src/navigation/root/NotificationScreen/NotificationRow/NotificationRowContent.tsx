@@ -1,29 +1,28 @@
-import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
-
 import { useThemeFonts } from "@common/customHooks";
 import {
   NotificationDeliveryFragment,
   NotificationFragment,
 } from "@common/fragments/NotificationScreenGQL";
 import { Logger } from "@common/logger/Logger";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-mobile";
 import { openURL } from "expo-linking";
 import { isEqual } from "lodash";
 import { DateTime } from "luxon";
 import {
-  HStack,
   Heading,
+  HStack,
   Pressable,
   Skeleton,
   Text,
-  VStack,
-  View,
   useTheme,
+  View,
+  VStack,
 } from "native-base";
 import { memo } from "react";
 import { useWindowDimensions } from "react-native";
 
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
+import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
 
 
 const NonMemoizedNotificationRowContent = ({

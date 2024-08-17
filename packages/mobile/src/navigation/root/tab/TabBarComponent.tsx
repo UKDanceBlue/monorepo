@@ -1,13 +1,5 @@
-import BackgroundCutout from "../../../../assets/screens/navigation/background-cutout";
-import DanceBlueRibbon from "../../../../assets/svgs/DBRibbon";
-import { useReactNavigationTheme } from "../../../theme";
-
 import { useColorModeValue, useThemeColors } from "@common/customHooks";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { colors } from "@theme/colors";
-import { Box, VStack, View, useTheme, ZStack } from "native-base";
-import { Text, TouchableOpacity, useWindowDimensions } from "react-native";
-
 import type {
   BottomTabBarProps,
   BottomTabNavigationOptions,
@@ -16,6 +8,13 @@ import type {
   ParamListBase,
   TabNavigationState,
 } from "@react-navigation/native";
+import { colors } from "@theme/colors";
+import { Box, useTheme, View, VStack, ZStack } from "native-base";
+import { Text, TouchableOpacity, useWindowDimensions } from "react-native";
+
+import BackgroundCutout from "../../../../assets/screens/navigation/background-cutout";
+import DanceBlueRibbon from "../../../../assets/svgs/DBRibbon";
+import { useReactNavigationTheme } from "../../../theme";
 
 
 // From https://reactnavigation.org/docs/bottom-tab-navigator#tabbar

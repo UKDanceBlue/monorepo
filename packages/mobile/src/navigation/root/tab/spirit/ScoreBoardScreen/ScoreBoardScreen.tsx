@@ -1,9 +1,8 @@
-import Scoreboard from "./Scoreboard/Scoreboard";
-
 import Jumbotron from "@common/components/Jumbotron";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import {
   getFragmentData,
   graphql,
@@ -12,16 +11,16 @@ import {
   Box,
   CheckIcon,
   HStack,
+  Pressable,
   Select,
   Text,
   View,
-  Pressable,
 } from "native-base";
 import { useEffect, useMemo, useState } from "react";
 
-import type { StandingType } from "../../../../../types/StandingType";
 import type { SpiritStackScreenProps } from "../../../../../types/navigationTypes";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
+import type { StandingType } from "../../../../../types/StandingType";
+import Scoreboard from "./Scoreboard/Scoreboard";
 
 
 function addOrdinal(num: number) {

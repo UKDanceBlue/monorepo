@@ -2,6 +2,8 @@ import { BaseStorageProvider } from "./StorageProvider.js";
 
 import { servePath, uploadPath } from "#environment";
 
+import { logger } from "#logging/standardLogging.js";
+
 import { DateTime } from "luxon";
 import { Service } from "typedi";
 
@@ -21,7 +23,6 @@ import type { MIMEType } from "util";
 
 
 
-import { logger } from "#logging/standardLogging.js";
 
 /**
  * Determines if the location a path refers to is within `servePath`

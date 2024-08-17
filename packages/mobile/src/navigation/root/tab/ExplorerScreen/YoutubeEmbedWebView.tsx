@@ -1,6 +1,5 @@
-import WebView from "react-native-webview";
-
 import type { WebViewProps } from "react-native-webview";
+import WebView from "react-native-webview";
 
 export function YoutubeEmbedWebView({
   source,

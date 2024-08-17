@@ -1,11 +1,5 @@
 
-import NotificationInfoModal from "../common/components/NotificationInfoModal";
-import WebpageModal from "../common/components/WebpageModal";
-import { useColorModeValue } from "../common/customHooks";
-import { universalCatch } from "../common/logging";
-import RootScreen from "../navigation/root/RootScreen";
-import { useReactNavigationTheme } from "../theme";
-
+import type { NavigationContainerRef } from "@react-navigation/native";
 import { NavigationContainer } from "@react-navigation/native";
 import {
   addEventListener as addLinkingEventListener,
@@ -18,11 +12,16 @@ import { addNotificationResponseReceivedListener } from "expo-notifications";
 import { useDisclose } from "native-base";
 import { useRef, useState } from "react";
 import { StatusBar } from "react-native";
-
-import type { NotificationInfoPopup } from "../types/NotificationPayload";
-import type { RootStackParamList } from "../types/navigationTypes";
-import type { NavigationContainerRef } from "@react-navigation/native";
 import type { WebViewSource } from "react-native-webview/lib/WebViewTypes";
+
+import NotificationInfoModal from "../common/components/NotificationInfoModal";
+import WebpageModal from "../common/components/WebpageModal";
+import { useColorModeValue } from "../common/customHooks";
+import { universalCatch } from "../common/logging";
+import RootScreen from "../navigation/root/RootScreen";
+import { useReactNavigationTheme } from "../theme";
+import type { RootStackParamList } from "../types/navigationTypes";
+import type { NotificationInfoPopup } from "../types/NotificationPayload";
 
 const linkingPrefixes = [
   createLinkingURL("/"),

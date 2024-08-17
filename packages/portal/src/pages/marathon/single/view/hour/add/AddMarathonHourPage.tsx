@@ -1,5 +1,6 @@
 import { LuxonDatePicker } from "@elements/components/antLuxonComponents";
 import { TanAntForm } from "@elements/components/form/TanAntForm";
+import type { TanAntChildInputProps } from "@elements/components/form/TanAntFormItem";
 import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
@@ -7,10 +8,8 @@ import { useNavigate, useParams } from "@tanstack/react-router";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { Editable, useEditor } from "@wysimark/react";
 import { Button, Input } from "antd";
-import { useMutation } from "urql";
-
-import type { TanAntChildInputProps } from "@elements/components/form/TanAntFormItem";
 import type { DateTime } from "luxon";
+import { useMutation } from "urql";
 
 export function AddMarathonHourPage() {
   const [{ fetching, error }, addMarathonHour] = useMutation(

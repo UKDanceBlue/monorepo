@@ -1,10 +1,9 @@
-import { useThemeColors } from "../../customHooks";
-
+import type { Icon as IconType } from "@expo/vector-icons/build/createIconSet";
 import { Box, Icon, Text } from "native-base";
+import type { ImageSourcePropType } from "react-native";
 import { ImageBackground } from "react-native";
 
-import type { Icon as IconType } from "@expo/vector-icons/build/createIconSet";
-import type { ImageSourcePropType } from "react-native";
+import { useThemeColors } from "../../customHooks";
 
 
 

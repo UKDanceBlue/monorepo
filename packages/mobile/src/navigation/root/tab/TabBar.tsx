@@ -1,5 +1,17 @@
 
 
+import { useTabBarConfig } from "@common/hooks/useTabBarConfig";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import type { RouteProp } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { ReactElement } from "react";
+import { useEffect, useState } from "react";
+
+import type {
+  RootStackParamList,
+  TabNavigatorParamList,
+} from "../../../types/navigationTypes";
+import HeaderIcons from "../../HeaderIcons";
 import { DBHeaderText } from "./DBHeaderText";
 import DBMomentsScreen from "./DBMoments";
 import EventListScreen from "./EventListScreen";
@@ -7,22 +19,8 @@ import ExplorerScreen from "./ExplorerScreen";
 import HomeScreen from "./HomeScreen";
 import InfoScreen from "./InfoScreen";
 import MarathonScreen from "./MarathonScreen";
-import TabBarComponent from "./TabBarComponent";
 import SpiritScreen from "./spirit/SpiritStack";
-
-import HeaderIcons from "../../HeaderIcons";
-
-import { useTabBarConfig } from "@common/hooks/useTabBarConfig";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { useEffect, useState } from "react";
-
-import type {
-  RootStackParamList,
-  TabNavigatorParamList,
-} from "../../../types/navigationTypes";
-import type { RouteProp } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { ReactElement } from "react";
+import TabBarComponent from "./TabBarComponent";
 
 const Tabs = createBottomTabNavigator<TabNavigatorParamList>();
 

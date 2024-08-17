@@ -1,9 +1,12 @@
+import "./NavigationMenu.css";
+
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { themeConfigContext } from "@config/antThemeConfig";
 import { API_BASE_URL } from "@config/api";
 import { marathonContext } from "@config/marathonContext";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useLoginState } from "@hooks/useLoginState";
+import type { AuthorizationRule } from "@ukdanceblue/common";
 import {
   AccessLevel,
   checkAuthorization,
@@ -11,10 +14,6 @@ import {
 } from "@ukdanceblue/common";
 import { Button, Menu, Select } from "antd";
 import { useContext, useEffect, useState } from "react";
-
-import type { AuthorizationRule } from "@ukdanceblue/common";
-
-import "./NavigationMenu.css";
 
 interface NavItemType {
   slug: string;

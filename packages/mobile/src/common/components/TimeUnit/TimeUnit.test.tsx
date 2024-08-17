@@ -1,8 +1,7 @@
-import TimeUnit from ".";
+import { describe, expect, it, vitest } from "vitest";
 
 import { renderWithNativeBase } from "../../../../test-helpers/NativeBase";
-
-import { describe, expect, it, vitest } from "vitest";
+import TimeUnit from ".";
 
 describe("<TimeUnit />", () => {
   it("renders 0 with a negative value", () => {

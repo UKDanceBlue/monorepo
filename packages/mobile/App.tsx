@@ -1,14 +1,4 @@
 // Import third-party dependencies
-import BoldoniFlfBoldItalicFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold-Italic.ttf";
-import BoldoniFlfBoldFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold.ttf";
-import BoldoniFlfItalicFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Italic.ttf";
-import BoldoniFlfRomanFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Roman.ttf";
-import OpenSansCondensedBoldFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Bold.ttf";
-import OpenSansCondensedLightItalicFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light-Italic.ttf";
-import OpenSansCondensedLightFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light.ttf";
-import { FilledNavigationContainer } from "./src/navigation/NavigationContainer";
-import { getCustomTheme } from "./src/theme";
-
 import ErrorBoundary from "@common/components/ErrorBoundary";
 import { useUpdateChecker } from "@common/hooks/useUpdateChecker";
 import { logError, universalCatch } from "@common/logging";
@@ -23,12 +13,21 @@ import { useFonts } from "expo-font";
 import { hideAsync } from "expo-splash-screen";
 // TODO: Switch away from native-base https://nativebase.io/blogs/road-ahead-with-gluestack-ui
 import { isEmergencyLaunch } from "expo-updates";
+import type { ICustomTheme } from "native-base";
 import { NativeBaseProvider } from "native-base";
 import { useEffect, useRef, useState } from "react";
 import { Alert, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import type { ICustomTheme } from "native-base";
+import BoldoniFlfBoldFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold.ttf";
+import BoldoniFlfBoldItalicFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold-Italic.ttf";
+import BoldoniFlfItalicFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Italic.ttf";
+import BoldoniFlfRomanFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Roman.ttf";
+import OpenSansCondensedBoldFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Bold.ttf";
+import OpenSansCondensedLightFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light.ttf";
+import OpenSansCondensedLightItalicFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light-Italic.ttf";
+import { FilledNavigationContainer } from "./src/navigation/NavigationContainer";
+import { getCustomTheme } from "./src/theme";
 
 if (isEmergencyLaunch) {
   Alert.alert(

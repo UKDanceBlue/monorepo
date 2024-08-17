@@ -1,5 +1,10 @@
 import { makeOidcClient } from "./oidcClient.js";
 
+import { makeUserJwt } from "#auth/index.js";
+import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
+
 import { AuthSource, makeUserData } from "@ukdanceblue/common";
 import jsonwebtoken from "jsonwebtoken";
 import { DateTime } from "luxon";
@@ -9,10 +14,6 @@ import type { Context } from "koa";
 import type { IncomingMessage } from "node:http";
 
 
-import { makeUserJwt } from "#auth/index.js";
-import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
 
 
 export const oidcCallback = async (ctx: Context) => {

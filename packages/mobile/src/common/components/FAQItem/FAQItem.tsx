@@ -1,4 +1,4 @@
-import { Text, VStack, View } from "native-base";
+import { Text, View,VStack } from "native-base";
 
 const FAQItem = ({
   question,
