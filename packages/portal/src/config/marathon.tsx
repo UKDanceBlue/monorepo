@@ -6,7 +6,6 @@ import { useQuery } from "urql";
 import { marathonContext } from "./marathonContext";
 import { LocalStorageKeys } from "./storage";
 
-
 const latestMarathonDocument = graphql(/* GraphQL */ `
   query ActiveMarathon {
     latestMarathon {
@@ -41,6 +40,7 @@ export const MarathonConfigProvider = ({
   children: React.ReactNode;
 }) => {
   const [marathonId, setMarathonId] = useState(
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     localStorage.getItem(LocalStorageKeys.SelectedMarathon) || null
   );
 

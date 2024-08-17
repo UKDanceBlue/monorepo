@@ -4,12 +4,7 @@ import { Icon, Text, View } from "native-base";
 
 import { useThemeColors } from "../../customHooks";
 
-
-const JumbotronIcon = <
-  PossibleIconNames extends string,
-  IconFontName extends string,
-  IconName extends PossibleIconNames,
->({
+const JumbotronIcon = <IconFontName extends string, IconName extends string>({
   icon,
   iconColor,
   iconType,
@@ -17,7 +12,7 @@ const JumbotronIcon = <
 }: {
   icon: IconName;
   iconColor: string;
-  iconType: IconType<PossibleIconNames, IconFontName>;
+  iconType: IconType<IconName, IconFontName>;
   iconSize: number;
 }) => {
   const colors = useThemeColors();
@@ -37,11 +32,7 @@ const JumbotronIcon = <
   }
 };
 
-const Jumbotron = <
-  PossibleIconNames extends string,
-  IconFontName extends string,
-  IconName extends PossibleIconNames,
->({
+const Jumbotron = <IconFontName extends string, IconName extends string>({
   icon,
   iconColor,
   iconType,
@@ -52,7 +43,7 @@ const Jumbotron = <
 }: {
   icon?: IconName;
   iconColor?: string;
-  iconType?: IconType<PossibleIconNames, IconFontName>;
+  iconType?: IconType<IconName, IconFontName>;
   title?: string;
   subTitle?: string;
   bodyText?: string;

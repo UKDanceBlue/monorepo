@@ -17,8 +17,6 @@ import type { Interval } from "luxon";
 import type { DateData } from "react-native-calendars";
 import type { MarkedDates } from "react-native-calendars/src/types";
 
-
-
 /**
  * Converts a luxon DateTime to a string in the format used by react-native-calendars
  *
@@ -171,7 +169,7 @@ const MULTI_DAY_EVENT_COLOR = "#3d3d80";
 export const markEvents = (
   events: readonly FragmentType<typeof EventScreenFragment>[]
 ) => {
-  const marked: Partial<MarkedDates> = {};
+  const marked: MarkedDates = {};
 
   for (const event of events) {
     const eventData = getFragmentData(EventScreenFragment, event);

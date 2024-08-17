@@ -7,8 +7,6 @@ import {
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 
-import type { UserLoginType } from "@context/user";
-
 const useAllowedLoginTypesQuery = graphql(/* GraphQL */ `
   query useAllowedLoginTypes {
     activeConfiguration(key: "ALLOWED_LOGIN_TYPES") {
@@ -21,7 +19,7 @@ const useAllowedLoginTypesQuery = graphql(/* GraphQL */ `
 
 export function useAllowedLoginTypes(): {
   allowedLoginTypesLoading: boolean;
-  allowedLoginTypes: UserLoginType[];
+  allowedLoginTypes: string[];
 } {
   const [{ data, fetching, error }] = useQuery({
     query: useAllowedLoginTypesQuery,
@@ -38,7 +36,7 @@ export function useAllowedLoginTypes(): {
   });
 
   const allowedTypes = useMemo(() => {
-    const allowedTypes: UserLoginType[] = [];
+    const allowedTypes: string[] = [];
 
     try {
       if (configValue) {

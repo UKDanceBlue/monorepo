@@ -1,4 +1,3 @@
-
 import type { NavigationContainerRef } from "@react-navigation/native";
 import { NavigationContainer } from "@react-navigation/native";
 import {
@@ -14,14 +13,12 @@ import { useRef, useState } from "react";
 import { StatusBar } from "react-native";
 import type { WebViewSource } from "react-native-webview/lib/WebViewTypes";
 
-import NotificationInfoModal from "../common/components/NotificationInfoModal";
 import WebpageModal from "../common/components/WebpageModal";
 import { useColorModeValue } from "../common/customHooks";
 import { universalCatch } from "../common/logging";
 import RootScreen from "../navigation/root/RootScreen";
 import { useReactNavigationTheme } from "../theme";
 import type { RootStackParamList } from "../types/navigationTypes";
-import type { NotificationInfoPopup } from "../types/NotificationPayload";
 
 const linkingPrefixes = [
   createLinkingURL("/"),
@@ -32,14 +29,6 @@ const linkingPrefixes = [
 export const FilledNavigationContainer = () => {
   const navigationRef =
     useRef<NavigationContainerRef<RootStackParamList>>(null);
-
-  const {
-    isOpen: isNotificationInfoOpen,
-    onClose: onNotificationInfoClose,
-    onOpen: onNotificationInfoOpen,
-  } = useDisclose(false);
-  const [notificationInfoPopupContent, setNotificationInfoPopupContent] =
-    useState<NotificationInfoPopup | null>(null);
 
   const {
     isOpen: isNotificationWebviewPopupSourceOpen,
@@ -75,20 +64,11 @@ export const FilledNavigationContainer = () => {
             // THIS IS THE NOTIFICATION ENTRY POINT
             const notificationSubscription =
               addNotificationResponseReceivedListener((response) => {
-                const {
-                  url: notificationUrl,
-                  textPopup,
-                  webviewPopup,
-                } = response.notification.request.content.data as {
+                const { url: notificationUrl, webviewPopup } = response
+                  .notification.request.content.data as {
                   url?: string;
-                  textPopup?: NotificationInfoPopup;
                   webviewPopup?: WebViewSource;
                 };
-
-                if (textPopup != null) {
-                  setNotificationInfoPopupContent(textPopup);
-                  onNotificationInfoOpen();
-                }
 
                 if (webviewPopup != null) {
                   setNotificationWebviewPopupSource(webviewPopup);
@@ -142,11 +122,6 @@ export const FilledNavigationContainer = () => {
           },
         }}
       >
-        <NotificationInfoModal
-          isNotificationInfoOpen={isNotificationInfoOpen}
-          onNotificationInfoClose={onNotificationInfoClose}
-          notificationInfoPopupContent={notificationInfoPopupContent}
-        />
         <WebpageModal
           isOpen={isNotificationWebviewPopupSourceOpen}
           onClose={onNotificationWebviewPopupSourceClose}

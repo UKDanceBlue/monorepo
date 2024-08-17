@@ -5,9 +5,9 @@ import { ErrorCode } from "@ukdanceblue/common";
 import { authExchange } from "@urql/exchange-auth";
 import type { ReactNode } from "react";
 import { createContext, useContext, useMemo, useReducer } from "react";
-import { cacheExchange, Client, fetchExchange,Provider } from "urql";
+import { cacheExchange, Client, fetchExchange, Provider } from "urql";
 
-const invalidateCacheContext = createContext<() => void>(() => {});
+const invalidateCacheContext = createContext<() => void>(() => undefined);
 
 export function UrqlContext({ children }: { children: ReactNode }) {
   const [cacheInvalidation, invalidateCache] = useReducer(
@@ -16,11 +16,13 @@ export function UrqlContext({ children }: { children: ReactNode }) {
   );
 
   const client = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     cacheInvalidation;
     return new Client({
       url: `${API_BASE_URL}/graphql`,
       exchanges: [
         cacheExchange,
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         authExchange(async ({ appendHeaders }) => {
           const token = await AsyncStorage.getItem(DANCEBLUE_TOKEN_KEY);
 
@@ -66,6 +68,7 @@ export function UrqlContext({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useInvalidateCache() {
   return useContext(invalidateCacheContext);
 }

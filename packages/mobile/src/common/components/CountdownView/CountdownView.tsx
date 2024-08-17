@@ -6,7 +6,6 @@ import { StyleSheet } from "react-native";
 import { useThemeColors } from "../../customHooks";
 import TimeUnit from "../TimeUnit";
 
-
 const CountdownView = ({ endTime }: { endTime: number }) => {
   const [countdownDisplayDuration, setCountdownDisplayDuration] =
     useState<Duration>(Duration.fromMillis(0));
@@ -125,7 +124,7 @@ const CountdownView = ({ endTime }: { endTime: number }) => {
   );
 };
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     flex: 1,

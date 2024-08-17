@@ -16,7 +16,6 @@ import BackgroundCutout from "../../../../assets/screens/navigation/background-c
 import DanceBlueRibbon from "../../../../assets/svgs/DBRibbon";
 import { useReactNavigationTheme } from "../../../theme";
 
-
 // From https://reactnavigation.org/docs/bottom-tab-navigator#tabbar
 
 const iconMap = {
@@ -262,9 +261,7 @@ function TabBarComponent({
                 label={
                   typeof options.tabBarLabel === "string"
                     ? options.tabBarLabel
-                    : options.title !== undefined
-                      ? options.title
-                      : route.name
+                    : (options.title ?? route.name)
                 }
                 isFocused={state.index === index}
                 options={options}

@@ -9,8 +9,7 @@ export const LuxonDatePicker =
 export const CalendarWithLuxon =
   Calendar.generateCalendar<DateTime>(luxonGenerateConfig);
 
-export interface TimePickerProps
-  extends Omit<PickerProps<DateTime>, "picker"> {}
+export type TimePickerProps = Omit<PickerProps<DateTime>, "picker">;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const TimePicker = forwardRef<any, TimePickerProps>(

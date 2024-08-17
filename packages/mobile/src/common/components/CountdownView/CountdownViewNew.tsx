@@ -5,8 +5,6 @@ import { useEffect, useState } from "react";
 import { useThemeColors } from "../../customHooks";
 import { CountdownNumber } from "./CountdownNumber";
 
-
-
 export const CountdownViewNew = ({ endTime }: { endTime: number }) => {
   const [countdownDisplayDuration, setCountdownDisplayDuration] =
     useState<Duration>(Duration.fromMillis(0));
@@ -129,4 +127,3 @@ export const CountdownViewNew = ({ endTime }: { endTime: number }) => {
     </View>
   );
 };
-``;

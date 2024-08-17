@@ -14,7 +14,6 @@ import {
   luxonDateTimeToMonthString,
 } from "./eventListUtils";
 
-
 export const EventListPage = ({
   month,
   eventsByMonth,
@@ -159,7 +158,7 @@ export const EventListPage = ({
           }
           initialScrollIndex={
             selectedDay?.dateString
-              ? dayIndexes.current[selectedDay.dateString] ?? 0
+              ? (dayIndexes.current[selectedDay.dateString] ?? 0)
               : 0
           }
           extraData={selectedDay}

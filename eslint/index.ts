@@ -1,4 +1,3 @@
-import { FlatCompat } from "@eslint/eslintrc";
 import eslintJs from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
 import eslintPluginJsdoc from "eslint-plugin-jsdoc";
@@ -18,13 +17,8 @@ import { dirname } from "path";
 
 import type { FlatConfig } from "@typescript-eslint/utils/ts-eslint";
 import type { Linter } from "eslint";
-import type { ConfigWithExtends } from "typescript-eslint";
 
 const projectRoot = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
-const compat = new FlatCompat({
-  baseDirectory: projectRoot,
-  recommendedConfig: eslintJs.configs.recommended,
-});
 
 function getTsEslintRulesFrom(
   overrides: FlatConfig.Rules,
@@ -211,90 +205,21 @@ export default eslintTs.config(
     plugins: {
       "react-refresh": eslintPluginReactRefresh,
       "react-hooks": eslintPluginReactHooks,
-    },
-    rules: {
-      "react-refresh/only-export-components": "warn",
-      "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn",
-    },
-  },
-  {
-    files: ["packages/common/**/*"],
-    languageOptions: {
-      ecmaVersion: 2020,
-      sourceType: "module",
-      globals: { ...globals.es2020, ...globals["shared-node-browser"] },
-    },
-  },
-  {
-    files: ["packages/**/*"],
-    plugins: {
-      react: eslintPluginReact,
-    },
-    rules: {
-      "react/react-in-jsx-scope": "off",
-      "react/jsx-uses-react": "off",
+      "react": eslintPluginReact,
     },
     settings: {
       react: {
         version: "detect",
       },
     },
-  },
-  {
-    files: ["packages/portal/**/*"],
-    languageOptions: {
-      ecmaVersion: 2020,
-      sourceType: "module",
-      globals: { ...globals.es2020, ...globals.browser },
-    },
-  },
-  {
-    files: ["packages/mobile/**/*"],
-    plugins: {
-      "react-native": eslintPluginReactNative,
-    },
-    languageOptions: {
-      ecmaVersion: 2020,
-      sourceType: "module",
-      globals: {
-        ...globals.es2019,
-        ...eslintPluginReactNative.environments?.["react-native"]?.globals,
-      },
-    },
     rules: {
-      "react-native/no-unused-styles": 2,
-      "react-native/no-inline-styles": "off",
-      "react-native/no-color-literals": "off",
-      "react-native/sort-styles": 2,
-      "react-native/split-platform-components": 2,
-      "react-native/no-raw-text": "off",
-      "react-native/no-single-element-style-arrays": 2,
-      "unicorn/prefer-top-level-await": "off",
+      "react-refresh/only-export-components": "warn",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
+      "react/react-in-jsx-scope": "off",
+      "react/jsx-uses-react": "off",
     },
   },
-  {
-    files: ["packages/server/src/**/*"],
-    plugins: { node: eslintPluginNode },
-    languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: "module",
-      globals: { ...globals.es2022, ...globals.node },
-    },
-    rules: {
-      "node/no-deprecated-api": "error",
-      "node/no-extraneous-import": "error",
-      "node/no-extraneous-require": "error",
-      "node/no-exports-assign": "error",
-      "node/no-missing-require": "error",
-      "node/no-unpublished-bin": "error",
-      "node/no-unpublished-require": "error",
-      "node/process-exit-as-throw": "error",
-      "node/shebang": "error",
-      "node/no-unpublished-import": "off",
-    },
-  },
-  eslintConfigPrettier,
   {
     languageOptions: {
       parser: eslintTs.parser,
@@ -361,11 +286,75 @@ export default eslintTs.config(
             allowNumber: true,
           },
         ],
+        "@typescript-eslint/prefer-nullish-coalescing": "warn",
       },
       eslintTs.configs.strictTypeChecked,
       eslintTs.configs.stylisticTypeChecked
     ),
   },
+  {
+    files: ["packages/common/**/*"],
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: "module",
+      globals: { ...globals.es2020, ...globals["shared-node-browser"] },
+    },
+  },
+  {
+    files: ["packages/portal/**/*"],
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: "module",
+      globals: { ...globals.es2020, ...globals.browser },
+    },
+  },
+  {
+    files: ["packages/mobile/**/*"],
+    plugins: {
+      "react-native": eslintPluginReactNative,
+    },
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: "module",
+      globals: {
+        ...globals.es2019,
+        ...eslintPluginReactNative.environments?.["react-native"]?.globals,
+      },
+    },
+    rules: {
+      "react-native/no-unused-styles": 2,
+      "react-native/no-inline-styles": "off",
+      "react-native/no-color-literals": "off",
+      "react-native/sort-styles": 2,
+      "react-native/split-platform-components": 2,
+      "react-native/no-raw-text": "off",
+      "react-native/no-single-element-style-arrays": 2,
+      "unicorn/prefer-top-level-await": "off",
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
+  {
+    files: ["packages/server/src/**/*"],
+    plugins: { node: eslintPluginNode },
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+      globals: { ...globals.es2022, ...globals.node },
+    },
+    rules: {
+      "node/no-deprecated-api": "error",
+      "node/no-extraneous-import": "error",
+      "node/no-extraneous-require": "error",
+      "node/no-exports-assign": "error",
+      "node/no-missing-require": "error",
+      "node/no-unpublished-bin": "error",
+      "node/no-unpublished-require": "error",
+      "node/process-exit-as-throw": "error",
+      "node/shebang": "error",
+      "node/no-unpublished-import": "off",
+    },
+  },
+  eslintConfigPrettier,
   {
     files: ["packages/*.test.ts", "packages/*.test.tsx"],
     plugins: {
@@ -429,7 +418,6 @@ export default eslintTs.config(
     // TODO: switch the mobile tests over to vitest
     ignores: ["**/mobile/**/*"],
   },
-  ...(compat.extends("plugin:import/typescript") as ConfigWithExtends[]),
   {
     files: ["packages/**/*.cjs", "*.cjs"],
     languageOptions: {

@@ -30,7 +30,6 @@ import type { RootStackScreenProps } from "../../../types/navigationTypes";
 import { onAddToCalendar } from "./addToCalendar";
 import { EventScreenFragment } from "./EventScreenFragment";
 
-
 const EventScreen = () => {
   const {
     params: { event, occurrenceId },
@@ -235,7 +234,7 @@ function stringifyInterval(
 ) {
   let whenString = "";
   let allDay = false;
-  if (interval != null && interval.isValid) {
+  if (interval?.isValid) {
     if (
       interval.start.toMillis() === DateTime.now().startOf("day").toMillis() &&
       interval.end.toMillis() === DateTime.now().endOf("day").toMillis()

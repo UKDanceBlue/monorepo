@@ -1,5 +1,3 @@
-
-
 import { useTabBarConfig } from "@common/hooks/useTabBarConfig";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import type { RouteProp } from "@react-navigation/native";
@@ -24,7 +22,7 @@ import TabBarComponent from "./TabBarComponent";
 
 const Tabs = createBottomTabNavigator<TabNavigatorParamList>();
 
-export const possibleTabs = {
+const possibleTabs = {
   Home: <Tabs.Screen key="Home" name="Home" component={HomeScreen} />,
   Events: (
     <Tabs.Screen key="Events" name="Events" component={EventListScreen} />

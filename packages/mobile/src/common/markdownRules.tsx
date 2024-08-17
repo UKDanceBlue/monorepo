@@ -1,7 +1,4 @@
-import type {
-  ASTNode,
-  RenderRules,
-} from "@jonasmerlin/react-native-markdown-display";
+import type { RenderRules } from "@jonasmerlin/react-native-markdown-display";
 import {
   hasParents,
   renderRules,
@@ -10,14 +7,10 @@ import {
 import { openUrl } from "@jonasmerlin/react-native-markdown-display/src/lib/util/openUrl";
 import { Platform } from "expo-modules-core";
 import { Box, Divider, Heading, Link, Row, Text, VStack } from "native-base";
-import React, { useEffect, useState } from "react";
 import type { FlexAlignType, TextStyle } from "react-native";
 import { StyleSheet } from "react-native";
-import type { IFitImageProps } from "react-native-fit-image";
-import FitImage from "react-native-fit-image";
 
-import { Logger } from "./logger/Logger";
-
+import { CustomImageRenderer } from "./components/CustomImageRenderer";
 
 export interface MarkdownRuleStyle {
   flexDirection: "column" | "row" | "column-reverse" | "row-reverse";
@@ -78,6 +71,7 @@ const markdownTextStyleKeys = new Set<keyof Partial<TextStyle>>([
   "writingDirection",
 ]);
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const styleRuleKeys = [
   "body",
   "heading1",
@@ -123,92 +117,9 @@ export type StyleRuleKeysType =
   | (typeof styleRuleKeys)[number]
   | `_VIEW_SAFE_${(typeof styleRuleKeys)[number]}`;
 
-type MarkdownRuleStyles = Partial<
+export type MarkdownRuleStyles = Partial<
   Record<StyleRuleKeysType, Partial<MarkdownRuleStyle>>
 >;
-
-const CustomImageRenderer = ({
-  node,
-  styles,
-  allowedImageHandlers,
-  defaultImageHandler,
-}: {
-  node: ASTNode;
-  styles: MarkdownRuleStyles;
-  allowedImageHandlers: string[];
-  defaultImageHandler: string | null | undefined;
-}) => {
-  const src = node.attributes.src ? String(node.attributes.src) : undefined;
-  const alt = node.attributes.alt ? String(node.attributes.alt) : undefined;
-  const title = node.attributes.title
-    ? String(node.attributes.title)
-    : undefined;
-
-  const [imageProps, setImageProps] = useState<
-    (IFitImageProps & { key?: React.Key }) | null
-  >(null);
-  useEffect(() => {
-    // we check that the source starts with at least one of the elements in allowedImageHandlers
-    const show = allowedImageHandlers.some((value) => {
-      return src?.toLowerCase().startsWith(value.toLowerCase());
-    });
-
-    if (!show) {
-      if (defaultImageHandler == null) {
-        return;
-      } else if (src?.startsWith("gs://")) {
-        Logger.error("Firebase storage is no longer supported", {
-          context: {
-            src,
-          },
-        });
-      } else {
-        let srcWithoutProtocol = src ?? "";
-        if (srcWithoutProtocol.includes("://")) {
-          srcWithoutProtocol = srcWithoutProtocol.substring(
-            srcWithoutProtocol.indexOf("://") + 3
-          );
-        }
-        setImageProps({
-          // @ts-expect-error - TODO: Fix these errors, seems ok for now
-          style: styles._VIEW_SAFE_image,
-          accessibilityLabel: alt ?? title,
-          source: { uri: `${defaultImageHandler}${srcWithoutProtocol}` },
-        });
-      }
-    } else {
-      setImageProps({
-        // @ts-expect-error - TODO: Fix these errors, seems ok for now
-        style: styles._VIEW_SAFE_image,
-        accessibilityLabel: alt ?? title,
-        source: { uri: src },
-      });
-    }
-  }, [
-    allowedImageHandlers,
-    alt,
-    defaultImageHandler,
-    src,
-    styles._VIEW_SAFE_image,
-    title,
-  ]);
-
-  if (imageProps == null) {
-    return null;
-  } else {
-    return (
-      <FitImage
-        {...imageProps}
-        {...((alt ?? title)
-          ? {
-              accessible: true,
-              accessibilityLabel: alt ?? title,
-            }
-          : {})}
-      />
-    );
-  }
-};
 
 // This is a modified clone of https://github.com/iamacup/react-native-markdown-display/blob/master/src/lib/renderRules.js
 export const rules: RenderRules = {

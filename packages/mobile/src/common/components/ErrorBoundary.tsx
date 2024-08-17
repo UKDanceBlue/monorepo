@@ -5,7 +5,6 @@ import { Button, SafeAreaView, ScrollView, Text, View } from "react-native";
 
 import { logError, universalCatch } from "../logging";
 
-
 type ErrorWithCause = Error & { cause?: unknown };
 
 class ErrorBoundary extends Component<
@@ -80,7 +79,7 @@ class ErrorBoundary extends Component<
     let stringifiedError = "";
     try {
       stringifiedError = JSON.stringify(untypedError, null, 2);
-    } catch (error_) {
+    } catch {
       stringifiedError = String(untypedError);
     }
 

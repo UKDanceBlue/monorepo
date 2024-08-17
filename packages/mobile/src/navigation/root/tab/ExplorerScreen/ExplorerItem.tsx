@@ -13,8 +13,6 @@ import DBRibbon from "../../../../../assets/svgs/DBRibbon";
 import { parseBlogText } from "./parseBlogText";
 import { YoutubeEmbedWebView } from "./YoutubeEmbedWebView";
 
-
-
 function cleanupTextContent(textContent: string) {
   let completedText = "";
 
@@ -118,7 +116,7 @@ export const ExplorerItem = ({
       };
     }
 
-    return () => {};
+    return () => undefined;
   }, [hasAudio, resourceLink]);
 
   useEffect(() => {

@@ -142,7 +142,7 @@ export const NavigationMenu = () => {
           let isAuthorized = false;
           for (const authorizationRule of item.authorizationRules) {
             if (
-               
+              // eslint-disable-next-line no-await-in-loop
               await checkAuthorization(
                 authorizationRule,
                 authorization ?? defaultAuthorization

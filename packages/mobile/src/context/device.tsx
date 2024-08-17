@@ -30,7 +30,7 @@ import { useMutation } from "urql";
 
 import { universalCatch } from "../common/logging";
 import { useAuthState } from "./auth";
-import { useLoading } from "./loading";
+import { useLoading } from "./useLoading";
 
 const setDeviceQuery = graphql(/* GraphQL */ `
   mutation SetDevice($input: RegisterDeviceInput!) {

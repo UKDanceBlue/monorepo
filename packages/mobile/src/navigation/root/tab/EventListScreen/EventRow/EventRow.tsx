@@ -18,7 +18,7 @@ const EventRow = ({
 }) => {
   const whenString = useMemo(() => {
     let whenString = "";
-    if (interval != null && interval.isValid) {
+    if (interval?.isValid) {
       if (
         interval.start.toMillis() ===
           DateTime.now().startOf("day").toMillis() &&

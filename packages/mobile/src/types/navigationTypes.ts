@@ -7,7 +7,6 @@ import type {
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 
-
 export interface SpiritStackParamList {
   MyTeam: undefined;
   Scoreboard: undefined;

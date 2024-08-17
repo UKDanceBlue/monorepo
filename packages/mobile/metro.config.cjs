@@ -20,7 +20,7 @@ const resolveRequest = (context, moduleName, platform) => {
 };
 
 /** @return {import("expo/metro-config").MetroConfig} */
-function config() {
+const config = () => {
   /** @type {import("expo/metro-config").MetroConfig}*/
   const config = getSentryExpoConfig(projectRoot);
 
@@ -44,6 +44,6 @@ function config() {
   config.resolver.unstable_enablePackageExports = true;
 
   return config;
-}
+};
 
 module.exports = config();
