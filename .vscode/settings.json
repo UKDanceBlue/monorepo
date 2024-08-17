@@ -11,6 +11,7 @@
     "source.organizeImports": "never",
     "source.fixAll": "explicit"
   },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "search.exclude": {
     "package-lock.json": true,
     "yarn.lock": true

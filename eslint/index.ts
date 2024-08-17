@@ -1,4 +1,3 @@
-import { fixupPluginRules } from "@eslint/compat";
 import { FlatCompat } from "@eslint/eslintrc";
 import eslintJs from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
@@ -10,6 +9,7 @@ import eslintPluginReactNative from "eslint-plugin-react-native";
 import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import eslintPluginVitest from "eslint-plugin-vitest";
+import eslintPluginSortImports from "eslint-plugin-simple-import-sort";
 import globals from "globals";
 import eslintTs from "typescript-eslint";
 
@@ -17,26 +17,14 @@ import { fileURLToPath } from "node:url";
 import { dirname } from "path";
 
 import type { FlatConfig } from "@typescript-eslint/utils/ts-eslint";
-import type { ESLint, Linter } from "eslint";
+import type { Linter } from "eslint";
 import type { ConfigWithExtends } from "typescript-eslint";
 
-const project = "./tsconfig.json";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const projectRoot = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+  baseDirectory: projectRoot,
   recommendedConfig: eslintJs.configs.recommended,
 });
-
-function legacyPlugin(name: string, alias: string = name): ESLint.Plugin {
-  const plugin = compat.plugins(name)[0]?.plugins?.[alias];
-
-  if (!plugin) {
-    throw new Error(`Unable to resolve plugin ${name} and/or alias ${alias}`);
-  }
-
-  return fixupPluginRules(plugin);
-}
 
 function getTsEslintRulesFrom(
   overrides: FlatConfig.Rules,
@@ -55,21 +43,21 @@ export default eslintTs.config(
   {
     ignores: [
       "**/*.d.ts",
-      "**/node_modules/**",
-      "**/coverage/**",
-      "**/dist/**",
-      "**/build/**",
-      "**/.next/**",
+      "**/node_modules/**/*",
+      "**/coverage/**/*",
+      "**/dist/**/*",
+      "**/build/**/*",
+      "**/.next/**/*",
       "**/*.json",
-      "packages/common/lib/graphql-client-*/**",
-      ".yarn/**",
-      "compose-volumes/**",
+      "packages/common/lib/graphql-client-*/**/*",
+      ".yarn/**/*",
+      "compose-volumes/**/*",
       "eslint/out/*.js",
+      "packages/mobile/.expo/**/*",
     ],
   },
   eslintJs.configs.recommended,
   {
-    files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
     languageOptions: {
       ecmaVersion: 2021,
       sourceType: "module",
@@ -88,9 +76,6 @@ export default eslintTs.config(
         },
       },
     },
-  },
-  {
-    files: ["*.+(js|ts|jsx|tsx)"],
     rules: {
       // Possible Errors
       "no-undef": "off",
@@ -215,15 +200,7 @@ export default eslintTs.config(
     },
   },
   {
-    files: ["**/*.cjs"],
-    languageOptions: {
-      // Assume we're pretty limited in what we can use in CJS
-      ecmaVersion: 2015,
-      sourceType: "script",
-    },
-  },
-  {
-    files: ["packages/**/*.tsx", "packages/**/*.jsx"],
+    files: ["packages/**/*.jsx", "packages/**/*.tsx"],
     languageOptions: {
       parserOptions: {
         ecmaFeatures: {
@@ -242,16 +219,15 @@ export default eslintTs.config(
     },
   },
   {
-    files: ["packages/common/lib/**/*.+(js|jsx|ts|tsx)"],
+    files: ["packages/common/**/*"],
     languageOptions: {
       ecmaVersion: 2020,
       sourceType: "module",
       globals: { ...globals.es2020, ...globals["shared-node-browser"] },
-      parserOptions: { tsconfigRootDir: "packages/common" },
     },
   },
   {
-    files: ["packages/+(portal|common|mobile)/src/**/*.+(js|jsx|ts|tsx)"],
+    files: ["packages/**/*"],
     plugins: {
       react: eslintPluginReact,
     },
@@ -266,16 +242,15 @@ export default eslintTs.config(
     },
   },
   {
-    files: ["packages/portal/src/**/*.+(js|jsx|ts|tsx)"],
+    files: ["packages/portal/**/*"],
     languageOptions: {
       ecmaVersion: 2020,
       sourceType: "module",
       globals: { ...globals.es2020, ...globals.browser },
-      parserOptions: { tsconfigRootDir: "packages/portal" },
     },
   },
   {
-    files: ["packages/mobile/**/*.+(js|jsx|ts|tsx)"],
+    files: ["packages/mobile/**/*"],
     plugins: {
       "react-native": eslintPluginReactNative,
     },
@@ -299,13 +274,12 @@ export default eslintTs.config(
     },
   },
   {
-    files: ["packages/server/src/**/*.ts", "packages/server/src/**/*.js"],
+    files: ["packages/server/src/**/*"],
     plugins: { node: eslintPluginNode },
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",
       globals: { ...globals.es2022, ...globals.node },
-      parserOptions: { tsconfigRootDir: "packages/server" },
     },
     rules: {
       "node/no-deprecated-api": "error",
@@ -322,11 +296,19 @@ export default eslintTs.config(
   },
   eslintConfigPrettier,
   {
-    files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
       parser: eslintTs.parser,
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: [
+            "yarn.config.cjs",
+            "eslint.config.js",
+            "packages/mobile/babel.config.mjs",
+            "packages/mobile/metro.config.cjs",
+          ],
+          defaultProject: "tsconfig.json",
+        },
+        tsconfigRootDir: projectRoot,
       },
     },
     plugins: {
@@ -385,7 +367,7 @@ export default eslintTs.config(
     ),
   },
   {
-    files: ["**/*.test.ts", "**/*.test.tsx"],
+    files: ["packages/*.test.ts", "packages/*.test.tsx"],
     plugins: {
       // THIS COULD BE AN ISSUE!!!
       vitest: eslintPluginVitest as unknown as Exclude<
@@ -445,51 +427,27 @@ export default eslintTs.config(
       globals: eslintPluginVitest.environments.env.globals,
     },
     // TODO: switch the mobile tests over to vitest
-    ignores: ["**/mobile/**"],
+    ignores: ["**/mobile/**/*"],
   },
   ...(compat.extends("plugin:import/typescript") as ConfigWithExtends[]),
   {
-    settings: {
-      "import/resolver": {
-        typescript: {
-          alwaysTryTypes: true,
-          project,
-        },
-      },
-    },
-    plugins: {
-      import: legacyPlugin("eslint-plugin-import", "import"),
+    files: ["packages/**/*.cjs", "*.cjs"],
+    languageOptions: {
+      // Assume we're pretty limited in what we can use in CJS
+      ecmaVersion: 2017,
+      sourceType: "commonjs",
     },
     rules: {
-      "import/no-duplicates": "warn",
-      "import/order": [
-        "error",
-        {
-          "groups": [
-            "index",
-            "sibling",
-            "parent",
-            "internal",
-            "external",
-            "builtin",
-            "object",
-            "type",
-          ],
-          "pathGroups": [
-            {
-              pattern: "#**",
-              group: "internal",
-              position: "before",
-            },
-          ],
-          "pathGroupsExcludedImportTypes": ["builtin"],
-          "alphabetize": {
-            order: "asc",
-          },
-          "newlines-between": "always",
-        },
-      ],
-      "sort-imports": ["off"],
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
+  {
+    plugins: {
+      "sort-imports": eslintPluginSortImports,
+    },
+    rules: {
+      "sort-imports/imports": "error",
+      "sort-imports/exports": "error",
     },
   }
 );
