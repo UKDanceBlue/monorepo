@@ -34,4 +34,4 @@ function babel(api) {
   };
 }
 
-export default babel;
+module.exports = babel;
