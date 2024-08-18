@@ -43,6 +43,7 @@
     "@vitest/coverage-v8": "^2.0.5",
     "@vitest/ui": "^2.0.5",
     "@yarnpkg/types": "^4.0.0",
+    "babel-cli": "^6.26.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.5",
     "eslint-config-prettier": "^9.1.0",
@@ -58,6 +59,7 @@
     "globals": "^15.9.0",
     "graphql": "^16.9.0",
     "graphql-scalars": "^1.23.0",
+    "node-gyp": "^10.2.0",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.1",
@@ -73,8 +75,5 @@
     "react-native-rss-parser@^1.5.1": "patch:react-native-rss-parser@npm%3A1.5.1#./.yarn/patches/react-native-rss-parser-npm-1.5.1-e4cc1d8bd8.patch",
     "@graphql-codegen/client-preset@npm:^4.2.2": "patch:@graphql-codegen/client-preset@npm%3A4.3.2#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.3.2-fb874ac9d8.patch",
     "urijs": "npm:uri-js-replace"
-  },
-  "dependencies": {
-    "babel-cli": "^6.26.0"
   }
 }
