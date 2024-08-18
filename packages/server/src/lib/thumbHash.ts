@@ -1,8 +1,9 @@
+import sharp from "sharp";
+import { rgbaToThumbHash } from "thumbhash";
+
 import assert from "node:assert";
 
 import type { SharpOptions } from "sharp";
-import sharp from "sharp";
-import { rgbaToThumbHash } from "thumbhash";
 
 /**
  * Generates a thumbhash from an image

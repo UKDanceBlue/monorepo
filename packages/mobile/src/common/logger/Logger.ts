@@ -1,14 +1,13 @@
-import crashlytics from "@react-native-firebase/crashlytics";
-
 import { ConsoleTransport } from "./ConsoleTransport";
-import { CrashlyticsTransport } from "./CrashlyticsTransport";
-import type { ExtraLogArgs, LoggerTransport } from "./transport";
+import { SentryTransport } from "./SentryTransport";
 import { LogLevel } from "./transport";
+
+import type { ExtraLogArgs, LoggerTransport } from "./transport";
 
 export class Logger {
   static #instance: Logger = new Logger(
     new ConsoleTransport(LogLevel.debug),
-    new CrashlyticsTransport(LogLevel.log, crashlytics())
+    new SentryTransport(LogLevel.info)
   );
 
   #transports: LoggerTransport[];
@@ -22,7 +21,7 @@ export class Logger {
     message: string | boolean | bigint | number | object,
     extra: ExtraLogArgs = {}
   ) {
-    let messageString: string = "ERROR: Message could not be stringified";
+    let messageString = "ERROR: Message could not be stringified";
     switch (typeof message) {
       case "string":
       case "boolean":

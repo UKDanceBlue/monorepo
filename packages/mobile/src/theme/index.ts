@@ -1,6 +1,3 @@
-import type { Theme as ReactNavigationTheme } from "@react-navigation/native";
-import { extendTheme, useColorMode, useTheme } from "native-base";
-import { useMemo } from "react";
 
 import { colors } from "./colors";
 import { components } from "./components";
@@ -14,6 +11,11 @@ import {
   opacity,
   shadows,
 } from "./typography";
+
+import { extendTheme, useColorMode, useTheme } from "native-base";
+import { useMemo } from "react";
+
+import type { Theme as ReactNavigationTheme } from "@react-navigation/native";
 
 /*
  * Useful links for extending the theme:

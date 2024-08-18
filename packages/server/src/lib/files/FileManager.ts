@@ -1,17 +1,23 @@
-import { MIMEType } from "util";
 
-import type { File } from "@prisma/client";
-import { Service } from "typedi";
 
 import { LocalStorageProvider } from "./storage/LocalStorageProvider.js";
+import { UnsupportedAccessMethod } from "./storage/StorageProvider.js";
+
+import { serveOrigin } from "#environment";
+
+import { logger } from "#logging/standardLogging.js";
+import { FileRepository } from "#repositories/file/fileRepository.js";
+
+import { Service } from "typedi";
+
+import { MIMEType } from "util";
+
 import type {
   StorableFile,
   StorageProvider,
 } from "./storage/StorageProvider.js";
-import { UnsupportedAccessMethod } from "./storage/StorageProvider.js";
-import { serveOrigin } from "#environment";
-import { logger } from "#logging/standardLogging.js";
-import { FileRepository } from "#repositories/file/fileRepository.js";
+import type { File } from "@prisma/client";
+
 
 const FILE_API = new URL("/api/file/download/", serveOrigin);
 

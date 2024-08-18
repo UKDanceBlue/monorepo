@@ -9,6 +9,7 @@ import InfinitePager from "react-native-infinite-pager";
 import { EventListPage } from "./EventListPage";
 import { useEvents } from "./eventListUtils";
 
+
 // const DummyView = (
 //   <View
 //     onStartShouldSetResponder={() => true}

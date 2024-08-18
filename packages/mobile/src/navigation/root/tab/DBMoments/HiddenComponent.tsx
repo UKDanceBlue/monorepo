@@ -9,8 +9,8 @@ import { Box, HStack, Image, Text, View } from "native-base";
 import type { Ref } from "react";
 import React, { useEffect, useState } from "react";
 import {
-  ImageBackground,
   Image as RNImage,
+  ImageBackground,
   useWindowDimensions,
 } from "react-native";
 

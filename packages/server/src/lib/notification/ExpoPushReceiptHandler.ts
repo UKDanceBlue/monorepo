@@ -1,10 +1,12 @@
-/* eslint-disable no-await-in-loop */
-import type { ExpoPushReceipt } from "expo-server-sdk";
+ 
+import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
+import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
+
 import { Expo } from "expo-server-sdk";
 import { Service } from "typedi";
 
-import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
-import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
+import type { ExpoPushReceipt } from "expo-server-sdk";
+
 
 @Service()
 export class ExpoPushReceiptHandler {

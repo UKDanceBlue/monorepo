@@ -1,14 +1,15 @@
-import type { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
 import { useAsyncStorage } from "@common/hooks/useAsyncStorage";
 import { Logger } from "@common/logger/Logger";
 import { showMessage } from "@common/util/alertUtils";
 import { useDeviceData } from "@context/device";
 import { ErrorCode } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useState } from "react";
 import { useClient } from "urql";
+
+import type { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 
 const NOTIFICATION_PAGE_SIZE = 8;
 const INCOMPLETE_PAGE_TIMEOUT = 10_000;

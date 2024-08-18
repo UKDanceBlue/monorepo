@@ -6,7 +6,6 @@ import type { BaseOptionType } from "antd/es/select";
 import { useMemo, useState } from "react";
 
 import { TeamNameFragment } from "../PersonFormsGQL";
-
 import { usePersonCreatorForm } from "./usePersonCreatorForm";
 
 export function PersonCreator({
@@ -71,106 +70,99 @@ export function PersonCreator({
 
   return (
     <Flex vertical gap="middle" align="center">
-      <formApi.Provider>
-        <Form
-          onFinish={() => {
-            formApi.handleSubmit().catch((error: unknown) => {
-              if (error instanceof Error) {
-                void message.error(error.message);
-              } else {
-                void message.error("An unknown error occurred");
-              }
-            });
+      <Form
+        onFinish={() => {
+          formApi.handleSubmit().catch((error: unknown) => {
+            if (error instanceof Error) {
+              void message.error(error.message);
+            } else {
+              void message.error("An unknown error occurred");
+            }
+          });
+        }}
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 32 }}
+      >
+        <formApi.Subscribe selector={(state) => state.values.captainOf}>
+          {(captainOf) => {
+            setFormCaptainOf(captainOf ?? []);
+            return null;
           }}
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 32 }}
-        >
-          <formApi.Subscribe selector={(state) => state.values.captainOf}>
-            {(captainOf) => {
-              setFormCaptainOf(captainOf ?? []);
-              return null;
-            }}
-          </formApi.Subscribe>
-          <formApi.Subscribe selector={(state) => state.values.memberOf}>
-            {(memberOf) => {
-              setFormMemberOf(memberOf ?? []);
-              return null;
-            }}
-          </formApi.Subscribe>
-          <formApi.Field
-            name="name"
-            children={(field) => (
-              <Form.Item
-                label="Name"
-                validateStatus={
-                  field.state.meta.errors.length > 0 ? "error" : ""
-                }
-                help={
-                  field.state.meta.errors.length > 0
-                    ? field.state.meta.errors[0]
-                    : undefined
-                }
-              >
-                <Input
-                  status={field.state.meta.errors.length > 0 ? "error" : ""}
-                  name={field.name}
-                  value={field.state.value ?? ""}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-              </Form.Item>
-            )}
-          />
-          <formApi.Field
-            name="linkblue"
-            children={(field) => (
-              <Form.Item
-                label="Linkblue"
-                validateStatus={
-                  field.state.meta.errors.length > 0 ? "error" : ""
-                }
-                help={
-                  field.state.meta.errors.length > 0
-                    ? field.state.meta.errors[0]
-                    : undefined
-                }
-              >
-                <Input
-                  status={field.state.meta.errors.length > 0 ? "error" : ""}
-                  name={field.name}
-                  value={field.state.value ?? ""}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-              </Form.Item>
-            )}
-          />
-          <formApi.Field
-            name="email"
-            onChange={(value) => (!value ? "Email is required" : undefined)}
-            children={(field) => (
-              <Form.Item
-                label="Email"
-                validateStatus={
-                  field.state.meta.errors.length > 0 ? "error" : ""
-                }
-                help={
-                  field.state.meta.errors.length > 0
-                    ? field.state.meta.errors[0]
-                    : undefined
-                }
-              >
-                <Input
-                  status={field.state.meta.errors.length > 0 ? "error" : ""}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-              </Form.Item>
-            )}
-          />
-          {/* <formApi.Field
+        </formApi.Subscribe>
+        <formApi.Subscribe selector={(state) => state.values.memberOf}>
+          {(memberOf) => {
+            setFormMemberOf(memberOf ?? []);
+            return null;
+          }}
+        </formApi.Subscribe>
+        <formApi.Field
+          name="name"
+          children={(field) => (
+            <Form.Item
+              label="Name"
+              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
+              help={
+                field.state.meta.errors.length > 0
+                  ? field.state.meta.errors[0]
+                  : undefined
+              }
+            >
+              <Input
+                status={field.state.meta.errors.length > 0 ? "error" : ""}
+                name={field.name}
+                value={field.state.value ?? ""}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+            </Form.Item>
+          )}
+        />
+        <formApi.Field
+          name="linkblue"
+          children={(field) => (
+            <Form.Item
+              label="Linkblue"
+              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
+              help={
+                field.state.meta.errors.length > 0
+                  ? field.state.meta.errors[0]
+                  : undefined
+              }
+            >
+              <Input
+                status={field.state.meta.errors.length > 0 ? "error" : ""}
+                name={field.name}
+                value={field.state.value ?? ""}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+            </Form.Item>
+          )}
+        />
+        <formApi.Field
+          name="email"
+          onChange={(value) => (!value ? "Email is required" : undefined)}
+          children={(field) => (
+            <Form.Item
+              label="Email"
+              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
+              help={
+                field.state.meta.errors.length > 0
+                  ? field.state.meta.errors[0]
+                  : undefined
+              }
+            >
+              <Input
+                status={field.state.meta.errors.length > 0 ? "error" : ""}
+                name={field.name}
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+            </Form.Item>
+          )}
+        />
+        {/* <formApi.Field
             name="role.committeeRole"
             children={(field) => (
               <Form.Item
@@ -234,67 +226,62 @@ export function PersonCreator({
               </Form.Item>
             )}
           /> */}
-          <p>
-            Note: If someone is captain of a team that also means they are a
-            member of that team, so you don't need to select both.
-          </p>
-          <formApi.Field
-            name="captainOf"
-            children={(field) => (
-              <Form.Item
-                label="Captain Of"
-                validateStatus={
-                  field.state.meta.errors.length > 0 ? "error" : ""
-                }
-                help={
-                  field.state.meta.errors.length > 0
-                    ? field.state.meta.errors[0]
-                    : undefined
-                }
-              >
-                <Select
-                  mode="multiple"
-                  status={field.state.meta.errors.length > 0 ? "error" : ""}
-                  value={field.state.value ?? null}
-                  onBlur={field.handleBlur}
-                  onChange={(value) => field.handleChange(value)}
-                  options={captaincyOptions}
-                />
-              </Form.Item>
-            )}
-          />
-          <formApi.Field
-            name="memberOf"
-            children={(field) => (
-              <Form.Item
-                label="Member Of"
-                validateStatus={
-                  field.state.meta.errors.length > 0 ? "error" : ""
-                }
-                help={
-                  field.state.meta.errors.length > 0
-                    ? field.state.meta.errors[0]
-                    : undefined
-                }
-              >
-                <Select
-                  mode="multiple"
-                  status={field.state.meta.errors.length > 0 ? "error" : ""}
-                  value={field.state.value ?? null}
-                  onBlur={field.handleBlur}
-                  onChange={(value) => field.handleChange(value)}
-                  options={membershipOptions}
-                />
-              </Form.Item>
-            )}
-          />
-          <Form.Item wrapperCol={{ span: 32, offset: 8 }}>
-            <Button type="primary" htmlType="submit">
-              Save
-            </Button>
-          </Form.Item>
-        </Form>
-      </formApi.Provider>
+        <p>
+          Note: If someone is captain of a team that also means they are a
+          member of that team, so you don't need to select both.
+        </p>
+        <formApi.Field
+          name="captainOf"
+          children={(field) => (
+            <Form.Item
+              label="Captain Of"
+              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
+              help={
+                field.state.meta.errors.length > 0
+                  ? field.state.meta.errors[0]
+                  : undefined
+              }
+            >
+              <Select
+                mode="multiple"
+                status={field.state.meta.errors.length > 0 ? "error" : ""}
+                value={field.state.value ?? null}
+                onBlur={field.handleBlur}
+                onChange={(value) => field.handleChange(value)}
+                options={captaincyOptions}
+              />
+            </Form.Item>
+          )}
+        />
+        <formApi.Field
+          name="memberOf"
+          children={(field) => (
+            <Form.Item
+              label="Member Of"
+              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
+              help={
+                field.state.meta.errors.length > 0
+                  ? field.state.meta.errors[0]
+                  : undefined
+              }
+            >
+              <Select
+                mode="multiple"
+                status={field.state.meta.errors.length > 0 ? "error" : ""}
+                value={field.state.value ?? null}
+                onBlur={field.handleBlur}
+                onChange={(value) => field.handleChange(value)}
+                options={membershipOptions}
+              />
+            </Form.Item>
+          )}
+        />
+        <Form.Item wrapperCol={{ span: 32, offset: 8 }}>
+          <Button type="primary" htmlType="submit">
+            Save
+          </Button>
+        </Form.Item>
+      </Form>
     </Flex>
   );
 }

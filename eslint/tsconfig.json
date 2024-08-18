@@ -7,7 +7,7 @@
     "noEmit": false,
     "outDir": "out"
   },
-  "include": ["./*.ts"],
+  "include": ["./index.ts", "./types.d.ts"],
   "exclude": [],
   "extends": "../tsconfig.json"
 }

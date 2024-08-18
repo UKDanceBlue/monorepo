@@ -8,6 +8,7 @@ import { ActivityIndicator, Dimensions, StatusBar } from "react-native";
 
 import { getRandomSplashLoginBackground } from "./SplashLoginBackgrounds";
 
+
 const SplashLoginScreen = () => {
   const { allowedLoginTypes, allowedLoginTypesLoading } =
     useAllowedLoginTypes();

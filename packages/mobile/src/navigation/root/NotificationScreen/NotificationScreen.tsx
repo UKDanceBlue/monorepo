@@ -9,12 +9,11 @@ import { manufacturer as deviceManufacturer } from "expo-device";
 import { openSettings } from "expo-linking";
 import { setBadgeCountAsync } from "expo-notifications";
 import { DateTime } from "luxon";
-import { Button, SectionList, Text, View, useTheme } from "native-base";
+import { Button, SectionList, Text, useTheme, View } from "native-base";
 import { useEffect, useMemo } from "react";
 import { RefreshControl } from "react-native";
 
-import { useDeviceData, useLoading, useUserData } from "../../../context";
-
+import { useDeviceData, useLoading } from "../../../context";
 import { NotificationRow } from "./NotificationRow";
 import { NotificationSectionHeader } from "./NotificationSectionHeader";
 import { useLoadNotifications } from "./refresh";
@@ -28,7 +27,6 @@ function NotificationScreen() {
   const [, , { UserDataProvider: isUserDataLoading }] = useLoading();
 
   const theme = useTheme();
-  const userData = useUserData();
 
   const {
     notifications,
@@ -90,19 +88,10 @@ function NotificationScreen() {
     });
   }, []);
 
-  function jumboText() {
-    let welcomeString = "Welcome to DanceBlue!";
-    if (userData.firstName != null) {
-      welcomeString = `Hey ${userData.firstName}!`;
-    }
-
-    return welcomeString;
-  }
-
   if (!notificationPermissionsGranted) {
     return (
       <View>
-        <JumbotronGeometric title={jumboText()} />
+        <JumbotronGeometric title="Welcome to DanceBlue!" />
         <Text textAlign="center">
           You have not enabled notifications for this device, enable them in the
           settings app
@@ -117,7 +106,7 @@ function NotificationScreen() {
   } else {
     return (
       <>
-        <JumbotronGeometric title={jumboText()} />
+        <JumbotronGeometric title={"Welcome to DanceBlue!"} />
         <Text textAlign="center" fontSize={theme.fontSizes["3xl"]}>
           Notifications
         </Text>

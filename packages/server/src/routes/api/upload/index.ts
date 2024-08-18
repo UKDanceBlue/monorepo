@@ -1,15 +1,20 @@
-import { open } from "fs/promises";
-
-import Router from "@koa/router";
-import type { File } from "@prisma/client";
-import { koaBody } from "koa-body";
-import { Container } from "typedi";
-
 import { maxFileSize } from "#environment";
+
 import { FileManager } from "#files/FileManager.js";
 import { generateThumbHash } from "#lib/thumbHash.js";
 import { logger } from "#logging/standardLogging.js";
 import { ImageRepository } from "#repositories/image/ImageRepository.js";
+
+import Router from "@koa/router";
+import { koaBody } from "koa-body";
+import { Container } from "typedi";
+
+import { open } from "fs/promises";
+
+import type { File } from "@prisma/client";
+
+
+
 
 const uploadRouter = new Router({ prefix: "/upload" }).post(
   "/image/:uuid",

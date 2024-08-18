@@ -1,5 +1,6 @@
 import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
+import { setTag as setSentryTag } from "@sentry/react-native";
 import { arrayToBase64String } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
 import {
@@ -13,9 +14,9 @@ import { isDevice, osName } from "expo-device";
 import type { PermissionStatus } from "expo-notifications";
 import {
   AndroidImportance,
-  IosAuthorizationStatus,
   getExpoPushTokenAsync,
   getPermissionsAsync,
+  IosAuthorizationStatus,
   requestPermissionsAsync,
   setNotificationChannelAsync,
 } from "expo-notifications";
@@ -28,9 +29,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
 import { universalCatch } from "../common/logging";
-
 import { useAuthState } from "./auth";
-import { useLoading } from "./loading";
+import { useLoading } from "./useLoading";
 
 const setDeviceQuery = graphql(/* GraphQL */ `
   mutation SetDevice($input: RegisterDeviceInput!) {
@@ -184,6 +184,7 @@ export const DeviceDataProvider = ({
       .then(async ({ uuid, verifier }) => {
         setDeviceId(uuid);
         setVerifier(verifier);
+        setSentryTag("device-id", uuid);
         try {
           const { token, notificationPermissionsGranted } =
             await registerPushNotifications();
@@ -237,4 +238,5 @@ export const DeviceDataProvider = ({
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useDeviceData = () => useContext(DeviceDataContext);

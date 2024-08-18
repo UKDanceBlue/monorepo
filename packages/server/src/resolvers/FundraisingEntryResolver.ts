@@ -1,5 +1,10 @@
+import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
+import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
+import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
+import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
+import { AbstractGraphQLPaginatedResponse } from "#resolvers/ApiResponse.js";
+
 import { CommitteeRole } from "@prisma/client";
-import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControl,
   AccessControlParam,
@@ -28,11 +33,8 @@ import {
 } from "type-graphql";
 import { Container, Service } from "typedi";
 
-import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
-import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
-import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
-import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
-import { AbstractGraphQLPaginatedResponse } from "#resolvers/ApiResponse.js";
+import type { GlobalId } from "@ukdanceblue/common";
+
 
 @ArgsType()
 export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import random from "lodash/random";
 import type { ImageSourcePropType } from "react-native";
 
@@ -13,7 +14,7 @@ const DBUCornHole =
   require("../../../../assets/screens/login-modal/review/LDBU-19.jpg") as ImageSourcePropType;
 const DBUChalkBoard =
   require("../../../../assets/screens/login-modal/review/LDBU-23.jpg") as ImageSourcePropType;
-  const DanceBlueU13 =
+const DanceBlueU13 =
   require("../../../../assets/screens/login-modal/DanceBlueU-13.jpg") as ImageSourcePropType;
 const DanceBlueU16 =
   require("../../../../assets/screens/login-modal/DanceBlueU-16.jpg") as ImageSourcePropType;
@@ -30,7 +31,7 @@ const Blu =
 const DBUMerch =
   require("../../../../assets/screens/login-modal/review/LDBU.jpg") as ImageSourcePropType;
 
-const SplashLoginBackgrounds: ImageSourcePropType[] = [
+const splashLoginBackgrounds: ImageSourcePropType[] = [
   Stickers,
   CutsForTheClinic,
   DBLetters5k,
@@ -48,8 +49,8 @@ const SplashLoginBackgrounds: ImageSourcePropType[] = [
 ];
 
 export function getRandomSplashLoginBackground(): ImageSourcePropType {
-  const index = random(0, SplashLoginBackgrounds.length - 1);
-  return SplashLoginBackgrounds[index];
+  const index = random(0, splashLoginBackgrounds.length - 1);
+  return splashLoginBackgrounds[index];
 }
 
-export default SplashLoginBackgrounds;
+export default splashLoginBackgrounds;

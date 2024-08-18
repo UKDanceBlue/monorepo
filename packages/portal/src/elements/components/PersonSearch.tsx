@@ -48,7 +48,7 @@ export function PersonSearch({
       value: person.name,
       label: person.name,
       person,
-    })) || [];
+    })) ?? [];
 
   if (data?.personByLinkBlue) {
     options.push({

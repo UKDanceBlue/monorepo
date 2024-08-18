@@ -1,40 +1,4 @@
-import type { GlobalId, OptionalToNullable } from "@ukdanceblue/common";
-import * as Common from "@ukdanceblue/common";
-import {
-  AccessControl,
-  AccessLevel,
-  AuthSource,
-  CommitteeRole,
-  DbRole,
-  DetailedError,
-  ErrorCode,
-  FilteredListQueryArgs,
-  GlobalIdScalar,
-  MembershipNode,
-  PointEntryNode,
-  SortDirection,
-  TeamLegacyStatus,
-  TeamNode,
-  TeamType,
-} from "@ukdanceblue/common";
-import { FormattedConcreteError } from "@ukdanceblue/common/error";
-import { VoidResolver } from "graphql-scalars";
-import {
-  Arg,
-  Args,
-  ArgsType,
-  Ctx,
-  Field,
-  FieldResolver,
-  InputType,
-  Int,
-  Mutation,
-  ObjectType,
-  Query,
-  Resolver,
-  Root,
-} from "type-graphql";
-import { Service } from "typedi";
+
 
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
@@ -55,6 +19,45 @@ import {
   globalFundraisingAccessParam,
 } from "#resolvers/FundraisingEntryResolver.js";
 import * as Context from "#resolvers/context.js";
+
+import {
+  AccessControl,
+  AccessLevel,
+  AuthSource,
+  CommitteeRole,
+  DbRole,
+  DetailedError,
+  ErrorCode,
+  FilteredListQueryArgs,
+  GlobalIdScalar,
+  MembershipNode,
+  PointEntryNode,
+  SortDirection,
+  TeamLegacyStatus,
+  TeamNode,
+  TeamType,
+} from "@ukdanceblue/common";
+import * as Common from "@ukdanceblue/common";
+import { FormattedConcreteError } from "@ukdanceblue/common/error";
+import { VoidResolver } from "graphql-scalars";
+import {
+  Arg,
+  Args,
+  ArgsType,
+  Ctx,
+  Field,
+  FieldResolver,
+  InputType,
+  Int,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
+import { Service } from "typedi";
+
+import type { GlobalId, OptionalToNullable } from "@ukdanceblue/common";
 
 @ObjectType("SingleTeamResponse", {
   implements: AbstractGraphQLOkResponse<TeamNode>,
@@ -226,7 +229,7 @@ export class TeamResolver {
       authRules: [
         {
           committeeIdentifier:
-            Common.CommitteeIdentifier["dancerRelationsCommittee"],
+            Common.CommitteeIdentifier.dancerRelationsCommittee,
           minCommitteeRole: CommitteeRole.Coordinator,
         },
       ],
@@ -257,7 +260,7 @@ export class TeamResolver {
       authRules: [
         {
           committeeIdentifier:
-            Common.CommitteeIdentifier["dancerRelationsCommittee"],
+            Common.CommitteeIdentifier.dancerRelationsCommittee,
           minCommitteeRole: CommitteeRole.Coordinator,
         },
       ],
@@ -294,7 +297,7 @@ export class TeamResolver {
       authRules: [
         {
           committeeIdentifier:
-            Common.CommitteeIdentifier["dancerRelationsCommittee"],
+            Common.CommitteeIdentifier.dancerRelationsCommittee,
           minCommitteeRole: CommitteeRole.Coordinator,
         },
       ],

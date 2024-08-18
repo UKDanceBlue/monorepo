@@ -17,9 +17,9 @@ import {
   Pressable,
   ScrollView,
   Text,
+  useTheme,
   VStack,
   ZStack,
-  useTheme,
 } from "native-base";
 import { useMemo } from "react";
 import { ActivityIndicator, useWindowDimensions } from "react-native";
@@ -27,9 +27,8 @@ import openMaps from "react-native-open-maps";
 import { WebView } from "react-native-webview";
 
 import type { RootStackScreenProps } from "../../../types/navigationTypes";
-
-import { EventScreenFragment } from "./EventScreenFragment";
 import { onAddToCalendar } from "./addToCalendar";
+import { EventScreenFragment } from "./EventScreenFragment";
 
 const EventScreen = () => {
   const {
@@ -235,7 +234,7 @@ function stringifyInterval(
 ) {
   let whenString = "";
   let allDay = false;
-  if (interval != null && interval.isValid) {
+  if (interval?.isValid) {
     if (
       interval.start.toMillis() === DateTime.now().startOf("day").toMillis() &&
       interval.end.toMillis() === DateTime.now().endOf("day").toMillis()

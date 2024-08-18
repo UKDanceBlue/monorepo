@@ -1,3 +1,5 @@
+import { teamsRoute } from "./baseRoutes";
+
 import { CreateTeamPage } from "@pages/teams/spirit/create-team/CreateTeamPage";
 import { ListTeamsPage } from "@pages/teams/spirit/list-teams/ListTeamsPage";
 import { SingleTeamPage } from "@pages/teams/spirit/single-team/SingleTeamPage";
@@ -7,7 +9,6 @@ import { ViewTeamFundraising } from "@pages/teams/spirit/single-team/view-team/f
 import { ViewTeamPoints } from "@pages/teams/spirit/single-team/view-team/points/ViewTeamPoints";
 import { Route } from "@tanstack/react-router";
 
-import { teamsRoute } from "./baseRoutes";
 
 export const teamsTableRoute = new Route({
   path: "/",

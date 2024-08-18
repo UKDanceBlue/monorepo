@@ -1,10 +1,11 @@
+import dotenv from "dotenv";
+import { Expo } from "expo-server-sdk";
+import { Container, Token } from "typedi";
+
 import { statSync } from "fs";
 import { readFile } from "fs/promises";
 import path, { isAbsolute } from "path";
 
-import dotenv from "dotenv";
-import { Expo } from "expo-server-sdk";
-import { Container, Token } from "typedi";
 
 import type { SyslogLevels } from "#logging/standardLogging.js";
 

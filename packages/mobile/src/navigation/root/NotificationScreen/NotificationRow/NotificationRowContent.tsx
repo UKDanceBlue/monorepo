@@ -10,19 +10,20 @@ import { openURL } from "expo-linking";
 import { isEqual } from "lodash";
 import { DateTime } from "luxon";
 import {
-  HStack,
   Heading,
+  HStack,
   Pressable,
   Skeleton,
   Text,
-  VStack,
-  View,
   useTheme,
+  View,
+  VStack,
 } from "native-base";
 import { memo } from "react";
 import { useWindowDimensions } from "react-native";
 
 import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
+
 
 const NonMemoizedNotificationRowContent = ({
   loading,

@@ -1,9 +1,10 @@
+import { useCommitChanges } from "./useCommitChanges";
+import { useConfig } from "./useConfig";
+
 import { useForm } from "@tanstack/react-form";
 import { useCallback, useEffect, useMemo } from "react";
 
-import { useCommitChanges } from "./useCommitChanges";
 import type { ConfigValue } from "./useConfig";
-import { useConfig } from "./useConfig";
 
 export function useConfigForm() {
   const {
@@ -43,18 +44,20 @@ export function useConfigForm() {
       }
     >
   >({
-    onSubmit: (values) => {
+    onSubmit: async ({ value: values }) => {
       const newValues: Record<string, ConfigValue> = {};
       Object.entries(values).forEach(([key, { new: value }]) => {
         if (value !== undefined) {
           newValues[key] = value;
         }
       });
-      return commitChanges(newValues, activeValues).finally(() => {
+      try {
+        return await commitChanges(newValues, activeValues);
+      } finally {
         setImmediate(() => {
           refetch();
         });
-      });
+      }
     },
     defaultValues,
   });

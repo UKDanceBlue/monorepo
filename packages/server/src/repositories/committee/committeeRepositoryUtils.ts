@@ -1,11 +1,13 @@
-import type { Prisma } from "@prisma/client";
-import { SortDirection } from "@ukdanceblue/common";
-
-import type { CommitteeFilters } from "./CommitteeRepository.js";
 import {
   dateFilterToPrisma,
   oneOfFilterToPrisma,
 } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
+import { SortDirection } from "@ukdanceblue/common";
+
+import type { CommitteeFilters } from "./CommitteeRepository.js";
+import type { Prisma } from "@prisma/client";
+
 
 
 export function buildCommitteeOrder(

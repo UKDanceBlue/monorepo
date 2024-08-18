@@ -11,7 +11,7 @@ interface LoadedAuthData {
   isLoggedIn: boolean;
   isAnonymous: boolean;
   uid: string | null;
-  authClaims: { [key: string]: string | object } | null;
+  authClaims: Record<string, string | object> | null;
 }
 
 type AuthData = UnloadedAuthData | LoadedAuthData;

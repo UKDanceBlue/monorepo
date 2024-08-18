@@ -18,6 +18,7 @@ import { thumbHashToDataURL } from "thumbhash";
 
 import { useEventDeletePopup } from "./EventDeletePopup";
 
+
 export const EventViewerFragment = graphql(/* GraphQL */ `
   fragment EventViewerFragment on EventNode {
     id

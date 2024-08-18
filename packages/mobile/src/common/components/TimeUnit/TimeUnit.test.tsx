@@ -1,7 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vitest } from "vitest";
 
 import { renderWithNativeBase } from "../../../../test-helpers/NativeBase";
-
 import TimeUnit from ".";
 
 describe("<TimeUnit />", () => {
@@ -27,7 +26,7 @@ describe("<TimeUnit />", () => {
   });
 
   it("throws when passed an invalid type", () => {
-    const mockedConsoleError = jest
+    const mockedConsoleError = vitest
       .spyOn(console, "error")
       .mockImplementation(() => undefined);
 

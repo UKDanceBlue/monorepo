@@ -49,7 +49,7 @@ export function useMakeNumberSearchFilterProps<Field extends string>(
     filter: NumericFilterItemInterface<Field>
   ) => void,
   clearFilter: (field: Field) => void,
-  integerOnly: boolean = false
+  integerOnly = false
 ) {
   const focusRef = useRef<InputRef | undefined>(undefined);
 

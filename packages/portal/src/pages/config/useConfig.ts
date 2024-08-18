@@ -28,9 +28,7 @@ export interface ConfigValue {
 
 interface ConfigValueCollection {
   key: string;
-  values: {
-    [uuid: string]: ConfigValue;
-  };
+  values: Record<string, ConfigValue>;
 }
 
 export function useConfig(): {

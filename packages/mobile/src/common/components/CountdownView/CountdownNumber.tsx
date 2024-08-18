@@ -4,7 +4,8 @@ import React from "react";
 import { useWindowDimensions } from "react-native";
 import { Circle, Svg, Text } from "react-native-svg";
 
-const validUnits = ["sec", "min", "hours", "days", "months", "years"] as const;
+// const validUnits = ["sec", "min", "hours", "days", "months", "years"] as const;
+type TimeUnit = "sec" | "min" | "hours" | "days" | "months" | "years";
 
 export const CountdownNumber = ({
   value,
@@ -15,7 +16,7 @@ export const CountdownNumber = ({
 }: {
   value: number | undefined;
   total: number | undefined;
-  unit: (typeof validUnits)[number];
+  unit: TimeUnit;
   amountInRow: number | undefined;
   radius: number | undefined;
 }) => {
@@ -41,7 +42,7 @@ export const CountdownNumber = ({
   const cy = canvasHeight / 2;
 
   const fontSizeValue = fontSizes["4xl"] ?? 0;
-  const fontSizeUnit = fontSizes["xl"];
+  const fontSizeUnit = fontSizes.xl;
 
   const viewBox = `0 0 ${canvasWidth} ${canvasHeight}`;
 

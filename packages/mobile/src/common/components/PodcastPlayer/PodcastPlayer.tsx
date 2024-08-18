@@ -9,6 +9,7 @@ import { universalCatch } from "../../logging";
 import { showMessage } from "../../util/alertUtils";
 import AudioPlayer from "../AudioPlayer";
 
+
 /**
  * A row-based component showing a target name, their rank (if applicable), and their points
  */

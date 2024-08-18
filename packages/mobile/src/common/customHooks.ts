@@ -1,40 +1,14 @@
-import type {
-  NetInfoState,
-  NetInfoUnknownState,
-} from "@react-native-community/netinfo";
 import NetInfo, { NetInfoStateType } from "@react-native-community/netinfo";
-import firebaseStorage from "@react-native-firebase/storage";
 import {
   useColorModeValue as useColorModeValueNativeBase,
   useTheme,
 } from "native-base";
-import { useDebugValue, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-/** @deprecated */
-export function useFirebaseStorageUrl(googleUri?: string) {
-  useDebugValue(`Storage for ${googleUri ?? "undefined"}`);
-
-  const [state, setState] = useState<[string | null, Error | null]>([
-    null,
-    null,
-  ]);
-
-  useEffect(() => {
-    if (googleUri) {
-      firebaseStorage()
-        .refFromURL(googleUri)
-        .getDownloadURL()
-        .then((url) => {
-          setState([url, null]);
-        })
-        .catch((error: unknown) => {
-          setState([null, error as Error]);
-        });
-    }
-  }, [googleUri]);
-
-  return state;
-}
+import type {
+  NetInfoState,
+  NetInfoUnknownState,
+} from "@react-native-community/netinfo";
 
 export function useNetworkStatus() {
   const [connectionInfo, setConnectionInfo] = useState<NetInfoState>({

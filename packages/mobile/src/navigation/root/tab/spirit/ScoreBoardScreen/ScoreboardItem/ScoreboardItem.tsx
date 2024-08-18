@@ -4,10 +4,11 @@ import { memo, useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 
 import DanceBlueRibbon from "../../../../../../../assets/svgs/DBRibbon";
-
 import FirstPlaceMedal from "./1stPlace";
 import SecondPlaceMedal from "./2ndPlace";
 import ThirdPlaceMedal from "./3rdPlace";
+
+
 
 function Award({ rank, size }: { rank: number; size: number }) {
   const colors = useThemeColors();

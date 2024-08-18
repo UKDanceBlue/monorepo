@@ -1,11 +1,12 @@
-import type { Membership } from "@prisma/client";
-import type { CommitteeIdentifier } from "@ukdanceblue/common";
 import {
   CommitteeMembershipNode,
   DetailedError,
   ErrorCode,
   MembershipNode,
 } from "@ukdanceblue/common";
+
+import type { Membership } from "@prisma/client";
+import type { CommitteeIdentifier } from "@ukdanceblue/common";
 
 export function membershipModelToResource(
   membershipModel: Membership

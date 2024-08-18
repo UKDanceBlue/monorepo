@@ -1,4 +1,16 @@
 import {
+  buildFundraisingEntryOrder,
+  buildFundraisingEntryWhere,
+} from "./fundraisingEntryRepositoryUtils.js";
+
+import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
+import {
+  RepositoryError,
+  SimpleUniqueParam,
+  handleRepositoryError,
+} from "#repositories/shared.js";
+
+import {
   DBFundsFundraisingEntry,
   FundraisingAssignment,
   FundraisingEntry,
@@ -6,8 +18,6 @@ import {
   Prisma,
   PrismaClient,
 } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
-
 import {
   ActionDeniedError,
   InvalidArgumentError,
@@ -15,17 +25,10 @@ import {
 } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 import { Service } from "typedi";
-import {
-  buildFundraisingEntryOrder,
-  buildFundraisingEntryWhere,
-} from "./fundraisingEntryRepositoryUtils.js";
+
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
-import {
-  RepositoryError,
-  SimpleUniqueParam,
-  handleRepositoryError,
-} from "#repositories/shared.js";
+import type { SortDirection } from "@ukdanceblue/common";
+
 
 const fundraisingEntryBooleanKeys = [] as const;
 type FundraisingEntryBooleanKey = (typeof fundraisingEntryBooleanKeys)[number];
@@ -95,9 +98,7 @@ export class FundraisingEntryRepository {
         return Err(new NotFoundError({ what: "FundraisingEntry" }));
       }
       return Ok(
-        row as typeof row & {
-          dbFundsEntry: NonNullable<typeof row.dbFundsEntry>;
-        }
+        row
       );
     } catch (error: unknown) {
       return handleRepositoryError(error);
@@ -408,9 +409,7 @@ export class FundraisingEntryRepository {
         return Err(new NotFoundError({ what: "FundraisingAssignment" }));
       }
       return Ok(
-        assignment.parentEntry as typeof assignment.parentEntry & {
-          dbFundsEntry: NonNullable<typeof assignment.parentEntry.dbFundsEntry>;
-        }
+        assignment.parentEntry
       );
     } catch (error: unknown) {
       return handleRepositoryError(error);

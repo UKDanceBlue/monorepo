@@ -3,7 +3,7 @@ import { API_BASE_URL } from "@config/api";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { SortDirection, base64StringToArray } from "@ukdanceblue/common";
+import { base64StringToArray,SortDirection } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,

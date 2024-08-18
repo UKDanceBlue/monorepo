@@ -1,3 +1,5 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+
 import type {
   DateFilterItemInterface,
   IsNullFilterItemInterface,
@@ -9,21 +11,20 @@ import type {
   StringFilterItemInterface,
 } from "@ukdanceblue/common";
 import type { Dispatch, SetStateAction } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
 
-type FilterObject<
+interface FilterObject<
   DateFields extends string,
   IsNullFields extends string,
   NumericFields extends string,
   OneOfFields extends string,
   StringFields extends string,
-> = {
+> {
   dateFilters: DateFilterItemInterface<DateFields>[];
   isNullFilters: IsNullFilterItemInterface<IsNullFields>[];
   numericFilters: NumericFilterItemInterface<NumericFields>[];
   oneOfFilters: OneOfFilterItemInterface<OneOfFields>[];
   stringFilters: StringFilterItemInterface<StringFields>[];
-};
+}
 
 type ListQueryOptions<
   DateFields extends string,
@@ -41,10 +42,10 @@ type ListQueryOptions<
     StringFields
   >;
 
-type SortOption<Field> = {
+interface SortOption<Field> {
   field: Field;
   direction: SortDirection;
-};
+}
 
 export function useListQuery<
   AllFields extends string,

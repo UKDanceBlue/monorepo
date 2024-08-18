@@ -1,6 +1,9 @@
-import type { Person } from "@prisma/client";
+import { buildDeviceOrder, buildDeviceWhere } from "./deviceRepositoryUtils.js";
+
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { RepositoryError } from "#repositories/shared.js";
+
 import { PrismaClient } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
 import {
   NotFoundError,
   FormattedConcreteError,
@@ -8,11 +11,12 @@ import {
 import { Err, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-import { buildDeviceOrder, buildDeviceWhere } from "./deviceRepositoryUtils.js";
+
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { NotificationAudience } from "#notification/NotificationProvider.js";
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { RepositoryError } from "#repositories/shared.js";
+import type { Person } from "@prisma/client";
+import type { SortDirection } from "@ukdanceblue/common";
+
 
 const deviceStringKeys = ["expoPushToken"] as const;
 type DeviceStringKey = (typeof deviceStringKeys)[number];

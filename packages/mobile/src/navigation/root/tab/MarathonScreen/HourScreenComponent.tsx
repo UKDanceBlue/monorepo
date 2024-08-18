@@ -116,7 +116,7 @@ export const HourScreenComponent = ({
         </ScrollView>
       )}
       {hourScreenData.title === "Trivia Crack" && <TriviaCrack />}
-      <NativeBaseMarkdown>{hourScreenData.details || ""}</NativeBaseMarkdown>
+      <NativeBaseMarkdown>{hourScreenData.details ?? ""}</NativeBaseMarkdown>
     </ScrollView>
   );
 };

@@ -1,6 +1,5 @@
 import { SimpleConfigFragment } from "@common/fragments/Configuration";
 import { log, logError } from "@common/logging";
-import type { UserLoginType } from "@context/user";
 import {
   getFragmentData,
   graphql,
@@ -20,7 +19,7 @@ const useAllowedLoginTypesQuery = graphql(/* GraphQL */ `
 
 export function useAllowedLoginTypes(): {
   allowedLoginTypesLoading: boolean;
-  allowedLoginTypes: UserLoginType[];
+  allowedLoginTypes: string[];
 } {
   const [{ data, fetching, error }] = useQuery({
     query: useAllowedLoginTypesQuery,
@@ -37,7 +36,7 @@ export function useAllowedLoginTypes(): {
   });
 
   const allowedTypes = useMemo(() => {
-    const allowedTypes: UserLoginType[] = [];
+    const allowedTypes: string[] = [];
 
     try {
       if (configValue) {

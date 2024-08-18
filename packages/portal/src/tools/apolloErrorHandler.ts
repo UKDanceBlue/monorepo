@@ -1,9 +1,11 @@
-import type { ApiError } from "@ukdanceblue/common";
 import { ErrorCode, isErrorCode } from "@ukdanceblue/common";
+import { CombinedError } from "urql";
+
+import type { ApiError } from "@ukdanceblue/common";
 import type { TypeOpen } from "antd/es/message/interface";
 import type { ModalFunc } from "antd/es/modal/confirm";
 import type { NotificationInstance } from "antd/es/notification/interface";
-import { CombinedError } from "urql";
+
 
 export type ExtendedApiError = ApiError;
 
@@ -62,7 +64,7 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
           (e) => typeof e === "object" && e !== null
         )
       ) {
-        const errors = error.networkError.result.errors as Array<object>;
+        const errors = error.networkError.result.errors as object[];
         for (const maybeAnApiError of errors) {
           console.error("maybeAnApiError", maybeAnApiError);
         }

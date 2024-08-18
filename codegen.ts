@@ -1,9 +1,11 @@
+import { resolvers } from "graphql-scalars";
+
 import { readdirSync } from "fs";
+
 import type { CodegenConfig } from "@graphql-codegen/cli";
 import type { ClientPresetConfig } from "@graphql-codegen/client-preset";
 import type { TypeScriptPluginConfig } from "@graphql-codegen/typescript";
 import type { GraphQLScalarTypeExtensions } from "graphql";
-import { resolvers } from "graphql-scalars";
 
 // import { dirname, join, normalize } from "path";
 // import { fileURLToPath } from "url";

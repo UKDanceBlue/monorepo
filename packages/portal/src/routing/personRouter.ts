@@ -1,3 +1,5 @@
+import { peopleRoute } from "./baseRoutes";
+
 import { CreatePersonPage } from "@pages/people/create-person/CreatePersonPage";
 import { ListPeoplePage } from "@pages/people/list-people/ListPeoplePage";
 import { SinglePersonPage } from "@pages/people/single-person/SinglePersonPage";
@@ -5,7 +7,6 @@ import { EditPersonPage } from "@pages/people/single-person/edit-person/EditPers
 import { ViewPersonPage } from "@pages/people/single-person/view-person/ViewPersonPage";
 import { Route } from "@tanstack/react-router";
 
-import { peopleRoute } from "./baseRoutes";
 
 export const peopleTableRoute = new Route({
   path: "/",

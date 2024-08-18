@@ -1,6 +1,15 @@
-import { MIMEType } from "node:util";
 
-import type { GlobalId } from "@ukdanceblue/common";
+import { FileManager } from "#files/FileManager.js";
+import { generateThumbHash } from "#lib/thumbHash.js";
+import { auditLogger } from "#logging/auditLogging.js";
+import { logger } from "#logging/standardLogging.js";
+import { ImageRepository } from "#repositories/image/ImageRepository.js";
+import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
+import {
+  AbstractGraphQLOkResponse,
+  AbstractGraphQLPaginatedResponse,
+} from "#resolvers/ApiResponse.js";
+
 import {
   AccessControl,
   AccessLevel,
@@ -26,16 +35,10 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { FileManager } from "#files/FileManager.js";
-import { generateThumbHash } from "#lib/thumbHash.js";
-import { auditLogger } from "#logging/auditLogging.js";
-import { logger } from "#logging/standardLogging.js";
-import { ImageRepository } from "#repositories/image/ImageRepository.js";
-import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
-import {
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "#resolvers/ApiResponse.js";
+import { MIMEType } from "node:util";
+
+import type { GlobalId } from "@ukdanceblue/common";
+
 
 @ObjectType("GetImageByUuidResponse", { implements: AbstractGraphQLOkResponse })
 class GetImageByUuidResponse extends AbstractGraphQLOkResponse<ImageNode> {

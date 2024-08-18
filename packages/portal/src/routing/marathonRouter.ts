@@ -1,3 +1,5 @@
+import { marathonsRoute } from "./baseRoutes";
+
 import { CreateMarathonPage } from "@pages/marathon/create/CreateMarathonPage";
 import { MarathonOverviewPage } from "@pages/marathon/overview/MarathonOverviewPage";
 import { SingleMarathonPage } from "@pages/marathon/single/SingleMarathonPage";
@@ -8,7 +10,6 @@ import { AddMarathonHourPage } from "@pages/marathon/single/view/hour/add/AddMar
 import { EditMarathonHourPage } from "@pages/marathon/single/view/hour/edit/EditMarathonHourPage";
 import { Route } from "@tanstack/react-router";
 
-import { marathonsRoute } from "./baseRoutes";
 
 export const marathonOverviewRoute = new Route({
   path: "/",

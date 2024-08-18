@@ -3,6 +3,7 @@ import { useWindowDimensions } from "react-native";
 
 import { useThemeColors, useThemeFonts } from "../../customHooks";
 
+
 const validUnits = ["sec", "min", "hours", "days", "months", "years"] as const;
 
 /**

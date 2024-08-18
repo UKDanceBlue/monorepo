@@ -1,25 +1,30 @@
-import http from "node:http";
+import { applicationHost, applicationPort, loggingLevel } from "#environment";
 
-import type {
-  ApolloServerPlugin,
-  GraphQLRequestListener,
-} from "@apollo/server";
+import { logger } from "#logging/logger.js";
+import eventsApiRouter from "#routes/api/events/index.js";
+import fileRouter from "#routes/api/file/index.js";
+import healthCheckRouter from "#routes/api/healthcheck/index.js";
+import uploadRouter from "#routes/api/upload/index.js";
+
 import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { koaMiddleware } from "@as-integrations/koa";
 import cors from "@koa/cors";
 import Router from "@koa/router";
-import type { DefaultState } from "koa";
 import Koa from "koa";
 import { koaBody } from "koa-body";
 
-import { applicationHost, applicationPort, loggingLevel } from "#environment";
-import { logger } from "#logging/logger.js";
+import http from "node:http";
+
+
+
 import type { GraphQLContext } from "#resolvers/context.js";
-import eventsApiRouter from "#routes/api/events/index.js";
-import fileRouter from "#routes/api/file/index.js";
-import healthCheckRouter from "#routes/api/healthcheck/index.js";
-import uploadRouter from "#routes/api/upload/index.js";
+import type {
+  ApolloServerPlugin,
+  GraphQLRequestListener,
+} from "@apollo/server";
+import type { DefaultState } from "koa";
+
 
 const basicLoggingPlugin: ApolloServerPlugin = {
   requestDidStart(requestContext) {

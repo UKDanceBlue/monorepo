@@ -1,12 +1,14 @@
-import { App } from "antd";
-import type { MessageType } from "antd/es/message/interface";
-import { useEffect, useRef } from "react";
-import type { CombinedError } from "urql";
-
 import {
   extractServerError,
   handleApiError,
 } from "../tools/apolloErrorHandler.js";
+
+import { App } from "antd";
+import { useEffect, useRef } from "react";
+
+import type { MessageType } from "antd/es/message/interface";
+import type { CombinedError } from "urql";
+
 
 // const MAX_ALLOWED_ERROR_MS = 500;
 const MAX_ALLOWED_LOADING_MS = 5000;

@@ -1,7 +1,9 @@
+import { DeviceRepository } from "./DeviceRepository.js";
+
+import { makePrismaMock } from "#repositories/../testing/PrismaMock.js";
+
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { DeviceRepository } from "./DeviceRepository.js";
-import { makePrismaMock } from "#repositories/../testing/PrismaMock.js";
 
 
 describe("deviceRepository", () => {

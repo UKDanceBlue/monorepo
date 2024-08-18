@@ -1,5 +1,6 @@
-import type { NotificationDelivery } from "@prisma/client";
 import { NotificationDeliveryNode } from "@ukdanceblue/common";
+
+import type { NotificationDelivery } from "@prisma/client";
 
 export function notificationDeliveryModelToResource(
   notificationDeliveryModel: NotificationDelivery

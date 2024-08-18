@@ -1,4 +1,1 @@
-
-
-
-export {default} from "./eslint/out/index.js";
+export { default } from "./eslint/out/index.js";

@@ -1,8 +1,9 @@
+import { buildEventOrder, buildEventWhere } from "./eventRepositoryUtils.js";
+
 import { Prisma, PrismaClient } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 import { Service } from "typedi";
 
-import { buildEventOrder, buildEventWhere } from "./eventRepositoryUtils.js";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 

@@ -2,12 +2,9 @@ import * as WebBrowser from "expo-web-browser";
 import { Image, Text, View } from "native-base";
 import { PixelRatio, StyleSheet, TouchableHighlight } from "react-native";
 
-import { useFirebaseStorageUrl } from "../../customHooks";
-
 // This is good, but we need to hold off until we get transparent logos for each sponsor
 // Probably a good idea to wait until the new home screen
 const SponsorCard = ({
-  imagePath,
   sponsorLink,
   name,
 }: {
@@ -15,10 +12,6 @@ const SponsorCard = ({
   sponsorLink?: string;
   name: string;
 }) => {
-  const [url] = useFirebaseStorageUrl(
-    `gs://react-danceblue.appspot.com${imagePath}`
-  );
-
   return (
     <TouchableHighlight
       onPress={
@@ -30,7 +23,7 @@ const SponsorCard = ({
         <Image
           borderRadius={"8"}
           source={{
-            uri: url ?? undefined,
+            // uri: url ?? undefined,
             width: PixelRatio.getPixelSizeForLayoutSize(75),
             height: PixelRatio.getPixelSizeForLayoutSize(50),
           }}

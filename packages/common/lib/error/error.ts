@@ -1,6 +1,8 @@
-import type { GraphQLFormattedError, SourceLocation } from "graphql";
-import { GraphQLError } from "graphql";
 import * as ErrorCode from "./errorCode.js";
+
+import { GraphQLError } from "graphql";
+
+import type { GraphQLFormattedError, SourceLocation } from "graphql";
 
 export abstract class ConcreteError {
   #graphQlError: GraphQLError;
@@ -57,11 +59,11 @@ export class FormattedConcreteError
     return this.graphQlError.extensions;
   }
 
-  get locations(): ReadonlyArray<SourceLocation> | undefined {
+  get locations(): readonly SourceLocation[] | undefined {
     return this.graphQlError.locations;
   }
 
-  get path(): ReadonlyArray<string | number> | undefined {
+  get path(): readonly (string | number)[] | undefined {
     return this.graphQlError.path;
   }
 

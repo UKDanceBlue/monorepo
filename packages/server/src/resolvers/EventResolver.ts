@@ -1,5 +1,20 @@
-import type { Prisma } from "@prisma/client";
-import type { GlobalId } from "@ukdanceblue/common";
+
+
+import { FileManager } from "#files/FileManager.js";
+import { auditLogger } from "#logging/auditLogging.js";
+import { EventRepository } from "#repositories/event/EventRepository.js";
+import {
+  eventModelToResource,
+  eventOccurrenceModelToResource,
+} from "#repositories/event/eventModelToResource.js";
+import { EventImagesRepository } from "#repositories/event/images/EventImagesRepository.js";
+import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
+import {
+  AbstractGraphQLCreatedResponse,
+  AbstractGraphQLOkResponse,
+  AbstractGraphQLPaginatedResponse,
+} from "#resolvers/ApiResponse.js";
+
 import {
   AccessControl,
   AccessLevel,
@@ -27,20 +42,8 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { FileManager } from "#files/FileManager.js";
-import { auditLogger } from "#logging/auditLogging.js";
-import { EventRepository } from "#repositories/event/EventRepository.js";
-import {
-  eventModelToResource,
-  eventOccurrenceModelToResource,
-} from "#repositories/event/eventModelToResource.js";
-import { EventImagesRepository } from "#repositories/event/images/EventImagesRepository.js";
-import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
-import {
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "#resolvers/ApiResponse.js";
+import type { Prisma } from "@prisma/client";
+import type { GlobalId } from "@ukdanceblue/common";
 
 @ObjectType("GetEventByUuidResponse", {
   implements: AbstractGraphQLOkResponse<EventNode>,

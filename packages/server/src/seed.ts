@@ -1,3 +1,10 @@
+
+import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
+import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
+import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { TeamRepository } from "#repositories/team/TeamRepository.js";
+
 import {
   CommitteeIdentifier,
   CommitteeRole,
@@ -6,12 +13,6 @@ import {
 } from "@ukdanceblue/common";
 import { FormattedConcreteError } from "@ukdanceblue/common/error";
 import { Container } from "typedi";
-
-import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
-import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
-import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { TeamRepository } from "#repositories/team/TeamRepository.js";
 
 if (process.env.NODE_ENV !== "development") {
   throw new Error("Seeding is only allowed in development mode");

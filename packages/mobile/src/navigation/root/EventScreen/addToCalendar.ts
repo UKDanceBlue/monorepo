@@ -1,10 +1,10 @@
+import { EventScreenFragment } from "./EventScreenFragment";
+
 import { universalCatch } from "@common/logging";
 import { showMessage, showPrompt } from "@common/util/alertUtils";
 import { discoverDefaultCalendar } from "@common/util/calendar";
 import { intervalFromSomething } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-mobile";
-import type { Event } from "expo-calendar";
 import {
   PermissionStatus,
   createEventAsync,
@@ -12,7 +12,10 @@ import {
   requestCalendarPermissionsAsync,
 } from "expo-calendar";
 
-import { EventScreenFragment } from "./EventScreenFragment";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
+import type { Event } from "expo-calendar";
+
+
 
 export async function onAddToCalendar(
   event: FragmentType<typeof EventScreenFragment>,
@@ -35,7 +38,7 @@ export async function onAddToCalendar(
       canAskAgain
     ) {
       permissionStatus =
-        // eslint-disable-next-line unicorn/no-await-expression-member
+         
         (await requestCalendarPermissionsAsync()).status;
     }
 

@@ -10,8 +10,9 @@ import { useCallback, useMemo } from "react";
 import type { ListRenderItem } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import EventRow from "./EventRow";
 import { RNCAL_DATE_FORMAT } from "./constants";
+import EventRow from "./EventRow";
+
 
 export const EventListRenderItem = ({
   item: [event, occurrenceId],

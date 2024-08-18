@@ -1,3 +1,4 @@
+
 import { QuestionOutlined } from "@ant-design/icons";
 import type { InputRef, TourProps } from "antd";
 import { App, Button, Flex, Form, Input, InputNumber, Tour } from "antd";
@@ -85,7 +86,7 @@ export function PointEntryCreator({
   });
 
   return (
-    <formApi.Provider>
+    
       <Tour
         steps={steps}
         placement="top"
@@ -182,6 +183,6 @@ export function PointEntryCreator({
           </Button>
         </Flex>
       </Form>
-    </formApi.Provider>
+    
   );
 }

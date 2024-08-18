@@ -40,6 +40,7 @@ export const MarathonConfigProvider = ({
   children: React.ReactNode;
 }) => {
   const [marathonId, setMarathonId] = useState(
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     localStorage.getItem(LocalStorageKeys.SelectedMarathon) || null
   );
 

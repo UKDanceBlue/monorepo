@@ -7,7 +7,9 @@ export const LogLevel = {
 } as const;
 export type LogLevel = (typeof LogLevel)[keyof typeof LogLevel];
 
-export const logLevelToString = (level: LogLevel) => {
+export const logLevelToString = (
+  level: LogLevel
+): "debug" | "log" | "info" | "error" | "warning" => {
   switch (level) {
     case LogLevel.debug: {
       return "debug";
@@ -19,13 +21,13 @@ export const logLevelToString = (level: LogLevel) => {
       return "info";
     }
     case LogLevel.warn: {
-      return "warn";
+      return "warning";
     }
     case LogLevel.error: {
       return "error";
     }
     default: {
-      return "unknown";
+      return "error";
     }
   }
 };

@@ -12,6 +12,7 @@ import DanceBlueRibbon from "../../../../../../../assets/svgs/DBRibbon";
 import type { StandingType } from "../../../../../../types/StandingType";
 import Scoreboard from "../../ScoreBoardScreen/Scoreboard";
 
+
 const TeamInformation = ({
   name,
   captains,

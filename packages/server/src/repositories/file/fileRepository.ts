@@ -1,7 +1,8 @@
-import type { MIMEType } from "util";
 
 import { Prisma, PrismaClient } from "@prisma/client";
 import { Service } from "typedi";
+
+import type { MIMEType } from "util";
 
 type UniqueParam = { id: number } | { uuid: string };
 

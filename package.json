@@ -27,37 +27,43 @@
     "portal:build": "yarn workspace @ukdanceblue/portal build",
     "mobile:start": "yarn workspace @ukdanceblue/mobile start",
     "docker:server:start": "docker-compose up -d --build",
-    "docker:server:stop": "docker-compose down"
+    "docker:server:stop": "docker-compose down",
+    "postinstall": "yarn constraints"
   },
   "devDependencies": {
-    "@eslint/js": "^8.57.0",
-    "@expo/ngrok": "^4.1.0",
+    "@eslint/compat": "^1.1.1",
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.9.0",
+    "@expo/ngrok": "^4.1.3",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/client-preset": "patch:@graphql-codegen/client-preset@npm%3A4.3.2#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.3.2-fb874ac9d8.patch",
     "@types/eslint-config-prettier": "^6.11.3",
+    "@types/eslint__eslintrc": "^2.1.2",
     "@types/eslint__js": "^8.42.3",
-    "@typescript-eslint/eslint-plugin": "^7.16.1",
-    "@typescript-eslint/parser": "^7.16.1",
-    "@vitest/coverage-v8": "^2.0.3",
-    "@vitest/ui": "^2.0.3",
+    "@vitest/coverage-v8": "^2.0.5",
+    "@vitest/ui": "^2.0.5",
+    "@yarnpkg/types": "^4.0.0",
+    "babel-cli": "^6.26.0",
     "eslint": "^8.57.0",
-    "eslint-config-next": "^14.1.4",
+    "eslint-config-next": "^14.2.5",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jsdoc": "^48.8.3",
-    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-jsdoc": "^50.0.1",
+    "eslint-plugin-n": "^17.10.2",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-native": "^4.1.0",
-    "eslint-plugin-react-refresh": "^0.4.8",
-    "eslint-plugin-unicorn": "^54.0.0",
+    "eslint-plugin-react-refresh": "^0.4.9",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unicorn": "^55.0.0",
     "eslint-plugin-vitest": "^0.5.4",
-    "globals": "^15.8.0",
+    "globals": "^15.9.0",
     "graphql": "^16.9.0",
     "graphql-scalars": "^1.23.0",
+    "node-gyp": "^10.2.0",
     "prettier": "^3.3.3",
-    "typescript": "^5.5.3",
-    "vitest": "^2.0.3"
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.0.1",
+    "vitest": "^2.0.5"
   },
   "workspaces": [
     "packages/*"
@@ -67,9 +73,7 @@
     "type-graphql@^2.0.0-beta.3": "patch:type-graphql@npm%3A2.0.0-beta.3#./.yarn/patches/type-graphql-npm-2.0.0-beta.3-3be2585c9a.patch",
     "react-native-infinite-pager@^0.3.13": "patch:react-native-infinite-pager@npm%3A0.3.13#./.yarn/patches/react-native-infinite-pager-npm-0.3.13-59b67e2e46.patch",
     "react-native-rss-parser@^1.5.1": "patch:react-native-rss-parser@npm%3A1.5.1#./.yarn/patches/react-native-rss-parser-npm-1.5.1-e4cc1d8bd8.patch",
-    "@graphql-codegen/client-preset@npm:^4.2.2": "patch:@graphql-codegen/client-preset@npm%3A4.3.2#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.3.2-fb874ac9d8.patch"
-  },
-  "dependencies": {
-    "babel-cli": "^6.26.0"
+    "@graphql-codegen/client-preset@npm:^4.2.2": "patch:@graphql-codegen/client-preset@npm%3A4.3.2#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.3.2-fb874ac9d8.patch",
+    "urijs": "npm:uri-js-replace"
   }
 }
