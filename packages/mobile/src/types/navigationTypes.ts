@@ -7,15 +7,15 @@ import type {
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 
-export interface SpiritStackParamList {
+export type SpiritStackParamList = {
   MyTeam: undefined;
   Scoreboard: undefined;
-}
+};
 
 export type SpiritStackScreenProps<T extends keyof SpiritStackParamList> =
   NativeStackScreenProps<SpiritStackParamList, T>;
 
-export interface TabNavigatorParamList {
+export type TabNavigatorParamList = {
   "Home": undefined;
   "Events": undefined;
   "Explore": undefined;
@@ -23,7 +23,7 @@ export interface TabNavigatorParamList {
   "Marathon": undefined;
   "DB Moments": undefined;
   "Info": undefined;
-}
+};
 
 export type TabNavigatorProps<T extends keyof TabNavigatorParamList> =
   CompositeScreenProps<
@@ -31,7 +31,7 @@ export type TabNavigatorProps<T extends keyof TabNavigatorParamList> =
     RootStackScreenProps<keyof RootStackParamList>
   >;
 
-export interface RootStackParamList {
+export type RootStackParamList = {
   "Main": undefined;
   "SplashLogin": undefined;
   "Tab": NavigatorScreenParams<TabNavigatorParamList>;
@@ -43,7 +43,7 @@ export interface RootStackParamList {
   };
   "Explorer": undefined;
   "Hour Details": undefined; // { firestoreHour: FirestoreHour };
-}
+};
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, T>;

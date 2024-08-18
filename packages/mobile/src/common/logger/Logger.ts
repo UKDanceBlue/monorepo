@@ -1,5 +1,5 @@
 import { ConsoleTransport } from "./ConsoleTransport";
-import { SentryTransport } from "./CrashlyticsTransport";
+import { SentryTransport } from "./SentryTransport";
 import { LogLevel } from "./transport";
 
 import type { ExtraLogArgs, LoggerTransport } from "./transport";

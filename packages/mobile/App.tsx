@@ -15,7 +15,7 @@ import { hideAsync } from "expo-splash-screen";
 import { isEmergencyLaunch } from "expo-updates";
 import type { ICustomTheme } from "native-base";
 import { NativeBaseProvider } from "native-base";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -26,7 +26,6 @@ import BoldoniFlfRomanFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Roman
 import OpenSansCondensedBoldFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Bold.ttf";
 import OpenSansCondensedLightFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light.ttf";
 import OpenSansCondensedLightItalicFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light-Italic.ttf";
-import { FilledNavigationContainer } from "./src/navigation/NavigationContainer";
 import { getCustomTheme } from "./src/theme";
 
 if (isEmergencyLaunch) {
@@ -36,12 +35,20 @@ if (isEmergencyLaunch) {
   );
 }
 
+const navigationContainerPromise = import(
+  "./src/navigation/NavigationContainer"
+);
+
 /**
  * Main app container
  */
 const App = () => {
   const isOfflineInternal = useRef(false);
   const [theme, setTheme] = useState<ICustomTheme | undefined>(undefined);
+  const [NavigationContainer, setNavigationContainer] = useState<
+    | Awaited<typeof navigationContainerPromise>["FilledNavigationContainer"]
+    | null
+  >(null);
 
   useAsyncStorageDevTools();
 
@@ -85,6 +92,14 @@ const App = () => {
     []
   );
 
+  useEffect(() => {
+    navigationContainerPromise
+      .then(({ FilledNavigationContainer }) => {
+        setNavigationContainer(FilledNavigationContainer);
+      })
+      .catch(universalCatch);
+  }, []);
+
   useUpdateChecker();
 
   return (
@@ -101,7 +116,9 @@ const App = () => {
                 <DeviceDataProvider>
                   <GestureHandlerRootView>
                     <View style={{ minHeight: "100%", minWidth: "100%" }}>
-                      <FilledNavigationContainer />
+                      <ErrorBoundary>
+                        {NavigationContainer && <NavigationContainer />}
+                      </ErrorBoundary>
                     </View>
                   </GestureHandlerRootView>
                 </DeviceDataProvider>

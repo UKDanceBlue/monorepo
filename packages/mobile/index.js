@@ -12,7 +12,7 @@ import { isRunningInExpoGo, registerRootComponent } from "expo";
 import { DevMenu, isDevelopmentBuild } from "expo-dev-client";
 import { setNotificationHandler } from "expo-notifications";
 import { preventAutoHideAsync } from "expo-splash-screen";
-import { channel,isEmbeddedLaunch, manifest, updateId } from "expo-updates";
+import { channel, isEmbeddedLaunch, manifest, updateId } from "expo-updates";
 import { Alert, LogBox } from "react-native";
 
 import App from "./App";

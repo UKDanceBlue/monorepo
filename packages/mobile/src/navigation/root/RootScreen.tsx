@@ -1,3 +1,6 @@
+import ErrorBoundary, {
+  withErrorBoundary,
+} from "@common/components/ErrorBoundary";
 import { useNavigationContainerRef } from "@react-navigation/core";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -112,11 +115,11 @@ const RootScreen = () => {
               <RootStack.Screen
                 name="Tab"
                 options={{ headerShown: false }}
-                component={TabBar}
+                component={withErrorBoundary(TabBar)}
               />
               <RootStack.Screen
                 name="Notifications"
-                component={NotificationScreen}
+                component={withErrorBoundary(NotificationScreen)}
                 options={{ headerRight: () => undefined }}
               />
               <RootStack.Screen
@@ -124,17 +127,19 @@ const RootScreen = () => {
                 options={{ headerRight: () => undefined }}
               >
                 {() => (
-                  <ProfileScreen
-                    profileScreenAuthFragment={
-                      rootScreenData?.loginState ?? null
-                    }
-                    profileScreenUserFragment={rootScreenData?.me ?? null}
-                  />
+                  <ErrorBoundary>
+                    <ProfileScreen
+                      profileScreenAuthFragment={
+                        rootScreenData?.loginState ?? null
+                      }
+                      profileScreenUserFragment={rootScreenData?.me ?? null}
+                    />
+                  </ErrorBoundary>
                 )}
               </RootStack.Screen>
               <RootStack.Screen
                 name="Event"
-                component={EventScreen}
+                component={withErrorBoundary(EventScreen)}
                 options={({ route }) => {
                   let eventTitle = "Event";
                   let spacesInTitle = 0;
@@ -195,7 +200,7 @@ const RootScreen = () => {
           ) : (
             <RootStack.Screen
               name="SplashLogin"
-              component={SplashLogin}
+              component={withErrorBoundary(SplashLogin)}
               options={{
                 headerShown: false,
                 presentation: "modal",
