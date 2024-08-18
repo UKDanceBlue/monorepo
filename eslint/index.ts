@@ -228,7 +228,7 @@ export default eslintTs.config(
           allowDefaultProject: [
             "yarn.config.cjs",
             "eslint.config.js",
-            "packages/mobile/babel.config.mjs",
+            "packages/mobile/babel.config.cjs",
             "packages/mobile/metro.config.cjs",
           ],
           defaultProject: "tsconfig.json",
