@@ -1,2 +1,2 @@
 export { useDeviceData } from "./device";
-export { useLoading } from "./loading";
+export { useLoading } from "./useLoading";

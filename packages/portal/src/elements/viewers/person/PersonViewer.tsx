@@ -10,7 +10,6 @@ import { Button, Descriptions, Empty, Flex, Typography } from "antd";
 
 import { usePersonDeletePopup } from "./PersonDeletePopup";
 
-
 export const PersonViewerFragment = graphql(/* GraphQL */ `
   fragment PersonViewerFragment on PersonNode {
     id
@@ -43,7 +42,7 @@ export function PersonViewer({
   const { PersonDeletePopup, showModal } = usePersonDeletePopup({
     uuid: personData?.id ?? "",
     onDelete: () => {
-      navigate({ to: "/people/" }).catch((error: unknown) =>
+      navigate({ to: "/people" }).catch((error: unknown) =>
         console.error(error)
       );
     },

@@ -6,7 +6,6 @@ import { useCallback, useEffect, useMemo } from "react";
 
 import type { ConfigValue } from "./useConfig";
 
-
 export function useConfigForm() {
   const {
     configs: existingConfig,
@@ -45,18 +44,20 @@ export function useConfigForm() {
       }
     >
   >({
-    onSubmit: (values) => {
+    onSubmit: async ({ value: values }) => {
       const newValues: Record<string, ConfigValue> = {};
       Object.entries(values).forEach(([key, { new: value }]) => {
         if (value !== undefined) {
           newValues[key] = value;
         }
       });
-      return commitChanges(newValues, activeValues).finally(() => {
+      try {
+        return await commitChanges(newValues, activeValues);
+      } finally {
         setImmediate(() => {
           refetch();
         });
-      });
+      }
     },
     defaultValues,
   });

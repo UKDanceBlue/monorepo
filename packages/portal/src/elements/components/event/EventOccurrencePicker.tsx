@@ -119,16 +119,16 @@ export function EventOccurrencePicker<
         <LuxonDatePicker.RangePicker
           value={[start, end]}
           onChange={(dates) => {
-            setStart(dates[0] ?? null);
-            setEnd(dates[1] ?? null);
+            setStart(dates?.[0] ?? null);
+            setEnd(dates?.[1] ?? null);
           }}
         />
       ) : (
         <LuxonDatePicker.RangePicker
           value={[start, end]}
           onChange={(dates) => {
-            setStart(dates[0] ?? null);
-            setEnd(dates[1] ?? null);
+            setStart(dates?.[0] ?? null);
+            setEnd(dates?.[1] ?? null);
           }}
           showTime
           format="YYYY-MM-DD HH:mm"

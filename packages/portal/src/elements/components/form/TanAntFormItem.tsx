@@ -1,9 +1,9 @@
 import type {
   DeepKeys,
   DeepValue,
-  FieldApi,
-  FormApi,
+  ReactFormApi,
   UpdaterFn,
+  ValidationError,
 } from "@tanstack/react-form";
 import type { FormItemProps } from "antd";
 import FormItem from "antd/es/form/FormItem";
@@ -21,18 +21,14 @@ type TanAntFormItemProps<
   TData,
 > =
   // Grab everything from the antd form item except for the ones we're going to use ourselves
-  Omit<
-    FormItemProps<never>,
-    "name" | "children" | "formApi" | "index" | "fieldProps"
-  > & {
+  Omit<FormItemProps<never>, "name" | "children" | "formApi" | "fieldProps"> & {
     // Required field API stuff
     name: TName;
-    index?: never;
     // Pass in the actual form API
-    formApi: FormApi<TParentData>;
+    formApi: ReactFormApi<TParentData>;
     // Any extra field props like validation and stuff
     fieldProps: {
-      validate?: (value: TData) => string | undefined;
+      validate?: (value: TData) => ValidationError | undefined;
     };
     // Pass in the children as a render prop, this let's us avoid some repetitive stuff
     children: (fieldApi: TanAntChildInputProps<TData>) => React.ReactNode;
@@ -41,22 +37,23 @@ type TanAntFormItemProps<
 export function TanAntFormItem<
   TParentData,
   TName extends DeepKeys<TParentData>,
-  TData = DeepValue<TParentData, TName>,
 >({
   formApi,
   name,
-  index,
   fieldProps,
   children,
   ...antProps
-}: TanAntFormItemProps<TParentData, TName, TData>) {
+}: TanAntFormItemProps<TParentData, TName, DeepValue<TParentData, TName>>) {
   return (
     <formApi.Field
       name={name}
-      index={index as never}
-      onChange={fieldProps.validate}
+      validators={{
+        onChange({ value }) {
+          return fieldProps.validate?.(value);
+        },
+      }}
     >
-      {(fieldApi: FieldApi<TParentData, TName, TData>) => {
+      {(fieldApi) => {
         const {
           meta: { errors },
           value,

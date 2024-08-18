@@ -10,7 +10,6 @@ import { Button, Descriptions, Empty, Flex } from "antd";
 
 import { useTeamDeletePopup } from "./TeamDeletePopup";
 
-
 export const TeamViewerFragment = graphql(/* GraphQL */ `
   fragment TeamViewerFragment on TeamNode {
     id
@@ -45,7 +44,7 @@ export function TeamViewer({
   const { TeamDeletePopup, showModal } = useTeamDeletePopup({
     uuid: teamData?.id ?? "",
     onDelete: () => {
-      navigate({ to: "/teams/" }).catch((error: unknown) =>
+      navigate({ to: "/teams" }).catch((error: unknown) =>
         console.error(error)
       );
     },

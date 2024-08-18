@@ -86,7 +86,7 @@ export function PointEntryCreator({
   });
 
   return (
-    <formApi.Provider>
+    
       <Tour
         steps={steps}
         placement="top"
@@ -183,6 +183,6 @@ export function PointEntryCreator({
           </Button>
         </Flex>
       </Form>
-    </formApi.Provider>
+    
   );
 }
