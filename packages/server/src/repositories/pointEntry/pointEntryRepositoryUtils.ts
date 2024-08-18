@@ -1,7 +1,7 @@
-import type { Prisma } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
 import type { PointEntryFilters } from "./PointEntryRepository.ts";
+import type { Prisma } from "@prisma/client";
 
 export function buildPointEntryOrder(
   order: readonly [key: string, sort: SortDirection][] | null | undefined

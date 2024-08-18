@@ -7,9 +7,9 @@ import { useEffect, useState } from "react";
 import { useQuery } from "urql";
 
 import type { SpiritStackParamList } from "../../../../types/navigationTypes";
-
 import ScoreboardScreen from "./ScoreBoardScreen";
 import TeamScreen from "./TeamScreen";
+
 
 const scoreBoardDocument = graphql(/* GraphQL */ `
   query ScoreBoardDocument($type: [TeamType!]) {

@@ -1,9 +1,10 @@
+import { sqlLogger } from "#logging/sqlLogging.js";
+import { logger } from "#logging/standardLogging.js";
+
 import { PrismaClient } from "@prisma/client";
 import { DetailedError, ErrorCode } from "@ukdanceblue/common";
 import { Container } from "typedi";
 
-import { sqlLogger } from "#logging/sqlLogging.js";
-import { logger } from "#logging/standardLogging.js";
 
 export const prisma = new PrismaClient({
   log: [

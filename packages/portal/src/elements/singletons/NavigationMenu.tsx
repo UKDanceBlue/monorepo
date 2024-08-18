@@ -1,3 +1,5 @@
+import "./NavigationMenu.css";
+
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { themeConfigContext } from "@config/antThemeConfig";
 import { API_BASE_URL } from "@config/api";
@@ -12,8 +14,6 @@ import {
 } from "@ukdanceblue/common";
 import { Button, Menu, Select } from "antd";
 import { useContext, useEffect, useState } from "react";
-
-import "./NavigationMenu.css";
 
 interface NavItemType {
   slug: string;

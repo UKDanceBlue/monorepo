@@ -1,5 +1,12 @@
-import { DBFundsTeam, Prisma, PrismaClient, Team } from "@prisma/client";
+import { logger } from "#logging/standardLogging.js";
+import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
+import {
+  RepositoryError,
+  SimpleUniqueParam,
+  handleRepositoryError,
+} from "#repositories/shared.js";
 
+import { DBFundsTeam, Prisma, PrismaClient, Team } from "@prisma/client";
 import {
   CompositeError,
   NotFoundError,
@@ -8,14 +15,9 @@ import {
 import { DateTime } from "luxon";
 import { Err, None, Ok, Option, Result } from "ts-results-es";
 import { Service } from "typedi";
-import { logger } from "#logging/standardLogging.js";
+
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
-import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
-import {
-  RepositoryError,
-  SimpleUniqueParam,
-  handleRepositoryError,
-} from "#repositories/shared.js";
+
 
 export type UniqueDbFundsTeamParam =
   | {
@@ -100,7 +102,7 @@ export class DBFundsRepository {
       }[] = [];
 
       // Unlike the other lists, this one is removed from rather than added to
-      const entryIdsToDelete: Set<number> = new Set(
+      const entryIdsToDelete = new Set<number>(
         dBFundsTeam.fundraisingEntries.map((entry) => entry.id)
       );
 

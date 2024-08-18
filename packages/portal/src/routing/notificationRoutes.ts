@@ -1,3 +1,5 @@
+import { notificationsRoute } from "./baseRoutes";
+
 import { CreateNotificationPage } from "@pages/notifications/create/CreateNotificationPage";
 import { ListNotificationsPage } from "@pages/notifications/list/ListNotificationsPage";
 import { SingleNotificationPage } from "@pages/notifications/single/SingleNotificationPage";
@@ -5,7 +7,6 @@ import { ManageNotificationPage } from "@pages/notifications/single/manage/Manag
 import { ViewNotificationPage } from "@pages/notifications/single/view/ViewNotificationPage";
 import { Route } from "@tanstack/react-router";
 
-import { notificationsRoute } from "./baseRoutes";
 
 export const notificationsTableRoute = new Route({
   path: "/",

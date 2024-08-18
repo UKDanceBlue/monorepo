@@ -1,16 +1,19 @@
-import type { IncomingMessage } from "node:http";
-
-import { AuthSource, makeUserData } from "@ukdanceblue/common";
-import jsonwebtoken from "jsonwebtoken";
-import type { Context } from "koa";
-import { DateTime } from "luxon";
-import { Container } from "typedi";
-
 import { makeOidcClient } from "./oidcClient.js";
+
 import { makeUserJwt } from "#auth/index.js";
 import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
+
+import { AuthSource, makeUserData } from "@ukdanceblue/common";
+import jsonwebtoken from "jsonwebtoken";
+import { DateTime } from "luxon";
+import { Container } from "typedi";
+
+import type { Context } from "koa";
+import type { IncomingMessage } from "node:http";
+
+
 
 
 export const oidcCallback = async (ctx: Context) => {
@@ -26,7 +29,7 @@ export const oidcCallback = async (ctx: Context) => {
     return ctx.throw("Missing state parameter", 400);
   }
 
-  let sessionDeleted: boolean = false;
+  let sessionDeleted = false;
 
   const personRepository = Container.get(PersonRepository);
   const loginFlowSessionRepository = Container.get(LoginFlowSessionRepository);

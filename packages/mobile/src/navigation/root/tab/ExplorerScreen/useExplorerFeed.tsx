@@ -78,9 +78,8 @@ export function useExplorerFeed(): {
           continue;
         }
 
-        let imageUrl: URL | undefined = image?.url
-          ? new URL(image.url)
-          : undefined;
+        let imageUrl: URL | null | undefined =
+          typeof image?.url === "string" ? new URL(image.url) : image?.url;
         // Special case for localhost server
         if (imageUrl?.hostname === "localhost") {
           imageUrl = new URL(imageUrl.pathname, API_BASE_URL);

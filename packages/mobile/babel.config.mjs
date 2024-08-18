@@ -1,4 +1,9 @@
-module.exports = function (api) {
+/**
+ *
+ * @param {import('@babel/core').ConfigAPI} api
+ * @returns {import('@babel/core').TransformOptions}
+ */
+function babel(api) {
   api.cache(true);
   return {
     presets: ["babel-preset-expo"],
@@ -27,4 +32,6 @@ module.exports = function (api) {
       "react-native-reanimated/plugin",
     ],
   };
-};
+}
+
+export default babel;

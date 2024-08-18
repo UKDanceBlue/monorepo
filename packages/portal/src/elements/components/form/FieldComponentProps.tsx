@@ -26,27 +26,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import type {
-  DeepKeys,
-  DeepValue,
-  FieldApi,
-  FieldOptions,
-} from "@tanstack/react-form";
+/*
+Modified by Tag Howard
+*/
+
+import type { DeepKeys, FieldApi, FieldOptions } from "@tanstack/react-form";
 
 type UseFieldOptions<
   TParentData,
   TName extends DeepKeys<TParentData>,
-  TData = DeepValue<TParentData, TName>,
-> = FieldOptions<TParentData, TName, TData> & {
+> = FieldOptions<TParentData, TName> & {
   mode?: "value" | "array";
 };
 
 export type FieldComponentProps<
   TParentData,
   TName extends DeepKeys<TParentData>,
-  TData = DeepValue<TParentData, TName>,
 > = {
-  children: (fieldApi: FieldApi<TParentData, TName, TData>) => any;
+  children: (fieldApi: FieldApi<TParentData, TName>) => any;
 } & (TParentData extends any[]
   ? {
       name?: TName;

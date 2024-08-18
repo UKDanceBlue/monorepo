@@ -1,8 +1,10 @@
+import { makeUserJwt } from "#auth/index.js";
+
 import { AuthSource } from "@ukdanceblue/common";
-import type { Context } from "koa";
 import { DateTime } from "luxon";
 
-import { makeUserJwt } from "#auth/index.js";
+import type { Context } from "koa";
+
 
 export const anonymousLogin = (ctx: Context) => {
   let redirectTo = "/";

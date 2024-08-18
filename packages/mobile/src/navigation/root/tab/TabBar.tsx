@@ -1,3 +1,4 @@
+import { withErrorBoundary } from "@common/components/ErrorBoundary";
 import { useTabBarConfig } from "@common/hooks/useTabBarConfig";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import type { RouteProp } from "@react-navigation/native";
@@ -10,7 +11,6 @@ import type {
   TabNavigatorParamList,
 } from "../../../types/navigationTypes";
 import HeaderIcons from "../../HeaderIcons";
-
 import { DBHeaderText } from "./DBHeaderText";
 import DBMomentsScreen from "./DBMoments";
 import EventListScreen from "./EventListScreen";
@@ -18,39 +18,61 @@ import ExplorerScreen from "./ExplorerScreen";
 import HomeScreen from "./HomeScreen";
 import InfoScreen from "./InfoScreen";
 import MarathonScreen from "./MarathonScreen";
-import MoraleCup from "./MoraleCup";
-import TabBarComponent from "./TabBarComponent";
 import SpiritScreen from "./spirit/SpiritStack";
+import TabBarComponent from "./TabBarComponent";
 
 const Tabs = createBottomTabNavigator<TabNavigatorParamList>();
 
-export const possibleTabs = {
-  Home: <Tabs.Screen key="Home" name="Home" component={HomeScreen} />,
+const possibleTabs = {
+  Home: (
+    <Tabs.Screen
+      key="Home"
+      name="Home"
+      component={withErrorBoundary(HomeScreen)}
+    />
+  ),
   Events: (
-    <Tabs.Screen key="Events" name="Events" component={EventListScreen} />
+    <Tabs.Screen
+      key="Events"
+      name="Events"
+      component={withErrorBoundary(EventListScreen)}
+    />
   ),
   Explorer: (
-    <Tabs.Screen key="Explore" name="Explore" component={ExplorerScreen} />
+    <Tabs.Screen
+      key="Explore"
+      name="Explore"
+      component={withErrorBoundary(ExplorerScreen)}
+    />
   ),
-  Teams: <Tabs.Screen key="Spirit" name="Teams" component={SpiritScreen} />,
+  Teams: (
+    <Tabs.Screen
+      key="Spirit"
+      name="Teams"
+      component={withErrorBoundary(SpiritScreen)}
+    />
+  ),
   Marathon: (
     <Tabs.Screen
       key="MarathonScreen"
       name="Marathon"
-      component={MarathonScreen}
+      component={withErrorBoundary(MarathonScreen)}
     />
   ),
   DBMoments: (
     <Tabs.Screen
       key="DBMoments"
       name="DB Moments"
-      component={DBMomentsScreen}
+      component={withErrorBoundary(DBMomentsScreen)}
     />
   ),
-  MoraleCup: (
-    <Tabs.Screen key="MoraleCup" name="Morale Cup" component={MoraleCup} />
+  Info: (
+    <Tabs.Screen
+      key="Info"
+      name="Info"
+      component={withErrorBoundary(InfoScreen)}
+    />
   ),
-  Info: <Tabs.Screen key="Info" name="Info" component={InfoScreen} />,
 } as const;
 
 const TabBar = () => {

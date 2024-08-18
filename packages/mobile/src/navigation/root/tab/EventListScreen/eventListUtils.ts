@@ -1,20 +1,21 @@
+import { RNCAL_DATE_FORMAT, RNCAL_DATE_FORMAT_NO_DAY } from "./constants";
+
 import { Logger } from "@common/logger/Logger";
 import { showMessage } from "@common/util/alertUtils";
 import { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
 import { intervalFromSomething } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-mobile";
-import type { Interval } from "luxon";
 import { DateTime } from "luxon";
 import { useEffect, useMemo, useRef } from "react";
-import type { DateData } from "react-native-calendars";
-import type { MarkedDates } from "react-native-calendars/src/types";
 import { useQuery } from "urql";
 
-import { RNCAL_DATE_FORMAT, RNCAL_DATE_FORMAT_NO_DAY } from "./constants";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
+import type { Interval } from "luxon";
+import type { DateData } from "react-native-calendars";
+import type { MarkedDates } from "react-native-calendars/src/types";
 
 /**
  * Converts a luxon DateTime to a string in the format used by react-native-calendars
@@ -168,7 +169,7 @@ const MULTI_DAY_EVENT_COLOR = "#3d3d80";
 export const markEvents = (
   events: readonly FragmentType<typeof EventScreenFragment>[]
 ) => {
-  const marked: Partial<MarkedDates> = {};
+  const marked: MarkedDates = {};
 
   for (const event of events) {
     const eventData = getFragmentData(EventScreenFragment, event);
@@ -225,7 +226,7 @@ export const markEvents = (
     today: true,
   };
 
-  return marked as MarkedDates;
+  return marked;
 };
 
 export const getTodayDateString = () =>

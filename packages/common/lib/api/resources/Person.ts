@@ -1,11 +1,15 @@
-import { Field, ObjectType } from "type-graphql";
+import { TimestampedResource } from "./Resource.js";
 
 import { DbRole } from "../../authorization/structures.js";
 import { Node, createNodeClasses } from "../relay.js";
-import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
-import { TimestampedResource } from "./Resource.js";
+import { Field, ObjectType } from "type-graphql";
+
+
+import type { GlobalId } from "../scalars/GlobalId.js";
+
+
 
 @ObjectType({
   implements: [Node],

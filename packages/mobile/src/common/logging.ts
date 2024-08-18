@@ -1,6 +1,6 @@
-import { isError } from "lodash";
-
 import { Logger } from "./logger/Logger";
+
+import { isError } from "lodash";
 
 /** @deprecated Use the Logger class directly */
 export function log(
@@ -37,18 +37,17 @@ export function logError(error: Error) {
   Logger.error(error.message, { error });
 }
 
-/** @deprecated I want to switch to using a more user-friendly error handler than this */
 export function universalCatch(error: unknown) {
   try {
     if (isError(error)) {
-      logError(error);
+      Logger.error("Caught error", { error });
     } else if (
       typeof error === "string" ||
       typeof error === "number" ||
       typeof error === "boolean" ||
       (typeof error === "object" && error !== null)
     ) {
-      log(error, "error");
+      Logger.error(String(error));
     } else {
       console.error(error);
     }

@@ -6,6 +6,7 @@ import { useQuery } from "urql";
 
 import { teamPageDocument } from "./teamPageDocument";
 
+
 export function ViewTeamPage() {
   const { teamId: teamUuid } = useParams({ from: "/teams/$teamId/" });
 

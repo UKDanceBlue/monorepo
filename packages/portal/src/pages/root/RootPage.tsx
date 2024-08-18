@@ -3,6 +3,7 @@ import { Layout } from "antd";
 
 import { NavigationMenu } from "../../elements/singletons/NavigationMenu";
 
+
 export const RootPage = () => {
   return (
     <>

@@ -1,13 +1,19 @@
 import { Logger } from "@common/logger/Logger";
 import { asyncWait } from "@common/util/wait";
+import {
+  CameraType,
+  FlashMode,
+  PermissionStatus,
+  useCameraPermissions,
+} from "expo-camera";
+import { MutableRefObject, useEffect, useRef, useState } from "react";
+
 import type {
   CameraCapturedPicture,
   CameraPictureOptions,
   CameraProps,
+  CameraViewRef,
 } from "expo-camera";
-import { Camera, CameraType, FlashMode, PermissionStatus } from "expo-camera";
-import type { RefObject } from "react";
-import { useEffect, useRef, useState } from "react";
 
 type CameraState =
   | "permission-blocked"
@@ -16,7 +22,7 @@ type CameraState =
   | "ready"
   | "captured";
 
-const takePicture = async (camera: Camera) => {
+const takePicture = async (camera: CameraViewRef) => {
   const options: CameraPictureOptions = {
     quality: 1,
     base64: false,
@@ -25,7 +31,7 @@ const takePicture = async (camera: Camera) => {
   };
   // Need to wait when we take a picture to make sure the camera is focused
   await asyncWait(1200);
-  return camera.takePictureAsync(options);
+  return camera.takePicture(options);
 };
 
 export function useCameraState(): {
@@ -33,37 +39,31 @@ export function useCameraState(): {
   toggleFlash: (set?: FlashMode) => void;
   facing: CameraType;
   toggleFacing: (set?: CameraType) => void;
-  cameraRef: RefObject<Camera>;
+  cameraRef: MutableRefObject<CameraViewRef | undefined>;
   onCameraReady: CameraProps["onCameraReady"];
-  images: {
-    [CameraType.front]?: CameraCapturedPicture;
-    [CameraType.back]?: CameraCapturedPicture;
-  };
+  images: Partial<Record<CameraType, CameraCapturedPicture>>;
   state: CameraState;
   requestPermission: () => void;
   startTakingPictures: () => void;
   reset: () => void;
   takingPicture: boolean;
 } {
-  const [flash, setFlash] = useState<FlashMode>(FlashMode.off);
-  const [facing, setFacing] = useState<CameraType>(CameraType.front);
-  const [currentlyTaking, setCurrentlyTaking] = useState<{
-    [CameraType.front]: boolean;
-    [CameraType.back]: boolean;
-  }>({
-    [CameraType.front]: false,
-    [CameraType.back]: false,
+  const [flash, setFlash] = useState<FlashMode>("off");
+  const [facing, setFacing] = useState<CameraType>("front");
+  const [currentlyTaking, setCurrentlyTaking] = useState<
+    Record<CameraType, boolean>
+  >({
+    front: false,
+    back: false,
   });
-  const [images, setImages] = useState<{
-    [CameraType.front]?: CameraCapturedPicture;
-    [CameraType.back]?: CameraCapturedPicture;
-  }>({});
+  const [images, setImages] = useState<
+    Partial<Record<CameraType, CameraCapturedPicture>>
+  >({});
   const [cameraLoading, setCameraLoading] = useState(true);
 
-  const cameraRef = useRef<Camera>(null);
+  const cameraRef = useRef<CameraViewRef>();
 
-  const [cameraPermission, requestCameraPermissions] =
-    Camera.useCameraPermissions();
+  const [cameraPermission, requestCameraPermissions] = useCameraPermissions();
 
   let state: CameraState = "loading";
   switch (cameraPermission?.status) {
@@ -76,8 +76,7 @@ export function useCameraState(): {
       break;
     }
     default: {
-      // eslint-disable-next-line unicorn/prefer-ternary
-      if (images[CameraType.front] && images[CameraType.back]) {
+      if (images.front && images.back) {
         state = "captured";
       } else {
         state = "ready";
@@ -86,16 +85,11 @@ export function useCameraState(): {
   }
 
   const toggleFlash = (set?: FlashMode) => {
-    setFlash(
-      (prev) => set ?? (prev === FlashMode.off ? FlashMode.on : FlashMode.off)
-    );
+    setFlash((prev) => set ?? (prev === "off" ? "on" : "off"));
   };
 
   const toggleFacing = (set?: CameraType) => {
-    setFacing(
-      (prev) =>
-        set ?? (prev === CameraType.front ? CameraType.back : CameraType.front)
-    );
+    setFacing((prev) => set ?? (prev === "front" ? "back" : "front"));
   };
 
   const requestPermission = () => {
@@ -142,12 +136,10 @@ export function useCameraState(): {
 
             toggleFacing();
             setTimeout(() => {
-            setCurrentlyTaking((prev) => ({
-              ...prev,
-              [checking === CameraType.front
-                ? CameraType.back
-                : CameraType.front]: true,
-            }));
+              setCurrentlyTaking((prev) => ({
+                ...prev,
+                [checking === "front" ? "back" : "front"]: true,
+              }));
             }, 3000);
           })
           .catch((error: unknown) => {
@@ -163,8 +155,8 @@ export function useCameraState(): {
   const reset = () => {
     setImages({});
     setCurrentlyTaking({
-      [CameraType.front]: false,
-      [CameraType.back]: false,
+      front: false,
+      back: false,
     });
   };
 
@@ -180,7 +172,6 @@ export function useCameraState(): {
     requestPermission,
     startTakingPictures,
     reset,
-    takingPicture:
-      currentlyTaking[CameraType.front] || currentlyTaking[CameraType.back],
+    takingPicture: currentlyTaking["front"] || currentlyTaking["back"],
   };
 }

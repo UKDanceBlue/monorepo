@@ -1,9 +1,8 @@
-import type { ContextFunction } from "@apollo/server";
-import type { KoaContextFunctionArgument } from "@as-integrations/koa";
-import type {
-  AuthorizationContext,
-  EffectiveCommitteeRole,
-} from "@ukdanceblue/common";
+import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
+import { logger } from "#logging/logger.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
+
 import {
   AccessLevel,
   AuthSource,
@@ -14,15 +13,19 @@ import {
   TeamType,
 } from "@ukdanceblue/common";
 import { ErrorCode } from "@ukdanceblue/common/error";
-import type { ConcreteResult } from "@ukdanceblue/common/error";
-import type { DefaultState } from "koa";
 import { Ok } from "ts-results-es";
 import { Container } from "typedi";
 
-import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
-import { logger } from "#logging/logger.js";
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
+import type { ContextFunction } from "@apollo/server";
+import type { KoaContextFunctionArgument } from "@as-integrations/koa";
+import type {
+  AuthorizationContext,
+  EffectiveCommitteeRole,
+} from "@ukdanceblue/common";
+import type { ConcreteResult } from "@ukdanceblue/common/error";
+import type { DefaultState } from "koa";
+
+
 
 export interface GraphQLContext extends AuthorizationContext {
   contextErrors: string[];

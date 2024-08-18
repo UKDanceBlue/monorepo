@@ -1,5 +1,6 @@
-import type { FundraisingAssignment } from "@prisma/client";
 import { FundraisingAssignmentNode } from "@ukdanceblue/common";
+
+import type { FundraisingAssignment } from "@prisma/client";
 
 export function fundraisingAssignmentModelToNode(
   marathonHourModel: FundraisingAssignment

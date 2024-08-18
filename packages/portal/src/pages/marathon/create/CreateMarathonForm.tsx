@@ -7,6 +7,7 @@ import { DateTime } from "luxon";
 
 import { useMarathonCreatorForm } from "./useMarathonCreatorForm";
 
+
 const MARATHON_YEAR_REGEX = /^DB\d{2}$/;
 
 export const CreateMarathonForm = () => {

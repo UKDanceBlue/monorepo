@@ -1,4 +1,3 @@
-import analytics from "@react-native-firebase/analytics";
 import type { NavigationContainerRef } from "@react-navigation/native";
 import { NavigationContainer } from "@react-navigation/native";
 import {
@@ -14,13 +13,11 @@ import { useRef, useState } from "react";
 import { StatusBar } from "react-native";
 import type { WebViewSource } from "react-native-webview/lib/WebViewTypes";
 
-import NotificationInfoModal from "../common/components/NotificationInfoModal";
 import WebpageModal from "../common/components/WebpageModal";
 import { useColorModeValue } from "../common/customHooks";
 import { universalCatch } from "../common/logging";
 import RootScreen from "../navigation/root/RootScreen";
 import { useReactNavigationTheme } from "../theme";
-import type { NotificationInfoPopup } from "../types/NotificationPayload";
 import type { RootStackParamList } from "../types/navigationTypes";
 
 const linkingPrefixes = [
@@ -30,17 +27,8 @@ const linkingPrefixes = [
 ];
 
 export const FilledNavigationContainer = () => {
-  const routeNameRef = useRef<string>();
   const navigationRef =
     useRef<NavigationContainerRef<RootStackParamList>>(null);
-
-  const {
-    isOpen: isNotificationInfoOpen,
-    onClose: onNotificationInfoClose,
-    onOpen: onNotificationInfoOpen,
-  } = useDisclose(false);
-  const [notificationInfoPopupContent, setNotificationInfoPopupContent] =
-    useState<NotificationInfoPopup | null>(null);
 
   const {
     isOpen: isNotificationWebviewPopupSourceOpen,
@@ -59,27 +47,6 @@ export const FilledNavigationContainer = () => {
       <NavigationContainer
         theme={useReactNavigationTheme()}
         ref={navigationRef}
-        onReady={() => {
-          routeNameRef.current = navigationRef.current?.getCurrentRoute()?.name;
-        }}
-        onStateChange={async () => {
-          try {
-            const lastRouteName = routeNameRef.current;
-            const currentRouteName =
-              navigationRef.current?.getCurrentRoute()?.name;
-
-            routeNameRef.current = currentRouteName;
-
-            if (lastRouteName !== currentRouteName) {
-              await analytics().logScreenView({
-                screen_name: currentRouteName,
-                screen_class: currentRouteName,
-              });
-            }
-          } catch (error) {
-            universalCatch(error);
-          }
-        }}
         linking={{
           prefixes: linkingPrefixes,
           getInitialURL: getInitialLinkingURL,
@@ -97,20 +64,11 @@ export const FilledNavigationContainer = () => {
             // THIS IS THE NOTIFICATION ENTRY POINT
             const notificationSubscription =
               addNotificationResponseReceivedListener((response) => {
-                const {
-                  url: notificationUrl,
-                  textPopup,
-                  webviewPopup,
-                } = response.notification.request.content.data as {
+                const { url: notificationUrl, webviewPopup } = response
+                  .notification.request.content.data as {
                   url?: string;
-                  textPopup?: NotificationInfoPopup;
                   webviewPopup?: WebViewSource;
                 };
-
-                if (textPopup != null) {
-                  setNotificationInfoPopupContent(textPopup);
-                  onNotificationInfoOpen();
-                }
 
                 if (webviewPopup != null) {
                   setNotificationWebviewPopupSource(webviewPopup);
@@ -164,11 +122,6 @@ export const FilledNavigationContainer = () => {
           },
         }}
       >
-        <NotificationInfoModal
-          isNotificationInfoOpen={isNotificationInfoOpen}
-          onNotificationInfoClose={onNotificationInfoClose}
-          notificationInfoPopupContent={notificationInfoPopupContent}
-        />
         <WebpageModal
           isOpen={isNotificationWebviewPopupSourceOpen}
           onClose={onNotificationWebviewPopupSourceClose}

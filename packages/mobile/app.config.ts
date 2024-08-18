@@ -1,6 +1,3 @@
-import { existsSync, readdirSync } from "fs";
-import { join, normalize } from "path";
-
 import type { ConfigContext, ExpoConfig } from "@expo/config"; // WARNING - @expo/config types aren't versioned
 
 /*
@@ -39,11 +36,6 @@ DO NOT CHANGE ANYTHING BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 */
 
-interface GoogleServiceFiles {
-  android: string;
-  ios: string;
-}
-
 interface Version {
   major: number;
   minor: number;
@@ -60,19 +52,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   // App info
   const name = IS_DEV ? "DB DEV CLIENT" : "DanceBlue";
   const qualifiedName = IS_DEV ? "org.danceblue.app.dev" : "org.danceblue.app";
-
-  // Google Services Files
-  const androidGoogleServicesFile = normalize(
-    join(
-      __dirname,
-      IS_DEV ? "./google-services.dev.json" : "./google-services.json"
-    )
-  );
-  const iosGoogleServicesFile = normalize(
-    join(
-      IS_DEV ? "./GoogleService-Info.dev.plist" : "./GoogleService-Info.plist"
-    )
-  );
 
   // console.log(
   //   `Generating manifest for ${IS_DEV ? "development" : "production"} app`
@@ -105,26 +84,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     nativeVersion.patch + buildsThisVersion
   }`;
 
-  // Check that the Google services file exists
-  const onNotExist = console.warn;
-  // process.env.EAS_BUILD_RUNNER === "eas-build"
-  // ? console.warn
-  // : (err: string) => {
-  //     throw new Error(err);
-  //   };
-  if (process.env.EAS_BUILD && !existsSync(androidGoogleServicesFile)) {
-    console.error("Detected files:", readdirSync(__dirname).join(" --- "));
-    onNotExist(
-      `GoogleService-Info file not found at ${androidGoogleServicesFile}`
-    );
-  }
-
-  // Check that the Google services file exists
-  if (!existsSync(iosGoogleServicesFile)) {
-    console.error("Detected files:", readdirSync(__dirname).join(" --- "));
-    onNotExist(`GoogleService-Info file not found at ${iosGoogleServicesFile}`);
-  }
-
   return makeExpoConfig({
     baseConfig: config,
     name,
@@ -134,10 +93,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     iosBuildString: buildNumber,
     runtimeVersion,
     qualifiedName,
-    googleServicesFiles: {
-      android: androidGoogleServicesFile,
-      ios: iosGoogleServicesFile,
-    },
   });
 };
 
@@ -157,7 +112,6 @@ function makeExpoConfig({
   iosBuildString,
   runtimeVersion,
   qualifiedName,
-  googleServicesFiles,
 }: {
   baseConfig: Partial<ExpoConfig>;
   name: "DB DEV CLIENT" | "DanceBlue";
@@ -167,7 +121,6 @@ function makeExpoConfig({
   iosBuildString: SemVer;
   runtimeVersion: SemVer;
   qualifiedName: DanceBlueQualifiedName;
-  googleServicesFiles: GoogleServiceFiles;
 }): ExpoConfig {
   const iosConfig = baseConfig.ios ?? {};
   const androidConfig = baseConfig.android ?? {};
@@ -175,9 +128,6 @@ function makeExpoConfig({
   iosConfig.buildNumber = iosBuildString;
 
   androidConfig.versionCode = androidBuildNumber;
-
-  iosConfig.googleServicesFile = googleServicesFiles.ios;
-  androidConfig.googleServicesFile = googleServicesFiles.android;
 
   iosConfig.bundleIdentifier = qualifiedName;
   androidConfig.package = qualifiedName;

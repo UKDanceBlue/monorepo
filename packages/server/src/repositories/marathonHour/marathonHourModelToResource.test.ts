@@ -1,8 +1,10 @@
-import type { MarathonHour } from "@prisma/client";
+import { marathonHourModelToResource } from "./marathonHourModelToResource.js";
+
 import { MarathonHourNode } from "@ukdanceblue/common";
 import { describe, expect, it } from "vitest";
 
-import { marathonHourModelToResource } from "./marathonHourModelToResource.js";
+import type { MarathonHour } from "@prisma/client";
+
 
 describe("marathonHourModelToResource", () => {
   it("should correctly transform MarathonHour to MarathonHourNode", () => {

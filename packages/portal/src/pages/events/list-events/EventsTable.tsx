@@ -4,8 +4,8 @@ import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useNavigate } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
 import {
-  parseEventOccurrence,
   parsedEventOccurrenceToStrings,
+  parseEventOccurrence,
 } from "@ukdanceblue/common/client-parsers";
 import {
   getFragmentData,

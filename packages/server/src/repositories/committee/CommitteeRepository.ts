@@ -1,3 +1,17 @@
+import * as CommitteeDescriptions from "./committeeDescriptions.js";
+import {
+  buildCommitteeOrder,
+  buildCommitteeWhere,
+} from "./committeeRepositoryUtils.js";
+
+import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
+import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
+import {
+  RepositoryError,
+  SimpleUniqueParam,
+  handleRepositoryError,
+} from "#repositories/shared.js";
+
 import { Committee, Prisma, PrismaClient, Team } from "@prisma/client";
 import {
   CommitteeIdentifier,
@@ -13,20 +27,10 @@ import {
 import { Err, None, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-import * as CommitteeDescriptions from "./committeeDescriptions.js";
-import {
-  buildCommitteeOrder,
-  buildCommitteeWhere,
-} from "./committeeRepositoryUtils.js";
+
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
-import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
-import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
-import {
-  RepositoryError,
-  SimpleUniqueParam,
-  handleRepositoryError,
-} from "#repositories/shared.js";
+
 
 // Make sure that we are exporting a description for every committee
 CommitteeDescriptions[
@@ -236,7 +240,7 @@ export class CommitteeRepository {
       await this.prisma.committee.upsert(overallCommittee);
       await this.prisma.committee.upsert(viceCommittee);
       for (const committee of Object.values(childCommittees)) {
-        // eslint-disable-next-line no-await-in-loop
+         
         await this.prisma.committee.upsert(committee);
       }
 
@@ -260,7 +264,7 @@ export class CommitteeRepository {
         });
 
       if (result?.length === 1) {
-        return Ok(result[0]!);
+        return Ok(result[0]);
       } else if (result?.length === 0) {
         return Err(
           new NotFoundError({

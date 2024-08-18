@@ -122,6 +122,7 @@ const TeamScreen = ({
           .filter(
             (member) =>
               member.position === MembershipPositionType.Captain &&
+              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               (member.person.name || member.person.linkblue)
           )
           .map(
@@ -132,6 +133,7 @@ const TeamScreen = ({
           .filter(
             (member) =>
               member.position === MembershipPositionType.Member &&
+              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               (member.person.name || member.person.linkblue)
           )
           .map(

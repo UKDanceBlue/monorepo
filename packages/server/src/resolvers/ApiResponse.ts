@@ -1,7 +1,8 @@
 import { ErrorCode } from "@ukdanceblue/common";
 import { NonNegativeIntResolver, PositiveIntResolver } from "graphql-scalars";
-import type { ClassType } from "type-graphql";
 import { Field, InterfaceType, registerEnumType } from "type-graphql";
+
+import type { ClassType } from "type-graphql";
 
 const DEFAULT_PAGE_SIZE = 10;
 const FIRST_PAGE = 1;

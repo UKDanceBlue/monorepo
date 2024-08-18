@@ -1,3 +1,5 @@
+import { eventsRoute } from "./baseRoutes";
+
 import { CreateEventPage } from "@pages/events/create-event/CreateEventPage";
 import { ListEvensPage } from "@pages/events/list-events/ListEventsPage";
 import { SingleEventPage } from "@pages/events/single-event/SingleEventPage";
@@ -5,7 +7,6 @@ import { EditEventPage } from "@pages/events/single-event/edit-event/EditEventPa
 import { ViewEventPage } from "@pages/events/single-event/view-event/ViewEventPage";
 import { Route } from "@tanstack/react-router";
 
-import { eventsRoute } from "./baseRoutes";
 
 export const eventsTableRoute = new Route({
   path: "/",

@@ -3,7 +3,6 @@ import { View } from "native-base";
 import { useEffect, useState } from "react";
 
 import { useThemeColors } from "../../customHooks";
-
 import { CountdownNumber } from "./CountdownNumber";
 
 export const CountdownViewNew = ({ endTime }: { endTime: number }) => {
@@ -128,4 +127,3 @@ export const CountdownViewNew = ({ endTime }: { endTime: number }) => {
     </View>
   );
 };
-``;

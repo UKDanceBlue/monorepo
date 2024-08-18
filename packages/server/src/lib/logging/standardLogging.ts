@@ -1,7 +1,9 @@
-import type winston from "winston";
+import { logDir, loggingLevel } from "#environment";
+
 import { createLogger, format, transports } from "winston";
 
-import { logDir, loggingLevel } from "#environment";
+import type winston from "winston";
+
 
 export const SyslogLevels = {
   emerg: 0,

@@ -6,7 +6,7 @@ import { useMemo } from "react";
 
 import type { ConfigValue } from "./useConfig";
 
-export function ConfigItem<Key extends string, Editable extends boolean>({
+export function ConfigItem<Editable extends boolean>({
   editable,
   configKey,
   configValueUuid,
@@ -15,7 +15,7 @@ export function ConfigItem<Key extends string, Editable extends boolean>({
   onChange,
 }: {
   editable: Editable;
-  configKey: Key;
+  configKey: string;
   configValue: ConfigValue;
 } & (Editable extends true
   ? {

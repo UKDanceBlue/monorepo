@@ -1,11 +1,14 @@
+import { TimestampedResource } from "./Resource.js";
+
+import { Node, createNodeClasses } from "../relay.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
+
 import { URLResolver } from "graphql-scalars";
 import { Field, Int, ObjectType } from "type-graphql";
 
-import { Node, createNodeClasses } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
-import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
-import { TimestampedResource } from "./Resource.js";
+
 @ObjectType({
   implements: [Node],
 })

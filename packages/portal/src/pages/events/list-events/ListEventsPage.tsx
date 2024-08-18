@@ -4,6 +4,7 @@ import { Button, Flex, Typography } from "antd";
 
 import { EventsTable } from "./EventsTable";
 
+
 export function ListEvensPage() {
   const navigate = useNavigate();
   return (

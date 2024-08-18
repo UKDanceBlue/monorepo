@@ -44,7 +44,7 @@ export function TeamViewer({
   const { TeamDeletePopup, showModal } = useTeamDeletePopup({
     uuid: teamData?.id ?? "",
     onDelete: () => {
-      navigate({ to: "/teams/" }).catch((error: unknown) =>
+      navigate({ to: "/teams" }).catch((error: unknown) =>
         console.error(error)
       );
     },

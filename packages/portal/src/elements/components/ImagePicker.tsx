@@ -101,6 +101,7 @@ export function ImagePicker({
                           Select
                         </Button>
                         <p style={{ textAlign: "center" }}>
+                          {/* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing */}
                           Alt text: {image.alt || "N/A"}
                         </p>
                         {node}

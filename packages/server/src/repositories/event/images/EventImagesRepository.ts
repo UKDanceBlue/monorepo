@@ -1,7 +1,8 @@
-import type { Prisma } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 import { DetailedError, ErrorCode } from "@ukdanceblue/common";
 import { Service } from "typedi";
+
+import type { Prisma } from "@prisma/client";
 
 type UniqueParam =
   | {

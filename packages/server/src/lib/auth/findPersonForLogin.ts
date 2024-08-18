@@ -1,8 +1,10 @@
-import type { AuthSource, Prisma, PrismaClient } from "@prisma/client";
-import type { DbRole } from "@ukdanceblue/common";
+import { logger } from "#logging/logger.js";
+
 import { MembershipPositionType } from "@ukdanceblue/common";
 
-import { logger } from "#logging/logger.js";
+import type { AuthSource, Prisma, PrismaClient } from "@prisma/client";
+import type { DbRole } from "@ukdanceblue/common";
+
 
 // TODO: rework this whole thing, it's pretty boated and confusing
 
@@ -60,7 +62,7 @@ export async function findPersonForLogin(
     if (!id) {
       continue;
     }
-    // eslint-disable-next-line no-await-in-loop
+     
     currentPerson = await client.person.findFirst({
       where: { authIdPairs: { some: { source, value: id } } },
       include,

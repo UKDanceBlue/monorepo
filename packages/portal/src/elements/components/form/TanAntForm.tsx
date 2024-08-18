@@ -14,10 +14,8 @@ export function TanAntForm<Values>({
   ...antProps
 }: TanAntFormProps<Values>) {
   return (
-    <formApi.Provider>
-      <Form onFinish={() => formApi.handleSubmit()} {...antProps}>
-        {children}
-      </Form>
-    </formApi.Provider>
+    <Form onFinish={() => formApi.handleSubmit()} {...antProps}>
+      {children}
+    </Form>
   );
 }

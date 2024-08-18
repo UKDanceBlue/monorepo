@@ -1,4 +1,7 @@
-import type { GlobalId } from "@ukdanceblue/common";
+import { MarathonHourRepository } from "#repositories/marathonHour/MarathonHourRepository.js";
+import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
+import { AbstractGraphQLPaginatedResponse } from "#resolvers/ApiResponse.js";
+
 import {
   DetailedError,
   ErrorCode,
@@ -23,9 +26,8 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { MarathonHourRepository } from "#repositories/marathonHour/MarathonHourRepository.js";
-import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
-import { AbstractGraphQLPaginatedResponse } from "#resolvers/ApiResponse.js";
+import type { GlobalId } from "@ukdanceblue/common";
+
 
 @ObjectType("ListMarathonHoursResponse", {
   implements: AbstractGraphQLPaginatedResponse<MarathonHourNode[]>,

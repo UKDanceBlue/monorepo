@@ -2,13 +2,10 @@ import * as WebBrowser from "expo-web-browser";
 import { Box, Image } from "native-base";
 import { PixelRatio, TouchableHighlight } from "react-native";
 
-import { useFirebaseStorageUrl } from "../../customHooks";
-
 /**
  * A card showing a Sponsor's logo that link's to their website
  */
 const SponsorCard = ({
-  imagePath,
   sponsorLink,
   name,
 }: {
@@ -16,10 +13,6 @@ const SponsorCard = ({
   sponsorLink?: string;
   name: string;
 }) => {
-  const [url] = useFirebaseStorageUrl(
-    `gs://react-danceblue.appspot.com${imagePath}`
-  );
-
   return (
     <TouchableHighlight
       onPress={
@@ -39,7 +32,7 @@ const SponsorCard = ({
       >
         <Image
           source={{
-            uri: url ?? undefined,
+            uri: undefined,
             width: PixelRatio.getPixelSizeForLayoutSize(75),
             height: PixelRatio.getPixelSizeForLayoutSize(50),
           }}

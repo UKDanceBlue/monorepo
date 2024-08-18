@@ -5,8 +5,9 @@ import { Button, Empty, Flex } from "antd";
 import { useQuery } from "urql";
 
 import { MarathonViewer } from "../single/view/MarathonViewer";
-
 import { MarathonsTable } from "./MarathonsTable";
+
+
 
 const marathonOverviewPageDocument = graphql(/* GraphQL */ `
   query MarathonOverviewPage {

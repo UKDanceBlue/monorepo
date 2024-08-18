@@ -9,7 +9,7 @@ import type {
   TabNavigationState,
 } from "@react-navigation/native";
 import { colors } from "@theme/colors";
-import { Box, VStack, View, useTheme, ZStack } from "native-base";
+import { Box, useTheme, View, VStack, ZStack } from "native-base";
 import { Text, TouchableOpacity, useWindowDimensions } from "react-native";
 
 import BackgroundCutout from "../../../../assets/screens/navigation/background-cutout";
@@ -110,7 +110,7 @@ function TabBarIcon({
           <Text
             style={{
               color: isFocused ? navTheme.colors.primary : navTheme.colors.text,
-              fontSize: theme.fontSizes["xs"],
+              fontSize: theme.fontSizes.xs,
             }}
           >
             {label}
@@ -261,9 +261,7 @@ function TabBarComponent({
                 label={
                   typeof options.tabBarLabel === "string"
                     ? options.tabBarLabel
-                    : options.title !== undefined
-                      ? options.title
-                      : route.name
+                    : (options.title ?? route.name)
                 }
                 isFocused={state.index === index}
                 options={options}

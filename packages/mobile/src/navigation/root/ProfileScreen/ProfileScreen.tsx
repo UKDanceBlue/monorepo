@@ -5,9 +5,9 @@ import { universalCatch } from "@common/logging";
 import {
   AuthSource,
   CommitteeIdentifier,
+  committeeNames,
   CommitteeRole,
   DbRole,
-  committeeNames,
 } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import {
@@ -22,12 +22,13 @@ import {
   Container,
   Spinner,
   Text,
-  VStack,
   theme,
+  VStack,
 } from "native-base";
 import { useMemo } from "react";
 
 import { ProfileFooter } from "./ProfileFooter";
+
 
 export const ProfileScreenAuthFragment = graphql(/* GraphQL */ `
   fragment ProfileScreenAuthFragment on LoginState {

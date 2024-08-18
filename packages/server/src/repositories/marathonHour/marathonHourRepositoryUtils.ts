@@ -1,15 +1,17 @@
-import type { Prisma } from "@prisma/client";
+import {
+  dateFilterToPrisma,
+  oneOfFilterToPrisma,
+  stringFilterToPrisma,
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
 import { SortDirection } from "@ukdanceblue/common";
 
 import type {
   MarathonHourFilters,
   MarathonHourOrderKeys,
 } from "./MarathonHourRepository.ts";
-import {
-  dateFilterToPrisma,
-  oneOfFilterToPrisma,
-  stringFilterToPrisma,
-} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { Prisma } from "@prisma/client";
+
 
 
 export function buildMarathonHourOrder(

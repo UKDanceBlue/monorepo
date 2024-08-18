@@ -1,5 +1,4 @@
 import { SimpleConfigFragment } from "@common/fragments/Configuration";
-import { showMessage } from "@common/util/alertUtils";
 import { TeamType } from "@ukdanceblue/common";
 import {
   getFragmentData,
@@ -35,7 +34,7 @@ const stationNumberToName = (stationNumber: number) => {
     }
   }
 };
-showMessage;
+
 export function TriviaCrack() {
   const [{ data }] = useQuery({
     query: graphql(/* GraphQL */ `
@@ -65,6 +64,7 @@ export function TriviaCrack() {
   );
 
   const { stationOrder, moraleTeamNumber } = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     const value = JSON.parse(option?.value || "{}") as unknown;
     let stationOrder: [number, number, number, number, number, number] | null =
       null;

@@ -28,12 +28,8 @@ export function useSaveMoment(): {
         const album = (await getAlbumAsync(ALBUM_NAME)) as Awaited<
           ReturnType<typeof getAlbumAsync>
         > | null;
-        // eslint-disable-next-line unicorn/prefer-ternary
-        if (!album) {
-          await createAlbumAsync(ALBUM_NAME, asset, false);
-        } else {
-          await addAssetsToAlbumAsync([asset], album, false);
-        }
+         
+        await (!album ? createAlbumAsync(ALBUM_NAME, asset, false) : addAssetsToAlbumAsync([asset], album, false));
 
         return undefined;
       } catch (error) {

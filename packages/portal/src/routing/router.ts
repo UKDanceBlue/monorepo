@@ -1,4 +1,3 @@
-import { Router } from "@tanstack/react-router";
 
 import {
   configRoute,
@@ -54,6 +53,8 @@ import {
   teamsTableRoute,
   viewTeamRoute,
 } from "./teamRoutes";
+
+import { Router } from "@tanstack/react-router";
 
 const routeTree = rootRoute.addChildren([
   homeRoute,

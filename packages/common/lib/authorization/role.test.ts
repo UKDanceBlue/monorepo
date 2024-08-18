@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { roleToAccessLevel } from "./role.js";
 
 import {
   AccessLevel,
@@ -7,7 +7,9 @@ import {
   DbRole,
 } from "../index.js";
 
-import { roleToAccessLevel } from "./role.js";
+import { describe, expect, it } from "vitest";
+
+
 
 // TODO test the committee hierarchy system (i.e. overall and vice roles vs other committees)
 

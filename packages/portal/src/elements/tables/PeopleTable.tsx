@@ -5,10 +5,10 @@ import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useNavigate } from "@tanstack/react-router";
 import type { CommitteeIdentifier } from "@ukdanceblue/common";
 import {
+  committeeNames,
   CommitteeRole,
   DbRole,
   SortDirection,
-  committeeNames,
   stringifyDbRole,
 } from "@ukdanceblue/common";
 import {

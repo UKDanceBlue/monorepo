@@ -5,6 +5,7 @@ import { useQuery } from "urql";
 
 import { EventViewer } from "./EventViewer";
 
+
 const viewEventPageDocument = graphql(/* GraphQL */ `
   query ViewEventPage($uuid: GlobalId!) {
     event(uuid: $uuid) {

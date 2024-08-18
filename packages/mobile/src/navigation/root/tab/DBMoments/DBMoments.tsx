@@ -1,7 +1,7 @@
 import DBMomentsLogo from "@assets/svgs/DBMomentsLogo";
 import { Logger } from "@common/logger/Logger";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { Camera, FlashMode } from "expo-camera";
+import { CameraView } from "expo-camera";
 import { Box, Button, Fab, Icon, Text, View } from "native-base";
 import { useState } from "react";
 
@@ -72,12 +72,14 @@ export const DBMomentsScreen = () => {
 
       return (
         <View style={{ flex: 1, justifyContent: "center" }}>
-          <Camera
+          <CameraView
             style={{ flex: 1 }}
-            type={facing}
-            ref={cameraRef}
+            facing={facing}
+            ref={(ref) =>
+              (cameraRef.current = ref?._cameraRef.current ?? undefined)
+            }
             onCameraReady={onCameraReady}
-            flashMode={flash}
+            flash={flash}
           >
             <Box style={{ flex: 1 }}>
               <View style={{ position: "absolute", top: 0, left: 0 }}>
@@ -117,9 +119,7 @@ export const DBMomentsScreen = () => {
                     color="white"
                     as={
                       <MaterialIcons
-                        name={
-                          flash === FlashMode.off ? "flash-off" : "flash-on"
-                        }
+                        name={flash === "off" ? "flash-off" : "flash-on"}
                       />
                     }
                     size={7}
@@ -187,7 +187,7 @@ export const DBMomentsScreen = () => {
                 onPress={() => reset()}
               /> */}
             </Box>
-          </Camera>
+          </CameraView>
         </View>
       );
     }

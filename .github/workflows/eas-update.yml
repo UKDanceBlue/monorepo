@@ -52,3 +52,7 @@ jobs:
       - name: Create update
         run: eas update --auto --non-interactive
         working-directory: packages/mobile
+
+      - name: Upload Sentry sourcemaps
+        run: npx sentry-expo-upload-sourcemaps dist
+        working-directory: packages/mobile

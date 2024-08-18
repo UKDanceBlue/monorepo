@@ -124,7 +124,7 @@ const CountdownView = ({ endTime }: { endTime: number }) => {
   );
 };
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     flex: 1,

@@ -6,8 +6,9 @@ import {
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
 import { ConcreteError, ErrorCode } from "@ukdanceblue/common/error";
-import type { Option } from "ts-results-es";
 import { None, Some } from "ts-results-es";
+
+import type { Option } from "ts-results-es";
 
 type RawPrismaError =
   | PrismaClientKnownRequestError

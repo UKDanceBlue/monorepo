@@ -1,14 +1,16 @@
-import { NotificationError, Prisma, PrismaClient } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
-import type { ExpoPushReceipt, ExpoPushTicket } from "expo-server-sdk";
-import type { DateTime } from "luxon";
-import { Service } from "typedi";
-
 import {
   buildNotificationDeliveryOrder,
   buildNotificationDeliveryWhere,
 } from "./notificationDeliveryRepositoryUtils.js";
+
+import { NotificationError, Prisma, PrismaClient } from "@prisma/client";
+import { Service } from "typedi";
+
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { SortDirection } from "@ukdanceblue/common";
+import type { ExpoPushReceipt, ExpoPushTicket } from "expo-server-sdk";
+import type { DateTime } from "luxon";
+
 
 
 const notificationDeliveryBooleanKeys = [] as const;
@@ -129,11 +131,9 @@ export class NotificationDeliveryRepository {
     });
 
     // THIS IS ONLY VALID SO LONG AS THE WHERE FOR receiptId IS NOT NULL
-    return returnVal as Array<
-      Omit<(typeof returnVal)[number], "receiptId"> & {
+    return returnVal as (Omit<(typeof returnVal)[number], "receiptId"> & {
         receiptId: NonNullable<(typeof returnVal)[number]["receiptId"]>;
-      }
-    >;
+      })[];
   }
 
   listNotificationDeliveries(

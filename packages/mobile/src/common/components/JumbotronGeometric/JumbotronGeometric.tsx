@@ -7,9 +7,8 @@ import { useThemeColors } from "../../customHooks";
 
 /** @deprecated TODO - Merge with Jumbotron */
 const JumbotronGeometric = <
-  PossibleIconNames extends string,
   IconFontName extends string,
-  IconName extends PossibleIconNames
+  IconName extends string,
 >({
   icon,
   iconType,
@@ -18,7 +17,7 @@ const JumbotronGeometric = <
   bgColor = "blue",
 }: {
   icon?: IconName;
-  iconType?: IconType<PossibleIconNames, IconFontName>;
+  iconType?: IconType<IconName, IconFontName>;
   title: string;
   text?: string;
   bgColor?: string;

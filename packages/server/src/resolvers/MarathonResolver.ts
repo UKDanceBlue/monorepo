@@ -1,4 +1,10 @@
-import type { GlobalId } from "@ukdanceblue/common";
+import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
+import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
+import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
+import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
+import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
+import { AbstractGraphQLPaginatedResponse } from "#resolvers/ApiResponse.js";
+
 import {
   CommitteeIdentifier,
   FilteredListQueryArgs,
@@ -25,12 +31,8 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
-import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
-import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
-import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
-import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
-import { AbstractGraphQLPaginatedResponse } from "#resolvers/ApiResponse.js";
+import type { GlobalId } from "@ukdanceblue/common";
+
 
 @ObjectType("ListMarathonsResponse", {
   implements: AbstractGraphQLPaginatedResponse<MarathonNode[]>,

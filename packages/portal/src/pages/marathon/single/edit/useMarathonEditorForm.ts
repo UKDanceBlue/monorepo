@@ -3,8 +3,9 @@ import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
-import type { DateTime } from "luxon";
 import { useMutation, useQuery } from "urql";
+
+import type { DateTime } from "luxon";
 
 export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
   // Form

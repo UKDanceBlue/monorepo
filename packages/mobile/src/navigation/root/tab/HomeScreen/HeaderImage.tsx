@@ -1,8 +1,9 @@
 import { Image, ZStack } from "native-base";
 
+import marathon from "../../../../../assets/screens/home/marathon.jpg";
+
 // import dbLogo from "../../../../../assets/logo/big-words.png";
 // import ribbon from "../../../../../assets/screens/home/2020-ribbon.jpg";
-import marathon from "../../../../../assets/screens/home/marathon.jpg";
 
 /**
  * A header image container used on the home screen

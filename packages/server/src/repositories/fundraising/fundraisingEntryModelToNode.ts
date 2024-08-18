@@ -1,5 +1,6 @@
-import type { DBFundsFundraisingEntry, FundraisingEntry } from "@prisma/client";
 import { FundraisingEntryNode } from "@ukdanceblue/common";
+
+import type { DBFundsFundraisingEntry, FundraisingEntry } from "@prisma/client";
 
 export function fundraisingEntryModelToNode(
   entryModel: FundraisingEntry & {

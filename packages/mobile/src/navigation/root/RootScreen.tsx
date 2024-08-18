@@ -1,3 +1,7 @@
+import ErrorBoundary, {
+  withErrorBoundary,
+} from "@common/components/ErrorBoundary";
+import { useNavigationContainerRef } from "@react-navigation/core";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DbRole } from "@ukdanceblue/common";
@@ -15,7 +19,7 @@ import { log } from "../../common/logging";
 import { useLoading } from "../../context";
 import type { RootStackParamList } from "../../types/navigationTypes";
 import HeaderIcons from "../HeaderIcons";
-
+import { routingInstrumentation } from "../routingInstrumentation";
 import EventScreen from "./EventScreen";
 import { EventScreenFragment } from "./EventScreen/EventScreenFragment";
 import SplashLogin from "./Modals/SplashLogin";
@@ -75,6 +79,14 @@ const RootScreen = () => {
   const headerBgColor = useColorModeValue(colors.white, colors.gray[800]);
   const headerFgColor = useColorModeValue(colors.gray[800], colors.light[600]);
 
+  const ref = useNavigationContainerRef();
+
+  useEffect(() => {
+    if (ref as unknown) {
+      routingInstrumentation.registerNavigationContainer(ref);
+    }
+  }, [ref]);
+
   return (
     <>
       {error != null && (
@@ -103,11 +115,11 @@ const RootScreen = () => {
               <RootStack.Screen
                 name="Tab"
                 options={{ headerShown: false }}
-                component={TabBar}
+                component={withErrorBoundary(TabBar)}
               />
               <RootStack.Screen
                 name="Notifications"
-                component={NotificationScreen}
+                component={withErrorBoundary(NotificationScreen)}
                 options={{ headerRight: () => undefined }}
               />
               <RootStack.Screen
@@ -115,17 +127,19 @@ const RootScreen = () => {
                 options={{ headerRight: () => undefined }}
               >
                 {() => (
-                  <ProfileScreen
-                    profileScreenAuthFragment={
-                      rootScreenData?.loginState ?? null
-                    }
-                    profileScreenUserFragment={rootScreenData?.me ?? null}
-                  />
+                  <ErrorBoundary>
+                    <ProfileScreen
+                      profileScreenAuthFragment={
+                        rootScreenData?.loginState ?? null
+                      }
+                      profileScreenUserFragment={rootScreenData?.me ?? null}
+                    />
+                  </ErrorBoundary>
                 )}
               </RootStack.Screen>
               <RootStack.Screen
                 name="Event"
-                component={EventScreen}
+                component={withErrorBoundary(EventScreen)}
                 options={({ route }) => {
                   let eventTitle = "Event";
                   let spacesInTitle = 0;
@@ -186,7 +200,7 @@ const RootScreen = () => {
           ) : (
             <RootStack.Screen
               name="SplashLogin"
-              component={SplashLogin}
+              component={withErrorBoundary(SplashLogin)}
               options={{
                 headerShown: false,
                 presentation: "modal",

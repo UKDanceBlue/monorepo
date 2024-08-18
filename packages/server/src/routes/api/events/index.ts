@@ -1,6 +1,7 @@
+import { upcomingEventsHandler } from "./upcomingEvents.js";
+
 import Router from "@koa/router";
 
-import { upcomingEventsHandler } from "./upcomingEvents.js";
 
 const eventsApiRouter = new Router({ prefix: "/events" });
 

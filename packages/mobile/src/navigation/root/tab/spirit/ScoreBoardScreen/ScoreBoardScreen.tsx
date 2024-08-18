@@ -11,17 +11,17 @@ import {
   Box,
   CheckIcon,
   HStack,
+  Pressable,
   Select,
   Text,
   View,
-  Pressable,
 } from "native-base";
 import { useEffect, useMemo, useState } from "react";
 
-import type { StandingType } from "../../../../../types/StandingType";
 import type { SpiritStackScreenProps } from "../../../../../types/navigationTypes";
-
+import type { StandingType } from "../../../../../types/StandingType";
 import Scoreboard from "./Scoreboard/Scoreboard";
+
 
 function addOrdinal(num: number) {
   const j = num % 10,

@@ -1,4 +1,17 @@
-import type { GlobalId } from "@ukdanceblue/common";
+
+
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
+import { PointEntryRepository } from "#repositories/pointEntry/PointEntryRepository.js";
+import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
+import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
+import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
+import {
+  AbstractGraphQLCreatedResponse,
+  AbstractGraphQLOkResponse,
+  AbstractGraphQLPaginatedResponse,
+} from "#resolvers/ApiResponse.js";
+
 import {
   DetailedError,
   ErrorCode,
@@ -28,17 +41,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
-import { PointEntryRepository } from "#repositories/pointEntry/PointEntryRepository.js";
-import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
-import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
-import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
-import {
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "#resolvers/ApiResponse.js";
+import type { GlobalId } from "@ukdanceblue/common";
 
 @ObjectType("GetPointEntryByUuidResponse", {
   implements: AbstractGraphQLOkResponse<PointEntryNode>,

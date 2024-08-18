@@ -1,16 +1,18 @@
+import { buildTeamOrder, buildTeamWhere } from "./teamRepositoryUtils.js";
+
 import { Prisma, PrismaClient } from "@prisma/client";
+import { TeamLegacyStatus } from "@ukdanceblue/common";
+import { Service } from "typedi";
+
+
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
+import type { SimpleUniqueParam } from "#repositories/shared.js";
 import type {
   MarathonYearString,
   SortDirection,
   TeamType,
 } from "@ukdanceblue/common";
-import { TeamLegacyStatus } from "@ukdanceblue/common";
-import { Service } from "typedi";
-
-import { buildTeamOrder, buildTeamWhere } from "./teamRepositoryUtils.js";
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
-import type { SimpleUniqueParam } from "#repositories/shared.js";
 
 const teamBooleanKeys = [] as const;
 type TeamBooleanKey = (typeof teamBooleanKeys)[number];
