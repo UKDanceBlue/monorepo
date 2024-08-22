@@ -1,5 +1,3 @@
-
-
 import { LocalStorageProvider } from "./storage/LocalStorageProvider.js";
 import { UnsupportedAccessMethod } from "./storage/StorageProvider.js";
 
@@ -17,7 +15,6 @@ import type {
   StorageProvider,
 } from "./storage/StorageProvider.js";
 import type { File } from "@prisma/client";
-
 
 const FILE_API = new URL("/api/file/download/", serveOrigin);
 

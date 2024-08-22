@@ -11,8 +11,6 @@ import { mkdir, open, stat, unlink } from "fs/promises";
 import { format, join, resolve } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 
-
-
 import type {
   StorableFile,
   StorageProvider,
@@ -20,9 +18,6 @@ import type {
 } from "./StorageProvider.js";
 import type { FileHandle } from "fs/promises";
 import type { MIMEType } from "util";
-
-
-
 
 /**
  * Determines if the location a path refers to is within `servePath`

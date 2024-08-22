@@ -27,10 +27,8 @@ import {
 import { Err, None, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
-
 
 // Make sure that we are exporting a description for every committee
 CommitteeDescriptions[
@@ -240,7 +238,6 @@ export class CommitteeRepository {
       await this.prisma.committee.upsert(overallCommittee);
       await this.prisma.committee.upsert(viceCommittee);
       for (const committee of Object.values(childCommittees)) {
-         
         await this.prisma.committee.upsert(committee);
       }
 
@@ -264,7 +261,7 @@ export class CommitteeRepository {
         });
 
       if (result?.length === 1) {
-        return Ok(result[0]);
+        return Ok(result[0]!);
       } else if (result?.length === 0) {
         return Err(
           new NotFoundError({

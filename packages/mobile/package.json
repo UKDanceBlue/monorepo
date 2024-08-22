@@ -74,7 +74,7 @@
     "luxon": "^3.5.0",
     "lz-string": "^1.5.0",
     "native-base": "patch:native-base@npm%3A3.4.28#~/.yarn/patches/native-base-npm-3.4.28-a8ecceae4d.patch",
-    "react": "18.2.0",
+    "react": "18.3.1",
     "react-native": "0.74.5",
     "react-native-calendars": "^1.1306.0",
     "react-native-elements": "^3.4.3",
@@ -110,13 +110,13 @@
     "@babel/plugin-transform-template-literals": "*",
     "@faker-js/faker": "^8.4.1",
     "@graphql-typed-document-node/core": "^3.2.0",
-    "@testing-library/react-native": "^11.5.4",
+    "@testing-library/react-native": "^12.6.0",
     "@types/babel__core": "^7.20.5",
     "@types/lodash": "^4.17.7",
     "@types/luxon": "^3.4.2",
     "@types/lz-string": "^1.5.0",
     "@types/markdown-it": "^14.1.2",
-    "@types/react": "~18.2.79",
+    "@types/react": "~18.3.4",
     "@types/react-native-rss-parser": "^1.4.3",
     "@types/react-test-renderer": "^18.3.0",
     "@types/uuid": "^10.0.0",
@@ -127,5 +127,8 @@
     "react-native-bundle-visualizer": "^3.1.3"
   },
   "packageManager": "yarn@4.1.1+sha256.f3cc0eda8e5560e529c7147565b30faa43b4e472d90e8634d7134a37c7f59781",
-  "private": true
+  "private": true,
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  }
 }
