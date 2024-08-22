@@ -1,5 +1,7 @@
 import { SyslogLevels } from "#logging/standardLogging.ts";
 
+import { URL } from "url";
+
 declare global {
   namespace NodeJS {
     interface ProcessEnvironment {
@@ -25,6 +27,8 @@ declare global {
       OVERRIDE_AUTH?: string;
     }
   }
+
+  declare type URL = URL;
 }
 
 // declare module "express-session" {

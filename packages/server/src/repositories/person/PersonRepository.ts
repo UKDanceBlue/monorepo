@@ -30,11 +30,9 @@ import {
 import { Err, Ok, Result } from "ts-results-es";
 import { Service } from "typedi";
 
-
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import type { Committee, Membership, Person, Team } from "@prisma/client";
-
 
 const personStringKeys = ["name", "email", "linkblue"] as const;
 type PersonStringKey = (typeof personStringKeys)[number];
@@ -229,32 +227,29 @@ export class PersonRepository {
         },
       });
 
-      for (const committee of committees) {
-        if (committee.team.correspondingCommittee) {
-          if (!committee.committeeRole) {
+      for (const { team, committeeRole } of committees) {
+        if (team.correspondingCommittee) {
+          if (!committeeRole) {
             return Err(
               new InvariantError("No role found for committee membership")
             );
           }
           const role = EffectiveCommitteeRole.init(
-            committee.team.correspondingCommittee.identifier,
-            committee.committeeRole
+            team.correspondingCommittee.identifier,
+            committeeRole
           );
           effectiveCommitteeRoles.push(role);
-          if (committee.team.correspondingCommittee.parentCommittee) {
+          if (team.correspondingCommittee.parentCommittee) {
             const parentRole = EffectiveCommitteeRole.init(
-              committee.team.correspondingCommittee.parentCommittee.identifier,
+              team.correspondingCommittee.parentCommittee.identifier,
               CommitteeRole.Member
             );
             effectiveCommitteeRoles.push(parentRole);
           }
-          const childRoles =
-            committee.team.correspondingCommittee.childCommittees.map((child) =>
-              EffectiveCommitteeRole.init(
-                child.identifier,
-                committee.committeeRole
-              )
-            );
+          const childRoles = team.correspondingCommittee.childCommittees.map(
+            (child) =>
+              EffectiveCommitteeRole.init(child.identifier, committeeRole)
+          );
           effectiveCommitteeRoles.push(...childRoles);
         }
       }

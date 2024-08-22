@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { vi } from "vitest";
 
 import type { PrismaClient } from "@prisma/client";
@@ -7,8 +6,8 @@ import type { Mock } from "vitest";
 export function makePrismaMock() {
   const mocksToClear: Mock[] = [];
 
-  function makeMockFn<TArgs extends any[] = any, TReturns = any>() {
-    const mock = vi.fn<TArgs, TReturns>();
+  function makeMockFn() {
+    const mock = vi.fn();
     mocksToClear.push(mock);
     return mock;
   }
