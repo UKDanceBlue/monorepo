@@ -64,14 +64,16 @@ export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
       endDate:
         dateTimeFromSomething(existingData?.marathon.endDate) ?? undefined,
     },
-    onChange: ({ startDate, endDate }) => {
-      if (startDate && endDate && startDate.toMillis() > endDate.toMillis()) {
-        return "Start date must be before end date";
-      }
+    validators: {
+      onChange: ({ value: { startDate, endDate } }) => {
+        if (startDate && endDate && startDate.toMillis() > endDate.toMillis()) {
+          return "Start date must be before end date";
+        }
 
-      return undefined;
+        return undefined;
+      },
     },
-    onSubmit: async (values) => {
+    onSubmit: async ({ value: values }) => {
       if (
         !values.year ||
         !values.startDate ||
@@ -99,7 +101,7 @@ export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
         resetEditWatcher();
         resetExistingWatcher();
         await navigate({
-          to: "/marathon/$marathonId/",
+          to: "/marathon/$marathonId",
           params: { marathonId: data.setMarathon.id },
         });
       }

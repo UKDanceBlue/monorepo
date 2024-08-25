@@ -14,7 +14,7 @@ export function TeamCreator() {
   const { formApi } = useTeamCreatorForm((ret) => {
     if (ret?.uuid) {
       navigate({
-        to: "/teams/$teamId/",
+        to: "/teams/$teamId",
         params: { teamId: ret.uuid },
       }).catch((error: unknown) => console.error(error));
     }

@@ -7,14 +7,13 @@ import { DateTime } from "luxon";
 
 import { useMarathonCreatorForm } from "./useMarathonCreatorForm";
 
-
 const MARATHON_YEAR_REGEX = /^DB\d{2}$/;
 
 export const CreateMarathonForm = () => {
   const { formApi } = useMarathonCreatorForm();
 
   return (
-    <TanAntForm formApi={formApi} layout="vertical">
+    <TanAntForm handleSubmit={formApi.handleSubmit} layout="vertical">
       <TanAntFormItem
         formApi={formApi}
         name="year"
@@ -38,7 +37,7 @@ export const CreateMarathonForm = () => {
           onChange,
           value,
           status,
-        }: TanAntChildInputProps<string>) => (
+        }: TanAntChildInputProps<string | undefined>) => (
           <Input
             status={status}
             name="year"
@@ -70,7 +69,7 @@ export const CreateMarathonForm = () => {
           onChange,
           value,
           status,
-        }: TanAntChildInputProps<DateTime>) => (
+        }: TanAntChildInputProps<DateTime | undefined>) => (
           <LuxonDatePicker
             showTime
             showSecond={false}
@@ -109,7 +108,7 @@ export const CreateMarathonForm = () => {
           onChange,
           value,
           status,
-        }: TanAntChildInputProps<DateTime>) => (
+        }: TanAntChildInputProps<DateTime | undefined>) => (
           <LuxonDatePicker
             showTime
             showSecond={false}

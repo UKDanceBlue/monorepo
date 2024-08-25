@@ -221,7 +221,7 @@ export const EventsTable = () => {
                 <Button
                   onClick={() =>
                     navigate({
-                      to: "/events/$eventId/",
+                      to: "/events/$eventId",
                       params: { eventId: uuid },
                     }).catch((error: unknown) => console.error(error))
                   }

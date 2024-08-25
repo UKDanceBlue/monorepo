@@ -10,7 +10,6 @@ import { useMutation } from "urql";
 
 import type { DocumentType } from "@ukdanceblue/common/graphql-client-portal";
 
-
 export function useTeamCreatorForm(
   afterSubmit:
     | ((
@@ -35,7 +34,7 @@ export function useTeamCreatorForm(
       legacyStatus: TeamLegacyStatus.NewTeam,
       type: TeamType.Spirit,
     },
-    onSubmit: async (values) => {
+    onSubmit: async ({ value: values }) => {
       if (!marathonId) {
         void showErrorMessage("No marathon selected");
         return;

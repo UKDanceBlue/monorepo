@@ -65,14 +65,14 @@ export function EditMarathonHourPage() {
     title: string;
   }>({
     defaultValues: {
-      details: data?.marathonHour.details || undefined,
-      durationInfo: data?.marathonHour.durationInfo || "",
+      details: data?.marathonHour.details ?? undefined,
+      durationInfo: data?.marathonHour.durationInfo ?? "",
       shownStartingAt: dateTimeFromSomething(
         data?.marathonHour.shownStartingAt
       ),
-      title: data?.marathonHour.title || "",
+      title: data?.marathonHour.title ?? "",
     },
-    onSubmit: async (values) => {
+    onSubmit: async ({ value: values }) => {
       if (!values.title) {
         return;
       }
@@ -85,7 +85,7 @@ export function EditMarathonHourPage() {
 
       const { data } = await editMarathonHour({
         input: {
-          details: values.details || undefined,
+          details: values.details ?? undefined,
           durationInfo: values.durationInfo,
           shownStartingAt,
           title: values.title,
@@ -97,7 +97,7 @@ export function EditMarathonHourPage() {
         resetWatcher();
         resetSaveWatcher();
         await navigate({
-          to: "/marathon/$marathonId/",
+          to: "/marathon/$marathonId",
           params: { marathonId },
         });
       }
@@ -108,7 +108,7 @@ export function EditMarathonHourPage() {
 
   return (
     <div>
-      <TanAntForm formApi={formApi}>
+      <TanAntForm handleSubmit={formApi.handleSubmit}>
         <TanAntFormItem
           label="Title"
           name="title"

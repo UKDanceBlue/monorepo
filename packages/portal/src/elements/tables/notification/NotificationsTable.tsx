@@ -215,7 +215,7 @@ export const NotificationsTable = () => {
                 <Button
                   onClick={() =>
                     navigate({
-                      to: "/notifications/$notificationId/",
+                      to: "/notifications/$notificationId",
                       params: { notificationId: uuid },
                     }).catch((error: unknown) => console.error(error))
                   }

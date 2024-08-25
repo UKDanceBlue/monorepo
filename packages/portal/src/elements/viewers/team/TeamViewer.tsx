@@ -112,7 +112,7 @@ export function TeamViewer({
               .map((captain) => (
                 <li key={captain.person.id}>
                   <Link
-                    to="/people/$personId/"
+                    to="/people/$personId"
                     params={{
                       personId: captain.person.id,
                     }}
@@ -129,7 +129,7 @@ export function TeamViewer({
             {teamData.members.map((member) => (
               <li key={member.person.id}>
                 <Link
-                  to="/people/$personId/"
+                  to="/people/$personId"
                   params={{
                     personId: member.person.id,
                   }}

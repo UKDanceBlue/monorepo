@@ -14,8 +14,6 @@ import type {
 import type { Interval } from "luxon";
 import type { UseQueryExecute } from "urql";
 
-
-
 export function useEventEditorForm(
   eventFragment: FragmentType<typeof EventEditorFragment> | undefined,
   refetchEvent: UseQueryExecute | undefined
@@ -51,7 +49,7 @@ export function useEventEditorForm(
           fullDay: occurrence.fullDay,
         })) ?? [],
     },
-    onSubmit: async (values) => {
+    onSubmit: async ({ value: values }) => {
       if (!eventData) {
         return;
       }

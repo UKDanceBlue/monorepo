@@ -6,7 +6,6 @@ import { useMutation } from "urql";
 
 import type { CreatePointEntryInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
 
-
 export function usePointEntryCreatorForm({
   teamUuid,
   onReset,
@@ -28,7 +27,7 @@ export function usePointEntryCreatorForm({
     defaultValues: {
       points: 0,
     },
-    onSubmit: async (values) => {
+    onSubmit: async ({ value: values }) => {
       await createPointEntry({
         input: {
           points: values.points,

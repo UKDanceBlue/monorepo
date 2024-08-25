@@ -11,7 +11,6 @@ import type {
 } from "@ukdanceblue/common/graphql-client-portal/raw-types";
 import type { Interval } from "luxon";
 
-
 export function useEventCreatorForm() {
   // Form
   const [{ fetching, error }, createEvent] = useMutation(eventCreatorDocument);
@@ -38,7 +37,7 @@ export function useEventCreatorForm() {
       description: null,
       occurrences: [],
     },
-    onSubmit: async (values) => {
+    onSubmit: async ({ value: values }) => {
       const { data } = await createEvent({
         input: {
           title: values.title,
@@ -62,7 +61,7 @@ export function useEventCreatorForm() {
 
       if (data) {
         await navigate({
-          to: "/events/",
+          to: "/events",
         });
       }
     },

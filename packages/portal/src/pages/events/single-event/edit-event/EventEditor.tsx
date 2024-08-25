@@ -45,7 +45,9 @@ export function EventEditor({
       >
         <formApi.Field
           name="title"
-          onChange={(value) => (!value ? "Title is required" : undefined)}
+          validators={{
+            onChange: ({ value }) => (!value ? "Title is required" : undefined),
+          }}
           children={(field) => (
             <Form.Item
               label="Title*"
@@ -105,9 +107,10 @@ export function EventEditor({
         )}
         <formApi.Field
           name="summary"
-          onChange={(value) =>
-            (value?.length ?? 0) > 255 ? "Too long" : undefined
-          }
+          validators={{
+            onChange: ({ value }) =>
+              (value?.length ?? 0) > 255 ? "Too long" : undefined,
+          }}
           children={(field) => (
             <Form.Item
               label="Summary*"
@@ -151,16 +154,18 @@ export function EventEditor({
 
         <formApi.Field
           name="occurrences"
-          onChange={(value) => {
-            for (let i = 0; i < value.length; i++) {
-              const interval = value[i]?.interval;
-              if (interval && !interval.isValid) {
-                return `Occurrence interval ${i + 1} is invalid: ${
-                  interval.invalidExplanation
-                }`;
+          validators={{
+            onChange: ({ value }) => {
+              for (let i = 0; i < value.length; i++) {
+                const interval = value[i]?.interval;
+                if (interval && !interval.isValid) {
+                  return `Occurrence interval ${i + 1} is invalid: ${
+                    interval.invalidExplanation
+                  }`;
+                }
               }
-            }
-            return undefined;
+              return undefined;
+            },
           }}
           mode="array"
         >

@@ -31,7 +31,7 @@ export const MarathonViewer = ({
   const marathonData = getFragmentData(MarathonViewerFragment, marathon);
 
   const sortedHours = useMemo(() => {
-    return [...(marathonData?.hours || [])]
+    return [...(marathonData?.hours ?? [])]
       .map((hour) => ({
         ...hour,
         shownStartingAt: dateTimeFromSomething(hour.shownStartingAt),

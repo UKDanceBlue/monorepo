@@ -22,7 +22,7 @@ export function PersonCreator({
   const { formApi } = usePersonCreatorForm((ret) => {
     if (ret?.id) {
       navigate({
-        to: "/people/$personId/",
+        to: "/people/$personId",
         params: { personId: ret.id },
       }).catch((error: unknown) => console.error(error));
     }
@@ -141,7 +141,9 @@ export function PersonCreator({
         />
         <formApi.Field
           name="email"
-          onChange={(value) => (!value ? "Email is required" : undefined)}
+          validators={{
+            onChange: ({ value }) => (!value ? "Email is required" : undefined),
+          }}
           children={(field) => (
             <Form.Item
               label="Email"

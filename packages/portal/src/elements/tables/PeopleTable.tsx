@@ -267,7 +267,7 @@ export const PeopleTable = () => {
                   <Button
                     onClick={() =>
                       navigate({
-                        to: "/people/$personId/",
+                        to: "/people/$personId",
                         params: { personId: record.id },
                       }).catch((error: unknown) => console.error(error))
                     }

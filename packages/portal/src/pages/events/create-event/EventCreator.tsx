@@ -27,7 +27,9 @@ export function EventCreator() {
     >
       <formApi.Field
         name="title"
-        onChange={(value) => (!value ? "Title is required" : undefined)}
+        validators={{
+          onChange: ({ value }) => (!value ? "Title is required" : undefined),
+        }}
         children={(field) => (
           <Form.Item
             label="Title*"
@@ -50,9 +52,10 @@ export function EventCreator() {
       />
       <formApi.Field
         name="summary"
-        onChange={(value) =>
-          (value?.length ?? 0) > 255 ? "Too long" : undefined
-        }
+        validators={{
+          onChange: ({ value }) =>
+            (value?.length ?? 0) > 255 ? "Too long" : undefined,
+        }}
         children={(field) => (
           <Form.Item
             label="Summary*"
@@ -98,16 +101,18 @@ export function EventCreator() {
       <List>
         <formApi.Field
           name="occurrences"
-          onChange={(value) => {
-            for (let i = 0; i < value.length; i++) {
-              const occurrence = value[i]?.interval;
-              if (occurrence && !occurrence.isValid) {
-                return `Occurrence ${i + 1} is invalid: ${
-                  occurrence.invalidExplanation
-                }`;
+          validators={{
+            onChange: ({ value }) => {
+              for (let i = 0; i < value.length; i++) {
+                const occurrence = value[i]?.interval;
+                if (occurrence && !occurrence.isValid) {
+                  return `Occurrence ${i + 1} is invalid: ${
+                    occurrence.invalidExplanation
+                  }`;
+                }
               }
-            }
-            return undefined;
+              return undefined;
+            },
           }}
           children={(field) => (
             <Form.Item

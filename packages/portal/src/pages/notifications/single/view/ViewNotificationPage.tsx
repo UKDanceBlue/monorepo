@@ -45,6 +45,7 @@ export function ViewNotificationPage() {
           onClick={() =>
             void navigate({
               to: "/notifications/$notificationId/manage",
+              from: "/notifications/$notificationId/",
             })
           }
           size="large"

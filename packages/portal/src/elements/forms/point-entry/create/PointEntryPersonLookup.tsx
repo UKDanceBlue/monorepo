@@ -192,7 +192,7 @@ export function PointEntryPersonLookup({
                     placeholder="Search by Name"
                     value={
                       (personFromUuid &&
-                        selectedPersonQuery.data?.person.name) ||
+                        selectedPersonQuery.data?.person.name) ??
                       searchByNameField
                     }
                     onBlur={field.handleBlur}
@@ -218,7 +218,7 @@ export function PointEntryPersonLookup({
                   name={`${field.name}-linkblue-field`}
                   value={
                     (personFromUuid &&
-                      selectedPersonQuery.data?.person.linkblue) ||
+                      selectedPersonQuery.data?.person.linkblue) ??
                     linkblueFieldValue
                   }
                   onChange={(e) => {

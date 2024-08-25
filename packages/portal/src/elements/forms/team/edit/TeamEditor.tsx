@@ -46,7 +46,9 @@ export function TeamEditor({
       >
         <formApi.Field
           name="name"
-          onChange={(value) => (!value ? "Name is required" : undefined)}
+          validators={{
+            onChange: ({ value }) => (!value ? "Name is required" : undefined),
+          }}
         >
           {(field) => (
             <Form.Item
@@ -77,9 +79,10 @@ export function TeamEditor({
         ) : null}
         <formApi.Field
           name="legacyStatus"
-          onChange={(value) =>
-            !value ? "Legacy Status is required" : undefined
-          }
+          validators={{
+            onChange: ({ value }) =>
+              !value ? "Legacy Status is required" : undefined,
+          }}
         >
           {(field) => (
             <Form.Item

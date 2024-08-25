@@ -126,11 +126,12 @@ export function PersonEditor({
         </formApi.Field>
         <formApi.Field
           name="linkblue"
-          onChange={(linkblue) =>
-            (linkblue ?? "").endsWith("@uky.edu")
-              ? "A LinkBlue looks like 'abcd123', not 'abcd123@uky.edu'"
-              : undefined
-          }
+          validators={{
+            onChange: ({ value: linkblue }) =>
+              (linkblue ?? "").endsWith("@uky.edu")
+                ? "A LinkBlue looks like 'abcd123', not 'abcd123@uky.edu'"
+                : undefined,
+          }}
         >
           {(field) => (
             <Form.Item
@@ -154,7 +155,9 @@ export function PersonEditor({
         </formApi.Field>
         <formApi.Field
           name="email"
-          onChange={(value) => (!value ? "Email is required" : undefined)}
+          validators={{
+            onChange: ({ value }) => (!value ? "Email is required" : undefined),
+          }}
           children={(field) => (
             <Form.Item
               label="Email"
