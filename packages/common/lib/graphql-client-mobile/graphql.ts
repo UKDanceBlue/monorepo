@@ -198,8 +198,8 @@ export type CreateMarathonHourInput = {
 };
 
 export type CreateMarathonInput = {
-  readonly endDate: Scalars['DateTimeISO']['input'];
-  readonly startDate: Scalars['DateTimeISO']['input'];
+  readonly endDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  readonly startDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
   readonly year: Scalars['String']['input'];
 };
 
@@ -2007,8 +2007,8 @@ export type SetMarathonHourInput = {
 };
 
 export type SetMarathonInput = {
-  readonly endDate: Scalars['DateTimeISO']['input'];
-  readonly startDate: Scalars['DateTimeISO']['input'];
+  readonly endDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  readonly startDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
   readonly year: Scalars['String']['input'];
 };
 

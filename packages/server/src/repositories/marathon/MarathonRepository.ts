@@ -16,7 +16,6 @@ import { Service } from "typedi";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { SortDirection } from "@ukdanceblue/common";
 
-
 const marathonBooleanKeys = [] as const;
 type MarathonBooleanKey = (typeof marathonBooleanKeys)[number];
 
@@ -164,8 +163,8 @@ export class MarathonRepository {
     endDate,
   }: {
     year: string;
-    startDate?: string;
-    endDate?: string;
+    startDate?: string | null;
+    endDate?: string | null;
   }): Promise<Result<Marathon, RepositoryError>> {
     try {
       const marathon = await this.prisma.marathon.create({
@@ -189,8 +188,8 @@ export class MarathonRepository {
       endDate,
     }: {
       year?: string;
-      startDate?: string;
-      endDate?: string;
+      startDate?: string | null;
+      endDate?: string | null;
     }
   ): Promise<Result<Marathon, RepositoryError>> {
     try {

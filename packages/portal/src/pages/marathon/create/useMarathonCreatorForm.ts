@@ -46,10 +46,8 @@ export function useMarathonCreatorForm() {
     onSubmit: async ({ value: values }) => {
       if (
         !values.year ||
-        !values.startDate ||
-        !values.endDate ||
-        !values.startDate.isValid ||
-        !values.endDate.isValid
+        (values.startDate && !values.startDate.isValid) ||
+        (values.endDate && !values.endDate.isValid)
       ) {
         return;
       }
@@ -58,10 +56,10 @@ export function useMarathonCreatorForm() {
         input: {
           year: values.year,
           startDate: values.startDate
-            .set({ minute: 0, second: 0, millisecond: 0 })
+            ?.set({ minute: 0, second: 0, millisecond: 0 })
             .toISO()!,
           endDate: values.endDate
-            .set({ minute: 0, second: 0, millisecond: 0 })
+            ?.set({ minute: 0, second: 0, millisecond: 0 })
             .toISO()!,
         },
       });

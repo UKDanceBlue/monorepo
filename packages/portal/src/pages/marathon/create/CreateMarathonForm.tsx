@@ -54,10 +54,7 @@ export const CreateMarathonForm = () => {
         label="Start Date"
         fieldProps={{
           validate: (value: DateTime | undefined) => {
-            if (!value) {
-              return "Start Date is required";
-            }
-            if (!value.isValid) {
+            if (value && !value.isValid) {
               return value.invalidExplanation ?? "Invalid date";
             }
             return undefined;
@@ -93,10 +90,7 @@ export const CreateMarathonForm = () => {
         label="End Date"
         fieldProps={{
           validate: (value: DateTime | undefined) => {
-            if (!value) {
-              return "End Date is required";
-            }
-            if (!value.isValid) {
+            if (value && !value.isValid) {
               return value.invalidExplanation ?? "Invalid date";
             }
             return undefined;

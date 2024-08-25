@@ -21,7 +21,7 @@ export const MarathonsTable = ({
     | undefined;
 }) => {
   return marathons?.length ? (
-    <Table dataSource={marathons} rowKey="uuid">
+    <Table dataSource={marathons} rowKey="id">
       <Table.Column title="Year" dataIndex="year" sorter />
       <Table.Column title="Start Date" dataIndex="startDate" sorter />
       <Table.Column title="End Date" dataIndex="endDate" sorter />
@@ -32,11 +32,11 @@ export const MarathonsTable = ({
           <>
             <Button
               icon={<EyeOutlined />}
-              href={`/marathon/${String((all as { uuid?: string }).uuid)}`}
+              href={`/marathon/${String((all as { id?: string }).id)}`}
             />{" "}
             <Button
               icon={<EditOutlined />}
-              href={`/marathon/${String((all as { uuid?: string }).uuid)}/edit`}
+              href={`/marathon/${String((all as { id?: string }).id)}/edit`}
             />
           </>
         )}

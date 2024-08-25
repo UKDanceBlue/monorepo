@@ -162,8 +162,8 @@ input CreateMarathonHourInput {
 }
 
 input CreateMarathonInput {
-  endDate: DateTimeISO!
-  startDate: DateTimeISO!
+  endDate: DateTimeISO
+  startDate: DateTimeISO
   year: String!
 }
 
@@ -2043,8 +2043,8 @@ input SetMarathonHourInput {
 }
 
 input SetMarathonInput {
-  endDate: DateTimeISO!
-  startDate: DateTimeISO!
+  endDate: DateTimeISO
+  startDate: DateTimeISO
   year: String!
 }
 
