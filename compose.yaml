@@ -32,7 +32,7 @@ services:
       MAX_FILE_SIZE: 200
       LOG_DIR: /data/logs
       DATABASE_URL: postgres://danceblue:danceblue@postgres:5432/danceblue
-      SERVE_ORIGIN: http://localhost:8000
+      SERVE_ORIGIN: http://127.0.0.1:8000
       LOGGING_LEVEL: ${LOGGING_LEVEL:-info}
     secrets:
       - cookie_secret

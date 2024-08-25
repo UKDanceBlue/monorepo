@@ -3,7 +3,7 @@
  * @param {import('@babel/core').ConfigAPI} api
  * @returns {import('@babel/core').TransformOptions}
  */
-function babel(api) {
+module.exports = function babel(api) {
   api.cache(true);
   return {
     presets: ["babel-preset-expo"],
@@ -24,7 +24,7 @@ function babel(api) {
             ".ttf",
           ],
           alias: {
-            "type-graphql": "type-graphql/build/cjs/browser-shim.js",
+            "type-graphql": "./node_modules/type-graphql/build/cjs/shim.js",
           },
         },
       ],
@@ -32,6 +32,4 @@ function babel(api) {
       "react-native-reanimated/plugin",
     ],
   };
-}
-
-module.exports = babel;
+};

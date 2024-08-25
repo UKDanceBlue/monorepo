@@ -8,10 +8,7 @@ const projectRoot = __dirname;
 /** @type {import("metro-resolver").CustomResolver} */
 const resolveRequest = (context, moduleName, platform) => {
   if (moduleName === "type-graphql") {
-    return {
-      filePath: "../common/node_modules/type-graphql/build/cjs/browser-shim.js",
-      type: "sourceFile",
-    };
+    return context.resolveRequest(context, "type-graphql/shim", platform);
   }
   return context.resolveRequest(context, moduleName, platform);
 };

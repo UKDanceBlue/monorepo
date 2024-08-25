@@ -29,9 +29,11 @@
       "es2022.array",
       "es2022.object",
       "es2022.string"
-    ]
+    ],
+    "outDir": "dist",
+    "noEmit": false
   },
-  "extends": ["../../tsconfig.json", "../../node_modules/expo/tsconfig.base"],
+  "extends": ["../../tsconfig.json", "./node_modules/expo/tsconfig.base.json"],
   "include": [
     "*.ts",
     "*.tsx",

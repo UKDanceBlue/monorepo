@@ -70,7 +70,6 @@
   ],
   "packageManager": "yarn@4.1.1+sha256.f3cc0eda8e5560e529c7147565b30faa43b4e472d90e8634d7134a37c7f59781",
   "resolutions": {
-    "type-graphql@^2.0.0-beta.3": "patch:type-graphql@npm%3A2.0.0-beta.3#./.yarn/patches/type-graphql-npm-2.0.0-beta.3-3be2585c9a.patch",
     "react-native-infinite-pager@^0.3.13": "patch:react-native-infinite-pager@npm%3A0.3.13#./.yarn/patches/react-native-infinite-pager-npm-0.3.13-59b67e2e46.patch",
     "react-native-rss-parser@^1.5.1": "patch:react-native-rss-parser@npm%3A1.5.1#./.yarn/patches/react-native-rss-parser-npm-1.5.1-e4cc1d8bd8.patch",
     "@graphql-codegen/client-preset@npm:^4.2.2": "patch:@graphql-codegen/client-preset@npm%3A4.3.2#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.3.2-fb874ac9d8.patch",
