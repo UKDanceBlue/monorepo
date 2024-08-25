@@ -32,5 +32,8 @@
     "urql",
     "Whatwg"
   ],
-  "eslint.codeActionsOnSave.mode": "problems"
+  "eslint.codeActionsOnSave.mode": "problems",
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
 }

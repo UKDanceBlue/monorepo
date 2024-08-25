@@ -1,5 +1,3 @@
-
-
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
@@ -139,7 +137,7 @@ class ListTeamsArgs extends FilteredListQueryArgs<
   marathonId!: string[] | null;
 }
 
-@ObjectType("DbFundsTeamInfo", { implements: [Common.Node] })
+@ObjectType("DbFundsTeamInfo")
 class DbFundsTeamInfo {
   @Field(() => Int)
   dbNum!: number;

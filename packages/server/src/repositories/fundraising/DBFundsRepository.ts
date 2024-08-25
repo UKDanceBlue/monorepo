@@ -18,10 +18,12 @@ import { Service } from "typedi";
 
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 
-
 export type UniqueDbFundsTeamParam =
   | {
       id: number;
+    }
+  | {
+      uuid: string;
     }
   | {
       dbNum: number;

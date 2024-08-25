@@ -1,4 +1,3 @@
-
 import { FileManager } from "#files/FileManager.js";
 import { FeedRepository } from "#repositories/feed/FeedRepository.js";
 import { feedItemModelToResource } from "#repositories/feed/feedModelToResource.js";
@@ -8,8 +7,11 @@ import {
   DetailedError,
   ErrorCode,
   FeedNode,
+  type GlobalId,
   ImageNode,
 } from "@ukdanceblue/common";
+import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
+import { Err, Ok } from "ts-results-es";
 import {
   Arg,
   Field,
@@ -48,6 +50,19 @@ export class FeedResolver {
     private readonly feedRepository: FeedRepository,
     private readonly fileManager: FileManager
   ) {}
+
+  @Query(() => FeedNode)
+  async feedItem(
+    @Arg("feedItemId") { id }: GlobalId
+  ): Promise<ConcreteResult<FeedNode>> {
+    const feedItem = await this.feedRepository.getFeedItemByUnique({
+      uuid: id,
+    });
+    if (feedItem == null) {
+      return Err(new NotFoundError({ what: "Feed item not found" }));
+    }
+    return Ok(feedItemModelToResource(feedItem));
+  }
 
   @Query(() => [FeedNode])
   async feed(
