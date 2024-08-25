@@ -157,7 +157,7 @@ export const DeviceDataProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [, setLoading] = useLoading();
+  const [, setLoading] = useLoading(undefined, 10_000);
 
   const [{ isConnected }, isNetStatusLoaded] = useNetworkStatus();
 

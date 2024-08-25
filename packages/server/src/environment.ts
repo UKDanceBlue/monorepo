@@ -6,7 +6,6 @@ import { statSync } from "fs";
 import { readFile } from "fs/promises";
 import path, { isAbsolute } from "path";
 
-
 import type { SyslogLevels } from "#logging/standardLogging.js";
 
 dotenv.config();
@@ -55,7 +54,6 @@ const LOGGING_LEVEL = getEnv(
   isDevelopment ? "debug" : "notice"
 );
 const APPLICATION_PORT = getEnv("APPLICATION_PORT", "8000");
-const APPLICATION_HOST = getEnv("APPLICATION_HOST", "localhost");
 const COOKIE_SECRET = getEnv("COOKIE_SECRET", null);
 const JWT_SECRET = getEnv("JWT_SECRET", null);
 const MS_OIDC_URL = getEnv("MS_OIDC_URL", null);
@@ -83,8 +81,6 @@ if (applicationPort < 0 || applicationPort > 65_535) {
     "Env variable 'APPLICATION_PORT' is not a valid port number"
   );
 }
-
-export const applicationHost = await APPLICATION_HOST;
 
 // Secrets
 export const cookieSecret = await COOKIE_SECRET;

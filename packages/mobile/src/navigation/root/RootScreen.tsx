@@ -1,7 +1,6 @@
 import ErrorBoundary, {
   withErrorBoundary,
 } from "@common/components/ErrorBoundary";
-import { useNavigationContainerRef } from "@react-navigation/core";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DbRole } from "@ukdanceblue/common";
@@ -19,7 +18,6 @@ import { log } from "../../common/logging";
 import { useLoading } from "../../context";
 import type { RootStackParamList } from "../../types/navigationTypes";
 import HeaderIcons from "../HeaderIcons";
-import { routingInstrumentation } from "../routingInstrumentation";
 import EventScreen from "./EventScreen";
 import { EventScreenFragment } from "./EventScreen/EventScreenFragment";
 import SplashLogin from "./Modals/SplashLogin";
@@ -57,8 +55,10 @@ const RootScreen = () => {
   });
 
   const [rootScreenLoading, setRootScreenLoading] = useLoading(
-    "rootScreen-rootScreenDocument"
+    "rootScreen-rootScreenDocument",
+    10_000
   );
+
   useEffect(() => {
     if (fetching) {
       setRootScreenLoading(true);
@@ -78,14 +78,6 @@ const RootScreen = () => {
   const { colors } = useTheme();
   const headerBgColor = useColorModeValue(colors.white, colors.gray[800]);
   const headerFgColor = useColorModeValue(colors.gray[800], colors.light[600]);
-
-  const ref = useNavigationContainerRef();
-
-  useEffect(() => {
-    if (ref as unknown) {
-      routingInstrumentation.registerNavigationContainer(ref);
-    }
-  }, [ref]);
 
   return (
     <>
