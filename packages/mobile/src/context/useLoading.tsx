@@ -1,4 +1,6 @@
-import { useCallback, useContext, useId } from "react";
+import { useTimeout } from "@common/hooks/useTimeout";
+import { Logger } from "@common/logger/Logger";
+import { useCallback, useContext, useId, useState } from "react";
 
 import { LoadingContext } from "./loading";
 
@@ -8,10 +10,29 @@ import { LoadingContext } from "./loading";
  */
 
 export const useLoading = (
-  id?: string
-): [boolean, (state: boolean) => void, Partial<Record<string, boolean>>] => {
+  id?: string,
+  timeout?: number
+): [
+  boolean,
+  (state: boolean) => void,
+  Partial<Record<string, boolean>>,
+  boolean,
+] => {
   const randomId = useId();
   const loadingId = id ?? randomId;
+
+  const [timedOut, setTimedOut] = useState(false);
+
+  const [startTimeout, cancelTimeout] = useTimeout(
+    useCallback(() => {
+      if (timeout) {
+        setTimedOut(true);
+        Logger.debug(`Loading timed out for ${loadingId}`, {
+          source: "useLoading",
+        });
+      }
+    }, [loadingId, timeout])
+  );
 
   const [loadingReasons, setLoadingForId] = useContext(LoadingContext);
 
@@ -21,9 +42,22 @@ export const useLoading = (
       // This will eventually be used to allow for making the spinner block all input behind it
       // Maybe use an object rather than an array to make it more readable, or a string? dunno
       setLoadingForId(state, loadingId);
+      setTimedOut(false);
+
+      if (timeout) {
+        if (state) {
+          startTimeout(timeout);
+        } else {
+          cancelTimeout();
+        }
+      }
+
+      Logger.debug(`Setting loading for ${loadingId} to ${state}`, {
+        source: "useLoading",
+      });
     },
-    [loadingId, setLoadingForId]
+    [cancelTimeout, loadingId, setLoadingForId, startTimeout, timeout]
   );
 
-  return [isLoading, setIsLoading, loadingReasons];
+  return [!timedOut && isLoading, setIsLoading, loadingReasons, timedOut];
 };

@@ -32,7 +32,7 @@ export const LoadingWrapper = ({ children }: { children: ReactNode }) => {
 
   return (
     <LoadingContext.Provider value={[loadingReasons, setLoading]}>
-      <ZStack>
+      <ZStack height="full">
         {children}
         {Object.values(loadingReasons).some(Boolean) && (
           <Center width="full" height="full">

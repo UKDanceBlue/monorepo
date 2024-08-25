@@ -40,7 +40,7 @@ function getLoginUrl(source: AuthSource): string {
 }
 
 export const useLogin = (): [boolean, (source: AuthSource) => void] => {
-  const [loading, setLoading] = useLoading("useLinkBlueLogin");
+  const [loading, setLoading] = useLoading("useLinkBlueLogin", 10_000);
   const invalidateCache = useInvalidateCache();
 
   const trigger = async (source: AuthSource) => {
@@ -86,7 +86,7 @@ export const useLogin = (): [boolean, (source: AuthSource) => void] => {
 };
 
 export const useLogOut = (): [boolean, () => void] => {
-  const [loading, setLoading] = useLoading("useLogOut");
+  const [loading, setLoading] = useLoading("useLogOut", 10_000);
   const invalidateCache = useInvalidateCache();
 
   const trigger = async () => {

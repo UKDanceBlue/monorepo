@@ -46,7 +46,7 @@ initSentry({
     // Here, we'll capture profiles for 100% of transactions.
     profilesSampleRate: __DEV__ ? 1 : 0.2,
   },
-  debug: true,
+  debug: false,
   integrations: [
     new ReactNativeTracing({
       routingInstrumentation,
