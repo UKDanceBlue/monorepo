@@ -4,7 +4,6 @@ import { defineConfig } from "vite";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 function resolveRelative(...relativePath: string[]) {
@@ -15,7 +14,7 @@ function resolveRelative(...relativePath: string[]) {
 export default defineConfig({
   resolve: {
     alias: {
-      "type-graphql": "type-graphql/browser-shim.js",
+      "type-graphql": "type-graphql/shim",
       "@config": resolveRelative("src", "config"),
       "@elements": resolveRelative("src", "elements"),
       "@hooks": resolveRelative("src", "hooks"),
