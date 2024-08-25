@@ -406,6 +406,7 @@ model FeedItem {
 model DBFundsTeam {
   // Unrelated to the 'id' field in the DBFunds API
   id                 Int                       @id @default(autoincrement())
+  uuid               String                    @unique @default(uuid()) @db.Uuid
   // The team's DbNum from the DBFunds API
   dbNum              Int                       @map("db_num")
   // The team's name from the DBFunds API
@@ -432,6 +433,7 @@ model DBFundsTeam {
 model DBFundsFundraisingEntry {
   // Unrelated to the 'id' field in the DBFunds API
   id            Int         @id @default(autoincrement())
+  uuid               String                    @unique @default(uuid()) @db.Uuid
   // The amount of the entry
   amount        Decimal
   // Who made the donation
