@@ -72,6 +72,7 @@ export const TeamsTable = () => {
     {
       allFields: ["name", "type", "legacyStatus", "marathonId", "totalPoints"],
       dateFields: [],
+      booleanFields: [],
       isNullFields: [],
       numericFields: ["totalPoints"],
       oneOfFields: ["type", "marathonId", "legacyStatus"],

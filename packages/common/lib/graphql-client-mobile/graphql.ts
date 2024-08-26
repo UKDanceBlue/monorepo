@@ -254,10 +254,9 @@ export type CreateTeamResponse = AbstractGraphQlCreatedResponse & AbstractGraphQ
   readonly uuid: Scalars['String']['output'];
 };
 
-export type DbFundsTeamInfo = Node & {
+export type DbFundsTeamInfo = {
   readonly __typename?: 'DbFundsTeamInfo';
   readonly dbNum: Scalars['Int']['output'];
-  readonly id: Scalars['GlobalId']['output'];
   readonly name: Scalars['String']['output'];
 };
 
@@ -491,6 +490,7 @@ export type FundraisingAssignmentNode = Node & {
 export type FundraisingEntryNode = Node & {
   readonly __typename?: 'FundraisingEntryNode';
   readonly amount: Scalars['Float']['output'];
+  readonly amountUnassigned: Scalars['Float']['output'];
   readonly assignments: ReadonlyArray<FundraisingAssignmentNode>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly donatedByText?: Maybe<Scalars['String']['output']>;
@@ -502,6 +502,7 @@ export type FundraisingEntryNode = Node & {
 
 export const FundraisingEntryResolverAllKeys = {
   Amount: 'amount',
+  AmountUnassigned: 'amountUnassigned',
   CreatedAt: 'createdAt',
   DonatedBy: 'donatedBy',
   DonatedOn: 'donatedOn',
@@ -563,7 +564,8 @@ export type FundraisingEntryResolverKeyedStringFilterItem = {
 };
 
 export const FundraisingEntryResolverNumericFilterKeys = {
-  Amount: 'amount'
+  Amount: 'amount',
+  AmountUnassigned: 'amountUnassigned'
 } as const;
 
 export type FundraisingEntryResolverNumericFilterKeys = typeof FundraisingEntryResolverNumericFilterKeys[keyof typeof FundraisingEntryResolverNumericFilterKeys];
@@ -1025,15 +1027,15 @@ export type MutationAddPersonToTeamArgs = {
 
 
 export type MutationAssignEntryToPersonArgs = {
-  entryId: Scalars['String']['input'];
+  entryId: Scalars['GlobalId']['input'];
   input: AssignEntryToPersonInput;
-  personId: Scalars['String']['input'];
+  personId: Scalars['GlobalId']['input'];
 };
 
 
 export type MutationAssignTeamToDbFundsTeamArgs = {
-  dbFundsTeamId: Scalars['Float']['input'];
-  teamId: Scalars['String']['input'];
+  dbFundsTeamDbNum: Scalars['Int']['input'];
+  teamId: Scalars['GlobalId']['input'];
 };
 
 
@@ -1630,6 +1632,7 @@ export type Query = {
   readonly event: GetEventByUuidResponse;
   readonly events: ListEventsResponse;
   readonly feed: ReadonlyArray<FeedNode>;
+  readonly feedItem: FeedNode;
   readonly fundraisingAssignment: FundraisingAssignmentNode;
   readonly fundraisingEntries: ListFundraisingEntriesResponse;
   readonly fundraisingEntry: FundraisingEntryNode;
@@ -1718,6 +1721,11 @@ export type QueryEventsArgs = {
 
 export type QueryFeedArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryFeedItemArgs = {
+  feedItemId: Scalars['GlobalId']['input'];
 };
 
 
@@ -2064,6 +2072,7 @@ export type TeamNode = Node & {
   /** @deprecated Just query the members field and filter by role */
   readonly captains: ReadonlyArray<MembershipNode>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly dbFundsTeam?: Maybe<DbFundsTeamInfo>;
   readonly fundraisingEntries: ListFundraisingEntriesResponse;
   readonly id: Scalars['GlobalId']['output'];
   readonly legacyStatus: TeamLegacyStatus;

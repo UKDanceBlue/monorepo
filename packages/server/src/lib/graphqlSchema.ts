@@ -1,7 +1,3 @@
-
-
-
-
 import { logger } from "#logging/logger.js";
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "#resolvers/DeviceResolver.js";
@@ -29,7 +25,7 @@ import {
   FormattedConcreteError,
   toBasicError,
 } from "@ukdanceblue/common/error";
-import { Result } from "ts-results-es";
+import { Option, Result } from "ts-results-es";
 import { buildSchema } from "type-graphql";
 import { Container } from "typedi";
 
@@ -42,7 +38,7 @@ const schemaPath = fileURLToPath(
 );
 
 /**
- * Logs errors, as well as allowing us to return a result from a resolver
+ * Logs errors, as well as allowing us to return results and options from resolvers
  */
 const errorHandlingMiddleware: MiddlewareFn = async (_, next) => {
   let result;
@@ -62,11 +58,15 @@ const errorHandlingMiddleware: MiddlewareFn = async (_, next) => {
           : toBasicError(result.error)
       );
     } else {
-      return result.value as unknown;
+      result = result.value as unknown;
     }
-  } else {
-    return result;
   }
+
+  if (Option.isOption(result)) {
+    result = result.unwrapOr(null);
+  }
+
+  return result;
 };
 
 const resolvers = [

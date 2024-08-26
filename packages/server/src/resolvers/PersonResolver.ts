@@ -1,5 +1,3 @@
-
-
 import { auditLogger } from "#logging/auditLogging.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
@@ -59,7 +57,6 @@ import { Container, Service } from "typedi";
 
 import type { GraphQLContext } from "#resolvers/context.js";
 import type { GlobalId } from "@ukdanceblue/common";
-
 
 @ObjectType("ListPeopleResponse", {
   implements: AbstractGraphQLPaginatedResponse<PersonNode>,
@@ -495,9 +492,14 @@ export class PersonResolver {
         assignedToPerson: { uuid: id },
       }
     );
-    const count = await this.fundraisingEntryRepository.countEntries({
-      filters: args.filters,
-    });
+    const count = await this.fundraisingEntryRepository.countEntries(
+      {
+        filters: args.filters,
+      },
+      {
+        assignedToPerson: { uuid: id },
+      }
+    );
 
     if (entries.isErr()) {
       throw new FormattedConcreteError(entries.error);

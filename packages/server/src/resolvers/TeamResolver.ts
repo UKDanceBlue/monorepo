@@ -36,7 +36,10 @@ import {
   TeamType,
 } from "@ukdanceblue/common";
 import * as Common from "@ukdanceblue/common";
-import { FormattedConcreteError } from "@ukdanceblue/common/error";
+import {
+  ConcreteResult,
+  FormattedConcreteError,
+} from "@ukdanceblue/common/error";
 import { VoidResolver } from "graphql-scalars";
 import {
   Arg,
@@ -56,6 +59,7 @@ import {
 import { Service } from "typedi";
 
 import type { GlobalId, OptionalToNullable } from "@ukdanceblue/common";
+import { Option } from "ts-results-es";
 
 @ObjectType("SingleTeamResponse", {
   implements: AbstractGraphQLOkResponse<TeamNode>,
@@ -409,6 +413,38 @@ export class TeamResolver {
       },
     ],
   })
+  @FieldResolver(() => DbFundsTeamInfo, { nullable: true })
+  async dbFundsTeam(
+    @Root() { id: { id } }: TeamNode
+  ): Promise<ConcreteResult<Option<DbFundsTeamInfo>>> {
+    const result = await this.dbFundsRepository.getDbFundsTeamForTeam({
+      uuid: id,
+    });
+
+    return result.map((row) =>
+      row.map((row) => {
+        const teamInfoInstance = new DbFundsTeamInfo();
+        teamInfoInstance.dbNum = row.dbNum;
+        teamInfoInstance.name = row.name;
+        return teamInfoInstance;
+      })
+    );
+  }
+
+  @AccessControl(globalFundraisingAccessParam, {
+    rootMatch: [
+      {
+        root: "id",
+        extractor: ({ teamMemberships }) =>
+          teamMemberships
+            .filter(
+              ({ position }) =>
+                position === Common.MembershipPositionType.Captain
+            )
+            .map(({ teamId }) => teamId),
+      },
+    ],
+  })
   @FieldResolver(() => ListFundraisingEntriesResponse)
   async fundraisingEntries(
     @Root() { id: { id } }: TeamNode,
@@ -433,9 +469,14 @@ export class TeamResolver {
         forTeam: { uuid: id },
       }
     );
-    const count = await this.fundraisingEntryRepository.countEntries({
-      filters: args.filters,
-    });
+    const count = await this.fundraisingEntryRepository.countEntries(
+      {
+        filters: args.filters,
+      },
+      {
+        forTeam: { uuid: id },
+      }
+    );
 
     if (entries.isErr()) {
       throw new FormattedConcreteError(entries.error);
@@ -489,12 +530,12 @@ export class TeamResolver {
   @AccessControl(globalFundraisingAccessParam)
   @Mutation(() => VoidResolver, { name: "assignTeamToDbFundsTeam" })
   async assignTeamToDbFundsTeam(
-    @Arg("teamId") teamId: string,
-    @Arg("dbFundsTeamId") dbFundsTeamId: number
+    @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId,
+    @Arg("dbFundsTeamDbNum", () => Int) dbFundsTeamDbNum: number
   ): Promise<void> {
     const result = await this.dbFundsRepository.assignTeamToDbFundsTeam(
       { uuid: teamId },
-      { dbNum: dbFundsTeamId }
+      { dbNum: dbFundsTeamDbNum }
     );
 
     if (result.isErr()) {

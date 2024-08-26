@@ -82,6 +82,7 @@ export const EventsTable = () => {
     {
       allFields: ["uuid", "title", "description", "occurrenceStart", "summary"],
       dateFields: ["occurrenceStart"],
+      booleanFields: [],
       isNullFields: [],
       numericFields: [],
       oneOfFields: [],

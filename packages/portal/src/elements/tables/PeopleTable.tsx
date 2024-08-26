@@ -87,6 +87,7 @@ export const PeopleTable = () => {
         "committeeName",
       ],
       dateFields: [],
+      booleanFields: [],
       isNullFields: [],
       numericFields: [],
       oneOfFields: ["dbRole", "committeeRole", "committeeName"],

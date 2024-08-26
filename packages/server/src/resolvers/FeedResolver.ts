@@ -8,6 +8,7 @@ import {
   ErrorCode,
   FeedNode,
   type GlobalId,
+  GlobalIdScalar,
   ImageNode,
 } from "@ukdanceblue/common";
 import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
@@ -53,7 +54,7 @@ export class FeedResolver {
 
   @Query(() => FeedNode)
   async feedItem(
-    @Arg("feedItemId") { id }: GlobalId
+    @Arg("feedItemId", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<FeedNode>> {
     const feedItem = await this.feedRepository.getFeedItemByUnique({
       uuid: id,

@@ -35,11 +35,11 @@ import { Container, Service } from "typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 
-
 @ArgsType()
 export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<
   | "donatedOn"
   | "amount"
+  | "amountUnassigned"
   | "donatedTo"
   | "donatedBy"
   | "teamId"
@@ -47,20 +47,21 @@ export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<
   | "updatedAt",
   "donatedTo" | "donatedBy",
   "teamId",
-  "amount",
+  "amount" | "amountUnassigned",
   "donatedOn" | "createdAt" | "updatedAt",
   never
 >("FundraisingEntryResolver", {
   all: [
     "donatedOn",
     "amount",
+    "amountUnassigned",
     "donatedTo",
     "donatedBy",
     "createdAt",
     "updatedAt",
   ],
   string: ["donatedTo", "donatedBy"],
-  numeric: ["amount"],
+  numeric: ["amount", "amountUnassigned"],
   oneOf: ["teamId"],
   date: ["donatedOn", "createdAt", "updatedAt"],
 }) {}

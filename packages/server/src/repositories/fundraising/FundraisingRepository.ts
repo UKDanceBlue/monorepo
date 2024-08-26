@@ -14,6 +14,7 @@ import {
   DBFundsFundraisingEntry,
   FundraisingAssignment,
   FundraisingEntry,
+  FundraisingEntryWithMeta,
   Person,
   Prisma,
   PrismaClient,
@@ -29,7 +30,6 @@ import { Service } from "typedi";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { SortDirection } from "@ukdanceblue/common";
 
-
 const fundraisingEntryBooleanKeys = [] as const;
 type FundraisingEntryBooleanKey = (typeof fundraisingEntryBooleanKeys)[number];
 
@@ -43,7 +43,7 @@ type FundraisingEntryDateKey = (typeof fundraisingEntryDateKeys)[number];
 const fundraisingEntryIsNullKeys = [] as const;
 type FundraisingEntryIsNullKey = (typeof fundraisingEntryIsNullKeys)[number];
 
-const fundraisingEntryNumericKeys = ["amount"] as const;
+const fundraisingEntryNumericKeys = ["amount", "amountUnassigned"] as const;
 type FundraisingEntryNumericKey = (typeof fundraisingEntryNumericKeys)[number];
 
 const fundraisingEntryOneOfKeys = ["teamId"] as const;
@@ -56,6 +56,7 @@ export type FundraisingEntryOrderKeys =
   | "teamId"
   | "donatedOn"
   | "amount"
+  | "amountUnassigned"
   | "donatedTo"
   | "donatedBy"
   | "createdAt"
@@ -72,7 +73,7 @@ export type FundraisingEntryFilters = FilterItems<
 
 const defaultInclude = {
   dbFundsEntry: true,
-} satisfies Prisma.FundraisingEntryInclude;
+} satisfies Prisma.FundraisingEntryWithMetaInclude;
 
 export type FundraisingEntryUniqueParam = SimpleUniqueParam;
 export type FundraisingAssignmentUniqueParam = SimpleUniqueParam;
@@ -85,21 +86,19 @@ export class FundraisingEntryRepository {
     param: FundraisingEntryUniqueParam
   ): Promise<
     Result<
-      FundraisingEntry & { dbFundsEntry: DBFundsFundraisingEntry },
+      FundraisingEntryWithMeta & { dbFundsEntry: DBFundsFundraisingEntry },
       RepositoryError
     >
   > {
     try {
-      const row = await this.prisma.fundraisingEntry.findUnique({
+      const row = await this.prisma.fundraisingEntryWithMeta.findUnique({
         where: param,
         include: defaultInclude,
       });
       if (!row) {
         return Err(new NotFoundError({ what: "FundraisingEntry" }));
       }
-      return Ok(
-        row
-      );
+      return Ok(row);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }
@@ -125,7 +124,7 @@ export class FundraisingEntryRepository {
     param: FundraisingEntryUniqueParam
   ): Promise<Result<readonly FundraisingAssignment[], RepositoryError>> {
     try {
-      const entry = await this.prisma.fundraisingEntry.findUnique({
+      const entry = await this.prisma.fundraisingEntryWithMeta.findUnique({
         where: param,
         select: { assignments: true },
       });
@@ -159,7 +158,7 @@ export class FundraisingEntryRepository {
     } = {}
   ): Promise<
     Result<
-      readonly (FundraisingEntry & {
+      readonly (FundraisingEntryWithMeta & {
         dbFundsEntry: DBFundsFundraisingEntry;
       })[],
       RepositoryError | ActionDeniedError | InvalidArgumentError
@@ -199,7 +198,7 @@ export class FundraisingEntryRepository {
         };
       }
 
-      const rows = await this.prisma.fundraisingEntry.findMany({
+      const rows = await this.prisma.fundraisingEntryWithMeta.findMany({
         include: defaultInclude,
         where,
         orderBy,
@@ -221,11 +220,17 @@ export class FundraisingEntryRepository {
     }
   }
 
-  async countEntries({
-    filters,
-  }: {
-    filters?: readonly FundraisingEntryFilters[] | undefined | null;
-  }): Promise<
+  async countEntries(
+    {
+      filters,
+    }: {
+      filters?: readonly FundraisingEntryFilters[] | undefined | null;
+    },
+    limits: {
+      assignedToPerson?: SimpleUniqueParam | undefined | null;
+      forTeam?: SimpleUniqueParam | undefined | null;
+    } = {}
+  ): Promise<
     Result<number, RepositoryError | ActionDeniedError | InvalidArgumentError>
   > {
     try {
@@ -234,8 +239,30 @@ export class FundraisingEntryRepository {
         return Err(where.error);
       }
 
+      if (limits.assignedToPerson) {
+        where.value.assignments = {
+          ...where.value.assignments,
+          every: {
+            ...where.value.assignments?.every,
+            person: limits.assignedToPerson,
+          },
+        };
+      }
+      if (limits.forTeam) {
+        where.value.dbFundsEntry = {
+          ...where.value.dbFundsEntry,
+          // @ts-expect-error Don't know why this is causing an error, but I'm not going to worry about it
+          dbFundsTeam: {
+            teams: {
+              some: limits.forTeam,
+            },
+            // This 'satisfies' is to make sure that we don't accidentally ignore errors due to the ts-expect-error above
+          } satisfies Prisma.DBFundsTeamWhereInput,
+        };
+      }
+
       return Ok(
-        await this.prisma.fundraisingEntry.count({ where: where.value })
+        await this.prisma.fundraisingEntryWithMeta.count({ where: where.value })
       );
     } catch (error: unknown) {
       return handleRepositoryError(error);
@@ -390,7 +417,7 @@ export class FundraisingEntryRepository {
     assignmentParam: FundraisingAssignmentUniqueParam
   ): Promise<
     Result<
-      FundraisingEntry & {
+      FundraisingEntryWithMeta & {
         dbFundsEntry: DBFundsFundraisingEntry;
       },
       RepositoryError
@@ -408,9 +435,7 @@ export class FundraisingEntryRepository {
       if (!assignment) {
         return Err(new NotFoundError({ what: "FundraisingAssignment" }));
       }
-      return Ok(
-        assignment.parentEntry
-      );
+      return Ok(assignment.parentEntry);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }

@@ -3,7 +3,6 @@ import type { NotFoundError } from "@ukdanceblue/common/error";
 
 const jobStateRepository = Container.get(JobStateRepository);
 
-
 import {
   DBFundsFundraisingProvider,
   type DBFundsFundraisingProviderError,
@@ -107,3 +106,4 @@ export const syncDbFunds = new Cron(
 syncDbFunds.options.startAt =
   await jobStateRepository.getNextJobDate(syncDbFunds);
 syncDbFunds.resume();
+syncDbFunds.trigger();

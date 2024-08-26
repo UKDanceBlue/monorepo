@@ -1,5 +1,3 @@
-
-
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
@@ -79,8 +77,8 @@ export class FundraisingAssignmentResolver {
   @AccessControl(fundraisingAccess)
   @Mutation(() => FundraisingAssignmentNode)
   async assignEntryToPerson(
-    @Arg("entryId") entryId: string,
-    @Arg("personId") personId: string,
+    @Arg("entryId", () => GlobalIdScalar) { id: entryId }: GlobalId,
+    @Arg("personId", () => GlobalIdScalar) { id: personId }: GlobalId,
     @Arg("input") { amount }: AssignEntryToPersonInput
   ): Promise<ConcreteResult<Promise<FundraisingAssignmentNode>>> {
     const assignment =

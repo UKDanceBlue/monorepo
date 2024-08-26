@@ -82,6 +82,7 @@ export const NotificationsTable = () => {
         "startedSendingAt",
       ],
       dateFields: ["createdAt", "updatedAt", "sendAt", "startedSendingAt"],
+      booleanFields: [],
       isNullFields: [],
       numericFields: [],
       oneOfFields: ["deliveryIssue"],

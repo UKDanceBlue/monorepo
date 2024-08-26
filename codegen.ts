@@ -91,6 +91,7 @@ const codegenConfig: CodegenConfig = {
   },
   emitLegacyCommonJSImports: false,
   generates,
+  watch: true,
 };
 
 export default codegenConfig;

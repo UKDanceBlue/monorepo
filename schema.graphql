@@ -220,9 +220,8 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTimeISO
 
-type DbFundsTeamInfo implements Node {
+type DbFundsTeamInfo {
   dbNum: Int!
-  id: GlobalId!
   name: String!
 }
 
@@ -478,6 +477,7 @@ type FundraisingAssignmentNode implements Node {
 
 type FundraisingEntryNode implements Node {
   amount: Float!
+  amountUnassigned: Float!
   assignments: [FundraisingAssignmentNode!]!
   createdAt: DateTimeISO
   donatedByText: String
@@ -489,6 +489,7 @@ type FundraisingEntryNode implements Node {
 
 enum FundraisingEntryResolverAllKeys {
   amount
+  amountUnassigned
   createdAt
   donatedBy
   donatedOn
@@ -567,6 +568,7 @@ input FundraisingEntryResolverKeyedStringFilterItem {
 
 enum FundraisingEntryResolverNumericFilterKeys {
   amount
+  amountUnassigned
 }
 
 enum FundraisingEntryResolverOneOfFilterKeys {
@@ -982,8 +984,8 @@ type Mutation {
   addExistingImageToEvent(eventId: String!, imageId: String!): AddEventImageResponse!
   addMap(imageUuid: String!, uuid: GlobalId!): MarathonHourNode!
   addPersonToTeam(personUuid: String!, teamUuid: String!): MembershipNode!
-  assignEntryToPerson(entryId: String!, input: AssignEntryToPersonInput!, personId: String!): FundraisingAssignmentNode!
-  assignTeamToDbFundsTeam(dbFundsTeamId: Float!, teamId: String!): Void!
+  assignEntryToPerson(entryId: GlobalId!, input: AssignEntryToPersonInput!, personId: GlobalId!): FundraisingAssignmentNode!
+  assignTeamToDbFundsTeam(dbFundsTeamDbNum: Int!, teamId: GlobalId!): Void!
   attachImageToFeedItem(feedItemUuid: String!, imageUuid: String!): FeedNode!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
   createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
@@ -1563,6 +1565,7 @@ type Query {
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
   feed(limit: Int = 10): [FeedNode!]!
+  feedItem(feedItemId: GlobalId!): FeedNode!
   fundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
   fundraisingEntries(
     """The boolean filters to apply to the query"""
@@ -2109,6 +2112,7 @@ enum TeamLegacyStatus {
 type TeamNode implements Node {
   captains: [MembershipNode!]! @deprecated(reason: "Just query the members field and filter by role")
   createdAt: DateTimeISO
+  dbFundsTeam: DbFundsTeamInfo
   fundraisingEntries(
     """The boolean filters to apply to the query"""
     booleanFilters: Void

@@ -75,6 +75,7 @@ export const NotificationDeliveriesTable = ({
         "deliveryError",
       ],
       dateFields: ["createdAt", "updatedAt", "sentAt", "receiptCheckedAt"],
+      booleanFields: [],
       isNullFields: [],
       numericFields: [],
       oneOfFields: ["deliveryError"],
