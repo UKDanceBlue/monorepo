@@ -50,7 +50,7 @@ const documents = {
     "\n  mutation DeletePerson($uuid: GlobalId!) {\n    deletePerson(uuid: $uuid) {\n      id\n    }\n  }\n": types.DeletePersonDocument,
     "\n  fragment PersonViewerFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    teams {\n      position\n      team {\n        id\n        name\n      }\n    }\n    committees {\n      identifier\n      role\n    }\n  }\n": types.PersonViewerFragmentFragmentDoc,
     "\n  mutation DeleteTeam($uuid: GlobalId!) {\n    deleteTeam(uuid: $uuid) {\n      ok\n    }\n  }\n": types.DeleteTeamDocument,
-    "\n  fragment TeamViewerFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    totalPoints\n    type\n    members {\n      person {\n        id\n        name\n        linkblue\n      }\n      position\n    }\n  }\n": types.TeamViewerFragmentFragmentDoc,
+    "\n  fragment TeamViewerFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    totalPoints\n    fundraisingTotalAmount\n    type\n    members {\n      person {\n        id\n        name\n        linkblue\n      }\n      position\n    }\n  }\n": types.TeamViewerFragmentFragmentDoc,
     "\n  query LoginState {\n    loginState {\n      loggedIn\n      dbRole\n      effectiveCommitteeRoles {\n        role\n        identifier\n      }\n    }\n  }\n": types.LoginStateDocument,
     "\n  mutation CommitConfigChanges($changes: [CreateConfigurationInput!]!) {\n    createConfigurations(input: $changes) {\n      ok\n    }\n  }\n": types.CommitConfigChangesDocument,
     "\n  fragment ConfigFragment on ConfigurationNode {\n    id\n    key\n    value\n    validAfter\n    validUntil\n    createdAt\n  }\n": types.ConfigFragmentFragmentDoc,
@@ -259,7 +259,7 @@ export function graphql(source: "\n  mutation DeleteTeam($uuid: GlobalId!) {\n  
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment TeamViewerFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    totalPoints\n    type\n    members {\n      person {\n        id\n        name\n        linkblue\n      }\n      position\n    }\n  }\n"): (typeof documents)["\n  fragment TeamViewerFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    totalPoints\n    type\n    members {\n      person {\n        id\n        name\n        linkblue\n      }\n      position\n    }\n  }\n"];
+export function graphql(source: "\n  fragment TeamViewerFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    totalPoints\n    fundraisingTotalAmount\n    type\n    members {\n      person {\n        id\n        name\n        linkblue\n      }\n      position\n    }\n  }\n"): (typeof documents)["\n  fragment TeamViewerFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    totalPoints\n    fundraisingTotalAmount\n    type\n    members {\n      person {\n        id\n        name\n        linkblue\n      }\n      position\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

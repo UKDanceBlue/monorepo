@@ -41,6 +41,7 @@ import {
   FormattedConcreteError,
 } from "@ukdanceblue/common/error";
 import { VoidResolver } from "graphql-scalars";
+import { Option } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -48,6 +49,7 @@ import {
   Ctx,
   Field,
   FieldResolver,
+  Float,
   InputType,
   Int,
   Mutation,
@@ -59,7 +61,6 @@ import {
 import { Service } from "typedi";
 
 import type { GlobalId, OptionalToNullable } from "@ukdanceblue/common";
-import { Option } from "ts-results-es";
 
 @ObjectType("SingleTeamResponse", {
   implements: AbstractGraphQLOkResponse<TeamNode>,
@@ -373,6 +374,27 @@ export class TeamResolver {
     });
 
     return rows.map((row) => pointEntryModelToResource(row));
+  }
+
+  @AccessControl(
+    { accessLevel: AccessLevel.Committee },
+    {
+      rootMatch: [
+        {
+          root: "id",
+          extractor: ({ teamMemberships }) =>
+            teamMemberships.map(({ teamId }) => teamId),
+        },
+      ],
+    }
+  )
+  @FieldResolver(() => [Float])
+  async fundraisingTotalAmount(
+    @Root() { id: { id } }: TeamNode
+  ): Promise<ConcreteResult<Option<number>>> {
+    return this.teamRepository.getTotalFundraisingAmount({
+      uuid: id,
+    });
   }
 
   @AccessControl({ accessLevel: AccessLevel.Public })

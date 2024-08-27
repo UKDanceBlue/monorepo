@@ -2156,6 +2156,7 @@ type TeamNode implements Node {
     """The string filters to apply to the query"""
     stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
   ): ListFundraisingEntriesResponse!
+  fundraisingTotalAmount: [Float!]!
   id: GlobalId!
   legacyStatus: TeamLegacyStatus!
   marathon: MarathonNode!

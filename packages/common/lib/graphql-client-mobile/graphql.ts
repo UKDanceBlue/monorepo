@@ -2074,6 +2074,7 @@ export type TeamNode = Node & {
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly dbFundsTeam?: Maybe<DbFundsTeamInfo>;
   readonly fundraisingEntries: ListFundraisingEntriesResponse;
+  readonly fundraisingTotalAmount: ReadonlyArray<Scalars['Float']['output']>;
   readonly id: Scalars['GlobalId']['output'];
   readonly legacyStatus: TeamLegacyStatus;
   readonly marathon: MarathonNode;
