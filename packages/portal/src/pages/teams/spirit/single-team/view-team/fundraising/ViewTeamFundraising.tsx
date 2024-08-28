@@ -5,10 +5,22 @@ import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useParams } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
-import { AutoComplete, Empty, Flex, Form, InputNumber, Table } from "antd";
+import {
+  AutoComplete,
+  Button,
+  Empty,
+  Flex,
+  Form,
+  InputNumber,
+  Select,
+  Table,
+} from "antd";
+import { useForm } from "antd/es/form/Form";
 import { DateTime } from "luxon";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "urql";
+
+import type { ViewTeamFundraisingDocumentQuery } from "/workspaces/monorepo/packages/common/dist/graphql-client-portal/graphql";
 
 const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
   query ViewTeamFundraisingDocument(
@@ -27,6 +39,13 @@ const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
         dbFundsTeam {
           dbNum
           name
+        }
+        members {
+          person {
+            id
+            name
+            linkblue
+          }
         }
         fundraisingEntries(
           page: $page
@@ -108,11 +127,15 @@ const UpdateFundraisingAssignmentDocument = graphql(/* GraphQL */ `
   }
 `);
 
-export function ViewTeamFundraising({
-  members,
-}: {
-  members: { name: string; id: string }[];
-}) {
+const DeleteFundraisingAssignmentDocument = graphql(/* GraphQL */ `
+  mutation DeleteFundraisingAssignment($id: GlobalId!) {
+    deleteFundraisingAssignment(id: $id) {
+      id
+    }
+  }
+`);
+
+export function ViewTeamFundraising() {
   const { teamId: teamUuid } = useParams({ from: "/teams/$teamId/" });
   const [fundraisingTeamSearch, setFundraisingTeamSearch] = useState("");
 
@@ -174,6 +197,9 @@ export function ViewTeamFundraising({
   const [updateFundraisingAssignmentState, updateFundraisingAssignment] =
     useMutation(UpdateFundraisingAssignmentDocument);
   useQueryStatusWatcher(updateFundraisingAssignmentState);
+  const [deleteFundraisingAssignmentState, deleteFundraisingAssignment] =
+    useMutation(DeleteFundraisingAssignmentDocument);
+  useQueryStatusWatcher(deleteFundraisingAssignmentState);
 
   return (
     <Flex vertical>
@@ -419,10 +445,9 @@ export function ViewTeamFundraising({
         ]}
         expandable={{
           rowExpandable: () => true,
-          expandedRowRender: ({ assignments }) => (
+          expandedRowRender: ({ assignments, id, amountUnassigned }) => (
             <Table
               dataSource={assignments}
-              rowKey={({ id }) => id}
               locale={{
                 emptyText: (
                   <Empty
@@ -433,41 +458,108 @@ export function ViewTeamFundraising({
                 ),
               }}
               footer={() => (
-                <Form
-                  layout="inline"
-                  onFinish={(v) => {}}
-                  initialValues={{ amount: 0 }}
-                >
-                  <Form.Item
-                    label="Person"
-                    name="personId"
-                    rules={[{ required: true, message: "Person is required" }]}
-                  >
-                    <AutoComplete
-                      options={[]}
-                      onSearch={() => {}}
-                      onSelect={() => {}}
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    label="Amount"
-                    name="amount"
-                    rules={[{ required: true, message: "Amount is required" }]}
-                  >
-                    <InputNumber />
-                  </Form.Item>
-                </Form>
+                <FundraisingTableNewAssignment
+                  addFundraisingAssignment={addFundraisingAssignment}
+                  refreshFundraisingEntries={refreshFundraisingEntries}
+                  amountUnassigned={amountUnassigned}
+                  id={id}
+                  members={
+                    data?.team.data.members.map(
+                      ({ person: { id, linkblue, name } }) => ({
+                        value: id,
+                        label: name ?? linkblue ?? id,
+                      })
+                    ) ?? []
+                  }
+                  loading={
+                    addFundraisingAssignmentState.fetching ||
+                    updateFundraisingAssignmentState.fetching
+                  }
+                />
               )}
               columns={[
                 {
                   title: "Person",
                   dataIndex: ["person", "name"],
                   key: "person",
+                  width: "60%",
                 },
                 {
                   title: "Amount",
                   dataIndex: "amount",
                   key: "amount",
+                  width: "40%",
+                  render: (amount: number, { id }: { id: string }) => (
+                    <Form
+                      layout="inline"
+                      onFinish={(values: { amount: number }) => {
+                        updateFundraisingAssignment({
+                          id,
+                          amount: values.amount,
+                        })
+                          .then(() => {
+                            refreshFundraisingEntries({
+                              requestPolicy: "network-only",
+                            });
+                          })
+                          .catch(() => {
+                            alert(
+                              "An error occurred while updating the assignment."
+                            );
+                          });
+                      }}
+                      initialValues={{ amount }}
+                      style={{ display: "flex", gap: 8 }}
+                    >
+                      <Form.Item name="amount">
+                        <InputNumber prefix="$" />
+                      </Form.Item>
+                      <Form.Item>
+                        <Button
+                          type="primary"
+                          htmlType="submit"
+                          loading={
+                            addFundraisingAssignmentState.fetching ||
+                            updateFundraisingAssignmentState.fetching
+                          }
+                        >
+                          Update
+                        </Button>
+                      </Form.Item>
+                    </Form>
+                  ),
+                },
+                {
+                  title: "Actions",
+                  key: "actions",
+                  render: (_, { id }: { id: string }) => (
+                    <Button
+                      type="primary"
+                      danger
+                      onClick={() => {
+                        if (
+                          confirm(
+                            "Are you sure you want to delete this assignment?"
+                          )
+                        ) {
+                          deleteFundraisingAssignment({ id })
+                            .then(() => {
+                              refreshFundraisingEntries({
+                                requestPolicy: "network-only",
+                              });
+                            })
+                            .catch(() => {
+                              alert(
+                                "An error occurred while deleting the assignment."
+                              );
+                            });
+                        }
+                      }}
+                      loading={deleteFundraisingAssignmentState.fetching}
+                    >
+                      Delete
+                    </Button>
+                  ),
                 },
               ]}
             />
@@ -475,5 +567,85 @@ export function ViewTeamFundraising({
         }}
       />
     </Flex>
+  );
+}
+function FundraisingTableNewAssignment({
+  addFundraisingAssignment,
+  amountUnassigned,
+  members,
+  id,
+  refreshFundraisingEntries,
+  loading,
+}: {
+  addFundraisingAssignment: ({
+    entryId,
+    personId,
+    amount,
+  }: {
+    entryId: string;
+    personId: string;
+    amount: number;
+  }) => Promise<unknown>;
+  refreshFundraisingEntries: (options?: {
+    requestPolicy: "network-only";
+  }) => void;
+  amountUnassigned: number;
+  id: string;
+  members: { label: string; value: string }[];
+  loading: boolean;
+}) {
+  const [form] = useForm<{
+    personId: string;
+    amount: number;
+  }>();
+
+  useEffect(() => {
+    form.setFieldsValue({ amount: amountUnassigned });
+  }, [amountUnassigned, form]);
+
+  return (
+    <Form
+      form={form}
+      layout="inline"
+      onFinish={(values: { personId: string; amount: number }) => {
+        addFundraisingAssignment({
+          entryId: id,
+          personId: values.personId,
+          amount: values.amount,
+        })
+          .then(() => {
+            refreshFundraisingEntries({
+              requestPolicy: "network-only",
+            });
+            form.resetFields(["personId"]);
+          })
+          .catch(() => {
+            alert("An error occurred while adding the assignment.");
+          });
+      }}
+      initialValues={{ amount: amountUnassigned }}
+      style={{ display: "flex", gap: 8 }}
+    >
+      <Form.Item
+        label="Person"
+        name="personId"
+        rules={[{ required: true, message: "Person is required" }]}
+        style={{ flex: 4 }}
+      >
+        <Select options={members} />
+      </Form.Item>
+      <Form.Item
+        name="amount"
+        rules={[{ required: true, message: "Amount is required" }]}
+        style={{ flex: 1 }}
+      >
+        <InputNumber prefix="$" />
+      </Form.Item>
+      <Form.Item style={{ flex: 1 }}>
+        <Button type="primary" htmlType="submit" loading={loading}>
+          Add Assignment
+        </Button>
+      </Form.Item>
+    </Form>
   );
 }

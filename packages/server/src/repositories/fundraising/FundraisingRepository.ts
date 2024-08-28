@@ -295,6 +295,10 @@ export class FundraisingEntryRepository {
   ): Promise<
     Result<FundraisingAssignment, RepositoryError | ActionDeniedError>
   > {
+    if (amount < 0) {
+      return Err(new ActionDeniedError("Amount must be non-negative"));
+    }
+
     try {
       const entry = await this.findEntryByUnique(entryParam);
       if (entry.isErr()) {
@@ -349,6 +353,10 @@ export class FundraisingEntryRepository {
   ): Promise<
     Result<FundraisingAssignment, RepositoryError | ActionDeniedError>
   > {
+    if (amount < 0) {
+      return Err(new ActionDeniedError("Amount must be non-negative"));
+    }
+
     try {
       const assignment = await this.prisma.fundraisingAssignment.findUnique({
         where: assignmentParam,
