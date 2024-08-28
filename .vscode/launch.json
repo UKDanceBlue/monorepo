@@ -103,8 +103,8 @@
     {
       "name": "Debug Expo",
       "request": "attach",
-      "type": "expo",
-      "projectRoot": "${workspaceFolder}/packages/mobile",
+      "type": "reactnativedirect",
+      "cwd": "${workspaceFolder}/packages/mobile",
       "presentation": {
         "group": "4mobile"
       }
