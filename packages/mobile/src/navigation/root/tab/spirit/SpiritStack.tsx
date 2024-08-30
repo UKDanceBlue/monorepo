@@ -10,7 +10,6 @@ import type { SpiritStackParamList } from "../../../../types/navigationTypes";
 import ScoreboardScreen from "./ScoreBoardScreen";
 import TeamScreen from "./TeamScreen";
 
-
 const scoreBoardDocument = graphql(/* GraphQL */ `
   query ScoreBoardDocument($type: [TeamType!]) {
     me {
@@ -21,6 +20,7 @@ const scoreBoardDocument = graphql(/* GraphQL */ `
           ...MyTeamFragment
         }
       }
+      ...MyFundraisingFragment
     }
     teams(
       sendAll: true
@@ -113,6 +113,7 @@ const SpiritScreen = () => {
         {() => (
           <TeamScreen
             myTeamFragment={query.data?.me?.teams[0]?.team ?? null}
+            myFundraisingFragment={query.data?.me ?? null}
             userUuid={query.data?.me?.id ?? ""}
             loading={query.fetching}
             refresh={refresh}

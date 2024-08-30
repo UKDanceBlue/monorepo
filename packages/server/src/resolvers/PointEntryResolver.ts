@@ -1,5 +1,3 @@
-
-
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PointEntryRepository } from "#repositories/pointEntry/PointEntryRepository.js";
@@ -23,7 +21,7 @@ import {
   SortDirection,
   TeamNode,
 } from "@ukdanceblue/common";
-import { NotFoundError , ConcreteResult } from "@ukdanceblue/common/error";
+import { NotFoundError, ConcreteResult } from "@ukdanceblue/common/error";
 import { Err } from "ts-results-es";
 import {
   Arg,
@@ -77,14 +75,14 @@ class CreatePointEntryInput implements Partial<PointEntryNode> {
   @Field(() => Int)
   points!: number;
 
-  @Field(() => String, { nullable: true })
-  personFromUuid!: string | null;
+  @Field(() => GlobalIdScalar, { nullable: true })
+  personFromUuid!: GlobalId | null;
 
-  @Field(() => String, { nullable: true })
-  opportunityUuid!: string | null;
+  @Field(() => GlobalIdScalar, { nullable: true })
+  opportunityUuid!: GlobalId | null;
 
-  @Field(() => String)
-  teamUuid!: string;
+  @Field(() => GlobalIdScalar)
+  teamUuid!: GlobalId;
 }
 
 @ArgsType()
@@ -162,12 +160,12 @@ export class PointEntryResolver {
       points: input.points,
       comment: input.comment,
       personParam: input.personFromUuid
-        ? { uuid: input.personFromUuid }
+        ? { uuid: input.personFromUuid.id }
         : undefined,
       opportunityParam: input.opportunityUuid
-        ? { uuid: input.opportunityUuid }
+        ? { uuid: input.opportunityUuid.id }
         : undefined,
-      teamParam: { uuid: input.teamUuid },
+      teamParam: { uuid: input.teamUuid.id },
     });
 
     return CreatePointEntryResponse.newOk(pointEntryModelToResource(model));

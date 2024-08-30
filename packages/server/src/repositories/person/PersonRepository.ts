@@ -24,17 +24,20 @@ import {
 } from "@ukdanceblue/common";
 import {
   ActionDeniedError,
+  BasicError,
+  ConcreteResult,
   CompositeError,
   InvalidArgumentError,
   InvariantError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
-import { Err, Ok, Result } from "ts-results-es";
+import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 import { Service } from "typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import type { Committee, Membership, Person, Team } from "@prisma/client";
+import { SomePrismaError } from "#error/prisma.js";
 import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
 
 const personStringKeys = ["name", "email", "linkblue"] as const;
@@ -951,6 +954,28 @@ export class PersonRepository {
         return Err(new NotFoundError({ what: "Primary committee" }));
       }
     } catch (error) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async getTotalFundraisingAmount(
+    param: UniquePersonParam
+  ): Promise<ConcreteResult<Option<number>, SomePrismaError | BasicError>> {
+    try {
+      const {
+        _sum: { amount },
+      } = await this.prisma.fundraisingAssignment.aggregate({
+        _sum: {
+          amount: true,
+        },
+        where: {
+          person: param,
+        },
+      });
+      return Ok(
+        amount !== null ? Some(amount.toDecimalPlaces(2).toNumber()) : None
+      );
+    } catch (error: unknown) {
       return handleRepositoryError(error);
     }
   }

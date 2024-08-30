@@ -42,7 +42,7 @@ export const createPersonByLinkBlue = graphql(/* GraphQL */ `
   mutation CreatePersonByLinkBlue(
     $linkBlue: String!
     $email: EmailAddress!
-    $teamUuid: String!
+    $teamUuid: GlobalId!
   ) {
     createPerson(
       input: { email: $email, linkblue: $linkBlue, memberOf: [$teamUuid] }

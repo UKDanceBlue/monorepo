@@ -38,7 +38,7 @@ import {
   FormattedConcreteError,
 } from "@ukdanceblue/common/error";
 import { EmailAddressResolver } from "graphql-scalars";
-import { Ok, Result } from "ts-results-es";
+import { Ok, Option, Result } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -46,6 +46,7 @@ import {
   Ctx,
   Field,
   FieldResolver,
+  Float,
   InputType,
   Mutation,
   ObjectType,
@@ -468,7 +469,7 @@ export class PersonResolver {
       },
     }
   )
-  @FieldResolver(() => CommitteeMembershipNode, { nullable: true })
+  @FieldResolver(() => ListFundraisingEntriesResponse, { nullable: true })
   async assignedDonationEntries(
     @Root() { id: { id } }: PersonNode,
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
@@ -515,6 +516,30 @@ export class PersonResolver {
       total: count.value,
       page: args.page,
       pageSize: args.pageSize,
+    });
+  }
+
+  @AccessControl(
+    // We can't grant blanket access as otherwise people would see who else was assigned to an entry
+    // You can view all assignments for an entry if you are:
+    // 1. A fundraising coordinator or chair
+    globalFundraisingAccessParam,
+    // 2. The person themselves
+    {
+      rootMatch: [
+        {
+          root: "id",
+          extractor: ({ userData }) => userData.userId,
+        },
+      ],
+    }
+  )
+  @FieldResolver(() => Float, { nullable: true })
+  async fundraisingTotalAmount(
+    @Root() { id: { id } }: PersonNode
+  ): Promise<ConcreteResult<Option<number>>> {
+    return this.personRepository.getTotalFundraisingAmount({
+      uuid: id,
     });
   }
 

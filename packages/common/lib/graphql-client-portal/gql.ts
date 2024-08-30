@@ -31,7 +31,7 @@ const documents = {
     "\n  query GetPersonByUuid($uuid: GlobalId!) {\n    person(uuid: $uuid) {\n      id\n      name\n      linkblue\n    }\n  }\n": types.GetPersonByUuidDocument,
     "\n  query GetPersonByLinkBlue($linkBlue: String!) {\n    personByLinkBlue(linkBlueId: $linkBlue) {\n      id\n      name\n    }\n  }\n": types.GetPersonByLinkBlueDocument,
     "\n  query SearchPersonByName($name: String!) {\n    searchPeopleByName(name: $name) {\n      id\n      name\n    }\n  }\n": types.SearchPersonByNameDocument,
-    "\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: String!\n    $email: EmailAddress!\n    $teamUuid: String!\n  ) {\n    createPerson(\n      input: { email: $email, linkblue: $linkBlue, memberOf: [$teamUuid] }\n    ) {\n      id\n    }\n  }\n": types.CreatePersonByLinkBlueDocument,
+    "\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: String!\n    $email: EmailAddress!\n    $teamUuid: GlobalId!\n  ) {\n    createPerson(\n      input: { email: $email, linkblue: $linkBlue, memberOf: [$teamUuid] }\n    ) {\n      id\n    }\n  }\n": types.CreatePersonByLinkBlueDocument,
     "\n  query PointEntryOpportunityLookup($name: String!) {\n    pointOpportunities(\n      stringFilters: { field: name, comparison: SUBSTRING, value: $name }\n      sendAll: true\n    ) {\n      data {\n        name\n        id\n      }\n    }\n  }\n": types.PointEntryOpportunityLookupDocument,
     "\n  mutation CreatePointOpportunity($input: CreatePointOpportunityInput!) {\n    createPointOpportunity(input: $input) {\n      uuid\n    }\n  }\n": types.CreatePointOpportunityDocument,
     "\n  mutation TeamCreator($input: CreateTeamInput!, $marathonUuid: String!) {\n    createTeam(input: $input, marathon: $marathonUuid) {\n      ok\n      uuid\n    }\n  }\n": types.TeamCreatorDocument,
@@ -184,7 +184,7 @@ export function graphql(source: "\n  query SearchPersonByName($name: String!) {\
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: String!\n    $email: EmailAddress!\n    $teamUuid: String!\n  ) {\n    createPerson(\n      input: { email: $email, linkblue: $linkBlue, memberOf: [$teamUuid] }\n    ) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: String!\n    $email: EmailAddress!\n    $teamUuid: String!\n  ) {\n    createPerson(\n      input: { email: $email, linkblue: $linkBlue, memberOf: [$teamUuid] }\n    ) {\n      id\n    }\n  }\n"];
+export function graphql(source: "\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: String!\n    $email: EmailAddress!\n    $teamUuid: GlobalId!\n  ) {\n    createPerson(\n      input: { email: $email, linkblue: $linkBlue, memberOf: [$teamUuid] }\n    ) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: String!\n    $email: EmailAddress!\n    $teamUuid: GlobalId!\n  ) {\n    createPerson(\n      input: { email: $email, linkblue: $linkBlue, memberOf: [$teamUuid] }\n    ) {\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
