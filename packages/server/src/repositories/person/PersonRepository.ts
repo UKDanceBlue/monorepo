@@ -3,6 +3,7 @@ import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
 import { findPersonForLogin } from "#auth/findPersonForLogin.js";
 import {
   handleRepositoryError,
+  unwrapRepositoryError,
   type RepositoryError,
   type SimpleUniqueParam,
 } from "#repositories/shared.js";
@@ -23,6 +24,7 @@ import {
 } from "@ukdanceblue/common";
 import {
   ActionDeniedError,
+  CompositeError,
   InvalidArgumentError,
   InvariantError,
   NotFoundError,
@@ -33,6 +35,7 @@ import { Service } from "typedi";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import type { Committee, Membership, Person, Team } from "@prisma/client";
+import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
 
 const personStringKeys = ["name", "email", "linkblue"] as const;
 type PersonStringKey = (typeof personStringKeys)[number];
@@ -78,7 +81,10 @@ export type UniquePersonParam =
 
 @Service()
 export class PersonRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(
+    private prisma: PrismaClient,
+    private membershipRepository: MembershipRepository
+  ) {}
 
   // Finders
 
@@ -450,37 +456,119 @@ export class PersonRepository {
     email,
     linkblue,
     authIds,
+    memberOf,
+    captainOf,
   }: {
     name?: string | null;
     email: string;
     linkblue?: string | null;
     authIds?: { source: Exclude<AuthSource, "None">; value: string }[] | null;
-  }): Promise<Result<Person, RepositoryError>> {
+    memberOf?: SimpleUniqueParam[] | undefined | null;
+    captainOf?: SimpleUniqueParam[] | undefined | null;
+  }): Promise<
+    Result<Person, RepositoryError | CompositeError<RepositoryError>>
+  > {
     try {
-      return Ok(
-        await this.prisma.person.create({
-          data: {
-            name,
-            email,
-            linkblue,
-            authIdPairs: authIds
-              ? {
-                  createMany: {
-                    data: authIds.map(
-                      (authId): Prisma.AuthIdPairCreateInput => {
-                        return {
-                          source: authId.source,
-                          value: authId.value,
-                          person: { connect: { email } },
-                        };
-                      }
-                    ),
-                  },
-                }
-              : undefined,
-          },
-        })
-      );
+      const [memberOfIds, captainOfIds] = await Promise.all([
+        memberOf
+          ? Promise.all(
+              memberOf.map((team) =>
+                this.prisma.team
+                  .findUnique({
+                    where: team,
+                    select: { id: true },
+                  })
+                  .then((team) => team?.id)
+              )
+            )
+          : Promise.resolve(null),
+        captainOf
+          ? Promise.all(
+              captainOf.map((team) =>
+                this.prisma.team
+                  .findUnique({
+                    where: team,
+                    select: { id: true },
+                  })
+                  .then((team) => team?.id)
+              )
+            )
+          : Promise.resolve(null),
+      ]);
+
+      const person = await this.prisma.person.create({
+        data: {
+          name,
+          email,
+          linkblue,
+          authIdPairs: authIds
+            ? {
+                createMany: {
+                  data: authIds.map((authId): Prisma.AuthIdPairCreateInput => {
+                    return {
+                      source: authId.source,
+                      value: authId.value,
+                      person: { connect: { email } },
+                    };
+                  }),
+                },
+              }
+            : undefined,
+        },
+      });
+
+      if (memberOfIds) {
+        const result = await Promise.allSettled(
+          memberOfIds.map(async (teamId) => {
+            if (teamId) {
+              await this.membershipRepository.assignPersonToTeam({
+                personParam: {
+                  id: person.id,
+                },
+                teamParam: {
+                  id: teamId,
+                },
+                position: MembershipPositionType.Member,
+              });
+            }
+          })
+        );
+        const errors = result.filter((r) => r.status === "rejected");
+        if (errors.length > 0) {
+          return Err(
+            new CompositeError(
+              errors.map((e) => unwrapRepositoryError(e.reason))
+            )
+          );
+        }
+      }
+      if (captainOfIds) {
+        const result = await Promise.allSettled(
+          captainOfIds.map(async (teamId) => {
+            if (teamId) {
+              await this.membershipRepository.assignPersonToTeam({
+                personParam: {
+                  id: person.id,
+                },
+                teamParam: {
+                  id: teamId,
+                },
+                position: MembershipPositionType.Captain,
+              });
+            }
+          })
+        );
+        const errors = result.filter((r) => r.status === "rejected");
+        if (errors.length > 0) {
+          return Err(
+            new CompositeError(
+              errors.map((e) => unwrapRepositoryError(e.reason))
+            )
+          );
+        }
+      }
+
+      return Ok(person);
     } catch (error) {
       return handleRepositoryError(error);
     }

@@ -168,11 +168,11 @@ input CreateMarathonInput {
 }
 
 input CreatePersonInput {
-  captainOf: [String!]! = []
+  captainOf: [GlobalId!]! = []
   dbRole: DbRole
   email: EmailAddress!
   linkblue: String
-  memberOf: [String!]! = []
+  memberOf: [GlobalId!]! = []
   name: String
 }
 
@@ -2052,10 +2052,10 @@ input SetMarathonInput {
 }
 
 input SetPersonInput {
-  captainOf: [String!]
+  captainOf: [GlobalId!]
   email: EmailAddress
   linkblue: String
-  memberOf: [String!]
+  memberOf: [GlobalId!]
   name: String
 }
 
@@ -2156,7 +2156,7 @@ type TeamNode implements Node {
     """The string filters to apply to the query"""
     stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
   ): ListFundraisingEntriesResponse!
-  fundraisingTotalAmount: [Float!]!
+  fundraisingTotalAmount: Float
   id: GlobalId!
   legacyStatus: TeamLegacyStatus!
   marathon: MarathonNode!

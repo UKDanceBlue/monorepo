@@ -17,10 +17,8 @@ import {
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { DateTime } from "luxon";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
-
-import type { ViewTeamFundraisingDocumentQuery } from "/workspaces/monorepo/packages/common/dist/graphql-client-portal/graphql";
 
 const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
   query ViewTeamFundraisingDocument(

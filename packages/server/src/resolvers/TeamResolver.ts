@@ -376,6 +376,7 @@ export class TeamResolver {
     return rows.map((row) => pointEntryModelToResource(row));
   }
 
+  // TODO: increase minimum access level
   @AccessControl(
     { accessLevel: AccessLevel.Committee },
     {
@@ -388,7 +389,7 @@ export class TeamResolver {
       ],
     }
   )
-  @FieldResolver(() => [Float])
+  @FieldResolver(() => Float, { nullable: true })
   async fundraisingTotalAmount(
     @Root() { id: { id } }: TeamNode
   ): Promise<ConcreteResult<Option<number>>> {

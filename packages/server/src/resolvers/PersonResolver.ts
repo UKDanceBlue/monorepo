@@ -100,11 +100,11 @@ class CreatePersonInput {
   @Field(() => DbRole, { nullable: true })
   dbRole?: DbRole;
 
-  @Field(() => [String], { defaultValue: [] })
-  memberOf?: string[];
+  @Field(() => [GlobalIdScalar], { defaultValue: [] })
+  memberOf?: GlobalId[];
 
-  @Field(() => [String], { defaultValue: [] })
-  captainOf?: string[];
+  @Field(() => [GlobalIdScalar], { defaultValue: [] })
+  captainOf?: GlobalId[];
 }
 @InputType()
 class SetPersonInput {
@@ -117,11 +117,11 @@ class SetPersonInput {
   @Field(() => String, { nullable: true })
   linkblue?: string;
 
-  @Field(() => [String], { nullable: true })
-  memberOf?: string[];
+  @Field(() => [GlobalIdScalar], { nullable: true })
+  memberOf?: GlobalId[];
 
-  @Field(() => [String], { nullable: true })
-  captainOf?: string[];
+  @Field(() => [GlobalIdScalar], { nullable: true })
+  captainOf?: GlobalId[];
 }
 
 @Resolver(() => PersonNode)
@@ -265,8 +265,8 @@ export class PersonResolver {
         name: input.name,
         email: input.email,
         linkblue: input.linkblue,
-        memberOf: input.memberOf?.map((uuid) => ({ uuid })),
-        captainOf: input.captainOf?.map((uuid) => ({ uuid })),
+        memberOf: input.memberOf?.map(({ id }) => ({ uuid: id })),
+        captainOf: input.captainOf?.map(({ id }) => ({ uuid: id })),
       }
     );
 
