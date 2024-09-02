@@ -16,10 +16,7 @@ import {
   MembershipPositionType,
   SortDirection,
 } from "@ukdanceblue/common";
-import {
-  ConcreteResult,
-  FormattedConcreteError,
-} from "@ukdanceblue/common/error";
+import { ConcreteResult } from "@ukdanceblue/common/error";
 import {
   Arg,
   Args,
@@ -34,6 +31,7 @@ import {
 import { Container, Service } from "typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
+import { Ok } from "ts-results-es";
 
 @ArgsType()
 export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<
@@ -111,7 +109,7 @@ export class FundraisingEntryResolver {
   @Query(() => ListFundraisingEntriesResponse)
   async fundraisingEntries(
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
-  ): Promise<ListFundraisingEntriesResponse> {
+  ): Promise<ConcreteResult<ListFundraisingEntriesResponse>> {
     const entries = await this.fundraisingEntryRepository.listEntries({
       filters: args.filters,
       order:
@@ -130,20 +128,22 @@ export class FundraisingEntryResolver {
     });
 
     if (entries.isErr()) {
-      throw new FormattedConcreteError(entries.error);
+      return entries;
     }
     if (count.isErr()) {
-      throw new FormattedConcreteError(count.error);
+      return count;
     }
 
-    return ListFundraisingEntriesResponse.newPaginated({
-      data: await Promise.all(
-        entries.value.map((model) => fundraisingEntryModelToNode(model))
-      ),
-      total: count.value,
-      page: args.page,
-      pageSize: args.pageSize,
-    });
+    return Ok(
+      ListFundraisingEntriesResponse.newPaginated({
+        data: await Promise.all(
+          entries.value.map((model) => fundraisingEntryModelToNode(model))
+        ),
+        total: count.value,
+        page: args.page,
+        pageSize: args.pageSize,
+      })
+    );
   }
 
   @AccessControl<FundraisingEntryNode>(
@@ -192,18 +192,20 @@ export class FundraisingEntryResolver {
   @FieldResolver(() => [FundraisingAssignmentNode])
   async assignments(
     @Root() { id: { id } }: FundraisingEntryNode
-  ): Promise<FundraisingAssignmentNode[]> {
+  ): Promise<ConcreteResult<FundraisingAssignmentNode[]>> {
     const assignments =
       await this.fundraisingEntryRepository.getAssignmentsForEntry({
         uuid: id,
       });
-    if (assignments.isErr()) {
-      throw new FormattedConcreteError(assignments.error);
-    }
-    return Promise.all(
-      assignments.value.map((assignment) =>
-        fundraisingAssignmentModelToNode(assignment)
-      )
-    );
+
+    return assignments
+      .toAsyncResult()
+      .map((assignments) =>
+        Promise.all(
+          assignments.map((assignment) =>
+            fundraisingAssignmentModelToNode(assignment)
+          )
+        )
+      ).promise;
   }
 }

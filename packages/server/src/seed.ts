@@ -37,14 +37,14 @@ try {
 
   const marathon = await marathonRepository.createMarathon({ year: "DB24" });
   if (marathon.isErr()) {
-    throw new FormattedConcreteError(marathon.error);
+    throw new FormattedConcreteError(marathon);
   }
 
   const ensureCommitteesResult = await committeeRepository.ensureCommittees([
     marathon.value,
   ]);
   if (ensureCommitteesResult.isErr()) {
-    throw new FormattedConcreteError(ensureCommitteesResult.error);
+    throw new FormattedConcreteError(ensureCommitteesResult);
   }
 
   const techChair = await personRepository.createPerson({
@@ -52,7 +52,7 @@ try {
     linkblue: "jtho264",
   });
   if (techChair.isErr()) {
-    throw new FormattedConcreteError(techChair.error);
+    throw new FormattedConcreteError(techChair);
   }
 
   await committeeRepository.assignPersonToCommittee(

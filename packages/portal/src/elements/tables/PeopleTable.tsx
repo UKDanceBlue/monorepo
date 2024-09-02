@@ -236,8 +236,7 @@ export const PeopleTable = () => {
               // TODO: fix
               return record.primaryCommittee?.role ?? "None";
             },
-            sorter: true,
-            sortDirections: ["ascend", "descend"],
+            sorter: false,
             filters: Object.values(CommitteeRole).map((role) => ({
               text: role,
               value: role,
@@ -252,8 +251,7 @@ export const PeopleTable = () => {
                 ? committeeNames[record.primaryCommittee.identifier]
                 : "None";
             },
-            sorter: true,
-            sortDirections: ["ascend", "descend"],
+            sorter: false,
             filters: Object.keys(committeeNames).map((committeeIdentifier) => ({
               text: committeeNames[committeeIdentifier as CommitteeIdentifier],
               value: committeeIdentifier,

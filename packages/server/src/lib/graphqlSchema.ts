@@ -25,7 +25,7 @@ import {
   FormattedConcreteError,
   toBasicError,
 } from "@ukdanceblue/common/error";
-import { Option, Result } from "ts-results-es";
+import { Err, Option, Result } from "ts-results-es";
 import { buildSchema } from "type-graphql";
 import { Container } from "typedi";
 
@@ -54,8 +54,8 @@ const errorHandlingMiddleware: MiddlewareFn = async (_, next) => {
       logger.error("An error occurred in a resolver", result.error);
       throw new FormattedConcreteError(
         result.error instanceof ConcreteError
-          ? result.error
-          : toBasicError(result.error)
+          ? result
+          : Err(toBasicError(result.error))
       );
     } else {
       result = result.value as unknown;

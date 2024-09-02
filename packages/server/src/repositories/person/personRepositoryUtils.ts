@@ -1,5 +1,6 @@
 import {
   dateFilterToPrisma,
+  oneOfFilterToPrisma,
   stringFilterToPrisma,
 } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
@@ -10,7 +11,6 @@ import { Err, Ok } from "ts-results-es";
 import type { PersonFilters, PersonOrderKeys } from "./PersonRepository.js";
 import type { Prisma } from "@prisma/client";
 import type { Result } from "ts-results-es";
-
 
 export function buildPersonOrder(
   order:
@@ -49,6 +49,7 @@ export function buildPersonWhere(
   filters: readonly PersonFilters[] | null | undefined
 ) {
   const where: Prisma.PersonWhereInput = {};
+  const membershipsWhere: Prisma.MembershipWhereInput = {};
 
   for (const filter of filters ?? []) {
     switch (filter.field) {
@@ -63,7 +64,29 @@ export function buildPersonWhere(
         where[filter.field] = dateFilterToPrisma(filter);
         break;
       }
+      case "committeeRole": {
+        membershipsWhere.committeeRole = oneOfFilterToPrisma(filter);
+        break;
+      }
+      case "committeeName": {
+        membershipsWhere.team = {
+          correspondingCommittee: {
+            identifier: oneOfFilterToPrisma(filter),
+          },
+        };
+        break;
+      }
+      case "dbRole":
+      default: {
+        filter.field satisfies "dbRole";
+        throw new Error(`Unsupported filter field: ${JSON.stringify(filter)}`);
+      }
     }
   }
-  return where;
+  return {
+    ...where,
+    memberships: {
+      some: membershipsWhere,
+    },
+  };
 }

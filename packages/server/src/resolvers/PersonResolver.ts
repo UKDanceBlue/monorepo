@@ -532,10 +532,10 @@ export class PersonResolver {
     );
 
     if (entries.isErr()) {
-      throw new FormattedConcreteError(entries.error);
+      throw new FormattedConcreteError(entries);
     }
     if (count.isErr()) {
-      throw new FormattedConcreteError(count.error);
+      throw new FormattedConcreteError(count);
     }
 
     return ListFundraisingEntriesResponse.newPaginated({
@@ -593,7 +593,7 @@ export class PersonResolver {
       });
 
     if (models.isErr()) {
-      throw new FormattedConcreteError(models.error);
+      throw new FormattedConcreteError(models);
     }
 
     return Promise.all(

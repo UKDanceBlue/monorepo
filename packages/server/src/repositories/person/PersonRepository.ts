@@ -14,9 +14,7 @@ import {
   CommitteeIdentifier,
   CommitteeRole,
   DbRole,
-  DetailedError,
   EffectiveCommitteeRole,
-  ErrorCode,
   MembershipPositionType,
   SortDirection,
   TeamLegacyStatus,
@@ -1061,10 +1059,7 @@ export class PersonRepository {
           !fallbackCommittee.team.correspondingCommittee ||
           !fallbackCommittee.committeeRole
         ) {
-          throw new DetailedError(
-            ErrorCode.InternalFailure,
-            "Invalid committee assignment"
-          );
+          return Err(new InvariantError("Invalid committee assignment"));
         }
         return Ok([
           fallbackCommittee,

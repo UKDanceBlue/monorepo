@@ -3,6 +3,7 @@ import * as ErrorCode from "./errorCode.js";
 import { GraphQLError } from "graphql";
 
 import type { GraphQLFormattedError, SourceLocation } from "graphql";
+import { Err } from "ts-results-es";
 
 export abstract class ConcreteError {
   #graphQlError: GraphQLError;
@@ -49,9 +50,11 @@ export class FormattedConcreteError
 {
   readonly cause: ConcreteError;
   readonly graphQlError: GraphQLFormattedErrorWithExtensions;
-  constructor(error: ConcreteError) {
+  readonly #stack: string | undefined;
+  constructor({ error, stack }: Err<ConcreteError>) {
     super(error.message);
     this.cause = error;
+    this.#stack = stack;
     this.graphQlError = error.graphQlError;
   }
 
@@ -68,7 +71,7 @@ export class FormattedConcreteError
   }
 
   get stack(): string | undefined {
-    return this.cause.expose ? this.cause.stack : undefined;
+    return this.cause.expose ? (this.cause.stack ?? this.#stack) : undefined;
   }
 }
 

@@ -39,7 +39,6 @@ import { Service } from "typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 import Validator from "validator";
-import { Ok } from "ts-results-es";
 
 @ObjectType("GetDeviceByUuidResponse", {
   implements: AbstractGraphQLOkResponse<DeviceNode>,
@@ -196,7 +195,9 @@ export class DeviceResolver {
       }
     );
 
-    return Ok(RegisterDeviceResponse.newOk(deviceModelToResource(row)));
+    return row.map((row) =>
+      RegisterDeviceResponse.newOk(deviceModelToResource(row))
+    );
   }
 
   @Mutation(() => DeleteDeviceResponse, { name: "deleteDevice" })

@@ -500,7 +500,7 @@ export class TeamResolver {
   async fundraisingEntries(
     @Root() { id: { id } }: TeamNode,
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
-  ): Promise<ListFundraisingEntriesResponse> {
+  ): Promise<ConcreteResult<ListFundraisingEntriesResponse>> {
     const entries = await this.fundraisingEntryRepository.listEntries(
       {
         filters: args.filters,
@@ -530,20 +530,22 @@ export class TeamResolver {
     );
 
     if (entries.isErr()) {
-      throw new FormattedConcreteError(entries.error);
+      return entries;
     }
     if (count.isErr()) {
-      throw new FormattedConcreteError(count.error);
+      return count;
     }
 
-    return ListFundraisingEntriesResponse.newPaginated({
-      data: await Promise.all(
-        entries.value.map((model) => fundraisingEntryModelToNode(model))
-      ),
-      total: count.value,
-      page: args.page,
-      pageSize: args.pageSize,
-    });
+    return Ok(
+      ListFundraisingEntriesResponse.newPaginated({
+        data: await Promise.all(
+          entries.value.map((model) => fundraisingEntryModelToNode(model))
+        ),
+        total: count.value,
+        page: args.page,
+        pageSize: args.pageSize,
+      })
+    );
   }
 
   @AccessControl(globalFundraisingAccessParam)
@@ -567,7 +569,7 @@ export class TeamResolver {
     });
 
     if (rows.isErr()) {
-      throw new FormattedConcreteError(rows.error);
+      throw new FormattedConcreteError(rows);
     }
 
     return rows.value.map((row) => {
@@ -590,7 +592,7 @@ export class TeamResolver {
     );
 
     if (result.isErr()) {
-      throw new FormattedConcreteError(result.error);
+      throw new FormattedConcreteError(result);
     }
 
     return undefined;
