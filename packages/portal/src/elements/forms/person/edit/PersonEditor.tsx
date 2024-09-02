@@ -210,7 +210,7 @@ export function PersonEditor({
                             </Select.Option>
                           </Select>
                         ) : (
-                          ` (${committeeIdentifier})`
+                          ` (${team.committeeRole})`
                         ))}
                       <Button
                         onClick={() =>
@@ -285,7 +285,7 @@ export function PersonEditor({
                             title="Committee Role"
                           />
                         ) : (
-                          ` (${committeeIdentifier})`
+                          ` (${team.committeeRole})`
                         ))}
                       <Button
                         onClick={() =>

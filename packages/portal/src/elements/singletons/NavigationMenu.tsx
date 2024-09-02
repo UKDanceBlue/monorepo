@@ -15,6 +15,8 @@ import {
 import { Button, Menu, Select } from "antd";
 import { useContext, useEffect, useState } from "react";
 
+import { MasqueradeSelector } from "./MasqueradeSelector";
+
 interface NavItemType {
   slug: string;
   title: string;
@@ -229,6 +231,17 @@ export const NavigationMenu = () => {
           style={{ color: "inherit" }}
         />
       </Menu.Item>
+      {authorization?.accessLevel === AccessLevel.SuperAdmin && (
+        <Menu.Item
+          key="masquerade"
+          title="Masquerade"
+          style={{
+            background: "transparent",
+          }}
+        >
+          <MasqueradeSelector />
+        </Menu.Item>
+      )}
       <Menu.Item
         key="selected-marathon"
         title="Select Marathon"

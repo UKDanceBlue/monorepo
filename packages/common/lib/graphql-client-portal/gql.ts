@@ -37,6 +37,7 @@ const documents = {
     "\n  mutation TeamCreator($input: CreateTeamInput!, $marathonUuid: GlobalId!) {\n    createTeam(input: $input, marathon: $marathonUuid) {\n      ok\n      uuid\n    }\n  }\n": types.TeamCreatorDocument,
     "\n  fragment TeamEditorFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    type\n  }\n": types.TeamEditorFragmentFragmentDoc,
     "\n  mutation TeamEditor($uuid: GlobalId!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n": types.TeamEditorDocument,
+    "\n      query MasqueradeSelector {\n        listPeople {\n          data {\n            id\n            name\n          }\n        }\n      }\n    ": types.MasqueradeSelectorDocument,
     "\n  fragment PeopleTableFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    primaryCommittee {\n      identifier\n      role\n    }\n  }\n": types.PeopleTableFragmentFragmentDoc,
     "\n  query PeopleTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [PersonResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [PersonResolverKeyedOneOfFilterItem!]\n    $stringFilters: [PersonResolverKeyedStringFilterItem!]\n  ) {\n    listPeople(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...PeopleTableFragment\n      }\n    }\n  }\n": types.PeopleTableDocument,
     "\n  query TeamsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [TeamResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]\n    $stringFilters: [TeamResolverKeyedStringFilterItem!]\n  ) {\n    teams(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...TeamsTableFragment\n      }\n    }\n  }\n": types.TeamsTableDocument,
@@ -83,7 +84,6 @@ const documents = {
     "\n  mutation EditMarathonHour($input: SetMarathonHourInput!, $uuid: GlobalId!) {\n    setMarathonHour(input: $input, uuid: $uuid) {\n      id\n    }\n  }\n": types.EditMarathonHourDocument,
     "\n  query NotificationManager($uuid: GlobalId!) {\n    notification(uuid: $uuid) {\n      data {\n        ...SingleNotificationFragment\n      }\n    }\n  }\n": types.NotificationManagerDocument,
     "\n  query NotificationViewer($uuid: GlobalId!) {\n    notification(uuid: $uuid) {\n      data {\n        ...SingleNotificationFragment\n      }\n    }\n  }\n": types.NotificationViewerDocument,
-    "\n  query CreatePersonPage {\n    teams(sendAll: true, sortBy: [\"name\"], sortDirection: [asc]) {\n      data {\n        ...TeamNameFragment\n      }\n    }\n  }\n": types.CreatePersonPageDocument,
     "\n  query EditPersonPage($uuid: GlobalId!, $marathonId: GlobalId!) {\n    person(uuid: $uuid) {\n      ...PersonEditorFragment\n    }\n    teams(\n      sendAll: true\n      sortBy: [\"name\"]\n      sortDirection: [asc]\n      marathonId: [$marathonId]\n    ) {\n      data {\n        ...TeamNameFragment\n      }\n    }\n  }\n": types.EditPersonPageDocument,
     "\n  query ViewPersonPage($uuid: GlobalId!) {\n    person(uuid: $uuid) {\n      ...PersonViewerFragment\n    }\n  }\n": types.ViewPersonPageDocument,
     "\n  query EditTeamPage($uuid: GlobalId!) {\n    team(uuid: $uuid) {\n      data {\n        ...TeamEditorFragment\n      }\n    }\n  }\n": types.EditTeamPageDocument,
@@ -206,6 +206,10 @@ export function graphql(source: "\n  fragment TeamEditorFragment on TeamNode {\n
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation TeamEditor($uuid: GlobalId!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n"): (typeof documents)["\n  mutation TeamEditor($uuid: GlobalId!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n      query MasqueradeSelector {\n        listPeople {\n          data {\n            id\n            name\n          }\n        }\n      }\n    "): (typeof documents)["\n      query MasqueradeSelector {\n        listPeople {\n          data {\n            id\n            name\n          }\n        }\n      }\n    "];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -390,10 +394,6 @@ export function graphql(source: "\n  query NotificationManager($uuid: GlobalId!)
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query NotificationViewer($uuid: GlobalId!) {\n    notification(uuid: $uuid) {\n      data {\n        ...SingleNotificationFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query NotificationViewer($uuid: GlobalId!) {\n    notification(uuid: $uuid) {\n      data {\n        ...SingleNotificationFragment\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query CreatePersonPage {\n    teams(sendAll: true, sortBy: [\"name\"], sortDirection: [asc]) {\n      data {\n        ...TeamNameFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query CreatePersonPage {\n    teams(sendAll: true, sortBy: [\"name\"], sortDirection: [asc]) {\n      data {\n        ...TeamNameFragment\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

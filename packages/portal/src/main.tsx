@@ -1,25 +1,42 @@
 import "normalize.css";
+import "./root.css";
 
+import { API_BASE_URL } from "@config/api.ts";
 import { MarathonConfigProvider } from "@config/marathon.tsx";
 import { RouterProvider } from "@tanstack/react-router";
 import { App as AntApp } from "antd";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { Provider as UrqlProvider } from "urql";
+import {
+  cacheExchange,
+  Client,
+  fetchExchange,
+  Provider as UrqlProvider,
+} from "urql";
 
 import { AntConfigProvider, ThemeConfigProvider } from "./config/ant.tsx";
-import { urqlClient } from "./config/urql.ts";
 import { router } from "./routing/router.ts";
+
+const API_URL = `${API_BASE_URL}/graphql`;
+
+const urqlClient = new Client({
+  url: API_URL,
+  exchanges: [cacheExchange, fetchExchange],
+  fetchOptions: () => {
+    const query = new URLSearchParams(window.location.search).get("masquerade");
+    return {
+      credentials: "include",
+      headers: query
+        ? {
+            "x-ukdb-masquerade": query,
+          }
+        : undefined,
+    };
+  },
+});
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <style>
-      {`
-      html, body, #root {
-        height: 100%;
-      }
-      `}
-    </style>
     <ThemeConfigProvider>
       <AntConfigProvider>
         <AntApp style={{ height: "100%" }}>

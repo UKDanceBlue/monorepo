@@ -9,6 +9,7 @@ import {
   CommitteeIdentifier,
   CommitteeRole,
   DbRole,
+  parseGlobalId,
   roleToAccessLevel,
   TeamType,
 } from "@ukdanceblue/common";
@@ -216,6 +217,15 @@ export const graphqlContextFunction: ContextFunction<
     ctx.request.headers["x-ukdb-masquerade"] &&
     typeof ctx.request.headers["x-ukdb-masquerade"] === "string"
   ) {
+    const parsedId = parseGlobalId(ctx.request.headers["x-ukdb-masquerade"]);
+    if (parsedId.isErr()) {
+      logger.error(
+        "graphqlContextFunction Error parsing masquerade ID",
+        parsedId.error
+      );
+      return structuredClone(defaultContext);
+    }
+    logger.trace("graphqlContextFunction Masquerading as", parsedId.value.id);
     // We need to reset the dbRole to the default one in case the masquerade user is not a committee member
     contextWithUser = await withUserInfo(
       {
@@ -225,7 +235,7 @@ export const graphqlContextFunction: ContextFunction<
           dbRole: authSourceDbRole,
         },
       },
-      ctx.request.headers["x-ukdb-masquerade"]
+      parsedId.value.id
     );
     if (contextWithUser.isErr()) {
       logger.error(
