@@ -40,7 +40,7 @@ const schemaPath = fileURLToPath(
 /**
  * Logs errors, as well as allowing us to return results and options from resolvers
  */
-const errorHandlingMiddleware: MiddlewareFn = async (_, next) => {
+const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
   let result;
   try {
     result = (await next()) as unknown;
@@ -51,12 +51,18 @@ const errorHandlingMiddleware: MiddlewareFn = async (_, next) => {
 
   if (Result.isResult(result)) {
     if (result.isErr()) {
-      logger.error("An error occurred in a resolver", result.error);
-      throw new FormattedConcreteError(
+      const error = new FormattedConcreteError(
         result.error instanceof ConcreteError
           ? result
-          : Err(toBasicError(result.error))
+          : Err(toBasicError(result.error)),
+        info
       );
+      logger.error(
+        "An error occurred in a resolver",
+        error.message,
+        error.stack
+      );
+      throw error;
     } else {
       result = result.value as unknown;
     }

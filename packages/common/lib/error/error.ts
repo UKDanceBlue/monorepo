@@ -1,8 +1,12 @@
 import * as ErrorCode from "./errorCode.js";
 
-import { GraphQLError } from "graphql";
+import { getLocation, GraphQLError } from "graphql";
 
-import type { GraphQLFormattedError, SourceLocation } from "graphql";
+import type {
+  GraphQLFormattedError,
+  GraphQLResolveInfo,
+  SourceLocation,
+} from "graphql";
 import { Err } from "ts-results-es";
 
 export abstract class ConcreteError {
@@ -51,23 +55,47 @@ export class FormattedConcreteError
   readonly cause: ConcreteError;
   readonly graphQlError: GraphQLFormattedErrorWithExtensions;
   readonly #stack: string | undefined;
-  constructor({ error, stack }: Err<ConcreteError>) {
+  readonly #info: GraphQLResolveInfo | undefined;
+
+  constructor({ error, stack }: Err<ConcreteError>, info?: GraphQLResolveInfo) {
     super(error.message);
     this.cause = error;
     this.#stack = stack;
+    this.#info = info;
     this.graphQlError = error.graphQlError;
   }
 
   get extensions(): GraphQLFormattedErrorExtensions {
-    return this.graphQlError.extensions;
+    return {
+      ...this.graphQlError.extensions,
+      stacktrace: this.stack ? this.stack.split("\n") : undefined,
+    };
   }
 
   get locations(): readonly SourceLocation[] | undefined {
-    return this.graphQlError.locations;
+    return (
+      this.#info?.fieldNodes
+        .map((node) =>
+          node.loc ? getLocation(node.loc.source, node.loc.start) : undefined
+        )
+        .filter(
+          (location): location is SourceLocation => location !== undefined
+        ) ?? this.graphQlError.locations
+    );
   }
 
   get path(): readonly (string | number)[] | undefined {
-    return this.graphQlError.path;
+    let current = this.#info?.path;
+    if (current) {
+      const path = [];
+      while (current) {
+        path.unshift(current.key);
+        current = current.prev;
+      }
+      return path;
+    } else {
+      return this.graphQlError.path;
+    }
   }
 
   get stack(): string | undefined {
