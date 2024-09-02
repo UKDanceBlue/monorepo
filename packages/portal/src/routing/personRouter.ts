@@ -7,7 +7,6 @@ import { EditPersonPage } from "@pages/people/single-person/edit-person/EditPers
 import { ViewPersonPage } from "@pages/people/single-person/view-person/ViewPersonPage";
 import { Route } from "@tanstack/react-router";
 
-
 export const peopleTableRoute = new Route({
   path: "/",
   getParentRoute: () => peopleRoute,

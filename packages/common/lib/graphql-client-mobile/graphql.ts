@@ -52,7 +52,7 @@ export type AbstractGraphQlArrayOkResponse = {
 /** API response */
 export type AbstractGraphQlCreatedResponse = {
   readonly ok: Scalars['Boolean']['output'];
-  readonly uuid: Scalars['String']['output'];
+  readonly uuid: Scalars['GlobalId']['output'];
 };
 
 /** API response */
@@ -108,6 +108,7 @@ export const CommitteeIdentifier = {
 export type CommitteeIdentifier = typeof CommitteeIdentifier[keyof typeof CommitteeIdentifier];
 export type CommitteeMembershipNode = Node & {
   readonly __typename?: 'CommitteeMembershipNode';
+  readonly committeeRole?: Maybe<CommitteeRole>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly id: Scalars['GlobalId']['output'];
   readonly identifier: CommitteeIdentifier;
@@ -156,7 +157,7 @@ export type CreateConfigurationResponse = AbstractGraphQlCreatedResponse & Abstr
   readonly __typename?: 'CreateConfigurationResponse';
   readonly data: ConfigurationNode;
   readonly ok: Scalars['Boolean']['output'];
-  readonly uuid: Scalars['String']['output'];
+  readonly uuid: Scalars['GlobalId']['output'];
 };
 
 export type CreateEventInput = {
@@ -176,7 +177,7 @@ export type CreateEventResponse = AbstractGraphQlCreatedResponse & AbstractGraph
   readonly __typename?: 'CreateEventResponse';
   readonly data: EventNode;
   readonly ok: Scalars['Boolean']['output'];
-  readonly uuid: Scalars['String']['output'];
+  readonly uuid: Scalars['GlobalId']['output'];
 };
 
 export type CreateFeedInput = {
@@ -204,31 +205,32 @@ export type CreateMarathonInput = {
 };
 
 export type CreatePersonInput = {
-  readonly captainOf?: ReadonlyArray<Scalars['GlobalId']['input']>;
+  readonly captainOf?: ReadonlyArray<MemberOf>;
+  /** @deprecated DBRole can no longer be set directly */
   readonly dbRole?: InputMaybe<DbRole>;
   readonly email: Scalars['EmailAddress']['input'];
   readonly linkblue?: InputMaybe<Scalars['String']['input']>;
-  readonly memberOf?: ReadonlyArray<Scalars['GlobalId']['input']>;
+  readonly memberOf?: ReadonlyArray<MemberOf>;
   readonly name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreatePointEntryInput = {
   readonly comment?: InputMaybe<Scalars['String']['input']>;
-  readonly opportunityUuid?: InputMaybe<Scalars['String']['input']>;
-  readonly personFromUuid?: InputMaybe<Scalars['String']['input']>;
+  readonly opportunityUuid?: InputMaybe<Scalars['GlobalId']['input']>;
+  readonly personFromUuid?: InputMaybe<Scalars['GlobalId']['input']>;
   readonly points: Scalars['Int']['input'];
-  readonly teamUuid: Scalars['String']['input'];
+  readonly teamUuid: Scalars['GlobalId']['input'];
 };
 
 export type CreatePointEntryResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'CreatePointEntryResponse';
   readonly data: PointEntryNode;
   readonly ok: Scalars['Boolean']['output'];
-  readonly uuid: Scalars['String']['output'];
+  readonly uuid: Scalars['GlobalId']['output'];
 };
 
 export type CreatePointOpportunityInput = {
-  readonly eventUuid?: InputMaybe<Scalars['ID']['input']>;
+  readonly eventUuid?: InputMaybe<Scalars['GlobalId']['input']>;
   readonly name: Scalars['String']['input'];
   readonly opportunityDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
   readonly type: TeamType;
@@ -238,7 +240,7 @@ export type CreatePointOpportunityResponse = AbstractGraphQlCreatedResponse & Ab
   readonly __typename?: 'CreatePointOpportunityResponse';
   readonly data: PointOpportunityNode;
   readonly ok: Scalars['Boolean']['output'];
-  readonly uuid: Scalars['String']['output'];
+  readonly uuid: Scalars['GlobalId']['output'];
 };
 
 export type CreateTeamInput = {
@@ -251,7 +253,7 @@ export type CreateTeamResponse = AbstractGraphQlCreatedResponse & AbstractGraphQ
   readonly __typename?: 'CreateTeamResponse';
   readonly data: TeamNode;
   readonly ok: Scalars['Boolean']['output'];
-  readonly uuid: Scalars['String']['output'];
+  readonly uuid: Scalars['GlobalId']['output'];
 };
 
 export type DbFundsTeamInfo = {
@@ -931,8 +933,14 @@ export type MarathonResolverKeyedIsNullFilterItem = {
   readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type MemberOf = {
+  readonly committeeRole?: InputMaybe<CommitteeRole>;
+  readonly id: Scalars['GlobalId']['input'];
+};
+
 export type MembershipNode = Node & {
   readonly __typename?: 'MembershipNode';
+  readonly committeeRole?: Maybe<CommitteeRole>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly id: Scalars['GlobalId']['output'];
   readonly person: PersonNode;
@@ -1009,20 +1017,20 @@ export type MutationAcknowledgeDeliveryIssueArgs = {
 
 
 export type MutationAddExistingImageToEventArgs = {
-  eventId: Scalars['String']['input'];
-  imageId: Scalars['String']['input'];
+  eventId: Scalars['GlobalId']['input'];
+  imageId: Scalars['GlobalId']['input'];
 };
 
 
 export type MutationAddMapArgs = {
-  imageUuid: Scalars['String']['input'];
+  imageUuid: Scalars['GlobalId']['input'];
   uuid: Scalars['GlobalId']['input'];
 };
 
 
 export type MutationAddPersonToTeamArgs = {
-  personUuid: Scalars['String']['input'];
-  teamUuid: Scalars['String']['input'];
+  personUuid: Scalars['GlobalId']['input'];
+  teamUuid: Scalars['GlobalId']['input'];
 };
 
 
@@ -1040,8 +1048,8 @@ export type MutationAssignTeamToDbFundsTeamArgs = {
 
 
 export type MutationAttachImageToFeedItemArgs = {
-  feedItemUuid: Scalars['String']['input'];
-  imageUuid: Scalars['String']['input'];
+  feedItemUuid: Scalars['GlobalId']['input'];
+  imageUuid: Scalars['GlobalId']['input'];
 };
 
 
@@ -1077,7 +1085,7 @@ export type MutationCreateMarathonArgs = {
 
 export type MutationCreateMarathonHourArgs = {
   input: CreateMarathonHourInput;
-  marathonUuid: Scalars['String']['input'];
+  marathonUuid: Scalars['GlobalId']['input'];
 };
 
 
@@ -1098,7 +1106,7 @@ export type MutationCreatePointOpportunityArgs = {
 
 export type MutationCreateTeamArgs = {
   input: CreateTeamInput;
-  marathon: Scalars['String']['input'];
+  marathon: Scalars['GlobalId']['input'];
 };
 
 
@@ -1118,7 +1126,7 @@ export type MutationDeleteEventArgs = {
 
 
 export type MutationDeleteFeedItemArgs = {
-  feedItemUuid: Scalars['String']['input'];
+  feedItemUuid: Scalars['GlobalId']['input'];
 };
 
 
@@ -1174,18 +1182,18 @@ export type MutationRegisterDeviceArgs = {
 
 
 export type MutationRemoveImageFromEventArgs = {
-  eventId: Scalars['String']['input'];
-  imageId: Scalars['String']['input'];
+  eventId: Scalars['GlobalId']['input'];
+  imageId: Scalars['GlobalId']['input'];
 };
 
 
 export type MutationRemoveImageFromFeedItemArgs = {
-  feedItemUuid: Scalars['String']['input'];
+  feedItemUuid: Scalars['GlobalId']['input'];
 };
 
 
 export type MutationRemoveMapArgs = {
-  imageUuid: Scalars['String']['input'];
+  imageUuid: Scalars['GlobalId']['input'];
   uuid: Scalars['GlobalId']['input'];
 };
 
@@ -1208,7 +1216,7 @@ export type MutationSetEventArgs = {
 
 
 export type MutationSetFeedItemArgs = {
-  feedItemUuid: Scalars['String']['input'];
+  feedItemUuid: Scalars['GlobalId']['input'];
   input: SetFeedInput;
 };
 
@@ -1839,7 +1847,7 @@ export type QueryNotificationDeliveriesArgs = {
   dateFilters?: InputMaybe<ReadonlyArray<NotificationDeliveryResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
   isNullFilters?: InputMaybe<ReadonlyArray<NotificationDeliveryResolverKeyedIsNullFilterItem>>;
-  notificationUuid: Scalars['String']['input'];
+  notificationUuid: Scalars['GlobalId']['input'];
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
   oneOfFilters?: InputMaybe<Scalars['Void']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -1935,7 +1943,7 @@ export type QueryTeamsArgs = {
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
   isNullFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedIsNullFilterItem>>;
   legacyStatus?: InputMaybe<ReadonlyArray<TeamLegacyStatus>>;
-  marathonId?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  marathonId?: InputMaybe<ReadonlyArray<Scalars['GlobalId']['input']>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
   oneOfFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -1949,11 +1957,12 @@ export type QueryTeamsArgs = {
 };
 
 export type RegisterDeviceInput = {
+  /** For legacy reasons, this can be a GlobalId or a raw UUID */
   readonly deviceId: Scalars['String']['input'];
   /** The Expo push token of the device */
   readonly expoPushToken?: InputMaybe<Scalars['String']['input']>;
   /** The ID of the last user to log in on this device */
-  readonly lastUserId?: InputMaybe<Scalars['String']['input']>;
+  readonly lastUserId?: InputMaybe<Scalars['GlobalId']['input']>;
   /** base64 encoded SHA-256 hash of a secret known to the device */
   readonly verifier: Scalars['String']['input'];
 };
@@ -1994,7 +2003,7 @@ export type SetEventOccurrenceInput = {
   readonly fullDay: Scalars['Boolean']['input'];
   readonly interval: IntervalIsoInput;
   /** If updating an existing occurrence, the UUID of the occurrence to update */
-  readonly uuid?: InputMaybe<Scalars['String']['input']>;
+  readonly uuid?: InputMaybe<Scalars['GlobalId']['input']>;
 };
 
 export type SetEventResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
@@ -2022,15 +2031,15 @@ export type SetMarathonInput = {
 };
 
 export type SetPersonInput = {
-  readonly captainOf?: InputMaybe<ReadonlyArray<Scalars['GlobalId']['input']>>;
+  readonly captainOf?: InputMaybe<ReadonlyArray<MemberOf>>;
   readonly email?: InputMaybe<Scalars['EmailAddress']['input']>;
   readonly linkblue?: InputMaybe<Scalars['String']['input']>;
-  readonly memberOf?: InputMaybe<ReadonlyArray<Scalars['GlobalId']['input']>>;
+  readonly memberOf?: InputMaybe<ReadonlyArray<MemberOf>>;
   readonly name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type SetPointOpportunityInput = {
-  readonly eventUuid?: InputMaybe<Scalars['ID']['input']>;
+  readonly eventUuid?: InputMaybe<Scalars['GlobalId']['input']>;
   readonly name?: InputMaybe<Scalars['String']['input']>;
   readonly opportunityDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
   readonly type?: InputMaybe<TeamType>;
@@ -2061,7 +2070,7 @@ export type StageNotificationResponse = AbstractGraphQlCreatedResponse & Abstrac
   readonly __typename?: 'StageNotificationResponse';
   readonly data: NotificationNode;
   readonly ok: Scalars['Boolean']['output'];
-  readonly uuid: Scalars['String']['output'];
+  readonly uuid: Scalars['GlobalId']['output'];
 };
 
 export { StringComparator };
@@ -2072,6 +2081,7 @@ export type TeamNode = Node & {
   readonly __typename?: 'TeamNode';
   /** @deprecated Just query the members field and filter by role */
   readonly captains: ReadonlyArray<MembershipNode>;
+  readonly committeeIdentifier?: Maybe<CommitteeIdentifier>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   readonly dbFundsTeam?: Maybe<DbFundsTeamInfo>;
   readonly fundraisingEntries: ListFundraisingEntriesResponse;
@@ -2302,7 +2312,7 @@ export type ActiveMarathonDocumentQuery = { readonly __typename?: 'Query', reado
 
 export type MyTeamFragmentFragment = { readonly __typename?: 'TeamNode', readonly id: string, readonly name: string, readonly totalPoints: number, readonly fundraisingTotalAmount?: number | null, readonly pointEntries: ReadonlyArray<{ readonly __typename?: 'PointEntryNode', readonly points: number, readonly personFrom?: { readonly __typename?: 'PersonNode', readonly id: string, readonly name?: string | null, readonly linkblue?: string | null } | null }>, readonly members: ReadonlyArray<{ readonly __typename?: 'MembershipNode', readonly position: MembershipPositionType, readonly person: { readonly __typename?: 'PersonNode', readonly linkblue?: string | null, readonly name?: string | null } }> } & { ' $fragmentName'?: 'MyTeamFragmentFragment' };
 
-export type MyFundraisingFragmentFragment = { readonly __typename?: 'PersonNode', readonly id: string, readonly fundraisingTotalAmount?: number | null, readonly fundraisingAssignments: ReadonlyArray<{ readonly __typename?: 'FundraisingAssignmentNode', readonly amount: number, readonly entry: { readonly __typename?: 'FundraisingEntryNode', readonly donatedToText?: string | null, readonly donatedByText?: string | null, readonly donatedOn: Date | string } }> } & { ' $fragmentName'?: 'MyFundraisingFragmentFragment' };
+export type MyFundraisingFragmentFragment = { readonly __typename?: 'PersonNode', readonly fundraisingTotalAmount?: number | null, readonly fundraisingAssignments: ReadonlyArray<{ readonly __typename?: 'FundraisingAssignmentNode', readonly amount: number, readonly entry: { readonly __typename?: 'FundraisingEntryNode', readonly donatedToText?: string | null, readonly donatedByText?: string | null, readonly donatedOn: Date | string } }> } & { ' $fragmentName'?: 'MyFundraisingFragmentFragment' };
 
 export const SimpleConfigFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SimpleConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<SimpleConfigFragment, unknown>;
 export const FullConfigFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FullConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SimpleConfig"}},{"kind":"Field","name":{"kind":"Name","value":"validAfter"}},{"kind":"Field","name":{"kind":"Name","value":"validUntil"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SimpleConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<FullConfigFragment, unknown>;
@@ -2317,7 +2327,7 @@ export const HourScreenFragmentFragmentDoc = {"kind":"Document","definitions":[{
 export const ScoreBoardFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScoreBoardFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<ScoreBoardFragmentFragment, unknown>;
 export const HighlightedTeamFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"HighlightedTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<HighlightedTeamFragmentFragment, unknown>;
 export const MyTeamFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"fundraisingTotalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"pointEntries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personFrom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"points"}}]}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<MyTeamFragmentFragment, unknown>;
-export const MyFundraisingFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyFundraisingFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fundraisingTotalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"fundraisingAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"entry"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"donatedToText"}},{"kind":"Field","name":{"kind":"Name","value":"donatedByText"}},{"kind":"Field","name":{"kind":"Name","value":"donatedOn"}}]}}]}}]}}]} as unknown as DocumentNode<MyFundraisingFragmentFragment, unknown>;
+export const MyFundraisingFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyFundraisingFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fundraisingTotalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"fundraisingAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"entry"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"donatedToText"}},{"kind":"Field","name":{"kind":"Name","value":"donatedByText"}},{"kind":"Field","name":{"kind":"Name","value":"donatedOn"}}]}}]}}]}}]} as unknown as DocumentNode<MyFundraisingFragmentFragment, unknown>;
 export const UseAllowedLoginTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"useAllowedLoginTypes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"activeConfiguration"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"key"},"value":{"kind":"StringValue","value":"ALLOWED_LOGIN_TYPES","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SimpleConfig"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SimpleConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<UseAllowedLoginTypesQuery, UseAllowedLoginTypesQueryVariables>;
 export const MarathonTimeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MarathonTime"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"latestMarathon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}}]}}]}}]} as unknown as DocumentNode<MarathonTimeQuery, MarathonTimeQueryVariables>;
 export const UseTabBarConfigDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"useTabBarConfig"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"activeConfiguration"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"key"},"value":{"kind":"StringValue","value":"TAB_BAR_CONFIG","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SimpleConfig"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SimpleConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<UseTabBarConfigQuery, UseTabBarConfigQueryVariables>;
@@ -2329,5 +2339,5 @@ export const RootScreenDocumentDocument = {"kind":"Document","definitions":[{"ki
 export const EventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Events"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"earliestTimestamp"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTimeISO"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"lastTimestamp"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTimeISO"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"events"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"dateFilters"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"comparison"},"value":{"kind":"EnumValue","value":"GREATER_THAN_OR_EQUAL_TO"}},{"kind":"ObjectField","name":{"kind":"Name","value":"field"},"value":{"kind":"EnumValue","value":"occurrenceStart"}},{"kind":"ObjectField","name":{"kind":"Name","value":"value"},"value":{"kind":"Variable","name":{"kind":"Name","value":"earliestTimestamp"}}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"comparison"},"value":{"kind":"EnumValue","value":"LESS_THAN_OR_EQUAL_TO"}},{"kind":"ObjectField","name":{"kind":"Name","value":"field"},"value":{"kind":"EnumValue","value":"occurrenceStart"}},{"kind":"ObjectField","name":{"kind":"Name","value":"value"},"value":{"kind":"Variable","name":{"kind":"Name","value":"lastTimestamp"}}}]}]}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"EnumValue","value":"asc"}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"StringValue","value":"occurrence","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventScreenFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventScreenFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"interval"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"end"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}}]}}]}}]} as unknown as DocumentNode<EventsQuery, EventsQueryVariables>;
 export const ServerFeedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServerFeed"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"feed"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"20"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"textContent"}},{"kind":"Field","name":{"kind":"Name","value":"image"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}}]}}]}}]}}]} as unknown as DocumentNode<ServerFeedQuery, ServerFeedQueryVariables>;
 export const MarathonScreenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MarathonScreen"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentMarathonHour"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"HourScreenFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"latestMarathon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"hours"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"HourScreenFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ImageViewFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"HourScreenFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MarathonHourNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"details"}},{"kind":"Field","name":{"kind":"Name","value":"durationInfo"}},{"kind":"Field","name":{"kind":"Name","value":"mapImages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ImageViewFragment"}}]}}]}}]} as unknown as DocumentNode<MarathonScreenQuery, MarathonScreenQueryVariables>;
-export const ScoreBoardDocumentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ScoreBoardDocument"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"type"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamType"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"HighlightedTeamFragment"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MyTeamFragment"}}]}}]}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MyFundraisingFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"sendAll"},"value":{"kind":"BooleanValue","value":true}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"totalPoints","block":false},{"kind":"StringValue","value":"name","block":false}]}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"desc"},{"kind":"EnumValue","value":"asc"}]}},{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"Variable","name":{"kind":"Name","value":"type"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ScoreBoardFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"HighlightedTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"fundraisingTotalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"pointEntries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personFrom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"points"}}]}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyFundraisingFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fundraisingTotalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"fundraisingAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"entry"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"donatedToText"}},{"kind":"Field","name":{"kind":"Name","value":"donatedByText"}},{"kind":"Field","name":{"kind":"Name","value":"donatedOn"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScoreBoardFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<ScoreBoardDocumentQuery, ScoreBoardDocumentQueryVariables>;
+export const ScoreBoardDocumentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ScoreBoardDocument"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"type"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamType"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"HighlightedTeamFragment"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MyTeamFragment"}}]}}]}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MyFundraisingFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"sendAll"},"value":{"kind":"BooleanValue","value":true}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"totalPoints","block":false},{"kind":"StringValue","value":"name","block":false}]}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"desc"},{"kind":"EnumValue","value":"asc"}]}},{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"Variable","name":{"kind":"Name","value":"type"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ScoreBoardFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"HighlightedTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"fundraisingTotalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"pointEntries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personFrom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"points"}}]}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyFundraisingFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fundraisingTotalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"fundraisingAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"entry"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"donatedToText"}},{"kind":"Field","name":{"kind":"Name","value":"donatedByText"}},{"kind":"Field","name":{"kind":"Name","value":"donatedOn"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScoreBoardFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<ScoreBoardDocumentQuery, ScoreBoardDocumentQueryVariables>;
 export const ActiveMarathonDocumentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ActiveMarathonDocument"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentMarathon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<ActiveMarathonDocumentQuery, ActiveMarathonDocumentQueryVariables>;

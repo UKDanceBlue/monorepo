@@ -111,8 +111,8 @@ export class NodeResolver {
         return Ok(data);
       }
       case TeamNode.constructor.name: {
-        const { data } = await this.teamResolver.getByUuid(id);
-        return Ok(data);
+        const data = await this.teamResolver.getByUuid(id);
+        return data.map(({ data: team }) => team);
       }
       default: {
         throw new Error(`Unknown typename: ${id.typename}`);

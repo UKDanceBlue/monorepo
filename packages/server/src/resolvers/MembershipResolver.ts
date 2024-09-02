@@ -3,7 +3,12 @@ import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
-import { MembershipNode, PersonNode, TeamNode } from "@ukdanceblue/common";
+import {
+  CommitteeRole,
+  MembershipNode,
+  PersonNode,
+  TeamNode,
+} from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 import { Service } from "typedi";
@@ -46,5 +51,14 @@ export class MembershipResolver {
     );
 
     return row.map((row) => teamModelToResource(row.team));
+  }
+
+  @FieldResolver(() => CommitteeRole, { nullable: true })
+  async committeeRole(
+    @Root() { id: { id } }: MembershipNode
+  ): Promise<ConcreteResult<CommitteeRole | null>> {
+    return (
+      await this.membershipRepository.findMembershipByUnique({ uuid: id })
+    ).map((row) => row.committeeRole);
   }
 }

@@ -1,4 +1,4 @@
-
+import { GraphQLResolveInfo } from "graphql";
 import { ConcreteError } from "./error.js";
 import * as ErrorCode from "./errorCode.js";
 
@@ -26,7 +26,7 @@ export abstract class ControlError extends ConcreteError {
   }
 }
 
-export class UnauthorizedError extends ControlError {
+export class AuthorizationRuleFailedError extends ControlError {
   get message() {
     return "Unauthorized";
   }
@@ -39,8 +39,40 @@ export class UnauthorizedError extends ControlError {
     return `Unauthorized: ${this.requiredAuthorization.map(prettyPrintAuthorizationRule).join(", ")}`;
   }
 
-  get tag(): ErrorCode.Unauthorized {
-    return ErrorCode.Unauthorized;
+  get tag(): ErrorCode.AuthorizationRuleFailed {
+    return ErrorCode.AuthorizationRuleFailed;
+  }
+}
+
+export class AccessControlError extends ControlError {
+  constructor(protected readonly info: GraphQLResolveInfo) {
+    super();
+  }
+
+  protected errorPath() {
+    let locationString = this.info.path.key;
+    let pathSegment: typeof this.info.path.prev = this.info.path.prev;
+    while (pathSegment) {
+      locationString = `${pathSegment.key}.${locationString}`;
+      pathSegment = pathSegment.prev;
+    }
+    return locationString;
+  }
+
+  get message() {
+    return `Access denied to ${this.info.fieldName} at ${this.errorPath()}`;
+  }
+
+  get detailedMessage() {
+    return `Access denied to ${this.info.fieldName} (${this.info.returnType.toString()}) at ${this.errorPath()} within ${this.info.parentType.toString()}`;
+  }
+
+  get expose() {
+    return true;
+  }
+
+  get tag(): ErrorCode.AccessControlError {
+    return ErrorCode.AccessControlError;
   }
 }
 

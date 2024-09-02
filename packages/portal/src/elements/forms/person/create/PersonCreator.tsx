@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
+import type { MemberOf } from "@ukdanceblue/common/graphql-client-portal/raw-types";
 import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
 import type { BaseOptionType } from "antd/es/select";
 import { useMemo, useState } from "react";
@@ -30,10 +31,10 @@ export function PersonCreator({
 
   const teamNamesData = getFragmentData(TeamNameFragment, teamNamesFragment);
 
-  const [formMemberOf, setFormMemberOf] = useState<readonly string[]>(
+  const [formMemberOf, setFormMemberOf] = useState<readonly MemberOf[]>(
     formApi.getFieldValue("memberOf") ?? []
   );
-  const [formCaptainOf, setFormCaptainOf] = useState<readonly string[]>(
+  const [formCaptainOf, setFormCaptainOf] = useState<readonly MemberOf[]>(
     formApi.getFieldValue("captainOf") ?? []
   );
   type OptionType = BaseOptionType & { label: string; value: string };
@@ -48,12 +49,12 @@ export function PersonCreator({
       captaincyOptions.push({
         label: team.name,
         value: team.id,
-        disabled: formMemberOf.includes(team.id),
+        disabled: formMemberOf.some(({ id }) => id === team.id),
       });
       membershipOptions.push({
         label: team.name,
         value: team.id,
-        disabled: formCaptainOf.includes(team.id),
+        disabled: formCaptainOf.some(({ id }) => id === team.id),
       });
     }
     return { captaincyOptions, membershipOptions };

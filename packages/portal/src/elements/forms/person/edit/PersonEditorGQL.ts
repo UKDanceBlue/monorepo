@@ -8,6 +8,7 @@ export const PersonEditorFragment = graphql(/* GraphQL */ `
     email
     teams {
       position
+      committeeRole
       team {
         id
         name

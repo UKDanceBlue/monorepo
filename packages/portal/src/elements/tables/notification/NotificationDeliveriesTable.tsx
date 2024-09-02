@@ -21,7 +21,7 @@ const NotificationDeliveriesTableFragment = graphql(/* GraphQL */ `
 
 const notificationDeliveriesTableQueryDocument = graphql(/* GraphQL */ `
   query NotificationDeliveriesTableQuery(
-    $notificationId: String!
+    $notificationId: GlobalId!
     $page: Int
     $pageSize: Int
     $sortBy: [String!]

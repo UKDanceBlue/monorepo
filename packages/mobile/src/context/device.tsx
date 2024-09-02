@@ -1,4 +1,3 @@
-import { universalCatch } from "../common/logging";
 import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
 import { setTag as setSentryTag } from "@sentry/react-native";
@@ -29,6 +28,7 @@ import {
 import { createContext, useContext, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
+import { universalCatch } from "../common/logging";
 import { useAuthState } from "./auth";
 import { useLoading } from "./useLoading";
 
@@ -197,7 +197,7 @@ export const DeviceDataProvider = ({
               verifier,
             },
           });
-          if (error) {
+          if (error && (error.graphQLErrors.length > 0 || error.networkError)) {
             Logger.error("Error registering push notifications", { error });
           } else {
             setPushToken(token?.data ?? null);

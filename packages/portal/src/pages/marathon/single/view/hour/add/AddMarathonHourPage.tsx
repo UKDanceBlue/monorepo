@@ -16,7 +16,7 @@ export function AddMarathonHourPage() {
     graphql(/* GraphQL */ `
       mutation AddMarathonHour(
         $input: CreateMarathonHourInput!
-        $marathonUuid: String!
+        $marathonUuid: GlobalId!
       ) {
         createMarathonHour(input: $input, marathonUuid: $marathonUuid) {
           id

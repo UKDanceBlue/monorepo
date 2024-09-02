@@ -25,8 +25,6 @@ import type {
 import type { ConcreteResult } from "@ukdanceblue/common/error";
 import type { DefaultState } from "koa";
 
-
-
 export interface GraphQLContext extends AuthorizationContext {
   contextErrors: string[];
 }
@@ -137,7 +135,7 @@ async function withUserInfo(
   return Ok(outputContext);
 }
 
-const defaultContext: Readonly<GraphQLContext> = Object.freeze({
+const defaultContext: Readonly<GraphQLContext> = Object.freeze<GraphQLContext>({
   authenticatedUser: null,
   teamMemberships: [],
   userData: {
@@ -146,6 +144,16 @@ const defaultContext: Readonly<GraphQLContext> = Object.freeze({
   authorization: defaultAuthorization,
   contextErrors: [],
 });
+
+const anonymousContext: Readonly<GraphQLContext> =
+  Object.freeze<GraphQLContext>({
+    ...defaultContext,
+    authorization: {
+      accessLevel: AccessLevel.Public,
+      committees: [],
+      dbRole: DbRole.Public,
+    },
+  });
 
 export const graphqlContextFunction: ContextFunction<
   [KoaContextFunctionArgument<DefaultState, GraphQLContext>],
@@ -167,12 +175,14 @@ export const graphqlContextFunction: ContextFunction<
   // Parse the token
   const { userId, authSource } = parseUserJwt(token);
 
+  if (authSource === AuthSource.Anonymous) {
+    return anonymousContext;
+  }
+
   // Set the dbRole based on the auth source
   let authSourceDbRole: DbRole;
   if (authSource === AuthSource.LinkBlue || authSource === AuthSource.Demo) {
     authSourceDbRole = DbRole.UKY;
-  } else if (authSource === AuthSource.Anonymous) {
-    authSourceDbRole = DbRole.Public;
   } else {
     authSourceDbRole = DbRole.None;
   }

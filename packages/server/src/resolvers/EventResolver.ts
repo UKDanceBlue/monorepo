@@ -1,5 +1,3 @@
-
-
 import { FileManager } from "#files/FileManager.js";
 import { auditLogger } from "#logging/auditLogging.js";
 import { EventRepository } from "#repositories/event/EventRepository.js";
@@ -123,12 +121,12 @@ class CreateEventInput {
 
 @InputType()
 export class SetEventOccurrenceInput {
-  @Field(() => String, {
+  @Field(() => GlobalIdScalar, {
     nullable: true,
     description:
       "If updating an existing occurrence, the UUID of the occurrence to update",
   })
-  uuid!: string | null;
+  uuid!: GlobalId | null;
   @Field(() => IntervalISO)
   interval!: IntervalISO;
   @Field(() => Boolean)
@@ -279,8 +277,7 @@ export class EventResolver {
       eventModelToResource(
         row,
         row.eventOccurrences.map(eventOccurrenceModelToResource)
-      ),
-      row.uuid
+      )
     );
   }
 
@@ -331,7 +328,7 @@ export class EventResolver {
               (
                 occurrence
               ): Prisma.EventOccurrenceUpdateManyWithWhereWithoutEventInput => ({
-                where: { uuid: occurrence.uuid! },
+                where: { uuid: occurrence.uuid!.id },
                 data: {
                   date: occurrence.interval.start,
                   endDate: occurrence.interval.end,
@@ -344,7 +341,7 @@ export class EventResolver {
             uuid: {
               notIn: input.occurrences
                 .filter((occurrence) => occurrence.uuid != null)
-                .map((occurrence) => occurrence.uuid!),
+                .map((occurrence) => occurrence.uuid!.id),
             },
           },
         },
@@ -368,12 +365,12 @@ export class EventResolver {
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => RemoveEventImageResponse, { name: "removeImageFromEvent" })
   async removeImage(
-    @Arg("eventId") eventUuid: string,
-    @Arg("imageId") imageUuid: string
+    @Arg("eventId", () => GlobalIdScalar) eventUuid: GlobalId,
+    @Arg("imageId", () => GlobalIdScalar) imageUuid: GlobalId
   ): Promise<RemoveEventImageResponse> {
     const row = await this.eventImageRepository.removeEventImageByUnique({
-      eventUuid,
-      imageUuid,
+      eventUuid: eventUuid.id,
+      imageUuid: imageUuid.id,
     });
 
     if (!row) {
@@ -388,12 +385,12 @@ export class EventResolver {
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => AddEventImageResponse, { name: "addExistingImageToEvent" })
   async addExistingImage(
-    @Arg("eventId") eventId: string,
-    @Arg("imageId") imageId: string
+    @Arg("eventId", () => GlobalIdScalar) eventId: GlobalId,
+    @Arg("imageId", () => GlobalIdScalar) imageId: GlobalId
   ): Promise<AddEventImageResponse> {
     const row = await this.eventImageRepository.addExistingImageToEvent(
-      { uuid: eventId },
-      { uuid: imageId }
+      { uuid: eventId.id },
+      { uuid: imageId.id }
     );
 
     return AddEventImageResponse.newOk(

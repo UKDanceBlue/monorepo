@@ -8,7 +8,7 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "start": "node .",
+    "start": "node --enable-source-maps .",
     "build": "tsc",
     "bs": "yarn run build && yarn run start",
     "dev": "tsc --watch & node --watch . --watch-path=./dist",

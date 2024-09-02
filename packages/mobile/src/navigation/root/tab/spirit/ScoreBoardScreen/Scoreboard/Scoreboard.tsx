@@ -16,7 +16,7 @@ const Scoreboard = ({
   onTeamClick,
 }: {
   title: string;
-  data: StandingType[];
+  data: readonly StandingType[];
   onRefresh?: () => void;
   refreshing?: boolean;
   titleButton?: React.ReactNode;

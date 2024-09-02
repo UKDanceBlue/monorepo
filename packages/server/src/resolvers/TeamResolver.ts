@@ -39,9 +39,10 @@ import * as Common from "@ukdanceblue/common";
 import {
   ConcreteResult,
   FormattedConcreteError,
+  NotFoundError,
 } from "@ukdanceblue/common/error";
 import { VoidResolver } from "graphql-scalars";
-import { Option } from "ts-results-es";
+import { Err, Ok, Option } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -138,8 +139,8 @@ class ListTeamsArgs extends FilteredListQueryArgs<
   @Field(() => [DbRole], { nullable: true, deprecationReason: "Use type" })
   visibility!: [DbRole] | null;
 
-  @Field(() => [String], { nullable: true })
-  marathonId!: string[] | null;
+  @Field(() => [GlobalIdScalar], { nullable: true })
+  marathonId!: GlobalId[] | null;
 }
 
 @ObjectType("DbFundsTeamInfo")
@@ -160,18 +161,30 @@ export class TeamResolver {
     private dbFundsRepository: DBFundsRepository
   ) {}
 
-  @AccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControl<never, SingleTeamResponse>(
+    { accessLevel: AccessLevel.Committee },
+    {
+      custom(_, context, result) {
+        return context.teamMemberships.some(({ teamId, position }) =>
+          result.isNone()
+            ? false
+            : teamId === result.value.data.id.id &&
+              position === Common.MembershipPositionType.Captain
+        );
+      },
+    }
+  )
   @Query(() => SingleTeamResponse, { name: "team" })
   async getByUuid(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<SingleTeamResponse> {
+  ): Promise<ConcreteResult<SingleTeamResponse>> {
     const row = await this.teamRepository.findTeamByUnique({ uuid: id });
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+      return Err(new NotFoundError({ what: "Team" }));
     }
 
-    return SingleTeamResponse.newOk(teamModelToResource(row));
+    return Ok(SingleTeamResponse.newOk(teamModelToResource(row)));
   }
 
   @AccessControl({ accessLevel: AccessLevel.Public })
@@ -180,6 +193,10 @@ export class TeamResolver {
     @Args(() => ListTeamsArgs) query: ListTeamsArgs,
     @Ctx() ctx: Context.GraphQLContext
   ): Promise<ListTeamsResponse> {
+    const marathonFilter = query.marathonId?.map(({ id: marathonId }) => ({
+      uuid: marathonId,
+    }));
+
     const [rows, total] = await Promise.all([
       this.teamRepository.listTeams({
         filters: query.filters,
@@ -195,14 +212,14 @@ export class TeamResolver {
         take: query.pageSize,
         onlyDemo: ctx.userData.authSource === AuthSource.Demo,
         legacyStatus: query.legacyStatus,
-        marathon: query.marathonId?.map((marathonId) => ({ uuid: marathonId })),
+        marathon: marathonFilter,
         type: query.type,
       }),
       this.teamRepository.countTeams({
         filters: query.filters,
         onlyDemo: ctx.userData.authSource === AuthSource.Demo,
         legacyStatus: query.legacyStatus,
-        marathon: query.marathonId?.map((marathonId) => ({ uuid: marathonId })),
+        marathon: marathonFilter,
         type: query.type,
       }),
     ]);
@@ -241,7 +258,7 @@ export class TeamResolver {
   @Mutation(() => CreateTeamResponse, { name: "createTeam" })
   async create(
     @Arg("input") input: CreateTeamInput,
-    @Arg("marathon") marathonUuid: string
+    @Arg("marathon", () => GlobalIdScalar) marathonUuid: GlobalId
   ): Promise<CreateTeamResponse> {
     const row = await this.teamRepository.createTeam(
       {
@@ -249,10 +266,10 @@ export class TeamResolver {
         type: input.type,
         legacyStatus: input.legacyStatus,
       },
-      { uuid: marathonUuid }
+      { uuid: marathonUuid.id }
     );
 
-    return CreateTeamResponse.newCreated(teamModelToResource(row), row.uuid);
+    return CreateTeamResponse.newCreated(teamModelToResource(row));
   }
 
   @AccessControl(
@@ -452,6 +469,17 @@ export class TeamResolver {
         return teamInfoInstance;
       })
     );
+  }
+
+  @FieldResolver(() => Common.CommitteeIdentifier, { nullable: true })
+  async committeeIdentifier(
+    @Root() { id: { id } }: TeamNode
+  ): Promise<Common.CommitteeIdentifier | null> {
+    const result = await this.teamRepository.getTeamCommitteeIdentifier({
+      uuid: id,
+    });
+
+    return result ?? null;
   }
 
   @AccessControl(globalFundraisingAccessParam, {

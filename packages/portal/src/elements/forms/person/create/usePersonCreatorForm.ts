@@ -37,11 +37,11 @@ export function usePersonCreatorForm(
     validators: {
       onChange: ({ value: values }) => {
         const memberOfCount: Record<string, number> = {};
-        for (const uuid of values.memberOf ?? []) {
+        for (const { id: uuid } of values.memberOf ?? []) {
           memberOfCount[uuid] = (memberOfCount[uuid] ?? 0) + 1;
         }
         const captainOfCount: Record<string, number> = {};
-        for (const uuid of values.captainOf ?? []) {
+        for (const { id: uuid } of values.captainOf ?? []) {
           captainOfCount[uuid] = (captainOfCount[uuid] ?? 0) + 1;
         }
 

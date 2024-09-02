@@ -40,7 +40,7 @@ const createFeedItemDocument = graphql(/* GraphQL */ `
 `);
 
 const deleteFeedItemDocument = graphql(/* GraphQL */ `
-  mutation DeleteFeedItem($uuid: String!) {
+  mutation DeleteFeedItem($uuid: GlobalId!) {
     deleteFeedItem(feedItemUuid: $uuid)
   }
 `);

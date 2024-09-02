@@ -22,6 +22,7 @@ import {
   AccessControl,
   AccessLevel,
   CommitteeMembershipNode,
+  CommitteeRole,
   DbRole,
   FilteredListQueryArgs,
   FundraisingAssignmentNode,
@@ -35,6 +36,7 @@ import {
 import {
   ConcreteError,
   ConcreteResult,
+  extractNotFound,
   FormattedConcreteError,
 } from "@ukdanceblue/common/error";
 import { EmailAddressResolver } from "graphql-scalars";
@@ -65,6 +67,15 @@ import type { GlobalId } from "@ukdanceblue/common";
 class ListPeopleResponse extends AbstractGraphQLPaginatedResponse<PersonNode> {
   @Field(() => [PersonNode])
   data!: PersonNode[];
+}
+
+@InputType()
+class MemberOf {
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
+
+  @Field(() => CommitteeRole, { nullable: true })
+  committeeRole?: CommitteeRole | null | undefined;
 }
 
 @ArgsType()
@@ -98,14 +109,17 @@ class CreatePersonInput {
   @Field(() => String, { nullable: true })
   linkblue?: string;
 
-  @Field(() => DbRole, { nullable: true })
+  @Field(() => DbRole, {
+    nullable: true,
+    deprecationReason: "DBRole can no longer be set directly",
+  })
   dbRole?: DbRole;
 
-  @Field(() => [GlobalIdScalar], { defaultValue: [] })
-  memberOf?: GlobalId[];
+  @Field(() => [MemberOf], { defaultValue: [] })
+  memberOf?: MemberOf[];
 
-  @Field(() => [GlobalIdScalar], { defaultValue: [] })
-  captainOf?: GlobalId[];
+  @Field(() => [MemberOf], { defaultValue: [] })
+  captainOf?: MemberOf[];
 }
 @InputType()
 class SetPersonInput {
@@ -118,11 +132,11 @@ class SetPersonInput {
   @Field(() => String, { nullable: true })
   linkblue?: string;
 
-  @Field(() => [GlobalIdScalar], { nullable: true })
-  memberOf?: GlobalId[];
+  @Field(() => [MemberOf], { nullable: true })
+  memberOf?: MemberOf[];
 
-  @Field(() => [GlobalIdScalar], { nullable: true })
-  captainOf?: GlobalId[];
+  @Field(() => [MemberOf], { nullable: true })
+  captainOf?: MemberOf[];
 }
 
 @Resolver(() => PersonNode)
@@ -244,6 +258,14 @@ export class PersonResolver {
       name: input.name,
       email: input.email,
       linkblue: input.linkblue,
+      memberOf: input.memberOf?.map(({ id: { id }, committeeRole }) => ({
+        uuid: id,
+        committeeRole,
+      })),
+      captainOf: input.captainOf?.map(({ id: { id }, committeeRole }) => ({
+        uuid: id,
+        committeeRole,
+      })),
     });
 
     return person
@@ -266,8 +288,14 @@ export class PersonResolver {
         name: input.name,
         email: input.email,
         linkblue: input.linkblue,
-        memberOf: input.memberOf?.map(({ id }) => ({ uuid: id })),
-        captainOf: input.captainOf?.map(({ id }) => ({ uuid: id })),
+        memberOf: input.memberOf?.map(({ id: { id }, committeeRole }) => ({
+          id,
+          committeeRole,
+        })),
+        captainOf: input.captainOf?.map(({ id: { id }, committeeRole }) => ({
+          id,
+          committeeRole,
+        })),
       }
     );
 
@@ -280,15 +308,15 @@ export class PersonResolver {
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => MembershipNode, { name: "addPersonToTeam" })
   async assignPersonToTeam(
-    @Arg("personUuid") personUuid: string,
-    @Arg("teamUuid") teamUuid: string
+    @Arg("personUuid", () => GlobalIdScalar) personUuid: GlobalId,
+    @Arg("teamUuid", () => GlobalIdScalar) teamUuid: GlobalId
   ): Promise<ConcreteResult<MembershipNode>> {
     const membership = await this.membershipRepository.assignPersonToTeam({
       personParam: {
-        uuid: personUuid,
+        uuid: personUuid.id,
       },
       teamParam: {
-        uuid: teamUuid,
+        uuid: teamUuid.id,
       },
       position: MembershipPositionType.Member,
     });
@@ -416,14 +444,15 @@ export class PersonResolver {
   @FieldResolver(() => CommitteeMembershipNode, { nullable: true })
   async primaryCommittee(
     @Root() { id: { id } }: PersonNode
-  ): Promise<ConcreteResult<CommitteeMembershipNode>> {
+  ): Promise<ConcreteResult<Option<CommitteeMembershipNode>>> {
     const models = await this.personRepository.getPrimaryCommitteeOfPerson({
       uuid: id,
     });
-
-    return models.map(([membership, committee]) =>
+    const resources = models.map(([membership, committee]) =>
       committeeMembershipModelToResource(membership, committee.identifier)
     );
+
+    return extractNotFound(resources);
   }
 
   @AccessControl<FundraisingEntryNode>(

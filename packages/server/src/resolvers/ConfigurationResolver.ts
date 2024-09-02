@@ -31,7 +31,6 @@ import { Service } from "typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 
-
 @ObjectType("GetConfigurationByUuidResponse", {
   implements: AbstractGraphQLOkResponse<ConfigurationNode>,
 })
@@ -146,8 +145,7 @@ export class ConfigurationResolver {
     auditLogger.dangerous("Configuration created", { configuration: row });
 
     return CreateConfigurationResponse.newCreated(
-      configurationModelToResource(row),
-      row.uuid
+      configurationModelToResource(row)
     );
   }
 

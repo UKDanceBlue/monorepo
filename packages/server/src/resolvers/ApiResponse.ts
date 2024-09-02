@@ -1,4 +1,5 @@
-import { ErrorCode } from "@ukdanceblue/common";
+import { ErrorCode, GlobalIdScalar } from "@ukdanceblue/common";
+import type { GlobalId } from "@ukdanceblue/common";
 import { NonNegativeIntResolver, PositiveIntResolver } from "graphql-scalars";
 import { Field, InterfaceType, registerEnumType } from "type-graphql";
 
@@ -60,8 +61,8 @@ export abstract class AbstractGraphQLArrayOkResponse<
 export abstract class AbstractGraphQLCreatedResponse<
   T,
 > extends AbstractGraphQLOkResponse<T> {
-  @Field(() => String)
-  uuid!: string;
+  @Field(() => GlobalIdScalar)
+  uuid!: GlobalId;
 
   toJson() {
     return {
@@ -70,17 +71,18 @@ export abstract class AbstractGraphQLCreatedResponse<
     };
   }
 
-  static newCreated<T, OkRes extends AbstractGraphQLCreatedResponse<T>>(
-    this: ClassType<OkRes>,
-    data: T,
-    uuid: string
-  ): OkRes {
+  static newCreated<
+    T extends { id: GlobalId },
+    OkRes extends AbstractGraphQLCreatedResponse<T>,
+  >(this: ClassType<OkRes>, data: T): OkRes {
     const response = new this();
     response.ok = true;
     if (data != null) {
       response.data = data;
     }
-    response.uuid = uuid;
+
+    response.uuid = data.id;
+
     return response;
   }
 }

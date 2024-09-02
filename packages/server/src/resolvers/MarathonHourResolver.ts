@@ -28,7 +28,6 @@ import { Service } from "typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 
-
 @ObjectType("ListMarathonHoursResponse", {
   implements: AbstractGraphQLPaginatedResponse<MarathonHourNode[]>,
 })
@@ -146,11 +145,11 @@ export class MarathonHourResolver {
   @Mutation(() => MarathonHourNode)
   async createMarathonHour(
     @Arg("input") input: CreateMarathonHourInput,
-    @Arg("marathonUuid") marathonUuid: string
+    @Arg("marathonUuid", () => GlobalIdScalar) marathonUuid: GlobalId
   ) {
     const marathonHour = await this.marathonHourRepository.createMarathonHour({
       ...input,
-      marathon: { uuid: marathonUuid },
+      marathon: { uuid: marathonUuid.id },
     });
     return marathonHourModelToResource(marathonHour);
   }
@@ -185,11 +184,11 @@ export class MarathonHourResolver {
   @Mutation(() => MarathonHourNode)
   async addMap(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
-    @Arg("imageUuid") imageUuid: string
+    @Arg("imageUuid", () => GlobalIdScalar) imageUuid: GlobalId
   ) {
     const marathonHour = await this.marathonHourRepository.addMap(
       { uuid: id },
-      { uuid: imageUuid }
+      { uuid: imageUuid.id }
     );
     if (marathonHour == null) {
       throw new DetailedError(ErrorCode.NotFound, "MarathonHour not found");
@@ -200,11 +199,11 @@ export class MarathonHourResolver {
   @Mutation(() => VoidResolver)
   async removeMap(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
-    @Arg("imageUuid") imageUuid: string
+    @Arg("imageUuid", () => GlobalIdScalar) imageUuid: GlobalId
   ) {
     const marathonHour = await this.marathonHourRepository.removeMap(
       { uuid: id },
-      { uuid: imageUuid }
+      { uuid: imageUuid.id }
     );
     if (marathonHour == null) {
       throw new DetailedError(ErrorCode.NotFound, "MarathonHour not found");

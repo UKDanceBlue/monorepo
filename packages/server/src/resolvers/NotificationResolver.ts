@@ -1,5 +1,3 @@
-
-
 import { NotificationScheduler } from "#jobs/NotificationScheduler.js";
 import { ExpoNotificationProvider } from "#notification/ExpoNotificationProvider.js";
 import * as NotificationProviderJs from "#notification/NotificationProvider.js";
@@ -185,8 +183,8 @@ class ListNotificationDeliveriesArgs extends FilteredListQueryArgs<
   date: ["createdAt", "updatedAt", "sentAt", "receiptCheckedAt"],
   oneOf: ["deliveryError"],
 }) {
-  @Field(() => String)
-  notificationUuid!: string;
+  @Field(() => GlobalIdScalar)
+  notificationUuid!: GlobalId;
 }
 
 @ObjectType("ListNotificationDeliveriesResponse", {
@@ -292,7 +290,7 @@ export class NotificationResolver {
   ): Promise<ListNotificationDeliveriesResponse> {
     const rows =
       await this.notificationDeliveryRepository.listNotificationDeliveries(
-        { uuid: query.notificationUuid },
+        { uuid: query.notificationUuid.id },
         {
           filters: query.filters,
           order:
@@ -313,7 +311,7 @@ export class NotificationResolver {
       total:
         await this.notificationDeliveryRepository.countNotificationDeliveries(
           {
-            uuid: query.notificationUuid,
+            uuid: query.notificationUuid.id,
           },
           {
             filters: query.filters,
@@ -361,8 +359,7 @@ export class NotificationResolver {
     );
 
     return StageNotificationResponse.newCreated(
-      notificationModelToResource(result),
-      result.uuid
+      notificationModelToResource(result)
     );
   }
 

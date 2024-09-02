@@ -204,6 +204,15 @@ export class TeamRepository {
     });
   }
 
+  getTeamCommitteeIdentifier(param: SimpleUniqueParam) {
+    return this.prisma.team
+      .findUnique({
+        where: param,
+      })
+      .correspondingCommittee()
+      .then((committee) => committee?.identifier);
+  }
+
   getTeamPointEntries(param: SimpleUniqueParam) {
     return this.prisma.pointEntry.findMany({
       where: {

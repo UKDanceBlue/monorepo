@@ -118,29 +118,34 @@ export class FundraisingAssignmentResolver {
   }
 
   @AccessControl<never, PersonNode>(globalFundraisingAccessParam, {
-    custom: async (_, { teamMemberships }, { id: { id } }) => {
-      const personRepository = Container.get(PersonRepository);
-      const memberships = await personRepository.findMembershipsOfPerson(
-        { uuid: id },
-        undefined,
-        undefined,
-        true
-      );
-      const userCaptaincies = teamMemberships.filter(
-        (membership) => membership.position === MembershipPositionType.Captain
-      );
-      for (const targetPersonMembership of memberships) {
-        if (
-          userCaptaincies.some(
-            (userCaptaincy) =>
-              userCaptaincy.teamId === targetPersonMembership.team.uuid
-          )
-        ) {
-          return true;
+    custom: (_, { teamMemberships }, result) =>
+      result.mapOr<Promise<boolean | null>>(
+        Promise.resolve(false),
+        async ({ id: { id } }) => {
+          const personRepository = Container.get(PersonRepository);
+          const memberships = await personRepository.findMembershipsOfPerson(
+            { uuid: id },
+            undefined,
+            undefined,
+            true
+          );
+          const userCaptaincies = teamMemberships.filter(
+            (membership) =>
+              membership.position === MembershipPositionType.Captain
+          );
+          for (const targetPersonMembership of memberships) {
+            if (
+              userCaptaincies.some(
+                (userCaptaincy) =>
+                  userCaptaincy.teamId === targetPersonMembership.team.uuid
+              )
+            ) {
+              return true;
+            }
+          }
+          return null;
         }
-      }
-      return null;
-    },
+      ),
   })
   @FieldResolver(() => PersonNode, {
     nullable: true,

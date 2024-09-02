@@ -267,7 +267,7 @@ export function PointEntryPersonLookup({
                           const result = await createPerson({
                             linkBlue: linkblueFieldValue,
                             email: `${linkblueFieldValue}@uky.edu`,
-                            teamUuid,
+                            team: { id: teamUuid },
                           });
                           if (result.data?.createPerson.id) {
                             setPersonFromUuid(result.data.createPerson.id);

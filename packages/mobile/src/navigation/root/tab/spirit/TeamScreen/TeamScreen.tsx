@@ -38,7 +38,6 @@ export const MyTeamFragment = graphql(/* GraphQL */ `
 
 export const MyFundraisingFragment = graphql(/* GraphQL */ `
   fragment MyFundraisingFragment on PersonNode {
-    id
     fundraisingTotalAmount
     fundraisingAssignments {
       amount
@@ -53,6 +52,7 @@ export const MyFundraisingFragment = graphql(/* GraphQL */ `
 
 const TeamScreen = ({
   myTeamFragment,
+  myFundraisingFragment,
   userUuid,
   loading: _loading,
   refresh: _refresh,
@@ -64,6 +64,10 @@ const TeamScreen = ({
   refresh: () => void;
 }) => {
   const team = getFragmentData(MyTeamFragment, myTeamFragment);
+  const fundraising = getFragmentData(
+    MyFundraisingFragment,
+    myFundraisingFragment
+  );
 
   const [teamStandings, setTeamStandings] = useState<StandingType[]>([]);
 
@@ -158,6 +162,8 @@ const TeamScreen = ({
         name={name}
         scoreboardData={teamStandings}
         teamTotal={totalPoints}
+        teamFundraisingTotal={fundraising?.fundraisingTotalAmount ?? 0}
+        myFundraisingEntries={fundraising?.fundraisingAssignments ?? []}
       />
     );
   }

@@ -88,15 +88,15 @@ export class FeedResolver {
 
   @Mutation(() => FeedNode)
   async attachImageToFeedItem(
-    @Arg("feedItemUuid") feedItemUuid: string,
-    @Arg("imageUuid") imageUuid: string
+    @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId,
+    @Arg("imageUuid", () => GlobalIdScalar) imageUuid: GlobalId
   ): Promise<FeedNode> {
     const feedItem = await this.feedRepository.attachImageToFeedItem(
       {
-        uuid: feedItemUuid,
+        uuid: feedItemUuid.id,
       },
       {
-        uuid: imageUuid,
+        uuid: imageUuid.id,
       }
     );
     if (feedItem == null) {
@@ -107,10 +107,10 @@ export class FeedResolver {
 
   @Mutation(() => FeedNode)
   async removeImageFromFeedItem(
-    @Arg("feedItemUuid") feedItemUuid: string
+    @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId
   ): Promise<FeedNode> {
     const feedItem = await this.feedRepository.removeImageFromFeedItem({
-      uuid: feedItemUuid,
+      uuid: feedItemUuid.id,
     });
     if (feedItem == null) {
       throw new DetailedError(ErrorCode.NotFound, "Feed item not found");
@@ -120,11 +120,11 @@ export class FeedResolver {
 
   @Mutation(() => FeedNode)
   async setFeedItem(
-    @Arg("feedItemUuid") feedItemUuid: string,
+    @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId,
     @Arg("input") input: SetFeedInput
   ): Promise<FeedNode> {
     const feedItem = await this.feedRepository.updateFeedItem(
-      { uuid: feedItemUuid },
+      { uuid: feedItemUuid.id },
       {
         title: input.title,
         textContent: input.textContent,
@@ -138,10 +138,10 @@ export class FeedResolver {
 
   @Mutation(() => Boolean)
   async deleteFeedItem(
-    @Arg("feedItemUuid") feedItemUuid: string
+    @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId
   ): Promise<boolean> {
     const feedItem = await this.feedRepository.deleteFeedItem({
-      uuid: feedItemUuid,
+      uuid: feedItemUuid.id,
     });
     return feedItem != null;
   }
