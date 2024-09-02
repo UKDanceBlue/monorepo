@@ -5,6 +5,7 @@ import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
 import {
   App,
+  AutoComplete,
   Button,
   Empty,
   Flex,
@@ -15,6 +16,8 @@ import {
   Typography,
 } from "antd";
 import FormItem from "antd/es/form/FormItem";
+import type { ReactNode } from "react";
+import { useState } from "react";
 import type { UseQueryExecute } from "urql";
 
 import { TeamNameFragment } from "../PersonFormsGQL";
@@ -48,6 +51,30 @@ export function PersonEditor({
     getFragmentData(TeamNameFragment, teamNamesFragment) ?? [];
 
   const personData = getFragmentData(PersonEditorFragment, personFragment);
+
+  const [captainSearch, setCaptainSearch] = useState("");
+  const lowerCaptainSearch = captainSearch.toLowerCase();
+  const captainOptions: ReactNode[] = [];
+  for (const team of teamNamesData) {
+    if (!team.name.toLowerCase().includes(lowerCaptainSearch)) continue;
+    captainOptions.push(
+      <AutoComplete.Option key={team.id} value={team.id}>
+        {team.name}
+      </AutoComplete.Option>
+    );
+  }
+
+  const [membershipSearch, setMembershipSearch] = useState("");
+  const lowerMembershipSearch = membershipSearch.toLowerCase();
+  const membershipOptions: ReactNode[] = [];
+  for (const team of teamNamesData) {
+    if (!team.name.toLowerCase().includes(lowerMembershipSearch)) continue;
+    membershipOptions.push(
+      <AutoComplete.Option key={team.id} value={team.id}>
+        {team.name}
+      </AutoComplete.Option>
+    );
+  }
 
   if (!personData) {
     return (
@@ -202,22 +229,20 @@ export function PersonEditor({
                 })}
               </List>
               <FormItem label="Add Captaincy">
-                <Select
-                  value={""}
-                  onChange={(value) =>
+                <AutoComplete
+                  value={captainSearch}
+                  onChange={(value) => setCaptainSearch(value)}
+                  onSelect={(value: string) => {
                     field.pushValue({
                       id: value,
                       committeeRole: null,
-                    })
-                  }
+                    });
+                    setCaptainSearch("");
+                  }}
                   style={{ minWidth: "15ch" }}
                 >
-                  {teamNamesData.map((team) => (
-                    <Select.Option key={team.id} value={team.id}>
-                      {team.name}
-                    </Select.Option>
-                  ))}
-                </Select>
+                  {captainOptions}
+                </AutoComplete>
               </FormItem>
             </>
           )}
@@ -238,7 +263,15 @@ export function PersonEditor({
                       {committeeIdentifier &&
                         (isAdmin ? (
                           <Select
-                            value={team.committeeRole ?? null}
+                            options={[
+                              { label: "Member", value: CommitteeRole.Member },
+                              {
+                                label: "Coordinator",
+                                value: CommitteeRole.Coordinator,
+                              },
+                              { label: "Chair", value: CommitteeRole.Chair },
+                            ]}
+                            value={team.committeeRole ?? CommitteeRole.Member}
                             onChange={(value) =>
                               field.handleChange(
                                 field.state.value?.map((val) =>
@@ -250,18 +283,7 @@ export function PersonEditor({
                             }
                             style={{ minWidth: "15ch", marginLeft: "1em" }}
                             title="Committee Role"
-                          >
-                            <Select.Option value={null}>{null}</Select.Option>
-                            <Select.Option value={CommitteeRole.Member}>
-                              Member
-                            </Select.Option>
-                            <Select.Option value={CommitteeRole.Coordinator}>
-                              Coordinator
-                            </Select.Option>
-                            <Select.Option value={CommitteeRole.Chair}>
-                              Chair
-                            </Select.Option>
-                          </Select>
+                          />
                         ) : (
                           ` (${committeeIdentifier})`
                         ))}
@@ -282,22 +304,20 @@ export function PersonEditor({
                 })}
               </List>
               <FormItem label="Add Membership">
-                <Select
-                  value={""}
-                  onChange={(value) =>
+                <AutoComplete
+                  value={membershipSearch}
+                  onChange={(value) => setMembershipSearch(value)}
+                  onSelect={(value: string) => {
                     field.pushValue({
                       id: value,
                       committeeRole: null,
-                    })
-                  }
+                    });
+                    setMembershipSearch("");
+                  }}
                   style={{ minWidth: "15ch" }}
                 >
-                  {teamNamesData.map((team) => (
-                    <Select.Option key={team.id} value={team.id}>
-                      {team.name}
-                    </Select.Option>
-                  ))}
-                </Select>
+                  {membershipOptions}
+                </AutoComplete>
               </FormItem>
             </>
           )}

@@ -7,7 +7,6 @@ import type { CommitteeIdentifier } from "@ukdanceblue/common";
 import {
   committeeNames,
   CommitteeRole,
-  DbRole,
   SortDirection,
   stringifyDbRole,
 } from "@ukdanceblue/common";
@@ -222,12 +221,7 @@ export const PeopleTable = () => {
             render: (_, record) => {
               return stringifyDbRole(record.dbRole);
             },
-            sorter: true,
-            sortDirections: ["ascend", "descend"],
-            filters: Object.values(DbRole).map((role) => ({
-              text: stringifyDbRole(role),
-              value: role,
-            })),
+            sorter: false,
           },
           {
             title: "Committee Role",

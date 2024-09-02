@@ -1,21 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
-import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
-import type { MemberOf } from "@ukdanceblue/common/graphql-client-portal/raw-types";
-import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
-import type { BaseOptionType } from "antd/es/select";
-import { useMemo, useState } from "react";
+import { App, Button, Flex, Form, Input } from "antd";
 
-import { TeamNameFragment } from "../PersonFormsGQL";
 import { usePersonCreatorForm } from "./usePersonCreatorForm";
 
-export function PersonCreator({
-  teamNamesFragment,
-}: {
-  teamNamesFragment?:
-    | readonly FragmentType<typeof TeamNameFragment>[]
-    | undefined;
-}) {
+export function PersonCreator() {
   const navigate = useNavigate();
 
   const { message } = App.useApp();
@@ -23,51 +11,11 @@ export function PersonCreator({
   const { formApi } = usePersonCreatorForm((ret) => {
     if (ret?.id) {
       navigate({
-        to: "/people/$personId",
+        to: "/people/$personId/edit",
         params: { personId: ret.id },
       }).catch((error: unknown) => console.error(error));
     }
   });
-
-  const teamNamesData = getFragmentData(TeamNameFragment, teamNamesFragment);
-
-  const [formMemberOf, setFormMemberOf] = useState<readonly MemberOf[]>(
-    formApi.getFieldValue("memberOf") ?? []
-  );
-  const [formCaptainOf, setFormCaptainOf] = useState<readonly MemberOf[]>(
-    formApi.getFieldValue("captainOf") ?? []
-  );
-  type OptionType = BaseOptionType & { label: string; value: string };
-
-  const { membershipOptions, captaincyOptions } = useMemo<{
-    membershipOptions: OptionType[];
-    captaincyOptions: OptionType[];
-  }>(() => {
-    const captaincyOptions: OptionType[] = [];
-    const membershipOptions: OptionType[] = [];
-    for (const team of teamNamesData ?? []) {
-      captaincyOptions.push({
-        label: team.name,
-        value: team.id,
-        disabled: formMemberOf.some(({ id }) => id === team.id),
-      });
-      membershipOptions.push({
-        label: team.name,
-        value: team.id,
-        disabled: formCaptainOf.some(({ id }) => id === team.id),
-      });
-    }
-    return { captaincyOptions, membershipOptions };
-  }, [formCaptainOf, formMemberOf, teamNamesData]);
-
-  if (!teamNamesFragment) {
-    return (
-      <Empty
-        description="Could not load the list of teams"
-        style={{ marginTop: "1em" }}
-      />
-    );
-  }
 
   return (
     <Flex vertical gap="middle" align="center">
@@ -84,18 +32,6 @@ export function PersonCreator({
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 32 }}
       >
-        <formApi.Subscribe selector={(state) => state.values.captainOf}>
-          {(captainOf) => {
-            setFormCaptainOf(captainOf ?? []);
-            return null;
-          }}
-        </formApi.Subscribe>
-        <formApi.Subscribe selector={(state) => state.values.memberOf}>
-          {(memberOf) => {
-            setFormMemberOf(memberOf ?? []);
-            return null;
-          }}
-        </formApi.Subscribe>
         <formApi.Field
           name="name"
           children={(field) => (
@@ -161,120 +97,6 @@ export function PersonCreator({
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
-              />
-            </Form.Item>
-          )}
-        />
-        {/* <formApi.Field
-            name="role.committeeRole"
-            children={(field) => (
-              <Form.Item
-                label="Committee Role"
-                validateStatus={
-                  field.state.meta.errors.length > 0 ? "error" : ""
-                }
-                help={
-                  field.state.meta.errors.length > 0
-                    ? field.state.meta.errors[0]
-                    : undefined
-                }
-              >
-                <Select
-                  status={field.state.meta.errors.length > 0 ? "error" : ""}
-                  options={[
-                    { label: "None", value: "" },
-                    { label: "Chair", value: CommitteeRole.Chair },
-                    { label: "Coordinator", value: CommitteeRole.Coordinator },
-                    { label: "Member", value: CommitteeRole.Member },
-                  ]}
-                  value={field.state.value ?? ("" as const)}
-                  onBlur={field.handleBlur}
-                  onChange={(value) =>
-                    field.handleChange(value === "" ? null : value)
-                  }
-                />
-              </Form.Item>
-            )}
-          />
-          <formApi.Field
-            name="role.committeeIdentifier"
-            children={(field) => (
-              <Form.Item
-                label="Committee Identifier"
-                validateStatus={
-                  field.state.meta.errors.length > 0 ? "error" : ""
-                }
-                help={
-                  field.state.meta.errors.length > 0
-                    ? field.state.meta.errors[0]
-                    : undefined
-                }
-              >
-                <Select
-                  status={field.state.meta.errors.length > 0 ? "error" : ""}
-                  value={field.state.value ?? null}
-                  onBlur={field.handleBlur}
-                  onChange={(value) => field.handleChange(value)}
-                  options={[
-                    {
-                      label: "None",
-                      value: null,
-                    },
-                    ...Object.entries(committeeNames).map(([value, label]) => ({
-                      label,
-                      value,
-                    })),
-                  ]}
-                />
-              </Form.Item>
-            )}
-          /> */}
-        <p>
-          Note: If someone is captain of a team that also means they are a
-          member of that team, so you don't need to select both.
-        </p>
-        <formApi.Field
-          name="captainOf"
-          children={(field) => (
-            <Form.Item
-              label="Captain Of"
-              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
-              help={
-                field.state.meta.errors.length > 0
-                  ? field.state.meta.errors[0]
-                  : undefined
-              }
-            >
-              <Select
-                mode="multiple"
-                status={field.state.meta.errors.length > 0 ? "error" : ""}
-                value={field.state.value ?? null}
-                onBlur={field.handleBlur}
-                onChange={(value) => field.handleChange(value)}
-                options={captaincyOptions}
-              />
-            </Form.Item>
-          )}
-        />
-        <formApi.Field
-          name="memberOf"
-          children={(field) => (
-            <Form.Item
-              label="Member Of"
-              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
-              help={
-                field.state.meta.errors.length > 0
-                  ? field.state.meta.errors[0]
-                  : undefined
-              }
-            >
-              <Select
-                mode="multiple"
-                status={field.state.meta.errors.length > 0 ? "error" : ""}
-                value={field.state.value ?? null}
-                onBlur={field.handleBlur}
-                onChange={(value) => field.handleChange(value)}
-                options={membershipOptions}
               />
             </Form.Item>
           )}

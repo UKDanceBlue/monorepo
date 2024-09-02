@@ -20,7 +20,7 @@ export function usePersonCreatorForm(
   const [{ fetching, error }, createPerson] = useMutation(
     personCreatorDocument
   );
-  useQueryStatusWatcher({
+  const { resetWatcher } = useQueryStatusWatcher({
     error,
     fetching,
     loadingMessage: "Saving person...",
@@ -79,6 +79,8 @@ export function usePersonCreatorForm(
           memberOf: values.memberOf ?? [],
         },
       });
+
+      resetWatcher();
 
       return afterSubmit?.(data?.createPerson);
     },

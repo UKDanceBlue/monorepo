@@ -241,14 +241,9 @@ export class PersonRepository {
 
       for (const { team, committeeRole } of committees) {
         if (team.correspondingCommittee) {
-          if (!committeeRole) {
-            return Err(
-              new InvariantError("No role found for committee membership")
-            );
-          }
           const role = EffectiveCommitteeRole.init(
             team.correspondingCommittee.identifier,
-            committeeRole
+            committeeRole ?? CommitteeRole.Member
           );
           effectiveCommitteeRoles.push(role);
           if (team.correspondingCommittee.parentCommittee) {
@@ -260,9 +255,15 @@ export class PersonRepository {
           }
           const childRoles =
             team.correspondingCommittee.childCommittees.flatMap((child) => [
-              EffectiveCommitteeRole.init(child.identifier, committeeRole),
+              EffectiveCommitteeRole.init(
+                child.identifier,
+                committeeRole ?? CommitteeRole.Member
+              ),
               ...child.childCommittees.map((c) =>
-                EffectiveCommitteeRole.init(c.identifier, committeeRole)
+                EffectiveCommitteeRole.init(
+                  c.identifier,
+                  committeeRole ?? CommitteeRole.Member
+                )
               ),
             ]);
           effectiveCommitteeRoles.push(...childRoles);
@@ -1047,18 +1048,12 @@ export class PersonRepository {
       }
 
       if (bestCommittee) {
-        if (
-          !bestCommittee.team.correspondingCommittee ||
-          !bestCommittee.committeeRole
-        ) {
+        if (!bestCommittee.team.correspondingCommittee) {
           return Err(new InvariantError("Invalid committee assignment"));
         }
         return Ok([bestCommittee, bestCommittee.team.correspondingCommittee]);
       } else if (fallbackCommittee) {
-        if (
-          !fallbackCommittee.team.correspondingCommittee ||
-          !fallbackCommittee.committeeRole
-        ) {
+        if (!fallbackCommittee.team.correspondingCommittee) {
           return Err(new InvariantError("Invalid committee assignment"));
         }
         return Ok([

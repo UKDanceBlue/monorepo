@@ -12,6 +12,9 @@ export const PersonEditorFragment = graphql(/* GraphQL */ `
       team {
         id
         name
+        marathon {
+          year
+        }
       }
     }
   }
