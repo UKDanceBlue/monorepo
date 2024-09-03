@@ -22,6 +22,7 @@ export default defineConfig({
       "@pages": resolveRelative("src", "pages"),
       "@routing": resolveRelative("src", "routing"),
       "@tools": resolveRelative("src", "tools"),
+      "@documents": resolveRelative("src", "documents"),
       "@assets": resolveRelative("assets"),
     },
   },

@@ -32,6 +32,7 @@ import { Route as MarathonMarathonIdIndexImport } from './routes/marathon/$marat
 import { Route as EventsEventIdIndexImport } from './routes/events/$eventId/index'
 import { Route as TeamsTeamIdPointsImport } from './routes/teams/$teamId/points'
 import { Route as TeamsTeamIdFundraisingImport } from './routes/teams/$teamId/fundraising'
+import { Route as TeamsTeamIdEditImport } from './routes/teams/$teamId/edit'
 import { Route as PeoplePersonIdEditImport } from './routes/people/$personId/edit'
 import { Route as NotificationsNotificationIdManageImport } from './routes/notifications/$notificationId/manage'
 import { Route as MarathonMarathonIdEditImport } from './routes/marathon/$marathonId/edit'
@@ -144,6 +145,11 @@ const TeamsTeamIdPointsRoute = TeamsTeamIdPointsImport.update({
 
 const TeamsTeamIdFundraisingRoute = TeamsTeamIdFundraisingImport.update({
   path: '/teams/$teamId/fundraising',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TeamsTeamIdEditRoute = TeamsTeamIdEditImport.update({
+  path: '/teams/$teamId/edit',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -311,6 +317,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PeoplePersonIdEditImport
       parentRoute: typeof rootRoute
     }
+    '/teams/$teamId/edit': {
+      id: '/teams/$teamId/edit'
+      path: '/teams/$teamId/edit'
+      fullPath: '/teams/$teamId/edit'
+      preLoaderRoute: typeof TeamsTeamIdEditImport
+      parentRoute: typeof rootRoute
+    }
     '/teams/$teamId/fundraising': {
       id: '/teams/$teamId/fundraising'
       path: '/teams/$teamId/fundraising'
@@ -398,6 +411,7 @@ export const routeTree = rootRoute.addChildren({
   MarathonMarathonIdEditRoute,
   NotificationsNotificationIdManageRoute,
   PeoplePersonIdEditRoute,
+  TeamsTeamIdEditRoute,
   TeamsTeamIdFundraisingRoute,
   TeamsTeamIdPointsRoute,
   EventsEventIdIndexRoute,
@@ -435,6 +449,7 @@ export const routeTree = rootRoute.addChildren({
         "/marathon/$marathonId/edit",
         "/notifications/$notificationId/manage",
         "/people/$personId/edit",
+        "/teams/$teamId/edit",
         "/teams/$teamId/fundraising",
         "/teams/$teamId/points",
         "/events/$eventId/",
@@ -499,6 +514,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/people/$personId/edit": {
       "filePath": "people/$personId/edit.tsx"
+    },
+    "/teams/$teamId/edit": {
+      "filePath": "teams/$teamId/edit.tsx"
     },
     "/teams/$teamId/fundraising": {
       "filePath": "teams/$teamId/fundraising.tsx"

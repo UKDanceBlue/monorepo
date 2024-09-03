@@ -1,5 +1,6 @@
 import { TeamEditor } from "@elements/forms/team/edit/TeamEditor";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
+import { createFileRoute } from "@tanstack/react-router";
 import { useParams } from "@tanstack/react-router";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useQuery } from "urql";
@@ -14,7 +15,7 @@ const viewTeamPageDocument = graphql(/* GraphQL */ `
   }
 `);
 
-export function EditTeamPage() {
+function EditTeamPage() {
   const { teamId } = useParams({ from: "/teams/$teamId/edit" });
 
   const [{ data, fetching, error }, refetchTeam] = useQuery({
@@ -35,3 +36,7 @@ export function EditTeamPage() {
     </div>
   );
 }
+
+export const Route = createFileRoute("/teams/$teamId/edit")({
+  component: EditTeamPage,
+});
