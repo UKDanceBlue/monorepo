@@ -1,10 +1,8 @@
+import { EventEditor } from "@elements/forms/event/edit/EventEditor";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { useParams } from "@tanstack/react-router";
+import { createFileRoute, useParams } from "@tanstack/react-router";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useQuery } from "urql";
-
-import { EventEditor } from "./EventEditor";
-
 
 const viewEventPageDocument = graphql(/* GraphQL */ `
   query EditEventPage($uuid: GlobalId!) {
@@ -16,8 +14,8 @@ const viewEventPageDocument = graphql(/* GraphQL */ `
   }
 `);
 
-export function EditEventPage() {
-  const { eventId } = useParams({ from: "/events/$eventId" });
+export function EditEvent() {
+  const { eventId } = useParams({ from: "/events/$eventId/edit" });
 
   const [{ data, fetching, error }, refetchEvent] = useQuery({
     query: viewEventPageDocument,
@@ -39,3 +37,7 @@ export function EditEventPage() {
     </div>
   );
 }
+
+export const Route = createFileRoute("/events/$eventId/edit")({
+  component: EditEvent,
+});

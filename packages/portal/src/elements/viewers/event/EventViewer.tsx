@@ -16,8 +16,7 @@ import { DateTime } from "luxon";
 import { useMemo } from "react";
 import { thumbHashToDataURL } from "thumbhash";
 
-import { useEventDeletePopup } from "./EventDeletePopup";
-
+import { useEventDeletePopup } from "../../components/event/EventDeletePopup";
 
 export const EventViewerFragment = graphql(/* GraphQL */ `
   fragment EventViewerFragment on EventNode {

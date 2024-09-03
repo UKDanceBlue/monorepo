@@ -106,9 +106,3 @@ const routeTree = rootRoute.addChildren([
 export const router = new Router({
   routeTree,
 });
-
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
-}

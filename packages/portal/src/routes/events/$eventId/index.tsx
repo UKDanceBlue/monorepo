@@ -1,9 +1,8 @@
+import { EventViewer } from "@elements/viewers/event/EventViewer";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { useParams } from "@tanstack/react-router";
+import { createFileRoute, useParams } from "@tanstack/react-router";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useQuery } from "urql";
-
-import { EventViewer } from "../../../../elements/viewers/event/EventViewer";
 
 const viewEventPageDocument = graphql(/* GraphQL */ `
   query ViewEventPage($uuid: GlobalId!) {
@@ -15,8 +14,8 @@ const viewEventPageDocument = graphql(/* GraphQL */ `
   }
 `);
 
-export function ViewEventPage() {
-  const { eventId } = useParams({ from: "/events/$eventId" });
+export function ViewEvent() {
+  const { eventId } = useParams({ from: "/events/$eventId/" });
 
   const [{ data, fetching, error }] = useQuery({
     query: viewEventPageDocument,
@@ -35,3 +34,7 @@ export function ViewEventPage() {
     </div>
   );
 }
+
+export const Route = createFileRoute("/events/$eventId/")({
+  component: ViewEvent,
+});

@@ -1,10 +1,9 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { useNavigate } from "@tanstack/react-router";
+import { EventsTable } from "@elements/tables/EventsTable";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button, Flex, Typography } from "antd";
 
-import { EventsTable } from "../../../elements/tables/EventsTable";
-
-export function ListEvensPage() {
+function Events() {
   const navigate = useNavigate();
   return (
     <>
@@ -23,3 +22,7 @@ export function ListEvensPage() {
     </>
   );
 }
+
+export const Route = createFileRoute("/events/")({
+  component: Events,
+});
