@@ -214,7 +214,7 @@ export const EventsTable = () => {
           },
           {
             title: "Actions",
-            dataIndex: "uuid",
+            dataIndex: "id",
             render: (uuid: string) => (
               <Flex gap="small" align="center">
                 <Link from="/events" to="$eventId" params={{ eventId: uuid }}>

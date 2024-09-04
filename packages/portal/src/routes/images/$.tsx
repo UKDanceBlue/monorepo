@@ -1,12 +1,13 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { CreateImagePopup } from "@elements/components/image/CreateImagePopup";
 import { ImagesTable } from "@elements/tables/ImagesTable";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useParams } from "@tanstack/react-router";
 import { Button, Flex, Typography } from "antd";
 import { useState } from "react";
 
 function ListImagesPage() {
   const [createImageOpen, setCreateImageOpen] = useState(false);
+  const { _splat } = useParams({ from: "/images/$" });
 
   return (
     <>
@@ -30,11 +31,11 @@ function ListImagesPage() {
           }
         }}
       />
-      <ImagesTable />
+      <ImagesTable previewedImageId={_splat} />
     </>
   );
 }
 
-export const Route = createFileRoute("/images/")({
+export const Route = createFileRoute("/images/$")({
   component: ListImagesPage,
 });

@@ -18,7 +18,6 @@ import { Route as TeamsIndexImport } from "./routes/teams/index";
 import { Route as PeopleIndexImport } from "./routes/people/index";
 import { Route as NotificationsIndexImport } from "./routes/notifications/index";
 import { Route as MarathonIndexImport } from "./routes/marathon/index";
-import { Route as ImagesIndexImport } from "./routes/images/index";
 import { Route as FeedIndexImport } from "./routes/feed/index";
 import { Route as EventsIndexImport } from "./routes/events/index";
 import { Route as ConfigIndexImport } from "./routes/config/index";
@@ -26,6 +25,7 @@ import { Route as TeamsCreateImport } from "./routes/teams/create";
 import { Route as PeopleCreateImport } from "./routes/people/create";
 import { Route as NotificationsCreateImport } from "./routes/notifications/create";
 import { Route as MarathonCreateImport } from "./routes/marathon/create";
+import { Route as ImagesSplatImport } from "./routes/images/$";
 import { Route as EventsCreateImport } from "./routes/events/create";
 import { Route as PeoplePersonIdIndexImport } from "./routes/people/$personId/index";
 import { Route as NotificationsNotificationIdIndexImport } from "./routes/notifications/$notificationId/index";
@@ -78,11 +78,6 @@ const MarathonIndexRoute = MarathonIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any);
 
-const ImagesIndexRoute = ImagesIndexImport.update({
-  path: "/images/",
-  getParentRoute: () => rootRoute,
-} as any);
-
 const FeedIndexRoute = FeedIndexImport.update({
   path: "/feed/",
   getParentRoute: () => rootRoute,
@@ -115,6 +110,11 @@ const NotificationsCreateRoute = NotificationsCreateImport.update({
 
 const MarathonCreateRoute = MarathonCreateImport.update({
   path: "/marathon/create",
+  getParentRoute: () => rootRoute,
+} as any);
+
+const ImagesSplatRoute = ImagesSplatImport.update({
+  path: "/images/$",
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -217,6 +217,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof EventsCreateImport;
       parentRoute: typeof rootRoute;
     };
+    "/images/$": {
+      id: "/images/$";
+      path: "/images/$";
+      fullPath: "/images/$";
+      preLoaderRoute: typeof ImagesSplatImport;
+      parentRoute: typeof rootRoute;
+    };
     "/marathon/create": {
       id: "/marathon/create";
       path: "/marathon/create";
@@ -264,13 +271,6 @@ declare module "@tanstack/react-router" {
       path: "/feed";
       fullPath: "/feed";
       preLoaderRoute: typeof FeedIndexImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/images/": {
-      id: "/images/";
-      path: "/images";
-      fullPath: "/images";
-      preLoaderRoute: typeof ImagesIndexImport;
       parentRoute: typeof rootRoute;
     };
     "/marathon/": {
@@ -414,6 +414,7 @@ declare module "@tanstack/react-router" {
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
   EventsCreateRoute,
+  ImagesSplatRoute,
   MarathonCreateRoute,
   NotificationsCreateRoute,
   PeopleCreateRoute,
@@ -421,7 +422,6 @@ export const routeTree = rootRoute.addChildren({
   ConfigIndexRoute,
   EventsIndexRoute,
   FeedIndexRoute,
-  ImagesIndexRoute,
   MarathonIndexRoute,
   NotificationsIndexRoute,
   PeopleIndexRoute,
@@ -455,6 +455,7 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/",
         "/events/create",
+        "/images/$",
         "/marathon/create",
         "/notifications/create",
         "/people/create",
@@ -462,7 +463,6 @@ export const routeTree = rootRoute.addChildren({
         "/config/",
         "/events/",
         "/feed/",
-        "/images/",
         "/marathon/",
         "/notifications/",
         "/people/",
@@ -486,6 +486,9 @@ export const routeTree = rootRoute.addChildren({
     "/events/create": {
       "filePath": "events/create.tsx"
     },
+    "/images/$": {
+      "filePath": "images/$.tsx"
+    },
     "/marathon/create": {
       "filePath": "marathon/create.tsx"
     },
@@ -506,9 +509,6 @@ export const routeTree = rootRoute.addChildren({
     },
     "/feed/": {
       "filePath": "feed/index.tsx"
-    },
-    "/images/": {
-      "filePath": "images/index.tsx"
     },
     "/marathon/": {
       "filePath": "marathon/index.tsx"

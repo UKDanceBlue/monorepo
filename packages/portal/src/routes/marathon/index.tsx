@@ -1,8 +1,7 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { MarathonsTable } from "@elements/tables/marathon/MarathonsTable";
 import { MarathonViewer } from "@elements/viewers/marathon/MarathonViewer";
-import { createFileRoute } from "@tanstack/react-router";
-import { useLinkProps } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Empty, Flex } from "antd";
 import { useQuery } from "urql";
@@ -25,8 +24,6 @@ function MarathonOverviewPage() {
     query: marathonOverviewPageDocument,
   });
 
-  const router = useLinkProps({ to: "/marathon/create" });
-
   return (
     <>
       <Flex
@@ -36,9 +33,11 @@ function MarathonOverviewPage() {
         gap="1rem"
       >
         <h1>Marathon</h1>
-        <Button icon={<PlusOutlined />} type="primary" href={router.href}>
-          Create New Marathon
-        </Button>
+        <Link from="/marathon" to="create">
+          <Button icon={<PlusOutlined />} type="primary">
+            Create New Marathon
+          </Button>
+        </Link>
       </Flex>
       {result.data?.latestMarathon || result.data?.marathons.data.length ? (
         <div>

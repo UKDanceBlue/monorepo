@@ -8,7 +8,7 @@ import path, { isAbsolute } from "path";
 
 import type { SyslogLevels } from "#logging/standardLogging.js";
 
-dotenv.config();
+dotenv.config({ override: true });
 
 async function getEnv(
   name: string,
@@ -20,7 +20,9 @@ async function getEnv(
   def?: string | null
 ): Promise<string | undefined> {
   let value;
-  if (process.env[`${name}_FILE`]) {
+  if (process.env[name]) {
+    value = process.env[name];
+  } else if (process.env[`${name}_FILE`]) {
     try {
       value = await readFile(process.env[`${name}_FILE`]!, "utf8");
     } catch {

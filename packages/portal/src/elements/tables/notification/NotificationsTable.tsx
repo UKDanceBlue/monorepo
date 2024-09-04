@@ -208,7 +208,7 @@ export const NotificationsTable = () => {
           },
           {
             title: "Actions",
-            dataIndex: "uuid",
+            dataIndex: "id",
             render: (uuid: string) => (
               <Flex gap="small" align="center">
                 <Link

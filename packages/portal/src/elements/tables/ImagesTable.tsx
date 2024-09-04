@@ -3,13 +3,14 @@ import { API_BASE_URL } from "@config/api";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
+import { useNavigate } from "@tanstack/react-router";
 import { base64StringToArray, SortDirection } from "@ukdanceblue/common";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Flex, Image, Modal, Table, Typography, Upload } from "antd";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { thumbHashToDataURL } from "thumbhash";
 import { useQuery } from "urql";
 
@@ -59,7 +60,11 @@ const imagesTableQueryDocument = graphql(/* GraphQL */ `
   }
 `);
 
-export const ImagesTable = () => {
+export const ImagesTable = ({
+  previewedImageId,
+}: {
+  previewedImageId?: string;
+}) => {
   const { queryOptions, updatePagination, clearSorting, pushSorting } =
     useListQuery(
       {
@@ -78,6 +83,7 @@ export const ImagesTable = () => {
       }
     );
   const { showErrorMessage } = useAntFeedback();
+  const navigate = useNavigate();
 
   const [{ data: imagesDocument, error, fetching }, refresh] = useQuery({
     query: imagesTableQueryDocument,
@@ -95,9 +101,6 @@ export const ImagesTable = () => {
     imagesDocument?.images.data
   );
 
-  const [previewedImage, setPreviewedImage] = useState<
-    Exclude<typeof listImagesData, null | undefined>[number] | null
-  >(null);
   const [uploadingImage, setUploadingImage] = useState<
     Exclude<typeof listImagesData, null | undefined>[number] | null
   >(null);
@@ -105,13 +108,50 @@ export const ImagesTable = () => {
   return (
     <>
       <Modal
-        open={previewedImage !== null}
-        onCancel={() => setPreviewedImage(null)}
+        open={Boolean(previewedImageId)}
+        onCancel={() => navigate({ from: "/images/$", params: { _splat: "" } })}
         cancelButtonProps={{ style: { display: "none" } }}
         okButtonProps={{ style: { display: "none" } }}
+        forceRender
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
-        <Typography>{previewedImage?.alt ?? "Image Preview"}</Typography>
-        <Image src={previewedImage?.url?.toString()} />
+        {useMemo(() => {
+          const previewedImage = previewedImageId
+            ? listImagesData?.find(({ id }) => id === previewedImageId)
+            : null;
+          if (!previewedImage) return null;
+          const aspectRatio = previewedImage.width / previewedImage.height;
+          const width = window.innerWidth * 0.45;
+          const height = width / aspectRatio;
+          return (
+            <>
+              <Typography>{previewedImage.alt ?? "Image Preview"}</Typography>
+              <Image
+                src={previewedImage.url?.toString()}
+                placeholder={
+                  previewedImage.thumbHash ? (
+                    <img
+                      src={thumbHashToDataURL(
+                        base64StringToArray(previewedImage.thumbHash)
+                      )}
+                      width={width}
+                      height={height}
+                    />
+                  ) : (
+                    true
+                  )
+                }
+                width={width}
+                height={height}
+                onLoadStartCapture={() => alert("load")}
+              />
+            </>
+          );
+        }, [listImagesData, previewedImageId])}
       </Modal>
       <Modal
         open={uploadingImage !== null}
@@ -197,7 +237,9 @@ export const ImagesTable = () => {
             render: (thumbHash: string, row) =>
               thumbHash ? (
                 <Button
-                  onClick={() => setPreviewedImage(row)}
+                  onClick={() =>
+                    navigate({ from: "/images/$", params: { _splat: row.id } })
+                  }
                   type="text"
                   style={{ padding: 0 }}
                 >
@@ -230,11 +272,13 @@ export const ImagesTable = () => {
           },
           {
             title: "Actions",
-            dataIndex: "uuid",
+            dataIndex: "id",
             render: (_, row) => (
               <Flex gap="small" align="center">
                 <Button
-                  onClick={() => setPreviewedImage(row)}
+                  onClick={() =>
+                    navigate({ from: "/images/$", params: { _splat: row.id } })
+                  }
                   icon={<EyeOutlined />}
                 />
                 <Button
