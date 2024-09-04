@@ -2,7 +2,7 @@ import { EyeOutlined, SendOutlined } from "@ant-design/icons";
 import { useListQuery } from "@hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
 import {
   getFragmentData,
@@ -56,8 +56,6 @@ const notificationsTableQueryDocument = graphql(/* GraphQL */ `
 `);
 
 export const NotificationsTable = () => {
-  const navigate = useNavigate();
-
   const {
     queryOptions,
     updatePagination,
@@ -213,24 +211,20 @@ export const NotificationsTable = () => {
             dataIndex: "uuid",
             render: (uuid: string) => (
               <Flex gap="small" align="center">
-                <Button
-                  onClick={() =>
-                    navigate({
-                      to: "/notifications/$notificationId",
-                      params: { notificationId: uuid },
-                    }).catch((error: unknown) => console.error(error))
-                  }
-                  icon={<EyeOutlined />}
-                />
-                <Button
-                  onClick={() =>
-                    navigate({
-                      to: "/notifications/$notificationId/manage",
-                      params: { notificationId: uuid },
-                    }).catch((error: unknown) => console.error(error))
-                  }
-                  icon={<SendOutlined />}
-                />
+                <Link
+                  to="$notificationId"
+                  from="/notifications"
+                  params={{ notificationId: uuid }}
+                >
+                  <Button icon={<EyeOutlined />} />
+                </Link>
+                <Link
+                  to="$notificationId/manage"
+                  from="/notifications"
+                  params={{ notificationId: uuid }}
+                >
+                  <Button icon={<SendOutlined />} />
+                </Link>
               </Flex>
             ),
           },

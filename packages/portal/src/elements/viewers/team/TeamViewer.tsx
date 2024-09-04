@@ -86,19 +86,15 @@ export function TeamViewer({
           >
             Delete Team
           </Button>
-          <Button
-            style={{ width: "18ch" }}
-            onClick={() => {
-              navigate({
-                to: "/teams/$teamId/edit",
-                params: { teamId: teamData.id },
-              }).catch((error: unknown) => console.error(error));
-            }}
-            icon={<EditOutlined />}
-            shape="round"
-          >
-            Edit Team
-          </Button>
+          <Link from="/teams/$teamId" to="edit">
+            <Button
+              style={{ width: "18ch" }}
+              icon={<EditOutlined />}
+              shape="round"
+            >
+              Edit Team
+            </Button>
+          </Link>
         </Flex>
       </Flex>
       <Descriptions
@@ -130,21 +126,23 @@ export function TeamViewer({
           </ul>
         </Descriptions.Item>
         <Descriptions.Item label="Members">
-          <ul>
-            {teamData.members.map((member) => (
-              <li key={member.person.id}>
-                <Link
-                  to="/people/$personId"
-                  params={{
-                    personId: member.person.id,
-                  }}
-                >
-                  {member.person.name ?? "Never logged in"} (
-                  {member.person.linkblue ?? "No linkblue"})
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div style={{ maxHeight: "10rem", overflowY: "scroll" }}>
+            <ul>
+              {teamData.members.map((member) => (
+                <li key={member.person.id}>
+                  <Link
+                    to="/people/$personId"
+                    params={{
+                      personId: member.person.id,
+                    }}
+                  >
+                    {member.person.name ?? "Never logged in"} (
+                    {member.person.linkblue ?? "No linkblue"})
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </Descriptions.Item>
       </Descriptions>
     </Flex>

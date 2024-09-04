@@ -70,11 +70,7 @@ export function PersonViewer({
           authorization.accessLevel >=
             AccessLevel.CommitteeChairOrCoordinator && (
             <>
-              <Link
-                to="/people/$personId/edit"
-                params={{ personId: personData.id }}
-                color="#efefef"
-              >
+              <Link from="/people/$personId" to="edit" color="#efefef">
                 <EditOutlined style={{ marginLeft: "1em" }} />
               </Link>
               <Button

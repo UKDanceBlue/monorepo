@@ -17,8 +17,6 @@ const TeamInformation = ({
   captains,
   scoreboardData,
   teamTotal,
-  teamFundraisingTotal,
-  myFundraisingEntries,
 }: {
   name: string;
   captains: readonly string[];

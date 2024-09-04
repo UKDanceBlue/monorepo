@@ -10,7 +10,6 @@ import type { UseQueryExecute } from "urql";
 
 import { usePointEntryDeletePopup } from "./PointEntryDeletePopup";
 
-
 export const PointEntryTableFragment = graphql(/* GraphQL */ `
   fragment PointEntryTableFragment on PointEntryNode {
     id
@@ -54,6 +53,7 @@ export function PointEntryTable({
         rowKey="uuid"
         loading={loading}
         pagination={false}
+        scroll={{ y: "50em" }}
         columns={[
           {
             title: "Person",

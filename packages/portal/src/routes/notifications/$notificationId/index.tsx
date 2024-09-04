@@ -2,8 +2,8 @@ import { SendOutlined } from "@ant-design/icons";
 import { NotificationDeliveriesTable } from "@elements/tables/notification/NotificationDeliveriesTable";
 import { NotificationViewer } from "@elements/viewers/notification/NotificationViewer";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { createFileRoute } from "@tanstack/react-router";
-import { useNavigate, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useParams } from "@tanstack/react-router";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Flex, Typography } from "antd";
 import { useQuery } from "urql";
@@ -34,25 +34,15 @@ function ViewNotificationPage() {
     loadingMessage: "Loading notification...",
   });
 
-  const navigate = useNavigate();
-
   return (
     <Flex vertical gap={16}>
       <Flex justify="space-between" align="center">
         <Typography.Title>Notification</Typography.Title>
-        <Button
-          type="link"
-          icon={<SendOutlined />}
-          onClick={() =>
-            void navigate({
-              to: "/notifications/$notificationId/manage",
-              from: "/notifications/$notificationId",
-            })
-          }
-          size="large"
-        >
-          Manage delivery
-        </Button>
+        <Link from="/notifications/$notificationId" to="manage">
+          <Button type="link" icon={<SendOutlined />} size="large">
+            Manage delivery
+          </Button>
+        </Link>
       </Flex>
       <NotificationViewer
         notificationFragment={data?.notification.data}

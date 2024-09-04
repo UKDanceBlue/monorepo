@@ -1,7 +1,7 @@
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
 import {
   parsedEventOccurrenceToStrings,
@@ -64,8 +64,6 @@ const eventsTableQueryDocument = graphql(/* GraphQL */ `
 `);
 
 export const EventsTable = () => {
-  const navigate = useNavigate();
-
   const {
     queryOptions,
     updatePagination,
@@ -219,24 +217,16 @@ export const EventsTable = () => {
             dataIndex: "uuid",
             render: (uuid: string) => (
               <Flex gap="small" align="center">
-                <Button
-                  onClick={() =>
-                    navigate({
-                      to: "/events/$eventId",
-                      params: { eventId: uuid },
-                    }).catch((error: unknown) => console.error(error))
-                  }
-                  icon={<EyeOutlined />}
-                />
-                <Button
-                  onClick={() =>
-                    navigate({
-                      to: "/events/$eventId/edit",
-                      params: { eventId: uuid },
-                    }).catch((error: unknown) => console.error(error))
-                  }
-                  icon={<EditOutlined />}
-                />
+                <Link from="/events" to="$eventId" params={{ eventId: uuid }}>
+                  <Button icon={<EyeOutlined />} />
+                </Link>
+                <Link
+                  from="/events"
+                  to="$eventId/edit"
+                  params={{ eventId: uuid }}
+                >
+                  <Button icon={<EditOutlined />} />
+                </Link>
               </Flex>
             ),
           },

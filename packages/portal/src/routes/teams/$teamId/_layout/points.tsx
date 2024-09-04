@@ -8,7 +8,9 @@ import { Flex } from "antd";
 import { useQuery } from "urql";
 
 function ViewTeamPoints() {
-  const { teamId: teamUuid } = useParams({ from: "/teams/$teamId/" });
+  const { teamId: teamUuid } = useParams({
+    from: "/teams/$teamId/_layout/points",
+  });
 
   const [{ fetching, data, error }, refetch] = useQuery({
     query: teamPageDocument,
@@ -41,6 +43,6 @@ function ViewTeamPoints() {
   );
 }
 
-export const Route = createFileRoute("/teams/$teamId/points")({
+export const Route = createFileRoute("/teams/$teamId/_layout/points")({
   component: ViewTeamPoints,
 });

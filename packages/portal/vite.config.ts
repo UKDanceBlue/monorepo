@@ -28,10 +28,10 @@ export default defineConfig({
   },
 
   plugins: [
-    react(),
     TanStackRouterVite({
       quoteStyle: "double",
       semicolons: true,
     }),
+    react(),
   ],
 });

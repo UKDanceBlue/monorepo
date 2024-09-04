@@ -22,7 +22,7 @@ import {
   TeamNode,
 } from "@ukdanceblue/common";
 import { NotFoundError, ConcreteResult } from "@ukdanceblue/common/error";
-import { Err } from "ts-results-es";
+import { Err, None, Ok, Option, Some } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -183,27 +183,36 @@ export class PointEntryResolver {
   @FieldResolver(() => PersonNode, { nullable: true })
   async personFrom(
     @Root() { id: { id } }: PointEntryNode
-  ): Promise<ConcreteResult<PersonNode>> {
+  ): Promise<ConcreteResult<Option<PersonNode>>> {
     const model = await this.pointEntryRepository.getPointEntryPersonFrom({
       uuid: id,
     });
 
     return model
-      ? personModelToResource(model, this.personRepository).promise
-      : Err(new NotFoundError({ what: "Person" }));
+      ? personModelToResource(model, this.personRepository).map((val) =>
+          Some(val)
+        ).promise
+      : Ok(None);
   }
 
   @FieldResolver(() => TeamNode)
-  async team(@Root() { id: { id } }: PointEntryNode): Promise<TeamNode> {
+  async team(
+    @Root() { id: { id } }: PointEntryNode
+  ): Promise<ConcreteResult<TeamNode>> {
     const model = await this.pointEntryRepository.getPointEntryTeam({
       uuid: id,
     });
 
     if (model == null) {
-      throw new DetailedError(ErrorCode.NotFound, "PointEntry not found");
+      return Err(
+        new NotFoundError({
+          what: "Team",
+          why: `couldn't find team for point entry ${id}`,
+        })
+      );
     }
 
-    return teamModelToResource(model);
+    return Ok(teamModelToResource(model));
   }
 
   @FieldResolver(() => PointOpportunityNode, { nullable: true })

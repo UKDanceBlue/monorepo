@@ -135,7 +135,9 @@ const DeleteFundraisingAssignmentDocument = graphql(/* GraphQL */ `
 `);
 
 function ViewTeamFundraising() {
-  const { teamId: teamUuid } = useParams({ from: "/teams/$teamId/" });
+  const { teamId: teamUuid } = useParams({
+    from: "/teams/$teamId/_layout/fundraising",
+  });
   const [fundraisingTeamSearch, setFundraisingTeamSearch] = useState("");
 
   const {
@@ -649,6 +651,6 @@ function FundraisingTableNewAssignment({
   );
 }
 
-export const Route = createFileRoute("/teams/$teamId/fundraising")({
+export const Route = createFileRoute("/teams/$teamId/_layout/fundraising")({
   component: ViewTeamFundraising,
 });

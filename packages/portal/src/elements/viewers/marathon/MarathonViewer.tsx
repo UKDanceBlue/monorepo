@@ -60,10 +60,7 @@ export const MarathonViewer = ({
         title={
           <Flex justify="space-between" align="center">
             <span>Hours</span>
-            <Link
-              to="/marathon/$marathonId/hours/add"
-              params={{ marathonId: marathonData.id }}
-            >
+            <Link from="/marathon/$marathonId" to="hours/add">
               Add
             </Link>
           </Flex>
@@ -76,8 +73,9 @@ export const MarathonViewer = ({
             label={hour.shownStartingAt.toLocaleString(DateTime.DATETIME_MED)}
           >
             <Link
-              to="/marathon/$marathonId/hours/$hourId"
-              params={{ marathonId: marathonData.id, hourId: hour.id }}
+              from="/marathon/$marathonId"
+              to="hours/$hourId"
+              params={{ hourId: hour.id }}
             >
               {hour.title}
             </Link>

@@ -2,7 +2,7 @@ import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useListQuery } from "@hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import type { CommitteeIdentifier } from "@ukdanceblue/common";
 import {
   committeeNames,
@@ -61,7 +61,6 @@ const peopleTableDocument = graphql(/* GraphQL */ `
 `);
 
 export const PeopleTable = () => {
-  const navigate = useNavigate();
   const {
     queryOptions,
     updatePagination,
@@ -257,24 +256,20 @@ export const PeopleTable = () => {
             render: (_, record) => {
               return (
                 <Flex gap="small" align="center">
-                  <Button
-                    onClick={() =>
-                      navigate({
-                        to: "/people/$personId",
-                        params: { personId: record.id },
-                      }).catch((error: unknown) => console.error(error))
-                    }
-                    icon={<EyeOutlined />}
-                  />
-                  <Button
-                    onClick={() =>
-                      navigate({
-                        to: "/people/$personId/edit",
-                        params: { personId: record.id },
-                      }).catch((error: unknown) => console.error(error))
-                    }
-                    icon={<EditOutlined />}
-                  />
+                  <Link
+                    from="/people"
+                    to="$personId"
+                    params={{ personId: record.id }}
+                  >
+                    <Button icon={<EyeOutlined />} />
+                  </Link>
+                  <Link
+                    from="/people"
+                    to="$personId/edit"
+                    params={{ personId: record.id }}
+                  >
+                    <Button icon={<EditOutlined />} />
+                  </Link>
                 </Flex>
               );
             },

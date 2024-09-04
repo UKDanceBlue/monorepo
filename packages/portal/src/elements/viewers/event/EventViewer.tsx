@@ -99,7 +99,8 @@ export function EventViewer({
       <Typography.Title level={2}>
         {eventData.title}
         <Link
-          to="/events/$eventId/edit"
+          from="/events/$eventId"
+          to="edit"
           params={{ eventId: eventData.id }}
           color="#efefef"
         >
