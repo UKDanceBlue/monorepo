@@ -42,7 +42,7 @@ export function PersonViewer({
   personFragment?: FragmentType<typeof PersonViewerFragment> | undefined | null;
 }) {
   const {
-    auth: { authorization },
+    loginState: { authorization },
   } = useRouteContext({ from: "/" });
 
   const personData = getFragmentData(PersonViewerFragment, PersonFragment);
@@ -71,7 +71,11 @@ export function PersonViewer({
           authorization.accessLevel >=
             AccessLevel.CommitteeChairOrCoordinator && (
             <>
-              <Link from="/people/$personId" to="edit" color="#efefef">
+              <Link
+                to="/people/$personId/edit"
+                params={{ personId: personData.id }}
+                color="#efefef"
+              >
                 <EditOutlined style={{ marginLeft: "1em" }} />
               </Link>
               <Button

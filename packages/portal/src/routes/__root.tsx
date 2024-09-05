@@ -1,43 +1,9 @@
-import { AntConfigProvider, ThemeConfigProvider } from "@config/ant.tsx";
-import { API_BASE_URL } from "@config/api.ts";
-import { MarathonConfigProvider } from "@config/marathon.tsx";
-import { useMarathon } from "@config/marathonContext";
 import { NavigationMenu } from "@elements/singletons/NavigationMenu";
-import { useLoginState } from "@hooks/useLoginState";
-import {
-  createRootRouteWithContext,
-  Outlet,
-  RouterContextProvider,
-  useRouter,
-} from "@tanstack/react-router";
-import type { Authorization } from "@ukdanceblue/common";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import type { PortalAuthData } from "@tools/loginState";
 import { Layout } from "antd";
-import { App as AntApp } from "antd";
 import type { DateTime } from "luxon";
 import { lazy, Suspense } from "react";
-import {
-  cacheExchange,
-  Client,
-  fetchExchange,
-  Provider as UrqlProvider,
-} from "urql";
-
-const API_URL = `${API_BASE_URL}/graphql`;
-const urqlClient = new Client({
-  url: API_URL,
-  exchanges: [cacheExchange, fetchExchange],
-  fetchOptions: () => {
-    const query = new URLSearchParams(window.location.search).get("masquerade");
-    return {
-      credentials: "include",
-      headers: query
-        ? {
-            "x-ukdb-masquerade": query,
-          }
-        : undefined,
-    };
-  },
-});
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === "production"
@@ -52,10 +18,7 @@ const TanStackRouterDevtools =
       );
 
 interface RouterContext {
-  auth: {
-    loggedIn: boolean | undefined;
-    authorization: Authorization | undefined;
-  };
+  loginState: PortalAuthData;
   selectedMarathon: {
     id: string;
     year: string;
@@ -65,17 +28,13 @@ interface RouterContext {
 }
 
 function RootComponent() {
+  const { loginState } = Route.useLoaderData();
+
   return (
-    <RouterContextProvider
-      context={{
-        auth: useLoginState(),
-        selectedMarathon: useMarathon(),
-      }}
-      router={useRouter()}
-    >
+    <>
       <Layout style={{ height: "100%" }}>
         <Layout.Header>
-          <NavigationMenu />
+          <NavigationMenu auth={loginState} />
         </Layout.Header>
         <div
           style={{
@@ -92,26 +51,14 @@ function RootComponent() {
       <Suspense>
         <TanStackRouterDevtools position="bottom-right" />
       </Suspense>
-    </RouterContextProvider>
+    </>
   );
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  component: () => {
-    return (
-      <>
-        <ThemeConfigProvider>
-          <AntConfigProvider>
-            <AntApp style={{ height: "100%" }}>
-              <UrqlProvider value={urqlClient}>
-                <MarathonConfigProvider>
-                  <RootComponent />
-                </MarathonConfigProvider>
-              </UrqlProvider>
-            </AntApp>
-          </AntConfigProvider>
-        </ThemeConfigProvider>
-      </>
-    );
+  component: RootComponent,
+  loader({ context }) {
+    console.log("Route.loader", context);
+    return { loginState: context.loginState };
   },
 });

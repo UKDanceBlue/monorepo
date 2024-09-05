@@ -2,6 +2,7 @@ import { createContext, useContext } from "react";
 
 import type { DateTime } from "luxon";
 
+// TODO replace marathon and setMarathon with Router context and move marathons to a simple hook
 export const marathonContext = createContext<{
   setMarathon: (marathonId: string | null) => void;
   marathon: {

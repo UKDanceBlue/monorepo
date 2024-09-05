@@ -13,6 +13,10 @@ const ViewMePageDocument = graphql(/* GraphQL */ `
   }
 `);
 
+export const Route = createFileRoute("/")({
+  component: HomePage,
+});
+
 function HomePage() {
   const [{ data, fetching, error }] = useQuery({
     query: ViewMePageDocument,
@@ -43,7 +47,3 @@ function HomePage() {
     </div>
   );
 }
-
-export const Route = createFileRoute("/")({
-  component: HomePage,
-});

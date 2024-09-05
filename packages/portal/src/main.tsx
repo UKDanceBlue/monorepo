@@ -1,6 +1,11 @@
 import "normalize.css";
 import "./root.css";
 
+import { AntConfigProvider, ThemeConfigProvider } from "@config/ant.tsx";
+import { API_BASE_URL } from "@config/api.ts";
+import { MarathonConfigProvider } from "@config/marathon.tsx";
+import { useMarathon } from "@config/marathonContext";
+import { useLoginState } from "@hooks/useLoginState";
 import {
   createRouter,
   ErrorComponent,
@@ -8,10 +13,34 @@ import {
 } from "@tanstack/react-router";
 import { defaultAuthorization } from "@ukdanceblue/common";
 import { Progress } from "antd";
-import { StrictMode } from "react";
+import { App as AntApp } from "antd";
+import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
+import {
+  cacheExchange,
+  Client,
+  fetchExchange,
+  Provider as UrqlProvider,
+} from "urql";
 
 import { routeTree } from "./routeTree.gen";
+
+const API_URL = `${API_BASE_URL}/graphql`;
+const urqlClient = new Client({
+  url: API_URL,
+  exchanges: [cacheExchange, fetchExchange],
+  fetchOptions: () => {
+    const query = new URLSearchParams(window.location.search).get("masquerade");
+    return {
+      credentials: "include",
+      headers: query
+        ? {
+            "x-ukdb-masquerade": query,
+          }
+        : undefined,
+    };
+  },
+});
 
 const router = createRouter({
   routeTree,
@@ -22,7 +51,7 @@ const router = createRouter({
   ),
   defaultErrorComponent: ({ error }) => <ErrorComponent error={error} />,
   context: {
-    auth: {
+    loginState: {
       authorization: defaultAuthorization,
       loggedIn: false,
     },
@@ -37,12 +66,35 @@ declare module "@tanstack/react-router" {
   }
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
+function RouterWrapper() {
+  const auth = useLoginState();
+  const selectedMarathon = useMarathon();
+
+  useEffect(() => {
+    router.update({ context: { loginState: auth, selectedMarathon } });
+    router.invalidate().catch((error: unknown) => console.error(error));
+  }, [auth, selectedMarathon]);
+
+  return <RouterProvider router={router} />;
+}
+
 const rootElement = document.getElementById("root")!;
 if (!rootElement.innerHTML) {
   const root = createRoot(rootElement);
   root.render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <ThemeConfigProvider>
+        <AntConfigProvider>
+          <AntApp style={{ height: "100%" }}>
+            <UrqlProvider value={urqlClient}>
+              <MarathonConfigProvider>
+                <RouterWrapper />
+              </MarathonConfigProvider>
+            </UrqlProvider>
+          </AntApp>
+        </AntConfigProvider>
+      </ThemeConfigProvider>
     </StrictMode>
   );
 }

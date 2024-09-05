@@ -36,7 +36,7 @@ export function PersonEditor({
   refetchPerson?: UseQueryExecute | undefined;
 }) {
   const {
-    auth: { authorization },
+    loginState: { authorization },
   } = useRouteContext({ from: "/" });
   const isAdmin =
     (authorization?.accessLevel ?? AccessLevel.None) >= AccessLevel.Admin;
