@@ -1,6 +1,5 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { useLoginState } from "@hooks/useLoginState";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useRouteContext } from "@tanstack/react-router";
 import {
   AccessLevel,
   committeeNames,
@@ -42,7 +41,9 @@ export function PersonViewer({
 }: {
   personFragment?: FragmentType<typeof PersonViewerFragment> | undefined | null;
 }) {
-  const { authorization } = useLoginState();
+  const {
+    auth: { authorization },
+  } = useRouteContext({ from: "/" });
 
   const personData = getFragmentData(PersonViewerFragment, PersonFragment);
 

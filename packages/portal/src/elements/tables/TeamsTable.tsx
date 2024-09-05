@@ -1,9 +1,8 @@
 import { DollarOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { useMarathon } from "@config/marathonContext";
 import { useListQuery } from "@hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouteContext } from "@tanstack/react-router";
 import { SortDirection, TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import {
   getFragmentData,
@@ -88,21 +87,21 @@ export const TeamsTable = () => {
     loadingMessage: "Loading teams...",
   });
 
-  const marathonId = useMarathon()?.id;
+  const { selectedMarathon } = useRouteContext({ from: "/" });
 
   useEffect(() => {
     if (
       queryOptions.oneOfFilters.find((f) => f.field === "marathonId")
-        ?.value[0] !== marathonId
+        ?.value[0] !== selectedMarathon?.id
     ) {
-      if (marathonId) {
+      if (selectedMarathon?.id) {
         updateFilter("marathonId", {
           field: "marathonId",
-          value: [marathonId],
+          value: [selectedMarathon.id],
         });
       }
     }
-  }, [marathonId, queryOptions.oneOfFilters, updateFilter]);
+  }, [selectedMarathon, queryOptions.oneOfFilters, updateFilter]);
 
   return (
     <Table

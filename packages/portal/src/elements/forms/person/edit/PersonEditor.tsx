@@ -1,5 +1,5 @@
 import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
-import { useLoginState } from "@hooks/useLoginState";
+import { useRouteContext } from "@tanstack/react-router";
 import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
@@ -35,7 +35,9 @@ export function PersonEditor({
     | undefined;
   refetchPerson?: UseQueryExecute | undefined;
 }) {
-  const { authorization } = useLoginState();
+  const {
+    auth: { authorization },
+  } = useRouteContext({ from: "/" });
   const isAdmin =
     (authorization?.accessLevel ?? AccessLevel.None) >= AccessLevel.Admin;
 

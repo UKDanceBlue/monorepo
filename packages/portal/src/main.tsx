@@ -6,6 +6,7 @@ import {
   ErrorComponent,
   RouterProvider,
 } from "@tanstack/react-router";
+import { defaultAuthorization } from "@ukdanceblue/common";
 import { Progress } from "antd";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -21,7 +22,11 @@ const router = createRouter({
   ),
   defaultErrorComponent: ({ error }) => <ErrorComponent error={error} />,
   context: {
-    auth: undefined!, // We'll inject this when we render
+    auth: {
+      authorization: defaultAuthorization,
+      loggedIn: false,
+    },
+    selectedMarathon: null,
   },
   defaultPreload: false,
 });

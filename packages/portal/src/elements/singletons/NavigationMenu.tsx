@@ -5,7 +5,7 @@ import { themeConfigContext } from "@config/antThemeConfig";
 import { API_BASE_URL } from "@config/api";
 import { marathonContext } from "@config/marathonContext";
 import { useAntFeedback } from "@hooks/useAntFeedback";
-import { useLoginState } from "@hooks/useLoginState";
+import { useRouteContext } from "@tanstack/react-router";
 import type { AuthorizationRule } from "@ukdanceblue/common";
 import {
   AccessLevel,
@@ -124,7 +124,9 @@ export const NavigationMenu = () => {
   const { dark, setDark } = useContext(themeConfigContext);
   const { showErrorMessage } = useAntFeedback();
 
-  const { loggedIn, authorization } = useLoginState();
+  const {
+    auth: { loggedIn, authorization },
+  } = useRouteContext({ from: "/" });
 
   const [menuItems, setMenuItems] = useState<
     {

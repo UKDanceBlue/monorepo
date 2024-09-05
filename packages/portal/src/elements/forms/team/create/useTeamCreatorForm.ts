@@ -1,6 +1,5 @@
 import { teamCreatorDocument } from "./TeamCreatorGQL";
 
-import { useMarathon } from "@config/marathonContext";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
@@ -9,6 +8,7 @@ import { type CreateTeamInput } from "@ukdanceblue/common/graphql-client-portal/
 import { useMutation } from "urql";
 
 import type { DocumentType } from "@ukdanceblue/common/graphql-client-portal";
+import { useRouteContext } from "@tanstack/react-router";
 
 export function useTeamCreatorForm(
   afterSubmit:
@@ -25,7 +25,7 @@ export function useTeamCreatorForm(
     loadingMessage: "Saving team...",
   });
 
-  const marathonId = useMarathon()?.id;
+  const { selectedMarathon } = useRouteContext({ from: "/" });
   const { showErrorMessage } = useAntFeedback();
 
   const Form = useForm<CreateTeamInput>({
@@ -35,7 +35,7 @@ export function useTeamCreatorForm(
       type: TeamType.Spirit,
     },
     onSubmit: async ({ value: values }) => {
-      if (!marathonId) {
+      if (!selectedMarathon?.id) {
         void showErrorMessage("No marathon selected");
         return;
       }
@@ -45,7 +45,7 @@ export function useTeamCreatorForm(
           legacyStatus: values.legacyStatus,
           type: values.type,
         },
-        marathonUuid: marathonId,
+        marathonUuid: selectedMarathon.id,
       });
 
       return afterSubmit?.(data?.createTeam);

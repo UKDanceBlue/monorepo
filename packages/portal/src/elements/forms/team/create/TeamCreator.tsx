@@ -1,6 +1,5 @@
-import { useMarathon } from "@config/marathonContext";
 import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import { App, Button, Flex, Form, Input, Select } from "antd";
 
@@ -19,6 +18,8 @@ export function TeamCreator() {
       }).catch((error: unknown) => console.error(error));
     }
   });
+
+  const { selectedMarathon } = useRouteContext({ from: "/" });
 
   return (
     <Flex vertical gap="middle" align="center">
@@ -56,7 +57,7 @@ export function TeamCreator() {
             </Form.Item>
           )}
         </formApi.Field>
-        <p>Marathon Year: {useMarathon()?.year}</p>
+        <p>Marathon Year: {selectedMarathon?.year}</p>
         <TanAntFormItem
           formApi={formApi}
           fieldProps={{

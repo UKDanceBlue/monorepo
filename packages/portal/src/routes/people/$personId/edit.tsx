@@ -1,7 +1,6 @@
-import { useMarathon } from "@config/marathonContext";
 import { PersonEditor } from "@elements/forms/person/edit/PersonEditor";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouteContext } from "@tanstack/react-router";
 import { useParams } from "@tanstack/react-router";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useQuery } from "urql";
@@ -26,12 +25,12 @@ const viewPersonPageDocument = graphql(/* GraphQL */ `
 
 export function EditPersonPage() {
   const { personId } = useParams({ from: "/people/$personId/" });
-  const marathon = useMarathon();
+  const { selectedMarathon } = useRouteContext({ from: "/" });
 
   const [{ data, fetching, error }, refetchPerson] = useQuery({
     query: viewPersonPageDocument,
-    variables: { uuid: personId, marathonId: marathon?.id ?? "" },
-    pause: !marathon,
+    variables: { uuid: personId, marathonId: selectedMarathon?.id ?? "" },
+    pause: !selectedMarathon,
   });
 
   useQueryStatusWatcher({
