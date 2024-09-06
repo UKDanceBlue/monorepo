@@ -185,90 +185,97 @@ export const NavigationMenu = ({
     useContext(marathonContext);
 
   return (
-    <Menu theme="dark" mode="horizontal" selectedKeys={activeKeys}>
-      {menuItems.map((item) => (
-        <Menu.Item {...item}>{item.label}</Menu.Item>
-      ))}
-      <Menu.Divider />
-      <Menu.Item
-        key="login"
-        style={{
-          background: "transparent",
-          marginLeft: "auto",
-        }}
-      >
-        {loggedIn ? (
-          <a
-            href={`${API_BASE_URL}/api/auth/logout?redirectTo=${encodeURI(
-              href
-            )}`}
-          >
-            Logout
-          </a>
-        ) : (
-          <a
-            href={`${API_BASE_URL}/api/auth/login?returning=cookie&redirectTo=${encodeURI(
-              href
-            )}`}
-          >
-            Login
-          </a>
-        )}
-      </Menu.Item>
-      <Menu.Item
-        key="dark"
-        title="Dark"
-        style={{
-          background: "transparent",
-        }}
-      >
-        <Button
-          icon={
-            dark ? (
-              <SunOutlined style={{ color: "inherit" }} />
-            ) : (
-              <MoonOutlined style={{ color: "inherit" }} />
-            )
-          }
-          onClick={() => setDark(!dark)}
-          type="text"
-          style={{ color: "inherit" }}
-        />
-      </Menu.Item>
-      {authorization?.accessLevel === AccessLevel.SuperAdmin && (
-        <Menu.Item
-          key="masquerade"
-          title="Masquerade"
-          style={{
+    <Menu
+      theme="dark"
+      mode="horizontal"
+      selectedKeys={activeKeys}
+      items={[
+        ...menuItems,
+        {
+          type: "item",
+          key: "login",
+          style: {
             background: "transparent",
-          }}
-        >
-          <MasqueradeSelector />
-        </Menu.Item>
-      )}
-      <Menu.Item
-        key="selected-marathon"
-        title="Select Marathon"
-        style={{
-          background: "transparent",
-        }}
-      >
-        <Select
-          defaultValue={""}
-          onChange={(value) => setMarathon(value)}
-          loading={loading}
-          value={marathon?.id}
-          variant="borderless"
-        >
-          {marathons
-            ? marathons.map((marathon) => (
-                <Select.Option key={marathon.id} value={marathon.id}>
-                  {marathon.year}
-                </Select.Option>
-              ))
-            : loadingOption}
-        </Select>
-      </Menu.Item>
-    </Menu>
+            marginLeft: "auto",
+          },
+          label: loggedIn ? (
+            <a
+              href={`${API_BASE_URL}/api/auth/logout?redirectTo=${encodeURI(
+                href
+              )}`}
+            >
+              Logout
+            </a>
+          ) : (
+            <a
+              href={`${API_BASE_URL}/api/auth/login?returning=cookie&redirectTo=${encodeURI(
+                href
+              )}`}
+            >
+              Login
+            </a>
+          ),
+        },
+        {
+          type: "divider",
+        },
+        {
+          type: "item",
+          key: "dark",
+          title: "Dark",
+          style: {
+            background: "transparent",
+          },
+          label: (
+            <Button
+              icon={
+                dark ? (
+                  <SunOutlined style={{ color: "inherit" }} />
+                ) : (
+                  <MoonOutlined style={{ color: "inherit" }} />
+                )
+              }
+              onClick={() => setDark(!dark)}
+              type="text"
+              style={{ color: "inherit" }}
+            />
+          ),
+        },
+        {
+          type: "item",
+          key: "masquerade",
+          title: "Masquerade",
+          style: {
+            background: "transparent",
+          },
+          label: <MasqueradeSelector />,
+        },
+        {
+          type: "item",
+          key: "selected-marathon",
+          title: "Select Marathon",
+          style: {
+            background: "transparent",
+          },
+          label: (
+            <Select
+              defaultValue={""}
+              onChange={(value) => setMarathon(value)}
+              loading={loading}
+              value={marathon?.id}
+              variant="borderless"
+            >
+              {marathons
+                ? marathons.map((marathon) => (
+                    <Select.Option key={marathon.id} value={marathon.id}>
+                      {marathon.year}
+                    </Select.Option>
+                  ))
+                : loadingOption}
+            </Select>
+          ),
+        },
+      ]}
+    />
   );
 };

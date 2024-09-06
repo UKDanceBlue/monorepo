@@ -14,7 +14,7 @@ import {
 import { defaultAuthorization } from "@ukdanceblue/common";
 import { Progress } from "antd";
 import { App as AntApp } from "antd";
-import { StrictMode, useEffect } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import {
   cacheExchange,
@@ -71,12 +71,12 @@ function RouterWrapper() {
   const auth = useLoginState();
   const selectedMarathon = useMarathon();
 
-  useEffect(() => {
-    router.update({ context: { loginState: auth, selectedMarathon } });
-    router.invalidate().catch((error: unknown) => console.error(error));
-  }, [auth, selectedMarathon]);
-
-  return <RouterProvider router={router} />;
+  return (
+    <RouterProvider
+      router={router}
+      context={{ loginState: auth, selectedMarathon }}
+    />
+  );
 }
 
 const rootElement = document.getElementById("root")!;
