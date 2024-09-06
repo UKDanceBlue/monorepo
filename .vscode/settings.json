@@ -48,6 +48,8 @@
       "password": "danceblue"
     }
   ],
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.cursorStyle": "line",
   "[sql]": {
     "editor.defaultFormatter": "mtxr.sqltools"
   }

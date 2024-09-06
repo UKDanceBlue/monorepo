@@ -112,4 +112,4 @@ if ! shopt -oq posix; then
   fi
 fi
 
-PROMPT_COMMAND='PS1_CMD1=$(__git_ps1 " (%s)"); PS1_CMD2=$(if [[ $(pwd) == /workspaces/monorepo* ]] ; then echo "@$(pwd | cut -b 21-)" ; else pwd ; fi)'; PS1='\[\e[38;5;56;1m\]DanceBlue\[\e[0;38;5;141;3m\]${PS1_CMD1}\[\e[0m\] ${PS1_CMD2} \\$ '
+PROMPT_COMMAND='PS1_CMD1=$(__git_ps1 " (%s)"); PS1_CMD2=$(if [[ $(pwd) == /workspaces/monorepo* ]] ; then echo "@$(pwd | cut -b 21-)" ; else pwd ; fi)'; PS1='\[\e[38;5;19;1m\]DanceBlue\[\e[0;38;5;166;3m\]${PS1_CMD1}\[\e[0m\] \[\e[38;5;239m\]${PS1_CMD2}\[\e[0m\] \[\e[38;5;214m\]-\[\e[38;5;215m\]>\[\e[0m\] '
