@@ -12,5 +12,8 @@ FROM mcr.microsoft.com/devcontainers/javascript-node:22
 # [Optional] Uncomment if you want to install more global node modules
 # RUN su node -c "npm install -g <your-package-list-here>"
 
+COPY ./bashrc /home/node/.bashrc
+COPY ./git-prompt.sh /home/node/.git-prompt.sh
+
 # Enable corepack
 RUN sudo corepack enable
