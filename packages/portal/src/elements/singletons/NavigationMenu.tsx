@@ -5,113 +5,56 @@ import { themeConfigContext } from "@config/antThemeConfig";
 import { API_BASE_URL } from "@config/api";
 import { marathonContext } from "@config/marathonContext";
 import { useAntFeedback } from "@hooks/useAntFeedback";
-import type { Authorization, AuthorizationRule } from "@ukdanceblue/common";
-import {
-  AccessLevel,
-  checkAuthorization,
-  defaultAuthorization,
-} from "@ukdanceblue/common";
+import type { Register } from "@tanstack/react-router";
+import { Link, useLocation, useRouter } from "@tanstack/react-router";
+import type { Authorization } from "@ukdanceblue/common";
+import { checkAuthorization, defaultAuthorization } from "@ukdanceblue/common";
 import { Button, Menu, Select } from "antd";
 import { useContext, useEffect, useState } from "react";
 
 import { MasqueradeSelector } from "./MasqueradeSelector";
 
-interface NavItemType {
-  slug: string;
+const routes: {
+  path: keyof Register["router"]["routesByPath"];
   title: string;
-  url?: string;
-  element?: React.ReactNode;
-  authorizationRules?: AuthorizationRule[];
-}
-
-const navItems = [
+}[] = [
   {
-    slug: "home",
+    path: "/",
     title: "Home",
-    url: "/",
   },
   {
-    slug: "events",
+    path: "/events",
     title: "Events",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
   {
-    slug: "teams",
+    path: "/teams",
     title: "Teams",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
   {
-    slug: "people",
+    path: "/people",
     title: "People",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
   {
-    slug: "notifications",
+    path: "/notifications",
     title: "Notifications",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
   {
-    slug: "marathon",
+    path: "/marathon",
     title: "Marathon",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
   {
-    slug: "feed",
+    path: "/feed",
     title: "Feed",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
   {
-    slug: "images",
+    path: "/images/$",
     title: "Images",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
   {
-    slug: "config",
+    path: "/config",
     title: "Config",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-    ],
   },
 ];
-const { pathname, href } = window.location;
-const activeKeys: string[] = [];
-for (const item of navItems) {
-  if (item.url != null && (pathname || "/") === item.url) {
-    activeKeys.push(item.slug);
-  } else if (item.slug === pathname.slice(1)) {
-    activeKeys.push(item.slug);
-  }
-}
 
 const loadingOption = [
   <Select.Option key="" value="" disabled>
@@ -130,6 +73,9 @@ export const NavigationMenu = ({
   const { dark, setDark } = useContext(themeConfigContext);
   const { showErrorMessage } = useAntFeedback();
 
+  const router = useRouter();
+  const location = useLocation();
+
   const [menuItems, setMenuItems] = useState<
     {
       key: string;
@@ -137,19 +83,32 @@ export const NavigationMenu = ({
       label: JSX.Element;
     }[]
   >([]);
+  const [activeKeys, setActiveKeys] = useState<string[]>([]);
 
   useEffect(() => {
-    const fetchMenuItems = async () => {
-      const filteredItems: NavItemType[] = [];
-      for (const item of navItems) {
-        if (!item.authorizationRules) {
-          filteredItems.push(item);
+    const fetchMenuItems = () => {
+      const activeKeys: string[] = [];
+      const filteredItems: {
+        route: (typeof router)["routesByPath"][keyof (typeof router)["routesByPath"]];
+        title: string;
+      }[] = [];
+      const matchedRoutes = new Set(
+        router.matchRoutes(location).map(({ id }) => id)
+      );
+
+      for (const routeInfo of routes) {
+        const route = router.routesByPath[routeInfo.path];
+        const { authorizationRules } = route.options.staticData;
+        if (!authorizationRules) {
+          filteredItems.push({ route, title: routeInfo.title });
+          if (matchedRoutes.has(route.id)) {
+            activeKeys.push(route.id);
+          }
         } else {
           let isAuthorized = false;
-          for (const authorizationRule of item.authorizationRules) {
+          for (const authorizationRule of authorizationRules) {
             if (
-              // eslint-disable-next-line no-await-in-loop
-              await checkAuthorization(
+              checkAuthorization(
                 authorizationRule,
                 authorization ?? defaultAuthorization
               )
@@ -159,27 +118,31 @@ export const NavigationMenu = ({
             }
           }
           if (isAuthorized) {
-            filteredItems.push(item);
+            filteredItems.push({ route, title: routeInfo.title });
+            if (matchedRoutes.has(route.id)) {
+              activeKeys.push(route.id);
+            }
           }
         }
       }
 
-      const updatedMenuItems = filteredItems.map((item) => ({
-        key: item.slug,
-        title: item.title,
-        label: (
-          <a href={item.url ?? `/${item.slug}`}>{item.element ?? item.title}</a>
-        ),
+      const updatedMenuItems = filteredItems.map(({ route, title }) => ({
+        key: route.id,
+        title,
+        label: <Link to={route.to}>{title}</Link>,
       }));
 
       setMenuItems(updatedMenuItems);
+      setActiveKeys(activeKeys);
     };
 
-    fetchMenuItems().catch((error: unknown) => {
+    try {
+      fetchMenuItems();
+    } catch (error) {
       void showErrorMessage({ content: "Failed to fetch menu items" });
       console.error("Failed to fetch menu items", error);
-    });
-  }, [authorization, showErrorMessage]);
+    }
+  }, [authorization, location, router, router.routesByPath, showErrorMessage]);
 
   const { setMarathon, marathon, loading, marathons } =
     useContext(marathonContext);
@@ -201,7 +164,7 @@ export const NavigationMenu = ({
           label: loggedIn ? (
             <a
               href={`${API_BASE_URL}/api/auth/logout?redirectTo=${encodeURI(
-                href
+                location.href
               )}`}
             >
               Logout
@@ -209,7 +172,7 @@ export const NavigationMenu = ({
           ) : (
             <a
               href={`${API_BASE_URL}/api/auth/login?returning=cookie&redirectTo=${encodeURI(
-                href
+                location.href
               )}`}
             >
               Login

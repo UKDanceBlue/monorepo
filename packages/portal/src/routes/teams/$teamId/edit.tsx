@@ -1,7 +1,8 @@
 import { TeamEditor } from "@elements/forms/team/edit/TeamEditor";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
-import { useParams } from "@tanstack/react-router";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
+import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useQuery } from "urql";
 
@@ -16,7 +17,7 @@ const viewTeamPageDocument = graphql(/* GraphQL */ `
 `);
 
 function EditTeamPage() {
-  const { teamId } = useParams({ from: "/teams/$teamId/edit" });
+  const { teamId } = Route.useParams();
 
   const [{ data, fetching, error }, refetchTeam] = useQuery({
     query: viewTeamPageDocument,
@@ -39,4 +40,18 @@ function EditTeamPage() {
 
 export const Route = createFileRoute("/teams/$teamId/edit")({
   component: EditTeamPage,
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: [
+      {
+        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+        committeeIdentifier: CommitteeIdentifier.viceCommittee,
+      },
+      {
+        accessLevel: AccessLevel.Admin,
+      },
+    ],
+  },
 });

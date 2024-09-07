@@ -1,13 +1,15 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { CreateImagePopup } from "@elements/components/image/CreateImagePopup";
 import { ImagesTable } from "@elements/tables/ImagesTable";
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
+import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
 import { useState } from "react";
 
 function ListImagesPage() {
   const [createImageOpen, setCreateImageOpen] = useState(false);
-  const { _splat } = useParams({ from: "/images/$" });
+  const { _splat } = Route.useParams();
 
   return (
     <>
@@ -38,4 +40,14 @@ function ListImagesPage() {
 
 export const Route = createFileRoute("/images/$")({
   component: ListImagesPage,
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: [
+      {
+        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+      },
+    ],
+  },
 });

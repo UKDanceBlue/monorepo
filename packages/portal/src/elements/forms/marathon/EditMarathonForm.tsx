@@ -2,7 +2,6 @@ import { LuxonDatePicker } from "@elements/components/antLuxonComponents";
 import { TanAntForm } from "@elements/components/form/TanAntForm";
 import type { TanAntChildInputProps } from "@elements/components/form/TanAntFormItem";
 import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
-import { useParams } from "@tanstack/react-router";
 import { Button, Form, Input } from "antd";
 import { DateTime } from "luxon";
 
@@ -10,8 +9,7 @@ import { useMarathonCreatorForm } from "./useMarathonEditorForm";
 
 const MARATHON_YEAR_REGEX = /^DB\d{2}$/;
 
-export const EditMarathonForm = () => {
-  const { marathonId } = useParams({ from: "/marathon/$marathonId/edit" });
+export const EditMarathonForm = ({ marathonId }: { marathonId: string }) => {
   const { formApi } = useMarathonCreatorForm({ marathonId });
 
   return (
@@ -46,7 +44,7 @@ export const EditMarathonForm = () => {
             value={value}
             onBlur={onBlur}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="DB22"
+            placeholder="DB00"
           />
         )}
       </TanAntFormItem>

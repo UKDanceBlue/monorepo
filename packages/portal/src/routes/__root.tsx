@@ -1,9 +1,12 @@
 import { NavigationMenu } from "@elements/singletons/NavigationMenu";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import type { PortalAuthData } from "@tools/loginState";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { Layout } from "antd";
+import type { useAppProps } from "antd/es/app/context";
 import type { DateTime } from "luxon";
 import { lazy, Suspense } from "react";
+import type { Client as UrqlClient } from "urql";
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === "production"
@@ -25,6 +28,8 @@ interface RouterContext {
     startDate: DateTime | null;
     endDate: DateTime | null;
   } | null;
+  urqlClient: UrqlClient;
+  antApp: useAppProps;
 }
 
 function RootComponent() {
@@ -60,5 +65,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   loader({ context }) {
     console.log("Route.loader", context);
     return { loginState: context.loginState };
+  },
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: null,
   },
 });

@@ -1,6 +1,8 @@
 import { ConfigItem } from "@elements/forms/config/ConfigItem";
 import { useConfigForm } from "@elements/forms/config/useConfigForm";
 import { createFileRoute } from "@tanstack/react-router";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
+import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Collapse, Divider, Flex, Form, Input, Space } from "antd";
 import { useState } from "react";
 
@@ -116,4 +118,14 @@ function ConfigPage() {
 
 export const Route = createFileRoute("/config/")({
   component: ConfigPage,
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: [
+      {
+        accessLevel: AccessLevel.Admin,
+      },
+    ],
+  },
 });

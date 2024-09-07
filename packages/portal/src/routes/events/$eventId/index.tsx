@@ -1,6 +1,8 @@
 import { EventViewer } from "@elements/viewers/event/EventViewer";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
+import { AccessLevel } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useQuery } from "urql";
 
@@ -15,7 +17,7 @@ const viewEventPageDocument = graphql(/* GraphQL */ `
 `);
 
 export function ViewEvent() {
-  const { eventId } = useParams({ from: "/events/$eventId/" });
+  const { eventId } = Route.useParams();
 
   const [{ data, fetching, error }] = useQuery({
     query: viewEventPageDocument,
@@ -37,4 +39,14 @@ export function ViewEvent() {
 
 export const Route = createFileRoute("/events/$eventId/")({
   component: ViewEvent,
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: [
+      {
+        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+      },
+    ],
+  },
 });

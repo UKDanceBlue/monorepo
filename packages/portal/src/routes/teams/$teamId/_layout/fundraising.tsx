@@ -3,8 +3,12 @@ import { useListQuery } from "@hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
-import { useParams } from "@tanstack/react-router";
-import { SortDirection } from "@ukdanceblue/common";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
+import {
+  AccessLevel,
+  CommitteeIdentifier,
+  SortDirection,
+} from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import {
   AutoComplete,
@@ -135,9 +139,7 @@ const DeleteFundraisingAssignmentDocument = graphql(/* GraphQL */ `
 `);
 
 function ViewTeamFundraising() {
-  const { teamId: teamUuid } = useParams({
-    from: "/teams/$teamId/_layout/fundraising",
-  });
+  const { teamId: teamUuid } = Route.useParams();
   const [fundraisingTeamSearch, setFundraisingTeamSearch] = useState("");
 
   const {
@@ -653,4 +655,18 @@ function FundraisingTableNewAssignment({
 
 export const Route = createFileRoute("/teams/$teamId/_layout/fundraising")({
   component: ViewTeamFundraising,
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: [
+      {
+        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+        committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
+      },
+      {
+        accessLevel: AccessLevel.Admin,
+      },
+    ],
+  },
 });

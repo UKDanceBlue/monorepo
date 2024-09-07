@@ -2,7 +2,7 @@ import { DollarOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useListQuery } from "@hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { Link, useRouteContext } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { SortDirection, TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import {
   getFragmentData,
@@ -51,7 +51,11 @@ export const TeamsTableFragment = graphql(/* GraphQL */ `
   }
 `);
 
-export const TeamsTable = () => {
+export const TeamsTable = ({
+  selectedMarathonId,
+}: {
+  selectedMarathonId: string | undefined;
+}) => {
   const {
     queryOptions,
     updatePagination,
@@ -87,21 +91,19 @@ export const TeamsTable = () => {
     loadingMessage: "Loading teams...",
   });
 
-  const { selectedMarathon } = useRouteContext({ from: "/" });
-
   useEffect(() => {
     if (
       queryOptions.oneOfFilters.find((f) => f.field === "marathonId")
-        ?.value[0] !== selectedMarathon?.id
+        ?.value[0] !== selectedMarathonId
     ) {
-      if (selectedMarathon?.id) {
+      if (selectedMarathonId) {
         updateFilter("marathonId", {
           field: "marathonId",
-          value: [selectedMarathon.id],
+          value: [selectedMarathonId],
         });
       }
     }
-  }, [selectedMarathon, queryOptions.oneOfFilters, updateFilter]);
+  }, [selectedMarathonId, queryOptions.oneOfFilters, updateFilter]);
 
   return (
     <Table

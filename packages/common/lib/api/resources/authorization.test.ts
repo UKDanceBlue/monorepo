@@ -10,7 +10,6 @@ import { describe, expect, it } from "vitest";
 
 import type { Authorization } from "../../index.js";
 
-
 const techChair: Authorization = {
   accessLevel: AccessLevel.Admin,
   dbRole: DbRole.Committee,
@@ -197,30 +196,6 @@ describe("checkAuthorization", () => {
     ).resolves.toBe(false);
   });
 
-  it("should work with a custom check function", async () => {
-    expect.assertions(2);
-    await expect(
-      checkAuthorization(
-        {
-          custom() {
-            return true;
-          },
-        },
-        { accessLevel: AccessLevel.None, dbRole: DbRole.None, committees: [] }
-      )
-    ).resolves.toBe(true);
-    await expect(
-      checkAuthorization(
-        {
-          custom() {
-            return false;
-          },
-        },
-        { accessLevel: AccessLevel.None, dbRole: DbRole.None, committees: [] }
-      )
-    ).resolves.toBe(false);
-  });
-
   it("should work with committeeIdentifier matching", async () => {
     expect.assertions(2);
     await expect(
@@ -267,38 +242,6 @@ describe("checkAuthorization", () => {
     ).resolves.toBe(false);
   });
 
-  it("should work with exact dbRole matching", async () => {
-    expect.assertions(2);
-    await expect(
-      checkAuthorization(
-        {
-          dbRole: DbRole.Committee,
-        },
-        techChair
-      )
-    ).resolves.toBe(true);
-    await expect(
-      checkAuthorization(
-        {
-          dbRole: DbRole.Committee,
-        },
-        none
-      )
-    ).resolves.toBe(false);
-  });
-
-  it("should work with minimum dbRole matching", async () => {
-    expect.assertions(1);
-    await expect(
-      checkAuthorization(
-        {
-          minDbRole: DbRole.Committee,
-        },
-        techChair
-      )
-    ).resolves.toBe(true);
-  });
-
   it("should work with minimum committeeRole matching", async () => {
     expect.assertions(3);
     await expect(
@@ -321,41 +264,6 @@ describe("checkAuthorization", () => {
       checkAuthorization(
         {
           minCommitteeRole: CommitteeRole.Coordinator,
-        },
-        none
-      )
-    ).resolves.toBe(false);
-  });
-
-  it("should work with all of the above", async () => {
-    expect.assertions(3);
-    await expect(
-      checkAuthorization(
-        {
-          accessLevel: AccessLevel.Admin,
-          dbRole: DbRole.Committee,
-          committeeIdentifier: CommitteeIdentifier.techCommittee,
-        },
-        techChair
-      )
-    ).resolves.toBe(true);
-    await expect(
-      checkAuthorization(
-        {
-          accessLevel: AccessLevel.Admin,
-          committeeIdentifier: CommitteeIdentifier.techCommittee,
-          minDbRole: DbRole.Committee,
-          minCommitteeRole: CommitteeRole.Coordinator,
-        },
-        techChair
-      )
-    ).resolves.toBe(true);
-    await expect(
-      checkAuthorization(
-        {
-          accessLevel: AccessLevel.Admin,
-          committeeIdentifier: CommitteeIdentifier.techCommittee,
-          minCommitteeRole: CommitteeRole.Chair,
         },
         none
       )

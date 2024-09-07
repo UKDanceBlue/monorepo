@@ -1,6 +1,8 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { PeopleTable } from "@elements/tables/PeopleTable";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
+import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
 
 function ListPeoplePage() {
@@ -21,4 +23,14 @@ function ListPeoplePage() {
 
 export const Route = createFileRoute("/people/")({
   component: ListPeoplePage,
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: [
+      {
+        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+      },
+    ],
+  },
 });

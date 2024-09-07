@@ -1,6 +1,8 @@
 import { EventEditor } from "@elements/forms/event/edit/EventEditor";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
+import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useQuery } from "urql";
 
@@ -15,7 +17,7 @@ const viewEventPageDocument = graphql(/* GraphQL */ `
 `);
 
 export function EditEvent() {
-  const { eventId } = useParams({ from: "/events/$eventId/edit" });
+  const { eventId } = Route.useParams();
 
   const [{ data, fetching, error }, refetchEvent] = useQuery({
     query: viewEventPageDocument,
@@ -40,4 +42,17 @@ export function EditEvent() {
 
 export const Route = createFileRoute("/events/$eventId/edit")({
   component: EditEvent,
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: [
+      {
+        accessLevel: AccessLevel.Admin,
+      },
+      {
+        minCommitteeRole: CommitteeRole.Chair,
+      },
+    ],
+  },
 });

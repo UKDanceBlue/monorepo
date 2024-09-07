@@ -1,6 +1,8 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { NotificationsTable } from "@elements/tables/notification/NotificationsTable";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
+import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
 
 function ListNotificationsPage() {
@@ -21,4 +23,14 @@ function ListNotificationsPage() {
 
 export const Route = createFileRoute("/notifications/")({
   component: ListNotificationsPage,
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: [
+      {
+        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+      },
+    ],
+  },
 });

@@ -11,10 +11,12 @@ import {
   ErrorComponent,
   RouterProvider,
 } from "@tanstack/react-router";
+import type { AuthorizationRule } from "@ukdanceblue/common";
 import { defaultAuthorization } from "@ukdanceblue/common";
-import { Progress } from "antd";
+import { App, Progress } from "antd";
 import { App as AntApp } from "antd";
-import { StrictMode } from "react";
+import type { useAppProps } from "antd/es/app/context";
+import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import {
   cacheExchange,
@@ -56,6 +58,8 @@ const router = createRouter({
       loggedIn: false,
     },
     selectedMarathon: null,
+    urqlClient,
+    antApp: {} as useAppProps,
   },
   defaultPreload: false,
 });
@@ -64,17 +68,26 @@ declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }
+  interface StaticDataRouteOption {
+    authorizationRules: AuthorizationRule[] | null;
+  }
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
 function RouterWrapper() {
-  const auth = useLoginState();
+  const loginState = useLoginState();
   const selectedMarathon = useMarathon();
+
+  useEffect(() => {
+    if (loginState.loggedIn && loginState.authorization) {
+      router.invalidate().catch((error: unknown) => console.error(error));
+    }
+  }, [loginState, selectedMarathon]);
 
   return (
     <RouterProvider
       router={router}
-      context={{ loginState: auth, selectedMarathon }}
+      context={{ loginState, selectedMarathon, antApp: App.useApp() }}
     />
   );
 }

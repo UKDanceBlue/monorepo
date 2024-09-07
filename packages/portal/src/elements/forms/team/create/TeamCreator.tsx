@@ -1,11 +1,18 @@
 import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
-import { useNavigate, useRouteContext } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import { App, Button, Flex, Form, Input, Select } from "antd";
 
 import { useTeamCreatorForm } from "./useTeamCreatorForm";
 
-export function TeamCreator() {
+export function TeamCreator({
+  selectedMarathon,
+}: {
+  selectedMarathon: {
+    id: string;
+    year: string;
+  } | null;
+}) {
   const navigate = useNavigate();
 
   const { message } = App.useApp();
@@ -17,9 +24,7 @@ export function TeamCreator() {
         params: { teamId: ret.uuid },
       }).catch((error: unknown) => console.error(error));
     }
-  });
-
-  const { selectedMarathon } = useRouteContext({ from: "/" });
+  }, selectedMarathon?.id);
 
   return (
     <Flex vertical gap="middle" align="center">

@@ -3,14 +3,13 @@ import { PointEntryCreator } from "@elements/forms/point-entry/create/PointEntry
 import { PointEntryTable } from "@elements/tables/point-entry/PointEntryTable";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
-import { useParams } from "@tanstack/react-router";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
+import { AccessLevel } from "@ukdanceblue/common";
 import { Flex } from "antd";
 import { useQuery } from "urql";
 
 function ViewTeamPoints() {
-  const { teamId: teamUuid } = useParams({
-    from: "/teams/$teamId/_layout/points",
-  });
+  const { teamId: teamUuid } = Route.useParams();
 
   const [{ fetching, data, error }, refetch] = useQuery({
     query: teamPageDocument,
@@ -45,4 +44,14 @@ function ViewTeamPoints() {
 
 export const Route = createFileRoute("/teams/$teamId/_layout/points")({
   component: ViewTeamPoints,
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: [
+      {
+        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+      },
+    ],
+  },
 });

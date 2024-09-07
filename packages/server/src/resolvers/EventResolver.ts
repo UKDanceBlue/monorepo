@@ -16,6 +16,7 @@ import {
 import {
   AccessControl,
   AccessLevel,
+  CommitteeRole,
   DetailedError,
   ErrorCode,
   EventNode,
@@ -248,7 +249,14 @@ export class EventResolver {
     });
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => CreateEventResponse, { name: "createEvent" })
   async create(
     @Arg("input") input: CreateEventInput
@@ -281,7 +289,14 @@ export class EventResolver {
     );
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => DeleteEventResponse, { name: "deleteEvent" })
   async delete(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -297,7 +312,14 @@ export class EventResolver {
     return DeleteEventResponse.newOk(true);
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => SetEventResponse, { name: "setEvent" })
   async set(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -362,7 +384,14 @@ export class EventResolver {
     );
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => RemoveEventImageResponse, { name: "removeImageFromEvent" })
   async removeImage(
     @Arg("eventId", () => GlobalIdScalar) eventUuid: GlobalId,
@@ -382,7 +411,14 @@ export class EventResolver {
     return RemoveEventImageResponse.newOk(true);
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => AddEventImageResponse, { name: "addExistingImageToEvent" })
   async addExistingImage(
     @Arg("eventId", () => GlobalIdScalar) eventId: GlobalId,

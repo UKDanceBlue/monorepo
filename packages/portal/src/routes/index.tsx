@@ -1,6 +1,7 @@
 import { PersonViewer } from "@elements/viewers/person/PersonViewer";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { Typography } from "antd";
 import { useQuery } from "urql";
@@ -15,9 +16,24 @@ const ViewMePageDocument = graphql(/* GraphQL */ `
 
 export const Route = createFileRoute("/")({
   component: HomePage,
+  loader({
+    context: {
+      loginState: { authorization },
+    },
+  }) {
+    return { authorization };
+  },
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: null,
+  },
 });
 
 function HomePage() {
+  const { authorization } = Route.useLoaderData();
+
   const [{ data, fetching, error }] = useQuery({
     query: ViewMePageDocument,
   });
@@ -41,7 +57,10 @@ function HomePage() {
       {data?.me && (
         <>
           <Typography.Title level={2}>Your Information</Typography.Title>
-          <PersonViewer personFragment={data.me} />
+          <PersonViewer
+            personFragment={data.me}
+            authorization={authorization}
+          />
         </>
       )}
     </div>

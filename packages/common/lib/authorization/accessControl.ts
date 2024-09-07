@@ -1,16 +1,17 @@
 import {
   AccessLevel,
+  committeeNames,
   compareCommitteeRole,
-  compareDbRole,
   parseGlobalId,
+  stringifyAccessLevel,
 } from "../index.js";
 
 import { UseMiddleware } from "type-graphql";
 
 import type {
   Authorization,
+  CommitteeIdentifier,
   CommitteeRole,
-  DbRole,
   GlobalId,
   MembershipPositionType,
   PersonNode,
@@ -30,15 +31,6 @@ export interface AuthorizationRule {
    * The minimum access level required to access this resource
    */
   accessLevel?: AccessLevel;
-  /**
-   * Exact DanceBlue role, cannot be used with minDbRole
-   */
-  dbRole?: DbRole;
-  /**
-   * The rules for this are as follows:
-   * Committee > TeamCaptain > TeamMember > Public > None
-   */
-  minDbRole?: DbRole;
   // /**
   //  * Exact committee role, cannot be used with minCommitteeRole
   //  */
@@ -53,73 +45,48 @@ export interface AuthorizationRule {
    *
    * Cannot be used with committeeIdentifiers
    */
-  committeeIdentifier?: string;
+  committeeIdentifier?: CommitteeIdentifier;
   /**
    * Same as committeeIdentifier, but allows any of the listed identifiers
    *
    * Cannot be used with committeeIdentifier
    */
-  committeeIdentifiers?: readonly string[];
-  /**
-   * Custom authorization rule
-   *
-   * Should usually be avoided, but can be used for more complex authorization rules
-   */
-  custom?: (authorization: Authorization) => boolean | Promise<boolean>;
+  committeeIdentifiers?: readonly CommitteeIdentifier[];
 }
 
 export function prettyPrintAuthorizationRule(rule: AuthorizationRule): string {
   const parts: string[] = [];
   if (rule.accessLevel != null) {
-    parts.push(`accessLevel >= ${rule.accessLevel}`);
+    parts.push(
+      `have an access level of at least ${stringifyAccessLevel(rule.accessLevel)}`
+    );
   }
-  if (rule.dbRole != null) {
-    parts.push(`dbRole === ${rule.dbRole}`);
-  }
-  if (rule.minDbRole != null) {
-    parts.push(`dbRole >= ${rule.minDbRole}`);
-  }
-  // if (rule.committeeRole != null) {
-  //   parts.push(`committeeRole === ${rule.committeeRole}`);
-  // }
   if (rule.minCommitteeRole != null) {
-    parts.push(`committeeRole >= ${rule.minCommitteeRole}`);
+    parts.push(`have a committee role of at least ${rule.minCommitteeRole}`);
   }
   if (rule.committeeIdentifier != null) {
-    parts.push(`committeeIdentifier === ${rule.committeeIdentifier}`);
+    parts.push(`be a member of ${committeeNames[rule.committeeIdentifier!]}`);
   }
   if (rule.committeeIdentifiers != null) {
     parts.push(
-      `committeeIdentifier in ${rule.committeeIdentifiers.join(", ")}`
+      `be a member of one of the following committees: ${rule.committeeIdentifiers
+        .map((id) => committeeNames[id])
+        .join(", ")}`
     );
   }
-  if (rule.custom != null) {
-    parts.push(`[custom]`);
-  }
-  return parts.join(", ");
+  return parts.join(" and ");
 }
 
-export async function checkAuthorization(
+export function checkAuthorization(
   {
     accessLevel,
     committeeIdentifier,
     committeeIdentifiers,
     // committeeRole,
-    custom,
-    dbRole,
     minCommitteeRole,
-    minDbRole,
   }: AuthorizationRule,
   authorization: Authorization
 ) {
-  if (minDbRole != null && dbRole != null) {
-    throw new TypeError(`Cannot specify both dbRole and minDbRole.`);
-  }
-  // if (minCommitteeRole != null && committeeRole != null) {
-  //   throw new TypeError(
-  //     `Cannot specify both committeeRole and minCommitteeRole.`
-  //   );
-  // }
   if (committeeIdentifier != null && committeeIdentifiers != null) {
     throw new TypeError(
       `Cannot specify both committeeIdentifier and committeeIdentifiers.`
@@ -133,22 +100,6 @@ export async function checkAuthorization(
     matches &&= authorization.accessLevel >= accessLevel;
   }
 
-  // DB role
-  if (dbRole != null) {
-    matches &&= authorization.dbRole === dbRole;
-  }
-  if (minDbRole != null) {
-    matches &&= compareDbRole(authorization.dbRole, minDbRole) >= 0;
-  }
-
-  // Committee role
-  // if (committeeRole != null) {
-  //   matches &&= authorization.committees.some(
-  //     (committee) =>
-  //       committee.role === committeeRole &&
-  //       committee.identifier === committeeIdentifier
-  //   );
-  // }
   if (minCommitteeRole != null) {
     if (authorization.committees.length === 0) {
       matches = false;
@@ -172,10 +123,6 @@ export async function checkAuthorization(
     );
   }
 
-  // Custom auth checker
-  if (custom != null) {
-    matches &&= await custom(authorization);
-  }
   return matches;
 }
 

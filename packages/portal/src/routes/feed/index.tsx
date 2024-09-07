@@ -1,7 +1,12 @@
 import { useImagePicker } from "@hooks/useImagePicker";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
-import { dateTimeFromSomething } from "@ukdanceblue/common";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
+import {
+  AccessLevel,
+  CommitteeRole,
+  dateTimeFromSomething,
+} from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import {
   Button,
@@ -210,4 +215,17 @@ function FeedPage() {
 
 export const Route = createFileRoute("/feed/")({
   component: FeedPage,
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: [
+      {
+        accessLevel: AccessLevel.Admin,
+      },
+      {
+        minCommitteeRole: CommitteeRole.Chair,
+      },
+    ],
+  },
 });

@@ -2,8 +2,11 @@ import { FileManager } from "#files/FileManager.js";
 import { FeedRepository } from "#repositories/feed/FeedRepository.js";
 import { feedItemModelToResource } from "#repositories/feed/feedModelToResource.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
+import { CommitteeRole } from "@prisma/client";
 
 import {
+  AccessControl,
+  AccessLevel,
   DetailedError,
   ErrorCode,
   FeedNode,
@@ -44,6 +47,8 @@ export class SetFeedInput {
   textContent?: string | null | undefined;
 }
 
+// TODO: Add access control
+
 @Resolver(() => FeedNode)
 @Service()
 export class FeedResolver {
@@ -74,6 +79,14 @@ export class FeedResolver {
     return rows.map(feedItemModelToResource);
   }
 
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => FeedNode)
   async createFeedItem(
     @Arg("input") input: CreateFeedInput
@@ -86,6 +99,14 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => FeedNode)
   async attachImageToFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId,
@@ -105,6 +126,14 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => FeedNode)
   async removeImageFromFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId
@@ -118,6 +147,14 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => FeedNode)
   async setFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId,
@@ -136,6 +173,14 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => Boolean)
   async deleteFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId

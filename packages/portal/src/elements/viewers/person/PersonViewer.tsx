@@ -1,5 +1,6 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Link, useNavigate, useRouteContext } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import type { Authorization } from "@ukdanceblue/common";
 import {
   AccessLevel,
   committeeNames,
@@ -38,13 +39,11 @@ export const PersonViewerFragment = graphql(/* GraphQL */ `
 
 export function PersonViewer({
   personFragment: PersonFragment,
+  authorization,
 }: {
   personFragment?: FragmentType<typeof PersonViewerFragment> | undefined | null;
+  authorization: Authorization | undefined;
 }) {
-  const {
-    loginState: { authorization },
-  } = useRouteContext({ from: "/" });
-
   const personData = getFragmentData(PersonViewerFragment, PersonFragment);
 
   const navigate = useNavigate();

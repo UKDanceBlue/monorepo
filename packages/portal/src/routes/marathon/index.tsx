@@ -2,6 +2,8 @@ import { PlusOutlined } from "@ant-design/icons";
 import { MarathonsTable } from "@elements/tables/marathon/MarathonsTable";
 import { MarathonViewer } from "@elements/viewers/marathon/MarathonViewer";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
+import { AccessLevel } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Empty, Flex } from "antd";
 import { useQuery } from "urql";
@@ -55,4 +57,14 @@ function MarathonOverviewPage() {
 
 export const Route = createFileRoute("/marathon/")({
   component: MarathonOverviewPage,
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: [
+      {
+        accessLevel: AccessLevel.Committee,
+      },
+    ],
+  },
 });

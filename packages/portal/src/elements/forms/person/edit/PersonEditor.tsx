@@ -1,5 +1,5 @@
 import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
-import { useRouteContext } from "@tanstack/react-router";
+import type { Authorization } from "@ukdanceblue/common";
 import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
@@ -28,16 +28,15 @@ export function PersonEditor({
   personFragment,
   teamNamesFragment,
   refetchPerson,
+  authorization,
 }: {
   personFragment?: FragmentType<typeof PersonEditorFragment> | undefined | null;
   teamNamesFragment?:
     | readonly FragmentType<typeof TeamNameFragment>[]
     | undefined;
   refetchPerson?: UseQueryExecute | undefined;
+  authorization?: Authorization | undefined;
 }) {
-  const {
-    loginState: { authorization },
-  } = useRouteContext({ from: "/" });
   const isAdmin =
     (authorization?.accessLevel ?? AccessLevel.None) >= AccessLevel.Admin;
 

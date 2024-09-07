@@ -3,7 +3,8 @@ import { NotificationDeliveriesTable } from "@elements/tables/notification/Notif
 import { NotificationViewer } from "@elements/viewers/notification/NotificationViewer";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useParams } from "@tanstack/react-router";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
+import { AccessLevel } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Flex, Typography } from "antd";
 import { useQuery } from "urql";
@@ -19,9 +20,7 @@ const notificationViewerDocument = graphql(/* GraphQL */ `
 `);
 
 function ViewNotificationPage() {
-  const { notificationId } = useParams({
-    from: "/notifications/$notificationId/",
-  });
+  const { notificationId } = Route.useParams();
 
   const [{ data, fetching, error }, refetch] = useQuery({
     query: notificationViewerDocument,
@@ -55,4 +54,14 @@ function ViewNotificationPage() {
 
 export const Route = createFileRoute("/notifications/$notificationId/")({
   component: ViewNotificationPage,
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: [
+      {
+        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+      },
+    ],
+  },
 });

@@ -5,8 +5,9 @@ import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
-import { useNavigate, useParams } from "@tanstack/react-router";
-import { dateTimeFromSomething } from "@ukdanceblue/common";
+import { useNavigate } from "@tanstack/react-router";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
+import { AccessLevel, dateTimeFromSomething } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { Editable, useEditor } from "@wysimark/react";
 import { Button, Input } from "antd";
@@ -33,9 +34,7 @@ const editMarathonHourDocument = graphql(/* GraphQL */ `
 `);
 
 function EditMarathonHourPage() {
-  const { hourId, marathonId } = useParams({
-    from: "/marathon/$marathonId/hours/$hourId/",
-  });
+  const { hourId, marathonId } = Route.useParams();
 
   const [{ data, fetching, error }] = useQuery({
     query: editMarathonHourDataDocument,
@@ -215,4 +214,14 @@ function EditMarathonHourPage() {
 
 export const Route = createFileRoute("/marathon/$marathonId/hours/$hourId/")({
   component: EditMarathonHourPage,
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: [
+      {
+        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+      },
+    ],
+  },
 });

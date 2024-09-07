@@ -1,7 +1,8 @@
 import { ManageNotificationForm } from "@elements/forms/notification/manage/ManageNotificationForm";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
-import { useParams } from "@tanstack/react-router";
+import { routerAuthCheck } from "@tools/routerAuthCheck";
+import { AccessLevel } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useQuery } from "urql";
 
@@ -16,9 +17,7 @@ const notificationManagerDocument = graphql(/* GraphQL */ `
 `);
 
 function ManageNotificationPage() {
-  const { notificationId } = useParams({
-    from: "/notifications/$notificationId/manage",
-  });
+  const { notificationId } = Route.useParams();
 
   const [{ data, fetching, error }, refetchNotification] = useQuery({
     query: notificationManagerDocument,
@@ -96,4 +95,14 @@ function ManageNotificationPage() {
 
 export const Route = createFileRoute("/notifications/$notificationId/manage")({
   component: ManageNotificationPage,
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: [
+      {
+        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+      },
+    ],
+  },
 });
