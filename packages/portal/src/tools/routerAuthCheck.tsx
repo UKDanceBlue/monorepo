@@ -20,12 +20,13 @@ export function routerAuthCheck(
 ) {
   const { authorizationRules } = route.options.staticData;
   const { authorization } = context.loginState;
+  if (!authorization) {
+    // Authorization is not yet loaded, so we can't check it yet.
+    return;
+  }
   if (
     authorizationRules &&
-    (!authorization ||
-      !authorizationRules.some((rule) =>
-        checkAuthorization(rule, authorization)
-      ))
+    !authorizationRules.some((rule) => checkAuthorization(rule, authorization))
   ) {
     const message = authorizationRules.map((rule) => (
       <li>{prettyPrintAuthorizationRule(rule)}</li>
