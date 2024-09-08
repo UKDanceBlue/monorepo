@@ -1480,6 +1480,7 @@ scalar PositiveInt
 type Query {
   activeConfiguration(key: String!): GetConfigurationByUuidResponse!
   allConfigurations: GetAllConfigurationsResponse!
+  auditLog: String!
   configuration(id: GlobalId!): GetConfigurationByUuidResponse!
   currentMarathon: MarathonNode
   currentMarathonHour: MarathonHourNode

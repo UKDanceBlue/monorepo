@@ -1,3 +1,4 @@
+import { getLoginState } from "@hooks/useLoginState";
 import { redirect } from "@tanstack/react-router";
 import type { AuthorizationRule } from "@ukdanceblue/common";
 import {
@@ -5,8 +6,7 @@ import {
   prettyPrintAuthorizationRule,
 } from "@ukdanceblue/common";
 import type { useAppProps } from "antd/es/app/context";
-
-import type { PortalAuthData } from "./loginState";
+import type { Client } from "urql";
 
 export function routerAuthCheck(
   route: {
@@ -16,10 +16,10 @@ export function routerAuthCheck(
       };
     };
   },
-  context: { loginState: PortalAuthData; antApp: useAppProps }
+  context: { urqlClient: Client; antApp: useAppProps }
 ) {
   const { authorizationRules } = route.options.staticData;
-  const { authorization } = context.loginState;
+  const { authorization } = getLoginState(context.urqlClient);
   if (!authorization) {
     // Authorization is not yet loaded, so we can't check it yet.
     return;

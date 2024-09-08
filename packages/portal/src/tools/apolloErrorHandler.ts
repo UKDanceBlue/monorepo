@@ -6,15 +6,12 @@ import type { TypeOpen } from "antd/es/message/interface";
 import type { ModalFunc } from "antd/es/modal/confirm";
 import type { NotificationInstance } from "antd/es/notification/interface";
 
-
 export type ExtendedApiError = ApiError;
 
 export function extractServerError(error: CombinedError): ExtendedApiError[] {
-  console.log("IN", error);
   const apiErrors: ExtendedApiError[] = [];
 
   for (const graphQLError of error.graphQLErrors) {
-    console.log("in", graphQLError);
     const apiError: ExtendedApiError = {
       message: graphQLError.message,
       code: ErrorCode.Unknown,
@@ -40,7 +37,6 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
       apiError.cause = JSON.stringify(graphQLError.extensions.cause);
     }
 
-    console.log("out", apiError);
     apiErrors.push(apiError);
   }
 
@@ -85,8 +81,6 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
       cause: error,
     });
   }
-
-  console.log("OUT", apiErrors);
 
   return apiErrors;
 }

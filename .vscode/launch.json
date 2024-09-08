@@ -130,7 +130,12 @@
     },
     {
       "name": "Dev Environment: Portal",
-      "configurations": ["Portal: Dev", "Common: Watch", "GraphQL: Watch"],
+      "configurations": [
+        "Server: Start",
+        "Portal: Dev",
+        "Common: Watch",
+        "GraphQL: Watch"
+      ],
       "presentation": {
         "group": "0dev-enviroment",
         "order": 2
@@ -138,7 +143,12 @@
     },
     {
       "name": "Dev Environment: Mobile",
-      "configurations": ["Mobile: Start", "Common: Watch", "GraphQL: Watch"],
+      "configurations": [
+        "Server: Start",
+        "Mobile: Start",
+        "Common: Watch",
+        "GraphQL: Watch"
+      ],
       "presentation": {
         "group": "0dev-enviroment",
         "order": 2

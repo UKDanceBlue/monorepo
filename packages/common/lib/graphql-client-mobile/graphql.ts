@@ -1613,6 +1613,7 @@ export type Query = {
   readonly __typename?: 'Query';
   readonly activeConfiguration: GetConfigurationByUuidResponse;
   readonly allConfigurations: GetAllConfigurationsResponse;
+  readonly auditLog: Scalars['String']['output'];
   readonly configuration: GetConfigurationByUuidResponse;
   readonly currentMarathon?: Maybe<MarathonNode>;
   readonly currentMarathonHour?: Maybe<MarathonHourNode>;

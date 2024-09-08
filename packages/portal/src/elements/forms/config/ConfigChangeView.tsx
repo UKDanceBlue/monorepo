@@ -10,7 +10,6 @@ export function ConfigChangeView({
   oldConfig: ConfigValue | undefined;
   newConfig: ConfigValue;
 }) {
-  console.log(oldConfig, newConfig);
   return (
     <Descriptions bordered>
       <Descriptions.Item label="Content">

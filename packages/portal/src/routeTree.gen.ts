@@ -27,6 +27,7 @@ import { Route as NotificationsCreateImport } from "./routes/notifications/creat
 import { Route as MarathonCreateImport } from "./routes/marathon/create";
 import { Route as ImagesSplatImport } from "./routes/images/$";
 import { Route as EventsCreateImport } from "./routes/events/create";
+import { Route as AdminLogsImport } from "./routes/admin/logs";
 import { Route as PeoplePersonIdIndexImport } from "./routes/people/$personId/index";
 import { Route as NotificationsNotificationIdIndexImport } from "./routes/notifications/$notificationId/index";
 import { Route as MarathonMarathonIdIndexImport } from "./routes/marathon/$marathonId/index";
@@ -123,6 +124,11 @@ const EventsCreateRoute = EventsCreateImport.update({
   getParentRoute: () => rootRoute,
 } as any);
 
+const AdminLogsRoute = AdminLogsImport.update({
+  path: "/admin/logs",
+  getParentRoute: () => rootRoute,
+} as any);
+
 const PeoplePersonIdIndexRoute = PeoplePersonIdIndexImport.update({
   path: "/people/$personId/",
   getParentRoute: () => rootRoute,
@@ -208,6 +214,13 @@ declare module "@tanstack/react-router" {
       path: "/";
       fullPath: "/";
       preLoaderRoute: typeof IndexImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/admin/logs": {
+      id: "/admin/logs";
+      path: "/admin/logs";
+      fullPath: "/admin/logs";
+      preLoaderRoute: typeof AdminLogsImport;
       parentRoute: typeof rootRoute;
     };
     "/events/create": {
@@ -413,6 +426,7 @@ declare module "@tanstack/react-router" {
 
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
+  AdminLogsRoute,
   EventsCreateRoute,
   ImagesSplatRoute,
   MarathonCreateRoute,
@@ -454,6 +468,7 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/admin/logs",
         "/events/create",
         "/images/$",
         "/marathon/create",
@@ -482,6 +497,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/admin/logs": {
+      "filePath": "admin/logs.tsx"
     },
     "/events/create": {
       "filePath": "events/create.tsx"

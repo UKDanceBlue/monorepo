@@ -4,19 +4,17 @@ import "./root.css";
 import { AntConfigProvider, ThemeConfigProvider } from "@config/ant.tsx";
 import { API_BASE_URL } from "@config/api.ts";
 import { MarathonConfigProvider } from "@config/marathon.tsx";
-import { useMarathon } from "@config/marathonContext";
-import { useLoginState } from "@hooks/useLoginState";
 import {
   createRouter,
   ErrorComponent,
   RouterProvider,
 } from "@tanstack/react-router";
 import type { AuthorizationRule } from "@ukdanceblue/common";
-import { defaultAuthorization } from "@ukdanceblue/common";
+import { devtoolsExchange } from "@urql/devtools";
 import { App, Progress } from "antd";
 import { App as AntApp } from "antd";
 import type { useAppProps } from "antd/es/app/context";
-import { StrictMode, useEffect } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import {
   cacheExchange,
@@ -30,7 +28,7 @@ import { routeTree } from "./routeTree.gen";
 const API_URL = `${API_BASE_URL}/graphql`;
 const urqlClient = new Client({
   url: API_URL,
-  exchanges: [cacheExchange, fetchExchange],
+  exchanges: [devtoolsExchange, cacheExchange, fetchExchange],
   fetchOptions: () => {
     const query = new URLSearchParams(window.location.search).get("masquerade");
     return {
@@ -53,11 +51,6 @@ const router = createRouter({
   ),
   defaultErrorComponent: ({ error }) => <ErrorComponent error={error} />,
   context: {
-    loginState: {
-      authorization: defaultAuthorization,
-      loggedIn: false,
-    },
-    selectedMarathon: null,
     urqlClient,
     antApp: {} as useAppProps,
   },
@@ -75,21 +68,7 @@ declare module "@tanstack/react-router" {
 
 // eslint-disable-next-line react-refresh/only-export-components
 function RouterWrapper() {
-  const loginState = useLoginState();
-  const selectedMarathon = useMarathon();
-
-  useEffect(() => {
-    if (loginState.loggedIn && loginState.authorization) {
-      router.invalidate().catch((error: unknown) => console.error(error));
-    }
-  }, [loginState, selectedMarathon]);
-
-  return (
-    <RouterProvider
-      router={router}
-      context={{ loginState, selectedMarathon, antApp: App.useApp() }}
-    />
-  );
+  return <RouterProvider router={router} context={{ antApp: App.useApp() }} />;
 }
 
 const rootElement = document.getElementById("root")!;

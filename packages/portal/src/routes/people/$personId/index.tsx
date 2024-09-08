@@ -1,4 +1,5 @@
 import { PersonViewer } from "@elements/viewers/person/PersonViewer";
+import { useLoginState } from "@hooks/useLoginState";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
 import { useParams } from "@tanstack/react-router";
@@ -16,7 +17,7 @@ const viewPersonPageDocument = graphql(/* GraphQL */ `
 `);
 
 function ViewPersonPage() {
-  const { authorization } = Route.useLoaderData();
+  const { authorization } = useLoginState();
   const { personId } = useParams({ from: "/people/$personId/" });
 
   const [{ data, fetching, error }] = useQuery({
@@ -42,13 +43,6 @@ function ViewPersonPage() {
 
 export const Route = createFileRoute("/people/$personId/")({
   component: ViewPersonPage,
-  loader({
-    context: {
-      loginState: { authorization },
-    },
-  }) {
-    return { authorization };
-  },
   beforeLoad({ context }) {
     routerAuthCheck(Route, context);
   },

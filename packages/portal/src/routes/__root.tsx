@@ -1,10 +1,9 @@
 import { NavigationMenu } from "@elements/singletons/NavigationMenu";
+import { refreshLoginState } from "@hooks/useLoginState";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
-import type { PortalAuthData } from "@tools/loginState";
 import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { Layout } from "antd";
 import type { useAppProps } from "antd/es/app/context";
-import type { DateTime } from "luxon";
 import { lazy, Suspense } from "react";
 import type { Client as UrqlClient } from "urql";
 
@@ -21,25 +20,16 @@ const TanStackRouterDevtools =
       );
 
 interface RouterContext {
-  loginState: PortalAuthData;
-  selectedMarathon: {
-    id: string;
-    year: string;
-    startDate: DateTime | null;
-    endDate: DateTime | null;
-  } | null;
   urqlClient: UrqlClient;
   antApp: useAppProps;
 }
 
 function RootComponent() {
-  const { loginState } = Route.useLoaderData();
-
   return (
     <>
       <Layout style={{ height: "100%" }}>
         <Layout.Header>
-          <NavigationMenu auth={loginState} />
+          <NavigationMenu />
         </Layout.Header>
         <div
           style={{
@@ -62,10 +52,8 @@ function RootComponent() {
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
-  loader({ context }) {
-    return { loginState: context.loginState };
-  },
-  beforeLoad({ context }) {
+  beforeLoad: async ({ context }) => {
+    await refreshLoginState(context.urqlClient);
     routerAuthCheck(Route, context);
   },
   staticData: {

@@ -5,9 +5,9 @@ import { themeConfigContext } from "@config/antThemeConfig";
 import { API_BASE_URL } from "@config/api";
 import { marathonContext } from "@config/marathonContext";
 import { useAntFeedback } from "@hooks/useAntFeedback";
+import { useLoginState } from "@hooks/useLoginState";
 import type { Register } from "@tanstack/react-router";
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
-import type { Authorization } from "@ukdanceblue/common";
 import { checkAuthorization, defaultAuthorization } from "@ukdanceblue/common";
 import { Button, Menu, Select } from "antd";
 import { useContext, useEffect, useState } from "react";
@@ -54,6 +54,10 @@ const routes: {
     path: "/config",
     title: "Config",
   },
+  {
+    path: "/admin/logs",
+    title: "Logs",
+  },
 ];
 
 const loadingOption = [
@@ -62,16 +66,11 @@ const loadingOption = [
   </Select.Option>,
 ];
 
-export const NavigationMenu = ({
-  auth: { loggedIn, authorization },
-}: {
-  auth: {
-    loggedIn: boolean | undefined;
-    authorization: Authorization | undefined;
-  };
-}) => {
+export const NavigationMenu = () => {
   const { dark, setDark } = useContext(themeConfigContext);
   const { showErrorMessage } = useAntFeedback();
+
+  const { authorization, loggedIn } = useLoginState();
 
   const router = useRouter();
   const location = useLocation();
@@ -164,7 +163,7 @@ export const NavigationMenu = ({
           label: loggedIn ? (
             <a
               href={`${API_BASE_URL}/api/auth/logout?redirectTo=${encodeURI(
-                location.href
+                window.location.href
               )}`}
             >
               Logout
@@ -172,7 +171,7 @@ export const NavigationMenu = ({
           ) : (
             <a
               href={`${API_BASE_URL}/api/auth/login?returning=cookie&redirectTo=${encodeURI(
-                location.href
+                window.location.href
               )}`}
             >
               Login

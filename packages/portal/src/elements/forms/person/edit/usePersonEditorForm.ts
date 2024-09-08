@@ -21,7 +21,6 @@ export function usePersonEditorForm(
     | undefined
 ) {
   const personData = getFragmentData(PersonEditorFragment, personFragment);
-  console.log(personData);
 
   // Form
   const [{ fetching, error }, setPerson] = useMutation(personEditorDocument);

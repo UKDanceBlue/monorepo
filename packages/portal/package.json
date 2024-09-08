@@ -14,6 +14,7 @@
     "@tanstack/react-form": "^0.31.0",
     "@tanstack/react-router": "^1.52.4",
     "@ukdanceblue/common": "workspace:^",
+    "@urql/devtools": "^2.0.3",
     "@wysimark/react": "^3.0.20",
     "antd": "^5.20.2",
     "class-validator": "^0.14.1",

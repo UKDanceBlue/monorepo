@@ -8852,6 +8852,7 @@ __metadata:
     "@types/react": "npm:~18.3.4"
     "@types/react-dom": "npm:~18.2.25"
     "@ukdanceblue/common": "workspace:^"
+    "@urql/devtools": "npm:^2.0.3"
     "@vitejs/plugin-react-swc": "npm:^3.7.0"
     "@wysimark/react": "npm:^3.0.20"
     antd: "npm:^5.20.2"
@@ -8975,6 +8976,18 @@ __metadata:
     "@0no-co/graphql.web": "npm:^1.0.5"
     wonka: "npm:^6.3.2"
   checksum: 10/ffab485c3d2c67c39e18d543938de8ef34889b41d1f3cbab62b9e26bba212c60b7915c73e9026c7163138ac53ea6262d4aba39541105cd2ba518468b62eb4519
+  languageName: node
+  linkType: hard
+
+"@urql/devtools@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@urql/devtools@npm:2.0.3"
+  dependencies:
+    wonka: "npm:>= 4.0.9"
+  peerDependencies:
+    "@urql/core": ">= 1.14.0"
+    graphql: ">= 0.11.0"
+  checksum: 10/01fc26d9b166f273af347b77005f19a72ff289793699a3dbbaa8a8213f323da897cb6a162c47fbaf50ef5f7e2f3f536608dfe7e0b65e12055686a9bf51aba5f0
   languageName: node
   linkType: hard
 
@@ -26074,17 +26087,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"wonka@npm:>= 4.0.9, wonka@npm:^6.3.2":
+  version: 6.3.4
+  resolution: "wonka@npm:6.3.4"
+  checksum: 10/0f102630182828268b57b54102003449b97abbc2483392239baf856a2fca7b72ae9be67c208415124a3d26a320674ed64387e9bf07a8d0badedb5f607d2ccfdc
+  languageName: node
+  linkType: hard
+
 "wonka@npm:^4.0.14":
   version: 4.0.15
   resolution: "wonka@npm:4.0.15"
   checksum: 10/33810f67e1f981181689e7c61129d21b3591bc48bc91516d164cb1b85bd09ada33ef0a3ad3922484912b848a50c84d0318e3428dccc597e491f9829fd0b1fe61
-  languageName: node
-  linkType: hard
-
-"wonka@npm:^6.3.2":
-  version: 6.3.4
-  resolution: "wonka@npm:6.3.4"
-  checksum: 10/0f102630182828268b57b54102003449b97abbc2483392239baf856a2fca7b72ae9be67c208415124a3d26a320674ed64387e9bf07a8d0badedb5f607d2ccfdc
   languageName: node
   linkType: hard
 

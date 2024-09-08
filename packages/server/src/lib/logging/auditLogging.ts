@@ -76,7 +76,6 @@ const dangerousConsoleTransport = new transports.Console({
       },
     })
   ),
-  level: "dangerous",
 });
 
 export const auditLogger = createLogger({
@@ -84,10 +83,10 @@ export const auditLogger = createLogger({
   silent: false,
   transports: [auditLogTransport, dangerousConsoleTransport],
   levels: {
-    info: 0,
-    insecure: 2,
-    secure: 4,
-    dangerous: 6,
+    info: 6,
+    insecure: 4,
+    secure: 2,
+    dangerous: 0,
   },
 }) as AuditLogger;
 

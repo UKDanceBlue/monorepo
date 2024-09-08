@@ -27,11 +27,11 @@ import {
 } from "@ukdanceblue/common/error";
 import { Err, Option, Result } from "ts-results-es";
 import { buildSchema } from "type-graphql";
-import { Container } from "typedi";
+import { Constructable, Container } from "typedi";
 
 import { fileURLToPath } from "url";
 
-import type { MiddlewareFn } from "type-graphql";
+import type { MiddlewareFn, NonEmptyArray } from "type-graphql";
 
 const schemaPath = fileURLToPath(
   new URL("../../../../schema.graphql", import.meta.url)
@@ -84,7 +84,7 @@ const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
   return result;
 };
 
-const resolvers = [
+const resolvers: NonEmptyArray<Constructable<unknown>> = [
   ConfigurationResolver,
   DeviceResolver,
   EventResolver,
@@ -103,18 +103,18 @@ const resolvers = [
   FundraisingAssignmentResolver,
   FundraisingEntryResolver,
   NodeResolver,
-] as const;
+];
 
 for (const service of resolvers) {
-  // @ts-expect-error Typedi doesn't seem to like it, but it works
   if (!Container.has(service)) {
     logger.crit(`Failed to resolve service: "${service.name}"`);
+    process.exit(1);
   } else {
     try {
-      // @ts-expect-error Typedi doesn't seem to like it, but it works
       Container.get(service);
     } catch (error) {
       logger.crit(`Failed to resolve service: "${service.name}"`, error);
+      process.exit(1);
     }
   }
 }
