@@ -279,7 +279,7 @@ export class EventResolver {
       },
     });
 
-    auditLogger.sensitive("Event created", { event: row });
+    auditLogger.secure("Event created", { event: row });
 
     return CreateEventResponse.newCreated(
       eventModelToResource(
@@ -307,7 +307,7 @@ export class EventResolver {
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
 
-    auditLogger.sensitive("Event deleted", { uuid: id });
+    auditLogger.secure("Event deleted", { uuid: id });
 
     return DeleteEventResponse.newOk(true);
   }
@@ -374,7 +374,7 @@ export class EventResolver {
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
 
-    auditLogger.sensitive("Event updated", { event: row });
+    auditLogger.secure("Event updated", { event: row });
 
     return SetEventResponse.newOk(
       eventModelToResource(
@@ -406,7 +406,7 @@ export class EventResolver {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");
     }
 
-    auditLogger.sensitive("Event image removed", { eventUuid, imageUuid });
+    auditLogger.secure("Event image removed", { eventUuid, imageUuid });
 
     return RemoveEventImageResponse.newOk(true);
   }

@@ -206,7 +206,7 @@ export class DeviceResolver {
   ): Promise<DeleteDeviceResponse> {
     await this.deviceRepository.deleteDevice({ uuid: id });
 
-    auditLogger.normal("Device deleted", { uuid: id });
+    auditLogger.secure("Device deleted", { uuid: id });
 
     return DeleteDeviceResponse.newOk(true);
   }

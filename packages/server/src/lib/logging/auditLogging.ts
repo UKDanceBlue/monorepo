@@ -4,7 +4,6 @@ import { createLogger, format, transports } from "winston";
 
 import type { LeveledLogMethod, Logger } from "winston";
 
-
 export interface AuditLogger extends Logger {
   /**
    * Log a message with the level `insecure`
@@ -13,14 +12,14 @@ export interface AuditLogger extends Logger {
    * influence users such as creating, updating,
    * or deleting a resource
    */
-  normal: LeveledLogMethod;
+  insecure: LeveledLogMethod;
   /**
    * Log a message with the level `secure`
    *
    * Use this level for more sensitive activities
    * such as deleting a user or modifying a team
    */
-  sensitive: LeveledLogMethod;
+  secure: LeveledLogMethod;
   /**
    * Log a message with the level `secure`
    *
@@ -81,14 +80,14 @@ const dangerousConsoleTransport = new transports.Console({
 });
 
 export const auditLogger = createLogger({
-  level: "secure",
+  level: "info",
   silent: false,
   transports: [auditLogTransport, dangerousConsoleTransport],
   levels: {
     info: 0,
-    dangerous: 2,
-    sensitive: 4,
-    normal: 6,
+    insecure: 2,
+    secure: 4,
+    dangerous: 6,
   },
 }) as AuditLogger;
 

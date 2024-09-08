@@ -63,7 +63,6 @@ function RootComponent() {
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
   loader({ context }) {
-    console.log("Route.loader", context);
     return { loginState: context.loginState };
   },
   beforeLoad({ context }) {

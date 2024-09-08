@@ -335,7 +335,7 @@ export class PersonResolver {
       .toAsyncResult()
       .andThen((row) => personModelToResource(row, this.personRepository))
       .map((person) => {
-        auditLogger.sensitive("Person deleted", {
+        auditLogger.secure("Person deleted", {
           person: {
             name: person.name,
             email: person.email,
