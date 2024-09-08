@@ -14,7 +14,7 @@ import {
 } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Descriptions, Empty, Flex, Typography } from "antd";
 
-import { usePersonDeletePopup } from "./PersonDeletePopup";
+import { usePersonDeletePopup } from "../../components/person/PersonDeletePopup";
 
 export const PersonViewerFragment = graphql(/* GraphQL */ `
   fragment PersonViewerFragment on PersonNode {

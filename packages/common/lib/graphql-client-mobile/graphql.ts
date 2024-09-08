@@ -1,6 +1,8 @@
 /* eslint-disable */
 import type { AuthSource } from '../index.js';
 import type { DbRole } from '../index.js';
+import type { CommitteeRole } from '../index.js';
+import type { CommitteeIdentifier } from '../index.js';
 import type { MembershipPositionType } from '../index.js';
 import type { TeamLegacyStatus } from '../index.js';
 import type { TeamType } from '../index.js';
@@ -89,23 +91,8 @@ export type AssignEntryToPersonInput = {
 
 export { AuthSource };
 
-/** The identifier for a committee */
-export const CommitteeIdentifier = {
-  CommunityDevelopmentCommittee: 'communityDevelopmentCommittee',
-  CorporateCommittee: 'corporateCommittee',
-  DancerRelationsCommittee: 'dancerRelationsCommittee',
-  FamilyRelationsCommittee: 'familyRelationsCommittee',
-  FundraisingCommittee: 'fundraisingCommittee',
-  MarketingCommittee: 'marketingCommittee',
-  MiniMarathonsCommittee: 'miniMarathonsCommittee',
-  OperationsCommittee: 'operationsCommittee',
-  OverallCommittee: 'overallCommittee',
-  ProgrammingCommittee: 'programmingCommittee',
-  TechCommittee: 'techCommittee',
-  ViceCommittee: 'viceCommittee'
-} as const;
+export { CommitteeIdentifier };
 
-export type CommitteeIdentifier = typeof CommitteeIdentifier[keyof typeof CommitteeIdentifier];
 export type CommitteeMembershipNode = Node & {
   readonly __typename?: 'CommitteeMembershipNode';
   readonly committeeRole?: Maybe<CommitteeRole>;
@@ -127,14 +114,8 @@ export type CommitteeNode = Node & {
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
-/** Roles within a committee */
-export const CommitteeRole = {
-  Chair: 'Chair',
-  Coordinator: 'Coordinator',
-  Member: 'Member'
-} as const;
+export { CommitteeRole };
 
-export type CommitteeRole = typeof CommitteeRole[keyof typeof CommitteeRole];
 export type ConfigurationNode = Node & {
   readonly __typename?: 'ConfigurationNode';
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;

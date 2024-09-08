@@ -1,10 +1,10 @@
-import { PersonSearch } from "@elements/components/PersonSearch";
+import { PersonSearch } from "@elements/components/person/PersonSearch";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useNavigate } from "@tanstack/react-router";
 import { Button, Checkbox, Flex, Form, Input, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
 
-import { NotificationPreview } from "../../../components/NotificationPreview";
+import { NotificationPreview } from "../../../components/notification/NotificationPreview";
 import { useNotificationCreator } from "./useNotificationCreator";
 
 export const CreateNotificationForm = () => {

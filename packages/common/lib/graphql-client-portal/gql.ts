@@ -17,6 +17,7 @@ const documents = {
     "\n  query SelectedMarathon($marathonId: GlobalId!) {\n    marathon(uuid: $marathonId) {\n      id\n      year\n      startDate\n      endDate\n    }\n  }\n": types.SelectedMarathonDocument,
     "\n  query ViewTeamPage($teamUuid: GlobalId!) {\n    team(uuid: $teamUuid) {\n      data {\n        ...TeamViewerFragment\n        pointEntries {\n          ...PointEntryTableFragment\n        }\n      }\n    }\n  }\n": types.ViewTeamPageDocument,
     "\n  query ImagePicker($stringFilters: [ImageResolverKeyedStringFilterItem!]) {\n    images(stringFilters: $stringFilters, pageSize: 9) {\n      data {\n        id\n        alt\n        url\n      }\n    }\n  }\n": types.ImagePickerDocument,
+    "\n  mutation DeletePerson($uuid: GlobalId!) {\n    deletePerson(uuid: $uuid) {\n      id\n    }\n  }\n": types.DeletePersonDocument,
     "\n  query PersonSearch($search: String!) {\n    searchPeopleByName(name: $search) {\n      id\n      name\n      linkblue\n    }\n    personByLinkBlue(linkBlueId: $search) {\n      id\n      name\n      linkblue\n    }\n  }\n": types.PersonSearchDocument,
     "\n  mutation DeleteEvent($uuid: GlobalId!) {\n    deleteEvent(uuid: $uuid) {\n      ok\n    }\n  }\n": types.DeleteEventDocument,
     "\n  mutation CreateImage($input: CreateImageInput!) {\n    createImage(input: $input) {\n      id\n    }\n  }\n": types.CreateImageDocument,
@@ -67,7 +68,6 @@ const documents = {
     "\n  fragment PointEntryTableFragment on PointEntryNode {\n    id\n    personFrom {\n      name\n      linkblue\n    }\n    points\n    pointOpportunity {\n      name\n      opportunityDate\n    }\n    comment\n  }\n": types.PointEntryTableFragmentFragmentDoc,
     "\n  fragment EventViewerFragment on EventNode {\n    id\n    title\n    summary\n    description\n    location\n    occurrences {\n      interval {\n        start\n        end\n      }\n      fullDay\n    }\n    images {\n      url\n      width\n      height\n      thumbHash\n      alt\n    }\n    createdAt\n    updatedAt\n  }\n": types.EventViewerFragmentFragmentDoc,
     "\n  fragment MarathonViewerFragment on MarathonNode {\n    id\n    year\n    startDate\n    endDate\n    hours {\n      id\n      shownStartingAt\n      title\n    }\n  }\n": types.MarathonViewerFragmentFragmentDoc,
-    "\n  mutation DeletePerson($uuid: GlobalId!) {\n    deletePerson(uuid: $uuid) {\n      id\n    }\n  }\n": types.DeletePersonDocument,
     "\n  fragment PersonViewerFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    teams {\n      position\n      team {\n        id\n        name\n      }\n    }\n    committees {\n      identifier\n      role\n    }\n  }\n": types.PersonViewerFragmentFragmentDoc,
     "\n  mutation DeleteTeam($uuid: GlobalId!) {\n    deleteTeam(uuid: $uuid) {\n      ok\n    }\n  }\n": types.DeleteTeamDocument,
     "\n  fragment TeamViewerFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    totalPoints\n    fundraisingTotalAmount\n    type\n    members {\n      person {\n        id\n        name\n        linkblue\n      }\n      position\n    }\n  }\n": types.TeamViewerFragmentFragmentDoc,
@@ -126,6 +126,10 @@ export function graphql(source: "\n  query ViewTeamPage($teamUuid: GlobalId!) {\
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query ImagePicker($stringFilters: [ImageResolverKeyedStringFilterItem!]) {\n    images(stringFilters: $stringFilters, pageSize: 9) {\n      data {\n        id\n        alt\n        url\n      }\n    }\n  }\n"): (typeof documents)["\n  query ImagePicker($stringFilters: [ImageResolverKeyedStringFilterItem!]) {\n    images(stringFilters: $stringFilters, pageSize: 9) {\n      data {\n        id\n        alt\n        url\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeletePerson($uuid: GlobalId!) {\n    deletePerson(uuid: $uuid) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation DeletePerson($uuid: GlobalId!) {\n    deletePerson(uuid: $uuid) {\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -326,10 +330,6 @@ export function graphql(source: "\n  fragment EventViewerFragment on EventNode {
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  fragment MarathonViewerFragment on MarathonNode {\n    id\n    year\n    startDate\n    endDate\n    hours {\n      id\n      shownStartingAt\n      title\n    }\n  }\n"): (typeof documents)["\n  fragment MarathonViewerFragment on MarathonNode {\n    id\n    year\n    startDate\n    endDate\n    hours {\n      id\n      shownStartingAt\n      title\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation DeletePerson($uuid: GlobalId!) {\n    deletePerson(uuid: $uuid) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation DeletePerson($uuid: GlobalId!) {\n    deletePerson(uuid: $uuid) {\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -8,7 +8,7 @@ import {
 } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Descriptions, Empty, Flex } from "antd";
 
-import { useTeamDeletePopup } from "./TeamDeletePopup";
+import { useTeamDeletePopup } from "../../components/team/TeamDeletePopup";
 
 export const TeamViewerFragment = graphql(/* GraphQL */ `
   fragment TeamViewerFragment on TeamNode {

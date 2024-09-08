@@ -8,7 +8,7 @@ import {
 import { Button, Table } from "antd";
 import type { UseQueryExecute } from "urql";
 
-import { usePointEntryDeletePopup } from "./PointEntryDeletePopup";
+import { usePointEntryDeletePopup } from "../../components/point-entry/PointEntryDeletePopup";
 
 export const PointEntryTableFragment = graphql(/* GraphQL */ `
   fragment PointEntryTableFragment on PointEntryNode {
