@@ -6,8 +6,7 @@ import {
   EffectiveCommitteeRole,
 } from "@ukdanceblue/common";
 import { Ctx, Field, ObjectType, Query, Resolver } from "type-graphql";
-import { Service } from "typedi";
-
+import { Service } from "@freshgum/typedi";
 
 @ObjectType("LoginState")
 export class LoginState {
@@ -25,7 +24,7 @@ export class LoginState {
 }
 
 @Resolver(() => LoginState)
-@Service()
+@Service([])
 export class LoginStateResolver {
   @Query(() => LoginState)
   loginState(@Ctx() ctx: Context.GraphQLContext): LoginState {

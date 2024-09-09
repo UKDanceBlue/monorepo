@@ -15,8 +15,11 @@ import {
 import { Committee, Prisma, PrismaClient, Team } from "@prisma/client";
 import {
   CommitteeIdentifier,
+  committeeNames,
   CommitteeRole,
   SortDirection,
+  TeamLegacyStatus,
+  TeamType,
 } from "@ukdanceblue/common";
 import {
   CompositeError,
@@ -25,7 +28,7 @@ import {
   toBasicError,
 } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Result } from "ts-results-es";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
@@ -54,7 +57,9 @@ type CommitteeUniqueParam =
   | SimpleUniqueParam
   | { identifier: CommitteeIdentifier };
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class CommitteeRepository {
   constructor(
     private readonly prisma: PrismaClient,
@@ -130,7 +135,7 @@ export class CommitteeRepository {
       }
 
       const committee = await this.getCommittee(committeeParam, {
-        forMarathon: marathonParam,
+        withTeamForMarathon: marathonParam,
       });
 
       if (committee.isErr()) {
@@ -146,13 +151,13 @@ export class CommitteeRepository {
       //   });
       // }
       const results = await Promise.allSettled(
-        committee.value.correspondingTeams.map((team) =>
+        committee.value.correspondingTeams?.map((team) =>
           this.membershipRepository.assignPersonToTeam({
             personParam: { id: person.id },
             teamParam: { id: team.id },
             committeeRole,
           })
-        )
+        ) ?? []
       );
 
       const errors: RepositoryError[] = [];
@@ -200,30 +205,44 @@ export class CommitteeRepository {
   async getCommittee(
     identifier: CommitteeIdentifier,
     opts: {
-      forMarathon?: UniqueMarathonParam;
+      withTeamForMarathon?: UniqueMarathonParam;
     } = {}
   ): Promise<
     Result<
       Committee & {
-        correspondingTeams: Team[];
+        correspondingTeams?: Team[];
       },
       RepositoryError
     >
   > {
     try {
-      const committee = await this.prisma.committee.upsert({
+      let committee:
+        | (Committee & {
+            correspondingTeams?: Team[];
+          })
+        | null = await this.prisma.committee.upsert({
         ...CommitteeDescriptions[identifier],
         where: { identifier },
+      });
+
+      await this.ensureCommitteeTeams(committee, [opts.withTeamForMarathon!]);
+
+      committee = await this.prisma.committee.findUnique({
+        where: { identifier },
         include: {
-          correspondingTeams: opts.forMarathon
+          correspondingTeams: opts.withTeamForMarathon
             ? {
                 where: {
-                  marathon: opts.forMarathon,
+                  marathon: opts.withTeamForMarathon,
                 },
               }
             : undefined,
         },
       });
+
+      if (!committee) {
+        return Err(new NotFoundError({ what: "Committee" }));
+      }
 
       return Ok(committee);
     } catch (error) {
@@ -231,14 +250,74 @@ export class CommitteeRepository {
     }
   }
 
-  async ensureCommittees(): Promise<Result<None, RepositoryError>> {
+  async ensureCommittees(
+    marathons?: UniqueMarathonParam[]
+  ): Promise<Result<None, RepositoryError>> {
     try {
       const { overallCommittee, viceCommittee, ...childCommittees } =
         CommitteeDescriptions;
-      await this.prisma.committee.upsert(overallCommittee);
-      await this.prisma.committee.upsert(viceCommittee);
+      const overall = await this.prisma.committee.upsert(overallCommittee);
+      if (marathons) {
+        await this.ensureCommitteeTeams(overall, marathons);
+      }
+      const vice = await this.prisma.committee.upsert(viceCommittee);
+      if (marathons) {
+        await this.ensureCommitteeTeams(vice, marathons);
+      }
       for (const committee of Object.values(childCommittees)) {
-        await this.prisma.committee.upsert(committee);
+        const child = await this.prisma.committee.upsert(committee);
+        if (marathons) {
+          await this.ensureCommitteeTeams(child, marathons);
+        }
+      }
+
+      return Ok(None);
+    } catch (error) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async ensureCommitteeTeams(
+    committee: { id: number; identifier: CommitteeIdentifier },
+    marathons: UniqueMarathonParam[]
+  ): Promise<Result<None, RepositoryError>> {
+    try {
+      for (const marathonParam of marathons) {
+        const marathon =
+          await this.marathonRepository.findMarathonByUnique(marathonParam);
+
+        if (marathon.isErr()) {
+          return Err(marathon.error);
+        }
+
+        await this.prisma.team.upsert({
+          where: {
+            marathonId_correspondingCommitteeId: {
+              marathonId: marathon.value.id,
+              correspondingCommitteeId: committee.id,
+            },
+          },
+          create: {
+            name: committeeNames[committee.identifier],
+            type: TeamType.Spirit,
+            legacyStatus: TeamLegacyStatus.ReturningTeam,
+            correspondingCommittee: {
+              connect: {
+                id: committee.id,
+              },
+            },
+            marathon: {
+              connect: {
+                id: marathon.value.id,
+              },
+            },
+          },
+          update: {
+            name: committeeNames[committee.identifier],
+            type: TeamType.Spirit,
+            legacyStatus: TeamLegacyStatus.ReturningTeam,
+          },
+        });
       }
 
       return Ok(None);

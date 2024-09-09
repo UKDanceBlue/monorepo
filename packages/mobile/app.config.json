@@ -23,7 +23,8 @@
         "@sentry/react-native/expo",
         {
           "organization": "ukdanceblue",
-          "project": "mobile"
+          "project": "mobile",
+          "url": "https://sentry.io/"
         }
       ],
       [

@@ -21,7 +21,8 @@
       "@pages/*": ["pages/*"],
       "@routing/*": ["routing/*"],
       "@tools/*": ["tools/*"],
-      "@assets/*": ["../assets/*"]
+      "@assets/*": ["../assets/*"],
+      "@documents/*": ["documents/*"]
     },
 
     "baseUrl": "./src"

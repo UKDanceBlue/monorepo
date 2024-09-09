@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -21,9 +22,16 @@ export default defineConfig({
       "@pages": resolveRelative("src", "pages"),
       "@routing": resolveRelative("src", "routing"),
       "@tools": resolveRelative("src", "tools"),
+      "@documents": resolveRelative("src", "documents"),
       "@assets": resolveRelative("assets"),
     },
   },
 
-  plugins: [react()],
+  plugins: [
+    TanStackRouterVite({
+      quoteStyle: "double",
+      semicolons: true,
+    }),
+    react(),
+  ],
 });

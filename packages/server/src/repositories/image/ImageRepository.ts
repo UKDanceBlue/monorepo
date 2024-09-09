@@ -1,11 +1,10 @@
 import { buildImageOrder, buildImageWhere } from "./imageRepositoryUtils.js";
 
 import { Prisma, PrismaClient } from "@prisma/client";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { SortDirection } from "@ukdanceblue/common";
-
 
 const imageBooleanKeys = [] as const;
 type ImageBooleanKey = (typeof imageBooleanKeys)[number];
@@ -36,7 +35,9 @@ export type ImageFilters = FilterItems<
 
 type UniqueImageParam = { id: number } | { uuid: string };
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class ImageRepository {
   constructor(private prisma: PrismaClient) {}
 

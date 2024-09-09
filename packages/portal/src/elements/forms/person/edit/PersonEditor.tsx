@@ -1,8 +1,25 @@
+import { useMarathon } from "@config/marathonContext";
+import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
+import { useAuthorizationRequirement } from "@hooks/useLoginState";
+import type { Authorization } from "@ukdanceblue/common";
+import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
-import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
-import type { BaseOptionType } from "antd/es/select";
-import { useMemo, useState } from "react";
+import {
+  App,
+  AutoComplete,
+  Button,
+  Empty,
+  Flex,
+  Form,
+  Input,
+  List,
+  Select,
+  Typography,
+} from "antd";
+import FormItem from "antd/es/form/FormItem";
+import type { ReactNode } from "react";
+import { useState } from "react";
 import type { UseQueryExecute } from "urql";
 
 import { TeamNameFragment } from "../PersonFormsGQL";
@@ -19,7 +36,12 @@ export function PersonEditor({
     | readonly FragmentType<typeof TeamNameFragment>[]
     | undefined;
   refetchPerson?: UseQueryExecute | undefined;
+  authorization?: Authorization | undefined;
 }) {
+  const selectedMarathon = useMarathon();
+
+  const isAdmin = useAuthorizationRequirement(AccessLevel.Admin);
+
   const { message } = App.useApp();
 
   const { formApi } = usePersonEditorForm(personFragment, () => {
@@ -28,38 +50,47 @@ export function PersonEditor({
     }
   });
 
-  const teamNamesData = getFragmentData(TeamNameFragment, teamNamesFragment);
-
-  const [formMemberOf, setFormMemberOf] = useState<readonly string[]>(
-    formApi.getFieldValue("memberOf") ?? []
+  const teamNamesData = (
+    getFragmentData(TeamNameFragment, teamNamesFragment) ?? []
+  ).toSorted(({ marathon: { year } }) =>
+    year === selectedMarathon?.year ? 0 : 1
   );
-  const [formCaptainOf, setFormCaptainOf] = useState<readonly string[]>(
-    formApi.getFieldValue("captainOf") ?? []
-  );
-  type OptionType = BaseOptionType & { label: string; value: string };
-
-  const { membershipOptions, captaincyOptions } = useMemo<{
-    membershipOptions: OptionType[];
-    captaincyOptions: OptionType[];
-  }>(() => {
-    const captaincyOptions: OptionType[] = [];
-    const membershipOptions: OptionType[] = [];
-    for (const team of teamNamesData ?? []) {
-      captaincyOptions.push({
-        label: team.name,
-        value: team.id,
-        disabled: formMemberOf.includes(team.id),
-      });
-      membershipOptions.push({
-        label: team.name,
-        value: team.id,
-        disabled: formCaptainOf.includes(team.id),
-      });
-    }
-    return { captaincyOptions, membershipOptions };
-  }, [formCaptainOf, formMemberOf, teamNamesData]);
 
   const personData = getFragmentData(PersonEditorFragment, personFragment);
+
+  const [captainSearch, setCaptainSearch] = useState("");
+  const lowerCaptainSearch = captainSearch.toLowerCase();
+  const captainOptions: ReactNode[] = [];
+  for (const team of teamNamesData) {
+    if (!team.name.toLowerCase().includes(lowerCaptainSearch)) continue;
+    captainOptions.push(
+      <AutoComplete.Option key={team.id} value={team.id}>
+        {team.marathon.year === selectedMarathon?.year ? (
+          <b>{team.marathon.year} </b>
+        ) : (
+          `${team.marathon.year} `
+        )}
+        {team.name}
+      </AutoComplete.Option>
+    );
+  }
+
+  const [membershipSearch, setMembershipSearch] = useState("");
+  const lowerMembershipSearch = membershipSearch.toLowerCase();
+  const membershipOptions: ReactNode[] = [];
+  for (const team of teamNamesData) {
+    if (!team.name.toLowerCase().includes(lowerMembershipSearch)) continue;
+    membershipOptions.push(
+      <AutoComplete.Option key={team.id} value={team.id}>
+        {team.marathon.year === selectedMarathon?.year ? (
+          <b>{team.marathon.year} </b>
+        ) : (
+          `${team.marathon.year} `
+        )}
+        {team.name}
+      </AutoComplete.Option>
+    );
+  }
 
   if (!personData) {
     return (
@@ -91,227 +122,249 @@ export function PersonEditor({
         wrapperCol={{ span: 32 }}
         style={{ minWidth: "25%" }}
       >
-        <formApi.Subscribe selector={(state) => state.values.captainOf}>
-          {(captainOf) => {
-            setFormCaptainOf(captainOf ?? []);
-            return null;
+        <Typography.Title level={4}>Personal Information</Typography.Title>
+        <TanAntFormItem
+          fieldProps={{
+            validate: (value) => (!value ? "Name is required" : undefined),
           }}
-        </formApi.Subscribe>
-        <formApi.Subscribe selector={(state) => state.values.memberOf}>
-          {(memberOf) => {
-            setFormMemberOf(memberOf ?? []);
-            return null;
-          }}
-        </formApi.Subscribe>
-        <formApi.Field name="name">
-          {(field) => (
-            <Form.Item
-              label="Name"
-              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
-              help={
-                field.state.meta.errors.length > 0
-                  ? field.state.meta.errors[0]
-                  : undefined
-              }
-            >
-              <Input
-                status={field.state.meta.errors.length > 0 ? "error" : ""}
-                name={field.name}
-                value={field.state.value ?? ""}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-            </Form.Item>
-          )}
-        </formApi.Field>
-        <formApi.Field
-          name="linkblue"
-          onChange={(linkblue) =>
-            (linkblue ?? "").endsWith("@uky.edu")
-              ? "A LinkBlue looks like 'abcd123', not 'abcd123@uky.edu'"
-              : undefined
-          }
+          formApi={formApi}
+          name="name"
+          label="Name"
         >
-          {(field) => (
-            <Form.Item
-              label="Linkblue"
-              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
-              help={
-                field.state.meta.errors.length > 0
-                  ? field.state.meta.errors[0]
-                  : undefined
-              }
-            >
-              <Input
-                status={field.state.meta.errors.length > 0 ? "error" : ""}
-                name={field.name}
-                value={field.state.value ?? ""}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-            </Form.Item>
+          {({ value, onChange, onBlur, status }) => (
+            <Input
+              status={status}
+              name="name"
+              value={value ?? ""}
+              onBlur={onBlur}
+              onChange={(e) => onChange(e.target.value)}
+            />
           )}
-        </formApi.Field>
-        <formApi.Field
+        </TanAntFormItem>
+        <TanAntFormItem
+          fieldProps={{
+            validate: (value) =>
+              (value ?? "").includes("@")
+                ? "A LinkBlue looks like 'abcd123', not 'abcd123@uky.edu'"
+                : undefined,
+          }}
+          formApi={formApi}
+          name="linkblue"
+          label="Linkblue"
+        >
+          {({ value, onChange, onBlur, status }) => (
+            <Input
+              status={status}
+              name="linkblue"
+              value={value ?? ""}
+              onBlur={onBlur}
+              onChange={(e) => onChange(e.target.value)}
+            />
+          )}
+        </TanAntFormItem>
+        <TanAntFormItem
+          fieldProps={{
+            validate: (value) => (!value ? "Email is required" : undefined),
+          }}
+          formApi={formApi}
           name="email"
-          onChange={(value) => (!value ? "Email is required" : undefined)}
-          children={(field) => (
-            <Form.Item
-              label="Email"
-              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
-              help={
-                field.state.meta.errors.length > 0
-                  ? field.state.meta.errors[0]
-                  : undefined
-              }
-            >
-              <Input
-                status={field.state.meta.errors.length > 0 ? "error" : ""}
-                name={field.name}
-                value={field.state.value ?? ""}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-            </Form.Item>
+          label="Email"
+        >
+          {({ value, onChange, onBlur, status }) => (
+            <Input
+              status={status}
+              name="email"
+              value={value ?? ""}
+              onBlur={onBlur}
+              onChange={(e) => onChange(e.target.value)}
+            />
           )}
-        />
-        {/* <formApi.Field
-            name="role."
-            children={(field) => (
-              <Form.Item
-                label="Committee Role"
-                validateStatus={
-                  field.state.meta.errors.length > 0 ? "error" : ""
-                }
-                help={
-                  field.state.meta.errors.length > 0
-                    ? field.state.meta.errors[0]
-                    : undefined
-                }
-              >
-                <Select
-                  status={field.state.meta.errors.length > 0 ? "error" : ""}
-                  options={[
-                    { label: "None", value: "" },
-                    { label: "Chair", value: CommitteeRole.Chair },
-                    { label: "Coordinator", value: CommitteeRole.Coordinator },
-                    { label: "Member", value: CommitteeRole.Member },
-                  ]}
-                  value={field.state.value ?? ("" as const)}
-                  onBlur={field.handleBlur}
-                  onChange={(value) =>
-                    field.handleChange(value === "" ? null : value)
-                  }
-                  filterOption={(input, option) =>
-                    option?.label.toLowerCase().includes(input.toLowerCase()) ??
-                    false
-                  }
-                />
-              </Form.Item>
-            )}
-          />
-          <formApi.Field
-            name="role.committeeIdentifier"
-            children={(field) => (
-              <Form.Item
-                label="Committee Identifier"
-                validateStatus={
-                  field.state.meta.errors.length > 0 ? "error" : ""
-                }
-                help={
-                  field.state.meta.errors.length > 0
-                    ? field.state.meta.errors[0]
-                    : undefined
-                }
-              >
-                <Select
-                  status={field.state.meta.errors.length > 0 ? "error" : ""}
-                  value={field.state.value ?? ("" as const)}
-                  onBlur={field.handleBlur}
-                  onChange={(value) =>
-                    field.handleChange(value === "" ? null : value)
-                  }
-                  options={[
-                    {
-                      label: "None",
-                      value: "",
-                    },
-                    ...Object.entries(committeeNames).map(([value, label]) => ({
-                      label,
-                      value,
-                    })),
-                  ]}
-                  filterOption={(input, option) =>
-                    option?.label.toLowerCase().includes(input.toLowerCase()) ??
-                    false
-                  }
-                />
-              </Form.Item>
-            )}
-          /> */}
-        <p>
+        </TanAntFormItem>
+        <Typography.Title level={4}>Teams</Typography.Title>
+        <span>
           Note: If someone is captain of a team that also means they are a
           member of that team, so you don't need to select both.
-        </p>
+        </span>
+        <Typography.Title level={5}>Captain Of</Typography.Title>
         <formApi.Field
           name="captainOf"
+          mode="array"
           children={(field) => (
-            <Form.Item
-              label="Captain Of"
-              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
-              help={
-                field.state.meta.errors.length > 0
-                  ? field.state.meta.errors[0]
-                  : undefined
-              }
-            >
-              <Select
-                mode="multiple"
-                status={field.state.meta.errors.length > 0 ? "error" : ""}
-                value={field.state.value ?? null}
-                onBlur={field.handleBlur}
-                onChange={(value) => field.handleChange(value)}
-                options={captaincyOptions}
-                filterOption={(input, option) =>
-                  option?.label.toLowerCase().includes(input.toLowerCase()) ??
-                  false
-                }
-              />
-            </Form.Item>
+            <>
+              <List>
+                {field.state.value?.map((team) => {
+                  const { name, committeeIdentifier, marathon } =
+                    personData.teams.find(
+                      (option) => option.team.id === team.id
+                    )?.team ??
+                    teamNamesData.find((option) => option.id === team.id) ??
+                    {};
+                  return (
+                    <List.Item key={team.id}>
+                      {marathon?.year ? `${marathon.year} ` : ""}
+                      {name ?? team.id}
+                      {committeeIdentifier &&
+                        (isAdmin ? (
+                          <Select
+                            value={team.committeeRole ?? null}
+                            onChange={(value) =>
+                              field.handleChange(
+                                field.state.value?.map((val) =>
+                                  val.id === team.id
+                                    ? { ...val, committeeRole: value }
+                                    : val
+                                )
+                              )
+                            }
+                            style={{ minWidth: "15ch", marginLeft: "1em" }}
+                            title="Committee Role"
+                          >
+                            <Select.Option value={CommitteeRole.Member}>
+                              Member
+                            </Select.Option>
+                            <Select.Option value={CommitteeRole.Coordinator}>
+                              Coordinator
+                            </Select.Option>
+                            <Select.Option value={CommitteeRole.Chair}>
+                              Chair
+                            </Select.Option>
+                          </Select>
+                        ) : (
+                          ` (${team.committeeRole})`
+                        ))}
+                      <Button
+                        onClick={() =>
+                          field.removeValue(
+                            field.state.value?.findIndex(
+                              (val) => val.id === team.id
+                            ) ?? 0
+                          )
+                        }
+                        style={{ marginLeft: "1em" }}
+                      >
+                        Remove
+                      </Button>
+                    </List.Item>
+                  );
+                })}
+              </List>
+              <FormItem label="Add Captaincy">
+                <AutoComplete
+                  value={captainSearch}
+                  onChange={(value) => setCaptainSearch(value)}
+                  onSelect={(value: string) => {
+                    field.pushValue({
+                      id: value,
+                      committeeRole: null,
+                    });
+                    setCaptainSearch("");
+                  }}
+                  style={{ minWidth: "15ch" }}
+                >
+                  {captainOptions}
+                </AutoComplete>
+              </FormItem>
+            </>
           )}
         />
+        <Typography.Title level={5}>Member Of</Typography.Title>
         <formApi.Field
           name="memberOf"
+          mode="array"
           children={(field) => (
-            <Form.Item
-              label="Member Of"
-              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
-              help={
-                field.state.meta.errors.length > 0
-                  ? field.state.meta.errors[0]
-                  : undefined
-              }
-            >
-              <Select
-                mode="multiple"
-                status={field.state.meta.errors.length > 0 ? "error" : ""}
-                value={field.state.value ?? null}
-                onBlur={field.handleBlur}
-                onChange={(value) => field.handleChange(value)}
-                options={membershipOptions}
-                filterOption={(input, option) =>
-                  option?.label.toLowerCase().includes(input.toLowerCase()) ??
-                  false
-                }
-              />
-            </Form.Item>
+            <>
+              <List>
+                {field.state.value?.map((team) => {
+                  const { name, committeeIdentifier, marathon } =
+                    personData.teams.find(
+                      (option) => option.team.id === team.id
+                    )?.team ??
+                    teamNamesData.find((option) => option.id === team.id) ??
+                    {};
+                  return (
+                    <List.Item key={team.id}>
+                      {marathon?.year ? `${marathon.year} ` : ""}
+                      {name ?? team.id}
+                      {committeeIdentifier &&
+                        (isAdmin ? (
+                          <Select
+                            options={[
+                              { label: "Member", value: CommitteeRole.Member },
+                              {
+                                label: "Coordinator",
+                                value: CommitteeRole.Coordinator,
+                              },
+                              { label: "Chair", value: CommitteeRole.Chair },
+                            ]}
+                            value={team.committeeRole ?? CommitteeRole.Member}
+                            onChange={(value) =>
+                              field.handleChange(
+                                field.state.value?.map((val) =>
+                                  val.id === team.id
+                                    ? { ...val, committeeRole: value }
+                                    : val
+                                )
+                              )
+                            }
+                            style={{ minWidth: "15ch", marginLeft: "1em" }}
+                            title="Committee Role"
+                          />
+                        ) : (
+                          ` (${team.committeeRole})`
+                        ))}
+                      <Button
+                        onClick={() =>
+                          field.removeValue(
+                            field.state.value?.findIndex(
+                              (val) => val.id === team.id
+                            ) ?? 0
+                          )
+                        }
+                        style={{ marginLeft: "1em" }}
+                      >
+                        Remove
+                      </Button>
+                    </List.Item>
+                  );
+                })}
+              </List>
+              <FormItem label="Add Membership">
+                <AutoComplete
+                  value={membershipSearch}
+                  onChange={(value) => setMembershipSearch(value)}
+                  onSelect={(value: string) => {
+                    field.pushValue({
+                      id: value,
+                      committeeRole: null,
+                    });
+                    setMembershipSearch("");
+                  }}
+                  style={{ minWidth: "15ch" }}
+                >
+                  {membershipOptions}
+                </AutoComplete>
+              </FormItem>
+            </>
           )}
         />
-        <Form.Item wrapperCol={{ span: 32, offset: 8 }}>
-          <Button type="primary" htmlType="submit">
-            Save
-          </Button>
-        </Form.Item>
+        <formApi.Subscribe selector={({ errors }) => errors}>
+          {(errors) => (
+            <>
+              <Typography.Text type="danger">
+                {errors.join(", ")}
+              </Typography.Text>
+              <Form.Item wrapperCol={{ span: 32, offset: 8 }}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  disabled={errors.length > 0}
+                >
+                  Save
+                </Button>
+              </Form.Item>
+            </>
+          )}
+        </formApi.Subscribe>
       </Form>
     </Flex>
   );

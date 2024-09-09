@@ -33,5 +33,25 @@
     "Whatwg"
   ],
   "eslint.codeActionsOnSave.mode": "problems",
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  },
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "DanceBlue",
+      "database": "danceblue",
+      "username": "danceblue",
+      "password": "danceblue"
+    }
+  ],
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.cursorStyle": "line",
+  "[sql]": {
+    "editor.defaultFormatter": "mtxr.sqltools"
+  }
   "react-native-tools.projectRoot": "./packages/mobile"
 }

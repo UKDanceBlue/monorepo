@@ -14,6 +14,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "paths": {
+      "#prisma": ["./src/prisma.js"],
       "#auth/*": ["./src/lib/auth/*"],
       "#error/*": ["./src/lib/error/*"],
       "#files/*": ["./src/lib/files/*"],

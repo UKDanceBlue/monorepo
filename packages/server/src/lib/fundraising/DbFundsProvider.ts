@@ -12,7 +12,7 @@ import {
 } from "@ukdanceblue/common/error";
 import { DateTime } from "luxon";
 import { Err, Ok } from "ts-results-es";
-import { Inject, Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 import { z } from "zod";
 
 import type {
@@ -21,8 +21,6 @@ import type {
   FundraisingTeam,
 } from "./FundraisingProvider.js";
 import type { MarathonYearString } from "@ukdanceblue/common";
-
-
 
 const dbFundsFundraisingTeamSchema = z.object({
   DbNum: z.number().int().nonnegative().describe("The team's dbNum"),
@@ -103,12 +101,10 @@ export type DBFundsFundraisingProviderError =
   | BasicError
   | TimeoutError;
 
-@Service()
+@Service([dbFundsApiOriginToken, dbFundsApiKeyToken])
 export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
   constructor(
-    @Inject(dbFundsApiOriginToken)
     private readonly dbFundsApiOrigin: string,
-    @Inject(dbFundsApiKeyToken)
     private readonly dbFundsApiKey: string
   ) {}
 

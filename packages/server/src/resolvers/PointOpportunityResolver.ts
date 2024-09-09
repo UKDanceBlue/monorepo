@@ -24,7 +24,6 @@ import {
   ArgsType,
   Field,
   FieldResolver,
-  ID,
   InputType,
   Mutation,
   ObjectType,
@@ -32,10 +31,9 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
-
 
 @ObjectType("SinglePointOpportunityResponse", {
   implements: AbstractGraphQLOkResponse<PointOpportunityNode>,
@@ -74,8 +72,8 @@ class CreatePointOpportunityInput {
   @Field(() => TeamType)
   type!: TeamType;
 
-  @Field(() => ID, { nullable: true })
-  eventUuid!: string | null;
+  @Field(() => GlobalIdScalar, { nullable: true })
+  eventUuid!: GlobalId | null;
 }
 
 @InputType()
@@ -89,8 +87,8 @@ class SetPointOpportunityInput {
   @Field(() => TeamType, { nullable: true })
   type!: TeamType | null;
 
-  @Field(() => ID, { nullable: true })
-  eventUuid!: string | null;
+  @Field(() => GlobalIdScalar, { nullable: true })
+  eventUuid!: GlobalId | null;
 }
 
 @ArgsType()
@@ -109,7 +107,7 @@ class ListPointOpportunitiesArgs extends FilteredListQueryArgs<
 }) {}
 
 @Resolver(() => PointOpportunityNode)
-@Service()
+@Service([PointOpportunityRepository])
 export class PointOpportunityResolver {
   constructor(
     private readonly pointOpportunityRepository: PointOpportunityRepository
@@ -173,7 +171,7 @@ export class PointOpportunityResolver {
     const row = await this.pointOpportunityRepository.createPointOpportunity({
       name: input.name,
       type: input.type,
-      eventParam: input.eventUuid ? { uuid: input.eventUuid } : null,
+      eventParam: input.eventUuid ? { uuid: input.eventUuid.id } : null,
       opportunityDate: input.opportunityDate ?? null,
     });
 
@@ -194,7 +192,7 @@ export class PointOpportunityResolver {
       {
         name: input.name ?? undefined,
         type: input.type ?? undefined,
-        eventParam: input.eventUuid ? { uuid: input.eventUuid } : undefined,
+        eventParam: input.eventUuid ? { uuid: input.eventUuid.id } : undefined,
         opportunityDate: input.opportunityDate ?? undefined,
       }
     );

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type {
+  BooleanFilterItemInterface,
   DateFilterItemInterface,
   IsNullFilterItemInterface,
   NumericFilterItemInterface,
@@ -18,12 +19,14 @@ interface FilterObject<
   NumericFields extends string,
   OneOfFields extends string,
   StringFields extends string,
+  BooleanFields extends string,
 > {
   dateFilters: DateFilterItemInterface<DateFields>[];
   isNullFilters: IsNullFilterItemInterface<IsNullFields>[];
   numericFilters: NumericFilterItemInterface<NumericFields>[];
   oneOfFilters: OneOfFilterItemInterface<OneOfFields>[];
   stringFilters: StringFilterItemInterface<StringFields>[];
+  booleanFilters: BooleanFilterItemInterface<BooleanFields>[];
 }
 
 type ListQueryOptions<
@@ -32,6 +35,7 @@ type ListQueryOptions<
   NumericFields extends string,
   OneOfFields extends string,
   StringFields extends string,
+  BooleanFields extends string,
 > = PaginationOptions &
   SortingOptions &
   FilterObject<
@@ -39,7 +43,8 @@ type ListQueryOptions<
     IsNullFields,
     NumericFields,
     OneOfFields,
-    StringFields
+    StringFields,
+    BooleanFields
   >;
 
 interface SortOption<Field> {
@@ -54,6 +59,7 @@ export function useListQuery<
   StringFields extends AllFields,
   OneOfFields extends AllFields,
   IsNullFields extends AllFields,
+  BooleanFields extends AllFields,
 >(
   {
     initPage,
@@ -65,11 +71,12 @@ export function useListQuery<
     initSorting: SortOption<AllFields>[];
   },
   {
-    dateFields,
-    numericFields,
-    stringFields,
-    oneOfFields,
-    isNullFields,
+    dateFields = [],
+    numericFields = [],
+    stringFields = [],
+    oneOfFields = [],
+    isNullFields = [],
+    booleanFields = [],
   }: {
     allFields: AllFields[];
     dateFields: DateFields[];
@@ -77,6 +84,7 @@ export function useListQuery<
     stringFields: StringFields[];
     oneOfFields: OneOfFields[];
     isNullFields: IsNullFields[];
+    booleanFields: BooleanFields[];
   }
 ): {
   queryOptions: ListQueryOptions<
@@ -84,7 +92,8 @@ export function useListQuery<
     IsNullFields,
     NumericFields,
     OneOfFields,
-    StringFields
+    StringFields,
+    BooleanFields
   >;
   updatePagination: (paginationOptions: {
     page?: number | undefined;
@@ -98,14 +107,16 @@ export function useListQuery<
     filter: Field extends DateFields
       ? DateFilterItemInterface<Field>
       : Field extends IsNullFields
-      ? IsNullFilterItemInterface<Field>
-      : Field extends NumericFields
-      ? NumericFilterItemInterface<Field>
-      : Field extends OneOfFields
-      ? OneOfFilterItemInterface<Field>
-      : Field extends StringFields
-      ? StringFilterItemInterface<Field>
-      : never
+        ? IsNullFilterItemInterface<Field>
+        : Field extends NumericFields
+          ? NumericFilterItemInterface<Field>
+          : Field extends OneOfFields
+            ? OneOfFilterItemInterface<Field>
+            : Field extends StringFields
+              ? StringFilterItemInterface<Field>
+              : Field extends BooleanFields
+                ? BooleanFilterItemInterface<Field>
+                : never
   ) => void;
   clearFilter: (field: AllFields) => void;
   clearFilters: () => void;
@@ -126,7 +137,8 @@ export function useListQuery<
       IsNullFields,
       NumericFields,
       OneOfFields,
-      StringFields
+      StringFields,
+      BooleanFields
     >
   >({
     page: initPage,
@@ -138,6 +150,7 @@ export function useListQuery<
     numericFilters: [],
     oneOfFilters: [],
     stringFilters: [],
+    booleanFilters: [],
   });
 
   const [page, setPage] = useState<number>(initPage);
@@ -157,6 +170,9 @@ export function useListQuery<
   >([]);
   const [stringFilters, setStringFilters] = useState<
     StringFilterItemInterface<StringFields>[]
+  >([]);
+  const [booleanFilters, setBooleanFilters] = useState<
+    BooleanFilterItemInterface<BooleanFields>[]
   >([]);
 
   useEffect(() => {
@@ -178,6 +194,7 @@ export function useListQuery<
       numericFilters,
       oneOfFilters,
       stringFilters,
+      booleanFilters,
     });
   }, [
     page,
@@ -188,6 +205,7 @@ export function useListQuery<
     numericFilters,
     oneOfFilters,
     stringFilters,
+    booleanFilters,
   ]);
 
   const updatePagination = useCallback(
@@ -225,20 +243,23 @@ export function useListQuery<
         | IsNullFields
         | NumericFields
         | OneOfFields
-        | StringFields,
+        | StringFields
+        | BooleanFields,
     >(
       field: Field,
       filter: Field extends DateFields
         ? DateFilterItemInterface<Field>
         : Field extends IsNullFields
-        ? IsNullFilterItemInterface<Field>
-        : Field extends NumericFields
-        ? NumericFilterItemInterface<Field>
-        : Field extends OneOfFields
-        ? OneOfFilterItemInterface<Field>
-        : Field extends StringFields
-        ? StringFilterItemInterface<Field>
-        : never
+          ? IsNullFilterItemInterface<Field>
+          : Field extends NumericFields
+            ? NumericFilterItemInterface<Field>
+            : Field extends OneOfFields
+              ? OneOfFilterItemInterface<Field>
+              : Field extends StringFields
+                ? StringFilterItemInterface<Field>
+                : Field extends BooleanFields
+                  ? BooleanFilterItemInterface<Field>
+                  : never
     ) => {
       if (dateFields.includes(field as never)) {
         setDateFilters((dateFilters) => {
@@ -318,9 +339,32 @@ export function useListQuery<
           }
           return newStringFilters;
         });
+      } else if (booleanFields.includes(field as never)) {
+        setBooleanFilters((booleanFilters) => {
+          const newBooleanFilters = [...booleanFilters];
+          const index = newBooleanFilters.findIndex(
+            (booleanFilter) => booleanFilter.field === field
+          );
+          if (index === -1) {
+            newBooleanFilters.push(
+              filter as BooleanFilterItemInterface<BooleanFields>
+            );
+          } else {
+            newBooleanFilters[index] =
+              filter as BooleanFilterItemInterface<BooleanFields>;
+          }
+          return newBooleanFilters;
+        });
       }
     },
-    [dateFields, isNullFields, numericFields, oneOfFields, stringFields]
+    [
+      dateFields,
+      isNullFields,
+      numericFields,
+      oneOfFields,
+      stringFields,
+      booleanFields,
+    ]
   );
 
   const clearFilter = useCallback(
@@ -347,9 +391,22 @@ export function useListQuery<
         setStringFilters((stringFilters) =>
           stringFilters.filter((stringFilter) => stringFilter.field !== field)
         );
+      } else if (booleanFields.includes(field as never)) {
+        setBooleanFilters((booleanFilters) =>
+          booleanFilters.filter(
+            (booleanFilter) => booleanFilter.field !== field
+          )
+        );
       }
     },
-    [dateFields, isNullFields, numericFields, oneOfFields, stringFields]
+    [
+      dateFields,
+      isNullFields,
+      numericFields,
+      oneOfFields,
+      stringFields,
+      booleanFields,
+    ]
   );
 
   const clearFilters = useCallback(() => {
@@ -358,6 +415,7 @@ export function useListQuery<
     setNumericFilters([]);
     setOneOfFilters([]);
     setStringFilters([]);
+    setBooleanFilters([]);
   }, []);
 
   return {

@@ -1,10 +1,10 @@
-import { PersonSearch } from "@elements/components/PersonSearch";
+import { PersonSearch } from "@elements/components/person/PersonSearch";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useNavigate } from "@tanstack/react-router";
 import { Button, Checkbox, Flex, Form, Input, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
 
-import { NotificationPreview } from "../../../components/NotificationPreview";
+import { NotificationPreview } from "../../../components/notification/NotificationPreview";
 import { useNotificationCreator } from "./useNotificationCreator";
 
 export const CreateNotificationForm = () => {
@@ -15,7 +15,7 @@ export const CreateNotificationForm = () => {
   const { formApi } = useNotificationCreator((data) => {
     if (data?.uuid) {
       navigate({
-        to: "/notifications/$notificationId/",
+        to: "/notifications/$notificationId",
         params: {
           notificationId: data.uuid,
         },
@@ -49,7 +49,9 @@ export const CreateNotificationForm = () => {
       >
         <formApi.Field
           name="title"
-          onChange={(value) => (!value ? "Title is required" : undefined)}
+          validators={{
+            onChange: ({ value }) => (!value ? "Title is required" : undefined),
+          }}
         >
           {(field) => (
             <Form.Item
@@ -75,7 +77,9 @@ export const CreateNotificationForm = () => {
         </formApi.Field>
         <formApi.Field
           name="body"
-          onChange={(value) => (!value ? "Body is required" : undefined)}
+          validators={{
+            onChange: ({ value }) => (!value ? "Body is required" : undefined),
+          }}
         >
           {(field) => (
             <Form.Item
@@ -101,15 +105,17 @@ export const CreateNotificationForm = () => {
         </formApi.Field>
         <formApi.Field
           name="url"
-          onChange={(value) => {
-            if (value) {
-              try {
-                new URL(value);
-              } catch {
-                return "Invalid URL";
+          validators={{
+            onChange: ({ value }) => {
+              if (value) {
+                try {
+                  new URL(value);
+                } catch {
+                  return "Invalid URL";
+                }
               }
-            }
-            return undefined;
+              return undefined;
+            },
           }}
         >
           {(field) => (

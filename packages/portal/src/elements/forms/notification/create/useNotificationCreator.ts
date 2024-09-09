@@ -7,7 +7,6 @@ import { useMutation } from "urql";
 import type { TeamType } from "@ukdanceblue/common";
 import type { DocumentType } from "@ukdanceblue/common/graphql-client-portal";
 
-
 export function useNotificationCreator(
   afterSubmit:
     | ((
@@ -53,10 +52,12 @@ export function useNotificationCreator(
       },
       url: "",
     },
-    onChange: (_values) => {
-      return undefined;
+    validators: {
+      onChange: () => {
+        return undefined;
+      },
     },
-    onSubmit: async (values) => {
+    onSubmit: async ({ value: values }) => {
       if (!values.title) {
         throw new Error("Title is required");
       } else if (!values.body) {

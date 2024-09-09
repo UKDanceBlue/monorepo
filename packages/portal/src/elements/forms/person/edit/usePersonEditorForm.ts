@@ -4,7 +4,7 @@ import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { MembershipPositionType } from "@ukdanceblue/common";
 import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
-import { type SetPersonInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
+import { type MemberOf } from "@ukdanceblue/common/graphql-client-portal/raw-types";
 import { useMutation } from "urql";
 
 import type {
@@ -30,7 +30,15 @@ export function usePersonEditorForm(
     loadingMessage: "Saving person...",
   });
 
-  const Form = useForm<SetPersonInput>({
+  // TODO: Show the user what year the marathon is for each team
+
+  const Form = useForm<{
+    readonly name?: string;
+    readonly linkblue?: string;
+    readonly email?: string;
+    readonly captainOf?: MemberOf[];
+    readonly memberOf?: MemberOf[];
+  }>({
     defaultValues: {
       name: personData?.name ?? "",
       linkblue: personData?.linkblue ?? "",
@@ -41,39 +49,45 @@ export function usePersonEditorForm(
             (membership) =>
               membership.position === MembershipPositionType.Captain
           )
-          .map((membership) => membership.team.id) ?? [],
+          .map((membership) => ({
+            id: membership.team.id,
+            committeeRole: membership.committeeRole,
+          })) ?? [],
       memberOf:
         personData?.teams
           .filter(
             (membership) =>
               membership.position === MembershipPositionType.Member
           )
-          .map((membership) => membership.team.id) ?? [],
+          .map((membership) => ({
+            id: membership.team.id,
+            committeeRole: membership.committeeRole,
+          })) ?? [],
     },
     validators: {
       onChange: ({ value: values }) => {
         const memberOfCount: Record<string, number> = {};
-        for (const uuid of values.memberOf ?? []) {
+        for (const { id: uuid } of values.memberOf ?? []) {
           memberOfCount[uuid] = (memberOfCount[uuid] ?? 0) + 1;
         }
         const captainOfCount: Record<string, number> = {};
-        for (const uuid of values.captainOf ?? []) {
+        for (const { id: uuid } of values.captainOf ?? []) {
           captainOfCount[uuid] = (captainOfCount[uuid] ?? 0) + 1;
         }
 
-        for (const uuid of Object.keys(memberOfCount)) {
+        for (const uuid in memberOfCount) {
           if ((memberOfCount[uuid] ?? 0) > 1) {
             return "Cannot be a member of a team more than once";
           }
         }
-        for (const uuid of Object.keys(captainOfCount)) {
+        for (const uuid in captainOfCount) {
           if ((captainOfCount[uuid] ?? 0) > 1) {
             return "Cannot be a captain of a team more than once";
           }
         }
 
-        for (const uuid of values.memberOf ?? []) {
-          if (values.captainOf?.includes(uuid)) {
+        for (const { id: uuid } of values.memberOf ?? []) {
+          if (values.captainOf?.some((team) => team.id === uuid)) {
             return "Cannot be a captain and member of a team";
           }
         }
@@ -96,8 +110,14 @@ export function usePersonEditorForm(
           name: values.name || null,
           linkblue: values.linkblue || null,
           email: values.email,
-          captainOf: values.captainOf ?? [],
-          memberOf: values.memberOf ?? [],
+          captainOf: (values.captainOf ?? []).map(({ id, committeeRole }) => ({
+            id,
+            committeeRole,
+          })),
+          memberOf: (values.memberOf ?? []).map(({ id, committeeRole }) => ({
+            id,
+            committeeRole,
+          })),
         },
       });
 

@@ -1,5 +1,3 @@
- 
-
 /*
 This file is adapted from MDN's page on Base64 encoding and decoding:
 https://developer.mozilla.org/en-US/docs/Glossary/Base64#solution_2_%E2%80%93_rewriting_atob_and_btoa_using_typedarrays_and_utf-8
@@ -10,14 +8,14 @@ function b64ToUint6(nChr: number): number {
   return nChr > 64 && nChr < 91
     ? nChr - 65
     : nChr > 96 && nChr < 123
-    ? nChr - 71
-    : nChr > 47 && nChr < 58
-    ? nChr + 4
-    : nChr === 43
-    ? 62
-    : nChr === 47
-    ? 63
-    : 0;
+      ? nChr - 71
+      : nChr > 47 && nChr < 58
+        ? nChr + 4
+        : nChr === 43
+          ? 62
+          : nChr === 47
+            ? 63
+            : 0;
 }
 
 export function base64StringToArray(
@@ -57,14 +55,14 @@ function uint6ToB64(nUint6: number): number {
   return nUint6 < 26
     ? nUint6 + 65
     : nUint6 < 52
-    ? nUint6 + 71
-    : nUint6 < 62
-    ? nUint6 - 4
-    : nUint6 === 62
-    ? 43
-    : nUint6 === 63
-    ? 47
-    : 65;
+      ? nUint6 + 71
+      : nUint6 < 62
+        ? nUint6 - 4
+        : nUint6 === 62
+          ? 43
+          : nUint6 === 63
+            ? 47
+            : 65;
 }
 
 export function arrayToBase64String(aBytes: Uint8Array): string {
@@ -116,27 +114,27 @@ export function UTF8ArrToStr(aBytes: Uint8Array): string {
             aBytes[++nIdx]! -
             128
         : nPart > 247 && nPart < 252 && nIdx + 4 < nLen /* five bytes */
-        ? ((nPart - 248) << 24) +
-          ((aBytes[++nIdx]! - 128) << 18) +
-          ((aBytes[++nIdx]! - 128) << 12) +
-          ((aBytes[++nIdx]! - 128) << 6) +
-          aBytes[++nIdx]! -
-          128
-        : nPart > 239 && nPart < 248 && nIdx + 3 < nLen /* four bytes */
-        ? ((nPart - 240) << 18) +
-          ((aBytes[++nIdx]! - 128) << 12) +
-          ((aBytes[++nIdx]! - 128) << 6) +
-          aBytes[++nIdx]! -
-          128
-        : nPart > 223 && nPart < 240 && nIdx + 2 < nLen /* three bytes */
-        ? ((nPart - 224) << 12) +
-          ((aBytes[++nIdx]! - 128) << 6) +
-          aBytes[++nIdx]! -
-          128
-        : nPart > 191 && nPart < 224 && nIdx + 1 < nLen /* two bytes */
-        ? ((nPart - 192) << 6) + aBytes[++nIdx]! - 128
-        : /* nPart < 127 ? */ /* one byte */
-          nPart
+          ? ((nPart - 248) << 24) +
+            ((aBytes[++nIdx]! - 128) << 18) +
+            ((aBytes[++nIdx]! - 128) << 12) +
+            ((aBytes[++nIdx]! - 128) << 6) +
+            aBytes[++nIdx]! -
+            128
+          : nPart > 239 && nPart < 248 && nIdx + 3 < nLen /* four bytes */
+            ? ((nPart - 240) << 18) +
+              ((aBytes[++nIdx]! - 128) << 12) +
+              ((aBytes[++nIdx]! - 128) << 6) +
+              aBytes[++nIdx]! -
+              128
+            : nPart > 223 && nPart < 240 && nIdx + 2 < nLen /* three bytes */
+              ? ((nPart - 224) << 12) +
+                ((aBytes[++nIdx]! - 128) << 6) +
+                aBytes[++nIdx]! -
+                128
+              : nPart > 191 && nPart < 224 && nIdx + 1 < nLen /* two bytes */
+                ? ((nPart - 192) << 6) + aBytes[++nIdx]! - 128
+                : /* nPart < 127 ? */ /* one byte */
+                  nPart
     );
   }
   return sView;
@@ -159,14 +157,14 @@ export function strToUTF8Arr(sDOMStr: string): Uint8Array {
       nChr < 0x80
         ? 1
         : nChr < 0x8_00
-        ? 2
-        : nChr < 0x1_00_00
-        ? 3
-        : nChr < 0x20_00_00
-        ? 4
-        : nChr < 0x4_00_00_00
-        ? 5
-        : 6;
+          ? 2
+          : nChr < 0x1_00_00
+            ? 3
+            : nChr < 0x20_00_00
+              ? 4
+              : nChr < 0x4_00_00_00
+                ? 5
+                : 6;
   }
 
   const aBytes = new Uint8Array(nArrLen);

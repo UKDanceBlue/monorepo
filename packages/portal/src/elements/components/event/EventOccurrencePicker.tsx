@@ -33,23 +33,15 @@ export function EventOccurrencePicker<
 
   useEffect(() => {
     if (oldDefaultOccurrence.current !== defaultOccurrence) {
-      console.log(
-        "defaultOccurrence changed",
-        oldDefaultOccurrence.current,
-        defaultOccurrence
-      );
       oldDefaultOccurrence.current = defaultOccurrence;
     }
     if (oldStart.current !== start) {
-      console.log("start changed", oldStart.current, start);
       oldStart.current = start;
     }
     if (oldEnd.current !== end) {
-      console.log("end changed", oldEnd.current, end);
       oldEnd.current = end;
     }
     if (oldFullDay.current !== fullDay) {
-      console.log("fullDay changed", oldFullDay.current, fullDay);
       oldFullDay.current = fullDay;
     }
   }, [defaultOccurrence, start, end, fullDay]);

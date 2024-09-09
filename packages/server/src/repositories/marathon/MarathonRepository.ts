@@ -11,11 +11,10 @@ import {
 import { Marathon, MarathonHour, Prisma, PrismaClient } from "@prisma/client";
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok, Result } from "ts-results-es";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { SortDirection } from "@ukdanceblue/common";
-
 
 const marathonBooleanKeys = [] as const;
 type MarathonBooleanKey = (typeof marathonBooleanKeys)[number];
@@ -62,7 +61,9 @@ export type UniqueMarathonParam =
   | { uuid: string }
   | { year: string };
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class MarathonRepository {
   constructor(private prisma: PrismaClient) {}
 
@@ -83,7 +84,7 @@ export class MarathonRepository {
   async findCurrentMarathon(): Promise<Result<Marathon, RepositoryError>> {
     try {
       const marathon = await this.prisma.marathon.findFirst({
-        orderBy: { year: "asc" },
+        orderBy: { year: "desc" },
         where: { startDate: { lte: new Date() }, endDate: { gte: new Date() } },
       });
       if (!marathon) {
@@ -98,7 +99,7 @@ export class MarathonRepository {
   async findActiveMarathon(): Promise<Result<Marathon, RepositoryError>> {
     try {
       const marathon = await this.prisma.marathon.findFirst({
-        orderBy: { year: "asc" },
+        orderBy: { year: "desc" },
       });
       if (!marathon) {
         return Err(new NotFoundError({ what: "Marathon" }));
@@ -164,8 +165,8 @@ export class MarathonRepository {
     endDate,
   }: {
     year: string;
-    startDate?: string;
-    endDate?: string;
+    startDate?: string | null;
+    endDate?: string | null;
   }): Promise<Result<Marathon, RepositoryError>> {
     try {
       const marathon = await this.prisma.marathon.create({
@@ -189,8 +190,8 @@ export class MarathonRepository {
       endDate,
     }: {
       year?: string;
-      startDate?: string;
-      endDate?: string;
+      startDate?: string | null;
+      endDate?: string | null;
     }
   ): Promise<Result<Marathon, RepositoryError>> {
     try {

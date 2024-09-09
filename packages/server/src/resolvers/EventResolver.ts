@@ -1,5 +1,3 @@
-
-
 import { FileManager } from "#files/FileManager.js";
 import { auditLogger } from "#logging/auditLogging.js";
 import { EventRepository } from "#repositories/event/EventRepository.js";
@@ -18,6 +16,7 @@ import {
 import {
   AccessControl,
   AccessLevel,
+  CommitteeRole,
   DetailedError,
   ErrorCode,
   EventNode,
@@ -40,7 +39,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { Prisma } from "@prisma/client";
 import type { GlobalId } from "@ukdanceblue/common";
@@ -123,12 +122,12 @@ class CreateEventInput {
 
 @InputType()
 export class SetEventOccurrenceInput {
-  @Field(() => String, {
+  @Field(() => GlobalIdScalar, {
     nullable: true,
     description:
       "If updating an existing occurrence, the UUID of the occurrence to update",
   })
-  uuid!: string | null;
+  uuid!: GlobalId | null;
   @Field(() => IntervalISO)
   interval!: IntervalISO;
   @Field(() => Boolean)
@@ -195,7 +194,7 @@ class ListEventsArgs extends FilteredListQueryArgs<
   ],
 }) {}
 
-@Service()
+@Service([EventRepository, EventImagesRepository, FileManager])
 @Resolver(() => EventNode)
 export class EventResolver {
   constructor(
@@ -250,7 +249,14 @@ export class EventResolver {
     });
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => CreateEventResponse, { name: "createEvent" })
   async create(
     @Arg("input") input: CreateEventInput
@@ -273,18 +279,24 @@ export class EventResolver {
       },
     });
 
-    auditLogger.sensitive("Event created", { event: row });
+    auditLogger.secure("Event created", { event: row });
 
     return CreateEventResponse.newCreated(
       eventModelToResource(
         row,
         row.eventOccurrences.map(eventOccurrenceModelToResource)
-      ),
-      row.uuid
+      )
     );
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => DeleteEventResponse, { name: "deleteEvent" })
   async delete(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -295,12 +307,19 @@ export class EventResolver {
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
 
-    auditLogger.sensitive("Event deleted", { uuid: id });
+    auditLogger.secure("Event deleted", { uuid: id });
 
     return DeleteEventResponse.newOk(true);
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => SetEventResponse, { name: "setEvent" })
   async set(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -331,7 +350,7 @@ export class EventResolver {
               (
                 occurrence
               ): Prisma.EventOccurrenceUpdateManyWithWhereWithoutEventInput => ({
-                where: { uuid: occurrence.uuid! },
+                where: { uuid: occurrence.uuid!.id },
                 data: {
                   date: occurrence.interval.start,
                   endDate: occurrence.interval.end,
@@ -344,7 +363,7 @@ export class EventResolver {
             uuid: {
               notIn: input.occurrences
                 .filter((occurrence) => occurrence.uuid != null)
-                .map((occurrence) => occurrence.uuid!),
+                .map((occurrence) => occurrence.uuid!.id),
             },
           },
         },
@@ -355,7 +374,7 @@ export class EventResolver {
       throw new DetailedError(ErrorCode.NotFound, "Event not found");
     }
 
-    auditLogger.sensitive("Event updated", { event: row });
+    auditLogger.secure("Event updated", { event: row });
 
     return SetEventResponse.newOk(
       eventModelToResource(
@@ -365,35 +384,49 @@ export class EventResolver {
     );
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => RemoveEventImageResponse, { name: "removeImageFromEvent" })
   async removeImage(
-    @Arg("eventId") eventUuid: string,
-    @Arg("imageId") imageUuid: string
+    @Arg("eventId", () => GlobalIdScalar) eventUuid: GlobalId,
+    @Arg("imageId", () => GlobalIdScalar) imageUuid: GlobalId
   ): Promise<RemoveEventImageResponse> {
     const row = await this.eventImageRepository.removeEventImageByUnique({
-      eventUuid,
-      imageUuid,
+      eventUuid: eventUuid.id,
+      imageUuid: imageUuid.id,
     });
 
     if (!row) {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");
     }
 
-    auditLogger.sensitive("Event image removed", { eventUuid, imageUuid });
+    auditLogger.secure("Event image removed", { eventUuid, imageUuid });
 
     return RemoveEventImageResponse.newOk(true);
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => AddEventImageResponse, { name: "addExistingImageToEvent" })
   async addExistingImage(
-    @Arg("eventId") eventId: string,
-    @Arg("imageId") imageId: string
+    @Arg("eventId", () => GlobalIdScalar) eventId: GlobalId,
+    @Arg("imageId", () => GlobalIdScalar) imageId: GlobalId
   ): Promise<AddEventImageResponse> {
     const row = await this.eventImageRepository.addExistingImageToEvent(
-      { uuid: eventId },
-      { uuid: imageId }
+      { uuid: eventId.id },
+      { uuid: imageId.id }
     );
 
     return AddEventImageResponse.newOk(

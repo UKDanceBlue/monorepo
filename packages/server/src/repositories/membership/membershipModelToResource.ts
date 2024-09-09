@@ -1,7 +1,6 @@
 import {
   CommitteeMembershipNode,
-  DetailedError,
-  ErrorCode,
+  CommitteeRole,
   MembershipNode,
 } from "@ukdanceblue/common";
 
@@ -23,17 +22,11 @@ export function committeeMembershipModelToResource(
   membershipModel: Membership,
   committeeIdentifier: CommitteeIdentifier
 ): CommitteeMembershipNode {
-  if (!membershipModel.committeeRole) {
-    throw new DetailedError(
-      ErrorCode.PreconditionsFailed,
-      "Committee role is required"
-    );
-  }
   return CommitteeMembershipNode.init({
     id: membershipModel.uuid,
     position: membershipModel.position,
     identifier: committeeIdentifier,
-    role: membershipModel.committeeRole,
+    role: membershipModel.committeeRole ?? CommitteeRole.Member,
     createdAt: membershipModel.createdAt,
     updatedAt: membershipModel.updatedAt,
   });

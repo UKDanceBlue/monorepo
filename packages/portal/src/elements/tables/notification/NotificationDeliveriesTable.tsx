@@ -21,7 +21,7 @@ const NotificationDeliveriesTableFragment = graphql(/* GraphQL */ `
 
 const notificationDeliveriesTableQueryDocument = graphql(/* GraphQL */ `
   query NotificationDeliveriesTableQuery(
-    $notificationId: String!
+    $notificationId: GlobalId!
     $page: Int
     $pageSize: Int
     $sortBy: [String!]
@@ -75,6 +75,7 @@ export const NotificationDeliveriesTable = ({
         "deliveryError",
       ],
       dateFields: ["createdAt", "updatedAt", "sentAt", "receiptCheckedAt"],
+      booleanFields: [],
       isNullFields: [],
       numericFields: [],
       oneOfFields: ["deliveryError"],

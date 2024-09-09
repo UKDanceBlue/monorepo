@@ -3,6 +3,7 @@ import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
 import { findPersonForLogin } from "#auth/findPersonForLogin.js";
 import {
   handleRepositoryError,
+  unwrapRepositoryError,
   type RepositoryError,
   type SimpleUniqueParam,
 } from "#repositories/shared.js";
@@ -13,9 +14,7 @@ import {
   CommitteeIdentifier,
   CommitteeRole,
   DbRole,
-  DetailedError,
   EffectiveCommitteeRole,
-  ErrorCode,
   MembershipPositionType,
   SortDirection,
   TeamLegacyStatus,
@@ -23,16 +22,24 @@ import {
 } from "@ukdanceblue/common";
 import {
   ActionDeniedError,
+  BasicError,
+  ConcreteResult,
+  CompositeError,
   InvalidArgumentError,
   InvariantError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
-import { Err, Ok, Result } from "ts-results-es";
-import { Service } from "typedi";
+import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
+import {
+  MarathonRepository,
+  UniqueMarathonParam,
+} from "#repositories/marathon/MarathonRepository.js";
 import type { Committee, Membership, Person, Team } from "@prisma/client";
+import { SomePrismaError } from "#error/prisma.js";
+import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
 
 const personStringKeys = ["name", "email", "linkblue"] as const;
 type PersonStringKey = (typeof personStringKeys)[number];
@@ -76,9 +83,15 @@ export type UniquePersonParam =
       linkblue: string;
     };
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken, MembershipRepository, MarathonRepository])
 export class PersonRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(
+    private prisma: PrismaClient,
+    private membershipRepository: MembershipRepository,
+    private marathonRepository: MarathonRepository
+  ) {}
 
   // Finders
 
@@ -189,6 +202,11 @@ export class PersonRepository {
     Result<EffectiveCommitteeRole[], RepositoryError | InvariantError>
   > {
     try {
+      const marathon = await this.marathonRepository.findActiveMarathon();
+      if (marathon.isErr()) {
+        return Err(marathon.error);
+      }
+
       const effectiveCommitteeRoles: EffectiveCommitteeRole[] = [];
 
       const committees = await this.prisma.membership.findMany({
@@ -198,6 +216,7 @@ export class PersonRepository {
             correspondingCommittee: {
               isNot: null,
             },
+            marathonId: marathon.value.id,
           },
           committeeRole: {
             not: null,
@@ -217,6 +236,11 @@ export class PersonRepository {
                   childCommittees: {
                     select: {
                       identifier: true,
+                      childCommittees: {
+                        select: {
+                          identifier: true,
+                        },
+                      },
                     },
                   },
                 },
@@ -229,14 +253,9 @@ export class PersonRepository {
 
       for (const { team, committeeRole } of committees) {
         if (team.correspondingCommittee) {
-          if (!committeeRole) {
-            return Err(
-              new InvariantError("No role found for committee membership")
-            );
-          }
           const role = EffectiveCommitteeRole.init(
             team.correspondingCommittee.identifier,
-            committeeRole
+            committeeRole ?? CommitteeRole.Member
           );
           effectiveCommitteeRoles.push(role);
           if (team.correspondingCommittee.parentCommittee) {
@@ -246,10 +265,19 @@ export class PersonRepository {
             );
             effectiveCommitteeRoles.push(parentRole);
           }
-          const childRoles = team.correspondingCommittee.childCommittees.map(
-            (child) =>
-              EffectiveCommitteeRole.init(child.identifier, committeeRole)
-          );
+          const childRoles =
+            team.correspondingCommittee.childCommittees.flatMap((child) => [
+              EffectiveCommitteeRole.init(
+                child.identifier,
+                committeeRole ?? CommitteeRole.Member
+              ),
+              ...child.childCommittees.map((c) =>
+                EffectiveCommitteeRole.init(
+                  c.identifier,
+                  committeeRole ?? CommitteeRole.Member
+                )
+              ),
+            ]);
           effectiveCommitteeRoles.push(...childRoles);
         }
       }
@@ -408,6 +436,10 @@ export class PersonRepository {
     types: TeamType[] | undefined = undefined,
     includeTeam = false
   ): Promise<Result<(Membership & { team: Team })[], RepositoryError>> {
+    if (types?.includes(TeamType.Spirit)) {
+      // @ts-expect-error Before committees were split out, they had a special type. It is now equivalent to Spirit
+      types.push("Committee");
+    }
     try {
       const rows = await this.prisma.person
         .findUnique({
@@ -450,80 +482,19 @@ export class PersonRepository {
     email,
     linkblue,
     authIds,
+    memberOf,
+    captainOf,
   }: {
     name?: string | null;
     email: string;
     linkblue?: string | null;
     authIds?: { source: Exclude<AuthSource, "None">; value: string }[] | null;
-  }): Promise<Result<Person, RepositoryError>> {
+    memberOf?: SimpleUniqueParam[] | undefined | null;
+    captainOf?: SimpleUniqueParam[] | undefined | null;
+  }): Promise<
+    Result<Person, RepositoryError | CompositeError<RepositoryError>>
+  > {
     try {
-      return Ok(
-        await this.prisma.person.create({
-          data: {
-            name,
-            email,
-            linkblue,
-            authIdPairs: authIds
-              ? {
-                  createMany: {
-                    data: authIds.map(
-                      (authId): Prisma.AuthIdPairCreateInput => {
-                        return {
-                          source: authId.source,
-                          value: authId.value,
-                          person: { connect: { email } },
-                        };
-                      }
-                    ),
-                  },
-                }
-              : undefined,
-          },
-        })
-      );
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async updatePerson(
-    param: UniquePersonParam,
-    {
-      name,
-      email,
-      linkblue,
-      authIds,
-      memberOf,
-      captainOf,
-    }: {
-      name?: string | undefined | null;
-      email?: string | undefined;
-      linkblue?: string | undefined | null;
-      authIds?:
-        | { source: Exclude<AuthSource, "None">; value: string }[]
-        | undefined
-        | null;
-      memberOf?: SimpleUniqueParam[] | undefined | null;
-      captainOf?: SimpleUniqueParam[] | undefined | null;
-    }
-  ): Promise<Result<Person, RepositoryError | InvalidArgumentError>> {
-    try {
-      let personId: number;
-      if ("id" in param) {
-        personId = param.id;
-      } else if ("uuid" in param) {
-        const found = await this.prisma.person.findUnique({
-          where: { uuid: param.uuid },
-          select: { id: true },
-        });
-        if (found == null) {
-          return Err(new NotFoundError({ what: "Person" }));
-        }
-        personId = found.id;
-      } else {
-        return Err(new InvalidArgumentError("Must provide either UUID or ID"));
-      }
-
       const [memberOfIds, captainOfIds] = await Promise.all([
         memberOf
           ? Promise.all(
@@ -550,6 +521,226 @@ export class PersonRepository {
             )
           : Promise.resolve(null),
       ]);
+
+      const person = await this.prisma.person.create({
+        data: {
+          name,
+          email,
+          linkblue,
+          authIdPairs: authIds
+            ? {
+                createMany: {
+                  data: authIds.map((authId): Prisma.AuthIdPairCreateInput => {
+                    return {
+                      source: authId.source,
+                      value: authId.value,
+                      person: { connect: { email } },
+                    };
+                  }),
+                },
+              }
+            : undefined,
+        },
+      });
+
+      if (memberOfIds) {
+        const result = await Promise.allSettled(
+          memberOfIds.map(async (teamId) => {
+            if (teamId) {
+              await this.membershipRepository.assignPersonToTeam({
+                personParam: {
+                  id: person.id,
+                },
+                teamParam: {
+                  id: teamId,
+                },
+                position: MembershipPositionType.Member,
+              });
+            }
+          })
+        );
+        const errors = result.filter((r) => r.status === "rejected");
+        if (errors.length > 0) {
+          return Err(
+            new CompositeError(
+              errors.map((e) => unwrapRepositoryError(e.reason))
+            )
+          );
+        }
+      }
+      if (captainOfIds) {
+        const result = await Promise.allSettled(
+          captainOfIds.map(async (teamId) => {
+            if (teamId) {
+              await this.membershipRepository.assignPersonToTeam({
+                personParam: {
+                  id: person.id,
+                },
+                teamParam: {
+                  id: teamId,
+                },
+                position: MembershipPositionType.Captain,
+              });
+            }
+          })
+        );
+        const errors = result.filter((r) => r.status === "rejected");
+        if (errors.length > 0) {
+          return Err(
+            new CompositeError(
+              errors.map((e) => unwrapRepositoryError(e.reason))
+            )
+          );
+        }
+      }
+
+      return Ok(person);
+    } catch (error) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async updatePerson(
+    param: UniquePersonParam,
+    {
+      name,
+      email,
+      linkblue,
+      authIds,
+      memberOf,
+      captainOf,
+    }: {
+      name?: string | undefined | null;
+      email?: string | undefined;
+      linkblue?: string | undefined | null;
+      authIds?:
+        | { source: Exclude<AuthSource, "None">; value: string }[]
+        | undefined
+        | null;
+      memberOf?:
+        | {
+            id: string | number;
+            committeeRole?: CommitteeRole | null | undefined;
+          }[]
+        | undefined
+        | null;
+      captainOf?:
+        | {
+            id: string | number;
+            committeeRole?: CommitteeRole | null | undefined;
+          }[]
+        | undefined
+        | null;
+    }
+  ): Promise<
+    Result<
+      Person,
+      | RepositoryError
+      | InvalidArgumentError
+      | CompositeError<NotFoundError | ActionDeniedError>
+    >
+  > {
+    try {
+      let personId: number;
+      if ("id" in param) {
+        personId = param.id;
+      } else if ("uuid" in param) {
+        const found = await this.prisma.person.findUnique({
+          where: { uuid: param.uuid },
+          select: { id: true },
+        });
+        if (found == null) {
+          return Err(new NotFoundError({ what: "Person" }));
+        }
+        personId = found.id;
+      } else {
+        return Err(new InvalidArgumentError("Must provide either UUID or ID"));
+      }
+
+      const [memberOfIds, captainOfIds] = await Promise.all([
+        memberOf
+          ? Promise.all(
+              memberOf.map(({ id, committeeRole }) =>
+                this.prisma.team
+                  .findUnique({
+                    where: typeof id === "number" ? { id: id } : { uuid: id },
+                    select: { id: true, correspondingCommitteeId: true },
+                  })
+                  .then((team) => {
+                    if (!team) {
+                      return Err(new NotFoundError({ what: "Team" }));
+                    } else if (
+                      !team.correspondingCommitteeId &&
+                      committeeRole
+                    ) {
+                      return Err(
+                        new ActionDeniedError(
+                          "Cannot assign a committee role to a non-committee team"
+                        )
+                      );
+                    } else {
+                      return Ok({
+                        id: team.id,
+                        committeeRole: committeeRole ?? undefined,
+                      });
+                    }
+                  })
+              )
+            )
+          : Promise.resolve([]),
+        captainOf
+          ? Promise.all(
+              captainOf.map(({ id, committeeRole }) =>
+                this.prisma.team
+                  .findUnique({
+                    where: typeof id === "number" ? { id: id } : { uuid: id },
+                    select: { id: true, correspondingCommitteeId: true },
+                  })
+                  .then((team) => {
+                    if (!team) {
+                      return Err(new NotFoundError({ what: "Team" }));
+                    } else if (
+                      !team.correspondingCommitteeId &&
+                      committeeRole
+                    ) {
+                      return Err(
+                        new ActionDeniedError(
+                          "Cannot assign a committee role to a non-committee team"
+                        )
+                      );
+                    } else {
+                      return Ok({
+                        id: team.id,
+                        committeeRole: committeeRole ?? undefined,
+                      });
+                    }
+                  })
+              )
+            )
+          : Promise.resolve([]),
+      ]);
+
+      const memberOfErrors: (ActionDeniedError | NotFoundError)[] = [];
+      const okMemberOfIds: { id: number; committeeRole?: CommitteeRole }[] = [];
+      const okCaptainOfIds: { id: number; committeeRole?: CommitteeRole }[] =
+        [];
+      for (const result of memberOfIds) {
+        if (result.isErr()) {
+          memberOfErrors.push(result.error);
+        } else {
+          okMemberOfIds.push(result.value);
+        }
+      }
+      for (const result of captainOfIds) {
+        if (result.isErr()) {
+          memberOfErrors.push(result.error);
+        } else {
+          okCaptainOfIds.push(result.value);
+        }
+      }
+      if (memberOfErrors.length > 0) {
+        return Err(new CompositeError(memberOfErrors));
+      }
 
       return Ok(
         await this.prisma.person.update({
@@ -584,47 +775,78 @@ export class PersonRepository {
               // TODO: this nesting is nightmarish and should be refactored
               memberOf || captainOf
                 ? {
-                    connectOrCreate: [
-                      ...(memberOfIds
+                    deleteMany: {
+                      teamId: {
+                        notIn: [
+                          ...(okMemberOfIds ?? []).map(({ id }) => id),
+                          ...(okCaptainOfIds ?? []).map(({ id }) => id),
+                        ],
+                      },
+                      personId,
+                    },
+                    upsert: [
+                      ...(okMemberOfIds
                         ?.filter(
                           (id): id is Exclude<typeof id, undefined> =>
                             id != null
                         )
                         .map(
-                          (
-                            teamId
-                          ): Prisma.MembershipCreateOrConnectWithoutPersonInput => {
+                          ({
+                            id: teamId,
+                            committeeRole,
+                          }): Prisma.MembershipUpsertWithWhereUniqueWithoutPersonInput => {
                             return {
                               where: { personId_teamId: { personId, teamId } },
                               create: {
                                 position: MembershipPositionType.Member,
+                                committeeRole,
                                 team: {
                                   connect: {
                                     id: teamId,
+                                    correspondingCommitteeId: committeeRole
+                                      ? {
+                                          not: null,
+                                        }
+                                      : undefined,
                                   },
                                 },
+                              },
+                              update: {
+                                position: MembershipPositionType.Member,
+                                committeeRole,
                               },
                             };
                           }
                         ) ?? []),
-                      ...(captainOfIds
+                      ...(okCaptainOfIds
                         ?.filter(
                           (id): id is Exclude<typeof id, undefined> =>
                             id != null
                         )
                         .map(
-                          (
-                            teamId
-                          ): Prisma.MembershipCreateOrConnectWithoutPersonInput => {
+                          ({
+                            id: teamId,
+                            committeeRole,
+                          }): Prisma.MembershipUpsertWithWhereUniqueWithoutPersonInput => {
                             return {
                               where: { personId_teamId: { personId, teamId } },
                               create: {
                                 position: MembershipPositionType.Captain,
+                                committeeRole,
                                 team: {
                                   connect: {
                                     id: teamId,
+                                    correspondingCommitteeId: committeeRole
+                                      ? {
+                                          not: null,
+                                        }
+                                      : undefined,
                                   },
                                 },
+                              },
+                              update: {
+                                position: MembershipPositionType.Captain,
+                                committeeRole,
                               },
                             };
                           }
@@ -644,6 +866,176 @@ export class PersonRepository {
       } else {
         return handleRepositoryError(error);
       }
+    }
+  }
+
+  async bulkLoadPeople(
+    people: {
+      name: string;
+      email: string;
+      linkblue: string;
+      committee: CommitteeIdentifier | null | undefined;
+      role: CommitteeRole | null | undefined;
+    }[],
+    marathon: UniqueMarathonParam
+  ): Promise<
+    Result<Person[], RepositoryError | CompositeError<RepositoryError>>
+  > {
+    let marathonId: number;
+    if ("id" in marathon) {
+      marathonId = marathon.id;
+    } else {
+      const found = await this.prisma.marathon.findUnique({
+        where: marathon,
+        select: { id: true },
+      });
+      if (found == null) {
+        return Err(new NotFoundError({ what: "Marathon" }));
+      }
+      marathonId = found.id;
+    }
+
+    const committeeIds: Record<CommitteeIdentifier, number> = {} as Record<
+      CommitteeIdentifier,
+      number
+    >;
+    const committees = await this.prisma.committee.findMany({
+      where: {
+        correspondingTeams: {
+          some: {
+            marathonId: marathonId,
+          },
+        },
+      },
+      select: {
+        identifier: true,
+        id: true,
+      },
+    });
+    for (const committee of committees) {
+      committeeIds[committee.identifier] = committee.id;
+    }
+
+    const addToVice: {
+      name: string;
+      email: string;
+      linkblue: string;
+      committee: CommitteeIdentifier | null | undefined;
+      role: CommitteeRole | null | undefined;
+    }[] = [];
+
+    try {
+      const result = await this.prisma.$transaction(
+        people.map((person) => {
+          if (
+            person.committee === CommitteeIdentifier.overallCommittee ||
+            person.committee === CommitteeIdentifier.fundraisingCommittee ||
+            person.committee === CommitteeIdentifier.dancerRelationsCommittee
+          ) {
+            addToVice.push(person);
+          }
+
+          return this.prisma.person.upsert({
+            where: {
+              linkblue: person.linkblue,
+            },
+            create: {
+              name: person.name,
+              email: person.email,
+              linkblue: person.linkblue,
+              memberships:
+                person.committee && person.role
+                  ? {
+                      create: {
+                        team: {
+                          connect: {
+                            marathonId_correspondingCommitteeId: {
+                              marathonId: marathonId,
+                              correspondingCommitteeId:
+                                committeeIds[person.committee],
+                            },
+                          },
+                        },
+                        position:
+                          person.role === CommitteeRole.Chair
+                            ? MembershipPositionType.Captain
+                            : MembershipPositionType.Member,
+                        committeeRole: person.role,
+                      },
+                    }
+                  : undefined,
+            },
+            update: {
+              name: person.name,
+              email: person.email,
+              linkblue: person.linkblue,
+              memberships:
+                person.committee && person.role
+                  ? {
+                      create: {
+                        team: {
+                          connect: {
+                            marathonId_correspondingCommitteeId: {
+                              marathonId: marathonId,
+                              correspondingCommitteeId:
+                                committeeIds[person.committee],
+                            },
+                          },
+                        },
+                        position:
+                          person.role === CommitteeRole.Chair
+                            ? MembershipPositionType.Captain
+                            : MembershipPositionType.Member,
+                        committeeRole: person.role,
+                      },
+                    }
+                  : undefined,
+            },
+          });
+        })
+      );
+
+      for (const person of addToVice) {
+        await this.prisma.membership.upsert({
+          create: {
+            person: {
+              connect: {
+                email: person.email,
+              },
+            },
+            team: {
+              connect: {
+                marathonId_correspondingCommitteeId: {
+                  marathonId: marathonId,
+                  correspondingCommitteeId: committeeIds.viceCommittee,
+                },
+              },
+            },
+            position:
+              person.role === CommitteeRole.Chair
+                ? MembershipPositionType.Captain
+                : MembershipPositionType.Member,
+            committeeRole: person.role,
+          },
+          update: {
+            position:
+              person.role === CommitteeRole.Chair
+                ? MembershipPositionType.Captain
+                : MembershipPositionType.Member,
+            committeeRole: person.role,
+          },
+          where: {
+            personId_teamId: {
+              personId: result.find((r) => r.email === person.email)!.id,
+              teamId: marathonId,
+            },
+          },
+        });
+      }
+
+      return Ok(result);
+    } catch (error) {
+      return handleRepositoryError(error);
     }
   }
 
@@ -765,7 +1157,7 @@ export class PersonRepository {
     person: UniquePersonParam,
     marathon?: UniqueMarathonParam
   ): Promise<
-    Result<[Membership, Committee], RepositoryError | InvariantError>
+    ConcreteResult<[Membership, Committee], RepositoryError | InvariantError>
   > {
     try {
       const committees = await this.prisma.membership.findMany({
@@ -838,22 +1230,13 @@ export class PersonRepository {
       }
 
       if (bestCommittee) {
-        if (
-          !bestCommittee.team.correspondingCommittee ||
-          !bestCommittee.committeeRole
-        ) {
+        if (!bestCommittee.team.correspondingCommittee) {
           return Err(new InvariantError("Invalid committee assignment"));
         }
         return Ok([bestCommittee, bestCommittee.team.correspondingCommittee]);
       } else if (fallbackCommittee) {
-        if (
-          !fallbackCommittee.team.correspondingCommittee ||
-          !fallbackCommittee.committeeRole
-        ) {
-          throw new DetailedError(
-            ErrorCode.InternalFailure,
-            "Invalid committee assignment"
-          );
+        if (!fallbackCommittee.team.correspondingCommittee) {
+          return Err(new InvariantError("Invalid committee assignment"));
         }
         return Ok([
           fallbackCommittee,
@@ -863,6 +1246,28 @@ export class PersonRepository {
         return Err(new NotFoundError({ what: "Primary committee" }));
       }
     } catch (error) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async getTotalFundraisingAmount(
+    param: UniquePersonParam
+  ): Promise<ConcreteResult<Option<number>, SomePrismaError | BasicError>> {
+    try {
+      const {
+        _sum: { amount },
+      } = await this.prisma.fundraisingAssignment.aggregate({
+        _sum: {
+          amount: true,
+        },
+        where: {
+          person: param,
+        },
+      });
+      return Ok(
+        amount !== null ? Some(amount.toDecimalPlaces(2).toNumber()) : None
+      );
+    } catch (error: unknown) {
       return handleRepositoryError(error);
     }
   }

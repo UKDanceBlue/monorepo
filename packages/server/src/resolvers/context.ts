@@ -9,12 +9,13 @@ import {
   CommitteeIdentifier,
   CommitteeRole,
   DbRole,
+  parseGlobalId,
   roleToAccessLevel,
   TeamType,
 } from "@ukdanceblue/common";
 import { ErrorCode } from "@ukdanceblue/common/error";
 import { Ok } from "ts-results-es";
-import { Container } from "typedi";
+import { Container } from "@freshgum/typedi";
 
 import type { ContextFunction } from "@apollo/server";
 import type { KoaContextFunctionArgument } from "@as-integrations/koa";
@@ -24,8 +25,7 @@ import type {
 } from "@ukdanceblue/common";
 import type { ConcreteResult } from "@ukdanceblue/common/error";
 import type { DefaultState } from "koa";
-
-
+import { superAdminLinkblue } from "#environment";
 
 export interface GraphQLContext extends AuthorizationContext {
   contextErrors: string[];
@@ -36,8 +36,7 @@ function isSuperAdmin(committeeRoles: EffectiveCommitteeRole[]): boolean {
     (role) =>
       // TODO: replace "=== Coordinator" with a check for just app&web, but that requires information about what kind of coordinator someone is
       role.identifier === CommitteeIdentifier.techCommittee &&
-      (role.role === CommitteeRole.Chair ||
-        role.role === CommitteeRole.Coordinator)
+      role.role === CommitteeRole.Chair
   );
 }
 
@@ -137,7 +136,7 @@ async function withUserInfo(
   return Ok(outputContext);
 }
 
-const defaultContext: Readonly<GraphQLContext> = Object.freeze({
+const defaultContext: Readonly<GraphQLContext> = Object.freeze<GraphQLContext>({
   authenticatedUser: null,
   teamMemberships: [],
   userData: {
@@ -146,6 +145,16 @@ const defaultContext: Readonly<GraphQLContext> = Object.freeze({
   authorization: defaultAuthorization,
   contextErrors: [],
 });
+
+const anonymousContext: Readonly<GraphQLContext> =
+  Object.freeze<GraphQLContext>({
+    ...defaultContext,
+    authorization: {
+      accessLevel: AccessLevel.Public,
+      committees: [],
+      dbRole: DbRole.Public,
+    },
+  });
 
 export const graphqlContextFunction: ContextFunction<
   [KoaContextFunctionArgument<DefaultState, GraphQLContext>],
@@ -167,12 +176,14 @@ export const graphqlContextFunction: ContextFunction<
   // Parse the token
   const { userId, authSource } = parseUserJwt(token);
 
+  if (authSource === AuthSource.Anonymous) {
+    return anonymousContext;
+  }
+
   // Set the dbRole based on the auth source
   let authSourceDbRole: DbRole;
   if (authSource === AuthSource.LinkBlue || authSource === AuthSource.Demo) {
     authSourceDbRole = DbRole.UKY;
-  } else if (authSource === AuthSource.Anonymous) {
-    authSourceDbRole = DbRole.Public;
   } else {
     authSourceDbRole = DbRole.None;
   }
@@ -200,12 +211,23 @@ export const graphqlContextFunction: ContextFunction<
     );
     return structuredClone(defaultContext);
   }
-  let superAdmin = isSuperAdmin(contextWithUser.value.authorization.committees);
+  let superAdmin =
+    contextWithUser.value.authenticatedUser?.linkblue === superAdminLinkblue ||
+    isSuperAdmin(contextWithUser.value.authorization.committees);
   if (
     superAdmin &&
     ctx.request.headers["x-ukdb-masquerade"] &&
     typeof ctx.request.headers["x-ukdb-masquerade"] === "string"
   ) {
+    const parsedId = parseGlobalId(ctx.request.headers["x-ukdb-masquerade"]);
+    if (parsedId.isErr()) {
+      logger.error(
+        "graphqlContextFunction Error parsing masquerade ID",
+        parsedId.error
+      );
+      return structuredClone(defaultContext);
+    }
+    logger.trace("graphqlContextFunction Masquerading as", parsedId.value.id);
     // We need to reset the dbRole to the default one in case the masquerade user is not a committee member
     contextWithUser = await withUserInfo(
       {
@@ -215,7 +237,7 @@ export const graphqlContextFunction: ContextFunction<
           dbRole: authSourceDbRole,
         },
       },
-      ctx.request.headers["x-ukdb-masquerade"]
+      parsedId.value.id
     );
     if (contextWithUser.isErr()) {
       logger.error(
@@ -225,6 +247,19 @@ export const graphqlContextFunction: ContextFunction<
       return structuredClone(defaultContext);
     }
     superAdmin = false;
+  }
+
+  if (
+    superAdmin &&
+    !contextWithUser.value.authorization.committees.some(
+      (role) => role.identifier === CommitteeIdentifier.techCommittee
+    )
+  ) {
+    contextWithUser.value.authorization.committees.push({
+      identifier: CommitteeIdentifier.techCommittee,
+      role: CommitteeRole.Chair,
+    });
+    contextWithUser.value.authorization.dbRole = DbRole.Committee;
   }
 
   const finalContext: GraphQLContext = {

@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { DetailedError, ErrorCode } from "@ukdanceblue/common";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { Prisma } from "@prisma/client";
 
@@ -24,7 +24,9 @@ type UniqueParam =
 
 type BasicUniqueParam = { id: number } | { uuid: string };
 
-// @Service()
+// import { prismaToken } from "#prisma";
+
+// @Service([prismaToken])
 // export class EventOccurrenceRepository {
 //   constructor(private prisma: PrismaClient) {}
 
@@ -41,7 +43,9 @@ type BasicUniqueParam = { id: number } | { uuid: string };
 //   }
 // }
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class EventImagesRepository {
   constructor(private prisma: PrismaClient) {}
 

@@ -1,0 +1,40 @@
+diff --git a/cjs/index.js b/cjs/index.js
+index 60c58911a31097480f8f3f9eb532d1be0115eee5..45d72a6c3f52de171f6f86136598891fd5da66dc 100644
+--- a/cjs/index.js
++++ b/cjs/index.js
+@@ -186,7 +186,7 @@ exports.preset = {
+                 schema: options.schema,
+                 config: {
+                     inlineFragmentTypes: isMaskingFragments ? 'mask' : options.config['inlineFragmentTypes'],
+-                    ...forwardedConfig,
++                    ...options.config,
+                 },
+                 documents: sources,
+                 documentTransforms: options.documentTransforms,
+diff --git a/esm/index.js b/esm/index.js
+index e2d651f51c613525828d5f1500aab6a86a1fcef6..9f27272b7c908215157cc8ff094bdd9fe74704d3 100644
+--- a/esm/index.js
++++ b/esm/index.js
+@@ -7,6 +7,7 @@ import { ClientSideBaseVisitor, DocumentMode } from '@graphql-codegen/visitor-pl
+ import * as fragmentMaskingPlugin from './fragment-masking-plugin.js';
+ import { generateDocumentHash, normalizeAndPrintDocumentNode } from './persisted-documents.js';
+ import { processSources } from './process-sources.js';
++export { addTypenameSelectionDocumentTransform } from './add-typename-selection-document-transform.js';
+ export { default as babelOptimizerPlugin } from './babel.js';
+ const isOutputFolderLike = (baseOutputDir) => baseOutputDir.endsWith('/');
+ export const preset = {
+@@ -181,7 +182,7 @@ export const preset = {
+                 schema: options.schema,
+                 config: {
+                     inlineFragmentTypes: isMaskingFragments ? 'mask' : options.config['inlineFragmentTypes'],
+-                    ...forwardedConfig,
++                    ...options.config,
+                 },
+                 documents: sources,
+                 documentTransforms: options.documentTransforms,
+@@ -237,4 +238,4 @@ function createDeferred() {
+     });
+     return d;
+ }
+-export { addTypenameSelectionDocumentTransform } from './add-typename-selection-document-transform.js';
++

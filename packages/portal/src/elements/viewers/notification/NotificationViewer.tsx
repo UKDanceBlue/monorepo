@@ -1,4 +1,4 @@
-import { NotificationPreview } from "@elements/components/NotificationPreview";
+import { NotificationPreview } from "@elements/components/notification/NotificationPreview";
 import { SingleNotificationFragment } from "@elements/forms/notification/SingleNotificationGQL";
 import { renderDateTime } from "@tools/luxonTools";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";

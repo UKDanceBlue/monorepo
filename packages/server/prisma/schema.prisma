@@ -406,6 +406,7 @@ model FeedItem {
 model DBFundsTeam {
   // Unrelated to the 'id' field in the DBFunds API
   id                 Int                       @id @default(autoincrement())
+  uuid               String                    @unique @default(uuid()) @db.Uuid
   // The team's DbNum from the DBFunds API
   dbNum              Int                       @map("db_num")
   // The team's name from the DBFunds API
@@ -432,6 +433,7 @@ model DBFundsTeam {
 model DBFundsFundraisingEntry {
   // Unrelated to the 'id' field in the DBFunds API
   id            Int         @id @default(autoincrement())
+  uuid          String      @unique @default(uuid()) @db.Uuid
   // The amount of the entry
   amount        Decimal
   // Who made the donation
@@ -445,7 +447,7 @@ model DBFundsFundraisingEntry {
   dbFundsTeam   DBFundsTeam @relation(fields: [dbFundsTeamId], references: [id], onDelete: Cascade)
 
   // The corresponding fundraising entry in our database
-  fundraisingEntry FundraisingEntry?
+  fundraisingEntry FundraisingEntryWithMeta?
 
   @@unique([donatedTo, donatedBy, date])
   @@map("db_funds_team_entries")
@@ -457,25 +459,39 @@ model FundraisingEntry {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  dbFundsEntry   DBFundsFundraisingEntry @relation(fields: [dbFundsEntryId], references: [id], onDelete: Cascade)
-  dbFundsEntryId Int                     @unique @map("db_funds_entry_id")
-
-  assignments FundraisingAssignment[]
+  dbFundsEntryId Int @unique @map("db_funds_entry_id")
 
   @@index([uuid], map: "fundraising_entries_uuid")
   @@map("fundraising_entries")
 }
 
+view FundraisingEntryWithMeta {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  unassigned Decimal? @map("unassigned")
+
+  dbFundsEntry   DBFundsFundraisingEntry @relation(fields: [dbFundsEntryId], references: [id], onDelete: Cascade)
+  dbFundsEntryId Int                     @unique @map("db_funds_entry_id")
+
+  assignments FundraisingAssignment[]
+
+  @@index([uuid], map: "fundraising_entries_with_meta_uuid")
+  @@map("fundraising_entries_with_meta")
+}
+
 model FundraisingAssignment {
-  id            Int              @id @default(autoincrement())
-  uuid          String           @unique(map: "fundraising_assignments_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id            Int                      @id @default(autoincrement())
+  uuid          String                   @unique(map: "fundraising_assignments_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt     DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
   amount        Decimal
-  personId      Int              @map("person_id")
-  person        Person           @relation(fields: [personId], references: [id], onDelete: Cascade)
-  parentEntry   FundraisingEntry @relation(fields: [fundraisingId], references: [id], onDelete: Cascade)
-  fundraisingId Int              @map("fundraising_id")
+  personId      Int                      @map("person_id")
+  person        Person                   @relation(fields: [personId], references: [id], onDelete: Cascade)
+  parentEntry   FundraisingEntryWithMeta @relation(fields: [fundraisingId], references: [id], onDelete: Cascade)
+  fundraisingId Int                      @map("fundraising_id")
 
   @@unique([fundraisingId, personId], map: "fundraising_assignments_fundraising_id_person_id_key")
   @@index([uuid], map: "fundraising_assignments_uuid")

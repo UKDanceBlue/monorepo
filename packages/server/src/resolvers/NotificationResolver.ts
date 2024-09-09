@@ -1,5 +1,3 @@
-
-
 import { NotificationScheduler } from "#jobs/NotificationScheduler.js";
 import { ExpoNotificationProvider } from "#notification/ExpoNotificationProvider.js";
 import * as NotificationProviderJs from "#notification/NotificationProvider.js";
@@ -39,7 +37,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Inject, Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { NotificationError } from "@prisma/client";
 import type { GlobalId } from "@ukdanceblue/common";
@@ -185,8 +183,8 @@ class ListNotificationDeliveriesArgs extends FilteredListQueryArgs<
   date: ["createdAt", "updatedAt", "sentAt", "receiptCheckedAt"],
   oneOf: ["deliveryError"],
 }) {
-  @Field(() => String)
-  notificationUuid!: string;
+  @Field(() => GlobalIdScalar)
+  notificationUuid!: GlobalId;
 }
 
 @ObjectType("ListNotificationDeliveriesResponse", {
@@ -219,12 +217,16 @@ class NotificationDeliveryIssueCount
 }
 
 @Resolver(() => NotificationNode)
-@Service()
+@Service([
+  NotificationRepository,
+  NotificationDeliveryRepository,
+  ExpoNotificationProvider,
+  NotificationScheduler,
+])
 export class NotificationResolver {
   constructor(
     private readonly notificationRepository: NotificationRepository,
     private readonly notificationDeliveryRepository: NotificationDeliveryRepository,
-    @Inject(() => ExpoNotificationProvider)
     private readonly notificationProvider: NotificationProviderJs.NotificationProvider,
     private readonly notificationScheduler: NotificationScheduler
   ) {}
@@ -292,7 +294,7 @@ export class NotificationResolver {
   ): Promise<ListNotificationDeliveriesResponse> {
     const rows =
       await this.notificationDeliveryRepository.listNotificationDeliveries(
-        { uuid: query.notificationUuid },
+        { uuid: query.notificationUuid.id },
         {
           filters: query.filters,
           order:
@@ -313,7 +315,7 @@ export class NotificationResolver {
       total:
         await this.notificationDeliveryRepository.countNotificationDeliveries(
           {
-            uuid: query.notificationUuid,
+            uuid: query.notificationUuid.id,
           },
           {
             filters: query.filters,
@@ -361,8 +363,7 @@ export class NotificationResolver {
     );
 
     return StageNotificationResponse.newCreated(
-      notificationModelToResource(result),
-      result.uuid
+      notificationModelToResource(result)
     );
   }
 
@@ -568,7 +569,7 @@ export class NotificationResolver {
 }
 
 @Resolver(() => NotificationDeliveryNode)
-@Service()
+@Service([NotificationDeliveryRepository])
 export class NotificationDeliveryResolver {
   constructor(
     private readonly notificationDeliveryRepository: NotificationDeliveryRepository

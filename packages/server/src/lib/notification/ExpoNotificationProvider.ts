@@ -1,5 +1,5 @@
 // We allow awaits in loops here because we actually do want to slow down processing
- 
+
 import { isDevelopment } from "#environment";
 
 import { logger } from "#logging/standardLogging.js";
@@ -10,7 +10,7 @@ import { NotificationDeliveryRepository } from "#repositories/notificationDelive
 import { DetailedError, ErrorCode } from "@ukdanceblue/common";
 import { Expo } from "expo-server-sdk";
 import { DateTime } from "luxon";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import { randomUUID } from "crypto";
 
@@ -21,8 +21,7 @@ import type {
 } from "./NotificationProvider.js";
 import type { Notification, Prisma } from "@prisma/client";
 import type { ExpoPushMessage, ExpoPushTicket } from "expo-server-sdk";
-
-
+import { expoServiceToken } from "./expoServiceToken.js";
 
 function makeExpoNotifications(
   content: {
@@ -57,7 +56,12 @@ function makeExpoNotifications(
   return messages;
 }
 
-@Service()
+@Service([
+  NotificationRepository,
+  NotificationDeliveryRepository,
+  DeviceRepository,
+  expoServiceToken,
+])
 export class ExpoNotificationProvider implements NotificationProvider {
   constructor(
     protected notificationRepository: NotificationRepository,

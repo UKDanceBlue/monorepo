@@ -3,7 +3,6 @@ import type { NotFoundError } from "@ukdanceblue/common/error";
 
 const jobStateRepository = Container.get(JobStateRepository);
 
-
 import {
   DBFundsFundraisingProvider,
   type DBFundsFundraisingProviderError,
@@ -15,7 +14,7 @@ import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js
 import { CompositeError, toBasicError } from "@ukdanceblue/common/error";
 import Cron from "croner";
 import { Err, None, Ok, type Result } from "ts-results-es";
-import { Container } from "typedi";
+import { Container } from "@freshgum/typedi";
 
 import type { PrismaError } from "#error/prisma.js";
 
@@ -107,3 +106,4 @@ export const syncDbFunds = new Cron(
 syncDbFunds.options.startAt =
   await jobStateRepository.getNextJobDate(syncDbFunds);
 syncDbFunds.resume();
+syncDbFunds.trigger();

@@ -17,6 +17,7 @@ export const MyTeamFragment = graphql(/* GraphQL */ `
     id
     name
     totalPoints
+    fundraisingTotalAmount
     pointEntries {
       personFrom {
         id
@@ -35,18 +36,38 @@ export const MyTeamFragment = graphql(/* GraphQL */ `
   }
 `);
 
+export const MyFundraisingFragment = graphql(/* GraphQL */ `
+  fragment MyFundraisingFragment on PersonNode {
+    fundraisingTotalAmount
+    fundraisingAssignments {
+      amount
+      entry {
+        donatedToText
+        donatedByText
+        donatedOn
+      }
+    }
+  }
+`);
+
 const TeamScreen = ({
   myTeamFragment,
+  myFundraisingFragment,
   userUuid,
   loading: _loading,
   refresh: _refresh,
 }: {
   myTeamFragment: FragmentType<typeof MyTeamFragment> | null;
+  myFundraisingFragment: FragmentType<typeof MyFundraisingFragment> | null;
   userUuid: string;
   loading: boolean;
   refresh: () => void;
 }) => {
   const team = getFragmentData(MyTeamFragment, myTeamFragment);
+  const fundraising = getFragmentData(
+    MyFundraisingFragment,
+    myFundraisingFragment
+  );
 
   const [teamStandings, setTeamStandings] = useState<StandingType[]>([]);
 
@@ -122,8 +143,7 @@ const TeamScreen = ({
           .filter(
             (member) =>
               member.position === MembershipPositionType.Captain &&
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-              (member.person.name || member.person.linkblue)
+              (member.person.name ?? member.person.linkblue)
           )
           .map(
             (captain) =>
@@ -133,8 +153,7 @@ const TeamScreen = ({
           .filter(
             (member) =>
               member.position === MembershipPositionType.Member &&
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-              (member.person.name || member.person.linkblue)
+              (member.person.name ?? member.person.linkblue)
           )
           .map(
             (member) =>
@@ -143,6 +162,8 @@ const TeamScreen = ({
         name={name}
         scoreboardData={teamStandings}
         teamTotal={totalPoints}
+        teamFundraisingTotal={fundraising?.fundraisingTotalAmount ?? 0}
+        myFundraisingEntries={fundraising?.fundraisingAssignments ?? []}
       />
     );
   }

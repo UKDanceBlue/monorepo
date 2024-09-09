@@ -8,13 +8,10 @@ import { personModelToResource } from "#repositories/person/personModelToResourc
 import { AuthSource, makeUserData } from "@ukdanceblue/common";
 import jsonwebtoken from "jsonwebtoken";
 import { DateTime } from "luxon";
-import { Container } from "typedi";
+import { Container } from "@freshgum/typedi";
 
 import type { Context } from "koa";
 import type { IncomingMessage } from "node:http";
-
-
-
 
 export const oidcCallback = async (ctx: Context) => {
   const oidcClient = await makeOidcClient(ctx.request);
