@@ -59,7 +59,7 @@ type CommitteeUniqueParam =
 
 import { prismaToken } from "#prisma";
 
-@Service([prismaToken])
+@Service([prismaToken, MembershipRepository, MarathonRepository])
 export class CommitteeRepository {
   constructor(
     private readonly prisma: PrismaClient,
