@@ -43,7 +43,6 @@ RUN mkdir -p /app/.yarn
 RUN mkdir -p /app/node_modules
 
 COPY --from=server-build /builddir/packages/server/dist /app/packages/server/dist
-COPY --from=server-build /builddir/packages/server/node_modules /app/packages/server/node_modules
 COPY --from=server-build /builddir/packages/server/prisma /app/packages/server/prisma
 COPY --from=server-build /builddir/packages/server/package.json /app/packages/server/package.json
 COPY --from=server-build /builddir/packages/common/dist /app/packages/common/dist
