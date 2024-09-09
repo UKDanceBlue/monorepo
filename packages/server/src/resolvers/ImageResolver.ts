@@ -1,4 +1,3 @@
-
 import { FileManager } from "#files/FileManager.js";
 import { generateThumbHash } from "#lib/thumbHash.js";
 import { auditLogger } from "#logging/auditLogging.js";
@@ -33,12 +32,11 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import { MIMEType } from "node:util";
 
 import type { GlobalId } from "@ukdanceblue/common";
-
 
 @ObjectType("GetImageByUuidResponse", { implements: AbstractGraphQLOkResponse })
 class GetImageByUuidResponse extends AbstractGraphQLOkResponse<ImageNode> {
@@ -83,7 +81,7 @@ class ListImagesResponse extends AbstractGraphQLPaginatedResponse<ImageNode> {
 }
 
 @Resolver(() => ImageNode)
-@Service()
+@Service([ImageRepository, FileManager])
 export class ImageResolver {
   constructor(
     private readonly imageRepository: ImageRepository,
@@ -197,7 +195,7 @@ export class ImageResolver {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");
     }
 
-    auditLogger.normal("Image alt text set", { image: result });
+    auditLogger.secure("Image alt text set", { image: result });
 
     return imageModelToResource(result, result.file, this.fileManager);
   }
@@ -240,7 +238,7 @@ export class ImageResolver {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");
     }
 
-    auditLogger.normal("Image URL set", { image: result });
+    auditLogger.secure("Image URL set", { image: result });
 
     return imageModelToResource(result, result.file, this.fileManager);
   }
@@ -258,7 +256,7 @@ export class ImageResolver {
       throw new DetailedError(ErrorCode.NotFound, "Image not found");
     }
 
-    auditLogger.normal("Image deleted", { image: result });
+    auditLogger.secure("Image deleted", { image: result });
 
     return DeleteImageResponse.newOk(true);
   }

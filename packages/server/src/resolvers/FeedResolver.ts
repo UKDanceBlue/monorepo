@@ -1,15 +1,21 @@
-
 import { FileManager } from "#files/FileManager.js";
 import { FeedRepository } from "#repositories/feed/FeedRepository.js";
 import { feedItemModelToResource } from "#repositories/feed/feedModelToResource.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
+import { CommitteeRole } from "@prisma/client";
 
 import {
+  AccessControl,
+  AccessLevel,
   DetailedError,
   ErrorCode,
   FeedNode,
+  type GlobalId,
+  GlobalIdScalar,
   ImageNode,
 } from "@ukdanceblue/common";
+import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
+import { Err, Ok } from "ts-results-es";
 import {
   Arg,
   Field,
@@ -21,7 +27,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 @InputType()
 export class CreateFeedInput {
@@ -41,13 +47,28 @@ export class SetFeedInput {
   textContent?: string | null | undefined;
 }
 
+// TODO: Add access control
+
 @Resolver(() => FeedNode)
-@Service()
+@Service([FeedRepository, FileManager])
 export class FeedResolver {
   constructor(
     private readonly feedRepository: FeedRepository,
     private readonly fileManager: FileManager
   ) {}
+
+  @Query(() => FeedNode)
+  async feedItem(
+    @Arg("feedItemId", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<ConcreteResult<FeedNode>> {
+    const feedItem = await this.feedRepository.getFeedItemByUnique({
+      uuid: id,
+    });
+    if (feedItem == null) {
+      return Err(new NotFoundError({ what: "Feed item not found" }));
+    }
+    return Ok(feedItemModelToResource(feedItem));
+  }
 
   @Query(() => [FeedNode])
   async feed(
@@ -58,6 +79,14 @@ export class FeedResolver {
     return rows.map(feedItemModelToResource);
   }
 
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => FeedNode)
   async createFeedItem(
     @Arg("input") input: CreateFeedInput
@@ -70,17 +99,25 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => FeedNode)
   async attachImageToFeedItem(
-    @Arg("feedItemUuid") feedItemUuid: string,
-    @Arg("imageUuid") imageUuid: string
+    @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId,
+    @Arg("imageUuid", () => GlobalIdScalar) imageUuid: GlobalId
   ): Promise<FeedNode> {
     const feedItem = await this.feedRepository.attachImageToFeedItem(
       {
-        uuid: feedItemUuid,
+        uuid: feedItemUuid.id,
       },
       {
-        uuid: imageUuid,
+        uuid: imageUuid.id,
       }
     );
     if (feedItem == null) {
@@ -89,12 +126,20 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => FeedNode)
   async removeImageFromFeedItem(
-    @Arg("feedItemUuid") feedItemUuid: string
+    @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId
   ): Promise<FeedNode> {
     const feedItem = await this.feedRepository.removeImageFromFeedItem({
-      uuid: feedItemUuid,
+      uuid: feedItemUuid.id,
     });
     if (feedItem == null) {
       throw new DetailedError(ErrorCode.NotFound, "Feed item not found");
@@ -102,13 +147,21 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => FeedNode)
   async setFeedItem(
-    @Arg("feedItemUuid") feedItemUuid: string,
+    @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId,
     @Arg("input") input: SetFeedInput
   ): Promise<FeedNode> {
     const feedItem = await this.feedRepository.updateFeedItem(
-      { uuid: feedItemUuid },
+      { uuid: feedItemUuid.id },
       {
         title: input.title,
         textContent: input.textContent,
@@ -120,12 +173,20 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
+    }
+  )
   @Mutation(() => Boolean)
   async deleteFeedItem(
-    @Arg("feedItemUuid") feedItemUuid: string
+    @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId
   ): Promise<boolean> {
     const feedItem = await this.feedRepository.deleteFeedItem({
-      uuid: feedItemUuid,
+      uuid: feedItemUuid.id,
     });
     return feedItem != null;
   }

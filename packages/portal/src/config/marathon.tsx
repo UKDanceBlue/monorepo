@@ -39,10 +39,7 @@ export const MarathonConfigProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [marathonId, setMarathonId] = useState(
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-    localStorage.getItem(LocalStorageKeys.SelectedMarathon) || null
-  );
+  const [marathonId, setMarathonId] = useState<string | null>(null);
 
   useEffect(() => {
     if (marathonId) {
@@ -58,6 +55,23 @@ export const MarathonConfigProvider = ({
     variables: { marathonId: marathonId ?? "" },
     pause: marathonId == null,
   });
+
+  useEffect(() => {
+    const storedMarathonId = localStorage.getItem(
+      LocalStorageKeys.SelectedMarathon
+    );
+    if (storedMarathonId) {
+      if (
+        latestMarathonResult.data?.marathons.data.some(
+          (m) => m.id === storedMarathonId
+        )
+      ) {
+        setMarathonId(storedMarathonId);
+      } else {
+        localStorage.removeItem(LocalStorageKeys.SelectedMarathon);
+      }
+    }
+  }, [latestMarathonResult.data?.marathons.data]);
 
   let marathon = null;
   if (marathonId != null && selectedMarathonResult.data != null) {

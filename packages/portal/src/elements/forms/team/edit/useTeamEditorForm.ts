@@ -12,7 +12,6 @@ import type {
   FragmentType,
 } from "@ukdanceblue/common/graphql-client-portal";
 
-
 export function useTeamEditorForm(
   teamFragment: FragmentType<typeof TeamEditorFragment> | undefined,
   afterSubmit:
@@ -37,7 +36,7 @@ export function useTeamEditorForm(
       legacyStatus: teamData?.legacyStatus ?? null,
       type: teamData?.type ?? TeamType.Spirit,
     },
-    onSubmit: async (values) => {
+    onSubmit: async ({ value: values }) => {
       if (!teamData?.id) {
         throw new Error("Team UUID is required");
       }

@@ -16,7 +16,7 @@ interface AbstractGraphQLArrayOkResponse implements GraphQLBaseResponse {
 """API response"""
 interface AbstractGraphQLCreatedResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   ok: Boolean!
-  uuid: String!
+  uuid: GlobalId!
 }
 
 """API response"""
@@ -60,6 +60,14 @@ enum AuthSource {
   None
 }
 
+input BulkPersonInput {
+  committee: CommitteeIdentifier
+  email: EmailAddress!
+  linkblue: String!
+  name: String!
+  role: CommitteeRole
+}
+
 """The identifier for a committee"""
 enum CommitteeIdentifier {
   communityDevelopmentCommittee
@@ -77,6 +85,7 @@ enum CommitteeIdentifier {
 }
 
 type CommitteeMembershipNode implements Node {
+  committeeRole: CommitteeRole
   createdAt: DateTimeISO
   id: GlobalId!
   identifier: CommitteeIdentifier!
@@ -121,7 +130,7 @@ input CreateConfigurationInput {
 type CreateConfigurationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: ConfigurationNode!
   ok: Boolean!
-  uuid: String!
+  uuid: GlobalId!
 }
 
 input CreateEventInput {
@@ -140,7 +149,7 @@ input CreateEventOccurrenceInput {
 type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: EventNode!
   ok: Boolean!
-  uuid: String!
+  uuid: GlobalId!
 }
 
 input CreateFeedInput {
@@ -162,36 +171,36 @@ input CreateMarathonHourInput {
 }
 
 input CreateMarathonInput {
-  endDate: DateTimeISO!
-  startDate: DateTimeISO!
+  endDate: DateTimeISO
+  startDate: DateTimeISO
   year: String!
 }
 
 input CreatePersonInput {
-  captainOf: [String!]! = []
-  dbRole: DbRole
+  captainOf: [MemberOf!]! = []
+  dbRole: DbRole @deprecated(reason: "DBRole can no longer be set directly")
   email: EmailAddress!
   linkblue: String
-  memberOf: [String!]! = []
+  memberOf: [MemberOf!]! = []
   name: String
 }
 
 input CreatePointEntryInput {
   comment: String
-  opportunityUuid: String
-  personFromUuid: String
+  opportunityUuid: GlobalId
+  personFromUuid: GlobalId
   points: Int!
-  teamUuid: String!
+  teamUuid: GlobalId!
 }
 
 type CreatePointEntryResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: PointEntryNode!
   ok: Boolean!
-  uuid: String!
+  uuid: GlobalId!
 }
 
 input CreatePointOpportunityInput {
-  eventUuid: ID
+  eventUuid: GlobalId
   name: String!
   opportunityDate: DateTimeISO
   type: TeamType!
@@ -200,7 +209,7 @@ input CreatePointOpportunityInput {
 type CreatePointOpportunityResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: PointOpportunityNode!
   ok: Boolean!
-  uuid: String!
+  uuid: GlobalId!
 }
 
 input CreateTeamInput {
@@ -212,7 +221,7 @@ input CreateTeamInput {
 type CreateTeamResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: TeamNode!
   ok: Boolean!
-  uuid: String!
+  uuid: GlobalId!
 }
 
 """
@@ -220,9 +229,8 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTimeISO
 
-type DbFundsTeamInfo implements Node {
+type DbFundsTeamInfo {
   dbNum: Int!
-  id: GlobalId!
   name: String!
 }
 
@@ -478,6 +486,7 @@ type FundraisingAssignmentNode implements Node {
 
 type FundraisingEntryNode implements Node {
   amount: Float!
+  amountUnassigned: Float!
   assignments: [FundraisingAssignmentNode!]!
   createdAt: DateTimeISO
   donatedByText: String
@@ -489,6 +498,7 @@ type FundraisingEntryNode implements Node {
 
 enum FundraisingEntryResolverAllKeys {
   amount
+  amountUnassigned
   createdAt
   donatedBy
   donatedOn
@@ -567,6 +577,7 @@ input FundraisingEntryResolverKeyedStringFilterItem {
 
 enum FundraisingEntryResolverNumericFilterKeys {
   amount
+  amountUnassigned
 }
 
 enum FundraisingEntryResolverOneOfFilterKeys {
@@ -961,7 +972,13 @@ input MarathonResolverKeyedIsNullFilterItem {
   negate: Boolean = false
 }
 
+input MemberOf {
+  committeeRole: CommitteeRole
+  id: GlobalId!
+}
+
 type MembershipNode implements Node {
+  committeeRole: CommitteeRole
   createdAt: DateTimeISO
   id: GlobalId!
   person: PersonNode!
@@ -979,27 +996,28 @@ enum MembershipPositionType {
 type Mutation {
   abortScheduledNotification(uuid: GlobalId!): AbortScheduledNotificationResponse!
   acknowledgeDeliveryIssue(uuid: GlobalId!): AcknowledgeDeliveryIssueResponse!
-  addExistingImageToEvent(eventId: String!, imageId: String!): AddEventImageResponse!
-  addMap(imageUuid: String!, uuid: GlobalId!): MarathonHourNode!
-  addPersonToTeam(personUuid: String!, teamUuid: String!): MembershipNode!
-  assignEntryToPerson(entryId: String!, input: AssignEntryToPersonInput!, personId: String!): FundraisingAssignmentNode!
-  assignTeamToDbFundsTeam(dbFundsTeamId: Float!, teamId: String!): Void!
-  attachImageToFeedItem(feedItemUuid: String!, imageUuid: String!): FeedNode!
+  addExistingImageToEvent(eventId: GlobalId!, imageId: GlobalId!): AddEventImageResponse!
+  addMap(imageUuid: GlobalId!, uuid: GlobalId!): MarathonHourNode!
+  addPersonToTeam(personUuid: GlobalId!, teamUuid: GlobalId!): MembershipNode!
+  assignEntryToPerson(entryId: GlobalId!, input: AssignEntryToPersonInput!, personId: GlobalId!): FundraisingAssignmentNode!
+  assignTeamToDbFundsTeam(dbFundsTeamDbNum: Int!, teamId: GlobalId!): Void!
+  attachImageToFeedItem(feedItemUuid: GlobalId!, imageUuid: GlobalId!): FeedNode!
+  bulkLoadPeople(marathonId: GlobalId!, people: [BulkPersonInput!]!): [PersonNode!]!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
   createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
   createEvent(input: CreateEventInput!): CreateEventResponse!
   createFeedItem(input: CreateFeedInput!): FeedNode!
   createImage(input: CreateImageInput!): ImageNode!
   createMarathon(input: CreateMarathonInput!): MarathonNode!
-  createMarathonHour(input: CreateMarathonHourInput!, marathonUuid: String!): MarathonHourNode!
+  createMarathonHour(input: CreateMarathonHourInput!, marathonUuid: GlobalId!): MarathonHourNode!
   createPerson(input: CreatePersonInput!): PersonNode!
   createPointEntry(input: CreatePointEntryInput!): CreatePointEntryResponse!
   createPointOpportunity(input: CreatePointOpportunityInput!): CreatePointOpportunityResponse!
-  createTeam(input: CreateTeamInput!, marathon: String!): CreateTeamResponse!
+  createTeam(input: CreateTeamInput!, marathon: GlobalId!): CreateTeamResponse!
   deleteConfiguration(uuid: GlobalId!): DeleteConfigurationResponse!
   deleteDevice(uuid: GlobalId!): DeleteDeviceResponse!
   deleteEvent(uuid: GlobalId!): DeleteEventResponse!
-  deleteFeedItem(feedItemUuid: String!): Boolean!
+  deleteFeedItem(feedItemUuid: GlobalId!): Boolean!
   deleteFundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
   deleteImage(uuid: GlobalId!): DeleteImageResponse!
   deleteMarathon(uuid: GlobalId!): Void!
@@ -1016,15 +1034,15 @@ type Mutation {
   deletePointOpportunity(uuid: GlobalId!): DeletePointOpportunityResponse!
   deleteTeam(uuid: GlobalId!): DeleteTeamResponse!
   registerDevice(input: RegisterDeviceInput!): RegisterDeviceResponse!
-  removeImageFromEvent(eventId: String!, imageId: String!): RemoveEventImageResponse!
-  removeImageFromFeedItem(feedItemUuid: String!): FeedNode!
-  removeMap(imageUuid: String!, uuid: GlobalId!): Void!
+  removeImageFromEvent(eventId: GlobalId!, imageId: GlobalId!): RemoveEventImageResponse!
+  removeImageFromFeedItem(feedItemUuid: GlobalId!): FeedNode!
+  removeMap(imageUuid: GlobalId!, uuid: GlobalId!): Void!
   scheduleNotification(sendAt: DateTimeISO!, uuid: GlobalId!): ScheduleNotificationResponse!
 
   """Send a notification immediately."""
   sendNotification(uuid: GlobalId!): SendNotificationResponse!
   setEvent(input: SetEventInput!, uuid: GlobalId!): SetEventResponse!
-  setFeedItem(feedItemUuid: String!, input: SetFeedInput!): FeedNode!
+  setFeedItem(feedItemUuid: GlobalId!, input: SetFeedInput!): FeedNode!
   setImageAltText(alt: String!, uuid: GlobalId!): ImageNode!
   setImageUrl(uuid: GlobalId!): ImageNode!
   setMarathon(input: SetMarathonInput!, uuid: GlobalId!): MarathonNode!
@@ -1267,12 +1285,13 @@ type PersonNode implements Node {
 
     """The string filters to apply to the query"""
     stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
-  ): CommitteeMembershipNode
+  ): ListFundraisingEntriesResponse
   committees: [CommitteeMembershipNode!]!
   createdAt: DateTimeISO
   dbRole: DbRole!
   email: String!
   fundraisingAssignments: [FundraisingAssignmentNode!]!
+  fundraisingTotalAmount: Float
   id: GlobalId!
   linkblue: String
   moraleTeams: [MembershipNode!]!
@@ -1470,6 +1489,7 @@ scalar PositiveInt
 type Query {
   activeConfiguration(key: String!): GetConfigurationByUuidResponse!
   allConfigurations: GetAllConfigurationsResponse!
+  auditLog: String!
   configuration(id: GlobalId!): GetConfigurationByUuidResponse!
   currentMarathon: MarathonNode
   currentMarathonHour: MarathonHourNode
@@ -1563,6 +1583,7 @@ type Query {
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
   feed(limit: Int = 10): [FeedNode!]!
+  feedItem(feedItemId: GlobalId!): FeedNode!
   fundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
   fundraisingEntries(
     """The boolean filters to apply to the query"""
@@ -1758,7 +1779,7 @@ type Query {
 
     """The is-null filters to apply to the query"""
     isNullFilters: [NotificationDeliveryResolverKeyedIsNullFilterItem!]
-    notificationUuid: String!
+    notificationUuid: GlobalId!
 
     """The numeric filters to apply to the query"""
     numericFilters: Void
@@ -1938,7 +1959,7 @@ type Query {
     """The is-null filters to apply to the query"""
     isNullFilters: [TeamResolverKeyedIsNullFilterItem!]
     legacyStatus: [TeamLegacyStatus!]
-    marathonId: [String!]
+    marathonId: [GlobalId!]
 
     """The numeric filters to apply to the query"""
     numericFilters: Void
@@ -1975,13 +1996,14 @@ type Query {
 }
 
 input RegisterDeviceInput {
+  """For legacy reasons, this can be a GlobalId or a raw UUID"""
   deviceId: String!
 
   """The Expo push token of the device"""
   expoPushToken: String
 
   """The ID of the last user to log in on this device"""
-  lastUserId: String
+  lastUserId: GlobalId
 
   """base64 encoded SHA-256 hash of a secret known to the device"""
   verifier: String!
@@ -2022,7 +2044,7 @@ input SetEventOccurrenceInput {
   """
   If updating an existing occurrence, the UUID of the occurrence to update
   """
-  uuid: String
+  uuid: GlobalId
 }
 
 type SetEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
@@ -2043,21 +2065,21 @@ input SetMarathonHourInput {
 }
 
 input SetMarathonInput {
-  endDate: DateTimeISO!
-  startDate: DateTimeISO!
+  endDate: DateTimeISO
+  startDate: DateTimeISO
   year: String!
 }
 
 input SetPersonInput {
-  captainOf: [String!]
+  captainOf: [MemberOf!]
   email: EmailAddress
   linkblue: String
-  memberOf: [String!]
+  memberOf: [MemberOf!]
   name: String
 }
 
 input SetPointOpportunityInput {
-  eventUuid: ID
+  eventUuid: GlobalId
   name: String
   opportunityDate: DateTimeISO
   type: TeamType
@@ -2088,7 +2110,7 @@ enum SortDirection {
 type StageNotificationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: NotificationNode!
   ok: Boolean!
-  uuid: String!
+  uuid: GlobalId!
 }
 
 enum StringComparator {
@@ -2108,7 +2130,9 @@ enum TeamLegacyStatus {
 
 type TeamNode implements Node {
   captains: [MembershipNode!]! @deprecated(reason: "Just query the members field and filter by role")
+  committeeIdentifier: CommitteeIdentifier
   createdAt: DateTimeISO
+  dbFundsTeam: DbFundsTeamInfo
   fundraisingEntries(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -2152,6 +2176,7 @@ type TeamNode implements Node {
     """The string filters to apply to the query"""
     stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
   ): ListFundraisingEntriesResponse!
+  fundraisingTotalAmount: Float
   id: GlobalId!
   legacyStatus: TeamLegacyStatus!
   marathon: MarathonNode!

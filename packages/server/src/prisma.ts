@@ -3,8 +3,9 @@ import { logger } from "#logging/standardLogging.js";
 
 import { PrismaClient } from "@prisma/client";
 import { DetailedError, ErrorCode } from "@ukdanceblue/common";
-import { Container } from "typedi";
+import { Container, Token } from "@freshgum/typedi";
 
+export const prismaToken = new Token<PrismaClient>("PrismaClient");
 
 export const prisma = new PrismaClient({
   log: [
@@ -40,9 +41,9 @@ prisma.$on("error", (e) => {
   sqlLogger.error(e.message);
 });
 
-Container.set<typeof prisma>(PrismaClient, prisma);
+Container.setValue(prismaToken, prisma);
 
-if (!Container.has(PrismaClient)) {
+if (!Container.has(prismaToken)) {
   throw new DetailedError(
     ErrorCode.InternalFailure,
     "PrismaClient not registered"

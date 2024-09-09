@@ -8,11 +8,8 @@ import { DateTimeISOResolver } from "graphql-scalars";
 import { None, Option, Some } from "ts-results-es";
 import { Field, Float, ObjectType } from "type-graphql";
 
-
 import type { GlobalId } from "../scalars/GlobalId.js";
 import type { DateTime } from "luxon";
-
-
 
 @ObjectType({
   implements: [Node],
@@ -43,6 +40,8 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   }
   @Field(() => Float)
   amount!: number;
+  @Field(() => Float)
+  amountUnassigned!: number;
 
   public getUniqueId(): string {
     return this.id.id;
@@ -54,6 +53,7 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
     donatedToText: Option<string> | string | null;
     donatedOn: Date;
     amount: number;
+    amountUnassigned: number;
     createdAt: Date;
     updatedAt: Date;
   }) {
@@ -76,6 +76,7 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
           : init.donatedToText;
     node.donatedOn = init.donatedOn;
     node.amount = init.amount;
+    node.amountUnassigned = init.amountUnassigned;
     node.createdAt = init.createdAt;
     node.updatedAt = init.updatedAt;
 

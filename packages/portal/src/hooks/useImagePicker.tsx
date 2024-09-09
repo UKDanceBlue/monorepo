@@ -1,4 +1,4 @@
-import { ImagePicker } from "@elements/components/ImagePicker";
+import { ImagePicker } from "@elements/components/image/ImagePicker";
 import { Modal } from "antd";
 import { useCallback, useState } from "react";
 

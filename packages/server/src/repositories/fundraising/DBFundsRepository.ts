@@ -13,22 +13,26 @@ import {
   BasicError,
 } from "@ukdanceblue/common/error";
 import { DateTime } from "luxon";
-import { Err, None, Ok, Option, Result } from "ts-results-es";
-import { Service } from "typedi";
+import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
+import { Service } from "@freshgum/typedi";
 
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
-
 
 export type UniqueDbFundsTeamParam =
   | {
       id: number;
     }
   | {
+      uuid: string;
+    }
+  | {
       dbNum: number;
       marathon: { id: number };
     };
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken, MarathonRepository])
 export class DBFundsRepository {
   constructor(
     private readonly prisma: PrismaClient,
@@ -212,6 +216,26 @@ export class DBFundsRepository {
         return Err(new NotFoundError({ what: "Team" }));
       }
       return Ok(team.teams);
+    } catch (error) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async getDbFundsTeamForTeam(
+    teamParam: SimpleUniqueParam
+  ): Promise<Result<Option<DBFundsTeam>, RepositoryError>> {
+    try {
+      const team = await this.prisma.team.findUnique({
+        where: teamParam,
+        include: { dbFundsTeam: true },
+      });
+      if (!team) {
+        return Err(new NotFoundError({ what: "Team" }));
+      }
+      if (team.dbFundsTeam == null) {
+        return Ok(None);
+      }
+      return Ok(Some(team.dbFundsTeam));
     } catch (error) {
       return handleRepositoryError(error);
     }

@@ -1,9 +1,8 @@
-
 import { ConcreteError } from "./error.js";
 import * as ErrorCode from "./errorCode.js";
 import { optionOf } from "./option.js";
 
-import type { Option } from "ts-results-es";
+import { type Option } from "ts-results-es";
 
 export class NotFoundError extends ConcreteError {
   readonly #what: Option<string>;

@@ -36,7 +36,8 @@
     "@eslint/js": "^9.9.0",
     "@expo/ngrok": "^4.1.3",
     "@graphql-codegen/cli": "^5.0.2",
-    "@graphql-codegen/client-preset": "patch:@graphql-codegen/client-preset@npm%3A4.3.2#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.3.2-fb874ac9d8.patch",
+    "@graphql-codegen/client-preset": "patch:@graphql-codegen/client-preset@npm%3A4.3.3#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.3.3-ec8a799259.patch",
+    "@parcel/watcher": "^2.4.1",
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/eslint__eslintrc": "^2.1.2",
     "@types/eslint__js": "^8.42.3",
@@ -72,8 +73,8 @@
   "resolutions": {
     "react-native-infinite-pager@^0.3.13": "patch:react-native-infinite-pager@npm%3A0.3.13#./.yarn/patches/react-native-infinite-pager-npm-0.3.13-59b67e2e46.patch",
     "react-native-rss-parser@^1.5.1": "patch:react-native-rss-parser@npm%3A1.5.1#./.yarn/patches/react-native-rss-parser-npm-1.5.1-e4cc1d8bd8.patch",
-    "@graphql-codegen/client-preset@npm:^4.2.2": "patch:@graphql-codegen/client-preset@npm%3A4.3.2#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.3.2-fb874ac9d8.patch",
     "urijs": "npm:uri-js-replace",
-    "promise": "npm:promise@^8.3.0"
+    "promise": "npm:promise@^8.3.0",
+    "@graphql-codegen/client-preset@npm:^4.2.2": "patch:@graphql-codegen/client-preset@npm%3A4.3.3#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.3.3-ec8a799259.patch"
   }
 }

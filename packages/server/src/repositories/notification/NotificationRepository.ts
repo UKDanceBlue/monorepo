@@ -4,14 +4,11 @@ import {
 } from "./notificationRepositoryUtils.js";
 
 import { Prisma, PrismaClient } from "@prisma/client";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { NotificationError } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
-
-
-
 
 const notificationBooleanKeys = [] as const;
 type NotificationBooleanKey = (typeof notificationBooleanKeys)[number];
@@ -63,7 +60,9 @@ export type NotificationFilters = FilterItems<
   NotificationStringKey
 >;
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class NotificationRepository {
   constructor(private prisma: PrismaClient) {}
 

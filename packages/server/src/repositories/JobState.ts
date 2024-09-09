@@ -1,8 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import Cron from "croner";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class JobStateRepository {
   constructor(private readonly prisma: PrismaClient) {}
 

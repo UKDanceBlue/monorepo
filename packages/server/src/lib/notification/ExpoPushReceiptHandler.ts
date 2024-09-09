@@ -1,14 +1,13 @@
- 
 import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
 import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
 
 import { Expo } from "expo-server-sdk";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { ExpoPushReceipt } from "expo-server-sdk";
+import { expoServiceToken } from "./expoServiceToken.js";
 
-
-@Service()
+@Service([NotificationDeliveryRepository, DeviceRepository, expoServiceToken])
 export class ExpoPushReceiptHandler {
   constructor(
     protected notificationDeliveryRepository: NotificationDeliveryRepository,

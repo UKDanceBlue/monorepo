@@ -4,11 +4,10 @@ import {
 } from "./pointEntryRepositoryUtils.js";
 
 import { Prisma, PrismaClient } from "@prisma/client";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { SortDirection } from "@ukdanceblue/common";
-
 
 const pointEntryBooleanKeys = [] as const;
 type PointEntryBooleanKey = (typeof pointEntryBooleanKeys)[number];
@@ -39,7 +38,9 @@ export type PointEntryFilters = FilterItems<
 
 type UniquePointEntryParam = { id: number } | { uuid: string };
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class PointEntryRepository {
   constructor(private prisma: PrismaClient) {}
 

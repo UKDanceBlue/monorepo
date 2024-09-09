@@ -5,8 +5,12 @@ import { themeConfigContext } from "@config/antThemeConfig";
 import { API_BASE_URL } from "@config/api";
 import { marathonContext } from "@config/marathonContext";
 import { useAntFeedback } from "@hooks/useAntFeedback";
-import { useLoginState } from "@hooks/useLoginState";
-import type { AuthorizationRule } from "@ukdanceblue/common";
+import {
+  useAuthorizationRequirement,
+  useLoginState,
+} from "@hooks/useLoginState";
+import type { Register } from "@tanstack/react-router";
+import { Link, useLocation, useRouter } from "@tanstack/react-router";
 import {
   AccessLevel,
   checkAuthorization,
@@ -15,102 +19,53 @@ import {
 import { Button, Menu, Select } from "antd";
 import { useContext, useEffect, useState } from "react";
 
-interface NavItemType {
-  slug: string;
-  title: string;
-  url?: string;
-  element?: React.ReactNode;
-  authorizationRules?: AuthorizationRule[];
-}
+import { MasqueradeSelector } from "./MasqueradeSelector";
 
-const navItems = [
+const routes: {
+  path: keyof Register["router"]["routesByPath"];
+  title: string;
+}[] = [
   {
-    slug: "home",
+    path: "/",
     title: "Home",
-    url: "/",
   },
   {
-    slug: "events",
+    path: "/events",
     title: "Events",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
   {
-    slug: "teams",
+    path: "/teams",
     title: "Teams",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
   {
-    slug: "people",
+    path: "/people",
     title: "People",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
   {
-    slug: "notifications",
+    path: "/notifications",
     title: "Notifications",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
   {
-    slug: "marathon",
+    path: "/marathon",
     title: "Marathon",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
   {
-    slug: "feed",
+    path: "/feed",
     title: "Feed",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
   {
-    slug: "images",
+    path: "/images/$",
     title: "Images",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
   {
-    slug: "config",
+    path: "/config",
     title: "Config",
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-    ],
+  },
+  {
+    path: "/admin/logs",
+    title: "Logs",
   },
 ];
-const { pathname, href } = window.location;
-const activeKeys: string[] = [];
-for (const item of navItems) {
-  if (item.url != null && (pathname || "/") === item.url) {
-    activeKeys.push(item.slug);
-  } else if (item.slug === pathname.slice(1)) {
-    activeKeys.push(item.slug);
-  }
-}
 
 const loadingOption = [
   <Select.Option key="" value="" disabled>
@@ -122,7 +77,10 @@ export const NavigationMenu = () => {
   const { dark, setDark } = useContext(themeConfigContext);
   const { showErrorMessage } = useAntFeedback();
 
-  const { loggedIn, authorization } = useLoginState();
+  const { authorization, loggedIn } = useLoginState();
+
+  const router = useRouter();
+  const location = useLocation();
 
   const [menuItems, setMenuItems] = useState<
     {
@@ -131,19 +89,32 @@ export const NavigationMenu = () => {
       label: JSX.Element;
     }[]
   >([]);
+  const [activeKeys, setActiveKeys] = useState<string[]>([]);
 
   useEffect(() => {
-    const fetchMenuItems = async () => {
-      const filteredItems: NavItemType[] = [];
-      for (const item of navItems) {
-        if (!item.authorizationRules) {
-          filteredItems.push(item);
+    const fetchMenuItems = () => {
+      const activeKeys: string[] = [];
+      const filteredItems: {
+        route: (typeof router)["routesByPath"][keyof (typeof router)["routesByPath"]];
+        title: string;
+      }[] = [];
+      const matchedRoutes = new Set(
+        router.matchRoutes(location).map(({ id }) => id)
+      );
+
+      for (const routeInfo of routes) {
+        const route = router.routesByPath[routeInfo.path];
+        const { authorizationRules } = route.options.staticData;
+        if (!authorizationRules) {
+          filteredItems.push({ route, title: routeInfo.title });
+          if (matchedRoutes.has(route.id)) {
+            activeKeys.push(route.id);
+          }
         } else {
           let isAuthorized = false;
-          for (const authorizationRule of item.authorizationRules) {
+          for (const authorizationRule of authorizationRules) {
             if (
-              // eslint-disable-next-line no-await-in-loop
-              await checkAuthorization(
+              checkAuthorization(
                 authorizationRule,
                 authorization ?? defaultAuthorization
               )
@@ -153,105 +124,129 @@ export const NavigationMenu = () => {
             }
           }
           if (isAuthorized) {
-            filteredItems.push(item);
+            filteredItems.push({ route, title: routeInfo.title });
+            if (matchedRoutes.has(route.id)) {
+              activeKeys.push(route.id);
+            }
           }
         }
       }
 
-      const updatedMenuItems = filteredItems.map((item) => ({
-        key: item.slug,
-        title: item.title,
-        label: (
-          <a href={item.url ?? `/${item.slug}`}>{item.element ?? item.title}</a>
-        ),
+      const updatedMenuItems = filteredItems.map(({ route, title }) => ({
+        key: route.id,
+        title,
+        label: <Link to={route.to}>{title}</Link>,
       }));
 
       setMenuItems(updatedMenuItems);
+      setActiveKeys(activeKeys);
     };
 
-    fetchMenuItems().catch((error: unknown) => {
+    try {
+      fetchMenuItems();
+    } catch (error) {
       void showErrorMessage({ content: "Failed to fetch menu items" });
       console.error("Failed to fetch menu items", error);
-    });
-  }, [authorization, showErrorMessage]);
+    }
+  }, [authorization, location, router, router.routesByPath, showErrorMessage]);
 
   const { setMarathon, marathon, loading, marathons } =
     useContext(marathonContext);
 
   return (
-    <Menu theme="dark" mode="horizontal" selectedKeys={activeKeys}>
-      {menuItems.map((item) => (
-        <Menu.Item {...item}>{item.label}</Menu.Item>
-      ))}
-      <Menu.Divider />
-      <Menu.Item
-        key="login"
-        style={{
-          background: "transparent",
-          marginLeft: "auto",
-        }}
-      >
-        {loggedIn ? (
-          <a
-            href={`${API_BASE_URL}/api/auth/logout?redirectTo=${encodeURI(
-              href
-            )}`}
-          >
-            Logout
-          </a>
-        ) : (
-          <a
-            href={`${API_BASE_URL}/api/auth/login?returning=cookie&redirectTo=${encodeURI(
-              href
-            )}`}
-          >
-            Login
-          </a>
-        )}
-      </Menu.Item>
-      <Menu.Item
-        key="dark"
-        title="Dark"
-        style={{
-          background: "transparent",
-        }}
-      >
-        <Button
-          icon={
-            dark ? (
-              <SunOutlined style={{ color: "inherit" }} />
-            ) : (
-              <MoonOutlined style={{ color: "inherit" }} />
-            )
-          }
-          onClick={() => setDark(!dark)}
-          type="text"
-          style={{ color: "inherit" }}
-        />
-      </Menu.Item>
-      <Menu.Item
-        key="selected-marathon"
-        title="Select Marathon"
-        style={{
-          background: "transparent",
-        }}
-      >
-        <Select
-          defaultValue={""}
-          onChange={(value) => setMarathon(value)}
-          loading={loading}
-          value={marathon?.id}
-          variant="borderless"
-        >
-          {marathons
-            ? marathons.map((marathon) => (
-                <Select.Option key={marathon.id} value={marathon.id}>
-                  {marathon.year}
-                </Select.Option>
-              ))
-            : loadingOption}
-        </Select>
-      </Menu.Item>
-    </Menu>
+    <Menu
+      theme="dark"
+      mode="horizontal"
+      selectedKeys={activeKeys}
+      items={[
+        ...menuItems,
+        {
+          type: "item",
+          key: "login",
+          style: {
+            background: "transparent",
+            marginLeft: "auto",
+          },
+          label: loggedIn ? (
+            <a
+              href={`${API_BASE_URL}/api/auth/logout?redirectTo=${encodeURI(
+                window.location.href
+              )}`}
+            >
+              Logout
+            </a>
+          ) : (
+            <a
+              href={`${API_BASE_URL}/api/auth/login?returning=cookie&redirectTo=${encodeURI(
+                window.location.href
+              )}`}
+            >
+              Login
+            </a>
+          ),
+        },
+        {
+          type: "divider",
+        },
+        {
+          type: "item",
+          key: "dark",
+          title: "Dark",
+          style: {
+            background: "transparent",
+          },
+          label: (
+            <Button
+              icon={
+                dark ? (
+                  <SunOutlined style={{ color: "inherit" }} />
+                ) : (
+                  <MoonOutlined style={{ color: "inherit" }} />
+                )
+              }
+              onClick={() => setDark(!dark)}
+              type="text"
+              style={{ color: "inherit" }}
+            />
+          ),
+        },
+        {
+          type: "item",
+          key: "selected-marathon",
+          title: "Select Marathon",
+          style: {
+            background: "transparent",
+          },
+          label: (
+            <Select
+              defaultValue={""}
+              onChange={(value) => setMarathon(value)}
+              loading={loading}
+              value={marathon?.id}
+              variant="borderless"
+            >
+              {marathons
+                ? marathons.map((marathon) => (
+                    <Select.Option key={marathon.id} value={marathon.id}>
+                      {marathon.year}
+                    </Select.Option>
+                  ))
+                : loadingOption}
+            </Select>
+          ),
+        },
+        {
+          type: "item",
+          key: "masquerade",
+          title: "Masquerade",
+          style: {
+            background: "transparent",
+          },
+          label: useAuthorizationRequirement(AccessLevel.SuperAdmin) ? (
+            <MasqueradeSelector />
+          ) : null,
+        },
+      ]}
+    />
   );
 };

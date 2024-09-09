@@ -7,11 +7,6 @@ import type { ClientPresetConfig } from "@graphql-codegen/client-preset";
 import type { TypeScriptPluginConfig } from "@graphql-codegen/typescript";
 import type { GraphQLScalarTypeExtensions } from "graphql";
 
-// import { dirname, join, normalize } from "path";
-// import { fileURLToPath } from "url";
-
-// const __dirname = dirname(fileURLToPath(import.meta.url));
-
 const graphqlScalarsClientDefs = Object.entries(resolvers).reduce<
   Record<string, GraphQLScalarTypeExtensions["codegenScalarType"]>
 >((acc, [key, value]) => {
@@ -37,8 +32,8 @@ const config: TypeScriptPluginConfig = {
     AuthSource: "../index.js#AuthSource",
     // AccessLevel: "../index.js#AccessLevel",
     DbRole: "../index.js#DbRole",
-    // CommitteeRole: "../index.js#CommitteeRole",
-    // CommitteeIdentifier: "../index.js#CommitteeIdentifier",
+    CommitteeRole: "../index.js#CommitteeRole",
+    CommitteeIdentifier: "../index.js#CommitteeIdentifier",
     // ErrorCode: "../index.js#ErrorCode",
     MembershipPositionType: "../index.js#MembershipPositionType",
     TeamLegacyStatus: "../index.js#TeamLegacyStatus",
@@ -64,7 +59,6 @@ if (packages.includes("mobile")) {
   generates["./packages/common/lib/graphql-client-mobile/"] = {
     preset: "client",
     presetConfig,
-    config,
     documents: [
       "./packages/mobile/src/**/*.ts",
       "./packages/mobile/src/**/*.tsx",
@@ -75,7 +69,6 @@ if (packages.includes("portal")) {
   generates["./packages/common/lib/graphql-client-portal/"] = {
     preset: "client",
     presetConfig,
-    config,
     documents: [
       "./packages/portal/src/**/*.ts",
       "./packages/portal/src/**/*.tsx",
@@ -89,8 +82,11 @@ const codegenConfig: CodegenConfig = {
       console.error("Error generating GraphQL client:", e);
     },
   },
+  noSilentErrors: true,
   emitLegacyCommonJSImports: false,
   generates,
+  ignoreNoDocuments: true,
+  config,
 };
 
 export default codegenConfig;

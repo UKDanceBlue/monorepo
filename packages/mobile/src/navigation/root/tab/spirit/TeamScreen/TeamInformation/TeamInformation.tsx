@@ -12,7 +12,6 @@ import DanceBlueRibbon from "../../../../../../../assets/svgs/DBRibbon";
 import type { StandingType } from "../../../../../../types/StandingType";
 import Scoreboard from "../../ScoreBoardScreen/Scoreboard";
 
-
 const TeamInformation = ({
   name,
   captains,
@@ -20,10 +19,19 @@ const TeamInformation = ({
   teamTotal,
 }: {
   name: string;
-  captains: string[];
-  members: string[];
-  scoreboardData: StandingType[];
+  captains: readonly string[];
+  members: readonly string[];
+  scoreboardData: readonly StandingType[];
   teamTotal: number;
+  teamFundraisingTotal: number;
+  myFundraisingEntries: readonly {
+    amount: number;
+    entry: {
+      donatedToText?: string | null | undefined;
+      donatedByText?: string | null | undefined;
+      donatedOn: string | Date;
+    };
+  }[];
 }) => {
   const { body, mono } = useThemeFonts();
   const { width: screenWidth } = useWindowDimensions();

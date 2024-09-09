@@ -8,8 +8,7 @@ import {
 import { Button, Table } from "antd";
 import type { UseQueryExecute } from "urql";
 
-import { usePointEntryDeletePopup } from "./PointEntryDeletePopup";
-
+import { usePointEntryDeletePopup } from "../../components/point-entry/PointEntryDeletePopup";
 
 export const PointEntryTableFragment = graphql(/* GraphQL */ `
   fragment PointEntryTableFragment on PointEntryNode {
@@ -54,6 +53,7 @@ export function PointEntryTable({
         rowKey="uuid"
         loading={loading}
         pagination={false}
+        scroll={{ y: "50em" }}
         columns={[
           {
             title: "Person",

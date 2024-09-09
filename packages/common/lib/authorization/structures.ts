@@ -30,8 +30,10 @@ export const AccessLevel = {
   UKY: 1,
   Committee: 3,
   CommitteeChairOrCoordinator: 3.5,
+  // Anyone on tech committee
   Admin: 4,
-  SuperAdmin: 5, // App & Web Coordinators and Tech chair - master override access
+  // Tech chair - master override access, allowed to masquerade as any user
+  SuperAdmin: 5,
 } as const;
 export type AccessLevel = (typeof AccessLevel)[keyof typeof AccessLevel];
 

@@ -8,7 +8,7 @@ import {
 } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Descriptions, Empty, Flex } from "antd";
 
-import { useTeamDeletePopup } from "./TeamDeletePopup";
+import { useTeamDeletePopup } from "../../components/team/TeamDeletePopup";
 
 export const TeamViewerFragment = graphql(/* GraphQL */ `
   fragment TeamViewerFragment on TeamNode {
@@ -20,6 +20,7 @@ export const TeamViewerFragment = graphql(/* GraphQL */ `
     }
     legacyStatus
     totalPoints
+    fundraisingTotalAmount
     type
     members {
       person {
@@ -69,6 +70,10 @@ export function TeamViewer({
           <Descriptions.Item label="Total Points">
             {teamData.totalPoints}
           </Descriptions.Item>
+          <Descriptions.Item label="Fundraising Total Amount">
+            {/* Set access rules for this */}
+            {teamData.fundraisingTotalAmount}
+          </Descriptions.Item>
           <Descriptions.Item label="Type">{teamData.type}</Descriptions.Item>
         </Descriptions>
         <Flex justify="space-between">
@@ -81,19 +86,15 @@ export function TeamViewer({
           >
             Delete Team
           </Button>
-          <Button
-            style={{ width: "18ch" }}
-            onClick={() => {
-              navigate({
-                to: "/teams/$teamId/edit",
-                params: { teamId: teamData.id },
-              }).catch((error: unknown) => console.error(error));
-            }}
-            icon={<EditOutlined />}
-            shape="round"
-          >
-            Edit Team
-          </Button>
+          <Link from="/teams/$teamId" to="edit">
+            <Button
+              style={{ width: "18ch" }}
+              icon={<EditOutlined />}
+              shape="round"
+            >
+              Edit Team
+            </Button>
+          </Link>
         </Flex>
       </Flex>
       <Descriptions
@@ -112,7 +113,7 @@ export function TeamViewer({
               .map((captain) => (
                 <li key={captain.person.id}>
                   <Link
-                    to="/people/$personId/"
+                    to="/people/$personId"
                     params={{
                       personId: captain.person.id,
                     }}
@@ -125,21 +126,23 @@ export function TeamViewer({
           </ul>
         </Descriptions.Item>
         <Descriptions.Item label="Members">
-          <ul>
-            {teamData.members.map((member) => (
-              <li key={member.person.id}>
-                <Link
-                  to="/people/$personId/"
-                  params={{
-                    personId: member.person.id,
-                  }}
-                >
-                  {member.person.name ?? "Never logged in"} (
-                  {member.person.linkblue ?? "No linkblue"})
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div style={{ maxHeight: "10rem", overflowY: "scroll" }}>
+            <ul>
+              {teamData.members.map((member) => (
+                <li key={member.person.id}>
+                  <Link
+                    to="/people/$personId"
+                    params={{
+                      personId: member.person.id,
+                    }}
+                  >
+                    {member.person.name ?? "Never logged in"} (
+                    {member.person.linkblue ?? "No linkblue"})
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </Descriptions.Item>
       </Descriptions>
     </Flex>

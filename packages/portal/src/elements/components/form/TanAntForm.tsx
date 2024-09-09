@@ -1,20 +1,24 @@
-import type { FormApi } from "@tanstack/react-form";
 import { Form, type FormProps } from "antd";
 
-interface TanAntFormProps<Values> extends FormProps<never> {
+interface TanAntFormProps extends FormProps<never> {
   fields?: never;
   onFinish?: never;
-  formApi: FormApi<Values>;
+  handleSubmit: () => Promise<void>;
   children: React.ReactNode;
 }
 
-export function TanAntForm<Values>({
-  formApi,
+export function TanAntForm({
+  handleSubmit,
   children,
   ...antProps
-}: TanAntFormProps<Values>) {
+}: TanAntFormProps) {
   return (
-    <Form onFinish={() => formApi.handleSubmit()} {...antProps}>
+    <Form
+      {...antProps}
+      onFinish={() =>
+        handleSubmit().catch((error: unknown) => console.error(error))
+      }
+    >
       {children}
     </Form>
   );

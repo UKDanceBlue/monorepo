@@ -1,9 +1,8 @@
 import { DollarOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { useMarathon } from "@config/marathonContext";
 import { useListQuery } from "@hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { SortDirection, TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import {
   getFragmentData,
@@ -52,9 +51,11 @@ export const TeamsTableFragment = graphql(/* GraphQL */ `
   }
 `);
 
-export const TeamsTable = () => {
-  const navigate = useNavigate();
-
+export const TeamsTable = ({
+  selectedMarathonId,
+}: {
+  selectedMarathonId: string | undefined;
+}) => {
   const {
     queryOptions,
     updatePagination,
@@ -72,6 +73,7 @@ export const TeamsTable = () => {
     {
       allFields: ["name", "type", "legacyStatus", "marathonId", "totalPoints"],
       dateFields: [],
+      booleanFields: [],
       isNullFields: [],
       numericFields: ["totalPoints"],
       oneOfFields: ["type", "marathonId", "legacyStatus"],
@@ -89,21 +91,19 @@ export const TeamsTable = () => {
     loadingMessage: "Loading teams...",
   });
 
-  const marathonId = useMarathon()?.id;
-
   useEffect(() => {
     if (
       queryOptions.oneOfFilters.find((f) => f.field === "marathonId")
-        ?.value[0] !== marathonId
+        ?.value[0] !== selectedMarathonId
     ) {
-      if (marathonId) {
+      if (selectedMarathonId) {
         updateFilter("marathonId", {
           field: "marathonId",
-          value: [marathonId],
+          value: [selectedMarathonId],
         });
       }
     }
-  }, [marathonId, queryOptions.oneOfFilters, updateFilter]);
+  }, [selectedMarathonId, queryOptions.oneOfFilters, updateFilter]);
 
   return (
     <Table
@@ -177,33 +177,27 @@ export const TeamsTable = () => {
           key: "actions",
           render: (_text, record) => (
             <Flex gap="small" align="center">
-              <Button
-                onClick={() =>
-                  navigate({
-                    to: "/teams/$teamId/points",
-                    params: { teamId: record.id },
-                  }).catch((error: unknown) => console.error(error))
-                }
-                icon={<EyeOutlined />}
-              />
-              <Button
-                onClick={() =>
-                  navigate({
-                    to: "/teams/$teamId/fundraising",
-                    params: { teamId: record.id },
-                  }).catch((error: unknown) => console.error(error))
-                }
-                icon={<DollarOutlined />}
-              />
-              <Button
-                onClick={() =>
-                  navigate({
-                    to: "/teams/$teamId/edit",
-                    params: { teamId: record.id },
-                  }).catch((error: unknown) => console.error(error))
-                }
-                icon={<EditOutlined />}
-              />
+              <Link
+                from="/teams"
+                to="$teamId/points"
+                params={{ teamId: record.id }}
+              >
+                <Button icon={<EyeOutlined />} />
+              </Link>
+              <Link
+                from="/teams"
+                to="$teamId/fundraising"
+                params={{ teamId: record.id }}
+              >
+                <Button icon={<DollarOutlined />} />
+              </Link>
+              <Link
+                from="/teams"
+                to="$teamId/edit"
+                params={{ teamId: record.id }}
+              >
+                <Button icon={<EditOutlined />} />
+              </Link>
             </Flex>
           ),
         },

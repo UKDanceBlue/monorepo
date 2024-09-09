@@ -197,7 +197,7 @@ export const DeviceDataProvider = ({
               verifier,
             },
           });
-          if (error) {
+          if (error && (error.graphQLErrors.length > 0 || error.networkError)) {
             Logger.error("Error registering push notifications", { error });
           } else {
             setPushToken(token?.data ?? null);

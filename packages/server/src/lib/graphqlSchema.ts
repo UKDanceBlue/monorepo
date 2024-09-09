@@ -1,7 +1,3 @@
-
-
-
-
 import { logger } from "#logging/logger.js";
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "#resolvers/DeviceResolver.js";
@@ -29,9 +25,9 @@ import {
   FormattedConcreteError,
   toBasicError,
 } from "@ukdanceblue/common/error";
-import { Result } from "ts-results-es";
+import { Err, Option, Result } from "ts-results-es";
 import { buildSchema } from "type-graphql";
-import { Container } from "typedi";
+import { Container } from "@freshgum/typedi";
 
 import { fileURLToPath } from "url";
 
@@ -42,31 +38,50 @@ const schemaPath = fileURLToPath(
 );
 
 /**
- * Logs errors, as well as allowing us to return a result from a resolver
+ * Logs errors, as well as allowing us to return results and options from resolvers
+ *
+ * NOTE: be careful working in this function as the types are mostly 'any', meaning you won't get much type checking
  */
-const errorHandlingMiddleware: MiddlewareFn = async (_, next) => {
-  let result;
+const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
+  let result: unknown;
   try {
     result = (await next()) as unknown;
   } catch (error) {
+    if (typeof error !== "object") {
+      error = { error };
+    }
     logger.error("An error occurred in a resolver", error);
     throw error;
   }
 
   if (Result.isResult(result)) {
     if (result.isErr()) {
-      logger.error("An error occurred in a resolver", result.error);
-      throw new FormattedConcreteError(
-        result.error instanceof ConcreteError
-          ? result.error
-          : toBasicError(result.error)
-      );
+      let concreteError: Err<ConcreteError>;
+      let stack: string | undefined;
+      if (result.error instanceof ConcreteError) {
+        concreteError = result;
+        stack = result.stack;
+      } else {
+        concreteError = Err(toBasicError(result.error));
+        stack = concreteError.error.stack;
+      }
+
+      const error = new FormattedConcreteError(concreteError, info);
+      logger.error("An error occurred in a resolver", {
+        message: concreteError.error.detailedMessage,
+        stack,
+      });
+      throw error;
     } else {
-      return result.value as unknown;
+      result = result.value as unknown;
     }
-  } else {
-    return result;
   }
+
+  if (Option.isOption(result)) {
+    result = result.unwrapOr(null);
+  }
+
+  return result;
 };
 
 const resolvers = [
@@ -91,16 +106,12 @@ const resolvers = [
 ] as const;
 
 for (const service of resolvers) {
-  // @ts-expect-error Typedi doesn't seem to like it, but it works
-  if (!Container.has(service)) {
-    logger.crit(`Failed to resolve service: "${service.name}"`);
-  } else {
-    try {
-      // @ts-expect-error Typedi doesn't seem to like it, but it works
-      Container.get(service);
-    } catch (error) {
-      logger.crit(`Failed to resolve service: "${service.name}"`, error);
-    }
+  try {
+    // @ts-expect-error This is a valid operation
+    Container.get(service);
+  } catch (error) {
+    logger.crit(`Failed to get service: "${service.name}"`, error);
+    process.exit(1);
   }
 }
 
@@ -108,6 +119,10 @@ export default await buildSchema({
   resolvers,
   emitSchemaFile: schemaPath,
   globalMiddlewares: [errorHandlingMiddleware],
-  container: Container,
+  container: {
+    get(someClass) {
+      return Container.get(someClass, false);
+    },
+  },
   validate: true,
 });

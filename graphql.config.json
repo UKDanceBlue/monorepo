@@ -1,9 +1,0 @@
-{
-  "schema": "schema.graphql",
-  "documents": [
-    "packages/portal/src/**/*.ts",
-    "packages/portal/src/**/*.tsx",
-    "packages/mobile/src/**/*.ts",
-    "packages/mobile/src/**/*.tsx"
-  ]
-}

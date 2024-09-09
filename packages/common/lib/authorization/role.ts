@@ -35,7 +35,11 @@ export function roleToAccessLevel({
         let thisLevel: AccessLevel;
 
         if (committee.identifier === CommitteeIdentifier.techCommittee) {
-          thisLevel = AccessLevel.Admin;
+          if (committee.role === CommitteeRole.Chair) {
+            thisLevel = AccessLevel.SuperAdmin;
+          } else {
+            thisLevel = AccessLevel.Admin;
+          }
         } else if (
           committee.role === CommitteeRole.Coordinator ||
           committee.role === CommitteeRole.Chair

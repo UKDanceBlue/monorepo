@@ -4,19 +4,14 @@ import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { RepositoryError } from "#repositories/shared.js";
 
 import { PrismaClient } from "@prisma/client";
-import {
-  NotFoundError,
-  FormattedConcreteError,
-} from "@ukdanceblue/common/error";
-import { Err, Result } from "ts-results-es";
-import { Service } from "typedi";
-
+import { NotFoundError } from "@ukdanceblue/common/error";
+import { Err, Ok, Result } from "ts-results-es";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { NotificationAudience } from "#notification/NotificationProvider.js";
 import type { Person } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
-
 
 const deviceStringKeys = ["expoPushToken"] as const;
 type DeviceStringKey = (typeof deviceStringKeys)[number];
@@ -33,7 +28,9 @@ export type DeviceFilters = FilterItems<
   DeviceStringKey
 >;
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken, PersonRepository])
 export class DeviceRepository {
   constructor(
     private prisma: PrismaClient,
@@ -115,29 +112,32 @@ export class DeviceRepository {
         uuid: lastUserId,
       });
       if (userResult.isErr()) {
-        throw new FormattedConcreteError(userResult.error);
+        return userResult;
       } else {
         user = userResult.value;
       }
     }
 
-    return this.prisma.device.upsert({
-      where: { uuid: deviceUuid },
-      update: {
-        expoPushToken,
-        verifier,
-        lastSeenPerson:
-          user == null ? { disconnect: true } : { connect: { id: user.id } },
-        lastSeen: new Date(),
-      },
-      create: {
-        uuid: deviceUuid,
-        expoPushToken,
-        verifier,
-        lastSeenPerson: user == null ? undefined : { connect: { id: user.id } },
-        lastSeen: new Date(),
-      },
-    });
+    return Ok(
+      await this.prisma.device.upsert({
+        where: { uuid: deviceUuid },
+        update: {
+          expoPushToken,
+          verifier,
+          lastSeenPerson:
+            user == null ? { disconnect: true } : { connect: { id: user.id } },
+          lastSeen: new Date(),
+        },
+        create: {
+          uuid: deviceUuid,
+          expoPushToken,
+          verifier,
+          lastSeenPerson:
+            user == null ? undefined : { connect: { id: user.id } },
+          lastSeen: new Date(),
+        },
+      })
+    );
   }
 
   async unsubscribeFromNotifications(

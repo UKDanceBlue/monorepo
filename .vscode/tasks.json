@@ -15,7 +15,7 @@
       "problemMatcher": [],
       "label": "Common: Build",
       "detail": "yarn workspace @ukdanceblue/common run build",
-      "dependsOn": ["GraphQL: Build"]
+      "dependsOn": []
     },
     {
       "type": "npm",
@@ -95,7 +95,7 @@
       "problemMatcher": [],
       "label": "Portal: Build",
       "detail": "yarn workspace @ukdanceblue/portal build",
-      "dependsOn": ["Common: Build"]
+      "dependsOn": ["GraphQL: Build", "Common: Build"]
     },
     {
       "type": "npm",

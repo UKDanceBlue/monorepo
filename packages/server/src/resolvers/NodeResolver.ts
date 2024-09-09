@@ -1,5 +1,3 @@
-
-
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "#resolvers/DeviceResolver.js";
 import { EventResolver } from "#resolvers/EventResolver.js";
@@ -35,18 +33,34 @@ import {
 import { ConcreteResult } from "@ukdanceblue/common/error";
 import { Ok } from "ts-results-es";
 import { Arg, Query, Resolver } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
+import { FeedResolver } from "./FeedResolver.js";
 
 @Resolver(() => Node)
-@Service()
+@Service([
+  ConfigurationResolver,
+  DeviceResolver,
+  EventResolver,
+  FeedResolver,
+  FundraisingAssignmentResolver,
+  FundraisingEntryResolver,
+  ImageResolver,
+  MarathonHourResolver,
+  MarathonResolver,
+  NotificationResolver,
+  PersonResolver,
+  PointOpportunityResolver,
+  PointEntryResolver,
+  TeamResolver,
+])
 export class NodeResolver {
   constructor(
     private readonly configurationResolver: ConfigurationResolver,
     private readonly deviceResolver: DeviceResolver,
     private readonly eventResolver: EventResolver,
-    // private readonly feedResolver: FeedResolver,
+    private readonly feedResolver: FeedResolver,
     private readonly fundraisingAssignmentResolver: FundraisingAssignmentResolver,
     private readonly fundraisingEntryResolver: FundraisingEntryResolver,
     private readonly imageResolver: ImageResolver,
@@ -76,11 +90,9 @@ export class NodeResolver {
         const { data } = await this.eventResolver.getByUuid(id);
         return Ok(data);
       }
-      // TODO: fix this
-      // case FeedResolver.constructor.name: {
-      //   const { data } = await this.feedResolver.getByUuid(id);
-      //   return Ok(data);
-      // }
+      case FeedResolver.constructor.name: {
+        return this.feedResolver.feedItem(id);
+      }
       case FundraisingAssignmentNode.constructor.name: {
         return this.fundraisingAssignmentResolver.fundraisingAssignment(id);
       }
@@ -114,8 +126,8 @@ export class NodeResolver {
         return Ok(data);
       }
       case TeamNode.constructor.name: {
-        const { data } = await this.teamResolver.getByUuid(id);
-        return Ok(data);
+        const data = await this.teamResolver.getByUuid(id);
+        return data.map(({ data: team }) => team);
       }
       default: {
         throw new Error(`Unknown typename: ${id.typename}`);

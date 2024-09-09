@@ -1,12 +1,13 @@
-
 import { Prisma, PrismaClient } from "@prisma/client";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { MIMEType } from "util";
 
 type UniqueParam = { id: number } | { uuid: string };
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 /**
  * This class should not be directly accessed by API routes, but rather by the FileManager class which keeps track of the storage provider.
  */

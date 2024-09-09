@@ -1,4 +1,3 @@
-import { useMarathon } from "@config/marathonContext";
 import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
 import { useNavigate } from "@tanstack/react-router";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
@@ -6,7 +5,14 @@ import { App, Button, Flex, Form, Input, Select } from "antd";
 
 import { useTeamCreatorForm } from "./useTeamCreatorForm";
 
-export function TeamCreator() {
+export function TeamCreator({
+  selectedMarathon,
+}: {
+  selectedMarathon: {
+    id: string;
+    year: string;
+  } | null;
+}) {
   const navigate = useNavigate();
 
   const { message } = App.useApp();
@@ -14,11 +20,11 @@ export function TeamCreator() {
   const { formApi } = useTeamCreatorForm((ret) => {
     if (ret?.uuid) {
       navigate({
-        to: "/teams/$teamId/",
+        to: "/teams/$teamId",
         params: { teamId: ret.uuid },
       }).catch((error: unknown) => console.error(error));
     }
-  });
+  }, selectedMarathon?.id);
 
   return (
     <Flex vertical gap="middle" align="center">
@@ -56,7 +62,7 @@ export function TeamCreator() {
             </Form.Item>
           )}
         </formApi.Field>
-        <p>Marathon Year: {useMarathon()?.year}</p>
+        <p>Marathon Year: {selectedMarathon?.year}</p>
         <TanAntFormItem
           formApi={formApi}
           fieldProps={{

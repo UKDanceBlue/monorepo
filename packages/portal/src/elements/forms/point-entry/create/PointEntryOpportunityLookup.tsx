@@ -92,7 +92,6 @@ export function PointEntryOpportunityLookup({
 
   const updateAutocomplete = useDebouncedCallback(
     () => {
-      console.log("updateAutocomplete", searchOpportunitiesField);
       updateSearch();
     },
     200,

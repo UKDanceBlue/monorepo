@@ -1,17 +1,18 @@
 import {
   AccessLevel,
-  DetailedError,
-  ErrorCode,
+  committeeNames,
   compareCommitteeRole,
-  compareDbRole,
+  parseGlobalId,
+  stringifyAccessLevel,
 } from "../index.js";
 
 import { UseMiddleware } from "type-graphql";
 
 import type {
   Authorization,
+  CommitteeIdentifier,
   CommitteeRole,
-  DbRole,
+  GlobalId,
   MembershipPositionType,
   PersonNode,
   TeamType,
@@ -19,22 +20,17 @@ import type {
 } from "../index.js";
 import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
 import type { Primitive } from "utility-types";
-
+import { Err, None, Option, Result, Some } from "ts-results-es";
+import { AccessControlError } from "../error/control.js";
+import { InvariantError } from "../error/direct.js";
+import { GraphQLNonNull } from "graphql";
+import { ConcreteResult } from "../error/result.js";
 
 export interface AuthorizationRule {
   /**
    * The minimum access level required to access this resource
    */
   accessLevel?: AccessLevel;
-  /**
-   * Exact DanceBlue role, cannot be used with minDbRole
-   */
-  dbRole?: DbRole;
-  /**
-   * The rules for this are as follows:
-   * Committee > TeamCaptain > TeamMember > Public > None
-   */
-  minDbRole?: DbRole;
   // /**
   //  * Exact committee role, cannot be used with minCommitteeRole
   //  */
@@ -49,73 +45,48 @@ export interface AuthorizationRule {
    *
    * Cannot be used with committeeIdentifiers
    */
-  committeeIdentifier?: string;
+  committeeIdentifier?: CommitteeIdentifier;
   /**
    * Same as committeeIdentifier, but allows any of the listed identifiers
    *
    * Cannot be used with committeeIdentifier
    */
-  committeeIdentifiers?: readonly string[];
-  /**
-   * Custom authorization rule
-   *
-   * Should usually be avoided, but can be used for more complex authorization rules
-   */
-  custom?: (authorization: Authorization) => boolean | Promise<boolean>;
+  committeeIdentifiers?: readonly CommitteeIdentifier[];
 }
 
 export function prettyPrintAuthorizationRule(rule: AuthorizationRule): string {
   const parts: string[] = [];
   if (rule.accessLevel != null) {
-    parts.push(`accessLevel >= ${rule.accessLevel}`);
+    parts.push(
+      `have an access level of at least ${stringifyAccessLevel(rule.accessLevel)}`
+    );
   }
-  if (rule.dbRole != null) {
-    parts.push(`dbRole === ${rule.dbRole}`);
-  }
-  if (rule.minDbRole != null) {
-    parts.push(`dbRole >= ${rule.minDbRole}`);
-  }
-  // if (rule.committeeRole != null) {
-  //   parts.push(`committeeRole === ${rule.committeeRole}`);
-  // }
   if (rule.minCommitteeRole != null) {
-    parts.push(`committeeRole >= ${rule.minCommitteeRole}`);
+    parts.push(`have a committee role of at least ${rule.minCommitteeRole}`);
   }
   if (rule.committeeIdentifier != null) {
-    parts.push(`committeeIdentifier === ${rule.committeeIdentifier}`);
+    parts.push(`be a member of ${committeeNames[rule.committeeIdentifier!]}`);
   }
   if (rule.committeeIdentifiers != null) {
     parts.push(
-      `committeeIdentifier in ${rule.committeeIdentifiers.join(", ")}`
+      `be a member of one of the following committees: ${rule.committeeIdentifiers
+        .map((id) => committeeNames[id])
+        .join(", ")}`
     );
   }
-  if (rule.custom != null) {
-    parts.push(`[custom]`);
-  }
-  return parts.join(", ");
+  return parts.join(" and ");
 }
 
-export async function checkAuthorization(
+export function checkAuthorization(
   {
     accessLevel,
     committeeIdentifier,
     committeeIdentifiers,
     // committeeRole,
-    custom,
-    dbRole,
     minCommitteeRole,
-    minDbRole,
   }: AuthorizationRule,
   authorization: Authorization
 ) {
-  if (minDbRole != null && dbRole != null) {
-    throw new TypeError(`Cannot specify both dbRole and minDbRole.`);
-  }
-  // if (minCommitteeRole != null && committeeRole != null) {
-  //   throw new TypeError(
-  //     `Cannot specify both committeeRole and minCommitteeRole.`
-  //   );
-  // }
   if (committeeIdentifier != null && committeeIdentifiers != null) {
     throw new TypeError(
       `Cannot specify both committeeIdentifier and committeeIdentifiers.`
@@ -129,22 +100,6 @@ export async function checkAuthorization(
     matches &&= authorization.accessLevel >= accessLevel;
   }
 
-  // DB role
-  if (dbRole != null) {
-    matches &&= authorization.dbRole === dbRole;
-  }
-  if (minDbRole != null) {
-    matches &&= compareDbRole(authorization.dbRole, minDbRole) >= 0;
-  }
-
-  // Committee role
-  // if (committeeRole != null) {
-  //   matches &&= authorization.committees.some(
-  //     (committee) =>
-  //       committee.role === committeeRole &&
-  //       committee.identifier === committeeIdentifier
-  //   );
-  // }
   if (minCommitteeRole != null) {
     if (authorization.committees.length === 0) {
       matches = false;
@@ -168,10 +123,6 @@ export async function checkAuthorization(
     );
   }
 
-  // Custom auth checker
-  if (custom != null) {
-    matches &&= await custom(authorization);
-  }
   return matches;
 }
 
@@ -216,7 +167,7 @@ export interface AccessControlParam<RootType = never, ResultType = never> {
   custom?: (
     root: RootType,
     context: ExtractorData,
-    result: ResultType
+    result: Option<ResultType>
   ) => boolean | null | Promise<boolean | null>;
 }
 
@@ -243,7 +194,7 @@ export function AccessControl<
     resolverData,
     next
   ) => {
-    const { context, args } = resolverData;
+    const { context, args, info } = resolverData;
     const root = resolverData.root as RootType;
     const { authorization } = context;
 
@@ -267,14 +218,12 @@ export function AccessControl<
             ? rule.authRules(root)
             : rule.authRules;
         if (authRules.length === 0) {
-          throw new DetailedError(
-            ErrorCode.InternalFailure,
-            "Resource has no allowed authorization rules."
+          return Err(
+            new InvariantError("Resource has no allowed authorization rules.")
           );
         }
         let matches = false;
         for (const authRule of authRules) {
-           
           matches = await checkAuthorization(authRule, authorization);
           if (matches) {
             break;
@@ -287,14 +236,21 @@ export function AccessControl<
 
       if (rule.argumentMatch != null) {
         for (const match of rule.argumentMatch) {
-          const argValue =
-            typeof match.argument === "string"
-              ? (args[match.argument] as Primitive | Primitive[])
-              : match.argument(args);
+          let argValue: Primitive | Primitive[];
+          if (match.argument === "id") {
+            argValue = parseGlobalId(args.id)
+              .map(({ id }) => args[id])
+              .unwrapOr(null);
+          } else if (typeof match.argument === "string") {
+            argValue = args[match.argument];
+          } else {
+            argValue = match.argument(args);
+          }
           if (argValue == null) {
-            throw new DetailedError(
-              ErrorCode.InternalFailure,
-              "FieldMatchAuthorized argument is null or undefined."
+            return Err(
+              new InvariantError(
+                "FieldMatchAuthorized argument is null or undefined."
+              )
             );
           }
           const expectedValue = match.extractor(context);
@@ -320,14 +276,21 @@ export function AccessControl<
       if (rule.rootMatch != null) {
         let shouldContinue = false;
         for (const match of rule.rootMatch) {
-          const rootValue =
-            typeof match.root === "string"
-              ? (root as Record<string, Primitive | Primitive[]>)[match.root]
-              : match.root(root);
+          let rootValue: Primitive | Primitive[];
+          if (match.root === "id") {
+            rootValue = (root as { id: GlobalId }).id.id;
+          } else if (typeof match.root === "string") {
+            rootValue = (root as Record<string, Primitive | Primitive[]>)[
+              match.root
+            ];
+          } else {
+            rootValue = match.root(root);
+          }
           if (rootValue == null) {
-            throw new DetailedError(
-              ErrorCode.InternalFailure,
-              "FieldMatchAuthorized root is null or undefined."
+            return Err(
+              new InvariantError(
+                "FieldMatchAuthorized root is null or undefined."
+              )
             );
           }
           const expectedValue = match.extractor(context);
@@ -362,19 +325,35 @@ export function AccessControl<
     }
 
     if (!ok) {
-      throw new DetailedError(
-        ErrorCode.Unauthorized,
-        "You are not authorized to access this resource."
-      );
+      if (info.returnType instanceof GraphQLNonNull) {
+        return Err(new AccessControlError(info));
+      } else {
+        return null;
+      }
     }
 
-    const result = (await next()) as ResultType;
+    const result = (await next()) as
+      | ResultType
+      | Option<ResultType>
+      | ConcreteResult<ResultType>
+      | ConcreteResult<Option<ResultType>>;
+    let resultValue: Option<ResultType>;
+    if (Result.isResult(result)) {
+      if (result.isErr()) {
+        resultValue = None;
+      } else {
+        resultValue = Option.isOption(result.value)
+          ? result.value
+          : Some(result.value);
+      }
+    } else {
+      resultValue = Option.isOption(result) ? result : Some(result);
+    }
 
     let customResult: boolean | null = true;
     for (const rule of params) {
       if (rule.custom != null) {
-         
-        customResult = await rule.custom(root, context, result);
+        customResult = await rule.custom(root, context, resultValue);
         if (customResult === true) {
           break;
         }
@@ -382,10 +361,7 @@ export function AccessControl<
     }
 
     if (customResult === false) {
-      throw new DetailedError(
-        ErrorCode.Unauthorized,
-        "You are not authorized to access this resource."
-      );
+      return Err(new AccessControlError(info));
     } else if (customResult === null) {
       return null;
     }

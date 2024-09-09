@@ -16,22 +16,27 @@ import type {
 import type { Prisma } from "@prisma/client";
 import type { InvalidArgumentError } from "@ukdanceblue/common/error";
 
-
 export function buildFundraisingEntryOrder(
   order:
     | readonly [key: FundraisingEntryOrderKeys, sort: SortDirection][]
     | null
     | undefined
-): Result<Prisma.FundraisingEntryOrderByWithRelationInput, ActionDeniedError> {
-  const orderBy: Prisma.FundraisingEntryOrderByWithRelationInput = {};
-  const dbFundsEntryOrderBy: Prisma.FundraisingEntryOrderByWithRelationInput["dbFundsEntry"] =
+): Result<
+  Prisma.FundraisingEntryWithMetaOrderByWithRelationInput,
+  ActionDeniedError
+> {
+  const orderBy: Prisma.FundraisingEntryWithMetaOrderByWithRelationInput = {};
+  const dbFundsEntryOrderBy: Prisma.DBFundsFundraisingEntryOrderByWithRelationInput =
     {};
 
   for (const [key, sort] of order ?? []) {
     switch (key) {
       case "donatedOn": {
-        dbFundsEntryOrderBy.date =
-          sort === SortDirection.asc ? "asc" : "desc";
+        dbFundsEntryOrderBy.date = sort === SortDirection.asc ? "asc" : "desc";
+        break;
+      }
+      case "amountUnassigned": {
+        orderBy.unassigned = sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
       case "amount":
@@ -67,12 +72,11 @@ export function buildFundraisingEntryOrder(
 export function buildFundraisingEntryWhere(
   filters: readonly FundraisingEntryFilters[] | null | undefined
 ): Result<
-  Prisma.FundraisingEntryWhereInput,
+  Prisma.FundraisingEntryWithMetaWhereInput,
   ActionDeniedError | InvalidArgumentError
 > {
-  const where: Prisma.FundraisingEntryWhereInput = {};
-  const dbFundsEntryWhere: Prisma.FundraisingEntryWhereInput["dbFundsEntry"] =
-    {};
+  const where: Prisma.FundraisingEntryWithMetaWhereInput = {};
+  const dbFundsEntryWhere: Prisma.DBFundsFundraisingEntryWhereInput[] = [];
 
   for (const filter of filters ?? []) {
     switch (filter.field) {
@@ -81,17 +85,27 @@ export function buildFundraisingEntryWhere(
         where[filter.field] = dateFilterToPrisma(filter);
         break;
       }
+      case "amountUnassigned": {
+        where.unassigned = numericFilterToPrisma(filter);
+        break;
+      }
       case "amount": {
-        dbFundsEntryWhere[filter.field] = numericFilterToPrisma(filter);
+        dbFundsEntryWhere.push({
+          [filter.field]: numericFilterToPrisma(filter),
+        });
         break;
       }
       case "donatedOn": {
-        dbFundsEntryWhere.date = dateFilterToPrisma(filter);
+        dbFundsEntryWhere.push({
+          date: dateFilterToPrisma(filter),
+        });
         break;
       }
       case "donatedTo":
       case "donatedBy": {
-        dbFundsEntryWhere[filter.field] = stringFilterToPrisma(filter);
+        dbFundsEntryWhere.push({
+          [filter.field]: stringFilterToPrisma(filter),
+        });
         break;
       }
       case "teamId": {
@@ -101,16 +115,18 @@ export function buildFundraisingEntryWhere(
         if (parsed.isErr()) {
           return parsed;
         }
-        dbFundsEntryWhere.dbFundsTeam = {
-          teams: {
-            some: {
-              uuid: oneOfFilterToPrisma({
-                ...filter,
-                value: parsed.value,
-              }),
+        dbFundsEntryWhere.push({
+          dbFundsTeam: {
+            teams: {
+              some: {
+                uuid: oneOfFilterToPrisma({
+                  ...filter,
+                  value: parsed.value,
+                }),
+              },
             },
           },
-        };
+        });
         break;
       }
       default: {
@@ -125,7 +141,7 @@ export function buildFundraisingEntryWhere(
   }
 
   if (Object.keys(dbFundsEntryWhere).length > 0) {
-    where.dbFundsEntry = dbFundsEntryWhere;
+    where.dbFundsEntry = { AND: dbFundsEntryWhere };
   }
 
   return Ok(where);

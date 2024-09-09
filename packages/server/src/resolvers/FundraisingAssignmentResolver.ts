@@ -1,5 +1,3 @@
-
-
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
@@ -29,7 +27,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Container, Service } from "typedi";
+import { Container, Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 
@@ -55,7 +53,7 @@ const fundraisingAccess: AccessControlParam<FundraisingAssignmentNode> = {
 };
 
 @Resolver(() => FundraisingAssignmentNode)
-@Service()
+@Service([FundraisingEntryRepository, PersonRepository])
 export class FundraisingAssignmentResolver {
   constructor(
     private readonly fundraisingEntryRepository: FundraisingEntryRepository,
@@ -79,8 +77,8 @@ export class FundraisingAssignmentResolver {
   @AccessControl(fundraisingAccess)
   @Mutation(() => FundraisingAssignmentNode)
   async assignEntryToPerson(
-    @Arg("entryId") entryId: string,
-    @Arg("personId") personId: string,
+    @Arg("entryId", () => GlobalIdScalar) { id: entryId }: GlobalId,
+    @Arg("personId", () => GlobalIdScalar) { id: personId }: GlobalId,
     @Arg("input") { amount }: AssignEntryToPersonInput
   ): Promise<ConcreteResult<Promise<FundraisingAssignmentNode>>> {
     const assignment =
@@ -120,29 +118,34 @@ export class FundraisingAssignmentResolver {
   }
 
   @AccessControl<never, PersonNode>(globalFundraisingAccessParam, {
-    custom: async (_, { teamMemberships }, { id: { id } }) => {
-      const personRepository = Container.get(PersonRepository);
-      const memberships = await personRepository.findMembershipsOfPerson(
-        { uuid: id },
-        undefined,
-        undefined,
-        true
-      );
-      const userCaptaincies = teamMemberships.filter(
-        (membership) => membership.position === MembershipPositionType.Captain
-      );
-      for (const targetPersonMembership of memberships) {
-        if (
-          userCaptaincies.some(
-            (userCaptaincy) =>
-              userCaptaincy.teamId === targetPersonMembership.team.uuid
-          )
-        ) {
-          return true;
+    custom: (_, { teamMemberships }, result) =>
+      result.mapOr<Promise<boolean | null>>(
+        Promise.resolve(false),
+        async ({ id: { id } }) => {
+          const personRepository = Container.get(PersonRepository);
+          const memberships = await personRepository.findMembershipsOfPerson(
+            { uuid: id },
+            undefined,
+            undefined,
+            true
+          );
+          const userCaptaincies = teamMemberships.filter(
+            (membership) =>
+              membership.position === MembershipPositionType.Captain
+          );
+          for (const targetPersonMembership of memberships) {
+            if (
+              userCaptaincies.some(
+                (userCaptaincy) =>
+                  userCaptaincy.teamId === targetPersonMembership.team.uuid
+              )
+            ) {
+              return true;
+            }
+          }
+          return null;
         }
-      }
-      return null;
-    },
+      ),
   })
   @FieldResolver(() => PersonNode, {
     nullable: true,

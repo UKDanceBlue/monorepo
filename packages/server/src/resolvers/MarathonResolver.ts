@@ -29,10 +29,9 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
-
 
 @ObjectType("ListMarathonsResponse", {
   implements: AbstractGraphQLPaginatedResponse<MarathonNode[]>,
@@ -47,11 +46,11 @@ class CreateMarathonInput {
   @Field()
   year!: string;
 
-  @Field(() => DateTimeISOResolver)
-  startDate!: string;
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  startDate?: string | null;
 
-  @Field(() => DateTimeISOResolver)
-  endDate!: string;
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  endDate?: string | null;
 }
 
 @InputType()
@@ -59,11 +58,11 @@ class SetMarathonInput {
   @Field(() => String)
   year!: string;
 
-  @Field(() => DateTimeISOResolver)
-  startDate!: string;
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  startDate?: string | null;
 
-  @Field(() => DateTimeISOResolver)
-  endDate!: string;
+  @Field(() => DateTimeISOResolver, { nullable: true })
+  endDate?: string | null;
 }
 
 @ArgsType()
@@ -81,7 +80,7 @@ class ListMarathonsArgs extends FilteredListQueryArgs<
 }) {}
 
 @Resolver(() => MarathonNode)
-@Service()
+@Service([MarathonRepository, CommitteeRepository])
 export class MarathonResolver
   implements
     Record<
@@ -151,6 +150,11 @@ export class MarathonResolver
   @Mutation(() => MarathonNode)
   async createMarathon(@Arg("input") input: CreateMarathonInput) {
     const marathon = await this.marathonRepository.createMarathon(input);
+    if (marathon.isOk()) {
+      await this.committeeRepository.ensureCommittees([
+        { id: marathon.value.id },
+      ]);
+    }
     return marathon.map(marathonModelToResource);
   }
 

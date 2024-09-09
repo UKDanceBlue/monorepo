@@ -1,5 +1,3 @@
-
-
 import { auditLogger } from "#logging/auditLogging.js";
 import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
 import { deviceModelToResource } from "#repositories/device/deviceModelToResource.js";
@@ -18,6 +16,7 @@ import {
   FilteredListQueryArgs,
   GlobalIdScalar,
   NotificationDeliveryNode,
+  parseGlobalId,
   PersonNode,
   SortDirection,
 } from "@ukdanceblue/common";
@@ -36,9 +35,10 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
+import Validator from "validator";
 
 @ObjectType("GetDeviceByUuidResponse", {
   implements: AbstractGraphQLOkResponse<DeviceNode>,
@@ -68,7 +68,9 @@ class DeleteDeviceResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
 class RegisterDeviceInput {
-  @Field(() => String)
+  @Field(() => String, {
+    description: "For legacy reasons, this can be a GlobalId or a raw UUID",
+  })
   deviceId!: string;
 
   @Field(() => String, {
@@ -82,11 +84,11 @@ class RegisterDeviceInput {
   })
   verifier!: string;
 
-  @Field(() => String, {
+  @Field(() => GlobalIdScalar, {
     description: "The ID of the last user to log in on this device",
     nullable: true,
   })
-  lastUserId?: string | null;
+  lastUserId?: GlobalId | null;
 }
 
 @ArgsType()
@@ -121,7 +123,7 @@ class NotificationDeliveriesArgs {
 }
 
 @Resolver(() => DeviceNode)
-@Service()
+@Service([DeviceRepository, PersonRepository])
 export class DeviceResolver {
   constructor(
     private readonly deviceRepository: DeviceRepository,
@@ -173,17 +175,29 @@ export class DeviceResolver {
   @Mutation(() => RegisterDeviceResponse, { name: "registerDevice" })
   async register(
     @Arg("input") input: RegisterDeviceInput
-  ): Promise<RegisterDeviceResponse> {
+  ): Promise<ConcreteResult<RegisterDeviceResponse>> {
+    let deviceId: string;
+    if (Validator.isUUID(input.deviceId)) {
+      deviceId = input.deviceId;
+    } else {
+      const globalIdResult = parseGlobalId(input.deviceId);
+      if (globalIdResult.isErr()) {
+        return globalIdResult;
+      }
+      deviceId = globalIdResult.value.id;
+    }
     const row = await this.deviceRepository.registerDevice(
-      input.deviceId,
+      deviceId,
       input.verifier,
       {
         expoPushToken: input.expoPushToken ?? null,
-        lastUserId: input.lastUserId ?? null,
+        lastUserId: input.lastUserId?.id ?? null,
       }
     );
 
-    return RegisterDeviceResponse.newOk(deviceModelToResource(row));
+    return row.map((row) =>
+      RegisterDeviceResponse.newOk(deviceModelToResource(row))
+    );
   }
 
   @Mutation(() => DeleteDeviceResponse, { name: "deleteDevice" })
@@ -192,7 +206,7 @@ export class DeviceResolver {
   ): Promise<DeleteDeviceResponse> {
     await this.deviceRepository.deleteDevice({ uuid: id });
 
-    auditLogger.normal("Device deleted", { uuid: id });
+    auditLogger.secure("Device deleted", { uuid: id });
 
     return DeleteDeviceResponse.newOk(true);
   }

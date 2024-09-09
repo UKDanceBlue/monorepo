@@ -4,11 +4,11 @@ import {
 } from "../tools/apolloErrorHandler.js";
 
 import { App } from "antd";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 import type { MessageType } from "antd/es/message/interface";
 import type { CombinedError } from "urql";
-
+import { useLocation } from "@tanstack/react-router";
 
 // const MAX_ALLOWED_ERROR_MS = 500;
 const MAX_ALLOWED_LOADING_MS = 5000;
@@ -23,6 +23,8 @@ export function useQueryStatusWatcher({
   loadingMessage?: string | (() => string) | undefined;
 }): { resetWatcher: () => void } {
   const antApp = App.useApp();
+  const { pathname } = useLocation();
+  const lastPathname = useRef(pathname);
 
   const networkLoadingTimer = useRef<ReturnType<typeof setTimeout> | null>(
     null
@@ -71,14 +73,26 @@ export function useQueryStatusWatcher({
     }
   });
 
-  return {
-    resetWatcher: () => {
-      if (networkLoadingTimer.current) {
-        clearTimeout(networkLoadingTimer.current);
-        networkLoadingTimer.current = null;
+  const resetWatcher = useCallback(() => {
+    if (networkLoadingTimer.current) {
+      clearTimeout(networkLoadingTimer.current);
+      networkLoadingTimer.current = null;
+    }
+    networkLoadingMessageHandle.current?.();
+    loadingMessageHandle.current?.();
+  }, []);
+
+  // Sorta hacky way to reset the watcher when we navigate to a new page.
+  useEffect(() => {
+    return () => {
+      if (lastPathname.current !== pathname) {
+        resetWatcher();
+        lastPathname.current = pathname;
       }
-      networkLoadingMessageHandle.current?.();
-      loadingMessageHandle.current?.();
-    },
+    };
+  }, [pathname, resetWatcher]);
+
+  return {
+    resetWatcher,
   };
 }

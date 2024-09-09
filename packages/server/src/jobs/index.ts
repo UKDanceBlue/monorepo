@@ -1,6 +1,6 @@
 import { NotificationScheduler } from "./NotificationScheduler.js";
 
-import { Container } from "typedi";
+import { Container } from "@freshgum/typedi";
 
 import "./fetchPushReceipts.js";
 import "./garbageCollectLogins.js";

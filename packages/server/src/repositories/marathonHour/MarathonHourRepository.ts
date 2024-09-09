@@ -4,11 +4,10 @@ import {
 } from "./marathonHourRepositoryUtils.js";
 
 import { Prisma, PrismaClient } from "@prisma/client";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { SortDirection } from "@ukdanceblue/common";
-
 
 const marathonHourBooleanKeys = [] as const;
 type MarathonHourBooleanKey = (typeof marathonHourBooleanKeys)[number];
@@ -52,7 +51,9 @@ export type MarathonHourFilters = FilterItems<
 
 type UniqueParam = { id: number } | { uuid: string };
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class MarathonHourRepository {
   constructor(private prisma: PrismaClient) {}
 

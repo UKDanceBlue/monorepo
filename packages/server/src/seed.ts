@@ -1,18 +1,11 @@
-
 import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
 import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { TeamRepository } from "#repositories/team/TeamRepository.js";
 
-import {
-  CommitteeIdentifier,
-  CommitteeRole,
-  TeamLegacyStatus,
-  TeamType,
-} from "@ukdanceblue/common";
+import { CommitteeIdentifier, CommitteeRole } from "@ukdanceblue/common";
 import { FormattedConcreteError } from "@ukdanceblue/common/error";
-import { Container } from "typedi";
+import { Container } from "@freshgum/typedi";
 
 if (process.env.NODE_ENV !== "development") {
   throw new Error("Seeding is only allowed in development mode");
@@ -23,7 +16,6 @@ const { prisma } = await import("./prisma.js");
 try {
   const personRepository = Container.get(PersonRepository);
   const committeeRepository = Container.get(CommitteeRepository);
-  const teamRepository = Container.get(TeamRepository);
   const configurationRepository = Container.get(ConfigurationRepository);
   const marathonRepository = Container.get(MarathonRepository);
 
@@ -43,9 +35,16 @@ try {
     value: JSON.stringify(["anonymous", "ms-oath-linkblue"]),
   });
 
-  const ensureCommitteesResult = await committeeRepository.ensureCommittees();
+  const marathon = await marathonRepository.createMarathon({ year: "DB24" });
+  if (marathon.isErr()) {
+    throw new FormattedConcreteError(marathon);
+  }
+
+  const ensureCommitteesResult = await committeeRepository.ensureCommittees([
+    marathon.value,
+  ]);
   if (ensureCommitteesResult.isErr()) {
-    throw new FormattedConcreteError(ensureCommitteesResult.error);
+    throw new FormattedConcreteError(ensureCommitteesResult);
   }
 
   const techChair = await personRepository.createPerson({
@@ -53,22 +52,8 @@ try {
     linkblue: "jtho264",
   });
   if (techChair.isErr()) {
-    throw new FormattedConcreteError(techChair.error);
+    throw new FormattedConcreteError(techChair);
   }
-
-  const marathon = await marathonRepository.findActiveMarathon();
-  if (marathon.isErr()) {
-    throw new FormattedConcreteError(marathon.error);
-  }
-
-  await teamRepository.createTeam(
-    {
-      name: "Tech",
-      type: TeamType.Spirit,
-      legacyStatus: TeamLegacyStatus.ReturningTeam,
-    },
-    { id: marathon.value.id }
-  );
 
   await committeeRepository.assignPersonToCommittee(
     { id: techChair.value.id },

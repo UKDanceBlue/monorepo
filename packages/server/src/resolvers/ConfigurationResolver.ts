@@ -1,4 +1,4 @@
-import { auditLogger } from "#logging/auditLogging.js";
+import { auditLogger, auditLoggerFileName } from "#logging/auditLogging.js";
 import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
 import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
 import {
@@ -27,10 +27,12 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
-
+import { readFile } from "fs/promises";
+import { join } from "path";
+import { logDir } from "#environment";
 
 @ObjectType("GetConfigurationByUuidResponse", {
   implements: AbstractGraphQLOkResponse<ConfigurationNode>,
@@ -80,7 +82,7 @@ class CreateConfigurationInput implements Partial<ConfigurationNode> {
 }
 
 @Resolver(() => ConfigurationNode)
-@Service()
+@Service([ConfigurationRepository])
 export class ConfigurationResolver {
   constructor(
     private readonly configurationRepository: ConfigurationRepository
@@ -146,8 +148,7 @@ export class ConfigurationResolver {
     auditLogger.dangerous("Configuration created", { configuration: row });
 
     return CreateConfigurationResponse.newCreated(
-      configurationModelToResource(row),
-      row.uuid
+      configurationModelToResource(row)
     );
   }
 
@@ -192,5 +193,12 @@ export class ConfigurationResolver {
     auditLogger.dangerous("Configuration deleted", { configuration: row });
 
     return DeleteConfigurationResponse.newOk(true);
+  }
+
+  @AccessControl({ accessLevel: AccessLevel.SuperAdmin })
+  @Query(() => String)
+  async auditLog(): Promise<string> {
+    const fileLookup = await readFile(join(logDir, auditLoggerFileName));
+    return fileLookup.toString("utf8");
   }
 }

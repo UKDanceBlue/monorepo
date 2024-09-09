@@ -5,7 +5,7 @@ import { servePath, uploadPath } from "#environment";
 import { logger } from "#logging/standardLogging.js";
 
 import { DateTime } from "luxon";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import { mkdir, open, stat, unlink } from "fs/promises";
 import { format, join, resolve } from "path";
@@ -31,7 +31,7 @@ function isPathAllowed(path: string): boolean {
   return resolvedPath.startsWith(resolvedServePath);
 }
 
-@Service()
+@Service([])
 export class LocalStorageProvider
   extends BaseStorageProvider
   implements StorageProvider

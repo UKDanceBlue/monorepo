@@ -2,8 +2,7 @@ import { logger } from "#logging/standardLogging.js";
 import { ExpoPushReceiptHandler } from "#notification/ExpoPushReceiptHandler.js";
 
 import Cron from "croner";
-import { Container } from "typedi";
-
+import { Container } from "@freshgum/typedi";
 
 import { JobStateRepository } from "#repositories/JobState.js";
 const jobStateRepository = Container.get(JobStateRepository);

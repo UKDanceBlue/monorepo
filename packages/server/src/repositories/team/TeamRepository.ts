@@ -1,13 +1,19 @@
 import { buildTeamOrder, buildTeamWhere } from "./teamRepositoryUtils.js";
 
+import { SomePrismaError } from "#error/prisma.js";
+import {
+  handleRepositoryError,
+  type SimpleUniqueParam,
+} from "#repositories/shared.js";
+
 import { Prisma, PrismaClient } from "@prisma/client";
 import { TeamLegacyStatus } from "@ukdanceblue/common";
-import { Service } from "typedi";
-
+import { BasicError, ConcreteResult } from "@ukdanceblue/common/error";
+import { None, Ok, Some, Option } from "ts-results-es";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
-import type { SimpleUniqueParam } from "#repositories/shared.js";
 import type {
   MarathonYearString,
   SortDirection,
@@ -76,7 +82,9 @@ function makeMarathonWhere(param: MarathonParam[]) {
   };
 }
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class TeamRepository {
   constructor(private prisma: PrismaClient) {}
 
@@ -117,14 +125,14 @@ export class TeamRepository {
         ...where,
         legacyStatus: legacyStatus
           ? { in: legacyStatus }
-          : where.legacyStatus ??
+          : (where.legacyStatus ??
             (onlyDemo
               ? {
                   equals: TeamLegacyStatus.DemoTeam,
                 }
               : {
                   not: TeamLegacyStatus.DemoTeam,
-                }),
+                })),
       },
       orderBy,
       skip: skip ?? undefined,
@@ -155,14 +163,14 @@ export class TeamRepository {
         ...where,
         legacyStatus: legacyStatus
           ? { in: legacyStatus }
-          : where.legacyStatus ??
+          : (where.legacyStatus ??
             (onlyDemo
               ? {
                   equals: TeamLegacyStatus.DemoTeam,
                 }
               : {
                   not: TeamLegacyStatus.DemoTeam,
-                }),
+                })),
       },
     });
   }
@@ -198,12 +206,47 @@ export class TeamRepository {
     });
   }
 
+  getTeamCommitteeIdentifier(param: SimpleUniqueParam) {
+    return this.prisma.team
+      .findUnique({
+        where: param,
+      })
+      .correspondingCommittee()
+      .then((committee) => committee?.identifier);
+  }
+
   getTeamPointEntries(param: SimpleUniqueParam) {
     return this.prisma.pointEntry.findMany({
       where: {
         team: param,
       },
     });
+  }
+
+  async getTotalFundraisingAmount(
+    param: SimpleUniqueParam
+  ): Promise<ConcreteResult<Option<number>, SomePrismaError | BasicError>> {
+    try {
+      const {
+        _sum: { amount },
+      } = await this.prisma.dBFundsFundraisingEntry.aggregate({
+        _sum: {
+          amount: true,
+        },
+        where: {
+          dbFundsTeam: {
+            teams: {
+              some: param,
+            },
+          },
+        },
+      });
+      return Ok(
+        amount !== null ? Some(amount.toDecimalPlaces(2).toNumber()) : None
+      );
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
   }
 
   getMarathon(team: SimpleUniqueParam) {

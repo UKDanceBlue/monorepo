@@ -1,5 +1,3 @@
-
-
 import { auditLogger } from "#logging/auditLogging.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
@@ -23,7 +21,9 @@ import { TeamType } from "@prisma/client";
 import {
   AccessControl,
   AccessLevel,
+  CommitteeIdentifier,
   CommitteeMembershipNode,
+  CommitteeRole,
   DbRole,
   FilteredListQueryArgs,
   FundraisingAssignmentNode,
@@ -35,12 +35,14 @@ import {
   SortDirection,
 } from "@ukdanceblue/common";
 import {
+  ActionDeniedError,
   ConcreteError,
   ConcreteResult,
+  extractNotFound,
   FormattedConcreteError,
 } from "@ukdanceblue/common/error";
 import { EmailAddressResolver } from "graphql-scalars";
-import { Ok, Result } from "ts-results-es";
+import { Err, Ok, Option, Result } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -48,6 +50,7 @@ import {
   Ctx,
   Field,
   FieldResolver,
+  Float,
   InputType,
   Mutation,
   ObjectType,
@@ -55,11 +58,10 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Container, Service } from "typedi";
+import { Container, Service } from "@freshgum/typedi";
 
 import type { GraphQLContext } from "#resolvers/context.js";
 import type { GlobalId } from "@ukdanceblue/common";
-
 
 @ObjectType("ListPeopleResponse", {
   implements: AbstractGraphQLPaginatedResponse<PersonNode>,
@@ -67,6 +69,15 @@ import type { GlobalId } from "@ukdanceblue/common";
 class ListPeopleResponse extends AbstractGraphQLPaginatedResponse<PersonNode> {
   @Field(() => [PersonNode])
   data!: PersonNode[];
+}
+
+@InputType()
+class MemberOf {
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
+
+  @Field(() => CommitteeRole, { nullable: true })
+  committeeRole?: CommitteeRole | null | undefined;
 }
 
 @ArgsType()
@@ -100,14 +111,17 @@ class CreatePersonInput {
   @Field(() => String, { nullable: true })
   linkblue?: string;
 
-  @Field(() => DbRole, { nullable: true })
+  @Field(() => DbRole, {
+    nullable: true,
+    deprecationReason: "DBRole can no longer be set directly",
+  })
   dbRole?: DbRole;
 
-  @Field(() => [String], { defaultValue: [] })
-  memberOf?: string[];
+  @Field(() => [MemberOf], { defaultValue: [] })
+  memberOf?: MemberOf[];
 
-  @Field(() => [String], { defaultValue: [] })
-  captainOf?: string[];
+  @Field(() => [MemberOf], { defaultValue: [] })
+  captainOf?: MemberOf[];
 }
 @InputType()
 class SetPersonInput {
@@ -120,15 +134,32 @@ class SetPersonInput {
   @Field(() => String, { nullable: true })
   linkblue?: string;
 
-  @Field(() => [String], { nullable: true })
-  memberOf?: string[];
+  @Field(() => [MemberOf], { nullable: true })
+  memberOf?: MemberOf[];
 
-  @Field(() => [String], { nullable: true })
-  captainOf?: string[];
+  @Field(() => [MemberOf], { nullable: true })
+  captainOf?: MemberOf[];
+}
+@InputType()
+class BulkPersonInput {
+  @Field(() => String)
+  name!: string;
+
+  @Field(() => EmailAddressResolver)
+  email!: string;
+
+  @Field(() => String)
+  linkblue!: string;
+
+  @Field(() => CommitteeIdentifier, { nullable: true })
+  committee!: CommitteeIdentifier | null | undefined;
+
+  @Field(() => CommitteeRole, { nullable: true })
+  role!: CommitteeRole | null | undefined;
 }
 
 @Resolver(() => PersonNode)
-@Service()
+@Service([PersonRepository, MembershipRepository, FundraisingEntryRepository])
 export class PersonResolver {
   constructor(
     private readonly personRepository: PersonRepository,
@@ -240,12 +271,41 @@ export class PersonResolver {
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => PersonNode, { name: "createPerson" })
   async create(
-    @Arg("input") input: CreatePersonInput
+    @Arg("input") input: CreatePersonInput,
+    @Ctx() { authorization: { accessLevel } }: GraphQLContext
   ): Promise<ConcreteResult<PersonNode>> {
+    if (
+      (input.memberOf ?? []).some(
+        ({ committeeRole }) => committeeRole != null
+      ) &&
+      accessLevel < AccessLevel.Admin
+    ) {
+      return Err(
+        new ActionDeniedError("Only tech committee can set committee roles")
+      );
+    } else if (
+      (input.captainOf ?? []).some(
+        ({ committeeRole }) => committeeRole != null
+      ) &&
+      accessLevel < AccessLevel.Admin
+    ) {
+      return Err(
+        new ActionDeniedError("Only tech committee can set committee roles")
+      );
+    }
+
     const person = await this.personRepository.createPerson({
       name: input.name,
       email: input.email,
       linkblue: input.linkblue,
+      memberOf: input.memberOf?.map(({ id: { id }, committeeRole }) => ({
+        uuid: id,
+        committeeRole,
+      })),
+      captainOf: input.captainOf?.map(({ id: { id }, committeeRole }) => ({
+        uuid: id,
+        committeeRole,
+      })),
     });
 
     return person
@@ -258,8 +318,29 @@ export class PersonResolver {
   @Mutation(() => PersonNode, { name: "setPerson" })
   async set(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
-    @Arg("input") input: SetPersonInput
+    @Arg("input") input: SetPersonInput,
+    @Ctx() { authorization: { accessLevel } }: GraphQLContext
   ): Promise<ConcreteResult<PersonNode>> {
+    if (
+      (input.memberOf ?? []).some(
+        ({ committeeRole }) => committeeRole != null
+      ) &&
+      accessLevel < AccessLevel.Admin
+    ) {
+      return Err(
+        new ActionDeniedError("Only tech committee can set committee roles")
+      );
+    } else if (
+      (input.captainOf ?? []).some(
+        ({ committeeRole }) => committeeRole != null
+      ) &&
+      accessLevel < AccessLevel.Admin
+    ) {
+      return Err(
+        new ActionDeniedError("Only tech committee can set committee roles")
+      );
+    }
+
     const row = await this.personRepository.updatePerson(
       {
         uuid: id,
@@ -268,8 +349,14 @@ export class PersonResolver {
         name: input.name,
         email: input.email,
         linkblue: input.linkblue,
-        memberOf: input.memberOf?.map((uuid) => ({ uuid })),
-        captainOf: input.captainOf?.map((uuid) => ({ uuid })),
+        memberOf: input.memberOf?.map(({ id: { id }, committeeRole }) => ({
+          id,
+          committeeRole,
+        })),
+        captainOf: input.captainOf?.map(({ id: { id }, committeeRole }) => ({
+          id,
+          committeeRole,
+        })),
       }
     );
 
@@ -279,18 +366,41 @@ export class PersonResolver {
       .promise;
   }
 
+  @AccessControl({ accessLevel: AccessLevel.SuperAdmin })
+  @Mutation(() => [PersonNode], { name: "bulkLoadPeople" })
+  async bulkLoad(
+    @Arg("people", () => [BulkPersonInput]) people: BulkPersonInput[],
+    @Arg("marathonId", () => GlobalIdScalar) marathonId: GlobalId
+  ): Promise<ConcreteResult<PersonNode[]>> {
+    const rows = await this.personRepository.bulkLoadPeople(people, {
+      uuid: marathonId.id,
+    });
+
+    return rows
+      .toAsyncResult()
+      .andThen(async (rows) =>
+        Result.all(
+          await Promise.all(
+            rows.map(
+              (row) => personModelToResource(row, this.personRepository).promise
+            )
+          )
+        )
+      ).promise;
+  }
+
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => MembershipNode, { name: "addPersonToTeam" })
   async assignPersonToTeam(
-    @Arg("personUuid") personUuid: string,
-    @Arg("teamUuid") teamUuid: string
+    @Arg("personUuid", () => GlobalIdScalar) personUuid: GlobalId,
+    @Arg("teamUuid", () => GlobalIdScalar) teamUuid: GlobalId
   ): Promise<ConcreteResult<MembershipNode>> {
     const membership = await this.membershipRepository.assignPersonToTeam({
       personParam: {
-        uuid: personUuid,
+        uuid: personUuid.id,
       },
       teamParam: {
-        uuid: teamUuid,
+        uuid: teamUuid.id,
       },
       position: MembershipPositionType.Member,
     });
@@ -309,7 +419,7 @@ export class PersonResolver {
       .toAsyncResult()
       .andThen((row) => personModelToResource(row, this.personRepository))
       .map((person) => {
-        auditLogger.sensitive("Person deleted", {
+        auditLogger.secure("Person deleted", {
           person: {
             name: person.name,
             email: person.email,
@@ -418,14 +528,15 @@ export class PersonResolver {
   @FieldResolver(() => CommitteeMembershipNode, { nullable: true })
   async primaryCommittee(
     @Root() { id: { id } }: PersonNode
-  ): Promise<ConcreteResult<CommitteeMembershipNode>> {
+  ): Promise<ConcreteResult<Option<CommitteeMembershipNode>>> {
     const models = await this.personRepository.getPrimaryCommitteeOfPerson({
       uuid: id,
     });
-
-    return models.map(([membership, committee]) =>
+    const resources = models.map(([membership, committee]) =>
       committeeMembershipModelToResource(membership, committee.identifier)
     );
+
+    return extractNotFound(resources);
   }
 
   @AccessControl<FundraisingEntryNode>(
@@ -471,7 +582,7 @@ export class PersonResolver {
       },
     }
   )
-  @FieldResolver(() => CommitteeMembershipNode, { nullable: true })
+  @FieldResolver(() => ListFundraisingEntriesResponse, { nullable: true })
   async assignedDonationEntries(
     @Root() { id: { id } }: PersonNode,
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
@@ -495,15 +606,20 @@ export class PersonResolver {
         assignedToPerson: { uuid: id },
       }
     );
-    const count = await this.fundraisingEntryRepository.countEntries({
-      filters: args.filters,
-    });
+    const count = await this.fundraisingEntryRepository.countEntries(
+      {
+        filters: args.filters,
+      },
+      {
+        assignedToPerson: { uuid: id },
+      }
+    );
 
     if (entries.isErr()) {
-      throw new FormattedConcreteError(entries.error);
+      throw new FormattedConcreteError(entries);
     }
     if (count.isErr()) {
-      throw new FormattedConcreteError(count.error);
+      throw new FormattedConcreteError(count);
     }
 
     return ListFundraisingEntriesResponse.newPaginated({
@@ -513,6 +629,30 @@ export class PersonResolver {
       total: count.value,
       page: args.page,
       pageSize: args.pageSize,
+    });
+  }
+
+  @AccessControl(
+    // We can't grant blanket access as otherwise people would see who else was assigned to an entry
+    // You can view all assignments for an entry if you are:
+    // 1. A fundraising coordinator or chair
+    globalFundraisingAccessParam,
+    // 2. The person themselves
+    {
+      rootMatch: [
+        {
+          root: "id",
+          extractor: ({ userData }) => userData.userId,
+        },
+      ],
+    }
+  )
+  @FieldResolver(() => Float, { nullable: true })
+  async fundraisingTotalAmount(
+    @Root() { id: { id } }: PersonNode
+  ): Promise<ConcreteResult<Option<number>>> {
+    return this.personRepository.getTotalFundraisingAmount({
+      uuid: id,
     });
   }
 
@@ -537,7 +677,7 @@ export class PersonResolver {
       });
 
     if (models.isErr()) {
-      throw new FormattedConcreteError(models.error);
+      throw new FormattedConcreteError(models);
     }
 
     return Promise.all(

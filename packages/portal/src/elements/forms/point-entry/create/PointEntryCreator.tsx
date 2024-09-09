@@ -1,4 +1,3 @@
-
 import { QuestionOutlined } from "@ant-design/icons";
 import type { InputRef, TourProps } from "antd";
 import { App, Button, Flex, Form, Input, InputNumber, Tour } from "antd";
@@ -86,7 +85,7 @@ export function PointEntryCreator({
   });
 
   return (
-    
+    <>
       <Tour
         steps={steps}
         placement="top"
@@ -134,9 +133,10 @@ export function PointEntryCreator({
         <Flex wrap="wrap" gap="10px">
           <formApi.Field
             name="points"
-            onChange={(value) =>
-              !value ? "A point value is required" : undefined
-            }
+            validators={{
+              onChange: ({ value }) =>
+                !value ? "A point value is required" : undefined,
+            }}
             children={(field) => (
               <Form.Item
                 label="Points*"
@@ -183,6 +183,6 @@ export function PointEntryCreator({
           </Button>
         </Flex>
       </Form>
-    
+    </>
   );
 }
