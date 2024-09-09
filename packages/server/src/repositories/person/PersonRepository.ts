@@ -84,12 +84,19 @@ export type UniquePersonParam =
     };
 
 import { prismaToken } from "#prisma";
+import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
 
-@Service([prismaToken, MembershipRepository, MarathonRepository])
+@Service([
+  prismaToken,
+  MembershipRepository,
+  CommitteeRepository,
+  MarathonRepository,
+])
 export class PersonRepository {
   constructor(
     private prisma: PrismaClient,
     private membershipRepository: MembershipRepository,
+    private committeeRepository: CommitteeRepository,
     private marathonRepository: MarathonRepository
   ) {}
 
@@ -881,50 +888,51 @@ export class PersonRepository {
   ): Promise<
     Result<Person[], RepositoryError | CompositeError<RepositoryError>>
   > {
-    let marathonId: number;
-    if ("id" in marathon) {
-      marathonId = marathon.id;
-    } else {
-      const found = await this.prisma.marathon.findUnique({
-        where: marathon,
-        select: { id: true },
-      });
-      if (found == null) {
-        return Err(new NotFoundError({ what: "Marathon" }));
+    try {
+      await this.committeeRepository.ensureCommittees([marathon]);
+      let marathonId: number;
+      if ("id" in marathon) {
+        marathonId = marathon.id;
+      } else {
+        const found = await this.prisma.marathon.findUnique({
+          where: marathon,
+          select: { id: true },
+        });
+        if (found == null) {
+          return Err(new NotFoundError({ what: "Marathon" }));
+        }
+        marathonId = found.id;
       }
-      marathonId = found.id;
-    }
 
-    const committeeIds: Record<CommitteeIdentifier, number> = {} as Record<
-      CommitteeIdentifier,
-      number
-    >;
-    const committees = await this.prisma.committee.findMany({
-      where: {
-        correspondingTeams: {
-          some: {
-            marathonId: marathonId,
+      const committeeIds: Record<CommitteeIdentifier, number> = {} as Record<
+        CommitteeIdentifier,
+        number
+      >;
+      const committees = await this.prisma.committee.findMany({
+        where: {
+          correspondingTeams: {
+            some: {
+              marathonId: marathonId,
+            },
           },
         },
-      },
-      select: {
-        identifier: true,
-        id: true,
-      },
-    });
-    for (const committee of committees) {
-      committeeIds[committee.identifier] = committee.id;
-    }
+        select: {
+          identifier: true,
+          id: true,
+        },
+      });
+      for (const committee of committees) {
+        committeeIds[committee.identifier] = committee.id;
+      }
 
-    const addToVice: {
-      name: string;
-      email: string;
-      linkblue: string;
-      committee: CommitteeIdentifier | null | undefined;
-      role: CommitteeRole | null | undefined;
-    }[] = [];
+      const addToVice: {
+        name: string;
+        email: string;
+        linkblue: string;
+        committee: CommitteeIdentifier | null | undefined;
+        role: CommitteeRole | null | undefined;
+      }[] = [];
 
-    try {
       const result = await this.prisma.$transaction(
         people.map((person) => {
           if (
