@@ -3,12 +3,9 @@ import { makeOidcClient } from "./oidcClient.js";
 import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
 
 import { generators } from "openid-client";
-import { Container } from "typedi";
+import { Container } from "@freshgum/typedi";
 
 import type { Context } from "koa";
-
-
-
 
 // TODO: convert to OAuth2
 export const login = async (ctx: Context) => {

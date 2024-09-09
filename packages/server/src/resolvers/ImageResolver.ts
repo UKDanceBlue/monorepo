@@ -32,7 +32,7 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import { MIMEType } from "node:util";
 
@@ -81,7 +81,7 @@ class ListImagesResponse extends AbstractGraphQLPaginatedResponse<ImageNode> {
 }
 
 @Resolver(() => ImageNode)
-@Service()
+@Service([ImageRepository, FileManager])
 export class ImageResolver {
   constructor(
     private readonly imageRepository: ImageRepository,

@@ -4,20 +4,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
-import type { DateTime } from "luxon";
 import { useQuery } from "urql";
 
 const viewPersonPageDocument = graphql(/* GraphQL */ `
-  query EditPersonPage($uuid: GlobalId!, $marathonId: GlobalId!) {
+  query EditPersonPage($uuid: GlobalId!) {
     person(uuid: $uuid) {
       ...PersonEditorFragment
     }
-    teams(
-      sendAll: true
-      sortBy: ["name"]
-      sortDirection: [asc]
-      marathonId: [$marathonId]
-    ) {
+    teams(sendAll: true, sortBy: ["name"], sortDirection: [asc]) {
       data {
         ...TeamNameFragment
       }
@@ -25,22 +19,12 @@ const viewPersonPageDocument = graphql(/* GraphQL */ `
   }
 `);
 
-export function EditPersonPage({
-  selectedMarathon,
-}: {
-  selectedMarathon: {
-    id: string;
-    year: string;
-    startDate: DateTime | null;
-    endDate: DateTime | null;
-  } | null;
-}) {
+export function EditPersonPage() {
   const { personId } = Route.useParams();
 
   const [{ data, fetching, error }, refetchPerson] = useQuery({
     query: viewPersonPageDocument,
-    variables: { uuid: personId, marathonId: selectedMarathon?.id ?? "" },
-    pause: !selectedMarathon,
+    variables: { uuid: personId },
   });
 
   useQueryStatusWatcher({

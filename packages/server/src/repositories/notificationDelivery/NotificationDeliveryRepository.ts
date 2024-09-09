@@ -4,14 +4,12 @@ import {
 } from "./notificationDeliveryRepositoryUtils.js";
 
 import { NotificationError, Prisma, PrismaClient } from "@prisma/client";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { SortDirection } from "@ukdanceblue/common";
 import type { ExpoPushReceipt, ExpoPushTicket } from "expo-server-sdk";
 import type { DateTime } from "luxon";
-
-
 
 const notificationDeliveryBooleanKeys = [] as const;
 type NotificationDeliveryBooleanKey =
@@ -92,7 +90,9 @@ function normalizeReceiptErrorCode(
   return normalizedCode;
 }
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class NotificationDeliveryRepository {
   constructor(private prisma: PrismaClient) {}
 
@@ -132,8 +132,8 @@ export class NotificationDeliveryRepository {
 
     // THIS IS ONLY VALID SO LONG AS THE WHERE FOR receiptId IS NOT NULL
     return returnVal as (Omit<(typeof returnVal)[number], "receiptId"> & {
-        receiptId: NonNullable<(typeof returnVal)[number]["receiptId"]>;
-      })[];
+      receiptId: NonNullable<(typeof returnVal)[number]["receiptId"]>;
+    })[];
   }
 
   listNotificationDeliveries(

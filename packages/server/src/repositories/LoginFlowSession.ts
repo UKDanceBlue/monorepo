@@ -1,11 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import { DateTime } from "luxon";
 import { generators } from "openid-client";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 type LoginFlowSessionUniqueParam = { id: number } | { uuid: string };
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class LoginFlowSessionRepository {
   constructor(private prisma: PrismaClient) {}
 

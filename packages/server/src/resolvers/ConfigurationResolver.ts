@@ -27,7 +27,7 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 import { readFile } from "fs/promises";
@@ -82,7 +82,7 @@ class CreateConfigurationInput implements Partial<ConfigurationNode> {
 }
 
 @Resolver(() => ConfigurationNode)
-@Service()
+@Service([ConfigurationRepository])
 export class ConfigurationResolver {
   constructor(
     private readonly configurationRepository: ConfigurationRepository

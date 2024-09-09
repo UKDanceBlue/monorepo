@@ -24,7 +24,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 
@@ -96,7 +96,7 @@ class ListMarathonHoursArgs extends FilteredListQueryArgs<
 }) {}
 
 @Resolver(() => MarathonHourNode)
-@Service()
+@Service([MarathonHourRepository])
 export class MarathonHourResolver {
   constructor(
     private readonly marathonHourRepository: MarathonHourRepository

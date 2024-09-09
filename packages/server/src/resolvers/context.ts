@@ -15,7 +15,7 @@ import {
 } from "@ukdanceblue/common";
 import { ErrorCode } from "@ukdanceblue/common/error";
 import { Ok } from "ts-results-es";
-import { Container } from "typedi";
+import { Container } from "@freshgum/typedi";
 
 import type { ContextFunction } from "@apollo/server";
 import type { KoaContextFunctionArgument } from "@as-integrations/koa";
@@ -25,6 +25,7 @@ import type {
 } from "@ukdanceblue/common";
 import type { ConcreteResult } from "@ukdanceblue/common/error";
 import type { DefaultState } from "koa";
+import { superAdminLinkblue } from "#environment";
 
 export interface GraphQLContext extends AuthorizationContext {
   contextErrors: string[];
@@ -35,8 +36,7 @@ function isSuperAdmin(committeeRoles: EffectiveCommitteeRole[]): boolean {
     (role) =>
       // TODO: replace "=== Coordinator" with a check for just app&web, but that requires information about what kind of coordinator someone is
       role.identifier === CommitteeIdentifier.techCommittee &&
-      (role.role === CommitteeRole.Chair ||
-        role.role === CommitteeRole.Coordinator)
+      role.role === CommitteeRole.Chair
   );
 }
 
@@ -211,7 +211,9 @@ export const graphqlContextFunction: ContextFunction<
     );
     return structuredClone(defaultContext);
   }
-  let superAdmin = isSuperAdmin(contextWithUser.value.authorization.committees);
+  let superAdmin =
+    contextWithUser.value.authenticatedUser?.linkblue === superAdminLinkblue ||
+    isSuperAdmin(contextWithUser.value.authorization.committees);
   if (
     superAdmin &&
     ctx.request.headers["x-ukdb-masquerade"] &&
@@ -245,6 +247,19 @@ export const graphqlContextFunction: ContextFunction<
       return structuredClone(defaultContext);
     }
     superAdmin = false;
+  }
+
+  if (
+    superAdmin &&
+    !contextWithUser.value.authorization.committees.some(
+      (role) => role.identifier === CommitteeIdentifier.techCommittee
+    )
+  ) {
+    contextWithUser.value.authorization.committees.push({
+      identifier: CommitteeIdentifier.techCommittee,
+      role: CommitteeRole.Chair,
+    });
+    contextWithUser.value.authorization.dbRole = DbRole.Committee;
   }
 
   const finalContext: GraphQLContext = {

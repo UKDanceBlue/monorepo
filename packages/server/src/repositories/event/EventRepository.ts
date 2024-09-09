@@ -2,10 +2,9 @@ import { buildEventOrder, buildEventWhere } from "./eventRepositoryUtils.js";
 
 import { Prisma, PrismaClient } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 
 const eventBooleanKeys = [] as const;
 type EventBooleanKey = (typeof eventBooleanKeys)[number];
@@ -58,7 +57,9 @@ export type EventFilters = FilterItems<
 
 type UniqueEventParam = { id: number } | { uuid: string };
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class EventRepository {
   constructor(private prisma: PrismaClient) {}
 

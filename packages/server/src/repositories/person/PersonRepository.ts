@@ -30,10 +30,13 @@ import {
   NotFoundError,
 } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
+import {
+  MarathonRepository,
+  UniqueMarathonParam,
+} from "#repositories/marathon/MarathonRepository.js";
 import type { Committee, Membership, Person, Team } from "@prisma/client";
 import { SomePrismaError } from "#error/prisma.js";
 import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
@@ -80,11 +83,14 @@ export type UniquePersonParam =
       linkblue: string;
     };
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken, MembershipRepository, MarathonRepository])
 export class PersonRepository {
   constructor(
     private prisma: PrismaClient,
-    private membershipRepository: MembershipRepository
+    private membershipRepository: MembershipRepository,
+    private marathonRepository: MarathonRepository
   ) {}
 
   // Finders
@@ -196,6 +202,11 @@ export class PersonRepository {
     Result<EffectiveCommitteeRole[], RepositoryError | InvariantError>
   > {
     try {
+      const marathon = await this.marathonRepository.findActiveMarathon();
+      if (marathon.isErr()) {
+        return Err(marathon.error);
+      }
+
       const effectiveCommitteeRoles: EffectiveCommitteeRole[] = [];
 
       const committees = await this.prisma.membership.findMany({
@@ -205,6 +216,7 @@ export class PersonRepository {
             correspondingCommittee: {
               isNot: null,
             },
+            marathonId: marathon.value.id,
           },
           committeeRole: {
             not: null,
@@ -854,6 +866,176 @@ export class PersonRepository {
       } else {
         return handleRepositoryError(error);
       }
+    }
+  }
+
+  async bulkLoadPeople(
+    people: {
+      name: string;
+      email: string;
+      linkblue: string;
+      committee: CommitteeIdentifier | null | undefined;
+      role: CommitteeRole | null | undefined;
+    }[],
+    marathon: UniqueMarathonParam
+  ): Promise<
+    Result<Person[], RepositoryError | CompositeError<RepositoryError>>
+  > {
+    let marathonId: number;
+    if ("id" in marathon) {
+      marathonId = marathon.id;
+    } else {
+      const found = await this.prisma.marathon.findUnique({
+        where: marathon,
+        select: { id: true },
+      });
+      if (found == null) {
+        return Err(new NotFoundError({ what: "Marathon" }));
+      }
+      marathonId = found.id;
+    }
+
+    const committeeIds: Record<CommitteeIdentifier, number> = {} as Record<
+      CommitteeIdentifier,
+      number
+    >;
+    const committees = await this.prisma.committee.findMany({
+      where: {
+        correspondingTeams: {
+          some: {
+            marathonId: marathonId,
+          },
+        },
+      },
+      select: {
+        identifier: true,
+        id: true,
+      },
+    });
+    for (const committee of committees) {
+      committeeIds[committee.identifier] = committee.id;
+    }
+
+    const addToVice: {
+      name: string;
+      email: string;
+      linkblue: string;
+      committee: CommitteeIdentifier | null | undefined;
+      role: CommitteeRole | null | undefined;
+    }[] = [];
+
+    try {
+      const result = await this.prisma.$transaction(
+        people.map((person) => {
+          if (
+            person.committee === CommitteeIdentifier.overallCommittee ||
+            person.committee === CommitteeIdentifier.fundraisingCommittee ||
+            person.committee === CommitteeIdentifier.dancerRelationsCommittee
+          ) {
+            addToVice.push(person);
+          }
+
+          return this.prisma.person.upsert({
+            where: {
+              linkblue: person.linkblue,
+            },
+            create: {
+              name: person.name,
+              email: person.email,
+              linkblue: person.linkblue,
+              memberships:
+                person.committee && person.role
+                  ? {
+                      create: {
+                        team: {
+                          connect: {
+                            marathonId_correspondingCommitteeId: {
+                              marathonId: marathonId,
+                              correspondingCommitteeId:
+                                committeeIds[person.committee],
+                            },
+                          },
+                        },
+                        position:
+                          person.role === CommitteeRole.Chair
+                            ? MembershipPositionType.Captain
+                            : MembershipPositionType.Member,
+                        committeeRole: person.role,
+                      },
+                    }
+                  : undefined,
+            },
+            update: {
+              name: person.name,
+              email: person.email,
+              linkblue: person.linkblue,
+              memberships:
+                person.committee && person.role
+                  ? {
+                      create: {
+                        team: {
+                          connect: {
+                            marathonId_correspondingCommitteeId: {
+                              marathonId: marathonId,
+                              correspondingCommitteeId:
+                                committeeIds[person.committee],
+                            },
+                          },
+                        },
+                        position:
+                          person.role === CommitteeRole.Chair
+                            ? MembershipPositionType.Captain
+                            : MembershipPositionType.Member,
+                        committeeRole: person.role,
+                      },
+                    }
+                  : undefined,
+            },
+          });
+        })
+      );
+
+      for (const person of addToVice) {
+        await this.prisma.membership.upsert({
+          create: {
+            person: {
+              connect: {
+                email: person.email,
+              },
+            },
+            team: {
+              connect: {
+                marathonId_correspondingCommitteeId: {
+                  marathonId: marathonId,
+                  correspondingCommitteeId: committeeIds.viceCommittee,
+                },
+              },
+            },
+            position:
+              person.role === CommitteeRole.Chair
+                ? MembershipPositionType.Captain
+                : MembershipPositionType.Member,
+            committeeRole: person.role,
+          },
+          update: {
+            position:
+              person.role === CommitteeRole.Chair
+                ? MembershipPositionType.Captain
+                : MembershipPositionType.Member,
+            committeeRole: person.role,
+          },
+          where: {
+            personId_teamId: {
+              personId: result.find((r) => r.email === person.email)!.id,
+              teamId: marathonId,
+            },
+          },
+        });
+      }
+
+      return Ok(result);
+    } catch (error) {
+      return handleRepositoryError(error);
     }
   }
 

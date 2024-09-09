@@ -27,11 +27,11 @@ import {
 } from "@ukdanceblue/common/error";
 import { Err, Option, Result } from "ts-results-es";
 import { buildSchema } from "type-graphql";
-import { Constructable, Container } from "typedi";
+import { Container } from "@freshgum/typedi";
 
 import { fileURLToPath } from "url";
 
-import type { MiddlewareFn, NonEmptyArray } from "type-graphql";
+import type { MiddlewareFn } from "type-graphql";
 
 const schemaPath = fileURLToPath(
   new URL("../../../../schema.graphql", import.meta.url)
@@ -84,7 +84,7 @@ const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
   return result;
 };
 
-const resolvers: NonEmptyArray<Constructable<unknown>> = [
+const resolvers = [
   ConfigurationResolver,
   DeviceResolver,
   EventResolver,
@@ -103,19 +103,15 @@ const resolvers: NonEmptyArray<Constructable<unknown>> = [
   FundraisingAssignmentResolver,
   FundraisingEntryResolver,
   NodeResolver,
-];
+] as const;
 
 for (const service of resolvers) {
-  if (!Container.has(service)) {
-    logger.crit(`Failed to resolve service: "${service.name}"`);
+  try {
+    // @ts-expect-error This is a valid operation
+    Container.get(service);
+  } catch (error) {
+    logger.crit(`Failed to get service: "${service.name}"`, error);
     process.exit(1);
-  } else {
-    try {
-      Container.get(service);
-    } catch (error) {
-      logger.crit(`Failed to resolve service: "${service.name}"`, error);
-      process.exit(1);
-    }
   }
 }
 
@@ -123,6 +119,10 @@ export default await buildSchema({
   resolvers,
   emitSchemaFile: schemaPath,
   globalMiddlewares: [errorHandlingMiddleware],
-  container: Container,
+  container: {
+    get(someClass) {
+      return Container.get(someClass, false);
+    },
+  },
   validate: true,
 });

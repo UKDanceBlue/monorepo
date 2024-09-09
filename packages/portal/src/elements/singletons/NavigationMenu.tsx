@@ -5,10 +5,17 @@ import { themeConfigContext } from "@config/antThemeConfig";
 import { API_BASE_URL } from "@config/api";
 import { marathonContext } from "@config/marathonContext";
 import { useAntFeedback } from "@hooks/useAntFeedback";
-import { useLoginState } from "@hooks/useLoginState";
+import {
+  useAuthorizationRequirement,
+  useLoginState,
+} from "@hooks/useLoginState";
 import type { Register } from "@tanstack/react-router";
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
-import { checkAuthorization, defaultAuthorization } from "@ukdanceblue/common";
+import {
+  AccessLevel,
+  checkAuthorization,
+  defaultAuthorization,
+} from "@ukdanceblue/common";
 import { Button, Menu, Select } from "antd";
 import { useContext, useEffect, useState } from "react";
 
@@ -205,15 +212,6 @@ export const NavigationMenu = () => {
         },
         {
           type: "item",
-          key: "masquerade",
-          title: "Masquerade",
-          style: {
-            background: "transparent",
-          },
-          label: <MasqueradeSelector />,
-        },
-        {
-          type: "item",
           key: "selected-marathon",
           title: "Select Marathon",
           style: {
@@ -236,6 +234,17 @@ export const NavigationMenu = () => {
                 : loadingOption}
             </Select>
           ),
+        },
+        {
+          type: "item",
+          key: "masquerade",
+          title: "Masquerade",
+          style: {
+            background: "transparent",
+          },
+          label: useAuthorizationRequirement(AccessLevel.SuperAdmin) ? (
+            <MasqueradeSelector />
+          ) : null,
         },
       ]}
     />

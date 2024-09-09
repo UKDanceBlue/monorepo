@@ -23,6 +23,7 @@ import { Route as EventsIndexImport } from "./routes/events/index";
 import { Route as ConfigIndexImport } from "./routes/config/index";
 import { Route as TeamsCreateImport } from "./routes/teams/create";
 import { Route as PeopleCreateImport } from "./routes/people/create";
+import { Route as PeopleBulkImport } from "./routes/people/bulk";
 import { Route as NotificationsCreateImport } from "./routes/notifications/create";
 import { Route as MarathonCreateImport } from "./routes/marathon/create";
 import { Route as ImagesSplatImport } from "./routes/images/$";
@@ -38,6 +39,7 @@ import { Route as PeoplePersonIdEditImport } from "./routes/people/$personId/edi
 import { Route as NotificationsNotificationIdManageImport } from "./routes/notifications/$notificationId/manage";
 import { Route as MarathonMarathonIdEditImport } from "./routes/marathon/$marathonId/edit";
 import { Route as EventsEventIdEditImport } from "./routes/events/$eventId/edit";
+import { Route as TeamsTeamIdLayoutIndexImport } from "./routes/teams/$teamId/_layout/index";
 import { Route as TeamsTeamIdLayoutPointsImport } from "./routes/teams/$teamId/_layout/points";
 import { Route as TeamsTeamIdLayoutFundraisingImport } from "./routes/teams/$teamId/_layout/fundraising";
 import { Route as MarathonMarathonIdHoursAddImport } from "./routes/marathon/$marathonId/hours/add";
@@ -101,6 +103,11 @@ const TeamsCreateRoute = TeamsCreateImport.update({
 
 const PeopleCreateRoute = PeopleCreateImport.update({
   path: "/people/create",
+  getParentRoute: () => rootRoute,
+} as any);
+
+const PeopleBulkRoute = PeopleBulkImport.update({
+  path: "/people/bulk",
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -181,6 +188,11 @@ const EventsEventIdEditRoute = EventsEventIdEditImport.update({
   getParentRoute: () => rootRoute,
 } as any);
 
+const TeamsTeamIdLayoutIndexRoute = TeamsTeamIdLayoutIndexImport.update({
+  path: "/",
+  getParentRoute: () => TeamsTeamIdLayoutRoute,
+} as any);
+
 const TeamsTeamIdLayoutPointsRoute = TeamsTeamIdLayoutPointsImport.update({
   path: "/points",
   getParentRoute: () => TeamsTeamIdLayoutRoute,
@@ -249,6 +261,13 @@ declare module "@tanstack/react-router" {
       path: "/notifications/create";
       fullPath: "/notifications/create";
       preLoaderRoute: typeof NotificationsCreateImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/people/bulk": {
+      id: "/people/bulk";
+      path: "/people/bulk";
+      fullPath: "/people/bulk";
+      preLoaderRoute: typeof PeopleBulkImport;
       parentRoute: typeof rootRoute;
     };
     "/people/create": {
@@ -412,6 +431,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof TeamsTeamIdLayoutPointsImport;
       parentRoute: typeof TeamsTeamIdLayoutImport;
     };
+    "/teams/$teamId/_layout/": {
+      id: "/teams/$teamId/_layout/";
+      path: "/";
+      fullPath: "/teams/$teamId/";
+      preLoaderRoute: typeof TeamsTeamIdLayoutIndexImport;
+      parentRoute: typeof TeamsTeamIdLayoutImport;
+    };
     "/marathon/$marathonId/hours/$hourId/": {
       id: "/marathon/$marathonId/hours/$hourId/";
       path: "/marathon/$marathonId/hours/$hourId";
@@ -431,6 +457,7 @@ export const routeTree = rootRoute.addChildren({
   ImagesSplatRoute,
   MarathonCreateRoute,
   NotificationsCreateRoute,
+  PeopleBulkRoute,
   PeopleCreateRoute,
   TeamsCreateRoute,
   ConfigIndexRoute,
@@ -448,6 +475,7 @@ export const routeTree = rootRoute.addChildren({
     TeamsTeamIdLayoutRoute: TeamsTeamIdLayoutRoute.addChildren({
       TeamsTeamIdLayoutFundraisingRoute,
       TeamsTeamIdLayoutPointsRoute,
+      TeamsTeamIdLayoutIndexRoute,
     }),
     TeamsTeamIdEditRoute,
   }),
@@ -473,6 +501,7 @@ export const routeTree = rootRoute.addChildren({
         "/images/$",
         "/marathon/create",
         "/notifications/create",
+        "/people/bulk",
         "/people/create",
         "/teams/create",
         "/config/",
@@ -512,6 +541,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/notifications/create": {
       "filePath": "notifications/create.tsx"
+    },
+    "/people/bulk": {
+      "filePath": "people/bulk.tsx"
     },
     "/people/create": {
       "filePath": "people/create.tsx"
@@ -564,7 +596,8 @@ export const routeTree = rootRoute.addChildren({
       "parent": "/teams/$teamId",
       "children": [
         "/teams/$teamId/_layout/fundraising",
-        "/teams/$teamId/_layout/points"
+        "/teams/$teamId/_layout/points",
+        "/teams/$teamId/_layout/"
       ]
     },
     "/teams/$teamId/edit": {
@@ -592,6 +625,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/teams/$teamId/_layout/points": {
       "filePath": "teams/$teamId/_layout/points.tsx",
+      "parent": "/teams/$teamId/_layout"
+    },
+    "/teams/$teamId/_layout/": {
+      "filePath": "teams/$teamId/_layout/index.tsx",
       "parent": "/teams/$teamId/_layout"
     },
     "/marathon/$marathonId/hours/$hourId/": {

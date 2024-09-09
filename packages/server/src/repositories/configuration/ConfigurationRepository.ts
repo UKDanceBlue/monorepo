@@ -6,14 +6,11 @@ import {
 import { SimpleUniqueParam } from "#repositories/shared.js";
 
 import { Prisma, PrismaClient } from "@prisma/client";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { SortDirection } from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
-
-
-
 
 const configurationStringKeys = ["key", "value"] as const;
 type ConfigurationStringKey = (typeof configurationStringKeys)[number];
@@ -35,7 +32,9 @@ export type ConfigurationFilters = FilterItems<
   ConfigurationStringKey
 >;
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class ConfigurationRepository {
   constructor(private prisma: PrismaClient) {}
 

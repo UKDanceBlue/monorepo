@@ -35,7 +35,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 import Validator from "validator";
@@ -123,7 +123,7 @@ class NotificationDeliveriesArgs {
 }
 
 @Resolver(() => DeviceNode)
-@Service()
+@Service([DeviceRepository, PersonRepository])
 export class DeviceResolver {
   constructor(
     private readonly deviceRepository: DeviceRepository,

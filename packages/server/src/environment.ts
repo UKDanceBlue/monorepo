@@ -1,12 +1,13 @@
 import dotenv from "dotenv";
 import { Expo } from "expo-server-sdk";
-import { Container, Token } from "typedi";
+import { Container, Token } from "@freshgum/typedi";
 
 import { statSync } from "fs";
 import { readFile } from "fs/promises";
 import path, { isAbsolute } from "path";
 
 import type { SyslogLevels } from "#logging/standardLogging.js";
+import { expoServiceToken } from "#notification/expoServiceToken.js";
 
 dotenv.config({ override: true });
 
@@ -15,10 +16,11 @@ async function getEnv(
   def?: undefined
 ): Promise<string | undefined>;
 async function getEnv(name: string, def: string | null): Promise<string>;
+async function getEnv(name: string, def: symbol): Promise<string | symbol>;
 async function getEnv(
   name: string,
-  def?: string | null
-): Promise<string | undefined> {
+  def?: string | symbol | null
+): Promise<string | symbol | undefined> {
   let value;
   if (process.env[name]) {
     value = process.env[name];
@@ -69,6 +71,7 @@ const SERVE_PATH = getEnv("SERVE_PATH", null);
 const UPLOAD_PATH = getEnv("UPLOAD_PATH", null);
 const SERVE_ORIGIN = getEnv("SERVE_ORIGIN", null);
 const LOG_DIR = getEnv("LOG_DIR", null);
+const SUPER_ADMIN_LINKBLUE = getEnv("SUPER_ADMIN_LINKBLUE", Symbol());
 
 // Core env
 export const loggingLevel: SyslogLevels = (await LOGGING_LEVEL) as SyslogLevels;
@@ -96,14 +99,17 @@ export const msClientSecret = await MS_CLIENT_SECRET;
 // Expo access token
 export const expoAccessToken = await EXPO_ACCESS_TOKEN;
 
-Container.set(Expo, new Expo({ accessToken: expoAccessToken }));
+Container.setValue(
+  expoServiceToken,
+  new Expo({ accessToken: expoAccessToken })
+);
 
 // DBFunds
 export const dbFundsApiKeyToken = new Token<string>("DBFUNDS_API_KEY");
 export const dbFundsApiOriginToken = new Token<string>("DBFUNDS_API_ORIGIN");
 
-Container.set(dbFundsApiKeyToken, await DBFUNDS_API_KEY);
-Container.set(dbFundsApiOriginToken, await DBFUNDS_API_ORIGIN);
+Container.setValue(dbFundsApiKeyToken, await DBFUNDS_API_KEY);
+Container.setValue(dbFundsApiOriginToken, await DBFUNDS_API_ORIGIN);
 
 // File upload settings
 export const serveOrigin = await SERVE_ORIGIN;
@@ -144,3 +150,6 @@ if (!isUploadInServe) {
 
 // Log directory
 export const logDir = await LOG_DIR;
+
+// Super admin
+export const superAdminLinkblue = await SUPER_ADMIN_LINKBLUE;

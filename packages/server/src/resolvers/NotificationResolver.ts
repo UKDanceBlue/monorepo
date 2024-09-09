@@ -37,7 +37,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Inject, Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { NotificationError } from "@prisma/client";
 import type { GlobalId } from "@ukdanceblue/common";
@@ -217,12 +217,16 @@ class NotificationDeliveryIssueCount
 }
 
 @Resolver(() => NotificationNode)
-@Service()
+@Service([
+  NotificationRepository,
+  NotificationDeliveryRepository,
+  ExpoNotificationProvider,
+  NotificationScheduler,
+])
 export class NotificationResolver {
   constructor(
     private readonly notificationRepository: NotificationRepository,
     private readonly notificationDeliveryRepository: NotificationDeliveryRepository,
-    @Inject(() => ExpoNotificationProvider)
     private readonly notificationProvider: NotificationProviderJs.NotificationProvider,
     private readonly notificationScheduler: NotificationScheduler
   ) {}
@@ -565,7 +569,7 @@ export class NotificationResolver {
 }
 
 @Resolver(() => NotificationDeliveryNode)
-@Service()
+@Service([NotificationDeliveryRepository])
 export class NotificationDeliveryResolver {
   constructor(
     private readonly notificationDeliveryRepository: NotificationDeliveryRepository

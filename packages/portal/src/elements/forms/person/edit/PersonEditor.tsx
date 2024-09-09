@@ -1,4 +1,6 @@
+import { useMarathon } from "@config/marathonContext";
 import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
+import { useAuthorizationRequirement } from "@hooks/useLoginState";
 import type { Authorization } from "@ukdanceblue/common";
 import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
@@ -28,7 +30,6 @@ export function PersonEditor({
   personFragment,
   teamNamesFragment,
   refetchPerson,
-  authorization,
 }: {
   personFragment?: FragmentType<typeof PersonEditorFragment> | undefined | null;
   teamNamesFragment?:
@@ -37,8 +38,9 @@ export function PersonEditor({
   refetchPerson?: UseQueryExecute | undefined;
   authorization?: Authorization | undefined;
 }) {
-  const isAdmin =
-    (authorization?.accessLevel ?? AccessLevel.None) >= AccessLevel.Admin;
+  const selectedMarathon = useMarathon();
+
+  const isAdmin = useAuthorizationRequirement(AccessLevel.Admin);
 
   const { message } = App.useApp();
 
@@ -48,8 +50,11 @@ export function PersonEditor({
     }
   });
 
-  const teamNamesData =
-    getFragmentData(TeamNameFragment, teamNamesFragment) ?? [];
+  const teamNamesData = (
+    getFragmentData(TeamNameFragment, teamNamesFragment) ?? []
+  ).toSorted(({ marathon: { year } }) =>
+    year === selectedMarathon?.year ? 0 : 1
+  );
 
   const personData = getFragmentData(PersonEditorFragment, personFragment);
 
@@ -60,6 +65,11 @@ export function PersonEditor({
     if (!team.name.toLowerCase().includes(lowerCaptainSearch)) continue;
     captainOptions.push(
       <AutoComplete.Option key={team.id} value={team.id}>
+        {team.marathon.year === selectedMarathon?.year ? (
+          <b>{team.marathon.year} </b>
+        ) : (
+          `${team.marathon.year} `
+        )}
         {team.name}
       </AutoComplete.Option>
     );
@@ -72,6 +82,11 @@ export function PersonEditor({
     if (!team.name.toLowerCase().includes(lowerMembershipSearch)) continue;
     membershipOptions.push(
       <AutoComplete.Option key={team.id} value={team.id}>
+        {team.marathon.year === selectedMarathon?.year ? (
+          <b>{team.marathon.year} </b>
+        ) : (
+          `${team.marathon.year} `
+        )}
         {team.name}
       </AutoComplete.Option>
     );
@@ -178,10 +193,15 @@ export function PersonEditor({
             <>
               <List>
                 {field.state.value?.map((team) => {
-                  const { name, committeeIdentifier } =
-                    teamNamesData.find((option) => option.id === team.id) ?? {};
+                  const { name, committeeIdentifier, marathon } =
+                    personData.teams.find(
+                      (option) => option.team.id === team.id
+                    )?.team ??
+                    teamNamesData.find((option) => option.id === team.id) ??
+                    {};
                   return (
                     <List.Item key={team.id}>
+                      {marathon?.year ? `${marathon.year} ` : ""}
                       {name ?? team.id}
                       {committeeIdentifier &&
                         (isAdmin ? (
@@ -199,7 +219,6 @@ export function PersonEditor({
                             style={{ minWidth: "15ch", marginLeft: "1em" }}
                             title="Committee Role"
                           >
-                            <Select.Option value={null}>{null}</Select.Option>
                             <Select.Option value={CommitteeRole.Member}>
                               Member
                             </Select.Option>
@@ -256,10 +275,15 @@ export function PersonEditor({
             <>
               <List>
                 {field.state.value?.map((team) => {
-                  const { name, committeeIdentifier } =
-                    teamNamesData.find((option) => option.id === team.id) ?? {};
+                  const { name, committeeIdentifier, marathon } =
+                    personData.teams.find(
+                      (option) => option.team.id === team.id
+                    )?.team ??
+                    teamNamesData.find((option) => option.id === team.id) ??
+                    {};
                   return (
                     <List.Item key={team.id}>
+                      {marathon?.year ? `${marathon.year} ` : ""}
                       {name ?? team.id}
                       {committeeIdentifier &&
                         (isAdmin ? (
@@ -323,11 +347,24 @@ export function PersonEditor({
             </>
           )}
         />
-        <Form.Item wrapperCol={{ span: 32, offset: 8 }}>
-          <Button type="primary" htmlType="submit">
-            Save
-          </Button>
-        </Form.Item>
+        <formApi.Subscribe selector={({ errors }) => errors}>
+          {(errors) => (
+            <>
+              <Typography.Text type="danger">
+                {errors.join(", ")}
+              </Typography.Text>
+              <Form.Item wrapperCol={{ span: 32, offset: 8 }}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  disabled={errors.length > 0}
+                >
+                  Save
+                </Button>
+              </Form.Item>
+            </>
+          )}
+        </formApi.Subscribe>
       </Form>
     </Flex>
   );

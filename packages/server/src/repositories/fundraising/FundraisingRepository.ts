@@ -25,7 +25,7 @@ import {
   NotFoundError,
 } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { SortDirection } from "@ukdanceblue/common";
@@ -78,7 +78,9 @@ const defaultInclude = {
 export type FundraisingEntryUniqueParam = SimpleUniqueParam;
 export type FundraisingAssignmentUniqueParam = SimpleUniqueParam;
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class FundraisingEntryRepository {
   constructor(private readonly prisma: PrismaClient) {}
 

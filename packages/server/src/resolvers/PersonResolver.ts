@@ -21,6 +21,7 @@ import { TeamType } from "@prisma/client";
 import {
   AccessControl,
   AccessLevel,
+  CommitteeIdentifier,
   CommitteeMembershipNode,
   CommitteeRole,
   DbRole,
@@ -34,13 +35,14 @@ import {
   SortDirection,
 } from "@ukdanceblue/common";
 import {
+  ActionDeniedError,
   ConcreteError,
   ConcreteResult,
   extractNotFound,
   FormattedConcreteError,
 } from "@ukdanceblue/common/error";
 import { EmailAddressResolver } from "graphql-scalars";
-import { Ok, Option, Result } from "ts-results-es";
+import { Err, Ok, Option, Result } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -56,7 +58,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Container, Service } from "typedi";
+import { Container, Service } from "@freshgum/typedi";
 
 import type { GraphQLContext } from "#resolvers/context.js";
 import type { GlobalId } from "@ukdanceblue/common";
@@ -138,9 +140,26 @@ class SetPersonInput {
   @Field(() => [MemberOf], { nullable: true })
   captainOf?: MemberOf[];
 }
+@InputType()
+class BulkPersonInput {
+  @Field(() => String)
+  name!: string;
+
+  @Field(() => EmailAddressResolver)
+  email!: string;
+
+  @Field(() => String)
+  linkblue!: string;
+
+  @Field(() => CommitteeIdentifier, { nullable: true })
+  committee!: CommitteeIdentifier | null | undefined;
+
+  @Field(() => CommitteeRole, { nullable: true })
+  role!: CommitteeRole | null | undefined;
+}
 
 @Resolver(() => PersonNode)
-@Service()
+@Service([PersonRepository, MembershipRepository, FundraisingEntryRepository])
 export class PersonResolver {
   constructor(
     private readonly personRepository: PersonRepository,
@@ -252,8 +271,29 @@ export class PersonResolver {
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => PersonNode, { name: "createPerson" })
   async create(
-    @Arg("input") input: CreatePersonInput
+    @Arg("input") input: CreatePersonInput,
+    @Ctx() { authorization: { accessLevel } }: GraphQLContext
   ): Promise<ConcreteResult<PersonNode>> {
+    if (
+      (input.memberOf ?? []).some(
+        ({ committeeRole }) => committeeRole != null
+      ) &&
+      accessLevel < AccessLevel.Admin
+    ) {
+      return Err(
+        new ActionDeniedError("Only tech committee can set committee roles")
+      );
+    } else if (
+      (input.captainOf ?? []).some(
+        ({ committeeRole }) => committeeRole != null
+      ) &&
+      accessLevel < AccessLevel.Admin
+    ) {
+      return Err(
+        new ActionDeniedError("Only tech committee can set committee roles")
+      );
+    }
+
     const person = await this.personRepository.createPerson({
       name: input.name,
       email: input.email,
@@ -278,8 +318,29 @@ export class PersonResolver {
   @Mutation(() => PersonNode, { name: "setPerson" })
   async set(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
-    @Arg("input") input: SetPersonInput
+    @Arg("input") input: SetPersonInput,
+    @Ctx() { authorization: { accessLevel } }: GraphQLContext
   ): Promise<ConcreteResult<PersonNode>> {
+    if (
+      (input.memberOf ?? []).some(
+        ({ committeeRole }) => committeeRole != null
+      ) &&
+      accessLevel < AccessLevel.Admin
+    ) {
+      return Err(
+        new ActionDeniedError("Only tech committee can set committee roles")
+      );
+    } else if (
+      (input.captainOf ?? []).some(
+        ({ committeeRole }) => committeeRole != null
+      ) &&
+      accessLevel < AccessLevel.Admin
+    ) {
+      return Err(
+        new ActionDeniedError("Only tech committee can set committee roles")
+      );
+    }
+
     const row = await this.personRepository.updatePerson(
       {
         uuid: id,
@@ -303,6 +364,29 @@ export class PersonResolver {
       .toAsyncResult()
       .andThen((row) => personModelToResource(row, this.personRepository))
       .promise;
+  }
+
+  @AccessControl({ accessLevel: AccessLevel.SuperAdmin })
+  @Mutation(() => [PersonNode], { name: "bulkLoadPeople" })
+  async bulkLoad(
+    @Arg("people", () => [BulkPersonInput]) people: BulkPersonInput[],
+    @Arg("marathonId", () => GlobalIdScalar) marathonId: GlobalId
+  ): Promise<ConcreteResult<PersonNode[]>> {
+    const rows = await this.personRepository.bulkLoadPeople(people, {
+      uuid: marathonId.id,
+    });
+
+    return rows
+      .toAsyncResult()
+      .andThen(async (rows) =>
+        Result.all(
+          await Promise.all(
+            rows.map(
+              (row) => personModelToResource(row, this.personRepository).promise
+            )
+          )
+        )
+      ).promise;
   }
 
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })

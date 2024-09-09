@@ -37,7 +37,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 
@@ -99,7 +99,7 @@ class ListPointEntriesArgs extends FilteredListQueryArgs<
 }) {}
 
 @Resolver(() => PointEntryNode)
-@Service()
+@Service([PointEntryRepository, PersonRepository])
 export class PointEntryResolver {
   constructor(
     private readonly pointEntryRepository: PointEntryRepository,

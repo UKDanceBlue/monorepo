@@ -27,7 +27,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Container, Service } from "typedi";
+import { Container, Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 
@@ -53,7 +53,7 @@ const fundraisingAccess: AccessControlParam<FundraisingAssignmentNode> = {
 };
 
 @Resolver(() => FundraisingAssignmentNode)
-@Service()
+@Service([FundraisingEntryRepository, PersonRepository])
 export class FundraisingAssignmentResolver {
   constructor(
     private readonly fundraisingEntryRepository: FundraisingEntryRepository,

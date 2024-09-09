@@ -1,4 +1,5 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { useAuthorizationRequirement } from "@hooks/useLoginState";
 import { Link, useNavigate } from "@tanstack/react-router";
 import type { Authorization } from "@ukdanceblue/common";
 import {
@@ -26,6 +27,9 @@ export const PersonViewerFragment = graphql(/* GraphQL */ `
     teams {
       position
       team {
+        marathon {
+          year
+        }
         id
         name
       }
@@ -56,6 +60,10 @@ export function PersonViewer({
     },
   });
 
+  const canEditPerson = useAuthorizationRequirement(
+    AccessLevel.CommitteeChairOrCoordinator
+  );
+
   if (!personData) {
     return (
       <Empty description="Person not found" style={{ marginTop: "1em" }} />
@@ -66,26 +74,24 @@ export function PersonViewer({
     <Flex vertical gap="middle" align="center">
       <Typography.Title level={2}>
         {personData.name}
-        {authorization &&
-          authorization.accessLevel >=
-            AccessLevel.CommitteeChairOrCoordinator && (
-            <>
-              <Link
-                to="/people/$personId/edit"
-                params={{ personId: personData.id }}
-                color="#efefef"
-              >
-                <EditOutlined style={{ marginLeft: "1em" }} />
-              </Link>
-              <Button
-                style={{ display: "inline", marginLeft: "1em" }}
-                onClick={showModal}
-                icon={<DeleteOutlined />}
-                danger
-                shape="circle"
-              />
-            </>
-          )}
+        {canEditPerson && (
+          <>
+            <Link
+              to="/people/$personId/edit"
+              params={{ personId: personData.id }}
+              color="#efefef"
+            >
+              <EditOutlined style={{ marginLeft: "1em" }} />
+            </Link>
+            <Button
+              style={{ display: "inline", marginLeft: "1em" }}
+              onClick={showModal}
+              icon={<DeleteOutlined />}
+              danger
+              shape="circle"
+            />
+          </>
+        )}
       </Typography.Title>
       {PersonDeletePopup}
       <Descriptions
@@ -128,7 +134,7 @@ export function PersonViewer({
                     ) {
                       children = (
                         <Link
-                          to="/teams/$teamId"
+                          to="/teams/$teamId/points"
                           params={{ teamId: team.team.id }}
                         >
                           {team.position}
@@ -139,7 +145,7 @@ export function PersonViewer({
                     }
 
                     return {
-                      label: team.team.name,
+                      label: `${team.team.name} (${team.team.marathon.year})`,
                       key: team.team.id,
                       children,
                     };

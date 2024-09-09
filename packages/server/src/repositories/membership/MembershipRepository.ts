@@ -8,10 +8,9 @@ import { Membership, Person, PrismaClient, Team } from "@prisma/client";
 import { CommitteeRole, MembershipPositionType } from "@ukdanceblue/common";
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok, Result } from "ts-results-es";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 
 const membershipBooleanKeys = [] as const;
 type MembershipBooleanKey = (typeof membershipBooleanKeys)[number];
@@ -42,7 +41,9 @@ export type MembershipFilters = FilterItems<
 
 type UniqueMembershipParam = { id: number } | { uuid: string };
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class MembershipRepository {
   constructor(private prisma: PrismaClient) {}
 

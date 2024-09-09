@@ -5,5 +5,8 @@ export const TeamNameFragment = graphql(/* GraphQL */ `
     id
     name
     committeeIdentifier
+    marathon {
+      year
+    }
   }
 `);

@@ -1,9 +1,17 @@
-import { defaultAuthorization, roleToAccessLevel } from "@ukdanceblue/common";
+import {
+  checkAuthorization,
+  defaultAuthorization,
+  roleToAccessLevel,
+} from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { useMemo } from "react";
 import { Client, OperationResult, useQuery } from "urql";
 
-import type { Authorization } from "@ukdanceblue/common";
+import type {
+  AccessLevel,
+  Authorization,
+  AuthorizationRule,
+} from "@ukdanceblue/common";
 import { LoginStateQuery } from "@ukdanceblue/common/graphql-client-portal/raw-types";
 
 const loginStateDocument = graphql(/* GraphQL */ `
@@ -86,4 +94,22 @@ export function useLoginState(): PortalAuthData {
   });
 
   return useMemo(() => parseLoginState(result), [result]);
+}
+
+export function useAuthorizationRequirement(
+  ...rules: AuthorizationRule[] | [AccessLevel]
+): boolean {
+  const { authorization } = useLoginState();
+
+  if (!authorization) {
+    return false;
+  }
+
+  if (typeof rules[0] === "number") {
+    return authorization.accessLevel >= rules[0];
+  }
+
+  return (rules as AuthorizationRule[]).some((r) =>
+    checkAuthorization(r, authorization)
+  );
 }

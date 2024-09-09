@@ -6,7 +6,7 @@ import { RepositoryError } from "#repositories/shared.js";
 import { PrismaClient } from "@prisma/client";
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok, Result } from "ts-results-es";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { NotificationAudience } from "#notification/NotificationProvider.js";
@@ -28,7 +28,9 @@ export type DeviceFilters = FilterItems<
   DeviceStringKey
 >;
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken, PersonRepository])
 export class DeviceRepository {
   constructor(
     private prisma: PrismaClient,

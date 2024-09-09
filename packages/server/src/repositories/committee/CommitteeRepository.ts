@@ -28,7 +28,7 @@ import {
   toBasicError,
 } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Result } from "ts-results-es";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
@@ -57,7 +57,9 @@ type CommitteeUniqueParam =
   | SimpleUniqueParam
   | { identifier: CommitteeIdentifier };
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class CommitteeRepository {
   constructor(
     private readonly prisma: PrismaClient,

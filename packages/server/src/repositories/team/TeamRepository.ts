@@ -10,7 +10,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { TeamLegacyStatus } from "@ukdanceblue/common";
 import { BasicError, ConcreteResult } from "@ukdanceblue/common/error";
 import { None, Ok, Some, Option } from "ts-results-es";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
@@ -82,7 +82,9 @@ function makeMarathonWhere(param: MarathonParam[]) {
   };
 }
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken])
 export class TeamRepository {
   constructor(private prisma: PrismaClient) {}
 

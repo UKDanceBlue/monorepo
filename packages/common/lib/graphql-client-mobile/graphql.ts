@@ -91,6 +91,14 @@ export type AssignEntryToPersonInput = {
 
 export { AuthSource };
 
+export type BulkPersonInput = {
+  readonly committee?: InputMaybe<CommitteeIdentifier>;
+  readonly email: Scalars['EmailAddress']['input'];
+  readonly linkblue: Scalars['String']['input'];
+  readonly name: Scalars['String']['input'];
+  readonly role?: InputMaybe<CommitteeRole>;
+};
+
 export { CommitteeIdentifier };
 
 export type CommitteeMembershipNode = Node & {
@@ -942,6 +950,7 @@ export type Mutation = {
   readonly assignEntryToPerson: FundraisingAssignmentNode;
   readonly assignTeamToDbFundsTeam: Scalars['Void']['output'];
   readonly attachImageToFeedItem: FeedNode;
+  readonly bulkLoadPeople: ReadonlyArray<PersonNode>;
   readonly createConfiguration: CreateConfigurationResponse;
   readonly createConfigurations: CreateConfigurationResponse;
   readonly createEvent: CreateEventResponse;
@@ -1031,6 +1040,12 @@ export type MutationAssignTeamToDbFundsTeamArgs = {
 export type MutationAttachImageToFeedItemArgs = {
   feedItemUuid: Scalars['GlobalId']['input'];
   imageUuid: Scalars['GlobalId']['input'];
+};
+
+
+export type MutationBulkLoadPeopleArgs = {
+  marathonId: Scalars['GlobalId']['input'];
+  people: ReadonlyArray<BulkPersonInput>;
 };
 
 

@@ -14,7 +14,7 @@ import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js
 import { CompositeError, toBasicError } from "@ukdanceblue/common/error";
 import Cron from "croner";
 import { Err, None, Ok, type Result } from "ts-results-es";
-import { Container } from "typedi";
+import { Container } from "@freshgum/typedi";
 
 import type { PrismaError } from "#error/prisma.js";
 

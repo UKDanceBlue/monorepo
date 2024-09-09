@@ -39,7 +39,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { Prisma } from "@prisma/client";
 import type { GlobalId } from "@ukdanceblue/common";
@@ -194,7 +194,7 @@ class ListEventsArgs extends FilteredListQueryArgs<
   ],
 }) {}
 
-@Service()
+@Service([EventRepository, EventImagesRepository, FileManager])
 @Resolver(() => EventNode)
 export class EventResolver {
   constructor(

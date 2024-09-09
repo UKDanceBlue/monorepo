@@ -60,6 +60,14 @@ enum AuthSource {
   None
 }
 
+input BulkPersonInput {
+  committee: CommitteeIdentifier
+  email: EmailAddress!
+  linkblue: String!
+  name: String!
+  role: CommitteeRole
+}
+
 """The identifier for a committee"""
 enum CommitteeIdentifier {
   communityDevelopmentCommittee
@@ -994,6 +1002,7 @@ type Mutation {
   assignEntryToPerson(entryId: GlobalId!, input: AssignEntryToPersonInput!, personId: GlobalId!): FundraisingAssignmentNode!
   assignTeamToDbFundsTeam(dbFundsTeamDbNum: Int!, teamId: GlobalId!): Void!
   attachImageToFeedItem(feedItemUuid: GlobalId!, imageUuid: GlobalId!): FeedNode!
+  bulkLoadPeople(marathonId: GlobalId!, people: [BulkPersonInput!]!): [PersonNode!]!
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
   createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
   createEvent(input: CreateEventInput!): CreateEventResponse!

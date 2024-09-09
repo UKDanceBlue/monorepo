@@ -14,7 +14,7 @@ import {
 } from "@ukdanceblue/common/error";
 import { DateTime } from "luxon";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 
@@ -30,7 +30,9 @@ export type UniqueDbFundsTeamParam =
       marathon: { id: number };
     };
 
-@Service()
+import { prismaToken } from "#prisma";
+
+@Service([prismaToken, MarathonRepository])
 export class DBFundsRepository {
   constructor(
     private readonly prisma: PrismaClient,

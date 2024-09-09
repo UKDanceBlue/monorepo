@@ -33,13 +33,28 @@ import {
 import { ConcreteResult } from "@ukdanceblue/common/error";
 import { Ok } from "ts-results-es";
 import { Arg, Query, Resolver } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 import { FeedResolver } from "./FeedResolver.js";
 
 @Resolver(() => Node)
-@Service()
+@Service([
+  ConfigurationResolver,
+  DeviceResolver,
+  EventResolver,
+  FeedResolver,
+  FundraisingAssignmentResolver,
+  FundraisingEntryResolver,
+  ImageResolver,
+  MarathonHourResolver,
+  MarathonResolver,
+  NotificationResolver,
+  PersonResolver,
+  PointOpportunityResolver,
+  PointEntryResolver,
+  TeamResolver,
+])
 export class NodeResolver {
   constructor(
     private readonly configurationResolver: ConfigurationResolver,

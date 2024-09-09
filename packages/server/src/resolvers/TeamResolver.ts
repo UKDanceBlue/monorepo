@@ -59,7 +59,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { GlobalId, OptionalToNullable } from "@ukdanceblue/common";
 
@@ -153,7 +153,7 @@ class DbFundsTeamInfo {
 }
 
 @Resolver(() => TeamNode)
-@Service()
+@Service([TeamRepository, FundraisingEntryRepository, DBFundsRepository])
 export class TeamResolver {
   constructor(
     private teamRepository: TeamRepository,

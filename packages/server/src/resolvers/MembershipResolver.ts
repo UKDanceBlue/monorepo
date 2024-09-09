@@ -11,10 +11,10 @@ import {
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
 import { FieldResolver, Resolver, Root } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 @Resolver(() => MembershipNode)
-@Service()
+@Service([MembershipRepository, PersonRepository])
 export class MembershipResolver {
   constructor(
     private readonly membershipRepository: MembershipRepository,

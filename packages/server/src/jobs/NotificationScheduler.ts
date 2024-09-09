@@ -1,12 +1,10 @@
-
-
 import { logger } from "#logging/standardLogging.js";
 import { ExpoNotificationProvider } from "#notification/ExpoNotificationProvider.js";
 import * as NotificationProviderJs from "#notification/NotificationProvider.js";
 import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
 
 import Cron, { scheduledJobs } from "croner";
-import { Inject, Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { Notification } from "@prisma/client";
 
@@ -18,11 +16,10 @@ function makeScheduledJobsMap() {
   return new Map(scheduledJobs.map((job) => [job.name, job]));
 }
 
-@Service()
+@Service([NotificationRepository, ExpoNotificationProvider])
 export class NotificationScheduler {
   constructor(
     private readonly notificationRepository: NotificationRepository,
-    @Inject(() => ExpoNotificationProvider)
     private readonly notificationProvider: NotificationProviderJs.NotificationProvider
   ) {
     this.ensureNotificationScheduler();

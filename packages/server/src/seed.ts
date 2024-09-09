@@ -5,7 +5,7 @@ import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 import { CommitteeIdentifier, CommitteeRole } from "@ukdanceblue/common";
 import { FormattedConcreteError } from "@ukdanceblue/common/error";
-import { Container } from "typedi";
+import { Container } from "@freshgum/typedi";
 
 if (process.env.NODE_ENV !== "development") {
   throw new Error("Seeding is only allowed in development mode");

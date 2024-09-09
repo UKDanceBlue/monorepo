@@ -3438,6 +3438,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@freshgum/typedi@npm:^0.7.2":
+  version: 0.7.2
+  resolution: "@freshgum/typedi@npm:0.7.2"
+  dependencies:
+    type-fest: "npm:4.7.1"
+  checksum: 10/c9473203cb3ad4710e3fdab4316ad7708a37f267b9fb13dedc1066c23f5915289073d08d671b629b73f7f9862f2df14088b1196734d772a13dc3ffb99b816c8c
+  languageName: node
+  linkType: hard
+
 "@graphql-codegen/add@npm:^5.0.3":
   version: 5.0.3
   resolution: "@graphql-codegen/add@npm:5.0.3"
@@ -8886,6 +8895,7 @@ __metadata:
     "@as-integrations/koa": "npm:^1.1.1"
     "@azure/msal-node": "npm:^2.13.0"
     "@faker-js/faker": "npm:^8.4.1"
+    "@freshgum/typedi": "npm:^0.7.2"
     "@koa/cors": "npm:^5.0.0"
     "@koa/router": "npm:^13.0.0"
     "@prisma/client": "npm:^5.18.0"
@@ -8930,7 +8940,6 @@ __metadata:
     ts-node: "npm:^10.9.2"
     ts-results-es: "npm:^4.2.0"
     type-graphql: "npm:^2.0.0-rc.2"
-    typedi: "npm:^0.10.0"
     typescript: "npm:^5.5.4"
     utility-types: "npm:^3.11.0"
     validator: "npm:^13.12.0"
@@ -24897,6 +24906,13 @@ __metadata:
   version: 4.0.8
   resolution: "type-detect@npm:4.0.8"
   checksum: 10/5179e3b8ebc51fce1b13efb75fdea4595484433f9683bbc2dca6d99789dba4e602ab7922d2656f2ce8383987467f7770131d4a7f06a26287db0615d2f4c4ce7d
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:4.7.1":
+  version: 4.7.1
+  resolution: "type-fest@npm:4.7.1"
+  checksum: 10/ef21f317738080d71d8603a65bd7136e1e0246980b407e9fe6b4c35cc239b712dd737b06c391e7cde8213d8a733449930b6cc5a3417324b90dddeb84fa167629
   languageName: node
   linkType: hard
 

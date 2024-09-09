@@ -27,7 +27,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 @InputType()
 export class CreateFeedInput {
@@ -50,7 +50,7 @@ export class SetFeedInput {
 // TODO: Add access control
 
 @Resolver(() => FeedNode)
-@Service()
+@Service([FeedRepository, FileManager])
 export class FeedResolver {
   constructor(
     private readonly feedRepository: FeedRepository,

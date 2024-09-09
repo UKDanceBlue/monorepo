@@ -29,7 +29,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 
@@ -80,7 +80,7 @@ class ListMarathonsArgs extends FilteredListQueryArgs<
 }) {}
 
 @Resolver(() => MarathonNode)
-@Service()
+@Service([MarathonRepository, CommitteeRepository])
 export class MarathonResolver
   implements
     Record<

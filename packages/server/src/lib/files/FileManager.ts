@@ -6,7 +6,7 @@ import { serveOrigin } from "#environment";
 import { logger } from "#logging/standardLogging.js";
 import { FileRepository } from "#repositories/file/fileRepository.js";
 
-import { Service } from "typedi";
+import { Service } from "@freshgum/typedi";
 
 import { MIMEType } from "util";
 
@@ -20,7 +20,7 @@ const FILE_API = new URL("/api/file/download/", serveOrigin);
 
 logger.info(`Serving files from ${FILE_API.href}`);
 
-@Service()
+@Service([LocalStorageProvider, FileRepository])
 export class FileManager {
   constructor(
     private localStorage: LocalStorageProvider,
