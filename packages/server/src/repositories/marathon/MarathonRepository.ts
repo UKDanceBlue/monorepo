@@ -62,10 +62,14 @@ export type UniqueMarathonParam =
   | { year: string };
 
 import { prismaToken } from "#prisma";
+import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
 
-@Service([prismaToken])
+@Service([prismaToken, CommitteeRepository])
 export class MarathonRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(
+    private prisma: PrismaClient,
+    private committeeRepository: CommitteeRepository
+  ) {}
 
   async findMarathonByUnique(
     param: UniqueMarathonParam
@@ -176,6 +180,7 @@ export class MarathonRepository {
           endDate,
         },
       });
+      await this.committeeRepository.ensureCommittees([{ id: marathon.id }]);
       return Ok(marathon);
     } catch (error) {
       return handleRepositoryError(error);

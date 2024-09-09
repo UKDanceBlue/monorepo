@@ -15,7 +15,7 @@ import {
   TeamNode,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
-import { DateTimeISOResolver, VoidResolver } from "graphql-scalars";
+import { DateTimeISOResolver } from "graphql-scalars";
 import {
   Arg,
   Args,
@@ -170,7 +170,7 @@ export class MarathonResolver
     return marathon.map(marathonModelToResource);
   }
 
-  @Mutation(() => VoidResolver)
+  @Mutation(() => MarathonNode)
   async deleteMarathon(@Arg("uuid", () => GlobalIdScalar) { id }: GlobalId) {
     const marathon = await this.marathonRepository.deleteMarathon({ uuid: id });
     return marathon.map(marathonModelToResource);
