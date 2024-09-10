@@ -10,7 +10,6 @@ import { useMutation } from "urql";
 
 import type { DateTime } from "luxon";
 
-
 export const useNotificationManagerForm = ({
   uuid,
 }: {

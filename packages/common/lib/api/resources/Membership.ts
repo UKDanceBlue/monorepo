@@ -9,9 +9,7 @@ import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 
-
 import type { GlobalId } from "../scalars/GlobalId.js";
-
 
 export const MembershipPositionType = {
   Member: "Member",

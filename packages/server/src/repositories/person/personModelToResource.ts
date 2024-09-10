@@ -5,7 +5,6 @@ import type { RepositoryError } from "#repositories/shared.js";
 import type { PersonRepository } from "./PersonRepository.js";
 import type { Person } from "@prisma/client";
 
-
 export function personModelToResource(
   person: Person,
   personRepository: PersonRepository

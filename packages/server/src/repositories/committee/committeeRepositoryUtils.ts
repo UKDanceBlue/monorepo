@@ -8,8 +8,6 @@ import { SortDirection } from "@ukdanceblue/common";
 import type { CommitteeFilters } from "./CommitteeRepository.js";
 import type { Prisma } from "@prisma/client";
 
-
-
 export function buildCommitteeOrder(
   order: readonly [key: string, sort: SortDirection][] | null | undefined
 ) {

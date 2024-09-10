@@ -2,7 +2,6 @@ import { intervalFromSomething } from "../utility/time/intervalTools.js";
 
 import type { Interval } from "luxon";
 
-
 interface EventOccurrence {
   fullDay: boolean;
   interval: { readonly start: Date | string; readonly end: Date | string };

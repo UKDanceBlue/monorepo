@@ -19,7 +19,6 @@ import { useEffect, useRef, useState } from "react";
 import { universalCatch } from "../../logging";
 import { showMessage } from "../../util/alertUtils";
 
-
 /**
  * A row-based component showing a target name, their rank (if applicable), and their points
  */

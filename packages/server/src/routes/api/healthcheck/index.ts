@@ -2,7 +2,6 @@ import { prisma } from "../../../prisma.js";
 
 import Router from "@koa/router";
 
-
 const healthCheckRouter = new Router({ prefix: "/healthcheck" });
 
 healthCheckRouter.get("/", async (ctx) => {

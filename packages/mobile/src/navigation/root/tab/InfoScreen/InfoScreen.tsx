@@ -13,8 +13,6 @@ import {
 import { useReactNavigationTheme } from "../../../../theme";
 import HeaderImage from "./HeaderImage";
 
-
-
 /**
  * Component for home screen in main navigation
  */

@@ -12,8 +12,6 @@ import type {
 } from "./MarathonHourRepository.ts";
 import type { Prisma } from "@prisma/client";
 
-
-
 export function buildMarathonHourOrder(
   order:
     | readonly [key: MarathonHourOrderKeys, sort: SortDirection][]

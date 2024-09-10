@@ -7,9 +7,6 @@ import { ArgsType, Field, Int } from "type-graphql";
 import type { ListQueryType } from "../ListQueryTypes.js";
 import type { Node, OptionalToNullable } from "@ukdanceblue/common";
 
-
-
-
 @ArgsType()
 export class UnfilteredListQueryArgs<SortByKeys extends string = never>
   implements OptionalToNullable<Partial<ListQueryType<Node>>>

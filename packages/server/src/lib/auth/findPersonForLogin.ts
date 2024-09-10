@@ -5,7 +5,6 @@ import { MembershipPositionType } from "@ukdanceblue/common";
 import type { AuthSource, Prisma, PrismaClient } from "@prisma/client";
 import type { DbRole } from "@ukdanceblue/common";
 
-
 // TODO: rework this whole thing, it's pretty boated and confusing
 
 const include = {
@@ -62,7 +61,7 @@ export async function findPersonForLogin(
     if (!id) {
       continue;
     }
-     
+
     currentPerson = await client.person.findFirst({
       where: { authIdPairs: { some: { source, value: id } } },
       include,

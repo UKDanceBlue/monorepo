@@ -12,8 +12,6 @@ import type { UseQueryExecute } from "urql";
 import { SingleNotificationFragment } from "../SingleNotificationGQL";
 import { useNotificationManagerForm } from "./useNotificationManager";
 
-
-
 const confirmationModalProps: ModalFuncProps = {
   okText: "Yes",
   cancelText: "No",

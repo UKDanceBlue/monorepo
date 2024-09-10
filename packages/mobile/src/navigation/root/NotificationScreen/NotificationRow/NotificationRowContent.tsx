@@ -24,7 +24,6 @@ import { useWindowDimensions } from "react-native";
 
 import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
 
-
 const NonMemoizedNotificationRowContent = ({
   loading,
   notification,

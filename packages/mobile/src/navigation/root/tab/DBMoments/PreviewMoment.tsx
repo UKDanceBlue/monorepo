@@ -10,7 +10,6 @@ import { captureRef } from "react-native-view-shot";
 import { HiddenComponent } from "./HiddenComponent";
 import { useSaveMoment } from "./useSaveMoment";
 
-
 export const PreviewMoment = ({
   frontImg,
   backImg,

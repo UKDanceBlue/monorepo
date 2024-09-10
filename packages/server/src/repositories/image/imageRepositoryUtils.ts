@@ -9,8 +9,6 @@ import { SortDirection } from "@ukdanceblue/common";
 import type { ImageFilters } from "./ImageRepository.ts";
 import type { Prisma } from "@prisma/client";
 
-
-
 export function buildImageOrder(
   order: readonly [key: string, sort: SortDirection][] | null | undefined
 ) {

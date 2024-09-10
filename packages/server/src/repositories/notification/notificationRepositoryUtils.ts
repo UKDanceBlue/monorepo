@@ -12,8 +12,6 @@ import type {
 } from "./NotificationRepository.ts";
 import type { Prisma } from "@prisma/client";
 
-
-
 export function buildNotificationOrder(
   order:
     | readonly [key: NotificationOrderKeys, sort: SortDirection][]

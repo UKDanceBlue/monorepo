@@ -9,8 +9,6 @@ import {
 
 import { describe, expect, it } from "vitest";
 
-
-
 // TODO test the committee hierarchy system (i.e. overall and vice roles vs other committees)
 
 describe("roleToAccessLevel", () => {

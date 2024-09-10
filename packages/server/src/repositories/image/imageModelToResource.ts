@@ -5,7 +5,6 @@ import { ImageNode } from "@ukdanceblue/common";
 import type { FileManager } from "#files/FileManager.js";
 import type { File, Image } from "@prisma/client";
 
-
 export async function imageModelToResource(
   imageModel: Image,
   fileModel: File | undefined | null,

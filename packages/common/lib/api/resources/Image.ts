@@ -8,7 +8,6 @@ import { Field, Int, ObjectType } from "type-graphql";
 
 import type { GlobalId } from "../scalars/GlobalId.js";
 
-
 @ObjectType({
   implements: [Node],
 })

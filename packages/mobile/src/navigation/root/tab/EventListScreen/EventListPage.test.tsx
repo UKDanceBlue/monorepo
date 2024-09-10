@@ -4,8 +4,6 @@ import { describe, expect, it } from "vitest";
 import { renderWithNativeBase } from "../../../../../test-helpers/NativeBase";
 import { EventListPage } from "./EventListPage";
 
-
-
 describe("<EventListPage />", () => {
   it("renders correctly", () => {
     const tree = renderWithNativeBase(

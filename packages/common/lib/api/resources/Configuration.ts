@@ -8,9 +8,7 @@ import { DateTimeISOResolver } from "graphql-scalars";
 import { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
-
 import type { GlobalId } from "../scalars/GlobalId.js";
-
 
 /*
 The way configurations work is that there can be n number of configurations,

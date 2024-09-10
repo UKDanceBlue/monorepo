@@ -85,25 +85,25 @@ export type TypeOfTypeNames =
 export type TypeOfMap<T extends TypeOfTypeNames> = T extends "undefined"
   ? undefined
   : T extends "object"
-  ? object
-  : T extends "boolean"
-  ? boolean
-  : T extends "number"
-  ? number
-  : T extends "bigint"
-  ? bigint
-  : T extends "string"
-  ? string
-  : T extends "symbol"
-  ? symbol
-  : never;
+    ? object
+    : T extends "boolean"
+      ? boolean
+      : T extends "number"
+        ? number
+        : T extends "bigint"
+          ? bigint
+          : T extends "string"
+            ? string
+            : T extends "symbol"
+              ? symbol
+              : never;
 
 export type RecursivePartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]
     ? RecursivePartial<U>[]
     : T[P] extends object
-    ? RecursivePartial<T[P]>
-    : T[P];
+      ? RecursivePartial<T[P]>
+      : T[P];
 };
 export type OptionalNullOrUndefined<T> = Partial<{
   [K in keyof T]: NonNullable<T[K]> | null | undefined;
@@ -123,8 +123,8 @@ export type OptionalToNullable<T> = T extends object
       [K in keyof T]: T[K] extends NonNullable<T[K]> ? T[K] : T[K] | null;
     }
   : T extends NonNullable<T>
-  ? T
-  : T | null;
+    ? T
+    : T | null;
 
 export type OmitNever<T> = {
   [K in keyof T as T[K] extends never ? never : K]: T[K];

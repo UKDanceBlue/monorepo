@@ -9,7 +9,6 @@ import { universalCatch } from "../../logging";
 import { showMessage } from "../../util/alertUtils";
 import AudioPlayer from "../AudioPlayer";
 
-
 /**
  * A row-based component showing a target name, their rank (if applicable), and their points
  */
@@ -47,8 +46,8 @@ const PodcastPlayer = () => {
           a.dateTimePublished > b.dateTimePublished
             ? -1
             : a.dateTimePublished > b.dateTimePublished
-            ? 1
-            : 0
+              ? 1
+              : 0
         );
       const mostRecentPodcast =
         mostRecentPodcasts.length > 0 ? mostRecentPodcasts[0] : undefined;

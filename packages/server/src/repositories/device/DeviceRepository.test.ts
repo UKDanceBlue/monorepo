@@ -4,8 +4,6 @@ import { makePrismaMock } from "#repositories/../testing/PrismaMock.js";
 
 import { beforeEach, describe, expect, it } from "vitest";
 
-
-
 describe("deviceRepository", () => {
   const { prismaMock, resetMocks } = makePrismaMock();
 

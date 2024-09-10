@@ -29,7 +29,6 @@ import { useMemo } from "react";
 
 import { ProfileFooter } from "./ProfileFooter";
 
-
 export const ProfileScreenAuthFragment = graphql(/* GraphQL */ `
   fragment ProfileScreenAuthFragment on LoginState {
     dbRole

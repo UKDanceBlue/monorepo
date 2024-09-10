@@ -18,7 +18,6 @@ import type {
   StringFilterItemInterface,
 } from "@ukdanceblue/common";
 
-
 @InputType()
 export abstract class FilterItem<Field extends string, V>
   implements FilterItemInterface<Field, V>

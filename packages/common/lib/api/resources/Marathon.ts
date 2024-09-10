@@ -7,10 +7,8 @@ import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { DateTimeISOResolver } from "graphql-scalars";
 import { Field, ObjectType } from "type-graphql";
 
-
 import type { GlobalId } from "../scalars/GlobalId.js";
 import type { DateTime } from "luxon";
-
 
 @ObjectType({
   implements: [Node],

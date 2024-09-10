@@ -6,7 +6,6 @@ import { DateTime } from "luxon";
 
 import type { Context } from "koa";
 
-
 export const demoLogin = async (ctx: Context) => {
   let redirectTo = "/";
   const queryRedirectTo = Array.isArray(ctx.query.redirectTo)
