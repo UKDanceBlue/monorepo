@@ -4,16 +4,15 @@ import { useContext, useState } from "react";
 
 import { themeConfigContext } from "./antThemeConfig";
 
-
 function makeAntDesignTheme({ dark }: { dark: boolean }): ThemeConfig {
   return {
     token: {
-      // Seed Token
       colorPrimary: "#0032A0",
-      borderRadius: 2,
-
-      // Alias Token
-      colorBgContainer: dark ? undefined : "#f6ffed",
+      colorBgBase: dark ? "#000810" : "#eef",
+      borderRadiusXS: 2,
+      borderRadiusSM: 4,
+      borderRadius: 8,
+      borderRadiusLG: 12,
     },
     algorithm: dark ? theme.darkAlgorithm : theme.defaultAlgorithm,
   };
