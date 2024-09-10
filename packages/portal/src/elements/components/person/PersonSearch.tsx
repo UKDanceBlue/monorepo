@@ -1,7 +1,8 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
+import type { GetRef } from "antd";
 import { AutoComplete, type AutoCompleteProps } from "antd";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQuery } from "urql";
 
 const personSearchDocument = graphql(/* GraphQL */ `
@@ -23,11 +24,15 @@ export function PersonSearch({
   onSelect,
   ...props
 }: {
-  onSelect?: (value: {
-    uuid: string;
-    name: string | undefined;
-    linkblue: string | undefined;
-  }) => void;
+  onSelect?: (
+    value: {
+      uuid: string;
+      name: string | undefined;
+      linkblue: string | undefined;
+    },
+    ref: GetRef<typeof AutoComplete> | null,
+    clear: () => void
+  ) => void;
 } & Omit<AutoCompleteProps, "options" | "onSelect" | "onSearch">) {
   const [search, setSearch] = useState("");
   const [{ data, fetching, error }] = useQuery({
@@ -35,7 +40,10 @@ export function PersonSearch({
     variables: {
       search,
     },
+    pause: search.length < 3,
   });
+
+  const autocompleteRef = useRef<GetRef<typeof AutoComplete>>(null);
 
   const { resetWatcher } = useQueryStatusWatcher({
     error,
@@ -60,22 +68,32 @@ export function PersonSearch({
     });
   }
 
+  const [selectedName, setSelectedName] = useState<string | undefined>();
+
   return (
     <AutoComplete
       {...props}
       options={options}
       onSearch={(value) => {
+        setSelectedName(undefined);
         setSearch(value);
         resetWatcher();
       }}
+      ref={autocompleteRef}
+      value={selectedName}
       onSelect={(value) => {
         const option = options.find((option) => option.value === value);
         if (option) {
-          onSelect?.({
-            uuid: option.person.id,
-            name: option.person.name ?? undefined,
-            linkblue: option.person.linkblue ?? undefined,
-          });
+          onSelect?.(
+            {
+              uuid: option.person.id,
+              name: option.person.name ?? undefined,
+              linkblue: option.person.linkblue ?? undefined,
+            },
+            autocompleteRef.current,
+            () => setSelectedName(undefined)
+          );
+          setSelectedName(option.label ?? undefined);
         }
       }}
     />

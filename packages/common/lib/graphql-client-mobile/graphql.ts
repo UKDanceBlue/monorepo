@@ -1278,8 +1278,8 @@ export type Node = {
 export type NotificationAudienceInput = {
   readonly all?: InputMaybe<Scalars['Boolean']['input']>;
   readonly memberOfTeamType?: InputMaybe<TeamType>;
-  readonly memberOfTeams?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
-  readonly users?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  readonly memberOfTeams?: InputMaybe<ReadonlyArray<Scalars['GlobalId']['input']>>;
+  readonly users?: InputMaybe<ReadonlyArray<Scalars['GlobalId']['input']>>;
 };
 
 /** The number of delivery issues for a notification, broken down by type. */
@@ -1659,7 +1659,7 @@ export type Query = {
   readonly notificationDeliveries: ListNotificationDeliveriesResponse;
   readonly notifications: ListNotificationsResponse;
   readonly person: PersonNode;
-  readonly personByLinkBlue: PersonNode;
+  readonly personByLinkBlue?: Maybe<PersonNode>;
   readonly pointEntries: ListPointEntriesResponse;
   readonly pointEntry: GetPointEntryByUuidResponse;
   readonly pointOpportunities: ListPointOpportunitiesResponse;

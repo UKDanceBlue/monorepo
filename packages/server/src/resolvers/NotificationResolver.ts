@@ -65,11 +65,11 @@ class NotificationAudienceInput {
   @Field(() => TeamType, { nullable: true })
   memberOfTeamType?: TeamType | null;
 
-  @Field(() => [String], { nullable: true })
-  memberOfTeams?: string[] | null;
+  @Field(() => [GlobalIdScalar], { nullable: true })
+  memberOfTeams?: GlobalId[] | null;
 
-  @Field(() => [String], { nullable: true })
-  users?: string[] | null;
+  @Field(() => [GlobalIdScalar], { nullable: true })
+  users?: GlobalId[] | null;
 }
 
 @ArgsType()
@@ -356,8 +356,8 @@ export class NotificationResolver {
       args.audience.all
         ? "all"
         : {
-            memberOfTeamIds: args.audience.memberOfTeams ?? undefined,
-            personIds: args.audience.users ?? undefined,
+            memberOfTeamIds: args.audience.memberOfTeams?.map((id) => id.id),
+            personIds: args.audience.users?.map((id) => id.id),
             memberOfTeamType: args.audience.memberOfTeamType ?? undefined,
           }
     );
