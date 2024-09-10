@@ -85,7 +85,7 @@ export function stringifyAccessLevel(val: unknown): string {
       return "Admin";
     }
     case AccessLevel.SuperAdmin: {
-      return "God Emperor of DanceBlue";
+      return "God Emperor of the DanceBlue App";
     }
   }
 }
