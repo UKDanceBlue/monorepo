@@ -22,8 +22,6 @@ import type { RootStackParamList } from "../types/navigationTypes";
 
 const linkingPrefixes = [
   createLinkingURL("/"),
-  // "https://*.danceblue.org",
-  // "https://danceblue.org"
 ];
 
 export const FilledNavigationContainer = () => {
