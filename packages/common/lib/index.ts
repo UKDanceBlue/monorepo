@@ -41,8 +41,6 @@ export * from "./api/filtering/list-query-args/UnfilteredListQueryArgs.js";
 export * from "./api/filtering/list-query-args/common.js";
 export * from "./api/filtering/list-query-args/registerFilterKeyEnums.js";
 
-export * from "./ui/color.js";
-
 /*
 Note:
 If the .js is missing in a bunch of places, use this regex to replace:
