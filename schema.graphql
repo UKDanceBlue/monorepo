@@ -1064,8 +1064,8 @@ scalar NonNegativeInt
 input NotificationAudienceInput {
   all: Boolean
   memberOfTeamType: TeamType
-  memberOfTeams: [String!]
-  users: [String!]
+  memberOfTeams: [GlobalId!]
+  users: [GlobalId!]
 }
 
 """The number of delivery issues for a notification, broken down by type."""
@@ -1863,7 +1863,7 @@ type Query {
     stringFilters: [NotificationResolverKeyedStringFilterItem!]
   ): ListNotificationsResponse!
   person(uuid: GlobalId!): PersonNode!
-  personByLinkBlue(linkBlueId: String!): PersonNode!
+  personByLinkBlue(linkBlueId: String!): PersonNode
   pointEntries(
     """The boolean filters to apply to the query"""
     booleanFilters: Void

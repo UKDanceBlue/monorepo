@@ -28,6 +28,7 @@ import {
   InvalidArgumentError,
   InvariantError,
   NotFoundError,
+  optionOf,
 } from "@ukdanceblue/common/error";
 import {
   AsyncResult,
@@ -140,13 +141,10 @@ export class PersonRepository {
 
   async findPersonByUnique(
     param: UniquePersonParam
-  ): Promise<Result<Person, RepositoryError>> {
+  ): Promise<Result<Option<Person>, RepositoryError>> {
     try {
       const row = await this.prisma.person.findUnique({ where: param });
-      if (!row) {
-        return Err(new NotFoundError({ what: "Person" }));
-      }
-      return Ok(row);
+      return Ok(optionOf(row));
     } catch (error) {
       return handleRepositoryError(error);
     }

@@ -40,9 +40,10 @@ import {
   ConcreteResult,
   extractNotFound,
   FormattedConcreteError,
+  NotFoundError,
 } from "@ukdanceblue/common/error";
 import { EmailAddressResolver } from "graphql-scalars";
-import { Err, Ok, Option, Result } from "ts-results-es";
+import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -172,7 +173,9 @@ export class PersonResolver {
   async getByUuid(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<PersonNode>> {
-    const row = await this.personRepository.findPersonByUnique({ uuid: id });
+    const row = (
+      await this.personRepository.findPersonByUnique({ uuid: id })
+    ).andThen((row) => row.toResult(new NotFoundError({ what: "Person" })));
 
     return row
       .toAsyncResult()
@@ -181,18 +184,23 @@ export class PersonResolver {
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
-  @Query(() => PersonNode, { name: "personByLinkBlue" })
+  @Query(() => PersonNode, { name: "personByLinkBlue", nullable: true })
   async getByLinkBlueId(
     @Arg("linkBlueId") linkBlueId: string
-  ): Promise<ConcreteResult<PersonNode>> {
+  ): Promise<ConcreteResult<Option<PersonNode>>> {
     const row = await this.personRepository.findPersonByUnique({
       linkblue: linkBlueId,
     });
 
-    return row
-      .toAsyncResult()
-      .andThen((row) => personModelToResource(row, this.personRepository))
-      .promise;
+    if (row.isErr()) {
+      return Err(row.error);
+    }
+    if (row.value.isNone()) {
+      return Ok(None);
+    }
+    return personModelToResource(row.value.value, this.personRepository).map(
+      (val) => Some(val)
+    ).promise;
   }
 
   @AccessControl({ accessLevel: AccessLevel.Committee })
