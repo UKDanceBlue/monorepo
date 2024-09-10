@@ -27,7 +27,7 @@ import {
   NotFoundError,
   toBasicError,
 } from "@ukdanceblue/common/error";
-import { Err, None, Ok, Result } from "ts-results-es";
+import { AsyncResult, Err, None, Ok, Result } from "ts-results-es";
 import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
@@ -120,8 +120,11 @@ export class CommitteeRepository {
       }
 
       if (!marathonParam) {
-        const latestMarathon =
-          await this.marathonRepository.findActiveMarathon();
+        const latestMarathon = await new AsyncResult(
+          this.marathonRepository.findActiveMarathon()
+        ).andThen((option) =>
+          option.toResult(new NotFoundError({ what: "active marathon" }))
+        ).promise;
         if (latestMarathon.isErr()) {
           return Err(latestMarathon.error);
         }

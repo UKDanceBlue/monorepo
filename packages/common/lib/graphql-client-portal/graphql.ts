@@ -968,7 +968,7 @@ export type Mutation = {
   readonly deleteFeedItem: Scalars['Boolean']['output'];
   readonly deleteFundraisingAssignment: FundraisingAssignmentNode;
   readonly deleteImage: DeleteImageResponse;
-  readonly deleteMarathon: Scalars['Void']['output'];
+  readonly deleteMarathon: MarathonNode;
   readonly deleteMarathonHour: Scalars['Void']['output'];
   readonly deleteNotification: DeleteNotificationResponse;
   readonly deletePerson: PersonNode;
@@ -1630,6 +1630,7 @@ export type Query = {
   readonly allConfigurations: GetAllConfigurationsResponse;
   readonly auditLog: Scalars['String']['output'];
   readonly configuration: GetConfigurationByUuidResponse;
+  /** The marathon that is currently happening, i.e. the marathon with the latest start date that has not yet ended. */
   readonly currentMarathon?: Maybe<MarathonNode>;
   readonly currentMarathonHour?: Maybe<MarathonHourNode>;
   readonly dbFundsTeams: ReadonlyArray<DbFundsTeamInfo>;
@@ -1644,6 +1645,7 @@ export type Query = {
   readonly fundraisingEntry: FundraisingEntryNode;
   readonly image: GetImageByUuidResponse;
   readonly images: ListImagesResponse;
+  /** The most recent marathon, regardless of whether it is currently happening, i.e. the marathon with the latest year. */
   readonly latestMarathon?: Maybe<MarathonNode>;
   readonly listPeople: ListPeopleResponse;
   readonly loginState: LoginState;

@@ -32,6 +32,7 @@ import {
 import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
+import { Option } from "ts-results-es";
 
 @ObjectType("ListMarathonsResponse", {
   implements: AbstractGraphQLPaginatedResponse<MarathonNode[]>,
@@ -135,16 +136,24 @@ export class MarathonResolver
     });
   }
 
-  @Query(() => MarathonNode, { nullable: true })
-  async currentMarathon() {
+  @Query(() => MarathonNode, {
+    nullable: true,
+    description:
+      "The marathon that is currently happening, i.e. the marathon with the latest start date that has not yet ended.",
+  })
+  async currentMarathon(): Promise<ConcreteResult<Option<MarathonNode>>> {
     const marathon = await this.marathonRepository.findCurrentMarathon();
-    return marathon.map(marathonModelToResource);
+    return marathon.map((m) => m.map(marathonModelToResource));
   }
 
-  @Query(() => MarathonNode, { nullable: true })
-  async latestMarathon() {
+  @Query(() => MarathonNode, {
+    nullable: true,
+    description:
+      "The most recent marathon, regardless of whether it is currently happening, i.e. the marathon with the latest year.",
+  })
+  async latestMarathon(): Promise<ConcreteResult<Option<MarathonNode>>> {
     const marathon = await this.marathonRepository.findActiveMarathon();
-    return marathon.map(marathonModelToResource);
+    return marathon.map((m) => m.map(marathonModelToResource));
   }
 
   @Mutation(() => MarathonNode)
