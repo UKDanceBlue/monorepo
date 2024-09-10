@@ -8680,19 +8680,19 @@ __metadata:
     "@types/luxon": "npm:^3.4.2"
     "@types/react": "npm:~18.3.4"
     "@types/validator": "npm:^13.12.0"
-    class-validator: "npm:^0.14.0"
+    class-validator: "npm:^0.14.1"
     graphql: "npm:^16.9.0"
     graphql-scalars: "npm:^1.23.0"
     htmlparser2: "npm:^9.1.0"
     http-status-codes: "npm:^2.3.0"
-    luxon: "npm:^3.4.4"
-    reflect-metadata: "npm:^0.2.0"
+    luxon: "npm:^3.5.0"
+    reflect-metadata: "npm:^0.2.2"
     ts-results-es: "npm:^4.2.0"
-    type-graphql: "npm:^2.0.0-beta.3"
+    type-graphql: "npm:^2.0.0-rc.2"
     typedi: "npm:^0.10.0"
     typescript: "npm:^5.5.4"
-    utility-types: "npm:^3.10.0"
-    validator: "npm:^13.9.0"
+    utility-types: "npm:^3.11.0"
+    validator: "npm:^13.12.0"
     vitest: "npm:^2.0.5"
   languageName: unknown
   linkType: soft
@@ -11190,7 +11190,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"class-validator@npm:^0.14.0, class-validator@npm:^0.14.1":
+"class-validator@npm:^0.14.1":
   version: 0.14.1
   resolution: "class-validator@npm:0.14.1"
   dependencies:
@@ -17965,7 +17965,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:^3.4.4, luxon@npm:^3.5.0":
+"luxon@npm:^3.5.0":
   version: 3.5.0
   resolution: "luxon@npm:3.5.0"
   checksum: 10/48f86e6c1c96815139f8559456a3354a276ba79bcef0ae0d4f2172f7652f3ba2be2237b0e103b8ea0b79b47715354ac9fac04eb1db3485dcc72d5110491dd47f
@@ -22334,7 +22334,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"reflect-metadata@npm:^0.2.0, reflect-metadata@npm:^0.2.2":
+"reflect-metadata@npm:^0.2.2":
   version: 0.2.2
   resolution: "reflect-metadata@npm:0.2.2"
   checksum: 10/1c93f9ac790fea1c852fde80c91b2760420069f4862f28e6fae0c00c6937a56508716b0ed2419ab02869dd488d123c4ab92d062ae84e8739ea7417fae10c4745
@@ -24964,7 +24964,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-graphql@npm:^2.0.0-beta.3, type-graphql@npm:^2.0.0-rc.2":
+"type-graphql@npm:^2.0.0-rc.2":
   version: 2.0.0-rc.2
   resolution: "type-graphql@npm:2.0.0-rc.2"
   dependencies:
@@ -25522,7 +25522,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"utility-types@npm:^3.10.0, utility-types@npm:^3.11.0":
+"utility-types@npm:^3.11.0":
   version: 3.11.0
   resolution: "utility-types@npm:3.11.0"
   checksum: 10/a3c51463fc807ed04ccc8b5d0fa6e31f3dcd7a4cbd30ab4bc6d760ce5319dd493d95bf04244693daf316f97e9ab2a37741edfed8748ad38572a595398ad0fdaf
