@@ -10,7 +10,6 @@ import { Issuer } from "openid-client";
 import type { Request } from "koa";
 import type { Client } from "openid-client";
 
-
 export async function makeOidcClient(req: Request): Promise<Client> {
   const forwardedProto = req.get("x-forwarded-proto");
   const url = req.URL;
@@ -18,7 +17,9 @@ export async function makeOidcClient(req: Request): Promise<Client> {
     url.protocol = forwardedProto;
   } else if (
     isDevelopment &&
-    (url.host.includes("localhost") || url.host.includes("127.0.0.1"))
+    (url.host.includes("localhost") ||
+      url.host.includes("127.0.0.1") ||
+      url.host.startsWith("100.10"))
   ) {
     url.protocol = "http";
   } else {

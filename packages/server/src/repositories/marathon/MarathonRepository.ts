@@ -9,8 +9,8 @@ import {
 } from "#repositories/shared.js";
 
 import { Marathon, MarathonHour, Prisma, PrismaClient } from "@prisma/client";
-import { NotFoundError } from "@ukdanceblue/common/error";
-import { Err, Ok, Result } from "ts-results-es";
+import { NotFoundError, optionOf } from "@ukdanceblue/common/error";
+import { Err, Ok, Option, Result } from "ts-results-es";
 import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
@@ -81,30 +81,28 @@ export class MarathonRepository {
     }
   }
 
-  async findCurrentMarathon(): Promise<Result<Marathon, RepositoryError>> {
+  async findCurrentMarathon(): Promise<
+    Result<Option<Marathon>, RepositoryError>
+  > {
     try {
       const marathon = await this.prisma.marathon.findFirst({
         orderBy: { year: "desc" },
         where: { startDate: { lte: new Date() }, endDate: { gte: new Date() } },
       });
-      if (!marathon) {
-        return Err(new NotFoundError({ what: "Marathon" }));
-      }
-      return Ok(marathon);
+      return Ok(optionOf(marathon));
     } catch (error) {
       return handleRepositoryError(error);
     }
   }
 
-  async findActiveMarathon(): Promise<Result<Marathon, RepositoryError>> {
+  async findActiveMarathon(): Promise<
+    Result<Option<Marathon>, RepositoryError>
+  > {
     try {
       const marathon = await this.prisma.marathon.findFirst({
         orderBy: { year: "desc" },
       });
-      if (!marathon) {
-        return Err(new NotFoundError({ what: "Marathon" }));
-      }
-      return Ok(marathon);
+      return Ok(optionOf(marathon));
     } catch (error) {
       return handleRepositoryError(error);
     }
