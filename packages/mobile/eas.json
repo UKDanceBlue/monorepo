@@ -1,7 +1,8 @@
 {
   "cli": {
     "version": ">=10.2.2",
-    "requireCommit": true
+    "requireCommit": true,
+    "appVersionSource": "local"
   },
   "build": {
     "dev-client": {
@@ -13,6 +14,12 @@
       "env": {
         "APP_VARIANT": "development",
         "YARN_ENABLE_IMMUTABLE_INSTALLS": "false"
+      },
+      "android": {
+        "config": "android.yml"
+      },
+      "ios": {
+        "config": "ios.yml"
       }
     },
     "dev-client-simulator": {
@@ -20,19 +27,8 @@
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
-        "simulator": true
-      }
-    },
-    "development": {
-      "distribution": "internal",
-      "channel": "development",
-      "cache": {
-        "key": "1"
-      },
-      "env": {
-        "APP_VARIANT": "production",
-        "CHECK_VERSION": "false",
-        "YARN_ENABLE_IMMUTABLE_INSTALLS": "false"
+        "simulator": true,
+        "config": "ios_simulator.yml"
       }
     },
     "production": {
@@ -45,6 +41,12 @@
         "APP_VARIANT": "production",
         "CHECK_VERSION": "true",
         "YARN_ENABLE_IMMUTABLE_INSTALLS": "false"
+      },
+      "android": {
+        "config": "android.yml"
+      },
+      "ios": {
+        "config": "ios.yml"
       }
     },
     "simulator": {

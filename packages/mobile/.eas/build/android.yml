@@ -1,0 +1,42 @@
+# https://github.com/expo/eas-custom-builds-example/blob/main/.eas/build/android-build-with-credentials.yml
+
+build:
+  name: Android build
+  steps:
+    # all of these steps can be replaced by the single
+    # - eas/build
+    # call
+    # this example aims to show what steps are executed under the hood
+    # it can be useful to know it if somebody wants to alter and customize the default build process
+
+    - eas/checkout
+
+    # if you are not interested in using custom .npmrc config you can skip it
+    # - eas/use_npm_token
+
+    # - eas/install_node_modules
+    - run:
+        name: Install node modules
+        command: |
+          npm i -g corepack
+          yarn workspaces focus @ukdanceblue/mobile @ukdanceblue/common 
+
+    - eas/resolve_build_config
+
+    - eas/prebuild
+
+    # if you are not using EAS Update you can remove this step from your config
+    # https://docs.expo.dev/eas-update/introduction/
+    - eas/configure_eas_update:
+        inputs:
+          throw_if_not_configured: false
+
+    - eas/inject_android_credentials
+
+    # you can skip this step if you are not using remote version management
+    # https://docs.expo.dev/build-reference/app-versions/#remote-version-source
+    # - eas/configure_android_version
+
+    - eas/run_gradle
+
+    - eas/find_and_upload_build_artifacts
