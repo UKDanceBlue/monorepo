@@ -11,8 +11,6 @@ import type {
 } from "./NotificationDeliveryRepository.js";
 import type { Prisma } from "@prisma/client";
 
-
-
 export function buildNotificationDeliveryOrder(
   order:
     | readonly [key: NotificationDeliveryOrderKeys, sort: SortDirection][]

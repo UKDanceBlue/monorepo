@@ -2,7 +2,6 @@ import { validateInterval } from "./intervalTools.js";
 
 import type { Interval } from "luxon";
 
-
 /**
  * This comparator considers the UTC timestamp of the intervals.
  *

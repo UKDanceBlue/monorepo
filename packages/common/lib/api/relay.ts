@@ -1,4 +1,3 @@
-
 import { Errorable, ResourceError } from "./resourceError.js";
 import { CursorScalar } from "./scalars/Cursor.js";
 import { GlobalIdScalar } from "./scalars/GlobalId.js";

@@ -13,7 +13,6 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { RNCAL_DATE_FORMAT } from "./constants";
 import EventRow from "./EventRow";
 
-
 export const EventListRenderItem = ({
   item: [event, occurrenceId],
   index,

@@ -4,7 +4,6 @@ import { DateTimeISOResolver } from "graphql-scalars";
 import { DateTime, Interval } from "luxon";
 import { Field, InputType, ObjectType } from "type-graphql";
 
-
 @ObjectType()
 @InputType("IntervalISOInput")
 export class IntervalISO {

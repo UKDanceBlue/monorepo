@@ -22,7 +22,6 @@ import type { SpiritStackScreenProps } from "../../../../../types/navigationType
 import type { StandingType } from "../../../../../types/StandingType";
 import Scoreboard from "./Scoreboard/Scoreboard";
 
-
 function addOrdinal(num: number) {
   const j = num % 10,
     k = num % 100;

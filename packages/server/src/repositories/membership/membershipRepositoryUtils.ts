@@ -5,8 +5,6 @@ import { SortDirection } from "@ukdanceblue/common";
 import type { MembershipFilters } from "./MembershipRepository.ts";
 import type { Prisma } from "@prisma/client";
 
-
-
 export function buildMembershipOrder(
   order: readonly [key: string, sort: SortDirection][] | null | undefined
 ) {

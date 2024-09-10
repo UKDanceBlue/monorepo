@@ -3,7 +3,6 @@ import type { ConcreteResult } from "@ukdanceblue/common/error";
 import type { DateTime } from "luxon";
 import type { Option } from "ts-results-es";
 
-
 export interface FundraisingTeam<IDType> {
   name: string;
   active: boolean;

@@ -3,8 +3,6 @@ import { describe, expect, it } from "vitest";
 import { renderWithNativeBase } from "../../../../test-helpers/NativeBase";
 import Badge from "./Badge";
 
-
-
 describe("<Badge />", () => {
   it("renders correctly", () => {
     const tree = renderWithNativeBase(

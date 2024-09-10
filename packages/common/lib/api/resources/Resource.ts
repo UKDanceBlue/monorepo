@@ -6,7 +6,6 @@ import { Field, ObjectType } from "type-graphql";
 import type { DateTime } from "luxon";
 import type { Class } from "utility-types";
 
-
 @ObjectType()
 export abstract class Resource {
   /**

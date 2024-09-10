@@ -8,7 +8,6 @@ import {
 
 import { registerEnumType } from "type-graphql";
 
-
 registerEnumType(SortDirection, { name: "SortDirection" });
 registerEnumType(Comparator, { name: "Comparator" });
 registerEnumType(IsComparator, { name: "IsComparator" });

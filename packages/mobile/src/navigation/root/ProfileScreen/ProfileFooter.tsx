@@ -1,4 +1,4 @@
-import { useLogin,useLogOut } from "@common/auth";
+import { useLogin, useLogOut } from "@common/auth";
 import { useColorModeValue } from "@common/customHooks";
 import { universalCatch } from "@common/logging";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,7 +20,6 @@ import { useState } from "react";
 import { TextInput } from "react-native";
 
 import { ProfileScreenAuthFragment } from ".";
-
 
 export const ProfileFooter = ({
   profileScreenAuthFragment,

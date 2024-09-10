@@ -1,4 +1,3 @@
-
 import { anonymousLogin } from "./anonymous.js";
 import { demoLogin } from "./demo.js";
 import { login } from "./login.js";

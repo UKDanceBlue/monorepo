@@ -14,7 +14,6 @@ import { useQuery } from "urql";
 import { HourScreenComponent } from "./HourScreenComponent";
 import { MarathonCountdownScreen } from "./MarathonCountdownScreen";
 
-
 const marathonScreenDocument = graphql(/* GraphQL */ `
   query MarathonScreen {
     currentMarathonHour {

@@ -1,4 +1,3 @@
-
 import { AuthSource } from "../../authorization/structures.js";
 import { Resource } from "../resources/Resource.js";
 

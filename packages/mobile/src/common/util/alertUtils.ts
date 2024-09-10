@@ -2,7 +2,6 @@ import { log } from "../logging";
 
 import { Alert } from "react-native";
 
-
 /**
  * Show a one button prompt
  */

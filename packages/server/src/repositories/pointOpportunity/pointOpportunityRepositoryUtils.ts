@@ -12,8 +12,6 @@ import type {
 } from "./PointOpportunityRepository.ts";
 import type { Prisma } from "@prisma/client";
 
-
-
 export function buildPointOpportunityOrder(
   order:
     | readonly [key: PointOpportunityOrderKeys, sort: SortDirection][]

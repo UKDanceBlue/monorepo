@@ -6,7 +6,6 @@ import jsonwebtoken from "jsonwebtoken";
 import type { JwtPayload, UserData } from "@ukdanceblue/common";
 import type { Request } from "koa";
 
-
 const jwtIssuer = "https://app.danceblue.org";
 
 /**

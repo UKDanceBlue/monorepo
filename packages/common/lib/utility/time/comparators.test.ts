@@ -3,7 +3,6 @@ import { intervalComparator } from "./comparators.js";
 import { DateTime, Interval } from "luxon";
 import { describe, expect, it } from "vitest";
 
-
 describe("intervalComparator", () => {
   const earlyDate = DateTime.fromObject(
     {
