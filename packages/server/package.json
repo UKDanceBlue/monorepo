@@ -10,6 +10,7 @@
   "scripts": {
     "start": "node --enable-source-maps .",
     "build": "tsc",
+    "check": "tsc --noEmit",
     "bs": "yarn run build && yarn run start",
     "dev": "tsc --watch & node --watch . --watch-path=./dist",
     "migrate-and-start": "yarn dlx prisma migrate deploy && yarn run start",

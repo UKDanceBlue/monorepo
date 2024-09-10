@@ -52,6 +52,6 @@
   "terminal.integrated.cursorStyle": "line",
   "[sql]": {
     "editor.defaultFormatter": "mtxr.sqltools"
-  }
+  },
   "react-native-tools.projectRoot": "./packages/mobile"
 }
