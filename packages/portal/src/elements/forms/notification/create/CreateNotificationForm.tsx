@@ -10,7 +10,7 @@ import { useNotificationCreator } from "./useNotificationCreator";
 export const CreateNotificationForm = () => {
   const navigate = useNavigate();
 
-  const { appMessage } = useAntFeedback();
+  const { appMessage, showErrorMessage } = useAntFeedback();
 
   const { formApi } = useNotificationCreator((data) => {
     if (data?.uuid) {
@@ -139,54 +139,82 @@ export const CreateNotificationForm = () => {
             </Form.Item>
           )}
         </formApi.Field>
-        <formApi.Field name="audience">
+        <formApi.Field name="audience.all">
           {(field) => (
             <Form.Item label="Audience">
               <Checkbox
-                checked={field.getValue().all}
-                onChange={(e) =>
-                  field.setValue(
-                    e.target.checked
-                      ? {
-                          all: true,
-                        }
-                      : {}
-                  )
-                }
+                checked={field.state.value}
+                onChange={(e) => field.setValue(e.target.checked)}
               >
                 All users
               </Checkbox>
-              {!field.getValue().all ? (
-                <div>
-                  <label>Individual</label>
-                  <PersonSearch
-                    onSelect={(person) => {
-                      field.setValue({
-                        users: [person.uuid],
-                      });
-                    }}
-                    value={field.getValue().users?.[0]}
-                  />
-
-                  <label>Type</label>
-                  <Select
-                    value={field.getValue().memberOfTeamType ?? ("" as const)}
-                    onChange={(value) =>
-                      field.setValue({
-                        memberOfTeamType: value === "" ? undefined : value,
-                      })
-                    }
-                  >
-                    <Select.Option value="">Any</Select.Option>
-                    <Select.Option value="Spirit">Spirit</Select.Option>
-                    <Select.Option value="Morale">Morale</Select.Option>
-                    <Select.Option value="Committee">Committee</Select.Option>
-                  </Select>
-                </div>
-              ) : null}
             </Form.Item>
           )}
         </formApi.Field>
+        <formApi.Subscribe selector={(state) => state.values.audience.all}>
+          {(all) =>
+            !all ? (
+              <div>
+                <Form.Item>
+                  <label>Individual</label>
+                  <formApi.Field name="audience.users" mode="array">
+                    {(field) => (
+                      <>
+                        <ul>
+                          {field.state.value?.map(
+                            ({ id, linkblue, name }, idx) => (
+                              <li key={id}>
+                                {name ?? linkblue ?? id}{" "}
+                                <Button onClick={() => field.removeValue(idx)}>
+                                  Remove
+                                </Button>
+                              </li>
+                            )
+                          )}
+                        </ul>
+                        <PersonSearch
+                          onSelect={(person, _, clear) => {
+                            if (
+                              field.state.value?.some(
+                                (user) => user.id === person.uuid
+                              )
+                            ) {
+                              showErrorMessage("User already added");
+                            } else {
+                              field.pushValue({
+                                id: person.uuid,
+                                name: person.name,
+                                linkblue: person.linkblue,
+                              });
+                              clear();
+                            }
+                          }}
+                        />
+                      </>
+                    )}
+                  </formApi.Field>
+                </Form.Item>
+                <formApi.Field name="audience.memberOfTeamType">
+                  {(field) => (
+                    <Form.Item>
+                      <label>Type</label>
+                      <Select
+                        value={field.state.value ?? ("" as const)}
+                        onChange={(value) =>
+                          field.setValue(value === "" ? undefined : value)
+                        }
+                      >
+                        <Select.Option value="">Any</Select.Option>
+                        <Select.Option value="Spirit">Spirit</Select.Option>
+                        <Select.Option value="Morale">Morale</Select.Option>
+                      </Select>
+                    </Form.Item>
+                  )}
+                </formApi.Field>
+              </div>
+            ) : null
+          }
+        </formApi.Subscribe>
         <Form.Item
           wrapperCol={{
             span: 32,

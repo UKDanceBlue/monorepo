@@ -237,12 +237,12 @@ export class ExpoNotificationProvider implements NotificationProvider {
       return "NoAction";
     }
 
-    if (isDevelopment && deliveryRows.length > 10) {
+    if (isDevelopment && deliveryRows.length > 12) {
       await this.notificationRepository.updateNotification(
         { id: databaseNotification.id },
         {
           deliveryIssue:
-            "FAILSAFE TRIGGERED: you are in a development environment and trying to send a notification to more than 10 devices. This is likely a mistake.",
+            "FAILSAFE TRIGGERED: you are in a development environment and trying to send a notification to more than 12 devices. This is likely a mistake.",
           sendAt: null,
         }
       );

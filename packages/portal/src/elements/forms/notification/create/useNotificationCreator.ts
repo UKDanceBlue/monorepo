@@ -37,10 +37,14 @@ export function useNotificationCreator(
           users?: never;
         }
       | {
-          all?: never;
+          all?: false | undefined;
           memberOfTeamType?: TeamType;
           memberOfTeams?: string[];
-          users?: string[];
+          users?: {
+            name: string | undefined;
+            id: string;
+            linkblue: string | undefined;
+          }[];
         };
     url?: string;
   }>({
@@ -82,7 +86,13 @@ export function useNotificationCreator(
       const { data } = await createNotification({
         title: values.title,
         body: values.body,
-        audience: values.audience,
+        audience: values.audience.all
+          ? { all: true }
+          : {
+              memberOfTeams: values.audience.memberOfTeams,
+              memberOfTeamType: values.audience.memberOfTeamType,
+              users: values.audience.users?.map(({ id }) => id),
+            },
         url: values.url,
       });
 
