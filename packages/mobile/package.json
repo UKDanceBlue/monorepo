@@ -4,6 +4,7 @@
   "version": "2.2.2",
   "type": "commonjs",
   "scripts": {
+    "check": "tsc --noEmit",
     "start": "expo start --dev-client",
     "test": "vitest",
     "test-with-coverage": "vitest --collect-coverage --collect-coverage-from=\"src/**/*.{js,jsx,ts,tsx}\"",
