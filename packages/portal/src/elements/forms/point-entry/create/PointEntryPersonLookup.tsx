@@ -77,7 +77,7 @@ export function PointEntryPersonLookup({
     }
   }, [
     getPersonByLinkBlueQuery.data?.personByLinkBlue,
-    getPersonByLinkBlueQuery.data?.personByLinkBlue.id,
+    getPersonByLinkBlueQuery.data?.personByLinkBlue?.id,
     setPersonFromUuid,
   ]);
 

@@ -1,19 +1,24 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useAuthorizationRequirement } from "@hooks/useLoginState";
 import { Link, useNavigate } from "@tanstack/react-router";
-import type { Authorization } from "@ukdanceblue/common";
+import type {
+  Authorization,
+  CommitteeIdentifier,
+  CommitteeRole,
+} from "@ukdanceblue/common";
 import {
   AccessLevel,
   committeeNames,
   MembershipPositionType,
-  stringifyDbRole,
+  roleToAccessLevel,
+  stringifyAccessLevel,
 } from "@ukdanceblue/common";
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
 import {
   getFragmentData,
   graphql,
 } from "@ukdanceblue/common/graphql-client-portal";
-import { Button, Descriptions, Empty, Flex, Typography } from "antd";
+import { Button, Card, Descriptions, Empty, Flex, Typography } from "antd";
 
 import { usePersonDeletePopup } from "../../components/person/PersonDeletePopup";
 
@@ -32,11 +37,9 @@ export const PersonViewerFragment = graphql(/* GraphQL */ `
         }
         id
         name
+        committeeIdentifier
       }
-    }
-    committees {
-      identifier
-      role
+      committeeRole
     }
   }
 `);
@@ -70,91 +73,119 @@ export function PersonViewer({
     );
   }
 
+  const committees: {
+    identifier: CommitteeIdentifier;
+    role: CommitteeRole;
+    year: string;
+  }[] = [];
+  for (const team of personData.teams) {
+    if (team.team.committeeIdentifier && team.committeeRole) {
+      committees.push({
+        identifier: team.team.committeeIdentifier,
+        role: team.committeeRole,
+        year: team.team.marathon.year,
+      });
+    }
+  }
+
   return (
-    <Flex vertical gap="middle" align="center">
-      <Typography.Title level={2}>
-        {personData.name}
-        {canEditPerson && (
-          <>
-            <Link
-              to="/people/$personId/edit"
-              params={{ personId: personData.id }}
-              color="#efefef"
-            >
-              <EditOutlined style={{ marginLeft: "1em" }} />
-            </Link>
-            <Button
-              style={{ display: "inline", marginLeft: "1em" }}
-              onClick={showModal}
-              icon={<DeleteOutlined />}
-              danger
-              shape="circle"
-            />
-          </>
-        )}
-      </Typography.Title>
-      {PersonDeletePopup}
-      <Descriptions
-        column={1}
-        layout="vertical"
-        items={[
-          {
-            label: "Linkblue",
-            children: personData.linkblue,
-          },
-          {
-            label: "Email",
-            children: personData.email,
-          },
-          {
-            label: "Role",
-            children: stringifyDbRole(personData.dbRole),
-          },
-          ...personData.committees.map((committee) => ({
-            label: committeeNames[committee.identifier],
-            children: stringifyDbRole(committee.role),
-          })),
-          {
-            label: "Teams",
-            children:
-              personData.teams.length === 0 ? (
-                "Not a member of any teams"
-              ) : (
-                <Descriptions
-                  column={2}
-                  bordered
-                  size="small"
-                  items={personData.teams.map((team) => {
-                    let children;
+    <Flex gap="middle" justify="center">
+      <Flex vertical gap="middle" align="center">
+        <Card
+          title={
+            <Typography.Title level={2}>
+              {personData.name}
+              {canEditPerson && (
+                <>
+                  <Link
+                    to="/people/$personId/edit"
+                    params={{ personId: personData.id }}
+                    color="#efefef"
+                  >
+                    <EditOutlined style={{ marginLeft: "1em" }} />
+                  </Link>
+                  <Button
+                    style={{ display: "inline", marginLeft: "1em" }}
+                    onClick={showModal}
+                    icon={<DeleteOutlined />}
+                    danger
+                    shape="circle"
+                  />
+                </>
+              )}
+            </Typography.Title>
+          }
+          style={{ maxWidth: "800px" }}
+        >
+          {PersonDeletePopup}
+          <Descriptions
+            column={1}
+            layout="vertical"
+            items={[
+              {
+                label: "Linkblue",
+                children: personData.linkblue,
+              },
+              {
+                label: "Email",
+                children: personData.email,
+              },
+              {
+                label: "Access Level",
+                children: stringifyAccessLevel(
+                  roleToAccessLevel({
+                    dbRole: personData.dbRole,
+                    committees,
+                  })
+                ),
+              },
+              ...committees.map((committee) => ({
+                label: `${committeeNames[committee.identifier]} (${committee.year})`,
+                children: committee.role,
+              })),
+              {
+                label: "Teams",
+                children:
+                  personData.teams.length === 0 ? (
+                    "Not a member of any teams"
+                  ) : (
+                    <dl style={{ marginTop: "0" }}>
+                      {personData.teams.map((team) => {
+                        let children;
 
-                    if (
-                      authorization &&
-                      (authorization.accessLevel >= AccessLevel.Committee ||
-                        team.position === MembershipPositionType.Captain)
-                    ) {
-                      children = (
-                        <Link
-                          to="/teams/$teamId/points"
-                          params={{ teamId: team.team.id }}
-                        >
-                          {team.position}
-                        </Link>
-                      );
-                    } else {
-                      children = team.position;
-                    }
+                        if (
+                          authorization &&
+                          (authorization.accessLevel >= AccessLevel.Committee ||
+                            team.position === MembershipPositionType.Captain)
+                        ) {
+                          children = (
+                            <Link
+                              to="/teams/$teamId/points"
+                              params={{ teamId: team.team.id }}
+                            >
+                              {team.position}
+                            </Link>
+                          );
+                        } else {
+                          children = team.position;
+                        }
 
-                    return {
-                      label: `${team.team.name} (${team.team.marathon.year})`,
-                      key: team.team.id,
-                      children,
-                    };
-                  })}
-                />
-              ),
-          },
-        ]}
-      />
+                        return (
+                          <div key={team.team.id}>
+                            <dt>
+                              {team.team.name} ({team.team.marathon.year})
+                            </dt>
+                            <dd>{children}</dd>
+                          </div>
+                        );
+                      })}
+                    </dl>
+                  ),
+              },
+            ]}
+          />
+        </Card>
+      </Flex>
     </Flex>
   );
 }
