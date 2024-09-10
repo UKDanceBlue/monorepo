@@ -111,9 +111,9 @@ const TeamInformation = ({
           titleButton={
             <TouchableOpacity
               onPress={() => {
-                openBrowserAsync(
-                  "https://danceblue.org/spirit-point-form/"
-                ).catch(universalCatch);
+                openBrowserAsync("https://spiritpoints.danceblue.org").catch(
+                  universalCatch
+                );
               }}
               style={{ marginLeft: 20 }}
             >

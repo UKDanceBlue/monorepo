@@ -29,7 +29,15 @@ import {
   InvariantError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
-import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
+import {
+  AsyncResult,
+  Err,
+  None,
+  Ok,
+  Option,
+  Result,
+  Some,
+} from "ts-results-es";
 import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
@@ -209,7 +217,11 @@ export class PersonRepository {
     Result<EffectiveCommitteeRole[], RepositoryError | InvariantError>
   > {
     try {
-      const marathon = await this.marathonRepository.findActiveMarathon();
+      const marathon = await new AsyncResult(
+        this.marathonRepository.findActiveMarathon()
+      ).andThen((option) =>
+        option.toResult(new NotFoundError({ what: "active marathon" }))
+      ).promise;
       if (marathon.isErr()) {
         return Err(marathon.error);
       }

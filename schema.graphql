@@ -1020,7 +1020,7 @@ type Mutation {
   deleteFeedItem(feedItemUuid: GlobalId!): Boolean!
   deleteFundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
   deleteImage(uuid: GlobalId!): DeleteImageResponse!
-  deleteMarathon(uuid: GlobalId!): Void!
+  deleteMarathon(uuid: GlobalId!): MarathonNode!
   deleteMarathonHour(uuid: GlobalId!): Void!
   deleteNotification(
     """
@@ -1491,6 +1491,10 @@ type Query {
   allConfigurations: GetAllConfigurationsResponse!
   auditLog: String!
   configuration(id: GlobalId!): GetConfigurationByUuidResponse!
+
+  """
+  The marathon that is currently happening, i.e. the marathon with the latest start date that has not yet ended.
+  """
   currentMarathon: MarathonNode
   currentMarathonHour: MarathonHourNode
   dbFundsTeams(search: String!): [DbFundsTeamInfo!]!
@@ -1673,6 +1677,10 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [ImageResolverKeyedStringFilterItem!]
   ): ListImagesResponse!
+
+  """
+  The most recent marathon, regardless of whether it is currently happening, i.e. the marathon with the latest year.
+  """
   latestMarathon: MarathonNode
   listPeople(
     """The boolean filters to apply to the query"""

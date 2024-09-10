@@ -1,5 +1,5 @@
 import type { MarathonYearString } from "@ukdanceblue/common";
-import type { NotFoundError } from "@ukdanceblue/common/error";
+import { NotFoundError } from "@ukdanceblue/common/error";
 
 const jobStateRepository = Container.get(JobStateRepository);
 
@@ -13,7 +13,7 @@ import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js
 
 import { CompositeError, toBasicError } from "@ukdanceblue/common/error";
 import Cron from "croner";
-import { Err, None, Ok, type Result } from "ts-results-es";
+import { AsyncResult, Err, None, Ok, type Result } from "ts-results-es";
 import { Container } from "@freshgum/typedi";
 
 import type { PrismaError } from "#error/prisma.js";
@@ -30,18 +30,26 @@ async function doSync(): Promise<
   const marathonRepository = Container.get(MarathonRepository);
   const fundraisingRepository = Container.get(DBFundsRepository);
   const fundraisingProvider = Container.get(DBFundsFundraisingProvider);
-  const activeMarathon = await marathonRepository.findActiveMarathon();
-  logger.trace("Found current marathon for DBFunds sync", activeMarathon);
+
+  const activeMarathon = await new AsyncResult(
+    marathonRepository.findActiveMarathon()
+  ).andThen(async (activeMarathon) =>
+    activeMarathon.toResult(new NotFoundError({ what: "active marathon" }))
+  ).promise;
   if (activeMarathon.isErr()) {
     return activeMarathon;
   }
+  logger.trace("Found current marathon for DBFunds sync", activeMarathon);
+
   const teams = await fundraisingProvider.getTeams(
     activeMarathon.value.year as MarathonYearString
   );
   if (teams.isErr()) {
     return Err(teams.error);
   }
-  logger.trace("Got teams for DBFunds sync", { teamCount: teams.value.length });
+  logger.trace("Got teams for DBFunds sync", {
+    teamCount: teams.value.length,
+  });
 
   const promises = teams.value.map(async (team) => {
     const entries = await fundraisingProvider.getTeamEntries(
