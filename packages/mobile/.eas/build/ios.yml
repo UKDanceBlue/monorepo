@@ -17,9 +17,7 @@ build:
         name: Install node modules
         command: |
           npm i -g corepack
-          yarn workspaces focus @ukdanceblue/mobile @ukdanceblue/common 
-
-    - eas/install_node_modules
+          yarn workspaces focus @ukdanceblue/mobile @ukdanceblue/common
 
     - eas/resolve_build_config
 
@@ -28,7 +26,8 @@ build:
 
     - eas/prebuild:
         inputs:
-          apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
+          apple_team_id:
+            ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
 
     - run:
         name: Install pods
