@@ -1,4 +1,3 @@
-
 import { ConcreteError } from "./error.js";
 import * as ErrorCode from "./errorCode.js";
 

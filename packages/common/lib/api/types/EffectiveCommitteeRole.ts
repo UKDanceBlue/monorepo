@@ -5,7 +5,6 @@ import {
 
 import { Field, ObjectType } from "type-graphql";
 
-
 @ObjectType("EffectiveCommitteeRole")
 export class EffectiveCommitteeRole {
   @Field(() => CommitteeIdentifier)

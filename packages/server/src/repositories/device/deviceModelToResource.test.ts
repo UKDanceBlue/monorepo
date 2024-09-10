@@ -5,7 +5,6 @@ import { describe, expect, it } from "vitest";
 
 import type { Device } from "@prisma/client";
 
-
 describe("deviceModelToResource", () => {
   it("maps a device model to a resource", () => {
     const deviceModel: Device = {

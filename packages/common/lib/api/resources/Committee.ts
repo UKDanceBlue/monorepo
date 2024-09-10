@@ -6,10 +6,7 @@ import { GlobalIdScalar } from "../scalars/GlobalId.js";
 
 import { Field, ObjectType } from "type-graphql";
 
-
 import type { GlobalId } from "../scalars/GlobalId.js";
-
-
 
 @ObjectType({ implements: [Node] })
 export class CommitteeNode extends TimestampedResource implements Node {

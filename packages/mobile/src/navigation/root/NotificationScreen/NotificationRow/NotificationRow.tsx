@@ -14,7 +14,6 @@ import Animated, {
 
 import { NotificationRowContent } from "./NotificationRowContent";
 
-
 export const AnimatedNotificationRow: SectionListRenderItem<
   FragmentType<typeof NotificationDeliveryFragment> | undefined,
   {

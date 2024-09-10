@@ -9,9 +9,6 @@ import type { EventFilters, EventOrderKeys } from "./EventRepository.ts";
 import type { Prisma } from "@prisma/client";
 import type { FilterItem } from "@ukdanceblue/common";
 
-
-
-
 export function buildEventOrder(
   order:
     | readonly [key: EventOrderKeys, sort: SortDirection][]

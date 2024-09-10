@@ -8,7 +8,6 @@ import type { FeedItem } from "react-native-rss-parser";
 import { ExplorerItem } from "./ExplorerItem";
 import { useExplorerFeed } from "./useExplorerFeed";
 
-
 export interface FeedSortingItem {
   jsxElement: JSX.Element;
   published: DateTime;

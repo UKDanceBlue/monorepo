@@ -3,7 +3,6 @@ import { StringComparator } from "@ukdanceblue/common";
 import type { InputRef } from "antd";
 import Search from "antd/es/input/Search";
 
-
 export function FilterSearchDropdown<Field extends string>({
   updateFilter,
   clearFilter,

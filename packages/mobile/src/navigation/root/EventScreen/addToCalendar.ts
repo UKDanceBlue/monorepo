@@ -15,8 +15,6 @@ import {
 import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
 import type { Event } from "expo-calendar";
 
-
-
 export async function onAddToCalendar(
   event: FragmentType<typeof EventScreenFragment>,
   occurrenceId: string
@@ -37,9 +35,7 @@ export async function onAddToCalendar(
       permissionStatus === PermissionStatus.UNDETERMINED ||
       canAskAgain
     ) {
-      permissionStatus =
-         
-        (await requestCalendarPermissionsAsync()).status;
+      permissionStatus = (await requestCalendarPermissionsAsync()).status;
     }
 
     if (permissionStatus === PermissionStatus.GRANTED) {

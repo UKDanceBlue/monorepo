@@ -5,7 +5,6 @@ import { describe, expect, it } from "vitest";
 
 import type { MarathonHour } from "@prisma/client";
 
-
 describe("marathonHourModelToResource", () => {
   it("should correctly transform MarathonHour to MarathonHourNode", () => {
     const now = new Date();

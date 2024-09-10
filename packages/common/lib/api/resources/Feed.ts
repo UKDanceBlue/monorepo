@@ -7,7 +7,6 @@ import { Field, ObjectType } from "type-graphql";
 
 import type { GlobalId } from "../scalars/GlobalId.js";
 
-
 // TODO: Expand this to include more types of feed items
 // export const FeedResourceType = {
 //   FeaturedImage: "FeaturedImage",

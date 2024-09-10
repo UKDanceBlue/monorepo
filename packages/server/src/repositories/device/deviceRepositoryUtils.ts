@@ -8,8 +8,6 @@ import { SortDirection } from "@ukdanceblue/common";
 import type { DeviceFilters } from "./DeviceRepository.js";
 import type { Prisma } from "@prisma/client";
 
-
-
 export function buildDeviceOrder(
   order: readonly [key: string, sort: SortDirection][] | null | undefined
 ) {

@@ -10,7 +10,6 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 import CommitteeHoldingSign from "../../../../../assets/svgs/CommitteeHoldingSign";
 
-
 export const MarathonCountdownScreen = ({
   marathonStart,
   marathonEnd,

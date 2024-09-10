@@ -28,8 +28,10 @@ export function useSaveMoment(): {
         const album = (await getAlbumAsync(ALBUM_NAME)) as Awaited<
           ReturnType<typeof getAlbumAsync>
         > | null;
-         
-        await (!album ? createAlbumAsync(ALBUM_NAME, asset, false) : addAssetsToAlbumAsync([asset], album, false));
+
+        await (!album
+          ? createAlbumAsync(ALBUM_NAME, asset, false)
+          : addAssetsToAlbumAsync([asset], album, false));
 
         return undefined;
       } catch (error) {

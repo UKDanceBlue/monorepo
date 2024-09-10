@@ -5,7 +5,6 @@ import { DateTime } from "luxon";
 
 import type { Context } from "koa";
 
-
 export const anonymousLogin = (ctx: Context) => {
   let redirectTo = "/";
   const queryRedirectTo = Array.isArray(ctx.query.redirectTo)

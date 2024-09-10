@@ -7,7 +7,6 @@ import { Field, ObjectType, registerEnumType } from "type-graphql";
 
 import type { GlobalId } from "../scalars/GlobalId.js";
 
-
 export const TeamType = {
   Spirit: "Spirit",
   Morale: "Morale",

@@ -8,8 +8,6 @@ import { SortDirection } from "@ukdanceblue/common";
 import type { ConfigurationFilters } from "./ConfigurationRepository.js";
 import type { Prisma } from "@prisma/client";
 
-
-
 export function buildConfigurationOrder(
   order: readonly [key: string, sort: SortDirection][] | null | undefined
 ) {
