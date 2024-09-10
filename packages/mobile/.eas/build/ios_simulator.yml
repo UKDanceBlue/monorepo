@@ -1,0 +1,43 @@
+# https://github.com/expo/eas-custom-builds-example/blob/main/.eas/build/ios-simulator-build.yml
+
+build:
+  name: iOS simulator build
+  steps:
+    # all of these steps can be replaced by the single
+    # - eas/build
+    # call
+    # this example aims to show what steps are executed under the hood
+    # it can be useful to know it if somebody wants to alter and customize the default build process
+
+    - eas/checkout
+
+    # if you are not interested in using custom .npmrc config you can skip it
+    # - eas/use_npm_token
+
+    # - eas/install_node_modules
+    - run:
+        name: Install node modules
+        command: |
+          npm i -g corepack
+          yarn workspaces focus @ukdanceblue/mobile @ukdanceblue/common 
+
+    - eas/resolve_build_config
+
+    - eas/prebuild
+
+    - run:
+        name: Install pods
+        working_directory: ./ios
+        command: pod install
+
+    # if you are not using EAS Update you can remove this step from your config
+    # https://docs.expo.dev/eas-update/introduction/
+    - eas/configure_eas_update:
+        inputs:
+          throw_if_not_configured: false
+
+    - eas/generate_gymfile_from_template
+
+    - eas/run_fastlane
+
+    - eas/find_and_upload_build_artifacts

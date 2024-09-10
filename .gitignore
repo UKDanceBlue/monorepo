@@ -20,3 +20,4 @@ react-danceblue-firebase-adminsdk-*.json
 compose-volumes/
 %programdata%/
 local-uploads/
+.expo
