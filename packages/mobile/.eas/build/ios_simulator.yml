@@ -14,12 +14,11 @@ build:
     # if you are not interested in using custom .npmrc config you can skip it
     # - eas/use_npm_token
 
-    # - eas/install_node_modules
     - run:
         name: Install node modules
         command: |
           npm i -g corepack
-          yarn workspaces focus @ukdanceblue/mobile @ukdanceblue/common 
+          yarn workspaces focus @ukdanceblue/mobile @ukdanceblue/common
 
     - eas/resolve_build_config
 
