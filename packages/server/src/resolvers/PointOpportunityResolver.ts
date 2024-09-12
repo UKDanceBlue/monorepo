@@ -175,7 +175,7 @@ export class PointOpportunityResolver {
       opportunityDate: input.opportunityDate ?? null,
     });
 
-    return CreatePointOpportunityResponse.newOk(
+    return CreatePointOpportunityResponse.newCreated(
       pointOpportunityModelToResource(row)
     );
   }

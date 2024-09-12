@@ -168,7 +168,9 @@ export class PointEntryResolver {
       teamParam: { uuid: input.teamUuid.id },
     });
 
-    return CreatePointEntryResponse.newOk(pointEntryModelToResource(model));
+    return CreatePointEntryResponse.newCreated(
+      pointEntryModelToResource(model)
+    );
   }
 
   @Mutation(() => DeletePointEntryResponse, { name: "deletePointEntry" })
