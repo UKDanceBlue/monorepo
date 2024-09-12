@@ -214,7 +214,10 @@ function EditMarathonHourPage() {
 
 export const Route = createFileRoute("/marathon/$marathonId/hours/$hourId/")({
   component: EditMarathonHourPage,
-  beforeLoad({ context }) {
+  beforeLoad({ context, params: { hourId } }) {
+    context.urqlClient.query(editMarathonHourDataDocument, {
+      marathonHourUuid: hourId,
+    });
     routerAuthCheck(Route, context);
   },
   staticData: {

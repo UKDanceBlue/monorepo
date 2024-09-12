@@ -42,7 +42,8 @@ export function EditEvent() {
 
 export const Route = createFileRoute("/events/$eventId/edit")({
   component: EditEvent,
-  beforeLoad({ context }) {
+  async beforeLoad({ context, params: { eventId } }) {
+    await context.urqlClient.query(viewEventPageDocument, { uuid: eventId });
     routerAuthCheck(Route, context);
   },
   staticData: {

@@ -28,7 +28,8 @@ function LogsPage() {
 
 export const Route = createFileRoute("/admin/logs")({
   component: LogsPage,
-  beforeLoad({ context }) {
+  async beforeLoad({ context }) {
+    await context.urqlClient.query(logsPageDocument, {});
     routerAuthCheck(Route, context);
   },
   staticData: {

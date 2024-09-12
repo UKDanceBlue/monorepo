@@ -54,7 +54,10 @@ function ViewNotificationPage() {
 
 export const Route = createFileRoute("/notifications/$notificationId/")({
   component: ViewNotificationPage,
-  beforeLoad({ context }) {
+  async beforeLoad({ context, params: { notificationId } }) {
+    await context.urqlClient.query(notificationViewerDocument, {
+      uuid: notificationId,
+    });
     routerAuthCheck(Route, context);
   },
   staticData: {

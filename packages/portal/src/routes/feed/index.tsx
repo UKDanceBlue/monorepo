@@ -215,7 +215,8 @@ function FeedPage() {
 
 export const Route = createFileRoute("/feed/")({
   component: FeedPage,
-  beforeLoad({ context }) {
+  async beforeLoad({ context }) {
+    await context.urqlClient.query(feedPageDocument, {});
     routerAuthCheck(Route, context);
   },
   staticData: {
