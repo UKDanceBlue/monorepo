@@ -161,19 +161,17 @@ export class TeamResolver {
     private dbFundsRepository: DBFundsRepository
   ) {}
 
-  @AccessControl<never, SingleTeamResponse>(
-    { accessLevel: AccessLevel.Committee },
-    {
-      custom(_, context, result) {
-        return context.teamMemberships.some(({ teamId, position }) =>
-          result.isNone()
-            ? false
-            : teamId === result.value.data.id.id &&
-              position === Common.MembershipPositionType.Captain
-        );
-      },
-    }
-  )
+  @AccessControl<never, SingleTeamResponse>((_, context, result) => {
+    return (
+      context.authorization.accessLevel > AccessLevel.Committee ||
+      context.teamMemberships.some(({ teamId, position }) =>
+        result.isNone()
+          ? false
+          : teamId === result.value.data.id.id &&
+            position === Common.MembershipPositionType.Captain
+      )
+    );
+  })
   @Query(() => SingleTeamResponse, { name: "team" })
   async getByUuid(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -393,19 +391,15 @@ export class TeamResolver {
     return rows.map((row) => pointEntryModelToResource(row));
   }
 
-  // TODO: increase minimum access level
-  @AccessControl(
-    { accessLevel: AccessLevel.Committee },
-    {
-      rootMatch: [
-        {
-          root: "id",
-          extractor: ({ teamMemberships }) =>
-            teamMemberships.map(({ teamId }) => teamId),
-        },
-      ],
-    }
-  )
+  @AccessControl(globalFundraisingAccessParam, {
+    rootMatch: [
+      {
+        root: "id",
+        extractor: ({ teamMemberships }) =>
+          teamMemberships.map(({ teamId }) => teamId),
+      },
+    ],
+  })
   @FieldResolver(() => Float, { nullable: true })
   async fundraisingTotalAmount(
     @Root() { id: { id } }: TeamNode

@@ -75,10 +75,7 @@ export class ListFundraisingEntriesResponse extends AbstractGraphQLPaginatedResp
 /**
  * Access control param for granting access to all fundraising entries.
  */
-export const globalFundraisingAccessParam: AccessControlParam<
-  unknown,
-  unknown
-> = {
+export const globalFundraisingAccessParam: AccessControlParam<unknown> = {
   authRules: [
     {
       minCommitteeRole: CommitteeRole.Coordinator,
@@ -150,9 +147,9 @@ export class FundraisingEntryResolver {
     // We can't grant blanket access as otherwise people would see who else was assigned to an entry
     // You can view all assignments for an entry if you are:
     // 1. A fundraising coordinator or chair
+    if (chek)
     globalFundraisingAccessParam,
     // 2. The captain of the team the entry is associated with
-    {
       custom: async (
         { id: { id } },
         { teamMemberships, userData: { userId } }

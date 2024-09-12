@@ -20,7 +20,6 @@ export const TeamViewerFragment = graphql(/* GraphQL */ `
     }
     legacyStatus
     totalPoints
-    fundraisingTotalAmount
     type
     members {
       person {
@@ -69,10 +68,6 @@ export function TeamViewer({
           </Descriptions.Item>
           <Descriptions.Item label="Total Points">
             {teamData.totalPoints}
-          </Descriptions.Item>
-          <Descriptions.Item label="Fundraising Total Amount">
-            {/* Set access rules for this */}
-            {teamData.fundraisingTotalAmount}
           </Descriptions.Item>
           <Descriptions.Item label="Type">{teamData.type}</Descriptions.Item>
         </Descriptions>

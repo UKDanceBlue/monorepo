@@ -224,8 +224,6 @@ export class PersonRepository {
         return Err(marathon.error);
       }
 
-      const effectiveCommitteeRoles: EffectiveCommitteeRole[] = [];
-
       const committees = await this.prisma.membership.findMany({
         where: {
           person: param,
@@ -248,6 +246,11 @@ export class PersonRepository {
                   parentCommittee: {
                     select: {
                       identifier: true,
+                      parentCommittee: {
+                        select: {
+                          identifier: true,
+                        },
+                      },
                     },
                   },
                   childCommittees: {
@@ -268,38 +271,61 @@ export class PersonRepository {
         },
       });
 
+      const effectiveCommitteeRoles: Partial<
+        Record<CommitteeIdentifier, EffectiveCommitteeRole>
+      > = {};
+      function addRole(identifier: CommitteeIdentifier, role: CommitteeRole) {
+        const existing = effectiveCommitteeRoles[identifier];
+        if (existing) {
+          if (role > existing.role) {
+            existing.role = role;
+          }
+        } else {
+          effectiveCommitteeRoles[identifier] = EffectiveCommitteeRole.init(
+            identifier,
+            role
+          );
+        }
+      }
       for (const { team, committeeRole } of committees) {
         if (team.correspondingCommittee) {
-          const role = EffectiveCommitteeRole.init(
+          addRole(
             team.correspondingCommittee.identifier,
             committeeRole ?? CommitteeRole.Member
           );
-          effectiveCommitteeRoles.push(role);
           if (team.correspondingCommittee.parentCommittee) {
-            const parentRole = EffectiveCommitteeRole.init(
+            addRole(
               team.correspondingCommittee.parentCommittee.identifier,
               CommitteeRole.Member
             );
-            effectiveCommitteeRoles.push(parentRole);
+            if (team.correspondingCommittee.parentCommittee.parentCommittee) {
+              addRole(
+                team.correspondingCommittee.parentCommittee.parentCommittee
+                  .identifier,
+                CommitteeRole.Member
+              );
+            }
           }
-          const childRoles =
-            team.correspondingCommittee.childCommittees.flatMap((child) => [
-              EffectiveCommitteeRole.init(
-                child.identifier,
-                committeeRole ?? CommitteeRole.Member
-              ),
-              ...child.childCommittees.map((c) =>
-                EffectiveCommitteeRole.init(
-                  c.identifier,
+
+          if (
+            committeeRole === CommitteeRole.Chair &&
+            team.correspondingCommittee.identifier ===
+              CommitteeIdentifier.overallCommittee
+          ) {
+            for (const child of team.correspondingCommittee.childCommittees) {
+              addRole(child.identifier, committeeRole ?? CommitteeRole.Member);
+              for (const grandchild of child.childCommittees) {
+                addRole(
+                  grandchild.identifier,
                   committeeRole ?? CommitteeRole.Member
-                )
-              ),
-            ]);
-          effectiveCommitteeRoles.push(...childRoles);
+                );
+              }
+            }
+          }
         }
       }
 
-      return Ok(effectiveCommitteeRoles);
+      return Ok(Object.values(effectiveCommitteeRoles));
     } catch (error) {
       return handleRepositoryError(error);
     }
