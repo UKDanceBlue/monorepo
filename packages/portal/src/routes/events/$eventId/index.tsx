@@ -39,7 +39,8 @@ export function ViewEvent() {
 
 export const Route = createFileRoute("/events/$eventId/")({
   component: ViewEvent,
-  beforeLoad({ context }) {
+  async beforeLoad({ context, params: { eventId } }) {
+    await context.urqlClient.query(viewEventPageDocument, { uuid: eventId });
     routerAuthCheck(Route, context);
   },
   staticData: {

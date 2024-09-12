@@ -95,7 +95,10 @@ function ManageNotificationPage() {
 
 export const Route = createFileRoute("/notifications/$notificationId/manage")({
   component: ManageNotificationPage,
-  beforeLoad({ context }) {
+  async beforeLoad({ context, params: { notificationId } }) {
+    await context.urqlClient.query(notificationManagerDocument, {
+      uuid: notificationId,
+    });
     routerAuthCheck(Route, context);
   },
   staticData: {

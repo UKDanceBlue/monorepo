@@ -71,6 +71,8 @@ export abstract class AbstractGraphQLCreatedResponse<
     };
   }
 
+  declare static newOk: never;
+
   static newCreated<
     T extends { id: GlobalId },
     OkRes extends AbstractGraphQLCreatedResponse<T>,

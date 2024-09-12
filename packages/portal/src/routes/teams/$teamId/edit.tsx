@@ -40,7 +40,8 @@ function EditTeamPage() {
 
 export const Route = createFileRoute("/teams/$teamId/edit")({
   component: EditTeamPage,
-  beforeLoad({ context }) {
+  async beforeLoad({ context, params: { teamId } }) {
+    await context.urqlClient.query(viewTeamPageDocument, { uuid: teamId });
     routerAuthCheck(Route, context);
   },
   staticData: {

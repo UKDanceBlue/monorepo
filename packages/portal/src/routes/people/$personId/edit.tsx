@@ -46,7 +46,8 @@ export function EditPersonPage() {
 
 export const Route = createFileRoute("/people/$personId/edit")({
   component: EditPersonPage,
-  beforeLoad({ context }) {
+  async beforeLoad({ context, params: { personId } }) {
+    await context.urqlClient.query(viewPersonPageDocument, { uuid: personId });
     routerAuthCheck(Route, context);
   },
   staticData: {

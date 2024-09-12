@@ -25,7 +25,7 @@
     <a href="https://www.danceblue.org">Explore DanceBlue</a>
     <br />
     <br />
-    <a href="https://danceblue.networkforgood.com/causes/4789-danceblue-golden-matrix-fund-dance-teams">Donate</a>
+    <a href="https://donate.danceblue.org">Donate</a>
     ·
     <a href="https://github.com/UKDanceBlue/danceblue-react-app/issues">Report Bug</a>
     ·

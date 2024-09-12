@@ -30,7 +30,10 @@ function ViewMarathonPage() {
 
 export const Route = createFileRoute("/marathon/$marathonId/")({
   component: ViewMarathonPage,
-  beforeLoad({ context }) {
+  beforeLoad({ context, params: { marathonId } }) {
+    context.urqlClient.query(marathonPageDocument, {
+      marathonUuid: marathonId,
+    });
     routerAuthCheck(Route, context);
   },
   staticData: {

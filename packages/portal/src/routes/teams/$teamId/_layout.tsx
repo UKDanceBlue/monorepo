@@ -35,7 +35,10 @@ function ViewTeamPage() {
 
 export const Route = createFileRoute("/teams/$teamId/_layout")({
   component: ViewTeamPage,
-  beforeLoad({ context }) {
+  async beforeLoad({ context, params: { teamId } }) {
+    await context.urqlClient.query(teamPageDocument, {
+      teamUuid: teamId,
+    });
     routerAuthCheck(Route, context);
   },
   staticData: {

@@ -64,9 +64,7 @@ export const ProfileFooter = ({
       <HStack justifyContent="center">
         <Button
           onPress={() => {
-            openURL("https://danceblue.networkforgood.com").catch(
-              universalCatch
-            );
+            openURL("https://donate.danceblue.org").catch(universalCatch);
           }}
           width="2/5"
           backgroundColor="primary.600"
