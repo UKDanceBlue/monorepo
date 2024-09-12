@@ -8,6 +8,9 @@ import {
 } from "#resolvers/ApiResponse.js";
 
 import {
+  AccessControl,
+  AccessLevel,
+  CommitteeIdentifier,
   DetailedError,
   ErrorCode,
   EventNode,
@@ -34,6 +37,7 @@ import {
 import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
+import { CommitteeRole } from "@prisma/client";
 
 @ObjectType("SinglePointOpportunityResponse", {
   implements: AbstractGraphQLOkResponse<PointOpportunityNode>,
@@ -113,6 +117,9 @@ export class PointOpportunityResolver {
     private readonly pointOpportunityRepository: PointOpportunityRepository
   ) {}
 
+  @AccessControl({
+    accessLevel: AccessLevel.Committee,
+  })
   @Query(() => SinglePointOpportunityResponse, { name: "pointOpportunity" })
   async getByUuid(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -131,6 +138,9 @@ export class PointOpportunityResolver {
     );
   }
 
+  @AccessControl({
+    accessLevel: AccessLevel.Committee,
+  })
   @Query(() => ListPointOpportunitiesResponse, { name: "pointOpportunities" })
   async list(
     @Args(() => ListPointOpportunitiesArgs) query: ListPointOpportunitiesArgs
@@ -162,6 +172,14 @@ export class PointOpportunityResolver {
     });
   }
 
+  @AccessControl({
+    authRules: [
+      {
+        committeeIdentifier: CommitteeIdentifier.viceCommittee,
+        minCommitteeRole: CommitteeRole.Coordinator,
+      },
+    ],
+  })
   @Mutation(() => CreatePointOpportunityResponse, {
     name: "createPointOpportunity",
   })
@@ -180,6 +198,14 @@ export class PointOpportunityResolver {
     );
   }
 
+  @AccessControl({
+    authRules: [
+      {
+        committeeIdentifier: CommitteeIdentifier.viceCommittee,
+        minCommitteeRole: CommitteeRole.Coordinator,
+      },
+    ],
+  })
   @Mutation(() => SinglePointOpportunityResponse, {
     name: "setPointOpportunity",
   })
@@ -206,6 +232,14 @@ export class PointOpportunityResolver {
     );
   }
 
+  @AccessControl({
+    authRules: [
+      {
+        committeeIdentifier: CommitteeIdentifier.viceCommittee,
+        minCommitteeRole: CommitteeRole.Coordinator,
+      },
+    ],
+  })
   @Mutation(() => DeletePointOpportunityResponse, {
     name: "deletePointOpportunity",
   })

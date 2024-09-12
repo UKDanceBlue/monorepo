@@ -11,6 +11,10 @@ import {
 } from "#resolvers/ApiResponse.js";
 
 import {
+  AccessControl,
+  AccessLevel,
+  CommitteeIdentifier,
+  CommitteeRole,
   DetailedError,
   ErrorCode,
   FilteredListQueryArgs,
@@ -106,6 +110,9 @@ export class PointEntryResolver {
     private readonly personRepository: PersonRepository
   ) {}
 
+  @AccessControl({
+    accessLevel: AccessLevel.Committee,
+  })
   @Query(() => GetPointEntryByUuidResponse, { name: "pointEntry" })
   async getByUuid(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -121,6 +128,9 @@ export class PointEntryResolver {
     return GetPointEntryByUuidResponse.newOk(pointEntryModelToResource(model));
   }
 
+  @AccessControl({
+    accessLevel: AccessLevel.Committee,
+  })
   @Query(() => ListPointEntriesResponse, { name: "pointEntries" })
   async list(
     @Args(() => ListPointEntriesArgs) query: ListPointEntriesArgs
@@ -152,6 +162,14 @@ export class PointEntryResolver {
     });
   }
 
+  @AccessControl({
+    authRules: [
+      {
+        committeeIdentifier: CommitteeIdentifier.viceCommittee,
+        minCommitteeRole: CommitteeRole.Coordinator,
+      },
+    ],
+  })
   @Mutation(() => CreatePointEntryResponse, { name: "createPointEntry" })
   async create(
     @Arg("input") input: CreatePointEntryInput
@@ -173,6 +191,14 @@ export class PointEntryResolver {
     );
   }
 
+  @AccessControl({
+    authRules: [
+      {
+        committeeIdentifier: CommitteeIdentifier.viceCommittee,
+        minCommitteeRole: CommitteeRole.Coordinator,
+      },
+    ],
+  })
   @Mutation(() => DeletePointEntryResponse, { name: "deletePointEntry" })
   async delete(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
