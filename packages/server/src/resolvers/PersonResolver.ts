@@ -548,46 +548,44 @@ export class PersonResolver {
   }
 
   @AccessControl<FundraisingEntryNode>(
-    // We can't grant blanket access as otherwise people would see who else was assigned to an entry
-    // You can view all assignments for an entry if you are:
-    // 1. A fundraising coordinator or chair
-    globalFundraisingAccessParam,
-    // 2. The captain of the team the entry is associated with
-    {
-      custom: async (
-        { id: { id } },
-        { teamMemberships, userData: { userId } }
-      ): Promise<boolean> => {
-        if (userId == null) {
-          return false;
-        }
-        const captainOf = teamMemberships.filter(
-          (membership) => membership.position === MembershipPositionType.Captain
-        );
-        if (captainOf.length === 0) {
-          return false;
-        }
+    async (
+      { id: { id } },
+      { teamMemberships, userData: { userId } }
+    ): Promise<boolean> => {
+      // We can't grant blanket access as otherwise people would see who else was assigned to an entry
+      // You can view all assignments for an entry if you are:
+      // 1. A fundraising coordinator or chair
+      globalFundraisingAccessParam;
+      // 2. The captain of the team the entry is associated with
+      if (userId == null) {
+        return false;
+      }
+      const captainOf = teamMemberships.filter(
+        (membership) => membership.position === MembershipPositionType.Captain
+      );
+      if (captainOf.length === 0) {
+        return false;
+      }
 
-        const fundraisingEntryRepository = Container.get(
-          FundraisingEntryRepository
-        );
-        const entry = await fundraisingEntryRepository.findEntryByUnique({
-          uuid: id,
-        });
-        if (entry.isErr()) {
-          return false;
-        }
-        const dbFundsRepository = Container.get(DBFundsRepository);
-        const teams = await dbFundsRepository.getTeamsForDbFundsTeam({
-          id: entry.value.dbFundsEntry.dbFundsTeamId,
-        });
-        if (teams.isErr()) {
-          return false;
-        }
-        return captainOf.some(({ teamId }) =>
-          teams.value.some((team) => team.uuid === teamId)
-        );
-      },
+      const fundraisingEntryRepository = Container.get(
+        FundraisingEntryRepository
+      );
+      const entry = await fundraisingEntryRepository.findEntryByUnique({
+        uuid: id,
+      });
+      if (entry.isErr()) {
+        return false;
+      }
+      const dbFundsRepository = Container.get(DBFundsRepository);
+      const teams = await dbFundsRepository.getTeamsForDbFundsTeam({
+        id: entry.value.dbFundsEntry.dbFundsTeamId,
+      });
+      if (teams.isErr()) {
+        return false;
+      }
+      return captainOf.some(({ teamId }) =>
+        teams.value.some((team) => team.uuid === teamId)
+      );
     }
   )
   @FieldResolver(() => ListFundraisingEntriesResponse, { nullable: true })

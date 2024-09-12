@@ -8,6 +8,7 @@ import { globalFundraisingAccessParam } from "#resolvers/FundraisingEntryResolve
 import {
   AccessControl,
   AccessControlParam,
+  checkParam,
   CommitteeIdentifier,
   CommitteeRole,
   FundraisingAssignmentNode,
@@ -117,9 +118,27 @@ export class FundraisingAssignmentResolver {
     return assignment.map(fundraisingAssignmentModelToNode);
   }
 
-  @AccessControl<never, PersonNode>(globalFundraisingAccessParam, {
-    custom: (_, { teamMemberships }, result) =>
-      result.mapOr<Promise<boolean | null>>(
+  @AccessControl<never, PersonNode>(
+    async (root, context, result): Promise<boolean | null> => {
+      // We can't grant blanket access as otherwise people would see who else was assigned to an entry
+      // You can view all assignments for an entry if you are:
+      // 1. A fundraising coordinator or chair
+      const globalFundraisingAccess = await checkParam(
+        globalFundraisingAccessParam,
+        context.authorization,
+        root,
+        {},
+        context
+      );
+      if (globalFundraisingAccess.isErr()) {
+        return false;
+      }
+      if (globalFundraisingAccess.value) {
+        return true;
+      }
+      const { teamMemberships } = context;
+
+      return result.mapOr<Promise<boolean | null>>(
         Promise.resolve(false),
         async ({ id: { id } }) => {
           const personRepository = Container.get(PersonRepository);
@@ -145,8 +164,9 @@ export class FundraisingAssignmentResolver {
           }
           return null;
         }
-      ),
-  })
+      );
+    }
+  )
   @FieldResolver(() => PersonNode, {
     nullable: true,
     description:

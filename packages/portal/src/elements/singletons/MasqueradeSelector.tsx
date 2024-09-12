@@ -1,3 +1,4 @@
+import { SessionStorageKeys } from "@config/storage";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
 import { AutoComplete } from "antd";
 import { useMemo, useRef, useState } from "react";
@@ -49,7 +50,8 @@ export function MasqueradeSelector() {
         })) ?? []
       }
       onSelect={(value) => {
-        window.location.search = `?masquerade=${value}`;
+        sessionStorage.setItem(SessionStorageKeys.Masquerade, String(value));
+        window.location.reload();
       }}
       onSearch={setSearch}
       placeholder="Masquerade as..."

@@ -4,6 +4,7 @@ import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { themeConfigContext } from "@config/antThemeConfig";
 import { API_BASE_URL } from "@config/api";
 import { marathonContext } from "@config/marathonContext";
+import { SessionStorageKeys } from "@config/storage";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import {
   useAuthorizationRequirement,
@@ -78,6 +79,8 @@ export const NavigationMenu = () => {
   const { showErrorMessage } = useAntFeedback();
 
   const { authorization, loggedIn } = useLoginState();
+
+  const canMasquerade = useAuthorizationRequirement(AccessLevel.SuperAdmin);
 
   const router = useRouter();
   const location = useLocation();
@@ -242,7 +245,20 @@ export const NavigationMenu = () => {
           style: {
             background: "transparent",
           },
-          label: useAuthorizationRequirement(AccessLevel.SuperAdmin) ? (
+          label: sessionStorage
+            .getItem(SessionStorageKeys.Masquerade)
+            ?.trim() ? (
+            <Button
+              onClick={() => {
+                sessionStorage.removeItem(SessionStorageKeys.Masquerade);
+                window.location.reload();
+              }}
+              type="text"
+              style={{ color: "inherit" }}
+            >
+              Stop Masquerading
+            </Button>
+          ) : canMasquerade ? (
             <MasqueradeSelector />
           ) : null,
         },

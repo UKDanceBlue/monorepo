@@ -1,9 +1,12 @@
 import "normalize.css";
 import "./root.css";
 
+import { WarningOutlined } from "@ant-design/icons";
 import { AntConfigProvider, ThemeConfigProvider } from "@config/ant.tsx";
 import { API_BASE_URL } from "@config/api.ts";
 import { MarathonConfigProvider } from "@config/marathon.tsx";
+import { SessionStorageKeys } from "@config/storage";
+import { SpinningRibbon } from "@elements/components/design/RibbonSpinner";
 import {
   createRouter,
   ErrorComponent,
@@ -11,10 +14,10 @@ import {
 } from "@tanstack/react-router";
 import type { AuthorizationRule } from "@ukdanceblue/common";
 import { devtoolsExchange } from "@urql/devtools";
-import { App, Progress } from "antd";
+import { App, Empty, Spin } from "antd";
 import { App as AntApp } from "antd";
 import type { useAppProps } from "antd/es/app/context";
-import { StrictMode } from "react";
+import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   cacheExchange,
@@ -30,12 +33,15 @@ const urqlClient = new Client({
   url: API_URL,
   exchanges: [devtoolsExchange, cacheExchange, fetchExchange],
   fetchOptions: () => {
-    const query = new URLSearchParams(window.location.search).get("masquerade");
+    // const query = new URLSearchParams(window.location.search).get("masquerade");
+    const masquerade = sessionStorage
+      .getItem(SessionStorageKeys.Masquerade)
+      ?.trim();
     return {
       credentials: "include",
-      headers: query
+      headers: masquerade
         ? {
-            "x-ukdb-masquerade": query,
+            "x-ukdb-masquerade": masquerade,
           }
         : undefined,
     };
@@ -45,9 +51,42 @@ const urqlClient = new Client({
 const router = createRouter({
   routeTree,
   defaultPendingComponent: () => (
-    <div className={`p-2 text-2xl`}>
-      <Progress />
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+        width: "100%",
+      }}
+    >
+      <Spin
+        size="large"
+        tip="Loading"
+        fullscreen
+        indicator={<SpinningRibbon size={70} />}
+      >
+        <div
+          style={{
+            padding: 64,
+            borderRadius: 4,
+          }}
+        />
+      </Spin>
     </div>
+  ),
+  defaultNotFoundComponent: () => (
+    <Empty
+      description="Page not found"
+      image={
+        <WarningOutlined
+          style={{
+            fontSize: "96px",
+            color: "#aa0",
+          }}
+        />
+      }
+    />
   ),
   defaultErrorComponent: ({ error }) => <ErrorComponent error={error} />,
   context: {
@@ -68,7 +107,65 @@ declare module "@tanstack/react-router" {
 
 // eslint-disable-next-line react-refresh/only-export-components
 function RouterWrapper() {
-  return <RouterProvider router={router} context={{ antApp: App.useApp() }} />;
+  const [isServerReachable, setIsServerReachable] = useState<
+    boolean | undefined
+  >(undefined);
+
+  useEffect(() => {
+    if (isServerReachable !== undefined) {
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (isServerReachable === undefined) {
+        setIsServerReachable(false);
+      }
+    }, 5000);
+    fetch(new URL("/api/healthcheck", API_BASE_URL))
+      .then(async (res) => {
+        clearTimeout(timeout);
+        if (res.ok) {
+          const text = await res.text();
+          setIsServerReachable(text === "OK");
+        } else {
+          throw new Error("Server is not reachable");
+        }
+      })
+      .catch(() => {
+        clearTimeout(timeout);
+        setIsServerReachable(false);
+      });
+  }, [isServerReachable]);
+
+  const antApp = App.useApp();
+
+  return isServerReachable === false ? (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#777",
+      }}
+    >
+      <Empty
+        description="Server is not reachable. Contact tech"
+        image={
+          <WarningOutlined
+            style={{
+              fontSize: "96px",
+              color: "#e33",
+            }}
+          />
+        }
+      />
+    </div>
+  ) : (
+    <RouterProvider router={router} context={{ antApp }} />
+  );
 }
 
 const rootElement = document.getElementById("root")!;

@@ -71,20 +71,6 @@ async function withUserInfo(
   outputContext.authenticatedUser = personResource.value;
   outputContext.userData.userId = userId;
 
-  // Set the committees the user is on
-  const committeeRoles =
-    await personRepository.getEffectiveCommitteeRolesOfPerson({
-      id: person.value.id,
-    });
-  if (committeeRoles.isErr()) {
-    return committeeRoles;
-  }
-  logger.trace(
-    "graphqlContextFunction Found committees",
-    ...committeeRoles.value
-  );
-  outputContext.authorization.committees = committeeRoles.value;
-
   // Set the teams the user is on
   let teamMemberships = await personRepository.findMembershipsOfPerson(
     {

@@ -7,6 +7,7 @@ import { AbstractGraphQLPaginatedResponse } from "#resolvers/ApiResponse.js";
 import { CommitteeRole } from "@prisma/client";
 import {
   AccessControl,
+  checkParam,
   AccessControlParam,
   CommitteeIdentifier,
   FilteredListQueryArgs,
@@ -75,10 +76,7 @@ export class ListFundraisingEntriesResponse extends AbstractGraphQLPaginatedResp
 /**
  * Access control param for granting access to all fundraising entries.
  */
-export const globalFundraisingAccessParam: AccessControlParam<
-  unknown,
-  unknown
-> = {
+export const globalFundraisingAccessParam: AccessControlParam<unknown> = {
   authRules: [
     {
       minCommitteeRole: CommitteeRole.Coordinator,
@@ -147,46 +145,61 @@ export class FundraisingEntryResolver {
   }
 
   @AccessControl<FundraisingEntryNode>(
-    // We can't grant blanket access as otherwise people would see who else was assigned to an entry
-    // You can view all assignments for an entry if you are:
-    // 1. A fundraising coordinator or chair
-    globalFundraisingAccessParam,
-    // 2. The captain of the team the entry is associated with
-    {
-      custom: async (
-        { id: { id } },
-        { teamMemberships, userData: { userId } }
-      ): Promise<boolean> => {
-        if (userId == null) {
-          return false;
-        }
-        const captainOf = teamMemberships.filter(
-          (membership) => membership.position === MembershipPositionType.Captain
-        );
-        if (captainOf.length === 0) {
-          return false;
-        }
+    async (root, context): Promise<boolean> => {
+      // We can't grant blanket access as otherwise people would see who else was assigned to an entry
+      // You can view all assignments for an entry if you are:
+      // 1. A fundraising coordinator or chair
+      const globalFundraisingAccess = await checkParam(
+        globalFundraisingAccessParam,
+        context.authorization,
+        root,
+        {},
+        context
+      );
+      if (globalFundraisingAccess.isErr()) {
+        return false;
+      }
+      if (globalFundraisingAccess.value) {
+        return true;
+      }
+      const {
+        userData: { userId },
+        teamMemberships,
+      } = context;
+      const {
+        id: { id },
+      } = root;
 
-        const fundraisingEntryRepository = Container.get(
-          FundraisingEntryRepository
-        );
-        const entry = await fundraisingEntryRepository.findEntryByUnique({
-          uuid: id,
-        });
-        if (entry.isErr()) {
-          return false;
-        }
-        const dbFundsRepository = Container.get(DBFundsRepository);
-        const teams = await dbFundsRepository.getTeamsForDbFundsTeam({
-          id: entry.value.dbFundsEntry.dbFundsTeamId,
-        });
-        if (teams.isErr()) {
-          return false;
-        }
-        return captainOf.some(({ teamId }) =>
-          teams.value.some((team) => team.uuid === teamId)
-        );
-      },
+      // 2. The captain of the team the entry is associated with
+      if (userId == null) {
+        return false;
+      }
+      const captainOf = teamMemberships.filter(
+        (membership) => membership.position === MembershipPositionType.Captain
+      );
+      if (captainOf.length === 0) {
+        return false;
+      }
+
+      const fundraisingEntryRepository = Container.get(
+        FundraisingEntryRepository
+      );
+      const entry = await fundraisingEntryRepository.findEntryByUnique({
+        uuid: id,
+      });
+      if (entry.isErr()) {
+        return false;
+      }
+      const dbFundsRepository = Container.get(DBFundsRepository);
+      const teams = await dbFundsRepository.getTeamsForDbFundsTeam({
+        id: entry.value.dbFundsEntry.dbFundsTeamId,
+      });
+      if (teams.isErr()) {
+        return false;
+      }
+      return captainOf.some(({ teamId }) =>
+        teams.value.some((team) => team.uuid === teamId)
+      );
     }
   )
   @FieldResolver(() => [FundraisingAssignmentNode])
