@@ -48,22 +48,20 @@ const HomeScreen = () => {
           <HStack justifyContent="center">
             <Button
               onPress={() => {
-                openURL("https://danceblue.networkforgood.com").catch(
-                  universalCatch
-                );
+                openURL("https://donate.danceblue.org").catch(universalCatch);
               }}
               width="2/5"
               backgroundColor="primary.600"
               _text={{ color: "secondary.400" }}
               _pressed={{ opacity: 0.6 }}
             >
-              Donate #FTK!
+              Donate Today!
             </Button>
             <Button
               onPress={() => {
-                openBrowserAsync(
-                  "https://danceblue.org/spirit-point-form/"
-                ).catch(universalCatch);
+                openBrowserAsync("https://spiritpoints.danceblue.org").catch(
+                  universalCatch
+                );
               }}
               width="2/5"
               backgroundColor={"secondary.400"}
@@ -175,11 +173,11 @@ const HomeScreen = () => {
             onPress={async () => {
               if (
                 await Linking.canOpenURL(
-                  "https://danceblue.networkforgood.com/"
+                  "https://donate.danceblue.org/"
                 ).catch(universalCatch)
               ) {
                 Linking.openURL(
-                  "https://danceblue.networkforgood.com/"
+                  "https://donate.danceblue.org/"
                 ).catch(universalCatch);
               }
             }}

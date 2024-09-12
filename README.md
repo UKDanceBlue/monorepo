@@ -25,7 +25,7 @@ Main:
     <a href="https://danceblue.org">Explore DanceBlue</a>
     <br />
     <br />
-    <a href="https://danceblue.networkforgood.com/">Donate</a>
+    <a href="https://donate.danceblue.org/">Donate</a>
     ·
     <a href="https://github.com/UKDanceBlue/app/issues">Report Bug</a>
     ·
