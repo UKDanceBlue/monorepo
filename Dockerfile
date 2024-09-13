@@ -35,7 +35,6 @@ FROM node:22.4.1 as server
 ENV MS_OIDC_URL="https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0/.well-known/openid-configuration"
 ENV NODE_ENV="production"
 ENV APPLICATION_PORT="8000"
-ENV APPLICATION_HOST="0.0.0.0"
 
 RUN mkdir -p /app/packages/server
 RUN mkdir -p /app/packages/common

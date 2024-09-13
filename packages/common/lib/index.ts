@@ -20,7 +20,7 @@ export * from "./utility/errors/ApiError.js";
 
 export * from "./utility/primitive/SimpleTypes.js";
 
-export * from "./authentication/jwt.js";
+export * from "./api/jwt.js";
 
 export * from "./authorization/role.js";
 export * from "./authorization/structures.js";

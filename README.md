@@ -72,6 +72,11 @@ them and their parent’s comfort.
 
 - [React Native](https://reactnative.dev/)
 - [Expo](https://expo.dev/)
+- [Prisma](https://www.prisma.io/)
+- [TypeGraphQL](https://typegraphql.com/)
+- [Urql](https://commerce.nearform.com/open-source/urql/docs/)
+- [Apollo Server](https://www.apollographql.com/docs/apollo-server/)
+- [TanStack](https://tanstack.com/)
 - [yarn](https://yarnpkg.com/)
 - [VS Code](https://code.visualstudio.com/)
 
@@ -90,7 +95,11 @@ To get a local copy up and running follow these simple steps.
    [an extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 3. Set up docker according to VSCode's
    [guide](https://code.visualstudio.com/docs/devcontainers/containers#_installation)
-4. Reopen this repository in the dev container
+4. Reopen this repository in the dev container (note: on windows you should try
+   and clone the repository into a folder in WSL or a docker volume for
+   performance reasons)
+5. Copy all `.env.example` files and remove the `.example` extension, then fill
+   in the values
 
 Alternatively you can set up your own Postgres database and then install the
 repository like a normal Typescript monorepo, but I personally recommend using a
@@ -104,6 +113,24 @@ are available in the top level package.json as well, prefixed by the package
 name. Broadly the build commands are `package:build` and `package:watch` for a
 single build or automatic builds respectively. There are also a few repository
 level scripts, for example testing and linting.
+
+### Linting and Formatting
+
+There are also a number of linting and type-checking scripts, the package
+specific ones are `package:check`, however you will generally want to just run
+the global command `repo:check`. This will check that the entire repository
+passes ESLint, Prettier, and Typescript checks. To format the repository run
+`repo:format:fix` and to fix linter issues run `repo:lint:fix`.
+
+### Running the Applications
+
+All scripts relevant to running the project have a corresponding entry in the
+VSCode launch.json file. This means that in VSCode you can use the 'Run and
+Debug' panel to start any target. Generally you can use on the 'Dev Environment:
+...' run configurations, these configs will activate any watchers needed to
+build the codebase and then start each relevant project. Alternatively you can
+run each component individually from the cli (`package:dev` or `package:start`
+depending on the tooling) or from the same 'Run and Debug' menu.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -149,7 +176,7 @@ info)!
 
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the MIT License. See `LICENSE` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -157,10 +184,14 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 ## Contact
 
-Tag Howard - app@danceblue.com
+App & Web Development Coordinator -
+[app@danceblue.com](mailto:app@danceblue.com)
+
+App & Web Design Coordinator -
+[design@danceblue.com](mailto:design@danceblue.com)
 
 Project Link:
-[https://github.com/UKDanceBlue/danceblue-react-app](https://github.com/UKDanceBlue/app)
+[https://github.com/UKDanceBlue/monorepo](https://github.com/UKDanceBlue/monorepo)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -168,13 +199,13 @@ Project Link:
 
 ## Acknowledgments
 
-- [Tag Howard](https://github.com/jthoward64) - App Development Coordinator -
-  DB22, DB23, DB24
+- [Tag Howard](https://github.com/jthoward64) - App & Web Development
+  Coordinator - DB22, DB23, DB24
 - [Jackson Huse](https://github.com/jphuse) - App Design Coordinator - DB23,
   DB24
 - [Skyler Trowel](https://github.com/smtrowel) - App Development Coordinator -
   DB25
 - [Camille Dyer](https://github.com/cdyer8) - App Design Coordinator - DB25
-- [Everyone on the DanceBlue committee](http://www.danceblue.org/meet-the-team)
+- [Everyone on the DanceBlue committee](https://danceblue.org/about/our-committee/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
