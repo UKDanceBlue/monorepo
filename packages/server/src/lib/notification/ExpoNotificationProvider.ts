@@ -7,7 +7,6 @@ import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
 import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
 import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
 
-import { DetailedError, ErrorCode } from "@ukdanceblue/common";
 import { Expo } from "expo-server-sdk";
 import { DateTime } from "luxon";
 import { Service } from "@freshgum/typedi";
@@ -20,8 +19,27 @@ import type {
   SendableNotification,
 } from "./NotificationProvider.js";
 import type { Notification, Prisma } from "@prisma/client";
-import type { ExpoPushMessage, ExpoPushTicket } from "expo-server-sdk";
+import type {
+  ExpoPushErrorTicket,
+  ExpoPushMessage,
+  ExpoPushSuccessTicket,
+  ExpoPushTicket,
+} from "expo-server-sdk";
 import { expoServiceToken } from "./expoServiceToken.js";
+import {
+  ActionDeniedError,
+  CompositeError,
+  InvariantError,
+  NotFoundError,
+  toBasicError,
+  UnknownError,
+} from "@ukdanceblue/common/error";
+import { AsyncResult, Err, Ok, Result } from "ts-results-es";
+import { ExpoPushFailureError, ExpoPushTicketError } from "#error/expo.js";
+import {
+  handleRepositoryError,
+  RepositoryError,
+} from "#repositories/shared.js";
 
 function makeExpoNotifications(
   content: {
@@ -108,15 +126,22 @@ export class ExpoNotificationProvider implements NotificationProvider {
     sendable: SendableNotification,
     audience: NotificationAudience
   ) {
-    logger.info("Preparing a notification", {
-      sendable,
-      audience,
-    });
+    try {
+      logger.info("Preparing a notification", {
+        sendable,
+        audience,
+      });
 
-    return this.addNotificationToDatabase(sendable, audience);
+      return new AsyncResult(
+        this.addNotificationToDatabase(sendable, audience)
+      );
+    } catch (error) {
+      logger.error("Error preparing notification", { error });
+      return Err(toBasicError(error)).toAsyncResult();
+    }
   }
 
-  public async sendNotification(
+  public sendNotification(
     notification:
       | {
           where: Prisma.NotificationWhereUniqueInput;
@@ -124,64 +149,47 @@ export class ExpoNotificationProvider implements NotificationProvider {
       | {
           value: Notification;
         }
-  ) {
-    const databaseNotification =
-      await this.notificationRepository.findNotificationByUnique(
+  ): AsyncResult<
+    void,
+    | CompositeError<ExpoPushTicketError>
+    | ExpoPushFailureError
+    | RepositoryError
+    | ActionDeniedError
+    | InvariantError
+  > {
+    return this.notificationRepository
+      .findNotificationByUnique(
         "where" in notification
           ? notification.where
           : { id: notification.value.id }
-      );
+      )
+      .andThen(
+        (
+          databaseNotification
+        ): AsyncResult<Notification, RepositoryError | InvariantError> => {
+          if (databaseNotification == null) {
+            return Err(
+              new NotFoundError({ what: "Notification" })
+            ).toAsyncResult();
+          }
 
-    if (databaseNotification == null) {
-      throw new DetailedError(
-        ErrorCode.InvalidRequest,
-        "Notification not found"
-      );
-    }
+          if (databaseNotification.startedSendingAt != null) {
+            return Err(
+              new InvariantError("Notification has already been sent")
+            ).toAsyncResult();
+          }
 
-    if (databaseNotification.startedSendingAt != null) {
-      throw new DetailedError(
-        ErrorCode.InvalidRequest,
-        "Notification has already been sent."
-      );
-    }
-
-    await this.notificationRepository.updateNotification(
-      { id: databaseNotification.id },
-      { startedSendingAt: new Date() }
-    );
-
-    try {
-      const result =
-        await this.completeNotificationDelivery(databaseNotification);
-
-      if (result === "NoAction") {
-        await this.notificationRepository.updateNotification(
-          { id: databaseNotification.id },
-          { startedSendingAt: null }
+          return this.notificationRepository.updateNotification(
+            { id: databaseNotification.id },
+            { startedSendingAt: new Date() }
+          );
+        }
+      )
+      .andThen((databaseNotification) => {
+        return new AsyncResult(
+          this.completeNotificationDelivery(databaseNotification)
         );
-      }
-
-      if (result === "AllSent") {
-        logger.info("Notification sent", {
-          notificationUuid: databaseNotification.uuid,
-        });
-      }
-
-      if (result === "SomeFailed") {
-        logger.warning("Notification partially sent", {
-          notificationUuid: databaseNotification.uuid,
-        });
-      }
-
-      if (result === "AllFailed") {
-        logger.error("Notification failed to send", {
-          notificationUuid: databaseNotification.uuid,
-        });
-      }
-    } catch (error) {
-      logger.error("Error sending notification", { error });
-    }
+      });
   }
 
   /**
@@ -207,9 +215,9 @@ export class ExpoNotificationProvider implements NotificationProvider {
       await this.notificationRepository.deleteNotification({
         id: databaseNotification.id,
       });
-      throw error;
+      return handleRepositoryError(error);
     }
-    return databaseNotification;
+    return Ok(databaseNotification);
   }
 
   /**
@@ -217,40 +225,51 @@ export class ExpoNotificationProvider implements NotificationProvider {
    */
   private async completeNotificationDelivery(
     databaseNotification: Notification
-  ): Promise<"AllSent" | "SomeFailed" | "AllFailed" | "NoAction"> {
-    const tickets: [ExpoPushTicket, deliveryUuid: string][] = [];
-
-    let deliveryRows: {
-      uuid: string;
-      device: {
-        id: number;
-        expoPushToken: string | null;
-      };
-    }[];
-    try {
-      deliveryRows =
-        await this.notificationRepository.findDeliveriesForNotification({
-          id: databaseNotification.id,
-        });
-    } catch (error) {
-      logger.error("Error finding notification deliveries", { error });
-      return "NoAction";
+  ): Promise<
+    Result<
+      void,
+      | CompositeError<ExpoPushTicketError>
+      | ExpoPushFailureError
+      | RepositoryError
+      | ActionDeniedError
+    >
+  > {
+    const deliveryRows: Result<
+      {
+        uuid: string;
+        device: {
+          id: number;
+          expoPushToken: string | null;
+        };
+      }[],
+      RepositoryError
+    > = await this.notificationRepository.findDeliveriesForNotification({
+      id: databaseNotification.id,
+    });
+    if (deliveryRows.isErr()) {
+      return deliveryRows;
     }
 
-    if (isDevelopment && deliveryRows.length > 12) {
-      await this.notificationRepository.updateNotification(
-        { id: databaseNotification.id },
-        {
-          deliveryIssue:
-            "FAILSAFE TRIGGERED: you are in a development environment and trying to send a notification to more than 12 devices. This is likely a mistake.",
-          sendAt: null,
-        }
-      );
-      return "NoAction";
+    if (isDevelopment && deliveryRows.value.length > 12) {
+      try {
+        await this.notificationRepository.updateNotification(
+          { id: databaseNotification.id },
+          {
+            deliveryIssue:
+              "FAILSAFE TRIGGERED: you are in a development environment and trying to send a notification to more than 12 devices. This is likely a mistake.",
+            sendAt: null,
+          }
+        );
+      } finally {
+        return Err(
+          new ActionDeniedError(
+            "FAILSAFE TRIGGERED: you are in a development environment and trying to send a notification to more than 12 devices. This is likely a mistake."
+          )
+        );
+      }
     }
 
-    // Lifecycle step 5
-    let chunks: readonly ExpoPushMessage[][];
+    let chunks: ExpoPushMessage[][] = [];
     try {
       const messages: ExpoPushMessage[] = makeExpoNotifications(
         {
@@ -258,28 +277,30 @@ export class ExpoNotificationProvider implements NotificationProvider {
           title: databaseNotification.title,
           url: databaseNotification.url,
         },
-        deliveryRows
+        deliveryRows.value
       );
       chunks = this.expoSdk.chunkPushNotifications(messages);
     } catch (error) {
-      logger.error("Error chunking notifications", { error });
-      return "NoAction";
+      return Err(toBasicError(error));
     }
 
     // Remove the sendAt date so that the notification is not sent again
-    try {
+    const updateNotificationResult =
       await this.notificationRepository.updateNotification(
         { id: databaseNotification.id },
         { sendAt: null }
-      );
-    } catch (error) {
-      logger.error("Error clearing sendAt date on notification", { error });
-      return "NoAction";
+      ).promise;
+    if (updateNotificationResult.isErr()) {
+      return updateNotificationResult;
     }
 
     // BEGIN DANGER ZONE
 
     let fullSuccess = true;
+
+    const successfulTickets: [ExpoPushSuccessTicket, deliveryUuid: string][] =
+      [];
+    const failedTickets: [ExpoPushErrorTicket, deliveryUuid: string][] = [];
 
     for (const chunk of chunks) {
       const ticketChunk: [ExpoPushTicket, deliveryUuid: string][] = [];
@@ -337,7 +358,13 @@ export class ExpoNotificationProvider implements NotificationProvider {
           })),
           sentAt: DateTime.utc(),
         });
-        tickets.push(...ticketChunk);
+        for (const [ticket, deliveryUuid] of ticketChunk) {
+          if (ticket.status === "error") {
+            failedTickets.push([ticket, deliveryUuid]);
+          } else {
+            successfulTickets.push([ticket, deliveryUuid]);
+          }
+        }
       } catch (error) {
         logger.error("Error updating notification delivery", { error });
         fullSuccess = false;
@@ -349,10 +376,9 @@ export class ExpoNotificationProvider implements NotificationProvider {
     // Lifecycle step 9
     try {
       await Promise.all(
-        tickets.map((ticket) => {
-          return ticket[0].status === "error" &&
-            ticket[0].details?.error === "DeviceNotRegistered"
-            ? this.handleDeviceNotRegistered(ticket[1])
+        failedTickets.map(([ticket, deliveryUuid]) => {
+          return ticket.details?.error === "DeviceNotRegistered"
+            ? this.handleDeviceNotRegistered(deliveryUuid)
             : Promise.resolve();
         })
       );
@@ -361,13 +387,22 @@ export class ExpoNotificationProvider implements NotificationProvider {
     }
 
     if (fullSuccess) {
-      return "AllSent";
+      return Ok(undefined);
     }
 
-    if (tickets.length === 0 && deliveryRows.length > 0) {
-      return "AllFailed";
+    if (
+      successfulTickets.length === 0 &&
+      failedTickets.length === 0 &&
+      deliveryRows.value.length > 0
+    ) {
+      return Err(new UnknownError("No tickets were returned from Expo"));
     }
 
-    return "SomeFailed";
+    return Err(
+      new ExpoPushFailureError(
+        "Some notifications failed to send",
+        failedTickets.map(([ticket]) => ticket)
+      )
+    );
   }
 }

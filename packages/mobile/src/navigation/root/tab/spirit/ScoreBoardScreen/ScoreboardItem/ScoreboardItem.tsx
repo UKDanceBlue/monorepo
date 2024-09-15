@@ -68,7 +68,10 @@ const ScoreboardItem = ({
   );
 
   return (
-    <View height={50} backgroundColor={highlighted ? "primary.50" : undefined}>
+    <View
+      height={screenWidth * 0.15}
+      backgroundColor={highlighted ? "primary.50" : undefined}
+    >
       <Flex direction="row" alignItems="center" flex={1}>
         <Container
           justifyContent="center"

@@ -15,8 +15,8 @@ import {
   AccessLevel,
   CommitteeIdentifier,
   CommitteeRole,
-  DetailedError,
-  ErrorCode,
+  LegacyError,
+  LegacyErrorCode,
   FilteredListQueryArgs,
   GlobalIdScalar,
   PersonNode,
@@ -122,7 +122,7 @@ export class PointEntryResolver {
     });
 
     if (model == null) {
-      throw new DetailedError(ErrorCode.NotFound, "PointEntry not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "PointEntry not found");
     }
 
     return GetPointEntryByUuidResponse.newOk(pointEntryModelToResource(model));
@@ -144,10 +144,10 @@ export class PointEntryResolver {
             query.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
-          query.page != null && query.pageSize != null
-            ? (query.page - 1) * query.pageSize
+          query.page != null && query.actualPageSize != null
+            ? (query.page - 1) * query.actualPageSize
             : null,
-        take: query.pageSize,
+        take: query.actualPageSize,
       }),
       this.pointEntryRepository.countPointEntries({
         filters: query.filters,
@@ -158,7 +158,7 @@ export class PointEntryResolver {
       data: rows.map((row) => pointEntryModelToResource(row)),
       total,
       page: query.page,
-      pageSize: query.pageSize,
+      pageSize: query.actualPageSize,
     });
   }
 

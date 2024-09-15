@@ -120,10 +120,10 @@ export class MarathonResolver
           args.sortDirection?.[i] ?? SortDirection.desc,
         ]) ?? [],
       skip:
-        args.page != null && args.pageSize != null
-          ? (args.page - 1) * args.pageSize
+        args.page != null && args.actualPageSize != null
+          ? (args.page - 1) * args.actualPageSize
           : null,
-      take: args.pageSize,
+      take: args.actualPageSize,
     });
     const marathonCount = await this.marathonRepository.countMarathons({
       filters: args.filters,
@@ -132,7 +132,7 @@ export class MarathonResolver
       data: marathons.map(marathonModelToResource),
       total: marathonCount,
       page: args.page,
-      pageSize: args.pageSize,
+      pageSize: args.actualPageSize,
     });
   }
 

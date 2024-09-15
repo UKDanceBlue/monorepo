@@ -26,6 +26,7 @@ const authStateDocument = graphql(/* GraphQL */ `
   query AuthState {
     me {
       id
+      email
     }
     loginState {
       dbRole
@@ -53,7 +54,7 @@ export function AuthStateProvider({ children }: { children: ReactNode }) {
         data?.me
           ? {
               id: data.me.id,
-              email: data.me.id,
+              email: data.me.email,
             }
           : null
       );

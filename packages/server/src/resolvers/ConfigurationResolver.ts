@@ -11,8 +11,8 @@ import {
   AccessControl,
   AccessLevel,
   ConfigurationNode,
-  DetailedError,
-  ErrorCode,
+  LegacyError,
+  LegacyErrorCode,
   GlobalIdScalar,
   SortDirection,
   dateTimeFromSomething,
@@ -99,7 +99,10 @@ export class ConfigurationResolver {
     );
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
+      throw new LegacyError(
+        LegacyErrorCode.NotFound,
+        "Configuration not found"
+      );
     }
 
     return GetConfigurationResponse.newOk(configurationModelToResource(row));
@@ -116,7 +119,10 @@ export class ConfigurationResolver {
     });
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
+      throw new LegacyError(
+        LegacyErrorCode.NotFound,
+        "Configuration not found"
+      );
     }
 
     return GetConfigurationResponse.newOk(configurationModelToResource(row));
@@ -187,7 +193,10 @@ export class ConfigurationResolver {
     const row = await this.configurationRepository.deleteConfiguration(id);
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Configuration not found");
+      throw new LegacyError(
+        LegacyErrorCode.NotFound,
+        "Configuration not found"
+      );
     }
 
     auditLogger.dangerous("Configuration deleted", { configuration: row });

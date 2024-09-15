@@ -22,10 +22,10 @@ const documents = {
     "\n  query MarathonTime {\n    latestMarathon {\n      startDate\n      endDate\n    }\n  }\n": types.MarathonTimeDocument,
     "\n  query useTabBarConfig {\n    activeConfiguration(key: \"TAB_BAR_CONFIG\") {\n      data {\n        ...SimpleConfig\n      }\n    }\n    me {\n      linkblue\n    }\n  }\n": types.UseTabBarConfigDocument,
     "\n      query TriviaCrack {\n        activeConfiguration(key: \"TRIVIA_CRACK\") {\n          data {\n            ...SimpleConfig\n          }\n        }\n\n        me {\n          teams {\n            team {\n              type\n              name\n            }\n          }\n        }\n      }\n    ": types.TriviaCrackDocument,
-    "\n  query AuthState {\n    me {\n      id\n    }\n    loginState {\n      dbRole\n      loggedIn\n      authSource\n    }\n  }\n": types.AuthStateDocument,
+    "\n  query AuthState {\n    me {\n      id\n      email\n    }\n    loginState {\n      dbRole\n      loggedIn\n      authSource\n    }\n  }\n": types.AuthStateDocument,
     "\n  mutation SetDevice($input: RegisterDeviceInput!) {\n    registerDevice(input: $input) {\n      ok\n    }\n  }\n": types.SetDeviceDocument,
     "\n  fragment EventScreenFragment on EventNode {\n    id\n    title\n    summary\n    description\n    location\n    occurrences {\n      id\n      interval {\n        start\n        end\n      }\n      fullDay\n    }\n    images {\n      thumbHash\n      url\n      height\n      width\n      alt\n      mimeType\n    }\n  }\n": types.EventScreenFragmentFragmentDoc,
-    "\n  query DeviceNotifications(\n    $deviceUuid: GlobalId!\n    $page: Int\n    $pageSize: Int\n    $verifier: String!\n  ) {\n    device(uuid: $deviceUuid) {\n      data {\n        notificationDeliveries(\n          pageSize: $pageSize\n          page: $page\n          verifier: $verifier\n        ) {\n          ...NotificationDeliveryFragment\n        }\n      }\n    }\n  }\n": types.DeviceNotificationsDocument,
+    "\n  query DeviceNotifications(\n    $deviceUuid: String!\n    $page: Int\n    $pageSize: Int\n    $verifier: String!\n  ) {\n    device(uuid: $deviceUuid) {\n      data {\n        notificationDeliveries(\n          pageSize: $pageSize\n          page: $page\n          verifier: $verifier\n        ) {\n          ...NotificationDeliveryFragment\n        }\n      }\n    }\n  }\n": types.DeviceNotificationsDocument,
     "\n  fragment ProfileScreenAuthFragment on LoginState {\n    dbRole\n    authSource\n  }\n": types.ProfileScreenAuthFragmentFragmentDoc,
     "\n  fragment ProfileScreenUserFragment on PersonNode {\n    name\n    linkblue\n    teams {\n      position\n      team {\n        name\n      }\n    }\n    primaryCommittee {\n      identifier\n      role\n    }\n  }\n": types.ProfileScreenUserFragmentFragmentDoc,
     "\n  query RootScreenDocument {\n    loginState {\n      ...ProfileScreenAuthFragment\n      ...RootScreenAuthFragment\n    }\n    me {\n      ...ProfileScreenUserFragment\n    }\n  }\n": types.RootScreenDocumentDocument,
@@ -95,7 +95,7 @@ export function graphql(source: "\n      query TriviaCrack {\n        activeConf
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query AuthState {\n    me {\n      id\n    }\n    loginState {\n      dbRole\n      loggedIn\n      authSource\n    }\n  }\n"): (typeof documents)["\n  query AuthState {\n    me {\n      id\n    }\n    loginState {\n      dbRole\n      loggedIn\n      authSource\n    }\n  }\n"];
+export function graphql(source: "\n  query AuthState {\n    me {\n      id\n      email\n    }\n    loginState {\n      dbRole\n      loggedIn\n      authSource\n    }\n  }\n"): (typeof documents)["\n  query AuthState {\n    me {\n      id\n      email\n    }\n    loginState {\n      dbRole\n      loggedIn\n      authSource\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -107,7 +107,7 @@ export function graphql(source: "\n  fragment EventScreenFragment on EventNode {
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query DeviceNotifications(\n    $deviceUuid: GlobalId!\n    $page: Int\n    $pageSize: Int\n    $verifier: String!\n  ) {\n    device(uuid: $deviceUuid) {\n      data {\n        notificationDeliveries(\n          pageSize: $pageSize\n          page: $page\n          verifier: $verifier\n        ) {\n          ...NotificationDeliveryFragment\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query DeviceNotifications(\n    $deviceUuid: GlobalId!\n    $page: Int\n    $pageSize: Int\n    $verifier: String!\n  ) {\n    device(uuid: $deviceUuid) {\n      data {\n        notificationDeliveries(\n          pageSize: $pageSize\n          page: $page\n          verifier: $verifier\n        ) {\n          ...NotificationDeliveryFragment\n        }\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query DeviceNotifications(\n    $deviceUuid: String!\n    $page: Int\n    $pageSize: Int\n    $verifier: String!\n  ) {\n    device(uuid: $deviceUuid) {\n      data {\n        notificationDeliveries(\n          pageSize: $pageSize\n          page: $page\n          verifier: $verifier\n        ) {\n          ...NotificationDeliveryFragment\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query DeviceNotifications(\n    $deviceUuid: String!\n    $page: Int\n    $pageSize: Int\n    $verifier: String!\n  ) {\n    device(uuid: $deviceUuid) {\n      data {\n        notificationDeliveries(\n          pageSize: $pageSize\n          page: $page\n          verifier: $verifier\n        ) {\n          ...NotificationDeliveryFragment\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

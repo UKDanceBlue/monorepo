@@ -13,10 +13,18 @@ export class LoginFlowSessionRepository {
 
   // Finders
 
+  /**
+   * Find a login flow session by its unique identifier
+   */
   findLoginFlowSessionByUnique(param: LoginFlowSessionUniqueParam) {
     return this.prisma.loginFlowSession.findUnique({ where: param });
   }
 
+  // Mutators
+
+  /**
+   * Start a new login flow, generating a new code verifier
+   */
   startLoginFlow({
     redirectToAfterLogin,
     sendToken,
@@ -36,6 +44,9 @@ export class LoginFlowSessionRepository {
     });
   }
 
+  /**
+   * Remove all login flows older than 24 hours
+   */
   gcOldLoginFlows() {
     return this.prisma.loginFlowSession.deleteMany({
       where: {
@@ -46,8 +57,9 @@ export class LoginFlowSessionRepository {
     });
   }
 
-  // Mutators
-
+  /**
+   * Complete a login flow by deleting it
+   */
   async completeLoginFlow(param: LoginFlowSessionUniqueParam) {
     return this.prisma.loginFlowSession.delete({ where: param });
   }

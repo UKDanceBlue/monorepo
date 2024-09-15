@@ -1686,7 +1686,7 @@ export type QueryDbFundsTeamsArgs = {
 
 
 export type QueryDeviceArgs = {
-  uuid: Scalars['GlobalId']['input'];
+  uuid: Scalars['String']['input'];
 };
 
 

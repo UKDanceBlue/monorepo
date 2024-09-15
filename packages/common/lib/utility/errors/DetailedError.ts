@@ -1,7 +1,7 @@
 import type { ApiError } from "./ApiError.js";
 
 /** @deprecated Use ConcreteError instead */
-export const ErrorCode = {
+export const LegacyErrorCode = {
   // Our codes
   Unknown: "UNKNOWN",
   NotFound: "NotFound",
@@ -24,45 +24,53 @@ export const ErrorCode = {
   GQLInternalServerError: "GQLInternalServerError",
 } as const;
 /** @deprecated Use ConcreteError instead */
-export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
+export type LegacyErrorCode =
+  (typeof LegacyErrorCode)[keyof typeof LegacyErrorCode];
 
 /** @deprecated Use ConcreteError instead */
-export function isErrorCode(code: unknown): code is ErrorCode {
-  return Object.values(ErrorCode).includes(code as ErrorCode);
+export function isLegacyErrorCode(code: unknown): code is LegacyErrorCode {
+  return Object.values(LegacyErrorCode).includes(code as LegacyErrorCode);
 }
 
 /** @deprecated Use ConcreteError instead */
-export function lookupErrorCode(error: Error | string | ApiError): ErrorCode {
+export function lookupLegacyErrorCode(
+  error: Error | string | ApiError
+): LegacyErrorCode {
   if (typeof error === "string") {
-    if (isErrorCode(error)) {
+    if (isLegacyErrorCode(error)) {
       return error;
     } else {
-      const code = (ErrorCode as Record<string, ErrorCode | undefined>)[error];
-      return code == null ? ErrorCode.Unknown : code;
+      const code = (
+        LegacyErrorCode as Record<string, LegacyErrorCode | undefined>
+      )[error];
+      return code == null ? LegacyErrorCode.Unknown : code;
     }
   } else if (error instanceof Error) {
-    return ErrorCode.Unknown;
+    return LegacyErrorCode.Unknown;
   } else {
     return error.code;
   }
 }
 
 /** @deprecated Use ConcreteResult instead */
-export class DetailedError extends Error {
-  code: ErrorCode;
+export class LegacyError extends Error {
+  code: LegacyErrorCode;
   details?: string;
   explanation?: string;
 
-  constructor(code: ErrorCode = ErrorCode.Unknown, message?: string) {
+  constructor(
+    code: LegacyErrorCode = LegacyErrorCode.Unknown,
+    message?: string
+  ) {
     super(message ?? code);
     this.code = code;
   }
 
   static from(
     val: Error | string | ApiError,
-    code: ErrorCode = ErrorCode.Unknown
-  ): DetailedError {
-    const response = new DetailedError(code);
+    code: LegacyErrorCode = LegacyErrorCode.Unknown
+  ): LegacyError {
+    const response = new LegacyError(code);
 
     if (typeof val === "string") {
       response.message = val;

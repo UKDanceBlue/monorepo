@@ -83,7 +83,7 @@ export class NodeResolver {
         return Ok(data);
       }
       case DeviceNode.constructor.name: {
-        const { data } = await this.deviceResolver.getByUuid(id);
+        const { data } = await this.deviceResolver.getByUuid(id.id);
         return Ok(data);
       }
       case EventNode.constructor.name: {
@@ -111,8 +111,8 @@ export class NodeResolver {
         return this.marathonResolver.marathon(id);
       }
       case NotificationNode.constructor.name: {
-        const { data } = await this.notificationResolver.getByUuid(id);
-        return Ok(data);
+        const result = await this.notificationResolver.getByUuid(id);
+        return result.map(({ data }) => data);
       }
       case PersonNode.constructor.name: {
         return this.personResolver.getByUuid(id);

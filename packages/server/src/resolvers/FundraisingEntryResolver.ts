@@ -116,10 +116,10 @@ export class FundraisingEntryResolver {
           args.sortDirection?.[i] ?? SortDirection.desc,
         ]) ?? [],
       skip:
-        args.page != null && args.pageSize != null
-          ? (args.page - 1) * args.pageSize
+        args.page != null && args.actualPageSize != null
+          ? (args.page - 1) * args.actualPageSize
           : null,
-      take: args.pageSize,
+      take: args.actualPageSize,
     });
     const count = await this.fundraisingEntryRepository.countEntries({
       filters: args.filters,
@@ -139,7 +139,7 @@ export class FundraisingEntryResolver {
         ),
         total: count.value,
         page: args.page,
-        pageSize: args.pageSize,
+        pageSize: args.actualPageSize,
       })
     );
   }

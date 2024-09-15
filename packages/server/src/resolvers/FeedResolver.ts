@@ -7,8 +7,8 @@ import { CommitteeRole } from "@prisma/client";
 import {
   AccessControl,
   AccessLevel,
-  DetailedError,
-  ErrorCode,
+  LegacyError,
+  LegacyErrorCode,
   FeedNode,
   type GlobalId,
   GlobalIdScalar,
@@ -121,7 +121,7 @@ export class FeedResolver {
       }
     );
     if (feedItem == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Feed item not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Feed item not found");
     }
     return feedItemModelToResource(feedItem);
   }
@@ -142,7 +142,7 @@ export class FeedResolver {
       uuid: feedItemUuid.id,
     });
     if (feedItem == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Feed item not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Feed item not found");
     }
     return feedItemModelToResource(feedItem);
   }
@@ -168,7 +168,7 @@ export class FeedResolver {
       }
     );
     if (feedItem == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Feed item not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Feed item not found");
     }
     return feedItemModelToResource(feedItem);
   }

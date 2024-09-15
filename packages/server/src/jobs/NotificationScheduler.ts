@@ -7,6 +7,7 @@ import Cron, { scheduledJobs } from "croner";
 import { Service } from "@freshgum/typedi";
 
 import type { Notification } from "@prisma/client";
+import { ConcreteResult } from "@ukdanceblue/common/error";
 
 function scheduleId(notificationUuid: string) {
   return `scheduled-notification:${notificationUuid}`;
@@ -68,7 +69,7 @@ export class NotificationScheduler {
 
     const scheduledJobNames = makeScheduledJobsMap();
     const now = new Date();
-    const promises: Promise<void>[] = [];
+    const promises: Promise<ConcreteResult<void>>[] = [];
     for (const notification of scheduledNotifications) {
       if (notification.sendAt) {
         const exitingJob = scheduledJobNames.get(scheduleId(notification.uuid));
@@ -94,6 +95,7 @@ export class NotificationScheduler {
           });
           promises.push(
             this.notificationProvider.sendNotification({ value: notification })
+              .promise
           );
         } else {
           logger.info("Scheduling notification", {
@@ -141,8 +143,15 @@ export class NotificationScheduler {
           const updatedNotification =
             await this.notificationRepository.findNotificationByUnique({
               uuid: notification.uuid,
+            }).promise;
+          if (updatedNotification.isErr()) {
+            logger.error("Failed to find scheduled notification, not sending", {
+              notificationUuid: notification.uuid,
+              error: updatedNotification.error,
             });
-          if (!updatedNotification) {
+            return;
+          }
+          if (!updatedNotification.value) {
             logger.info(
               "Scheduled notification was deleted since it was scheduled, not sending",
               {
@@ -154,7 +163,7 @@ export class NotificationScheduler {
             );
             return;
           }
-          if (notification.sendAt !== updatedNotification.sendAt) {
+          if (notification.sendAt !== updatedNotification.value.sendAt) {
             logger.info(
               "Scheduled notification was updated since it was scheduled, not sending",
               {
@@ -163,9 +172,15 @@ export class NotificationScheduler {
             );
             return;
           }
-          await this.notificationProvider.sendNotification({
+          const result = await this.notificationProvider.sendNotification({
             value: notification,
-          });
+          }).promise;
+          if (result.isErr()) {
+            logger.error("Failed to send scheduled notification", {
+              notificationUuid: notification.uuid,
+              error: result.error,
+            });
+          }
         } catch (error) {
           logger.error("Failed to send scheduled notification", {
             notificationUuid: notification.uuid,

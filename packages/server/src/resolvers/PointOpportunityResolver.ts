@@ -11,8 +11,8 @@ import {
   AccessControl,
   AccessLevel,
   CommitteeIdentifier,
-  DetailedError,
-  ErrorCode,
+  LegacyError,
+  LegacyErrorCode,
   EventNode,
   FilteredListQueryArgs,
   GlobalIdScalar,
@@ -130,7 +130,10 @@ export class PointOpportunityResolver {
       });
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "PointOpportunity not found");
+      throw new LegacyError(
+        LegacyErrorCode.NotFound,
+        "PointOpportunity not found"
+      );
     }
 
     return SinglePointOpportunityResponse.newOk(
@@ -154,10 +157,10 @@ export class PointOpportunityResolver {
             query.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
-          query.page != null && query.pageSize != null
-            ? (query.page - 1) * query.pageSize
+          query.page != null && query.actualPageSize != null
+            ? (query.page - 1) * query.actualPageSize
             : null,
-        take: query.pageSize,
+        take: query.actualPageSize,
       }),
       this.pointOpportunityRepository.countPointOpportunities({
         filters: query.filters,
@@ -168,7 +171,7 @@ export class PointOpportunityResolver {
       data: rows.map((row) => pointOpportunityModelToResource(row)),
       total,
       page: query.page,
-      pageSize: query.pageSize,
+      pageSize: query.actualPageSize,
     });
   }
 
@@ -224,7 +227,10 @@ export class PointOpportunityResolver {
     );
 
     if (!row) {
-      throw new DetailedError(ErrorCode.NotFound, "PointOpportunity not found");
+      throw new LegacyError(
+        LegacyErrorCode.NotFound,
+        "PointOpportunity not found"
+      );
     }
 
     return SinglePointOpportunityResponse.newOk(
@@ -251,7 +257,10 @@ export class PointOpportunityResolver {
     });
 
     if (!row) {
-      throw new DetailedError(ErrorCode.NotFound, "PointOpportunity not found");
+      throw new LegacyError(
+        LegacyErrorCode.NotFound,
+        "PointOpportunity not found"
+      );
     }
 
     return DeletePointOpportunityResponse.newOk(true);

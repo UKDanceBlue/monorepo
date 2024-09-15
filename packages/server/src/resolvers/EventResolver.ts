@@ -17,8 +17,8 @@ import {
   AccessControl,
   AccessLevel,
   CommitteeRole,
-  DetailedError,
-  ErrorCode,
+  LegacyError,
+  LegacyErrorCode,
   EventNode,
   FilteredListQueryArgs,
   GlobalIdScalar,
@@ -209,7 +209,7 @@ export class EventResolver {
     const row = await this.eventRepository.findEventByUnique({ uuid: id });
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Event not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Event not found");
     }
 
     return GetEventByUuidResponse.newOk(
@@ -230,10 +230,10 @@ export class EventResolver {
           query.sortDirection?.[i] ?? SortDirection.desc,
         ]) ?? [],
       skip:
-        query.page != null && query.pageSize != null
-          ? (query.page - 1) * query.pageSize
+        query.page != null && query.actualPageSize != null
+          ? (query.page - 1) * query.actualPageSize
           : null,
-      take: query.pageSize,
+      take: query.actualPageSize,
     });
 
     return ListEventsResponse.newPaginated({
@@ -245,7 +245,7 @@ export class EventResolver {
       ),
       total: await this.eventRepository.countEvents({ filters: query.filters }),
       page: query.page,
-      pageSize: query.pageSize,
+      pageSize: query.actualPageSize,
     });
   }
 
@@ -304,7 +304,7 @@ export class EventResolver {
     const row = await this.eventRepository.deleteEvent({ uuid: id });
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Event not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Event not found");
     }
 
     auditLogger.secure("Event deleted", { uuid: id });
@@ -371,7 +371,7 @@ export class EventResolver {
     );
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Event not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Event not found");
     }
 
     auditLogger.secure("Event updated", { event: row });
@@ -403,7 +403,7 @@ export class EventResolver {
     });
 
     if (!row) {
-      throw new DetailedError(ErrorCode.NotFound, "Image not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
     }
 
     auditLogger.secure("Event image removed", { eventUuid, imageUuid });

@@ -1498,7 +1498,10 @@ type Query {
   currentMarathon: MarathonNode
   currentMarathonHour: MarathonHourNode
   dbFundsTeams(search: String!): [DbFundsTeamInfo!]!
-  device(uuid: GlobalId!): GetDeviceByUuidResponse!
+  device(
+    """For legacy reasons, this can be a GlobalId or a raw UUID"""
+    uuid: String!
+  ): GetDeviceByUuidResponse!
   devices(
     """The boolean filters to apply to the query"""
     booleanFilters: Void

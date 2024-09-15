@@ -1,4 +1,4 @@
-import { ErrorCode, isErrorCode } from "@ukdanceblue/common";
+import { LegacyErrorCode, isLegacyErrorCode } from "@ukdanceblue/common";
 import { CombinedError } from "urql";
 
 import type { ApiError } from "@ukdanceblue/common";
@@ -14,10 +14,10 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
   for (const graphQLError of error.graphQLErrors) {
     const apiError: ExtendedApiError = {
       message: graphQLError.message,
-      code: ErrorCode.Unknown,
+      code: LegacyErrorCode.Unknown,
     };
 
-    if (isErrorCode(graphQLError.extensions.code)) {
+    if (isLegacyErrorCode(graphQLError.extensions.code)) {
       apiError.code = graphQLError.extensions.code;
     }
 
@@ -43,7 +43,7 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
   if (error.networkError) {
     const apiError: ExtendedApiError = {
       message: error.networkError.message,
-      code: ErrorCode.Unknown,
+      code: LegacyErrorCode.Unknown,
       cause: error.networkError,
     };
 
@@ -77,7 +77,7 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
   if (apiErrors.length === 0) {
     apiErrors.push({
       message: error.message,
-      code: ErrorCode.Unknown,
+      code: LegacyErrorCode.Unknown,
       cause: error,
     });
   }
@@ -104,7 +104,7 @@ export function handleUnknownError(
 
   const apiError: ApiError = {
     message: "An unknown error occurred.",
-    code: ErrorCode.Unknown,
+    code: LegacyErrorCode.Unknown,
     cause: error,
   };
 

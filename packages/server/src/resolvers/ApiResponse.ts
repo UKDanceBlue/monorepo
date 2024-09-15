@@ -1,13 +1,14 @@
-import { ErrorCode, GlobalIdScalar } from "@ukdanceblue/common";
+import { GlobalIdScalar } from "@ukdanceblue/common";
 import type { GlobalId } from "@ukdanceblue/common";
 import { NonNegativeIntResolver, PositiveIntResolver } from "graphql-scalars";
-import { Field, InterfaceType, registerEnumType } from "type-graphql";
+import { Field, InterfaceType } from "type-graphql";
 
 import type { ClassType } from "type-graphql";
 
 const DEFAULT_PAGE_SIZE = 10;
 const FIRST_PAGE = 1;
 
+/** @deprecated There isn't really any reason to use these types, but that's just how the API was structured originally. Do not use them in new code */
 @InterfaceType({ description: "API response" })
 export class GraphQLBaseResponse {
   @Field(() => Boolean)
@@ -18,6 +19,7 @@ export class GraphQLBaseResponse {
   }
 }
 
+/** @deprecated There isn't really any reason to use these types, but that's just how the API was structured originally. Do not use them in new code */
 @InterfaceType({ description: "API response", implements: GraphQLBaseResponse })
 export abstract class AbstractGraphQLOkResponse<T> extends GraphQLBaseResponse {
   data?: T;
@@ -43,6 +45,7 @@ export abstract class AbstractGraphQLOkResponse<T> extends GraphQLBaseResponse {
   }
 }
 
+/** @deprecated There isn't really any reason to use these types, but that's just how the API was structured originally. Do not use them in new code */
 @InterfaceType({ description: "API response", implements: GraphQLBaseResponse })
 export abstract class AbstractGraphQLArrayOkResponse<
   T,
@@ -54,6 +57,7 @@ export abstract class AbstractGraphQLArrayOkResponse<
   }
 }
 
+/** @deprecated There isn't really any reason to use these types, but that's just how the API was structured originally. Do not use them in new code */
 @InterfaceType({
   description: "API response",
   implements: AbstractGraphQLOkResponse,
@@ -152,5 +156,3 @@ export abstract class AbstractGraphQLPaginatedResponse<
     return baseResponse;
   }
 }
-
-registerEnumType(ErrorCode, { name: "ErrorCode", description: "Error codes" });

@@ -7,7 +7,7 @@ import type { ExtraLogArgs, LoggerTransport } from "./transport";
 export class Logger {
   static #instance: Logger = new Logger(
     new ConsoleTransport(LogLevel.debug),
-    new SentryTransport(LogLevel.info)
+    new SentryTransport(LogLevel.warn)
   );
 
   #transports: LoggerTransport[];

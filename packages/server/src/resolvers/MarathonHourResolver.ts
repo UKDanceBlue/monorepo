@@ -3,8 +3,8 @@ import { marathonHourModelToResource } from "#repositories/marathonHour/marathon
 import { AbstractGraphQLPaginatedResponse } from "#resolvers/ApiResponse.js";
 
 import {
-  DetailedError,
-  ErrorCode,
+  LegacyError,
+  LegacyErrorCode,
   FilteredListQueryArgs,
   GlobalIdScalar,
   ImageNode,
@@ -109,7 +109,7 @@ export class MarathonHourResolver {
         uuid: id,
       });
     if (marathonHour == null) {
-      throw new DetailedError(ErrorCode.NotFound, "MarathonHour not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "MarathonHour not found");
     }
     return marathonHourModelToResource(marathonHour);
   }
@@ -133,7 +133,7 @@ export class MarathonHourResolver {
       data: marathons.map(marathonHourModelToResource),
       total: marathonCount,
       page: args.page,
-      pageSize: args.pageSize,
+      pageSize: args.actualPageSize,
     });
   }
 
@@ -164,7 +164,7 @@ export class MarathonHourResolver {
       input
     );
     if (marathonHour == null) {
-      throw new DetailedError(ErrorCode.NotFound, "MarathonHour not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "MarathonHour not found");
     }
     return marathonHourModelToResource(marathonHour);
   }
@@ -177,7 +177,7 @@ export class MarathonHourResolver {
       uuid: id,
     });
     if (marathonHour == null) {
-      throw new DetailedError(ErrorCode.NotFound, "MarathonHour not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "MarathonHour not found");
     }
   }
 
@@ -191,7 +191,7 @@ export class MarathonHourResolver {
       { uuid: imageUuid.id }
     );
     if (marathonHour == null) {
-      throw new DetailedError(ErrorCode.NotFound, "MarathonHour not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "MarathonHour not found");
     }
     return marathonHourModelToResource(marathonHour);
   }
@@ -206,7 +206,7 @@ export class MarathonHourResolver {
       { uuid: imageUuid.id }
     );
     if (marathonHour == null) {
-      throw new DetailedError(ErrorCode.NotFound, "MarathonHour not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "MarathonHour not found");
     }
   }
 }

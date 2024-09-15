@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { DetailedError, ErrorCode } from "@ukdanceblue/common";
+import { LegacyError, LegacyErrorCode } from "@ukdanceblue/common";
 import { Service } from "@freshgum/typedi";
 
 import type { Prisma } from "@prisma/client";
@@ -117,8 +117,8 @@ export class EventImagesRepository {
     } else if (count === 1) {
       return true;
     } else {
-      throw new DetailedError(
-        ErrorCode.InternalFailure,
+      throw new LegacyError(
+        LegacyErrorCode.InternalFailure,
         "Expected to remove at most one event-image relationship, but removed more than one."
       );
     }

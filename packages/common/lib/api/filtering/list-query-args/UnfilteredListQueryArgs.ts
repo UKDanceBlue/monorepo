@@ -34,6 +34,10 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
   })
   pageSize!: number | null;
 
+  get actualPageSize(): number | undefined {
+    return this.sendAll ? undefined : (this.pageSize ?? DEFAULT_PAGE_SIZE);
+  }
+
   @Field(() => Int, {
     nullable: true,
     description: `The page number to return, defaults to ${String(FIRST_PAGE)}`,

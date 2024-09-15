@@ -3,11 +3,11 @@ import {
   buildNotificationWhere,
 } from "./notificationRepositoryUtils.js";
 
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Notification, Prisma, PrismaClient } from "@prisma/client";
 import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type { NotificationError } from "@prisma/client";
+import { NotificationError } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 
 const notificationBooleanKeys = [] as const;
@@ -61,27 +61,51 @@ export type NotificationFilters = FilterItems<
 >;
 
 import { prismaToken } from "#prisma";
+import {
+  handleRepositoryError,
+  RepositoryError,
+} from "#repositories/shared.js";
+import { AsyncResult, Err, Ok, Result } from "ts-results-es";
+import { NotFoundError } from "@ukdanceblue/common/error";
 
 @Service([prismaToken])
 export class NotificationRepository {
   constructor(private prisma: PrismaClient) {}
 
   findNotificationByUnique(param: Prisma.NotificationWhereUniqueInput) {
-    return this.prisma.notification.findUnique({ where: param });
+    return new AsyncResult(
+      this.prisma.notification
+        .findUnique({ where: param })
+        .then(
+          (result): Result<Notification, RepositoryError> =>
+            result
+              ? Ok(result)
+              : Err(new NotFoundError({ what: "Notification" }))
+        )
+        .catch(handleRepositoryError)
+    );
   }
 
-  findDeliveriesForNotification(param: Prisma.NotificationWhereUniqueInput) {
-    return this.prisma.notificationDelivery.findMany({
-      where: { notification: param },
-      include: {
-        device: {
-          select: {
-            expoPushToken: true,
-            id: true,
+  async findDeliveriesForNotification(
+    param: Prisma.NotificationWhereUniqueInput
+  ) {
+    try {
+      return Ok(
+        await this.prisma.notificationDelivery.findMany({
+          where: { notification: param },
+          include: {
+            device: {
+              select: {
+                expoPushToken: true,
+                id: true,
+              },
+            },
           },
-        },
-      },
-    });
+        })
+      );
+    } catch (error) {
+      return handleRepositoryError(error);
+    }
   }
 
   countDeliveriesForNotification(param: Prisma.NotificationWhereUniqueInput) {
@@ -180,18 +204,12 @@ export class NotificationRepository {
     param: Prisma.NotificationWhereUniqueInput,
     data: Prisma.NotificationUpdateInput
   ) {
-    try {
-      return this.prisma.notification.update({ where: param, data });
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return null;
-      } else {
-        throw error;
-      }
-    }
+    return new AsyncResult(
+      this.prisma.notification
+        .update({ where: param, data })
+        .then((result) => Ok(result))
+        .catch(handleRepositoryError)
+    );
   }
 
   deleteNotification(param: Prisma.NotificationWhereUniqueInput) {
