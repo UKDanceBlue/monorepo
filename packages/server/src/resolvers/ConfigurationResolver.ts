@@ -89,6 +89,8 @@ export class ConfigurationResolver {
   ) {}
   @Query(() => GetConfigurationResponse, {
     name: "activeConfiguration",
+    description:
+      "Get the active configuration for a given key at the current time",
   })
   async activeConfiguration(
     @Arg("key") key: string
@@ -110,6 +112,7 @@ export class ConfigurationResolver {
 
   @Query(() => GetConfigurationResponse, {
     name: "configuration",
+    description: "Get a particular configuration entry by UUID",
   })
   async getByUuid(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -128,7 +131,10 @@ export class ConfigurationResolver {
     return GetConfigurationResponse.newOk(configurationModelToResource(row));
   }
 
-  @Query(() => GetAllConfigurationsResponse, { name: "allConfigurations" })
+  @Query(() => GetAllConfigurationsResponse, {
+    name: "allConfigurations",
+    description: "Get all configurations, irrespective of time",
+  })
   async getAll(): Promise<GetAllConfigurationsResponse> {
     const rows = await this.configurationRepository.findConfigurations(null, [
       ["createdAt", SortDirection.desc],
@@ -140,7 +146,11 @@ export class ConfigurationResolver {
   }
 
   @AccessControl({ accessLevel: AccessLevel.Admin })
-  @Mutation(() => CreateConfigurationResponse, { name: "createConfiguration" })
+  @Mutation(() => CreateConfigurationResponse, {
+    name: "createConfiguration",
+    description:
+      "Create a new configuration, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)",
+  })
   async create(
     @Arg("input") input: CreateConfigurationInput
   ): Promise<CreateConfigurationResponse> {
@@ -159,7 +169,11 @@ export class ConfigurationResolver {
   }
 
   @AccessControl({ accessLevel: AccessLevel.Admin })
-  @Mutation(() => CreateConfigurationResponse, { name: "createConfigurations" })
+  @Mutation(() => CreateConfigurationResponse, {
+    name: "createConfigurations",
+    description:
+      "Create multiple configurations, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)",
+  })
   async batchCreate(
     @Arg("input", () => [CreateConfigurationInput])
     input: CreateConfigurationInput[]
@@ -186,7 +200,10 @@ export class ConfigurationResolver {
   }
 
   @AccessControl({ accessLevel: AccessLevel.Admin })
-  @Mutation(() => DeleteConfigurationResponse, { name: "deleteConfiguration" })
+  @Mutation(() => DeleteConfigurationResponse, {
+    name: "deleteConfiguration",
+    description: "Delete a configuration by UUID",
+  })
   async delete(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<DeleteConfigurationResponse> {
@@ -205,9 +222,20 @@ export class ConfigurationResolver {
   }
 
   @AccessControl({ accessLevel: AccessLevel.SuperAdmin })
-  @Query(() => String)
-  async auditLog(): Promise<string> {
+  @Query(() => String, {
+    name: "auditLog",
+    description: "Get the audit log file from the server",
+  })
+  async auditLog(
+    @Arg("lines", { defaultValue: 25 }) lines: number,
+    @Arg("offset", { defaultValue: 0 }) offset: number
+  ): Promise<string> {
     const fileLookup = await readFile(join(logDir, auditLoggerFileName));
-    return fileLookup.toString("utf8");
+    return fileLookup
+      .toString("utf8")
+      .split("\n")
+      .reverse()
+      .slice(offset, offset + lines)
+      .join("/n");
   }
 }

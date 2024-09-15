@@ -130,7 +130,10 @@ export class DeviceResolver {
     private readonly personRepository: PersonRepository
   ) {}
 
-  @Query(() => GetDeviceByUuidResponse, { name: "device" })
+  @Query(() => GetDeviceByUuidResponse, {
+    name: "device",
+    description: "Get a device by it's UUID",
+  })
   async getByUuid(
     @Arg("uuid", () => String, {
       description: "For legacy reasons, this can be a GlobalId or a raw UUID",
@@ -149,7 +152,10 @@ export class DeviceResolver {
     return GetDeviceByUuidResponse.newOk(deviceModelToResource(row));
   }
 
-  @Query(() => ListDevicesResponse, { name: "devices" })
+  @Query(() => ListDevicesResponse, {
+    name: "devices",
+    description: "List all devices",
+  })
   async list(
     @Args(() => ListDevicesArgs) query: ListDevicesArgs
   ): Promise<ListDevicesResponse> {
@@ -178,7 +184,10 @@ export class DeviceResolver {
     });
   }
 
-  @Mutation(() => RegisterDeviceResponse, { name: "registerDevice" })
+  @Mutation(() => RegisterDeviceResponse, {
+    name: "registerDevice",
+    description: "Register a new device, or update an existing one",
+  })
   async register(
     @Arg("input") input: RegisterDeviceInput
   ): Promise<ConcreteResult<RegisterDeviceResponse>> {
@@ -206,7 +215,10 @@ export class DeviceResolver {
     );
   }
 
-  @Mutation(() => DeleteDeviceResponse, { name: "deleteDevice" })
+  @Mutation(() => DeleteDeviceResponse, {
+    name: "deleteDevice",
+    description: "Delete a device by it's UUID",
+  })
   async delete(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<DeleteDeviceResponse> {
@@ -229,7 +241,9 @@ export class DeviceResolver {
       .promise;
   }
 
-  @FieldResolver(() => [NotificationDeliveryNode])
+  @FieldResolver(() => [NotificationDeliveryNode], {
+    description: "List all notification deliveries for this device",
+  })
   async notificationDeliveries(
     @Root() { id: { id } }: DeviceNode,
     @Args(() => NotificationDeliveriesArgs) query: NotificationDeliveriesArgs

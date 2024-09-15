@@ -8,6 +8,25 @@ import { Container } from "@freshgum/typedi";
 import type { Context } from "koa";
 import type { NextFn } from "type-graphql";
 
+interface UpcomingEvent {
+  title: string;
+  summary: string | null;
+  description: string | null;
+  location: string | null;
+  occurrences: {
+    start: Date;
+    end: Date;
+  }[];
+  images: {
+    url: string;
+    mimeType: string;
+    width: number;
+    height: number;
+    alt: string | null;
+    thumbHash: string | null;
+  }[];
+}
+
 const EMPTY_PNG_URL =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIW2NgAAIAAAUAAR4f7BQAAAAASUVORK5CYII=";
 
@@ -42,7 +61,7 @@ export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
 
   const fileManager = Container.get(FileManager);
 
-  const eventsJson = await Promise.all(
+  const eventsJson: UpcomingEvent[] = await Promise.all(
     upcomingEvents.map(async (event) => {
       const occurrences = event.eventOccurrences;
 
@@ -84,7 +103,8 @@ export const upcomingEventsHandler = async (ctx: Context, next: NextFn) => {
             thumbHash: image.thumbHash?.toString("base64") ?? null,
             width: image.width,
             height: image.height,
-            ...fileData,
+            url: fileData.url.toString(),
+            mimeType: fileData.mimeType,
           };
         })
       );
