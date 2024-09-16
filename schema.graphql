@@ -8,33 +8,47 @@ type AbortScheduledNotificationResponse implements AbstractGraphQLOkResponse & G
   ok: Boolean!
 }
 
-"""API response"""
+"""
+API response
+"""
 interface AbstractGraphQLArrayOkResponse implements GraphQLBaseResponse {
   ok: Boolean!
 }
 
-"""API response"""
+"""
+API response
+"""
 interface AbstractGraphQLCreatedResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   ok: Boolean!
   uuid: GlobalId!
 }
 
-"""API response"""
+"""
+API response
+"""
 interface AbstractGraphQLOkResponse implements GraphQLBaseResponse {
   ok: Boolean!
 }
 
-"""API response"""
+"""
+API response
+"""
 interface AbstractGraphQLPaginatedResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
   ok: Boolean!
 
-  """The current page number (1-indexed)"""
+  """
+  The current page number (1-indexed)
+  """
   page: PositiveInt!
 
-  """The number of items per page"""
+  """
+  The number of items per page
+  """
   pageSize: NonNegativeInt!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
@@ -52,7 +66,9 @@ input AssignEntryToPersonInput {
   amount: Float!
 }
 
-"""The source of authentication"""
+"""
+The source of authentication
+"""
 enum AuthSource {
   Anonymous
   Demo
@@ -68,7 +84,9 @@ input BulkPersonInput {
   role: CommitteeRole
 }
 
-"""The identifier for a committee"""
+"""
+The identifier for a committee
+"""
 enum CommitteeIdentifier {
   communityDevelopmentCommittee
   corporateCommittee
@@ -103,7 +121,9 @@ type CommitteeNode implements Node {
   updatedAt: DateTimeISO
 }
 
-"""Roles within a committee"""
+"""
+Roles within a committee
+"""
 enum CommitteeRole {
   Chair
   Coordinator
@@ -235,7 +255,9 @@ type DbFundsTeamInfo {
   name: String!
 }
 
-"""DanceBlue roles"""
+"""
+DanceBlue roles
+"""
 enum DbRole {
   Committee
   None
@@ -309,10 +331,14 @@ enum DeviceResolverDateFilterKeys {
 }
 
 input DeviceResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: NumericComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: DeviceResolverDateFilterKeys!
 
   """
@@ -323,7 +349,9 @@ input DeviceResolverKeyedDateFilterItem {
 }
 
 input DeviceResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: DeviceResolverAllKeys!
 
   """
@@ -333,7 +361,9 @@ input DeviceResolverKeyedIsNullFilterItem {
 }
 
 input DeviceResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: Void!
 
   """
@@ -344,10 +374,14 @@ input DeviceResolverKeyedOneOfFilterItem {
 }
 
 input DeviceResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: StringComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: DeviceResolverStringFilterKeys!
 
   """
@@ -369,7 +403,10 @@ type EffectiveCommitteeRole {
 """
 A field whose value conforms to the standard internet email address format as specified in HTML Spec: https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address.
 """
-scalar EmailAddress @specifiedBy(url: "https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address")
+scalar EmailAddress
+  @specifiedBy(
+    url: "https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address"
+  )
 
 type EventNode implements Node {
   createdAt: DateTimeISO
@@ -412,10 +449,14 @@ enum EventResolverDateFilterKeys {
 }
 
 input EventResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: NumericComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: EventResolverDateFilterKeys!
 
   """
@@ -426,7 +467,9 @@ input EventResolverKeyedDateFilterItem {
 }
 
 input EventResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: EventResolverAllKeys!
 
   """
@@ -436,7 +479,9 @@ input EventResolverKeyedIsNullFilterItem {
 }
 
 input EventResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: Void!
 
   """
@@ -447,10 +492,14 @@ input EventResolverKeyedOneOfFilterItem {
 }
 
 input EventResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: StringComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: EventResolverStringFilterKeys!
 
   """
@@ -520,10 +569,14 @@ enum FundraisingEntryResolverDateFilterKeys {
 }
 
 input FundraisingEntryResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: NumericComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: FundraisingEntryResolverDateFilterKeys!
 
   """
@@ -534,7 +587,9 @@ input FundraisingEntryResolverKeyedDateFilterItem {
 }
 
 input FundraisingEntryResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: FundraisingEntryResolverAllKeys!
 
   """
@@ -544,10 +599,14 @@ input FundraisingEntryResolverKeyedIsNullFilterItem {
 }
 
 input FundraisingEntryResolverKeyedNumericFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: NumericComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: FundraisingEntryResolverNumericFilterKeys!
 
   """
@@ -558,7 +617,9 @@ input FundraisingEntryResolverKeyedNumericFilterItem {
 }
 
 input FundraisingEntryResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: FundraisingEntryResolverOneOfFilterKeys!
 
   """
@@ -569,10 +630,14 @@ input FundraisingEntryResolverKeyedOneOfFilterItem {
 }
 
 input FundraisingEntryResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: StringComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: FundraisingEntryResolverStringFilterKeys!
 
   """
@@ -631,10 +696,14 @@ type GetPointEntryByUuidResponse implements AbstractGraphQLOkResponse & GraphQLB
   ok: Boolean!
 }
 
-"""GlobalId custom scalar type"""
+"""
+GlobalId custom scalar type
+"""
 scalar GlobalId
 
-"""API response"""
+"""
+API response
+"""
 interface GraphQLBaseResponse {
   ok: Boolean!
 }
@@ -665,10 +734,14 @@ enum ImageResolverDateFilterKeys {
 }
 
 input ImageResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: NumericComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: ImageResolverDateFilterKeys!
 
   """
@@ -679,7 +752,9 @@ input ImageResolverKeyedDateFilterItem {
 }
 
 input ImageResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: ImageResolverAllKeys!
 
   """
@@ -689,10 +764,14 @@ input ImageResolverKeyedIsNullFilterItem {
 }
 
 input ImageResolverKeyedNumericFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: NumericComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: ImageResolverNumericFilterKeys!
 
   """
@@ -703,7 +782,9 @@ input ImageResolverKeyedNumericFilterItem {
 }
 
 input ImageResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: Void!
 
   """
@@ -714,10 +795,14 @@ input ImageResolverKeyedOneOfFilterItem {
 }
 
 input ImageResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: StringComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: ImageResolverStringFilterKeys!
 
   """
@@ -750,13 +835,19 @@ type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGra
   data: [DeviceNode!]!
   ok: Boolean!
 
-  """The current page number (1-indexed)"""
+  """
+  The current page number (1-indexed)
+  """
   page: PositiveInt!
 
-  """The number of items per page"""
+  """
+  The number of items per page
+  """
   pageSize: NonNegativeInt!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
@@ -764,13 +855,19 @@ type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
   data: [EventNode!]!
   ok: Boolean!
 
-  """The current page number (1-indexed)"""
+  """
+  The current page number (1-indexed)
+  """
   page: PositiveInt!
 
-  """The number of items per page"""
+  """
+  The number of items per page
+  """
   pageSize: NonNegativeInt!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
@@ -778,13 +875,19 @@ type ListFundraisingEntriesResponse implements AbstractGraphQLArrayOkResponse & 
   data: [FundraisingEntryNode!]!
   ok: Boolean!
 
-  """The current page number (1-indexed)"""
+  """
+  The current page number (1-indexed)
+  """
   page: PositiveInt!
 
-  """The number of items per page"""
+  """
+  The number of items per page
+  """
   pageSize: NonNegativeInt!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
@@ -792,13 +895,19 @@ type ListImagesResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
   data: [ImageNode!]!
   ok: Boolean!
 
-  """The current page number (1-indexed)"""
+  """
+  The current page number (1-indexed)
+  """
   page: PositiveInt!
 
-  """The number of items per page"""
+  """
+  The number of items per page
+  """
   pageSize: NonNegativeInt!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
@@ -806,13 +915,19 @@ type ListMarathonsResponse implements AbstractGraphQLArrayOkResponse & AbstractG
   data: [MarathonNode!]!
   ok: Boolean!
 
-  """The current page number (1-indexed)"""
+  """
+  The current page number (1-indexed)
+  """
   page: PositiveInt!
 
-  """The number of items per page"""
+  """
+  The number of items per page
+  """
   pageSize: NonNegativeInt!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
@@ -820,13 +935,19 @@ type ListNotificationDeliveriesResponse implements AbstractGraphQLArrayOkRespons
   data: [NotificationDeliveryNode!]!
   ok: Boolean!
 
-  """The current page number (1-indexed)"""
+  """
+  The current page number (1-indexed)
+  """
   page: PositiveInt!
 
-  """The number of items per page"""
+  """
+  The number of items per page
+  """
   pageSize: NonNegativeInt!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
@@ -834,13 +955,19 @@ type ListNotificationsResponse implements AbstractGraphQLArrayOkResponse & Abstr
   data: [NotificationNode!]!
   ok: Boolean!
 
-  """The current page number (1-indexed)"""
+  """
+  The current page number (1-indexed)
+  """
   page: PositiveInt!
 
-  """The number of items per page"""
+  """
+  The number of items per page
+  """
   pageSize: NonNegativeInt!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
@@ -848,13 +975,19 @@ type ListPeopleResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
   data: [PersonNode!]!
   ok: Boolean!
 
-  """The current page number (1-indexed)"""
+  """
+  The current page number (1-indexed)
+  """
   page: PositiveInt!
 
-  """The number of items per page"""
+  """
+  The number of items per page
+  """
   pageSize: NonNegativeInt!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
@@ -862,13 +995,19 @@ type ListPointEntriesResponse implements AbstractGraphQLArrayOkResponse & Abstra
   data: [PointEntryNode!]!
   ok: Boolean!
 
-  """The current page number (1-indexed)"""
+  """
+  The current page number (1-indexed)
+  """
   page: PositiveInt!
 
-  """The number of items per page"""
+  """
+  The number of items per page
+  """
   pageSize: NonNegativeInt!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
@@ -876,13 +1015,19 @@ type ListPointOpportunitiesResponse implements AbstractGraphQLArrayOkResponse & 
   data: [PointOpportunityNode!]!
   ok: Boolean!
 
-  """The current page number (1-indexed)"""
+  """
+  The current page number (1-indexed)
+  """
   page: PositiveInt!
 
-  """The number of items per page"""
+  """
+  The number of items per page
+  """
   pageSize: NonNegativeInt!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
@@ -890,13 +1035,19 @@ type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraph
   data: [TeamNode!]!
   ok: Boolean!
 
-  """The current page number (1-indexed)"""
+  """
+  The current page number (1-indexed)
+  """
   page: PositiveInt!
 
-  """The number of items per page"""
+  """
+  The number of items per page
+  """
   pageSize: NonNegativeInt!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
@@ -956,10 +1107,14 @@ enum MarathonResolverDateFilterKeys {
 }
 
 input MarathonResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: NumericComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: MarathonResolverDateFilterKeys!
 
   """
@@ -970,7 +1125,9 @@ input MarathonResolverKeyedDateFilterItem {
 }
 
 input MarathonResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: MarathonResolverAllKeys!
 
   """
@@ -994,21 +1151,28 @@ type MembershipNode implements Node {
   updatedAt: DateTimeISO
 }
 
-"""The position of a member on a team"""
+"""
+The position of a member on a team
+"""
 enum MembershipPositionType {
   Captain
   Member
 }
 
 type Mutation {
-  abortScheduledNotification(uuid: GlobalId!): AbortScheduledNotificationResponse!
+  abortScheduledNotification(
+    uuid: GlobalId!
+  ): AbortScheduledNotificationResponse!
   acknowledgeDeliveryIssue(uuid: GlobalId!): AcknowledgeDeliveryIssueResponse!
-
   """Add an existing image to an event"""
   addExistingImageToEvent(eventId: GlobalId!, imageId: GlobalId!): AddEventImageResponse!
   addMap(imageUuid: GlobalId!, uuid: GlobalId!): MarathonHourNode!
   addPersonToTeam(personUuid: GlobalId!, teamUuid: GlobalId!): MembershipNode!
-  assignEntryToPerson(entryId: GlobalId!, input: AssignEntryToPersonInput!, personId: GlobalId!): FundraisingAssignmentNode!
+  assignEntryToPerson(
+    entryId: GlobalId!
+    input: AssignEntryToPersonInput!
+    personId: GlobalId!
+  ): FundraisingAssignmentNode!
   assignTeamToDbFundsTeam(dbFundsTeamDbNum: Int!, teamId: GlobalId!): Void!
 
   """Attach an image to a feed item"""
@@ -1032,10 +1196,15 @@ type Mutation {
   createFeedItem(input: CreateFeedInput!): FeedNode!
   createImage(input: CreateImageInput!): ImageNode!
   createMarathon(input: CreateMarathonInput!): MarathonNode!
-  createMarathonHour(input: CreateMarathonHourInput!, marathonUuid: GlobalId!): MarathonHourNode!
+  createMarathonHour(
+    input: CreateMarathonHourInput!
+    marathonUuid: GlobalId!
+  ): MarathonHourNode!
   createPerson(input: CreatePersonInput!): PersonNode!
   createPointEntry(input: CreatePointEntryInput!): CreatePointEntryResponse!
-  createPointOpportunity(input: CreatePointOpportunityInput!): CreatePointOpportunityResponse!
+  createPointOpportunity(
+    input: CreatePointOpportunityInput!
+  ): CreatePointOpportunityResponse!
   createTeam(input: CreateTeamInput!, marathon: GlobalId!): CreateTeamResponse!
 
   """Delete a configuration by UUID"""
@@ -1074,9 +1243,14 @@ type Mutation {
   """Remove an image from a feed item"""
   removeImageFromFeedItem(feedItemUuid: GlobalId!): FeedNode!
   removeMap(imageUuid: GlobalId!, uuid: GlobalId!): Void!
-  scheduleNotification(sendAt: DateTimeISO!, uuid: GlobalId!): ScheduleNotificationResponse!
+  scheduleNotification(
+    sendAt: DateTimeISO!
+    uuid: GlobalId!
+  ): ScheduleNotificationResponse!
 
-  """Send a notification immediately."""
+  """
+  Send a notification immediately.
+  """
   sendNotification(uuid: GlobalId!): SendNotificationResponse!
 
   """Update an event by UUID"""
@@ -1087,19 +1261,35 @@ type Mutation {
   setImageAltText(alt: String!, uuid: GlobalId!): ImageNode!
   setImageUrl(uuid: GlobalId!): ImageNode!
   setMarathon(input: SetMarathonInput!, uuid: GlobalId!): MarathonNode!
-  setMarathonHour(input: SetMarathonHourInput!, uuid: GlobalId!): MarathonHourNode!
+  setMarathonHour(
+    input: SetMarathonHourInput!
+    uuid: GlobalId!
+  ): MarathonHourNode!
   setPerson(input: SetPersonInput!, uuid: GlobalId!): PersonNode!
-  setPointOpportunity(input: SetPointOpportunityInput!, uuid: GlobalId!): SinglePointOpportunityResponse!
+  setPointOpportunity(
+    input: SetPointOpportunityInput!
+    uuid: GlobalId!
+  ): SinglePointOpportunityResponse!
   setTeam(input: SetTeamInput!, uuid: GlobalId!): SingleTeamResponse!
-  stageNotification(audience: NotificationAudienceInput!, body: String!, title: String!, url: String): StageNotificationResponse!
-  updateFundraisingAssignment(id: GlobalId!, input: UpdateFundraisingAssignmentInput!): FundraisingAssignmentNode!
+  stageNotification(
+    audience: NotificationAudienceInput!
+    body: String!
+    title: String!
+    url: String
+  ): StageNotificationResponse!
+  updateFundraisingAssignment(
+    id: GlobalId!
+    input: UpdateFundraisingAssignmentInput!
+  ): FundraisingAssignmentNode!
 }
 
 interface Node {
   id: GlobalId!
 }
 
-"""Integers that will have a value of 0 or more."""
+"""
+Integers that will have a value of 0 or more.
+"""
 scalar NonNegativeInt
 
 input NotificationAudienceInput {
@@ -1109,7 +1299,9 @@ input NotificationAudienceInput {
   users: [GlobalId!]
 }
 
-"""The number of delivery issues for a notification, broken down by type."""
+"""
+The number of delivery issues for a notification, broken down by type.
+"""
 type NotificationDeliveryIssueCount {
   DeviceNotRegistered: Int!
   InvalidCredentials: Int!
@@ -1126,15 +1318,21 @@ type NotificationDeliveryNode implements Node {
   chunkUuid: String
   createdAt: DateTimeISO
 
-  """Any error message returned by Expo when sending the notification."""
+  """
+  Any error message returned by Expo when sending the notification.
+  """
   deliveryError: String
   id: GlobalId!
   notification: NotificationNode!
 
-  """The time the server received a delivery receipt from the user."""
+  """
+  The time the server received a delivery receipt from the user.
+  """
   receiptCheckedAt: DateTimeISO
 
-  """The time the server sent the notification to Expo for delivery."""
+  """
+  The time the server sent the notification to Expo for delivery.
+  """
   sentAt: DateTimeISO
   updatedAt: DateTimeISO
 }
@@ -1155,10 +1353,14 @@ enum NotificationDeliveryResolverDateFilterKeys {
 }
 
 input NotificationDeliveryResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: NumericComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: NotificationDeliveryResolverDateFilterKeys!
 
   """
@@ -1169,7 +1371,9 @@ input NotificationDeliveryResolverKeyedDateFilterItem {
 }
 
 input NotificationDeliveryResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: NotificationDeliveryResolverAllKeys!
 
   """
@@ -1192,7 +1396,9 @@ type NotificationNode implements Node {
   """
   sendAt: DateTimeISO
 
-  """The time the server started sending the notification."""
+  """
+  The time the server started sending the notification.
+  """
   startedSendingAt: DateTimeISO
   title: String!
   updatedAt: DateTimeISO
@@ -1217,10 +1423,14 @@ enum NotificationResolverDateFilterKeys {
 }
 
 input NotificationResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: NumericComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: NotificationResolverDateFilterKeys!
 
   """
@@ -1231,7 +1441,9 @@ input NotificationResolverKeyedDateFilterItem {
 }
 
 input NotificationResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: NotificationResolverAllKeys!
 
   """
@@ -1241,7 +1453,9 @@ input NotificationResolverKeyedIsNullFilterItem {
 }
 
 input NotificationResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: NotificationResolverOneOfFilterKeys!
 
   """
@@ -1252,10 +1466,14 @@ input NotificationResolverKeyedOneOfFilterItem {
 }
 
 input NotificationResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: StringComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: NotificationResolverStringFilterKeys!
 
   """
@@ -1285,28 +1503,47 @@ enum NumericComparator {
 
 type PersonNode implements Node {
   assignedDonationEntries(
-    """The boolean filters to apply to the query"""
+    """
+    The boolean filters to apply to the query
+    """
     booleanFilters: Void
 
-    """The date filters to apply to the query"""
+    """
+    The date filters to apply to the query
+    """
     dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
 
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+    """
+    Whether to include deleted items in the results
+    """
+    includeDeleted: Boolean
+      @deprecated(
+        reason: "Soft-deletion is no longer used in this project, this parameter is ignored"
+      )
 
-    """The is-null filters to apply to the query"""
+    """
+    The is-null filters to apply to the query
+    """
     isNullFilters: [FundraisingEntryResolverKeyedIsNullFilterItem!]
 
-    """The numeric filters to apply to the query"""
+    """
+    The numeric filters to apply to the query
+    """
     numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
 
-    """The one-of filters to apply to the query"""
+    """
+    The one-of filters to apply to the query
+    """
     oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
 
-    """The page number to return, defaults to 1"""
+    """
+    The page number to return, defaults to 1
+    """
     page: Int
 
-    """The number of items to return per page, defaults to 10"""
+    """
+    The number of items to return per page, defaults to 10
+    """
     pageSize: Int
 
     """
@@ -1324,7 +1561,9 @@ type PersonNode implements Node {
     """
     sortDirection: [SortDirection!]
 
-    """The string filters to apply to the query"""
+    """
+    The string filters to apply to the query
+    """
     stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
   ): ListFundraisingEntriesResponse
   committees: [CommitteeMembershipNode!]!
@@ -1352,7 +1591,9 @@ enum PersonResolverAllKeys {
 }
 
 input PersonResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: PersonResolverAllKeys!
 
   """
@@ -1362,7 +1603,9 @@ input PersonResolverKeyedIsNullFilterItem {
 }
 
 input PersonResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: PersonResolverOneOfFilterKeys!
 
   """
@@ -1373,10 +1616,14 @@ input PersonResolverKeyedOneOfFilterItem {
 }
 
 input PersonResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: StringComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: PersonResolverStringFilterKeys!
 
   """
@@ -1420,10 +1667,14 @@ enum PointEntryResolverDateFilterKeys {
 }
 
 input PointEntryResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: NumericComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: PointEntryResolverDateFilterKeys!
 
   """
@@ -1434,7 +1685,9 @@ input PointEntryResolverKeyedDateFilterItem {
 }
 
 input PointEntryResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: PointEntryResolverAllKeys!
 
   """
@@ -1469,10 +1722,14 @@ enum PointOpportunityResolverDateFilterKeys {
 }
 
 input PointOpportunityResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: NumericComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: PointOpportunityResolverDateFilterKeys!
 
   """
@@ -1483,7 +1740,9 @@ input PointOpportunityResolverKeyedDateFilterItem {
 }
 
 input PointOpportunityResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: PointOpportunityResolverAllKeys!
 
   """
@@ -1493,7 +1752,9 @@ input PointOpportunityResolverKeyedIsNullFilterItem {
 }
 
 input PointOpportunityResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: PointOpportunityResolverOneOfFilterKeys!
 
   """
@@ -1504,10 +1765,14 @@ input PointOpportunityResolverKeyedOneOfFilterItem {
 }
 
 input PointOpportunityResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: StringComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: PointOpportunityResolverStringFilterKeys!
 
   """
@@ -1526,7 +1791,9 @@ enum PointOpportunityResolverStringFilterKeys {
   name
 }
 
-"""Integers that will have a value greater than 0."""
+"""
+Integers that will have a value greater than 0.
+"""
 scalar PositiveInt
 
 type Query {
@@ -1557,28 +1824,47 @@ type Query {
 
   """List all devices"""
   devices(
-    """The boolean filters to apply to the query"""
+    """
+    The boolean filters to apply to the query
+    """
     booleanFilters: Void
 
-    """The date filters to apply to the query"""
+    """
+    The date filters to apply to the query
+    """
     dateFilters: [DeviceResolverKeyedDateFilterItem!]
 
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+    """
+    Whether to include deleted items in the results
+    """
+    includeDeleted: Boolean
+      @deprecated(
+        reason: "Soft-deletion is no longer used in this project, this parameter is ignored"
+      )
 
-    """The is-null filters to apply to the query"""
+    """
+    The is-null filters to apply to the query
+    """
     isNullFilters: [DeviceResolverKeyedIsNullFilterItem!]
 
-    """The numeric filters to apply to the query"""
+    """
+    The numeric filters to apply to the query
+    """
     numericFilters: Void
 
-    """The one-of filters to apply to the query"""
+    """
+    The one-of filters to apply to the query
+    """
     oneOfFilters: [DeviceResolverKeyedOneOfFilterItem!]
 
-    """The page number to return, defaults to 1"""
+    """
+    The page number to return, defaults to 1
+    """
     page: Int
 
-    """The number of items to return per page, defaults to 10"""
+    """
+    The number of items to return per page, defaults to 10
+    """
     pageSize: Int
 
     """
@@ -1596,7 +1882,9 @@ type Query {
     """
     sortDirection: [SortDirection!]
 
-    """The string filters to apply to the query"""
+    """
+    The string filters to apply to the query
+    """
     stringFilters: [DeviceResolverKeyedStringFilterItem!]
   ): ListDevicesResponse!
 
@@ -1605,28 +1893,47 @@ type Query {
 
   """List events"""
   events(
-    """The boolean filters to apply to the query"""
+    """
+    The boolean filters to apply to the query
+    """
     booleanFilters: Void
 
-    """The date filters to apply to the query"""
+    """
+    The date filters to apply to the query
+    """
     dateFilters: [EventResolverKeyedDateFilterItem!]
 
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+    """
+    Whether to include deleted items in the results
+    """
+    includeDeleted: Boolean
+      @deprecated(
+        reason: "Soft-deletion is no longer used in this project, this parameter is ignored"
+      )
 
-    """The is-null filters to apply to the query"""
+    """
+    The is-null filters to apply to the query
+    """
     isNullFilters: [EventResolverKeyedIsNullFilterItem!]
 
-    """The numeric filters to apply to the query"""
+    """
+    The numeric filters to apply to the query
+    """
     numericFilters: Void
 
-    """The one-of filters to apply to the query"""
+    """
+    The one-of filters to apply to the query
+    """
     oneOfFilters: [EventResolverKeyedOneOfFilterItem!]
 
-    """The page number to return, defaults to 1"""
+    """
+    The page number to return, defaults to 1
+    """
     page: Int
 
-    """The number of items to return per page, defaults to 10"""
+    """
+    The number of items to return per page, defaults to 10
+    """
     pageSize: Int
 
     """
@@ -1644,7 +1951,9 @@ type Query {
     """
     sortDirection: [SortDirection!]
 
-    """The string filters to apply to the query"""
+    """
+    The string filters to apply to the query
+    """
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
 
@@ -1655,28 +1964,47 @@ type Query {
   feedItem(feedItemId: GlobalId!): FeedNode!
   fundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
   fundraisingEntries(
-    """The boolean filters to apply to the query"""
+    """
+    The boolean filters to apply to the query
+    """
     booleanFilters: Void
 
-    """The date filters to apply to the query"""
+    """
+    The date filters to apply to the query
+    """
     dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
 
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+    """
+    Whether to include deleted items in the results
+    """
+    includeDeleted: Boolean
+      @deprecated(
+        reason: "Soft-deletion is no longer used in this project, this parameter is ignored"
+      )
 
-    """The is-null filters to apply to the query"""
+    """
+    The is-null filters to apply to the query
+    """
     isNullFilters: [FundraisingEntryResolverKeyedIsNullFilterItem!]
 
-    """The numeric filters to apply to the query"""
+    """
+    The numeric filters to apply to the query
+    """
     numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
 
-    """The one-of filters to apply to the query"""
+    """
+    The one-of filters to apply to the query
+    """
     oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
 
-    """The page number to return, defaults to 1"""
+    """
+    The page number to return, defaults to 1
+    """
     page: Int
 
-    """The number of items to return per page, defaults to 10"""
+    """
+    The number of items to return per page, defaults to 10
+    """
     pageSize: Int
 
     """
@@ -1694,34 +2022,55 @@ type Query {
     """
     sortDirection: [SortDirection!]
 
-    """The string filters to apply to the query"""
+    """
+    The string filters to apply to the query
+    """
     stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
   ): ListFundraisingEntriesResponse!
   fundraisingEntry(id: GlobalId!): FundraisingEntryNode!
   image(uuid: GlobalId!): GetImageByUuidResponse!
   images(
-    """The boolean filters to apply to the query"""
+    """
+    The boolean filters to apply to the query
+    """
     booleanFilters: Void
 
-    """The date filters to apply to the query"""
+    """
+    The date filters to apply to the query
+    """
     dateFilters: [ImageResolverKeyedDateFilterItem!]
 
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+    """
+    Whether to include deleted items in the results
+    """
+    includeDeleted: Boolean
+      @deprecated(
+        reason: "Soft-deletion is no longer used in this project, this parameter is ignored"
+      )
 
-    """The is-null filters to apply to the query"""
+    """
+    The is-null filters to apply to the query
+    """
     isNullFilters: [ImageResolverKeyedIsNullFilterItem!]
 
-    """The numeric filters to apply to the query"""
+    """
+    The numeric filters to apply to the query
+    """
     numericFilters: [ImageResolverKeyedNumericFilterItem!]
 
-    """The one-of filters to apply to the query"""
+    """
+    The one-of filters to apply to the query
+    """
     oneOfFilters: [ImageResolverKeyedOneOfFilterItem!]
 
-    """The page number to return, defaults to 1"""
+    """
+    The page number to return, defaults to 1
+    """
     page: Int
 
-    """The number of items to return per page, defaults to 10"""
+    """
+    The number of items to return per page, defaults to 10
+    """
     pageSize: Int
 
     """
@@ -1739,7 +2088,9 @@ type Query {
     """
     sortDirection: [SortDirection!]
 
-    """The string filters to apply to the query"""
+    """
+    The string filters to apply to the query
+    """
     stringFilters: [ImageResolverKeyedStringFilterItem!]
   ): ListImagesResponse!
 
@@ -1748,28 +2099,47 @@ type Query {
   """
   latestMarathon: MarathonNode
   listPeople(
-    """The boolean filters to apply to the query"""
+    """
+    The boolean filters to apply to the query
+    """
     booleanFilters: Void
 
-    """The date filters to apply to the query"""
+    """
+    The date filters to apply to the query
+    """
     dateFilters: Void
 
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+    """
+    Whether to include deleted items in the results
+    """
+    includeDeleted: Boolean
+      @deprecated(
+        reason: "Soft-deletion is no longer used in this project, this parameter is ignored"
+      )
 
-    """The is-null filters to apply to the query"""
+    """
+    The is-null filters to apply to the query
+    """
     isNullFilters: [PersonResolverKeyedIsNullFilterItem!]
 
-    """The numeric filters to apply to the query"""
+    """
+    The numeric filters to apply to the query
+    """
     numericFilters: Void
 
-    """The one-of filters to apply to the query"""
+    """
+    The one-of filters to apply to the query
+    """
     oneOfFilters: [PersonResolverKeyedOneOfFilterItem!]
 
-    """The page number to return, defaults to 1"""
+    """
+    The page number to return, defaults to 1
+    """
     page: Int
 
-    """The number of items to return per page, defaults to 10"""
+    """
+    The number of items to return per page, defaults to 10
+    """
     pageSize: Int
 
     """
@@ -1787,7 +2157,9 @@ type Query {
     """
     sortDirection: [SortDirection!]
 
-    """The string filters to apply to the query"""
+    """
+    The string filters to apply to the query
+    """
     stringFilters: [PersonResolverKeyedStringFilterItem!]
   ): ListPeopleResponse!
   loginState: LoginState!
@@ -1795,28 +2167,47 @@ type Query {
   marathonForYear(year: String!): MarathonNode!
   marathonHour(uuid: GlobalId!): MarathonHourNode!
   marathons(
-    """The boolean filters to apply to the query"""
+    """
+    The boolean filters to apply to the query
+    """
     booleanFilters: Void
 
-    """The date filters to apply to the query"""
+    """
+    The date filters to apply to the query
+    """
     dateFilters: [MarathonResolverKeyedDateFilterItem!]
 
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+    """
+    Whether to include deleted items in the results
+    """
+    includeDeleted: Boolean
+      @deprecated(
+        reason: "Soft-deletion is no longer used in this project, this parameter is ignored"
+      )
 
-    """The is-null filters to apply to the query"""
+    """
+    The is-null filters to apply to the query
+    """
     isNullFilters: [MarathonResolverKeyedIsNullFilterItem!]
 
-    """The numeric filters to apply to the query"""
+    """
+    The numeric filters to apply to the query
+    """
     numericFilters: Void
 
-    """The one-of filters to apply to the query"""
+    """
+    The one-of filters to apply to the query
+    """
     oneOfFilters: Void
 
-    """The page number to return, defaults to 1"""
+    """
+    The page number to return, defaults to 1
+    """
     page: Int
 
-    """The number of items to return per page, defaults to 10"""
+    """
+    The number of items to return per page, defaults to 10
+    """
     pageSize: Int
 
     """
@@ -1834,36 +2225,57 @@ type Query {
     """
     sortDirection: [SortDirection!]
 
-    """The string filters to apply to the query"""
+    """
+    The string filters to apply to the query
+    """
     stringFilters: Void
   ): ListMarathonsResponse!
   me: PersonNode
   node(id: GlobalId!): Node!
   notification(uuid: GlobalId!): GetNotificationByUuidResponse!
   notificationDeliveries(
-    """The boolean filters to apply to the query"""
+    """
+    The boolean filters to apply to the query
+    """
     booleanFilters: Void
 
-    """The date filters to apply to the query"""
+    """
+    The date filters to apply to the query
+    """
     dateFilters: [NotificationDeliveryResolverKeyedDateFilterItem!]
 
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+    """
+    Whether to include deleted items in the results
+    """
+    includeDeleted: Boolean
+      @deprecated(
+        reason: "Soft-deletion is no longer used in this project, this parameter is ignored"
+      )
 
-    """The is-null filters to apply to the query"""
+    """
+    The is-null filters to apply to the query
+    """
     isNullFilters: [NotificationDeliveryResolverKeyedIsNullFilterItem!]
     notificationUuid: GlobalId!
 
-    """The numeric filters to apply to the query"""
+    """
+    The numeric filters to apply to the query
+    """
     numericFilters: Void
 
-    """The one-of filters to apply to the query"""
+    """
+    The one-of filters to apply to the query
+    """
     oneOfFilters: Void
 
-    """The page number to return, defaults to 1"""
+    """
+    The page number to return, defaults to 1
+    """
     page: Int
 
-    """The number of items to return per page, defaults to 10"""
+    """
+    The number of items to return per page, defaults to 10
+    """
     pageSize: Int
 
     """
@@ -1881,32 +2293,53 @@ type Query {
     """
     sortDirection: [SortDirection!]
 
-    """The string filters to apply to the query"""
+    """
+    The string filters to apply to the query
+    """
     stringFilters: Void
   ): ListNotificationDeliveriesResponse!
   notifications(
-    """The boolean filters to apply to the query"""
+    """
+    The boolean filters to apply to the query
+    """
     booleanFilters: Void
 
-    """The date filters to apply to the query"""
+    """
+    The date filters to apply to the query
+    """
     dateFilters: [NotificationResolverKeyedDateFilterItem!]
 
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+    """
+    Whether to include deleted items in the results
+    """
+    includeDeleted: Boolean
+      @deprecated(
+        reason: "Soft-deletion is no longer used in this project, this parameter is ignored"
+      )
 
-    """The is-null filters to apply to the query"""
+    """
+    The is-null filters to apply to the query
+    """
     isNullFilters: [NotificationResolverKeyedIsNullFilterItem!]
 
-    """The numeric filters to apply to the query"""
+    """
+    The numeric filters to apply to the query
+    """
     numericFilters: Void
 
-    """The one-of filters to apply to the query"""
+    """
+    The one-of filters to apply to the query
+    """
     oneOfFilters: [NotificationResolverKeyedOneOfFilterItem!]
 
-    """The page number to return, defaults to 1"""
+    """
+    The page number to return, defaults to 1
+    """
     page: Int
 
-    """The number of items to return per page, defaults to 10"""
+    """
+    The number of items to return per page, defaults to 10
+    """
     pageSize: Int
 
     """
@@ -1924,34 +2357,55 @@ type Query {
     """
     sortDirection: [SortDirection!]
 
-    """The string filters to apply to the query"""
+    """
+    The string filters to apply to the query
+    """
     stringFilters: [NotificationResolverKeyedStringFilterItem!]
   ): ListNotificationsResponse!
   person(uuid: GlobalId!): PersonNode!
   personByLinkBlue(linkBlueId: String!): PersonNode
   pointEntries(
-    """The boolean filters to apply to the query"""
+    """
+    The boolean filters to apply to the query
+    """
     booleanFilters: Void
 
-    """The date filters to apply to the query"""
+    """
+    The date filters to apply to the query
+    """
     dateFilters: [PointEntryResolverKeyedDateFilterItem!]
 
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+    """
+    Whether to include deleted items in the results
+    """
+    includeDeleted: Boolean
+      @deprecated(
+        reason: "Soft-deletion is no longer used in this project, this parameter is ignored"
+      )
 
-    """The is-null filters to apply to the query"""
+    """
+    The is-null filters to apply to the query
+    """
     isNullFilters: [PointEntryResolverKeyedIsNullFilterItem!]
 
-    """The numeric filters to apply to the query"""
+    """
+    The numeric filters to apply to the query
+    """
     numericFilters: Void
 
-    """The one-of filters to apply to the query"""
+    """
+    The one-of filters to apply to the query
+    """
     oneOfFilters: Void
 
-    """The page number to return, defaults to 1"""
+    """
+    The page number to return, defaults to 1
+    """
     page: Int
 
-    """The number of items to return per page, defaults to 10"""
+    """
+    The number of items to return per page, defaults to 10
+    """
     pageSize: Int
 
     """
@@ -1969,33 +2423,54 @@ type Query {
     """
     sortDirection: [SortDirection!]
 
-    """The string filters to apply to the query"""
+    """
+    The string filters to apply to the query
+    """
     stringFilters: Void
   ): ListPointEntriesResponse!
   pointEntry(uuid: GlobalId!): GetPointEntryByUuidResponse!
   pointOpportunities(
-    """The boolean filters to apply to the query"""
+    """
+    The boolean filters to apply to the query
+    """
     booleanFilters: Void
 
-    """The date filters to apply to the query"""
+    """
+    The date filters to apply to the query
+    """
     dateFilters: [PointOpportunityResolverKeyedDateFilterItem!]
 
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+    """
+    Whether to include deleted items in the results
+    """
+    includeDeleted: Boolean
+      @deprecated(
+        reason: "Soft-deletion is no longer used in this project, this parameter is ignored"
+      )
 
-    """The is-null filters to apply to the query"""
+    """
+    The is-null filters to apply to the query
+    """
     isNullFilters: [PointOpportunityResolverKeyedIsNullFilterItem!]
 
-    """The numeric filters to apply to the query"""
+    """
+    The numeric filters to apply to the query
+    """
     numericFilters: Void
 
-    """The one-of filters to apply to the query"""
+    """
+    The one-of filters to apply to the query
+    """
     oneOfFilters: [PointOpportunityResolverKeyedOneOfFilterItem!]
 
-    """The page number to return, defaults to 1"""
+    """
+    The page number to return, defaults to 1
+    """
     page: Int
 
-    """The number of items to return per page, defaults to 10"""
+    """
+    The number of items to return per page, defaults to 10
+    """
     pageSize: Int
 
     """
@@ -2013,37 +2488,58 @@ type Query {
     """
     sortDirection: [SortDirection!]
 
-    """The string filters to apply to the query"""
+    """
+    The string filters to apply to the query
+    """
     stringFilters: [PointOpportunityResolverKeyedStringFilterItem!]
   ): ListPointOpportunitiesResponse!
   pointOpportunity(uuid: GlobalId!): SinglePointOpportunityResponse!
   searchPeopleByName(name: String!): [PersonNode!]!
   team(uuid: GlobalId!): SingleTeamResponse!
   teams(
-    """The boolean filters to apply to the query"""
+    """
+    The boolean filters to apply to the query
+    """
     booleanFilters: Void
 
-    """The date filters to apply to the query"""
+    """
+    The date filters to apply to the query
+    """
     dateFilters: Void
 
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+    """
+    Whether to include deleted items in the results
+    """
+    includeDeleted: Boolean
+      @deprecated(
+        reason: "Soft-deletion is no longer used in this project, this parameter is ignored"
+      )
 
-    """The is-null filters to apply to the query"""
+    """
+    The is-null filters to apply to the query
+    """
     isNullFilters: [TeamResolverKeyedIsNullFilterItem!]
     legacyStatus: [TeamLegacyStatus!]
     marathonId: [GlobalId!]
 
-    """The numeric filters to apply to the query"""
+    """
+    The numeric filters to apply to the query
+    """
     numericFilters: Void
 
-    """The one-of filters to apply to the query"""
+    """
+    The one-of filters to apply to the query
+    """
     oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]
 
-    """The page number to return, defaults to 1"""
+    """
+    The page number to return, defaults to 1
+    """
     page: Int
 
-    """The number of items to return per page, defaults to 10"""
+    """
+    The number of items to return per page, defaults to 10
+    """
     pageSize: Int
 
     """
@@ -2061,7 +2557,9 @@ type Query {
     """
     sortDirection: [SortDirection!]
 
-    """The string filters to apply to the query"""
+    """
+    The string filters to apply to the query
+    """
     stringFilters: [TeamResolverKeyedStringFilterItem!]
     type: [TeamType!]
     visibility: [DbRole!] @deprecated(reason: "Use type")
@@ -2069,16 +2567,24 @@ type Query {
 }
 
 input RegisterDeviceInput {
-  """For legacy reasons, this can be a GlobalId or a raw UUID"""
+  """
+  For legacy reasons, this can be a GlobalId or a raw UUID
+  """
   deviceId: String!
 
-  """The Expo push token of the device"""
+  """
+  The Expo push token of the device
+  """
   expoPushToken: String
 
-  """The ID of the last user to log in on this device"""
+  """
+  The ID of the last user to log in on this device
+  """
   lastUserId: GlobalId
 
-  """base64 encoded SHA-256 hash of a secret known to the device"""
+  """
+  base64 encoded SHA-256 hash of a secret known to the device
+  """
   verifier: String!
 }
 
@@ -2194,7 +2700,9 @@ enum StringComparator {
   SUBSTRING
 }
 
-"""New Team vs Returning Team"""
+"""
+New Team vs Returning Team
+"""
 enum TeamLegacyStatus {
   DemoTeam
   NewTeam
@@ -2202,33 +2710,53 @@ enum TeamLegacyStatus {
 }
 
 type TeamNode implements Node {
-  captains: [MembershipNode!]! @deprecated(reason: "Just query the members field and filter by role")
+  captains: [MembershipNode!]!
+    @deprecated(reason: "Just query the members field and filter by role")
   committeeIdentifier: CommitteeIdentifier
   createdAt: DateTimeISO
   dbFundsTeam: DbFundsTeamInfo
   fundraisingEntries(
-    """The boolean filters to apply to the query"""
+    """
+    The boolean filters to apply to the query
+    """
     booleanFilters: Void
 
-    """The date filters to apply to the query"""
+    """
+    The date filters to apply to the query
+    """
     dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
 
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+    """
+    Whether to include deleted items in the results
+    """
+    includeDeleted: Boolean
+      @deprecated(
+        reason: "Soft-deletion is no longer used in this project, this parameter is ignored"
+      )
 
-    """The is-null filters to apply to the query"""
+    """
+    The is-null filters to apply to the query
+    """
     isNullFilters: [FundraisingEntryResolverKeyedIsNullFilterItem!]
 
-    """The numeric filters to apply to the query"""
+    """
+    The numeric filters to apply to the query
+    """
     numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
 
-    """The one-of filters to apply to the query"""
+    """
+    The one-of filters to apply to the query
+    """
     oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
 
-    """The page number to return, defaults to 1"""
+    """
+    The page number to return, defaults to 1
+    """
     page: Int
 
-    """The number of items to return per page, defaults to 10"""
+    """
+    The number of items to return per page, defaults to 10
+    """
     pageSize: Int
 
     """
@@ -2246,7 +2774,9 @@ type TeamNode implements Node {
     """
     sortDirection: [SortDirection!]
 
-    """The string filters to apply to the query"""
+    """
+    The string filters to apply to the query
+    """
     stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
   ): ListFundraisingEntriesResponse!
   fundraisingTotalAmount: Float
@@ -2269,7 +2799,9 @@ enum TeamResolverAllKeys {
 }
 
 input TeamResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: TeamResolverAllKeys!
 
   """
@@ -2279,7 +2811,9 @@ input TeamResolverKeyedIsNullFilterItem {
 }
 
 input TeamResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: TeamResolverOneOfFilterKeys!
 
   """
@@ -2290,10 +2824,14 @@ input TeamResolverKeyedOneOfFilterItem {
 }
 
 input TeamResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
+  """
+  The comparator to use for the filter
+  """
   comparison: StringComparator!
 
-  """The field to filter on"""
+  """
+  The field to filter on
+  """
   field: TeamResolverStringFilterKeys!
 
   """
@@ -2313,7 +2851,9 @@ enum TeamResolverStringFilterKeys {
   name
 }
 
-"""Types of teams"""
+"""
+Types of teams
+"""
 enum TeamType {
   Morale
   Spirit
@@ -2328,5 +2868,7 @@ input UpdateFundraisingAssignmentInput {
   amount: Float!
 }
 
-"""Represents NULL values"""
+"""
+Represents NULL values
+"""
 scalar Void
