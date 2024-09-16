@@ -8,8 +8,11 @@ import {
 } from "#resolvers/ApiResponse.js";
 
 import {
-  DetailedError,
-  ErrorCode,
+  AccessControl,
+  AccessLevel,
+  CommitteeIdentifier,
+  LegacyError,
+  LegacyErrorCode,
   EventNode,
   FilteredListQueryArgs,
   GlobalIdScalar,
@@ -34,6 +37,7 @@ import {
 import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
+import { CommitteeRole } from "@prisma/client";
 
 @ObjectType("SinglePointOpportunityResponse", {
   implements: AbstractGraphQLOkResponse<PointOpportunityNode>,
@@ -74,6 +78,9 @@ class CreatePointOpportunityInput {
 
   @Field(() => GlobalIdScalar, { nullable: true })
   eventUuid!: GlobalId | null;
+
+  @Field(() => GlobalIdScalar)
+  marathonUuid!: GlobalId;
 }
 
 @InputType()
@@ -93,15 +100,27 @@ class SetPointOpportunityInput {
 
 @ArgsType()
 class ListPointOpportunitiesArgs extends FilteredListQueryArgs<
-  "name" | "opportunityDate" | "type" | "createdAt" | "updatedAt",
+  | "name"
+  | "opportunityDate"
+  | "type"
+  | "createdAt"
+  | "updatedAt"
+  | "marathonUuid",
   "name",
-  "type",
+  "type" | "marathonUuid",
   never,
   "opportunityDate" | "createdAt" | "updatedAt",
   never
 >("PointOpportunityResolver", {
-  all: ["name", "opportunityDate", "type", "createdAt", "updatedAt"],
-  oneOf: ["type"],
+  all: [
+    "name",
+    "opportunityDate",
+    "type",
+    "createdAt",
+    "updatedAt",
+    "marathonUuid",
+  ],
+  oneOf: ["type", "marathonUuid"],
   string: ["name"],
   date: ["opportunityDate", "createdAt", "updatedAt"],
 }) {}
@@ -113,6 +132,9 @@ export class PointOpportunityResolver {
     private readonly pointOpportunityRepository: PointOpportunityRepository
   ) {}
 
+  @AccessControl({
+    accessLevel: AccessLevel.Committee,
+  })
   @Query(() => SinglePointOpportunityResponse, { name: "pointOpportunity" })
   async getByUuid(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -123,7 +145,10 @@ export class PointOpportunityResolver {
       });
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "PointOpportunity not found");
+      throw new LegacyError(
+        LegacyErrorCode.NotFound,
+        "PointOpportunity not found"
+      );
     }
 
     return SinglePointOpportunityResponse.newOk(
@@ -131,6 +156,9 @@ export class PointOpportunityResolver {
     );
   }
 
+  @AccessControl({
+    accessLevel: AccessLevel.Committee,
+  })
   @Query(() => ListPointOpportunitiesResponse, { name: "pointOpportunities" })
   async list(
     @Args(() => ListPointOpportunitiesArgs) query: ListPointOpportunitiesArgs
@@ -144,10 +172,10 @@ export class PointOpportunityResolver {
             query.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
-          query.page != null && query.pageSize != null
-            ? (query.page - 1) * query.pageSize
+          query.page != null && query.actualPageSize != null
+            ? (query.page - 1) * query.actualPageSize
             : null,
-        take: query.pageSize,
+        take: query.actualPageSize,
       }),
       this.pointOpportunityRepository.countPointOpportunities({
         filters: query.filters,
@@ -158,10 +186,18 @@ export class PointOpportunityResolver {
       data: rows.map((row) => pointOpportunityModelToResource(row)),
       total,
       page: query.page,
-      pageSize: query.pageSize,
+      pageSize: query.actualPageSize,
     });
   }
 
+  @AccessControl({
+    authRules: [
+      {
+        committeeIdentifier: CommitteeIdentifier.viceCommittee,
+        minCommitteeRole: CommitteeRole.Coordinator,
+      },
+    ],
+  })
   @Mutation(() => CreatePointOpportunityResponse, {
     name: "createPointOpportunity",
   })
@@ -173,6 +209,7 @@ export class PointOpportunityResolver {
       type: input.type,
       eventParam: input.eventUuid ? { uuid: input.eventUuid.id } : null,
       opportunityDate: input.opportunityDate ?? null,
+      marathon: { uuid: input.marathonUuid.id },
     });
 
     return CreatePointOpportunityResponse.newCreated(
@@ -180,6 +217,14 @@ export class PointOpportunityResolver {
     );
   }
 
+  @AccessControl({
+    authRules: [
+      {
+        committeeIdentifier: CommitteeIdentifier.viceCommittee,
+        minCommitteeRole: CommitteeRole.Coordinator,
+      },
+    ],
+  })
   @Mutation(() => SinglePointOpportunityResponse, {
     name: "setPointOpportunity",
   })
@@ -198,7 +243,10 @@ export class PointOpportunityResolver {
     );
 
     if (!row) {
-      throw new DetailedError(ErrorCode.NotFound, "PointOpportunity not found");
+      throw new LegacyError(
+        LegacyErrorCode.NotFound,
+        "PointOpportunity not found"
+      );
     }
 
     return SinglePointOpportunityResponse.newOk(
@@ -206,6 +254,14 @@ export class PointOpportunityResolver {
     );
   }
 
+  @AccessControl({
+    authRules: [
+      {
+        committeeIdentifier: CommitteeIdentifier.viceCommittee,
+        minCommitteeRole: CommitteeRole.Coordinator,
+      },
+    ],
+  })
   @Mutation(() => DeletePointOpportunityResponse, {
     name: "deletePointOpportunity",
   })
@@ -217,7 +273,10 @@ export class PointOpportunityResolver {
     });
 
     if (!row) {
-      throw new DetailedError(ErrorCode.NotFound, "PointOpportunity not found");
+      throw new LegacyError(
+        LegacyErrorCode.NotFound,
+        "PointOpportunity not found"
+      );
     }
 
     return DeletePointOpportunityResponse.newOk(true);

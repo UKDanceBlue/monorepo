@@ -24,8 +24,8 @@ import {
   AuthSource,
   CommitteeRole,
   DbRole,
-  DetailedError,
-  ErrorCode,
+  LegacyError,
+  LegacyErrorCode,
   FilteredListQueryArgs,
   GlobalIdScalar,
   MembershipNode,
@@ -204,10 +204,10 @@ export class TeamResolver {
             query.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
-          query.page != null && query.pageSize != null
-            ? (query.page - 1) * query.pageSize
+          query.page != null && query.actualPageSize != null
+            ? (query.page - 1) * query.actualPageSize
             : null,
-        take: query.pageSize,
+        take: query.actualPageSize,
         onlyDemo: ctx.userData.authSource === AuthSource.Demo,
         legacyStatus: query.legacyStatus,
         marathon: marathonFilter,
@@ -235,7 +235,7 @@ export class TeamResolver {
       ),
       total,
       page: query.page,
-      pageSize: query.pageSize,
+      pageSize: query.actualPageSize,
     });
   }
 
@@ -301,7 +301,7 @@ export class TeamResolver {
     );
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Team not found");
     }
 
     return SingleTeamResponse.newOk(teamModelToResource(row));
@@ -328,7 +328,7 @@ export class TeamResolver {
     const row = await this.teamRepository.deleteTeam({ uuid: id });
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Team not found");
     }
 
     return DeleteTeamResponse.newOk(true);
@@ -427,7 +427,7 @@ export class TeamResolver {
     const result = await this.teamRepository.getMarathon({ uuid: id });
 
     if (result == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Team not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Team not found");
     }
 
     return marathonModelToResource(result);
@@ -504,10 +504,10 @@ export class TeamResolver {
             args.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
-          args.page != null && args.pageSize != null
-            ? (args.page - 1) * args.pageSize
+          args.page != null && args.actualPageSize != null
+            ? (args.page - 1) * args.actualPageSize
             : null,
-        take: args.pageSize,
+        take: args.actualPageSize,
       },
       {
         // EXTREMELY IMPORTANT FOR SECURITY
@@ -537,7 +537,7 @@ export class TeamResolver {
         ),
         total: count.value,
         page: args.page,
-        pageSize: args.pageSize,
+        pageSize: args.actualPageSize,
       })
     );
   }

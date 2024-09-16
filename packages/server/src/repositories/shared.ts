@@ -6,9 +6,18 @@ import { Err } from "ts-results-es";
 import type { SomePrismaError } from "#error/prisma.js";
 import type { NotFoundError, BasicError } from "@ukdanceblue/common/error";
 
+/**
+ * Either a Primary Key numeric ID or a UUID string
+ */
 export type SimpleUniqueParam = { id: number } | { uuid: string };
+/**
+ * The error types that can be returned by most repository functions
+ */
 export type RepositoryError = SomePrismaError | BasicError | NotFoundError;
 
+/**
+ * Takes in an arbitrary error and returns a PrismaError subclass if it is a Prisma error, or a BasicError if it is not
+ */
 export function unwrapRepositoryError(
   error: unknown
 ): SomePrismaError | BasicError {
@@ -16,6 +25,9 @@ export function unwrapRepositoryError(
   return prismaError.isSome() ? prismaError.unwrap() : toBasicError(error);
 }
 
+/**
+ * Takes in an arbitrary error and returns a PrismaError subclass if it is a Prisma error, or a BasicError if it is not (wrapped by Err)
+ */
 export function handleRepositoryError(
   error: unknown
 ): Err<SomePrismaError | BasicError> {

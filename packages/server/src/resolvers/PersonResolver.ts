@@ -217,10 +217,10 @@ export class PersonResolver {
             args.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
-          args.page != null && args.pageSize != null
-            ? (args.page - 1) * args.pageSize
+          args.page != null && args.actualPageSize != null
+            ? (args.page - 1) * args.actualPageSize
             : null,
-        take: args.pageSize,
+        take: args.actualPageSize,
       }),
       this.personRepository.countPeople({ filters: args.filters }),
     ]);
@@ -245,7 +245,7 @@ export class PersonResolver {
           data: rows,
           total,
           page: args.page,
-          pageSize: args.pageSize,
+          pageSize: args.actualPageSize,
         })
       );
     });
@@ -602,10 +602,10 @@ export class PersonResolver {
             args.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
-          args.page != null && args.pageSize != null
-            ? (args.page - 1) * args.pageSize
+          args.page != null && args.actualPageSize != null
+            ? (args.page - 1) * args.actualPageSize
             : null,
-        take: args.pageSize,
+        take: args.actualPageSize,
       },
       {
         // EXTREMELY IMPORTANT FOR SECURITY
@@ -634,7 +634,7 @@ export class PersonResolver {
       ),
       total: count.value,
       page: args.page,
-      pageSize: args.pageSize,
+      pageSize: args.actualPageSize,
     });
   }
 

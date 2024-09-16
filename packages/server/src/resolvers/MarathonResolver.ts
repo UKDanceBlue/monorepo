@@ -32,7 +32,7 @@ import {
 import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
-import { Option } from "ts-results-es";
+import { AsyncResult, Option } from "ts-results-es";
 
 @ObjectType("ListMarathonsResponse", {
   implements: AbstractGraphQLPaginatedResponse<MarathonNode[]>,
@@ -120,10 +120,10 @@ export class MarathonResolver
           args.sortDirection?.[i] ?? SortDirection.desc,
         ]) ?? [],
       skip:
-        args.page != null && args.pageSize != null
-          ? (args.page - 1) * args.pageSize
+        args.page != null && args.actualPageSize != null
+          ? (args.page - 1) * args.actualPageSize
           : null,
-      take: args.pageSize,
+      take: args.actualPageSize,
     });
     const marathonCount = await this.marathonRepository.countMarathons({
       filters: args.filters,
@@ -132,7 +132,7 @@ export class MarathonResolver
       data: marathons.map(marathonModelToResource),
       total: marathonCount,
       page: args.page,
-      pageSize: args.pageSize,
+      pageSize: args.actualPageSize,
     });
   }
 
@@ -158,13 +158,14 @@ export class MarathonResolver
 
   @Mutation(() => MarathonNode)
   async createMarathon(@Arg("input") input: CreateMarathonInput) {
-    const marathon = await this.marathonRepository.createMarathon(input);
-    if (marathon.isOk()) {
-      await this.committeeRepository.ensureCommittees([
-        { id: marathon.value.id },
+    return new AsyncResult(
+      this.marathonRepository.createMarathon(input)
+    ).andThen(async (marathon) => {
+      const result = await this.committeeRepository.ensureCommittees([
+        { id: marathon.id },
       ]);
-    }
-    return marathon.map(marathonModelToResource);
+      return result.map(() => marathonModelToResource(marathon));
+    }).promise;
   }
 
   @Mutation(() => MarathonNode)

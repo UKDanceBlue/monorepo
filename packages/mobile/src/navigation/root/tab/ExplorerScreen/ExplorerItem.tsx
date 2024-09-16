@@ -1,11 +1,13 @@
 // import DBLogoCondensed from "../../../../../assets/svgs/DBLogoCondensed";
 import AudioPlayer from "@common/components/AudioPlayer";
+import ErrorBoundary from "@common/components/ErrorBoundary";
 import { universalCatch } from "@common/logging";
 import { showMessage } from "@common/util/alertUtils";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Audio } from "expo-av";
+import { Image } from "expo-image";
 import { openURL } from "expo-linking";
-import { Box, Button, HStack, Image, Text, View } from "native-base";
+import { Box, Button, HStack, Text, View } from "native-base";
 import { useEffect, useState } from "react";
 import { PixelRatio, useWindowDimensions } from "react-native";
 
@@ -80,6 +82,7 @@ export const ExplorerItem = ({
     width: number;
     height: number;
     alt?: string | undefined;
+    thumbHash?: string | undefined;
   };
   blockResource?: (resource: string) => void;
 }) => {
@@ -197,105 +200,107 @@ export const ExplorerItem = ({
       <View
         /* borderBottomColor="#c5c6d0" borderBottomWidth={0.5} */ marginTop={5}
       >
-        <View borderBottomColor="#c5c6d0" borderBottomWidth={0.5}>
-          <HStack alignItems="center" marginLeft={2} marginY={2}>
-            <FontAwesome5
-              name={iconName}
-              size={PixelRatio.get() * 9}
-              color="#0032A0"
-            />
-            <Text
-              marginLeft={2}
-              fontSize={headerFontSize}
-              onPress={() => {
-                openURL(link).catch(universalCatch);
-              }}
-            >
-              {source}
-            </Text>
-          </HStack>
-        </View>
-
-        <HStack margin={2}>
-          <View width="100%">
-            {title && (
-              <Text textAlign="center" fontSize={blogTitleFontSize}>
-                {title}
+        <ErrorBoundary>
+          <View borderBottomColor="#c5c6d0" borderBottomWidth={0.5}>
+            <HStack alignItems="center" marginLeft={2} marginY={2}>
+              <FontAwesome5
+                name={iconName}
+                size={PixelRatio.get() * 9}
+                color="#0032A0"
+              />
+              <Text
+                marginLeft={2}
+                fontSize={headerFontSize}
+                onPress={() => {
+                  openURL(link).catch(universalCatch);
+                }}
+              >
+                {source}
               </Text>
-            )}
-            {image && (
-              <>
-                <Image
-                  source={{
-                    uri: image.url,
-                    width: image.width,
-                    height: image.height,
-                  }}
-                  alt={image.alt}
-                  width="full"
-                  height={1.5 * calculatedHeight}
-                  style={{
-                    objectFit: "contain",
-                  }}
-                />
-                <Box width="full" alignItems="flex-end">
-                  {console.log(image)}
-                  <Button
-                    marginTop={0.5}
-                    width="1/3"
-                    onPress={() => {
-                      openURL("https://photos.danceblue.org").catch(
-                        universalCatch
-                      );
-                    }}
-                  >
-                    See More Photos!
-                  </Button>
-                </Box>
-              </>
-            )}
-            {plainTextContent && (
-              <>
-                <Text
-                  fontSize={blogContentFontSize}
-                  textAlign="justify"
-                  fontFamily=""
-                >
-                  {cleanupTextContent(plainTextContent)}
+            </HStack>
+          </View>
+
+          <HStack margin={2}>
+            <View width="100%">
+              {title && (
+                <Text textAlign="center" fontSize={blogTitleFontSize}>
+                  {title}
                 </Text>
-                {resourceLink && (
+              )}
+              {image && (
+                <>
+                  <Image
+                    source={{
+                      uri: image.url,
+                      width: image.width,
+                      height: image.height,
+                    }}
+                    placeholder={{ thumbhash: image.thumbHash }}
+                    alt={image.alt}
+                    style={{
+                      objectFit: "contain",
+                      width: "100%",
+                      height: calculatedHeight,
+                    }}
+                  />
                   <Box width="full" alignItems="flex-end">
                     <Button
                       marginTop={0.5}
                       width="1/3"
                       onPress={() => {
-                        openURL(resourceLink).catch(universalCatch);
+                        openURL("https://photos.danceblue.org").catch(
+                          universalCatch
+                        );
                       }}
                     >
-                      Read More!
+                      See More Photos!
                     </Button>
                   </Box>
-                )}
-              </>
-            )}
-            {sound && (
-              <AudioPlayer
-                sound={sound}
-                loading={!sound}
-                title=""
-                titleLink="https://danceblue.org/category/podcast/"
-              />
-            )}
-            {hasYouTubeVideo && resourceLink && (
-              <YoutubeEmbedWebView
-                style={{ height: calculatedHeight }}
-                source={{ uri: resourceLink }}
-                allowsFullscreenVideo={true}
-                onErrorEmitted={() => blockResource?.(resourceLink)}
-              />
-            )}
-          </View>
-        </HStack>
+                </>
+              )}
+              {plainTextContent && (
+                <>
+                  <Text
+                    fontSize={blogContentFontSize}
+                    textAlign="justify"
+                    fontFamily=""
+                  >
+                    {cleanupTextContent(plainTextContent)}
+                  </Text>
+                  {resourceLink && (
+                    <Box width="full" alignItems="flex-end">
+                      <Button
+                        marginTop={0.5}
+                        width="1/3"
+                        onPress={() => {
+                          openURL(resourceLink).catch(universalCatch);
+                        }}
+                      >
+                        Read More!
+                      </Button>
+                    </Box>
+                  )}
+                </>
+              )}
+              {sound && (
+                <AudioPlayer
+                  sound={sound}
+                  loading={!sound}
+                  title=""
+                  titleLink="https://danceblue.org/category/podcast/"
+                />
+              )}
+              {hasYouTubeVideo && resourceLink && (
+                <YoutubeEmbedWebView
+                  style={{ height: calculatedHeight }}
+                  source={{ uri: resourceLink }}
+                  allowsFullscreenVideo={true}
+                  onErrorEmitted={() => blockResource?.(resourceLink)}
+                />
+              )}
+            </View>
+          </HStack>
+        </ErrorBoundary>
       </View>
     );
   }

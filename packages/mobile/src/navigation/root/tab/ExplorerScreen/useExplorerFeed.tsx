@@ -104,9 +104,7 @@ export function useExplorerFeed(): {
                   width: image.width,
                   height: image.height,
                   alt: image.alt ?? undefined,
-
-                  // TODO decode and use the thumbHash
-                  thumbHash: undefined,
+                  thumbHash: image.thumbHash ?? undefined,
                 }
               : undefined,
         });

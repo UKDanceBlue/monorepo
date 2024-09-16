@@ -14,8 +14,8 @@ import {
 import {
   AccessControl,
   AccessLevel,
-  DetailedError,
-  ErrorCode,
+  LegacyError,
+  LegacyErrorCode,
   FilteredListQueryArgs,
   GlobalIdScalar,
   NotificationDeliveryNode,
@@ -41,6 +41,13 @@ import { Service } from "@freshgum/typedi";
 
 import type { NotificationError } from "@prisma/client";
 import type { GlobalId } from "@ukdanceblue/common";
+import {
+  ActionDeniedError,
+  ConcreteResult,
+  InvalidArgumentError,
+} from "@ukdanceblue/common/error";
+import { Err, Ok } from "ts-results-es";
+import { handleRepositoryError } from "#repositories/shared.js";
 
 @ObjectType("GetNotificationByUuidResponse", {
   implements: AbstractGraphQLOkResponse<NotificationNode>,
@@ -237,18 +244,14 @@ export class NotificationResolver {
   @Query(() => GetNotificationByUuidResponse, { name: "notification" })
   async getByUuid(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<GetNotificationByUuidResponse> {
-    const row = await this.notificationRepository.findNotificationByUnique({
-      uuid: id,
-    });
-
-    if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Notification not found");
-    }
-
-    return GetNotificationByUuidResponse.newOk(
-      notificationModelToResource(row)
-    );
+  ): Promise<ConcreteResult<GetNotificationByUuidResponse>> {
+    return this.notificationRepository
+      .findNotificationByUnique({
+        uuid: id,
+      })
+      .map((row) =>
+        GetNotificationByUuidResponse.newOk(notificationModelToResource(row))
+      ).promise;
   }
 
   @AccessControl({
@@ -266,10 +269,10 @@ export class NotificationResolver {
           query.sortDirection?.[i] ?? SortDirection.desc,
         ]) ?? [],
       skip:
-        query.page != null && query.pageSize != null
-          ? (query.page - 1) * query.pageSize
+        query.page != null && query.actualPageSize != null
+          ? (query.page - 1) * query.actualPageSize
           : null,
-      take: query.pageSize,
+      take: query.actualPageSize,
     });
 
     return ListNotificationsResponse.newPaginated({
@@ -278,7 +281,7 @@ export class NotificationResolver {
         filters: query.filters,
       }),
       page: query.page,
-      pageSize: query.pageSize,
+      pageSize: query.actualPageSize,
     });
   }
 
@@ -303,10 +306,10 @@ export class NotificationResolver {
               query.sortDirection?.[i] ?? SortDirection.desc,
             ]) ?? [],
           skip:
-            query.page != null && query.pageSize != null
-              ? (query.page - 1) * query.pageSize
+            query.page != null && query.actualPageSize != null
+              ? (query.page - 1) * query.actualPageSize
               : null,
-          take: query.pageSize,
+          take: query.actualPageSize,
         }
       );
 
@@ -322,7 +325,7 @@ export class NotificationResolver {
           }
         ),
       page: query.page,
-      pageSize: query.pageSize,
+      pageSize: query.actualPageSize,
     });
   }
 
@@ -332,18 +335,16 @@ export class NotificationResolver {
   @Mutation(() => StageNotificationResponse, { name: "stageNotification" })
   async stage(
     @Args(() => StageNotificationArgs) args: StageNotificationArgs
-  ): Promise<StageNotificationResponse> {
+  ): Promise<ConcreteResult<StageNotificationResponse>> {
     if (Object.keys(args.audience).length === 0) {
-      throw new DetailedError(
-        ErrorCode.InvalidRequest,
-        "Audience must be specified."
-      );
+      return Err(new InvalidArgumentError("Audience must be specified."));
     }
 
     if (args.audience.all && Object.keys(args.audience).length > 1) {
-      throw new DetailedError(
-        ErrorCode.InvalidRequest,
-        "Audience must not contain other fields if all is true."
+      return Err(
+        new InvalidArgumentError(
+          "Audience must not contain other fields if all is true."
+        )
       );
     }
 
@@ -360,10 +361,10 @@ export class NotificationResolver {
             personIds: args.audience.users?.map((id) => id.id),
             memberOfTeamType: args.audience.memberOfTeamType ?? undefined,
           }
-    );
+    ).promise;
 
-    return StageNotificationResponse.newCreated(
-      notificationModelToResource(result)
+    return result.map((result) =>
+      StageNotificationResponse.newCreated(notificationModelToResource(result))
     );
   }
 
@@ -376,26 +377,25 @@ export class NotificationResolver {
   })
   async send(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<SendNotificationResponse> {
-    const databaseNotification =
-      await this.notificationRepository.findNotificationByUnique({ uuid: id });
+  ): Promise<ConcreteResult<SendNotificationResponse>> {
+    return this.notificationRepository
+      .findNotificationByUnique({ uuid: id })
+      .andThen((notification) =>
+        notification.sendAt != null
+          ? Err(
+              new ActionDeniedError(
+                "Cannot send a scheduled notification, cancel the schedule first."
+              )
+            )
+          : Ok(notification)
+      )
+      .map(async (databaseNotification) => {
+        await this.notificationProvider.sendNotification({
+          value: databaseNotification,
+        }).promise;
 
-    if (databaseNotification == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Notification not found");
-    }
-
-    if (databaseNotification.sendAt != null) {
-      throw new DetailedError(
-        ErrorCode.InvalidRequest,
-        "Cannot send a scheduled notification, cancel the schedule first."
-      );
-    }
-
-    await this.notificationProvider.sendNotification({
-      value: databaseNotification,
-    });
-
-    return SendNotificationResponse.newOk(true);
+        return SendNotificationResponse.newOk(true);
+      }).promise;
   }
 
   @AccessControl({
@@ -407,29 +407,25 @@ export class NotificationResolver {
   async schedule(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("sendAt") sendAt: Date
-  ): Promise<ScheduleNotificationResponse> {
-    const notification =
-      await this.notificationRepository.findNotificationByUnique({ uuid: id });
+  ): Promise<ConcreteResult<ScheduleNotificationResponse>> {
+    return this.notificationRepository
+      .findNotificationByUnique({ uuid: id })
+      .andThen((notification) =>
+        notification.startedSendingAt != null
+          ? Err(new ActionDeniedError("Notification has already been sent."))
+          : Ok(notification)
+      )
+      .andThen((notification) =>
+        this.notificationRepository.updateNotification(
+          { id: notification.id },
+          { sendAt }
+        )
+      )
+      .map(() => {
+        this.notificationScheduler.ensureNotificationScheduler();
 
-    if (notification == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Notification not found");
-    }
-
-    if (notification.startedSendingAt != null) {
-      throw new DetailedError(
-        ErrorCode.InvalidRequest,
-        "Notification has already been sent."
-      );
-    }
-
-    await this.notificationRepository.updateNotification(
-      { id: notification.id },
-      { sendAt }
-    );
-
-    this.notificationScheduler.ensureNotificationScheduler();
-
-    return ScheduleNotificationResponse.newOk(true);
+        return ScheduleNotificationResponse.newOk(true);
+      }).promise;
   }
 
   @AccessControl({
@@ -440,27 +436,31 @@ export class NotificationResolver {
   })
   async acknowledgeDeliveryIssue(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<AcknowledgeDeliveryIssueResponse> {
+  ): Promise<ConcreteResult<AcknowledgeDeliveryIssueResponse>> {
     const notification =
-      await this.notificationRepository.findNotificationByUnique({ uuid: id });
-
-    if (notification == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Notification not found");
+      await this.notificationRepository.findNotificationByUnique({ uuid: id })
+        .promise;
+    if (notification.isErr()) {
+      return notification;
     }
 
-    if (notification.deliveryIssue == null) {
-      throw new DetailedError(
-        ErrorCode.InvalidRequest,
-        "Notification has no delivery issue to acknowledge."
+    if (notification.value.deliveryIssue == null) {
+      return Err(
+        new InvalidArgumentError(
+          "Notification has no delivery issue to acknowledge."
+        )
       );
     }
 
-    await this.notificationRepository.updateNotification(
-      { id: notification.id },
+    const result = await this.notificationRepository.updateNotification(
+      { id: notification.value.id },
       { deliveryIssueAcknowledgedAt: new Date() }
-    );
+    ).promise;
+    if (result.isErr()) {
+      return result;
+    }
 
-    return AcknowledgeDeliveryIssueResponse.newOk(true);
+    return Ok(AcknowledgeDeliveryIssueResponse.newOk(true));
   }
 
   @AccessControl({
@@ -471,34 +471,26 @@ export class NotificationResolver {
   })
   async abortScheduled(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<AbortScheduledNotificationResponse> {
-    const notification =
-      await this.notificationRepository.findNotificationByUnique({ uuid: id });
-
-    if (notification == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Notification not found");
-    }
-
-    if (notification.startedSendingAt != null) {
-      throw new DetailedError(
-        ErrorCode.InvalidRequest,
-        "Notification has already been sent."
-      );
-    }
-
-    if (notification.sendAt == null) {
-      throw new DetailedError(
-        ErrorCode.InvalidRequest,
-        "Notification is not scheduled."
-      );
-    }
-
-    await this.notificationRepository.updateNotification(
-      { id: notification.id },
-      { sendAt: null }
-    );
-
-    return AbortScheduledNotificationResponse.newOk(true);
+  ): Promise<ConcreteResult<AbortScheduledNotificationResponse>> {
+    return this.notificationRepository
+      .findNotificationByUnique({ uuid: id })
+      .andThen((notification) =>
+        notification.startedSendingAt != null
+          ? Err(new ActionDeniedError("Notification has already been sent."))
+          : Ok(notification)
+      )
+      .andThen((notification) =>
+        notification.sendAt == null
+          ? Err(new InvalidArgumentError("Notification is not scheduled."))
+          : Ok(notification)
+      )
+      .andThen((notification) =>
+        this.notificationRepository.updateNotification(
+          { id: notification.id },
+          { sendAt: null }
+        )
+      )
+      .map(() => AbortScheduledNotificationResponse.newOk(true)).promise;
   }
 
   @AccessControl({
@@ -513,26 +505,49 @@ export class NotificationResolver {
         "If true, the notification will be deleted even if it has already been sent, which will also delete the delivery records.",
     })
     force?: boolean
-  ): Promise<DeleteNotificationResponse> {
-    const notification =
-      await this.notificationRepository.findNotificationByUnique({ uuid: id });
+  ): Promise<ConcreteResult<DeleteNotificationResponse>> {
+    // const notification =
+    //   await this.notificationRepository.findNotificationByUnique({ uuid: id });
 
-    if (notification == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Notification not found");
-    }
+    // if (notification == null) {
+    //   throw new DetailedError(ErrorCode.NotFound, "Notification not found");
+    // }
 
-    if (notification.startedSendingAt != null && force !== true) {
-      throw new DetailedError(
-        ErrorCode.InvalidRequest,
-        "Cannot delete a notification that has already been sent without setting force to true."
-      );
-    }
+    // if (notification.startedSendingAt != null && force !== true) {
+    //   throw new DetailedError(
+    //     ErrorCode.InvalidRequest,
+    //     "Cannot delete a notification that has already been sent without setting force to true."
+    //   );
+    // }
 
-    await this.notificationRepository.deleteNotification({
-      id: notification.id,
-    });
+    // await this.notificationRepository.deleteNotification({
+    //   id: notification.id,
+    // });
 
-    return DeleteNotificationResponse.newOk(true);
+    // return DeleteNotificationResponse.newOk(true);
+    return this.notificationRepository
+      .findNotificationByUnique({ uuid: id })
+      .andThen((notification) =>
+        notification.startedSendingAt != null && force !== true
+          ? Err(
+              new ActionDeniedError(
+                "Cannot delete a notification that has already been sent without setting force to true."
+              )
+            )
+          : Ok(notification)
+      )
+      .andThen(async (notification) => {
+        try {
+          return Ok(
+            this.notificationRepository.deleteNotification({
+              id: notification.id,
+            })
+          );
+        } catch (error) {
+          return handleRepositoryError(error);
+        }
+      })
+      .map(() => DeleteNotificationResponse.newOk(true)).promise;
   }
 
   @AccessControl({
@@ -587,7 +602,7 @@ export class NotificationDeliveryResolver {
       });
 
     if (notification == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Notification not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Notification not found");
     }
 
     return notificationModelToResource(notification);

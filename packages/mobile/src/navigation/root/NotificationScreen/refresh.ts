@@ -2,7 +2,7 @@ import { useAsyncStorage } from "@common/hooks/useAsyncStorage";
 import { Logger } from "@common/logger/Logger";
 import { showMessage } from "@common/util/alertUtils";
 import { useDeviceData } from "@context/device";
-import { ErrorCode } from "@ukdanceblue/common";
+import { LegacyErrorCode } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useState } from "react";
@@ -16,7 +16,7 @@ const INCOMPLETE_PAGE_TIMEOUT = 10_000;
 
 export const deviceNotificationsQuery = graphql(/* GraphQL */ `
   query DeviceNotifications(
-    $deviceUuid: GlobalId!
+    $deviceUuid: String!
     $page: Int
     $pageSize: Int
     $verifier: String!
@@ -118,7 +118,7 @@ export function useLoadNotifications(): {
           try {
             if (result.error) {
               const code = result.error.graphQLErrors[0]?.extensions?.code;
-              if (code === ErrorCode.Unauthorized) {
+              if (code === LegacyErrorCode.Unauthorized) {
                 // I don't really want to handle dealing with a device that's forgotten it's verifier...
                 // ...so I'm just going to tell the user to report it as a bug and we'll figure it out if it happens
                 showMessage(

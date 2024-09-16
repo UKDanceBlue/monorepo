@@ -75,15 +75,7 @@ function NotificationScreen() {
 
   // Clear badge count when navigating to this screen
   useEffect(() => {
-    (async () => {
-      const success = await setBadgeCountAsync(0);
-
-      if (!success) {
-        Logger.warn("Failed to clear badge count", {
-          error: "setBadgeCountAsync returned false",
-        });
-      }
-    })().catch((error: unknown) => {
+    setBadgeCountAsync(0).catch((error: unknown) => {
       Logger.error("Failed to clear badge count", { error });
     });
   }, []);

@@ -12,8 +12,8 @@ import {
 import {
   AccessControl,
   AccessLevel,
-  DetailedError,
-  ErrorCode,
+  LegacyError,
+  LegacyErrorCode,
   FilteredListQueryArgs,
   GlobalIdScalar,
   ImageNode,
@@ -95,7 +95,7 @@ export class ImageResolver {
     const result = await this.imageRepository.findImageByUnique({ uuid: id });
 
     if (result == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Image not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
     }
 
     return GetImageByUuidResponse.newOk(
@@ -115,10 +115,10 @@ export class ImageResolver {
           args.sortDirection?.[i] ?? SortDirection.desc,
         ]) ?? [],
       skip:
-        args.page != null && args.pageSize != null
-          ? (args.page - 1) * args.pageSize
+        args.page != null && args.actualPageSize != null
+          ? (args.page - 1) * args.actualPageSize
           : null,
-      take: args.pageSize,
+      take: args.actualPageSize,
     });
     const count = await this.imageRepository.countImages({
       filters: args.filters,
@@ -132,7 +132,7 @@ export class ImageResolver {
       ),
       total: count,
       page: args.page,
-      pageSize: args.pageSize,
+      pageSize: args.actualPageSize,
     });
   }
 
@@ -192,7 +192,7 @@ export class ImageResolver {
     );
 
     if (result == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Image not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
     }
 
     auditLogger.secure("Image alt text set", { image: result });
@@ -235,7 +235,7 @@ export class ImageResolver {
     );
 
     if (result == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Image not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
     }
 
     auditLogger.secure("Image URL set", { image: result });
@@ -253,7 +253,7 @@ export class ImageResolver {
     const result = await this.imageRepository.deleteImage({ uuid: id });
 
     if (result == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Image not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
     }
 
     auditLogger.secure("Image deleted", { image: result });
@@ -270,8 +270,8 @@ async function handleImageUrl(url: URL | null | undefined): Promise<{
 }> {
   if (url != null) {
     if (url.protocol !== "https:") {
-      throw new DetailedError(
-        ErrorCode.InvalidRequest,
+      throw new LegacyError(
+        LegacyErrorCode.InvalidRequest,
         "An Image URL must be a valid HTTPS URL"
       );
     } else {
@@ -283,8 +283,8 @@ async function handleImageUrl(url: URL | null | undefined): Promise<{
 
         const contentType = download.headers.get("content-type");
         if (contentType == null) {
-          throw new DetailedError(
-            ErrorCode.InvalidRequest,
+          throw new LegacyError(
+            LegacyErrorCode.InvalidRequest,
             "The requested image does not have a content type"
           );
         }
@@ -295,8 +295,8 @@ async function handleImageUrl(url: URL | null | undefined): Promise<{
           logger.error("Failed to parse MIME type in createImage", {
             error,
           });
-          throw new DetailedError(
-            ErrorCode.InvalidRequest,
+          throw new LegacyError(
+            LegacyErrorCode.InvalidRequest,
             "Could not determine the MIME type of the requested image"
           );
         }
@@ -306,8 +306,8 @@ async function handleImageUrl(url: URL | null | undefined): Promise<{
         logger.error("Failed to fetch an image from url in createImage", {
           error,
         });
-        throw new DetailedError(
-          ErrorCode.InvalidRequest,
+        throw new LegacyError(
+          LegacyErrorCode.InvalidRequest,
           "Could not access the requested image"
         );
       }

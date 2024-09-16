@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "@common/apiUrl";
 import { DANCEBLUE_TOKEN_KEY } from "@common/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ErrorCode } from "@ukdanceblue/common";
+import { LegacyErrorCode } from "@ukdanceblue/common";
 import { authExchange } from "@urql/exchange-auth";
 import type { ReactNode } from "react";
 import { createContext, useContext, useMemo, useReducer } from "react";
@@ -41,7 +41,7 @@ export function UrqlContext({ children }: { children: ReactNode }) {
             },
             didAuthError: ({ message, graphQLErrors }) => {
               for (const err of graphQLErrors) {
-                if (err.extensions.code === ErrorCode.NotLoggedIn) {
+                if (err.extensions.code === LegacyErrorCode.NotLoggedIn) {
                   return true;
                 }
               }

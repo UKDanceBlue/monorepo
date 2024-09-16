@@ -62,6 +62,9 @@ export const useLogin = (): [boolean, (source: AuthSource) => void] => {
           }
           break;
         }
+        case WebBrowserResultType.DISMISS:
+        case WebBrowserResultType.OPENED:
+        case WebBrowserResultType.LOCKED:
         case WebBrowserResultType.CANCEL: {
           Logger.debug("Auth session was cancelled", {
             context: { result },
@@ -69,9 +72,7 @@ export const useLogin = (): [boolean, (source: AuthSource) => void] => {
           break;
         }
         default: {
-          Logger.warn("Auth session was not successful", {
-            context: { result },
-          });
+          result satisfies never;
         }
       }
       invalidateCache();

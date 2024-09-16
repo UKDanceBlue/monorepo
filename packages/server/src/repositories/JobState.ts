@@ -8,6 +8,9 @@ import { prismaToken } from "#prisma";
 export class JobStateRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
+  /**
+   * Log a new completion of a given job
+   */
   async logCompletedJob(job: Cron) {
     const jobName = job.name;
     const previousRun = job.currentRun();
@@ -20,6 +23,9 @@ export class JobStateRepository {
     }
   }
 
+  /**
+   * Get the next scheduled run date for a given job based on its last run date
+   */
   async getNextJobDate(job: Cron) {
     const jobName = job.name;
     let baseDate = new Date();

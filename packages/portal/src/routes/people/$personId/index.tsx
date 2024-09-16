@@ -50,7 +50,7 @@ export const Route = createFileRoute("/people/$personId/")({
   staticData: {
     authorizationRules: [
       {
-        accessLevel: AccessLevel.Admin,
+        accessLevel: AccessLevel.Committee,
       },
     ],
   },

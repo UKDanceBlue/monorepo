@@ -88,10 +88,16 @@ import { prismaToken } from "#prisma";
 export class TeamRepository {
   constructor(private prisma: PrismaClient) {}
 
+  /**
+   * Find a team by its unique identifier
+   */
   findTeamByUnique(param: SimpleUniqueParam) {
     return this.prisma.team.findUnique({ where: param });
   }
 
+  /**
+   * Find teams based on filters
+   */
   listTeams({
     filters,
     order,

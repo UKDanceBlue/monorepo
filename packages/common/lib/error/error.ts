@@ -8,6 +8,7 @@ import type {
   SourceLocation,
 } from "graphql";
 import { Err } from "ts-results-es";
+import { ErrorCodeType } from "./index.js";
 
 export abstract class ConcreteError {
   #graphQlError: GraphQLError;
@@ -36,7 +37,7 @@ export abstract class ConcreteError {
   get stack(): string | undefined {
     return undefined;
   }
-  abstract get tag(): (typeof ErrorCode)[keyof typeof ErrorCode];
+  abstract get tag(): ErrorCodeType;
 }
 
 export interface GraphQLFormattedErrorExtensions {

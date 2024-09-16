@@ -1,4 +1,4 @@
-import type { ErrorCode } from "./DetailedError.js";
+import type { LegacyErrorCode } from "./DetailedError.js";
 
 /** @deprecated */
 export interface ApiError<HasCause extends boolean = boolean> {
@@ -6,7 +6,7 @@ export interface ApiError<HasCause extends boolean = boolean> {
    * The error code, this should be a short machine-readable code that
    * can be used to identify the error.
    */
-  code: ErrorCode;
+  code: LegacyErrorCode;
   /**
    * The error message, this should be a short human-readable, but not
    * necessarily user-friendly, message.

@@ -7,8 +7,8 @@ import { CommitteeRole } from "@prisma/client";
 import {
   AccessControl,
   AccessLevel,
-  DetailedError,
-  ErrorCode,
+  LegacyError,
+  LegacyErrorCode,
   FeedNode,
   type GlobalId,
   GlobalIdScalar,
@@ -47,8 +47,6 @@ export class SetFeedInput {
   textContent?: string | null | undefined;
 }
 
-// TODO: Add access control
-
 @Resolver(() => FeedNode)
 @Service([FeedRepository, FileManager])
 export class FeedResolver {
@@ -57,7 +55,10 @@ export class FeedResolver {
     private readonly fileManager: FileManager
   ) {}
 
-  @Query(() => FeedNode)
+  @Query(() => FeedNode, { description: "Get a feed item by its UUID" })
+  @AccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   async feedItem(
     @Arg("feedItemId", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<FeedNode>> {
@@ -70,7 +71,10 @@ export class FeedResolver {
     return Ok(feedItemModelToResource(feedItem));
   }
 
-  @Query(() => [FeedNode])
+  @Query(() => [FeedNode], { description: "Get the active feed" })
+  @AccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   async feed(
     @Arg("limit", () => Int, { defaultValue: 10, nullable: true })
     limit: number | null
@@ -87,7 +91,7 @@ export class FeedResolver {
       authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
     }
   )
-  @Mutation(() => FeedNode)
+  @Mutation(() => FeedNode, { description: "Add a new item to the feed" })
   async createFeedItem(
     @Arg("input") input: CreateFeedInput
   ): Promise<FeedNode> {
@@ -107,7 +111,7 @@ export class FeedResolver {
       authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
     }
   )
-  @Mutation(() => FeedNode)
+  @Mutation(() => FeedNode, { description: "Attach an image to a feed item" })
   async attachImageToFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId,
     @Arg("imageUuid", () => GlobalIdScalar) imageUuid: GlobalId
@@ -121,7 +125,7 @@ export class FeedResolver {
       }
     );
     if (feedItem == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Feed item not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Feed item not found");
     }
     return feedItemModelToResource(feedItem);
   }
@@ -134,7 +138,7 @@ export class FeedResolver {
       authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
     }
   )
-  @Mutation(() => FeedNode)
+  @Mutation(() => FeedNode, { description: "Remove an image from a feed item" })
   async removeImageFromFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId
   ): Promise<FeedNode> {
@@ -142,7 +146,7 @@ export class FeedResolver {
       uuid: feedItemUuid.id,
     });
     if (feedItem == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Feed item not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Feed item not found");
     }
     return feedItemModelToResource(feedItem);
   }
@@ -155,7 +159,7 @@ export class FeedResolver {
       authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
     }
   )
-  @Mutation(() => FeedNode)
+  @Mutation(() => FeedNode, { description: "Set the content of a feed item" })
   async setFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId,
     @Arg("input") input: SetFeedInput
@@ -168,7 +172,7 @@ export class FeedResolver {
       }
     );
     if (feedItem == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Feed item not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Feed item not found");
     }
     return feedItemModelToResource(feedItem);
   }
@@ -181,7 +185,7 @@ export class FeedResolver {
       authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
     }
   )
-  @Mutation(() => Boolean)
+  @Mutation(() => Boolean, { description: "Delete a feed item" })
   async deleteFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId
   ): Promise<boolean> {
@@ -191,7 +195,10 @@ export class FeedResolver {
     return feedItem != null;
   }
 
-  @FieldResolver(() => ImageNode, { nullable: true })
+  @FieldResolver(() => ImageNode, {
+    nullable: true,
+    description: "The image associated with this feed item",
+  })
   async image(@Root() { id: { id } }: FeedNode) {
     const row = await this.feedRepository.getFeedItemImage({ uuid: id });
     if (row == null) {

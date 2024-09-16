@@ -160,7 +160,7 @@ export function PersonViewer({
                         ) {
                           children = (
                             <Link
-                              to="/teams/$teamId/points"
+                              to="/teams/$teamId"
                               params={{ teamId: team.team.id }}
                             >
                               {team.position}

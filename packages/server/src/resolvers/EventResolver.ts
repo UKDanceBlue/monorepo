@@ -17,8 +17,8 @@ import {
   AccessControl,
   AccessLevel,
   CommitteeRole,
-  DetailedError,
-  ErrorCode,
+  LegacyError,
+  LegacyErrorCode,
   EventNode,
   FilteredListQueryArgs,
   GlobalIdScalar,
@@ -202,14 +202,17 @@ export class EventResolver {
     private readonly eventImageRepository: EventImagesRepository,
     private readonly fileManager: FileManager
   ) {}
-  @Query(() => GetEventByUuidResponse, { name: "event" })
+  @Query(() => GetEventByUuidResponse, {
+    name: "event",
+    description: "Get an event by UUID",
+  })
   async getByUuid(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<GetEventByUuidResponse> {
     const row = await this.eventRepository.findEventByUnique({ uuid: id });
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Event not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Event not found");
     }
 
     return GetEventByUuidResponse.newOk(
@@ -220,7 +223,10 @@ export class EventResolver {
     );
   }
 
-  @Query(() => ListEventsResponse, { name: "events" })
+  @Query(() => ListEventsResponse, {
+    name: "events",
+    description: "List events",
+  })
   async list(@Args() query: ListEventsArgs) {
     const rows = await this.eventRepository.listEvents({
       filters: query.filters,
@@ -230,10 +236,10 @@ export class EventResolver {
           query.sortDirection?.[i] ?? SortDirection.desc,
         ]) ?? [],
       skip:
-        query.page != null && query.pageSize != null
-          ? (query.page - 1) * query.pageSize
+        query.page != null && query.actualPageSize != null
+          ? (query.page - 1) * query.actualPageSize
           : null,
-      take: query.pageSize,
+      take: query.actualPageSize,
     });
 
     return ListEventsResponse.newPaginated({
@@ -245,7 +251,7 @@ export class EventResolver {
       ),
       total: await this.eventRepository.countEvents({ filters: query.filters }),
       page: query.page,
-      pageSize: query.pageSize,
+      pageSize: query.actualPageSize,
     });
   }
 
@@ -257,7 +263,10 @@ export class EventResolver {
       authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
     }
   )
-  @Mutation(() => CreateEventResponse, { name: "createEvent" })
+  @Mutation(() => CreateEventResponse, {
+    name: "createEvent",
+    description: "Create a new event",
+  })
   async create(
     @Arg("input") input: CreateEventInput
   ): Promise<CreateEventResponse> {
@@ -297,14 +306,17 @@ export class EventResolver {
       authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
     }
   )
-  @Mutation(() => DeleteEventResponse, { name: "deleteEvent" })
+  @Mutation(() => DeleteEventResponse, {
+    name: "deleteEvent",
+    description: "Delete an event by UUID",
+  })
   async delete(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<DeleteEventResponse> {
     const row = await this.eventRepository.deleteEvent({ uuid: id });
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Event not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Event not found");
     }
 
     auditLogger.secure("Event deleted", { uuid: id });
@@ -320,7 +332,10 @@ export class EventResolver {
       authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
     }
   )
-  @Mutation(() => SetEventResponse, { name: "setEvent" })
+  @Mutation(() => SetEventResponse, {
+    name: "setEvent",
+    description: "Update an event by UUID",
+  })
   async set(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetEventInput
@@ -371,7 +386,7 @@ export class EventResolver {
     );
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Event not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Event not found");
     }
 
     auditLogger.secure("Event updated", { event: row });
@@ -392,7 +407,10 @@ export class EventResolver {
       authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
     }
   )
-  @Mutation(() => RemoveEventImageResponse, { name: "removeImageFromEvent" })
+  @Mutation(() => RemoveEventImageResponse, {
+    name: "removeImageFromEvent",
+    description: "Remove an image from an event",
+  })
   async removeImage(
     @Arg("eventId", () => GlobalIdScalar) eventUuid: GlobalId,
     @Arg("imageId", () => GlobalIdScalar) imageUuid: GlobalId
@@ -403,7 +421,7 @@ export class EventResolver {
     });
 
     if (!row) {
-      throw new DetailedError(ErrorCode.NotFound, "Image not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
     }
 
     auditLogger.secure("Event image removed", { eventUuid, imageUuid });
@@ -419,7 +437,10 @@ export class EventResolver {
       authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
     }
   )
-  @Mutation(() => AddEventImageResponse, { name: "addExistingImageToEvent" })
+  @Mutation(() => AddEventImageResponse, {
+    name: "addExistingImageToEvent",
+    description: "Add an existing image to an event",
+  })
   async addExistingImage(
     @Arg("eventId", () => GlobalIdScalar) eventId: GlobalId,
     @Arg("imageId", () => GlobalIdScalar) imageId: GlobalId
@@ -434,7 +455,9 @@ export class EventResolver {
     );
   }
 
-  @FieldResolver(() => [ImageNode])
+  @FieldResolver(() => [ImageNode], {
+    description: "List all images for this event",
+  })
   async images(@Root() event: EventNode): Promise<ImageNode[]> {
     const rows = await this.eventImageRepository.findEventImagesByEventUnique({
       uuid: event.id.id,

@@ -5,8 +5,8 @@
 
 */
 -- DropIndex
--- DROP INDEX "teams_persistent_identifier_unique";
-ALTER TABLE "teams" DROP CONSTRAINT "teams_persistent_identifier_unique";
+DROP INDEX "teams_persistent_identifier_unique";
+-- ALTER TABLE "teams" DROP CONSTRAINT IF EXISTS "teams_persistent_identifier_unique";
 
 -- AlterTable
 ALTER TABLE "teams" ADD COLUMN     "committee_id" INTEGER;

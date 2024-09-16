@@ -30,3 +30,7 @@ export const PrismaError = Symbol("PrimaError");
 export type PrismaError = typeof PrismaError;
 export const ZodError = Symbol("ZodError");
 export type ZodError = typeof ZodError;
+export const ExpoPushTicketError = Symbol("ExpoError");
+export type ExpoPushTicketError = typeof ExpoPushTicketError;
+export const ExpoPushFailureError = Symbol("ExpoError");
+export type ExpoPushFailureError = typeof ExpoPushFailureError;

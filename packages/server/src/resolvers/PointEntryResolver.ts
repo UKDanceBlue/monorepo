@@ -11,8 +11,12 @@ import {
 } from "#resolvers/ApiResponse.js";
 
 import {
-  DetailedError,
-  ErrorCode,
+  AccessControl,
+  AccessLevel,
+  CommitteeIdentifier,
+  CommitteeRole,
+  LegacyError,
+  LegacyErrorCode,
   FilteredListQueryArgs,
   GlobalIdScalar,
   PersonNode,
@@ -106,6 +110,9 @@ export class PointEntryResolver {
     private readonly personRepository: PersonRepository
   ) {}
 
+  @AccessControl({
+    accessLevel: AccessLevel.Committee,
+  })
   @Query(() => GetPointEntryByUuidResponse, { name: "pointEntry" })
   async getByUuid(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -115,12 +122,15 @@ export class PointEntryResolver {
     });
 
     if (model == null) {
-      throw new DetailedError(ErrorCode.NotFound, "PointEntry not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "PointEntry not found");
     }
 
     return GetPointEntryByUuidResponse.newOk(pointEntryModelToResource(model));
   }
 
+  @AccessControl({
+    accessLevel: AccessLevel.Committee,
+  })
   @Query(() => ListPointEntriesResponse, { name: "pointEntries" })
   async list(
     @Args(() => ListPointEntriesArgs) query: ListPointEntriesArgs
@@ -134,10 +144,10 @@ export class PointEntryResolver {
             query.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
-          query.page != null && query.pageSize != null
-            ? (query.page - 1) * query.pageSize
+          query.page != null && query.actualPageSize != null
+            ? (query.page - 1) * query.actualPageSize
             : null,
-        take: query.pageSize,
+        take: query.actualPageSize,
       }),
       this.pointEntryRepository.countPointEntries({
         filters: query.filters,
@@ -148,10 +158,18 @@ export class PointEntryResolver {
       data: rows.map((row) => pointEntryModelToResource(row)),
       total,
       page: query.page,
-      pageSize: query.pageSize,
+      pageSize: query.actualPageSize,
     });
   }
 
+  @AccessControl({
+    authRules: [
+      {
+        committeeIdentifier: CommitteeIdentifier.viceCommittee,
+        minCommitteeRole: CommitteeRole.Coordinator,
+      },
+    ],
+  })
   @Mutation(() => CreatePointEntryResponse, { name: "createPointEntry" })
   async create(
     @Arg("input") input: CreatePointEntryInput
@@ -173,6 +191,14 @@ export class PointEntryResolver {
     );
   }
 
+  @AccessControl({
+    authRules: [
+      {
+        committeeIdentifier: CommitteeIdentifier.viceCommittee,
+        minCommitteeRole: CommitteeRole.Coordinator,
+      },
+    ],
+  })
   @Mutation(() => DeletePointEntryResponse, { name: "deletePointEntry" })
   async delete(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId

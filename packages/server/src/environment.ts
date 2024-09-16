@@ -11,48 +11,9 @@ import { expoServiceToken } from "#notification/expoServiceToken.js";
 
 dotenv.config({ override: true });
 
-async function getEnv(
-  name: string,
-  def?: undefined
-): Promise<string | undefined>;
-async function getEnv(name: string, def: string | null): Promise<string>;
-async function getEnv(name: string, def: symbol): Promise<string | symbol>;
-async function getEnv(
-  name: string,
-  def?: string | symbol | null
-): Promise<string | symbol | undefined> {
-  let value;
-  if (process.env[name]) {
-    value = process.env[name];
-  } else if (process.env[`${name}_FILE`]) {
-    try {
-      value = await readFile(process.env[`${name}_FILE`]!, "utf8");
-    } catch {
-      value = process.env[name];
-    }
-  } else {
-    const lowercaseName = name.toLowerCase();
-    try {
-      value = await readFile(`/run/secrets/${lowercaseName}`, "utf8");
-    } catch {
-      value = process.env[name];
-    }
-  }
-
-  if (!value) {
-    if (def === null) {
-      throw new Error(`Env variable '${name}' is not set`);
-    }
-    if (def !== undefined) {
-      return def;
-    }
-  }
-
-  return value?.trim();
-}
-
 export const isDevelopment = process.env.NODE_ENV === "development";
 
+// These are all of the environment variables that the server uses
 const LOGGING_LEVEL = getEnv(
   "LOGGING_LEVEL",
   isDevelopment ? "debug" : "notice"
@@ -153,3 +114,61 @@ export const logDir = await LOG_DIR;
 
 // Super admin
 export const superAdminLinkblue = await SUPER_ADMIN_LINKBLUE;
+
+/**
+ * Get an environment variable
+ *
+ * If the variable is set in the .env file or system environment, that value will be used.
+ * However, if the variable is not set, the function will look for an environment variable
+ * with the same name but with "_FILE" appended to the end. If that variable is set, the
+ * function will read the file at that path and use its contents as the value.
+ * Finally, if the variable is not set, the function will look for a file in /run/secrets
+ * with a lowercase name of the variable. If that file exists, the function will read the
+ * file at that path and use its contents as the value.
+ *
+ * If def is undefined, the function will return undefined when the environment variable is not set
+ * If def is null, the function will throw an error when the environment variable is not set
+ * If def is a string or symbol, the function will return it when the environment variable is not set
+ *
+ * @param name The key of the environment variable
+ * @param def The default value to return if the environment variable is not set
+ */
+async function getEnv(
+  name: string,
+  def?: undefined
+): Promise<string | undefined>;
+async function getEnv(name: string, def: string | null): Promise<string>;
+async function getEnv(name: string, def: symbol): Promise<string | symbol>;
+async function getEnv(
+  name: string,
+  def?: string | symbol | null
+): Promise<string | symbol | undefined> {
+  let value;
+  if (process.env[name]) {
+    value = process.env[name];
+  } else if (process.env[`${name}_FILE`]) {
+    try {
+      value = await readFile(process.env[`${name}_FILE`]!, "utf8");
+    } catch {
+      value = process.env[name];
+    }
+  } else {
+    const lowercaseName = name.toLowerCase();
+    try {
+      value = await readFile(`/run/secrets/${lowercaseName}`, "utf8");
+    } catch {
+      value = process.env[name];
+    }
+  }
+
+  if (!value) {
+    if (def === null) {
+      throw new Error(`Env variable '${name}' is not set`);
+    }
+    if (def !== undefined) {
+      return def;
+    }
+  }
+
+  return value?.trim();
+}

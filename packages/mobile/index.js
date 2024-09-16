@@ -54,6 +54,7 @@ initSentry({
     }),
   ],
   environment: channel ?? (isDevelopmentBuild() ? "dev-client" : "unknown"),
+  enabled: !isDevelopmentBuild(),
 });
 
 configureSentryScope((scope) => {

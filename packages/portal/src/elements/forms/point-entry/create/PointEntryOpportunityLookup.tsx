@@ -1,4 +1,5 @@
 import { PlusOutlined } from "@ant-design/icons";
+import { useMarathon } from "@config/marathonContext";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { TeamType } from "@ukdanceblue/common";
 import { graphql } from "@ukdanceblue/common/graphql-client-portal";
@@ -13,16 +14,16 @@ import {
   Input,
   Modal,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useMutation, useQuery } from "urql";
-import { useDebouncedCallback } from "use-debounce";
 
 import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
 
 const pointEntryOpportunityLookup = graphql(/* GraphQL */ `
-  query PointEntryOpportunityLookup($name: String!) {
+  query PointEntryOpportunityLookup($name: String!, $marathonUuid: String!) {
     pointOpportunities(
       stringFilters: { field: name, comparison: SUBSTRING, value: $name }
+      oneOfFilters: { field: marathonUuid, value: [$marathonUuid] }
       sendAll: true
     ) {
       data {
@@ -50,20 +51,25 @@ export function PointEntryOpportunityLookup({
   const [searchOpportunitiesField, setSearchOpportunitiesField] = useState<
     string | undefined
   >(undefined);
+  const [selected, setSelected] = useState<string | undefined>(undefined);
 
   const [createStatus, createPointOpportunity] = useMutation(
     createPointOpportunityDocument
   );
+  const marathon = useMarathon();
   useQueryStatusWatcher({
     fetching: createStatus.fetching,
     loadingMessage: "Creating opportunity",
     error: createStatus.error,
   });
 
-  const [searchByNameQuery, updateSearch] = useQuery({
+  const [searchByNameQuery] = useQuery({
     query: pointEntryOpportunityLookup,
-    pause: true,
-    variables: { name: `%${searchOpportunitiesField ?? ""}%` },
+    pause: !marathon || !searchOpportunitiesField,
+    variables: {
+      name: searchOpportunitiesField ?? "",
+      marathonUuid: marathon?.id ?? "",
+    },
   });
   useQueryStatusWatcher({
     fetching: searchByNameQuery.fetching,
@@ -71,34 +77,17 @@ export function PointEntryOpportunityLookup({
     error: searchByNameQuery.error,
   });
 
-  const [nameAutocomplete, setNameAutocomplete] = useState<
-    { value: string; label: string }[]
-  >([]);
-  useEffect(() => {
-    if (searchByNameQuery.data?.pointOpportunities.data) {
-      const newNameAutocomplete: typeof nameAutocomplete = [];
-      for (const opportunity of searchByNameQuery.data.pointOpportunities
-        .data) {
-        if (opportunity.name) {
-          newNameAutocomplete.push({
-            value: opportunity.id,
-            label: opportunity.name,
-          });
-        }
+  const nameAutocomplete: { value: string; label: string }[] = [];
+  if (searchByNameQuery.data?.pointOpportunities.data) {
+    for (const opportunity of searchByNameQuery.data.pointOpportunities.data) {
+      if (opportunity.name) {
+        nameAutocomplete.push({
+          value: opportunity.id,
+          label: opportunity.name,
+        });
       }
-      setNameAutocomplete(newNameAutocomplete);
     }
-  }, [searchByNameQuery.data?.pointOpportunities.data]);
-
-  const updateAutocomplete = useDebouncedCallback(
-    () => {
-      updateSearch();
-    },
-    200,
-    {
-      trailing: true,
-    }
-  );
+  }
 
   const { message } = App.useApp();
 
@@ -115,16 +104,20 @@ export function PointEntryOpportunityLookup({
             <Form
               layout="vertical"
               onFinish={(values: CreatePointOpportunityInput) => {
+                if (!marathon) {
+                  message.error("Marathon must be selected before creating");
+                  return;
+                }
                 createPointOpportunity({
                   input: {
                     name: values.name,
                     opportunityDate: values.opportunityDate ?? null,
                     type: TeamType.Spirit,
+                    marathonUuid: marathon.id,
                   },
                 })
                   .then((result) => {
                     if (result.data?.createPointOpportunity.uuid) {
-                      updateAutocomplete();
                       field.handleChange(
                         result.data.createPointOpportunity.uuid
                       );
@@ -173,24 +166,21 @@ export function PointEntryOpportunityLookup({
             <Flex>
               <AutoComplete
                 placeholder="Opportunity Name"
-                value={searchOpportunitiesField ?? undefined}
+                value={selected ?? searchOpportunitiesField ?? undefined}
                 onBlur={field.handleBlur}
                 onChange={(value, option) => {
                   if (Array.isArray(option)) {
                     throw new TypeError("Unexpected array of options");
                   }
-                  setSearchOpportunitiesField(option.label);
+                  setSelected(undefined);
+                  setSearchOpportunitiesField(value);
                   if (!option.value) {
                     field.handleChange(undefined);
                   }
-                  if (value) {
-                    updateAutocomplete();
-                  } else {
-                    setNameAutocomplete([]);
-                  }
                 }}
-                onSelect={(value) => {
+                onSelect={(value, { label }) => {
                   field.handleChange(value);
+                  setSelected(label);
                 }}
                 options={nameAutocomplete}
                 style={{ minWidth: "30ch" }}

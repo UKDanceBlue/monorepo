@@ -10,9 +10,9 @@ import {
 } from "#resolvers/ApiResponse.js";
 
 import {
-  DetailedError,
+  LegacyError,
   DeviceNode,
-  ErrorCode,
+  LegacyErrorCode,
   FilteredListQueryArgs,
   GlobalIdScalar,
   NotificationDeliveryNode,
@@ -130,20 +130,32 @@ export class DeviceResolver {
     private readonly personRepository: PersonRepository
   ) {}
 
-  @Query(() => GetDeviceByUuidResponse, { name: "device" })
+  @Query(() => GetDeviceByUuidResponse, {
+    name: "device",
+    description: "Get a device by it's UUID",
+  })
   async getByUuid(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("uuid", () => String, {
+      description: "For legacy reasons, this can be a GlobalId or a raw UUID",
+    })
+    someId: string
   ): Promise<GetDeviceByUuidResponse> {
+    const id = parseGlobalId(someId)
+      .map((id) => id.id)
+      .unwrapOr(someId);
     const row = await this.deviceRepository.getDeviceByUuid(id);
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Device not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Device not found");
     }
 
     return GetDeviceByUuidResponse.newOk(deviceModelToResource(row));
   }
 
-  @Query(() => ListDevicesResponse, { name: "devices" })
+  @Query(() => ListDevicesResponse, {
+    name: "devices",
+    description: "List all devices",
+  })
   async list(
     @Args(() => ListDevicesArgs) query: ListDevicesArgs
   ): Promise<ListDevicesResponse> {
@@ -156,10 +168,10 @@ export class DeviceResolver {
             query.sortDirection?.[i] ?? SortDirection.desc,
           ]) ?? [],
         skip:
-          query.page != null && query.pageSize != null
-            ? (query.page - 1) * query.pageSize
+          query.page != null && query.actualPageSize != null
+            ? (query.page - 1) * query.actualPageSize
             : null,
-        take: query.pageSize,
+        take: query.actualPageSize,
       }),
       this.deviceRepository.countDevices({ filters: query.filters }),
     ]);
@@ -168,11 +180,14 @@ export class DeviceResolver {
       data: rows.map((row) => deviceModelToResource(row)),
       total: count,
       page: query.page,
-      pageSize: query.pageSize,
+      pageSize: query.actualPageSize,
     });
   }
 
-  @Mutation(() => RegisterDeviceResponse, { name: "registerDevice" })
+  @Mutation(() => RegisterDeviceResponse, {
+    name: "registerDevice",
+    description: "Register a new device, or update an existing one",
+  })
   async register(
     @Arg("input") input: RegisterDeviceInput
   ): Promise<ConcreteResult<RegisterDeviceResponse>> {
@@ -200,7 +215,10 @@ export class DeviceResolver {
     );
   }
 
-  @Mutation(() => DeleteDeviceResponse, { name: "deleteDevice" })
+  @Mutation(() => DeleteDeviceResponse, {
+    name: "deleteDevice",
+    description: "Delete a device by it's UUID",
+  })
   async delete(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<DeleteDeviceResponse> {
@@ -223,7 +241,9 @@ export class DeviceResolver {
       .promise;
   }
 
-  @FieldResolver(() => [NotificationDeliveryNode])
+  @FieldResolver(() => [NotificationDeliveryNode], {
+    description: "List all notification deliveries for this device",
+  })
   async notificationDeliveries(
     @Root() { id: { id } }: DeviceNode,
     @Args(() => NotificationDeliveriesArgs) query: NotificationDeliveriesArgs
@@ -231,15 +251,15 @@ export class DeviceResolver {
     const row = await this.deviceRepository.getDeviceByUuid(id);
 
     if (row == null) {
-      throw new DetailedError(ErrorCode.NotFound, "Device not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Device not found");
     }
 
     if (
       row.verifier != null &&
       (query.verifier == null || row.verifier !== query.verifier)
     ) {
-      throw new DetailedError(
-        ErrorCode.Unauthorized,
+      throw new LegacyError(
+        LegacyErrorCode.Unauthorized,
         "Incorrect device verifier"
       );
     }
