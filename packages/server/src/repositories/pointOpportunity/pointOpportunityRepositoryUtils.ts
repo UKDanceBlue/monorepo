@@ -4,7 +4,7 @@ import {
   stringFilterToPrisma,
 } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import { SortDirection } from "@ukdanceblue/common";
+import { parseGlobalId, SortDirection } from "@ukdanceblue/common";
 
 import type {
   PointOpportunityFilters,
@@ -30,7 +30,14 @@ export function buildPointOpportunityOrder(
         orderBy[key] = sort === SortDirection.asc ? "asc" : "desc";
         break;
       }
+      case "marathonUuid": {
+        orderBy.marathon = {
+          year: sort === SortDirection.asc ? "asc" : "desc",
+        };
+        break;
+      }
       default: {
+        key satisfies never;
         throw new Error(`Unsupported sort key: ${String(key)}`);
       }
     }
@@ -49,6 +56,15 @@ export function buildPointOpportunityWhere(
         where[filter.field] = stringFilterToPrisma(filter);
         break;
       }
+      case "marathonUuid": {
+        where.marathon = {
+          uuid: oneOfFilterToPrisma({
+            ...filter,
+            value: filter.value.map((v) => parseGlobalId(v).unwrap().id),
+          }),
+        };
+        break;
+      }
       case "type": {
         where[filter.field] = oneOfFilterToPrisma(filter);
         break;
@@ -60,6 +76,7 @@ export function buildPointOpportunityWhere(
         break;
       }
       default: {
+        filter satisfies never;
         throw new Error(
           `Unsupported filter key: ${String(
             (filter as { field?: string } | undefined)?.field

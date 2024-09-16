@@ -78,6 +78,9 @@ class CreatePointOpportunityInput {
 
   @Field(() => GlobalIdScalar, { nullable: true })
   eventUuid!: GlobalId | null;
+
+  @Field(() => GlobalIdScalar)
+  marathonUuid!: GlobalId;
 }
 
 @InputType()
@@ -97,15 +100,27 @@ class SetPointOpportunityInput {
 
 @ArgsType()
 class ListPointOpportunitiesArgs extends FilteredListQueryArgs<
-  "name" | "opportunityDate" | "type" | "createdAt" | "updatedAt",
+  | "name"
+  | "opportunityDate"
+  | "type"
+  | "createdAt"
+  | "updatedAt"
+  | "marathonUuid",
   "name",
-  "type",
+  "type" | "marathonUuid",
   never,
   "opportunityDate" | "createdAt" | "updatedAt",
   never
 >("PointOpportunityResolver", {
-  all: ["name", "opportunityDate", "type", "createdAt", "updatedAt"],
-  oneOf: ["type"],
+  all: [
+    "name",
+    "opportunityDate",
+    "type",
+    "createdAt",
+    "updatedAt",
+    "marathonUuid",
+  ],
+  oneOf: ["type", "marathonUuid"],
   string: ["name"],
   date: ["opportunityDate", "createdAt", "updatedAt"],
 }) {}
@@ -194,6 +209,7 @@ export class PointOpportunityResolver {
       type: input.type,
       eventParam: input.eventUuid ? { uuid: input.eventUuid.id } : null,
       opportunityDate: input.opportunityDate ?? null,
+      marathon: { uuid: input.marathonUuid.id },
     });
 
     return CreatePointOpportunityResponse.newCreated(

@@ -186,7 +186,7 @@ classes are used to represent specific errors should be returned as part of a
 an Apollo-friendly error object, meaning they will give a good error message to
 the client.
 
-# Dependency Injection
+## Dependency Injection
 
 The server uses a simple dependency injection library called `typedi`
 (specifically a fork of `typedi` called `@freshgum/typedi`). This library allows

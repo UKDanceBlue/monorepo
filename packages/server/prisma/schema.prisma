@@ -224,6 +224,8 @@ model PointOpportunity {
   eventId         Int?                 @map("event_id")
   pointEntries    PointEntry[]
   event           Event?               @relation(fields: [eventId], references: [id])
+  marathonId      Int                  @map("marathon_id")
+  marathon        Marathon             @relation(fields: [marathonId], references: [id])
 
   @@index([uuid], map: "point_opportunities_uuid")
   @@map("point_opportunities")
@@ -352,6 +354,7 @@ model Marathon {
   teams                Team[]
   teamsWithTotalPoints TeamsWithTotalPoints[]
   dbFundsTeams         DBFundsTeam[]
+  pointOpportunities   PointOpportunity[]
 
   @@index([uuid], map: "marathons_uuid")
   @@map("marathons")

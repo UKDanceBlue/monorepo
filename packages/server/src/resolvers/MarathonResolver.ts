@@ -32,7 +32,7 @@ import {
 import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
-import { Option } from "ts-results-es";
+import { AsyncResult, Option } from "ts-results-es";
 
 @ObjectType("ListMarathonsResponse", {
   implements: AbstractGraphQLPaginatedResponse<MarathonNode[]>,
@@ -158,13 +158,14 @@ export class MarathonResolver
 
   @Mutation(() => MarathonNode)
   async createMarathon(@Arg("input") input: CreateMarathonInput) {
-    const marathon = await this.marathonRepository.createMarathon(input);
-    if (marathon.isOk()) {
-      await this.committeeRepository.ensureCommittees([
-        { id: marathon.value.id },
+    return new AsyncResult(
+      this.marathonRepository.createMarathon(input)
+    ).andThen(async (marathon) => {
+      const result = await this.committeeRepository.ensureCommittees([
+        { id: marathon.id },
       ]);
-    }
-    return marathon.map(marathonModelToResource);
+      return result.map(() => marathonModelToResource(marathon));
+    }).promise;
   }
 
   @Mutation(() => MarathonNode)

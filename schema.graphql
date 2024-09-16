@@ -201,6 +201,7 @@ type CreatePointEntryResponse implements AbstractGraphQLCreatedResponse & Abstra
 
 input CreatePointOpportunityInput {
   eventUuid: GlobalId
+  marathonUuid: GlobalId!
   name: String!
   opportunityDate: DateTimeISO
   type: TeamType!
@@ -280,6 +281,8 @@ type DeviceNode implements Node {
   id: GlobalId!
   lastLoggedInUser: PersonNode
   lastLogin: DateTimeISO
+
+  """List all notification deliveries for this device"""
   notificationDeliveries(
     page: Int = 1
     pageSize: Int = 10
@@ -372,6 +375,8 @@ type EventNode implements Node {
   createdAt: DateTimeISO
   description: String
   id: GlobalId!
+
+  """List all images for this event"""
   images: [ImageNode!]!
   location: String
   occurrences: [EventOccurrenceNode!]!
@@ -465,6 +470,8 @@ enum EventResolverStringFilterKeys {
 type FeedNode implements Node {
   createdAt: DateTimeISO
   id: GlobalId!
+
+  """The image associated with this feed item"""
   image: ImageNode
   textContent: String
   title: String!
@@ -996,16 +1003,32 @@ enum MembershipPositionType {
 type Mutation {
   abortScheduledNotification(uuid: GlobalId!): AbortScheduledNotificationResponse!
   acknowledgeDeliveryIssue(uuid: GlobalId!): AcknowledgeDeliveryIssueResponse!
+
+  """Add an existing image to an event"""
   addExistingImageToEvent(eventId: GlobalId!, imageId: GlobalId!): AddEventImageResponse!
   addMap(imageUuid: GlobalId!, uuid: GlobalId!): MarathonHourNode!
   addPersonToTeam(personUuid: GlobalId!, teamUuid: GlobalId!): MembershipNode!
   assignEntryToPerson(entryId: GlobalId!, input: AssignEntryToPersonInput!, personId: GlobalId!): FundraisingAssignmentNode!
   assignTeamToDbFundsTeam(dbFundsTeamDbNum: Int!, teamId: GlobalId!): Void!
+
+  """Attach an image to a feed item"""
   attachImageToFeedItem(feedItemUuid: GlobalId!, imageUuid: GlobalId!): FeedNode!
   bulkLoadPeople(marathonId: GlobalId!, people: [BulkPersonInput!]!): [PersonNode!]!
+
+  """
+  Create a new configuration, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)
+  """
   createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
+
+  """
+  Create multiple configurations, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)
+  """
   createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
+
+  """Create a new event"""
   createEvent(input: CreateEventInput!): CreateEventResponse!
+
+  """Add a new item to the feed"""
   createFeedItem(input: CreateFeedInput!): FeedNode!
   createImage(input: CreateImageInput!): ImageNode!
   createMarathon(input: CreateMarathonInput!): MarathonNode!
@@ -1014,9 +1037,17 @@ type Mutation {
   createPointEntry(input: CreatePointEntryInput!): CreatePointEntryResponse!
   createPointOpportunity(input: CreatePointOpportunityInput!): CreatePointOpportunityResponse!
   createTeam(input: CreateTeamInput!, marathon: GlobalId!): CreateTeamResponse!
+
+  """Delete a configuration by UUID"""
   deleteConfiguration(uuid: GlobalId!): DeleteConfigurationResponse!
+
+  """Delete a device by it's UUID"""
   deleteDevice(uuid: GlobalId!): DeleteDeviceResponse!
+
+  """Delete an event by UUID"""
   deleteEvent(uuid: GlobalId!): DeleteEventResponse!
+
+  """Delete a feed item"""
   deleteFeedItem(feedItemUuid: GlobalId!): Boolean!
   deleteFundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
   deleteImage(uuid: GlobalId!): DeleteImageResponse!
@@ -1033,15 +1064,25 @@ type Mutation {
   deletePointEntry(uuid: GlobalId!): DeletePointEntryResponse!
   deletePointOpportunity(uuid: GlobalId!): DeletePointOpportunityResponse!
   deleteTeam(uuid: GlobalId!): DeleteTeamResponse!
+
+  """Register a new device, or update an existing one"""
   registerDevice(input: RegisterDeviceInput!): RegisterDeviceResponse!
+
+  """Remove an image from an event"""
   removeImageFromEvent(eventId: GlobalId!, imageId: GlobalId!): RemoveEventImageResponse!
+
+  """Remove an image from a feed item"""
   removeImageFromFeedItem(feedItemUuid: GlobalId!): FeedNode!
   removeMap(imageUuid: GlobalId!, uuid: GlobalId!): Void!
   scheduleNotification(sendAt: DateTimeISO!, uuid: GlobalId!): ScheduleNotificationResponse!
 
   """Send a notification immediately."""
   sendNotification(uuid: GlobalId!): SendNotificationResponse!
+
+  """Update an event by UUID"""
   setEvent(input: SetEventInput!, uuid: GlobalId!): SetEventResponse!
+
+  """Set the content of a feed item"""
   setFeedItem(feedItemUuid: GlobalId!, input: SetFeedInput!): FeedNode!
   setImageAltText(alt: String!, uuid: GlobalId!): ImageNode!
   setImageUrl(uuid: GlobalId!): ImageNode!
@@ -1414,6 +1455,7 @@ type PointOpportunityNode implements Node {
 
 enum PointOpportunityResolverAllKeys {
   createdAt
+  marathonUuid
   name
   opportunityDate
   type
@@ -1476,6 +1518,7 @@ input PointOpportunityResolverKeyedStringFilterItem {
 }
 
 enum PointOpportunityResolverOneOfFilterKeys {
+  marathonUuid
   type
 }
 
@@ -1487,9 +1530,16 @@ enum PointOpportunityResolverStringFilterKeys {
 scalar PositiveInt
 
 type Query {
+  """Get the active configuration for a given key at the current time"""
   activeConfiguration(key: String!): GetConfigurationByUuidResponse!
+
+  """Get all configurations, irrespective of time"""
   allConfigurations: GetAllConfigurationsResponse!
-  auditLog: String!
+
+  """Get the audit log file from the server"""
+  auditLog(lines: Float! = 25, offset: Float! = 0): String!
+
+  """Get a particular configuration entry by UUID"""
   configuration(id: GlobalId!): GetConfigurationByUuidResponse!
 
   """
@@ -1498,10 +1548,14 @@ type Query {
   currentMarathon: MarathonNode
   currentMarathonHour: MarathonHourNode
   dbFundsTeams(search: String!): [DbFundsTeamInfo!]!
+
+  """Get a device by it's UUID"""
   device(
     """For legacy reasons, this can be a GlobalId or a raw UUID"""
     uuid: String!
   ): GetDeviceByUuidResponse!
+
+  """List all devices"""
   devices(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -1545,7 +1599,11 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [DeviceResolverKeyedStringFilterItem!]
   ): ListDevicesResponse!
+
+  """Get an event by UUID"""
   event(uuid: GlobalId!): GetEventByUuidResponse!
+
+  """List events"""
   events(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -1589,7 +1647,11 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [EventResolverKeyedStringFilterItem!]
   ): ListEventsResponse!
+
+  """Get the active feed"""
   feed(limit: Int = 10): [FeedNode!]!
+
+  """Get a feed item by its UUID"""
   feedItem(feedItemId: GlobalId!): FeedNode!
   fundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
   fundraisingEntries(

@@ -26,7 +26,7 @@ type PointOpportunityIsNullKey = (typeof pointOpportunityIsNullKeys)[number];
 const pointOpportunityNumericKeys = [] as const;
 type PointOpportunityNumericKey = (typeof pointOpportunityNumericKeys)[number];
 
-const pointOpportunityOneOfKeys = ["type"] as const;
+const pointOpportunityOneOfKeys = ["type", "marathonUuid"] as const;
 type PointOpportunityOneOfKey = (typeof pointOpportunityOneOfKeys)[number];
 
 const pointOpportunityStringKeys = ["name"] as const;
@@ -36,6 +36,7 @@ export type PointOpportunityOrderKeys =
   | "name"
   | "opportunityDate"
   | "type"
+  | "marathonUuid"
   | "createdAt"
   | "updatedAt";
 
@@ -51,6 +52,8 @@ export type PointOpportunityFilters = FilterItems<
 type UniquePointOpportunityParam = { id: number } | { uuid: string };
 
 import { prismaToken } from "#prisma";
+import { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
+import { SimpleUniqueParam } from "#repositories/shared.js";
 
 @Service([prismaToken])
 export class PointOpportunityRepository {
@@ -110,11 +113,13 @@ export class PointOpportunityRepository {
     type,
     eventParam,
     opportunityDate,
+    marathon,
   }: {
     name: string;
     type: PointOpportunityType;
-    eventParam?: { id: number } | { uuid: string } | undefined | null;
+    eventParam?: SimpleUniqueParam | undefined | null;
     opportunityDate?: Date | undefined | null;
+    marathon: UniqueMarathonParam;
   }) {
     return this.prisma.pointOpportunity.create({
       data: {
@@ -126,6 +131,9 @@ export class PointOpportunityRepository {
             }
           : undefined,
         opportunityDate,
+        marathon: {
+          connect: marathon,
+        },
       },
     });
   }
