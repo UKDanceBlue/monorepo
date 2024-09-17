@@ -20,9 +20,7 @@ import RootScreen from "../navigation/root/RootScreen";
 import { useReactNavigationTheme } from "../theme";
 import type { RootStackParamList } from "../types/navigationTypes";
 
-const linkingPrefixes = [
-  createLinkingURL("/"),
-];
+const linkingPrefixes = [createLinkingURL("/")];
 
 export const FilledNavigationContainer = () => {
   const navigationRef =
