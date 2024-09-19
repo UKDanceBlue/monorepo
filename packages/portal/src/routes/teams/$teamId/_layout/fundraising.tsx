@@ -216,6 +216,17 @@ function ViewTeamFundraising() {
     useMutation(DeleteFundraisingAssignmentDocument);
   useQueryStatusWatcher(deleteFundraisingAssignmentState);
 
+  const donatedByStringFilterProps = useMakeStringSearchFilterProps(
+    "donatedBy",
+    updateFilter,
+    clearFilter
+  );
+  const donatedToStringFilterProps = useMakeStringSearchFilterProps(
+    "donatedTo",
+    updateFilter,
+    clearFilter
+  );
+
   if (!canSetDbNum && !data?.team.data.dbFundsTeam?.dbNum) {
     return (
       <p>
@@ -318,22 +329,14 @@ function ViewTeamFundraising() {
               dataIndex: "donatedByText",
               key: "donatedByText",
               sorter: true,
-              ...useMakeStringSearchFilterProps(
-                "donatedBy",
-                updateFilter,
-                clearFilter
-              ),
+              ...donatedByStringFilterProps,
             },
             {
               title: "Donated To",
               dataIndex: "donatedToText",
               key: "donatedToText",
               sorter: true,
-              ...useMakeStringSearchFilterProps(
-                "donatedTo",
-                updateFilter,
-                clearFilter
-              ),
+              ...donatedToStringFilterProps,
             },
             {
               title: "Donated On",
