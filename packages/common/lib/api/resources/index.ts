@@ -1,4 +1,5 @@
 export * from "../scalars/GlobalId.js";
+export * from "../scalars/Void.js";
 export { AuthIdPairResource as AuthIdPairNode } from "../types/AuthIdPair.js";
 export { EffectiveCommitteeRole } from "../types/EffectiveCommitteeRole.js";
 export { IntervalISO } from "../types/IntervalISO.js";

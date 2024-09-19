@@ -119,8 +119,8 @@ export const ManageNotificationForm = ({
                   void showConfirmModal({
                     ...confirmationModalProps,
                     title:
-                      "Are you sure you would like to schedule the notification?",
-                    content: `This will send the notification to all specified recipients on ${sendAt.toLocaleString(
+                      "!STOP! Are you sure you would like to schedule the notification? !STOP!",
+                    content: `This will send the notification to ${notification.deliveryCount} specified recipients on ${sendAt.toLocaleString(
                       DateTime.DATE_MED_WITH_WEEKDAY
                     )} at ${sendAt.toLocaleString(DateTime.TIME_SIMPLE)}.`,
                     onOk: () => {
@@ -145,9 +145,9 @@ export const ManageNotificationForm = ({
                 void showWarningModal({
                   ...confirmationModalProps,
                   title:
-                    "Are you sure you would like to send the notification?",
+                    "!STOP! Are you sure you would like to send the notification? !STOP!",
                   content:
-                    "This will immediately send the notification to all recipients. There is no way to cancel this operation.",
+                    "This will immediately send the notification to ${notification.deliveryCount} recipients. There is no way to cancel this operation.",
                   onOk: () => {
                     handleOperationResult(
                       sendNotification(),

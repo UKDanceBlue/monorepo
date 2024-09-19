@@ -579,7 +579,7 @@ export class TeamResolver {
   async assignTeamToDbFundsTeam(
     @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId,
     @Arg("dbFundsTeamDbNum", () => Int) dbFundsTeamDbNum: number
-  ): Promise<void> {
+  ): Promise<typeof Common.VoidScalar> {
     const result = await this.dbFundsRepository.assignTeamToDbFundsTeam(
       { uuid: teamId },
       { dbNum: dbFundsTeamDbNum }
@@ -589,6 +589,6 @@ export class TeamResolver {
       throw new FormattedConcreteError(result);
     }
 
-    return undefined;
+    return Common.VoidScalar;
   }
 }
