@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.7-labs
+# syntax=docker/dockerfile:1.10-labs
 FROM node:22.4.1 as build
 
 ADD --link --exclude=packages/mobile . /builddir
