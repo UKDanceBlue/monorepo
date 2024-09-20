@@ -46,7 +46,7 @@ function ViewTeamPoints() {
         <div style={{ flex: 1 }}>
           <h2>Create Point Entry</h2>
           <PointEntryCreator
-            teamUuid={teamUuid}
+            team={data?.team.data}
             refetch={() => refetch({ requestPolicy: "network-only" })}
           />
         </div>

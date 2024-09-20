@@ -18,14 +18,12 @@ import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
 const generalLinkblueRegex = new RegExp(/^[A-Za-z]{3,4}\d{3}$/);
 export function PointEntryPersonLookup({
   formApi,
-  teamUuid,
   nameFieldRef,
   linkblueFieldRef,
   selectedPersonRef,
   clearButtonRef,
 }: {
   formApi: ReturnType<typeof usePointEntryCreatorForm>["formApi"];
-  teamUuid: string;
   nameFieldRef: LegacyRef<HTMLDivElement>;
   linkblueFieldRef: Parameters<typeof Input>[0]["ref"];
   selectedPersonRef: LegacyRef<HTMLSpanElement>;
@@ -63,6 +61,7 @@ export function PointEntryPersonLookup({
   const [getPersonByLinkBlueQuery, getPersonByLinkBlue] = useQuery({
     query: getPersonByLinkBlueDocument,
     pause: true,
+    requestPolicy: "network-only",
     variables: { linkBlue: linkblueFieldValue ?? "" },
   });
   useQueryStatusWatcher({
@@ -114,6 +113,7 @@ export function PointEntryPersonLookup({
   const [searchByNameQuery, searchByName] = useQuery({
     query: searchPersonByNameDocument,
     pause: true,
+    requestPolicy: "network-only",
     variables: { name: searchByNameField ?? "" },
   });
   useQueryStatusWatcher({
@@ -267,7 +267,6 @@ export function PointEntryPersonLookup({
                           const result = await createPerson({
                             linkBlue: linkblueFieldValue,
                             email: `${linkblueFieldValue}@uky.edu`,
-                            team: { id: teamUuid },
                           });
                           if (result.data?.createPerson.id) {
                             setPersonFromUuid(result.data.createPerson.id);

@@ -1,4 +1,7 @@
-import { createPointEntryDocument } from "./PointEntryCreatorGQL";
+import {
+  createPointEntryAndAssignDocument,
+  createPointEntryDocument,
+} from "./PointEntryCreatorGQL";
 
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
@@ -14,31 +17,62 @@ export function usePointEntryCreatorForm({
   onReset: () => void;
 }) {
   // Form
-  const [{ fetching, error }, createPointEntry] = useMutation(
-    createPointEntryDocument
-  );
+  const [
+    { fetching: createPointEntryFetching, error: createPointEntryError },
+    createPointEntry,
+  ] = useMutation(createPointEntryDocument);
   useQueryStatusWatcher({
-    error,
-    fetching,
+    error: createPointEntryError,
+    fetching: createPointEntryFetching,
     loadingMessage: "Saving point entry...",
   });
 
-  const Form = useForm<Omit<CreatePointEntryInput, "teamUuid">>({
+  const [
+    {
+      fetching: createPointEntryAndAssignFetching,
+      error: createPointEntryAndAssignError,
+    },
+    createPointEntryAndAssign,
+  ] = useMutation(createPointEntryAndAssignDocument);
+  useQueryStatusWatcher({
+    error: createPointEntryAndAssignError,
+    fetching: createPointEntryAndAssignFetching,
+    loadingMessage: "Saving point entry...",
+  });
+
+  const Form = useForm<
+    Omit<CreatePointEntryInput, "teamUuid"> & { shouldAddToTeam: boolean }
+  >({
     defaultValues: {
       points: 0,
+      shouldAddToTeam: false,
     },
-    onSubmit: async ({ value: values }) => {
-      await createPointEntry({
-        input: {
-          points: values.points,
-          teamUuid,
-          comment: values.comment ?? null,
-          personFromUuid: values.personFromUuid ?? null,
-          opportunityUuid: values.opportunityUuid ?? null,
-        },
-      });
+    onSubmit: async ({ value: values, formApi }) => {
+      if (values.shouldAddToTeam && values.personFromUuid) {
+        await createPointEntryAndAssign({
+          input: {
+            points: values.points,
+            teamUuid,
+            comment: values.comment ?? null,
+            personFromUuid: values.personFromUuid ?? null,
+            opportunityUuid: values.opportunityUuid ?? null,
+          },
+          person: values.personFromUuid,
+          team: teamUuid,
+        });
+      } else {
+        await createPointEntry({
+          input: {
+            points: values.points,
+            teamUuid,
+            comment: values.comment ?? null,
+            personFromUuid: values.personFromUuid ?? null,
+            opportunityUuid: values.opportunityUuid ?? null,
+          },
+        });
+      }
+      formApi.reset();
       onReset();
-      Form.reset();
     },
   });
 

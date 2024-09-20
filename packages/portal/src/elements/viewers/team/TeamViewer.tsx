@@ -1,5 +1,11 @@
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  MinusCircleTwoTone,
+} from "@ant-design/icons";
+import { PersonSearch } from "@elements/components/person/PersonSearch";
 import { useAuthorizationRequirement } from "@hooks/useLoginState";
+import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   AccessLevel,
@@ -13,8 +19,12 @@ import {
   graphql,
 } from "@ukdanceblue/common/graphql-client-portal";
 import { Button, Descriptions, Empty, Flex } from "antd";
+import { useState } from "react";
+import { useMutation } from "urql";
 
 import { useTeamDeletePopup } from "../../components/team/TeamDeletePopup";
+import { AssignToTeamPopup } from "./AssignToTeamPopup";
+import { assignToTeamDocument, removeFromTeamDocument } from "./TeamViewerGql";
 
 export const TeamViewerFragment = graphql(/* GraphQL */ `
   fragment TeamViewerFragment on TeamNode {
@@ -56,8 +66,39 @@ export function TeamViewer({
     }
   );
 
+  const canEditMemberships = useAuthorizationRequirement(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+      committeeIdentifier: CommitteeIdentifier.viceCommittee,
+    }
+  );
+
   const canViewPeople = useAuthorizationRequirement({
     accessLevel: AccessLevel.Committee,
+  });
+
+  const [personToAssignToTeam, setPersonToAssignToTeam] = useState<{
+    uuid: string;
+    name: string | undefined;
+    linkblue: string | undefined;
+  } | null>(null);
+  const [{ fetching: assignFetching, error: assignError }, assignToTeam] =
+    useMutation(assignToTeamDocument);
+  useQueryStatusWatcher({
+    error: assignError,
+    fetching: assignFetching,
+    loadingMessage: "Assigning person to team...",
+  });
+
+  const [{ fetching: removeFetching, error: removeError }, removeFromTeam] =
+    useMutation(removeFromTeamDocument);
+  useQueryStatusWatcher({
+    error: removeError,
+    fetching: removeFetching,
+    loadingMessage: "Removing person from team...",
   });
 
   const navigate = useNavigate();
@@ -139,6 +180,22 @@ export function TeamViewer({
                       {captain.person.name ?? "Never logged in"} (
                       {captain.person.linkblue ?? "No linkblue"})
                     </Link>
+                    {canEditMemberships ? (
+                      <Button
+                        icon={<MinusCircleTwoTone />}
+                        type="text"
+                        shape="circle"
+                        style={{
+                          marginLeft: "0.5em",
+                        }}
+                        onClick={() =>
+                          removeFromTeam({
+                            person: captain.person.id,
+                            team: teamData.id,
+                          })
+                        }
+                      />
+                    ) : null}
                   </li>
                 ) : (
                   <li key={captain.person.id}>
@@ -164,6 +221,22 @@ export function TeamViewer({
                       {member.person.name ?? "Never logged in"} (
                       {member.person.linkblue ?? "No linkblue"})
                     </Link>
+                    {canEditMemberships ? (
+                      <Button
+                        icon={<MinusCircleTwoTone />}
+                        type="text"
+                        shape="circle"
+                        style={{
+                          marginLeft: "0.5em",
+                        }}
+                        onClick={() =>
+                          removeFromTeam({
+                            person: member.person.id,
+                            team: teamData.id,
+                          })
+                        }
+                      />
+                    ) : null}
                   </li>
                 ) : (
                   <li key={member.person.id}>
@@ -175,7 +248,30 @@ export function TeamViewer({
             </ul>
           </div>
         </Descriptions.Item>
+        <Descriptions.Item label="Add Member">
+          <PersonSearch
+            onSelect={(person) => {
+              setPersonToAssignToTeam(person);
+            }}
+            style={{ width: "100%" }}
+          />
+        </Descriptions.Item>
       </Descriptions>
+      <AssignToTeamPopup
+        person={personToAssignToTeam}
+        onClose={() => {
+          setPersonToAssignToTeam(null);
+        }}
+        onSubmit={(position) => {
+          assignToTeam({
+            person: personToAssignToTeam?.uuid ?? "",
+            team: teamData.id,
+            position,
+          }).catch((error: unknown) => console.error(error));
+          setPersonToAssignToTeam(null);
+        }}
+        teamName={teamData.name}
+      />
     </Flex>
   );
 }

@@ -401,7 +401,11 @@ export class PersonResolver {
   @Mutation(() => MembershipNode, { name: "addPersonToTeam" })
   async assignPersonToTeam(
     @Arg("personUuid", () => GlobalIdScalar) personUuid: GlobalId,
-    @Arg("teamUuid", () => GlobalIdScalar) teamUuid: GlobalId
+    @Arg("teamUuid", () => GlobalIdScalar) teamUuid: GlobalId,
+    @Arg("position", () => MembershipPositionType, {
+      defaultValue: MembershipPositionType.Member,
+    })
+    position: MembershipPositionType
   ): Promise<ConcreteResult<MembershipNode>> {
     const membership = await this.membershipRepository.assignPersonToTeam({
       personParam: {
@@ -410,8 +414,26 @@ export class PersonResolver {
       teamParam: {
         uuid: teamUuid.id,
       },
-      position: MembershipPositionType.Member,
+      position,
     });
+
+    return membership.map(membershipModelToResource);
+  }
+
+  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @Mutation(() => MembershipNode, { name: "removePersonFromTeam" })
+  async unassignPersonFromTeam(
+    @Arg("personUuid", () => GlobalIdScalar) personUuid: GlobalId,
+    @Arg("teamUuid", () => GlobalIdScalar) teamUuid: GlobalId
+  ): Promise<ConcreteResult<MembershipNode>> {
+    const membership = await this.membershipRepository.removePersonFromTeam(
+      {
+        uuid: personUuid.id,
+      },
+      {
+        uuid: teamUuid.id,
+      }
+    );
 
     return membership.map(membershipModelToResource);
   }

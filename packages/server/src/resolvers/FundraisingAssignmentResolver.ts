@@ -53,6 +53,7 @@ const fundraisingAccess: AccessControlParam<FundraisingAssignmentNode> = {
   ],
 };
 
+// TODO: Give team captains access
 @Resolver(() => FundraisingAssignmentNode)
 @Service([FundraisingEntryRepository, PersonRepository])
 export class FundraisingAssignmentResolver {

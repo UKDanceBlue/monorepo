@@ -1,17 +1,29 @@
 import { QuestionOutlined } from "@ant-design/icons";
+import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
+import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
 import type { InputRef, TourProps } from "antd";
-import { App, Button, Flex, Form, Input, InputNumber, Tour } from "antd";
+import {
+  App,
+  Button,
+  Checkbox,
+  Flex,
+  Form,
+  Input,
+  InputNumber,
+  Tour,
+} from "antd";
 import { useReducer, useRef, useState } from "react";
 
+import { PointEntryCreatorFragment } from "./PointEntryCreatorGQL";
 import { PointEntryOpportunityLookup } from "./PointEntryOpportunityLookup";
 import { PointEntryPersonLookup } from "./PointEntryPersonLookup";
 import { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
 
 export function PointEntryCreator({
-  teamUuid,
+  team,
   refetch,
 }: {
-  teamUuid: string;
+  team?: FragmentType<typeof PointEntryCreatorFragment>;
   refetch: () => void;
 }) {
   const { message } = App.useApp();
@@ -69,12 +81,14 @@ export function PointEntryCreator({
     },
   ];
 
+  const teamData = getFragmentData(PointEntryCreatorFragment, team);
+
   const [personLookupKey, resetLookup] = useReducer(
     (prev: number) => prev + 1,
     0
   );
   const { formApi } = usePointEntryCreatorForm({
-    teamUuid,
+    teamUuid: teamData?.id ?? "",
     onReset: () => {
       resetLookup();
       // Delay refetching a bit to allow the form to reset
@@ -104,7 +118,6 @@ export function PointEntryCreator({
           });
         }}
         wrapperCol={{ flex: 1 }}
-        layout="vertical"
         labelWrap
       >
         <formApi.Field
@@ -164,13 +177,38 @@ export function PointEntryCreator({
         </Flex>
         <PointEntryPersonLookup
           formApi={formApi}
-          teamUuid={teamUuid}
           key={personLookupKey}
           nameFieldRef={nameFieldRef}
           linkblueFieldRef={linkblueFieldRef}
           selectedPersonRef={selectedPersonRef}
           clearButtonRef={clearButtonRef}
         />
+        <formApi.Field name="shouldAddToTeam">
+          {(field) => (
+            <>
+              <Form.Item label="Add this person to team">
+                <formApi.Subscribe
+                  selector={({ values }) => values.personFromUuid}
+                >
+                  {(personFromUuid) => (
+                    <Checkbox
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(val) => field.handleChange(val.target.checked)}
+                      disabled={
+                        !personFromUuid ||
+                        !teamData?.members ||
+                        teamData.members.some(
+                          ({ person: { id } }) => id === personFromUuid
+                        )
+                      }
+                    />
+                  )}
+                </formApi.Subscribe>
+              </Form.Item>
+            </>
+          )}
+        </formApi.Field>
         <Flex justify="space-between" align="center" wrap="wrap">
           <Button type="primary" htmlType="submit" ref={submitButtonRef}>
             Submit
