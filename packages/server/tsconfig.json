@@ -28,6 +28,14 @@
       "#environment": ["./src/environment.ts"]
     }
   },
-  "include": ["src"],
+  "include": [
+    "src",
+    "../common/lib/api/params/eventParams.ts",
+    "../common/lib/api/params/ApiResponse.ts",
+, "../common/lib/api/params/ListMarathonsResponse.ts", "../common/lib/api/params/ListMarathonHoursResponse.ts", "../common/lib/api/params/ListFundraisingEntriesResponse.ts", "../common/lib/api/params/GetNotificationByUuidResponse.ts", "../common/lib/api/params/GetPointEntryByUuidResponse.ts", "../common/lib/api/params/GetImageByUuidResponse.ts", "../common/lib/api/params/GetConfigurationResponse.ts"    "../common/lib/api/params/SingleTeamResponse.ts",
+    "../common/lib/api/params/SinglePointOpportunityResponse.ts",
+    "../common/lib/api/params/LoginState.1.ts",
+    "../common/lib/api/params/ListPeopleResponse.ts"
+, "../common/lib/api/params/fundraisingAccess.ts", "../common/lib/api/params/CreateFeedInput.ts"  ],
   "extends": "../../tsconfig.json"
 }

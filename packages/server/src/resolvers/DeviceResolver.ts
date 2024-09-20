@@ -4,16 +4,11 @@ import { deviceModelToResource } from "#repositories/device/deviceModelToResourc
 import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
-import {
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "#resolvers/ApiResponse.js";
 
 import {
   LegacyError,
   DeviceNode,
   LegacyErrorCode,
-  FilteredListQueryArgs,
   GlobalIdScalar,
   NotificationDeliveryNode,
   parseGlobalId,
@@ -24,13 +19,8 @@ import { ConcreteResult } from "@ukdanceblue/common/error";
 import {
   Arg,
   Args,
-  ArgsType,
-  Field,
   FieldResolver,
-  InputType,
-  Int,
   Mutation,
-  ObjectType,
   Query,
   Resolver,
   Root,
@@ -39,88 +29,15 @@ import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 import Validator from "validator";
-
-@ObjectType("GetDeviceByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<DeviceNode>,
-})
-class GetDeviceByUuidResponse extends AbstractGraphQLOkResponse<DeviceNode> {
-  @Field(() => DeviceNode)
-  data!: DeviceNode;
-}
-@ObjectType("ListDevicesResponse", {
-  implements: AbstractGraphQLPaginatedResponse<DeviceNode>,
-})
-class ListDevicesResponse extends AbstractGraphQLPaginatedResponse<DeviceNode> {
-  @Field(() => [DeviceNode])
-  data!: DeviceNode[];
-}
-@ObjectType("RegisterDeviceResponse", {
-  implements: AbstractGraphQLOkResponse<DeviceNode>,
-})
-class RegisterDeviceResponse extends AbstractGraphQLOkResponse<DeviceNode> {
-  @Field(() => DeviceNode)
-  data!: DeviceNode;
-}
-@ObjectType("DeleteDeviceResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-class DeleteDeviceResponse extends AbstractGraphQLOkResponse<never> {}
-
-@InputType()
-class RegisterDeviceInput {
-  @Field(() => String, {
-    description: "For legacy reasons, this can be a GlobalId or a raw UUID",
-  })
-  deviceId!: string;
-
-  @Field(() => String, {
-    description: "The Expo push token of the device",
-    nullable: true,
-  })
-  expoPushToken?: string | null;
-
-  @Field(() => String, {
-    description: "base64 encoded SHA-256 hash of a secret known to the device",
-  })
-  verifier!: string;
-
-  @Field(() => GlobalIdScalar, {
-    description: "The ID of the last user to log in on this device",
-    nullable: true,
-  })
-  lastUserId?: GlobalId | null;
-}
-
-@ArgsType()
-class ListDevicesArgs extends FilteredListQueryArgs<
-  "expoPushToken" | "lastSeen" | "createdAt" | "updatedAt",
-  "expoPushToken",
-  never,
-  never,
-  "lastSeen" | "createdAt" | "updatedAt",
-  never
->("DeviceResolver", {
-  all: ["expoPushToken", "lastSeen", "createdAt", "updatedAt"],
-  string: ["expoPushToken"],
-  date: ["lastSeen", "createdAt", "updatedAt"],
-}) {}
-
-@ArgsType()
-class NotificationDeliveriesArgs {
-  // TODO: Handle this in the normal authorization flow instead of here
-  @Field(() => String, {
-    nullable: true,
-    description:
-      "The verifier code for this device, if it does not match then the query will be rejected",
-  })
-  verifier?: string;
-
-  @Field(() => Int, { nullable: true, defaultValue: 1 })
-  page?: number;
-
-  @Field(() => Int, { nullable: true, defaultValue: 10 })
-  pageSize?: number;
-}
+import {
+  GetDeviceByUuidResponse,
+  ListDevicesResponse,
+  ListDevicesArgs,
+  RegisterDeviceResponse,
+  RegisterDeviceInput,
+  DeleteDeviceResponse,
+  NotificationDeliveriesArgs,
+} from "@ukdanceblue/common";
 
 @Resolver(() => DeviceNode)
 @Service([DeviceRepository, PersonRepository])

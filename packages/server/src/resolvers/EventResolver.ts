@@ -7,11 +7,6 @@ import {
 } from "#repositories/event/eventModelToResource.js";
 import { EventImagesRepository } from "#repositories/event/images/EventImagesRepository.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
-import {
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "#resolvers/ApiResponse.js";
 
 import {
   AccessControl,
@@ -20,21 +15,15 @@ import {
   LegacyError,
   LegacyErrorCode,
   EventNode,
-  FilteredListQueryArgs,
   GlobalIdScalar,
   ImageNode,
-  IntervalISO,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
   Arg,
   Args,
-  ArgsType,
-  Field,
   FieldResolver,
-  InputType,
   Mutation,
-  ObjectType,
   Query,
   Resolver,
   Root,
@@ -43,156 +32,18 @@ import { Service } from "@freshgum/typedi";
 
 import type { Prisma } from "@prisma/client";
 import type { GlobalId } from "@ukdanceblue/common";
-
-@ObjectType("GetEventByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<EventNode>,
-})
-class GetEventByUuidResponse extends AbstractGraphQLOkResponse<EventNode> {
-  @Field(() => EventNode)
-  data!: EventNode;
-}
-@ObjectType("CreateEventResponse", {
-  implements: AbstractGraphQLCreatedResponse<EventNode>,
-})
-class CreateEventResponse extends AbstractGraphQLCreatedResponse<EventNode> {
-  @Field(() => EventNode)
-  data!: EventNode;
-}
-@ObjectType("SetEventResponse", {
-  implements: AbstractGraphQLOkResponse<EventNode>,
-})
-class SetEventResponse extends AbstractGraphQLOkResponse<EventNode> {
-  @Field(() => EventNode)
-  data!: EventNode;
-}
-@ObjectType("DeleteEventResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-class DeleteEventResponse extends AbstractGraphQLOkResponse<never> {}
-
-@ObjectType("RemoveEventImageResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-class RemoveEventImageResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
-
-@ObjectType("AddEventImageResponse", {
-  implements: AbstractGraphQLOkResponse<ImageNode>,
-})
-class AddEventImageResponse extends AbstractGraphQLOkResponse<ImageNode> {
-  @Field(() => ImageNode)
-  data!: ImageNode;
-}
-
-@ObjectType("ListEventsResponse", {
-  implements: AbstractGraphQLPaginatedResponse<EventNode[]>,
-})
-class ListEventsResponse extends AbstractGraphQLPaginatedResponse<EventNode> {
-  @Field(() => [EventNode])
-  data!: EventNode[];
-}
-
-@InputType()
-export class CreateEventOccurrenceInput {
-  @Field(() => IntervalISO)
-  interval!: IntervalISO;
-  @Field(() => Boolean)
-  fullDay!: boolean;
-}
-
-@InputType()
-class CreateEventInput {
-  @Field()
-  title!: string;
-
-  @Field(() => String, { nullable: true })
-  summary!: string | null;
-
-  @Field(() => String, { nullable: true })
-  location!: string | null;
-
-  @Field(() => [CreateEventOccurrenceInput])
-  occurrences!: CreateEventOccurrenceInput[];
-
-  @Field(() => String, { nullable: true })
-  description!: string | null;
-}
-
-@InputType()
-export class SetEventOccurrenceInput {
-  @Field(() => GlobalIdScalar, {
-    nullable: true,
-    description:
-      "If updating an existing occurrence, the UUID of the occurrence to update",
-  })
-  uuid!: GlobalId | null;
-  @Field(() => IntervalISO)
-  interval!: IntervalISO;
-  @Field(() => Boolean)
-  fullDay!: boolean;
-}
-
-@InputType()
-class SetEventInput {
-  @Field()
-  title!: string;
-
-  @Field(() => String, { nullable: true })
-  summary!: string | null;
-
-  @Field(() => String, { nullable: true })
-  location!: string | null;
-
-  @Field(() => [SetEventOccurrenceInput])
-  occurrences!: SetEventOccurrenceInput[];
-
-  @Field(() => String, { nullable: true })
-  description!: string | null;
-}
-
-@ArgsType()
-class ListEventsArgs extends FilteredListQueryArgs<
-  | "title"
-  | "description"
-  | "summary"
-  | "location"
-  | "occurrence"
-  | "occurrenceStart"
-  | "occurrenceEnd"
-  | "createdAt"
-  | "updatedAt",
-  "title" | "description" | "summary" | "location",
-  never,
-  never,
-  | "occurrence"
-  | "occurrenceStart"
-  | "occurrenceEnd"
-  | "createdAt"
-  | "updatedAt",
-  never
->("EventResolver", {
-  all: [
-    "title",
-    "description",
-    "summary",
-    "location",
-    "occurrence",
-    "occurrenceStart",
-    "occurrenceEnd",
-    "createdAt",
-    "updatedAt",
-  ],
-  string: ["title", "summary", "description", "location"],
-  date: [
-    "occurrence",
-    "createdAt",
-    "updatedAt",
-    "occurrenceStart",
-    "occurrenceEnd",
-  ],
-}) {}
+import {
+  GetEventByUuidResponse,
+  ListEventsResponse,
+  ListEventsArgs,
+  CreateEventResponse,
+  CreateEventInput,
+  DeleteEventResponse,
+  SetEventResponse,
+  SetEventInput,
+  RemoveEventImageResponse,
+  AddEventImageResponse,
+} from "@ukdanceblue/common";
 
 @Service([EventRepository, EventImagesRepository, FileManager])
 @Resolver(() => EventNode)

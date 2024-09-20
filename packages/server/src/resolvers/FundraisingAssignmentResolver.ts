@@ -3,14 +3,11 @@ import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fund
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
-import { globalFundraisingAccessParam } from "#resolvers/FundraisingEntryResolver.js";
+import { globalFundraisingAccessParam } from "./accessParams.js";
 
 import {
   AccessControl,
-  AccessControlParam,
   checkParam,
-  CommitteeIdentifier,
-  CommitteeRole,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
   GlobalIdScalar,
@@ -20,9 +17,7 @@ import {
 import { ConcreteResult } from "@ukdanceblue/common/error";
 import {
   Arg,
-  Field,
   FieldResolver,
-  InputType,
   Mutation,
   Query,
   Resolver,
@@ -31,27 +26,11 @@ import {
 import { Container, Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
-
-@InputType()
-class AssignEntryToPersonInput {
-  @Field()
-  amount!: number;
-}
-
-@InputType()
-class UpdateFundraisingAssignmentInput {
-  @Field()
-  amount!: number;
-}
-
-const fundraisingAccess: AccessControlParam<FundraisingAssignmentNode> = {
-  authRules: [
-    {
-      minCommitteeRole: CommitteeRole.Coordinator,
-      committeeIdentifiers: [CommitteeIdentifier.fundraisingCommittee],
-    },
-  ],
-};
+import {
+  fundraisingAccess,
+  AssignEntryToPersonInput,
+  UpdateFundraisingAssignmentInput,
+} from "@ukdanceblue/common";
 
 // TODO: Give team captains access
 @Resolver(() => FundraisingAssignmentNode)

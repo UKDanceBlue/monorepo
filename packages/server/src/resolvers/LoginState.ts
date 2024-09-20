@@ -1,27 +1,9 @@
 import * as Context from "#resolvers/context.js";
 
-import {
-  AuthSource,
-  DbRole,
-  EffectiveCommitteeRole,
-} from "@ukdanceblue/common";
-import { Ctx, Field, ObjectType, Query, Resolver } from "type-graphql";
+import { DbRole } from "@ukdanceblue/common";
+import { Ctx, Query, Resolver } from "type-graphql";
 import { Service } from "@freshgum/typedi";
-
-@ObjectType("LoginState")
-export class LoginState {
-  @Field(() => Boolean)
-  loggedIn!: boolean;
-
-  @Field(() => DbRole)
-  dbRole!: DbRole;
-
-  @Field(() => AuthSource)
-  authSource!: AuthSource;
-
-  @Field(() => [EffectiveCommitteeRole])
-  effectiveCommitteeRoles!: EffectiveCommitteeRole[];
-}
+import { LoginState } from "@ukdanceblue/common";
 
 @Resolver(() => LoginState)
 @Service([])

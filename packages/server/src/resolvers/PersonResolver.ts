@@ -10,22 +10,17 @@ import {
 } from "#repositories/membership/membershipModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
-import { AbstractGraphQLPaginatedResponse } from "#resolvers/ApiResponse.js";
 import {
   ListFundraisingEntriesArgs,
   ListFundraisingEntriesResponse,
-  globalFundraisingAccessParam,
-} from "#resolvers/FundraisingEntryResolver.js";
+} from "@ukdanceblue/common";
+import { globalFundraisingAccessParam } from "./accessParams.js";
 
 import { TeamType } from "@prisma/client";
 import {
   AccessControl,
   AccessLevel,
-  CommitteeIdentifier,
   CommitteeMembershipNode,
-  CommitteeRole,
-  DbRole,
-  FilteredListQueryArgs,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
   GlobalIdScalar,
@@ -42,19 +37,14 @@ import {
   FormattedConcreteError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
-import { EmailAddressResolver } from "graphql-scalars";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 import {
   Arg,
   Args,
-  ArgsType,
   Ctx,
-  Field,
   FieldResolver,
   Float,
-  InputType,
   Mutation,
-  ObjectType,
   Query,
   Resolver,
   Root,
@@ -63,101 +53,13 @@ import { Container, Service } from "@freshgum/typedi";
 
 import type { GraphQLContext } from "#resolvers/context.js";
 import type { GlobalId } from "@ukdanceblue/common";
-
-@ObjectType("ListPeopleResponse", {
-  implements: AbstractGraphQLPaginatedResponse<PersonNode>,
-})
-class ListPeopleResponse extends AbstractGraphQLPaginatedResponse<PersonNode> {
-  @Field(() => [PersonNode])
-  data!: PersonNode[];
-}
-
-@InputType()
-class MemberOf {
-  @Field(() => GlobalIdScalar)
-  id!: GlobalId;
-
-  @Field(() => CommitteeRole, { nullable: true })
-  committeeRole?: CommitteeRole | null | undefined;
-}
-
-@ArgsType()
-class ListPeopleArgs extends FilteredListQueryArgs<
-  "name" | "email" | "linkblue" | "committeeRole" | "committeeName" | "dbRole",
-  "name" | "email" | "linkblue",
-  "committeeRole" | "committeeName" | "dbRole",
-  never,
-  never,
-  never
->("PersonResolver", {
-  all: [
-    "name",
-    "email",
-    "linkblue",
-    "committeeRole",
-    "committeeName",
-    "dbRole",
-  ],
-  string: ["name", "email", "linkblue"],
-  oneOf: ["committeeRole", "committeeName", "dbRole"],
-}) {}
-@InputType()
-class CreatePersonInput {
-  @Field(() => String, { nullable: true })
-  name?: string;
-
-  @Field(() => EmailAddressResolver)
-  email!: string;
-
-  @Field(() => String, { nullable: true })
-  linkblue?: string;
-
-  @Field(() => DbRole, {
-    nullable: true,
-    deprecationReason: "DBRole can no longer be set directly",
-  })
-  dbRole?: DbRole;
-
-  @Field(() => [MemberOf], { defaultValue: [] })
-  memberOf?: MemberOf[];
-
-  @Field(() => [MemberOf], { defaultValue: [] })
-  captainOf?: MemberOf[];
-}
-@InputType()
-class SetPersonInput {
-  @Field(() => String, { nullable: true })
-  name?: string;
-
-  @Field(() => EmailAddressResolver, { nullable: true })
-  email?: string;
-
-  @Field(() => String, { nullable: true })
-  linkblue?: string;
-
-  @Field(() => [MemberOf], { nullable: true })
-  memberOf?: MemberOf[];
-
-  @Field(() => [MemberOf], { nullable: true })
-  captainOf?: MemberOf[];
-}
-@InputType()
-class BulkPersonInput {
-  @Field(() => String)
-  name!: string;
-
-  @Field(() => EmailAddressResolver)
-  email!: string;
-
-  @Field(() => String)
-  linkblue!: string;
-
-  @Field(() => CommitteeIdentifier, { nullable: true })
-  committee!: CommitteeIdentifier | null | undefined;
-
-  @Field(() => CommitteeRole, { nullable: true })
-  role!: CommitteeRole | null | undefined;
-}
+import {
+  ListPeopleResponse,
+  ListPeopleArgs,
+  CreatePersonInput,
+  SetPersonInput,
+  BulkPersonInput,
+} from "@ukdanceblue/common";
 
 @Resolver(() => PersonNode)
 @Service([PersonRepository, MembershipRepository, FundraisingEntryRepository])

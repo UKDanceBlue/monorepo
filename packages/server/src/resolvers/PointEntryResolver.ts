@@ -4,11 +4,6 @@ import { PointEntryRepository } from "#repositories/pointEntry/PointEntryReposit
 import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
 import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
-import {
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "#resolvers/ApiResponse.js";
 
 import {
   AccessControl,
@@ -17,7 +12,6 @@ import {
   CommitteeRole,
   LegacyError,
   LegacyErrorCode,
-  FilteredListQueryArgs,
   GlobalIdScalar,
   PersonNode,
   PointEntryNode,
@@ -30,13 +24,8 @@ import { Err, None, Ok, Option, Some } from "ts-results-es";
 import {
   Arg,
   Args,
-  ArgsType,
-  Field,
   FieldResolver,
-  InputType,
-  Int,
   Mutation,
-  ObjectType,
   Query,
   Resolver,
   Root,
@@ -44,63 +33,14 @@ import {
 import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
-
-@ObjectType("GetPointEntryByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<PointEntryNode>,
-})
-class GetPointEntryByUuidResponse extends AbstractGraphQLOkResponse<PointEntryNode> {
-  @Field(() => PointEntryNode)
-  data!: PointEntryNode;
-}
-@ObjectType("ListPointEntriesResponse", {
-  implements: AbstractGraphQLPaginatedResponse<PointEntryNode>,
-})
-class ListPointEntriesResponse extends AbstractGraphQLPaginatedResponse<PointEntryNode> {
-  @Field(() => [PointEntryNode])
-  data!: PointEntryNode[];
-}
-@ObjectType("CreatePointEntryResponse", {
-  implements: AbstractGraphQLCreatedResponse<PointEntryNode>,
-})
-class CreatePointEntryResponse extends AbstractGraphQLCreatedResponse<PointEntryNode> {
-  @Field(() => PointEntryNode)
-  data!: PointEntryNode;
-}
-@ObjectType("DeletePointEntryResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-class DeletePointEntryResponse extends AbstractGraphQLOkResponse<never> {}
-
-@InputType()
-class CreatePointEntryInput implements Partial<PointEntryNode> {
-  @Field(() => String, { nullable: true })
-  comment!: string | null;
-
-  @Field(() => Int)
-  points!: number;
-
-  @Field(() => GlobalIdScalar, { nullable: true })
-  personFromUuid!: GlobalId | null;
-
-  @Field(() => GlobalIdScalar, { nullable: true })
-  opportunityUuid!: GlobalId | null;
-
-  @Field(() => GlobalIdScalar)
-  teamUuid!: GlobalId;
-}
-
-@ArgsType()
-class ListPointEntriesArgs extends FilteredListQueryArgs<
-  "createdAt" | "updatedAt",
-  never,
-  never,
-  never,
-  "createdAt" | "updatedAt",
-  never
->("PointEntryResolver", {
-  all: ["createdAt", "updatedAt"],
-  date: ["createdAt", "updatedAt"],
-}) {}
+import {
+  GetPointEntryByUuidResponse,
+  ListPointEntriesResponse,
+  ListPointEntriesArgs,
+  CreatePointEntryResponse,
+  CreatePointEntryInput,
+  DeletePointEntryResponse,
+} from "@ukdanceblue/common";
 
 @Resolver(() => PointEntryNode)
 @Service([PointEntryRepository, PersonRepository])

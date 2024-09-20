@@ -7,15 +7,10 @@ import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryMo
 import { TeamRepository } from "#repositories/team/TeamRepository.js";
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 import {
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "#resolvers/ApiResponse.js";
-import {
   ListFundraisingEntriesArgs,
   ListFundraisingEntriesResponse,
-  globalFundraisingAccessParam,
-} from "#resolvers/FundraisingEntryResolver.js";
+} from "@ukdanceblue/common";
+import { globalFundraisingAccessParam } from "./accessParams.js";
 import * as Context from "#resolvers/context.js";
 
 import {
@@ -23,17 +18,13 @@ import {
   AccessLevel,
   AuthSource,
   CommitteeRole,
-  DbRole,
   LegacyError,
   LegacyErrorCode,
-  FilteredListQueryArgs,
   GlobalIdScalar,
   MembershipNode,
   PointEntryNode,
   SortDirection,
-  TeamLegacyStatus,
   TeamNode,
-  TeamType,
 } from "@ukdanceblue/common";
 import * as Common from "@ukdanceblue/common";
 import {
@@ -46,111 +37,28 @@ import { Err, Ok, Option } from "ts-results-es";
 import {
   Arg,
   Args,
-  ArgsType,
   Ctx,
-  Field,
   FieldResolver,
   Float,
-  InputType,
   Int,
   Mutation,
-  ObjectType,
   Query,
   Resolver,
   Root,
 } from "type-graphql";
 import { Service } from "@freshgum/typedi";
 
-import type { GlobalId, OptionalToNullable } from "@ukdanceblue/common";
-
-@ObjectType("SingleTeamResponse", {
-  implements: AbstractGraphQLOkResponse<TeamNode>,
-})
-class SingleTeamResponse extends AbstractGraphQLOkResponse<TeamNode> {
-  @Field(() => TeamNode)
-  data!: TeamNode;
-}
-@ObjectType("ListTeamsResponse", {
-  implements: AbstractGraphQLPaginatedResponse<TeamNode>,
-})
-class ListTeamsResponse extends AbstractGraphQLPaginatedResponse<TeamNode> {
-  @Field(() => [TeamNode])
-  data!: TeamNode[];
-}
-@ObjectType("CreateTeamResponse", {
-  implements: AbstractGraphQLCreatedResponse<TeamNode>,
-})
-class CreateTeamResponse extends AbstractGraphQLCreatedResponse<TeamNode> {
-  @Field(() => TeamNode)
-  data!: TeamNode;
-}
-@ObjectType("DeleteTeamResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-class DeleteTeamResponse extends AbstractGraphQLOkResponse<never> {}
-
-@InputType()
-class CreateTeamInput implements OptionalToNullable<Partial<TeamNode>> {
-  @Field(() => String)
-  name!: string;
-
-  @Field(() => TeamType)
-  type!: TeamType;
-
-  @Field(() => TeamLegacyStatus)
-  legacyStatus!: TeamLegacyStatus;
-}
-
-@InputType()
-class SetTeamInput implements OptionalToNullable<Partial<TeamNode>> {
-  @Field(() => String, { nullable: true })
-  name!: string | null;
-
-  @Field(() => TeamType, { nullable: true })
-  type!: TeamType | null;
-
-  @Field(() => TeamLegacyStatus, { nullable: true })
-  legacyStatus!: TeamLegacyStatus | null;
-
-  @Field(() => String, { nullable: true })
-  persistentIdentifier!: string | null;
-}
-
-@ArgsType()
-class ListTeamsArgs extends FilteredListQueryArgs<
-  "name" | "type" | "legacyStatus" | "marathonId",
-  "name",
-  "type" | "legacyStatus" | "marathonId",
-  never,
-  never,
-  never
->("TeamResolver", {
-  all: ["name", "type", "legacyStatus", "marathonId"],
-  string: ["name"],
-  numeric: [],
-  oneOf: ["type", "marathonId", "legacyStatus"],
-}) {
-  @Field(() => [TeamType], { nullable: true })
-  type!: [TeamType] | null;
-
-  @Field(() => [TeamLegacyStatus], { nullable: true })
-  legacyStatus!: [TeamLegacyStatus] | null;
-
-  @Field(() => [DbRole], { nullable: true, deprecationReason: "Use type" })
-  visibility!: [DbRole] | null;
-
-  @Field(() => [GlobalIdScalar], { nullable: true })
-  marathonId!: GlobalId[] | null;
-}
-
-@ObjectType("DbFundsTeamInfo")
-class DbFundsTeamInfo {
-  @Field(() => Int)
-  dbNum!: number;
-
-  @Field(() => String)
-  name!: string;
-}
+import type { GlobalId } from "@ukdanceblue/common";
+import {
+  SingleTeamResponse,
+  ListTeamsResponse,
+  ListTeamsArgs,
+  CreateTeamResponse,
+  CreateTeamInput,
+  SetTeamInput,
+  DeleteTeamResponse,
+  DbFundsTeamInfo,
+} from "@ukdanceblue/common";
 
 @Resolver(() => TeamNode)
 @Service([TeamRepository, FundraisingEntryRepository, DBFundsRepository])

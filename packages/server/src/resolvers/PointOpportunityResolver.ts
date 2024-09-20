@@ -1,11 +1,6 @@
 import { eventModelToResource } from "#repositories/event/eventModelToResource.js";
 import { PointOpportunityRepository } from "#repositories/pointOpportunity/PointOpportunityRepository.js";
 import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
-import {
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "#resolvers/ApiResponse.js";
 
 import {
   AccessControl,
@@ -14,22 +9,15 @@ import {
   LegacyError,
   LegacyErrorCode,
   EventNode,
-  FilteredListQueryArgs,
   GlobalIdScalar,
   PointOpportunityNode,
   SortDirection,
-  TeamType,
 } from "@ukdanceblue/common";
-import { DateTimeISOResolver } from "graphql-scalars";
 import {
   Arg,
   Args,
-  ArgsType,
-  Field,
   FieldResolver,
-  InputType,
   Mutation,
-  ObjectType,
   Query,
   Resolver,
   Root,
@@ -38,92 +26,15 @@ import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 import { CommitteeRole } from "@prisma/client";
-
-@ObjectType("SinglePointOpportunityResponse", {
-  implements: AbstractGraphQLOkResponse<PointOpportunityNode>,
-})
-class SinglePointOpportunityResponse extends AbstractGraphQLOkResponse<PointOpportunityNode> {
-  @Field(() => PointOpportunityNode)
-  data!: PointOpportunityNode;
-}
-@ObjectType("ListPointOpportunitiesResponse", {
-  implements: AbstractGraphQLPaginatedResponse<PointOpportunityNode>,
-})
-class ListPointOpportunitiesResponse extends AbstractGraphQLPaginatedResponse<PointOpportunityNode> {
-  @Field(() => [PointOpportunityNode])
-  data!: PointOpportunityNode[];
-}
-@ObjectType("CreatePointOpportunityResponse", {
-  implements: AbstractGraphQLCreatedResponse<PointOpportunityNode>,
-})
-class CreatePointOpportunityResponse extends AbstractGraphQLCreatedResponse<PointOpportunityNode> {
-  @Field(() => PointOpportunityNode)
-  data!: PointOpportunityNode;
-}
-@ObjectType("DeletePointOpportunityResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-class DeletePointOpportunityResponse extends AbstractGraphQLOkResponse<never> {}
-
-@InputType()
-class CreatePointOpportunityInput {
-  @Field(() => String)
-  name!: string;
-
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  opportunityDate!: Date | null;
-
-  @Field(() => TeamType)
-  type!: TeamType;
-
-  @Field(() => GlobalIdScalar, { nullable: true })
-  eventUuid!: GlobalId | null;
-
-  @Field(() => GlobalIdScalar)
-  marathonUuid!: GlobalId;
-}
-
-@InputType()
-class SetPointOpportunityInput {
-  @Field(() => String, { nullable: true })
-  name!: string | null;
-
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  opportunityDate!: Date | null;
-
-  @Field(() => TeamType, { nullable: true })
-  type!: TeamType | null;
-
-  @Field(() => GlobalIdScalar, { nullable: true })
-  eventUuid!: GlobalId | null;
-}
-
-@ArgsType()
-class ListPointOpportunitiesArgs extends FilteredListQueryArgs<
-  | "name"
-  | "opportunityDate"
-  | "type"
-  | "createdAt"
-  | "updatedAt"
-  | "marathonUuid",
-  "name",
-  "type" | "marathonUuid",
-  never,
-  "opportunityDate" | "createdAt" | "updatedAt",
-  never
->("PointOpportunityResolver", {
-  all: [
-    "name",
-    "opportunityDate",
-    "type",
-    "createdAt",
-    "updatedAt",
-    "marathonUuid",
-  ],
-  oneOf: ["type", "marathonUuid"],
-  string: ["name"],
-  date: ["opportunityDate", "createdAt", "updatedAt"],
-}) {}
+import {
+  SinglePointOpportunityResponse,
+  ListPointOpportunitiesResponse,
+  ListPointOpportunitiesArgs,
+  CreatePointOpportunityResponse,
+  CreatePointOpportunityInput,
+  SetPointOpportunityInput,
+  DeletePointOpportunityResponse,
+} from "@ukdanceblue/common";
 
 @Resolver(() => PointOpportunityNode)
 @Service([PointOpportunityRepository])

@@ -3,11 +3,9 @@ import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js
 import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
 import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
-import { AbstractGraphQLPaginatedResponse } from "#resolvers/ApiResponse.js";
 
 import {
   CommitteeIdentifier,
-  FilteredListQueryArgs,
   GlobalIdScalar,
   MarathonHourNode,
   MarathonNode,
@@ -15,16 +13,11 @@ import {
   TeamNode,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
-import { DateTimeISOResolver } from "graphql-scalars";
 import {
   Arg,
   Args,
-  ArgsType,
-  Field,
   FieldResolver,
-  InputType,
   Mutation,
-  ObjectType,
   Query,
   Resolver,
   Root,
@@ -33,52 +26,12 @@ import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 import { AsyncResult, Option } from "ts-results-es";
-
-@ObjectType("ListMarathonsResponse", {
-  implements: AbstractGraphQLPaginatedResponse<MarathonNode[]>,
-})
-class ListMarathonsResponse extends AbstractGraphQLPaginatedResponse<MarathonNode> {
-  @Field(() => [MarathonNode])
-  data!: MarathonNode[];
-}
-
-@InputType()
-class CreateMarathonInput {
-  @Field()
-  year!: string;
-
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  startDate?: string | null;
-
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  endDate?: string | null;
-}
-
-@InputType()
-class SetMarathonInput {
-  @Field(() => String)
-  year!: string;
-
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  startDate?: string | null;
-
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  endDate?: string | null;
-}
-
-@ArgsType()
-class ListMarathonsArgs extends FilteredListQueryArgs<
-  "year" | "startDate" | "endDate" | "createdAt" | "updatedAt",
-  never,
-  "year",
-  never,
-  "startDate" | "endDate" | "createdAt" | "updatedAt",
-  never
->("MarathonResolver", {
-  all: ["year", "startDate", "endDate", "createdAt", "updatedAt"],
-  oneOf: ["year"],
-  date: ["startDate", "endDate", "createdAt", "updatedAt"],
-}) {}
+import {
+  ListMarathonsResponse,
+  ListMarathonsArgs,
+  CreateMarathonInput,
+  SetMarathonInput,
+} from "@ukdanceblue/common";
 
 @Resolver(() => MarathonNode)
 @Service([MarathonRepository, CommitteeRepository])

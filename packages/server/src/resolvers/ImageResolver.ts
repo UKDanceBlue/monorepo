@@ -4,81 +4,31 @@ import { auditLogger } from "#logging/auditLogging.js";
 import { logger } from "#logging/standardLogging.js";
 import { ImageRepository } from "#repositories/image/ImageRepository.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
-import {
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "#resolvers/ApiResponse.js";
 
 import {
   AccessControl,
   AccessLevel,
   LegacyError,
   LegacyErrorCode,
-  FilteredListQueryArgs,
   GlobalIdScalar,
   ImageNode,
   SortDirection,
 } from "@ukdanceblue/common";
 import { URLResolver } from "graphql-scalars";
 import fetch from "node-fetch";
-import {
-  Arg,
-  Args,
-  ArgsType,
-  Field,
-  InputType,
-  Mutation,
-  ObjectType,
-  Query,
-  Resolver,
-} from "type-graphql";
+import { Arg, Args, Mutation, Query, Resolver } from "type-graphql";
 import { Service } from "@freshgum/typedi";
 
 import { MIMEType } from "node:util";
 
 import type { GlobalId } from "@ukdanceblue/common";
-
-@ObjectType("GetImageByUuidResponse", { implements: AbstractGraphQLOkResponse })
-class GetImageByUuidResponse extends AbstractGraphQLOkResponse<ImageNode> {
-  @Field(() => ImageNode)
-  data!: ImageNode;
-}
-
-@ObjectType("DeleteImageResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-class DeleteImageResponse extends AbstractGraphQLOkResponse<never> {}
-@InputType()
-class CreateImageInput implements Partial<ImageNode> {
-  @Field(() => String, { nullable: true })
-  alt?: string | null;
-
-  @Field(() => URLResolver, { nullable: true })
-  url?: URL | null;
-}
-
-@ArgsType()
-class ListImagesArgs extends FilteredListQueryArgs<
-  "alt" | "width" | "height" | "createdAt" | "updatedAt",
-  "alt",
-  never,
-  "width" | "height",
-  "createdAt" | "updatedAt",
-  never
->("ImageResolver", {
-  all: ["alt", "width", "height", "createdAt", "updatedAt"],
-  string: ["alt"],
-  numeric: ["width", "height"],
-  date: ["createdAt", "updatedAt"],
-}) {}
-
-@ObjectType("ListImagesResponse", {
-  implements: AbstractGraphQLPaginatedResponse<ImageNode[]>,
-})
-class ListImagesResponse extends AbstractGraphQLPaginatedResponse<ImageNode> {
-  @Field(() => [ImageNode])
-  data!: ImageNode[];
-}
+import {
+  GetImageByUuidResponse,
+  ListImagesResponse,
+  ListImagesArgs,
+  CreateImageInput,
+  DeleteImageResponse,
+} from "@ukdanceblue/common";
 
 @Resolver(() => ImageNode)
 @Service([ImageRepository, FileManager])
@@ -243,8 +193,6 @@ export class ImageResolver {
     return imageModelToResource(result, result.file, this.fileManager);
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
-  @Mutation(() => ImageNode, { name: "setImageUrl" })
   @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
   @Mutation(() => DeleteImageResponse, { name: "deleteImage" })
   async delete(

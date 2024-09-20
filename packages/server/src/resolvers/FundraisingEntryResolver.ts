@@ -2,15 +2,10 @@ import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.j
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
-import { AbstractGraphQLPaginatedResponse } from "#resolvers/ApiResponse.js";
 
-import { CommitteeRole } from "@prisma/client";
 import {
   AccessControl,
   checkParam,
-  AccessControlParam,
-  CommitteeIdentifier,
-  FilteredListQueryArgs,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
   GlobalIdScalar,
@@ -18,72 +13,16 @@ import {
   SortDirection,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
-import {
-  Arg,
-  Args,
-  ArgsType,
-  Field,
-  FieldResolver,
-  ObjectType,
-  Query,
-  Resolver,
-  Root,
-} from "type-graphql";
+import { Arg, Args, FieldResolver, Query, Resolver, Root } from "type-graphql";
 import { Container, Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 import { Ok } from "ts-results-es";
-
-@ArgsType()
-export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<
-  | "donatedOn"
-  | "amount"
-  | "amountUnassigned"
-  | "donatedTo"
-  | "donatedBy"
-  | "teamId"
-  | "createdAt"
-  | "updatedAt",
-  "donatedTo" | "donatedBy",
-  "teamId",
-  "amount" | "amountUnassigned",
-  "donatedOn" | "createdAt" | "updatedAt",
-  never
->("FundraisingEntryResolver", {
-  all: [
-    "donatedOn",
-    "amount",
-    "amountUnassigned",
-    "donatedTo",
-    "donatedBy",
-    "createdAt",
-    "updatedAt",
-  ],
-  string: ["donatedTo", "donatedBy"],
-  numeric: ["amount", "amountUnassigned"],
-  oneOf: ["teamId"],
-  date: ["donatedOn", "createdAt", "updatedAt"],
-}) {}
-
-@ObjectType("ListFundraisingEntriesResponse", {
-  implements: AbstractGraphQLPaginatedResponse<FundraisingEntryNode[]>,
-})
-export class ListFundraisingEntriesResponse extends AbstractGraphQLPaginatedResponse<FundraisingEntryNode> {
-  @Field(() => [FundraisingEntryNode])
-  data!: FundraisingEntryNode[];
-}
-
-/**
- * Access control param for granting access to all fundraising entries.
- */
-export const globalFundraisingAccessParam: AccessControlParam<unknown> = {
-  authRules: [
-    {
-      minCommitteeRole: CommitteeRole.Coordinator,
-      committeeIdentifiers: [CommitteeIdentifier.fundraisingCommittee],
-    },
-  ],
-};
+import { globalFundraisingAccessParam } from "./accessParams.js";
+import {
+  ListFundraisingEntriesResponse,
+  ListFundraisingEntriesArgs,
+} from "@ukdanceblue/common";
 
 @Resolver(() => FundraisingEntryNode)
 @Service([FundraisingEntryRepository])

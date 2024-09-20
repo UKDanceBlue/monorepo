@@ -1,25 +1,19 @@
 import { MarathonHourRepository } from "#repositories/marathonHour/MarathonHourRepository.js";
 import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
-import { AbstractGraphQLPaginatedResponse } from "#resolvers/ApiResponse.js";
 
 import {
   LegacyError,
   LegacyErrorCode,
-  FilteredListQueryArgs,
   GlobalIdScalar,
   ImageNode,
   MarathonHourNode,
 } from "@ukdanceblue/common";
-import { DateTimeISOResolver, VoidResolver } from "graphql-scalars";
+import { VoidResolver } from "graphql-scalars";
 import {
   Arg,
   Args,
-  ArgsType,
-  Field,
   FieldResolver,
-  InputType,
   Mutation,
-  ObjectType,
   Query,
   Resolver,
   Root,
@@ -27,73 +21,12 @@ import {
 import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
-
-@ObjectType("ListMarathonHoursResponse", {
-  implements: AbstractGraphQLPaginatedResponse<MarathonHourNode[]>,
-})
-class ListMarathonHoursResponse extends AbstractGraphQLPaginatedResponse<MarathonHourNode> {
-  @Field(() => [MarathonHourNode])
-  data!: MarathonHourNode[];
-}
-
-@InputType()
-class CreateMarathonHourInput {
-  @Field(() => String)
-  title!: string;
-
-  @Field(() => String, { nullable: true })
-  details?: string | null;
-
-  @Field(() => String)
-  durationInfo!: string;
-
-  @Field(() => DateTimeISOResolver)
-  shownStartingAt!: string;
-}
-
-@InputType()
-class SetMarathonHourInput {
-  @Field(() => String)
-  title!: string;
-
-  @Field(() => String, { nullable: true })
-  details?: string | null;
-
-  @Field(() => String)
-  durationInfo!: string;
-
-  @Field(() => DateTimeISOResolver)
-  shownStartingAt!: string;
-}
-
-@ArgsType()
-class ListMarathonHoursArgs extends FilteredListQueryArgs<
-  | "title"
-  | "details"
-  | "durationInfo"
-  | "marathonYear"
-  | "shownStartingAt"
-  | "createdAt"
-  | "updatedAt",
-  "title" | "details" | "durationInfo",
-  "marathonYear",
-  never,
-  "shownStartingAt" | "createdAt" | "updatedAt",
-  never
->("MarathonHourResolver", {
-  all: [
-    "title",
-    "details",
-    "durationInfo",
-    "marathonYear",
-    "shownStartingAt",
-    "createdAt",
-    "updatedAt",
-  ],
-  string: ["title", "details", "durationInfo"],
-  oneOf: ["marathonYear"],
-  date: ["shownStartingAt", "createdAt", "updatedAt"],
-}) {}
+import {
+  ListMarathonHoursResponse,
+  ListMarathonHoursArgs,
+  CreateMarathonHourInput,
+  SetMarathonHourInput,
+} from "@ukdanceblue/common";
 
 @Resolver(() => MarathonHourNode)
 @Service([MarathonHourRepository])

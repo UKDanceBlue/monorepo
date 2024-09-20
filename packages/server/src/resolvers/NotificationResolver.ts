@@ -5,41 +5,29 @@ import { NotificationRepository } from "#repositories/notification/NotificationR
 import { notificationModelToResource } from "#repositories/notification/notificationModelToResource.js";
 import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
 import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
-import {
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "#resolvers/ApiResponse.js";
 
 import {
   AccessControl,
   AccessLevel,
   LegacyError,
   LegacyErrorCode,
-  FilteredListQueryArgs,
   GlobalIdScalar,
   NotificationDeliveryNode,
   NotificationNode,
   SortDirection,
-  TeamType,
 } from "@ukdanceblue/common";
 import {
   Arg,
   Args,
-  ArgsType,
-  Field,
   FieldResolver,
-  InputType,
   Int,
   Mutation,
-  ObjectType,
   Query,
   Resolver,
   Root,
 } from "type-graphql";
 import { Service } from "@freshgum/typedi";
 
-import type { NotificationError } from "@prisma/client";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
   ActionDeniedError,
@@ -48,180 +36,21 @@ import {
 } from "@ukdanceblue/common/error";
 import { Err, Ok } from "ts-results-es";
 import { handleRepositoryError } from "#repositories/shared.js";
-
-@ObjectType("GetNotificationByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<NotificationNode>,
-})
-class GetNotificationByUuidResponse extends AbstractGraphQLOkResponse<NotificationNode> {
-  @Field(() => NotificationNode)
-  data!: NotificationNode;
-}
-@ObjectType("ListNotificationsResponse", {
-  implements: AbstractGraphQLPaginatedResponse<NotificationNode>,
-})
-class ListNotificationsResponse extends AbstractGraphQLPaginatedResponse<NotificationNode> {
-  @Field(() => [NotificationNode])
-  data!: NotificationNode[];
-}
-
-@InputType()
-class NotificationAudienceInput {
-  @Field(() => Boolean, { nullable: true })
-  all?: boolean;
-
-  @Field(() => TeamType, { nullable: true })
-  memberOfTeamType?: TeamType | null;
-
-  @Field(() => [GlobalIdScalar], { nullable: true })
-  memberOfTeams?: GlobalId[] | null;
-
-  @Field(() => [GlobalIdScalar], { nullable: true })
-  users?: GlobalId[] | null;
-}
-
-@ArgsType()
-class StageNotificationArgs {
-  @Field(() => String)
-  title!: string;
-
-  @Field(() => String)
-  body!: string;
-
-  @Field(() => String, { nullable: true })
-  url?: string | null;
-
-  @Field(() => NotificationAudienceInput)
-  audience!: NotificationAudienceInput;
-}
-
-@ObjectType("StageNotificationResponse", {
-  implements: AbstractGraphQLCreatedResponse<NotificationNode>,
-})
-class StageNotificationResponse extends AbstractGraphQLCreatedResponse<NotificationNode> {
-  @Field(() => NotificationNode)
-  data!: NotificationNode;
-}
-
-@ObjectType("SendNotificationResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-class SendNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
-
-@ObjectType("ScheduleNotificationResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-class ScheduleNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
-
-@ObjectType("AcknowledgeDeliveryIssueResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-class AcknowledgeDeliveryIssueResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
-
-@ObjectType("AbortScheduledNotificationResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-class AbortScheduledNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
-
-@ObjectType("DeleteNotificationResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-class DeleteNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
-
-@ArgsType()
-class ListNotificationsArgs extends FilteredListQueryArgs<
-  | "createdAt"
-  | "updatedAt"
-  | "title"
-  | "body"
-  | "deliveryIssue"
-  | "sendAt"
-  | "startedSendingAt",
-  "title" | "body",
-  "deliveryIssue",
-  never,
-  "createdAt" | "updatedAt" | "sendAt" | "startedSendingAt",
-  never
->("NotificationResolver", {
-  all: [
-    "createdAt",
-    "updatedAt",
-    "title",
-    "body",
-    "deliveryIssue",
-    "sendAt",
-    "startedSendingAt",
-  ],
-  date: ["createdAt", "updatedAt", "sendAt", "startedSendingAt"],
-  string: ["title", "body"],
-  oneOf: ["deliveryIssue"],
-}) {}
-
-@ArgsType()
-class ListNotificationDeliveriesArgs extends FilteredListQueryArgs<
-  "createdAt" | "updatedAt" | "sentAt" | "receiptCheckedAt" | "deliveryError",
-  never,
-  "deliveryError",
-  never,
-  "createdAt" | "updatedAt" | "sentAt" | "receiptCheckedAt",
-  never
->("NotificationDeliveryResolver", {
-  all: [
-    "createdAt",
-    "updatedAt",
-    "sentAt",
-    "receiptCheckedAt",
-    "deliveryError",
-  ],
-  date: ["createdAt", "updatedAt", "sentAt", "receiptCheckedAt"],
-  oneOf: ["deliveryError"],
-}) {
-  @Field(() => GlobalIdScalar)
-  notificationUuid!: GlobalId;
-}
-
-@ObjectType("ListNotificationDeliveriesResponse", {
-  implements: AbstractGraphQLPaginatedResponse<NotificationDeliveryNode>,
-})
-class ListNotificationDeliveriesResponse extends AbstractGraphQLPaginatedResponse<NotificationDeliveryNode> {
-  @Field(() => [NotificationDeliveryNode])
-  data!: NotificationDeliveryNode[];
-}
-
-@ObjectType("NotificationDeliveryIssueCount", {
-  description:
-    "The number of delivery issues for a notification, broken down by type.",
-})
-class NotificationDeliveryIssueCount
-  implements Record<NotificationError, number>
-{
-  @Field(() => Int)
-  DeviceNotRegistered!: number;
-  @Field(() => Int)
-  InvalidCredentials!: number;
-  @Field(() => Int)
-  MessageTooBig!: number;
-  @Field(() => Int)
-  MessageRateExceeded!: number;
-  @Field(() => Int)
-  MismatchSenderId!: number;
-  @Field(() => Int)
-  Unknown!: number;
-}
+import {
+  GetNotificationByUuidResponse,
+  ListNotificationsResponse,
+  ListNotificationsArgs,
+  ListNotificationDeliveriesResponse,
+  ListNotificationDeliveriesArgs,
+  StageNotificationResponse,
+  StageNotificationArgs,
+  SendNotificationResponse,
+  ScheduleNotificationResponse,
+  AcknowledgeDeliveryIssueResponse,
+  AbortScheduledNotificationResponse,
+  DeleteNotificationResponse,
+  NotificationDeliveryIssueCount,
+} from "@ukdanceblue/common";
 
 @Resolver(() => NotificationNode)
 @Service([

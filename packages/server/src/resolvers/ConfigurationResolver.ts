@@ -1,11 +1,6 @@
 import { auditLogger, auditLoggerFileName } from "#logging/auditLogging.js";
 import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
 import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
-import {
-  AbstractGraphQLArrayOkResponse,
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-} from "#resolvers/ApiResponse.js";
 
 import {
   AccessControl,
@@ -17,69 +12,21 @@ import {
   SortDirection,
   dateTimeFromSomething,
 } from "@ukdanceblue/common";
-import { DateTimeISOResolver } from "graphql-scalars";
-import {
-  Arg,
-  Field,
-  InputType,
-  Mutation,
-  ObjectType,
-  Query,
-  Resolver,
-} from "type-graphql";
+import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { Service } from "@freshgum/typedi";
 
 import type { GlobalId } from "@ukdanceblue/common";
 import { readFile } from "fs/promises";
 import { join } from "path";
 import { logDir } from "#environment";
-
-@ObjectType("GetConfigurationByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<ConfigurationNode>,
-})
-class GetConfigurationResponse extends AbstractGraphQLOkResponse<ConfigurationNode> {
-  @Field(() => ConfigurationNode)
-  data!: ConfigurationNode;
-}
-@ObjectType("GetAllConfigurationsResponse", {
-  implements: AbstractGraphQLArrayOkResponse<ConfigurationNode>,
-})
-class GetAllConfigurationsResponse extends AbstractGraphQLArrayOkResponse<ConfigurationNode> {
-  @Field(() => [ConfigurationNode])
-  data!: ConfigurationNode[];
-}
-@ObjectType("CreateConfigurationResponse", {
-  implements: AbstractGraphQLCreatedResponse<ConfigurationNode>,
-})
-class CreateConfigurationResponse extends AbstractGraphQLCreatedResponse<ConfigurationNode> {
-  @Field(() => ConfigurationNode)
-  data!: ConfigurationNode;
-}
-@ObjectType("CreateConfigurationsResponse", {
-  implements: AbstractGraphQLCreatedResponse<ConfigurationNode>,
-})
-class CreateConfigurationsResponse extends AbstractGraphQLArrayOkResponse<ConfigurationNode> {
-  @Field(() => [ConfigurationNode])
-  data!: ConfigurationNode[];
-}
-@ObjectType("DeleteConfigurationResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-class DeleteConfigurationResponse extends AbstractGraphQLOkResponse<never> {}
-@InputType()
-class CreateConfigurationInput implements Partial<ConfigurationNode> {
-  @Field()
-  key!: string;
-
-  @Field()
-  value!: string;
-
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  validAfter!: Date | null;
-
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  validUntil!: Date | null;
-}
+import {
+  GetConfigurationResponse,
+  GetAllConfigurationsResponse,
+  CreateConfigurationResponse,
+  CreateConfigurationInput,
+  CreateConfigurationsResponse,
+  DeleteConfigurationResponse,
+} from "@ukdanceblue/common";
 
 @Resolver(() => ConfigurationNode)
 @Service([ConfigurationRepository])

@@ -21,6 +21,7 @@ export * from "./utility/errors/ApiError.js";
 export * from "./utility/primitive/SimpleTypes.js";
 
 export * from "./api/jwt.js";
+export * from "./api/params/index.js";
 
 export * from "./authorization/role.js";
 export * from "./authorization/structures.js";
