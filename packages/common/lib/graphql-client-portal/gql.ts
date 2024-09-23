@@ -52,6 +52,7 @@ const documents = {
     "\n  mutation CreatePersonByLinkBlue($linkBlue: String!, $email: EmailAddress!) {\n    createPerson(input: { email: $email, linkblue: $linkBlue }) {\n      id\n    }\n  }\n": types.CreatePersonByLinkBlueDocument,
     "\n  query PointEntryOpportunityLookup($name: String!, $marathonUuid: String!) {\n    pointOpportunities(\n      stringFilters: { field: name, comparison: SUBSTRING, value: $name }\n      oneOfFilters: { field: marathonUuid, value: [$marathonUuid] }\n      sendAll: true\n    ) {\n      data {\n        name\n        id\n      }\n    }\n  }\n": types.PointEntryOpportunityLookupDocument,
     "\n  mutation CreatePointOpportunity($input: CreatePointOpportunityInput!) {\n    createPointOpportunity(input: $input) {\n      uuid\n    }\n  }\n": types.CreatePointOpportunityDocument,
+    "\n  mutation TeamBulkCreator($input: [BulkTeamInput!]!, $marathonId: GlobalId!) {\n    bulkLoadTeams(teams: $input, marathonId: $marathonId) {\n      id\n    }\n  }\n": types.TeamBulkCreatorDocument,
     "\n  mutation TeamCreator($input: CreateTeamInput!, $marathonUuid: GlobalId!) {\n    createTeam(input: $input, marathon: $marathonUuid) {\n      ok\n      uuid\n    }\n  }\n": types.TeamCreatorDocument,
     "\n  fragment TeamEditorFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    type\n  }\n": types.TeamEditorFragmentFragmentDoc,
     "\n  mutation TeamEditor($uuid: GlobalId!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n": types.TeamEditorDocument,
@@ -272,6 +273,10 @@ export function graphql(source: "\n  query PointEntryOpportunityLookup($name: St
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation CreatePointOpportunity($input: CreatePointOpportunityInput!) {\n    createPointOpportunity(input: $input) {\n      uuid\n    }\n  }\n"): (typeof documents)["\n  mutation CreatePointOpportunity($input: CreatePointOpportunityInput!) {\n    createPointOpportunity(input: $input) {\n      uuid\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation TeamBulkCreator($input: [BulkTeamInput!]!, $marathonId: GlobalId!) {\n    bulkLoadTeams(teams: $input, marathonId: $marathonId) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation TeamBulkCreator($input: [BulkTeamInput!]!, $marathonId: GlobalId!) {\n    bulkLoadTeams(teams: $input, marathonId: $marathonId) {\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

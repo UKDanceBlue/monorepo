@@ -49,7 +49,11 @@ export function buildPersonWhere(
   filters: readonly PersonFilters[] | null | undefined
 ) {
   const where: Prisma.PersonWhereInput = {};
-  const membershipsWhere: Prisma.MembershipWhereInput = {};
+  let membershipsWhereCommitteeRole:
+    | Prisma.MembershipWhereInput["committeeRole"]
+    | undefined = undefined;
+  let membershipsWhereTeam: Prisma.MembershipWhereInput["team"] | undefined =
+    undefined;
 
   for (const filter of filters ?? []) {
     switch (filter.field) {
@@ -65,11 +69,11 @@ export function buildPersonWhere(
         break;
       }
       case "committeeRole": {
-        membershipsWhere.committeeRole = oneOfFilterToPrisma(filter);
+        membershipsWhereCommitteeRole = oneOfFilterToPrisma(filter);
         break;
       }
       case "committeeName": {
-        membershipsWhere.team = {
+        membershipsWhereTeam = {
           correspondingCommittee: {
             identifier: oneOfFilterToPrisma(filter),
           },
@@ -85,8 +89,23 @@ export function buildPersonWhere(
   }
   return {
     ...where,
-    memberships: {
-      some: membershipsWhere,
-    },
-  };
+    memberships:
+      membershipsWhereCommitteeRole || membershipsWhereTeam
+        ? {
+            some:
+              membershipsWhereCommitteeRole && !membershipsWhereTeam
+                ? {
+                    committeeRole: membershipsWhereCommitteeRole,
+                  }
+                : !membershipsWhereCommitteeRole && membershipsWhereTeam
+                  ? {
+                      team: membershipsWhereTeam,
+                    }
+                  : {
+                      committeeRole: membershipsWhereCommitteeRole,
+                      team: membershipsWhereTeam,
+                    },
+          }
+        : undefined,
+  } satisfies Prisma.PersonWhereInput;
 }

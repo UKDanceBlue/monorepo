@@ -1,5 +1,6 @@
 /* eslint-disable */
 import type { AuthSource } from '../index.js';
+import type { AccessLevel } from '../index.js';
 import type { DbRole } from '../index.js';
 import type { CommitteeRole } from '../index.js';
 import type { CommitteeIdentifier } from '../index.js';
@@ -73,6 +74,8 @@ export type AbstractGraphQlPaginatedResponse = {
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
+export { AccessLevel };
+
 export type AcknowledgeDeliveryIssueResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'AcknowledgeDeliveryIssueResponse';
   readonly data: Scalars['Boolean']['output'];
@@ -97,6 +100,14 @@ export type BulkPersonInput = {
   readonly linkblue: Scalars['String']['input'];
   readonly name: Scalars['String']['input'];
   readonly role?: InputMaybe<CommitteeRole>;
+};
+
+export type BulkTeamInput = {
+  readonly captainLinkblues?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  readonly legacyStatus: TeamLegacyStatus;
+  readonly memberLinkblues?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  readonly name: Scalars['String']['input'];
+  readonly type: TeamType;
 };
 
 export { CommitteeIdentifier };
@@ -851,6 +862,7 @@ export type ListTeamsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQl
 
 export type LoginState = {
   readonly __typename?: 'LoginState';
+  readonly accessLevel: AccessLevel;
   readonly authSource: AuthSource;
   readonly dbRole: DbRole;
   readonly effectiveCommitteeRoles: ReadonlyArray<EffectiveCommitteeRole>;
@@ -957,6 +969,7 @@ export type Mutation = {
   /** Attach an image to a feed item */
   readonly attachImageToFeedItem: FeedNode;
   readonly bulkLoadPeople: ReadonlyArray<PersonNode>;
+  readonly bulkLoadTeams: ReadonlyArray<TeamNode>;
   /** Create a new configuration, superseding existing configurations with the same key (depending on the validAfter and validUntil fields) */
   readonly createConfiguration: CreateConfigurationResponse;
   /** Create multiple configurations, superseding existing configurations with the same key (depending on the validAfter and validUntil fields) */
@@ -1067,6 +1080,12 @@ export type MutationAttachImageToFeedItemArgs = {
 export type MutationBulkLoadPeopleArgs = {
   marathonId: Scalars['GlobalId']['input'];
   people: ReadonlyArray<BulkPersonInput>;
+};
+
+
+export type MutationBulkLoadTeamsArgs = {
+  marathonId: Scalars['GlobalId']['input'];
+  teams: ReadonlyArray<BulkTeamInput>;
 };
 
 
@@ -1251,6 +1270,7 @@ export type MutationSetImageAltTextArgs = {
 
 
 export type MutationSetImageUrlArgs = {
+  url: Scalars['URL']['input'];
   uuid: Scalars['GlobalId']['input'];
 };
 
@@ -2472,6 +2492,14 @@ export type CreatePointOpportunityMutationVariables = Exact<{
 
 export type CreatePointOpportunityMutation = { readonly __typename?: 'Mutation', readonly createPointOpportunity: { readonly __typename?: 'CreatePointOpportunityResponse', readonly uuid: string } };
 
+export type TeamBulkCreatorMutationVariables = Exact<{
+  input: ReadonlyArray<BulkTeamInput> | BulkTeamInput;
+  marathonId: Scalars['GlobalId']['input'];
+}>;
+
+
+export type TeamBulkCreatorMutation = { readonly __typename?: 'Mutation', readonly bulkLoadTeams: ReadonlyArray<{ readonly __typename?: 'TeamNode', readonly id: string }> };
+
 export type TeamCreatorMutationVariables = Exact<{
   input: CreateTeamInput;
   marathonUuid: Scalars['GlobalId']['input'];
@@ -2898,6 +2926,7 @@ export const SearchPersonByNameDocument = {"kind":"Document","definitions":[{"ki
 export const CreatePersonByLinkBlueDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePersonByLinkBlue"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"linkBlue"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EmailAddress"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPerson"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"linkblue"},"value":{"kind":"Variable","name":{"kind":"Name","value":"linkBlue"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreatePersonByLinkBlueMutation, CreatePersonByLinkBlueMutationVariables>;
 export const PointEntryOpportunityLookupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PointEntryOpportunityLookup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"marathonUuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pointOpportunities"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"stringFilters"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"field"},"value":{"kind":"EnumValue","value":"name"}},{"kind":"ObjectField","name":{"kind":"Name","value":"comparison"},"value":{"kind":"EnumValue","value":"SUBSTRING"}},{"kind":"ObjectField","name":{"kind":"Name","value":"value"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"oneOfFilters"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"field"},"value":{"kind":"EnumValue","value":"marathonUuid"}},{"kind":"ObjectField","name":{"kind":"Name","value":"value"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"marathonUuid"}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"sendAll"},"value":{"kind":"BooleanValue","value":true}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<PointEntryOpportunityLookupQuery, PointEntryOpportunityLookupQueryVariables>;
 export const CreatePointOpportunityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePointOpportunity"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreatePointOpportunityInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPointOpportunity"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]} as unknown as DocumentNode<CreatePointOpportunityMutation, CreatePointOpportunityMutationVariables>;
+export const TeamBulkCreatorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TeamBulkCreator"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BulkTeamInput"}}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"marathonId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GlobalId"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bulkLoadTeams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"teams"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}},{"kind":"Argument","name":{"kind":"Name","value":"marathonId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"marathonId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<TeamBulkCreatorMutation, TeamBulkCreatorMutationVariables>;
 export const TeamCreatorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TeamCreator"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateTeamInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"marathonUuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GlobalId"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTeam"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}},{"kind":"Argument","name":{"kind":"Name","value":"marathon"},"value":{"kind":"Variable","name":{"kind":"Name","value":"marathonUuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}},{"kind":"Field","name":{"kind":"Name","value":"uuid"}}]}}]}}]} as unknown as DocumentNode<TeamCreatorMutation, TeamCreatorMutationVariables>;
 export const TeamEditorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TeamEditor"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GlobalId"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SetTeamInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setTeam"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<TeamEditorMutation, TeamEditorMutationVariables>;
 export const MasqueradeSelectorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MasqueradeSelector"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"search"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"searchPeopleByName"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"search"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<MasqueradeSelectorQuery, MasqueradeSelectorQueryVariables>;

@@ -22,6 +22,7 @@ import { Route as FeedIndexImport } from "./routes/feed/index";
 import { Route as EventsIndexImport } from "./routes/events/index";
 import { Route as ConfigIndexImport } from "./routes/config/index";
 import { Route as TeamsCreateImport } from "./routes/teams/create";
+import { Route as TeamsBulkImport } from "./routes/teams/bulk";
 import { Route as PeopleCreateImport } from "./routes/people/create";
 import { Route as PeopleBulkImport } from "./routes/people/bulk";
 import { Route as NotificationsCreateImport } from "./routes/notifications/create";
@@ -98,6 +99,11 @@ const ConfigIndexRoute = ConfigIndexImport.update({
 
 const TeamsCreateRoute = TeamsCreateImport.update({
   path: "/teams/create",
+  getParentRoute: () => rootRoute,
+} as any);
+
+const TeamsBulkRoute = TeamsBulkImport.update({
+  path: "/teams/bulk",
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -275,6 +281,13 @@ declare module "@tanstack/react-router" {
       path: "/people/create";
       fullPath: "/people/create";
       preLoaderRoute: typeof PeopleCreateImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/teams/bulk": {
+      id: "/teams/bulk";
+      path: "/teams/bulk";
+      fullPath: "/teams/bulk";
+      preLoaderRoute: typeof TeamsBulkImport;
       parentRoute: typeof rootRoute;
     };
     "/teams/create": {
@@ -459,6 +472,7 @@ export const routeTree = rootRoute.addChildren({
   NotificationsCreateRoute,
   PeopleBulkRoute,
   PeopleCreateRoute,
+  TeamsBulkRoute,
   TeamsCreateRoute,
   ConfigIndexRoute,
   EventsIndexRoute,
@@ -503,6 +517,7 @@ export const routeTree = rootRoute.addChildren({
         "/notifications/create",
         "/people/bulk",
         "/people/create",
+        "/teams/bulk",
         "/teams/create",
         "/config/",
         "/events/",
@@ -547,6 +562,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/people/create": {
       "filePath": "people/create.tsx"
+    },
+    "/teams/bulk": {
+      "filePath": "teams/bulk.tsx"
     },
     "/teams/create": {
       "filePath": "teams/create.tsx"

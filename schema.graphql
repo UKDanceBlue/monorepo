@@ -79,6 +79,14 @@ input BulkPersonInput {
   role: CommitteeRole
 }
 
+input BulkTeamInput {
+  captainLinkblues: [String!]
+  legacyStatus: TeamLegacyStatus!
+  memberLinkblues: [String!]
+  name: String!
+  type: TeamType!
+}
+
 """The identifier for a committee"""
 enum CommitteeIdentifier {
   communityDevelopmentCommittee
@@ -1026,6 +1034,7 @@ type Mutation {
   """Attach an image to a feed item"""
   attachImageToFeedItem(feedItemUuid: GlobalId!, imageUuid: GlobalId!): FeedNode!
   bulkLoadPeople(marathonId: GlobalId!, people: [BulkPersonInput!]!): [PersonNode!]!
+  bulkLoadTeams(marathonId: GlobalId!, teams: [BulkTeamInput!]!): [TeamNode!]!
 
   """
   Create a new configuration, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)

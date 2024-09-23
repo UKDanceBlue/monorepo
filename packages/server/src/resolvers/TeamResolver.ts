@@ -25,6 +25,7 @@ import {
   PointEntryNode,
   SortDirection,
   TeamNode,
+  BulkTeamInput,
 } from "@ukdanceblue/common";
 import * as Common from "@ukdanceblue/common";
 import {
@@ -213,6 +214,32 @@ export class TeamResolver {
     }
 
     return SingleTeamResponse.newOk(teamModelToResource(row));
+  }
+
+  @AccessControl(
+    {
+      accessLevel: AccessLevel.Admin,
+    },
+    {
+      authRules: [
+        {
+          committeeIdentifier:
+            Common.CommitteeIdentifier.dancerRelationsCommittee,
+          minCommitteeRole: CommitteeRole.Coordinator,
+        },
+      ],
+    }
+  )
+  @Mutation(() => [TeamNode], { name: "bulkLoadTeams" })
+  async bulkLoad(
+    @Arg("teams", () => [BulkTeamInput]) teams: BulkTeamInput[],
+    @Arg("marathonId", () => GlobalIdScalar) marathonId: GlobalId
+  ): Promise<ConcreteResult<TeamNode[]>> {
+    const rows = await this.teamRepository.bulkLoadTeams(teams, {
+      uuid: marathonId.id,
+    });
+
+    return rows.map((rows) => rows.map((row) => teamModelToResource(row)));
   }
 
   @AccessControl(

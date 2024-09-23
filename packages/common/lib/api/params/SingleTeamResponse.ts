@@ -63,6 +63,24 @@ export class SetTeamInput implements OptionalToNullable<Partial<TeamNode>> {
   persistentIdentifier!: string | null;
 }
 
+@InputType()
+export class BulkTeamInput {
+  @Field(() => String)
+  name!: string;
+
+  @Field(() => TeamType)
+  type!: TeamType;
+
+  @Field(() => TeamLegacyStatus)
+  legacyStatus!: TeamLegacyStatus;
+
+  @Field(() => [String], { nullable: true })
+  captainLinkblues!: string[] | null;
+
+  @Field(() => [String], { nullable: true })
+  memberLinkblues!: string[] | null;
+}
+
 @ArgsType()
 export class ListTeamsArgs extends FilteredListQueryArgs<
   "name" | "type" | "legacyStatus" | "marathonId",

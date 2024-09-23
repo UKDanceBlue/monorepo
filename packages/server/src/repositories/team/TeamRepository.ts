@@ -3,18 +3,20 @@ import { buildTeamOrder, buildTeamWhere } from "./teamRepositoryUtils.js";
 import { SomePrismaError } from "#error/prisma.js";
 import {
   handleRepositoryError,
+  RepositoryError,
   type SimpleUniqueParam,
 } from "#repositories/shared.js";
 
-import { Prisma, PrismaClient } from "@prisma/client";
-import { TeamLegacyStatus } from "@ukdanceblue/common";
+import { Prisma, PrismaClient, Team } from "@prisma/client";
+import { MembershipPositionType, TeamLegacyStatus } from "@ukdanceblue/common";
 import { BasicError, ConcreteResult } from "@ukdanceblue/common/error";
-import { None, Ok, Some, Option } from "ts-results-es";
+import { None, Ok, Some, Option, Result } from "ts-results-es";
 import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import type {
+  BulkTeamInput,
   MarathonYearString,
   SortDirection,
   TeamType,
@@ -293,6 +295,99 @@ export class TeamRepository {
       } else {
         throw error;
       }
+    }
+  }
+
+  async bulkLoadTeams(
+    teams: BulkTeamInput[],
+    marathonParam: UniqueMarathonParam
+  ): Promise<Result<Team[], RepositoryError>> {
+    try {
+      const existingMatchesList = await Promise.all(
+        teams.map((team) =>
+          this.prisma.team.findFirst({
+            where: {
+              name: team.name,
+              marathon: marathonParam,
+            },
+          })
+        )
+      );
+
+      const toCreate: Prisma.TeamCreateInput[] = [];
+      const toUpdate: Prisma.TeamUpdateArgs[] = [];
+
+      for (let i = 0; i < teams.length; i++) {
+        const team = teams[i];
+        const existingMatch = existingMatchesList[i];
+        if (!team) {
+          continue;
+        }
+
+        if (existingMatch) {
+          toUpdate.push({
+            where: { id: existingMatch.id },
+            data: {
+              type: team.type,
+              legacyStatus: team.legacyStatus,
+            },
+          });
+        } else {
+          toCreate.push({
+            name: team.name,
+            type: team.type,
+            legacyStatus: team.legacyStatus,
+            marathon: {
+              connect: marathonParam,
+            },
+            memberships: {
+              create: [
+                ...(team.captainLinkblues?.map(
+                  (linkblue): Prisma.MembershipCreateWithoutTeamInput => ({
+                    person: {
+                      connectOrCreate: {
+                        where: {
+                          linkblue,
+                        },
+                        create: {
+                          linkblue,
+                          email: `${linkblue}@uky.edu`,
+                        },
+                      },
+                    },
+                    position: MembershipPositionType.Captain,
+                  })
+                ) ?? []),
+                ...(team.memberLinkblues?.map(
+                  (linkblue): Prisma.MembershipCreateWithoutTeamInput => ({
+                    person: {
+                      connectOrCreate: {
+                        where: {
+                          linkblue,
+                        },
+                        create: {
+                          linkblue,
+                          email: `${linkblue}@uky.edu`,
+                        },
+                      },
+                    },
+                    position: MembershipPositionType.Member,
+                  })
+                ) ?? []),
+              ],
+            },
+          });
+        }
+      }
+
+      const results = await this.prisma.$transaction([
+        ...toCreate.map((create) => this.prisma.team.create({ data: create })),
+        ...toUpdate.map((update) => this.prisma.team.update(update)),
+      ]);
+
+      return Ok(results);
+    } catch (error) {
+      return handleRepositoryError(error);
     }
   }
 

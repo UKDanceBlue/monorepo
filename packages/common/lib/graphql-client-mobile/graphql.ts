@@ -1,5 +1,6 @@
 /* eslint-disable */
 import type { AuthSource } from '../index.js';
+import type { AccessLevel } from '../index.js';
 import type { DbRole } from '../index.js';
 import type { CommitteeRole } from '../index.js';
 import type { CommitteeIdentifier } from '../index.js';
@@ -73,6 +74,8 @@ export type AbstractGraphQlPaginatedResponse = {
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
+export { AccessLevel };
+
 export type AcknowledgeDeliveryIssueResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
   readonly __typename?: 'AcknowledgeDeliveryIssueResponse';
   readonly data: Scalars['Boolean']['output'];
@@ -97,6 +100,14 @@ export type BulkPersonInput = {
   readonly linkblue: Scalars['String']['input'];
   readonly name: Scalars['String']['input'];
   readonly role?: InputMaybe<CommitteeRole>;
+};
+
+export type BulkTeamInput = {
+  readonly captainLinkblues?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  readonly legacyStatus: TeamLegacyStatus;
+  readonly memberLinkblues?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  readonly name: Scalars['String']['input'];
+  readonly type: TeamType;
 };
 
 export { CommitteeIdentifier };
@@ -851,6 +862,7 @@ export type ListTeamsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQl
 
 export type LoginState = {
   readonly __typename?: 'LoginState';
+  readonly accessLevel: AccessLevel;
   readonly authSource: AuthSource;
   readonly dbRole: DbRole;
   readonly effectiveCommitteeRoles: ReadonlyArray<EffectiveCommitteeRole>;
@@ -957,6 +969,7 @@ export type Mutation = {
   /** Attach an image to a feed item */
   readonly attachImageToFeedItem: FeedNode;
   readonly bulkLoadPeople: ReadonlyArray<PersonNode>;
+  readonly bulkLoadTeams: ReadonlyArray<TeamNode>;
   /** Create a new configuration, superseding existing configurations with the same key (depending on the validAfter and validUntil fields) */
   readonly createConfiguration: CreateConfigurationResponse;
   /** Create multiple configurations, superseding existing configurations with the same key (depending on the validAfter and validUntil fields) */
@@ -1067,6 +1080,12 @@ export type MutationAttachImageToFeedItemArgs = {
 export type MutationBulkLoadPeopleArgs = {
   marathonId: Scalars['GlobalId']['input'];
   people: ReadonlyArray<BulkPersonInput>;
+};
+
+
+export type MutationBulkLoadTeamsArgs = {
+  marathonId: Scalars['GlobalId']['input'];
+  teams: ReadonlyArray<BulkTeamInput>;
 };
 
 
@@ -1251,6 +1270,7 @@ export type MutationSetImageAltTextArgs = {
 
 
 export type MutationSetImageUrlArgs = {
+  url: Scalars['URL']['input'];
   uuid: Scalars['GlobalId']['input'];
 };
 

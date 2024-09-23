@@ -34,7 +34,8 @@
     "urql": "^4.1.0",
     "use-debounce": "^10.0.3",
     "utility-types": "^3.11.0",
-    "validator": "^13.12.0"
+    "validator": "^13.12.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@tanstack/router-devtools": "^1.52.4",
