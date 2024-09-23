@@ -29,8 +29,6 @@ export function SpreadsheetUploader<
         multiple={false}
         customRequest={async ({ file, onSuccess, onError }) => {
           try {
-            console.log(file);
-
             if (typeof file === "string") {
               throw new TypeError("Invalid file type");
             }
@@ -43,8 +41,6 @@ export function SpreadsheetUploader<
             if (!sheet) {
               throw new Error("No sheet found in workbook");
             }
-
-            console.log(sheet);
 
             const json = utils.sheet_to_json(sheet, { header: 2 });
 

@@ -41,7 +41,6 @@ export default defineConfig({
     TanStackRouterVite({
       quoteStyle: "double",
       semicolons: true,
-      autoCodeSplitting: true,
     }),
     react(),
   ],
