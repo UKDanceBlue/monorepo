@@ -76,6 +76,15 @@ export const EventsTable = () => {
       initPage: 1,
       initPageSize: 10,
       initSorting: [],
+      initialStateOverride: {
+        dateFilters: [
+          {
+            field: "occurrenceStart",
+            comparison: "GREATER_THAN_OR_EQUAL_TO",
+            value: new Date().toISOString(),
+          },
+        ],
+      },
     },
     {
       allFields: ["uuid", "title", "description", "occurrenceStart", "summary"],

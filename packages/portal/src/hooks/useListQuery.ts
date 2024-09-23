@@ -65,10 +65,21 @@ export function useListQuery<
     initPage,
     initPageSize,
     initSorting,
+    initialStateOverride,
   }: {
     initPage: number;
     initPageSize: number;
     initSorting: SortOption<AllFields>[];
+    initialStateOverride?: Partial<
+      ListQueryOptions<
+        DateFields,
+        IsNullFields,
+        NumericFields,
+        OneOfFields,
+        StringFields,
+        BooleanFields
+      >
+    >;
   },
   {
     dateFields = [],
@@ -416,6 +427,13 @@ export function useListQuery<
     setOneOfFilters([]);
     setStringFilters([]);
     setBooleanFilters([]);
+  }, []);
+
+  useEffect(() => {
+    setQueryOptions((prevQueryOptions) => ({
+      ...prevQueryOptions,
+      ...initialStateOverride,
+    }));
   }, []);
 
   return {
