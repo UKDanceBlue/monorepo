@@ -12,7 +12,8 @@ export class LoginStateResolver {
   loginState(@Ctx() ctx: Context.GraphQLContext): LoginState {
     return {
       loggedIn: ctx.authorization.dbRole !== DbRole.None,
-      effectiveCommitteeRoles: ctx.authorization.committees,
+      effectiveCommitteeRoles: ctx.authorization.effectiveCommitteeRoles,
+      accessLevel: ctx.authorization.accessLevel,
       dbRole: ctx.authorization.dbRole,
       authSource: ctx.userData.authSource,
     };

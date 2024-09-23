@@ -101,10 +101,10 @@ export function checkAuthorization(
   }
 
   if (minCommitteeRole != null) {
-    if (authorization.committees.length === 0) {
+    if (authorization.effectiveCommitteeRoles.length === 0) {
       matches = false;
     } else {
-      matches &&= authorization.committees.some(
+      matches &&= authorization.effectiveCommitteeRoles.some(
         (committee) =>
           compareCommitteeRole(committee.role, minCommitteeRole) >= 0
       );
@@ -113,12 +113,12 @@ export function checkAuthorization(
 
   // Committee identifier(s)
   if (committeeIdentifier != null) {
-    matches &&= authorization.committees.some(
+    matches &&= authorization.effectiveCommitteeRoles.some(
       (committee) => committee.identifier === committeeIdentifier
     );
   }
   if (committeeIdentifiers != null) {
-    matches &&= authorization.committees.some((committee) =>
+    matches &&= authorization.effectiveCommitteeRoles.some((committee) =>
       committeeIdentifiers.includes(committee.identifier)
     );
   }

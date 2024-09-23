@@ -11,6 +11,6 @@ export * from "./ListFundraisingEntriesResponse.js";
 export * from "./ListMarathonHoursResponse.js";
 export * from "./ListMarathonsResponse.js";
 export * from "./ListPeopleResponse.js";
-export * from "./LoginState.1.js";
+export * from "./LoginState.js";
 export * from "./SinglePointOpportunityResponse.js";
 export * from "./SingleTeamResponse.js";

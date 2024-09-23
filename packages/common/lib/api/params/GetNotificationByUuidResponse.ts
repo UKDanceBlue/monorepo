@@ -1,18 +1,17 @@
 import type { NotificationError } from "@prisma/client";
-import {
-  NotificationNode,
-  TeamType,
-  GlobalIdScalar,
-  type GlobalId,
-  FilteredListQueryArgs,
-  NotificationDeliveryNode,
-} from "@ukdanceblue/common";
 import { ObjectType, Field, InputType, ArgsType, Int } from "type-graphql";
 import {
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
   AbstractGraphQLCreatedResponse,
 } from "./ApiResponse.js";
+import {
+  NotificationDeliveryNode,
+  NotificationNode,
+} from "../resources/Notification.js";
+import { TeamType } from "../resources/Team.js";
+import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
+import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("GetNotificationByUuidResponse", {
   implements: AbstractGraphQLOkResponse<NotificationNode>,

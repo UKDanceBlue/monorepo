@@ -13,7 +13,7 @@ import type { Authorization } from "../../index.js";
 const techChair: Authorization = {
   accessLevel: AccessLevel.Admin,
   dbRole: DbRole.Committee,
-  committees: [
+  effectiveCommitteeRoles: [
     {
       identifier: CommitteeIdentifier.techCommittee,
       role: CommitteeRole.Chair,
@@ -24,7 +24,7 @@ const techChair: Authorization = {
 const techCoordinator: Authorization = {
   accessLevel: AccessLevel.Admin,
   dbRole: DbRole.Committee,
-  committees: [
+  effectiveCommitteeRoles: [
     {
       identifier: CommitteeIdentifier.techCommittee,
       role: CommitteeRole.Coordinator,
@@ -35,7 +35,7 @@ const techCoordinator: Authorization = {
 const techMember: Authorization = {
   accessLevel: AccessLevel.Admin,
   dbRole: DbRole.Committee,
-  committees: [
+  effectiveCommitteeRoles: [
     {
       identifier: CommitteeIdentifier.techCommittee,
       role: CommitteeRole.Member,
@@ -46,7 +46,7 @@ const techMember: Authorization = {
 const overallChair: Authorization = {
   accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   dbRole: DbRole.Committee,
-  committees: [
+  effectiveCommitteeRoles: [
     {
       identifier: CommitteeIdentifier.techCommittee,
       role: CommitteeRole.Chair,
@@ -61,7 +61,7 @@ const overallChair: Authorization = {
 const dancerRelationsChair: Authorization = {
   accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   dbRole: DbRole.Committee,
-  committees: [
+  effectiveCommitteeRoles: [
     {
       identifier: CommitteeIdentifier.dancerRelationsCommittee,
       role: CommitteeRole.Chair,
@@ -72,7 +72,7 @@ const dancerRelationsChair: Authorization = {
 const dancerRelationsCoordinator: Authorization = {
   accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   dbRole: DbRole.Committee,
-  committees: [
+  effectiveCommitteeRoles: [
     {
       identifier: CommitteeIdentifier.dancerRelationsCommittee,
       role: CommitteeRole.Coordinator,
@@ -83,7 +83,7 @@ const dancerRelationsCoordinator: Authorization = {
 const dancerRelationsMember: Authorization = {
   accessLevel: AccessLevel.Committee,
   dbRole: DbRole.Committee,
-  committees: [
+  effectiveCommitteeRoles: [
     {
       identifier: CommitteeIdentifier.dancerRelationsCommittee,
       role: CommitteeRole.Member,
@@ -94,19 +94,19 @@ const dancerRelationsMember: Authorization = {
 const member: Authorization = {
   accessLevel: AccessLevel.UKY,
   dbRole: DbRole.UKY,
-  committees: [],
+  effectiveCommitteeRoles: [],
 };
 
 const publicAuth: Authorization = {
   accessLevel: AccessLevel.Public,
   dbRole: DbRole.Public,
-  committees: [],
+  effectiveCommitteeRoles: [],
 };
 
 const none: Authorization = {
   accessLevel: AccessLevel.None,
   dbRole: DbRole.None,
-  committees: [],
+  effectiveCommitteeRoles: [],
 };
 describe("checkAuthorization", () => {
   it("should return true when the user's access level matches the required access level", async () => {

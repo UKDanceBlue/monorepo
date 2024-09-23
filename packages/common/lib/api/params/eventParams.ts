@@ -1,17 +1,14 @@
-import {
-  EventNode,
-  ImageNode,
-  IntervalISO,
-  GlobalIdScalar,
-  type GlobalId,
-  FilteredListQueryArgs,
-} from "@ukdanceblue/common";
 import { ObjectType, Field, InputType, ArgsType } from "type-graphql";
 import {
   AbstractGraphQLOkResponse,
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
+import { EventNode } from "../resources/Event.js";
+import { ImageNode } from "../resources/Image.js";
+import { IntervalISO } from "../types/IntervalISO.js";
+import { GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
+import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("GetEventByUuidResponse", {
   implements: AbstractGraphQLOkResponse<EventNode>,

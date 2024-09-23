@@ -30,7 +30,7 @@ const config: TypeScriptPluginConfig = {
   immutableTypes: true,
   enumValues: {
     AuthSource: "../index.js#AuthSource",
-    // AccessLevel: "../index.js#AccessLevel",
+    AccessLevel: "../index.js#AccessLevel",
     DbRole: "../index.js#DbRole",
     CommitteeRole: "../index.js#CommitteeRole",
     CommitteeIdentifier: "../index.js#CommitteeIdentifier",

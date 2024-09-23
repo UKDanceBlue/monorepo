@@ -1,15 +1,12 @@
-import {
-  PointEntryNode,
-  GlobalIdScalar,
-  type GlobalId,
-  FilteredListQueryArgs,
-} from "@ukdanceblue/common";
 import { ObjectType, Field, InputType, Int, ArgsType } from "type-graphql";
 import {
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
   AbstractGraphQLCreatedResponse,
 } from "./ApiResponse.js";
+import { PointEntryNode } from "../resources/PointEntry.js";
+import { GlobalIdScalar, type GlobalId } from "../scalars/GlobalId.js";
+import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("GetPointEntryByUuidResponse", {
   implements: AbstractGraphQLOkResponse<PointEntryNode>,

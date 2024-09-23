@@ -1,9 +1,8 @@
-import { GlobalIdScalar } from "@ukdanceblue/common";
-import type { GlobalId } from "@ukdanceblue/common";
 import { NonNegativeIntResolver, PositiveIntResolver } from "graphql-scalars";
 import { Field, InterfaceType } from "type-graphql";
 
 import type { ClassType } from "type-graphql";
+import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
 
 const DEFAULT_PAGE_SIZE = 10;
 const FIRST_PAGE = 1;

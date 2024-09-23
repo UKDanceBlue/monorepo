@@ -1,7 +1,8 @@
-import { MarathonNode, FilteredListQueryArgs } from "@ukdanceblue/common";
 import { DateTimeISOResolver } from "graphql-scalars";
 import { ObjectType, Field, InputType, ArgsType } from "type-graphql";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { MarathonNode } from "../resources/Marathon.js";
+import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("ListMarathonsResponse", {
   implements: AbstractGraphQLPaginatedResponse<MarathonNode[]>,

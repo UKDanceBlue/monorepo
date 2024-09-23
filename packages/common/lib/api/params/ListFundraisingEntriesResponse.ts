@@ -1,9 +1,7 @@
-import {
-  FilteredListQueryArgs,
-  FundraisingEntryNode,
-} from "@ukdanceblue/common";
 import { ArgsType, ObjectType, Field } from "type-graphql";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
+import { FundraisingEntryNode } from "../resources/Fundraising.js";
 
 @ArgsType()
 export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<

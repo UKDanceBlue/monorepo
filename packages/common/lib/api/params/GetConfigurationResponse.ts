@@ -1,4 +1,3 @@
-import { ConfigurationNode } from "@ukdanceblue/common";
 import { DateTimeISOResolver } from "graphql-scalars";
 import { ObjectType, Field, InputType } from "type-graphql";
 import {
@@ -6,6 +5,7 @@ import {
   AbstractGraphQLArrayOkResponse,
   AbstractGraphQLCreatedResponse,
 } from "./ApiResponse.js";
+import { ConfigurationNode } from "../resources/Configuration.js";
 
 @ObjectType("GetConfigurationByUuidResponse", {
   implements: AbstractGraphQLOkResponse<ConfigurationNode>,

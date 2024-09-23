@@ -38,6 +38,17 @@ interface AbstractGraphQLPaginatedResponse implements AbstractGraphQLArrayOkResp
   total: NonNegativeInt!
 }
 
+"""The level of access a user has"""
+enum AccessLevel {
+  Admin
+  Committee
+  CommitteeChairOrCoordinator
+  None
+  Public
+  SuperAdmin
+  UKY
+}
+
 type AcknowledgeDeliveryIssueResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: Boolean!
   ok: Boolean!
@@ -901,6 +912,7 @@ type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraph
 }
 
 type LoginState {
+  accessLevel: AccessLevel!
   authSource: AuthSource!
   dbRole: DbRole!
   effectiveCommitteeRoles: [EffectiveCommitteeRole!]!
@@ -1086,7 +1098,7 @@ type Mutation {
   """Set the content of a feed item"""
   setFeedItem(feedItemUuid: GlobalId!, input: SetFeedInput!): FeedNode!
   setImageAltText(alt: String!, uuid: GlobalId!): ImageNode!
-  setImageUrl(uuid: GlobalId!): ImageNode!
+  setImageUrl(url: URL!, uuid: GlobalId!): ImageNode!
   setMarathon(input: SetMarathonInput!, uuid: GlobalId!): MarathonNode!
   setMarathonHour(input: SetMarathonHourInput!, uuid: GlobalId!): MarathonHourNode!
   setPerson(input: SetPersonInput!, uuid: GlobalId!): PersonNode!

@@ -1,14 +1,11 @@
 import { ObjectType, Field, InputType, ArgsType, Int } from "type-graphql";
 import {
-  DeviceNode,
-  GlobalIdScalar,
-  type GlobalId,
-  FilteredListQueryArgs,
-} from "../../index.js";
-import {
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
+import { DeviceNode } from "../resources/Device.js";
+import { GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
+import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("GetDeviceByUuidResponse", {
   implements: AbstractGraphQLOkResponse<DeviceNode>,

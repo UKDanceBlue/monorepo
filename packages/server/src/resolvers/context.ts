@@ -112,7 +112,8 @@ async function withUserInfo(
     "graphqlContextFunction Effective committee roles",
     ...effectiveCommitteeRoles.value
   );
-  outputContext.authorization.committees = effectiveCommitteeRoles.value;
+  outputContext.authorization.effectiveCommitteeRoles =
+    effectiveCommitteeRoles.value;
 
   // If the user is on a committee, override the dbRole
   if (effectiveCommitteeRoles.value.length > 0) {
@@ -137,7 +138,7 @@ const anonymousContext: Readonly<GraphQLContext> =
     ...defaultContext,
     authorization: {
       accessLevel: AccessLevel.Public,
-      committees: [],
+      effectiveCommitteeRoles: [],
       dbRole: DbRole.Public,
     },
   });
@@ -199,7 +200,7 @@ export const graphqlContextFunction: ContextFunction<
   }
   let superAdmin =
     contextWithUser.value.authenticatedUser?.linkblue === superAdminLinkblue ||
-    isSuperAdmin(contextWithUser.value.authorization.committees);
+    isSuperAdmin(contextWithUser.value.authorization.effectiveCommitteeRoles);
   if (
     superAdmin &&
     ctx.request.headers["x-ukdb-masquerade"] &&
@@ -237,11 +238,11 @@ export const graphqlContextFunction: ContextFunction<
 
   if (
     superAdmin &&
-    !contextWithUser.value.authorization.committees.some(
+    !contextWithUser.value.authorization.effectiveCommitteeRoles.some(
       (role) => role.identifier === CommitteeIdentifier.techCommittee
     )
   ) {
-    contextWithUser.value.authorization.committees.push({
+    contextWithUser.value.authorization.effectiveCommitteeRoles.push({
       identifier: CommitteeIdentifier.techCommittee,
       role: CommitteeRole.Chair,
     });

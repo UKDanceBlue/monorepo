@@ -1,10 +1,3 @@
-import {
-  PointOpportunityNode,
-  TeamType,
-  GlobalIdScalar,
-  type GlobalId,
-  FilteredListQueryArgs,
-} from "@ukdanceblue/common";
 import { DateTimeISOResolver } from "graphql-scalars";
 import { ObjectType, Field, InputType, ArgsType } from "type-graphql";
 import {
@@ -12,6 +5,10 @@ import {
   AbstractGraphQLPaginatedResponse,
   AbstractGraphQLCreatedResponse,
 } from "./ApiResponse.js";
+import { PointOpportunityNode } from "../resources/PointOpportunity.js";
+import { TeamType } from "../resources/Team.js";
+import { GlobalIdScalar, type GlobalId } from "../scalars/GlobalId.js";
+import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("SinglePointOpportunityResponse", {
   implements: AbstractGraphQLOkResponse<PointOpportunityNode>,

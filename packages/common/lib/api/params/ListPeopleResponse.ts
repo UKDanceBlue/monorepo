@@ -1,15 +1,14 @@
-import {
-  PersonNode,
-  GlobalIdScalar,
-  type GlobalId,
-  CommitteeRole,
-  FilteredListQueryArgs,
-  DbRole,
-  CommitteeIdentifier,
-} from "@ukdanceblue/common";
 import { EmailAddressResolver } from "graphql-scalars";
 import { ObjectType, Field, InputType, ArgsType } from "type-graphql";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { PersonNode } from "../resources/Person.js";
+import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
+import {
+  CommitteeIdentifier,
+  CommitteeRole,
+  DbRole,
+} from "../../authorization/structures.js";
+import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 
 @ObjectType("ListPeopleResponse", {
   implements: AbstractGraphQLPaginatedResponse<PersonNode>,
