@@ -1,4 +1,3 @@
-import type { NotificationError } from "@prisma/client";
 import { ObjectType, Field, InputType, ArgsType, Int } from "type-graphql";
 import {
   AbstractGraphQLOkResponse,
@@ -171,7 +170,7 @@ export class ListNotificationDeliveriesResponse extends AbstractGraphQLPaginated
     "The number of delivery issues for a notification, broken down by type.",
 })
 export class NotificationDeliveryIssueCount
-  implements Record<NotificationError, number>
+  //implements Record<NotificationError, number>
 {
   @Field(() => Int)
   DeviceNotRegistered!: number;
