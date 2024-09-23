@@ -294,6 +294,7 @@ export class DBFundsRepository {
             dbNum: search.byDbNum,
             name: {
               contains: search.byName,
+              mode: "insensitive",
             },
           },
           orderBy: {

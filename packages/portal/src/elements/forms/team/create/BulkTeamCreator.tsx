@@ -77,7 +77,7 @@ export function BulkTeamCreator() {
               : TeamLegacyStatus.NewTeam,
           captainLinkblues: row[captainLinkblueRow]
             .split(",")
-            .map((linkblue) => linkblue.trim()),
+            .map((linkblue) => linkblue.trim().split("@")[0]!),
           memberLinkblues: null,
         };
       }}

@@ -14,7 +14,7 @@ export const garbageCollectLoginFlowSessions = new Cron(
     name: "garbage-collect-login-flow-sessions",
     paused: true,
     catch: (error) => {
-      console.error("Failed to fetch push receipts", error);
+      console.error("Failed to garbage collect old login flows", error);
     },
   },
   async () => {

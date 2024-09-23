@@ -171,9 +171,9 @@ model Person {
   uuid                       String                  @unique(map: "people_uuid_unique") @default(uuid()) @db.Uuid
   createdAt                  DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt                  DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
-  name                       String?
-  email                      String                  @unique(map: "people_email_unique")
-  linkblue                   String?                 @unique(map: "people_linkblue_unique")
+  name                       String?                 @db.Citext
+  email                      String                  @unique(map: "people_email_unique") @db.Citext
+  linkblue                   String?                 @unique(map: "people_linkblue_unique") @db.Citext
   authIdPairs                AuthIdPair[]
   devices                    Device[]
   memberships                Membership[]
