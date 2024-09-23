@@ -41,7 +41,7 @@ export function usePersonEditorForm(
   }>({
     defaultValues: {
       name: personData?.name ?? "",
-      linkblue: personData?.linkblue ?? "",
+      linkblue: personData?.linkblue?.toLowerCase() ?? "",
       email: personData?.email ?? "",
       captainOf:
         personData?.teams
@@ -108,7 +108,7 @@ export function usePersonEditorForm(
         uuid: personData.id,
         input: {
           name: values.name || null,
-          linkblue: values.linkblue || null,
+          linkblue: values.linkblue?.toLowerCase() || null,
           email: values.email,
           captainOf: (values.captainOf ?? []).map(({ id, committeeRole }) => ({
             id,

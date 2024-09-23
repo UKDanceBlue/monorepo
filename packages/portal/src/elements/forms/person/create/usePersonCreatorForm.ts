@@ -73,7 +73,7 @@ export function usePersonCreatorForm(
       const { data } = await createPerson({
         input: {
           name: values.name || null,
-          linkblue: values.linkblue || null,
+          linkblue: values.linkblue?.toLowerCase() || null,
           email: values.email,
           captainOf: values.captainOf ?? [],
           memberOf: values.memberOf ?? [],

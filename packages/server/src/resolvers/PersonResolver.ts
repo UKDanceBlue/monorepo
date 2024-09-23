@@ -91,7 +91,7 @@ export class PersonResolver {
     @Arg("linkBlueId") linkBlueId: string
   ): Promise<ConcreteResult<Option<PersonNode>>> {
     const row = await this.personRepository.findPersonByUnique({
-      linkblue: linkBlueId,
+      linkblue: linkBlueId?.toLowerCase(),
     });
 
     if (row.isErr()) {
@@ -207,7 +207,7 @@ export class PersonResolver {
     const person = await this.personRepository.createPerson({
       name: input.name,
       email: input.email,
-      linkblue: input.linkblue,
+      linkblue: input.linkblue?.toLowerCase(),
       memberOf: input.memberOf?.map(({ id: { id }, committeeRole }) => ({
         uuid: id,
         committeeRole,
@@ -258,7 +258,7 @@ export class PersonResolver {
       {
         name: input.name,
         email: input.email,
-        linkblue: input.linkblue,
+        linkblue: input.linkblue?.toLowerCase(),
         memberOf: input.memberOf?.map(({ id: { id }, committeeRole }) => ({
           id,
           committeeRole,

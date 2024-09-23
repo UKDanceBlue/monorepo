@@ -18,7 +18,7 @@ export function personModelToResource(
       id: person.uuid,
       name: person.name,
       email: person.email,
-      linkblue: person.linkblue,
+      linkblue: person.linkblue?.toLowerCase(),
       createdAt: person.createdAt,
       updatedAt: person.updatedAt,
 

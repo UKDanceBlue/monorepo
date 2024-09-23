@@ -347,11 +347,11 @@ export class TeamRepository {
                     person: {
                       connectOrCreate: {
                         where: {
-                          linkblue,
+                          linkblue: linkblue?.toLowerCase(),
                         },
                         create: {
-                          linkblue,
-                          email: `${linkblue}@uky.edu`,
+                          linkblue: linkblue?.toLowerCase(),
+                          email: `${linkblue?.toLowerCase()}@uky.edu`,
                         },
                       },
                     },
@@ -363,11 +363,11 @@ export class TeamRepository {
                     person: {
                       connectOrCreate: {
                         where: {
-                          linkblue,
+                          linkblue: linkblue?.toLowerCase(),
                         },
                         create: {
-                          linkblue,
-                          email: `${linkblue}@uky.edu`,
+                          linkblue: linkblue?.toLowerCase(),
+                          email: `${linkblue?.toLowerCase()}@uky.edu`,
                         },
                       },
                     },

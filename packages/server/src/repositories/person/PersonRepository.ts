@@ -404,7 +404,7 @@ export class PersonRepository {
         await this.prisma.person.findMany({
           where: {
             linkblue: {
-              contains: linkblue,
+              contains: linkblue?.toLowerCase(),
               mode: "insensitive",
             },
           },
@@ -569,7 +569,7 @@ export class PersonRepository {
         data: {
           name,
           email,
-          linkblue,
+          linkblue: linkblue?.toLowerCase(),
           authIdPairs: authIds
             ? {
                 createMany: {
@@ -791,7 +791,7 @@ export class PersonRepository {
           data: {
             name,
             email,
-            linkblue,
+            linkblue: linkblue?.toLowerCase(),
             authIdPairs: authIds
               ? {
                   upsert: authIds.map((authId) => {
@@ -981,12 +981,12 @@ export class PersonRepository {
 
           return this.prisma.person.upsert({
             where: {
-              linkblue: person.linkblue,
+              linkblue: person.linkblue?.toLowerCase(),
             },
             create: {
               name: person.name,
               email: person.email,
-              linkblue: person.linkblue,
+              linkblue: person.linkblue?.toLowerCase(),
               memberships:
                 person.committee && person.role
                   ? {
@@ -1012,7 +1012,7 @@ export class PersonRepository {
             update: {
               name: person.name,
               email: person.email,
-              linkblue: person.linkblue,
+              linkblue: person.linkblue?.toLowerCase(),
               memberships:
                 person.committee && person.role
                   ? {

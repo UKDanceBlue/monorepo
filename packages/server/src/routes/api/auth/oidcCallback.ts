@@ -67,12 +67,12 @@ export const oidcCallback = async (ctx: Context) => {
       family_name: lastName,
       upn: userPrincipalName,
     } = decodedJwt;
-    let linkblue = null;
+    let linkblue: null | string = null;
     if (
       typeof userPrincipalName === "string" &&
       userPrincipalName.endsWith("@uky.edu")
     ) {
-      linkblue = userPrincipalName.replace(/@uky\.edu$/, "");
+      linkblue = userPrincipalName.replace(/@uky\.edu$/, "").toLowerCase();
     }
     if (typeof objectId !== "string") {
       return ctx.throw("Missing OID", 500);
@@ -117,7 +117,7 @@ export const oidcCallback = async (ctx: Context) => {
       }
     }
     if (linkblue && currentPerson.linkblue !== linkblue) {
-      currentPerson.linkblue = linkblue;
+      currentPerson.linkblue = linkblue?.toLowerCase();
     }
 
     const updatedPerson = await personRepository.updatePerson(
@@ -125,7 +125,7 @@ export const oidcCallback = async (ctx: Context) => {
       {
         name: currentPerson.name,
         email: currentPerson.email,
-        linkblue: currentPerson.linkblue,
+        linkblue: currentPerson.linkblue?.toLowerCase(),
         authIds: currentPerson.authIdPairs.map((a) => ({
           source: a.source,
           value: a.value,

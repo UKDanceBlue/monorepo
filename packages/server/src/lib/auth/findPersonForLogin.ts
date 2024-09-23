@@ -135,7 +135,7 @@ export async function findPersonForLogin(
         },
         email: userInfo.email,
         name: userInfo.name ?? null,
-        linkblue: userInfo.linkblue ?? null,
+        linkblue: userInfo.linkblue?.toLowerCase() ?? null,
         memberships: {
           createMany: {
             data: [
