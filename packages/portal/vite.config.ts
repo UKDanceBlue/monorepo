@@ -26,11 +26,22 @@ export default defineConfig({
       "@assets": resolveRelative("assets"),
     },
   },
-
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ["react", "react-dom"],
+          common: ["@ukdanceblue/common"],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
   plugins: [
     TanStackRouterVite({
       quoteStyle: "double",
       semicolons: true,
+      autoCodeSplitting: true,
     }),
     react(),
   ],

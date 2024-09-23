@@ -11,6 +11,7 @@ import {
   createRouter,
   ErrorComponent,
   RouterProvider,
+  useAwaited,
 } from "@tanstack/react-router";
 import type { AuthorizationRule } from "@ukdanceblue/common";
 import { devtoolsExchange } from "@urql/devtools";
@@ -26,7 +27,7 @@ import {
   Provider as UrqlProvider,
 } from "urql";
 
-import { routeTree } from "./routeTree.gen";
+const routeTreePromise = import("./routeTree.gen");
 
 const API_URL = `${API_BASE_URL}/graphql`;
 const urqlClient = new Client({
@@ -48,57 +49,60 @@ const urqlClient = new Client({
   },
 });
 
-const router = createRouter({
-  routeTree,
-  defaultPendingComponent: () => (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100%",
-        width: "100%",
-      }}
-    >
-      <Spin
-        size="large"
-        tip="Loading"
-        fullscreen
-        indicator={<SpinningRibbon size={70} />}
+// eslint-disable-next-line unicorn/prefer-top-level-await
+const routerPromise = routeTreePromise.then(({ routeTree }) =>
+  createRouter({
+    routeTree,
+    defaultPendingComponent: () => (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+          width: "100%",
+        }}
       >
-        <div
-          style={{
-            padding: 64,
-            borderRadius: 4,
-          }}
-        />
-      </Spin>
-    </div>
-  ),
-  defaultNotFoundComponent: () => (
-    <Empty
-      description="Page not found"
-      image={
-        <WarningOutlined
-          style={{
-            fontSize: "96px",
-            color: "#aa0",
-          }}
-        />
-      }
-    />
-  ),
-  defaultErrorComponent: ({ error }) => <ErrorComponent error={error} />,
-  context: {
-    urqlClient,
-    antApp: {} as useAppProps,
-  },
-  defaultPreload: false,
-});
+        <Spin
+          size="large"
+          tip="Loading"
+          fullscreen
+          indicator={<SpinningRibbon size={70} />}
+        >
+          <div
+            style={{
+              padding: 64,
+              borderRadius: 4,
+            }}
+          />
+        </Spin>
+      </div>
+    ),
+    defaultNotFoundComponent: () => (
+      <Empty
+        description="Page not found"
+        image={
+          <WarningOutlined
+            style={{
+              fontSize: "96px",
+              color: "#aa0",
+            }}
+          />
+        }
+      />
+    ),
+    defaultErrorComponent: ({ error }) => <ErrorComponent error={error} />,
+    context: {
+      urqlClient,
+      antApp: {} as useAppProps,
+    },
+    defaultPreload: false,
+  })
+);
 
 declare module "@tanstack/react-router" {
   interface Register {
-    router: typeof router;
+    router: Awaited<typeof routerPromise>;
   }
   interface StaticDataRouteOption {
     authorizationRules: AuthorizationRule[] | null;
@@ -110,6 +114,10 @@ function RouterWrapper() {
   const [isServerReachable, setIsServerReachable] = useState<
     boolean | undefined
   >(undefined);
+
+  const [router] = useAwaited({
+    promise: routerPromise,
+  });
 
   useEffect(() => {
     if (isServerReachable !== undefined) {

@@ -53,7 +53,7 @@ function parseLoginState(
     return {
       loggedIn: true,
       authorization: {
-        committees,
+        effectiveCommitteeRoles: committees,
         dbRole: result.data.loginState.dbRole,
         accessLevel: roleToAccessLevel({
           dbRole: result.data.loginState.dbRole,
