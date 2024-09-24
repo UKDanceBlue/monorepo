@@ -11,17 +11,15 @@ jobs:
   do-release:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
       packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: release
+          ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
       - name: Fast forward release branch to main
         run: |
-          date > generated.txt
           git fetch origin main
-          git checkout release
           git merge --ff-only origin/main
           git push origin release
