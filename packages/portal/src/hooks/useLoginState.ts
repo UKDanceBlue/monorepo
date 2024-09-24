@@ -57,7 +57,7 @@ function parseLoginState(
         dbRole: result.data.loginState.dbRole,
         accessLevel: roleToAccessLevel({
           dbRole: result.data.loginState.dbRole,
-          committees,
+          effectiveCommitteeRoles: committees,
         }),
       },
     };

@@ -135,7 +135,7 @@ export function PersonViewer({
                 children: stringifyAccessLevel(
                   roleToAccessLevel({
                     dbRole: personData.dbRole,
-                    committees,
+                    effectiveCommitteeRoles: committees,
                   })
                 ),
               },
