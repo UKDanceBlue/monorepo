@@ -1,3 +1,5 @@
+name: Do Release
+
 on:
   workflow_dispatch:
 
@@ -12,6 +14,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: release
       - name: Fast forward release branch to main
         run: |
           git fetch origin main
