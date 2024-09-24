@@ -6,7 +6,7 @@ import {
   reloadAsync,
   useUpdates,
 } from "expo-updates";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function useUpdateChecker() {
   const {
@@ -19,6 +19,9 @@ export function useUpdateChecker() {
     downloadedUpdate,
     initializationError,
   } = useUpdates();
+
+  const [didNotifyPending, setDidNotifyPending] = useState(false);
+  const [didNotifyAvailable, setDidNotifyAvailable] = useState(false);
 
   useEffect(() => {
     Logger.info("Checking for updates", { context: { currentlyRunning } });
@@ -69,7 +72,8 @@ export function useUpdateChecker() {
   }, [downloadError]);
 
   useEffect(() => {
-    if (isUpdateAvailable) {
+    if (isUpdateAvailable && !didNotifyAvailable) {
+      setDidNotifyAvailable(true);
       Logger.info("Update available", { context: { availableUpdate } });
       showPrompt(
         "A new version of the app is available. Would you like to download it now?",
@@ -87,7 +91,8 @@ export function useUpdateChecker() {
   }, [availableUpdate, isUpdateAvailable]);
 
   useEffect(() => {
-    if (isUpdatePending) {
+    if (isUpdatePending && !didNotifyPending) {
+      setDidNotifyPending(true);
       Logger.info("Update pending", { context: { downloadedUpdate } });
       showPrompt(
         "A new version of the app has been downloaded. Would you like to reload the app to apply it?",

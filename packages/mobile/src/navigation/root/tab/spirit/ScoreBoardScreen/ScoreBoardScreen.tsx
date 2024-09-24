@@ -191,7 +191,7 @@ const ScoreBoardScreen = ({
               <Select.Item label="Dancer Teams" value="dancers" />
               <Select.Item label="New Teams Only" value="new" />
               <Select.Item label="Returning Teams Only" value="returning" />
-              <Select.Item label="Committee" value="committee" />
+              {/* <Select.Item label="Committee" value="committee" /> */}
             </Select>
           </Box>
         </HStack>
