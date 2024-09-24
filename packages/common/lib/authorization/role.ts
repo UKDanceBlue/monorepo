@@ -14,10 +14,13 @@ import {
  */
 export function roleToAccessLevel({
   dbRole,
-  committees,
+  effectiveCommitteeRoles,
 }: {
   dbRole: DbRole;
-  committees?: { identifier: CommitteeIdentifier; role: CommitteeRole }[];
+  effectiveCommitteeRoles?: {
+    identifier: CommitteeIdentifier;
+    role: CommitteeRole;
+  }[];
 }): AccessLevel {
   switch (dbRole) {
     case DbRole.None: {
@@ -31,7 +34,7 @@ export function roleToAccessLevel({
     }
     case DbRole.Committee: {
       let maxLevel: AccessLevel | null = null;
-      for (const committee of committees ?? []) {
+      for (const committee of effectiveCommitteeRoles ?? []) {
         let thisLevel: AccessLevel;
 
         if (committee.identifier === CommitteeIdentifier.techCommittee) {
