@@ -1,0 +1,20 @@
+on:
+  workflow_dispatch:
+
+# All this job does is fast forward the release branch to the latest commit on main
+
+jobs:
+  do-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Fast forward release branch to main
+        run: |
+          git fetch origin main
+          git checkout release
+          git merge --ff-only origin/main
+          git push origin release
