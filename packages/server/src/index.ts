@@ -1,4 +1,6 @@
 import { logger } from "#logging/logger.js";
+import { koaToken } from "#routes/koaToken.js";
+import { Container } from "@freshgum/typedi";
 
 import "reflect-metadata";
 
@@ -17,6 +19,7 @@ const { createServer, startHttpServer, startServer } = await import(
 );
 const { app, httpServer, apolloServer } = await createServer();
 logger.info("Created server");
+Container.setValue(koaToken, app);
 
 await startHttpServer(httpServer);
 const httpServerAddress = httpServer.address();
