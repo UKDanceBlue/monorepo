@@ -24,6 +24,10 @@ type DoSyncError =
   | NotFoundError
   | PrismaError
   | DBFundsFundraisingProviderError;
+
+/**
+ *
+ */
 async function doSync(): Promise<
   Result<None, DoSyncError | CompositeError<DoSyncError>>
 > {
