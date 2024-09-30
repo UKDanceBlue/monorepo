@@ -81,6 +81,11 @@ export class MarathonRepository {
     }
   }
 
+  /**
+   * Find the current marathon, if one exists
+   *
+   * A marathon is considered current if the current date is between the start and end dates
+   */
   async findCurrentMarathon(): Promise<
     Result<Option<Marathon>, RepositoryError>
   > {
@@ -95,6 +100,11 @@ export class MarathonRepository {
     }
   }
 
+  /**
+   * Find the active marathon, if one exists
+   *
+   * A marathon is considered active if it is the most recent marathon by marathon year
+   */
   async findActiveMarathon(): Promise<
     Result<Option<Marathon>, RepositoryError>
   > {

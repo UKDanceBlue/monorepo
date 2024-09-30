@@ -11,10 +11,10 @@ import ScoreboardScreen from "./ScoreBoardScreen";
 import TeamScreen from "./TeamScreen";
 
 const scoreBoardDocument = graphql(/* GraphQL */ `
-  query ScoreBoardDocument($type: [TeamType!], $marathonId: GlobalId!) {
+  query ScoreBoardDocument($type: TeamType!, $marathonId: GlobalId!) {
     me {
       id
-      teams {
+      primaryTeam(teamType: $type) {
         team {
           ...HighlightedTeamFragment
           ...MyTeamFragment
@@ -26,7 +26,7 @@ const scoreBoardDocument = graphql(/* GraphQL */ `
       sendAll: true
       sortBy: ["totalPoints", "name"]
       sortDirection: [desc, asc]
-      type: $type
+      type: [$type]
       marathonId: [$marathonId]
     ) {
       data {
@@ -61,11 +61,10 @@ const SpiritScreen = () => {
     query: scoreBoardDocument,
     pause: !spiritMode || !marathonQuery.data?.latestMarathon,
     variables: {
-      type: !spiritMode
-        ? []
-        : spiritMode === "spirit"
-          ? [TeamType.Spirit]
-          : [TeamType.Morale],
+      type:
+        !spiritMode || spiritMode === "spirit"
+          ? TeamType.Spirit
+          : TeamType.Morale,
       marathonId: marathonQuery.data?.latestMarathon?.id ?? "",
     },
   });
@@ -110,7 +109,7 @@ const SpiritScreen = () => {
       <SpiritStack.Screen name="Scoreboard">
         {() => (
           <ScoreboardScreen
-            highlightedTeamFragment={query.data?.me?.teams[0]?.team ?? null}
+            highlightedTeamFragment={query.data?.me?.primaryTeam?.team ?? null}
             scoreBoardFragment={query.data?.teams.data ?? null}
             loading={!spiritMode || query.fetching}
             refresh={() => refresh({ requestPolicy: "network-only" })}
@@ -121,7 +120,7 @@ const SpiritScreen = () => {
       <SpiritStack.Screen name="MyTeam">
         {() => (
           <TeamScreen
-            myTeamFragment={query.data?.me?.teams[0]?.team ?? null}
+            myTeamFragment={query.data?.me?.primaryTeam?.team ?? null}
             myFundraisingFragment={query.data?.me ?? null}
             userUuid={query.data?.me?.id ?? ""}
             loading={!spiritMode || query.fetching}

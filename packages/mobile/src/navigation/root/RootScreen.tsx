@@ -1,6 +1,7 @@
 import ErrorBoundary, {
   withErrorBoundary,
 } from "@common/components/ErrorBoundary";
+import { Logger } from "@common/logger/Logger";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DbRole } from "@ukdanceblue/common";
@@ -9,8 +10,8 @@ import {
   graphql,
 } from "@ukdanceblue/common/graphql-client-mobile";
 import { Center, Text, useTheme } from "native-base";
-import { useEffect, useMemo } from "react";
-import { useWindowDimensions } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import { Alert, useWindowDimensions } from "react-native";
 import { useQuery } from "urql";
 
 import { useColorModeValue } from "../../common/customHooks";
@@ -53,6 +54,15 @@ const RootScreen = () => {
   const [{ data: rootScreenData, fetching, error }] = useQuery({
     query: rootScreenDocument,
   });
+  const [shownErrors, setShownErrors] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (error && !shownErrors.has(String(error))) {
+      Logger.error("Error fetching data for RootScreen", { error });
+      setShownErrors((prev) => new Set([...prev, String(error)]));
+      Alert.alert("Error fetching data for RootScreen", String(error));
+    }
+  }, [error, shownErrors]);
 
   const [rootScreenLoading, setRootScreenLoading] = useLoading(
     "rootScreen-rootScreenDocument",
@@ -81,12 +91,6 @@ const RootScreen = () => {
 
   return (
     <>
-      {error != null && (
-        <Center>
-          {console.error(error)}
-          <Text>Error: {error.message}</Text>
-        </Center>
-      )}
       {!rootScreenLoading && (
         <RootStack.Navigator
           screenOptions={({

@@ -16,7 +16,6 @@ import {
 } from "@ukdanceblue/common";
 import { globalFundraisingAccessParam } from "./accessParams.js";
 
-import { TeamType } from "@prisma/client";
 import {
   AccessControl,
   AccessLevel,
@@ -28,6 +27,7 @@ import {
   MembershipPositionType,
   PersonNode,
   SortDirection,
+  TeamType,
 } from "@ukdanceblue/common";
 import {
   ActionDeniedError,
@@ -469,6 +469,32 @@ export class PersonResolver {
     );
 
     return extractNotFound(resources);
+  }
+
+  @AccessControl(
+    { accessLevel: AccessLevel.Committee },
+    {
+      rootMatch: [
+        {
+          root: "id",
+          extractor: ({ userData }) => userData.userId,
+        },
+      ],
+    }
+  )
+  @FieldResolver(() => MembershipNode, { nullable: true })
+  async primaryTeam(
+    @Arg("teamType", () => TeamType) teamType: TeamType,
+    @Root() { id: { id } }: PersonNode
+  ): Promise<ConcreteResult<Option<MembershipNode>>> {
+    const model = await this.personRepository.getPrimaryTeamOfPerson(
+      {
+        uuid: id,
+      },
+      teamType
+    );
+
+    return model.map((option) => option.map(membershipModelToResource));
   }
 
   @AccessControl<FundraisingEntryNode>(

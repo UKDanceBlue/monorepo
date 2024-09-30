@@ -5,7 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "check": "tsc --noEmit",
-    "start": "expo start --dev-client",
+    "start": "expo start --dev-client --tunnel",
     "test": "vitest",
     "test-with-coverage": "vitest --collect-coverage --collect-coverage-from=\"src/**/*.{js,jsx,ts,tsx}\"",
     "doctor": "npx expo-doctor@latest",

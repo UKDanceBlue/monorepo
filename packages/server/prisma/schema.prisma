@@ -452,7 +452,7 @@ model DBFundsFundraisingEntry {
   // The corresponding fundraising entry in our database
   fundraisingEntry FundraisingEntryWithMeta?
 
-  @@unique([donatedTo, donatedBy, date])
+  @@unique([donatedTo, donatedBy, date, dbFundsTeamId])
   @@map("db_funds_team_entries")
 }
 

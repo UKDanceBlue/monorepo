@@ -1489,6 +1489,7 @@ export type PersonNode = Node & {
   readonly moraleTeams: ReadonlyArray<MembershipNode>;
   readonly name?: Maybe<Scalars['String']['output']>;
   readonly primaryCommittee?: Maybe<CommitteeMembershipNode>;
+  readonly primaryTeam?: Maybe<MembershipNode>;
   readonly teams: ReadonlyArray<MembershipNode>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
@@ -1507,6 +1508,11 @@ export type PersonNodeAssignedDonationEntriesArgs = {
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
   stringFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedStringFilterItem>>;
+};
+
+
+export type PersonNodePrimaryTeamArgs = {
+  teamType: TeamType;
 };
 
 export const PersonResolverAllKeys = {
