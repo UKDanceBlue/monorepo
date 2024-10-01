@@ -24,7 +24,7 @@ export default defineConfig({
       "@tools": resolveRelative("src", "tools"),
       "@documents": resolveRelative("src", "documents"),
       "@assets": resolveRelative("assets"),
-      "@graphql/index.js": resolveRelative("graphql"),
+      "@graphql": resolveRelative("graphql"),
     },
   },
   build: {

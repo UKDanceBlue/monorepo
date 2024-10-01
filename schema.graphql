@@ -2040,6 +2040,8 @@ type Query {
     stringFilters: [PointOpportunityResolverKeyedStringFilterItem!]
   ): ListPointOpportunitiesResponse!
   pointOpportunity(uuid: GlobalId!): SinglePointOpportunityResponse!
+  rawFundraisingEntries(identifier: Int!, marathonYear: String!): String!
+  rawFundraisingTotals(marathonYear: String!): String!
   searchPeopleByName(name: String!): [PersonNode!]!
   team(uuid: GlobalId!): SingleTeamResponse!
   teams(

@@ -79,6 +79,8 @@ const documents = {
     "\n  mutation RemoveFromTeam($person: GlobalId!, $team: GlobalId!) {\n    removePersonFromTeam(personUuid: $person, teamUuid: $team) {\n      id\n    }\n  }\n": types.RemoveFromTeamDocument,
     "\n  query LoginState {\n    loginState {\n      loggedIn\n      dbRole\n      effectiveCommitteeRoles {\n        role\n        identifier\n      }\n    }\n  }\n": types.LoginStateDocument,
     "\n  query LogsPage {\n    auditLog\n  }\n": types.LogsPageDocument,
+    "\n  query DbFundsEntryViewer($year: String!, $dbNum: Int!) {\n    rawFundraisingEntries(marathonYear: $year, identifier: $dbNum)\n  }\n": types.DbFundsEntryViewerDocument,
+    "\n      query DbFundsViewer($year: String!) {\n        rawFundraisingTotals(marathonYear: $year)\n      }\n    ": types.DbFundsViewerDocument,
     "\n  query EditEventPage($uuid: GlobalId!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventEditorFragment\n      }\n    }\n  }\n": types.EditEventPageDocument,
     "\n  query ViewEventPage($uuid: GlobalId!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventViewerFragment\n      }\n    }\n  }\n": types.ViewEventPageDocument,
     "\n  query FeedPage {\n    feed(limit: null) {\n      id\n      title\n      createdAt\n      textContent\n      image {\n        url\n        alt\n      }\n    }\n  }\n": types.FeedPageDocument,
@@ -381,6 +383,14 @@ export function graphql(source: "\n  query LoginState {\n    loginState {\n     
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query LogsPage {\n    auditLog\n  }\n"): (typeof documents)["\n  query LogsPage {\n    auditLog\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query DbFundsEntryViewer($year: String!, $dbNum: Int!) {\n    rawFundraisingEntries(marathonYear: $year, identifier: $dbNum)\n  }\n"): (typeof documents)["\n  query DbFundsEntryViewer($year: String!, $dbNum: Int!) {\n    rawFundraisingEntries(marathonYear: $year, identifier: $dbNum)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n      query DbFundsViewer($year: String!) {\n        rawFundraisingTotals(marathonYear: $year)\n      }\n    "): (typeof documents)["\n      query DbFundsViewer($year: String!) {\n        rawFundraisingTotals(marathonYear: $year)\n      }\n    "];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

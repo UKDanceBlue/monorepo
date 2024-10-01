@@ -39,6 +39,10 @@ const routes: {
     title: "Teams",
   },
   {
+    path: "/dbfunds",
+    title: "DB Funds",
+  },
+  {
     path: "/people",
     title: "People",
   },

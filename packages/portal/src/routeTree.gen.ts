@@ -20,6 +20,7 @@ import { Route as NotificationsIndexImport } from "./routes/notifications/index"
 import { Route as MarathonIndexImport } from "./routes/marathon/index";
 import { Route as FeedIndexImport } from "./routes/feed/index";
 import { Route as EventsIndexImport } from "./routes/events/index";
+import { Route as DbfundsIndexImport } from "./routes/dbfunds/index";
 import { Route as ConfigIndexImport } from "./routes/config/index";
 import { Route as TeamsCreateImport } from "./routes/teams/create";
 import { Route as TeamsBulkImport } from "./routes/teams/bulk";
@@ -89,6 +90,11 @@ const FeedIndexRoute = FeedIndexImport.update({
 
 const EventsIndexRoute = EventsIndexImport.update({
   path: "/events/",
+  getParentRoute: () => rootRoute,
+} as any);
+
+const DbfundsIndexRoute = DbfundsIndexImport.update({
+  path: "/dbfunds/",
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -304,6 +310,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ConfigIndexImport;
       parentRoute: typeof rootRoute;
     };
+    "/dbfunds/": {
+      id: "/dbfunds/";
+      path: "/dbfunds";
+      fullPath: "/dbfunds";
+      preLoaderRoute: typeof DbfundsIndexImport;
+      parentRoute: typeof rootRoute;
+    };
     "/events/": {
       id: "/events/";
       path: "/events";
@@ -475,6 +488,7 @@ export const routeTree = rootRoute.addChildren({
   TeamsBulkRoute,
   TeamsCreateRoute,
   ConfigIndexRoute,
+  DbfundsIndexRoute,
   EventsIndexRoute,
   FeedIndexRoute,
   MarathonIndexRoute,
@@ -520,6 +534,7 @@ export const routeTree = rootRoute.addChildren({
         "/teams/bulk",
         "/teams/create",
         "/config/",
+        "/dbfunds/",
         "/events/",
         "/feed/",
         "/marathon/",
@@ -571,6 +586,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/config/": {
       "filePath": "config/index.tsx"
+    },
+    "/dbfunds/": {
+      "filePath": "dbfunds/index.tsx"
     },
     "/events/": {
       "filePath": "events/index.tsx"

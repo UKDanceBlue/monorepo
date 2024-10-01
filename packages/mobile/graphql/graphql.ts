@@ -1729,6 +1729,8 @@ export type Query = {
   readonly pointEntry: GetPointEntryByUuidResponse;
   readonly pointOpportunities: ListPointOpportunitiesResponse;
   readonly pointOpportunity: SinglePointOpportunityResponse;
+  readonly rawFundraisingEntries: Scalars['String']['output'];
+  readonly rawFundraisingTotals: Scalars['String']['output'];
   readonly searchPeopleByName: ReadonlyArray<PersonNode>;
   readonly team: SingleTeamResponse;
   readonly teams: ListTeamsResponse;
@@ -1994,6 +1996,17 @@ export type QueryPointOpportunitiesArgs = {
 
 export type QueryPointOpportunityArgs = {
   uuid: Scalars['GlobalId']['input'];
+};
+
+
+export type QueryRawFundraisingEntriesArgs = {
+  identifier: Scalars['Int']['input'];
+  marathonYear: Scalars['String']['input'];
+};
+
+
+export type QueryRawFundraisingTotalsArgs = {
+  marathonYear: Scalars['String']['input'];
 };
 
 

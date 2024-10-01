@@ -5,6 +5,7 @@ import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisi
 
 import {
   AccessControl,
+  AccessLevel,
   checkParam,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
@@ -13,21 +14,32 @@ import {
   SortDirection,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
-import { Arg, Args, FieldResolver, Query, Resolver, Root } from "type-graphql";
+import {
+  Arg,
+  Args,
+  FieldResolver,
+  Int,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
 import { Container, Service } from "@freshgum/typedi";
 
-import type { GlobalId } from "@ukdanceblue/common";
+import type { GlobalId, MarathonYearString } from "@ukdanceblue/common";
 import { Ok } from "ts-results-es";
 import { globalFundraisingAccessParam } from "./accessParams.js";
 import {
   ListFundraisingEntriesResponse,
   ListFundraisingEntriesArgs,
 } from "@ukdanceblue/common";
+import { DBFundsFundraisingProvider } from "#lib/fundraising/DbFundsProvider.js";
+import type { FundraisingProvider } from "#lib/fundraising/FundraisingProvider.js";
 
 @Resolver(() => FundraisingEntryNode)
-@Service([FundraisingEntryRepository])
+@Service([DBFundsFundraisingProvider, FundraisingEntryRepository])
 export class FundraisingEntryResolver {
   constructor(
+    private readonly fundraisingProvider: FundraisingProvider<number>,
     private readonly fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
@@ -159,5 +171,40 @@ export class FundraisingEntryResolver {
           )
         )
       ).promise;
+  }
+
+  @AccessControl(globalFundraisingAccessParam, {
+    accessLevel: AccessLevel.Admin,
+  })
+  @Query(() => String)
+  async rawFundraisingTotals(
+    @Arg("marathonYear", () => String) marathonYear: MarathonYearString
+  ) {
+    const result = await this.fundraisingProvider.getTeams(marathonYear);
+    return result.map((data) => JSON.stringify(data));
+  }
+
+  @AccessControl(globalFundraisingAccessParam, {
+    accessLevel: AccessLevel.Admin,
+  })
+  @Query(() => String)
+  async rawFundraisingEntries(
+    @Arg("marathonYear", () => String) marathonYear: MarathonYearString,
+    @Arg("identifier", () => Int) identifier: number
+  ) {
+    const result = await this.fundraisingProvider.getTeamEntries(
+      marathonYear,
+      identifier
+    );
+    return result
+      .map((data) =>
+        data.map((val) => ({
+          donatedBy: val.donatedBy.unwrapOr(null),
+          donatedTo: val.donatedBy.unwrapOr(null),
+          donatedOn: val.donatedOn.toISO(),
+          amount: val.amount,
+        }))
+      )
+      .map((data) => JSON.stringify(data));
   }
 }

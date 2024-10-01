@@ -23,6 +23,6 @@ export interface FundraisingProvider<IDType> {
   ): Promise<ConcreteResult<FundraisingTeam<IDType>[]>>;
   getTeamEntries(
     marathonYear: MarathonYearString,
-    identifier: unknown
+    identifier: IDType
   ): Promise<ConcreteResult<FundraisingEntry[]>>;
 }
