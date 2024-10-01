@@ -73,6 +73,13 @@ const possibleTabs = {
       component={withErrorBoundary(InfoScreen)}
     />
   ),
+  Fundraising: (
+    <Tabs.Screen
+      key="FundraisingScreen"
+      name="DB Funds"
+      component={withErrorBoundary(FundraisingScreen)}
+    />
+  ),
 } as const;
 
 const TabBar = () => {
