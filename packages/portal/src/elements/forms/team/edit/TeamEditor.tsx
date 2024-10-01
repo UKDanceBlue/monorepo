@@ -1,6 +1,6 @@
+import type { FragmentType } from "@graphql/index.js";
+import { getFragmentData } from "@graphql/index.js";
 import { TeamLegacyStatus } from "@ukdanceblue/common";
-import type { FragmentType } from "@graphql";
-import { getFragmentData } from "@graphql";
 import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
 import type { UseQueryExecute } from "urql";
 

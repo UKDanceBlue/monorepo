@@ -1,4 +1,5 @@
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { getFragmentData, graphql } from "@graphql/index.js";
 import { useListQuery } from "@hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
@@ -10,7 +11,6 @@ import {
   SortDirection,
   stringifyDbRole,
 } from "@ukdanceblue/common";
-import { getFragmentData, graphql } from "@graphql";
 import { Button, Flex, Table } from "antd";
 import { useQuery } from "urql";
 

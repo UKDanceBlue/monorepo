@@ -1,11 +1,11 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import type { FragmentType } from "@graphql/index.js";
+import { getFragmentData, graphql } from "@graphql/index.js";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   base64StringToArray,
   intervalFromSomething,
 } from "@ukdanceblue/common";
-import type { FragmentType } from "@graphql";
-import { getFragmentData, graphql } from "@graphql";
 import { Button, Descriptions, Flex, Image, List, Typography } from "antd";
 import DescriptionsItem from "antd/es/descriptions/Item";
 import type { Interval } from "luxon";

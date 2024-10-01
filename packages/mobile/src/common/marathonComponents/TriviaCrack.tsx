@@ -1,6 +1,6 @@
 import { SimpleConfigFragment } from "@common/fragments/Configuration";
+import { getFragmentData, graphql } from "@graphql/index.js";
 import { TeamType } from "@ukdanceblue/common";
-import { getFragmentData, graphql } from "@graphql";
 import { Text, View } from "native-base";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator } from "react-native";
@@ -61,7 +61,7 @@ export function TriviaCrack() {
   );
 
   const { stationOrder, moraleTeamNumber } = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+     
     const value = JSON.parse(option?.value || "{}") as unknown;
     let stationOrder: [number, number, number, number, number, number] | null =
       null;

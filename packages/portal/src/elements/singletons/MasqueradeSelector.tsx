@@ -1,5 +1,5 @@
 import { SessionStorageKeys } from "@config/storage";
-import { graphql } from "@graphql";
+import { graphql } from "@graphql/index.js";
 import { AutoComplete } from "antd";
 import { useMemo, useRef, useState } from "react";
 import { useQuery } from "urql";

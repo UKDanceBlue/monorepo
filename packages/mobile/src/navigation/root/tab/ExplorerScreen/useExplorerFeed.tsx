@@ -1,8 +1,8 @@
 import { API_BASE_URL } from "@common/apiUrl";
 import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
+import { graphql } from "@graphql/index.js";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { graphql } from "@graphql";
 import type { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FeedItem } from "react-native-rss-parser";

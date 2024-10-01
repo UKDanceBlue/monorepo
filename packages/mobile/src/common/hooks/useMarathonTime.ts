@@ -1,6 +1,6 @@
 import { Logger } from "@common/logger/Logger";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { graphql } from "@graphql";
+import { graphql } from "@graphql/index.js";
 import { DateTime } from "luxon";
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";

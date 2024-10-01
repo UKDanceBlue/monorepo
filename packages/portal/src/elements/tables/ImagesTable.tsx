@@ -1,11 +1,11 @@
 import { EyeOutlined, InboxOutlined, UploadOutlined } from "@ant-design/icons";
 import { API_BASE_URL } from "@config/api";
+import { getFragmentData, graphql } from "@graphql/index.js";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useNavigate } from "@tanstack/react-router";
 import { base64StringToArray, SortDirection } from "@ukdanceblue/common";
-import { getFragmentData, graphql } from "@graphql";
 import { Button, Flex, Image, Modal, Table, Typography, Upload } from "antd";
 import { useMemo, useState } from "react";
 import { thumbHashToDataURL } from "thumbhash";

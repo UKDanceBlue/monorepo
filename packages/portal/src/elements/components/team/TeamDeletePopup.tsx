@@ -1,4 +1,4 @@
-import { graphql } from "@graphql";
+import { graphql } from "@graphql/index.js";
 import { Modal } from "antd";
 import useNotification from "antd/es/notification/useNotification";
 import { useEffect, useState } from "react";

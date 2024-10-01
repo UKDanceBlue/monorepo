@@ -4,8 +4,8 @@ import {
   NotificationFragment,
 } from "@common/fragments/NotificationScreenGQL";
 import { Logger } from "@common/logger/Logger";
-import type { FragmentType } from "@graphql";
-import { getFragmentData } from "@graphql";
+import type { FragmentType } from "@graphql/index.js";
+import { getFragmentData } from "@graphql/index.js";
 import { openURL } from "expo-linking";
 import { isEqual } from "lodash";
 import { DateTime } from "luxon";

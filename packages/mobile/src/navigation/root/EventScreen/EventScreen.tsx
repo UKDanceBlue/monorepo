@@ -1,9 +1,9 @@
 import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
 import { log } from "@common/logging";
 import { showMessage } from "@common/util/alertUtils";
+import { getFragmentData } from "@graphql/index.js";
 import { useRoute } from "@react-navigation/native";
 import { intervalFromSomething } from "@ukdanceblue/common";
-import { getFragmentData } from "@graphql";
 import { setStringAsync } from "expo-clipboard";
 import type { Interval } from "luxon";
 import { DateTime } from "luxon";

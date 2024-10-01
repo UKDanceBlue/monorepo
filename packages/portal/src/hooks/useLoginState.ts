@@ -3,7 +3,7 @@ import {
   defaultAuthorization,
   roleToAccessLevel,
 } from "@ukdanceblue/common";
-import { graphql } from "@graphql";
+import { graphql } from "@graphql/index.js";
 import { useMemo } from "react";
 import { Client, OperationResult, useQuery } from "urql";
 
@@ -12,7 +12,7 @@ import type {
   Authorization,
   AuthorizationRule,
 } from "@ukdanceblue/common";
-import { LoginStateQuery } from "@graphql/raw-types";
+import { LoginStateQuery } from "@graphql/graphql.js";
 
 const loginStateDocument = graphql(/* GraphQL */ `
   query LoginState {

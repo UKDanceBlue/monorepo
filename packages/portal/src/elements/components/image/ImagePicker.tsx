@@ -1,6 +1,6 @@
+import { graphql } from "@graphql/index.js";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { StringComparator } from "@ukdanceblue/common";
-import { graphql } from "@graphql";
 import { Button, Flex, Image, Input } from "antd";
 import { useState } from "react";
 import { useQuery } from "urql";

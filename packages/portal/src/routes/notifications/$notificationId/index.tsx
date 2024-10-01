@@ -1,11 +1,11 @@
 import { SendOutlined } from "@ant-design/icons";
 import { NotificationDeliveriesTable } from "@elements/tables/notification/NotificationDeliveriesTable";
 import { NotificationViewer } from "@elements/viewers/notification/NotificationViewer";
+import { graphql } from "@graphql/index.js";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel } from "@ukdanceblue/common";
-import { graphql } from "@graphql";
 import { Button, Flex, Typography } from "antd";
 import { useQuery } from "urql";
 

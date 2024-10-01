@@ -23,7 +23,7 @@
       "@tools/*": ["tools/*"],
       "@assets/*": ["../assets/*"],
       "@documents/*": ["documents/*"],
-      "@graphql": ["../graphql/index.js"]
+      "@graphql/*": ["../graphql/*"]
     },
 
     "baseUrl": "./src"

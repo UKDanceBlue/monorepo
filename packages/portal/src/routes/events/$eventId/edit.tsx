@@ -1,9 +1,9 @@
 import { EventEditor } from "@elements/forms/event/edit/EventEditor";
+import { graphql } from "@graphql/index.js";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
 import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
-import { graphql } from "@graphql";
 import { useQuery } from "urql";
 
 const viewEventPageDocument = graphql(/* GraphQL */ `

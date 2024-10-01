@@ -1,7 +1,7 @@
+import type { FragmentType } from "@graphql/index.js";
+import { getFragmentData } from "@graphql/index.js";
 import { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
 import { intervalFromSomething } from "@ukdanceblue/common";
-import type { FragmentType } from "@graphql";
-import { getFragmentData } from "@graphql";
 import { Platform } from "expo-modules-core";
 import { DateTime } from "luxon";
 import { Box, Column, Heading, Row } from "native-base";

@@ -1,5 +1,5 @@
-import type { FragmentType } from "@graphql";
-import { getFragmentData, graphql } from "@graphql";
+import type { FragmentType } from "@graphql/index.js";
+import { getFragmentData, graphql } from "@graphql/index.js";
 import { Image, type ImageProps } from "expo-image";
 
 export const ImageViewFragment = graphql(/* GraphQL */ `

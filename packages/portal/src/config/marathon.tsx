@@ -1,5 +1,5 @@
+import { graphql } from "@graphql/index.js";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { graphql } from "@graphql";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "urql";
 

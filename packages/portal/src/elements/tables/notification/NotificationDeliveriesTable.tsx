@@ -1,8 +1,8 @@
+import { getFragmentData, graphql } from "@graphql/index.js";
 import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { renderDateTime } from "@tools/luxonTools";
 import { SortDirection } from "@ukdanceblue/common";
-import { getFragmentData, graphql } from "@graphql";
 import { Table } from "antd";
 import { DateTime } from "luxon";
 import { useQuery } from "urql";

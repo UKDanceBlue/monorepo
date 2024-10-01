@@ -1,5 +1,5 @@
+import type { FragmentType } from "@graphql/index.js";
 import type { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
-import type { FragmentType } from "@graphql";
 import type { DateTime } from "luxon";
 import { Column, Divider, Spinner, Text } from "native-base";
 import { useEffect, useMemo, useRef, useState } from "react";

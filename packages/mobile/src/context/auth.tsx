@@ -1,7 +1,7 @@
 import { Logger } from "@common/logger/Logger";
+import { graphql } from "@graphql/index.js";
 import { setUser as setSentryUser } from "@sentry/react-native";
 import { AuthSource } from "@ukdanceblue/common";
-import { graphql } from "@graphql";
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect } from "react";
 import { useQuery } from "urql";

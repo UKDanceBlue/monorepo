@@ -10,7 +10,7 @@
       "@navigation/*": ["./src/navigation/*"],
       "@theme/*": ["./src/theme/*"],
       "@common-types/*": ["./src/types/*"],
-      "@graphql": ["./src/graphql/index.js"]
+      "@graphql/*": ["./graphql/*"]
     },
     "noUncheckedIndexedAccess": false,
     "exactOptionalPropertyTypes": false,
@@ -35,5 +35,14 @@
     "noEmit": false
   },
   "extends": ["../../tsconfig.json", "./node_modules/expo/tsconfig.base.json"],
-  "include": ["index.js", "src", "assets", "config-plugins", "test-helpers"]
+  "include": [
+    "index.js",
+    "App.tsx",
+    "global.d.ts",
+    "src",
+    "assets",
+    "graphql",
+    "config-plugins",
+    "test-helpers"
+  ]
 }

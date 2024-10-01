@@ -4,7 +4,7 @@ import { universalCatch } from "@common/logging";
 import { showMessage, showPrompt } from "@common/util/alertUtils";
 import { discoverDefaultCalendar } from "@common/util/calendar";
 import { intervalFromSomething } from "@ukdanceblue/common";
-import { getFragmentData } from "@graphql";
+import { getFragmentData } from "@graphql/index.js";
 import {
   PermissionStatus,
   createEventAsync,
@@ -12,7 +12,7 @@ import {
   requestCalendarPermissionsAsync,
 } from "expo-calendar";
 
-import type { FragmentType } from "@graphql";
+import type { FragmentType } from "@graphql/index.js";
 import type { Event } from "expo-calendar";
 
 export async function onAddToCalendar(

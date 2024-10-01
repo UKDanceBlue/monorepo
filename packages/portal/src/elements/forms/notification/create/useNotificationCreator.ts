@@ -5,7 +5,7 @@ import { useForm } from "@tanstack/react-form";
 import { useMutation } from "urql";
 
 import type { TeamType } from "@ukdanceblue/common";
-import type { DocumentType } from "@graphql";
+import type { DocumentType } from "@graphql/index.js";
 
 export function useNotificationCreator(
   afterSubmit:

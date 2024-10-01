@@ -5,7 +5,7 @@ import type {
   NavigatorScreenParams,
 } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { FragmentType } from "@graphql";
+import type { FragmentType } from "@graphql/index.js";
 
 export type SpiritStackParamList = {
   MyTeam: undefined;

@@ -2,9 +2,9 @@ import { useLogin, useLogOut } from "@common/auth";
 import { useColorModeValue } from "@common/customHooks";
 import { universalCatch } from "@common/logging";
 import { Ionicons } from "@expo/vector-icons";
+import type { FragmentType } from "@graphql/index.js";
+import { getFragmentData } from "@graphql/index.js";
 import { AuthSource } from "@ukdanceblue/common";
-import type { FragmentType } from "@graphql";
-import { getFragmentData } from "@graphql";
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import { openURL } from "expo-linking";
 import {

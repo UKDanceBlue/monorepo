@@ -1,4 +1,5 @@
 import { FilterFilled } from "@ant-design/icons";
+import { graphql } from "@graphql/index.js";
 import { useListQuery } from "@hooks/useListQuery";
 import { useAuthorizationRequirement } from "@hooks/useLoginState";
 import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
@@ -11,7 +12,6 @@ import {
   CommitteeRole,
   SortDirection,
 } from "@ukdanceblue/common";
-import { graphql } from "@graphql";
 import {
   AutoComplete,
   Button,

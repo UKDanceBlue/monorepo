@@ -1,10 +1,10 @@
 import { useMarathon } from "@config/marathonContext";
 import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
+import type { FragmentType } from "@graphql/index.js";
+import { getFragmentData } from "@graphql/index.js";
 import { useAuthorizationRequirement } from "@hooks/useLoginState";
 import type { Authorization } from "@ukdanceblue/common";
 import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
-import type { FragmentType } from "@graphql";
-import { getFragmentData } from "@graphql";
 import {
   App,
   AutoComplete,

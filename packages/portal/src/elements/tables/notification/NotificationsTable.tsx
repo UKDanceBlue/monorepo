@@ -1,10 +1,10 @@
 import { EyeOutlined, SendOutlined } from "@ant-design/icons";
+import { getFragmentData, graphql } from "@graphql/index.js";
 import { useListQuery } from "@hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { Link } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
-import { getFragmentData, graphql } from "@graphql";
 import { Button, Flex, Table } from "antd";
 import { DateTime } from "luxon";
 import { useQuery } from "urql";

@@ -1,4 +1,5 @@
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { getFragmentData, graphql } from "@graphql/index.js";
 import { useListQuery } from "@hooks/useListQuery";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { Link } from "@tanstack/react-router";
@@ -7,7 +8,6 @@ import {
   parsedEventOccurrenceToStrings,
   parseEventOccurrence,
 } from "@ukdanceblue/common/client-parsers";
-import { getFragmentData, graphql } from "@graphql";
 import { Button, Flex, Table } from "antd";
 import { useCallback, useMemo } from "react";
 import { useQuery } from "urql";

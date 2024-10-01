@@ -7,7 +7,7 @@ import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "urql";
 
-import type { CreatePointEntryInput } from "@graphql/raw-types";
+import type { CreatePointEntryInput } from "@graphql/graphql.js";
 
 export function usePointEntryCreatorForm({
   teamUuid,

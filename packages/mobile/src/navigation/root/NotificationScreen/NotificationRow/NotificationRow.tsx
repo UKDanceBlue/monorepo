@@ -1,6 +1,6 @@
 import type { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
 import { showMessage } from "@common/util/alertUtils";
-import type { FragmentType } from "@graphql";
+import type { FragmentType } from "@graphql/index.js";
 import { Box, Button, Row, useTheme } from "native-base";
 import type { SectionListRenderItem } from "react-native";
 import { useWindowDimensions } from "react-native";

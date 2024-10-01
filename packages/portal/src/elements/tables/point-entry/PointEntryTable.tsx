@@ -1,7 +1,7 @@
 import { DeleteOutlined } from "@ant-design/icons";
+import type { FragmentType } from "@graphql/index.js";
+import { getFragmentData, graphql } from "@graphql/index.js";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import type { FragmentType } from "@graphql";
-import { getFragmentData, graphql } from "@graphql";
 import { Button, Table } from "antd";
 import type { UseQueryExecute } from "urql";
 

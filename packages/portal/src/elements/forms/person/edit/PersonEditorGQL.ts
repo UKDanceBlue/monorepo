@@ -1,4 +1,4 @@
-import { graphql } from "@graphql";
+import { graphql } from "@graphql/index.js";
 
 export const PersonEditorFragment = graphql(/* GraphQL */ `
   fragment PersonEditorFragment on PersonNode {

@@ -3,11 +3,11 @@ import { PersonEditorFragment, personEditorDocument } from "./PersonEditorGQL";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { MembershipPositionType } from "@ukdanceblue/common";
-import { getFragmentData } from "@graphql";
-import { type MemberOf } from "@graphql/raw-types";
+import { getFragmentData } from "@graphql/index.js";
+import { type MemberOf } from "@graphql/graphql.js";
 import { useMutation } from "urql";
 
-import type { DocumentType, FragmentType } from "@graphql";
+import type { DocumentType, FragmentType } from "@graphql/index.js";
 
 export function usePersonEditorForm(
   personFragment: FragmentType<typeof PersonEditorFragment> | undefined | null,

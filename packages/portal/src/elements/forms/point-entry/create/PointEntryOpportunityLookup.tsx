@@ -1,9 +1,9 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { useMarathon } from "@config/marathonContext";
+import { graphql } from "@graphql/index.js";
+import type { CreatePointOpportunityInput } from "@graphql/graphql.js";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { TeamType } from "@ukdanceblue/common";
-import { graphql } from "@graphql";
-import type { CreatePointOpportunityInput } from "@graphql/raw-types";
 import {
   App,
   AutoComplete,

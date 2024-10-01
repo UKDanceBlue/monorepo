@@ -1,10 +1,10 @@
 import { useMarathon } from "@config/marathonContext";
 import { SpreadsheetUploader } from "@elements/components/SpreadsheetUploader";
+import { graphql } from "@graphql/index.js";
+import type { BulkPersonInput } from "@graphql/graphql.js";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { CommitteeIdentifier, CommitteeRole } from "@ukdanceblue/common";
-import { graphql } from "@graphql";
-import type { BulkPersonInput } from "@graphql/raw-types";
 import { useMutation } from "urql";
 
 const personBulkCreatorDocument = graphql(/* GraphQL */ `

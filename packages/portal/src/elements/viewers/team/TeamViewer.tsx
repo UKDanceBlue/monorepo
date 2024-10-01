@@ -4,6 +4,8 @@ import {
   MinusCircleTwoTone,
 } from "@ant-design/icons";
 import { PersonSearch } from "@elements/components/person/PersonSearch";
+import type { FragmentType } from "@graphql/index.js";
+import { getFragmentData, graphql } from "@graphql/index.js";
 import { useAuthorizationRequirement } from "@hooks/useLoginState";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -13,8 +15,6 @@ import {
   CommitteeRole,
   MembershipPositionType,
 } from "@ukdanceblue/common";
-import type { FragmentType } from "@graphql";
-import { getFragmentData, graphql } from "@graphql";
 import { Button, Descriptions, Empty, Flex } from "antd";
 import { useState } from "react";
 import { useMutation } from "urql";

@@ -2,7 +2,7 @@ import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { graphql } from "@graphql";
+import { graphql } from "@graphql/index.js";
 import { useMutation, useQuery } from "urql";
 
 import type { DateTime } from "luxon";

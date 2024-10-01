@@ -1,7 +1,7 @@
+import type { FragmentType } from "@graphql/index.js";
+import { getFragmentData, graphql } from "@graphql/index.js";
 import { Link } from "@tanstack/react-router";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import type { FragmentType } from "@graphql";
-import { getFragmentData, graphql } from "@graphql";
 import { Descriptions, Empty, Flex } from "antd";
 import { DateTime } from "luxon";
 import { useMemo } from "react";

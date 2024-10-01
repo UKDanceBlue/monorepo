@@ -1,3 +1,4 @@
+import { graphql } from "@graphql/index.js";
 import { useImagePicker } from "@hooks/useImagePicker";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
@@ -7,7 +8,6 @@ import {
   CommitteeRole,
   dateTimeFromSomething,
 } from "@ukdanceblue/common";
-import { graphql } from "@graphql";
 import {
   Button,
   Card,

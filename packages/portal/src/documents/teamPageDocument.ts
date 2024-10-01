@@ -1,4 +1,4 @@
-import { graphql } from "@graphql";
+import { graphql } from "@graphql/index.js";
 
 export const teamPageDocument = graphql(/* GraphQL */ `
   query ViewTeamPage($teamUuid: GlobalId!) {
