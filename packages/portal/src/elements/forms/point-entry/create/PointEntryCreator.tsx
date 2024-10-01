@@ -1,6 +1,6 @@
 import { QuestionOutlined } from "@ant-design/icons";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
-import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
+import type { FragmentType } from "@graphql";
+import { getFragmentData } from "@graphql";
 import type { InputRef, TourProps } from "antd";
 import {
   App,

@@ -1,11 +1,8 @@
 import type { StandingType } from "@common-types/StandingType";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { MembershipPositionType } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
-import {
-  getFragmentData,
-  graphql,
-} from "@ukdanceblue/common/graphql-client-mobile";
+import type { FragmentType } from "@graphql";
+import { getFragmentData, graphql } from "@graphql";
 import { Center, Text } from "native-base";
 import { useEffect, useState } from "react";
 import { useWindowDimensions } from "react-native";

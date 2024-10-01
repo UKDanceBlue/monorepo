@@ -1,7 +1,7 @@
 import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
+import { graphql } from "@graphql";
 import { Button, Modal, Text, View } from "native-base";
 import { useEffect, useMemo, useState } from "react";
 import {

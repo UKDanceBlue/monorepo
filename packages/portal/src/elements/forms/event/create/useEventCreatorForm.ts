@@ -8,7 +8,7 @@ import { useMutation } from "urql";
 import type {
   SetEventInput,
   SetEventOccurrenceInput,
-} from "@ukdanceblue/common/graphql-client-portal/raw-types";
+} from "@graphql/raw-types";
 import type { Interval } from "luxon";
 
 export function useEventCreatorForm() {

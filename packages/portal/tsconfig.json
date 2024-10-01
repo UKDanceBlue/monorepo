@@ -22,12 +22,13 @@
       "@routing/*": ["routing/*"],
       "@tools/*": ["tools/*"],
       "@assets/*": ["../assets/*"],
-      "@documents/*": ["documents/*"]
+      "@documents/*": ["documents/*"],
+      "@graphql": ["../graphql/index.js"]
     },
 
     "baseUrl": "./src"
   },
-  "include": ["src"],
+  "include": ["src", "graphql"],
   "references": [{ "path": "./tsconfig.node.json" }],
   "extends": "../../tsconfig.json"
 }

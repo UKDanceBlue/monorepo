@@ -3,14 +3,14 @@ import { EventEditorFragment, eventEditorDocument } from "./EventEditorGQL";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { intervalFromSomething } from "@ukdanceblue/common";
-import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
+import { getFragmentData } from "@graphql";
 import { useMutation } from "urql";
 
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
+import type { FragmentType } from "@graphql";
 import type {
   SetEventInput,
   SetEventOccurrenceInput,
-} from "@ukdanceblue/common/graphql-client-portal/raw-types";
+} from "@graphql/raw-types";
 import type { Interval } from "luxon";
 import type { UseQueryExecute } from "urql";
 

@@ -7,10 +7,7 @@ import {
   parsedEventOccurrenceToStrings,
   parseEventOccurrence,
 } from "@ukdanceblue/common/client-parsers";
-import {
-  getFragmentData,
-  graphql,
-} from "@ukdanceblue/common/graphql-client-portal";
+import { getFragmentData, graphql } from "@graphql";
 import { Button, Flex, Table } from "antd";
 import { useCallback, useMemo } from "react";
 import { useQuery } from "urql";

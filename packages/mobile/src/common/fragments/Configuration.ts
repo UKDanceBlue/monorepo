@@ -1,4 +1,4 @@
-import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
+import { graphql } from "@graphql";
 
 export const SimpleConfigFragment = graphql(/* GraphQL */ `
   fragment SimpleConfig on ConfigurationNode {

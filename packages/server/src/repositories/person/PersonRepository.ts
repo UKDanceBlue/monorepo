@@ -1294,6 +1294,63 @@ export class PersonRepository {
     }
   }
 
+  async getPrimaryTeamOfPerson(
+    personParam: UniquePersonParam,
+    teamType: TeamType
+  ): Promise<Result<Option<Membership & { team: Team }>, RepositoryError>> {
+    try {
+      const activeMarathon = await this.marathonRepository.findActiveMarathon();
+      if (activeMarathon.isErr()) {
+        return Err(activeMarathon.error);
+      }
+      if (activeMarathon.value.isNone()) {
+        return Err(new NotFoundError({ what: "active marathon" }));
+      }
+
+      const pointEntriesPerTeam = await this.prisma.pointEntry.groupBy({
+        by: ["teamId"],
+        _count: {
+          id: true,
+        },
+        where: {
+          person: personParam,
+          team: {
+            type: teamType,
+          },
+        },
+      });
+
+      let teamId: number | undefined;
+      if (!pointEntriesPerTeam[0]) {
+        return Ok(None);
+      } else if (pointEntriesPerTeam.length === 1) {
+        teamId = pointEntriesPerTeam[0].teamId;
+      } else {
+        teamId = pointEntriesPerTeam.reduce((prev, curr) =>
+          prev._count.id > curr._count.id ? prev : curr
+        ).teamId;
+      }
+
+      if (!teamId) {
+        return Ok(None);
+      }
+
+      const team = await this.prisma.membership.findFirst({
+        where: {
+          person: personParam,
+          teamId,
+        },
+        include: {
+          team: true,
+        },
+      });
+
+      return Ok(optionOf(team));
+    } catch (error) {
+      return handleRepositoryError(error);
+    }
+  }
+
   async getTotalFundraisingAmount(
     param: UniquePersonParam
   ): Promise<ConcreteResult<Option<number>, SomePrismaError | BasicError>> {

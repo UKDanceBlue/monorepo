@@ -3,8 +3,8 @@ import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
 import { useAuthorizationRequirement } from "@hooks/useLoginState";
 import type { Authorization } from "@ukdanceblue/common";
 import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
-import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
+import type { FragmentType } from "@graphql";
+import { getFragmentData } from "@graphql";
 import {
   App,
   AutoComplete,

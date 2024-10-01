@@ -1,4 +1,4 @@
-import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
+import { graphql } from "@graphql";
 
 export const EventScreenFragment = graphql(/* GraphQL */ `
   fragment EventScreenFragment on EventNode {

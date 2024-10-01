@@ -17,6 +17,9 @@ function makeScheduledJobsMap() {
   return new Map(scheduledJobs.map((job) => [job.name, job]));
 }
 
+/**
+ * This class acts as a service wrapper for a cron job that schedules notifications
+ */
 @Service([NotificationRepository, ExpoNotificationProvider])
 export class NotificationScheduler {
   constructor(
@@ -26,6 +29,10 @@ export class NotificationScheduler {
     this.ensureNotificationScheduler();
   }
 
+  /**
+   * This method will check for an existing notification scheduler job, and if one
+   * is not loaded, it will create one
+   */
   public ensureNotificationScheduler() {
     if (
       !scheduledJobs.some((job) => job.name === "check-scheduled-notifications")
@@ -57,6 +64,19 @@ export class NotificationScheduler {
     }
   }
 
+  /**
+   * 1. Grab any notifications that are scheduled (including already sent ones)
+   *
+   * For each notification:
+   *
+   * ---
+   * 2. If the notification already has a job in place to send it and the date is correct, skip the notification
+   * 3. If date is incorrect, delete the existing job
+   * 4. If the notification's send at date is in the past, immediately send the notification and continue to the next notification
+   * 5. Otherwise, schedule the notification and continue to the next notification
+   * ---
+   * 6. Log the results of any notifications sent by step 4
+   */
   private async checkScheduledNotifications() {
     logger.debug("Checking for scheduled notifications");
 
@@ -116,6 +136,11 @@ export class NotificationScheduler {
     }
   }
 
+  /**
+   * Create a scheduled job for the given notification that will first perform a series of
+   * checks to make sure it is still safe to send, and if so, dispatch a call to the
+   * notification service.
+   */
   private scheduleNotification(notification: Notification) {
     if (!notification.sendAt) {
       throw new Error("Notification has no sendAt date, cannot schedule it");

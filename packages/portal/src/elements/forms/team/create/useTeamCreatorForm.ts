@@ -4,10 +4,10 @@ import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
-import { type CreateTeamInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
+import { type CreateTeamInput } from "@graphql/raw-types";
 import { useMutation } from "urql";
 
-import type { DocumentType } from "@ukdanceblue/common/graphql-client-portal";
+import type { DocumentType } from "@graphql";
 
 export function useTeamCreatorForm(
   afterSubmit:

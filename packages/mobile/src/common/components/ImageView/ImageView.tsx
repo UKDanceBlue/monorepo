@@ -1,8 +1,5 @@
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
-import {
-  getFragmentData,
-  graphql,
-} from "@ukdanceblue/common/graphql-client-mobile";
+import type { FragmentType } from "@graphql";
+import { getFragmentData, graphql } from "@graphql";
 import { Image, type ImageProps } from "expo-image";
 
 export const ImageViewFragment = graphql(/* GraphQL */ `

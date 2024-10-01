@@ -1,4 +1,4 @@
-import { graphql } from "@ukdanceblue/common/graphql-client-portal";
+import { graphql } from "@graphql";
 
 export const SingleNotificationFragment = graphql(/* GraphQL */ `
   fragment SingleNotificationFragment on NotificationNode {

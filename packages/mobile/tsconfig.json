@@ -9,7 +9,8 @@
       "@context/*": ["./src/context/*"],
       "@navigation/*": ["./src/navigation/*"],
       "@theme/*": ["./src/theme/*"],
-      "@common-types/*": ["./src/types/*"]
+      "@common-types/*": ["./src/types/*"],
+      "@graphql": ["./src/graphql/index.js"]
     },
     "noUncheckedIndexedAccess": false,
     "exactOptionalPropertyTypes": false,
@@ -34,13 +35,5 @@
     "noEmit": false
   },
   "extends": ["../../tsconfig.json", "./node_modules/expo/tsconfig.base.json"],
-  "include": [
-    "*.ts",
-    "*.tsx",
-    "index.js",
-    "src",
-    "assets",
-    "config-plugins",
-    "test-helpers"
-  ]
+  "include": ["index.js", "src", "assets", "config-plugins", "test-helpers"]
 }

@@ -4,7 +4,7 @@ import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import type { BulkTeamInput } from "@ukdanceblue/common";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-portal";
+import { graphql } from "@graphql";
 import { useMutation } from "urql";
 
 const teamBulkCreatorDocument = graphql(/* GraphQL */ `

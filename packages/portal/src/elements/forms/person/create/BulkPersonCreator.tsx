@@ -3,8 +3,8 @@ import { SpreadsheetUploader } from "@elements/components/SpreadsheetUploader";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { CommitteeIdentifier, CommitteeRole } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-portal";
-import type { BulkPersonInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
+import { graphql } from "@graphql";
+import type { BulkPersonInput } from "@graphql/raw-types";
 import { useMutation } from "urql";
 
 const personBulkCreatorDocument = graphql(/* GraphQL */ `

@@ -3,8 +3,8 @@ import { useColorModeValue } from "@common/customHooks";
 import { universalCatch } from "@common/logging";
 import { Ionicons } from "@expo/vector-icons";
 import { AuthSource } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
-import { getFragmentData } from "@ukdanceblue/common/graphql-client-mobile";
+import type { FragmentType } from "@graphql";
+import { getFragmentData } from "@graphql";
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import { openURL } from "expo-linking";
 import {

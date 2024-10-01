@@ -10,10 +10,7 @@ import {
   SortDirection,
   stringifyDbRole,
 } from "@ukdanceblue/common";
-import {
-  getFragmentData,
-  graphql,
-} from "@ukdanceblue/common/graphql-client-portal";
+import { getFragmentData, graphql } from "@graphql";
 import { Button, Flex, Table } from "antd";
 import { useQuery } from "urql";
 

@@ -4,7 +4,7 @@ import { MarathonViewer } from "@elements/viewers/marathon/MarathonViewer";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-portal";
+import { graphql } from "@graphql";
 import { Button, Empty, Flex } from "antd";
 import { useQuery } from "urql";
 

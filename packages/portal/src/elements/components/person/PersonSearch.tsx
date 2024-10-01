@@ -1,5 +1,5 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { graphql } from "@ukdanceblue/common/graphql-client-portal";
+import { graphql } from "@graphql";
 import type { GetRef } from "antd";
 import { AutoComplete, type AutoCompleteProps } from "antd";
 import { useRef, useState } from "react";

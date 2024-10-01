@@ -2,8 +2,8 @@ import { PlusOutlined } from "@ant-design/icons";
 import { useMarathon } from "@config/marathonContext";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { TeamType } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-portal";
-import type { CreatePointOpportunityInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
+import { graphql } from "@graphql";
+import type { CreatePointOpportunityInput } from "@graphql/raw-types";
 import {
   App,
   AutoComplete,

@@ -1,9 +1,6 @@
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import {
-  getFragmentData,
-  graphql,
-} from "@ukdanceblue/common/graphql-client-portal";
+import { getFragmentData, graphql } from "@graphql";
 import { DateTime, Interval } from "luxon";
 import { useMemo } from "react";
 import { useQuery } from "urql";

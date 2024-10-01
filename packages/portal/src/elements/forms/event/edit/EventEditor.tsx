@@ -1,7 +1,7 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { base64StringToArray } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
-import { getFragmentData } from "@ukdanceblue/common/graphql-client-portal";
+import type { FragmentType } from "@graphql";
+import { getFragmentData } from "@graphql";
 import { App, Button, Empty, Flex, Form, Image, Input, List } from "antd";
 import { DateTime, Interval } from "luxon";
 import { thumbHashToDataURL } from "thumbhash";

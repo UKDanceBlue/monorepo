@@ -1,7 +1,7 @@
 import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useForm } from "@tanstack/react-form";
-import { graphql } from "@ukdanceblue/common/graphql-client-portal";
+import { graphql } from "@graphql";
 import { Form, Input, Modal } from "antd";
 import { useClient } from "urql";
 

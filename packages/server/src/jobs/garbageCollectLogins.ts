@@ -8,6 +8,10 @@ import { JobStateRepository } from "#repositories/JobState.js";
 
 const jobStateRepository = Container.get(JobStateRepository);
 
+/**
+ * This job simply deletes old login flow sessions that were not automatically deleted
+ * as part of the login process.
+ */
 export const garbageCollectLoginFlowSessions = new Cron(
   "0 0 */6 * * *",
   {

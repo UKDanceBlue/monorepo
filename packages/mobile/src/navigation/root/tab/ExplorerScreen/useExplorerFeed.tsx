@@ -2,7 +2,7 @@ import { API_BASE_URL } from "@common/apiUrl";
 import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
+import { graphql } from "@graphql";
 import type { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FeedItem } from "react-native-rss-parser";

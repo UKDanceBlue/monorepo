@@ -54,6 +54,9 @@ WORKDIR /app/packages/server
 
 CMD corepack yarn dlx prisma migrate deploy && node .
 
+# TODO: check that the endpoint returns "OK"
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [ "curl" "http://localhost:${APPLICATION_PORT}}" ]
+
 # Portal
 FROM nginx:stable-alpine as portal
 

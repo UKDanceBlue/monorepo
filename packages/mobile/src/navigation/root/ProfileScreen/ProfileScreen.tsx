@@ -9,11 +9,8 @@ import {
   CommitteeRole,
   DbRole,
 } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
-import {
-  getFragmentData,
-  graphql,
-} from "@ukdanceblue/common/graphql-client-mobile";
+import type { FragmentType } from "@graphql";
+import { getFragmentData, graphql } from "@graphql";
 import { openURL } from "expo-linking";
 import {
   Box,

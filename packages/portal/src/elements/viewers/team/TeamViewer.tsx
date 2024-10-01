@@ -13,11 +13,8 @@ import {
   CommitteeRole,
   MembershipPositionType,
 } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
-import {
-  getFragmentData,
-  graphql,
-} from "@ukdanceblue/common/graphql-client-portal";
+import type { FragmentType } from "@graphql";
+import { getFragmentData, graphql } from "@graphql";
 import { Button, Descriptions, Empty, Flex } from "antd";
 import { useState } from "react";
 import { useMutation } from "urql";

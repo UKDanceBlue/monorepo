@@ -1,4 +1,4 @@
-import { graphql } from "@ukdanceblue/common/graphql-client-portal";
+import { graphql } from "@graphql";
 
 export const PointEntryCreatorFragment = graphql(/* GraphQL */ `
   fragment PointEntryCreatorFragment on TeamNode {

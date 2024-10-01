@@ -22,6 +22,7 @@ import type {
   GraphQLRequestListener,
 } from "@apollo/server";
 import type { DefaultState } from "koa";
+import { Container } from "@freshgum/typedi";
 
 const basicLoggingPlugin: ApolloServerPlugin = {
   requestDidStart(requestContext) {
@@ -162,10 +163,10 @@ export async function startServer(
   );
   apiRouter.use(
     "/api",
-    authApiRouter.routes(),
-    eventsApiRouter.routes(),
-    healthCheckRouter.routes(),
-    fileRouter.routes(),
-    uploadRouter.routes()
+    Container.get(authApiRouter).routes,
+    Container.get(eventsApiRouter).routes,
+    Container.get(healthCheckRouter).routes,
+    Container.get(fileRouter).routes,
+    Container.get(uploadRouter).routes
   );
 }
