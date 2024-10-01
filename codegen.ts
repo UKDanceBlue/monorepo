@@ -52,6 +52,7 @@ const config: TypeScriptPluginConfig = {
     ...graphqlScalarsClientDefs,
   },
   strictScalars: true,
+  immutableTypes: true,
 };
 
 const generates: CodegenConfig["generates"] = {};

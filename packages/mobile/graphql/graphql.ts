@@ -42,279 +42,279 @@ export type Scalars = {
 };
 
 export type AbortScheduledNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'AbortScheduledNotificationResponse';
-  data: Scalars['Boolean']['output'];
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'AbortScheduledNotificationResponse';
+  readonly data: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 /** API response */
 export type AbstractGraphQlArrayOkResponse = {
-  ok: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 /** API response */
 export type AbstractGraphQlCreatedResponse = {
-  ok: Scalars['Boolean']['output'];
-  uuid: Scalars['GlobalId']['output'];
+  readonly ok: Scalars['Boolean']['output'];
+  readonly uuid: Scalars['GlobalId']['output'];
 };
 
 /** API response */
 export type AbstractGraphQlOkResponse = {
-  ok: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 /** API response */
 export type AbstractGraphQlPaginatedResponse = {
-  ok: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
-  page: Scalars['PositiveInt']['output'];
+  readonly page: Scalars['PositiveInt']['output'];
   /** The number of items per page */
-  pageSize: Scalars['NonNegativeInt']['output'];
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
   /** The total number of items */
-  total: Scalars['NonNegativeInt']['output'];
+  readonly total: Scalars['NonNegativeInt']['output'];
 };
 
 export { AccessLevel };
 
 export type AcknowledgeDeliveryIssueResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'AcknowledgeDeliveryIssueResponse';
-  data: Scalars['Boolean']['output'];
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'AcknowledgeDeliveryIssueResponse';
+  readonly data: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type AddEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'AddEventImageResponse';
-  data: ImageNode;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'AddEventImageResponse';
+  readonly data: ImageNode;
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type AssignEntryToPersonInput = {
-  amount: Scalars['Float']['input'];
+  readonly amount: Scalars['Float']['input'];
 };
 
 export { AuthSource };
 
 export type BulkPersonInput = {
-  committee?: InputMaybe<CommitteeIdentifier>;
-  email: Scalars['EmailAddress']['input'];
-  linkblue: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-  role?: InputMaybe<CommitteeRole>;
+  readonly committee?: InputMaybe<CommitteeIdentifier>;
+  readonly email: Scalars['EmailAddress']['input'];
+  readonly linkblue: Scalars['String']['input'];
+  readonly name: Scalars['String']['input'];
+  readonly role?: InputMaybe<CommitteeRole>;
 };
 
 export type BulkTeamInput = {
-  captainLinkblues?: InputMaybe<Array<Scalars['String']['input']>>;
-  legacyStatus: TeamLegacyStatus;
-  memberLinkblues?: InputMaybe<Array<Scalars['String']['input']>>;
-  name: Scalars['String']['input'];
-  type: TeamType;
+  readonly captainLinkblues?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  readonly legacyStatus: TeamLegacyStatus;
+  readonly memberLinkblues?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  readonly name: Scalars['String']['input'];
+  readonly type: TeamType;
 };
 
 export { CommitteeIdentifier };
 
 export type CommitteeMembershipNode = Node & {
-  __typename?: 'CommitteeMembershipNode';
-  committeeRole?: Maybe<CommitteeRole>;
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  id: Scalars['GlobalId']['output'];
-  identifier: CommitteeIdentifier;
-  person: PersonNode;
-  position: MembershipPositionType;
-  role: CommitteeRole;
-  team: TeamNode;
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly __typename?: 'CommitteeMembershipNode';
+  readonly committeeRole?: Maybe<CommitteeRole>;
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly id: Scalars['GlobalId']['output'];
+  readonly identifier: CommitteeIdentifier;
+  readonly person: PersonNode;
+  readonly position: MembershipPositionType;
+  readonly role: CommitteeRole;
+  readonly team: TeamNode;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
 export type CommitteeNode = Node & {
-  __typename?: 'CommitteeNode';
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  id: Scalars['GlobalId']['output'];
-  identifier: CommitteeIdentifier;
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly __typename?: 'CommitteeNode';
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly id: Scalars['GlobalId']['output'];
+  readonly identifier: CommitteeIdentifier;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
 export { CommitteeRole };
 
 export type ConfigurationNode = Node & {
-  __typename?: 'ConfigurationNode';
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  id: Scalars['GlobalId']['output'];
-  key: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  validAfter?: Maybe<Scalars['DateTimeISO']['output']>;
-  validUntil?: Maybe<Scalars['DateTimeISO']['output']>;
-  value: Scalars['String']['output'];
+  readonly __typename?: 'ConfigurationNode';
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly id: Scalars['GlobalId']['output'];
+  readonly key: Scalars['String']['output'];
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly validAfter?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly validUntil?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly value: Scalars['String']['output'];
 };
 
 export type CreateConfigurationInput = {
-  key: Scalars['String']['input'];
-  validAfter?: InputMaybe<Scalars['DateTimeISO']['input']>;
-  validUntil?: InputMaybe<Scalars['DateTimeISO']['input']>;
-  value: Scalars['String']['input'];
+  readonly key: Scalars['String']['input'];
+  readonly validAfter?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  readonly validUntil?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  readonly value: Scalars['String']['input'];
 };
 
 export type CreateConfigurationResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'CreateConfigurationResponse';
-  data: ConfigurationNode;
-  ok: Scalars['Boolean']['output'];
-  uuid: Scalars['GlobalId']['output'];
+  readonly __typename?: 'CreateConfigurationResponse';
+  readonly data: ConfigurationNode;
+  readonly ok: Scalars['Boolean']['output'];
+  readonly uuid: Scalars['GlobalId']['output'];
 };
 
 export type CreateEventInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  location?: InputMaybe<Scalars['String']['input']>;
-  occurrences: Array<CreateEventOccurrenceInput>;
-  summary?: InputMaybe<Scalars['String']['input']>;
-  title: Scalars['String']['input'];
+  readonly description?: InputMaybe<Scalars['String']['input']>;
+  readonly location?: InputMaybe<Scalars['String']['input']>;
+  readonly occurrences: ReadonlyArray<CreateEventOccurrenceInput>;
+  readonly summary?: InputMaybe<Scalars['String']['input']>;
+  readonly title: Scalars['String']['input'];
 };
 
 export type CreateEventOccurrenceInput = {
-  fullDay: Scalars['Boolean']['input'];
-  interval: IntervalIsoInput;
+  readonly fullDay: Scalars['Boolean']['input'];
+  readonly interval: IntervalIsoInput;
 };
 
 export type CreateEventResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'CreateEventResponse';
-  data: EventNode;
-  ok: Scalars['Boolean']['output'];
-  uuid: Scalars['GlobalId']['output'];
+  readonly __typename?: 'CreateEventResponse';
+  readonly data: EventNode;
+  readonly ok: Scalars['Boolean']['output'];
+  readonly uuid: Scalars['GlobalId']['output'];
 };
 
 export type CreateFeedInput = {
-  imageUuid?: InputMaybe<Scalars['String']['input']>;
-  textContent?: InputMaybe<Scalars['String']['input']>;
-  title: Scalars['String']['input'];
+  readonly imageUuid?: InputMaybe<Scalars['String']['input']>;
+  readonly textContent?: InputMaybe<Scalars['String']['input']>;
+  readonly title: Scalars['String']['input'];
 };
 
 export type CreateImageInput = {
-  alt?: InputMaybe<Scalars['String']['input']>;
-  url?: InputMaybe<Scalars['URL']['input']>;
+  readonly alt?: InputMaybe<Scalars['String']['input']>;
+  readonly url?: InputMaybe<Scalars['URL']['input']>;
 };
 
 export type CreateMarathonHourInput = {
-  details?: InputMaybe<Scalars['String']['input']>;
-  durationInfo: Scalars['String']['input'];
-  shownStartingAt: Scalars['DateTimeISO']['input'];
-  title: Scalars['String']['input'];
+  readonly details?: InputMaybe<Scalars['String']['input']>;
+  readonly durationInfo: Scalars['String']['input'];
+  readonly shownStartingAt: Scalars['DateTimeISO']['input'];
+  readonly title: Scalars['String']['input'];
 };
 
 export type CreateMarathonInput = {
-  endDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
-  startDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
-  year: Scalars['String']['input'];
+  readonly endDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  readonly startDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  readonly year: Scalars['String']['input'];
 };
 
 export type CreatePersonInput = {
-  captainOf?: Array<MemberOf>;
+  readonly captainOf?: ReadonlyArray<MemberOf>;
   /** @deprecated DBRole can no longer be set directly */
-  dbRole?: InputMaybe<DbRole>;
-  email: Scalars['EmailAddress']['input'];
-  linkblue?: InputMaybe<Scalars['String']['input']>;
-  memberOf?: Array<MemberOf>;
-  name?: InputMaybe<Scalars['String']['input']>;
+  readonly dbRole?: InputMaybe<DbRole>;
+  readonly email: Scalars['EmailAddress']['input'];
+  readonly linkblue?: InputMaybe<Scalars['String']['input']>;
+  readonly memberOf?: ReadonlyArray<MemberOf>;
+  readonly name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreatePointEntryInput = {
-  comment?: InputMaybe<Scalars['String']['input']>;
-  opportunityUuid?: InputMaybe<Scalars['GlobalId']['input']>;
-  personFromUuid?: InputMaybe<Scalars['GlobalId']['input']>;
-  points: Scalars['Int']['input'];
-  teamUuid: Scalars['GlobalId']['input'];
+  readonly comment?: InputMaybe<Scalars['String']['input']>;
+  readonly opportunityUuid?: InputMaybe<Scalars['GlobalId']['input']>;
+  readonly personFromUuid?: InputMaybe<Scalars['GlobalId']['input']>;
+  readonly points: Scalars['Int']['input'];
+  readonly teamUuid: Scalars['GlobalId']['input'];
 };
 
 export type CreatePointEntryResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'CreatePointEntryResponse';
-  data: PointEntryNode;
-  ok: Scalars['Boolean']['output'];
-  uuid: Scalars['GlobalId']['output'];
+  readonly __typename?: 'CreatePointEntryResponse';
+  readonly data: PointEntryNode;
+  readonly ok: Scalars['Boolean']['output'];
+  readonly uuid: Scalars['GlobalId']['output'];
 };
 
 export type CreatePointOpportunityInput = {
-  eventUuid?: InputMaybe<Scalars['GlobalId']['input']>;
-  marathonUuid: Scalars['GlobalId']['input'];
-  name: Scalars['String']['input'];
-  opportunityDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
-  type: TeamType;
+  readonly eventUuid?: InputMaybe<Scalars['GlobalId']['input']>;
+  readonly marathonUuid: Scalars['GlobalId']['input'];
+  readonly name: Scalars['String']['input'];
+  readonly opportunityDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  readonly type: TeamType;
 };
 
 export type CreatePointOpportunityResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'CreatePointOpportunityResponse';
-  data: PointOpportunityNode;
-  ok: Scalars['Boolean']['output'];
-  uuid: Scalars['GlobalId']['output'];
+  readonly __typename?: 'CreatePointOpportunityResponse';
+  readonly data: PointOpportunityNode;
+  readonly ok: Scalars['Boolean']['output'];
+  readonly uuid: Scalars['GlobalId']['output'];
 };
 
 export type CreateTeamInput = {
-  legacyStatus: TeamLegacyStatus;
-  name: Scalars['String']['input'];
-  type: TeamType;
+  readonly legacyStatus: TeamLegacyStatus;
+  readonly name: Scalars['String']['input'];
+  readonly type: TeamType;
 };
 
 export type CreateTeamResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'CreateTeamResponse';
-  data: TeamNode;
-  ok: Scalars['Boolean']['output'];
-  uuid: Scalars['GlobalId']['output'];
+  readonly __typename?: 'CreateTeamResponse';
+  readonly data: TeamNode;
+  readonly ok: Scalars['Boolean']['output'];
+  readonly uuid: Scalars['GlobalId']['output'];
 };
 
 export type DbFundsTeamInfo = {
-  __typename?: 'DbFundsTeamInfo';
-  dbNum: Scalars['Int']['output'];
-  name: Scalars['String']['output'];
+  readonly __typename?: 'DbFundsTeamInfo';
+  readonly dbNum: Scalars['Int']['output'];
+  readonly name: Scalars['String']['output'];
 };
 
 export { DbRole };
 
 export type DeleteConfigurationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'DeleteConfigurationResponse';
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'DeleteConfigurationResponse';
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type DeleteDeviceResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'DeleteDeviceResponse';
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'DeleteDeviceResponse';
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type DeleteEventResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'DeleteEventResponse';
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'DeleteEventResponse';
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type DeleteImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'DeleteImageResponse';
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'DeleteImageResponse';
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type DeleteNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'DeleteNotificationResponse';
-  data: Scalars['Boolean']['output'];
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'DeleteNotificationResponse';
+  readonly data: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type DeletePointEntryResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'DeletePointEntryResponse';
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'DeletePointEntryResponse';
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type DeletePointOpportunityResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'DeletePointOpportunityResponse';
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'DeletePointOpportunityResponse';
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type DeleteTeamResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'DeleteTeamResponse';
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'DeleteTeamResponse';
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type DeviceNode = Node & {
-  __typename?: 'DeviceNode';
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  id: Scalars['GlobalId']['output'];
-  lastLoggedInUser?: Maybe<PersonNode>;
-  lastLogin?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly __typename?: 'DeviceNode';
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly id: Scalars['GlobalId']['output'];
+  readonly lastLoggedInUser?: Maybe<PersonNode>;
+  readonly lastLogin?: Maybe<Scalars['DateTimeISO']['output']>;
   /** List all notification deliveries for this device */
-  notificationDeliveries: Array<NotificationDeliveryNode>;
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly notificationDeliveries: ReadonlyArray<NotificationDeliveryNode>;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
 
@@ -341,37 +341,37 @@ export const DeviceResolverDateFilterKeys = {
 export type DeviceResolverDateFilterKeys = typeof DeviceResolverDateFilterKeys[keyof typeof DeviceResolverDateFilterKeys];
 export type DeviceResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: DeviceResolverDateFilterKeys;
+  readonly field: DeviceResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['DateTimeISO']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['DateTimeISO']['input'];
 };
 
 export type DeviceResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: DeviceResolverAllKeys;
+  readonly field: DeviceResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type DeviceResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: Scalars['Void']['input'];
+  readonly field: Scalars['Void']['input'];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Array<Scalars['String']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
 export type DeviceResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: DeviceResolverStringFilterKeys;
+  readonly field: DeviceResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['String']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
 };
 
 export const DeviceResolverStringFilterKeys = {
@@ -380,30 +380,30 @@ export const DeviceResolverStringFilterKeys = {
 
 export type DeviceResolverStringFilterKeys = typeof DeviceResolverStringFilterKeys[keyof typeof DeviceResolverStringFilterKeys];
 export type EffectiveCommitteeRole = {
-  __typename?: 'EffectiveCommitteeRole';
-  identifier: CommitteeIdentifier;
-  role: CommitteeRole;
+  readonly __typename?: 'EffectiveCommitteeRole';
+  readonly identifier: CommitteeIdentifier;
+  readonly role: CommitteeRole;
 };
 
 export type EventNode = Node & {
-  __typename?: 'EventNode';
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['GlobalId']['output'];
+  readonly __typename?: 'EventNode';
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly description?: Maybe<Scalars['String']['output']>;
+  readonly id: Scalars['GlobalId']['output'];
   /** List all images for this event */
-  images: Array<ImageNode>;
-  location?: Maybe<Scalars['String']['output']>;
-  occurrences: Array<EventOccurrenceNode>;
-  summary?: Maybe<Scalars['String']['output']>;
-  title: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly images: ReadonlyArray<ImageNode>;
+  readonly location?: Maybe<Scalars['String']['output']>;
+  readonly occurrences: ReadonlyArray<EventOccurrenceNode>;
+  readonly summary?: Maybe<Scalars['String']['output']>;
+  readonly title: Scalars['String']['output'];
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
 export type EventOccurrenceNode = {
-  __typename?: 'EventOccurrenceNode';
-  fullDay: Scalars['Boolean']['output'];
-  id: Scalars['ID']['output'];
-  interval: IntervalIso;
+  readonly __typename?: 'EventOccurrenceNode';
+  readonly fullDay: Scalars['Boolean']['output'];
+  readonly id: Scalars['ID']['output'];
+  readonly interval: IntervalIso;
 };
 
 export const EventResolverAllKeys = {
@@ -430,37 +430,37 @@ export const EventResolverDateFilterKeys = {
 export type EventResolverDateFilterKeys = typeof EventResolverDateFilterKeys[keyof typeof EventResolverDateFilterKeys];
 export type EventResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: EventResolverDateFilterKeys;
+  readonly field: EventResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['DateTimeISO']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['DateTimeISO']['input'];
 };
 
 export type EventResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: EventResolverAllKeys;
+  readonly field: EventResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type EventResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: Scalars['Void']['input'];
+  readonly field: Scalars['Void']['input'];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Array<Scalars['String']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
 export type EventResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: EventResolverStringFilterKeys;
+  readonly field: EventResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['String']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
 };
 
 export const EventResolverStringFilterKeys = {
@@ -472,38 +472,38 @@ export const EventResolverStringFilterKeys = {
 
 export type EventResolverStringFilterKeys = typeof EventResolverStringFilterKeys[keyof typeof EventResolverStringFilterKeys];
 export type FeedNode = Node & {
-  __typename?: 'FeedNode';
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  id: Scalars['GlobalId']['output'];
+  readonly __typename?: 'FeedNode';
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly id: Scalars['GlobalId']['output'];
   /** The image associated with this feed item */
-  image?: Maybe<ImageNode>;
-  textContent?: Maybe<Scalars['String']['output']>;
-  title: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly image?: Maybe<ImageNode>;
+  readonly textContent?: Maybe<Scalars['String']['output']>;
+  readonly title: Scalars['String']['output'];
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
 export type FundraisingAssignmentNode = Node & {
-  __typename?: 'FundraisingAssignmentNode';
-  amount: Scalars['Float']['output'];
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  entry: FundraisingEntryNode;
-  id: Scalars['GlobalId']['output'];
+  readonly __typename?: 'FundraisingAssignmentNode';
+  readonly amount: Scalars['Float']['output'];
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly entry: FundraisingEntryNode;
+  readonly id: Scalars['GlobalId']['output'];
   /** The person assigned to this assignment, only null when access is denied */
-  person?: Maybe<PersonNode>;
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly person?: Maybe<PersonNode>;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
 export type FundraisingEntryNode = Node & {
-  __typename?: 'FundraisingEntryNode';
-  amount: Scalars['Float']['output'];
-  amountUnassigned: Scalars['Float']['output'];
-  assignments: Array<FundraisingAssignmentNode>;
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  donatedByText?: Maybe<Scalars['String']['output']>;
-  donatedOn: Scalars['DateTimeISO']['output'];
-  donatedToText?: Maybe<Scalars['String']['output']>;
-  id: Scalars['GlobalId']['output'];
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly __typename?: 'FundraisingEntryNode';
+  readonly amount: Scalars['Float']['output'];
+  readonly amountUnassigned: Scalars['Float']['output'];
+  readonly assignments: ReadonlyArray<FundraisingAssignmentNode>;
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly donatedByText?: Maybe<Scalars['String']['output']>;
+  readonly donatedOn: Scalars['DateTimeISO']['output'];
+  readonly donatedToText?: Maybe<Scalars['String']['output']>;
+  readonly id: Scalars['GlobalId']['output'];
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
 export const FundraisingEntryResolverAllKeys = {
@@ -526,47 +526,47 @@ export const FundraisingEntryResolverDateFilterKeys = {
 export type FundraisingEntryResolverDateFilterKeys = typeof FundraisingEntryResolverDateFilterKeys[keyof typeof FundraisingEntryResolverDateFilterKeys];
 export type FundraisingEntryResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: FundraisingEntryResolverDateFilterKeys;
+  readonly field: FundraisingEntryResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['DateTimeISO']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['DateTimeISO']['input'];
 };
 
 export type FundraisingEntryResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: FundraisingEntryResolverAllKeys;
+  readonly field: FundraisingEntryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type FundraisingEntryResolverKeyedNumericFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: FundraisingEntryResolverNumericFilterKeys;
+  readonly field: FundraisingEntryResolverNumericFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['Float']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['Float']['input'];
 };
 
 export type FundraisingEntryResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: FundraisingEntryResolverOneOfFilterKeys;
+  readonly field: FundraisingEntryResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Array<Scalars['String']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
 export type FundraisingEntryResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: FundraisingEntryResolverStringFilterKeys;
+  readonly field: FundraisingEntryResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['String']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
 };
 
 export const FundraisingEntryResolverNumericFilterKeys = {
@@ -587,63 +587,63 @@ export const FundraisingEntryResolverStringFilterKeys = {
 
 export type FundraisingEntryResolverStringFilterKeys = typeof FundraisingEntryResolverStringFilterKeys[keyof typeof FundraisingEntryResolverStringFilterKeys];
 export type GetAllConfigurationsResponse = AbstractGraphQlArrayOkResponse & GraphQlBaseResponse & {
-  __typename?: 'GetAllConfigurationsResponse';
-  data: Array<ConfigurationNode>;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'GetAllConfigurationsResponse';
+  readonly data: ReadonlyArray<ConfigurationNode>;
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetConfigurationByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'GetConfigurationByUuidResponse';
-  data: ConfigurationNode;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'GetConfigurationByUuidResponse';
+  readonly data: ConfigurationNode;
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetDeviceByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'GetDeviceByUuidResponse';
-  data: DeviceNode;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'GetDeviceByUuidResponse';
+  readonly data: DeviceNode;
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetEventByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'GetEventByUuidResponse';
-  data: EventNode;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'GetEventByUuidResponse';
+  readonly data: EventNode;
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetImageByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'GetImageByUuidResponse';
-  data: ImageNode;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'GetImageByUuidResponse';
+  readonly data: ImageNode;
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetNotificationByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'GetNotificationByUuidResponse';
-  data: NotificationNode;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'GetNotificationByUuidResponse';
+  readonly data: NotificationNode;
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type GetPointEntryByUuidResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'GetPointEntryByUuidResponse';
-  data: PointEntryNode;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'GetPointEntryByUuidResponse';
+  readonly data: PointEntryNode;
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 /** API response */
 export type GraphQlBaseResponse = {
-  ok: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type ImageNode = Node & {
-  __typename?: 'ImageNode';
-  alt?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  height: Scalars['Int']['output'];
-  id: Scalars['GlobalId']['output'];
-  mimeType: Scalars['String']['output'];
-  thumbHash?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  url?: Maybe<Scalars['URL']['output']>;
-  width: Scalars['Int']['output'];
+  readonly __typename?: 'ImageNode';
+  readonly alt?: Maybe<Scalars['String']['output']>;
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly height: Scalars['Int']['output'];
+  readonly id: Scalars['GlobalId']['output'];
+  readonly mimeType: Scalars['String']['output'];
+  readonly thumbHash?: Maybe<Scalars['String']['output']>;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly url?: Maybe<Scalars['URL']['output']>;
+  readonly width: Scalars['Int']['output'];
 };
 
 export const ImageResolverAllKeys = {
@@ -663,47 +663,47 @@ export const ImageResolverDateFilterKeys = {
 export type ImageResolverDateFilterKeys = typeof ImageResolverDateFilterKeys[keyof typeof ImageResolverDateFilterKeys];
 export type ImageResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: ImageResolverDateFilterKeys;
+  readonly field: ImageResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['DateTimeISO']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['DateTimeISO']['input'];
 };
 
 export type ImageResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: ImageResolverAllKeys;
+  readonly field: ImageResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type ImageResolverKeyedNumericFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: ImageResolverNumericFilterKeys;
+  readonly field: ImageResolverNumericFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['Float']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['Float']['input'];
 };
 
 export type ImageResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: Scalars['Void']['input'];
+  readonly field: Scalars['Void']['input'];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Array<Scalars['String']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
 export type ImageResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: ImageResolverStringFilterKeys;
+  readonly field: ImageResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['String']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
 };
 
 export const ImageResolverNumericFilterKeys = {
@@ -718,190 +718,190 @@ export const ImageResolverStringFilterKeys = {
 
 export type ImageResolverStringFilterKeys = typeof ImageResolverStringFilterKeys[keyof typeof ImageResolverStringFilterKeys];
 export type IntervalIso = {
-  __typename?: 'IntervalISO';
-  end: Scalars['DateTimeISO']['output'];
-  start: Scalars['DateTimeISO']['output'];
+  readonly __typename?: 'IntervalISO';
+  readonly end: Scalars['DateTimeISO']['output'];
+  readonly start: Scalars['DateTimeISO']['output'];
 };
 
 export type IntervalIsoInput = {
-  end: Scalars['DateTimeISO']['input'];
-  start: Scalars['DateTimeISO']['input'];
+  readonly end: Scalars['DateTimeISO']['input'];
+  readonly start: Scalars['DateTimeISO']['input'];
 };
 
 export type ListDevicesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
-  __typename?: 'ListDevicesResponse';
-  data: Array<DeviceNode>;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'ListDevicesResponse';
+  readonly data: ReadonlyArray<DeviceNode>;
+  readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
-  page: Scalars['PositiveInt']['output'];
+  readonly page: Scalars['PositiveInt']['output'];
   /** The number of items per page */
-  pageSize: Scalars['NonNegativeInt']['output'];
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
   /** The total number of items */
-  total: Scalars['NonNegativeInt']['output'];
+  readonly total: Scalars['NonNegativeInt']['output'];
 };
 
 export type ListEventsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
-  __typename?: 'ListEventsResponse';
-  data: Array<EventNode>;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'ListEventsResponse';
+  readonly data: ReadonlyArray<EventNode>;
+  readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
-  page: Scalars['PositiveInt']['output'];
+  readonly page: Scalars['PositiveInt']['output'];
   /** The number of items per page */
-  pageSize: Scalars['NonNegativeInt']['output'];
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
   /** The total number of items */
-  total: Scalars['NonNegativeInt']['output'];
+  readonly total: Scalars['NonNegativeInt']['output'];
 };
 
 export type ListFundraisingEntriesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
-  __typename?: 'ListFundraisingEntriesResponse';
-  data: Array<FundraisingEntryNode>;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'ListFundraisingEntriesResponse';
+  readonly data: ReadonlyArray<FundraisingEntryNode>;
+  readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
-  page: Scalars['PositiveInt']['output'];
+  readonly page: Scalars['PositiveInt']['output'];
   /** The number of items per page */
-  pageSize: Scalars['NonNegativeInt']['output'];
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
   /** The total number of items */
-  total: Scalars['NonNegativeInt']['output'];
+  readonly total: Scalars['NonNegativeInt']['output'];
 };
 
 export type ListImagesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
-  __typename?: 'ListImagesResponse';
-  data: Array<ImageNode>;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'ListImagesResponse';
+  readonly data: ReadonlyArray<ImageNode>;
+  readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
-  page: Scalars['PositiveInt']['output'];
+  readonly page: Scalars['PositiveInt']['output'];
   /** The number of items per page */
-  pageSize: Scalars['NonNegativeInt']['output'];
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
   /** The total number of items */
-  total: Scalars['NonNegativeInt']['output'];
+  readonly total: Scalars['NonNegativeInt']['output'];
 };
 
 export type ListMarathonsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
-  __typename?: 'ListMarathonsResponse';
-  data: Array<MarathonNode>;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'ListMarathonsResponse';
+  readonly data: ReadonlyArray<MarathonNode>;
+  readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
-  page: Scalars['PositiveInt']['output'];
+  readonly page: Scalars['PositiveInt']['output'];
   /** The number of items per page */
-  pageSize: Scalars['NonNegativeInt']['output'];
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
   /** The total number of items */
-  total: Scalars['NonNegativeInt']['output'];
+  readonly total: Scalars['NonNegativeInt']['output'];
 };
 
 export type ListNotificationDeliveriesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
-  __typename?: 'ListNotificationDeliveriesResponse';
-  data: Array<NotificationDeliveryNode>;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'ListNotificationDeliveriesResponse';
+  readonly data: ReadonlyArray<NotificationDeliveryNode>;
+  readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
-  page: Scalars['PositiveInt']['output'];
+  readonly page: Scalars['PositiveInt']['output'];
   /** The number of items per page */
-  pageSize: Scalars['NonNegativeInt']['output'];
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
   /** The total number of items */
-  total: Scalars['NonNegativeInt']['output'];
+  readonly total: Scalars['NonNegativeInt']['output'];
 };
 
 export type ListNotificationsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
-  __typename?: 'ListNotificationsResponse';
-  data: Array<NotificationNode>;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'ListNotificationsResponse';
+  readonly data: ReadonlyArray<NotificationNode>;
+  readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
-  page: Scalars['PositiveInt']['output'];
+  readonly page: Scalars['PositiveInt']['output'];
   /** The number of items per page */
-  pageSize: Scalars['NonNegativeInt']['output'];
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
   /** The total number of items */
-  total: Scalars['NonNegativeInt']['output'];
+  readonly total: Scalars['NonNegativeInt']['output'];
 };
 
 export type ListPeopleResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
-  __typename?: 'ListPeopleResponse';
-  data: Array<PersonNode>;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'ListPeopleResponse';
+  readonly data: ReadonlyArray<PersonNode>;
+  readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
-  page: Scalars['PositiveInt']['output'];
+  readonly page: Scalars['PositiveInt']['output'];
   /** The number of items per page */
-  pageSize: Scalars['NonNegativeInt']['output'];
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
   /** The total number of items */
-  total: Scalars['NonNegativeInt']['output'];
+  readonly total: Scalars['NonNegativeInt']['output'];
 };
 
 export type ListPointEntriesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
-  __typename?: 'ListPointEntriesResponse';
-  data: Array<PointEntryNode>;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'ListPointEntriesResponse';
+  readonly data: ReadonlyArray<PointEntryNode>;
+  readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
-  page: Scalars['PositiveInt']['output'];
+  readonly page: Scalars['PositiveInt']['output'];
   /** The number of items per page */
-  pageSize: Scalars['NonNegativeInt']['output'];
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
   /** The total number of items */
-  total: Scalars['NonNegativeInt']['output'];
+  readonly total: Scalars['NonNegativeInt']['output'];
 };
 
 export type ListPointOpportunitiesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
-  __typename?: 'ListPointOpportunitiesResponse';
-  data: Array<PointOpportunityNode>;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'ListPointOpportunitiesResponse';
+  readonly data: ReadonlyArray<PointOpportunityNode>;
+  readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
-  page: Scalars['PositiveInt']['output'];
+  readonly page: Scalars['PositiveInt']['output'];
   /** The number of items per page */
-  pageSize: Scalars['NonNegativeInt']['output'];
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
   /** The total number of items */
-  total: Scalars['NonNegativeInt']['output'];
+  readonly total: Scalars['NonNegativeInt']['output'];
 };
 
 export type ListTeamsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
-  __typename?: 'ListTeamsResponse';
-  data: Array<TeamNode>;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'ListTeamsResponse';
+  readonly data: ReadonlyArray<TeamNode>;
+  readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
-  page: Scalars['PositiveInt']['output'];
+  readonly page: Scalars['PositiveInt']['output'];
   /** The number of items per page */
-  pageSize: Scalars['NonNegativeInt']['output'];
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
   /** The total number of items */
-  total: Scalars['NonNegativeInt']['output'];
+  readonly total: Scalars['NonNegativeInt']['output'];
 };
 
 export type LoginState = {
-  __typename?: 'LoginState';
-  accessLevel: AccessLevel;
-  authSource: AuthSource;
-  dbRole: DbRole;
-  effectiveCommitteeRoles: Array<EffectiveCommitteeRole>;
-  loggedIn: Scalars['Boolean']['output'];
+  readonly __typename?: 'LoginState';
+  readonly accessLevel: AccessLevel;
+  readonly authSource: AuthSource;
+  readonly dbRole: DbRole;
+  readonly effectiveCommitteeRoles: ReadonlyArray<EffectiveCommitteeRole>;
+  readonly loggedIn: Scalars['Boolean']['output'];
 };
 
 export type MarathonHourNode = Node & {
-  __typename?: 'MarathonHourNode';
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  details?: Maybe<Scalars['String']['output']>;
-  durationInfo: Scalars['String']['output'];
-  id: Scalars['GlobalId']['output'];
-  mapImages: Array<ImageNode>;
-  shownStartingAt: Scalars['DateTimeISO']['output'];
-  title: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly __typename?: 'MarathonHourNode';
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly details?: Maybe<Scalars['String']['output']>;
+  readonly durationInfo: Scalars['String']['output'];
+  readonly id: Scalars['GlobalId']['output'];
+  readonly mapImages: ReadonlyArray<ImageNode>;
+  readonly shownStartingAt: Scalars['DateTimeISO']['output'];
+  readonly title: Scalars['String']['output'];
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
 export type MarathonNode = Node & {
-  __typename?: 'MarathonNode';
-  communityDevelopmentCommitteeTeam: TeamNode;
-  corporateCommitteeTeam: TeamNode;
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  dancerRelationsCommitteeTeam: TeamNode;
-  endDate?: Maybe<Scalars['DateTimeISO']['output']>;
-  familyRelationsCommitteeTeam: TeamNode;
-  fundraisingCommitteeTeam: TeamNode;
-  hours: Array<MarathonHourNode>;
-  id: Scalars['GlobalId']['output'];
-  marketingCommitteeTeam: TeamNode;
-  miniMarathonsCommitteeTeam: TeamNode;
-  operationsCommitteeTeam: TeamNode;
-  overallCommitteeTeam: TeamNode;
-  programmingCommitteeTeam: TeamNode;
-  startDate?: Maybe<Scalars['DateTimeISO']['output']>;
-  techCommitteeTeam: TeamNode;
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  viceCommitteeTeam: TeamNode;
-  year: Scalars['String']['output'];
+  readonly __typename?: 'MarathonNode';
+  readonly communityDevelopmentCommitteeTeam: TeamNode;
+  readonly corporateCommitteeTeam: TeamNode;
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly dancerRelationsCommitteeTeam: TeamNode;
+  readonly endDate?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly familyRelationsCommitteeTeam: TeamNode;
+  readonly fundraisingCommitteeTeam: TeamNode;
+  readonly hours: ReadonlyArray<MarathonHourNode>;
+  readonly id: Scalars['GlobalId']['output'];
+  readonly marketingCommitteeTeam: TeamNode;
+  readonly miniMarathonsCommitteeTeam: TeamNode;
+  readonly operationsCommitteeTeam: TeamNode;
+  readonly overallCommitteeTeam: TeamNode;
+  readonly programmingCommitteeTeam: TeamNode;
+  readonly startDate?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly techCommitteeTeam: TeamNode;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly viceCommitteeTeam: TeamNode;
+  readonly year: Scalars['String']['output'];
 };
 
 export const MarathonResolverAllKeys = {
@@ -923,109 +923,109 @@ export const MarathonResolverDateFilterKeys = {
 export type MarathonResolverDateFilterKeys = typeof MarathonResolverDateFilterKeys[keyof typeof MarathonResolverDateFilterKeys];
 export type MarathonResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: MarathonResolverDateFilterKeys;
+  readonly field: MarathonResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['DateTimeISO']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['DateTimeISO']['input'];
 };
 
 export type MarathonResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: MarathonResolverAllKeys;
+  readonly field: MarathonResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type MemberOf = {
-  committeeRole?: InputMaybe<CommitteeRole>;
-  id: Scalars['GlobalId']['input'];
+  readonly committeeRole?: InputMaybe<CommitteeRole>;
+  readonly id: Scalars['GlobalId']['input'];
 };
 
 export type MembershipNode = Node & {
-  __typename?: 'MembershipNode';
-  committeeRole?: Maybe<CommitteeRole>;
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  id: Scalars['GlobalId']['output'];
-  person: PersonNode;
-  position: MembershipPositionType;
-  team: TeamNode;
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly __typename?: 'MembershipNode';
+  readonly committeeRole?: Maybe<CommitteeRole>;
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly id: Scalars['GlobalId']['output'];
+  readonly person: PersonNode;
+  readonly position: MembershipPositionType;
+  readonly team: TeamNode;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
 export { MembershipPositionType };
 
 export type Mutation = {
-  __typename?: 'Mutation';
-  abortScheduledNotification: AbortScheduledNotificationResponse;
-  acknowledgeDeliveryIssue: AcknowledgeDeliveryIssueResponse;
+  readonly __typename?: 'Mutation';
+  readonly abortScheduledNotification: AbortScheduledNotificationResponse;
+  readonly acknowledgeDeliveryIssue: AcknowledgeDeliveryIssueResponse;
   /** Add an existing image to an event */
-  addExistingImageToEvent: AddEventImageResponse;
-  addMap: MarathonHourNode;
-  addPersonToTeam: MembershipNode;
-  assignEntryToPerson: FundraisingAssignmentNode;
-  assignTeamToDbFundsTeam: Scalars['Void']['output'];
+  readonly addExistingImageToEvent: AddEventImageResponse;
+  readonly addMap: MarathonHourNode;
+  readonly addPersonToTeam: MembershipNode;
+  readonly assignEntryToPerson: FundraisingAssignmentNode;
+  readonly assignTeamToDbFundsTeam: Scalars['Void']['output'];
   /** Attach an image to a feed item */
-  attachImageToFeedItem: FeedNode;
-  bulkLoadPeople: Array<PersonNode>;
-  bulkLoadTeams: Array<TeamNode>;
+  readonly attachImageToFeedItem: FeedNode;
+  readonly bulkLoadPeople: ReadonlyArray<PersonNode>;
+  readonly bulkLoadTeams: ReadonlyArray<TeamNode>;
   /** Create a new configuration, superseding existing configurations with the same key (depending on the validAfter and validUntil fields) */
-  createConfiguration: CreateConfigurationResponse;
+  readonly createConfiguration: CreateConfigurationResponse;
   /** Create multiple configurations, superseding existing configurations with the same key (depending on the validAfter and validUntil fields) */
-  createConfigurations: CreateConfigurationResponse;
+  readonly createConfigurations: CreateConfigurationResponse;
   /** Create a new event */
-  createEvent: CreateEventResponse;
+  readonly createEvent: CreateEventResponse;
   /** Add a new item to the feed */
-  createFeedItem: FeedNode;
-  createImage: ImageNode;
-  createMarathon: MarathonNode;
-  createMarathonHour: MarathonHourNode;
-  createPerson: PersonNode;
-  createPointEntry: CreatePointEntryResponse;
-  createPointOpportunity: CreatePointOpportunityResponse;
-  createTeam: CreateTeamResponse;
+  readonly createFeedItem: FeedNode;
+  readonly createImage: ImageNode;
+  readonly createMarathon: MarathonNode;
+  readonly createMarathonHour: MarathonHourNode;
+  readonly createPerson: PersonNode;
+  readonly createPointEntry: CreatePointEntryResponse;
+  readonly createPointOpportunity: CreatePointOpportunityResponse;
+  readonly createTeam: CreateTeamResponse;
   /** Delete a configuration by UUID */
-  deleteConfiguration: DeleteConfigurationResponse;
+  readonly deleteConfiguration: DeleteConfigurationResponse;
   /** Delete a device by it's UUID */
-  deleteDevice: DeleteDeviceResponse;
+  readonly deleteDevice: DeleteDeviceResponse;
   /** Delete an event by UUID */
-  deleteEvent: DeleteEventResponse;
+  readonly deleteEvent: DeleteEventResponse;
   /** Delete a feed item */
-  deleteFeedItem: Scalars['Boolean']['output'];
-  deleteFundraisingAssignment: FundraisingAssignmentNode;
-  deleteImage: DeleteImageResponse;
-  deleteMarathon: MarathonNode;
-  deleteMarathonHour: Scalars['Void']['output'];
-  deleteNotification: DeleteNotificationResponse;
-  deletePerson: PersonNode;
-  deletePointEntry: DeletePointEntryResponse;
-  deletePointOpportunity: DeletePointOpportunityResponse;
-  deleteTeam: DeleteTeamResponse;
+  readonly deleteFeedItem: Scalars['Boolean']['output'];
+  readonly deleteFundraisingAssignment: FundraisingAssignmentNode;
+  readonly deleteImage: DeleteImageResponse;
+  readonly deleteMarathon: MarathonNode;
+  readonly deleteMarathonHour: Scalars['Void']['output'];
+  readonly deleteNotification: DeleteNotificationResponse;
+  readonly deletePerson: PersonNode;
+  readonly deletePointEntry: DeletePointEntryResponse;
+  readonly deletePointOpportunity: DeletePointOpportunityResponse;
+  readonly deleteTeam: DeleteTeamResponse;
   /** Register a new device, or update an existing one */
-  registerDevice: RegisterDeviceResponse;
+  readonly registerDevice: RegisterDeviceResponse;
   /** Remove an image from an event */
-  removeImageFromEvent: RemoveEventImageResponse;
+  readonly removeImageFromEvent: RemoveEventImageResponse;
   /** Remove an image from a feed item */
-  removeImageFromFeedItem: FeedNode;
-  removeMap: Scalars['Void']['output'];
-  removePersonFromTeam: MembershipNode;
-  scheduleNotification: ScheduleNotificationResponse;
+  readonly removeImageFromFeedItem: FeedNode;
+  readonly removeMap: Scalars['Void']['output'];
+  readonly removePersonFromTeam: MembershipNode;
+  readonly scheduleNotification: ScheduleNotificationResponse;
   /** Send a notification immediately. */
-  sendNotification: SendNotificationResponse;
+  readonly sendNotification: SendNotificationResponse;
   /** Update an event by UUID */
-  setEvent: SetEventResponse;
+  readonly setEvent: SetEventResponse;
   /** Set the content of a feed item */
-  setFeedItem: FeedNode;
-  setImageAltText: ImageNode;
-  setImageUrl: ImageNode;
-  setMarathon: MarathonNode;
-  setMarathonHour: MarathonHourNode;
-  setPerson: PersonNode;
-  setPointOpportunity: SinglePointOpportunityResponse;
-  setTeam: SingleTeamResponse;
-  stageNotification: StageNotificationResponse;
-  updateFundraisingAssignment: FundraisingAssignmentNode;
+  readonly setFeedItem: FeedNode;
+  readonly setImageAltText: ImageNode;
+  readonly setImageUrl: ImageNode;
+  readonly setMarathon: MarathonNode;
+  readonly setMarathonHour: MarathonHourNode;
+  readonly setPerson: PersonNode;
+  readonly setPointOpportunity: SinglePointOpportunityResponse;
+  readonly setTeam: SingleTeamResponse;
+  readonly stageNotification: StageNotificationResponse;
+  readonly updateFundraisingAssignment: FundraisingAssignmentNode;
 };
 
 
@@ -1079,13 +1079,13 @@ export type MutationAttachImageToFeedItemArgs = {
 
 export type MutationBulkLoadPeopleArgs = {
   marathonId: Scalars['GlobalId']['input'];
-  people: Array<BulkPersonInput>;
+  people: ReadonlyArray<BulkPersonInput>;
 };
 
 
 export type MutationBulkLoadTeamsArgs = {
   marathonId: Scalars['GlobalId']['input'];
-  teams: Array<BulkTeamInput>;
+  teams: ReadonlyArray<BulkTeamInput>;
 };
 
 
@@ -1095,7 +1095,7 @@ export type MutationCreateConfigurationArgs = {
 
 
 export type MutationCreateConfigurationsArgs = {
-  input: Array<CreateConfigurationInput>;
+  input: ReadonlyArray<CreateConfigurationInput>;
 };
 
 
@@ -1319,41 +1319,41 @@ export type MutationUpdateFundraisingAssignmentArgs = {
 };
 
 export type Node = {
-  id: Scalars['GlobalId']['output'];
+  readonly id: Scalars['GlobalId']['output'];
 };
 
 export type NotificationAudienceInput = {
-  all?: InputMaybe<Scalars['Boolean']['input']>;
-  memberOfTeamType?: InputMaybe<TeamType>;
-  memberOfTeams?: InputMaybe<Array<Scalars['GlobalId']['input']>>;
-  users?: InputMaybe<Array<Scalars['GlobalId']['input']>>;
+  readonly all?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly memberOfTeamType?: InputMaybe<TeamType>;
+  readonly memberOfTeams?: InputMaybe<ReadonlyArray<Scalars['GlobalId']['input']>>;
+  readonly users?: InputMaybe<ReadonlyArray<Scalars['GlobalId']['input']>>;
 };
 
 /** The number of delivery issues for a notification, broken down by type. */
 export type NotificationDeliveryIssueCount = {
-  __typename?: 'NotificationDeliveryIssueCount';
-  DeviceNotRegistered: Scalars['Int']['output'];
-  InvalidCredentials: Scalars['Int']['output'];
-  MessageRateExceeded: Scalars['Int']['output'];
-  MessageTooBig: Scalars['Int']['output'];
-  MismatchSenderId: Scalars['Int']['output'];
-  Unknown: Scalars['Int']['output'];
+  readonly __typename?: 'NotificationDeliveryIssueCount';
+  readonly DeviceNotRegistered: Scalars['Int']['output'];
+  readonly InvalidCredentials: Scalars['Int']['output'];
+  readonly MessageRateExceeded: Scalars['Int']['output'];
+  readonly MessageTooBig: Scalars['Int']['output'];
+  readonly MismatchSenderId: Scalars['Int']['output'];
+  readonly Unknown: Scalars['Int']['output'];
 };
 
 export type NotificationDeliveryNode = Node & {
-  __typename?: 'NotificationDeliveryNode';
+  readonly __typename?: 'NotificationDeliveryNode';
   /** A unique identifier corresponding the group of notifications this was sent to Expo with. */
-  chunkUuid?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly chunkUuid?: Maybe<Scalars['String']['output']>;
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
   /** Any error message returned by Expo when sending the notification. */
-  deliveryError?: Maybe<Scalars['String']['output']>;
-  id: Scalars['GlobalId']['output'];
-  notification: NotificationNode;
+  readonly deliveryError?: Maybe<Scalars['String']['output']>;
+  readonly id: Scalars['GlobalId']['output'];
+  readonly notification: NotificationNode;
   /** The time the server received a delivery receipt from the user. */
-  receiptCheckedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly receiptCheckedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   /** The time the server sent the notification to Expo for delivery. */
-  sentAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly sentAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
 export const NotificationDeliveryResolverAllKeys = {
@@ -1375,37 +1375,37 @@ export const NotificationDeliveryResolverDateFilterKeys = {
 export type NotificationDeliveryResolverDateFilterKeys = typeof NotificationDeliveryResolverDateFilterKeys[keyof typeof NotificationDeliveryResolverDateFilterKeys];
 export type NotificationDeliveryResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: NotificationDeliveryResolverDateFilterKeys;
+  readonly field: NotificationDeliveryResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['DateTimeISO']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['DateTimeISO']['input'];
 };
 
 export type NotificationDeliveryResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: NotificationDeliveryResolverAllKeys;
+  readonly field: NotificationDeliveryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type NotificationNode = Node & {
-  __typename?: 'NotificationNode';
-  body: Scalars['String']['output'];
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  deliveryCount: Scalars['Int']['output'];
-  deliveryIssue?: Maybe<Scalars['String']['output']>;
-  deliveryIssueAcknowledgedAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  deliveryIssueCount: NotificationDeliveryIssueCount;
-  id: Scalars['GlobalId']['output'];
+  readonly __typename?: 'NotificationNode';
+  readonly body: Scalars['String']['output'];
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly deliveryCount: Scalars['Int']['output'];
+  readonly deliveryIssue?: Maybe<Scalars['String']['output']>;
+  readonly deliveryIssueAcknowledgedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly deliveryIssueCount: NotificationDeliveryIssueCount;
+  readonly id: Scalars['GlobalId']['output'];
   /** The time the notification is scheduled to be sent, if null it is either already sent or unscheduled. */
-  sendAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly sendAt?: Maybe<Scalars['DateTimeISO']['output']>;
   /** The time the server started sending the notification. */
-  startedSendingAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  title: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  url?: Maybe<Scalars['URL']['output']>;
+  readonly startedSendingAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly title: Scalars['String']['output'];
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly url?: Maybe<Scalars['URL']['output']>;
 };
 
 export const NotificationResolverAllKeys = {
@@ -1429,37 +1429,37 @@ export const NotificationResolverDateFilterKeys = {
 export type NotificationResolverDateFilterKeys = typeof NotificationResolverDateFilterKeys[keyof typeof NotificationResolverDateFilterKeys];
 export type NotificationResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: NotificationResolverDateFilterKeys;
+  readonly field: NotificationResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['DateTimeISO']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['DateTimeISO']['input'];
 };
 
 export type NotificationResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: NotificationResolverAllKeys;
+  readonly field: NotificationResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type NotificationResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: NotificationResolverOneOfFilterKeys;
+  readonly field: NotificationResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Array<Scalars['String']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
 export type NotificationResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: NotificationResolverStringFilterKeys;
+  readonly field: NotificationResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['String']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
 };
 
 export const NotificationResolverOneOfFilterKeys = {
@@ -1476,38 +1476,38 @@ export type NotificationResolverStringFilterKeys = typeof NotificationResolverSt
 export { NumericComparator };
 
 export type PersonNode = Node & {
-  __typename?: 'PersonNode';
-  assignedDonationEntries?: Maybe<ListFundraisingEntriesResponse>;
-  committees: Array<CommitteeMembershipNode>;
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  dbRole: DbRole;
-  email: Scalars['String']['output'];
-  fundraisingAssignments: Array<FundraisingAssignmentNode>;
-  fundraisingTotalAmount?: Maybe<Scalars['Float']['output']>;
-  id: Scalars['GlobalId']['output'];
-  linkblue?: Maybe<Scalars['String']['output']>;
-  moraleTeams: Array<MembershipNode>;
-  name?: Maybe<Scalars['String']['output']>;
-  primaryCommittee?: Maybe<CommitteeMembershipNode>;
-  primaryTeam?: Maybe<MembershipNode>;
-  teams: Array<MembershipNode>;
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly __typename?: 'PersonNode';
+  readonly assignedDonationEntries?: Maybe<ListFundraisingEntriesResponse>;
+  readonly committees: ReadonlyArray<CommitteeMembershipNode>;
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly dbRole: DbRole;
+  readonly email: Scalars['String']['output'];
+  readonly fundraisingAssignments: ReadonlyArray<FundraisingAssignmentNode>;
+  readonly fundraisingTotalAmount?: Maybe<Scalars['Float']['output']>;
+  readonly id: Scalars['GlobalId']['output'];
+  readonly linkblue?: Maybe<Scalars['String']['output']>;
+  readonly moraleTeams: ReadonlyArray<MembershipNode>;
+  readonly name?: Maybe<Scalars['String']['output']>;
+  readonly primaryCommittee?: Maybe<CommitteeMembershipNode>;
+  readonly primaryTeam?: Maybe<MembershipNode>;
+  readonly teams: ReadonlyArray<MembershipNode>;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
 
 export type PersonNodeAssignedDonationEntriesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<Array<FundraisingEntryResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<Array<FundraisingEntryResolverKeyedIsNullFilterItem>>;
-  numericFilters?: InputMaybe<Array<FundraisingEntryResolverKeyedNumericFilterItem>>;
-  oneOfFilters?: InputMaybe<Array<FundraisingEntryResolverKeyedOneOfFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedIsNullFilterItem>>;
+  numericFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedNumericFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
-  sortBy?: InputMaybe<Array<Scalars['String']['input']>>;
-  sortDirection?: InputMaybe<Array<SortDirection>>;
-  stringFilters?: InputMaybe<Array<FundraisingEntryResolverKeyedStringFilterItem>>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedStringFilterItem>>;
 };
 
 
@@ -1527,27 +1527,27 @@ export const PersonResolverAllKeys = {
 export type PersonResolverAllKeys = typeof PersonResolverAllKeys[keyof typeof PersonResolverAllKeys];
 export type PersonResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: PersonResolverAllKeys;
+  readonly field: PersonResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type PersonResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: PersonResolverOneOfFilterKeys;
+  readonly field: PersonResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Array<Scalars['String']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
 export type PersonResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: PersonResolverStringFilterKeys;
+  readonly field: PersonResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['String']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
 };
 
 export const PersonResolverOneOfFilterKeys = {
@@ -1565,15 +1565,15 @@ export const PersonResolverStringFilterKeys = {
 
 export type PersonResolverStringFilterKeys = typeof PersonResolverStringFilterKeys[keyof typeof PersonResolverStringFilterKeys];
 export type PointEntryNode = Node & {
-  __typename?: 'PointEntryNode';
-  comment?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  id: Scalars['GlobalId']['output'];
-  personFrom?: Maybe<PersonNode>;
-  pointOpportunity?: Maybe<PointOpportunityNode>;
-  points: Scalars['Int']['output'];
-  team: TeamNode;
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly __typename?: 'PointEntryNode';
+  readonly comment?: Maybe<Scalars['String']['output']>;
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly id: Scalars['GlobalId']['output'];
+  readonly personFrom?: Maybe<PersonNode>;
+  readonly pointOpportunity?: Maybe<PointOpportunityNode>;
+  readonly points: Scalars['Int']['output'];
+  readonly team: TeamNode;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
 export const PointEntryResolverAllKeys = {
@@ -1590,30 +1590,30 @@ export const PointEntryResolverDateFilterKeys = {
 export type PointEntryResolverDateFilterKeys = typeof PointEntryResolverDateFilterKeys[keyof typeof PointEntryResolverDateFilterKeys];
 export type PointEntryResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: PointEntryResolverDateFilterKeys;
+  readonly field: PointEntryResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['DateTimeISO']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['DateTimeISO']['input'];
 };
 
 export type PointEntryResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: PointEntryResolverAllKeys;
+  readonly field: PointEntryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type PointOpportunityNode = Node & {
-  __typename?: 'PointOpportunityNode';
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  event?: Maybe<EventNode>;
-  id: Scalars['GlobalId']['output'];
-  name: Scalars['String']['output'];
-  opportunityDate?: Maybe<Scalars['DateTimeISO']['output']>;
-  type: TeamType;
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly __typename?: 'PointOpportunityNode';
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly event?: Maybe<EventNode>;
+  readonly id: Scalars['GlobalId']['output'];
+  readonly name: Scalars['String']['output'];
+  readonly opportunityDate?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly type: TeamType;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
 export const PointOpportunityResolverAllKeys = {
@@ -1635,37 +1635,37 @@ export const PointOpportunityResolverDateFilterKeys = {
 export type PointOpportunityResolverDateFilterKeys = typeof PointOpportunityResolverDateFilterKeys[keyof typeof PointOpportunityResolverDateFilterKeys];
 export type PointOpportunityResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: PointOpportunityResolverDateFilterKeys;
+  readonly field: PointOpportunityResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['DateTimeISO']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['DateTimeISO']['input'];
 };
 
 export type PointOpportunityResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: PointOpportunityResolverAllKeys;
+  readonly field: PointOpportunityResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type PointOpportunityResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: PointOpportunityResolverOneOfFilterKeys;
+  readonly field: PointOpportunityResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Array<Scalars['String']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
 export type PointOpportunityResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: PointOpportunityResolverStringFilterKeys;
+  readonly field: PointOpportunityResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['String']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
 };
 
 export const PointOpportunityResolverOneOfFilterKeys = {
@@ -1680,58 +1680,58 @@ export const PointOpportunityResolverStringFilterKeys = {
 
 export type PointOpportunityResolverStringFilterKeys = typeof PointOpportunityResolverStringFilterKeys[keyof typeof PointOpportunityResolverStringFilterKeys];
 export type Query = {
-  __typename?: 'Query';
+  readonly __typename?: 'Query';
   /** Get the active configuration for a given key at the current time */
-  activeConfiguration: GetConfigurationByUuidResponse;
+  readonly activeConfiguration: GetConfigurationByUuidResponse;
   /** Get all configurations, irrespective of time */
-  allConfigurations: GetAllConfigurationsResponse;
+  readonly allConfigurations: GetAllConfigurationsResponse;
   /** Get the audit log file from the server */
-  auditLog: Scalars['String']['output'];
+  readonly auditLog: Scalars['String']['output'];
   /** Get a particular configuration entry by UUID */
-  configuration: GetConfigurationByUuidResponse;
+  readonly configuration: GetConfigurationByUuidResponse;
   /** The marathon that is currently happening, i.e. the marathon with the latest start date that has not yet ended. */
-  currentMarathon?: Maybe<MarathonNode>;
-  currentMarathonHour?: Maybe<MarathonHourNode>;
-  dbFundsTeams: Array<DbFundsTeamInfo>;
+  readonly currentMarathon?: Maybe<MarathonNode>;
+  readonly currentMarathonHour?: Maybe<MarathonHourNode>;
+  readonly dbFundsTeams: ReadonlyArray<DbFundsTeamInfo>;
   /** Get a device by it's UUID */
-  device: GetDeviceByUuidResponse;
+  readonly device: GetDeviceByUuidResponse;
   /** List all devices */
-  devices: ListDevicesResponse;
+  readonly devices: ListDevicesResponse;
   /** Get an event by UUID */
-  event: GetEventByUuidResponse;
+  readonly event: GetEventByUuidResponse;
   /** List events */
-  events: ListEventsResponse;
+  readonly events: ListEventsResponse;
   /** Get the active feed */
-  feed: Array<FeedNode>;
+  readonly feed: ReadonlyArray<FeedNode>;
   /** Get a feed item by its UUID */
-  feedItem: FeedNode;
-  fundraisingAssignment: FundraisingAssignmentNode;
-  fundraisingEntries: ListFundraisingEntriesResponse;
-  fundraisingEntry: FundraisingEntryNode;
-  image: GetImageByUuidResponse;
-  images: ListImagesResponse;
+  readonly feedItem: FeedNode;
+  readonly fundraisingAssignment: FundraisingAssignmentNode;
+  readonly fundraisingEntries: ListFundraisingEntriesResponse;
+  readonly fundraisingEntry: FundraisingEntryNode;
+  readonly image: GetImageByUuidResponse;
+  readonly images: ListImagesResponse;
   /** The most recent marathon, regardless of whether it is currently happening, i.e. the marathon with the latest year. */
-  latestMarathon?: Maybe<MarathonNode>;
-  listPeople: ListPeopleResponse;
-  loginState: LoginState;
-  marathon: MarathonNode;
-  marathonForYear: MarathonNode;
-  marathonHour: MarathonHourNode;
-  marathons: ListMarathonsResponse;
-  me?: Maybe<PersonNode>;
-  node: Node;
-  notification: GetNotificationByUuidResponse;
-  notificationDeliveries: ListNotificationDeliveriesResponse;
-  notifications: ListNotificationsResponse;
-  person: PersonNode;
-  personByLinkBlue?: Maybe<PersonNode>;
-  pointEntries: ListPointEntriesResponse;
-  pointEntry: GetPointEntryByUuidResponse;
-  pointOpportunities: ListPointOpportunitiesResponse;
-  pointOpportunity: SinglePointOpportunityResponse;
-  searchPeopleByName: Array<PersonNode>;
-  team: SingleTeamResponse;
-  teams: ListTeamsResponse;
+  readonly latestMarathon?: Maybe<MarathonNode>;
+  readonly listPeople: ListPeopleResponse;
+  readonly loginState: LoginState;
+  readonly marathon: MarathonNode;
+  readonly marathonForYear: MarathonNode;
+  readonly marathonHour: MarathonHourNode;
+  readonly marathons: ListMarathonsResponse;
+  readonly me?: Maybe<PersonNode>;
+  readonly node: Node;
+  readonly notification: GetNotificationByUuidResponse;
+  readonly notificationDeliveries: ListNotificationDeliveriesResponse;
+  readonly notifications: ListNotificationsResponse;
+  readonly person: PersonNode;
+  readonly personByLinkBlue?: Maybe<PersonNode>;
+  readonly pointEntries: ListPointEntriesResponse;
+  readonly pointEntry: GetPointEntryByUuidResponse;
+  readonly pointOpportunities: ListPointOpportunitiesResponse;
+  readonly pointOpportunity: SinglePointOpportunityResponse;
+  readonly searchPeopleByName: ReadonlyArray<PersonNode>;
+  readonly team: SingleTeamResponse;
+  readonly teams: ListTeamsResponse;
 };
 
 
@@ -1763,17 +1763,17 @@ export type QueryDeviceArgs = {
 
 export type QueryDevicesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<Array<DeviceResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<Array<DeviceResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<Array<DeviceResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
-  sortBy?: InputMaybe<Array<Scalars['String']['input']>>;
-  sortDirection?: InputMaybe<Array<SortDirection>>;
-  stringFilters?: InputMaybe<Array<DeviceResolverKeyedStringFilterItem>>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<DeviceResolverKeyedStringFilterItem>>;
 };
 
 
@@ -1784,17 +1784,17 @@ export type QueryEventArgs = {
 
 export type QueryEventsArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<Array<EventResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<Array<EventResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<Array<EventResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
-  sortBy?: InputMaybe<Array<Scalars['String']['input']>>;
-  sortDirection?: InputMaybe<Array<SortDirection>>;
-  stringFilters?: InputMaybe<Array<EventResolverKeyedStringFilterItem>>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<EventResolverKeyedStringFilterItem>>;
 };
 
 
@@ -1815,17 +1815,17 @@ export type QueryFundraisingAssignmentArgs = {
 
 export type QueryFundraisingEntriesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<Array<FundraisingEntryResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<Array<FundraisingEntryResolverKeyedIsNullFilterItem>>;
-  numericFilters?: InputMaybe<Array<FundraisingEntryResolverKeyedNumericFilterItem>>;
-  oneOfFilters?: InputMaybe<Array<FundraisingEntryResolverKeyedOneOfFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedIsNullFilterItem>>;
+  numericFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedNumericFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
-  sortBy?: InputMaybe<Array<Scalars['String']['input']>>;
-  sortDirection?: InputMaybe<Array<SortDirection>>;
-  stringFilters?: InputMaybe<Array<FundraisingEntryResolverKeyedStringFilterItem>>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedStringFilterItem>>;
 };
 
 
@@ -1841,17 +1841,17 @@ export type QueryImageArgs = {
 
 export type QueryImagesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<Array<ImageResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<ImageResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<Array<ImageResolverKeyedIsNullFilterItem>>;
-  numericFilters?: InputMaybe<Array<ImageResolverKeyedNumericFilterItem>>;
-  oneOfFilters?: InputMaybe<Array<ImageResolverKeyedOneOfFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<ImageResolverKeyedIsNullFilterItem>>;
+  numericFilters?: InputMaybe<ReadonlyArray<ImageResolverKeyedNumericFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<ImageResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
-  sortBy?: InputMaybe<Array<Scalars['String']['input']>>;
-  sortDirection?: InputMaybe<Array<SortDirection>>;
-  stringFilters?: InputMaybe<Array<ImageResolverKeyedStringFilterItem>>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<ImageResolverKeyedStringFilterItem>>;
 };
 
 
@@ -1859,15 +1859,15 @@ export type QueryListPeopleArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
   dateFilters?: InputMaybe<Scalars['Void']['input']>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<Array<PersonResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<PersonResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<Array<PersonResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<PersonResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
-  sortBy?: InputMaybe<Array<Scalars['String']['input']>>;
-  sortDirection?: InputMaybe<Array<SortDirection>>;
-  stringFilters?: InputMaybe<Array<PersonResolverKeyedStringFilterItem>>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<PersonResolverKeyedStringFilterItem>>;
 };
 
 
@@ -1888,16 +1888,16 @@ export type QueryMarathonHourArgs = {
 
 export type QueryMarathonsArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<Array<MarathonResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<MarathonResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<Array<MarathonResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<MarathonResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
   oneOfFilters?: InputMaybe<Scalars['Void']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
-  sortBy?: InputMaybe<Array<Scalars['String']['input']>>;
-  sortDirection?: InputMaybe<Array<SortDirection>>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
   stringFilters?: InputMaybe<Scalars['Void']['input']>;
 };
 
@@ -1914,34 +1914,34 @@ export type QueryNotificationArgs = {
 
 export type QueryNotificationDeliveriesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<Array<NotificationDeliveryResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<NotificationDeliveryResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<Array<NotificationDeliveryResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<NotificationDeliveryResolverKeyedIsNullFilterItem>>;
   notificationUuid: Scalars['GlobalId']['input'];
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
   oneOfFilters?: InputMaybe<Scalars['Void']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
-  sortBy?: InputMaybe<Array<Scalars['String']['input']>>;
-  sortDirection?: InputMaybe<Array<SortDirection>>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
   stringFilters?: InputMaybe<Scalars['Void']['input']>;
 };
 
 
 export type QueryNotificationsArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<Array<NotificationResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<Array<NotificationResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<Array<NotificationResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
-  sortBy?: InputMaybe<Array<Scalars['String']['input']>>;
-  sortDirection?: InputMaybe<Array<SortDirection>>;
-  stringFilters?: InputMaybe<Array<NotificationResolverKeyedStringFilterItem>>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<NotificationResolverKeyedStringFilterItem>>;
 };
 
 
@@ -1957,16 +1957,16 @@ export type QueryPersonByLinkBlueArgs = {
 
 export type QueryPointEntriesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<Array<PointEntryResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<PointEntryResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<Array<PointEntryResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<PointEntryResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
   oneOfFilters?: InputMaybe<Scalars['Void']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
-  sortBy?: InputMaybe<Array<Scalars['String']['input']>>;
-  sortDirection?: InputMaybe<Array<SortDirection>>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
   stringFilters?: InputMaybe<Scalars['Void']['input']>;
 };
 
@@ -1978,17 +1978,17 @@ export type QueryPointEntryArgs = {
 
 export type QueryPointOpportunitiesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<Array<PointOpportunityResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<Array<PointOpportunityResolverKeyedIsNullFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedIsNullFilterItem>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<Array<PointOpportunityResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
-  sortBy?: InputMaybe<Array<Scalars['String']['input']>>;
-  sortDirection?: InputMaybe<Array<SortDirection>>;
-  stringFilters?: InputMaybe<Array<PointOpportunityResolverKeyedStringFilterItem>>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<PointOpportunityResolverKeyedStringFilterItem>>;
 };
 
 
@@ -2011,136 +2011,136 @@ export type QueryTeamsArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
   dateFilters?: InputMaybe<Scalars['Void']['input']>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<Array<TeamResolverKeyedIsNullFilterItem>>;
-  legacyStatus?: InputMaybe<Array<TeamLegacyStatus>>;
-  marathonId?: InputMaybe<Array<Scalars['GlobalId']['input']>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedIsNullFilterItem>>;
+  legacyStatus?: InputMaybe<ReadonlyArray<TeamLegacyStatus>>;
+  marathonId?: InputMaybe<ReadonlyArray<Scalars['GlobalId']['input']>>;
   numericFilters?: InputMaybe<Scalars['Void']['input']>;
-  oneOfFilters?: InputMaybe<Array<TeamResolverKeyedOneOfFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
-  sortBy?: InputMaybe<Array<Scalars['String']['input']>>;
-  sortDirection?: InputMaybe<Array<SortDirection>>;
-  stringFilters?: InputMaybe<Array<TeamResolverKeyedStringFilterItem>>;
-  type?: InputMaybe<Array<TeamType>>;
-  visibility?: InputMaybe<Array<DbRole>>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<TeamResolverKeyedStringFilterItem>>;
+  type?: InputMaybe<ReadonlyArray<TeamType>>;
+  visibility?: InputMaybe<ReadonlyArray<DbRole>>;
 };
 
 export type RegisterDeviceInput = {
   /** For legacy reasons, this can be a GlobalId or a raw UUID */
-  deviceId: Scalars['String']['input'];
+  readonly deviceId: Scalars['String']['input'];
   /** The Expo push token of the device */
-  expoPushToken?: InputMaybe<Scalars['String']['input']>;
+  readonly expoPushToken?: InputMaybe<Scalars['String']['input']>;
   /** The ID of the last user to log in on this device */
-  lastUserId?: InputMaybe<Scalars['GlobalId']['input']>;
+  readonly lastUserId?: InputMaybe<Scalars['GlobalId']['input']>;
   /** base64 encoded SHA-256 hash of a secret known to the device */
-  verifier: Scalars['String']['input'];
+  readonly verifier: Scalars['String']['input'];
 };
 
 export type RegisterDeviceResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'RegisterDeviceResponse';
-  data: DeviceNode;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'RegisterDeviceResponse';
+  readonly data: DeviceNode;
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type RemoveEventImageResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'RemoveEventImageResponse';
-  data: Scalars['Boolean']['output'];
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'RemoveEventImageResponse';
+  readonly data: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type ScheduleNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'ScheduleNotificationResponse';
-  data: Scalars['Boolean']['output'];
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'ScheduleNotificationResponse';
+  readonly data: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type SendNotificationResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'SendNotificationResponse';
-  data: Scalars['Boolean']['output'];
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'SendNotificationResponse';
+  readonly data: Scalars['Boolean']['output'];
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type SetEventInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  location?: InputMaybe<Scalars['String']['input']>;
-  occurrences: Array<SetEventOccurrenceInput>;
-  summary?: InputMaybe<Scalars['String']['input']>;
-  title: Scalars['String']['input'];
+  readonly description?: InputMaybe<Scalars['String']['input']>;
+  readonly location?: InputMaybe<Scalars['String']['input']>;
+  readonly occurrences: ReadonlyArray<SetEventOccurrenceInput>;
+  readonly summary?: InputMaybe<Scalars['String']['input']>;
+  readonly title: Scalars['String']['input'];
 };
 
 export type SetEventOccurrenceInput = {
-  fullDay: Scalars['Boolean']['input'];
-  interval: IntervalIsoInput;
+  readonly fullDay: Scalars['Boolean']['input'];
+  readonly interval: IntervalIsoInput;
   /** If updating an existing occurrence, the UUID of the occurrence to update */
-  uuid?: InputMaybe<Scalars['GlobalId']['input']>;
+  readonly uuid?: InputMaybe<Scalars['GlobalId']['input']>;
 };
 
 export type SetEventResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'SetEventResponse';
-  data: EventNode;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'SetEventResponse';
+  readonly data: EventNode;
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type SetFeedInput = {
-  textContent?: InputMaybe<Scalars['String']['input']>;
-  title: Scalars['String']['input'];
+  readonly textContent?: InputMaybe<Scalars['String']['input']>;
+  readonly title: Scalars['String']['input'];
 };
 
 export type SetMarathonHourInput = {
-  details?: InputMaybe<Scalars['String']['input']>;
-  durationInfo: Scalars['String']['input'];
-  shownStartingAt: Scalars['DateTimeISO']['input'];
-  title: Scalars['String']['input'];
+  readonly details?: InputMaybe<Scalars['String']['input']>;
+  readonly durationInfo: Scalars['String']['input'];
+  readonly shownStartingAt: Scalars['DateTimeISO']['input'];
+  readonly title: Scalars['String']['input'];
 };
 
 export type SetMarathonInput = {
-  endDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
-  startDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
-  year: Scalars['String']['input'];
+  readonly endDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  readonly startDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  readonly year: Scalars['String']['input'];
 };
 
 export type SetPersonInput = {
-  captainOf?: InputMaybe<Array<MemberOf>>;
-  email?: InputMaybe<Scalars['EmailAddress']['input']>;
-  linkblue?: InputMaybe<Scalars['String']['input']>;
-  memberOf?: InputMaybe<Array<MemberOf>>;
-  name?: InputMaybe<Scalars['String']['input']>;
+  readonly captainOf?: InputMaybe<ReadonlyArray<MemberOf>>;
+  readonly email?: InputMaybe<Scalars['EmailAddress']['input']>;
+  readonly linkblue?: InputMaybe<Scalars['String']['input']>;
+  readonly memberOf?: InputMaybe<ReadonlyArray<MemberOf>>;
+  readonly name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type SetPointOpportunityInput = {
-  eventUuid?: InputMaybe<Scalars['GlobalId']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  opportunityDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
-  type?: InputMaybe<TeamType>;
+  readonly eventUuid?: InputMaybe<Scalars['GlobalId']['input']>;
+  readonly name?: InputMaybe<Scalars['String']['input']>;
+  readonly opportunityDate?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  readonly type?: InputMaybe<TeamType>;
 };
 
 export type SetTeamInput = {
-  legacyStatus?: InputMaybe<TeamLegacyStatus>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  persistentIdentifier?: InputMaybe<Scalars['String']['input']>;
-  type?: InputMaybe<TeamType>;
+  readonly legacyStatus?: InputMaybe<TeamLegacyStatus>;
+  readonly name?: InputMaybe<Scalars['String']['input']>;
+  readonly persistentIdentifier?: InputMaybe<Scalars['String']['input']>;
+  readonly type?: InputMaybe<TeamType>;
 };
 
 export type SinglePointOpportunityResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'SinglePointOpportunityResponse';
-  data: PointOpportunityNode;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'SinglePointOpportunityResponse';
+  readonly data: PointOpportunityNode;
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export type SingleTeamResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'SingleTeamResponse';
-  data: TeamNode;
-  ok: Scalars['Boolean']['output'];
+  readonly __typename?: 'SingleTeamResponse';
+  readonly data: TeamNode;
+  readonly ok: Scalars['Boolean']['output'];
 };
 
 export { SortDirection };
 
 export type StageNotificationResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
-  __typename?: 'StageNotificationResponse';
-  data: NotificationNode;
-  ok: Scalars['Boolean']['output'];
-  uuid: Scalars['GlobalId']['output'];
+  readonly __typename?: 'StageNotificationResponse';
+  readonly data: NotificationNode;
+  readonly ok: Scalars['Boolean']['output'];
+  readonly uuid: Scalars['GlobalId']['output'];
 };
 
 export { StringComparator };
@@ -2148,39 +2148,39 @@ export { StringComparator };
 export { TeamLegacyStatus };
 
 export type TeamNode = Node & {
-  __typename?: 'TeamNode';
+  readonly __typename?: 'TeamNode';
   /** @deprecated Just query the members field and filter by role */
-  captains: Array<MembershipNode>;
-  committeeIdentifier?: Maybe<CommitteeIdentifier>;
-  createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
-  dbFundsTeam?: Maybe<DbFundsTeamInfo>;
-  fundraisingEntries: ListFundraisingEntriesResponse;
-  fundraisingTotalAmount?: Maybe<Scalars['Float']['output']>;
-  id: Scalars['GlobalId']['output'];
-  legacyStatus: TeamLegacyStatus;
-  marathon: MarathonNode;
-  members: Array<MembershipNode>;
-  name: Scalars['String']['output'];
-  pointEntries: Array<PointEntryNode>;
-  totalPoints: Scalars['Int']['output'];
-  type: TeamType;
-  updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly captains: ReadonlyArray<MembershipNode>;
+  readonly committeeIdentifier?: Maybe<CommitteeIdentifier>;
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly dbFundsTeam?: Maybe<DbFundsTeamInfo>;
+  readonly fundraisingEntries: ListFundraisingEntriesResponse;
+  readonly fundraisingTotalAmount?: Maybe<Scalars['Float']['output']>;
+  readonly id: Scalars['GlobalId']['output'];
+  readonly legacyStatus: TeamLegacyStatus;
+  readonly marathon: MarathonNode;
+  readonly members: ReadonlyArray<MembershipNode>;
+  readonly name: Scalars['String']['output'];
+  readonly pointEntries: ReadonlyArray<PointEntryNode>;
+  readonly totalPoints: Scalars['Int']['output'];
+  readonly type: TeamType;
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
 
 export type TeamNodeFundraisingEntriesArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
-  dateFilters?: InputMaybe<Array<FundraisingEntryResolverKeyedDateFilterItem>>;
+  dateFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedDateFilterItem>>;
   includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-  isNullFilters?: InputMaybe<Array<FundraisingEntryResolverKeyedIsNullFilterItem>>;
-  numericFilters?: InputMaybe<Array<FundraisingEntryResolverKeyedNumericFilterItem>>;
-  oneOfFilters?: InputMaybe<Array<FundraisingEntryResolverKeyedOneOfFilterItem>>;
+  isNullFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedIsNullFilterItem>>;
+  numericFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedNumericFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedOneOfFilterItem>>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   sendAll?: InputMaybe<Scalars['Boolean']['input']>;
-  sortBy?: InputMaybe<Array<Scalars['String']['input']>>;
-  sortDirection?: InputMaybe<Array<SortDirection>>;
-  stringFilters?: InputMaybe<Array<FundraisingEntryResolverKeyedStringFilterItem>>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedStringFilterItem>>;
 };
 
 export const TeamResolverAllKeys = {
@@ -2193,27 +2193,27 @@ export const TeamResolverAllKeys = {
 export type TeamResolverAllKeys = typeof TeamResolverAllKeys[keyof typeof TeamResolverAllKeys];
 export type TeamResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: TeamResolverAllKeys;
+  readonly field: TeamResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type TeamResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: TeamResolverOneOfFilterKeys;
+  readonly field: TeamResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Array<Scalars['String']['input']>;
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
 };
 
 export type TeamResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: TeamResolverStringFilterKeys;
+  readonly field: TeamResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars['Boolean']['input']>;
-  value: Scalars['String']['input'];
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
 };
 
 export const TeamResolverOneOfFilterKeys = {
@@ -2231,67 +2231,67 @@ export type TeamResolverStringFilterKeys = typeof TeamResolverStringFilterKeys[k
 export { TeamType };
 
 export type UpdateFundraisingAssignmentInput = {
-  amount: Scalars['Float']['input'];
+  readonly amount: Scalars['Float']['input'];
 };
 
-export type ImageViewFragmentFragment = { __typename?: 'ImageNode', id: string, url?: URL | string | null, thumbHash?: string | null, alt?: string | null, width: number, height: number, mimeType: string } & { ' $fragmentName'?: 'ImageViewFragmentFragment' };
+export type ImageViewFragmentFragment = { readonly __typename?: 'ImageNode', readonly id: string, readonly url?: URL | string | null, readonly thumbHash?: string | null, readonly alt?: string | null, readonly width: number, readonly height: number, readonly mimeType: string } & { ' $fragmentName'?: 'ImageViewFragmentFragment' };
 
-export type SimpleConfigFragment = { __typename?: 'ConfigurationNode', id: string, key: string, value: string } & { ' $fragmentName'?: 'SimpleConfigFragment' };
+export type SimpleConfigFragment = { readonly __typename?: 'ConfigurationNode', readonly id: string, readonly key: string, readonly value: string } & { ' $fragmentName'?: 'SimpleConfigFragment' };
 
 export type FullConfigFragment = (
-  { __typename?: 'ConfigurationNode', validAfter?: Date | string | null, validUntil?: Date | string | null, createdAt?: Date | string | null }
+  { readonly __typename?: 'ConfigurationNode', readonly validAfter?: Date | string | null, readonly validUntil?: Date | string | null, readonly createdAt?: Date | string | null }
   & { ' $fragmentRefs'?: { 'SimpleConfigFragment': SimpleConfigFragment } }
 ) & { ' $fragmentName'?: 'FullConfigFragment' };
 
-export type NotificationFragmentFragment = { __typename?: 'NotificationNode', id: string, title: string, body: string, url?: URL | string | null } & { ' $fragmentName'?: 'NotificationFragmentFragment' };
+export type NotificationFragmentFragment = { readonly __typename?: 'NotificationNode', readonly id: string, readonly title: string, readonly body: string, readonly url?: URL | string | null } & { ' $fragmentName'?: 'NotificationFragmentFragment' };
 
-export type NotificationDeliveryFragmentFragment = { __typename?: 'NotificationDeliveryNode', id: string, sentAt?: Date | string | null, notification: (
-    { __typename?: 'NotificationNode' }
+export type NotificationDeliveryFragmentFragment = { readonly __typename?: 'NotificationDeliveryNode', readonly id: string, readonly sentAt?: Date | string | null, readonly notification: (
+    { readonly __typename?: 'NotificationNode' }
     & { ' $fragmentRefs'?: { 'NotificationFragmentFragment': NotificationFragmentFragment } }
   ) } & { ' $fragmentName'?: 'NotificationDeliveryFragmentFragment' };
 
 export type UseAllowedLoginTypesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type UseAllowedLoginTypesQuery = { __typename?: 'Query', activeConfiguration: { __typename?: 'GetConfigurationByUuidResponse', data: (
-      { __typename?: 'ConfigurationNode' }
+export type UseAllowedLoginTypesQuery = { readonly __typename?: 'Query', readonly activeConfiguration: { readonly __typename?: 'GetConfigurationByUuidResponse', readonly data: (
+      { readonly __typename?: 'ConfigurationNode' }
       & { ' $fragmentRefs'?: { 'SimpleConfigFragment': SimpleConfigFragment } }
     ) } };
 
 export type MarathonTimeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MarathonTimeQuery = { __typename?: 'Query', latestMarathon?: { __typename?: 'MarathonNode', startDate?: Date | string | null, endDate?: Date | string | null } | null };
+export type MarathonTimeQuery = { readonly __typename?: 'Query', readonly latestMarathon?: { readonly __typename?: 'MarathonNode', readonly startDate?: Date | string | null, readonly endDate?: Date | string | null } | null };
 
 export type UseTabBarConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type UseTabBarConfigQuery = { __typename?: 'Query', activeConfiguration: { __typename?: 'GetConfigurationByUuidResponse', data: (
-      { __typename?: 'ConfigurationNode' }
+export type UseTabBarConfigQuery = { readonly __typename?: 'Query', readonly activeConfiguration: { readonly __typename?: 'GetConfigurationByUuidResponse', readonly data: (
+      { readonly __typename?: 'ConfigurationNode' }
       & { ' $fragmentRefs'?: { 'SimpleConfigFragment': SimpleConfigFragment } }
-    ) }, me?: { __typename?: 'PersonNode', linkblue?: string | null } | null };
+    ) }, readonly me?: { readonly __typename?: 'PersonNode', readonly linkblue?: string | null } | null };
 
 export type TriviaCrackQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TriviaCrackQuery = { __typename?: 'Query', activeConfiguration: { __typename?: 'GetConfigurationByUuidResponse', data: (
-      { __typename?: 'ConfigurationNode' }
+export type TriviaCrackQuery = { readonly __typename?: 'Query', readonly activeConfiguration: { readonly __typename?: 'GetConfigurationByUuidResponse', readonly data: (
+      { readonly __typename?: 'ConfigurationNode' }
       & { ' $fragmentRefs'?: { 'SimpleConfigFragment': SimpleConfigFragment } }
-    ) }, me?: { __typename?: 'PersonNode', teams: Array<{ __typename?: 'MembershipNode', team: { __typename?: 'TeamNode', type: TeamType, name: string } }> } | null };
+    ) }, readonly me?: { readonly __typename?: 'PersonNode', readonly teams: ReadonlyArray<{ readonly __typename?: 'MembershipNode', readonly team: { readonly __typename?: 'TeamNode', readonly type: TeamType, readonly name: string } }> } | null };
 
 export type AuthStateQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AuthStateQuery = { __typename?: 'Query', me?: { __typename?: 'PersonNode', id: string, email: string } | null, loginState: { __typename?: 'LoginState', dbRole: DbRole, loggedIn: boolean, authSource: AuthSource } };
+export type AuthStateQuery = { readonly __typename?: 'Query', readonly me?: { readonly __typename?: 'PersonNode', readonly id: string, readonly email: string } | null, readonly loginState: { readonly __typename?: 'LoginState', readonly dbRole: DbRole, readonly loggedIn: boolean, readonly authSource: AuthSource } };
 
 export type SetDeviceMutationVariables = Exact<{
   input: RegisterDeviceInput;
 }>;
 
 
-export type SetDeviceMutation = { __typename?: 'Mutation', registerDevice: { __typename?: 'RegisterDeviceResponse', ok: boolean } };
+export type SetDeviceMutation = { readonly __typename?: 'Mutation', readonly registerDevice: { readonly __typename?: 'RegisterDeviceResponse', readonly ok: boolean } };
 
-export type EventScreenFragmentFragment = { __typename?: 'EventNode', id: string, title: string, summary?: string | null, description?: string | null, location?: string | null, occurrences: Array<{ __typename?: 'EventOccurrenceNode', id: string, fullDay: boolean, interval: { __typename?: 'IntervalISO', start: Date | string, end: Date | string } }>, images: Array<{ __typename?: 'ImageNode', thumbHash?: string | null, url?: URL | string | null, height: number, width: number, alt?: string | null, mimeType: string }> } & { ' $fragmentName'?: 'EventScreenFragmentFragment' };
+export type EventScreenFragmentFragment = { readonly __typename?: 'EventNode', readonly id: string, readonly title: string, readonly summary?: string | null, readonly description?: string | null, readonly location?: string | null, readonly occurrences: ReadonlyArray<{ readonly __typename?: 'EventOccurrenceNode', readonly id: string, readonly fullDay: boolean, readonly interval: { readonly __typename?: 'IntervalISO', readonly start: Date | string, readonly end: Date | string } }>, readonly images: ReadonlyArray<{ readonly __typename?: 'ImageNode', readonly thumbHash?: string | null, readonly url?: URL | string | null, readonly height: number, readonly width: number, readonly alt?: string | null, readonly mimeType: string }> } & { ' $fragmentName'?: 'EventScreenFragmentFragment' };
 
 export type DeviceNotificationsQueryVariables = Exact<{
   deviceUuid: Scalars['String']['input'];
@@ -2301,27 +2301,27 @@ export type DeviceNotificationsQueryVariables = Exact<{
 }>;
 
 
-export type DeviceNotificationsQuery = { __typename?: 'Query', device: { __typename?: 'GetDeviceByUuidResponse', data: { __typename?: 'DeviceNode', notificationDeliveries: Array<(
-        { __typename?: 'NotificationDeliveryNode' }
+export type DeviceNotificationsQuery = { readonly __typename?: 'Query', readonly device: { readonly __typename?: 'GetDeviceByUuidResponse', readonly data: { readonly __typename?: 'DeviceNode', readonly notificationDeliveries: ReadonlyArray<(
+        { readonly __typename?: 'NotificationDeliveryNode' }
         & { ' $fragmentRefs'?: { 'NotificationDeliveryFragmentFragment': NotificationDeliveryFragmentFragment } }
       )> } } };
 
-export type ProfileScreenAuthFragmentFragment = { __typename?: 'LoginState', dbRole: DbRole, authSource: AuthSource } & { ' $fragmentName'?: 'ProfileScreenAuthFragmentFragment' };
+export type ProfileScreenAuthFragmentFragment = { readonly __typename?: 'LoginState', readonly dbRole: DbRole, readonly authSource: AuthSource } & { ' $fragmentName'?: 'ProfileScreenAuthFragmentFragment' };
 
-export type ProfileScreenUserFragmentFragment = { __typename?: 'PersonNode', name?: string | null, linkblue?: string | null, teams: Array<{ __typename?: 'MembershipNode', position: MembershipPositionType, team: { __typename?: 'TeamNode', name: string } }>, primaryCommittee?: { __typename?: 'CommitteeMembershipNode', identifier: CommitteeIdentifier, role: CommitteeRole } | null } & { ' $fragmentName'?: 'ProfileScreenUserFragmentFragment' };
+export type ProfileScreenUserFragmentFragment = { readonly __typename?: 'PersonNode', readonly name?: string | null, readonly linkblue?: string | null, readonly teams: ReadonlyArray<{ readonly __typename?: 'MembershipNode', readonly position: MembershipPositionType, readonly team: { readonly __typename?: 'TeamNode', readonly name: string } }>, readonly primaryCommittee?: { readonly __typename?: 'CommitteeMembershipNode', readonly identifier: CommitteeIdentifier, readonly role: CommitteeRole } | null } & { ' $fragmentName'?: 'ProfileScreenUserFragmentFragment' };
 
 export type RootScreenDocumentQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type RootScreenDocumentQuery = { __typename?: 'Query', loginState: (
-    { __typename?: 'LoginState' }
+export type RootScreenDocumentQuery = { readonly __typename?: 'Query', readonly loginState: (
+    { readonly __typename?: 'LoginState' }
     & { ' $fragmentRefs'?: { 'ProfileScreenAuthFragmentFragment': ProfileScreenAuthFragmentFragment;'RootScreenAuthFragmentFragment': RootScreenAuthFragmentFragment } }
-  ), me?: (
-    { __typename?: 'PersonNode' }
+  ), readonly me?: (
+    { readonly __typename?: 'PersonNode' }
     & { ' $fragmentRefs'?: { 'ProfileScreenUserFragmentFragment': ProfileScreenUserFragmentFragment } }
   ) | null };
 
-export type RootScreenAuthFragmentFragment = { __typename?: 'LoginState', dbRole: DbRole } & { ' $fragmentName'?: 'RootScreenAuthFragmentFragment' };
+export type RootScreenAuthFragmentFragment = { readonly __typename?: 'LoginState', readonly dbRole: DbRole } & { ' $fragmentName'?: 'RootScreenAuthFragmentFragment' };
 
 export type EventsQueryVariables = Exact<{
   earliestTimestamp: Scalars['DateTimeISO']['input'];
@@ -2329,35 +2329,35 @@ export type EventsQueryVariables = Exact<{
 }>;
 
 
-export type EventsQuery = { __typename?: 'Query', events: { __typename?: 'ListEventsResponse', data: Array<(
-      { __typename?: 'EventNode' }
+export type EventsQuery = { readonly __typename?: 'Query', readonly events: { readonly __typename?: 'ListEventsResponse', readonly data: ReadonlyArray<(
+      { readonly __typename?: 'EventNode' }
       & { ' $fragmentRefs'?: { 'EventScreenFragmentFragment': EventScreenFragmentFragment } }
     )> } };
 
 export type ServerFeedQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ServerFeedQuery = { __typename?: 'Query', feed: Array<{ __typename?: 'FeedNode', id: string, title: string, createdAt?: Date | string | null, textContent?: string | null, image?: { __typename?: 'ImageNode', url?: URL | string | null, alt?: string | null, width: number, height: number, thumbHash?: string | null } | null }> };
+export type ServerFeedQuery = { readonly __typename?: 'Query', readonly feed: ReadonlyArray<{ readonly __typename?: 'FeedNode', readonly id: string, readonly title: string, readonly createdAt?: Date | string | null, readonly textContent?: string | null, readonly image?: { readonly __typename?: 'ImageNode', readonly url?: URL | string | null, readonly alt?: string | null, readonly width: number, readonly height: number, readonly thumbHash?: string | null } | null }> };
 
-export type HourScreenFragmentFragment = { __typename?: 'MarathonHourNode', id: string, title: string, details?: string | null, durationInfo: string, mapImages: Array<(
-    { __typename?: 'ImageNode' }
+export type HourScreenFragmentFragment = { readonly __typename?: 'MarathonHourNode', readonly id: string, readonly title: string, readonly details?: string | null, readonly durationInfo: string, readonly mapImages: ReadonlyArray<(
+    { readonly __typename?: 'ImageNode' }
     & { ' $fragmentRefs'?: { 'ImageViewFragmentFragment': ImageViewFragmentFragment } }
   )> } & { ' $fragmentName'?: 'HourScreenFragmentFragment' };
 
 export type MarathonScreenQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MarathonScreenQuery = { __typename?: 'Query', currentMarathonHour?: (
-    { __typename?: 'MarathonHourNode' }
+export type MarathonScreenQuery = { readonly __typename?: 'Query', readonly currentMarathonHour?: (
+    { readonly __typename?: 'MarathonHourNode' }
     & { ' $fragmentRefs'?: { 'HourScreenFragmentFragment': HourScreenFragmentFragment } }
-  ) | null, latestMarathon?: { __typename?: 'MarathonNode', startDate?: Date | string | null, endDate?: Date | string | null, hours: Array<(
-      { __typename?: 'MarathonHourNode' }
+  ) | null, readonly latestMarathon?: { readonly __typename?: 'MarathonNode', readonly startDate?: Date | string | null, readonly endDate?: Date | string | null, readonly hours: ReadonlyArray<(
+      { readonly __typename?: 'MarathonHourNode' }
       & { ' $fragmentRefs'?: { 'HourScreenFragmentFragment': HourScreenFragmentFragment } }
     )> } | null };
 
-export type ScoreBoardFragmentFragment = { __typename?: 'TeamNode', id: string, name: string, totalPoints: number, legacyStatus: TeamLegacyStatus, type: TeamType } & { ' $fragmentName'?: 'ScoreBoardFragmentFragment' };
+export type ScoreBoardFragmentFragment = { readonly __typename?: 'TeamNode', readonly id: string, readonly name: string, readonly totalPoints: number, readonly legacyStatus: TeamLegacyStatus, readonly type: TeamType } & { ' $fragmentName'?: 'ScoreBoardFragmentFragment' };
 
-export type HighlightedTeamFragmentFragment = { __typename?: 'TeamNode', id: string, name: string, legacyStatus: TeamLegacyStatus, type: TeamType } & { ' $fragmentName'?: 'HighlightedTeamFragmentFragment' };
+export type HighlightedTeamFragmentFragment = { readonly __typename?: 'TeamNode', readonly id: string, readonly name: string, readonly legacyStatus: TeamLegacyStatus, readonly type: TeamType } & { ' $fragmentName'?: 'HighlightedTeamFragmentFragment' };
 
 export type ScoreBoardDocumentQueryVariables = Exact<{
   type: TeamType;
@@ -2365,25 +2365,25 @@ export type ScoreBoardDocumentQueryVariables = Exact<{
 }>;
 
 
-export type ScoreBoardDocumentQuery = { __typename?: 'Query', me?: (
-    { __typename?: 'PersonNode', id: string, primaryTeam?: { __typename?: 'MembershipNode', team: (
-        { __typename?: 'TeamNode' }
+export type ScoreBoardDocumentQuery = { readonly __typename?: 'Query', readonly me?: (
+    { readonly __typename?: 'PersonNode', readonly id: string, readonly primaryTeam?: { readonly __typename?: 'MembershipNode', readonly team: (
+        { readonly __typename?: 'TeamNode' }
         & { ' $fragmentRefs'?: { 'HighlightedTeamFragmentFragment': HighlightedTeamFragmentFragment;'MyTeamFragmentFragment': MyTeamFragmentFragment } }
       ) } | null }
     & { ' $fragmentRefs'?: { 'MyFundraisingFragmentFragment': MyFundraisingFragmentFragment } }
-  ) | null, teams: { __typename?: 'ListTeamsResponse', data: Array<(
-      { __typename?: 'TeamNode' }
+  ) | null, readonly teams: { readonly __typename?: 'ListTeamsResponse', readonly data: ReadonlyArray<(
+      { readonly __typename?: 'TeamNode' }
       & { ' $fragmentRefs'?: { 'ScoreBoardFragmentFragment': ScoreBoardFragmentFragment } }
     )> } };
 
 export type ActiveMarathonDocumentQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ActiveMarathonDocumentQuery = { __typename?: 'Query', currentMarathon?: { __typename?: 'MarathonNode', id: string } | null, latestMarathon?: { __typename?: 'MarathonNode', id: string } | null };
+export type ActiveMarathonDocumentQuery = { readonly __typename?: 'Query', readonly currentMarathon?: { readonly __typename?: 'MarathonNode', readonly id: string } | null, readonly latestMarathon?: { readonly __typename?: 'MarathonNode', readonly id: string } | null };
 
-export type MyTeamFragmentFragment = { __typename?: 'TeamNode', id: string, name: string, totalPoints: number, fundraisingTotalAmount?: number | null, pointEntries: Array<{ __typename?: 'PointEntryNode', points: number, personFrom?: { __typename?: 'PersonNode', id: string, name?: string | null, linkblue?: string | null } | null }>, members: Array<{ __typename?: 'MembershipNode', position: MembershipPositionType, person: { __typename?: 'PersonNode', linkblue?: string | null, name?: string | null } }> } & { ' $fragmentName'?: 'MyTeamFragmentFragment' };
+export type MyTeamFragmentFragment = { readonly __typename?: 'TeamNode', readonly id: string, readonly name: string, readonly totalPoints: number, readonly fundraisingTotalAmount?: number | null, readonly pointEntries: ReadonlyArray<{ readonly __typename?: 'PointEntryNode', readonly points: number, readonly personFrom?: { readonly __typename?: 'PersonNode', readonly id: string, readonly name?: string | null, readonly linkblue?: string | null } | null }>, readonly members: ReadonlyArray<{ readonly __typename?: 'MembershipNode', readonly position: MembershipPositionType, readonly person: { readonly __typename?: 'PersonNode', readonly linkblue?: string | null, readonly name?: string | null } }> } & { ' $fragmentName'?: 'MyTeamFragmentFragment' };
 
-export type MyFundraisingFragmentFragment = { __typename?: 'PersonNode', fundraisingTotalAmount?: number | null, fundraisingAssignments: Array<{ __typename?: 'FundraisingAssignmentNode', amount: number, entry: { __typename?: 'FundraisingEntryNode', donatedToText?: string | null, donatedByText?: string | null, donatedOn: Date | string } }> } & { ' $fragmentName'?: 'MyFundraisingFragmentFragment' };
+export type MyFundraisingFragmentFragment = { readonly __typename?: 'PersonNode', readonly fundraisingTotalAmount?: number | null, readonly fundraisingAssignments: ReadonlyArray<{ readonly __typename?: 'FundraisingAssignmentNode', readonly amount: number, readonly entry: { readonly __typename?: 'FundraisingEntryNode', readonly donatedToText?: string | null, readonly donatedByText?: string | null, readonly donatedOn: Date | string } }> } & { ' $fragmentName'?: 'MyFundraisingFragmentFragment' };
 
 export const SimpleConfigFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SimpleConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<SimpleConfigFragment, unknown>;
 export const FullConfigFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FullConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SimpleConfig"}},{"kind":"Field","name":{"kind":"Name","value":"validAfter"}},{"kind":"Field","name":{"kind":"Name","value":"validUntil"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SimpleConfig"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConfigurationNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<FullConfigFragment, unknown>;
