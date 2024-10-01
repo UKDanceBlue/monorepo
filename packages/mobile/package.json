@@ -1,7 +1,6 @@
 {
   "name": "@ukdanceblue/mobile",
   "main": "./index.js",
-  "version": "2.2.2",
   "type": "commonjs",
   "scripts": {
     "check": "tsc --noEmit",

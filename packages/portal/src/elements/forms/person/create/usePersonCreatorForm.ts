@@ -2,10 +2,10 @@ import { personCreatorDocument } from "./PersonCreatorGQL";
 
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
-import { type CreatePersonInput } from "@ukdanceblue/common/graphql-client-portal/raw-types";
+import { type CreatePersonInput } from "@graphql/raw-types";
 import { useMutation } from "urql";
 
-import type { DocumentType } from "@ukdanceblue/common/graphql-client-portal";
+import type { DocumentType } from "@graphql";
 
 export function usePersonCreatorForm(
   afterSubmit:

@@ -13,11 +13,8 @@ import {
   roleToAccessLevel,
   stringifyAccessLevel,
 } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-portal";
-import {
-  getFragmentData,
-  graphql,
-} from "@ukdanceblue/common/graphql-client-portal";
+import type { FragmentType } from "@graphql";
+import { getFragmentData, graphql } from "@graphql";
 import { Button, Card, Descriptions, Empty, Flex, Typography } from "antd";
 
 import { usePersonDeletePopup } from "../../components/person/PersonDeletePopup";

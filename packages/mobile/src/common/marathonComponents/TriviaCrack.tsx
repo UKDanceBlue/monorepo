@@ -1,9 +1,6 @@
 import { SimpleConfigFragment } from "@common/fragments/Configuration";
 import { TeamType } from "@ukdanceblue/common";
-import {
-  getFragmentData,
-  graphql,
-} from "@ukdanceblue/common/graphql-client-mobile";
+import { getFragmentData, graphql } from "@graphql";
 import { Text, View } from "native-base";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator } from "react-native";

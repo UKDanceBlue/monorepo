@@ -2,7 +2,7 @@ import { useNetworkStatus } from "@common/customHooks";
 import { Logger } from "@common/logger/Logger";
 import { setTag as setSentryTag } from "@sentry/react-native";
 import { arrayToBase64String } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-mobile";
+import { graphql } from "@graphql";
 import {
   CryptoDigestAlgorithm,
   CryptoEncoding,

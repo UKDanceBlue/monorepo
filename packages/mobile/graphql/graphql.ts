@@ -1,15 +1,15 @@
 /* eslint-disable */
-import type { AuthSource } from '../index.js';
-import type { AccessLevel } from '../index.js';
-import type { DbRole } from '../index.js';
-import type { CommitteeRole } from '../index.js';
-import type { CommitteeIdentifier } from '../index.js';
-import type { MembershipPositionType } from '../index.js';
-import type { TeamLegacyStatus } from '../index.js';
-import type { TeamType } from '../index.js';
-import type { SortDirection } from '../index.js';
-import type { NumericComparator } from '../index.js';
-import type { StringComparator } from '../index.js';
+import type { AuthSource } from '@ukdanceblue/common';
+import type { AccessLevel } from '@ukdanceblue/common';
+import type { DbRole } from '@ukdanceblue/common';
+import type { CommitteeRole } from '@ukdanceblue/common';
+import type { CommitteeIdentifier } from '@ukdanceblue/common';
+import type { MembershipPositionType } from '@ukdanceblue/common';
+import type { TeamLegacyStatus } from '@ukdanceblue/common';
+import type { TeamType } from '@ukdanceblue/common';
+import type { SortDirection } from '@ukdanceblue/common';
+import type { NumericComparator } from '@ukdanceblue/common';
+import type { StringComparator } from '@ukdanceblue/common';
 import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;

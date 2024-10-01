@@ -3,8 +3,8 @@ import { NotificationDeliveryFragment } from "@common/fragments/NotificationScre
 import { Logger } from "@common/logger/Logger";
 import { universalCatch } from "@common/logging";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
-import { getFragmentData } from "@ukdanceblue/common/graphql-client-mobile";
+import type { FragmentType } from "@graphql";
+import { getFragmentData } from "@graphql";
 import { manufacturer as deviceManufacturer } from "expo-device";
 import { openSettings } from "expo-linking";
 import { setBadgeCountAsync } from "expo-notifications";

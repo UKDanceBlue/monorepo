@@ -2,11 +2,8 @@ import Jumbotron from "@common/components/Jumbotron";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
-import {
-  getFragmentData,
-  graphql,
-} from "@ukdanceblue/common/graphql-client-mobile";
+import type { FragmentType } from "@graphql";
+import { getFragmentData, graphql } from "@graphql";
 import {
   Box,
   CheckIcon,

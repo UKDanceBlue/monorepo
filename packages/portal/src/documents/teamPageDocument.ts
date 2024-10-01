@@ -1,4 +1,4 @@
-import { graphql } from "@ukdanceblue/common/graphql-client-portal";
+import { graphql } from "@graphql";
 
 export const teamPageDocument = graphql(/* GraphQL */ `
   query ViewTeamPage($teamUuid: GlobalId!) {

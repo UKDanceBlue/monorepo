@@ -2,7 +2,7 @@ import { MarathonViewer } from "@elements/viewers/marathon/MarathonViewer";
 import { createFileRoute } from "@tanstack/react-router";
 import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-portal";
+import { graphql } from "@graphql";
 import { useQuery } from "urql";
 
 const marathonPageDocument = graphql(/* GraphQL */ `

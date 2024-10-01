@@ -11,7 +11,7 @@ import {
   CommitteeRole,
   SortDirection,
 } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-portal";
+import { graphql } from "@graphql";
 import {
   AutoComplete,
   Button,

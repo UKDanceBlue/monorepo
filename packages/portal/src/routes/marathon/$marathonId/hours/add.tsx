@@ -8,7 +8,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
 import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-portal";
+import { graphql } from "@graphql";
 import { Editable, useEditor } from "@wysimark/react";
 import { Button, Input } from "antd";
 import type { DateTime } from "luxon";

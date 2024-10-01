@@ -3,11 +3,8 @@ import ImageView, {
 } from "@common/components/ImageView/ImageView";
 import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
 import { TriviaCrack } from "@common/marathonComponents/TriviaCrack";
-import type { FragmentType } from "@ukdanceblue/common/graphql-client-mobile";
-import {
-  getFragmentData,
-  graphql,
-} from "@ukdanceblue/common/graphql-client-mobile";
+import type { FragmentType } from "@graphql";
+import { getFragmentData, graphql } from "@graphql";
 import { Heading, ScrollView, Text } from "native-base";
 import { useEffect, useState } from "react";
 import {

@@ -5,11 +5,8 @@ import { Logger } from "@common/logger/Logger";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DbRole } from "@ukdanceblue/common";
-import {
-  getFragmentData,
-  graphql,
-} from "@ukdanceblue/common/graphql-client-mobile";
-import { Center, Text, useTheme } from "native-base";
+import { getFragmentData, graphql } from "@graphql";
+import { useTheme } from "native-base";
 import { useEffect, useMemo, useState } from "react";
 import { Alert, useWindowDimensions } from "react-native";
 import { useQuery } from "urql";

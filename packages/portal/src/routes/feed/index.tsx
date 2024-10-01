@@ -7,7 +7,7 @@ import {
   CommitteeRole,
   dateTimeFromSomething,
 } from "@ukdanceblue/common";
-import { graphql } from "@ukdanceblue/common/graphql-client-portal";
+import { graphql } from "@graphql";
 import {
   Button,
   Card,

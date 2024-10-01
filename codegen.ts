@@ -24,25 +24,26 @@ const presetConfig: ClientPresetConfig = {
   },
 };
 
+// NOTE: this configuration object requires the patch in `.yarn/patches/@graphql-codegen-client-preset-npm-4.3.3-ec8a799259.patch` which is automatically applied by Yarn
+// If you get errors with types not matching up between GraphQL an @ukdanceblue/common, then the patch probably isn't working
 const config: TypeScriptPluginConfig = {
   useTypeImports: true,
   enumsAsConst: true,
-  immutableTypes: true,
   enumValues: {
-    AuthSource: "../index.js#AuthSource",
-    AccessLevel: "../index.js#AccessLevel",
-    DbRole: "../index.js#DbRole",
-    CommitteeRole: "../index.js#CommitteeRole",
-    CommitteeIdentifier: "../index.js#CommitteeIdentifier",
-    // ErrorCode: "../index.js#ErrorCode",
-    MembershipPositionType: "../index.js#MembershipPositionType",
-    TeamLegacyStatus: "../index.js#TeamLegacyStatus",
-    TeamType: "../index.js#TeamType",
-    SortDirection: "../index.js#SortDirection",
-    // Comparator: "../index.js#Comparator",
-    NumericComparator: "../index.js#NumericComparator",
-    StringComparator: "../index.js#StringComparator",
-    // IsComparator: "../index.js#IsComparator",
+    AuthSource: "@ukdanceblue/common#AuthSource",
+    AccessLevel: "@ukdanceblue/common#AccessLevel",
+    DbRole: "@ukdanceblue/common#DbRole",
+    CommitteeRole: "@ukdanceblue/common#CommitteeRole",
+    CommitteeIdentifier: "@ukdanceblue/common#CommitteeIdentifier",
+    // ErrorCode: "@ukdanceblue/common#ErrorCode",
+    MembershipPositionType: "@ukdanceblue/common#MembershipPositionType",
+    TeamLegacyStatus: "@ukdanceblue/common#TeamLegacyStatus",
+    TeamType: "@ukdanceblue/common#TeamType",
+    SortDirection: "@ukdanceblue/common#SortDirection",
+    // Comparator: "@ukdanceblue/common#Comparator",
+    NumericComparator: "@ukdanceblue/common#NumericComparator",
+    StringComparator: "@ukdanceblue/common#StringComparator",
+    // IsComparator: "@ukdanceblue/common#IsComparator",
   },
   scalars: {
     LuxonDateRange: "string",
@@ -54,9 +55,11 @@ const config: TypeScriptPluginConfig = {
 };
 
 const generates: CodegenConfig["generates"] = {};
+
+// We do this readdir thing in case a partial copy of the monorepo is being used
 const packages = readdirSync("./packages");
 if (packages.includes("mobile")) {
-  generates["./packages/common/lib/graphql-client-mobile/"] = {
+  generates["./packages/mobile/graphql/"] = {
     preset: "client",
     presetConfig,
     documents: [
@@ -66,7 +69,7 @@ if (packages.includes("mobile")) {
   };
 }
 if (packages.includes("portal")) {
-  generates["./packages/common/lib/graphql-client-portal/"] = {
+  generates["./packages/portal/graphql/"] = {
     preset: "client",
     presetConfig,
     documents: [

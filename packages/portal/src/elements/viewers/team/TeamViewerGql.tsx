@@ -1,4 +1,4 @@
-import { graphql } from "@ukdanceblue/common/graphql-client-portal";
+import { graphql } from "@graphql";
 
 export const assignToTeamDocument = graphql(/* GraphQL */ `
   mutation AssignToTeam(

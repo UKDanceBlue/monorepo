@@ -1,9 +1,6 @@
 import { SimpleConfigFragment } from "@common/fragments/Configuration";
 import { log, logError } from "@common/logging";
-import {
-  getFragmentData,
-  graphql,
-} from "@ukdanceblue/common/graphql-client-mobile";
+import { getFragmentData, graphql } from "@graphql";
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 
