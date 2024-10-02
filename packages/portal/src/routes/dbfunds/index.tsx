@@ -1,5 +1,6 @@
 import { DownloadOutlined } from "@ant-design/icons";
 import { useMarathon } from "@config/marathonContext";
+import { SpreadsheetUploader } from "@elements/components/SpreadsheetUploader";
 import { graphql } from "@graphql/index";
 import { createFileRoute } from "@tanstack/react-router";
 import { routerAuthCheck } from "@tools/routerAuthCheck";
@@ -29,6 +30,94 @@ const getEntryDocument = graphql(/* GraphQL */ `
     rawFundraisingEntries(marathonYear: $year, identifier: $dbNum)
   }
 `);
+
+interface GcFormat {
+  "Mil ID": number;
+  "Salesforce ID": string;
+  "Donor Name": string;
+  "Salutation": string;
+  "Transaction Type": string;
+  "Online Gift?": string;
+  "Unit": string;
+  "giftproc": string;
+  "BegFY": string;
+  "CFY": string;
+  "giftamount": number;
+  "giftacctnm": string;
+  "table_val": string;
+  "giftacctno": string;
+  "giftsolic": string;
+  "giftcomm": string;
+  "addrline1": string;
+  "addrline2": string;
+  "addrline3": string;
+  "addrcity": string;
+  "addrplace": string;
+  "addrzipcod": string;
+  "intaddress": string;
+  "Constituent Type": string;
+  "Donor Name 3": string;
+  "coretext": string;
+  "CFY $": number;
+}
+const GcFormatKeys = [
+  "Mil ID",
+  "Salesforce ID",
+  "Donor Name",
+  "Salutation",
+  "Transaction Type",
+  "Online Gift?",
+  "Unit",
+  "giftproc",
+  "BegFY",
+  "CFY",
+  "giftamount",
+  "giftacctnm",
+  "table_val",
+  "giftacctno",
+  "giftsolic",
+  "giftcomm",
+  "addrline1",
+  "addrline2",
+  "addrline3",
+  "addrcity",
+  "addrplace",
+  "addrzipcod",
+  "intaddress",
+  "Constituent Type",
+  "Donor Name 3",
+  "coretext",
+  "CFY $",
+] as const satisfies (keyof GcFormat)[];
+interface NfgFormat {
+  "Mil ID": number;
+  "Salesforce ID": string;
+  "donor_first_name": string;
+  "donor_last_name": string;
+  "Transaction Type": string;
+  "Online Gift?": string;
+  "Unit": string;
+  "giftproc": string;
+  "BegFY": string;
+  "CFY": string;
+  "giftamount": number;
+  "giftacctnm": string;
+  "table_val": string;
+  "giftacctno": string;
+  "giftsolic": string;
+  "giftcomm": string;
+  "addrline1": string;
+  "addrline2": string;
+  "addrline3": string;
+  "addrcity": string;
+  "addrplace": string;
+  "addrzipcod": string;
+  "intaddress": string;
+  "Constituent Type": string;
+  "Donor Name 3": string;
+  "coretext": string;
+  "CFY $": number;
+}
 
 function DbFundsViewer() {
   const marathonYear = useMarathon()?.year;
@@ -80,6 +169,32 @@ function DbFundsViewer() {
     <Flex vertical>
       <Flex vertical gap="small">
         <Typography.Title level={2}>Fundraising Teams</Typography.Title>
+        <SpreadsheetUploader
+          rowMapper={(rowIn: GcFormat): NfgFormat => {
+            return {
+              ...rowIn,
+              donor_first_name: "",
+              donor_last_name: rowIn["Donor Name"]
+                .replace(/Mr\.|Mrs\.|Ms\./g, "")
+                .trim(),
+            };
+          }}
+          onUpload={async (output) => {
+            const newData = utils.json_to_sheet(output);
+            const workbook = utils.book_new();
+            utils.book_append_sheet(workbook, newData, "");
+            const now = DateTime.now().toFormat("yyyy-MM-dd_HH-mm-ss");
+            writeFile(workbook, `fundraising_teams_${now}.csv`);
+          }}
+          rowValidator={(row: unknown): row is GcFormat => {
+            if (typeof row !== "object" || row === null) {
+              return false;
+            }
+            return Object.keys(row).every((key) =>
+              GcFormatKeys.includes(key as any)
+            );
+          }}
+        />
         <Flex gap="small">
           <Button
             icon={<DownloadOutlined />}
