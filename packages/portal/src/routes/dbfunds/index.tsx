@@ -212,6 +212,10 @@ function DbFundsViewer() {
           <Button
             icon={<DownloadOutlined />}
             onClick={async () => {
+              if (!marathonYear) {
+                return;
+              }
+              
               const workbook = utils.book_new();
 
               const sheet = utils.json_to_sheet(parsedMainData ?? []);
@@ -222,7 +226,7 @@ function DbFundsViewer() {
                 namesById.set(team.identifier, team.name);
               });
 
-              for (const team of parsedMainData ?? []) {
+              for (const team of parsedMainData ?? []) {                
                 // eslint-disable-next-line no-await-in-loop
                 const data = await urql
                   .query(getEntryDocument, {
