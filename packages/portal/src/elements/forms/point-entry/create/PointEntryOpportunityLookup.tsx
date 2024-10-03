@@ -1,7 +1,7 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { useMarathon } from "@config/marathonContext";
-import { graphql } from "@graphql/index.js";
 import type { CreatePointOpportunityInput } from "@graphql/graphql.js";
+import { graphql } from "@graphql/index.js";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { TeamType } from "@ukdanceblue/common";
 import {

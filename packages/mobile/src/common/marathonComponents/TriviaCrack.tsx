@@ -61,7 +61,7 @@ export function TriviaCrack() {
   );
 
   const { stationOrder, moraleTeamNumber } = useMemo(() => {
-     
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     const value = JSON.parse(option?.value || "{}") as unknown;
     let stationOrder: [number, number, number, number, number, number] | null =
       null;

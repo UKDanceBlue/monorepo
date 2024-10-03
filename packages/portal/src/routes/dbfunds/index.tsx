@@ -177,23 +177,30 @@ function DbFundsViewer() {
             const entries: [keyof NfgFormat, string][] = [];
             for (const [key, value] of Object.entries(rowIn)) {
               if (key === "Donor Name") {
-                entries.push(["donor_first_name", ""]);
-                entries.push([
-                  "donor_last_name",
-                  value.replace(/Mr\.|Mrs\.|Ms\./g, "").trim(),
-                ]);
+                entries.push(
+                  ["donor_first_name", ""],
+                  [
+                    "donor_last_name",
+                    String(value)
+                      .replaceAll(/Mr\.|Mrs\.|Ms\./g, "")
+                      .trim(),
+                  ]
+                );
               } else {
-                entries.push([key as keyof NfgFormat, value]);
+                entries.push([key as keyof NfgFormat, String(value)]);
               }
             }
             return Object.fromEntries(entries) as unknown as NfgFormat;
           }}
-          onUpload={async (output) => {
+          onUpload={(output) => {
             const newData = utils.json_to_sheet(output);
             const workbook = utils.book_new();
             utils.book_append_sheet(workbook, newData, "");
 
-            const data = write(workbook, { type: "array", bookType: "csv" });
+            const data = write(workbook, {
+              type: "array",
+              bookType: "csv",
+            }) as Uint8Array;
             const blob = new Blob([data], {
               type: "text/csv",
             });
@@ -208,7 +215,7 @@ function DbFundsViewer() {
               return false;
             }
             return Object.keys(row).every((key) =>
-              GcFormatKeys.includes(key as any)
+              GcFormatKeys.includes(key as keyof GcFormat)
             );
           }}
         />

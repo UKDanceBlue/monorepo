@@ -1,7 +1,7 @@
 import { useMarathon } from "@config/marathonContext";
 import { SpreadsheetUploader } from "@elements/components/SpreadsheetUploader";
-import { graphql } from "@graphql/index.js";
 import type { BulkPersonInput } from "@graphql/graphql.js";
+import { graphql } from "@graphql/index.js";
 import { useAntFeedback } from "@hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { CommitteeIdentifier, CommitteeRole } from "@ukdanceblue/common";
