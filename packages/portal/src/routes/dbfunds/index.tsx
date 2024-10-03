@@ -9,7 +9,7 @@ import { Button, Flex, Table, Typography } from "antd";
 import { DateTime } from "luxon";
 import { useMemo, useState } from "react";
 import { useClient, useQuery } from "urql";
-import { utils, writeFile } from "xlsx";
+import { utils, write, writeFile } from "xlsx";
 
 interface FundraisingTeam {
   name: string;
@@ -170,21 +170,38 @@ function DbFundsViewer() {
       <Flex vertical gap="small">
         <Typography.Title level={2}>Fundraising Teams</Typography.Title>
         <SpreadsheetUploader
+          noPreview
+          text="Click or drag a file to convert a GiveCampus CSV to a Network for Good CSV"
+          showIcon={false}
           rowMapper={(rowIn: GcFormat): NfgFormat => {
-            return {
-              ...rowIn,
-              donor_first_name: "",
-              donor_last_name: rowIn["Donor Name"]
-                .replace(/Mr\.|Mrs\.|Ms\./g, "")
-                .trim(),
-            };
+            const entries: [keyof NfgFormat, string][] = [];
+            for (const [key, value] of Object.entries(rowIn)) {
+              if (key === "Donor Name") {
+                entries.push(["donor_first_name", ""]);
+                entries.push([
+                  "donor_last_name",
+                  value.replace(/Mr\.|Mrs\.|Ms\./g, "").trim(),
+                ]);
+              } else {
+                entries.push([key as keyof NfgFormat, value]);
+              }
+            }
+            return Object.fromEntries(entries) as unknown as NfgFormat;
           }}
           onUpload={async (output) => {
             const newData = utils.json_to_sheet(output);
             const workbook = utils.book_new();
             utils.book_append_sheet(workbook, newData, "");
-            const now = DateTime.now().toFormat("yyyy-MM-dd_HH-mm-ss");
-            writeFile(workbook, `fundraising_teams_${now}.csv`);
+
+            const data = write(workbook, { type: "array", bookType: "csv" });
+            const blob = new Blob([data], {
+              type: "text/csv",
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `fundraising_teams_${DateTime.now().toFormat("yyyy-MM-dd_HH-mm")}.csv`;
+            a.click();
           }}
           rowValidator={(row: unknown): row is GcFormat => {
             if (typeof row !== "object" || row === null) {
@@ -215,7 +232,7 @@ function DbFundsViewer() {
               if (!marathonYear) {
                 return;
               }
-              
+
               const workbook = utils.book_new();
 
               const sheet = utils.json_to_sheet(parsedMainData ?? []);
@@ -226,7 +243,7 @@ function DbFundsViewer() {
                 namesById.set(team.identifier, team.name);
               });
 
-              for (const team of parsedMainData ?? []) {                
+              for (const team of parsedMainData ?? []) {
                 // eslint-disable-next-line no-await-in-loop
                 const data = await urql
                   .query(getEntryDocument, {

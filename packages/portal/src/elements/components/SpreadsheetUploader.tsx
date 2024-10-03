@@ -13,11 +13,19 @@ export function SpreadsheetUploader<
   rowMapper,
   onUpload,
   onFail,
+  noPreview,
+  showIcon = true,
+  showUploadList = false,
+  text,
 }: {
   rowValidator: (row: unknown) => row is RowType;
   rowMapper: (row: RowType) => OutputType | Promise<OutputType>;
   onUpload: (output: OutputType[]) => void | Promise<void>;
   onFail?: (error: Error) => void;
+  noPreview?: boolean;
+  showIcon?: boolean;
+  showUploadList?: boolean;
+  text?: string;
 }) {
   const { showErrorMessage, showSuccessNotification } = useAntFeedback();
   const [data, setData] = useState<OutputType[] | null>(null);
@@ -27,6 +35,7 @@ export function SpreadsheetUploader<
       <Upload.Dragger
         accept=".xlsx,.csv"
         multiple={false}
+        showUploadList={showUploadList}
         customRequest={async ({ file, onSuccess, onError }) => {
           try {
             if (typeof file === "string") {
@@ -44,8 +53,6 @@ export function SpreadsheetUploader<
 
             const json = utils.sheet_to_json(sheet, { header: 2 });
 
-            console.table(json);
-
             if (!json.every(rowValidator)) {
               throw new Error("Invalid row format");
             }
@@ -62,6 +69,11 @@ export function SpreadsheetUploader<
 
             setData(output);
             showSuccessNotification({ message: "File parsed successfully" });
+
+            if (noPreview) {
+              await onUpload(output);
+            }
+
             onSuccess?.("ok");
           } catch (error) {
             console.error(error);
@@ -73,15 +85,16 @@ export function SpreadsheetUploader<
           }
         }}
       >
-        <p className="ant-upload-drag-icon">
-          <InboxOutlined />
-        </p>
+        {showIcon && (
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+        )}
         <p className="ant-upload-text">
-          Click or drag file to this area to upload
+          {text ?? "Click or drag file to this area to upload"}
         </p>
       </Upload.Dragger>
-      {console.log(data)}
-      {data && (
+      {data && !noPreview && (
         <Flex vertical gap={8}>
           <Table
             dataSource={data}
