@@ -29,7 +29,20 @@ export const garbageCollectLoginFlowSessions = new Cron(
         },
       });
 
+      // Remove any from the list where the corrected version already exists
+      const limitedBadLinkblues = [];
       for (const badLinkblue of badLinkblues) {
+        const existingPerson = await prisma.person.findFirst({
+          where: {
+            linkblue: badLinkblue.linkblue?.replace("@uky.edu", ""),
+          },
+        });
+        if (!existingPerson) {
+          limitedBadLinkblues.push(badLinkblue);
+        }
+      }
+
+      for (const badLinkblue of limitedBadLinkblues) {
         await prisma.person.update({
           where: {
             id: badLinkblue.id,
@@ -48,7 +61,19 @@ export const garbageCollectLoginFlowSessions = new Cron(
         },
       });
 
+      const limitedBadEmails = [];
       for (const badEmail of badEmails) {
+        const existingPerson = await prisma.person.findFirst({
+          where: {
+            email: badEmail.linkblue?.replace("@uky.edu@uky.edu", "@uky.edu"),
+          },
+        });
+        if (!existingPerson) {
+          limitedBadEmails.push(badEmail);
+        }
+      }
+
+      for (const badEmail of limitedBadEmails) {
         await prisma.person.update({
           where: {
             id: badEmail.id,

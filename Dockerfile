@@ -67,4 +67,4 @@ FROM nginx:stable-alpine as portal
 
 COPY --from=portal-build /builddir/packages/portal/dist /usr/share/nginx/html
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [[ "$(curl -fs http://localhost:80)" == "OK" ]] || exit 1
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl -fs http://localhost:80
