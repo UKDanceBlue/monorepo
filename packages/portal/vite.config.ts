@@ -49,6 +49,7 @@ export default defineConfig({
     sentryVitePlugin({
       org: "ukdanceblue",
       project: "portal",
+      disable: process.env.NODE_ENV !== "production",
     }),
   ],
 });

@@ -7913,7 +7913,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/cli@npm:^2.36.1":
+"@sentry/cli@npm:^2.36.1, @sentry/cli@npm:^2.36.6":
   version: 2.36.6
   resolution: "@sentry/cli@npm:2.36.6"
   dependencies:
@@ -9874,6 +9874,7 @@ __metadata:
     "@koa/cors": "npm:^5.0.0"
     "@koa/router": "npm:^13.0.0"
     "@prisma/client": "npm:^5.18.0"
+    "@sentry/cli": "npm:^2.36.6"
     "@sentry/node": "npm:^8.33.1"
     "@sentry/profiling-node": "npm:^8.33.1"
     "@types/express-session": "npm:^1.18.0"

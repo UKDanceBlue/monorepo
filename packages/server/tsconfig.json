@@ -13,6 +13,7 @@
     "checkJs": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+
     "paths": {
       "#prisma": ["./src/prisma.js"],
       "#auth/*": ["./src/lib/auth/*"],
@@ -26,7 +27,14 @@
       "#resolvers/*": ["./src/resolvers/*"],
       "#routes/*": ["./src/routes/*"],
       "#environment": ["./src/environment.ts"]
-    }
+    },
+
+    "inlineSources": true,
+
+    // Set `sourceRoot` to  "/" to strip the build path prefix
+    // from generated source code references.
+    // This improves issue grouping in Sentry.
+    "sourceRoot": "/"
   },
   "include": ["src"],
   "extends": "../../tsconfig.json"

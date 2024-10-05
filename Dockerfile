@@ -2,6 +2,7 @@
 FROM node:22.4.1 as build
 
 ENV SENTRY_AUTH_TOKEN=""
+ENV NODE_ENV="production"
 
 ADD --link --exclude=packages/mobile . /builddir
 
@@ -22,6 +23,9 @@ RUN corepack yarn prisma generate
 
 RUN corepack yarn build
 
+RUN corepack yarn sentry-cli sourcemaps inject --org ukdanceblue --project server ./dist
+RUN corepack yarn sentry-cli sourcemaps upload --org ukdanceblue --project server ./dist
+
 # Portal build
 FROM build as portal-build
 
@@ -35,7 +39,6 @@ RUN corepack yarn build
 FROM node:22.4.1 as server
 
 ENV MS_OIDC_URL="https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0/.well-known/openid-configuration"
-ENV NODE_ENV="production"
 ENV APPLICATION_PORT="8000"
 
 RUN mkdir -p /app/packages/server

@@ -9,3 +9,6 @@ coverage/
 public/script*
 assets/
 *.log
+
+# Sentry Config File
+.sentryclirc
