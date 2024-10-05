@@ -1,3 +1,4 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
 
@@ -37,6 +38,7 @@ export default defineConfig({
       },
     },
     chunkSizeWarningLimit: 1000,
+    sourcemap: true,
   },
   plugins: [
     TanStackRouterVite({
@@ -44,5 +46,9 @@ export default defineConfig({
       semicolons: true,
     }),
     react(),
+    sentryVitePlugin({
+      org: "ukdanceblue",
+      project: "portal",
+    }),
   ],
 });

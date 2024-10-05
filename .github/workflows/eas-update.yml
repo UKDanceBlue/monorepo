@@ -56,5 +56,5 @@ jobs:
       - name: Upload Sentry sourcemaps
         run: npx sentry-expo-upload-sourcemaps dist
         env:
-          SENTRY_AUTH_TOKEN: secrets.SENTRY_AUTH_TOKEN
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         working-directory: packages/mobile

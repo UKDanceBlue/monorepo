@@ -1,6 +1,8 @@
 # syntax=docker/dockerfile:1.10-labs
 FROM node:22.4.1 as build
 
+ENV SENTRY_AUTH_TOKEN=""
+
 ADD --link --exclude=packages/mobile . /builddir
 
 WORKDIR /builddir
@@ -54,10 +56,11 @@ WORKDIR /app/packages/server
 
 CMD corepack yarn dlx prisma migrate deploy && node .
 
-# TODO: check that the endpoint returns "OK"
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [ "curl" "http://localhost:${APPLICATION_PORT}}" ]
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [[ "$(curl -fs http://localhost:8000/api/healthcheck)" == "OK" ]] || exit 1
 
 # Portal
 FROM nginx:stable-alpine as portal
 
 COPY --from=portal-build /builddir/packages/portal/dist /usr/share/nginx/html
+
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [[ "$(curl -fs http://localhost:80)" == "OK" ]] || exit 1
