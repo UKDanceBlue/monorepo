@@ -36,6 +36,9 @@ init({
     "localhost",
     /^https:\/\/(app|dev)\.danceblue\.org\/(api|graphql)/,
   ],
+  enabled: ["https://app.danceblue.org", "https://dev.danceblue.org"].includes(
+    window.location.origin
+  ),
 });
 
 const routeTreePromise = import("./routeTree.gen");

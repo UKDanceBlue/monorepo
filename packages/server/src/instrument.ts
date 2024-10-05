@@ -1,5 +1,6 @@
 // This file is first imported by index.ts
 
+import { isDevelopment } from "#environment";
 import { logger } from "#logging/standardLogging.js";
 import { init } from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
@@ -12,6 +13,8 @@ init({
 
   // Set sampling rate for profiling - this is relative to tracesSampleRate
   profilesSampleRate: 0.1,
+
+  enabled: !isDevelopment,
 });
 
 logger.info("Sentry loaded");
