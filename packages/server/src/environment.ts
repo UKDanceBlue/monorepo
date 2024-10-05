@@ -1,3 +1,5 @@
+// This file is first imported by index.ts
+
 import dotenv from "dotenv";
 import { Expo } from "expo-server-sdk";
 import { Container, Token } from "@freshgum/typedi";
@@ -6,7 +8,7 @@ import { statSync } from "fs";
 import { readFile } from "fs/promises";
 import path, { isAbsolute } from "path";
 
-import type { SyslogLevels } from "#logging/standardLogging.js";
+import { logger, type SyslogLevels } from "#logging/standardLogging.js";
 import { expoServiceToken } from "#notification/expoServiceToken.js";
 
 dotenv.config({ override: true });
@@ -119,6 +121,8 @@ export const superAdminLinkblue = await SUPER_ADMIN_LINKBLUE.then((value) => {
   }
   return value;
 });
+
+logger.info("Loaded environment variables");
 
 /**
  * Get an environment variable

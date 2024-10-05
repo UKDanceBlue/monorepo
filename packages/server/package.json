@@ -31,6 +31,8 @@
     "@koa/cors": "^5.0.0",
     "@koa/router": "^13.0.0",
     "@prisma/client": "^5.18.0",
+    "@sentry/node": "^8.33.1",
+    "@sentry/profiling-node": "^8.33.1",
     "@types/express-session": "^1.18.0",
     "@types/http-errors": "^2.0.4",
     "@types/jsonwebtoken": "^9.0.6",

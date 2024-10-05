@@ -23,6 +23,7 @@ import type {
 } from "@apollo/server";
 import type { DefaultState } from "koa";
 import { Container } from "@freshgum/typedi";
+import { setupKoaErrorHandler } from "@sentry/node";
 
 const basicLoggingPlugin: ApolloServerPlugin = {
   requestDidStart(requestContext) {
@@ -65,6 +66,8 @@ export async function createServer() {
   app.on("error", (err, ctx) => {
     logger.error("Koa app error", err, ctx);
   });
+
+  setupKoaErrorHandler(app);
 
   const httpServer = http.createServer(app.callback());
 

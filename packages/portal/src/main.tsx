@@ -7,6 +7,7 @@ import { API_BASE_URL } from "@config/api.ts";
 import { MarathonConfigProvider } from "@config/marathon.tsx";
 import { SessionStorageKeys } from "@config/storage";
 import { SpinningRibbon } from "@elements/components/design/RibbonSpinner";
+import { browserTracingIntegration, init } from "@sentry/react";
 import {
   createRouter,
   ErrorComponent,
@@ -26,6 +27,16 @@ import {
   fetchExchange,
   Provider as UrqlProvider,
 } from "urql";
+
+init({
+  dsn: "https://f149f5546299b507f5e7b9b4aeafc2f4@o4507762130681856.ingest.us.sentry.io/4508071881932800",
+  integrations: [browserTracingIntegration()],
+  tracesSampleRate: 0.1,
+  tracePropagationTargets: [
+    "localhost",
+    /^https:\/\/(app|dev)\.danceblue\.org\/(api|graphql)/,
+  ],
+});
 
 const routeTreePromise = import("./routeTree.gen");
 

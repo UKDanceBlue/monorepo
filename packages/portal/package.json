@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.4.0",
+    "@sentry/react": "^8.33.1",
     "@tanstack/react-form": "^0.31.0",
     "@tanstack/react-router": "^1.52.4",
     "@ukdanceblue/common": "workspace:^",

@@ -9,8 +9,9 @@ import "reflect-metadata";
 
 logger.info("DanceBlue Server Starting");
 
+await import("./instrument.js");
+
 await import("#environment");
-logger.info("Loaded environment variables");
 
 await import("./prisma.js");
 
