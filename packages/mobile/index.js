@@ -38,13 +38,9 @@ LogBox.ignoreLogs([
 
 initSentry({
   dsn: "https://f8d08f6f2a9dd8d627a9ed4b99fb4ba4@o4507762130681856.ingest.us.sentry.io/4507762137825280",
-  // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-  // We recommend adjusting this value in production.
-  tracesSampleRate: __DEV__ ? 1 : 0.2,
+  tracesSampleRate: 0.2,
   _experiments: {
-    // profilesSampleRate is relative to tracesSampleRate.
-    // Here, we'll capture profiles for 100% of transactions.
-    profilesSampleRate: __DEV__ ? 1 : 0.2,
+    profilesSampleRate: 0.2,
   },
   debug: false,
   integrations: [
@@ -54,7 +50,7 @@ initSentry({
     }),
   ],
   environment: channel ?? (isDevelopmentBuild() ? "dev-client" : "unknown"),
-  enabled: !isDevelopmentBuild(),
+  enabled: !__DEV__,
 });
 
 configureSentryScope((scope) => {
