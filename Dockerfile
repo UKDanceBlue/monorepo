@@ -1,7 +1,6 @@
 # syntax=docker/dockerfile:1.10-labs
 FROM node:22.4.1 as build
 
-ENV SENTRY_AUTH_TOKEN=""
 ENV NODE_ENV="production"
 
 ADD --link --exclude=packages/mobile . /builddir
@@ -23,8 +22,9 @@ RUN corepack yarn prisma generate
 
 RUN corepack yarn build
 
-RUN corepack yarn sentry-cli sourcemaps inject --org ukdanceblue --project server ./dist
-RUN corepack yarn sentry-cli sourcemaps upload --org ukdanceblue --project server ./dist
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required \
+  corepack yarn sentry-cli sourcemaps inject --org ukdanceblue --project server ./dist && \
+  corepack yarn sentry-cli sourcemaps upload --org ukdanceblue --project server ./dist
 
 # Portal build
 FROM build as portal-build
@@ -33,7 +33,8 @@ WORKDIR /builddir/packages/portal
 
 ENV VITE_API_BASE_URL=""
 
-RUN corepack yarn build
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required \
+  corepack yarn build
 
 # Server
 FROM node:22.4.1 as server
