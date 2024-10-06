@@ -1,15 +1,13 @@
-import { logger } from "#logging/logger.js";
-import { koaToken } from "#routes/koaToken.js";
-import { Container } from "@freshgum/typedi";
-
 import "reflect-metadata";
 
 // No top level imports that cause side effects should be used in this file
 // We want to control the order of execution
 
-logger.info("DanceBlue Server Starting");
-
 await import("#environment");
+
+const { logger } = await import("#logging/logger.js");
+
+logger.info("DanceBlue Server Starting");
 
 await import("./instrument.js");
 
@@ -20,6 +18,9 @@ const { createServer, startHttpServer, startServer } = await import(
 );
 const { app, httpServer, apolloServer } = await createServer();
 logger.info("Created server");
+
+const { koaToken } = await import("#routes/koaToken.js");
+const { Container } = await import("@freshgum/typedi");
 Container.setValue(koaToken, app);
 
 await startHttpServer(httpServer);
