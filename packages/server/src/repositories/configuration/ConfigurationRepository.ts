@@ -81,7 +81,7 @@ export class ConfigurationRepository {
 
   // Mutators
 
-  createConfiguration({
+  async createConfiguration({
     key,
     value,
     validAfter,
@@ -92,29 +92,65 @@ export class ConfigurationRepository {
     validAfter: DateTime | null;
     validUntil: DateTime | null;
   }) {
+    const validAfterDate = validAfter?.toJSDate() ?? null;
+    const validUntilDate = validUntil?.toJSDate() ?? null;
+
+    const existing = await this.prisma.configuration.findFirst({
+      where: {
+        key,
+        value,
+        validAfter: validAfterDate,
+        validUntil: validUntilDate,
+      },
+    });
+
+    if (existing) {
+      return existing;
+    }
     return this.prisma.configuration.create({
       data: {
         key,
         value,
-        validAfter: validAfter?.toJSDate() ?? null,
-        validUntil: validUntil?.toJSDate() ?? null,
+        validAfter: validAfterDate,
+        validUntil: validUntilDate,
       },
     });
   }
 
-  updateConfiguration(
-    uuid: string,
-    value?: string | undefined,
-    validAfter?: DateTime | undefined | null,
-    validUntil?: DateTime | undefined | null
+  async bulkCreateConfigurations(
+    configurations: {
+      key: string;
+      value: string;
+      validAfter: DateTime | null;
+      validUntil: DateTime | null;
+    }[]
   ) {
-    return this.prisma.configuration.update({
-      where: { uuid },
-      data: {
-        value,
-        validAfter: validAfter === null ? null : validAfter?.toJSDate(),
-        validUntil: validUntil === null ? null : validUntil?.toJSDate(),
-      },
+    const existingConfigurations = await Promise.all(
+      configurations.map(async (configuration) => {
+        const existing = await this.prisma.configuration.findFirst({
+          where: {
+            key: configuration.key,
+            value: configuration.value,
+            validAfter: configuration.validAfter?.toJSDate() ?? null,
+            validUntil: configuration.validUntil?.toJSDate() ?? null,
+          },
+        });
+
+        return [configuration, existing] as const;
+      })
+    );
+
+    const newConfigurations = existingConfigurations.filter(
+      ([_, existing]) => !existing
+    );
+
+    return this.prisma.configuration.createMany({
+      data: newConfigurations.map(([configuration]) => ({
+        key: configuration.key,
+        value: configuration.value,
+        validAfter: configuration.validAfter?.toJSDate() ?? null,
+        validUntil: configuration.validUntil?.toJSDate() ?? null,
+      })),
     });
   }
 

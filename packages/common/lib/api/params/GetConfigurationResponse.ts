@@ -1,4 +1,4 @@
-import { DateTimeISOResolver } from "graphql-scalars";
+import { DateTimeISOResolver, VoidResolver } from "graphql-scalars";
 import { ObjectType, Field, InputType } from "type-graphql";
 import {
   AbstractGraphQLOkResponse,
@@ -6,6 +6,7 @@ import {
   AbstractGraphQLCreatedResponse,
 } from "./ApiResponse.js";
 import { ConfigurationNode } from "../resources/Configuration.js";
+import { VoidScalar } from "../scalars/Void.js";
 
 @ObjectType("GetConfigurationByUuidResponse", {
   implements: AbstractGraphQLOkResponse<ConfigurationNode>,
@@ -29,11 +30,13 @@ export class CreateConfigurationResponse extends AbstractGraphQLCreatedResponse<
   data!: ConfigurationNode;
 }
 @ObjectType("CreateConfigurationsResponse", {
-  implements: AbstractGraphQLCreatedResponse<ConfigurationNode>,
+  implements: AbstractGraphQLCreatedResponse<typeof VoidScalar>,
 })
-export class CreateConfigurationsResponse extends AbstractGraphQLArrayOkResponse<ConfigurationNode> {
-  @Field(() => [ConfigurationNode])
-  data!: ConfigurationNode[];
+export class CreateConfigurationsResponse extends AbstractGraphQLOkResponse<
+  typeof VoidScalar
+> {
+  @Field(() => VoidResolver)
+  data!: typeof VoidScalar;
 }
 @ObjectType("DeleteConfigurationResponse", {
   implements: AbstractGraphQLOkResponse<boolean>,

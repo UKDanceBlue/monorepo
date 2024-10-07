@@ -25,18 +25,24 @@ import type {
 } from "@ukdanceblue/common";
 import type { ConcreteResult } from "@ukdanceblue/common/error";
 import type { DefaultState } from "koa";
-import { superAdminLinkblue } from "#environment";
+import { superAdminLinkblues } from "#environment";
 
-export interface GraphQLContext extends AuthorizationContext {
-  contextErrors: string[];
-}
+export interface GraphQLContext extends AuthorizationContext {}
 
-function isSuperAdmin(committeeRoles: EffectiveCommitteeRole[]): boolean {
-  return committeeRoles.some(
-    (role) =>
-      // TODO: replace "=== Coordinator" with a check for just app&web, but that requires information about what kind of coordinator someone is
-      role.identifier === CommitteeIdentifier.techCommittee &&
-      role.role === CommitteeRole.Chair
+function isSuperAdmin(
+  committeeRoles: EffectiveCommitteeRole[],
+  linkblue?: string | null | undefined
+): boolean {
+  return (
+    (typeof superAdminLinkblues !== "symbol" &&
+      linkblue &&
+      superAdminLinkblues.includes(linkblue)) ||
+    committeeRoles.some(
+      (role) =>
+        // TODO: replace "=== Coordinator" with a check for just app&web, but that requires information about what kind of coordinator someone is
+        role.identifier === CommitteeIdentifier.techCommittee &&
+        role.role === CommitteeRole.Chair
+    )
   );
 }
 
@@ -130,7 +136,6 @@ const defaultContext: Readonly<GraphQLContext> = Object.freeze<GraphQLContext>({
     authSource: AuthSource.None,
   },
   authorization: defaultAuthorization,
-  contextErrors: [],
 });
 
 const anonymousContext: Readonly<GraphQLContext> =
@@ -198,9 +203,10 @@ export const graphqlContextFunction: ContextFunction<
     );
     return structuredClone(defaultContext);
   }
-  let superAdmin =
-    contextWithUser.value.authenticatedUser?.linkblue === superAdminLinkblue ||
-    isSuperAdmin(contextWithUser.value.authorization.effectiveCommitteeRoles);
+  let superAdmin = isSuperAdmin(
+    contextWithUser.value.authorization.effectiveCommitteeRoles,
+    contextWithUser.value.authenticatedUser?.linkblue
+  );
   if (
     superAdmin &&
     ctx.request.headers["x-ukdb-masquerade"] &&

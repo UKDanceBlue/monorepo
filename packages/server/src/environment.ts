@@ -117,9 +117,9 @@ if (!isUploadInServe) {
 export const logDir = await LOG_DIR;
 
 // Super admin
-export const superAdminLinkblue = await SUPER_ADMIN_LINKBLUE.then((value) => {
+export const superAdminLinkblues = await SUPER_ADMIN_LINKBLUE.then((value) => {
   if (typeof value === "string") {
-    return value.toLowerCase();
+    return value.toLowerCase().split(",");
   }
   return value;
 });

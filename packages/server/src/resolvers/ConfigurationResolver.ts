@@ -6,8 +6,6 @@ import {
   AccessControl,
   AccessLevel,
   ConfigurationNode,
-  LegacyError,
-  LegacyErrorCode,
   GlobalIdScalar,
   SortDirection,
   dateTimeFromSomething,
@@ -27,6 +25,12 @@ import {
   CreateConfigurationsResponse,
   DeleteConfigurationResponse,
 } from "@ukdanceblue/common";
+import {
+  ConcreteResult,
+  NotFoundError,
+  toBasicError,
+} from "@ukdanceblue/common/error";
+import { Err, Ok } from "ts-results-es";
 
 @Resolver(() => ConfigurationNode)
 @Service([ConfigurationRepository])
@@ -34,6 +38,7 @@ export class ConfigurationResolver {
   constructor(
     private readonly configurationRepository: ConfigurationRepository
   ) {}
+
   @Query(() => GetConfigurationResponse, {
     name: "activeConfiguration",
     description:
@@ -41,54 +46,64 @@ export class ConfigurationResolver {
   })
   async activeConfiguration(
     @Arg("key") key: string
-  ): Promise<GetConfigurationResponse> {
+  ): Promise<ConcreteResult<GetConfigurationResponse>> {
     const row = await this.configurationRepository.findConfigurationByKey(
       key,
       new Date()
     );
 
     if (row == null) {
-      throw new LegacyError(
-        LegacyErrorCode.NotFound,
-        "Configuration not found"
+      return Err(
+        new NotFoundError({
+          what: `Configuration with key ${key}`,
+          where: "activeConfiguration resolver",
+        })
       );
     }
 
-    return GetConfigurationResponse.newOk(configurationModelToResource(row));
+    return Ok(
+      GetConfigurationResponse.newOk(configurationModelToResource(row))
+    );
   }
 
+  @AccessControl({ accessLevel: AccessLevel.Admin })
   @Query(() => GetConfigurationResponse, {
     name: "configuration",
     description: "Get a particular configuration entry by UUID",
   })
   async getByUuid(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<GetConfigurationResponse> {
+  ): Promise<ConcreteResult<GetConfigurationResponse>> {
     const row = await this.configurationRepository.findConfigurationByUnique({
       uuid: id,
     });
 
     if (row == null) {
-      throw new LegacyError(
-        LegacyErrorCode.NotFound,
-        "Configuration not found"
+      return Err(
+        new NotFoundError({
+          what: `Configuration with UUID ${id}`,
+          where: "configuration resolver",
+        })
       );
     }
 
-    return GetConfigurationResponse.newOk(configurationModelToResource(row));
+    return Ok(
+      GetConfigurationResponse.newOk(configurationModelToResource(row))
+    );
   }
 
+  @AccessControl({ accessLevel: AccessLevel.Admin })
   @Query(() => GetAllConfigurationsResponse, {
     name: "allConfigurations",
     description: "Get all configurations, irrespective of time",
   })
-  async getAll(): Promise<GetAllConfigurationsResponse> {
+  async getAll(): Promise<ConcreteResult<GetAllConfigurationsResponse>> {
     const rows = await this.configurationRepository.findConfigurations(null, [
       ["createdAt", SortDirection.desc],
     ]);
 
-    return GetAllConfigurationsResponse.newOk(
-      rows.map(configurationModelToResource)
+    return Ok(
+      GetAllConfigurationsResponse.newOk(rows.map(configurationModelToResource))
     );
   }
 
@@ -100,7 +115,7 @@ export class ConfigurationResolver {
   })
   async create(
     @Arg("input") input: CreateConfigurationInput
-  ): Promise<CreateConfigurationResponse> {
+  ): Promise<ConcreteResult<CreateConfigurationResponse>> {
     const row = await this.configurationRepository.createConfiguration({
       key: input.key,
       value: input.value,
@@ -110,8 +125,8 @@ export class ConfigurationResolver {
 
     auditLogger.dangerous("Configuration created", { configuration: row });
 
-    return CreateConfigurationResponse.newCreated(
-      configurationModelToResource(row)
+    return Ok(
+      CreateConfigurationResponse.newCreated(configurationModelToResource(row))
     );
   }
 
@@ -124,26 +139,22 @@ export class ConfigurationResolver {
   async batchCreate(
     @Arg("input", () => [CreateConfigurationInput])
     input: CreateConfigurationInput[]
-  ): Promise<CreateConfigurationsResponse> {
+  ): Promise<ConcreteResult<CreateConfigurationsResponse>> {
     // TODO: This should be converted into a batch operation
-    const rows = await Promise.all(
-      input.map((i) =>
-        this.configurationRepository.createConfiguration({
-          key: i.key,
-          value: i.value,
-          validAfter: dateTimeFromSomething(i.validAfter ?? null),
-          validUntil: dateTimeFromSomething(i.validUntil ?? null),
-        })
-      )
+    const rows = await this.configurationRepository.bulkCreateConfigurations(
+      input.map((i) => ({
+        key: i.key,
+        value: i.value,
+        validAfter: dateTimeFromSomething(i.validAfter ?? null),
+        validUntil: dateTimeFromSomething(i.validUntil ?? null),
+      }))
     );
 
     auditLogger.dangerous("Configurations created", {
       configurations: rows,
     });
 
-    return CreateConfigurationsResponse.newOk(
-      rows.map(configurationModelToResource)
-    );
+    return Ok(CreateConfigurationsResponse.newOk(""));
   }
 
   @AccessControl({ accessLevel: AccessLevel.Admin })
@@ -153,19 +164,21 @@ export class ConfigurationResolver {
   })
   async delete(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<DeleteConfigurationResponse> {
+  ): Promise<ConcreteResult<DeleteConfigurationResponse>> {
     const row = await this.configurationRepository.deleteConfiguration(id);
 
     if (row == null) {
-      throw new LegacyError(
-        LegacyErrorCode.NotFound,
-        "Configuration not found"
+      return Err(
+        new NotFoundError({
+          what: `Configuration with UUID ${id}`,
+          where: "deleteConfiguration resolver",
+        })
       );
     }
 
     auditLogger.dangerous("Configuration deleted", { configuration: row });
 
-    return DeleteConfigurationResponse.newOk(true);
+    return Ok(DeleteConfigurationResponse.newOk(true));
   }
 
   @AccessControl({ accessLevel: AccessLevel.SuperAdmin })
@@ -176,13 +189,19 @@ export class ConfigurationResolver {
   async auditLog(
     @Arg("lines", { defaultValue: 25 }) lines: number,
     @Arg("offset", { defaultValue: 0 }) offset: number
-  ): Promise<string> {
-    const fileLookup = await readFile(join(logDir, auditLoggerFileName));
-    return fileLookup
-      .toString("utf8")
-      .split("\n")
-      .reverse()
-      .slice(offset, offset + lines)
-      .join("/n");
+  ): Promise<ConcreteResult<string>> {
+    try {
+      const fileLookup = await readFile(join(logDir, auditLoggerFileName));
+      return Ok(
+        fileLookup
+          .toString("utf8")
+          .split("\n")
+          .reverse()
+          .slice(offset, offset + lines)
+          .join("\n")
+      );
+    } catch (e) {
+      return Err(toBasicError(e));
+    }
   }
 }

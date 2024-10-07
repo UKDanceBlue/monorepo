@@ -79,8 +79,8 @@ export class NodeResolver {
   ): Promise<ConcreteResult<Node>> {
     switch (id.typename) {
       case ConfigurationNode.constructor.name: {
-        const { data } = await this.configurationResolver.getByUuid(id);
-        return Ok(data);
+        const data = await this.configurationResolver.getByUuid(id);
+        return data.map(({ data }) => data);
       }
       case DeviceNode.constructor.name: {
         const { data } = await this.deviceResolver.getByUuid(id.id);
