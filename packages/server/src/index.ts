@@ -3,11 +3,13 @@ import "reflect-metadata";
 // No top level imports that cause side effects should be used in this file
 // We want to control the order of execution
 
-await import("#environment");
+const { logDir, loggingLevel } = await import("#environment");
 
 const { logger } = await import("#logging/logger.js");
 
-logger.info("DanceBlue Server Starting");
+logger.info(
+  `Logger initialized with level "${loggingLevel}", writing log files to "${logDir}"`
+);
 
 await import("./instrument.js");
 

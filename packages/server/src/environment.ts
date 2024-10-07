@@ -8,7 +8,9 @@ import { statSync } from "fs";
 import { readFile } from "fs/promises";
 import path, { isAbsolute } from "path";
 
-import { logger, type SyslogLevels } from "#logging/standardLogging.js";
+import { type SyslogLevels } from "#logging/standardLogging.js";
+
+// NOTE: You cannot import any files that depend on environment variables from this file
 import { expoServiceToken } from "#notification/expoServiceToken.js";
 
 dotenv.config({ override: true });
@@ -121,8 +123,6 @@ export const superAdminLinkblue = await SUPER_ADMIN_LINKBLUE.then((value) => {
   }
   return value;
 });
-
-logger.info("Loaded environment variables");
 
 /**
  * Get an environment variable

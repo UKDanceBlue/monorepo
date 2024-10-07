@@ -169,9 +169,8 @@ export class ListNotificationDeliveriesResponse extends AbstractGraphQLPaginated
   description:
     "The number of delivery issues for a notification, broken down by type.",
 })
-export class NotificationDeliveryIssueCount
-  //implements Record<NotificationError, number>
-{
+//implements Record<NotificationError, number>
+export class NotificationDeliveryIssueCount {
   @Field(() => Int)
   DeviceNotRegistered!: number;
   @Field(() => Int)
