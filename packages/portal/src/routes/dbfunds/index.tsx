@@ -90,7 +90,7 @@ const GcFormatKeys = [
   "CFY $",
 ] as const satisfies (keyof GcFormat)[];
 interface NfgFormat {
-  "Mil ID": number;
+  "Mil ID": string;
   "Salesforce ID": string;
   "donor_first_name": string;
   "donor_last_name": string;
@@ -100,12 +100,11 @@ interface NfgFormat {
   "giftproc": string;
   "BegFY": string;
   "CFY": string;
-  "giftamount": number;
+  "giftamount": string;
   "giftacctnm": string;
   "table_val": string;
   "giftacctno": string;
   "giftsolic": string;
-  "giftcomm": string;
   "addrline1": string;
   "addrline2": string;
   "addrline3": string;
@@ -116,7 +115,7 @@ interface NfgFormat {
   "Constituent Type": string;
   "Donor Name 3": string;
   "coretext": string;
-  "CFY $": number;
+  "CFY $": string;
 }
 
 function DbFundsViewer() {
@@ -176,7 +175,9 @@ function DbFundsViewer() {
           rowMapper={(rowIn: GcFormat): NfgFormat => {
             const entries: [keyof NfgFormat, string][] = [];
             for (const [key, value] of Object.entries(rowIn)) {
-              if (key === "Donor Name") {
+              if (["Salutation"].includes(key)) {
+                continue;
+              } else if (key === "Donor Name") {
                 entries.push(
                   ["donor_first_name", ""],
                   [
@@ -190,7 +191,17 @@ function DbFundsViewer() {
                 entries.push([key as keyof NfgFormat, String(value)]);
               }
             }
-            return Object.fromEntries(entries) as unknown as NfgFormat;
+            const base = Object.fromEntries(entries) as Record<
+              | keyof Omit<GcFormat, "Donor Name">
+              | "donor_first_name"
+              | "donor_last_name",
+              string
+            >;
+            return {
+              ...base,
+              addrline2: "",
+              addrline3: "",
+            };
           }}
           onUpload={(output) => {
             const newData = utils.json_to_sheet(output);
