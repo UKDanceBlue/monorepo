@@ -4,6 +4,7 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "paths": {
+      "@assets/*": ["./assets/*"],
       "@graphql/*": ["./src/graphql/*"],
       "@common/*": ["./src/common/*"],
       "@context/*": ["./src/context/*"],
