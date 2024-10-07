@@ -60,23 +60,17 @@ const generates: CodegenConfig["generates"] = {};
 // We do this readdir thing in case a partial copy of the monorepo is being used
 const packages = readdirSync("./packages");
 if (packages.includes("mobile")) {
-  generates["./packages/mobile/src/graphql/"] = {
+  generates["packages/mobile/src/graphql/"] = {
     preset: "client",
     presetConfig,
-    documents: [
-      "./packages/mobile/src/**/*.ts",
-      "./packages/mobile/src/**/*.tsx",
-    ],
+    documents: ["packages/mobile/src"],
   };
 }
 if (packages.includes("portal")) {
-  generates["./packages/portal/graphql/"] = {
+  generates["packages/portal/graphql/"] = {
     preset: "client",
     presetConfig,
-    documents: [
-      "./packages/portal/src/**/*.ts",
-      "./packages/portal/src/**/*.tsx",
-    ],
+    documents: ["packages/portal/src"],
   };
 }
 const codegenConfig: CodegenConfig = {
