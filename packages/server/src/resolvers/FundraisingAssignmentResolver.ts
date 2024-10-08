@@ -11,6 +11,7 @@ import {
   FundraisingAssignmentNode,
   FundraisingEntryNode,
   GlobalIdScalar,
+  isGlobalId,
   MembershipPositionType,
   PersonNode,
 } from "@ukdanceblue/common";
@@ -25,12 +26,13 @@ import {
 } from "type-graphql";
 import { Container, Service } from "@freshgum/typedi";
 
-import type { GlobalId } from "@ukdanceblue/common";
+import type { AccessControlContext, GlobalId } from "@ukdanceblue/common";
 import {
   fundraisingAccess,
   AssignEntryToPersonInput,
   UpdateFundraisingAssignmentInput,
 } from "@ukdanceblue/common";
+import { Option } from "ts-results-es";
 
 // TODO: Give team captains access
 @Resolver(() => FundraisingAssignmentNode)
@@ -41,7 +43,56 @@ export class FundraisingAssignmentResolver {
     private readonly personRepository: PersonRepository
   ) {}
 
-  @AccessControl(fundraisingAccess)
+  @AccessControl<never, FundraisingAssignmentNode>(
+    async (
+      root: never,
+      context: AccessControlContext,
+      result: Option<FundraisingAssignmentNode>
+    ): Promise<boolean | null> => {
+      // We can't grant blanket access as otherwise people would see who else was assigned to an entry
+      // You can view all assignments for an entry if you are:
+      // 1. A fundraising coordinator or chair
+      const globalFundraisingAccess = await checkParam(
+        globalFundraisingAccessParam,
+        context.authorization,
+        root,
+        {},
+        context
+      );
+      if (globalFundraisingAccess.isErr()) {
+        return false;
+      }
+      if (globalFundraisingAccess.value) {
+        return true;
+      }
+      const { teamMemberships } = context;
+
+      return result.mapOr<Promise<boolean | null>>(
+        Promise.resolve(false),
+        async ({ id: { id: fundraisingAssignmentId } }) => {
+          const fundraisingEntryRepository: FundraisingEntryRepository =
+            Container.get(FundraisingEntryRepository);
+          const membership =
+            await fundraisingEntryRepository.getMembershipForAssignment({
+              uuid: fundraisingAssignmentId,
+            });
+          if (membership.isErr()) {
+            return false;
+          }
+
+          for (const userCaptaincy of teamMemberships) {
+            if (
+              userCaptaincy.teamId === membership.value.team.uuid &&
+              userCaptaincy.position === MembershipPositionType.Captain
+            ) {
+              return true;
+            }
+          }
+          return false;
+        }
+      );
+    }
+  )
   @Query(() => FundraisingAssignmentNode)
   async fundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -55,7 +106,56 @@ export class FundraisingAssignmentResolver {
       .promise;
   }
 
-  @AccessControl(fundraisingAccess)
+  @AccessControl(
+    async (
+      root: never,
+      context: AccessControlContext,
+      result: Option<FundraisingAssignmentNode>
+    ): Promise<boolean | null> => {
+      // We can't grant blanket access as otherwise people would see who else was assigned to an entry
+      // You can view all assignments for an entry if you are:
+      // 1. A fundraising coordinator or chair
+      const globalFundraisingAccess = await checkParam(
+        globalFundraisingAccessParam,
+        context.authorization,
+        root,
+        {},
+        context
+      );
+      if (globalFundraisingAccess.isErr()) {
+        return false;
+      }
+      if (globalFundraisingAccess.value) {
+        return true;
+      }
+      const { teamMemberships } = context;
+
+      return result.mapOr<Promise<boolean | null>>(
+        Promise.resolve(false),
+        async ({ id: { id: fundraisingAssignmentId } }) => {
+          const fundraisingEntryRepository: FundraisingEntryRepository =
+            Container.get(FundraisingEntryRepository);
+          const membership =
+            await fundraisingEntryRepository.getMembershipForAssignment({
+              uuid: fundraisingAssignmentId,
+            });
+          if (membership.isErr()) {
+            return false;
+          }
+
+          for (const userCaptaincy of teamMemberships) {
+            if (
+              userCaptaincy.teamId === membership.value.team.uuid &&
+              userCaptaincy.position === MembershipPositionType.Captain
+            ) {
+              return true;
+            }
+          }
+          return false;
+        }
+      );
+    }
+  )
   @Mutation(() => FundraisingAssignmentNode)
   async assignEntryToPerson(
     @Arg("entryId", () => GlobalIdScalar) { id: entryId }: GlobalId,
@@ -72,7 +172,56 @@ export class FundraisingAssignmentResolver {
     return assignment.map(fundraisingAssignmentModelToNode);
   }
 
-  @AccessControl(fundraisingAccess)
+  @AccessControl(
+    async (
+      root,
+      context,
+      _,
+      { id: fundraisingAssignmentId }
+    ): Promise<boolean | null> => {
+      // We can't grant blanket access as otherwise people would see who else was assigned to an entry
+      // You can view all assignments for an entry if you are:
+      // 1. A fundraising coordinator or chair
+      const globalFundraisingAccess = await checkParam(
+        globalFundraisingAccessParam,
+        context.authorization,
+        root,
+        {},
+        context
+      );
+      if (globalFundraisingAccess.isErr()) {
+        return false;
+      }
+      if (globalFundraisingAccess.value) {
+        return true;
+      }
+      const { teamMemberships } = context;
+
+      if (!isGlobalId(fundraisingAssignmentId)) {
+        return false;
+      }
+
+      const fundraisingEntryRepository: FundraisingEntryRepository =
+        Container.get(FundraisingEntryRepository);
+      const membership =
+        await fundraisingEntryRepository.getMembershipForAssignment({
+          uuid: fundraisingAssignmentId.id,
+        });
+      if (membership.isErr()) {
+        return false;
+      }
+
+      for (const userCaptaincy of teamMemberships) {
+        if (
+          userCaptaincy.teamId === membership.value.team.uuid &&
+          userCaptaincy.position === MembershipPositionType.Captain
+        ) {
+          return true;
+        }
+      }
+      return false;
+    }
+  )
   @Mutation(() => FundraisingAssignmentNode)
   async updateFundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
@@ -86,6 +235,56 @@ export class FundraisingAssignmentResolver {
     return assignment.map(fundraisingAssignmentModelToNode);
   }
 
+  @AccessControl(
+    async (
+      root,
+      context,
+      _,
+      { id: fundraisingAssignmentId }
+    ): Promise<boolean | null> => {
+      // We can't grant blanket access as otherwise people would see who else was assigned to an entry
+      // You can view all assignments for an entry if you are:
+      // 1. A fundraising coordinator or chair
+      const globalFundraisingAccess = await checkParam(
+        globalFundraisingAccessParam,
+        context.authorization,
+        root,
+        {},
+        context
+      );
+      if (globalFundraisingAccess.isErr()) {
+        return false;
+      }
+      if (globalFundraisingAccess.value) {
+        return true;
+      }
+      const { teamMemberships } = context;
+
+      if (!isGlobalId(fundraisingAssignmentId)) {
+        return false;
+      }
+
+      const fundraisingEntryRepository: FundraisingEntryRepository =
+        Container.get(FundraisingEntryRepository);
+      const membership =
+        await fundraisingEntryRepository.getMembershipForAssignment({
+          uuid: fundraisingAssignmentId.id,
+        });
+      if (membership.isErr()) {
+        return false;
+      }
+
+      for (const userCaptaincy of teamMemberships) {
+        if (
+          userCaptaincy.teamId === membership.value.team.uuid &&
+          userCaptaincy.position === MembershipPositionType.Captain
+        ) {
+          return true;
+        }
+      }
+      return false;
+    }
+  )
   @AccessControl(fundraisingAccess)
   @Mutation(() => FundraisingAssignmentNode)
   async deleteFundraisingAssignment(

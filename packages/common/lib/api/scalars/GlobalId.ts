@@ -38,6 +38,24 @@ export function serializeGlobalId(value: GlobalId): string {
   return arrayToBase64String(strToUTF8Arr(`${value.typename}:${value.id}`));
 }
 
+export function isGlobalId(value: unknown): value is GlobalId {
+  if (typeof value === "object") {
+    if (
+      value &&
+      typeof value === "object" &&
+      "typename" in value &&
+      "id" in value
+    ) {
+      const { typename, id } = value;
+      if (typeof typename !== "string" || typeof id !== "string") {
+        return false;
+      }
+      return true;
+    }
+  }
+  return false;
+}
+
 export const GlobalIdScalar = new GraphQLScalarType<
   { typename: string; id: string },
   string

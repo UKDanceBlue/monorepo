@@ -15,9 +15,11 @@ import {
   FundraisingAssignment,
   FundraisingEntry,
   FundraisingEntryWithMeta,
+  Membership,
   Person,
   Prisma,
   PrismaClient,
+  Team,
 } from "@prisma/client";
 import {
   ActionDeniedError,
@@ -418,6 +420,61 @@ export class FundraisingEntryRepository {
         return Err(new NotFoundError({ what: "FundraisingAssignment" }));
       }
       return Ok(assignment.person);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async getMembershipForAssignment(
+    assignmentParam: FundraisingAssignmentUniqueParam
+  ): Promise<
+    Result<
+      Membership & {
+        team: Team;
+        person: Person;
+      },
+      RepositoryError
+    >
+  > {
+    try {
+      const assignment = await this.prisma.fundraisingAssignment.findUnique({
+        where: assignmentParam,
+        select: {
+          person: true,
+          parentEntry: {
+            select: {
+              dbFundsEntry: {
+                select: {
+                  dbFundsTeam: {
+                    select: { teams: { select: { id: true } } },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!assignment) {
+        return Err(new NotFoundError({ what: "FundraisingAssignment" }));
+      }
+
+      const result = await this.prisma.membership.findFirst({
+        where: {
+          person: assignment.person,
+          teamId: {
+            in: assignment.parentEntry.dbFundsEntry.dbFundsTeam.teams.map(
+              (t) => t.id
+            ),
+          },
+        },
+        include: { team: true, person: true },
+      });
+      if (!result || !result.team || !result.person) {
+        return Err(new NotFoundError({ what: "Membership" }));
+      }
+
+      return Ok(result);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }

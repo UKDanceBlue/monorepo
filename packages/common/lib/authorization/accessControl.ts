@@ -126,7 +126,7 @@ export function checkAuthorization(
   return matches;
 }
 
-interface ExtractorData {
+export interface AccessControlContext {
   authenticatedUser: PersonNode | null;
   teamMemberships: SimpleTeamMembership[];
   userData: UserData;
@@ -149,11 +149,11 @@ export interface AccessControlParam<RootType = never> {
   accessLevel?: AccessLevel;
   argumentMatch?: {
     argument: string | ((args: ArgsDictionary) => Primitive | Primitive[]);
-    extractor: (param: ExtractorData) => Primitive | Primitive[];
+    extractor: (param: AccessControlContext) => Primitive | Primitive[];
   }[];
   rootMatch?: {
     root: string | ((root: RootType) => Primitive | Primitive[]);
-    extractor: (param: ExtractorData) => Primitive | Primitive[];
+    extractor: (param: AccessControlContext) => Primitive | Primitive[];
   }[];
 }
 
@@ -168,8 +168,9 @@ export interface AccessControlParam<RootType = never> {
  */
 export type CustomAuthorizationFunction<RootType, ResultType> = (
   root: RootType,
-  context: ExtractorData,
-  result: Option<ResultType>
+  context: AccessControlContext,
+  result: Option<ResultType>,
+  args: { [key: string]: unknown }
 ) => boolean | null | Promise<boolean | null>;
 
 export interface SimpleTeamMembership {
@@ -190,7 +191,7 @@ export async function checkParam<RootType extends object = never>(
   authorization: Authorization,
   root: RootType,
   args: ArgsDictionary,
-  context: ExtractorData
+  context: AccessControlContext
 ): Promise<Result<boolean, InvariantError>> {
   if (rule.accessLevel != null) {
     if (rule.accessLevel > authorization.accessLevel) {
@@ -361,7 +362,7 @@ export function AccessControl<
         resultValue = Option.isOption(result) ? result : Some(result);
       }
 
-      let customResult = await params[0](root, context, resultValue);
+      let customResult = await params[0](root, context, resultValue, args);
 
       if (customResult === false) {
         return Err(new AccessControlError(info));
