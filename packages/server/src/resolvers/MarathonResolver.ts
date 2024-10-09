@@ -5,10 +5,13 @@ import { marathonHourModelToResource } from "#repositories/marathonHour/marathon
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
 import {
+  AccessLevel,
   CommitteeIdentifier,
   GlobalIdScalar,
   MarathonHourNode,
   MarathonNode,
+  MutationAccessControl,
+  QueryAccessControl,
   SortDirection,
   TeamNode,
 } from "@ukdanceblue/common";
@@ -47,6 +50,9 @@ export class MarathonResolver
     private readonly committeeRepository: CommitteeRepository
   ) {}
 
+  @QueryAccessControl({
+    accessLevel: AccessLevel.None,
+  })
   @Query(() => MarathonNode)
   async marathon(@Arg("uuid", () => GlobalIdScalar) { id }: GlobalId) {
     const marathon = await this.marathonRepository.findMarathonByUnique({
@@ -55,6 +61,9 @@ export class MarathonResolver
     return marathon.map(marathonModelToResource);
   }
 
+  @QueryAccessControl({
+    accessLevel: AccessLevel.Committee,
+  })
   @Query(() => MarathonNode)
   async marathonForYear(@Arg("year") year: string) {
     const marathon = await this.marathonRepository.findMarathonByUnique({
@@ -63,6 +72,9 @@ export class MarathonResolver
     return marathon.map(marathonModelToResource);
   }
 
+  @QueryAccessControl({
+    accessLevel: AccessLevel.Committee,
+  })
   @Query(() => ListMarathonsResponse)
   async marathons(@Args() args: ListMarathonsArgs) {
     const marathons = await this.marathonRepository.listMarathons({
@@ -89,6 +101,9 @@ export class MarathonResolver
     });
   }
 
+  @QueryAccessControl({
+    accessLevel: AccessLevel.None,
+  })
   @Query(() => MarathonNode, {
     nullable: true,
     description:
@@ -99,6 +114,9 @@ export class MarathonResolver
     return marathon.map((m) => m.map(marathonModelToResource));
   }
 
+  @QueryAccessControl({
+    accessLevel: AccessLevel.None,
+  })
   @Query(() => MarathonNode, {
     nullable: true,
     description:
@@ -109,6 +127,9 @@ export class MarathonResolver
     return marathon.map((m) => m.map(marathonModelToResource));
   }
 
+  @MutationAccessControl({
+    accessLevel: AccessLevel.SuperAdmin,
+  })
   @Mutation(() => MarathonNode)
   async createMarathon(@Arg("input") input: CreateMarathonInput) {
     return new AsyncResult(
@@ -121,6 +142,9 @@ export class MarathonResolver
     }).promise;
   }
 
+  @MutationAccessControl({
+    accessLevel: AccessLevel.SuperAdmin,
+  })
   @Mutation(() => MarathonNode)
   async setMarathon(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -133,6 +157,9 @@ export class MarathonResolver
     return marathon.map(marathonModelToResource);
   }
 
+  @MutationAccessControl({
+    accessLevel: AccessLevel.SuperAdmin,
+  })
   @Mutation(() => MarathonNode)
   async deleteMarathon(@Arg("uuid", () => GlobalIdScalar) { id }: GlobalId) {
     const marathon = await this.marathonRepository.deleteMarathon({ uuid: id });
@@ -158,6 +185,9 @@ export class MarathonResolver
   }
 
   // Committees
+  @MutationAccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   @FieldResolver(() => TeamNode)
   async communityDevelopmentCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -166,6 +196,9 @@ export class MarathonResolver
     );
   }
 
+  @MutationAccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   @FieldResolver(() => TeamNode)
   async programmingCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -174,6 +207,9 @@ export class MarathonResolver
     );
   }
 
+  @MutationAccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   @FieldResolver(() => TeamNode)
   async fundraisingCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -182,6 +218,9 @@ export class MarathonResolver
     );
   }
 
+  @MutationAccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   @FieldResolver(() => TeamNode)
   async dancerRelationsCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -190,6 +229,9 @@ export class MarathonResolver
     );
   }
 
+  @MutationAccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   @FieldResolver(() => TeamNode)
   async familyRelationsCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -198,11 +240,17 @@ export class MarathonResolver
     );
   }
 
+  @MutationAccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   @FieldResolver(() => TeamNode)
   async techCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(CommitteeIdentifier.techCommittee, marathon);
   }
 
+  @MutationAccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   @FieldResolver(() => TeamNode)
   async operationsCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -211,6 +259,9 @@ export class MarathonResolver
     );
   }
 
+  @MutationAccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   @FieldResolver(() => TeamNode)
   async marketingCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -219,6 +270,9 @@ export class MarathonResolver
     );
   }
 
+  @MutationAccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   @FieldResolver(() => TeamNode)
   async corporateCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -227,6 +281,9 @@ export class MarathonResolver
     );
   }
 
+  @MutationAccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   @FieldResolver(() => TeamNode)
   async miniMarathonsCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -235,11 +292,17 @@ export class MarathonResolver
     );
   }
 
+  @MutationAccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   @FieldResolver(() => TeamNode)
   async viceCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(CommitteeIdentifier.viceCommittee, marathon);
   }
 
+  @MutationAccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   @FieldResolver(() => TeamNode)
   async overallCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(CommitteeIdentifier.overallCommittee, marathon);

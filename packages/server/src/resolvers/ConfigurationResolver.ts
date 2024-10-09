@@ -3,12 +3,13 @@ import { ConfigurationRepository } from "#repositories/configuration/Configurati
 import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
 
 import {
-  AccessControl,
+  QueryAccessControl,
   AccessLevel,
   ConfigurationNode,
   GlobalIdScalar,
   SortDirection,
   dateTimeFromSomething,
+  MutationAccessControl,
 } from "@ukdanceblue/common";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { Service } from "@freshgum/typedi";
@@ -66,7 +67,7 @@ export class ConfigurationResolver {
     );
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Admin })
+  @QueryAccessControl({ accessLevel: AccessLevel.Admin })
   @Query(() => GetConfigurationResponse, {
     name: "configuration",
     description: "Get a particular configuration entry by UUID",
@@ -92,7 +93,7 @@ export class ConfigurationResolver {
     );
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Admin })
+  @QueryAccessControl({ accessLevel: AccessLevel.Admin })
   @Query(() => GetAllConfigurationsResponse, {
     name: "allConfigurations",
     description: "Get all configurations, irrespective of time",
@@ -107,7 +108,7 @@ export class ConfigurationResolver {
     );
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Admin })
+  @MutationAccessControl({ accessLevel: AccessLevel.Admin })
   @Mutation(() => CreateConfigurationResponse, {
     name: "createConfiguration",
     description:
@@ -130,7 +131,7 @@ export class ConfigurationResolver {
     );
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Admin })
+  @MutationAccessControl({ accessLevel: AccessLevel.Admin })
   @Mutation(() => CreateConfigurationResponse, {
     name: "createConfigurations",
     description:
@@ -157,7 +158,7 @@ export class ConfigurationResolver {
     return Ok(CreateConfigurationsResponse.newOk(""));
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Admin })
+  @MutationAccessControl({ accessLevel: AccessLevel.Admin })
   @Mutation(() => DeleteConfigurationResponse, {
     name: "deleteConfiguration",
     description: "Delete a configuration by UUID",
@@ -181,7 +182,7 @@ export class ConfigurationResolver {
     return Ok(DeleteConfigurationResponse.newOk(true));
   }
 
-  @AccessControl({ accessLevel: AccessLevel.SuperAdmin })
+  @QueryAccessControl({ accessLevel: AccessLevel.SuperAdmin })
   @Query(() => String, {
     name: "auditLog",
     description: "Get the audit log file from the server",

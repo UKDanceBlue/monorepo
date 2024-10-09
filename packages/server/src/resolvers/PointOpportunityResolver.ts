@@ -3,7 +3,7 @@ import { PointOpportunityRepository } from "#repositories/pointOpportunity/Point
 import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
 
 import {
-  AccessControl,
+  QueryAccessControl,
   AccessLevel,
   CommitteeIdentifier,
   LegacyError,
@@ -12,6 +12,7 @@ import {
   GlobalIdScalar,
   PointOpportunityNode,
   SortDirection,
+  MutationAccessControl,
 } from "@ukdanceblue/common";
 import {
   Arg,
@@ -43,7 +44,7 @@ export class PointOpportunityResolver {
     private readonly pointOpportunityRepository: PointOpportunityRepository
   ) {}
 
-  @AccessControl({
+  @QueryAccessControl({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => SinglePointOpportunityResponse, { name: "pointOpportunity" })
@@ -67,7 +68,7 @@ export class PointOpportunityResolver {
     );
   }
 
-  @AccessControl({
+  @QueryAccessControl({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListPointOpportunitiesResponse, { name: "pointOpportunities" })
@@ -101,7 +102,7 @@ export class PointOpportunityResolver {
     });
   }
 
-  @AccessControl({
+  @MutationAccessControl({
     authRules: [
       {
         committeeIdentifier: CommitteeIdentifier.viceCommittee,
@@ -128,7 +129,7 @@ export class PointOpportunityResolver {
     );
   }
 
-  @AccessControl({
+  @MutationAccessControl({
     authRules: [
       {
         committeeIdentifier: CommitteeIdentifier.viceCommittee,
@@ -165,7 +166,7 @@ export class PointOpportunityResolver {
     );
   }
 
-  @AccessControl({
+  @MutationAccessControl({
     authRules: [
       {
         committeeIdentifier: CommitteeIdentifier.viceCommittee,

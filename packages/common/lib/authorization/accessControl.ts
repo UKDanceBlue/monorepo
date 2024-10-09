@@ -308,19 +308,19 @@ export async function checkParam<RootType extends object = never>(
   return Ok(true);
 }
 
-export function AccessControl<
+export function QueryAccessControl<
   RootType extends object = never,
   ResultType extends object = never,
 >(
   params: CustomAuthorizationFunction<RootType, ResultType>
 ): MethodDecorator & PropertyDecorator;
-export function AccessControl<
+export function QueryAccessControl<
   RootType extends object = never,
   ResultType extends object = never,
 >(
   ...params: AccessControlParam<RootType>[]
 ): MethodDecorator & PropertyDecorator;
-export function AccessControl<
+export function QueryAccessControl<
   RootType extends object = never,
   ResultType extends object = never,
 >(
@@ -377,6 +377,80 @@ export function AccessControl<
           rule,
           authorization,
           root,
+          args,
+          context
+        );
+        if (result.isErr()) {
+          return Err(result.error);
+        }
+
+        ok = result.value;
+        if (ok) {
+          break;
+        }
+      }
+
+      if (!ok) {
+        if (info.returnType instanceof GraphQLNonNull) {
+          return Err(new AccessControlError(info));
+        } else {
+          return null;
+        }
+      }
+
+      return next();
+    }
+  };
+
+  return UseMiddleware(middleware);
+}
+
+export function MutationAccessControl(
+  params: CustomAuthorizationFunction<never, never>
+): MethodDecorator & PropertyDecorator;
+export function MutationAccessControl(
+  ...params: AccessControlParam<never>[]
+): MethodDecorator & PropertyDecorator;
+export function MutationAccessControl(
+  ...params:
+    | AccessControlParam<never>[]
+    | [CustomAuthorizationFunction<never, never>]
+): MethodDecorator & PropertyDecorator {
+  const middleware: MiddlewareFn<AuthorizationContext> = async (
+    resolverData,
+    next
+  ) => {
+    const { context, args, info } = resolverData;
+    const { authorization } = context;
+
+    if (authorization.accessLevel === AccessLevel.SuperAdmin) {
+      // Super admins have access to everything
+      return next();
+    }
+
+    let ok = false;
+
+    if (typeof params[0] === "function") {
+      let customResult = await params[0](
+        {} as never,
+        context,
+        {} as never,
+        args
+      );
+
+      if (customResult === false) {
+        return Err(new AccessControlError(info));
+      } else if (customResult === null) {
+        return null;
+      }
+
+      return next();
+    } else {
+      for (const rule of params as AccessControlParam<never>[]) {
+        const result = await checkParam(
+          rule,
+          authorization,
+          {} as never,
           args,
           context
         );

@@ -4,7 +4,7 @@ import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fund
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 
 import {
-  AccessControl,
+  QueryAccessControl,
   AccessLevel,
   checkParam,
   FundraisingAssignmentNode,
@@ -43,7 +43,7 @@ export class FundraisingEntryResolver {
     private readonly fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
-  @AccessControl(globalFundraisingAccessParam)
+  @QueryAccessControl(globalFundraisingAccessParam)
   @Query(() => FundraisingEntryNode)
   async fundraisingEntry(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -54,7 +54,7 @@ export class FundraisingEntryResolver {
     return entry.toAsyncResult().map(fundraisingEntryModelToNode).promise;
   }
 
-  @AccessControl(globalFundraisingAccessParam)
+  @QueryAccessControl(globalFundraisingAccessParam)
   @Query(() => ListFundraisingEntriesResponse)
   async fundraisingEntries(
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
@@ -95,7 +95,7 @@ export class FundraisingEntryResolver {
     );
   }
 
-  @AccessControl<FundraisingEntryNode>(
+  @QueryAccessControl<FundraisingEntryNode>(
     async (root, context): Promise<boolean> => {
       // We can't grant blanket access as otherwise people would see who else was assigned to an entry
       // You can view all assignments for an entry if you are:
@@ -173,7 +173,7 @@ export class FundraisingEntryResolver {
       ).promise;
   }
 
-  @AccessControl(globalFundraisingAccessParam, {
+  @QueryAccessControl(globalFundraisingAccessParam, {
     accessLevel: AccessLevel.Admin,
   })
   @Query(() => String)
@@ -184,7 +184,7 @@ export class FundraisingEntryResolver {
     return result.map((data) => JSON.stringify(data));
   }
 
-  @AccessControl(globalFundraisingAccessParam, {
+  @QueryAccessControl(globalFundraisingAccessParam, {
     accessLevel: AccessLevel.Admin,
   })
   @Query(() => String)

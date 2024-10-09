@@ -6,13 +6,14 @@ import { personModelToResource } from "#repositories/person/personModelToResourc
 import { globalFundraisingAccessParam } from "./accessParams.js";
 
 import {
-  AccessControl,
+  QueryAccessControl,
   checkParam,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
   GlobalIdScalar,
   isGlobalId,
   MembershipPositionType,
+  MutationAccessControl,
   PersonNode,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
@@ -34,7 +35,6 @@ import {
 } from "@ukdanceblue/common";
 import { Option } from "ts-results-es";
 
-// TODO: Give team captains access
 @Resolver(() => FundraisingAssignmentNode)
 @Service([FundraisingEntryRepository, PersonRepository])
 export class FundraisingAssignmentResolver {
@@ -43,15 +43,12 @@ export class FundraisingAssignmentResolver {
     private readonly personRepository: PersonRepository
   ) {}
 
-  @AccessControl<never, FundraisingAssignmentNode>(
+  @QueryAccessControl<never, FundraisingAssignmentNode>(
     async (
       root: never,
       context: AccessControlContext,
       result: Option<FundraisingAssignmentNode>
     ): Promise<boolean | null> => {
-      // We can't grant blanket access as otherwise people would see who else was assigned to an entry
-      // You can view all assignments for an entry if you are:
-      // 1. A fundraising coordinator or chair
       const globalFundraisingAccess = await checkParam(
         globalFundraisingAccessParam,
         context.authorization,
@@ -106,15 +103,12 @@ export class FundraisingAssignmentResolver {
       .promise;
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     async (
       root: never,
       context: AccessControlContext,
       result: Option<FundraisingAssignmentNode>
     ): Promise<boolean | null> => {
-      // We can't grant blanket access as otherwise people would see who else was assigned to an entry
-      // You can view all assignments for an entry if you are:
-      // 1. A fundraising coordinator or chair
       const globalFundraisingAccess = await checkParam(
         globalFundraisingAccessParam,
         context.authorization,
@@ -172,16 +166,13 @@ export class FundraisingAssignmentResolver {
     return assignment.map(fundraisingAssignmentModelToNode);
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     async (
       root,
       context,
       _,
       { id: fundraisingAssignmentId }
     ): Promise<boolean | null> => {
-      // We can't grant blanket access as otherwise people would see who else was assigned to an entry
-      // You can view all assignments for an entry if you are:
-      // 1. A fundraising coordinator or chair
       const globalFundraisingAccess = await checkParam(
         globalFundraisingAccessParam,
         context.authorization,
@@ -235,16 +226,13 @@ export class FundraisingAssignmentResolver {
     return assignment.map(fundraisingAssignmentModelToNode);
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     async (
       root,
       context,
       _,
       { id: fundraisingAssignmentId }
     ): Promise<boolean | null> => {
-      // We can't grant blanket access as otherwise people would see who else was assigned to an entry
-      // You can view all assignments for an entry if you are:
-      // 1. A fundraising coordinator or chair
       const globalFundraisingAccess = await checkParam(
         globalFundraisingAccessParam,
         context.authorization,
@@ -285,7 +273,7 @@ export class FundraisingAssignmentResolver {
       return false;
     }
   )
-  @AccessControl(fundraisingAccess)
+  @QueryAccessControl(fundraisingAccess)
   @Mutation(() => FundraisingAssignmentNode)
   async deleteFundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -297,11 +285,10 @@ export class FundraisingAssignmentResolver {
     return assignment.map(fundraisingAssignmentModelToNode);
   }
 
-  @AccessControl<never, PersonNode>(
+  @QueryAccessControl<never, PersonNode>(
     async (root, context, result): Promise<boolean | null> => {
       // We can't grant blanket access as otherwise people would see who else was assigned to an entry
-      // You can view all assignments for an entry if you are:
-      // 1. A fundraising coordinator or chair
+
       const globalFundraisingAccess = await checkParam(
         globalFundraisingAccessParam,
         context.authorization,
@@ -363,6 +350,54 @@ export class FundraisingAssignmentResolver {
       .promise;
   }
 
+  @QueryAccessControl<never, PersonNode>(
+    async (root, context, result): Promise<boolean | null> => {
+      // We can't grant blanket access as otherwise people would see who else was assigned to an entry
+
+      const globalFundraisingAccess = await checkParam(
+        globalFundraisingAccessParam,
+        context.authorization,
+        root,
+        {},
+        context
+      );
+      if (globalFundraisingAccess.isErr()) {
+        return false;
+      }
+      if (globalFundraisingAccess.value) {
+        return true;
+      }
+      const { teamMemberships } = context;
+
+      return result.mapOr<Promise<boolean | null>>(
+        Promise.resolve(false),
+        async ({ id: { id } }) => {
+          const personRepository = Container.get(PersonRepository);
+          const memberships = await personRepository.findMembershipsOfPerson(
+            { uuid: id },
+            undefined,
+            undefined,
+            true
+          );
+          const userCaptaincies = teamMemberships.filter(
+            (membership) =>
+              membership.position === MembershipPositionType.Captain
+          );
+          for (const targetPersonMembership of memberships) {
+            if (
+              userCaptaincies.some(
+                (userCaptaincy) =>
+                  userCaptaincy.teamId === targetPersonMembership.team.uuid
+              )
+            ) {
+              return true;
+            }
+          }
+          return null;
+        }
+      );
+    }
+  )
   @FieldResolver(() => FundraisingEntryNode)
   async entry(
     @Root() { id: { id } }: FundraisingAssignmentNode

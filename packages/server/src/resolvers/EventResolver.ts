@@ -9,7 +9,7 @@ import { EventImagesRepository } from "#repositories/event/images/EventImagesRep
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
 import {
-  AccessControl,
+  QueryAccessControl,
   AccessLevel,
   CommitteeRole,
   LegacyError,
@@ -18,6 +18,7 @@ import {
   GlobalIdScalar,
   ImageNode,
   SortDirection,
+  MutationAccessControl,
 } from "@ukdanceblue/common";
 import {
   Arg,
@@ -53,6 +54,10 @@ export class EventResolver {
     private readonly eventImageRepository: EventImagesRepository,
     private readonly fileManager: FileManager
   ) {}
+
+  @QueryAccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   @Query(() => GetEventByUuidResponse, {
     name: "event",
     description: "Get an event by UUID",
@@ -74,6 +79,9 @@ export class EventResolver {
     );
   }
 
+  @QueryAccessControl({
+    accessLevel: AccessLevel.Public,
+  })
   @Query(() => ListEventsResponse, {
     name: "events",
     description: "List events",
@@ -106,7 +114,7 @@ export class EventResolver {
     });
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -149,7 +157,7 @@ export class EventResolver {
     );
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -175,7 +183,7 @@ export class EventResolver {
     return DeleteEventResponse.newOk(true);
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -250,7 +258,7 @@ export class EventResolver {
     );
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -280,7 +288,7 @@ export class EventResolver {
     return RemoveEventImageResponse.newOk(true);
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     {
       accessLevel: AccessLevel.Admin,
     },

@@ -6,13 +6,14 @@ import { ImageRepository } from "#repositories/image/ImageRepository.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
 import {
-  AccessControl,
+  QueryAccessControl,
   AccessLevel,
   LegacyError,
   LegacyErrorCode,
   GlobalIdScalar,
   ImageNode,
   SortDirection,
+  MutationAccessControl,
 } from "@ukdanceblue/common";
 import { URLResolver } from "graphql-scalars";
 import fetch from "node-fetch";
@@ -53,6 +54,9 @@ export class ImageResolver {
     );
   }
 
+  @QueryAccessControl({
+    accessLevel: AccessLevel.Committee,
+  })
   @Query(() => ListImagesResponse, { name: "images" })
   async list(
     @Args(() => ListImagesArgs) args: ListImagesArgs
@@ -86,7 +90,9 @@ export class ImageResolver {
     });
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @MutationAccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   @Mutation(() => ImageNode, { name: "createImage" })
   async create(@Arg("input") input: CreateImageInput): Promise<ImageNode> {
     const { mime, thumbHash, width, height } = await handleImageUrl(input.url);
@@ -126,7 +132,9 @@ export class ImageResolver {
     return imageModelToResource(result, null, this.fileManager);
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @MutationAccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   @Mutation(() => ImageNode, { name: "setImageAltText" })
   async setAltText(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -150,7 +158,9 @@ export class ImageResolver {
     return imageModelToResource(result, result.file, this.fileManager);
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @MutationAccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   @Mutation(() => ImageNode, { name: "setImageUrl" })
   async setImageUrl(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -193,7 +203,9 @@ export class ImageResolver {
     return imageModelToResource(result, result.file, this.fileManager);
   }
 
-  @AccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @MutationAccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   @Mutation(() => DeleteImageResponse, { name: "deleteImage" })
   async delete(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId

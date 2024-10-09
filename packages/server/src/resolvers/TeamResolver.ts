@@ -14,7 +14,8 @@ import { globalFundraisingAccessParam } from "./accessParams.js";
 import * as Context from "#resolvers/context.js";
 
 import {
-  AccessControl,
+  QueryAccessControl,
+  MutationAccessControl,
   AccessLevel,
   AuthSource,
   CommitteeRole,
@@ -70,7 +71,7 @@ export class TeamResolver {
     private dbFundsRepository: DBFundsRepository
   ) {}
 
-  @AccessControl<never, SingleTeamResponse>((_, context, result) => {
+  @QueryAccessControl<never, SingleTeamResponse>((_, context, result) => {
     return (
       context.authorization.accessLevel > AccessLevel.Committee ||
       context.teamMemberships.some(({ teamId, position }) =>
@@ -94,7 +95,7 @@ export class TeamResolver {
     return Ok(SingleTeamResponse.newOk(teamModelToResource(row)));
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Public })
+  @QueryAccessControl({ accessLevel: AccessLevel.Public })
   @Query(() => ListTeamsResponse, { name: "teams" })
   async list(
     @Args(() => ListTeamsArgs) query: ListTeamsArgs,
@@ -148,7 +149,7 @@ export class TeamResolver {
     });
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -179,7 +180,7 @@ export class TeamResolver {
     return CreateTeamResponse.newCreated(teamModelToResource(row));
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -216,7 +217,7 @@ export class TeamResolver {
     return SingleTeamResponse.newOk(teamModelToResource(row));
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -225,7 +226,7 @@ export class TeamResolver {
         {
           committeeIdentifier:
             Common.CommitteeIdentifier.dancerRelationsCommittee,
-          minCommitteeRole: CommitteeRole.Coordinator,
+          minCommitteeRole: CommitteeRole.Chair,
         },
       ],
     }
@@ -242,7 +243,7 @@ export class TeamResolver {
     return rows.map((rows) => rows.map((row) => teamModelToResource(row)));
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -269,7 +270,7 @@ export class TeamResolver {
     return DeleteTeamResponse.newOk(true);
   }
 
-  @AccessControl(
+  @QueryAccessControl(
     { accessLevel: AccessLevel.Committee },
     {
       rootMatch: [
@@ -290,7 +291,7 @@ export class TeamResolver {
     return memberships.map((row) => membershipModelToResource(row));
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Committee })
+  @QueryAccessControl({ accessLevel: AccessLevel.Committee })
   @FieldResolver(() => [MembershipNode], {
     deprecationReason: "Just query the members field and filter by role",
   })
@@ -303,7 +304,7 @@ export class TeamResolver {
     return memberships.map((row) => membershipModelToResource(row));
   }
 
-  @AccessControl(
+  @QueryAccessControl(
     { accessLevel: AccessLevel.Committee },
     {
       rootMatch: [
@@ -326,7 +327,7 @@ export class TeamResolver {
     return rows.map((row) => pointEntryModelToResource(row));
   }
 
-  @AccessControl(globalFundraisingAccessParam, {
+  @QueryAccessControl(globalFundraisingAccessParam, {
     rootMatch: [
       {
         root: "id",
@@ -344,7 +345,7 @@ export class TeamResolver {
     });
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Public })
+  @QueryAccessControl({ accessLevel: AccessLevel.Public })
   @FieldResolver(() => Int)
   async totalPoints(@Root() { id: { id } }: TeamNode): Promise<number> {
     const result = await this.teamRepository.getTotalTeamPoints({
@@ -354,7 +355,7 @@ export class TeamResolver {
     return result._sum.points ?? 0;
   }
 
-  @AccessControl({ accessLevel: AccessLevel.Public })
+  @QueryAccessControl({ accessLevel: AccessLevel.Public })
   @FieldResolver(() => Common.MarathonNode)
   async marathon(
     @Root() { id: { id } }: TeamNode
@@ -368,7 +369,7 @@ export class TeamResolver {
     return marathonModelToResource(result);
   }
 
-  @AccessControl(globalFundraisingAccessParam, {
+  @QueryAccessControl(globalFundraisingAccessParam, {
     rootMatch: [
       {
         root: "id",
@@ -411,7 +412,7 @@ export class TeamResolver {
     return result ?? null;
   }
 
-  @AccessControl(globalFundraisingAccessParam, {
+  @QueryAccessControl(globalFundraisingAccessParam, {
     rootMatch: [
       {
         root: "id",
@@ -477,7 +478,7 @@ export class TeamResolver {
     );
   }
 
-  @AccessControl(globalFundraisingAccessParam)
+  @QueryAccessControl(globalFundraisingAccessParam)
   @Query(() => [DbFundsTeamInfo], { name: "dbFundsTeams" })
   async dbFundsTeams(
     @Arg("search") search: string
@@ -509,7 +510,7 @@ export class TeamResolver {
     });
   }
 
-  @AccessControl(globalFundraisingAccessParam)
+  @MutationAccessControl(globalFundraisingAccessParam)
   @Mutation(() => VoidResolver, { name: "assignTeamToDbFundsTeam" })
   async assignTeamToDbFundsTeam(
     @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId,

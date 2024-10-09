@@ -7,7 +7,7 @@ import { NotificationDeliveryRepository } from "#repositories/notificationDelive
 import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
 
 import {
-  AccessControl,
+  QueryAccessControl,
   AccessLevel,
   LegacyError,
   LegacyErrorCode,
@@ -15,6 +15,7 @@ import {
   NotificationDeliveryNode,
   NotificationNode,
   SortDirection,
+  MutationAccessControl,
 } from "@ukdanceblue/common";
 import {
   Arg,
@@ -67,7 +68,7 @@ export class NotificationResolver {
     private readonly notificationScheduler: NotificationScheduler
   ) {}
 
-  @AccessControl({
+  @QueryAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Query(() => GetNotificationByUuidResponse, { name: "notification" })
@@ -83,7 +84,7 @@ export class NotificationResolver {
       ).promise;
   }
 
-  @AccessControl({
+  @QueryAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Query(() => ListNotificationsResponse, { name: "notifications" })
@@ -114,7 +115,7 @@ export class NotificationResolver {
     });
   }
 
-  @AccessControl({
+  @QueryAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Query(() => ListNotificationDeliveriesResponse, {
@@ -158,7 +159,7 @@ export class NotificationResolver {
     });
   }
 
-  @AccessControl({
+  @MutationAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => StageNotificationResponse, { name: "stageNotification" })
@@ -197,7 +198,7 @@ export class NotificationResolver {
     );
   }
 
-  @AccessControl({
+  @MutationAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => SendNotificationResponse, {
@@ -227,7 +228,7 @@ export class NotificationResolver {
       }).promise;
   }
 
-  @AccessControl({
+  @MutationAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => ScheduleNotificationResponse, {
@@ -257,7 +258,7 @@ export class NotificationResolver {
       }).promise;
   }
 
-  @AccessControl({
+  @MutationAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => AcknowledgeDeliveryIssueResponse, {
@@ -292,7 +293,7 @@ export class NotificationResolver {
     return Ok(AcknowledgeDeliveryIssueResponse.newOk(true));
   }
 
-  @AccessControl({
+  @MutationAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => AbortScheduledNotificationResponse, {
@@ -322,7 +323,7 @@ export class NotificationResolver {
       .map(() => AbortScheduledNotificationResponse.newOk(true)).promise;
   }
 
-  @AccessControl({
+  @MutationAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => DeleteNotificationResponse, { name: "deleteNotification" })
@@ -335,25 +336,6 @@ export class NotificationResolver {
     })
     force?: boolean
   ): Promise<ConcreteResult<DeleteNotificationResponse>> {
-    // const notification =
-    //   await this.notificationRepository.findNotificationByUnique({ uuid: id });
-
-    // if (notification == null) {
-    //   throw new DetailedError(ErrorCode.NotFound, "Notification not found");
-    // }
-
-    // if (notification.startedSendingAt != null && force !== true) {
-    //   throw new DetailedError(
-    //     ErrorCode.InvalidRequest,
-    //     "Cannot delete a notification that has already been sent without setting force to true."
-    //   );
-    // }
-
-    // await this.notificationRepository.deleteNotification({
-    //   id: notification.id,
-    // });
-
-    // return DeleteNotificationResponse.newOk(true);
     return this.notificationRepository
       .findNotificationByUnique({ uuid: id })
       .andThen((notification) =>
@@ -379,7 +361,7 @@ export class NotificationResolver {
       .map(() => DeleteNotificationResponse.newOk(true)).promise;
   }
 
-  @AccessControl({
+  @QueryAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @FieldResolver(() => Int, { name: "deliveryCount" })
@@ -391,7 +373,7 @@ export class NotificationResolver {
     });
   }
 
-  @AccessControl({
+  @QueryAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @FieldResolver(() => NotificationDeliveryIssueCount, {

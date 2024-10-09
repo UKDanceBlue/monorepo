@@ -6,7 +6,7 @@ import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
 import {
-  AccessControl,
+  QueryAccessControl,
   AccessLevel,
   CommitteeIdentifier,
   CommitteeRole,
@@ -18,6 +18,7 @@ import {
   PointOpportunityNode,
   SortDirection,
   TeamNode,
+  MutationAccessControl,
 } from "@ukdanceblue/common";
 import { NotFoundError, ConcreteResult } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Some } from "ts-results-es";
@@ -50,7 +51,7 @@ export class PointEntryResolver {
     private readonly personRepository: PersonRepository
   ) {}
 
-  @AccessControl({
+  @QueryAccessControl({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => GetPointEntryByUuidResponse, { name: "pointEntry" })
@@ -68,7 +69,7 @@ export class PointEntryResolver {
     return GetPointEntryByUuidResponse.newOk(pointEntryModelToResource(model));
   }
 
-  @AccessControl({
+  @QueryAccessControl({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListPointEntriesResponse, { name: "pointEntries" })
@@ -102,7 +103,7 @@ export class PointEntryResolver {
     });
   }
 
-  @AccessControl({
+  @MutationAccessControl({
     authRules: [
       {
         committeeIdentifier: CommitteeIdentifier.viceCommittee,
@@ -131,7 +132,7 @@ export class PointEntryResolver {
     );
   }
 
-  @AccessControl({
+  @MutationAccessControl({
     authRules: [
       {
         committeeIdentifier: CommitteeIdentifier.viceCommittee,

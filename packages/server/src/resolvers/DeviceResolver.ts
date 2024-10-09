@@ -14,6 +14,9 @@ import {
   parseGlobalId,
   PersonNode,
   SortDirection,
+  MutationAccessControl,
+  AccessLevel,
+  QueryAccessControl,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
 import {
@@ -69,6 +72,7 @@ export class DeviceResolver {
     return GetDeviceByUuidResponse.newOk(deviceModelToResource(row));
   }
 
+  @QueryAccessControl({ accessLevel: AccessLevel.Admin })
   @Query(() => ListDevicesResponse, {
     name: "devices",
     description: "List all devices",
@@ -132,6 +136,7 @@ export class DeviceResolver {
     );
   }
 
+  @MutationAccessControl({ accessLevel: AccessLevel.Admin })
   @Mutation(() => DeleteDeviceResponse, {
     name: "deleteDevice",
     description: "Delete a device by it's UUID",

@@ -5,7 +5,7 @@ import { imageModelToResource } from "#repositories/image/imageModelToResource.j
 import { CommitteeRole } from "@prisma/client";
 
 import {
-  AccessControl,
+  QueryAccessControl,
   AccessLevel,
   LegacyError,
   LegacyErrorCode,
@@ -13,6 +13,7 @@ import {
   type GlobalId,
   GlobalIdScalar,
   ImageNode,
+  MutationAccessControl,
 } from "@ukdanceblue/common";
 import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok } from "ts-results-es";
@@ -37,7 +38,7 @@ export class FeedResolver {
   ) {}
 
   @Query(() => FeedNode, { description: "Get a feed item by its UUID" })
-  @AccessControl({
+  @QueryAccessControl({
     accessLevel: AccessLevel.Public,
   })
   async feedItem(
@@ -53,7 +54,7 @@ export class FeedResolver {
   }
 
   @Query(() => [FeedNode], { description: "Get the active feed" })
-  @AccessControl({
+  @QueryAccessControl({
     accessLevel: AccessLevel.Public,
   })
   async feed(
@@ -64,7 +65,7 @@ export class FeedResolver {
     return rows.map(feedItemModelToResource);
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -84,7 +85,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -111,7 +112,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -132,7 +133,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -158,7 +159,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @AccessControl(
+  @MutationAccessControl(
     {
       accessLevel: AccessLevel.Admin,
     },
