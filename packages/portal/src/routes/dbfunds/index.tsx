@@ -178,14 +178,25 @@ function DbFundsViewer() {
               if (["Salutation"].includes(key)) {
                 continue;
               } else if (key === "Donor Name") {
+                const name = String(value)
+                  .replaceAll(/Mr\.|Mrs\.|Ms\./g, "")
+                  .trim()
+                  .split(" ");
+                let firstName = "N/A";
+                let lastName = "N/A";
+                const middleInitialIdx = name.findIndex((part) =>
+                  part.endsWith(".")
+                );
+                if (middleInitialIdx !== -1) {
+                  firstName = name.slice(0, middleInitialIdx + 1).join(" ");
+                  lastName = name.slice(middleInitialIdx + 1).join(" ");
+                } else {
+                  firstName = name[0]!;
+                  lastName = name.slice(1).join(" ");
+                }
                 entries.push(
-                  ["donor_first_name", ""],
-                  [
-                    "donor_last_name",
-                    String(value)
-                      .replaceAll(/Mr\.|Mrs\.|Ms\./g, "")
-                      .trim(),
-                  ]
+                  ["donor_first_name", firstName],
+                  ["donor_last_name", lastName]
                 );
               } else {
                 entries.push([key as keyof NfgFormat, String(value)]);
@@ -204,7 +215,39 @@ function DbFundsViewer() {
             };
           }}
           onUpload={(output) => {
-            const newData = utils.json_to_sheet(output);
+            const newData = utils.json_to_sheet(
+              output.map(
+                (row): NfgFormat => ({
+                  "Mil ID": row["Mil ID"],
+                  "Salesforce ID": row["Salesforce ID"],
+                  "donor_first_name": row.donor_first_name,
+                  "donor_last_name": row.donor_last_name,
+                  "Transaction Type": row["Transaction Type"],
+                  "Online Gift?": row["Online Gift?"],
+                  "Unit": row.Unit,
+                  "giftproc": row.giftproc,
+                  "BegFY": row.BegFY,
+                  "CFY": row.CFY,
+                  "giftamount": row.giftamount,
+                  "giftacctnm": row.giftacctnm,
+                  "table_val": row.table_val,
+                  "giftacctno": row.giftacctno,
+                  "giftsolic": row.giftsolic,
+                  "addrline1": row.addrline1,
+                  "addrline2": row.addrline2,
+                  "addrline3": row.addrline3,
+                  "addrcity": row.addrcity,
+                  "addrplace": row.addrplace,
+                  "addrzipcod": row.addrzipcod,
+                  "intaddress": row.intaddress,
+                  "Constituent Type": row["Constituent Type"],
+                  "Donor Name 3": row["Donor Name 3"],
+                  "coretext": row.coretext,
+                  "CFY $": `$${Number.parseFloat(row["CFY $"]).toFixed(2)}`,
+                })
+              )
+            );
+
             const workbook = utils.book_new();
             utils.book_append_sheet(workbook, newData, "");
 
