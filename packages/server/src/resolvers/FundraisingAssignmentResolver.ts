@@ -15,6 +15,7 @@ import {
   MembershipPositionType,
   MutationAccessControl,
   PersonNode,
+  TeamType,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
 import {
@@ -103,53 +104,50 @@ export class FundraisingAssignmentResolver {
       .promise;
   }
 
-  @MutationAccessControl(
-    async (
-      root: never,
-      context: AccessControlContext,
-      result: Option<FundraisingAssignmentNode>
-    ): Promise<boolean | null> => {
-      const globalFundraisingAccess = await checkParam(
-        globalFundraisingAccessParam,
-        context.authorization,
-        root,
-        {},
-        context
-      );
-      if (globalFundraisingAccess.isErr()) {
-        return false;
-      }
-      if (globalFundraisingAccess.value) {
+  @MutationAccessControl(async (context, args): Promise<boolean | null> => {
+    const globalFundraisingAccess = await checkParam(
+      globalFundraisingAccessParam,
+      context.authorization,
+      {},
+      args,
+      context
+    );
+    if (globalFundraisingAccess.isErr()) {
+      return false;
+    }
+    if (globalFundraisingAccess.value) {
+      return true;
+    }
+    const { teamMemberships } = context;
+
+    const {
+      personId: { id: personId },
+    } = args as { personId: GlobalId };
+
+    const personRepository: PersonRepository = Container.get(PersonRepository);
+    const membership = await personRepository.findMembershipsOfPerson(
+      { uuid: personId },
+      undefined,
+      [TeamType.Spirit],
+      true
+    );
+    if (membership.isErr()) {
+      return false;
+    }
+
+    for (const userCaptaincy of teamMemberships) {
+      if (
+        membership.value.some(
+          (personMembership) =>
+            personMembership.team.uuid === userCaptaincy.teamId
+        ) &&
+        userCaptaincy.position === MembershipPositionType.Captain
+      ) {
         return true;
       }
-      const { teamMemberships } = context;
-
-      return result.mapOr<Promise<boolean | null>>(
-        Promise.resolve(false),
-        async ({ id: { id: fundraisingAssignmentId } }) => {
-          const fundraisingEntryRepository: FundraisingEntryRepository =
-            Container.get(FundraisingEntryRepository);
-          const membership =
-            await fundraisingEntryRepository.getMembershipForAssignment({
-              uuid: fundraisingAssignmentId,
-            });
-          if (membership.isErr()) {
-            return false;
-          }
-
-          for (const userCaptaincy of teamMemberships) {
-            if (
-              userCaptaincy.teamId === membership.value.team.uuid &&
-              userCaptaincy.position === MembershipPositionType.Captain
-            ) {
-              return true;
-            }
-          }
-          return false;
-        }
-      );
     }
-  )
+    return false;
+  })
   @Mutation(() => FundraisingAssignmentNode)
   async assignEntryToPerson(
     @Arg("entryId", () => GlobalIdScalar) { id: entryId }: GlobalId,
@@ -168,15 +166,13 @@ export class FundraisingAssignmentResolver {
 
   @MutationAccessControl(
     async (
-      root,
       context,
-      _,
       { id: fundraisingAssignmentId }
     ): Promise<boolean | null> => {
       const globalFundraisingAccess = await checkParam(
         globalFundraisingAccessParam,
         context.authorization,
-        root,
+        {},
         {},
         context
       );
@@ -228,15 +224,13 @@ export class FundraisingAssignmentResolver {
 
   @MutationAccessControl(
     async (
-      root,
       context,
-      _,
       { id: fundraisingAssignmentId }
     ): Promise<boolean | null> => {
       const globalFundraisingAccess = await checkParam(
         globalFundraisingAccessParam,
         context.authorization,
-        root,
+        {},
         {},
         context
       );

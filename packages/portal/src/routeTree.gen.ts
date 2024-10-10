@@ -220,7 +220,7 @@ const MarathonMarathonIdHoursAddRoute = MarathonMarathonIdHoursAddImport.update(
   {
     path: "/marathon/$marathonId/hours/add",
     getParentRoute: () => rootRoute,
-  } as any
+  } as any,
 );
 
 const MarathonMarathonIdHoursHourIdIndexRoute =

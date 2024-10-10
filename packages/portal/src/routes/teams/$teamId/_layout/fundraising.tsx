@@ -73,7 +73,9 @@ const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
               id
               amount
               person {
+                id
                 name
+                linkblue
               }
             }
           }
@@ -492,6 +494,7 @@ function ViewTeamFundraising() {
             expandedRowRender: ({ assignments, id, amountUnassigned }) => (
               <Table
                 dataSource={assignments}
+                pagination={false}
                 locale={{
                   emptyText: (
                     <Empty
@@ -524,7 +527,17 @@ function ViewTeamFundraising() {
                 columns={[
                   {
                     title: "Person",
-                    dataIndex: ["person", "name"],
+                    dataIndex: ["person"],
+                    render: ({
+                      id,
+                      name,
+                      linkblue,
+                    }: {
+                      id: string;
+                      name?: string;
+                      linkblue?: string;
+                    }) =>
+                      name ?? (!linkblue ? <i>{linkblue}</i> : <pre>{id}</pre>),
                     key: "person",
                     width: "60%",
                   },

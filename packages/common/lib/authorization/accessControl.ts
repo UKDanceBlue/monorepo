@@ -166,10 +166,26 @@ export interface AccessControlParam<RootType = never> {
  * If the custom rule returns null the field is set to null (make sure the field is nullable in the schema)
  * If one param returns false and another returns null, an error will be thrown and the null ignored.
  */
-export type CustomAuthorizationFunction<RootType, ResultType> = (
+export type CustomQueryAuthorizationFunction<RootType, ResultType> = (
   root: RootType,
   context: AccessControlContext,
   result: Option<ResultType>,
+  args: { [key: string]: unknown }
+) => boolean | null | Promise<boolean | null>;
+
+/**
+ * Custom mutation authorization function
+ *
+ * Same as CustomAuthorizationFunction, but without root or result
+ *
+ * Should usually be avoided, but can be used for more complex authorization rules
+ *
+ * If the custom rule returns a boolean the user is allowed access if the rule returns true and an error is thrown if the rule returns false.
+ * If the custom rule returns null the field is set to null (make sure the field is nullable in the schema)
+ * If one param returns false and another returns null, an error will be thrown and the null ignored.
+ */
+export type CustomMutationAuthorizationFunction = (
+  context: AccessControlContext,
   args: { [key: string]: unknown }
 ) => boolean | null | Promise<boolean | null>;
 
@@ -312,7 +328,7 @@ export function QueryAccessControl<
   RootType extends object = never,
   ResultType extends object = never,
 >(
-  params: CustomAuthorizationFunction<RootType, ResultType>
+  params: CustomQueryAuthorizationFunction<RootType, ResultType>
 ): MethodDecorator & PropertyDecorator;
 export function QueryAccessControl<
   RootType extends object = never,
@@ -326,7 +342,7 @@ export function QueryAccessControl<
 >(
   ...params:
     | AccessControlParam<RootType>[]
-    | [CustomAuthorizationFunction<RootType, ResultType>]
+    | [CustomQueryAuthorizationFunction<RootType, ResultType>]
 ): MethodDecorator & PropertyDecorator {
   const middleware: MiddlewareFn<AuthorizationContext> = async (
     resolverData,
@@ -344,25 +360,19 @@ export function QueryAccessControl<
     let ok = false;
 
     if (typeof params[0] === "function") {
-      const result = (await next()) as
+      let result = (await next()) as
         | ResultType
         | Option<ResultType>
         | ConcreteResult<ResultType>
         | ConcreteResult<Option<ResultType>>;
-      let resultValue: Option<ResultType>;
       if (Result.isResult(result)) {
-        if (result.isErr()) {
-          resultValue = None;
-        } else {
-          resultValue = Option.isOption(result.value)
-            ? result.value
-            : Some(result.value);
-        }
-      } else {
-        resultValue = Option.isOption(result) ? result : Some(result);
+        result = result.unwrapOr(None);
+      }
+      if (!Option.isOption(result)) {
+        result = Some(result);
       }
 
-      let customResult = await params[0](root, context, resultValue, args);
+      let customResult = await params[0](root, context, result, args);
 
       if (customResult === false) {
         return Err(new AccessControlError(info));
@@ -406,15 +416,13 @@ export function QueryAccessControl<
 }
 
 export function MutationAccessControl(
-  params: CustomAuthorizationFunction<never, never>
+  params: CustomMutationAuthorizationFunction
 ): MethodDecorator & PropertyDecorator;
 export function MutationAccessControl(
   ...params: AccessControlParam<never>[]
 ): MethodDecorator & PropertyDecorator;
 export function MutationAccessControl(
-  ...params:
-    | AccessControlParam<never>[]
-    | [CustomAuthorizationFunction<never, never>]
+  ...params: AccessControlParam<never>[] | [CustomMutationAuthorizationFunction]
 ): MethodDecorator & PropertyDecorator {
   const middleware: MiddlewareFn<AuthorizationContext> = async (
     resolverData,
@@ -431,12 +439,7 @@ export function MutationAccessControl(
     let ok = false;
 
     if (typeof params[0] === "function") {
-      let customResult = await params[0](
-        {} as never,
-        context,
-        {} as never,
-        args
-      );
+      let customResult = await params[0](context, args);
 
       if (customResult === false) {
         return Err(new AccessControlError(info));
@@ -446,11 +449,13 @@ export function MutationAccessControl(
 
       return next();
     } else {
-      for (const rule of params as AccessControlParam<never>[]) {
-        const result = await checkParam(
+      for (const rule of params as AccessControlParam<
+        Record<string, never>
+      >[]) {
+        const result = await checkParam<Record<string, never>>(
           rule,
           authorization,
-          {} as never,
+          {},
           args,
           context
         );

@@ -260,12 +260,16 @@ export function TeamViewer({
           setPersonToAssignToTeam(null);
         }}
         onSubmit={(position) => {
+          setPersonToAssignToTeam(null);
           assignToTeam({
             person: personToAssignToTeam?.uuid ?? "",
             team: teamData.id,
             position,
-          }).catch((error: unknown) => console.error(error));
-          setPersonToAssignToTeam(null);
+          })
+            .then(() => {
+              window.location.reload();
+            })
+            .catch((error: unknown) => console.error(error));
         }}
         teamName={teamData.name}
       />

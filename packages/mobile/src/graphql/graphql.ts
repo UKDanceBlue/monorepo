@@ -776,6 +776,18 @@ export type ListImagesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQ
   readonly total: Scalars['NonNegativeInt']['output'];
 };
 
+export type ListMarathonHoursResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'ListMarathonHoursResponse';
+  readonly data: ReadonlyArray<MarathonHourNode>;
+  readonly ok: Scalars['Boolean']['output'];
+  /** The current page number (1-indexed) */
+  readonly page: Scalars['PositiveInt']['output'];
+  /** The number of items per page */
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
+  /** The total number of items */
+  readonly total: Scalars['NonNegativeInt']['output'];
+};
+
 export type ListMarathonsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListMarathonsResponse';
   readonly data: ReadonlyArray<MarathonNode>;
@@ -881,6 +893,71 @@ export type MarathonHourNode = Node & {
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
+export const MarathonHourResolverAllKeys = {
+  CreatedAt: 'createdAt',
+  Details: 'details',
+  DurationInfo: 'durationInfo',
+  MarathonYear: 'marathonYear',
+  ShownStartingAt: 'shownStartingAt',
+  Title: 'title',
+  UpdatedAt: 'updatedAt'
+} as const;
+
+export type MarathonHourResolverAllKeys = typeof MarathonHourResolverAllKeys[keyof typeof MarathonHourResolverAllKeys];
+export const MarathonHourResolverDateFilterKeys = {
+  CreatedAt: 'createdAt',
+  ShownStartingAt: 'shownStartingAt',
+  UpdatedAt: 'updatedAt'
+} as const;
+
+export type MarathonHourResolverDateFilterKeys = typeof MarathonHourResolverDateFilterKeys[keyof typeof MarathonHourResolverDateFilterKeys];
+export type MarathonHourResolverKeyedDateFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: NumericComparator;
+  /** The field to filter on */
+  readonly field: MarathonHourResolverDateFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['DateTimeISO']['input'];
+};
+
+export type MarathonHourResolverKeyedIsNullFilterItem = {
+  /** The field to filter on */
+  readonly field: MarathonHourResolverAllKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type MarathonHourResolverKeyedOneOfFilterItem = {
+  /** The field to filter on */
+  readonly field: MarathonHourResolverOneOfFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
+};
+
+export type MarathonHourResolverKeyedStringFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: StringComparator;
+  /** The field to filter on */
+  readonly field: MarathonHourResolverStringFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
+};
+
+export const MarathonHourResolverOneOfFilterKeys = {
+  MarathonYear: 'marathonYear'
+} as const;
+
+export type MarathonHourResolverOneOfFilterKeys = typeof MarathonHourResolverOneOfFilterKeys[keyof typeof MarathonHourResolverOneOfFilterKeys];
+export const MarathonHourResolverStringFilterKeys = {
+  Details: 'details',
+  DurationInfo: 'durationInfo',
+  Title: 'title'
+} as const;
+
+export type MarathonHourResolverStringFilterKeys = typeof MarathonHourResolverStringFilterKeys[keyof typeof MarathonHourResolverStringFilterKeys];
 export type MarathonNode = Node & {
   readonly __typename?: 'MarathonNode';
   readonly communityDevelopmentCommitteeTeam: TeamNode;
@@ -1717,6 +1794,7 @@ export type Query = {
   readonly marathon: MarathonNode;
   readonly marathonForYear: MarathonNode;
   readonly marathonHour: MarathonHourNode;
+  readonly marathonHours: ListMarathonHoursResponse;
   readonly marathons: ListMarathonsResponse;
   readonly me?: Maybe<PersonNode>;
   readonly node: Node;
@@ -1885,6 +1963,22 @@ export type QueryMarathonForYearArgs = {
 
 export type QueryMarathonHourArgs = {
   uuid: Scalars['GlobalId']['input'];
+};
+
+
+export type QueryMarathonHoursArgs = {
+  booleanFilters?: InputMaybe<Scalars['Void']['input']>;
+  dateFilters?: InputMaybe<ReadonlyArray<MarathonHourResolverKeyedDateFilterItem>>;
+  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  isNullFilters?: InputMaybe<ReadonlyArray<MarathonHourResolverKeyedIsNullFilterItem>>;
+  numericFilters?: InputMaybe<Scalars['Void']['input']>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<MarathonHourResolverKeyedOneOfFilterItem>>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sendAll?: InputMaybe<Scalars['Boolean']['input']>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<MarathonHourResolverKeyedStringFilterItem>>;
 };
 
 
