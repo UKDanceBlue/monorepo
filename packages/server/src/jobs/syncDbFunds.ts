@@ -19,21 +19,17 @@ import { Container } from "@freshgum/typedi";
 import type { PrismaError } from "#error/prisma.js";
 
 import { JobStateRepository } from "#repositories/JobState.js";
+import { Marathon } from "@prisma/client";
 
 type DoSyncError =
   | NotFoundError
   | PrismaError
   | DBFundsFundraisingProviderError;
 
-/**
- *
- */
-async function doSync(): Promise<
+async function doSyncForActive(): Promise<
   Result<None, DoSyncError | CompositeError<DoSyncError>>
 > {
   const marathonRepository = Container.get(MarathonRepository);
-  const fundraisingRepository = Container.get(DBFundsRepository);
-  const fundraisingProvider = Container.get(DBFundsFundraisingProvider);
 
   const activeMarathon = await new AsyncResult(
     marathonRepository.findActiveMarathon()
@@ -45,8 +41,47 @@ async function doSync(): Promise<
   }
   logger.trace("Found current marathon for DBFunds sync", activeMarathon);
 
+  return doSyncForMarathon(activeMarathon.value);
+}
+
+async function doSyncForPastMarathons(): Promise<
+  Result<None, DoSyncError | CompositeError<DoSyncError>>
+> {
+  const marathonRepository = Container.get(MarathonRepository);
+
+  const activeMarathon = await new AsyncResult(
+    marathonRepository.findActiveMarathon()
+  ).andThen(async (activeMarathon) =>
+    activeMarathon.toResult(new NotFoundError({ what: "active marathon" }))
+  ).promise;
+  if (activeMarathon.isErr()) {
+    return activeMarathon;
+  }
+
+  const allMarathons = await marathonRepository.listMarathons({});
+
+  const pastMarathons = allMarathons.filter(
+    (marathon) => marathon.id !== activeMarathon.value.id
+  );
+
+  for (const marathon of pastMarathons) {
+    const result = await doSyncForMarathon(marathon);
+    if (result.isErr()) {
+      return result;
+    }
+  }
+
+  return Ok(None);
+}
+
+async function doSyncForMarathon(
+  marathon: Marathon
+): Promise<Result<None, DoSyncError | CompositeError<DoSyncError>>> {
+  const fundraisingRepository = Container.get(DBFundsRepository);
+  const fundraisingProvider = Container.get(DBFundsFundraisingProvider);
+
   const teams = await fundraisingProvider.getTeams(
-    activeMarathon.value.year as MarathonYearString
+    marathon.year as MarathonYearString
   );
   if (teams.isErr()) {
     return Err(teams.error);
@@ -57,7 +92,7 @@ async function doSync(): Promise<
 
   const promises = teams.value.map(async (team) => {
     const entries = await fundraisingProvider.getTeamEntries(
-      activeMarathon.value.year as MarathonYearString,
+      marathon.year as MarathonYearString,
       team.identifier
     );
     if (entries.isErr()) {
@@ -70,7 +105,7 @@ async function doSync(): Promise<
         name: team.name,
         total: team.total,
       },
-      { id: activeMarathon.value.id },
+      { id: marathon.id },
       entries.value
     );
   });
@@ -104,13 +139,35 @@ export const syncDbFunds = new Cron(
   },
   async () => {
     logger.info("Syncing DBFunds");
-    const result = await doSync();
+    const result = await doSyncForActive();
 
     if (result.isErr()) {
       logger.error("Failed to sync DBFunds", result.error);
     } else {
       logger.info("DBFunds sync complete");
       await jobStateRepository.logCompletedJob(syncDbFunds);
+    }
+  }
+);
+
+export const syncDbFundsPast = new Cron(
+  "0 0 2 * * *",
+  {
+    name: "sync-db-funds-past",
+    paused: true,
+    catch: (error) => {
+      console.error("Failed to sync DBFunds for past marathons", error);
+    },
+  },
+  async () => {
+    logger.info("Syncing DBFunds for past marathons");
+    const result = await doSyncForPastMarathons();
+
+    if (result.isErr()) {
+      logger.error("Failed to sync DBFunds for past marathons", result.error);
+    } else {
+      logger.info("DBFunds past marathons sync complete");
+      await jobStateRepository.logCompletedJob(syncDbFundsPast);
     }
   }
 );
