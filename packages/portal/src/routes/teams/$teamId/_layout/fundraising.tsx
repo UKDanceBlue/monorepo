@@ -537,7 +537,7 @@ function ViewTeamFundraising() {
                       name?: string;
                       linkblue?: string;
                     }) =>
-                      name ?? (!linkblue ? <i>{linkblue}</i> : <pre>{id}</pre>),
+                      name ?? (linkblue ? <i>{linkblue}</i> : <pre>{id}</pre>),
                     key: "person",
                     width: "60%",
                   },
