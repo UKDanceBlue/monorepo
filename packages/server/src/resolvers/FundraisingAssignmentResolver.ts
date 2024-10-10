@@ -30,7 +30,6 @@ import { Container, Service } from "@freshgum/typedi";
 
 import type { AccessControlContext, GlobalId } from "@ukdanceblue/common";
 import {
-  fundraisingAccess,
   AssignEntryToPersonInput,
   UpdateFundraisingAssignmentInput,
 } from "@ukdanceblue/common";
@@ -267,7 +266,6 @@ export class FundraisingAssignmentResolver {
       return false;
     }
   )
-  @QueryAccessControl(fundraisingAccess)
   @Mutation(() => FundraisingAssignmentNode)
   async deleteFundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
