@@ -60,7 +60,7 @@ WORKDIR /app/packages/server
 
 CMD corepack yarn dlx prisma migrate deploy && node .
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [[ "$(curl -fs http://localhost:8000/api/healthcheck)" == "OK" ]] || exit 1
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD bash -c '[[ "$(curl -fs http://localhost:8000/api/healthcheck)" == "OK" ]] || exit 1'
 
 # Portal
 FROM nginx:stable-alpine as portal
