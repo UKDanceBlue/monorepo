@@ -234,7 +234,7 @@ function DbFundsViewer() {
                   "table_val": row.table_val,
                   "giftacctno": row.giftacctno,
                   "giftsolic": row.giftsolic,
-                  "giftcomm": "",
+                  "giftcomm": row.giftcomm,
                   "addrline1": row.addrline1,
                   "addrline2": row.addrline2,
                   "addrline3": row.addrline3,
