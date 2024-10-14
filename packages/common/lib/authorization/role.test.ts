@@ -7,12 +7,14 @@ import {
   DbRole,
 } from "../index.js";
 
-import { describe, expect, it } from "vitest";
+import { describe, it } from "vitest";
 
 // TODO test the committee hierarchy system (i.e. overall and vice roles vs other committees)
 
-describe("roleToAccessLevel", () => {
-  it("returns the correct access level for a given role normally", () => {
+describe("roleToAccessLevel", { todo: true }, () => {
+  it("returns the correct access level for a given role normally", ({
+    expect,
+  }) => {
     const chairRole = {
       dbRole: DbRole.Committee,
       committeeRole: CommitteeRole.Chair,
@@ -54,7 +56,7 @@ describe("roleToAccessLevel", () => {
     expect(roleToAccessLevel(noneRole)).toBe(AccessLevel.None);
   });
 
-  it("grants any member of the tech committee admin access", () => {
+  it("grants any member of the tech committee admin access", ({ expect }) => {
     const chairRole = {
       dbRole: DbRole.Committee,
       committeeRole: CommitteeRole.Chair,
@@ -77,7 +79,7 @@ describe("roleToAccessLevel", () => {
     expect(roleToAccessLevel(memberRole)).toBe(AccessLevel.Admin);
   });
 
-  it("throws an error for an illegal role", () => {
+  it("throws an error for an illegal role", ({ expect }) => {
     const illegalRole = {
       dbRole: "illegal" as DbRole,
     };

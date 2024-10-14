@@ -22,67 +22,34 @@ export function registerFilterKeyEnums<
   if (allKeys.length > 0) {
     registerEnumType(AllKeysEnum, { name: `${resolverName}AllKeys` });
   }
+  const allKeysSet = new Set<string>(allKeys);
 
-  const StringFilterKeysEnum = Object.fromEntries(
-    stringFilterKeys.map((key) => [key, key])
-  ) as {
-    [key in StringFilterKeys]: key;
-  };
-  if (stringFilterKeys.length > 0) {
-    registerEnumType(StringFilterKeysEnum, {
-      name: `${resolverName}StringFilterKeys`,
-    });
+  function register<K extends AllKeys>(keys: K[], typeName: string) {
+    const FilterKeysEnum: {
+      [key in K]: key;
+    } = {} as {
+      [key in K]: key;
+    };
+    if (keys.length > 0) {
+      for (const key of keys) {
+        if (!allKeysSet.has(key)) {
+          throw new Error(`${typeName} filter key ${key} not in all keys`);
+        }
+        FilterKeysEnum[key] = key;
+      }
+      registerEnumType(FilterKeysEnum, {
+        name: `${resolverName}${typeName}FilterKeys`,
+      });
+    }
+    return FilterKeysEnum;
   }
 
-  const OneOfFilterKeysEnum = Object.fromEntries(
-    oneOfFilterKeys.map((key) => [key, key])
-  ) as {
-    [key in OneOfFilterKeys]: key;
-  };
-  if (oneOfFilterKeys.length > 0) {
-    registerEnumType(OneOfFilterKeysEnum, {
-      name: `${resolverName}OneOfFilterKeys`,
-    });
-  }
-
-  const NumericFilterKeysEnum = Object.fromEntries(
-    numericFilterKeys.map((key) => [key, key])
-  ) as {
-    [key in NumericFilterKeys]: key;
-  };
-  if (numericFilterKeys.length > 0) {
-    registerEnumType(NumericFilterKeysEnum, {
-      name: `${resolverName}NumericFilterKeys`,
-    });
-  }
-
-  const DateFilterKeysEnum = Object.fromEntries(
-    dateFilterKeys.map((key) => [key, key])
-  ) as {
-    [key in DateFilterKeys]: key;
-  };
-  if (dateFilterKeys.length > 0) {
-    registerEnumType(DateFilterKeysEnum, {
-      name: `${resolverName}DateFilterKeys`,
-    });
-  }
-
-  const BooleanFilterKeysEnum = Object.fromEntries(
-    booleanFilterKeys.map((key) => [key, key])
-  ) as {
-    [key in BooleanFilterKeys]: key;
-  };
-  if (booleanFilterKeys.length > 0) {
-    registerEnumType(BooleanFilterKeysEnum, {
-      name: `${resolverName}BooleanFilterKeys`,
-    });
-  }
   return {
-    StringFilterKeysEnum,
-    OneOfFilterKeysEnum,
-    NumericFilterKeysEnum,
-    DateFilterKeysEnum,
-    BooleanFilterKeysEnum,
+    StringFilterKeysEnum: register(stringFilterKeys, "String"),
+    OneOfFilterKeysEnum: register(oneOfFilterKeys, "OneOf"),
+    NumericFilterKeysEnum: register(numericFilterKeys, "Numeric"),
+    DateFilterKeysEnum: register(dateFilterKeys, "Date"),
+    BooleanFilterKeysEnum: register(booleanFilterKeys, "Boolean"),
     AllKeysEnum,
   };
 }

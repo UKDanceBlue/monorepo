@@ -66,6 +66,7 @@ const combinedLogTransport = new transports.File({
   maxsize: 1_000_000,
   maxFiles: 3,
   dirname: logDir,
+  silent: logDir === "TEST",
 });
 
 export const logger = createLogger({

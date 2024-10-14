@@ -2,21 +2,22 @@ import {
   AccessLevel,
   committeeNames,
   compareCommitteeRole,
-  parseGlobalId,
   stringifyAccessLevel,
-} from "../index.js";
+} from "./structures.js";
+
+import { parseGlobalId } from "../api/scalars/GlobalId.js";
 
 import { UseMiddleware } from "type-graphql";
 
-import type {
-  Authorization,
-  CommitteeIdentifier,
-  CommitteeRole,
-  GlobalId,
-  MembershipPositionType,
-  PersonNode,
-  TeamType,
-  UserData,
+import {
+  type Authorization,
+  type CommitteeIdentifier,
+  type CommitteeRole,
+  type GlobalId,
+  type MembershipPositionType,
+  type PersonNode,
+  type TeamType,
+  type UserData,
 } from "../index.js";
 import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
 import type { Primitive } from "utility-types";

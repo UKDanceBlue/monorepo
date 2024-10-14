@@ -11,5 +11,10 @@ export default defineWorkspace([
   },
   {
     root: "packages/server/src",
+    test: {
+      env: {
+        NODE_ENV: "test",
+      },
+    },
   },
 ]);

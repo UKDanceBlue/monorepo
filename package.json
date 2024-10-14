@@ -18,6 +18,7 @@
     "gql:watch": "graphql-codegen-esm --config codegen.ts -w packages",
     "common:watch": "yarn workspace @ukdanceblue/common run watch",
     "common:build": "yarn workspace @ukdanceblue/common run build",
+    "common:test": "yarn workspace @ukdanceblue/common run test",
     "server:bs": "yarn workspace @ukdanceblue/server run bs",
     "server:build": "yarn workspace @ukdanceblue/server run build",
     "server:check": "yarn workspace @ukdanceblue/server run check && echo 'Server \t\tOK'",

@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "module": "ES2022",
+    "target": "ES2022"
   },
   "extends": "./tsconfig.json",
   "include": ["./__tests__/**/*.ts", "./__tests__/**/*.tsx"]

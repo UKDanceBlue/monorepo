@@ -58,6 +58,7 @@ export const auditLoggerFileName = "audit.log.json";
 const auditLogTransport = new transports.File({
   filename: auditLoggerFileName,
   dirname: logDir,
+  silent: logDir === "TEST",
   maxsize: 1_000_000,
   maxFiles: 3,
   format: format.combine(format.timestamp(), format.json()),

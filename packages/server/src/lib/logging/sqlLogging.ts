@@ -9,6 +9,7 @@ const databaseLogTransport = new transports.File({
   maxsize: 1_000_000,
   maxFiles: 1,
   dirname: logDir,
+  silent: logDir === "TEST",
 });
 
 interface SqlLogger extends winston.Logger {

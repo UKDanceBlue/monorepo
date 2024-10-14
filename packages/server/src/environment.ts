@@ -17,6 +17,8 @@ dotenv.config({ override: true });
 
 export const isDevelopment = process.env.NODE_ENV === "development";
 
+const isTest = process.env.NODE_ENV === "test";
+
 // These are all of the environment variables that the server uses
 const LOGGING_LEVEL = getEnv(
   "LOGGING_LEVEL",
@@ -32,9 +34,9 @@ const EXPO_ACCESS_TOKEN = getEnv("EXPO_ACCESS_TOKEN", null);
 const DBFUNDS_API_KEY = getEnv("DBFUNDS_API_KEY", null);
 const DBFUNDS_API_ORIGIN = getEnv("DBFUNDS_API_ORIGIN", null);
 const MAX_FILE_SIZE = getEnv("MAX_FILE_SIZE", "10");
-const SERVE_PATH = getEnv("SERVE_PATH", null);
-const UPLOAD_PATH = getEnv("UPLOAD_PATH", null);
-const SERVE_ORIGIN = getEnv("SERVE_ORIGIN", null);
+const SERVE_PATH = getEnv("SERVE_PATH", "/data/serve");
+const UPLOAD_PATH = getEnv("UPLOAD_PATH", "/data/serve/uploads");
+const SERVE_ORIGIN = getEnv("SERVE_ORIGIN", "http://localhost:8000");
 const LOG_DIR = getEnv("LOG_DIR", null);
 const SUPER_ADMIN_LINKBLUE = getEnv("SUPER_ADMIN_LINKBLUE", Symbol());
 
@@ -152,6 +154,9 @@ async function getEnv(
   name: string,
   def?: string | symbol | null
 ): Promise<string | symbol | undefined> {
+  if (isTest) {
+    return def ?? "TEST";
+  }
   let value;
   if (process.env[name]) {
     value = process.env[name];

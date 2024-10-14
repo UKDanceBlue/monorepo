@@ -1,0 +1,143 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`registerFilterKeyEnums > to register the correct names 1`] = `
+[
+  [
+    {
+      "bool": "bool",
+      "date": "date",
+      "num": "num",
+      "oneOf": "oneOf",
+      "str": "str",
+    },
+    {
+      "name": "TestAllKeys",
+    },
+  ],
+  [
+    {
+      "str": "str",
+    },
+    {
+      "name": "TestStringFilterKeys",
+    },
+  ],
+  [
+    {
+      "oneOf": "oneOf",
+    },
+    {
+      "name": "TestOneOfFilterKeys",
+    },
+  ],
+  [
+    {
+      "num": "num",
+    },
+    {
+      "name": "TestNumericFilterKeys",
+    },
+  ],
+  [
+    {
+      "date": "date",
+    },
+    {
+      "name": "TestDateFilterKeys",
+    },
+  ],
+  [
+    {
+      "bool": "bool",
+    },
+    {
+      "name": "TestBooleanFilterKeys",
+    },
+  ],
+]
+`;
+
+exports[`registerFilterKeyEnums > to register the correct names when only some are empty 1`] = `
+[
+  [
+    {
+      "bool": "bool",
+      "date": "date",
+      "num": "num",
+      "oneOf": "oneOf",
+      "str": "str",
+    },
+    {
+      "name": "TestAllKeys",
+    },
+  ],
+  [
+    {
+      "str": "str",
+    },
+    {
+      "name": "TestStringFilterKeys",
+    },
+  ],
+  [
+    {
+      "oneOf": "oneOf",
+    },
+    {
+      "name": "TestOneOfFilterKeys",
+    },
+  ],
+  [
+    {
+      "num": "num",
+    },
+    {
+      "name": "TestNumericFilterKeys",
+    },
+  ],
+  [
+    {
+      "date": "date",
+    },
+    {
+      "name": "TestDateFilterKeys",
+    },
+  ],
+  [
+    {
+      "bool": "bool",
+    },
+    {
+      "name": "TestBooleanFilterKeys",
+    },
+  ],
+  [
+    {
+      "bool": "bool",
+      "date": "date",
+      "num": "num",
+      "oneOf": "oneOf",
+      "str": "str",
+    },
+    {
+      "name": "TestAllKeys",
+    },
+  ],
+  [
+    {
+      "oneOf": "oneOf",
+    },
+    {
+      "name": "TestOneOfFilterKeys",
+    },
+  ],
+  [
+    {
+      "date": "date",
+    },
+    {
+      "name": "TestDateFilterKeys",
+    },
+  ],
+]
+`;
