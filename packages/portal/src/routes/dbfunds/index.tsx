@@ -105,6 +105,7 @@ interface NfgFormat {
   "table_val": string;
   "giftacctno": string;
   "giftsolic": string;
+  "giftcomm": string;
   "addrline1": string;
   "addrline2": string;
   "addrline3": string;
@@ -233,6 +234,7 @@ function DbFundsViewer() {
                   "table_val": row.table_val,
                   "giftacctno": row.giftacctno,
                   "giftsolic": row.giftsolic,
+                  "giftcomm": "",
                   "addrline1": row.addrline1,
                   "addrline2": row.addrline2,
                   "addrline3": row.addrline3,
