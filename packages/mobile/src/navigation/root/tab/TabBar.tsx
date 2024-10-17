@@ -15,6 +15,7 @@ import { DBHeaderText } from "./DBHeaderText";
 import DBMomentsScreen from "./DBMoments";
 import EventListScreen from "./EventListScreen";
 import ExplorerScreen from "./ExplorerScreen";
+import FundraisingScreen from "./FundraisingScreen";
 import HomeScreen from "./HomeScreen";
 import InfoScreen from "./InfoScreen";
 import MarathonScreen from "./MarathonScreen";
