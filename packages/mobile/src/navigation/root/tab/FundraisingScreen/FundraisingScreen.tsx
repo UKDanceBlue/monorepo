@@ -7,7 +7,7 @@ import { Center, Text } from "native-base";
 import { useEffect, useState } from "react";
 import { useWindowDimensions } from "react-native";
 
-import TeamInformation from "./TeamInformation";
+import FundraisingInformation from "./FundraisingInformation";
 
 export const MyTeamFragment = graphql(/* GraphQL */ `
   fragment MyTeamFragment on TeamNode {
@@ -132,10 +132,10 @@ const TeamScreen = ({
       </Center>
     );
   } else {
-    const { name, totalPoints, members } = team;
+    const { name, member, doners } = team;
 
     return (
-      <TeamInformation
+      <FundraisingInformation
         captains={members
           .filter(
             (member) =>
@@ -157,8 +157,8 @@ const TeamScreen = ({
               member.person.name ?? member.person.linkblue ?? "Unknown"
           )}
         name={name}
-        scoreboardData={teamStandings}
-        teamTotal={totalPoints}
+        scoreboardData={doners}
+        personalTotal={fundraisingPersonalAmount}
         teamFundraisingTotal={fundraising?.fundraisingTotalAmount ?? 0}
         myFundraisingEntries={fundraising?.fundraisingAssignments ?? []}
       />
