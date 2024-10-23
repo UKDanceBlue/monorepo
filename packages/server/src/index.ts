@@ -1,5 +1,4 @@
 import "reflect-metadata";
-
 // No top level imports that cause side effects should be used in this file
 // We want to control the order of execution
 

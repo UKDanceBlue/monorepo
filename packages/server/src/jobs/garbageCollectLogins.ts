@@ -1,7 +1,7 @@
 import { logger } from "#logging/standardLogging.js";
 import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
 
-import Cron from "croner";
+import { Cron } from "croner";
 import { Container } from "@freshgum/typedi";
 
 import { JobStateRepository } from "#repositories/JobState.js";

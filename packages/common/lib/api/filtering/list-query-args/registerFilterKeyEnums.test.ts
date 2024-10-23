@@ -12,6 +12,7 @@ describe("registerFilterKeyEnums", (test) => {
   test("registers nothing when called empty", ({ expect }) => {
     registerFilterKeyEnums([], "Empty", [], [], [], [], []);
     expect(registerEnumType.mock.calls.length).toBe(0);
+    registerEnumType.mockClear();
   });
 
   test("to register the correct names", ({ expect }) => {
@@ -24,7 +25,62 @@ describe("registerFilterKeyEnums", (test) => {
       ["date"],
       ["bool"]
     );
-    expect(registerEnumType.mock.calls);
+    const expectedCalls = [
+      [
+        {
+          bool: "bool",
+          date: "date",
+          num: "num",
+          oneOf: "oneOf",
+          str: "str",
+        },
+        {
+          name: "TestAllKeys",
+        },
+      ],
+      [
+        {
+          str: "str",
+        },
+        {
+          name: "TestStringFilterKeys",
+        },
+      ],
+      [
+        {
+          oneOf: "oneOf",
+        },
+        {
+          name: "TestOneOfFilterKeys",
+        },
+      ],
+      [
+        {
+          num: "num",
+        },
+        {
+          name: "TestNumericFilterKeys",
+        },
+      ],
+      [
+        {
+          date: "date",
+        },
+        {
+          name: "TestDateFilterKeys",
+        },
+      ],
+      [
+        {
+          bool: "bool",
+        },
+        {
+          name: "TestBooleanFilterKeys",
+        },
+      ],
+    ];
+    expect(registerEnumType.mock.calls).toStrictEqual(expectedCalls);
+    registerEnumType.mockClear();
   });
 
   test("to register the correct names when only some are empty", ({
@@ -39,6 +95,39 @@ describe("registerFilterKeyEnums", (test) => {
       ["date"],
       []
     );
-    expect(registerEnumType.mock.calls).toMatchSnapshot();
+
+    const expectedCalls = [
+      [
+        {
+          bool: "bool",
+          date: "date",
+          num: "num",
+          oneOf: "oneOf",
+          str: "str",
+        },
+        {
+          name: "TestAllKeys",
+        },
+      ],
+      [
+        {
+          oneOf: "oneOf",
+        },
+        {
+          name: "TestOneOfFilterKeys",
+        },
+      ],
+      [
+        {
+          date: "date",
+        },
+        {
+          name: "TestDateFilterKeys",
+        },
+      ],
+    ];
+
+    expect(registerEnumType.mock.calls).toStrictEqual(expectedCalls);
+    registerEnumType.mockClear();
   });
 });

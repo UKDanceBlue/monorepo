@@ -54,7 +54,7 @@ describe("deviceRepository", () => {
 
     expect(prismaMock.device.findMany).toHaveBeenCalledWith({
       select: { id: true, uuid: true, expoPushToken: true },
-      where: { expoPushToken: { not: null } },
+      where: { AND: [{ expoPushToken: { not: null } }] },
       orderBy: { lastSeen: "asc" },
     });
 

@@ -1,10 +1,10 @@
+import { Logger } from "@common/logger/Logger";
 import type { MarkdownProps } from "@jonasmerlin/react-native-markdown-display";
 import Markdown, {
   MarkdownIt,
 } from "@jonasmerlin/react-native-markdown-display";
 import { canOpenURL, openURL } from "expo-linking";
 
-import { log } from "../../logging";
 import { rules as defaultRules } from "../../markdownRules";
 
 const NativeBaseMarkdown = ({
@@ -27,9 +27,8 @@ const NativeBaseMarkdown = ({
           canOpenURL(url)
             .then((canOpen) => (canOpen ? openURL(url) : null))
             .catch((error: unknown) => {
-              log(
-                `Failed to open URL ${url}: ${JSON.stringify(error)}`,
-                "error"
+              Logger.error(
+                `Failed to open URL ${url}: ${JSON.stringify(error)}`
               );
             });
           return false;

@@ -1,4 +1,5 @@
 import { defineWorkspace } from "vitest/config";
+import { literalConfig as portalConfig } from "./packages/portal/vite.config.js";
 
 export default defineWorkspace([
   {
@@ -15,6 +16,13 @@ export default defineWorkspace([
       env: {
         NODE_ENV: "test",
       },
+    },
+  },
+  {
+    ...portalConfig,
+    root: "packages/portal",
+    test: {
+      environment: "happy-dom",
     },
   },
 ]);

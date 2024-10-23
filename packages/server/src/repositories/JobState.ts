@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import Cron from "croner";
+import { Cron } from "croner";
 import { Service } from "@freshgum/typedi";
 
 import { prismaToken } from "#prisma";

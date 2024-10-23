@@ -3,6 +3,7 @@ import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "urql";
 
+import type { MarathonContextData } from "./marathonContext";
 import { marathonContext } from "./marathonContext";
 import { LocalStorageKeys } from "./storage";
 
@@ -36,8 +37,10 @@ const selectedMarathonDocument = graphql(/* GraphQL */ `
 
 export const MarathonConfigProvider = ({
   children,
+  valueOverride,
 }: {
   children: React.ReactNode;
+  valueOverride?: Pick<MarathonContextData, "marathon" | "marathons">;
 }) => {
   const [marathonId, setMarathonId] = useState<string | null>(null);
 
@@ -49,11 +52,14 @@ export const MarathonConfigProvider = ({
     }
   }, [marathonId]);
 
-  const [latestMarathonResult] = useQuery({ query: latestMarathonDocument });
+  const [latestMarathonResult] = useQuery({
+    query: latestMarathonDocument,
+    pause: valueOverride != null,
+  });
   const [selectedMarathonResult] = useQuery({
     query: selectedMarathonDocument,
     variables: { marathonId: marathonId ?? "" },
-    pause: marathonId == null,
+    pause: marathonId == null || valueOverride != null,
   });
 
   useEffect(() => {
@@ -86,6 +92,21 @@ export const MarathonConfigProvider = ({
   const endDate = useMemo(() => {
     return dateTimeFromSomething(marathon?.endDate) ?? null;
   }, [marathon?.endDate]);
+
+  if (valueOverride) {
+    return (
+      <marathonContext.Provider
+        value={{
+          marathon: valueOverride.marathon,
+          marathons: valueOverride.marathons,
+          loading: false,
+          setMarathon: () => undefined,
+        }}
+      >
+        {children}
+      </marathonContext.Provider>
+    );
+  }
 
   return (
     <marathonContext.Provider

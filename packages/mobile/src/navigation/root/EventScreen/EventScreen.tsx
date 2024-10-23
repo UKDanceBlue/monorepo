@@ -1,5 +1,5 @@
 import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
-import { log } from "@common/logging";
+import { Logger } from "@common/logger/Logger";
 import { showMessage } from "@common/util/alertUtils";
 import { getFragmentData } from "@graphql/index.js";
 import { useRoute } from "@react-navigation/native";
@@ -184,7 +184,9 @@ const EventScreen = () => {
               onPress={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                log(`Opening ${eventData.location} in os-default maps app`);
+                Logger.log(
+                  `Opening ${eventData.location} in os-default maps app`
+                );
                 openMaps({
                   query: eventData.location ?? undefined,
                   mapType: "standard",

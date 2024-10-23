@@ -99,7 +99,10 @@ if (maxFileSize < 10) {
 if (!isAbsolute(servePath) || !isAbsolute(uploadPath)) {
   throw new Error("SERVE_PATH and UPLOAD_PATH must be absolute paths");
 }
-if (statSync(servePath).isFile() || statSync(uploadPath).isFile()) {
+if (
+  !isTest &&
+  (statSync(servePath).isFile() || statSync(uploadPath).isFile())
+) {
   throw new Error("SERVE_PATH and UPLOAD_PATH must be directories");
 }
 let uploadParentPath = uploadPath;

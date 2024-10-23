@@ -3,7 +3,7 @@ import { ExpoNotificationProvider } from "#notification/ExpoNotificationProvider
 import * as NotificationProviderJs from "#notification/NotificationProvider.js";
 import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
 
-import Cron, { scheduledJobs } from "croner";
+import { Cron, scheduledJobs } from "croner";
 import { Service } from "@freshgum/typedi";
 
 import type { Notification } from "@prisma/client";
@@ -42,7 +42,7 @@ export class NotificationScheduler {
         "0 */3 * * * *",
         {
           name: "check-scheduled-notifications",
-          catch: (error) => {
+          catch: (error: unknown) => {
             logger.error("Failed to check for scheduled notifications", error);
           },
         },
@@ -152,7 +152,7 @@ export class NotificationScheduler {
       {
         maxRuns: 1,
         name: jobName,
-        catch: (error) => {
+        catch: (error: unknown) => {
           logger.error("Failed to send scheduled notification", {
             notificationUuid: notification.uuid,
             error,

@@ -12,8 +12,7 @@ function resolveRelative(...relativePath: string[]) {
   return resolve(__dirname, ...relativePath);
 }
 
-// https://vitejs.dev/config/
-export default defineConfig({
+export const literalConfig = {
   resolve: {
     alias: {
       "type-graphql": "type-graphql/shim",
@@ -26,6 +25,7 @@ export default defineConfig({
       "@documents": resolveRelative("src", "documents"),
       "@assets": resolveRelative("assets"),
       "@graphql": resolveRelative("graphql"),
+      "@mocks": resolveRelative("mocks"),
     },
   },
   build: {
@@ -52,4 +52,7 @@ export default defineConfig({
       disable: process.env.NODE_ENV !== "production",
     }),
   ],
-});
+};
+
+// https://vitejs.dev/config/
+export default defineConfig(literalConfig);

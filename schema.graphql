@@ -529,6 +529,7 @@ enum FundraisingEntryResolverAllKeys {
   donatedBy
   donatedOn
   donatedTo
+  teamId
   updatedAt
 }
 

@@ -4,22 +4,24 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
+    "build:client": "vite build --outDir dist/client",
+    "build:server": "vite build --outDir dist/server --ssr src/entry-server.js",
     "build": "tsc && vite build",
     "check": "tsc --noEmit",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ant-design/icons": "^5.4.0",
-    "@sentry/react": "^8.33.1",
-    "@sentry/vite-plugin": "^2.22.5",
-    "@tanstack/react-form": "^0.31.0",
-    "@tanstack/react-router": "^1.52.4",
+    "@ant-design/icons": "^5.5.1",
+    "@sentry/react": "^8.35.0",
+    "@sentry/vite-plugin": "^2.22.6",
+    "@tanstack/react-form": "^0.34.0",
+    "@tanstack/react-router": "^1.74.5",
     "@ukdanceblue/common": "workspace:^",
+    "@urql/core": "^5.0.8",
     "@urql/devtools": "^2.0.3",
     "@wysimark/react": "^3.0.20",
-    "antd": "^5.20.2",
+    "antd": "^5.21.5",
     "class-validator": "^0.14.1",
     "graphql": "^16.9.0",
     "graphql-scalars": "^1.23.0",
@@ -28,27 +30,35 @@
     "normalize.css": "^8.0.1",
     "react": "18.3.1",
     "react-dom": "~18.3.1",
-    "react-hook-form": "^7.52.2",
+    "react-hook-form": "^7.53.1",
     "reflect-metadata": "^0.2.2",
     "thumbhash": "^0.1.1",
     "type-graphql": "^2.0.0-rc.2",
     "typedi": "^0.10.0",
-    "urql": "^4.1.0",
-    "use-debounce": "^10.0.3",
+    "urql": "^4.2.0",
+    "use-debounce": "^10.0.4",
     "utility-types": "^3.11.0",
     "validator": "^13.12.0",
+    "wonka": "^6.3.4",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
-    "@tanstack/router-devtools": "^1.52.4",
-    "@tanstack/router-plugin": "^1.52.0",
+    "@tanstack/router-devtools": "^1.74.5",
+    "@tanstack/router-plugin": "^1.74.2",
     "@types/lodash.isequal": "^4.5.8",
     "@types/luxon": "^3.4.2",
-    "@types/react": "~18.3.4",
-    "@types/react-dom": "~18.2.25",
-    "@vitejs/plugin-react-swc": "^3.7.0",
-    "typescript": "^5.5.4",
-    "vite": "^5.4.6"
+    "@types/react": "~18.3.11",
+    "@types/react-dom": "~18.3.1",
+    "@vitejs/plugin-react-swc": "^3.7.1",
+    "cypress": "^13.15.0",
+    "cypress-vite": "^1.5.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.9"
   },
-  "packageManager": "yarn@4.1.1+sha256.f3cc0eda8e5560e529c7147565b30faa43b4e472d90e8634d7134a37c7f59781"
+  "packageManager": "yarn@4.1.1+sha256.f3cc0eda8e5560e529c7147565b30faa43b4e472d90e8634d7134a37c7f59781",
+  "exports": {
+    "./*": {
+      "import": "./dist/*"
+    }
+  }
 }

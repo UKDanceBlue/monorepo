@@ -93,7 +93,7 @@ export const NavigationMenu = () => {
     {
       key: string;
       title: string;
-      label: JSX.Element;
+      label: React.JSX.Element;
     }[]
   >([]);
   const [activeKeys, setActiveKeys] = useState<string[]>([]);

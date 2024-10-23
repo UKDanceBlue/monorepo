@@ -1,7 +1,6 @@
 import { API_BASE_URL } from "@common/apiUrl";
 import { DANCEBLUE_TOKEN_KEY } from "@common/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LegacyErrorCode } from "@ukdanceblue/common";
 import { authExchange } from "@urql/exchange-auth";
 import type { ReactNode } from "react";
 import { createContext, useContext, useMemo, useReducer } from "react";
@@ -39,12 +38,12 @@ export function UrqlContext({ children }: { children: ReactNode }) {
               await AsyncStorage.removeItem(DANCEBLUE_TOKEN_KEY);
               invalidateCache();
             },
-            didAuthError: ({ message, graphQLErrors }) => {
-              for (const err of graphQLErrors) {
-                if (err.extensions.code === LegacyErrorCode.NotLoggedIn) {
-                  return true;
-                }
-              }
+            didAuthError: ({ message }) => {
+              // for (const err of graphQLErrors) {
+              //   if (err.extensions.code === LegacyErrorCode.NotLoggedIn) {
+              //     return true;
+              //   }
+              // }
 
               return (
                 message ===

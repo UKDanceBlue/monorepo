@@ -1,7 +1,8 @@
+import type { ReactElement } from "react";
 import { G, Svg } from "react-native-svg";
 
 export interface PinwheelPosition<Value> {
-  svgGroup: ({ transform }: { transform: string }) => JSX.Element;
+  svgGroup: ({ transform }: { transform: string }) => ReactElement;
   value: Value;
 }
 
@@ -31,7 +32,7 @@ const PinwheelSegment = ({
   angle,
   rotateBy,
 }: {
-  svgGroup: ({ transform }: { transform: string }) => JSX.Element;
+  svgGroup: ({ transform }: { transform: string }) => ReactElement;
   centerPoint: Coordinate;
   radius: number;
   angle: number;

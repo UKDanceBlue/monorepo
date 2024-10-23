@@ -33,6 +33,7 @@ export const AnimatedNotificationRow: SectionListRenderItem<
   const flung = useSharedValue(false);
 
   // A gesture handler that allows swiping the view left only, right will just bounce
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   const panGestureHandler = useAnimatedGestureHandler({
     onStart: (_, ctx: { startX: number }) => {
       ctx.startX = x.value;

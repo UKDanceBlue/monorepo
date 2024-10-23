@@ -31,10 +31,10 @@ export function PointEntryPersonLookup({
 }) {
   const { showErrorMessage } = useUnknownErrorHandler();
   // Form state (shared with parent)
-  const { getValue, setValue: setPersonFromUuid } = formApi.useField({
+  const { state, setValue: setPersonFromUuid } = formApi.useField({
     name: "personFromUuid",
   });
-  const personFromUuid = getValue();
+  const personFromUuid = state.value;
 
   const [selectedPersonQuery, updateSelectedPerson] = useQuery({
     query: getPersonByUuidDocument,
@@ -278,7 +278,7 @@ export function PointEntryPersonLookup({
                     }}
                     loading={createPersonQuery.fetching}
                     icon={<PlusOutlined />}
-                    color="green"
+                    color="default"
                   >
                     Create
                   </Button>
@@ -304,7 +304,7 @@ export function PointEntryPersonLookup({
                 )}
               </span>
               <Button
-                color="grey"
+                color="default"
                 onClick={() => {
                   field.handleChange("");
                   setPersonFromUuid("");

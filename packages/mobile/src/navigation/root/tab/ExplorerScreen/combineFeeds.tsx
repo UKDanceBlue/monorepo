@@ -1,6 +1,7 @@
 import { Logger } from "@common/logger/Logger";
 import { DateTime } from "luxon";
 import { Text } from "native-base";
+import type { ReactElement } from "react";
 import { useMemo, useState } from "react";
 import { View } from "react-native";
 import type { FeedItem } from "react-native-rss-parser";
@@ -9,7 +10,7 @@ import { ExplorerItem } from "./ExplorerItem";
 import { useExplorerFeed } from "./useExplorerFeed";
 
 export interface FeedSortingItem {
-  jsxElement: JSX.Element;
+  jsxElement: ReactElement;
   published: DateTime;
 }
 

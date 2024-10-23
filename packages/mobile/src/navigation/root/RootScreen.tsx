@@ -12,7 +12,6 @@ import { Alert, useWindowDimensions } from "react-native";
 import { useQuery } from "urql";
 
 import { useColorModeValue } from "../../common/customHooks";
-import { log } from "../../common/logging";
 import { useLoading } from "../../context";
 import type { RootStackParamList } from "../../types/navigationTypes";
 import HeaderIcons from "../HeaderIcons";
@@ -169,9 +168,8 @@ const RootScreen = () => {
                       titleWidth = eventTitle.length * fontScale;
 
                       if (++loopCount > 100) {
-                        log(
-                          "Infinite loop detected while calculating title width for event screen.",
-                          "warn"
+                        Logger.warn(
+                          "Infinite loop detected while calculating title width for event screen."
                         );
                       }
                     }

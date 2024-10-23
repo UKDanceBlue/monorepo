@@ -4,7 +4,6 @@ import eslintPluginJsdoc from "eslint-plugin-jsdoc";
 import eslintPluginNode from "eslint-plugin-n";
 import eslintPluginReact from "eslint-plugin-react";
 import eslintPluginReactHooks from "eslint-plugin-react-hooks";
-import eslintPluginReactNative from "eslint-plugin-react-native";
 import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import eslintPluginVitest from "eslint-plugin-vitest";
@@ -310,25 +309,15 @@ export default eslintTs.config(
   },
   {
     files: ["packages/mobile/**/*"],
-    plugins: {
-      "react-native": eslintPluginReactNative,
-    },
     languageOptions: {
       ecmaVersion: 2020,
       sourceType: "module",
       globals: {
-        ...globals.es2019,
-        ...eslintPluginReactNative.environments?.["react-native"]?.globals,
+        ...globals.es2021,
+        ...globals["shared-node-browser"],
       },
     },
     rules: {
-      "react-native/no-unused-styles": 2,
-      "react-native/no-inline-styles": "off",
-      "react-native/no-color-literals": "off",
-      "react-native/sort-styles": 2,
-      "react-native/split-platform-components": 2,
-      "react-native/no-raw-text": "off",
-      "react-native/no-single-element-style-arrays": 2,
       "unicorn/prefer-top-level-await": "off",
       "@typescript-eslint/no-require-imports": "off",
     },

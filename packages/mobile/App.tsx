@@ -1,7 +1,8 @@
 // Import third-party dependencies
 import ErrorBoundary from "@common/components/ErrorBoundary";
 import { useUpdateChecker } from "@common/hooks/useUpdateChecker";
-import { logError, universalCatch } from "@common/logging";
+import { Logger } from "@common/logger/Logger";
+import { universalCatch } from "@common/logging";
 import { showMessage } from "@common/util/alertUtils";
 import { AuthStateProvider } from "@context/auth";
 import { DeviceDataProvider } from "@context/device";
@@ -57,7 +58,7 @@ const App = () => {
 
   useEffect(() => {
     if (error) {
-      logError(error);
+      Logger.error("Error loading fonts", { error });
     }
   }, [error]);
 

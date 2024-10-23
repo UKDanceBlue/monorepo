@@ -1,9 +1,10 @@
 import { ImagePicker } from "@elements/components/image/ImagePicker";
 import { Modal } from "antd";
+import type { ReactElement } from "react";
 import { useCallback, useState } from "react";
 
 export function useImagePicker() {
-  const [queue, setQueue] = useState<JSX.Element[]>([]);
+  const [queue, setQueue] = useState<ReactElement[]>([]);
 
   const openPicker = useCallback(
     (

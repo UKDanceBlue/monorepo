@@ -245,14 +245,16 @@ export function TeamViewer({
             </ul>
           </div>
         </Descriptions.Item>
-        <Descriptions.Item label="Add Member">
-          <PersonSearch
-            onSelect={(person) => {
-              setPersonToAssignToTeam(person);
-            }}
-            style={{ width: "100%" }}
-          />
-        </Descriptions.Item>
+        {canEditMemberships && (
+          <Descriptions.Item label="Add Member">
+            <PersonSearch
+              onSelect={(person) => {
+                setPersonToAssignToTeam(person);
+              }}
+              style={{ width: "100%" }}
+            />
+          </Descriptions.Item>
+        )}
       </Descriptions>
       <AssignToTeamPopup
         person={personToAssignToTeam}

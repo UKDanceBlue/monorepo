@@ -5,7 +5,7 @@ import { ImageBackground } from "react-native";
 
 import { useThemeColors } from "../../customHooks";
 
-/** @deprecated TODO - Merge with Jumbotron */
+/** TODO - Merge with Jumbotron */
 const JumbotronGeometric = <
   IconFontName extends string,
   IconName extends string,

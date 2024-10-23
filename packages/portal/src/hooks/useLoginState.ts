@@ -14,7 +14,7 @@ import type {
 } from "@ukdanceblue/common";
 import { LoginStateQuery } from "@graphql/graphql.js";
 
-const loginStateDocument = graphql(/* GraphQL */ `
+export const loginStateDocument = graphql(/* GraphQL */ `
   query LoginState {
     loginState {
       loggedIn

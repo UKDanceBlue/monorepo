@@ -12,7 +12,7 @@ import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.j
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
 
 import { CompositeError, toBasicError } from "@ukdanceblue/common/error";
-import Cron from "croner";
+import { Cron } from "croner";
 import { AsyncResult, Err, None, Ok, type Result } from "ts-results-es";
 import { Container } from "@freshgum/typedi";
 
