@@ -1,12 +1,27 @@
 {
   "name": "@ukdanceblue/portal",
   "private": true,
-  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UKDanceBlue/monorepo.git",
+    "directory": "packages/portal"
+  },
+  "license": "MPL-2.0",
+  "author": {
+    "name": "University of Kentucky DanceBlue Tech Committee",
+    "email": "app@danceblue.org",
+    "url": "https://danceblue.org"
+  },
   "type": "module",
+  "exports": {
+    "./*": {
+      "import": "./dist/*"
+    }
+  },
   "scripts": {
+    "build": "tsc && vite build",
     "build:client": "vite build --outDir dist/client",
     "build:server": "vite build --outDir dist/server --ssr src/entry-server.js",
-    "build": "tsc && vite build",
     "check": "tsc --noEmit",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
@@ -55,10 +70,5 @@
     "typescript": "^5.6.3",
     "vite": "^5.4.9"
   },
-  "packageManager": "yarn@4.1.1+sha256.f3cc0eda8e5560e529c7147565b30faa43b4e472d90e8634d7134a37c7f59781",
-  "exports": {
-    "./*": {
-      "import": "./dist/*"
-    }
-  }
+  "packageManager": "yarn@4.1.1+sha256.f3cc0eda8e5560e529c7147565b30faa43b4e472d90e8634d7134a37c7f59781"
 }

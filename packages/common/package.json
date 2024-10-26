@@ -1,45 +1,50 @@
 {
   "name": "@ukdanceblue/common",
   "private": true,
-  "version": "2.0.0",
-  "description": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/UKDanceBlue/db-app-common.git"
+    "url": "https://github.com/UKDanceBlue/monorepo.git",
+    "directory": "packages/common"
+  },
+  "license": "MPL-2.0",
+  "author": {
+    "name": "University of Kentucky DanceBlue Tech Committee",
+    "email": "app@danceblue.org",
+    "url": "https://danceblue.org"
   },
   "type": "module",
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "require": "./dist/index.js",
       "node": "./dist/index.js",
+      "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./client-parsers": {
       "default": "./dist/client-parsers/index.js"
     },
     "./error": {
-      "types": "./dist/error/index.d.ts",
-      "node": "./dist/error/index.js"
-    },
-    "./graphql-client-portal": {
-      "node": null,
-      "react-native": null,
-      "types": "./dist/graphql-client-portal/index.d.ts",
-      "default": "./dist/graphql-client-portal/index.js"
+      "node": "./dist/error/index.js",
+      "types": "./dist/error/index.d.ts"
     },
     "./graphql-client-mobile": {
-      "node": null,
       "browser": null,
+      "default": "./dist/graphql-client-mobile/index.js",
+      "node": null,
       "react-native": "./dist/graphql-client-mobile/index.js",
-      "types": "./dist/graphql-client-mobile/index.d.ts",
-      "default": "./dist/graphql-client-mobile/index.js"
-    },
-    "./graphql-client-portal/raw-types": {
-      "types": "./dist/graphql-client-portal/graphql.d.ts"
+      "types": "./dist/graphql-client-mobile/index.d.ts"
     },
     "./graphql-client-mobile/raw-types": {
       "types": "./dist/graphql-client-mobile/graphql.d.ts"
+    },
+    "./graphql-client-portal": {
+      "default": "./dist/graphql-client-portal/index.js",
+      "node": null,
+      "react-native": null,
+      "types": "./dist/graphql-client-portal/index.d.ts"
+    },
+    "./graphql-client-portal/raw-types": {
+      "types": "./dist/graphql-client-portal/graphql.d.ts"
     }
   },
   "main": "./dist/index.js",
@@ -49,15 +54,6 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w"
-  },
-  "author": "UKDanceBlue",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/luxon": "^3.4.2",
-    "@types/react": "~18.3.11",
-    "@types/validator": "^13.12.2",
-    "typescript": "^5.6.3",
-    "vitest": "^2.1.3"
   },
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
@@ -73,6 +69,13 @@
     "typedi": "^0.10.0",
     "utility-types": "^3.11.0",
     "validator": "^13.12.0"
+  },
+  "devDependencies": {
+    "@types/luxon": "^3.4.2",
+    "@types/react": "~18.3.11",
+    "@types/validator": "^13.12.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.3"
   },
   "packageManager": "yarn@4.1.1+sha256.f3cc0eda8e5560e529c7147565b30faa43b4e472d90e8634d7134a37c7f59781"
 }
