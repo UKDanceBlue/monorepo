@@ -1,13 +1,4 @@
 // Import third-party dependencies
-import ErrorBoundary from "@common/components/ErrorBoundary";
-import { useUpdateChecker } from "@common/hooks/useUpdateChecker";
-import { Logger } from "@common/logger/Logger";
-import { universalCatch } from "@common/logging";
-import { showMessage } from "@common/util/alertUtils";
-import { AuthStateProvider } from "@context/auth";
-import { DeviceDataProvider } from "@context/device";
-import { LoadingWrapper } from "@context/loading";
-import { UrqlContext } from "@context/urql";
 import { useAsyncStorageDevTools } from "@dev-plugins/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import { useFonts } from "expo-font";
@@ -19,6 +10,16 @@ import { NativeBaseProvider } from "native-base";
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+
+import ErrorBoundary from "#common/components/ErrorBoundary";
+import { useUpdateChecker } from "#common/hooks/useUpdateChecker";
+import { Logger } from "#common/logger/Logger";
+import { universalCatch } from "#common/logging";
+import { showMessage } from "#common/util/alertUtils";
+import { AuthStateProvider } from "#context/auth";
+import { DeviceDataProvider } from "#context/device";
+import { LoadingWrapper } from "#context/loading";
+import { UrqlContext } from "#context/urql";
 
 import BoldoniFlfBoldFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold.ttf";
 import BoldoniFlfBoldItalicFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold-Italic.ttf";

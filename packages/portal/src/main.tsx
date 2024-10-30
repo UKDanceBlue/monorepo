@@ -2,10 +2,6 @@ import "normalize.css";
 import "./root.css";
 
 import { WarningOutlined } from "@ant-design/icons";
-import { AntConfigProvider, ThemeConfigProvider } from "@config/ant.tsx";
-import { API_BASE_URL } from "@config/api.ts";
-import { MarathonConfigProvider } from "@config/marathon.tsx";
-import { SessionStorageKeys } from "@config/storage";
 import { browserTracingIntegration, init } from "@sentry/react";
 import { RouterProvider, useAwaited } from "@tanstack/react-router";
 import type { AuthorizationRule } from "@ukdanceblue/common";
@@ -20,6 +16,11 @@ import {
   fetchExchange,
   Provider as UrqlProvider,
 } from "urql";
+
+import { AntConfigProvider, ThemeConfigProvider } from "#config/ant.tsx";
+import { API_BASE_URL } from "#config/api.ts";
+import { MarathonConfigProvider } from "#config/marathon.tsx";
+import { SessionStorageKeys } from "#config/storage";
 
 init({
   dsn: "https://f149f5546299b507f5e7b9b4aeafc2f4@o4507762130681856.ingest.us.sentry.io/4508071881932800",

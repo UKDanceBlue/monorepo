@@ -1,13 +1,13 @@
 import { TeamEditorFragment, teamEditorDocument } from "./TeamEditorGQL";
 
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { TeamType } from "@ukdanceblue/common";
-import { getFragmentData } from "@graphql/index.js";
-import { type SetTeamInput } from "@graphql/graphql.js";
+import { getFragmentData } from "#graphql/index.js";
+import { type SetTeamInput } from "#graphql/graphql.js";
 import { useMutation } from "urql";
 
-import type { DocumentType, FragmentType } from "@graphql/index.js";
+import type { DocumentType, FragmentType } from "#graphql/index.js";
 
 export function useTeamEditorForm(
   teamFragment: FragmentType<typeof TeamEditorFragment> | undefined,

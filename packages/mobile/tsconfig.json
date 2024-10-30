@@ -4,13 +4,13 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "paths": {
-      "@assets/*": ["./assets/*"],
-      "@graphql/*": ["./src/graphql/*"],
-      "@common/*": ["./src/common/*"],
-      "@context/*": ["./src/context/*"],
-      "@navigation/*": ["./src/navigation/*"],
-      "@theme/*": ["./src/theme/*"],
-      "@common-types/*": ["./src/types/*"]
+      "#assets/*": ["./assets/*"],
+      "#graphql/*": ["./graphql/*"],
+      "#common/*": ["./src/common/*"],
+      "#context/*": ["./src/context/*"],
+      "#navigation/*": ["./src/navigation/*"],
+      "#theme/*": ["./src/theme/*"],
+      "#common-types/*": ["./src/types/*"]
     },
     "noUncheckedIndexedAccess": false,
     "exactOptionalPropertyTypes": false,

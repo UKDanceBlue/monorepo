@@ -1,7 +1,4 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import type { FragmentType } from "@graphql/index.js";
-import { getFragmentData, graphql } from "@graphql/index.js";
-import { useAuthorizationRequirement } from "@hooks/useLoginState";
 import { Link, useNavigate } from "@tanstack/react-router";
 import type {
   Authorization,
@@ -16,6 +13,10 @@ import {
   stringifyAccessLevel,
 } from "@ukdanceblue/common";
 import { Button, Card, Descriptions, Empty, Flex, Typography } from "antd";
+
+import type { FragmentType } from "#graphql/index.js";
+import { getFragmentData, graphql } from "#graphql/index.js";
+import { useAuthorizationRequirement } from "#hooks/useLoginState";
 
 import { usePersonDeletePopup } from "../../components/person/PersonDeletePopup";
 

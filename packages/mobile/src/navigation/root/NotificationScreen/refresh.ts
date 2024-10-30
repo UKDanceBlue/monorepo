@@ -1,15 +1,15 @@
-import { useAsyncStorage } from "@common/hooks/useAsyncStorage";
-import { Logger } from "@common/logger/Logger";
-import { showMessage } from "@common/util/alertUtils";
-import { useDeviceData } from "@context/device";
+import { useAsyncStorage } from "#common/hooks/useAsyncStorage";
+import { Logger } from "#common/logger/Logger";
+import { showMessage } from "#common/util/alertUtils";
+import { useDeviceData } from "#context/device";
 import { LegacyErrorCode } from "@ukdanceblue/common";
-import { graphql } from "@graphql/index.js";
+import { graphql } from "#graphql/index";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useState } from "react";
 import { useClient } from "urql";
 
-import type { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
-import type { FragmentType } from "@graphql/index.js";
+import type { NotificationDeliveryFragment } from "#common/fragments/NotificationScreenGQL";
+import type { FragmentType } from "#graphql/index";
 
 const NOTIFICATION_PAGE_SIZE = 8;
 const INCOMPLETE_PAGE_TIMEOUT = 10_000;

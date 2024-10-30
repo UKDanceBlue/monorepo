@@ -1,5 +1,6 @@
 import { defineWorkspace } from "vitest/config";
-import { literalConfig as portalConfig } from "./packages/portal/vite.config.js";
+// @ts-ignore
+import { literalConfig as portalConfig } from "./packages/portal/vite.config.ts";
 
 export default defineWorkspace([
   {

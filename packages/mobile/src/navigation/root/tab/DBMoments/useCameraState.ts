@@ -1,5 +1,5 @@
-import { Logger } from "@common/logger/Logger";
-import { asyncWait } from "@common/util/wait";
+import { Logger } from "#common/logger/Logger";
+import { asyncWait } from "#common/util/wait";
 import {
   CameraType,
   FlashMode,

@@ -1,13 +1,14 @@
 import { DollarOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { getFragmentData, graphql } from "@graphql/index.js";
-import { useListQuery } from "@hooks/useListQuery";
-import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { Link } from "@tanstack/react-router";
 import { SortDirection, TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import { Button, Flex, Table } from "antd";
 import { useEffect } from "react";
 import { useQuery } from "urql";
+
+import { getFragmentData, graphql } from "#graphql/index.js";
+import { useListQuery } from "#hooks/useListQuery";
+import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 const teamsTableQueryDocument = graphql(/* GraphQL */ `
   query TeamsTable(

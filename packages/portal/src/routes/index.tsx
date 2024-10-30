@@ -1,11 +1,12 @@
-import { PersonViewer } from "@elements/viewers/person/PersonViewer";
-import { graphql } from "@graphql/index.js";
-import { useLoginState } from "@hooks/useLoginState";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { Typography } from "antd";
 import { useQuery } from "urql";
+
+import { PersonViewer } from "#elements/viewers/person/PersonViewer";
+import { graphql } from "#graphql/index.js";
+import { useLoginState } from "#hooks/useLoginState";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 const ViewMePageDocument = graphql(/* GraphQL */ `
   query HomePage {

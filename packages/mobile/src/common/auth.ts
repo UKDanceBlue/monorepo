@@ -1,8 +1,8 @@
 import { API_BASE_URL } from "./apiUrl";
 import { Logger } from "./logger/Logger";
 
-import { useLoading } from "@context/useLoading";
-import { useInvalidateCache } from "@context/urql";
+import { useLoading } from "#context/useLoading";
+import { useInvalidateCache } from "#context/urql";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthSource } from "@ukdanceblue/common";
 import { createURL } from "expo-linking";

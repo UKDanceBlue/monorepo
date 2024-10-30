@@ -1,9 +1,3 @@
-import JumbotronGeometric from "@common/components/JumbotronGeometric";
-import { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
-import { Logger } from "@common/logger/Logger";
-import { universalCatch } from "@common/logging";
-import type { FragmentType } from "@graphql/index.js";
-import { getFragmentData } from "@graphql/index.js";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { manufacturer as deviceManufacturer } from "expo-device";
 import { openSettings } from "expo-linking";
@@ -12,6 +6,13 @@ import { DateTime } from "luxon";
 import { Button, SectionList, Text, useTheme, View } from "native-base";
 import { useEffect, useMemo } from "react";
 import { RefreshControl } from "react-native";
+
+import JumbotronGeometric from "#common/components/JumbotronGeometric";
+import { NotificationDeliveryFragment } from "#common/fragments/NotificationScreenGQL";
+import { Logger } from "#common/logger/Logger";
+import { universalCatch } from "#common/logging";
+import type { FragmentType } from "#graphql/index";
+import { getFragmentData } from "#graphql/index";
 
 import { useDeviceData, useLoading } from "../../../context";
 import { NotificationRow } from "./NotificationRow";

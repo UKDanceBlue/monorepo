@@ -1,8 +1,3 @@
-import dbMonogram from "@assets/logo/monogram.png";
-import {
-  type MarathonTime,
-  useMarathonTime,
-} from "@common/hooks/useMarathonTime";
 import type { CameraCapturedPicture } from "expo-camera";
 import { DateTime } from "luxon";
 import { Box, HStack, Image, Text, View } from "native-base";
@@ -13,6 +8,12 @@ import {
   ImageBackground,
   useWindowDimensions,
 } from "react-native";
+
+import dbMonogram from "#assets/logo/monogram.png";
+import {
+  type MarathonTime,
+  useMarathonTime,
+} from "#common/hooks/useMarathonTime";
 
 function calculateDBYear() {
   const currentYear = DateTime.now().year.toString().slice(-2);

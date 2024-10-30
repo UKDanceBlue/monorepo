@@ -1,4 +1,4 @@
-import { graphql } from "@graphql/index.js";
+import { graphql } from "#graphql/index";
 
 export const NotificationFragment = graphql(/* GraphQL */ `
   fragment NotificationFragment on NotificationNode {

@@ -1,5 +1,5 @@
-import { Logger } from "@common/logger/Logger";
-import { showPrompt } from "@common/util/alertUtils";
+import { Logger } from "#common/logger/Logger";
+import { showPrompt } from "#common/util/alertUtils";
 import {
   checkForUpdateAsync,
   fetchUpdateAsync,

@@ -1,8 +1,3 @@
-import { useMarathon } from "@config/marathonContext";
-import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
-import type { FragmentType } from "@graphql/index.js";
-import { getFragmentData } from "@graphql/index.js";
-import { useAuthorizationRequirement } from "@hooks/useLoginState";
 import type { Authorization } from "@ukdanceblue/common";
 import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
 import {
@@ -21,6 +16,12 @@ import FormItem from "antd/es/form/FormItem";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import type { UseQueryExecute } from "urql";
+
+import { useMarathon } from "#config/marathonContext";
+import { TanAntFormItem } from "#elements/components/form/TanAntFormItem";
+import type { FragmentType } from "#graphql/index.js";
+import { getFragmentData } from "#graphql/index.js";
+import { useAuthorizationRequirement } from "#hooks/useLoginState";
 
 import { TeamNameFragment } from "../PersonFormsGQL";
 import { PersonEditorFragment } from "./PersonEditorGQL";

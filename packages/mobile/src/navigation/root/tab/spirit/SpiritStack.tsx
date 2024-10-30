@@ -1,10 +1,11 @@
-import { Logger } from "@common/logger/Logger";
-import { showMessage } from "@common/util/alertUtils";
-import { graphql } from "@graphql/index.js";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { TeamType } from "@ukdanceblue/common";
 import { useEffect, useState } from "react";
 import { useQuery } from "urql";
+
+import { Logger } from "#common/logger/Logger";
+import { showMessage } from "#common/util/alertUtils";
+import { graphql } from "#graphql/index";
 
 import type { SpiritStackParamList } from "../../../../types/navigationTypes";
 import ScoreboardScreen from "./ScoreBoardScreen";

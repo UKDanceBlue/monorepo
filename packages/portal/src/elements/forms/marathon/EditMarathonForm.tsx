@@ -1,9 +1,10 @@
-import { LuxonDatePicker } from "@elements/components/antLuxonComponents";
-import { TanAntForm } from "@elements/components/form/TanAntForm";
-import type { TanAntChildInputProps } from "@elements/components/form/TanAntFormItem";
-import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
 import { Button, Form, Input } from "antd";
 import { DateTime } from "luxon";
+
+import { LuxonDatePicker } from "#elements/components/antLuxonComponents";
+import { TanAntForm } from "#elements/components/form/TanAntForm";
+import type { TanAntChildInputProps } from "#elements/components/form/TanAntFormItem";
+import { TanAntFormItem } from "#elements/components/form/TanAntFormItem";
 
 import { useMarathonCreatorForm } from "./useMarathonEditorForm";
 

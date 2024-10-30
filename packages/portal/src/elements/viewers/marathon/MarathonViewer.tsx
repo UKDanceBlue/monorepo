@@ -1,10 +1,11 @@
-import type { FragmentType } from "@graphql/index.js";
-import { getFragmentData, graphql } from "@graphql/index.js";
 import { Link } from "@tanstack/react-router";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { Descriptions, Empty, Flex } from "antd";
 import { DateTime } from "luxon";
 import { useMemo } from "react";
+
+import type { FragmentType } from "#graphql/index.js";
+import { getFragmentData, graphql } from "#graphql/index.js";
 
 export const MarathonViewerFragment = graphql(/* GraphQL */ `
   fragment MarathonViewerFragment on MarathonNode {

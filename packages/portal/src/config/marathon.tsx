@@ -1,7 +1,8 @@
-import { graphql } from "@graphql/index.js";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "urql";
+
+import { graphql } from "#graphql/index.js";
 
 import type { MarathonContextData } from "./marathonContext";
 import { marathonContext } from "./marathonContext";

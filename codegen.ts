@@ -53,6 +53,7 @@ const config: TypeScriptPluginConfig = {
   },
   strictScalars: true,
   immutableTypes: true,
+  emitLegacyCommonJSImports: false,
 };
 
 const generates: CodegenConfig["generates"] = {};
@@ -60,7 +61,7 @@ const generates: CodegenConfig["generates"] = {};
 // We do this readdir thing in case a partial copy of the monorepo is being used
 const packages = readdirSync("./packages");
 if (packages.includes("mobile")) {
-  generates["packages/mobile/src/graphql/"] = {
+  generates["packages/mobile/graphql/"] = {
     preset: "client",
     presetConfig,
     documents: ["packages/mobile/src"],

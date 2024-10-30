@@ -1,8 +1,9 @@
-import { SessionStorageKeys } from "@config/storage";
-import { graphql } from "@graphql/index.js";
 import { AutoComplete } from "antd";
 import { useMemo, useRef, useState } from "react";
 import { useQuery } from "urql";
+
+import { SessionStorageKeys } from "#config/storage";
+import { graphql } from "#graphql/index.js";
 
 export function MasqueradeSelector() {
   const [search, setSearch] = useState("");

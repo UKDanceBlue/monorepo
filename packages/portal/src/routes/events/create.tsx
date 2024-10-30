@@ -1,7 +1,8 @@
-import { EventCreator } from "@elements/forms/event/create/EventCreator";
 import { createFileRoute } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
+
+import { EventCreator } from "#elements/forms/event/create/EventCreator";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 function EventsCreate() {
   return (

@@ -1,10 +1,11 @@
-import { PersonEditor } from "@elements/forms/person/edit/PersonEditor";
-import { graphql } from "@graphql/index.js";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
+
+import { PersonEditor } from "#elements/forms/person/edit/PersonEditor";
+import { graphql } from "#graphql/index.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 const viewPersonPageDocument = graphql(/* GraphQL */ `
   query EditPersonPage($uuid: GlobalId!) {

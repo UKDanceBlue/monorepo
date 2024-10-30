@@ -1,10 +1,3 @@
-import ImageView, {
-  ImageViewFragment,
-} from "@common/components/ImageView/ImageView";
-import NativeBaseMarkdown from "@common/components/NativeBaseMarkdown";
-import { TriviaCrack } from "@common/marathonComponents/TriviaCrack";
-import type { FragmentType } from "@graphql/index.js";
-import { getFragmentData, graphql } from "@graphql/index.js";
 import { Heading, ScrollView, Text } from "native-base";
 import { useEffect, useState } from "react";
 import {
@@ -12,6 +5,14 @@ import {
   TouchableWithoutFeedback,
   useWindowDimensions,
 } from "react-native";
+
+import ImageView, {
+  ImageViewFragment,
+} from "#common/components/ImageView/ImageView";
+import NativeBaseMarkdown from "#common/components/NativeBaseMarkdown";
+import { TriviaCrack } from "#common/marathonComponents/TriviaCrack";
+import type { FragmentType } from "#graphql/index";
+import { getFragmentData, graphql } from "#graphql/index";
 
 const HourScreenFragment = graphql(/* GraphQL */ `
   fragment HourScreenFragment on MarathonHourNode {

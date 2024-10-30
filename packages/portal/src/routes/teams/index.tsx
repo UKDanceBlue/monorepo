@@ -1,15 +1,16 @@
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
-import { useMarathon } from "@config/marathonContext";
-import { TeamsTable } from "@elements/tables/TeamsTable";
-import { useAuthorizationRequirement } from "@hooks/useLoginState";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import {
   AccessLevel,
   CommitteeIdentifier,
   CommitteeRole,
 } from "@ukdanceblue/common";
 import { Button, Flex } from "antd";
+
+import { useMarathon } from "#config/marathonContext";
+import { TeamsTable } from "#elements/tables/TeamsTable";
+import { useAuthorizationRequirement } from "#hooks/useLoginState";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 export function ListTeamsPage() {
   const selectedMarathon = useMarathon();

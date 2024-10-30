@@ -1,10 +1,11 @@
 import { WarningOutlined } from "@ant-design/icons";
-import { SpinningRibbon } from "@elements/components/design/RibbonSpinner";
 import { createRouter, ErrorComponent } from "@tanstack/react-router";
 import { Empty, Spin } from "antd";
 import type { useAppProps } from "antd/es/app/context";
 import { routeTree } from "routeTree.gen";
 import type { Client as UrqlClient } from "urql";
+
+import { SpinningRibbon } from "#elements/components/design/RibbonSpinner";
 
 export const router = createRouter({
   routeTree,

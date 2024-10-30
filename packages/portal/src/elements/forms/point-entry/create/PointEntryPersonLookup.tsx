@@ -1,11 +1,12 @@
 import { ClearOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { useAskConfirm, useUnknownErrorHandler } from "@hooks/useAntFeedback";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { AutoComplete, Button, Descriptions, Flex, Form, Input } from "antd";
 import type { LegacyRef } from "react";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 import { useDebouncedCallback } from "use-debounce";
+
+import { useAskConfirm, useUnknownErrorHandler } from "#hooks/useAntFeedback";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 import {
   createPersonByLinkBlue,

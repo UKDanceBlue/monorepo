@@ -3,11 +3,6 @@ import {
   EditOutlined,
   MinusCircleTwoTone,
 } from "@ant-design/icons";
-import { PersonSearch } from "@elements/components/person/PersonSearch";
-import type { FragmentType } from "@graphql/index.js";
-import { getFragmentData, graphql } from "@graphql/index.js";
-import { useAuthorizationRequirement } from "@hooks/useLoginState";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   AccessLevel,
@@ -18,6 +13,12 @@ import {
 import { Button, Descriptions, Empty, Flex } from "antd";
 import { useState } from "react";
 import { useMutation } from "urql";
+
+import { PersonSearch } from "#elements/components/person/PersonSearch";
+import type { FragmentType } from "#graphql/index.js";
+import { getFragmentData, graphql } from "#graphql/index.js";
+import { useAuthorizationRequirement } from "#hooks/useLoginState";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 import { useTeamDeletePopup } from "../../components/team/TeamDeletePopup";
 import { AssignToTeamPopup } from "./AssignToTeamPopup";

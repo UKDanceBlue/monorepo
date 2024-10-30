@@ -1,8 +1,4 @@
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { getFragmentData, graphql } from "@graphql/index.js";
-import { useListQuery } from "@hooks/useListQuery";
-import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { Link } from "@tanstack/react-router";
 import type { CommitteeIdentifier } from "@ukdanceblue/common";
 import {
@@ -13,6 +9,11 @@ import {
 } from "@ukdanceblue/common";
 import { Button, Flex, Table } from "antd";
 import { useQuery } from "urql";
+
+import { getFragmentData, graphql } from "#graphql/index.js";
+import { useListQuery } from "#hooks/useListQuery";
+import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 const PeopleTableFragment = graphql(/* GraphQL */ `
   fragment PeopleTableFragment on PersonNode {

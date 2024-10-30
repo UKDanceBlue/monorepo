@@ -1,13 +1,14 @@
-import { teamPageDocument } from "@documents/teamPageDocument";
-import { PointEntryCreator } from "@elements/forms/point-entry/create/PointEntryCreator";
-import { PointEntryTable } from "@elements/tables/point-entry/PointEntryTable";
-import { useAuthorizationRequirement } from "@hooks/useLoginState";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Flex } from "antd";
 import { useQuery } from "urql";
+
+import { teamPageDocument } from "#documents/teamPageDocument";
+import { PointEntryCreator } from "#elements/forms/point-entry/create/PointEntryCreator";
+import { PointEntryTable } from "#elements/tables/point-entry/PointEntryTable";
+import { useAuthorizationRequirement } from "#hooks/useLoginState";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 function ViewTeamPoints() {
   const { teamId: teamUuid } = Route.useParams();

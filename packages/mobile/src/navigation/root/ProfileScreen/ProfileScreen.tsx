@@ -1,9 +1,3 @@
-import { useLogin } from "@common/auth";
-import JumbotronGeometric from "@common/components/JumbotronGeometric";
-import { useThemeFonts } from "@common/customHooks";
-import { universalCatch } from "@common/logging";
-import type { FragmentType } from "@graphql/index.js";
-import { getFragmentData, graphql } from "@graphql/index.js";
 import {
   AuthSource,
   CommitteeIdentifier,
@@ -23,6 +17,13 @@ import {
   VStack,
 } from "native-base";
 import { useMemo } from "react";
+
+import { useLogin } from "#common/auth";
+import JumbotronGeometric from "#common/components/JumbotronGeometric";
+import { useThemeFonts } from "#common/customHooks";
+import { universalCatch } from "#common/logging";
+import type { FragmentType } from "#graphql/index";
+import { getFragmentData, graphql } from "#graphql/index";
 
 import { ProfileFooter } from "./ProfileFooter";
 

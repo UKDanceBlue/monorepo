@@ -1,4 +1,3 @@
-import { useNetworkStatus } from "@common/customHooks";
 import { useNavigation } from "@react-navigation/native";
 import { ErrorBoundary } from "@sentry/react-native";
 import { DateTime } from "luxon";
@@ -6,6 +5,8 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import type { InfinitePagerPageComponent } from "react-native-infinite-pager";
 import InfinitePager from "react-native-infinite-pager";
+
+import { useNetworkStatus } from "#common/customHooks";
 
 import { EventListPage } from "./EventListPage";
 import { useEvents } from "./eventListUtils";

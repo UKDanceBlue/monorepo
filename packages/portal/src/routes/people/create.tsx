@@ -1,7 +1,8 @@
-import { PersonCreator } from "@elements/forms/person/create/PersonCreator";
 import { createFileRoute } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel } from "@ukdanceblue/common";
+
+import { PersonCreator } from "#elements/forms/person/create/PersonCreator";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 function CreatePersonPage() {
   return (

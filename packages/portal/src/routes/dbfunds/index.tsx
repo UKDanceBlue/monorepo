@@ -1,15 +1,16 @@
 import { DownloadOutlined } from "@ant-design/icons";
-import { useMarathon } from "@config/marathonContext";
-import { SpreadsheetUploader } from "@elements/components/SpreadsheetUploader";
-import { graphql } from "@graphql/index";
 import { createFileRoute } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Button, Flex, Table, Typography } from "antd";
 import { DateTime } from "luxon";
 import { useMemo, useState } from "react";
 import { useClient, useQuery } from "urql";
 import { utils, write, writeFile } from "xlsx";
+
+import { useMarathon } from "#config/marathonContext";
+import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader";
+import { graphql } from "#graphql/index";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 interface FundraisingTeam {
   name: string;

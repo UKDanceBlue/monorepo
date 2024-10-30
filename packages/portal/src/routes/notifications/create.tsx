@@ -1,7 +1,8 @@
-import { CreateNotificationForm } from "@elements/forms/notification/create/CreateNotificationForm";
 import { createFileRoute } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel } from "@ukdanceblue/common";
+
+import { CreateNotificationForm } from "#elements/forms/notification/create/CreateNotificationForm";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 function CreateNotificationPage() {
   return (

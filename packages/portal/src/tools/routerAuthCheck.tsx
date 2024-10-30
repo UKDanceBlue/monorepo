@@ -1,4 +1,3 @@
-import { getLoginState } from "@hooks/useLoginState";
 import { redirect } from "@tanstack/react-router";
 import type { AuthorizationRule } from "@ukdanceblue/common";
 import {
@@ -7,6 +6,8 @@ import {
 } from "@ukdanceblue/common";
 import type { useAppProps } from "antd/es/app/context";
 import type { Client } from "urql";
+
+import { getLoginState } from "#hooks/useLoginState";
 
 export function routerAuthCheck(
   route: {

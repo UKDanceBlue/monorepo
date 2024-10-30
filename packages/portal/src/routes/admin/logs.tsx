@@ -1,10 +1,11 @@
-import { LogViewer } from "@elements/viewers/admin/LogViewer";
-import { graphql } from "@graphql/index.js";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
+
+import { LogViewer } from "#elements/viewers/admin/LogViewer";
+import { graphql } from "#graphql/index.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 const logsPageDocument = graphql(/* GraphQL */ `
   query LogsPage {

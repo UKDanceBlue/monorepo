@@ -1,6 +1,3 @@
-import { useNetworkStatus } from "@common/customHooks";
-import { Logger } from "@common/logger/Logger";
-import { graphql } from "@graphql/index.js";
 import { setTag as setSentryTag } from "@sentry/react-native";
 import { arrayToBase64String } from "@ukdanceblue/common";
 import {
@@ -27,6 +24,10 @@ import {
 } from "expo-secure-store";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useMutation } from "urql";
+
+import { useNetworkStatus } from "#common/customHooks";
+import { Logger } from "#common/logger/Logger";
+import { graphql } from "#graphql/index";
 
 import { universalCatch } from "../common/logging";
 import { useAuthState } from "./auth";

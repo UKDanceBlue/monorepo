@@ -1,4 +1,3 @@
-import { universalCatch } from "@common/logging";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { openURL } from "expo-linking";
 import { Box, Button, HStack, Text, VStack } from "native-base";
@@ -9,6 +8,8 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
+
+import { universalCatch } from "#common/logging";
 
 import { useReactNavigationTheme } from "../../../../theme";
 import HeaderImage from "./HeaderImage";

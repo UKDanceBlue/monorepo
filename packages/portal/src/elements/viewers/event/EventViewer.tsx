@@ -1,6 +1,4 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import type { FragmentType } from "@graphql/index.js";
-import { getFragmentData, graphql } from "@graphql/index.js";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   base64StringToArray,
@@ -12,6 +10,9 @@ import type { Interval } from "luxon";
 import { DateTime } from "luxon";
 import { useMemo } from "react";
 import { thumbHashToDataURL } from "thumbhash";
+
+import type { FragmentType } from "#graphql/index.js";
+import { getFragmentData, graphql } from "#graphql/index.js";
 
 import { useEventDeletePopup } from "../../components/event/EventDeletePopup";
 

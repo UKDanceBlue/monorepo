@@ -1,7 +1,4 @@
-import Jumbotron from "@common/components/Jumbotron";
 import { FontAwesome5 } from "@expo/vector-icons";
-import type { FragmentType } from "@graphql/index.js";
-import { getFragmentData, graphql } from "@graphql/index.js";
 import { useNavigation } from "@react-navigation/native";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import {
@@ -14,6 +11,10 @@ import {
   View,
 } from "native-base";
 import { useEffect, useMemo, useState } from "react";
+
+import Jumbotron from "#common/components/Jumbotron";
+import type { FragmentType } from "#graphql/index";
+import { getFragmentData, graphql } from "#graphql/index";
 
 import type { SpiritStackScreenProps } from "../../../../../types/navigationTypes";
 import type { StandingType } from "../../../../../types/StandingType";

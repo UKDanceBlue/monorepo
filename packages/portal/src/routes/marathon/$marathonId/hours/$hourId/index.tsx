@@ -1,18 +1,19 @@
-import { LuxonDatePicker } from "@elements/components/antLuxonComponents";
-import { TanAntForm } from "@elements/components/form/TanAntForm";
-import type { TanAntChildInputProps } from "@elements/components/form/TanAntFormItem";
-import { TanAntFormItem } from "@elements/components/form/TanAntFormItem";
-import { graphql } from "@graphql/index.js";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel, dateTimeFromSomething } from "@ukdanceblue/common";
 import { Editable, useEditor } from "@wysimark/react";
 import { Button, Input } from "antd";
 import type { DateTime } from "luxon";
 import { useMutation, useQuery } from "urql";
+
+import { LuxonDatePicker } from "#elements/components/antLuxonComponents";
+import { TanAntForm } from "#elements/components/form/TanAntForm";
+import type { TanAntChildInputProps } from "#elements/components/form/TanAntFormItem";
+import { TanAntFormItem } from "#elements/components/form/TanAntFormItem";
+import { graphql } from "#graphql/index.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 const editMarathonHourDataDocument = graphql(/* GraphQL */ `
   query EditMarathonHourData($marathonHourUuid: GlobalId!) {

@@ -1,8 +1,9 @@
-import { LuxonDatePicker } from "@elements/components/antLuxonComponents";
 import type { Updater, ValidationError } from "@tanstack/react-form";
 import { Form, Input, Space } from "antd";
 import { DateTime } from "luxon";
 import { useMemo } from "react";
+
+import { LuxonDatePicker } from "#elements/components/antLuxonComponents";
 
 import type { ConfigValue } from "./useConfig";
 

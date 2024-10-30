@@ -1,8 +1,4 @@
-import { graphql } from "@graphql/index.js";
-import { useImagePicker } from "@hooks/useImagePicker";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import {
   AccessLevel,
   CommitteeRole,
@@ -21,6 +17,11 @@ import {
 } from "antd";
 import { useState } from "react";
 import { useClient, useQuery } from "urql";
+
+import { graphql } from "#graphql/index.js";
+import { useImagePicker } from "#hooks/useImagePicker";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 const feedPageDocument = graphql(/* GraphQL */ `
   query FeedPage {

@@ -1,11 +1,12 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { CreateImagePopup } from "@elements/components/image/CreateImagePopup";
-import { ImagesTable } from "@elements/tables/ImagesTable";
 import { createFileRoute } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
 import { useState } from "react";
+
+import { CreateImagePopup } from "#elements/components/image/CreateImagePopup";
+import { ImagesTable } from "#elements/tables/ImagesTable";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 function ListImagesPage() {
   const [createImageOpen, setCreateImageOpen] = useState(false);

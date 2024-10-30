@@ -1,6 +1,3 @@
-import type { FragmentType } from "@graphql/index.js";
-import { getFragmentData } from "@graphql/index.js";
-import { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
 import { intervalFromSomething } from "@ukdanceblue/common";
 import { Platform } from "expo-modules-core";
 import { DateTime } from "luxon";
@@ -9,6 +6,10 @@ import type { MutableRefObject } from "react";
 import { useCallback, useMemo } from "react";
 import type { ListRenderItem } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
+
+import type { FragmentType } from "#graphql/index";
+import { getFragmentData } from "#graphql/index";
+import { EventScreenFragment } from "#navigation/root/EventScreen/EventScreenFragment";
 
 import { RNCAL_DATE_FORMAT } from "./constants";
 import EventRow from "./EventRow";

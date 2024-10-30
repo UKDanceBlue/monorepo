@@ -1,11 +1,5 @@
 import { FilterFilled } from "@ant-design/icons";
-import { graphql } from "@graphql/index.js";
-import { useListQuery } from "@hooks/useListQuery";
-import { useAuthorizationRequirement } from "@hooks/useLoginState";
-import { useMakeStringSearchFilterProps } from "@hooks/useMakeSearchFilterProps";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import {
   AccessLevel,
   CommitteeIdentifier,
@@ -26,6 +20,13 @@ import { useForm } from "antd/es/form/Form";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
+
+import { graphql } from "#graphql/index.js";
+import { useListQuery } from "#hooks/useListQuery";
+import { useAuthorizationRequirement } from "#hooks/useLoginState";
+import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
   query ViewTeamFundraisingDocument(

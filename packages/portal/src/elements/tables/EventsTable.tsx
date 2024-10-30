@@ -1,7 +1,4 @@
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { getFragmentData, graphql } from "@graphql/index.js";
-import { useListQuery } from "@hooks/useListQuery";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { Link } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
 import {
@@ -11,6 +8,10 @@ import {
 import { Button, Flex, Table } from "antd";
 import { useCallback, useMemo } from "react";
 import { useQuery } from "urql";
+
+import { getFragmentData, graphql } from "#graphql/index.js";
+import { useListQuery } from "#hooks/useListQuery";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 const EventsTableFragment = graphql(/* GraphQL */ `
   fragment EventsTableFragment on EventNode {

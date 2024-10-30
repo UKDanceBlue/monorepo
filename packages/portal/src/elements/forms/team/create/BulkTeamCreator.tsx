@@ -1,11 +1,12 @@
-import { useMarathon } from "@config/marathonContext";
-import { SpreadsheetUploader } from "@elements/components/SpreadsheetUploader";
-import { graphql } from "@graphql/index.js";
-import { useAntFeedback } from "@hooks/useAntFeedback";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import type { BulkTeamInput } from "@ukdanceblue/common";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import { useMutation } from "urql";
+
+import { useMarathon } from "#config/marathonContext";
+import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader";
+import { graphql } from "#graphql/index.js";
+import { useAntFeedback } from "#hooks/useAntFeedback";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 const teamBulkCreatorDocument = graphql(/* GraphQL */ `
   mutation TeamBulkCreator($input: [BulkTeamInput!]!, $marathonId: GlobalId!) {

@@ -1,10 +1,11 @@
-import { ConfigItem } from "@elements/forms/config/ConfigItem";
-import { useConfigForm } from "@elements/forms/config/useConfigForm";
 import { createFileRoute } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Collapse, Divider, Flex, Form, Input, Space } from "antd";
 import { useState } from "react";
+
+import { ConfigItem } from "#elements/forms/config/ConfigItem";
+import { useConfigForm } from "#elements/forms/config/useConfigForm";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 // Form keys can only contain uppercase letters and underscores
 const FORM_KEY_REGEX = /^[A-Z_]+$/;

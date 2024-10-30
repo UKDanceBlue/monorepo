@@ -1,8 +1,9 @@
-import { graphql } from "@graphql/index.js";
 import { Modal } from "antd";
 import useNotification from "antd/es/notification/useNotification";
 import { useEffect, useState } from "react";
 import { useMutation } from "urql";
+
+import { graphql } from "#graphql/index.js";
 
 const deletePointEntryDocument = graphql(/* GraphQL */ `
   mutation DeletePointEntry($uuid: GlobalId!) {

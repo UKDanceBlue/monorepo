@@ -1,4 +1,3 @@
-import { useColorModeValue, useThemeColors } from "@common/customHooks";
 import { FontAwesome5 } from "@expo/vector-icons";
 import type {
   BottomTabBarProps,
@@ -8,9 +7,11 @@ import type {
   ParamListBase,
   TabNavigationState,
 } from "@react-navigation/native";
-import { colors } from "@theme/colors";
 import { Box, useTheme, View, VStack, ZStack } from "native-base";
 import { Text, TouchableOpacity, useWindowDimensions } from "react-native";
+
+import { useColorModeValue, useThemeColors } from "#common/customHooks";
+import { colors } from "#theme/colors";
 
 import BackgroundCutout from "../../../../assets/screens/navigation/background-cutout";
 import DanceBlueRibbon from "../../../../assets/svgs/DBRibbon";

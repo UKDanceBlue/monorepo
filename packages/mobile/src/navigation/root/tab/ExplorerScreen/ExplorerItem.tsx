@@ -1,8 +1,4 @@
 // import DBLogoCondensed from "../../../../../assets/svgs/DBLogoCondensed";
-import AudioPlayer from "@common/components/AudioPlayer";
-import ErrorBoundary from "@common/components/ErrorBoundary";
-import { universalCatch } from "@common/logging";
-import { showMessage } from "@common/util/alertUtils";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Audio } from "expo-av";
 import { Image } from "expo-image";
@@ -10,6 +6,11 @@ import { openURL } from "expo-linking";
 import { Box, Button, HStack, Text, View } from "native-base";
 import { useEffect, useState } from "react";
 import { PixelRatio, useWindowDimensions } from "react-native";
+
+import AudioPlayer from "#common/components/AudioPlayer";
+import ErrorBoundary from "#common/components/ErrorBoundary";
+import { universalCatch } from "#common/logging";
+import { showMessage } from "#common/util/alertUtils";
 
 import DBRibbon from "../../../../../assets/svgs/DBRibbon";
 import { parseBlogText } from "./parseBlogText";

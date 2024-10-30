@@ -1,12 +1,13 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { MarathonsTable } from "@elements/tables/marathon/MarathonsTable";
-import { MarathonViewer } from "@elements/viewers/marathon/MarathonViewer";
-import { graphql } from "@graphql/index.js";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Empty, Flex } from "antd";
 import { useQuery } from "urql";
+
+import { MarathonsTable } from "#elements/tables/marathon/MarathonsTable";
+import { MarathonViewer } from "#elements/viewers/marathon/MarathonViewer";
+import { graphql } from "#graphql/index.js";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 const marathonOverviewPageDocument = graphql(/* GraphQL */ `
   query MarathonOverviewPage {

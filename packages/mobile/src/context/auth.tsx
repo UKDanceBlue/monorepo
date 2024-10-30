@@ -1,10 +1,11 @@
-import { Logger } from "@common/logger/Logger";
-import { graphql } from "@graphql/index.js";
 import { setUser as setSentryUser } from "@sentry/react-native";
 import { AuthSource } from "@ukdanceblue/common";
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect } from "react";
 import { useQuery } from "urql";
+
+import { Logger } from "#common/logger/Logger";
+import { graphql } from "#graphql/index";
 
 export interface AuthState {
   personUuid: string | null;

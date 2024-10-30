@@ -1,6 +1,3 @@
-import type { NotificationDeliveryFragment } from "@common/fragments/NotificationScreenGQL";
-import { showMessage } from "@common/util/alertUtils";
-import type { FragmentType } from "@graphql/index.js";
 import { Box, Button, Row, useTheme } from "native-base";
 import type { SectionListRenderItem } from "react-native";
 import { useWindowDimensions } from "react-native";
@@ -11,6 +8,10 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+
+import type { NotificationDeliveryFragment } from "#common/fragments/NotificationScreenGQL";
+import { showMessage } from "#common/util/alertUtils";
+import type { FragmentType } from "#graphql/index";
 
 import { NotificationRowContent } from "./NotificationRowContent";
 
@@ -33,7 +34,6 @@ export const AnimatedNotificationRow: SectionListRenderItem<
   const flung = useSharedValue(false);
 
   // A gesture handler that allows swiping the view left only, right will just bounce
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
   const panGestureHandler = useAnimatedGestureHandler({
     onStart: (_, ctx: { startX: number }) => {
       ctx.startX = x.value;

@@ -1,15 +1,6 @@
 import "./NavigationMenu.css";
 
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
-import { themeConfigContext } from "@config/antThemeConfig";
-import { API_BASE_URL } from "@config/api";
-import { marathonContext } from "@config/marathonContext";
-import { SessionStorageKeys } from "@config/storage";
-import { useAntFeedback } from "@hooks/useAntFeedback";
-import {
-  useAuthorizationRequirement,
-  useLoginState,
-} from "@hooks/useLoginState";
 import type { Register } from "@tanstack/react-router";
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
 import {
@@ -19,6 +10,16 @@ import {
 } from "@ukdanceblue/common";
 import { Button, Menu, Select } from "antd";
 import { useContext, useEffect, useState } from "react";
+
+import { themeConfigContext } from "#config/antThemeConfig";
+import { API_BASE_URL } from "#config/api";
+import { marathonContext } from "#config/marathonContext";
+import { SessionStorageKeys } from "#config/storage";
+import { useAntFeedback } from "#hooks/useAntFeedback";
+import {
+  useAuthorizationRequirement,
+  useLoginState,
+} from "#hooks/useLoginState";
 
 import { MasqueradeSelector } from "./MasqueradeSelector";
 

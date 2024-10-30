@@ -1,9 +1,10 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { EventsTable } from "@elements/tables/EventsTable";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
+
+import { EventsTable } from "#elements/tables/EventsTable";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 function Events() {
   return (

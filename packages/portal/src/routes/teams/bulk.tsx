@@ -1,11 +1,12 @@
-import { BulkTeamCreator } from "@elements/forms/team/create/BulkTeamCreator";
 import { createFileRoute } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import {
   AccessLevel,
   CommitteeIdentifier,
   CommitteeRole,
 } from "@ukdanceblue/common";
+
+import { BulkTeamCreator } from "#elements/forms/team/create/BulkTeamCreator";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 function BulkCreateTeamPage() {
   return (

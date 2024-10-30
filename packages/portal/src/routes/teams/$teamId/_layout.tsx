@@ -1,12 +1,13 @@
-import { teamPageDocument } from "@documents/teamPageDocument";
-import { TeamViewer } from "@elements/viewers/team/TeamViewer";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { createFileRoute } from "@tanstack/react-router";
 import { Outlet } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel } from "@ukdanceblue/common";
 import { Flex } from "antd";
 import { useQuery } from "urql";
+
+import { teamPageDocument } from "#documents/teamPageDocument";
+import { TeamViewer } from "#elements/viewers/team/TeamViewer";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 function ViewTeamPage() {
   const { teamId: teamUuid } = Route.useParams();

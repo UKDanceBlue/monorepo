@@ -20,18 +20,24 @@
   "typescript.inlayHints.parameterNames.enabled": "all",
   "javascript.inlayHints.parameterNames.enabled": "all",
   "cSpell.words": [
+    "antd",
     "Catchable",
     "codegen",
+    "collapsable",
     "cooldown",
     "Errorable",
     "jonasmerlin",
     "Leaderboards",
+    "linkblue",
     "Linkblues",
+    "luxon",
     "Spinnable",
     "tanstack",
     "typecheck",
+    "ukdanceblue",
     "urql",
-    "Whatwg"
+    "Whatwg",
+    "wysimark"
   ],
   "eslint.codeActionsOnSave.mode": "problems",
   "[prisma]": {

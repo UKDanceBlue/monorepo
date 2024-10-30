@@ -1,15 +1,15 @@
 import { RNCAL_DATE_FORMAT, RNCAL_DATE_FORMAT_NO_DAY } from "./constants";
 
-import { Logger } from "@common/logger/Logger";
-import { showMessage } from "@common/util/alertUtils";
-import { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
+import { Logger } from "#common/logger/Logger";
+import { showMessage } from "#common/util/alertUtils";
+import { EventScreenFragment } from "#navigation/root/EventScreen/EventScreenFragment";
 import { intervalFromSomething } from "@ukdanceblue/common";
-import { getFragmentData, graphql } from "@graphql/index.js";
+import { getFragmentData, graphql } from "#graphql/index";
 import { DateTime } from "luxon";
 import { useEffect, useMemo, useRef } from "react";
 import { useQuery } from "urql";
 
-import type { FragmentType } from "@graphql/index.js";
+import type { FragmentType } from "#graphql/index";
 import type { Interval } from "luxon";
 import type { DateData } from "react-native-calendars";
 import type { MarkedDates } from "react-native-calendars/src/types";

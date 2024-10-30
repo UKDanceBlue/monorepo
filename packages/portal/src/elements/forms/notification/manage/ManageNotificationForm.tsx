@@ -1,13 +1,14 @@
-import { LuxonDatePicker } from "@elements/components/antLuxonComponents";
-import { NotificationViewer } from "@elements/viewers/notification/NotificationViewer";
-import type { FragmentType } from "@graphql/index.js";
-import { getFragmentData } from "@graphql/index.js";
-import { useAntFeedback } from "@hooks/useAntFeedback";
 import type { ModalFuncProps } from "antd";
 import { Button, Empty, Flex, Form } from "antd";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import type { UseQueryExecute } from "urql";
+
+import { LuxonDatePicker } from "#elements/components/antLuxonComponents";
+import { NotificationViewer } from "#elements/viewers/notification/NotificationViewer";
+import type { FragmentType } from "#graphql/index.js";
+import { getFragmentData } from "#graphql/index.js";
+import { useAntFeedback } from "#hooks/useAntFeedback";
 
 import { SingleNotificationFragment } from "../SingleNotificationGQL";
 import { useNotificationManagerForm } from "./useNotificationManager";

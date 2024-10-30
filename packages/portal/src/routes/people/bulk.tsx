@@ -1,7 +1,8 @@
-import { BulkPersonCreator } from "@elements/forms/person/create/BulkPersonCreator";
 import { createFileRoute } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel } from "@ukdanceblue/common";
+
+import { BulkPersonCreator } from "#elements/forms/person/create/BulkPersonCreator";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 function BulkCreatePersonPage() {
   return (

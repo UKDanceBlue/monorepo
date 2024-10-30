@@ -1,8 +1,3 @@
-import ErrorBoundary, {
-  withErrorBoundary,
-} from "@common/components/ErrorBoundary";
-import { Logger } from "@common/logger/Logger";
-import { getFragmentData, graphql } from "@graphql/index.js";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DbRole } from "@ukdanceblue/common";
@@ -10,6 +5,12 @@ import { useTheme } from "native-base";
 import { useEffect, useMemo, useState } from "react";
 import { Alert, useWindowDimensions } from "react-native";
 import { useQuery } from "urql";
+
+import ErrorBoundary, {
+  withErrorBoundary,
+} from "#common/components/ErrorBoundary";
+import { Logger } from "#common/logger/Logger";
+import { getFragmentData, graphql } from "#graphql/index";
 
 import { useColorModeValue } from "../../common/customHooks";
 import { useLoading } from "../../context";

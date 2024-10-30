@@ -1,5 +1,4 @@
 import { NumberOutlined, SearchOutlined } from "@ant-design/icons";
-import { FilterSearchDropdown } from "@elements/components/FilterDropdown";
 import type {
   NumericFilterItemInterface,
   StringFilterItemInterface,
@@ -7,6 +6,8 @@ import type {
 import { NumericComparator } from "@ukdanceblue/common";
 import { Input, type InputRef } from "antd";
 import { useRef } from "react";
+
+import { FilterSearchDropdown } from "#elements/components/FilterDropdown";
 
 export function useMakeStringSearchFilterProps<Field extends string>(
   field: Field,

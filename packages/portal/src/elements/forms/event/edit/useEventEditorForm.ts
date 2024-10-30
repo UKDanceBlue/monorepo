@@ -1,16 +1,16 @@
 import { EventEditorFragment, eventEditorDocument } from "./EventEditorGQL";
 
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { intervalFromSomething } from "@ukdanceblue/common";
-import { getFragmentData } from "@graphql/index.js";
+import { getFragmentData } from "#graphql/index.js";
 import { useMutation } from "urql";
 
-import type { FragmentType } from "@graphql/index.js";
+import type { FragmentType } from "#graphql/index.js";
 import type {
   SetEventInput,
   SetEventOccurrenceInput,
-} from "@graphql/graphql.js";
+} from "#graphql/graphql.js";
 import type { Interval } from "luxon";
 import type { UseQueryExecute } from "urql";
 

@@ -1,4 +1,4 @@
-import { graphql } from "@graphql/index.js";
+import { graphql } from "#graphql/index.js";
 
 export const cancelNotificationScheduleDocument = graphql(/* GraphQL */ `
   mutation CancelNotificationSchedule($uuid: GlobalId!) {

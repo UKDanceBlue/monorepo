@@ -1,11 +1,3 @@
-import { useThemeFonts } from "@common/customHooks";
-import {
-  NotificationDeliveryFragment,
-  NotificationFragment,
-} from "@common/fragments/NotificationScreenGQL";
-import { Logger } from "@common/logger/Logger";
-import type { FragmentType } from "@graphql/index.js";
-import { getFragmentData } from "@graphql/index.js";
 import { openURL } from "expo-linking";
 import { isEqual } from "lodash";
 import { DateTime } from "luxon";
@@ -21,6 +13,15 @@ import {
 } from "native-base";
 import { memo } from "react";
 import { useWindowDimensions } from "react-native";
+
+import { useThemeFonts } from "#common/customHooks";
+import {
+  NotificationDeliveryFragment,
+  NotificationFragment,
+} from "#common/fragments/NotificationScreenGQL";
+import { Logger } from "#common/logger/Logger";
+import type { FragmentType } from "#graphql/index";
+import { getFragmentData } from "#graphql/index";
 
 import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
 

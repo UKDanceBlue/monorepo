@@ -1,11 +1,12 @@
-import type { FragmentType } from "@graphql/index.js";
-import type { EventScreenFragment } from "@navigation/root/EventScreen/EventScreenFragment";
 import type { DateTime } from "luxon";
 import { Column, Divider, Spinner, Text } from "native-base";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FlatList } from "react-native";
 import { Calendar } from "react-native-calendars";
 import type { DateData, MarkedDates } from "react-native-calendars/src/types";
+
+import type { FragmentType } from "#graphql/index";
+import type { EventScreenFragment } from "#navigation/root/EventScreen/EventScreenFragment";
 
 import { EventListRenderItem } from "./EventListRenderItem";
 import {

@@ -1,6 +1,6 @@
-import { SimpleConfigFragment } from "@common/fragments/Configuration";
-import { log, logError } from "@common/logging";
-import { getFragmentData, graphql } from "@graphql/index.js";
+import { SimpleConfigFragment } from "#common/fragments/Configuration";
+import { log, logError } from "#common/logging";
+import { getFragmentData, graphql } from "#graphql/index";
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 

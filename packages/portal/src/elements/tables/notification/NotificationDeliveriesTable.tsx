@@ -1,11 +1,12 @@
-import { getFragmentData, graphql } from "@graphql/index.js";
-import { useListQuery } from "@hooks/useListQuery";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
-import { renderDateTime } from "@tools/luxonTools";
 import { SortDirection } from "@ukdanceblue/common";
 import { Table } from "antd";
 import { DateTime } from "luxon";
 import { useQuery } from "urql";
+
+import { getFragmentData, graphql } from "#graphql/index.js";
+import { useListQuery } from "#hooks/useListQuery";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { renderDateTime } from "#tools/luxonTools";
 
 const NotificationDeliveriesTableFragment = graphql(/* GraphQL */ `
   fragment NotificationDeliveriesTableFragment on NotificationDeliveryNode {

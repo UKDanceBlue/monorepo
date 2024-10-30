@@ -1,9 +1,10 @@
-import { graphql } from "@graphql/index.js";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { StringComparator } from "@ukdanceblue/common";
 import { Button, Flex, Image, Input } from "antd";
 import { useState } from "react";
 import { useQuery } from "urql";
+
+import { graphql } from "#graphql/index.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 const imagePickerDocument = graphql(/* GraphQL */ `
   query ImagePicker($stringFilters: [ImageResolverKeyedStringFilterItem!]) {

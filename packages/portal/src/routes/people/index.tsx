@@ -1,10 +1,11 @@
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
-import { PeopleTable } from "@elements/tables/PeopleTable";
-import { useAuthorizationRequirement } from "@hooks/useLoginState";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
+
+import { PeopleTable } from "#elements/tables/PeopleTable";
+import { useAuthorizationRequirement } from "#hooks/useLoginState";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 function ListPeoplePage() {
   const canCreate = useAuthorizationRequirement(AccessLevel.Admin);

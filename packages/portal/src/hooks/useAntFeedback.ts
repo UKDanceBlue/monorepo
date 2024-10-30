@@ -1,4 +1,4 @@
-import { handleUnknownError } from "@tools/apolloErrorHandler";
+import { handleUnknownError } from "#tools/apolloErrorHandler";
 import { App } from "antd";
 import { useCallback, useState } from "react";
 

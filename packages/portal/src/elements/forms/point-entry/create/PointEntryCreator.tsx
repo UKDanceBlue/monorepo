@@ -1,6 +1,4 @@
 import { QuestionOutlined } from "@ant-design/icons";
-import type { FragmentType } from "@graphql/index.js";
-import { getFragmentData } from "@graphql/index.js";
 import type { InputRef, TourProps } from "antd";
 import {
   App,
@@ -13,6 +11,9 @@ import {
   Tour,
 } from "antd";
 import { useReducer, useRef, useState } from "react";
+
+import type { FragmentType } from "#graphql/index.js";
+import { getFragmentData } from "#graphql/index.js";
 
 import { PointEntryCreatorFragment } from "./PointEntryCreatorGQL";
 import { PointEntryOpportunityLookup } from "./PointEntryOpportunityLookup";

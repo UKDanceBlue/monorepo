@@ -1,8 +1,9 @@
-import { useMarathon } from "@config/marathonContext";
-import { TeamCreator } from "@elements/forms/team/create/TeamCreator";
 import { createFileRoute } from "@tanstack/react-router";
-import { routerAuthCheck } from "@tools/routerAuthCheck";
 import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
+
+import { useMarathon } from "#config/marathonContext";
+import { TeamCreator } from "#elements/forms/team/create/TeamCreator";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 function CreateTeamPage() {
   const selectedMarathon = useMarathon();

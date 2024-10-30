@@ -1,8 +1,4 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { useMarathon } from "@config/marathonContext";
-import type { CreatePointOpportunityInput } from "@graphql/graphql.js";
-import { graphql } from "@graphql/index.js";
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
 import { TeamType } from "@ukdanceblue/common";
 import {
   App,
@@ -16,6 +12,11 @@ import {
 } from "antd";
 import { useState } from "react";
 import { useMutation, useQuery } from "urql";
+
+import { useMarathon } from "#config/marathonContext";
+import type { CreatePointOpportunityInput } from "#graphql/graphql.js";
+import { graphql } from "#graphql/index.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
 

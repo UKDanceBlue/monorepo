@@ -1,11 +1,12 @@
 import { PlusOutlined } from "@ant-design/icons";
-import type { FragmentType } from "@graphql/index.js";
-import { getFragmentData } from "@graphql/index.js";
 import { base64StringToArray } from "@ukdanceblue/common";
 import { App, Button, Empty, Flex, Form, Image, Input, List } from "antd";
 import { DateTime, Interval } from "luxon";
 import { thumbHashToDataURL } from "thumbhash";
 import type { UseQueryExecute } from "urql";
+
+import type { FragmentType } from "#graphql/index.js";
+import { getFragmentData } from "#graphql/index.js";
 
 import { EventOccurrencePicker } from "../../../components/event/EventOccurrencePicker";
 import { EventEditorFragment } from "./EventEditorGQL";

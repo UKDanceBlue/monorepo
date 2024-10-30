@@ -5,7 +5,7 @@ import {
   sendNotificationDocument,
 } from "./NotificationManagerGQL";
 
-import { useQueryStatusWatcher } from "@hooks/useQueryStatusWatcher";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 import { useMutation } from "urql";
 
 import type { DateTime } from "luxon";

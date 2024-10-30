@@ -1,9 +1,10 @@
-import { Logger } from "@common/logger/Logger";
 import type { MarkdownProps } from "@jonasmerlin/react-native-markdown-display";
 import Markdown, {
   MarkdownIt,
 } from "@jonasmerlin/react-native-markdown-display";
 import { canOpenURL, openURL } from "expo-linking";
+
+import { Logger } from "#common/logger/Logger";
 
 import { rules as defaultRules } from "../../markdownRules";
 

@@ -11,14 +11,14 @@ import { Err } from "ts-results-es";
 import { ErrorCodeType } from "./index.js";
 
 export abstract class ConcreteError {
-  #graphQlError: GraphQLError;
+  #graphql/commonError: GraphQLError;
 
   constructor() {
-    this.#graphQlError = new GraphQLError("");
+    this.#graphql/commonError = new GraphQLError("");
   }
 
   get graphQlError() {
-    const formatted = this.#graphQlError.toJSON();
+    const formatted = this.#graphql/commonError.toJSON();
     return {
       ...formatted,
       message: this.message,
