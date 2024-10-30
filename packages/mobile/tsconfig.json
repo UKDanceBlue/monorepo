@@ -5,7 +5,7 @@
     "moduleResolution": "bundler",
     "paths": {
       "#assets/*": ["./assets/*"],
-      "#graphql/*": ["./graphql/*"],
+      "#graphql/*": ["./src/graphql/*"],
       "#common/*": ["./src/common/*"],
       "#context/*": ["./src/context/*"],
       "#navigation/*": ["./src/navigation/*"],
