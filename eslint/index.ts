@@ -300,6 +300,14 @@ export default eslintTs.config(
     },
   },
   {
+    files: ["packages/react-native-markdown-display/**/*"],
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: "module",
+      globals: { ...globals.es2020, ...globals["shared-node-browser"] },
+    },
+  },
+  {
     files: ["packages/portal/**/*"],
     languageOptions: {
       ecmaVersion: 2020,

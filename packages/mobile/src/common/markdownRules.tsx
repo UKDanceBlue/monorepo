@@ -1,12 +1,12 @@
-import type { RenderRules } from "@jonasmerlin/react-native-markdown-display";
 import {
   hasParents,
   renderRules,
-} from "@jonasmerlin/react-native-markdown-display";
+} from "@ukdanceblue/react-native-markdown-display";
 // @ts-expect-error - this is a private type
-import { openUrl } from "@jonasmerlin/react-native-markdown-display/src/lib/util/openUrl";
+import { openUrl } from "@ukdanceblue/react-native-markdown-display/src/lib/util/openUrl";
 import { Platform } from "expo-modules-core";
 import { Box, Divider, Heading, Link, Row, Text, VStack } from "native-base";
+import type { ReactNode } from "react";
 import type { FlexAlignType, TextStyle } from "react-native";
 import { StyleSheet } from "react-native";
 
@@ -122,7 +122,15 @@ export type MarkdownRuleStyles = Partial<
 >;
 
 // This is a modified clone of https://github.com/iamacup/react-native-markdown-display/blob/master/src/lib/renderRules.js
-export const rules: RenderRules = {
+export const rules: typeof renderRules & {
+  html_inline: ({
+    content,
+    key,
+  }: {
+    content: string;
+    key: React.Key;
+  }) => ReactNode;
+} = {
   // when unknown elements are introduced, so it wont break
   unknown: renderRules.unknown,
 
@@ -284,11 +292,9 @@ export const rules: RenderRules = {
       );
 
       const orderedList = parent[orderedListIndex];
-      const listItemNumber = (
-        orderedList.attributes as undefined | Record<string, unknown>
-      )?.start
-        ? Number(orderedList.attributes.start) + node.index
-        : node.index + 1;
+      const listItemNumber = orderedList.attributes?.start
+        ? Number(orderedList.attributes.start) + (node.index ?? 0)
+        : (node.index ?? 0) + 1;
 
       return (
         // @ts-expect-error - TODO: Fix these errors, seems ok for now
@@ -326,7 +332,7 @@ export const rules: RenderRules = {
   ) => (
     <Text
       key={node.key}
-      style={[inheritedStyles, styles.code_block]}
+      style={[inheritedStyles, styles.code_block as TextStyle]}
       selectable
     >
       {children}
@@ -348,7 +354,11 @@ export const rules: RenderRules = {
     }
 
     return (
-      <Text key={key} style={[inheritedStyles, styles.code_block]} selectable>
+      <Text
+        key={key}
+        style={[inheritedStyles, styles.code_block as TextStyle]}
+        selectable
+      >
         {content}
       </Text>
     );
@@ -369,7 +379,11 @@ export const rules: RenderRules = {
     }
 
     return (
-      <Text key={key} style={[inheritedStyles, styles.fence]} selectable>
+      <Text
+        key={key}
+        style={[inheritedStyles, styles.fence as TextStyle]}
+        selectable
+      >
         {content}
       </Text>
     );
@@ -437,7 +451,7 @@ export const rules: RenderRules = {
       key={node.key}
       /* @ts-expect-error - TODO: Fix these errors, seems ok for now */
       style={styles._VIEW_SAFE_link}
-      href={String(node.attributes.href)}
+      href={String(node.attributes?.href)}
     >
       <Text color={"blue.600"}>{children}</Text>
     </Link>
@@ -457,7 +471,7 @@ export const rules: RenderRules = {
             url: string,
             callback?: (url: string) => boolean
           ) => undefined
-        )(String(node.attributes.href), onLinkPress)
+        )(String(node.attributes?.href), onLinkPress)
       }
       /* @ts-expect-error - TODO: Fix these errors, seems ok for now */
       style={styles._VIEW_SAFE_blocklink}
@@ -493,7 +507,11 @@ export const rules: RenderRules = {
     styles: MarkdownRuleStyles,
     inheritedStyles = {}
   ) => (
-    <Text key={node.key} style={[inheritedStyles, styles.text]} selectable>
+    <Text
+      key={node.key}
+      style={[inheritedStyles, styles.text as TextStyle]}
+      selectable
+    >
       {node.content}
     </Text>
   ),

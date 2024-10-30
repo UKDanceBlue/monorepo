@@ -116,7 +116,6 @@ async function registerPushNotifications() {
           allowCriticalAlerts: true,
           provideAppNotificationSettings: false,
           allowProvisional: false,
-          allowAnnouncements: false,
         },
       });
     }

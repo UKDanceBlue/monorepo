@@ -11,7 +11,6 @@ import { MutableRefObject, useEffect, useRef, useState } from "react";
 import type {
   CameraCapturedPicture,
   CameraPictureOptions,
-  CameraProps,
   CameraViewRef,
 } from "expo-camera";
 
@@ -40,7 +39,7 @@ export function useCameraState(): {
   facing: CameraType;
   toggleFacing: (set?: CameraType) => void;
   cameraRef: MutableRefObject<CameraViewRef | undefined>;
-  onCameraReady: CameraProps["onCameraReady"];
+  onCameraReady: () => void;
   images: Partial<Record<CameraType, CameraCapturedPicture>>;
   state: CameraState;
   requestPermission: () => void;
@@ -110,7 +109,7 @@ export function useCameraState(): {
     }
   };
 
-  const onCameraReady: CameraProps["onCameraReady"] = () => {
+  const onCameraReady = () => {
     console.log("Camera is ready");
     setCameraLoading(false);
   };

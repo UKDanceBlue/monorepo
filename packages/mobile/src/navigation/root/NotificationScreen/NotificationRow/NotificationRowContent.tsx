@@ -7,7 +7,6 @@ import { Logger } from "@common/logger/Logger";
 import type { FragmentType } from "@graphql/index.js";
 import { getFragmentData } from "@graphql/index.js";
 import { openURL } from "expo-linking";
-import { isEqual } from "lodash";
 import { DateTime } from "luxon";
 import {
   Heading,
@@ -135,9 +134,10 @@ const NonMemoizedNotificationRowContent = ({
 const NotificationRowContent = memo(
   NonMemoizedNotificationRowContent,
   (prevProps, nextProps) => {
+    // Warning: this is a shallow comparison and may not be sufficient
     return (
       prevProps.loading === nextProps.loading &&
-      isEqual(prevProps.notification, nextProps.notification)
+      prevProps.notification === nextProps.notification
     );
   }
 );

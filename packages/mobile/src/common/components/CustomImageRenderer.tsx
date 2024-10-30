@@ -1,6 +1,6 @@
 import { Logger } from "@common/logger/Logger";
 import type { MarkdownRuleStyles } from "@common/markdownRules";
-import type { ASTNode } from "@jonasmerlin/react-native-markdown-display";
+import type { ASTNode } from "@ukdanceblue/react-native-markdown-display";
 import type { Key } from "react";
 import { useEffect, useState } from "react";
 import type { IFitImageProps } from "react-native-fit-image";
@@ -17,11 +17,14 @@ export const CustomImageRenderer = ({
   allowedImageHandlers: string[];
   defaultImageHandler: string | null | undefined;
 }) => {
-  const src = node.attributes.src ? String(node.attributes.src) : undefined;
-  const alt = node.attributes.alt ? String(node.attributes.alt) : undefined;
-  const title = node.attributes.title
-    ? String(node.attributes.title)
-    : undefined;
+  const src =
+    typeof node.attributes?.src === "string" ? node.attributes.src : undefined;
+  const alt =
+    typeof node.attributes?.alt === "string" ? node.attributes.alt : undefined;
+  const title =
+    typeof node.attributes?.title === "string"
+      ? node.attributes.title
+      : undefined;
 
   const [imageProps, setImageProps] = useState<
     (IFitImageProps & { key?: Key }) | null

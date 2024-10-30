@@ -94,7 +94,8 @@
         "GitHub.copilot",
         "GitHub.vscode-pull-request-github",
         "mtxr.sqltools",
-        "mtxr.sqltools-driver-pg"
+        "mtxr.sqltools-driver-pg",
+        "fill-labs.dependi"
       ]
     }
   },

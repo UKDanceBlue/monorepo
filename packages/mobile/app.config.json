@@ -3,14 +3,13 @@
     "name": "UK DanceBlue",
     "description": "University of Kentucky DanceBlue Mobile Application",
     "slug": "danceblue-mobile",
-    "privacy": "unlisted",
     "owner": "ukdanceblue",
     "scheme": "danceblue",
     "jsEngine": "hermes",
     "notification": {
       "icon": "./assets/app/icon-2.png"
     },
-    "platforms": ["ios", "android", "web"],
+    "platforms": ["ios", "android"],
     "orientation": "portrait",
     "icon": "./assets/app/icon-2.png",
     "splash": {
@@ -43,7 +42,6 @@
       "expo-av",
       "expo-font",
       "expo-secure-store",
-      "expo-file-system",
       [
         "expo-image-picker",
         {

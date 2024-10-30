@@ -5,11 +5,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   configureScope as configureSentryScope,
   init as initSentry,
-  ReactNativeTracing,
+  reactNativeTracingIntegration,
   wrap as wrapWithSentry,
 } from "@sentry/react-native";
 import { isRunningInExpoGo, registerRootComponent } from "expo";
-import { DevMenu, isDevelopmentBuild } from "expo-dev-client";
+import { isDevelopmentBuild, registerDevMenuItems } from "expo-dev-client";
 import { setNotificationHandler } from "expo-notifications";
 import { preventAutoHideAsync } from "expo-splash-screen";
 import { channel, isEmbeddedLaunch, manifest, updateId } from "expo-updates";
@@ -44,7 +44,7 @@ initSentry({
   },
   debug: false,
   integrations: [
-    new ReactNativeTracing({
+    reactNativeTracingIntegration({
       routingInstrumentation,
       enableNativeFramesTracking: !isRunningInExpoGo(),
     }),
@@ -73,7 +73,7 @@ configureSentryScope((scope) => {
 });
 
 if (isDevelopmentBuild()) {
-  DevMenu.registerDevMenuItems([
+  registerDevMenuItems([
     {
       name: "Clear AsyncStorage",
       callback: async () => {
