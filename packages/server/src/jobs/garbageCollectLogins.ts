@@ -1,10 +1,9 @@
-import { logger } from "#logging/standardLogging.js";
-import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
-
-import { Cron } from "croner";
 import { Container } from "@freshgum/typedi";
+import { Cron } from "croner";
 
+import { logger } from "#logging/standardLogging.js";
 import { JobStateRepository } from "#repositories/JobState.js";
+import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
 
 const jobStateRepository = Container.get(JobStateRepository);
 

@@ -1,22 +1,21 @@
-import { logger } from "#logging/standardLogging.js";
-import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
-import {
-  RepositoryError,
-  SimpleUniqueParam,
-  handleRepositoryError,
-} from "#repositories/shared.js";
-
+import { Service } from "@freshgum/typedi";
 import { DBFundsTeam, Prisma, PrismaClient, Team } from "@prisma/client";
 import {
+  BasicError,
   CompositeError,
   NotFoundError,
-  BasicError,
 } from "@ukdanceblue/common/error";
 import { DateTime } from "luxon";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
-import { Service } from "@freshgum/typedi";
 
+import { logger } from "#logging/standardLogging.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
+import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
+import {
+  handleRepositoryError,
+  RepositoryError,
+  SimpleUniqueParam,
+} from "#repositories/shared.js";
 
 export type UniqueDbFundsTeamParam =
   | {

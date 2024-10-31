@@ -1,5 +1,6 @@
 import { CommitteeRole } from "@prisma/client";
-import { AccessControlParam, CommitteeIdentifier } from "@ukdanceblue/common";
+import type { AccessControlParam} from "@ukdanceblue/common";
+import { CommitteeIdentifier } from "@ukdanceblue/common";
 
 /**
  * Access control param for granting access to all fundraising entries.

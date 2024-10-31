@@ -1,19 +1,19 @@
-import { Logger } from "#common/logger/Logger";
-import { asyncWait } from "#common/util/wait";
-import {
-  CameraType,
-  FlashMode,
-  PermissionStatus,
-  useCameraPermissions,
-} from "expo-camera";
-import { MutableRefObject, useEffect, useRef, useState } from "react";
-
 import type {
   CameraCapturedPicture,
   CameraPictureOptions,
   CameraProps,
+  CameraType,
   CameraViewRef,
+  FlashMode} from "expo-camera";
+import {
+  PermissionStatus,
+  useCameraPermissions,
 } from "expo-camera";
+import type { MutableRefObject} from "react";
+import { useEffect, useRef, useState } from "react";
+
+import { Logger } from "#common/logger/Logger";
+import { asyncWait } from "#common/util/wait";
 
 type CameraState =
   | "permission-blocked"
@@ -76,11 +76,7 @@ export function useCameraState(): {
       break;
     }
     default: {
-      if (images.front && images.back) {
-        state = "captured";
-      } else {
-        state = "ready";
-      }
+      state = images.front && images.back ? "captured" : "ready";
     }
   }
 
@@ -172,6 +168,6 @@ export function useCameraState(): {
     requestPermission,
     startTakingPictures,
     reset,
-    takingPicture: currentlyTaking["front"] || currentlyTaking["back"],
+    takingPicture: currentlyTaking.front || currentlyTaking.back,
   };
 }

@@ -1,14 +1,13 @@
-import {
-  AccessLevel,
-  committeeNames,
-  compareCommitteeRole,
-  stringifyAccessLevel,
-} from "./structures.js";
+import { GraphQLNonNull } from "graphql";
+import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
+import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
+import { UseMiddleware } from "type-graphql";
+import type { Primitive } from "utility-types";
 
 import { parseGlobalId } from "../api/scalars/GlobalId.js";
-
-import { UseMiddleware } from "type-graphql";
-
+import { AccessControlError } from "../error/control.js";
+import { InvariantError } from "../error/direct.js";
+import type { ConcreteResult } from "../error/result.js";
 import {
   type Authorization,
   type CommitteeIdentifier,
@@ -19,13 +18,12 @@ import {
   type TeamType,
   type UserData,
 } from "../index.js";
-import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
-import type { Primitive } from "utility-types";
-import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
-import { AccessControlError } from "../error/control.js";
-import { InvariantError } from "../error/direct.js";
-import { GraphQLNonNull } from "graphql";
-import { ConcreteResult } from "../error/result.js";
+import {
+  AccessLevel,
+  committeeNames,
+  compareCommitteeRole,
+  stringifyAccessLevel,
+} from "./structures.js";
 
 export interface AuthorizationRule {
   /**
@@ -66,7 +64,7 @@ export function prettyPrintAuthorizationRule(rule: AuthorizationRule): string {
     parts.push(`have a committee role of at least ${rule.minCommitteeRole}`);
   }
   if (rule.committeeIdentifier != null) {
-    parts.push(`be a member of ${committeeNames[rule.committeeIdentifier!]}`);
+    parts.push(`be a member of ${committeeNames[rule.committeeIdentifier]}`);
   }
   if (rule.committeeIdentifiers != null) {
     parts.push(
@@ -171,7 +169,7 @@ export type CustomQueryAuthorizationFunction<RootType, ResultType> = (
   root: RootType,
   context: AccessControlContext,
   result: Option<ResultType>,
-  args: { [key: string]: unknown }
+  args: Record<string, unknown>
 ) => boolean | null | Promise<boolean | null>;
 
 /**
@@ -187,7 +185,7 @@ export type CustomQueryAuthorizationFunction<RootType, ResultType> = (
  */
 export type CustomMutationAuthorizationFunction = (
   context: AccessControlContext,
-  args: { [key: string]: unknown }
+  args: Record<string, unknown>
 ) => boolean | null | Promise<boolean | null>;
 
 export interface SimpleTeamMembership {
@@ -373,7 +371,7 @@ export function QueryAccessControl<
         result = Some(result);
       }
 
-      let customResult = await params[0](root, context, result, args);
+      const customResult = await params[0](root, context, result, args);
 
       if (customResult === false) {
         return Err(new AccessControlError(info));
@@ -402,11 +400,7 @@ export function QueryAccessControl<
       }
 
       if (!ok) {
-        if (info.returnType instanceof GraphQLNonNull) {
-          return Err(new AccessControlError(info));
-        } else {
-          return null;
-        }
+        return info.returnType instanceof GraphQLNonNull ? Err(new AccessControlError(info)) : null;
       }
 
       return next();
@@ -420,10 +414,10 @@ export function MutationAccessControl(
   params: CustomMutationAuthorizationFunction
 ): MethodDecorator & PropertyDecorator;
 export function MutationAccessControl(
-  ...params: AccessControlParam<never>[]
+  ...params: AccessControlParam[]
 ): MethodDecorator & PropertyDecorator;
 export function MutationAccessControl(
-  ...params: AccessControlParam<never>[] | [CustomMutationAuthorizationFunction]
+  ...params: AccessControlParam[] | [CustomMutationAuthorizationFunction]
 ): MethodDecorator & PropertyDecorator {
   const middleware: MiddlewareFn<AuthorizationContext> = async (
     resolverData,
@@ -440,7 +434,7 @@ export function MutationAccessControl(
     let ok = false;
 
     if (typeof params[0] === "function") {
-      let customResult = await params[0](context, args);
+      const customResult = await params[0](context, args);
 
       if (customResult === false) {
         return Err(new AccessControlError(info));
@@ -471,11 +465,7 @@ export function MutationAccessControl(
       }
 
       if (!ok) {
-        if (info.returnType instanceof GraphQLNonNull) {
-          return Err(new AccessControlError(info));
-        } else {
-          return null;
-        }
+        return info.returnType instanceof GraphQLNonNull ? Err(new AccessControlError(info)) : null;
       }
 
       return next();

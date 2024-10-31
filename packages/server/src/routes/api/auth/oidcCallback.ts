@@ -1,17 +1,17 @@
-import { makeOidcClient } from "./oidcClient.js";
+import type { IncomingMessage } from "node:http";
+
+import { Container } from "@freshgum/typedi";
+import { AuthSource, makeUserData } from "@ukdanceblue/common";
+import jsonwebtoken from "jsonwebtoken";
+import type { Context } from "koa";
+import { DateTime } from "luxon";
 
 import { makeUserJwt } from "#auth/index.js";
 import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
-import { AuthSource, makeUserData } from "@ukdanceblue/common";
-import jsonwebtoken from "jsonwebtoken";
-import { DateTime } from "luxon";
-import { Container } from "@freshgum/typedi";
-
-import type { Context } from "koa";
-import type { IncomingMessage } from "node:http";
+import { makeOidcClient } from "./oidcClient.js";
 
 export const oidcCallback = async (ctx: Context) => {
   const oidcClient = await makeOidcClient(ctx.request);
@@ -117,7 +117,7 @@ export const oidcCallback = async (ctx: Context) => {
       }
     }
     if (linkblue && currentPerson.linkblue !== linkblue) {
-      currentPerson.linkblue = linkblue?.toLowerCase();
+      currentPerson.linkblue = linkblue.toLowerCase();
     }
 
     const updatedPerson = await personRepository.updatePerson(

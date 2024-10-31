@@ -1,14 +1,12 @@
-import { TimestampedResource } from "./Resource.js";
-
-import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
-import { Node, createNodeClasses } from "../relay.js";
-import { GlobalIdScalar } from "../scalars/GlobalId.js";
-
 import { DateTimeISOResolver } from "graphql-scalars";
 import { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
+import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
+import { createNodeClasses,Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
+import { TimestampedResource } from "./Resource.js";
 
 /*
 The way configurations work is that there can be n number of configurations,

@@ -1,10 +1,9 @@
+import type { DateTime } from "luxon";
+import { Field, ObjectType } from "type-graphql";
+import type { Class } from "utility-types";
+
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { GlobalId } from "../scalars/GlobalId.js";
-
-import { Field, ObjectType } from "type-graphql";
-
-import type { DateTime } from "luxon";
-import type { Class } from "utility-types";
 
 @ObjectType()
 export abstract class Resource {

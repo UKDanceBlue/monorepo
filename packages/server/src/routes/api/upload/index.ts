@@ -1,16 +1,13 @@
-import { maxFileSize } from "#environment";
+import { Service } from "@freshgum/typedi";
+import type { File } from "@prisma/client";
+import { open } from "fs/promises";
+import { koaBody } from "koa-body";
 
+import { maxFileSize } from "#environment";
 import { FileManager } from "#files/FileManager.js";
 import { generateThumbHash } from "#lib/thumbHash.js";
 import { logger } from "#logging/standardLogging.js";
 import { ImageRepository } from "#repositories/image/ImageRepository.js";
-
-import { koaBody } from "koa-body";
-import { Service } from "@freshgum/typedi";
-
-import { open } from "fs/promises";
-
-import type { File } from "@prisma/client";
 import { RouterService } from "#routes/RouteService.js";
 
 @Service([ImageRepository, FileManager])

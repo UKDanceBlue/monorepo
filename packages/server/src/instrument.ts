@@ -1,9 +1,10 @@
 // This file is first imported by index.ts
 
-import { isDevelopment } from "#environment";
-import { logger } from "#logging/standardLogging.js";
 import { init } from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
+
+import { isDevelopment } from "#environment";
+import { logger } from "#logging/standardLogging.js";
 
 init({
   dsn: "https://abd4a421b3c1748b991799a7b236f240@o4507762130681856.ingest.us.sentry.io/4508071851786240",

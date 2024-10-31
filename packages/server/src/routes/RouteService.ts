@@ -1,4 +1,5 @@
-import Router, { Middleware } from "@koa/router";
+import type { Middleware } from "@koa/router";
+import Router from "@koa/router";
 
 export abstract class RouterService {
   private readonly localRouter: Router;

@@ -1,10 +1,10 @@
-import { buildImageOrder, buildImageWhere } from "./imageRepositoryUtils.js";
-
-import { Prisma, PrismaClient } from "@prisma/client";
 import { Service } from "@freshgum/typedi";
+import { Prisma, PrismaClient } from "@prisma/client";
+import type { SortDirection } from "@ukdanceblue/common";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type { SortDirection } from "@ukdanceblue/common";
+
+import { buildImageOrder, buildImageWhere } from "./imageRepositoryUtils.js";
 
 const imageBooleanKeys = [] as const;
 type ImageBooleanKey = (typeof imageBooleanKeys)[number];

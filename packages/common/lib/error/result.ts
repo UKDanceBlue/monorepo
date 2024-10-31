@@ -1,5 +1,6 @@
-import type { ConcreteError, JsError, UnknownError } from "./error.js";
 import type { Result } from "ts-results-es";
+
+import type { ConcreteError, JsError, UnknownError } from "./error.js";
 
 export type ConcreteResult<T, E extends ConcreteError = ConcreteError> = Result<
   T,

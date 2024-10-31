@@ -1,37 +1,36 @@
-import { auditLogger, auditLoggerFileName } from "#logging/auditLogging.js";
-import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
-import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
-
+import { Service } from "@freshgum/typedi";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
-  QueryAccessControl,
   AccessLevel,
   ConfigurationNode,
-  GlobalIdScalar,
-  SortDirection,
   dateTimeFromSomething,
+  GlobalIdScalar,
   MutationAccessControl,
+  QueryAccessControl,
+  SortDirection,
 } from "@ukdanceblue/common";
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
-import { Service } from "@freshgum/typedi";
-
-import type { GlobalId } from "@ukdanceblue/common";
-import { readFile } from "fs/promises";
-import { join } from "path";
-import { logDir } from "#environment";
 import {
-  GetConfigurationResponse,
-  GetAllConfigurationsResponse,
-  CreateConfigurationResponse,
   CreateConfigurationInput,
+  CreateConfigurationResponse,
   CreateConfigurationsResponse,
   DeleteConfigurationResponse,
+  GetAllConfigurationsResponse,
+  GetConfigurationResponse,
 } from "@ukdanceblue/common";
 import {
   ConcreteResult,
   NotFoundError,
   toBasicError,
 } from "@ukdanceblue/common/error";
+import { readFile } from "fs/promises";
+import { join } from "path";
 import { Err, Ok } from "ts-results-es";
+import { Arg, Mutation, Query, Resolver } from "type-graphql";
+
+import { logDir } from "#environment";
+import { auditLogger, auditLoggerFileName } from "#logging/auditLogging.js";
+import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
+import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
 
 @Resolver(() => ConfigurationNode)
 @Service([ConfigurationRepository])
@@ -201,8 +200,8 @@ export class ConfigurationResolver {
           .slice(offset, offset + lines)
           .join("\n")
       );
-    } catch (e) {
-      return Err(toBasicError(e));
+    } catch (error) {
+      return Err(toBasicError(error));
     }
   }
 }

@@ -1,26 +1,25 @@
-import { buildTeamOrder, buildTeamWhere } from "./teamRepositoryUtils.js";
-
-import { SomePrismaError } from "#error/prisma.js";
-import {
-  handleRepositoryError,
-  RepositoryError,
-  type SimpleUniqueParam,
-} from "#repositories/shared.js";
-
-import { Prisma, PrismaClient, Team } from "@prisma/client";
-import { MembershipPositionType, TeamLegacyStatus } from "@ukdanceblue/common";
-import { BasicError, ConcreteResult } from "@ukdanceblue/common/error";
-import { None, Ok, Some, Option, Result } from "ts-results-es";
 import { Service } from "@freshgum/typedi";
-
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
+import { Prisma, PrismaClient, Team } from "@prisma/client";
 import type {
   BulkTeamInput,
   MarathonYearString,
   SortDirection,
   TeamType,
 } from "@ukdanceblue/common";
+import { MembershipPositionType, TeamLegacyStatus } from "@ukdanceblue/common";
+import { BasicError, ConcreteResult } from "@ukdanceblue/common/error";
+import { None, Ok, Option, Result,Some } from "ts-results-es";
+
+import { SomePrismaError } from "#error/prisma.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
+import {
+  handleRepositoryError,
+  RepositoryError,
+  type SimpleUniqueParam,
+} from "#repositories/shared.js";
+
+import { buildTeamOrder, buildTeamWhere } from "./teamRepositoryUtils.js";
 
 const teamBooleanKeys = [] as const;
 type TeamBooleanKey = (typeof teamBooleanKeys)[number];
@@ -347,11 +346,11 @@ export class TeamRepository {
                     person: {
                       connectOrCreate: {
                         where: {
-                          linkblue: linkblue?.toLowerCase(),
+                          linkblue: linkblue.toLowerCase(),
                         },
                         create: {
-                          linkblue: linkblue?.toLowerCase(),
-                          email: `${linkblue?.toLowerCase()}@uky.edu`,
+                          linkblue: linkblue.toLowerCase(),
+                          email: `${linkblue.toLowerCase()}@uky.edu`,
                         },
                       },
                     },
@@ -363,11 +362,11 @@ export class TeamRepository {
                     person: {
                       connectOrCreate: {
                         where: {
-                          linkblue: linkblue?.toLowerCase(),
+                          linkblue: linkblue.toLowerCase(),
                         },
                         create: {
-                          linkblue: linkblue?.toLowerCase(),
-                          email: `${linkblue?.toLowerCase()}@uky.edu`,
+                          linkblue: linkblue.toLowerCase(),
+                          email: `${linkblue.toLowerCase()}@uky.edu`,
                         },
                       },
                     },

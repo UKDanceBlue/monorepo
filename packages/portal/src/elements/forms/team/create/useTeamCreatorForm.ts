@@ -1,13 +1,13 @@
-import { teamCreatorDocument } from "./TeamCreatorGQL";
-
-import { useAntFeedback } from "#hooks/useAntFeedback";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
-import { type CreateTeamInput } from "#graphql/graphql.js";
 import { useMutation } from "urql";
 
+import { type CreateTeamInput } from "#graphql/graphql.js";
 import type { DocumentType } from "#graphql/index.js";
+import { useAntFeedback } from "#hooks/useAntFeedback";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+
+import { teamCreatorDocument } from "./TeamCreatorGQL";
 
 export function useTeamCreatorForm(
   afterSubmit:

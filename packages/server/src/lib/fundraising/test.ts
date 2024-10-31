@@ -1,4 +1,5 @@
 import { Container } from "@freshgum/typedi";
+
 import { DBFundsFundraisingProvider } from "./DbFundsProvider.js";
 
 const dbfunds = Container.get(DBFundsFundraisingProvider);

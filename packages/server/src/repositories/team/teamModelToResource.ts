@@ -1,6 +1,5 @@
-import { TeamType, TeamNode } from "@ukdanceblue/common";
-
 import type { TeamLegacyStatus } from "@ukdanceblue/common";
+import { TeamNode,TeamType } from "@ukdanceblue/common";
 
 export function teamModelToResource(teamModel: {
   uuid: string;

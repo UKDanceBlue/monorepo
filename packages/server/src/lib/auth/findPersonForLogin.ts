@@ -1,9 +1,8 @@
-import { logger } from "#logging/logger.js";
-
-import { MembershipPositionType } from "@ukdanceblue/common";
-
 import type { AuthSource, Prisma, PrismaClient } from "@prisma/client";
 import type { DbRole } from "@ukdanceblue/common";
+import { MembershipPositionType } from "@ukdanceblue/common";
+
+import { logger } from "#logging/logger.js";
 
 // TODO: rework this whole thing, it's pretty boated and confusing
 

@@ -1,14 +1,3 @@
-import {
-  BooleanFilterItem,
-  DateFilterItem,
-  IsNullFilterItem,
-  NumericFilterItem,
-  OneOfFilterItem,
-  StringFilterItem,
-} from "./FilterItem.js";
-import { UnfilteredListQueryArgs } from "./UnfilteredListQueryArgs.js";
-import { registerFilterKeyEnums } from "./registerFilterKeyEnums.js";
-
 import { VoidResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType } from "type-graphql";
 
@@ -20,6 +9,16 @@ import type {
   AbstractOneOfFilterItem,
   AbstractStringFilterItem,
 } from "./FilterItem.js";
+import {
+  BooleanFilterItem,
+  DateFilterItem,
+  IsNullFilterItem,
+  NumericFilterItem,
+  OneOfFilterItem,
+  StringFilterItem,
+} from "./FilterItem.js";
+import { registerFilterKeyEnums } from "./registerFilterKeyEnums.js";
+import { UnfilteredListQueryArgs } from "./UnfilteredListQueryArgs.js";
 
 export abstract class AbstractFilteredListQueryArgs<
   AllKeys extends string,

@@ -1,15 +1,4 @@
-import {
-  buildFundraisingEntryOrder,
-  buildFundraisingEntryWhere,
-} from "./fundraisingEntryRepositoryUtils.js";
-
-import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
-import {
-  RepositoryError,
-  SimpleUniqueParam,
-  handleRepositoryError,
-} from "#repositories/shared.js";
-
+import { Service } from "@freshgum/typedi";
 import {
   DBFundsFundraisingEntry,
   FundraisingAssignment,
@@ -21,16 +10,26 @@ import {
   PrismaClient,
   Team,
 } from "@prisma/client";
+import type { SortDirection } from "@ukdanceblue/common";
 import {
   ActionDeniedError,
   InvalidArgumentError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
-import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type { SortDirection } from "@ukdanceblue/common";
+import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
+import {
+  handleRepositoryError,
+  RepositoryError,
+  SimpleUniqueParam,
+} from "#repositories/shared.js";
+
+import {
+  buildFundraisingEntryOrder,
+  buildFundraisingEntryWhere,
+} from "./fundraisingEntryRepositoryUtils.js";
 
 const fundraisingEntryBooleanKeys = [] as const;
 type FundraisingEntryBooleanKey = (typeof fundraisingEntryBooleanKeys)[number];

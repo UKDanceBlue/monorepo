@@ -1,15 +1,13 @@
-import { TimestampedResource } from "./Resource.js";
-
-import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
-import { Node, createNodeClasses } from "../relay.js";
-import { GlobalIdScalar } from "../scalars/GlobalId.js";
-
 import { DateTimeISOResolver } from "graphql-scalars";
+import type { DateTime } from "luxon";
 import { None, Option, Some } from "ts-results-es";
 import { Field, Float, ObjectType } from "type-graphql";
 
+import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
+import { createNodeClasses,Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
-import type { DateTime } from "luxon";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
+import { TimestampedResource } from "./Resource.js";
 
 @ObjectType({
   implements: [Node],

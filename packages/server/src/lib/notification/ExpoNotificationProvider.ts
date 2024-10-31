@@ -1,31 +1,7 @@
 // We allow awaits in loops here because we actually do want to slow down processing
 
-import { isDevelopment } from "#environment";
-
-import { logger } from "#logging/standardLogging.js";
-import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
-import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
-import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
-
-import { Expo } from "expo-server-sdk";
-import { DateTime } from "luxon";
 import { Service } from "@freshgum/typedi";
-
-import { randomUUID } from "crypto";
-
-import type {
-  NotificationAudience,
-  NotificationProvider,
-  SendableNotification,
-} from "./NotificationProvider.js";
 import type { Notification, Prisma } from "@prisma/client";
-import type {
-  ExpoPushErrorTicket,
-  ExpoPushMessage,
-  ExpoPushSuccessTicket,
-  ExpoPushTicket,
-} from "expo-server-sdk";
-import { expoServiceToken } from "./expoServiceToken.js";
 import {
   ActionDeniedError,
   CompositeError,
@@ -34,12 +10,34 @@ import {
   toBasicError,
   UnknownError,
 } from "@ukdanceblue/common/error";
+import { randomUUID } from "crypto";
+import type {
+  ExpoPushErrorTicket,
+  ExpoPushMessage,
+  ExpoPushSuccessTicket,
+  ExpoPushTicket,
+} from "expo-server-sdk";
+import { Expo } from "expo-server-sdk";
+import { DateTime } from "luxon";
 import { AsyncResult, Err, Ok, Result } from "ts-results-es";
+
+import { isDevelopment } from "#environment";
 import { ExpoPushFailureError, ExpoPushTicketError } from "#error/expo.js";
+import { logger } from "#logging/standardLogging.js";
+import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
+import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
+import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
 import {
   handleRepositoryError,
   RepositoryError,
 } from "#repositories/shared.js";
+
+import { expoServiceToken } from "./expoServiceToken.js";
+import type {
+  NotificationAudience,
+  NotificationProvider,
+  SendableNotification,
+} from "./NotificationProvider.js";
 
 function makeExpoNotifications(
   content: {

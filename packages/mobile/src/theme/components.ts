@@ -1,6 +1,5 @@
-import originalComponentThemes from "native-base/components";
-
 import type { ComponentTheme, Theme } from "native-base";
+import originalComponentThemes from "native-base/components";
 
 const {
   Button: originalButtonTheme,

@@ -1,14 +1,13 @@
+import { useLocation } from "@tanstack/react-router";
+import { App } from "antd";
+import type { MessageType } from "antd/es/message/interface";
+import { useCallback, useEffect, useRef } from "react";
+import type { CombinedError } from "urql";
+
 import {
   extractServerError,
   handleApiError,
 } from "../tools/apolloErrorHandler.js";
-
-import { App } from "antd";
-import { useCallback, useEffect, useRef } from "react";
-
-import type { MessageType } from "antd/es/message/interface";
-import type { CombinedError } from "urql";
-import { useLocation } from "@tanstack/react-router";
 
 // const MAX_ALLOWED_ERROR_MS = 500;
 const MAX_ALLOWED_LOADING_MS = 5000;

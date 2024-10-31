@@ -1,12 +1,13 @@
 import { DateTimeISOResolver, VoidResolver } from "graphql-scalars";
-import { ObjectType, Field, InputType } from "type-graphql";
-import {
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLArrayOkResponse,
-  AbstractGraphQLCreatedResponse,
-} from "./ApiResponse.js";
+import { Field, InputType,ObjectType } from "type-graphql";
+
 import { ConfigurationNode } from "../resources/Configuration.js";
 import { VoidScalar } from "../scalars/Void.js";
+import {
+  AbstractGraphQLArrayOkResponse,
+  AbstractGraphQLCreatedResponse,
+  AbstractGraphQLOkResponse,
+} from "./ApiResponse.js";
 
 @ObjectType("GetConfigurationByUuidResponse", {
   implements: AbstractGraphQLOkResponse<ConfigurationNode>,

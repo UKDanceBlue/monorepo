@@ -1,26 +1,29 @@
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
-import { PointEntryRepository } from "#repositories/pointEntry/PointEntryRepository.js";
-import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
-import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
-import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
-
+import { Service } from "@freshgum/typedi";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
-  QueryAccessControl,
   AccessLevel,
   CommitteeIdentifier,
   CommitteeRole,
+  GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
-  GlobalIdScalar,
+  MutationAccessControl,
   PersonNode,
   PointEntryNode,
   PointOpportunityNode,
+  QueryAccessControl,
   SortDirection,
   TeamNode,
-  MutationAccessControl,
 } from "@ukdanceblue/common";
-import { NotFoundError, ConcreteResult } from "@ukdanceblue/common/error";
+import {
+  CreatePointEntryInput,
+  CreatePointEntryResponse,
+  DeletePointEntryResponse,
+  GetPointEntryByUuidResponse,
+  ListPointEntriesArgs,
+  ListPointEntriesResponse,
+} from "@ukdanceblue/common";
+import { ConcreteResult,NotFoundError } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Some } from "ts-results-es";
 import {
   Arg,
@@ -31,17 +34,13 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "@freshgum/typedi";
 
-import type { GlobalId } from "@ukdanceblue/common";
-import {
-  GetPointEntryByUuidResponse,
-  ListPointEntriesResponse,
-  ListPointEntriesArgs,
-  CreatePointEntryResponse,
-  CreatePointEntryInput,
-  DeletePointEntryResponse,
-} from "@ukdanceblue/common";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
+import { PointEntryRepository } from "#repositories/pointEntry/PointEntryRepository.js";
+import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
+import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
 @Resolver(() => PointEntryNode)
 @Service([PointEntryRepository, PersonRepository])

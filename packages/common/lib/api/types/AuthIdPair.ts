@@ -1,7 +1,7 @@
+import { Field, ObjectType } from "type-graphql";
+
 import { AuthSource } from "../../authorization/structures.js";
 import { Resource } from "../resources/Resource.js";
-
-import { Field, ObjectType } from "type-graphql";
 
 @ObjectType()
 export class AuthIdPairResource<

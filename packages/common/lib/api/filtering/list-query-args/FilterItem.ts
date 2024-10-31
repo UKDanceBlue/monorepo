@@ -1,13 +1,3 @@
-import {
-  IsComparator,
-  NumericComparator,
-  StringComparator,
-} from "../ListQueryTypes.js";
-
-import { DateTimeISOResolver, VoidResolver } from "graphql-scalars";
-import { Field, InputType } from "type-graphql";
-
-import type { Comparator } from "../ListQueryTypes.js";
 import type {
   BooleanFilterItemInterface,
   DateFilterItemInterface,
@@ -17,6 +7,15 @@ import type {
   OneOfFilterItemInterface,
   StringFilterItemInterface,
 } from "@ukdanceblue/common";
+import { DateTimeISOResolver, VoidResolver } from "graphql-scalars";
+import { Field, InputType } from "type-graphql";
+
+import type { Comparator } from "../ListQueryTypes.js";
+import {
+  IsComparator,
+  NumericComparator,
+  StringComparator,
+} from "../ListQueryTypes.js";
 
 @InputType()
 export abstract class FilterItem<Field extends string, V>

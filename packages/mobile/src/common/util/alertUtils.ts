@@ -1,6 +1,6 @@
-import { log } from "../logging";
-
 import { Alert } from "react-native";
+
+import { log } from "../logging";
 
 /**
  * Show a one button prompt

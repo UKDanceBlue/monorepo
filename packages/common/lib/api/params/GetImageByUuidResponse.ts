@@ -1,11 +1,12 @@
 import { URLResolver } from "graphql-scalars";
-import { ObjectType, Field, InputType, ArgsType } from "type-graphql";
+import { ArgsType,Field, InputType, ObjectType } from "type-graphql";
+
+import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
+import { ImageNode } from "../resources/Image.js";
 import {
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
 } from "./ApiResponse.js";
-import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
-import { ImageNode } from "../resources/Image.js";
 
 @ObjectType("GetImageByUuidResponse", { implements: AbstractGraphQLOkResponse })
 export class GetImageByUuidResponse extends AbstractGraphQLOkResponse<ImageNode> {

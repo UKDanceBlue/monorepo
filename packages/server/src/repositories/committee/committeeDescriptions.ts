@@ -1,6 +1,5 @@
-import { CommitteeIdentifier } from "@ukdanceblue/common";
-
 import type { Prisma } from "@prisma/client";
+import { CommitteeIdentifier } from "@ukdanceblue/common";
 
 const createCommittee = (
   identifier: CommitteeIdentifier,

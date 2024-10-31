@@ -1,18 +1,19 @@
-import {
-  checkAuthorization,
-  defaultAuthorization,
-  roleToAccessLevel,
-} from "@ukdanceblue/common";
-import { graphql } from "#graphql/index.js";
-import { useMemo } from "react";
-import { Client, OperationResult, useQuery } from "urql";
-
 import type {
   AccessLevel,
   Authorization,
   AuthorizationRule,
 } from "@ukdanceblue/common";
-import { LoginStateQuery } from "#graphql/graphql.js";
+import {
+  checkAuthorization,
+  defaultAuthorization,
+  roleToAccessLevel,
+} from "@ukdanceblue/common";
+import { useMemo } from "react";
+import type { Client, OperationResult} from "urql";
+import { useQuery } from "urql";
+
+import type { LoginStateQuery } from "#graphql/graphql.js";
+import { graphql } from "#graphql/index.js";
 
 export const loginStateDocument = graphql(/* GraphQL */ `
   query LoginState {

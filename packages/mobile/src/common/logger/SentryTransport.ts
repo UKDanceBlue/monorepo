@@ -1,8 +1,7 @@
-import { LoggerTransport, logLevelToString } from "./transport";
-
 import { captureException, captureMessage } from "@sentry/react-native";
 
 import type { ExtraLogArgs, LogLevel } from "./transport";
+import { LoggerTransport, logLevelToString } from "./transport";
 
 export class SentryTransport extends LoggerTransport {
   constructor(level: LogLevel) {

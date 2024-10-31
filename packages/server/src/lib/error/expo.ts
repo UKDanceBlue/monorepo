@@ -3,7 +3,7 @@ import {
   ConcreteError,
   ErrorCode,
 } from "@ukdanceblue/common/error";
-import { ExpoPushErrorTicket } from "expo-server-sdk";
+import type { ExpoPushErrorTicket } from "expo-server-sdk";
 
 export abstract class ExpoError extends ConcreteError {
   constructor() {

@@ -1,16 +1,15 @@
+import { Service } from "@freshgum/typedi";
+import { Prisma, PrismaClient } from "@prisma/client";
+import type { SortDirection } from "@ukdanceblue/common";
+import type { DateTime } from "luxon";
+
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import { SimpleUniqueParam } from "#repositories/shared.js";
+
 import {
   buildConfigurationOrder,
   buildConfigurationWhere,
 } from "./configurationRepositoryUtils.js";
-
-import { SimpleUniqueParam } from "#repositories/shared.js";
-
-import { Prisma, PrismaClient } from "@prisma/client";
-import { Service } from "@freshgum/typedi";
-
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type { SortDirection } from "@ukdanceblue/common";
-import type { DateTime } from "luxon";
 
 const configurationStringKeys = ["key", "value"] as const;
 type ConfigurationStringKey = (typeof configurationStringKeys)[number];
@@ -46,8 +45,8 @@ export class ConfigurationRepository {
   findConfigurations(
     filters: readonly ConfigurationFilters[] | null | undefined,
     order: readonly [key: string, sort: SortDirection][] | null | undefined,
-    limit?: number | undefined,
-    offset?: number | undefined
+    limit?: number  ,
+    offset?: number  
   ) {
     const where = buildConfigurationWhere(filters);
     const orderBy = buildConfigurationOrder(order);

@@ -1,20 +1,19 @@
-import {
-  buildMarathonOrder,
-  buildMarathonWhere,
-} from "./marathonRepositoryUtils.js";
+import { Service } from "@freshgum/typedi";
+import { Marathon, MarathonHour, Prisma, PrismaClient } from "@prisma/client";
+import type { SortDirection } from "@ukdanceblue/common";
+import { NotFoundError, optionOf } from "@ukdanceblue/common/error";
+import { Err, Ok, Option, Result } from "ts-results-es";
 
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import {
   handleRepositoryError,
   type RepositoryError,
 } from "#repositories/shared.js";
 
-import { Marathon, MarathonHour, Prisma, PrismaClient } from "@prisma/client";
-import { NotFoundError, optionOf } from "@ukdanceblue/common/error";
-import { Err, Ok, Option, Result } from "ts-results-es";
-import { Service } from "@freshgum/typedi";
-
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type { SortDirection } from "@ukdanceblue/common";
+import {
+  buildMarathonOrder,
+  buildMarathonWhere,
+} from "./marathonRepositoryUtils.js";
 
 const marathonBooleanKeys = [] as const;
 type MarathonBooleanKey = (typeof marathonBooleanKeys)[number];

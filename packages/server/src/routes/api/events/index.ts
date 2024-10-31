@@ -1,13 +1,12 @@
-import { RouterService } from "#routes/RouteService.js";
+import { Service } from "@freshgum/typedi";
+import type { Context } from "koa";
+import { DateTime } from "luxon";
+import type { NextFn } from "type-graphql";
+
 import { FileManager } from "#files/FileManager.js";
 import { combineMimePartsToString } from "#files/mime.js";
 import { EventRepository } from "#repositories/event/EventRepository.js";
-
-import { DateTime } from "luxon";
-
-import type { Context } from "koa";
-import type { NextFn } from "type-graphql";
-import { Service } from "@freshgum/typedi";
+import { RouterService } from "#routes/RouteService.js";
 
 interface UpcomingEvent {
   title: string;

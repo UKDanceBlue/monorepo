@@ -1,15 +1,21 @@
-import { MarathonHourRepository } from "#repositories/marathonHour/MarathonHourRepository.js";
-import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
-
+import { Service } from "@freshgum/typedi";
+import { CommitteeRole } from "@prisma/client";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
-  LegacyError,
-  LegacyErrorCode,
+  AccessLevel,
+  CommitteeIdentifier,
   GlobalIdScalar,
   ImageNode,
+  LegacyError,
+  LegacyErrorCode,
   MarathonHourNode,
-  AccessLevel,
   MutationAccessControl,
-  CommitteeIdentifier,
+} from "@ukdanceblue/common";
+import {
+  CreateMarathonHourInput,
+  ListMarathonHoursArgs,
+  ListMarathonHoursResponse,
+  SetMarathonHourInput,
 } from "@ukdanceblue/common";
 import { VoidResolver } from "graphql-scalars";
 import {
@@ -21,16 +27,9 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "@freshgum/typedi";
 
-import type { GlobalId } from "@ukdanceblue/common";
-import {
-  ListMarathonHoursResponse,
-  ListMarathonHoursArgs,
-  CreateMarathonHourInput,
-  SetMarathonHourInput,
-} from "@ukdanceblue/common";
-import { CommitteeRole } from "@prisma/client";
+import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
+import { MarathonHourRepository } from "#repositories/marathonHour/MarathonHourRepository.js";
 
 @Resolver(() => MarathonHourNode)
 @Service([MarathonHourRepository])

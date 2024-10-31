@@ -1,22 +1,37 @@
-import { NotificationScheduler } from "#jobs/NotificationScheduler.js";
-import { ExpoNotificationProvider } from "#notification/ExpoNotificationProvider.js";
-import * as NotificationProviderJs from "#notification/NotificationProvider.js";
-import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
-import { notificationModelToResource } from "#repositories/notification/notificationModelToResource.js";
-import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
-import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
-
+import { Service } from "@freshgum/typedi";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
-  QueryAccessControl,
   AccessLevel,
+  GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
-  GlobalIdScalar,
+  MutationAccessControl,
   NotificationDeliveryNode,
   NotificationNode,
+  QueryAccessControl,
   SortDirection,
-  MutationAccessControl,
 } from "@ukdanceblue/common";
+import {
+  AbortScheduledNotificationResponse,
+  AcknowledgeDeliveryIssueResponse,
+  DeleteNotificationResponse,
+  GetNotificationByUuidResponse,
+  ListNotificationDeliveriesArgs,
+  ListNotificationDeliveriesResponse,
+  ListNotificationsArgs,
+  ListNotificationsResponse,
+  NotificationDeliveryIssueCount,
+  ScheduleNotificationResponse,
+  SendNotificationResponse,
+  StageNotificationArgs,
+  StageNotificationResponse,
+} from "@ukdanceblue/common";
+import {
+  ActionDeniedError,
+  ConcreteResult,
+  InvalidArgumentError,
+} from "@ukdanceblue/common/error";
+import { Err, Ok } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -27,31 +42,15 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "@freshgum/typedi";
 
-import type { GlobalId } from "@ukdanceblue/common";
-import {
-  ActionDeniedError,
-  ConcreteResult,
-  InvalidArgumentError,
-} from "@ukdanceblue/common/error";
-import { Err, Ok } from "ts-results-es";
+import { NotificationScheduler } from "#jobs/NotificationScheduler.js";
+import { ExpoNotificationProvider } from "#notification/ExpoNotificationProvider.js";
+import * as NotificationProviderJs from "#notification/NotificationProvider.js";
+import { notificationModelToResource } from "#repositories/notification/notificationModelToResource.js";
+import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
+import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
+import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
 import { handleRepositoryError } from "#repositories/shared.js";
-import {
-  GetNotificationByUuidResponse,
-  ListNotificationsResponse,
-  ListNotificationsArgs,
-  ListNotificationDeliveriesResponse,
-  ListNotificationDeliveriesArgs,
-  StageNotificationResponse,
-  StageNotificationArgs,
-  SendNotificationResponse,
-  ScheduleNotificationResponse,
-  AcknowledgeDeliveryIssueResponse,
-  AbortScheduledNotificationResponse,
-  DeleteNotificationResponse,
-  NotificationDeliveryIssueCount,
-} from "@ukdanceblue/common";
 
 @Resolver(() => NotificationNode)
 @Service([

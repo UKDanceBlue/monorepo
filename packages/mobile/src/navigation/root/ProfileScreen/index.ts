@@ -1,5 +1,5 @@
 export {
+  default,
   ProfileScreenAuthFragment,
   ProfileScreenUserFragment,
-  default,
 } from "./ProfileScreen";

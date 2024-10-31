@@ -1,6 +1,6 @@
-import { SyslogLevels } from "#logging/standardLogging.ts";
-
 import { URL } from "url";
+
+import { SyslogLevels } from "#logging/standardLogging.ts";
 
 declare global {
   declare type URL = URL;
