@@ -4,10 +4,10 @@
     "allowJs": true,
     "checkJs": true,
     "rootDir": ".",
-    "noEmit": false,
-    "outDir": "out"
+    "noEmit": true,
+    "allowImportingTsExtensions": true
   },
-  "include": ["./index.ts", "./types.d.ts"],
+  "include": ["./types.d.ts", "../eslint.config.mts"],
   "exclude": [],
   "extends": "../tsconfig.json"
 }

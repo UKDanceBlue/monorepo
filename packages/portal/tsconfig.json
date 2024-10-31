@@ -29,7 +29,7 @@
 
     "baseUrl": "./src"
   },
-  "include": ["src", "graphql", "mocks"],
+  "include": ["./src", "./graphql", "./mocks"],
   "references": [{ "path": "./tsconfig.node.json" }],
   "extends": "../../tsconfig.json"
 }

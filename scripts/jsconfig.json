@@ -1,7 +1,0 @@
-{
-  "include": ["./*.js"],
-  "compilerOptions": {
-    "types": ["node"],
-    "strict": true
-  }
-}

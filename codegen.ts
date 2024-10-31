@@ -65,6 +65,7 @@ if (packages.includes("mobile")) {
     preset: "client",
     presetConfig,
     documents: ["packages/mobile/src"],
+    config,
   };
 }
 if (packages.includes("portal")) {
@@ -72,6 +73,7 @@ if (packages.includes("portal")) {
     preset: "client",
     presetConfig,
     documents: ["packages/portal/src"],
+    config,
   };
 }
 const codegenConfig: CodegenConfig = {

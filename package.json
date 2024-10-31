@@ -20,7 +20,7 @@
     "common:watch": "yarn workspace @ukdanceblue/common run watch",
     "docker:server:start": "docker-compose up -d --build",
     "docker:server:stop": "docker-compose down",
-    "gql:build": "graphql-codegen-esm --config codegen.ts && node scripts/fix-codegen.js && eslint packages/mobile/src/graphql packages/portal/graphql --fix && prettier --write packages/mobile/src/graphql packages/portal/graphql",
+    "gql:build": "graphql-codegen-esm --config codegen.ts && tsx scripts/fix-codegen.ts && eslint packages/mobile/src/graphql packages/portal/graphql --fix || prettier --write packages/mobile/src/graphql packages/portal/graphql",
     "gql:watch": "chokidar \"packages/mobile/src/**/*\" \"packages/portal/src/**/*\" --ignore \"packages/mobile/src/graphql/**/*\" --initial --silent --verbose --command \"yarn gql:build\"",
     "postinstall": "yarn constraints",
     "mobile:check": "yarn workspace @ukdanceblue/mobile check && echo 'Mobile \t\tOK'",
@@ -36,8 +36,9 @@
     "repo:format:fix": "prettier --write --log-level warn . && echo 'Prettier \tOK'",
     "repo:lint": "eslint . && echo 'ESLint \t\tOK'",
     "repo:lint:fix": "eslint --fix . && echo 'ESLint \t\tOK'",
+    "repo:lint:view-config": "yarn dlx @eslint/config-inspector@latest",
     "repo:lint:report": "eslint --output-file eslint_report.json --format json .",
-    "repo:licenses": "yarn licenses generate-disclaimer -R > DISCLAIMER",
+    "repo:licenses:gen-disclaimer": "yarn licenses generate-disclaimer -R > DISCLAIMER",
     "repo:licenses:check": "yarn licenses audit --allowed MIT --allowed Beerware --allowed MPL-2.0 --allowed BSD-3-Clause --allowed BSD-2-Clause --allowed Apache-2.0",
     "repo:sort-package-json": "yarn dlx sort-package-json package.json ./packages/*/package.json",
     "repo:test": "vitest",
@@ -51,14 +52,12 @@
     "server:start": "yarn workspace @ukdanceblue/server run start"
   },
   "resolutions": {
-    "@graphql-codegen/client-preset@npm:^4.2.2": "patch:@graphql-codegen/client-preset@npm%3A4.3.3#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.3.3-ec8a799259.patch",
     "promise": "npm:promise@^8.3.0",
-    "react-native-infinite-pager@^0.3.13": "patch:react-native-infinite-pager@npm%3A0.3.13#./.yarn/patches/react-native-infinite-pager-npm-0.3.13-59b67e2e46.patch",
-    "react-native-rss-parser@^1.5.1": "patch:react-native-rss-parser@npm%3A1.5.1#./.yarn/patches/react-native-rss-parser-npm-1.5.1-e4cc1d8bd8.patch",
     "urijs": "npm:uri-js-replace"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.1",
+    "@eslint/config-inspector": "^0.5.6",
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.13.0",
     "@expo/ngrok": "^4.1.3",
@@ -92,6 +91,7 @@
     "graphql-scalars": "^1.23.0",
     "node-gyp": "^10.2.0",
     "prettier": "^3.3.3",
+    "tsx": "^4.19.2",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.11.0",
     "vitest": "^2.1.3"

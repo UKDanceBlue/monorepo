@@ -54,122 +54,146 @@ const TeamsTeamIdImport = createFileRoute("/teams/$teamId")();
 // Create/Update Routes
 
 const IndexRoute = IndexImport.update({
+  id: "/",
   path: "/",
   getParentRoute: () => rootRoute,
 } as any);
 
 const TeamsTeamIdRoute = TeamsTeamIdImport.update({
+  id: "/teams/$teamId",
   path: "/teams/$teamId",
   getParentRoute: () => rootRoute,
 } as any);
 
 const TeamsIndexRoute = TeamsIndexImport.update({
+  id: "/teams/",
   path: "/teams/",
   getParentRoute: () => rootRoute,
 } as any);
 
 const PeopleIndexRoute = PeopleIndexImport.update({
+  id: "/people/",
   path: "/people/",
   getParentRoute: () => rootRoute,
 } as any);
 
 const NotificationsIndexRoute = NotificationsIndexImport.update({
+  id: "/notifications/",
   path: "/notifications/",
   getParentRoute: () => rootRoute,
 } as any);
 
 const MarathonIndexRoute = MarathonIndexImport.update({
+  id: "/marathon/",
   path: "/marathon/",
   getParentRoute: () => rootRoute,
 } as any);
 
 const FeedIndexRoute = FeedIndexImport.update({
+  id: "/feed/",
   path: "/feed/",
   getParentRoute: () => rootRoute,
 } as any);
 
 const EventsIndexRoute = EventsIndexImport.update({
+  id: "/events/",
   path: "/events/",
   getParentRoute: () => rootRoute,
 } as any);
 
 const DbfundsIndexRoute = DbfundsIndexImport.update({
+  id: "/dbfunds/",
   path: "/dbfunds/",
   getParentRoute: () => rootRoute,
 } as any);
 
 const ConfigIndexRoute = ConfigIndexImport.update({
+  id: "/config/",
   path: "/config/",
   getParentRoute: () => rootRoute,
 } as any);
 
 const TeamsCreateRoute = TeamsCreateImport.update({
+  id: "/teams/create",
   path: "/teams/create",
   getParentRoute: () => rootRoute,
 } as any);
 
 const TeamsBulkRoute = TeamsBulkImport.update({
+  id: "/teams/bulk",
   path: "/teams/bulk",
   getParentRoute: () => rootRoute,
 } as any);
 
 const PeopleCreateRoute = PeopleCreateImport.update({
+  id: "/people/create",
   path: "/people/create",
   getParentRoute: () => rootRoute,
 } as any);
 
 const PeopleBulkRoute = PeopleBulkImport.update({
+  id: "/people/bulk",
   path: "/people/bulk",
   getParentRoute: () => rootRoute,
 } as any);
 
 const NotificationsCreateRoute = NotificationsCreateImport.update({
+  id: "/notifications/create",
   path: "/notifications/create",
   getParentRoute: () => rootRoute,
 } as any);
 
 const MarathonCreateRoute = MarathonCreateImport.update({
+  id: "/marathon/create",
   path: "/marathon/create",
   getParentRoute: () => rootRoute,
 } as any);
 
 const ImagesSplatRoute = ImagesSplatImport.update({
+  id: "/images/$",
   path: "/images/$",
   getParentRoute: () => rootRoute,
 } as any);
 
 const EventsCreateRoute = EventsCreateImport.update({
+  id: "/events/create",
   path: "/events/create",
   getParentRoute: () => rootRoute,
 } as any);
 
 const AdminLogsRoute = AdminLogsImport.update({
+  id: "/admin/logs",
   path: "/admin/logs",
   getParentRoute: () => rootRoute,
 } as any);
 
 const PeoplePersonIdIndexRoute = PeoplePersonIdIndexImport.update({
+  id: "/people/$personId/",
   path: "/people/$personId/",
   getParentRoute: () => rootRoute,
 } as any);
 
 const NotificationsNotificationIdIndexRoute =
   NotificationsNotificationIdIndexImport.update({
+    id: "/notifications/$notificationId/",
     path: "/notifications/$notificationId/",
     getParentRoute: () => rootRoute,
   } as any);
 
 const MarathonMarathonIdIndexRoute = MarathonMarathonIdIndexImport.update({
+  id: "/marathon/$marathonId/",
   path: "/marathon/$marathonId/",
   getParentRoute: () => rootRoute,
 } as any);
 
 const EventsEventIdIndexRoute = EventsEventIdIndexImport.update({
+  id: "/events/$eventId/",
   path: "/events/$eventId/",
   getParentRoute: () => rootRoute,
 } as any);
 
 const TeamsTeamIdEditRoute = TeamsTeamIdEditImport.update({
+  id: "/edit",
   path: "/edit",
   getParentRoute: () => TeamsTeamIdRoute,
 } as any);
@@ -180,51 +204,60 @@ const TeamsTeamIdLayoutRoute = TeamsTeamIdLayoutImport.update({
 } as any);
 
 const PeoplePersonIdEditRoute = PeoplePersonIdEditImport.update({
+  id: "/people/$personId/edit",
   path: "/people/$personId/edit",
   getParentRoute: () => rootRoute,
 } as any);
 
 const NotificationsNotificationIdManageRoute =
   NotificationsNotificationIdManageImport.update({
+    id: "/notifications/$notificationId/manage",
     path: "/notifications/$notificationId/manage",
     getParentRoute: () => rootRoute,
   } as any);
 
 const MarathonMarathonIdEditRoute = MarathonMarathonIdEditImport.update({
+  id: "/marathon/$marathonId/edit",
   path: "/marathon/$marathonId/edit",
   getParentRoute: () => rootRoute,
 } as any);
 
 const EventsEventIdEditRoute = EventsEventIdEditImport.update({
+  id: "/events/$eventId/edit",
   path: "/events/$eventId/edit",
   getParentRoute: () => rootRoute,
 } as any);
 
 const TeamsTeamIdLayoutIndexRoute = TeamsTeamIdLayoutIndexImport.update({
+  id: "/",
   path: "/",
   getParentRoute: () => TeamsTeamIdLayoutRoute,
 } as any);
 
 const TeamsTeamIdLayoutPointsRoute = TeamsTeamIdLayoutPointsImport.update({
+  id: "/points",
   path: "/points",
   getParentRoute: () => TeamsTeamIdLayoutRoute,
 } as any);
 
 const TeamsTeamIdLayoutFundraisingRoute =
   TeamsTeamIdLayoutFundraisingImport.update({
+    id: "/fundraising",
     path: "/fundraising",
     getParentRoute: () => TeamsTeamIdLayoutRoute,
   } as any);
 
 const MarathonMarathonIdHoursAddRoute = MarathonMarathonIdHoursAddImport.update(
   {
+    id: "/marathon/$marathonId/hours/add",
     path: "/marathon/$marathonId/hours/add",
     getParentRoute: () => rootRoute,
-  } as any
+  } as any,
 );
 
 const MarathonMarathonIdHoursHourIdIndexRoute =
   MarathonMarathonIdHoursHourIdIndexImport.update({
+    id: "/marathon/$marathonId/hours/$hourId/",
     path: "/marathon/$marathonId/hours/$hourId/",
     getParentRoute: () => rootRoute,
   } as any);
@@ -476,44 +509,322 @@ declare module "@tanstack/react-router" {
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren({
-  IndexRoute,
-  AdminLogsRoute,
-  EventsCreateRoute,
-  ImagesSplatRoute,
-  MarathonCreateRoute,
-  NotificationsCreateRoute,
-  PeopleBulkRoute,
-  PeopleCreateRoute,
-  TeamsBulkRoute,
-  TeamsCreateRoute,
-  ConfigIndexRoute,
-  DbfundsIndexRoute,
-  EventsIndexRoute,
-  FeedIndexRoute,
-  MarathonIndexRoute,
-  NotificationsIndexRoute,
-  PeopleIndexRoute,
-  TeamsIndexRoute,
-  EventsEventIdEditRoute,
-  MarathonMarathonIdEditRoute,
-  NotificationsNotificationIdManageRoute,
-  PeoplePersonIdEditRoute,
-  TeamsTeamIdRoute: TeamsTeamIdRoute.addChildren({
-    TeamsTeamIdLayoutRoute: TeamsTeamIdLayoutRoute.addChildren({
-      TeamsTeamIdLayoutFundraisingRoute,
-      TeamsTeamIdLayoutPointsRoute,
-      TeamsTeamIdLayoutIndexRoute,
-    }),
-    TeamsTeamIdEditRoute,
-  }),
-  EventsEventIdIndexRoute,
-  MarathonMarathonIdIndexRoute,
-  NotificationsNotificationIdIndexRoute,
-  PeoplePersonIdIndexRoute,
-  MarathonMarathonIdHoursAddRoute,
-  MarathonMarathonIdHoursHourIdIndexRoute,
-});
+interface TeamsTeamIdLayoutRouteChildren {
+  TeamsTeamIdLayoutFundraisingRoute: typeof TeamsTeamIdLayoutFundraisingRoute;
+  TeamsTeamIdLayoutPointsRoute: typeof TeamsTeamIdLayoutPointsRoute;
+  TeamsTeamIdLayoutIndexRoute: typeof TeamsTeamIdLayoutIndexRoute;
+}
+
+const TeamsTeamIdLayoutRouteChildren: TeamsTeamIdLayoutRouteChildren = {
+  TeamsTeamIdLayoutFundraisingRoute: TeamsTeamIdLayoutFundraisingRoute,
+  TeamsTeamIdLayoutPointsRoute: TeamsTeamIdLayoutPointsRoute,
+  TeamsTeamIdLayoutIndexRoute: TeamsTeamIdLayoutIndexRoute,
+};
+
+const TeamsTeamIdLayoutRouteWithChildren =
+  TeamsTeamIdLayoutRoute._addFileChildren(TeamsTeamIdLayoutRouteChildren);
+
+interface TeamsTeamIdRouteChildren {
+  TeamsTeamIdLayoutRoute: typeof TeamsTeamIdLayoutRouteWithChildren;
+  TeamsTeamIdEditRoute: typeof TeamsTeamIdEditRoute;
+}
+
+const TeamsTeamIdRouteChildren: TeamsTeamIdRouteChildren = {
+  TeamsTeamIdLayoutRoute: TeamsTeamIdLayoutRouteWithChildren,
+  TeamsTeamIdEditRoute: TeamsTeamIdEditRoute,
+};
+
+const TeamsTeamIdRouteWithChildren = TeamsTeamIdRoute._addFileChildren(
+  TeamsTeamIdRouteChildren,
+);
+
+export interface FileRoutesByFullPath {
+  "/": typeof IndexRoute;
+  "/admin/logs": typeof AdminLogsRoute;
+  "/events/create": typeof EventsCreateRoute;
+  "/images/$": typeof ImagesSplatRoute;
+  "/marathon/create": typeof MarathonCreateRoute;
+  "/notifications/create": typeof NotificationsCreateRoute;
+  "/people/bulk": typeof PeopleBulkRoute;
+  "/people/create": typeof PeopleCreateRoute;
+  "/teams/bulk": typeof TeamsBulkRoute;
+  "/teams/create": typeof TeamsCreateRoute;
+  "/config": typeof ConfigIndexRoute;
+  "/dbfunds": typeof DbfundsIndexRoute;
+  "/events": typeof EventsIndexRoute;
+  "/feed": typeof FeedIndexRoute;
+  "/marathon": typeof MarathonIndexRoute;
+  "/notifications": typeof NotificationsIndexRoute;
+  "/people": typeof PeopleIndexRoute;
+  "/teams": typeof TeamsIndexRoute;
+  "/events/$eventId/edit": typeof EventsEventIdEditRoute;
+  "/marathon/$marathonId/edit": typeof MarathonMarathonIdEditRoute;
+  "/notifications/$notificationId/manage": typeof NotificationsNotificationIdManageRoute;
+  "/people/$personId/edit": typeof PeoplePersonIdEditRoute;
+  "/teams/$teamId": typeof TeamsTeamIdLayoutRouteWithChildren;
+  "/teams/$teamId/edit": typeof TeamsTeamIdEditRoute;
+  "/events/$eventId": typeof EventsEventIdIndexRoute;
+  "/marathon/$marathonId": typeof MarathonMarathonIdIndexRoute;
+  "/notifications/$notificationId": typeof NotificationsNotificationIdIndexRoute;
+  "/people/$personId": typeof PeoplePersonIdIndexRoute;
+  "/marathon/$marathonId/hours/add": typeof MarathonMarathonIdHoursAddRoute;
+  "/teams/$teamId/fundraising": typeof TeamsTeamIdLayoutFundraisingRoute;
+  "/teams/$teamId/points": typeof TeamsTeamIdLayoutPointsRoute;
+  "/teams/$teamId/": typeof TeamsTeamIdLayoutIndexRoute;
+  "/marathon/$marathonId/hours/$hourId": typeof MarathonMarathonIdHoursHourIdIndexRoute;
+}
+
+export interface FileRoutesByTo {
+  "/": typeof IndexRoute;
+  "/admin/logs": typeof AdminLogsRoute;
+  "/events/create": typeof EventsCreateRoute;
+  "/images/$": typeof ImagesSplatRoute;
+  "/marathon/create": typeof MarathonCreateRoute;
+  "/notifications/create": typeof NotificationsCreateRoute;
+  "/people/bulk": typeof PeopleBulkRoute;
+  "/people/create": typeof PeopleCreateRoute;
+  "/teams/bulk": typeof TeamsBulkRoute;
+  "/teams/create": typeof TeamsCreateRoute;
+  "/config": typeof ConfigIndexRoute;
+  "/dbfunds": typeof DbfundsIndexRoute;
+  "/events": typeof EventsIndexRoute;
+  "/feed": typeof FeedIndexRoute;
+  "/marathon": typeof MarathonIndexRoute;
+  "/notifications": typeof NotificationsIndexRoute;
+  "/people": typeof PeopleIndexRoute;
+  "/teams": typeof TeamsIndexRoute;
+  "/events/$eventId/edit": typeof EventsEventIdEditRoute;
+  "/marathon/$marathonId/edit": typeof MarathonMarathonIdEditRoute;
+  "/notifications/$notificationId/manage": typeof NotificationsNotificationIdManageRoute;
+  "/people/$personId/edit": typeof PeoplePersonIdEditRoute;
+  "/teams/$teamId": typeof TeamsTeamIdLayoutIndexRoute;
+  "/teams/$teamId/edit": typeof TeamsTeamIdEditRoute;
+  "/events/$eventId": typeof EventsEventIdIndexRoute;
+  "/marathon/$marathonId": typeof MarathonMarathonIdIndexRoute;
+  "/notifications/$notificationId": typeof NotificationsNotificationIdIndexRoute;
+  "/people/$personId": typeof PeoplePersonIdIndexRoute;
+  "/marathon/$marathonId/hours/add": typeof MarathonMarathonIdHoursAddRoute;
+  "/teams/$teamId/fundraising": typeof TeamsTeamIdLayoutFundraisingRoute;
+  "/teams/$teamId/points": typeof TeamsTeamIdLayoutPointsRoute;
+  "/marathon/$marathonId/hours/$hourId": typeof MarathonMarathonIdHoursHourIdIndexRoute;
+}
+
+export interface FileRoutesById {
+  __root__: typeof rootRoute;
+  "/": typeof IndexRoute;
+  "/admin/logs": typeof AdminLogsRoute;
+  "/events/create": typeof EventsCreateRoute;
+  "/images/$": typeof ImagesSplatRoute;
+  "/marathon/create": typeof MarathonCreateRoute;
+  "/notifications/create": typeof NotificationsCreateRoute;
+  "/people/bulk": typeof PeopleBulkRoute;
+  "/people/create": typeof PeopleCreateRoute;
+  "/teams/bulk": typeof TeamsBulkRoute;
+  "/teams/create": typeof TeamsCreateRoute;
+  "/config/": typeof ConfigIndexRoute;
+  "/dbfunds/": typeof DbfundsIndexRoute;
+  "/events/": typeof EventsIndexRoute;
+  "/feed/": typeof FeedIndexRoute;
+  "/marathon/": typeof MarathonIndexRoute;
+  "/notifications/": typeof NotificationsIndexRoute;
+  "/people/": typeof PeopleIndexRoute;
+  "/teams/": typeof TeamsIndexRoute;
+  "/events/$eventId/edit": typeof EventsEventIdEditRoute;
+  "/marathon/$marathonId/edit": typeof MarathonMarathonIdEditRoute;
+  "/notifications/$notificationId/manage": typeof NotificationsNotificationIdManageRoute;
+  "/people/$personId/edit": typeof PeoplePersonIdEditRoute;
+  "/teams/$teamId": typeof TeamsTeamIdRouteWithChildren;
+  "/teams/$teamId/_layout": typeof TeamsTeamIdLayoutRouteWithChildren;
+  "/teams/$teamId/edit": typeof TeamsTeamIdEditRoute;
+  "/events/$eventId/": typeof EventsEventIdIndexRoute;
+  "/marathon/$marathonId/": typeof MarathonMarathonIdIndexRoute;
+  "/notifications/$notificationId/": typeof NotificationsNotificationIdIndexRoute;
+  "/people/$personId/": typeof PeoplePersonIdIndexRoute;
+  "/marathon/$marathonId/hours/add": typeof MarathonMarathonIdHoursAddRoute;
+  "/teams/$teamId/_layout/fundraising": typeof TeamsTeamIdLayoutFundraisingRoute;
+  "/teams/$teamId/_layout/points": typeof TeamsTeamIdLayoutPointsRoute;
+  "/teams/$teamId/_layout/": typeof TeamsTeamIdLayoutIndexRoute;
+  "/marathon/$marathonId/hours/$hourId/": typeof MarathonMarathonIdHoursHourIdIndexRoute;
+}
+
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths:
+    | "/"
+    | "/admin/logs"
+    | "/events/create"
+    | "/images/$"
+    | "/marathon/create"
+    | "/notifications/create"
+    | "/people/bulk"
+    | "/people/create"
+    | "/teams/bulk"
+    | "/teams/create"
+    | "/config"
+    | "/dbfunds"
+    | "/events"
+    | "/feed"
+    | "/marathon"
+    | "/notifications"
+    | "/people"
+    | "/teams"
+    | "/events/$eventId/edit"
+    | "/marathon/$marathonId/edit"
+    | "/notifications/$notificationId/manage"
+    | "/people/$personId/edit"
+    | "/teams/$teamId"
+    | "/teams/$teamId/edit"
+    | "/events/$eventId"
+    | "/marathon/$marathonId"
+    | "/notifications/$notificationId"
+    | "/people/$personId"
+    | "/marathon/$marathonId/hours/add"
+    | "/teams/$teamId/fundraising"
+    | "/teams/$teamId/points"
+    | "/teams/$teamId/"
+    | "/marathon/$marathonId/hours/$hourId";
+  fileRoutesByTo: FileRoutesByTo;
+  to:
+    | "/"
+    | "/admin/logs"
+    | "/events/create"
+    | "/images/$"
+    | "/marathon/create"
+    | "/notifications/create"
+    | "/people/bulk"
+    | "/people/create"
+    | "/teams/bulk"
+    | "/teams/create"
+    | "/config"
+    | "/dbfunds"
+    | "/events"
+    | "/feed"
+    | "/marathon"
+    | "/notifications"
+    | "/people"
+    | "/teams"
+    | "/events/$eventId/edit"
+    | "/marathon/$marathonId/edit"
+    | "/notifications/$notificationId/manage"
+    | "/people/$personId/edit"
+    | "/teams/$teamId"
+    | "/teams/$teamId/edit"
+    | "/events/$eventId"
+    | "/marathon/$marathonId"
+    | "/notifications/$notificationId"
+    | "/people/$personId"
+    | "/marathon/$marathonId/hours/add"
+    | "/teams/$teamId/fundraising"
+    | "/teams/$teamId/points"
+    | "/marathon/$marathonId/hours/$hourId";
+  id:
+    | "__root__"
+    | "/"
+    | "/admin/logs"
+    | "/events/create"
+    | "/images/$"
+    | "/marathon/create"
+    | "/notifications/create"
+    | "/people/bulk"
+    | "/people/create"
+    | "/teams/bulk"
+    | "/teams/create"
+    | "/config/"
+    | "/dbfunds/"
+    | "/events/"
+    | "/feed/"
+    | "/marathon/"
+    | "/notifications/"
+    | "/people/"
+    | "/teams/"
+    | "/events/$eventId/edit"
+    | "/marathon/$marathonId/edit"
+    | "/notifications/$notificationId/manage"
+    | "/people/$personId/edit"
+    | "/teams/$teamId"
+    | "/teams/$teamId/_layout"
+    | "/teams/$teamId/edit"
+    | "/events/$eventId/"
+    | "/marathon/$marathonId/"
+    | "/notifications/$notificationId/"
+    | "/people/$personId/"
+    | "/marathon/$marathonId/hours/add"
+    | "/teams/$teamId/_layout/fundraising"
+    | "/teams/$teamId/_layout/points"
+    | "/teams/$teamId/_layout/"
+    | "/marathon/$marathonId/hours/$hourId/";
+  fileRoutesById: FileRoutesById;
+}
+
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute;
+  AdminLogsRoute: typeof AdminLogsRoute;
+  EventsCreateRoute: typeof EventsCreateRoute;
+  ImagesSplatRoute: typeof ImagesSplatRoute;
+  MarathonCreateRoute: typeof MarathonCreateRoute;
+  NotificationsCreateRoute: typeof NotificationsCreateRoute;
+  PeopleBulkRoute: typeof PeopleBulkRoute;
+  PeopleCreateRoute: typeof PeopleCreateRoute;
+  TeamsBulkRoute: typeof TeamsBulkRoute;
+  TeamsCreateRoute: typeof TeamsCreateRoute;
+  ConfigIndexRoute: typeof ConfigIndexRoute;
+  DbfundsIndexRoute: typeof DbfundsIndexRoute;
+  EventsIndexRoute: typeof EventsIndexRoute;
+  FeedIndexRoute: typeof FeedIndexRoute;
+  MarathonIndexRoute: typeof MarathonIndexRoute;
+  NotificationsIndexRoute: typeof NotificationsIndexRoute;
+  PeopleIndexRoute: typeof PeopleIndexRoute;
+  TeamsIndexRoute: typeof TeamsIndexRoute;
+  EventsEventIdEditRoute: typeof EventsEventIdEditRoute;
+  MarathonMarathonIdEditRoute: typeof MarathonMarathonIdEditRoute;
+  NotificationsNotificationIdManageRoute: typeof NotificationsNotificationIdManageRoute;
+  PeoplePersonIdEditRoute: typeof PeoplePersonIdEditRoute;
+  TeamsTeamIdRoute: typeof TeamsTeamIdRouteWithChildren;
+  EventsEventIdIndexRoute: typeof EventsEventIdIndexRoute;
+  MarathonMarathonIdIndexRoute: typeof MarathonMarathonIdIndexRoute;
+  NotificationsNotificationIdIndexRoute: typeof NotificationsNotificationIdIndexRoute;
+  PeoplePersonIdIndexRoute: typeof PeoplePersonIdIndexRoute;
+  MarathonMarathonIdHoursAddRoute: typeof MarathonMarathonIdHoursAddRoute;
+  MarathonMarathonIdHoursHourIdIndexRoute: typeof MarathonMarathonIdHoursHourIdIndexRoute;
+}
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AdminLogsRoute: AdminLogsRoute,
+  EventsCreateRoute: EventsCreateRoute,
+  ImagesSplatRoute: ImagesSplatRoute,
+  MarathonCreateRoute: MarathonCreateRoute,
+  NotificationsCreateRoute: NotificationsCreateRoute,
+  PeopleBulkRoute: PeopleBulkRoute,
+  PeopleCreateRoute: PeopleCreateRoute,
+  TeamsBulkRoute: TeamsBulkRoute,
+  TeamsCreateRoute: TeamsCreateRoute,
+  ConfigIndexRoute: ConfigIndexRoute,
+  DbfundsIndexRoute: DbfundsIndexRoute,
+  EventsIndexRoute: EventsIndexRoute,
+  FeedIndexRoute: FeedIndexRoute,
+  MarathonIndexRoute: MarathonIndexRoute,
+  NotificationsIndexRoute: NotificationsIndexRoute,
+  PeopleIndexRoute: PeopleIndexRoute,
+  TeamsIndexRoute: TeamsIndexRoute,
+  EventsEventIdEditRoute: EventsEventIdEditRoute,
+  MarathonMarathonIdEditRoute: MarathonMarathonIdEditRoute,
+  NotificationsNotificationIdManageRoute:
+    NotificationsNotificationIdManageRoute,
+  PeoplePersonIdEditRoute: PeoplePersonIdEditRoute,
+  TeamsTeamIdRoute: TeamsTeamIdRouteWithChildren,
+  EventsEventIdIndexRoute: EventsEventIdIndexRoute,
+  MarathonMarathonIdIndexRoute: MarathonMarathonIdIndexRoute,
+  NotificationsNotificationIdIndexRoute: NotificationsNotificationIdIndexRoute,
+  PeoplePersonIdIndexRoute: PeoplePersonIdIndexRoute,
+  MarathonMarathonIdHoursAddRoute: MarathonMarathonIdHoursAddRoute,
+  MarathonMarathonIdHoursHourIdIndexRoute:
+    MarathonMarathonIdHoursHourIdIndexRoute,
+};
+
+export const routeTree = rootRoute
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>();
 
 /* prettier-ignore-end */
 

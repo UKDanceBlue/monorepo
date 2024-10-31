@@ -13,6 +13,15 @@ for (const file of files) {
     .replace('from "./graphql.js";', 'from "./graphql";')
     .replace('from "./fragment-masking.js"', 'from "./fragment-masking"')
     .replace('from "./gql.js";', 'from "./gql";')
-    .replace("/* eslint-disable */", "");
+    .replace(
+      "/* eslint-disable */",
+      `/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
+/* eslint-disable @typescript-eslint/no-unnecessary-type-parameters */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-invalid-void-type */`
+    );
   writeFileSync(join(folder, file), newContent);
 }
