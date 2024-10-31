@@ -21,7 +21,12 @@ for (const file of files) {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-invalid-void-type */`
+/* eslint-disable @typescript-eslint/no-invalid-void-type */
+/* eslint-disable @typescript-eslint/consistent-indexed-object-style */
+/* eslint-disable @typescript-eslint/consistent-type-definitions */
+/* eslint-disable @typescript-eslint/array-type */
+/* eslint-disable unicorn/prefer-export-from */
+/* eslint-disable sort-imports/exports */`
     );
   writeFileSync(join(folder, file), newContent);
 }

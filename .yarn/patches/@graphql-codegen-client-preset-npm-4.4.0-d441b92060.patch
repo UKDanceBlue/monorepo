@@ -1,8 +1,8 @@
 diff --git a/cjs/index.js b/cjs/index.js
-index 60c58911a31097480f8f3f9eb532d1be0115eee5..45d72a6c3f52de171f6f86136598891fd5da66dc 100644
+index 69bc3334efbb29ac1ddef98304a8fa09ffcdef8e..a2521f5fb92152710d8366dbcd8f6726e699ef2d 100644
 --- a/cjs/index.js
 +++ b/cjs/index.js
-@@ -186,7 +186,7 @@ exports.preset = {
+@@ -190,7 +190,7 @@ exports.preset = {
                  schema: options.schema,
                  config: {
                      inlineFragmentTypes: isMaskingFragments ? 'mask' : options.config['inlineFragmentTypes'],
@@ -12,7 +12,7 @@ index 60c58911a31097480f8f3f9eb532d1be0115eee5..45d72a6c3f52de171f6f86136598891f
                  documents: sources,
                  documentTransforms: options.documentTransforms,
 diff --git a/esm/index.js b/esm/index.js
-index e2d651f51c613525828d5f1500aab6a86a1fcef6..9f27272b7c908215157cc8ff094bdd9fe74704d3 100644
+index 9147ef68449454dc144b0663c9a5af33c95257b3..2c3247ae9df163ff00354fd2d89b1a0bdb27d03b 100644
 --- a/esm/index.js
 +++ b/esm/index.js
 @@ -7,6 +7,7 @@ import { ClientSideBaseVisitor, DocumentMode } from '@graphql-codegen/visitor-pl
@@ -23,7 +23,7 @@ index e2d651f51c613525828d5f1500aab6a86a1fcef6..9f27272b7c908215157cc8ff094bdd9f
  export { default as babelOptimizerPlugin } from './babel.js';
  const isOutputFolderLike = (baseOutputDir) => baseOutputDir.endsWith('/');
  export const preset = {
-@@ -181,7 +182,7 @@ export const preset = {
+@@ -185,7 +186,7 @@ export const preset = {
                  schema: options.schema,
                  config: {
                      inlineFragmentTypes: isMaskingFragments ? 'mask' : options.config['inlineFragmentTypes'],
@@ -32,7 +32,7 @@ index e2d651f51c613525828d5f1500aab6a86a1fcef6..9f27272b7c908215157cc8ff094bdd9f
                  },
                  documents: sources,
                  documentTransforms: options.documentTransforms,
-@@ -237,4 +238,4 @@ function createDeferred() {
+@@ -241,4 +242,4 @@ function createDeferred() {
      });
      return d;
  }
