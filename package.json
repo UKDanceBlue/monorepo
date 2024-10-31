@@ -20,9 +20,8 @@
     "common:watch": "yarn workspace @ukdanceblue/common run watch",
     "docker:server:start": "docker-compose up -d --build",
     "docker:server:stop": "docker-compose down",
-    "gql:build": "graphql-codegen-esm --config codegen.ts && node scripts/fix-codegen.js && yarn repo:lint:fix & yarn repo:format:fix",
-    // TODO add an ignore for generated files
-    "gql:watch": "chokidar \"packages/mobile/src/**/*\" \"packages/portal/src/**/*\" --initial --silent --verbose --command \"yarn gql:build\"",
+    "gql:build": "graphql-codegen-esm --config codegen.ts && node scripts/fix-codegen.js && eslint packages/mobile/src/graphql packages/portal/graphql --fix && prettier --write packages/mobile/src/graphql packages/portal/graphql",
+    "gql:watch": "chokidar \"packages/mobile/src/**/*\" \"packages/portal/src/**/*\" --ignore \"packages/mobile/src/graphql/**/*\" --initial --silent --verbose --command \"yarn gql:build\"",
     "postinstall": "yarn constraints",
     "mobile:check": "yarn workspace @ukdanceblue/mobile check && echo 'Mobile \t\tOK'",
     "mobile:start": "yarn workspace @ukdanceblue/mobile start",

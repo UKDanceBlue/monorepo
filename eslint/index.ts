@@ -42,7 +42,6 @@ export default eslintTs.config(
       "**/build/**/*",
       "**/.next/**/*",
       "**/*.json",
-      "packages/common/lib/graphql-client-*/**/*",
       ".yarn/**/*",
       "compose-volumes/**/*",
       "eslint/out/*.js",
