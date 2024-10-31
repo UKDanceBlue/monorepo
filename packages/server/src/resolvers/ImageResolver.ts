@@ -1,35 +1,34 @@
-import { FileManager } from "#files/FileManager.js";
-import { generateThumbHash } from "#lib/thumbHash.js";
-import { auditLogger } from "#logging/auditLogging.js";
-import { logger } from "#logging/standardLogging.js";
-import { ImageRepository } from "#repositories/image/ImageRepository.js";
-import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
+import { MIMEType } from "node:util";
 
+import { Service } from "@freshgum/typedi";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
-  QueryAccessControl,
   AccessLevel,
-  LegacyError,
-  LegacyErrorCode,
   GlobalIdScalar,
   ImageNode,
-  SortDirection,
+  LegacyError,
+  LegacyErrorCode,
   MutationAccessControl,
+  QueryAccessControl,
+  SortDirection,
+} from "@ukdanceblue/common";
+import {
+  CreateImageInput,
+  DeleteImageResponse,
+  GetImageByUuidResponse,
+  ListImagesArgs,
+  ListImagesResponse,
 } from "@ukdanceblue/common";
 import { URLResolver } from "graphql-scalars";
 import fetch from "node-fetch";
 import { Arg, Args, Mutation, Query, Resolver } from "type-graphql";
-import { Service } from "@freshgum/typedi";
 
-import { MIMEType } from "node:util";
-
-import type { GlobalId } from "@ukdanceblue/common";
-import {
-  GetImageByUuidResponse,
-  ListImagesResponse,
-  ListImagesArgs,
-  CreateImageInput,
-  DeleteImageResponse,
-} from "@ukdanceblue/common";
+import { FileManager } from "#files/FileManager.js";
+import { generateThumbHash } from "#lib/thumbHash.js";
+import { auditLogger } from "#logging/auditLogging.js";
+import { logger } from "#logging/standardLogging.js";
+import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
+import { ImageRepository } from "#repositories/image/ImageRepository.js";
 
 @Resolver(() => ImageNode)
 @Service([ImageRepository, FileManager])

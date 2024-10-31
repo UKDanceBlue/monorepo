@@ -243,6 +243,7 @@ export default eslintTs.config(
         "@typescript-eslint/return-await": "error",
         "@typescript-eslint/no-misused-promises": "off",
         "@typescript-eslint/prefer-for-of": "off",
+        "@typescript-eslint/no-deprecated": "off",
         "@typescript-eslint/consistent-type-imports": [
           "error",
           {

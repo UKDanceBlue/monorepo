@@ -2,14 +2,7 @@ import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { openURL } from "expo-linking";
 import { openBrowserAsync } from "expo-web-browser";
 import { Box, Button, HStack, Text, VStack } from "native-base";
-import { Box, Text } from "native-base";
-import {
-  PixelRatio,
-  StatusBar,
-  TouchableOpacity,
-  useWindowDimensions,
-} from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { PixelRatio, StatusBar, useWindowDimensions } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 import { universalCatch } from "#common/logging";

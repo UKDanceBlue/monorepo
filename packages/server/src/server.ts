@@ -1,35 +1,30 @@
-import { applicationPort, isDevelopment, loggingLevel } from "#environment";
-
-import { logger } from "#logging/logger.js";
-import eventsApiRouter from "#routes/api/events/index.js";
-import fileRouter from "#routes/api/file/index.js";
-import healthCheckRouter from "#routes/api/healthcheck/index.js";
-import uploadRouter from "#routes/api/upload/index.js";
-
-import { ApolloServer } from "@apollo/server";
-import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import { koaMiddleware } from "@as-integrations/koa";
-import cors from "@koa/cors";
-import Router from "@koa/router";
-import Koa from "koa";
-import { koaBody } from "koa-body";
-import serveStatic from "koa-static";
-
 import http from "node:http";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-import { createServer as createViteServer } from "vite";
-
-import type { GraphQLContext } from "#resolvers/context.js";
 import type {
   ApolloServerPlugin,
   GraphQLRequestListener,
 } from "@apollo/server";
-import type { DefaultState } from "koa";
+import { ApolloServer } from "@apollo/server";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import { koaMiddleware } from "@as-integrations/koa";
 import { Container } from "@freshgum/typedi";
+import cors from "@koa/cors";
+import Router from "@koa/router";
 import { setupKoaErrorHandler } from "@sentry/node";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import type { DefaultState } from "koa";
+import Koa from "koa";
+import { koaBody } from "koa-body";
+import serveStatic from "koa-static";
+
+import { applicationPort, loggingLevel } from "#environment";
+import { logger } from "#logging/logger.js";
+import type { GraphQLContext } from "#resolvers/context.js";
+import eventsApiRouter from "#routes/api/events/index.js";
+import fileRouter from "#routes/api/file/index.js";
+import healthCheckRouter from "#routes/api/healthcheck/index.js";
+import uploadRouter from "#routes/api/upload/index.js";
 
 const basicLoggingPlugin: ApolloServerPlugin = {
   requestDidStart(requestContext) {

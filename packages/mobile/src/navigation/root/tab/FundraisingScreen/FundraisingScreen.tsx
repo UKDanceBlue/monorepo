@@ -7,8 +7,6 @@ import { Center, Text } from "native-base";
 import { useEffect, useState } from "react";
 import { useWindowDimensions } from "react-native";
 
-import FundraisingInformation from "./FundraisingInformation";
-
 export const MyTeamFragment = graphql(/* GraphQL */ `
   fragment MyTeamFragment on TeamNode {
     id
