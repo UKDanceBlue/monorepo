@@ -1,6 +1,18 @@
-/* eslint-disable */
-import type { ResultOf, DocumentTypeDecoration, TypedDocumentNode } from '@graphql-typed-document-node/core';
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+  /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-parameters */
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  /* eslint-disable @typescript-eslint/no-unsafe-return */
+   
+   
+   
+   
+  /* eslint-disable @typescript-eslint/array-type */
+   
+   
+import type { DocumentTypeDecoration, ResultOf, TypedDocumentNode } from '@graphql-typed-document-node/core';
 import type { FragmentDefinitionNode } from 'graphql';
+
 import type { Incremental } from './graphql.js';
 
 

@@ -1,4 +1,16 @@
-/* eslint-disable */
+ 
+   
+   
+   
+   
+   
+  /* eslint-disable @typescript-eslint/no-invalid-void-type */
+  /* eslint-disable @typescript-eslint/consistent-indexed-object-style */
+  /* eslint-disable @typescript-eslint/consistent-type-definitions */
+  /* eslint-disable @typescript-eslint/array-type */
+  /* eslint-disable unicorn/prefer-export-from */
+   
+import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 import type { AuthSource } from '@ukdanceblue/common';
 import type { AccessLevel } from '@ukdanceblue/common';
 import type { DbRole } from '@ukdanceblue/common';
@@ -10,7 +22,6 @@ import type { TeamType } from '@ukdanceblue/common';
 import type { SortDirection } from '@ukdanceblue/common';
 import type { NumericComparator } from '@ukdanceblue/common';
 import type { StringComparator } from '@ukdanceblue/common';
-import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };

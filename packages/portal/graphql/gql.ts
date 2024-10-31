@@ -1,6 +1,18 @@
-/* eslint-disable */
-import * as types from './graphql.js';
+ 
+   
+   
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+   
+  /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+   
+   
+   
+   
+   
+   
 import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+
+import * as types from './graphql.js';
 
 /**
  * Map of all GraphQL operations in the project.
