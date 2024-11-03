@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+
 import eslintJs from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
 import eslintPluginJsdoc from "eslint-plugin-jsdoc";
@@ -5,14 +7,12 @@ import eslintPluginNode from "eslint-plugin-n";
 import eslintPluginReact from "eslint-plugin-react";
 import eslintPluginReactHooks from "eslint-plugin-react-hooks";
 import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
+import eslintPluginSortImports from "eslint-plugin-simple-import-sort";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import eslintPluginVitest from "eslint-plugin-vitest";
-import eslintPluginSortImports from "eslint-plugin-simple-import-sort";
 import globals from "globals";
-import eslintTs from "typescript-eslint";
-
-import { fileURLToPath } from "node:url";
 import { dirname } from "path";
+import eslintTs from "typescript-eslint";
 
 const projectRoot = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 

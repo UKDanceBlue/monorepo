@@ -1,6 +1,7 @@
 // @ts-check
 
 /** @type {import('@yarnpkg/types')} */
+// @ts-expect-error - Weird issue with cjs
 const { defineConfig } = require(`@yarnpkg/types`);
 
 /**

@@ -11,6 +11,10 @@ import { fileURLToPath } from "url";
 
 import { logger } from "#logging/logger.js";
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
+import {
+  DailyDepartmentNotificationBatchResolver,
+  DailyDepartmentNotificationResolver,
+} from "#resolvers/DailyDepartmentNotification.js";
 import { DeviceResolver } from "#resolvers/DeviceResolver.js";
 import { EventResolver } from "#resolvers/EventResolver.js";
 import { FeedResolver } from "#resolvers/FeedResolver.js";
@@ -85,6 +89,8 @@ const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
 const resolvers = [
   ConfigurationResolver,
   DeviceResolver,
+  DailyDepartmentNotificationResolver,
+  DailyDepartmentNotificationBatchResolver,
   EventResolver,
   ImageResolver,
   PersonResolver,

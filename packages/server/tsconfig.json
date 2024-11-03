@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
-    "noEmit": true,
-    "incremental": true,
+    "noEmit": false,
     "lib": ["ESNext"],
     "target": "ESNext",
     "module": "NodeNext",

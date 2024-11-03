@@ -28,7 +28,7 @@
     "./*.ts",
     "./*.js",
     "./*.cjs",
-    "./scripts/*.ts",
+    "./scripts/*",
     "./packages/portal/vite.config.ts",
     "./packages/common/jest.config.ts",
     "./scripts/fix-codegen.mts"
