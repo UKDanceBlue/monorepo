@@ -19,11 +19,9 @@
     }
   },
   "scripts": {
-    "build": "tsc && vite build",
-    "build:client": "vite build --outDir dist/client",
-    "build:server": "vite build --outDir dist/server --ssr src/entry-server.js",
+    "dev": "vite --host",
+    "build": "vite build",
     "check": "tsc --noEmit",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
