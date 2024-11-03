@@ -46,16 +46,6 @@ services:
     volumes:
       - content:/data/serve
     restart: unless-stopped
-  portal:
-    image: ghcr.io/ukdanceblue/app-portal:${VERSION:-latest}
-    networks:
-      proxy:
-        aliases:
-          - ${HOST_PREFIX:-}-portal
-    build:
-      context: .
-      target: portal
-    restart: unless-stopped
 
 networks:
   proxy:

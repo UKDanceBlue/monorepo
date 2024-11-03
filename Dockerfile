@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.10-labs
-FROM node:22.4.1 as build
+FROM node:22.4.1 AS build
 
 ENV NODE_ENV="production"
 
@@ -28,7 +28,7 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required \
   corepack yarn sentry-cli sourcemaps upload --org ukdanceblue --project server ./dist
 
 # Server
-FROM node:22.4.1 as server
+FROM node:22.4.1 AS server
 
 ENV MS_OIDC_URL="https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0/.well-known/openid-configuration"
 ENV APPLICATION_PORT="8000"
@@ -52,6 +52,6 @@ COPY --from=build /builddir/yarn.lock /app/yarn.lock
 
 WORKDIR /app/packages/server
 
-CMD corepack yarn dlx prisma migrate deploy && node .
+ENTRYPOINT ["node" "--run=migrate-and-start"]
 
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD bash -c '[[ "$(curl -fs http://localhost:8000/api/healthcheck)" == "OK" ]] || exit 1'
