@@ -1,9 +1,8 @@
-import { FundraisingEntryNode } from "@ukdanceblue/common";
-
 import type {
   DBFundsFundraisingEntry,
   FundraisingEntryWithMeta,
 } from "@prisma/client";
+import { FundraisingEntryNode } from "@ukdanceblue/common";
 
 export function fundraisingEntryModelToNode(
   entryModel: FundraisingEntryWithMeta & {

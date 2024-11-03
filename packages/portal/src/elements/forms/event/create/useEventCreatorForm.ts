@@ -1,15 +1,15 @@
-import { eventCreatorDocument } from "./EventCreatorGQL";
-
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
+import type { Interval } from "luxon";
 import { useMutation } from "urql";
 
 import type {
   SetEventInput,
   SetEventOccurrenceInput,
 } from "#graphql/graphql.js";
-import type { Interval } from "luxon";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+
+import { eventCreatorDocument } from "./EventCreatorGQL";
 
 export function useEventCreatorForm() {
   // Form

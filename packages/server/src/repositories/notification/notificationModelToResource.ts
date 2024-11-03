@@ -1,6 +1,5 @@
-import { NotificationNode } from "@ukdanceblue/common";
-
 import type { Notification } from "@prisma/client";
+import { NotificationNode } from "@ukdanceblue/common";
 
 export function notificationModelToResource(
   notificationModel: Notification

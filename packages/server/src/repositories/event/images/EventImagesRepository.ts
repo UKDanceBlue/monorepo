@@ -1,8 +1,7 @@
+import { Service } from "@freshgum/typedi";
+import type { Prisma } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 import { LegacyError, LegacyErrorCode } from "@ukdanceblue/common";
-import { Service } from "@freshgum/typedi";
-
-import type { Prisma } from "@prisma/client";
 
 type UniqueParam =
   | {

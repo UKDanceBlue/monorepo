@@ -1,6 +1,6 @@
-import { Logger } from "./logger/Logger";
-
 import { isError } from "lodash";
+
+import { Logger } from "./logger/Logger";
 
 /** @deprecated Use the Logger class directly */
 export function log(

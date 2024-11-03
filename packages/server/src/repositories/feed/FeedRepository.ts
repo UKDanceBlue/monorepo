@@ -1,5 +1,5 @@
-import { FeedItem, Prisma, PrismaClient } from "@prisma/client";
 import { Service } from "@freshgum/typedi";
+import { FeedItem, Prisma, PrismaClient } from "@prisma/client";
 
 type UniqueParam = { id: number } | { uuid: string };
 

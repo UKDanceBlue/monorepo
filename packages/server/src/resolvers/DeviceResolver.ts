@@ -1,22 +1,26 @@
-import { auditLogger } from "#logging/auditLogging.js";
-import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
-import { deviceModelToResource } from "#repositories/device/deviceModelToResource.js";
-import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
-
+import { Service } from "@freshgum/typedi";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
-  LegacyError,
+  AccessLevel,
   DeviceNode,
-  LegacyErrorCode,
   GlobalIdScalar,
+  LegacyError,
+  LegacyErrorCode,
+  MutationAccessControl,
   NotificationDeliveryNode,
   parseGlobalId,
   PersonNode,
-  SortDirection,
-  MutationAccessControl,
-  AccessLevel,
   QueryAccessControl,
+  SortDirection,
+} from "@ukdanceblue/common";
+import {
+  DeleteDeviceResponse,
+  GetDeviceByUuidResponse,
+  ListDevicesArgs,
+  ListDevicesResponse,
+  NotificationDeliveriesArgs,
+  RegisterDeviceInput,
+  RegisterDeviceResponse,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
 import {
@@ -28,19 +32,14 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "@freshgum/typedi";
-
-import type { GlobalId } from "@ukdanceblue/common";
 import Validator from "validator";
-import {
-  GetDeviceByUuidResponse,
-  ListDevicesResponse,
-  ListDevicesArgs,
-  RegisterDeviceResponse,
-  RegisterDeviceInput,
-  DeleteDeviceResponse,
-  NotificationDeliveriesArgs,
-} from "@ukdanceblue/common";
+
+import { auditLogger } from "#logging/auditLogging.js";
+import { deviceModelToResource } from "#repositories/device/deviceModelToResource.js";
+import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
+import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 @Resolver(() => DeviceNode)
 @Service([DeviceRepository, PersonRepository])

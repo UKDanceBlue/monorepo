@@ -1,6 +1,6 @@
-import { intervalFromSomething } from "../utility/time/intervalTools.js";
-
 import type { Interval } from "luxon";
+
+import { intervalFromSomething } from "../utility/time/intervalTools.js";
 
 interface EventOccurrence {
   fullDay: boolean;

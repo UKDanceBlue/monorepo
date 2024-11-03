@@ -1,10 +1,9 @@
 import { unwrapResolverError } from "@apollo/server/errors";
+import type { GraphQLFormattedErrorWithExtensions } from "@ukdanceblue/common/error";
 import { ErrorCode, FormattedConcreteError } from "@ukdanceblue/common/error";
+import type { GraphQLFormattedError } from "graphql";
 import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
-
-import type { GraphQLFormattedErrorWithExtensions } from "@ukdanceblue/common/error";
-import type { GraphQLFormattedError } from "graphql";
 import type { Writable } from "utility-types";
 
 /**

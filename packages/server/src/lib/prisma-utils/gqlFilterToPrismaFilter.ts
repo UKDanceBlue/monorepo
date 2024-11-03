@@ -1,9 +1,3 @@
-import {
-  IsComparator,
-  NumericComparator,
-  StringComparator,
-} from "@ukdanceblue/common";
-
 import type { Prisma } from "@prisma/client";
 import type {
   AbstractBooleanFilterItem,
@@ -12,6 +6,11 @@ import type {
   AbstractNumericFilterItem,
   AbstractOneOfFilterItem,
   AbstractStringFilterItem,
+} from "@ukdanceblue/common";
+import {
+  IsComparator,
+  NumericComparator,
+  StringComparator,
 } from "@ukdanceblue/common";
 
 export type FilterItems<

@@ -1,6 +1,5 @@
-import { createContext, useContext } from "react";
-
 import type { DateTime } from "luxon";
+import { createContext, useContext } from "react";
 
 export interface MarathonContextData {
   setMarathon: (marathonId: string | null) => void;

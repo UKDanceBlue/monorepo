@@ -1,26 +1,25 @@
-import { dbFundsApiKeyToken, dbFundsApiOriginToken } from "#environment";
-
-import { ZodError } from "#error/zod.js";
-
+import { Service } from "@freshgum/typedi";
+import type { MarathonYearString } from "@ukdanceblue/common";
 import {
-  TimeoutError,
   BasicError,
-  toBasicError,
+  ConcreteResult,
   HttpError,
   optionOf,
-  ConcreteResult,
+  TimeoutError,
+  toBasicError,
 } from "@ukdanceblue/common/error";
 import { DateTime } from "luxon";
 import { Err, Ok } from "ts-results-es";
-import { Service } from "@freshgum/typedi";
 import { z } from "zod";
+
+import { dbFundsApiKeyToken, dbFundsApiOriginToken } from "#environment";
+import { ZodError } from "#error/zod.js";
 
 import type {
   FundraisingEntry,
   FundraisingProvider,
   FundraisingTeam,
 } from "./FundraisingProvider.js";
-import type { MarathonYearString } from "@ukdanceblue/common";
 
 const dbFundsFundraisingTeamSchema = z.object({
   DbNum: z.number().int().nonnegative().describe("The team's dbNum"),

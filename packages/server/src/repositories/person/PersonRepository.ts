@@ -1,13 +1,5 @@
-import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
-
-import { findPersonForLogin } from "#auth/findPersonForLogin.js";
-import {
-  handleRepositoryError,
-  unwrapRepositoryError,
-  type RepositoryError,
-  type SimpleUniqueParam,
-} from "#repositories/shared.js";
-
+import { Service } from "@freshgum/typedi";
+import type { Committee, Membership, Person, Team } from "@prisma/client";
 import { Prisma, PrismaClient } from "@prisma/client";
 import {
   AuthSource,
@@ -23,8 +15,8 @@ import {
 import {
   ActionDeniedError,
   BasicError,
-  ConcreteResult,
   CompositeError,
+  ConcreteResult,
   InvalidArgumentError,
   InvariantError,
   NotFoundError,
@@ -39,16 +31,23 @@ import {
   Result,
   Some,
 } from "ts-results-es";
-import { Service } from "@freshgum/typedi";
 
+import { findPersonForLogin } from "#auth/findPersonForLogin.js";
+import { SomePrismaError } from "#error/prisma.js";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import {
   MarathonRepository,
   UniqueMarathonParam,
 } from "#repositories/marathon/MarathonRepository.js";
-import type { Committee, Membership, Person, Team } from "@prisma/client";
-import { SomePrismaError } from "#error/prisma.js";
 import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
+import {
+  handleRepositoryError,
+  type RepositoryError,
+  type SimpleUniqueParam,
+  unwrapRepositoryError,
+} from "#repositories/shared.js";
+
+import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
 
 const personStringKeys = ["name", "email", "linkblue"] as const;
 type PersonStringKey = (typeof personStringKeys)[number];
@@ -404,7 +403,7 @@ export class PersonRepository {
         await this.prisma.person.findMany({
           where: {
             linkblue: {
-              contains: linkblue?.toLowerCase(),
+              contains: linkblue.toLowerCase(),
               mode: "insensitive",
             },
           },
@@ -706,7 +705,7 @@ export class PersonRepository {
               memberOf.map(({ id, committeeRole }) =>
                 this.prisma.team
                   .findUnique({
-                    where: typeof id === "number" ? { id: id } : { uuid: id },
+                    where: typeof id === "number" ? { id } : { uuid: id },
                     select: { id: true, correspondingCommitteeId: true },
                   })
                   .then((team) => {
@@ -736,7 +735,7 @@ export class PersonRepository {
               captainOf.map(({ id, committeeRole }) =>
                 this.prisma.team
                   .findUnique({
-                    where: typeof id === "number" ? { id: id } : { uuid: id },
+                    where: typeof id === "number" ? { id } : { uuid: id },
                     select: { id: true, correspondingCommitteeId: true },
                   })
                   .then((team) => {
@@ -829,7 +828,7 @@ export class PersonRepository {
                     },
                     upsert: [
                       ...(okMemberOfIds
-                        ?.filter(
+                        .filter(
                           (id): id is Exclude<typeof id, undefined> =>
                             id != null
                         )
@@ -862,7 +861,7 @@ export class PersonRepository {
                           }
                         ) ?? []),
                       ...(okCaptainOfIds
-                        ?.filter(
+                        .filter(
                           (id): id is Exclude<typeof id, undefined> =>
                             id != null
                         )
@@ -948,7 +947,7 @@ export class PersonRepository {
         where: {
           correspondingTeams: {
             some: {
-              marathonId: marathonId,
+              marathonId,
             },
           },
         },
@@ -981,12 +980,12 @@ export class PersonRepository {
 
           return this.prisma.person.upsert({
             where: {
-              linkblue: person.linkblue?.toLowerCase(),
+              linkblue: person.linkblue.toLowerCase(),
             },
             create: {
               name: person.name,
               email: person.email,
-              linkblue: person.linkblue?.toLowerCase(),
+              linkblue: person.linkblue.toLowerCase(),
               memberships:
                 person.committee && person.role
                   ? {
@@ -994,7 +993,7 @@ export class PersonRepository {
                         team: {
                           connect: {
                             marathonId_correspondingCommitteeId: {
-                              marathonId: marathonId,
+                              marathonId,
                               correspondingCommitteeId:
                                 committeeIds[person.committee],
                             },
@@ -1012,7 +1011,7 @@ export class PersonRepository {
             update: {
               name: person.name,
               email: person.email,
-              linkblue: person.linkblue?.toLowerCase(),
+              linkblue: person.linkblue.toLowerCase(),
               memberships:
                 person.committee && person.role
                   ? {
@@ -1020,7 +1019,7 @@ export class PersonRepository {
                         team: {
                           connect: {
                             marathonId_correspondingCommitteeId: {
-                              marathonId: marathonId,
+                              marathonId,
                               correspondingCommitteeId:
                                 committeeIds[person.committee],
                             },
@@ -1050,7 +1049,7 @@ export class PersonRepository {
             team: {
               connect: {
                 marathonId_correspondingCommitteeId: {
-                  marathonId: marathonId,
+                  marathonId,
                   correspondingCommitteeId: committeeIds.viceCommittee,
                 },
               },

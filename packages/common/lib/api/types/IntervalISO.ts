@@ -1,8 +1,8 @@
-import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
-
 import { DateTimeISOResolver } from "graphql-scalars";
 import { DateTime, Interval } from "luxon";
 import { Field, InputType, ObjectType } from "type-graphql";
+
+import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 
 @ObjectType()
 @InputType("IntervalISOInput")

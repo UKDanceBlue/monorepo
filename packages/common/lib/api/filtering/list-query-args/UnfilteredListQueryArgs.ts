@@ -1,11 +1,9 @@
-import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./common.js";
-
-import { SortDirection } from "../ListQueryTypes.js";
-
+import type { Node, OptionalToNullable } from "@ukdanceblue/common";
 import { ArgsType, Field, Int } from "type-graphql";
 
 import type { ListQueryType } from "../ListQueryTypes.js";
-import type { Node, OptionalToNullable } from "@ukdanceblue/common";
+import { SortDirection } from "../ListQueryTypes.js";
+import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./common.js";
 
 @ArgsType()
 export class UnfilteredListQueryArgs<SortByKeys extends string = never>

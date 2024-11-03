@@ -1,7 +1,7 @@
+import { Service } from "@freshgum/typedi";
 import { PrismaClient } from "@prisma/client";
 import { DateTime } from "luxon";
 import { generators } from "openid-client";
-import { Service } from "@freshgum/typedi";
 
 type LoginFlowSessionUniqueParam = { id: number } | { uuid: string };
 

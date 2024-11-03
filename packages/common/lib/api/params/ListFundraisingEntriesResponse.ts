@@ -1,7 +1,8 @@
-import { ArgsType, ObjectType, Field } from "type-graphql";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { ArgsType, Field,ObjectType } from "type-graphql";
+
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { FundraisingEntryNode } from "../resources/Fundraising.js";
+import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 @ArgsType()
 export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<

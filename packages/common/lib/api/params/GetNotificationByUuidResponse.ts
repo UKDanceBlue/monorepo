@@ -1,16 +1,17 @@
-import { ObjectType, Field, InputType, ArgsType, Int } from "type-graphql";
-import {
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-  AbstractGraphQLCreatedResponse,
-} from "./ApiResponse.js";
+import { ArgsType, Field, InputType, Int,ObjectType } from "type-graphql";
+
+import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import {
   NotificationDeliveryNode,
   NotificationNode,
 } from "../resources/Notification.js";
 import { TeamType } from "../resources/Team.js";
 import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
-import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
+import {
+  AbstractGraphQLCreatedResponse,
+  AbstractGraphQLOkResponse,
+  AbstractGraphQLPaginatedResponse,
+} from "./ApiResponse.js";
 
 @ObjectType("GetNotificationByUuidResponse", {
   implements: AbstractGraphQLOkResponse<NotificationNode>,

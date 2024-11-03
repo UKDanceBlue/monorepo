@@ -1,7 +1,7 @@
 import type { Notification, Prisma } from "@prisma/client";
 import type { TeamType } from "@ukdanceblue/common";
-import { ConcreteError } from "@ukdanceblue/common/error";
-import { AsyncResult } from "ts-results-es";
+import type { ConcreteError } from "@ukdanceblue/common/error";
+import type { AsyncResult } from "ts-results-es";
 
 export interface SendableNotification {
   title: string;

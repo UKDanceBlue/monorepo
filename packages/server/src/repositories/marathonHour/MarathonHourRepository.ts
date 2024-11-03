@@ -1,13 +1,13 @@
+import { Service } from "@freshgum/typedi";
+import { Prisma, PrismaClient } from "@prisma/client";
+import type { SortDirection } from "@ukdanceblue/common";
+
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
 import {
   buildMarathonHourOrder,
   buildMarathonHourWhere,
 } from "./marathonHourRepositoryUtils.js";
-
-import { Prisma, PrismaClient } from "@prisma/client";
-import { Service } from "@freshgum/typedi";
-
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type { SortDirection } from "@ukdanceblue/common";
 
 const marathonHourBooleanKeys = [] as const;
 type MarathonHourBooleanKey = (typeof marathonHourBooleanKeys)[number];

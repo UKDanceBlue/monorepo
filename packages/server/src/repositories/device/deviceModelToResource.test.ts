@@ -1,9 +1,8 @@
-import { deviceModelToResource } from "./deviceModelToResource.js";
-
+import type { Device } from "@prisma/client";
 import { DeviceNode } from "@ukdanceblue/common";
 import { describe, expect, it } from "vitest";
 
-import type { Device } from "@prisma/client";
+import { deviceModelToResource } from "./deviceModelToResource.js";
 
 describe("deviceModelToResource", () => {
   it("maps a device model to a resource", () => {

@@ -1,6 +1,5 @@
-import { PointEntryNode } from "@ukdanceblue/common";
-
 import type { PointEntry } from "@prisma/client";
+import { PointEntryNode } from "@ukdanceblue/common";
 
 export function pointEntryModelToResource(
   pointEntryModel: PointEntry

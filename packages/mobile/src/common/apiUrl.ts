@@ -10,9 +10,9 @@
 //     : "http://localhost:8000";
 // }
 
-import { Logger } from "./logger/Logger";
-
 import { reloadAsync } from "expo-updates";
+
+import { Logger } from "./logger/Logger";
 
 export let API_BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL || "https://app.danceblue.org";

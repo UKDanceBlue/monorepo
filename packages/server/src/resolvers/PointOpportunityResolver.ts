@@ -1,18 +1,26 @@
-import { eventModelToResource } from "#repositories/event/eventModelToResource.js";
-import { PointOpportunityRepository } from "#repositories/pointOpportunity/PointOpportunityRepository.js";
-import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
-
+import { Service } from "@freshgum/typedi";
+import { CommitteeRole } from "@prisma/client";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
-  QueryAccessControl,
   AccessLevel,
   CommitteeIdentifier,
-  LegacyError,
-  LegacyErrorCode,
   EventNode,
   GlobalIdScalar,
-  PointOpportunityNode,
-  SortDirection,
+  LegacyError,
+  LegacyErrorCode,
   MutationAccessControl,
+  PointOpportunityNode,
+  QueryAccessControl,
+  SortDirection,
+} from "@ukdanceblue/common";
+import {
+  CreatePointOpportunityInput,
+  CreatePointOpportunityResponse,
+  DeletePointOpportunityResponse,
+  ListPointOpportunitiesArgs,
+  ListPointOpportunitiesResponse,
+  SetPointOpportunityInput,
+  SinglePointOpportunityResponse,
 } from "@ukdanceblue/common";
 import {
   Arg,
@@ -23,19 +31,10 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "@freshgum/typedi";
 
-import type { GlobalId } from "@ukdanceblue/common";
-import { CommitteeRole } from "@prisma/client";
-import {
-  SinglePointOpportunityResponse,
-  ListPointOpportunitiesResponse,
-  ListPointOpportunitiesArgs,
-  CreatePointOpportunityResponse,
-  CreatePointOpportunityInput,
-  SetPointOpportunityInput,
-  DeletePointOpportunityResponse,
-} from "@ukdanceblue/common";
+import { eventModelToResource } from "#repositories/event/eventModelToResource.js";
+import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
+import { PointOpportunityRepository } from "#repositories/pointOpportunity/PointOpportunityRepository.js";
 
 @Resolver(() => PointOpportunityNode)
 @Service([PointOpportunityRepository])

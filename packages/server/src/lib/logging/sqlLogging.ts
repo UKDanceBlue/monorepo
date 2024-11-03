@@ -1,8 +1,7 @@
-import { isDevelopment, logDir } from "#environment";
-
+import type winston from "winston";
 import { createLogger, format, transports } from "winston";
 
-import type winston from "winston";
+import { isDevelopment, logDir } from "#environment";
 
 const databaseLogTransport = new transports.File({
   filename: "database.log",

@@ -1,10 +1,9 @@
-import { Errorable, ResourceError } from "./resourceError.js";
-import { CursorScalar } from "./scalars/Cursor.js";
-import { GlobalIdScalar } from "./scalars/GlobalId.js";
-
 import { Field, InterfaceType, ObjectType } from "type-graphql";
 
+import { Errorable, ResourceError } from "./resourceError.js";
+import { CursorScalar } from "./scalars/Cursor.js";
 import type { GlobalId } from "./scalars/GlobalId.js";
+import { GlobalIdScalar } from "./scalars/GlobalId.js";
 
 @ObjectType()
 export class PageInfo {

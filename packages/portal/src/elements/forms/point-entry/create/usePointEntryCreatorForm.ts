@@ -1,13 +1,13 @@
-import {
-  createPointEntryAndAssignDocument,
-  createPointEntryDocument,
-} from "./PointEntryCreatorGQL";
-
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "urql";
 
 import type { CreatePointEntryInput } from "#graphql/graphql.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+
+import {
+  createPointEntryAndAssignDocument,
+  createPointEntryDocument,
+} from "./PointEntryCreatorGQL";
 
 export function usePointEntryCreatorForm({
   teamUuid,

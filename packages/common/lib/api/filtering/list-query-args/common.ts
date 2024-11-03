@@ -1,3 +1,5 @@
+import { registerEnumType } from "type-graphql";
+
 import {
   Comparator,
   IsComparator,
@@ -5,8 +7,6 @@ import {
   SortDirection,
   StringComparator,
 } from "../ListQueryTypes.js";
-
-import { registerEnumType } from "type-graphql";
 
 registerEnumType(SortDirection, { name: "SortDirection" });
 registerEnumType(Comparator, { name: "Comparator" });

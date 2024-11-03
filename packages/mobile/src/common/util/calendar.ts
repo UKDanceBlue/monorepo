@@ -1,7 +1,6 @@
+import type { Calendar } from "expo-calendar";
 import { getCalendarsAsync, getDefaultCalendarAsync } from "expo-calendar";
 import { Platform } from "react-native";
-
-import type { Calendar } from "expo-calendar";
 
 export async function discoverDefaultCalendar(): Promise<Calendar | null> {
   if (Platform.OS === "ios") {

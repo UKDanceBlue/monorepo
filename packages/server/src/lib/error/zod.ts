@@ -1,5 +1,4 @@
 import { ConcreteError, ErrorCode } from "@ukdanceblue/common/error";
-
 import type { ZodError as RawZodError } from "zod";
 export class ZodError extends ConcreteError {
   readonly error: RawZodError;

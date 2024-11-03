@@ -1,11 +1,11 @@
-import { personCreatorDocument } from "./PersonCreatorGQL";
-
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 import { useForm } from "@tanstack/react-form";
-import { type CreatePersonInput } from "#graphql/graphql.js";
 import { useMutation } from "urql";
 
+import { type CreatePersonInput } from "#graphql/graphql.js";
 import type { DocumentType } from "#graphql/index.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+
+import { personCreatorDocument } from "./PersonCreatorGQL";
 
 export function usePersonCreatorForm(
   afterSubmit:

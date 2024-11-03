@@ -1,17 +1,4 @@
-import * as CommitteeDescriptions from "./committeeDescriptions.js";
-import {
-  buildCommitteeOrder,
-  buildCommitteeWhere,
-} from "./committeeRepositoryUtils.js";
-
-import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
-import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
-import {
-  RepositoryError,
-  SimpleUniqueParam,
-  handleRepositoryError,
-} from "#repositories/shared.js";
-
+import { Service } from "@freshgum/typedi";
 import { Committee, Prisma, PrismaClient, Team } from "@prisma/client";
 import {
   CommitteeIdentifier,
@@ -28,10 +15,22 @@ import {
   toBasicError,
 } from "@ukdanceblue/common/error";
 import { AsyncResult, Err, None, Ok, Result } from "ts-results-es";
-import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
+import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
+import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
+import {
+  handleRepositoryError,
+  RepositoryError,
+  SimpleUniqueParam,
+} from "#repositories/shared.js";
+
+import * as CommitteeDescriptions from "./committeeDescriptions.js";
+import {
+  buildCommitteeOrder,
+  buildCommitteeWhere,
+} from "./committeeRepositoryUtils.js";
 
 // Make sure that we are exporting a description for every committee
 CommitteeDescriptions[
@@ -72,8 +71,8 @@ export class CommitteeRepository {
   async findCommittees(
     filters: readonly CommitteeFilters[] | null | undefined,
     order: readonly [key: string, sort: SortDirection][] | null | undefined,
-    limit?: number | undefined,
-    offset?: number | undefined
+    limit?: number  ,
+    offset?: number  
   ): Promise<Result<Committee[], RepositoryError>> {
     try {
       const where = buildCommitteeWhere(filters);

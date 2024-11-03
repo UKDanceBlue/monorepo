@@ -1,7 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCallback } from "react";
-
 import type { AsyncStorageHook } from "@react-native-async-storage/async-storage/lib/typescript/types";
+import { useCallback } from "react";
 
 export function useAsyncStorage(key: string): AsyncStorageHook {
   return {

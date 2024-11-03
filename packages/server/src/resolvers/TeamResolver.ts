@@ -1,34 +1,35 @@
-import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
-import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
-import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
-import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
-import { membershipModelToResource } from "#repositories/membership/membershipModelToResource.js";
-import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
-import { TeamRepository } from "#repositories/team/TeamRepository.js";
-import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
+import { Service } from "@freshgum/typedi";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   ListFundraisingEntriesArgs,
   ListFundraisingEntriesResponse,
 } from "@ukdanceblue/common";
-import { globalFundraisingAccessParam } from "./accessParams.js";
-import * as Context from "#resolvers/context.js";
-
 import {
-  QueryAccessControl,
-  MutationAccessControl,
   AccessLevel,
   AuthSource,
+  BulkTeamInput,
   CommitteeRole,
+  GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
-  GlobalIdScalar,
   MembershipNode,
+  MutationAccessControl,
   PointEntryNode,
+  QueryAccessControl,
   SortDirection,
   TeamNode,
-  BulkTeamInput,
 } from "@ukdanceblue/common";
 import * as Common from "@ukdanceblue/common";
+import {
+  CreateTeamInput,
+  CreateTeamResponse,
+  DbFundsTeamInfo,
+  DeleteTeamResponse,
+  ListTeamsArgs,
+  ListTeamsResponse,
+  SetTeamInput,
+  SingleTeamResponse,
+} from "@ukdanceblue/common";
 import {
   ConcreteResult,
   FormattedConcreteError,
@@ -48,19 +49,18 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "@freshgum/typedi";
 
-import type { GlobalId } from "@ukdanceblue/common";
-import {
-  SingleTeamResponse,
-  ListTeamsResponse,
-  ListTeamsArgs,
-  CreateTeamResponse,
-  CreateTeamInput,
-  SetTeamInput,
-  DeleteTeamResponse,
-  DbFundsTeamInfo,
-} from "@ukdanceblue/common";
+import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
+import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
+import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
+import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
+import { membershipModelToResource } from "#repositories/membership/membershipModelToResource.js";
+import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
+import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
+import { TeamRepository } from "#repositories/team/TeamRepository.js";
+import * as Context from "#resolvers/context.js";
+
+import { globalFundraisingAccessParam } from "./accessParams.js";
 
 @Resolver(() => TeamNode)
 @Service([TeamRepository, FundraisingEntryRepository, DBFundsRepository])

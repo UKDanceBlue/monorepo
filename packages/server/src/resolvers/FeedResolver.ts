@@ -1,20 +1,17 @@
-import { FileManager } from "#files/FileManager.js";
-import { FeedRepository } from "#repositories/feed/FeedRepository.js";
-import { feedItemModelToResource } from "#repositories/feed/feedModelToResource.js";
-import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
+import { Service } from "@freshgum/typedi";
 import { CommitteeRole } from "@prisma/client";
-
 import {
-  QueryAccessControl,
   AccessLevel,
-  LegacyError,
-  LegacyErrorCode,
   FeedNode,
   type GlobalId,
   GlobalIdScalar,
   ImageNode,
+  LegacyError,
+  LegacyErrorCode,
   MutationAccessControl,
+  QueryAccessControl,
 } from "@ukdanceblue/common";
+import { CreateFeedInput, SetFeedInput } from "@ukdanceblue/common";
 import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok } from "ts-results-es";
 import {
@@ -26,8 +23,11 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "@freshgum/typedi";
-import { CreateFeedInput, SetFeedInput } from "@ukdanceblue/common";
+
+import { FileManager } from "#files/FileManager.js";
+import { feedItemModelToResource } from "#repositories/feed/feedModelToResource.js";
+import { FeedRepository } from "#repositories/feed/FeedRepository.js";
+import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
 @Resolver(() => FeedNode)
 @Service([FeedRepository, FileManager])

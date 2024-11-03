@@ -1,9 +1,10 @@
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { getFragmentData, graphql } from "#graphql/index.js";
 import { DateTime, Interval } from "luxon";
 import { useMemo } from "react";
 import { useQuery } from "urql";
+
+import { getFragmentData, graphql } from "#graphql/index.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 export const ConfigFragment = graphql(/* GraphQL */ `
   fragment ConfigFragment on ConfigurationNode {

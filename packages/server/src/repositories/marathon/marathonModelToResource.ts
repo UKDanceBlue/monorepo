@@ -1,6 +1,5 @@
-import { MarathonNode } from "@ukdanceblue/common";
-
 import type { Marathon } from "@prisma/client";
+import { MarathonNode } from "@ukdanceblue/common";
 
 export function marathonModelToResource(marathonModel: Marathon): MarathonNode {
   return MarathonNode.init({

@@ -1,14 +1,15 @@
 import { EmailAddressResolver } from "graphql-scalars";
-import { ObjectType, Field, InputType, ArgsType } from "type-graphql";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
-import { PersonNode } from "../resources/Person.js";
-import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
+import { ArgsType,Field, InputType, ObjectType } from "type-graphql";
+
 import {
   CommitteeIdentifier,
   CommitteeRole,
   DbRole,
 } from "../../authorization/structures.js";
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
+import { PersonNode } from "../resources/Person.js";
+import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
+import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 @ObjectType("ListPeopleResponse", {
   implements: AbstractGraphQLPaginatedResponse<PersonNode>,

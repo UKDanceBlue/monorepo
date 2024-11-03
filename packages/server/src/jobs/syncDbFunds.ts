@@ -3,23 +3,21 @@ import { NotFoundError } from "@ukdanceblue/common/error";
 
 const jobStateRepository = Container.get(JobStateRepository);
 
+import { Container } from "@freshgum/typedi";
+import type { Marathon } from "@prisma/client";
+import { CompositeError, toBasicError } from "@ukdanceblue/common/error";
+import { Cron } from "croner";
+import { AsyncResult, Err, None, Ok, type Result } from "ts-results-es";
+
+import type { PrismaError } from "#error/prisma.js";
 import {
   DBFundsFundraisingProvider,
   type DBFundsFundraisingProviderError,
 } from "#lib/fundraising/DbFundsProvider.js";
 import { logger } from "#logging/standardLogging.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
-import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
-
-import { CompositeError, toBasicError } from "@ukdanceblue/common/error";
-import { Cron } from "croner";
-import { AsyncResult, Err, None, Ok, type Result } from "ts-results-es";
-import { Container } from "@freshgum/typedi";
-
-import type { PrismaError } from "#error/prisma.js";
-
 import { JobStateRepository } from "#repositories/JobState.js";
-import { Marathon } from "@prisma/client";
+import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
 
 type DoSyncError =
   | NotFoundError

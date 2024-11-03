@@ -1,17 +1,16 @@
-import { buildDeviceOrder, buildDeviceWhere } from "./deviceRepositoryUtils.js";
-
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { RepositoryError } from "#repositories/shared.js";
-
+import { Service } from "@freshgum/typedi";
+import type { Person } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
+import type { SortDirection } from "@ukdanceblue/common";
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok, Result } from "ts-results-es";
-import { Service } from "@freshgum/typedi";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { NotificationAudience } from "#notification/NotificationProvider.js";
-import type { Person } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { RepositoryError } from "#repositories/shared.js";
+
+import { buildDeviceOrder, buildDeviceWhere } from "./deviceRepositoryUtils.js";
 
 const deviceStringKeys = ["expoPushToken"] as const;
 type DeviceStringKey = (typeof deviceStringKeys)[number];

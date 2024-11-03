@@ -1,9 +1,5 @@
-import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
-import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
-import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
-import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
-import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
-
+import { Service } from "@freshgum/typedi";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessLevel,
   CommitteeIdentifier,
@@ -15,7 +11,14 @@ import {
   SortDirection,
   TeamNode,
 } from "@ukdanceblue/common";
+import {
+  CreateMarathonInput,
+  ListMarathonsArgs,
+  ListMarathonsResponse,
+  SetMarathonInput,
+} from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
+import { AsyncResult, Option } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -25,16 +28,12 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "@freshgum/typedi";
 
-import type { GlobalId } from "@ukdanceblue/common";
-import { AsyncResult, Option } from "ts-results-es";
-import {
-  ListMarathonsResponse,
-  ListMarathonsArgs,
-  CreateMarathonInput,
-  SetMarathonInput,
-} from "@ukdanceblue/common";
+import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
+import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
+import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
+import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
+import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
 @Resolver(() => MarathonNode)
 @Service([MarathonRepository, CommitteeRepository])

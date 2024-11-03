@@ -1,6 +1,5 @@
-import { PointOpportunityNode, TeamType } from "@ukdanceblue/common";
-
 import type { PointOpportunity } from "@prisma/client";
+import { PointOpportunityNode, TeamType } from "@ukdanceblue/common";
 
 export function pointOpportunityModelToResource(
   pointOpportunityModel: PointOpportunity
