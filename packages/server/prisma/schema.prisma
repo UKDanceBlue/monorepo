@@ -539,7 +539,7 @@ model DailyDepartmentNotification {
   behalfHonorMemorial     String?                          @map("behalf_honor_memorial")
   matchingGift            String?                          @map("matching_gift")
   batchId                 String                           @map("batch_id")
-  batch                   DailyDepartmentNotificationBatch @relation(fields: [batchId], references: [batchId])
+  batch                   DailyDepartmentNotificationBatch @relation(fields: [batchId], references: [batchId], onDelete: Cascade, onUpdate: Cascade)
   ukFirstGift             Boolean                          @map("uk_first_gift")
   divFirstGift            Boolean                          @map("div_first_gift")
   idSorter                String                           @id @map("id_sorter")

@@ -1,5 +1,6 @@
 export * from "./ApiResponse.js";
 export * from "./CreateFeedInput.js";
+export * from "./DailyDepartmentNotificationParams.js";
 export * from "./deviceParams.js";
 export * from "./eventParams.js";
 export * from "./fundraisingAccess.js";

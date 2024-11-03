@@ -30,13 +30,11 @@
     },
     {
       "name": "Server: Start",
-      "type": "node",
       "request": "launch",
-      "runtimeArgs": ["-r", "ts-node/register"],
-      "args": ["${workspaceFolder}/packages/server/src/index.ts"],
-      "cwd": "${workspaceFolder}/packages/server",
-      "trace": true,
+      "runtimeArgs": ["run", "server:start"],
+      "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**"],
+      "type": "node",
       "presentation": {
         "group": "6server"
       },

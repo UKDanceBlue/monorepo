@@ -1,4 +1,5 @@
 import { LocalDateResolver } from "graphql-scalars";
+import { Err, Ok, Result } from "ts-results-es";
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 
 import { Node } from "../relay.js";
@@ -42,12 +43,14 @@ registerEnumType(BatchType, {
   name: "BatchType",
 });
 
-export function extractDDNBatchType(batchId: string): BatchType {
+export function extractDDNBatchType(
+  batchId: string
+): Result<BatchType, string> {
   let code = "";
   for (let i = batchId.length - 1; i >= 0; i--) {
     const letter = batchId[i];
     if (!letter) {
-      return BatchType.Unknown;
+      return Err(batchId);
     }
     // Skip anything that isn't an uppercase letter
     if (letter < "A" || letter > "Z") {
@@ -59,10 +62,9 @@ export function extractDDNBatchType(batchId: string): BatchType {
     }
     code = letter + code;
   }
-  return (
-    (BatchType[code as keyof typeof BatchType] as BatchType | undefined) ??
-    BatchType.Unknown
-  );
+  return (BatchType[code as keyof typeof BatchType] as BatchType | undefined)
+    ? Ok(BatchType[code as keyof typeof BatchType])
+    : Err(code);
 }
 
 @ObjectType()
