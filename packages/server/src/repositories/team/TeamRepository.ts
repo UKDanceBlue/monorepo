@@ -8,7 +8,7 @@ import type {
 } from "@ukdanceblue/common";
 import { MembershipPositionType, TeamLegacyStatus } from "@ukdanceblue/common";
 import { BasicError, ConcreteResult } from "@ukdanceblue/common/error";
-import { None, Ok, Option, Result,Some } from "ts-results-es";
+import { None, Ok, Option, Result, Some } from "ts-results-es";
 
 import { SomePrismaError } from "#error/prisma.js";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";

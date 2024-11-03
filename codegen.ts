@@ -44,6 +44,7 @@ const config: TypeScriptPluginConfig = {
     NumericComparator: "@ukdanceblue/common#NumericComparator",
     StringComparator: "@ukdanceblue/common#StringComparator",
     // IsComparator: "@ukdanceblue/common#IsComparator",
+    BatchType: "@ukdanceblue/common#BatchType",
   },
   scalars: {
     LuxonDateRange: "string",

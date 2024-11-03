@@ -28,19 +28,21 @@ model Device {
   uuid                   String                 @unique(map: "devices_uuid_unique") @default(uuid()) @db.Uuid
   createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt              DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
-  // Verifier for the device, this is a base64 encoded SHA512 digest of a secret the device knows
-  // This is nullable for devices that were registered before we started using the
-  // verifier and will be set once the device registers next and will never be null again
-  // This means that when this is null, simply trust the device
+  /// Verifier for the device, this is a base64 encoded SHA512 digest of a secret the device knows
+  ///
+  /// This is nullable for devices that were registered before we started using the
+  /// verifier and will be set once the device registers next and will never be null again
+  ///
+  /// This means that when this is null, simply trust the device
   verifier               String?
-  // The Expo push token for the device, if available
+  /// The Expo push token for the device, if available
   expoPushToken          String?                @map("expo_push_token")
-  // The last time the device was seen
+  /// The last time the device was seen
   lastSeen               DateTime?              @map("last_login") @db.Timestamptz(6)
   lastSeenPersonId       Int?                   @map("last_user_id")
-  // The last person to use the device
+  /// The last person to use the device
   lastSeenPerson         Person?                @relation(fields: [lastSeenPersonId], references: [id])
-  // The notifications that have been sent to this device
+  /// The notifications that have been sent to this device
   deliveredNotifications NotificationDelivery[]
 
   @@index([uuid], map: "devices_uuid")
@@ -295,45 +297,48 @@ model Notification {
   updatedAt                   DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
   title                       String
   body                        String
-  // The time at which the notification should be sent, if null it's already been sent
+  /// The time at which the notification should be sent, if null it's already been sent
   sendAt                      DateTime?              @map("send_at") @db.Timestamptz(6)
-  // The time at which the process of sending the notification was started
+  /// The time at which the process of sending the notification was started
   startedSendingAt            DateTime?              @map("started_sending_at") @db.Timestamptz(6)
-  // URL to open when the notification is tapped
+  /// URL to open when the notification is tapped
   url                         String?
-  // Every individual delivery of the notification
+  /// Every individual delivery of the notification
   deliveries                  NotificationDelivery[]
-  // If set, indicates a potential issue with delivery of the entire notification
+  /// If set, indicates a potential issue with delivery of the entire notification
   deliveryIssue               String?                @map("delivery_issue")
-  // If set, indicates the time at which the delivery issue was acknowledged, null until then
+  /// If set, indicates the time at which the delivery issue was acknowledged, null until then
   deliveryIssueAcknowledgedAt DateTime?              @map("delivery_issue_acknowledged_at") @db.Timestamptz(6)
 
   @@index([uuid], map: "notifications_uuid")
   @@map("notifications")
 }
 
-// A record of a notification being sent to a device
+/// A record of a notification being sent to a device
 model NotificationDelivery {
   id               Int                @id @default(autoincrement())
   uuid             String             @unique(map: "notification_deliveries_uuid_unique") @default(uuid()) @db.Uuid
   deviceId         Int                @map("device_id")
   notificationId   Int                @map("notification_id")
-  // The device to which the notification was sent
+  /// The device to which the notification was sent
   device           Device             @relation(fields: [deviceId], references: [id], onDelete: Cascade)
-  // The notification that was sent
+  /// The notification that was sent
   notification     Notification       @relation(fields: [notificationId], references: [id], onDelete: Cascade)
-  // A unique ID for each chunk of notifications sent to Expo
+  /// A unique ID for each chunk of notifications sent to Expo
   chunkUuid        String?            @map("chunk_uuid") @db.Uuid
-  // The receipt ID from Expo (I *think* this is unique, but I'm not 100% sure)
+  /// The receipt ID from Expo (I *think* this is unique, but I'm not 100% sure)
   receiptId        String?            @unique @map("receipt_id")
-  // Null by default, set to true once the notification has been sent to Expo
+  /// Null by default, set to true once the notification has been sent to Expo
   sentAt           DateTime?          @map("sent_at") @db.Timestamptz(6)
-  // The time we checked the push receipt from Expo, remains null until the receipt is checked and is always set once it is
-  // This is set to the time that the receipt was checked, not necessarily the time the notification was actually delivered
-  // Furthermore, this is never set if we got an error from the push ticket down below
+  /// The time we checked the push receipt from Expo, remains null until the receipt is checked and is always set once it is
+  ///
+  /// This is set to the time that the receipt was checked, not necessarily the time the notification was actually delivered
+  ///
+  /// Furthermore, this is never set if we got an error from the push ticket down below
   receiptCheckedAt DateTime?          @map("delivered_by") @db.Timestamptz(6)
-  // If set, either the push ticket or receipt indicated an error
-  // If it is null we assume the notification made it to the device and should be considered delivered
+  /// If set, either the push ticket or receipt indicated an error
+  ///
+  /// If it is null we assume the notification made it to the device and should be considered delivered
   deliveryError    NotificationError? @map("delivery_error")
   createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -405,51 +410,51 @@ model FeedItem {
   @@map("feed_items")
 }
 
-// This table is kept in sync with the DBFunds API and should not be modified
+/// This table is kept in sync with the DBFunds API and should not be modified
 model DBFundsTeam {
-  // Unrelated to the 'id' field in the DBFunds API
+  /// Unrelated to the 'id' field in the DBFunds API
   id                 Int                       @id @default(autoincrement())
   uuid               String                    @unique @default(uuid()) @db.Uuid
-  // The team's DbNum from the DBFunds API
+  /// The team's DbNum from the DBFunds API
   dbNum              Int                       @map("db_num")
-  // The team's name from the DBFunds API
+  /// The team's name from the DBFunds API
   name               String
-  // The team's total fundraising amount from the DBFunds API
+  /// The team's total fundraising amount from the DBFunds API
   totalAmount        Float                     @map("total_amount")
-  // Whether the team is active in DBFunds
+  /// Whether the team is active in DBFunds
   active             Boolean
-  // All fundraising entries for the team
+  /// All fundraising entries for the team
   fundraisingEntries DBFundsFundraisingEntry[]
 
-  // The marathon the team is associated with
+  /// The marathon the team is associated with
   marathon   Marathon? @relation(fields: [marathonId], references: [id])
   marathonId Int?      @map("marathon_id")
 
-  // The corresponding teams in our database
+  /// The corresponding teams in our database
   teams Team[]
 
   @@unique([dbNum, marathonId], map: "db_funds_teams_db_num_marathon_id_key")
   @@map("db_funds_teams")
 }
 
-// This table is kept in sync with the DBFunds API and should not be modified
+/// This table is kept in sync with the DBFunds API and should not be modified
 model DBFundsFundraisingEntry {
-  // Unrelated to the 'id' field in the DBFunds API
+  /// Unrelated to the 'id' field in the DBFunds API
   id            Int         @id @default(autoincrement())
   uuid          String      @unique @default(uuid()) @db.Uuid
-  // The amount of the entry
+  /// The amount of the entry
   amount        Decimal
-  // Who made the donation
+  /// Who made the donation
   donatedBy     String?     @map("donated_by")
-  // Who the donation was made for
+  /// Who the donation was made for
   donatedTo     String?     @map("donated_to")
-  // The date of the donation
+  /// The date of the donation
   date          DateTime
-  // The team's DbNum from the DBFunds API
+  /// The team's DbNum from the DBFunds API
   dbFundsTeamId Int         @map("team_db_num")
   dbFundsTeam   DBFundsTeam @relation(fields: [dbFundsTeamId], references: [id], onDelete: Cascade)
 
-  // The corresponding fundraising entry in our database
+  /// The corresponding fundraising entry in our database
   fundraisingEntry FundraisingEntryWithMeta?
 
   @@unique([donatedTo, donatedBy, date, dbFundsTeamId])
@@ -508,19 +513,121 @@ model JobState {
   @@map("job_states")
 }
 
-// Potential errors after sending a notification to Expo (see https://docs.expo.dev/push-notifications/sending-notifications/#individual-errors)
+model DailyDepartmentNotification {
+  division                String?
+  department              String?
+  effectiveDate           DateTime?                        @map("effective_date") @db.Date
+  processDate             DateTime?                        @map("process_date") @db.Date
+  pledgedDate             DateTime?                        @map("pledged_date") @db.Date
+  transactionDate         DateTime?                        @map("transaction_date") @db.Date
+  transactionType         String                           @map("transaction_type")
+  donor1Amount            Decimal?                         @map("donor1_amount")
+  donor2Amount            Decimal?                         @map("donor2_amount")
+  combinedAmount          Decimal                          @map("combined_amount")
+  pledgedAmount           Decimal                          @map("pledged_amount")
+  accountNumber           String                           @map("account_number")
+  accountName             String                           @map("account_name")
+  holdingDestination      String?                          @map("holding_destination")
+  comment                 String?
+  secShares               String?                          @map("sec_shares")
+  secType                 String?                          @map("sec_type")
+  gikType                 String?                          @map("gik_type")
+  gikDescription          String?                          @map("gik_description")
+  onlineGift              Boolean                          @map("online_gift")
+  solicitationCode        String?                          @map("solicitation_code")
+  solicitation            String?
+  behalfHonorMemorial     String?                          @map("behalf_honor_memorial")
+  matchingGift            String?                          @map("matching_gift")
+  batchId                 String                           @map("batch_id")
+  batch                   DailyDepartmentNotificationBatch @relation(fields: [batchId], references: [batchId])
+  ukFirstGift             Boolean                          @map("uk_first_gift")
+  divFirstGift            Boolean                          @map("div_first_gift")
+  idSorter                String                           @id @map("id_sorter")
+  combinedDonorName       String                           @map("combined_donor_name")
+  combinedDonorSalutation String                           @map("combined_donor_salutation")
+  combinedDonorSort       String?                          @map("combined_donor_sort")
+  donor1Id                String?                          @map("donor1_id")
+  donor1GiftKey           String?                          @map("donor1_gift_key")
+  donor1Name              String?                          @map("donor1_name")
+  donor1Deceased          Boolean?                         @map("donor1_deceased")
+  donor1Constituency      String?                          @map("donor1_constituency")
+  donor1TitleBar          String?                          @map("donor1_title_bar")
+  donor1Pm                String?                          @map("donor1_pm")
+  donor1Degrees           String?                          @map("donor1_degrees")
+  donor2Id                String?                          @map("donor2_id")
+  donor2GiftKey           String?                          @map("donor2_gift_key")
+  donor2Name              String?                          @map("donor2_name")
+  donor2Deceased          Boolean?                         @map("donor2_deceased")
+  donor2Constituency      String?                          @map("donor2_constituency")
+  donor2TitleBar          String?                          @map("donor2_title_bar")
+  donor2Pm                String?                          @map("donor2_pm")
+  donor2Degrees           String?                          @map("donor2_degrees")
+  donor1Relation          String?                          @map("donor1_relation")
+  donor2Relation          String?                          @map("donor2_relation")
+
+  // For privacy reasons, the following fields are never actually stored in the database
+  pLine1                   String? @map("p_line1")
+  pLine2                   String? @map("p_line2")
+  pLine3                   String? @map("p_line3")
+  pCity                    String? @map("p_city")
+  pState                   String? @map("p_state")
+  pZip                     String? @map("p_zip")
+  homePhone                String? @map("home_phone")
+  homePhoneRestriction     String? @map("home_phone_restriction")
+  businessPhone            String? @map("business_phone")
+  businessPhoneRestriction String? @map("business_phone_restriction")
+  email                    String? @map("email")
+  emailRestriction         String? @map("email_restriction")
+
+  transmittalSn String?   @map("transmittal_sn")
+  sapDocNum     String?   @map("sap_doc_num")
+  sapDocDate    DateTime? @map("sap_doc_date") @db.Date
+  jvDocNum      String?   @map("jv_doc_num")
+  jvDocDate     DateTime? @map("jv_doc_date") @db.Date
+  advFeeCcPhil  String?   @map("adv_fee_cc_phil")
+  advFeeAmtPhil Decimal?  @map("adv_fee_amt_phil")
+  advFeeCcUnit  String?   @map("adv_fee_cc_unit")
+  advFeeAmtUnit Decimal?  @map("adv_fee_amt_unit")
+  advFeeStatus  String?   @map("adv_fee_status")
+  hcUnit        String?   @map("hc_unit")
+}
+
+model DailyDepartmentNotificationBatch {
+  batchId   String                        @id @map("batch_id")
+  batchType BatchType                     @map("batch_type")
+  DDNs      DailyDepartmentNotification[]
+}
+
+enum BatchType {
+  /// Check batches (C) include gifts to UK mailed directly to the Office of Development or to Gift Receiving, generally response to a phonathon solicitation
+  Check
+  /// Transmittal batches (T) include gifts to UK mailed directly to another department.
+  Transmittal
+  /// Credit Card batches (D) include credit card gifts approved by Gift Receiving office or Phonathon/Annual Giving, those made by a donor through the Office of Development online giving page, or by recurring subscription
+  CreditCard
+  /// ACH batches (A) include gifts set-up by the Gift Receiving office as a recurring subscription
+  ACH
+  /// Non-cash batches (N) include any gift to UK that is not received, processed or approved by the Gift Receiving office – gift was deposited by another department or gift-in-kind
+  NonCash
+  /// Payroll Deduction batches (X) include gifts from UK employees through bi-weekly or monthly payroll deductions
+  PayrollDeduction
+  /// Fallback batch type for when the batch type is unknown
+  Unknown
+}
+
+/// Potential errors after sending a notification to Expo (see https://docs.expo.dev/push-notifications/sending-notifications/#individual-errors)
 enum NotificationError {
-  // The device cannot receive push notifications anymore and you should stop sending messages to the corresponding Expo push token.
+  /// The device cannot receive push notifications anymore and you should stop sending messages to the corresponding Expo push token.
   DeviceNotRegistered
-  // Your push notification credentials for your standalone app are invalid (for example, you may have revoked them).
+  /// Your push notification credentials for your standalone app are invalid (for example, you may have revoked them).
   InvalidCredentials
-  // The total notification payload was too large. On Android and iOS, the total payload must be at most 4096 bytes.
+  /// The total notification payload was too large. On Android and iOS, the total payload must be at most 4096 bytes.
   MessageTooBig
-  // You are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
+  /// You are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
   MessageRateExceeded
-  // This indicates that there is an issue with your FCM push credentials.
+  /// This indicates that there is an issue with your FCM push credentials.
   MismatchSenderId
-  // This is for any unknown errors that don't have a specific error code, this is not one of Expo's error codes.
+  /// This is for any unknown errors that don't have a specific error code, this is not one of Expo's error codes.
   Unknown
 }
 

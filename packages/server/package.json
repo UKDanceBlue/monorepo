@@ -12,7 +12,7 @@
     "email": "app@danceblue.org",
     "url": "https://danceblue.org"
   },
-  "type": "commonjs",
+  "type": "module",
   "imports": {
     "#auth/*.js": "./dist/lib/auth/*.js",
     "#environment": "./dist/environment.js",

@@ -1,6 +1,7 @@
 import { Container, Service } from "@freshgum/typedi";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
+  checkParam,
   ListFundraisingEntriesArgs,
   ListFundraisingEntriesResponse,
   MutationAccessControl,
@@ -33,7 +34,15 @@ import {
   FormattedConcreteError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
-import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
+import {
+  AsyncResult,
+  Err,
+  None,
+  Ok,
+  Option,
+  Result,
+  Some,
+} from "ts-results-es";
 import {
   Arg,
   Args,
@@ -76,12 +85,10 @@ export class PersonResolver {
   async getByUuid(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<PersonNode>> {
-    const row = (
+    return new AsyncResult(
       await this.personRepository.findPersonByUnique({ uuid: id })
-    ).andThen((row) => row.toResult(new NotFoundError({ what: "Person" })));
-
-    return row
-      .toAsyncResult()
+    )
+      .andThen((row) => row.toResult(new NotFoundError({ what: "Person" })))
       .andThen((row) => personModelToResource(row, this.personRepository))
       .promise;
   }
@@ -164,11 +171,8 @@ export class PersonResolver {
   async searchByName(
     @Arg("name") name: string
   ): Promise<ConcreteResult<PersonNode[]>> {
-    const rows = await this.personRepository.searchByName(name);
-
-    return rows
-      .toAsyncResult()
-      .andThen(async (rows) =>
+    return new AsyncResult(this.personRepository.searchByName(name)).andThen(
+      async (rows) =>
         Result.all(
           await Promise.all(
             rows.map(
@@ -176,7 +180,7 @@ export class PersonResolver {
             )
           )
         )
-      ).promise;
+    ).promise;
   }
 
   @MutationAccessControl({
@@ -256,28 +260,26 @@ export class PersonResolver {
       );
     }
 
-    const row = await this.personRepository.updatePerson(
-      {
-        uuid: id,
-      },
-      {
-        name: input.name,
-        email: input.email,
-        linkblue: input.linkblue?.toLowerCase(),
-        memberOf: input.memberOf?.map(({ id: { id }, committeeRole }) => ({
-          id,
-          committeeRole,
-        })),
-        captainOf: input.captainOf?.map(({ id: { id }, committeeRole }) => ({
-          id,
-          committeeRole,
-        })),
-      }
-    );
-
-    return row
-      .toAsyncResult()
-      .andThen((row) => personModelToResource(row, this.personRepository))
+    return new AsyncResult(
+      this.personRepository.updatePerson(
+        {
+          uuid: id,
+        },
+        {
+          name: input.name,
+          email: input.email,
+          linkblue: input.linkblue?.toLowerCase(),
+          memberOf: input.memberOf?.map(({ id: { id }, committeeRole }) => ({
+            id,
+            committeeRole,
+          })),
+          captainOf: input.captainOf?.map(({ id: { id }, committeeRole }) => ({
+            id,
+            committeeRole,
+          })),
+        }
+      )
+    ).andThen((row) => personModelToResource(row, this.personRepository))
       .promise;
   }
 
@@ -287,21 +289,19 @@ export class PersonResolver {
     @Arg("people", () => [BulkPersonInput]) people: BulkPersonInput[],
     @Arg("marathonId", () => GlobalIdScalar) marathonId: GlobalId
   ): Promise<ConcreteResult<PersonNode[]>> {
-    const rows = await this.personRepository.bulkLoadPeople(people, {
-      uuid: marathonId.id,
-    });
-
-    return rows
-      .toAsyncResult()
-      .andThen(async (rows) =>
-        Result.all(
-          await Promise.all(
-            rows.map(
-              (row) => personModelToResource(row, this.personRepository).promise
-            )
+    return new AsyncResult(
+      this.personRepository.bulkLoadPeople(people, {
+        uuid: marathonId.id,
+      })
+    ).andThen(async (rows) =>
+      Result.all(
+        await Promise.all(
+          rows.map(
+            (row) => personModelToResource(row, this.personRepository).promise
           )
         )
-      ).promise;
+      )
+    ).promise;
   }
 
   @MutationAccessControl({
@@ -316,17 +316,17 @@ export class PersonResolver {
     })
     position: MembershipPositionType
   ): Promise<ConcreteResult<MembershipNode>> {
-    const membership = await this.membershipRepository.assignPersonToTeam({
-      personParam: {
-        uuid: personUuid.id,
-      },
-      teamParam: {
-        uuid: teamUuid.id,
-      },
-      position,
-    });
-
-    return membership.map(membershipModelToResource);
+    return new AsyncResult(
+      this.membershipRepository.assignPersonToTeam({
+        personParam: {
+          uuid: personUuid.id,
+        },
+        teamParam: {
+          uuid: teamUuid.id,
+        },
+        position,
+      })
+    ).map(membershipModelToResource).promise;
   }
 
   @MutationAccessControl({
@@ -337,16 +337,16 @@ export class PersonResolver {
     @Arg("personUuid", () => GlobalIdScalar) personUuid: GlobalId,
     @Arg("teamUuid", () => GlobalIdScalar) teamUuid: GlobalId
   ): Promise<ConcreteResult<MembershipNode>> {
-    const membership = await this.membershipRepository.removePersonFromTeam(
-      {
-        uuid: personUuid.id,
-      },
-      {
-        uuid: teamUuid.id,
-      }
-    );
-
-    return membership.map(membershipModelToResource);
+    return new AsyncResult(
+      this.membershipRepository.removePersonFromTeam(
+        {
+          uuid: personUuid.id,
+        },
+        {
+          uuid: teamUuid.id,
+        }
+      )
+    ).map(membershipModelToResource).promise;
   }
 
   @MutationAccessControl({
@@ -356,10 +356,7 @@ export class PersonResolver {
   async delete(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<PersonNode>> {
-    const result = await this.personRepository.deletePerson({ uuid: id });
-
-    return result
-      .toAsyncResult()
+    return new AsyncResult(this.personRepository.deletePerson({ uuid: id }))
       .andThen((row) => personModelToResource(row, this.personRepository))
       .map((person) => {
         auditLogger.secure("Person deleted", {
@@ -389,20 +386,18 @@ export class PersonResolver {
   async committees(
     @Root() { id: { id } }: PersonNode
   ): Promise<ConcreteResult<CommitteeMembershipNode[]>> {
-    const models = await this.personRepository.findCommitteeMembershipsOfPerson(
-      {
+    return new AsyncResult(
+      this.personRepository.findCommitteeMembershipsOfPerson({
         uuid: id,
-      }
-    );
-
-    return models.map((models) =>
+      })
+    ).map((models) =>
       models.map((membership) => {
         return committeeMembershipModelToResource(
           membership,
           membership.team.correspondingCommittee.identifier
         );
       })
-    );
+    ).promise;
   }
 
   @QueryAccessControl(
@@ -420,15 +415,15 @@ export class PersonResolver {
   async teams(
     @Root() { id: { id } }: PersonNode
   ): Promise<ConcreteResult<MembershipNode[]>> {
-    const models = await this.personRepository.findMembershipsOfPerson(
-      {
-        uuid: id,
-      },
-      {},
-      [TeamType.Spirit]
-    );
-
-    return models.map((models) => models.map(membershipModelToResource));
+    return new AsyncResult(
+      this.personRepository.findMembershipsOfPerson(
+        {
+          uuid: id,
+        },
+        {},
+        [TeamType.Spirit]
+      )
+    ).map((models) => models.map(membershipModelToResource)).promise;
   }
 
   @QueryAccessControl(
@@ -446,15 +441,15 @@ export class PersonResolver {
   async moraleTeams(
     @Root() { id: { id } }: PersonNode
   ): Promise<ConcreteResult<MembershipNode[]>> {
-    const models = await this.personRepository.findMembershipsOfPerson(
-      {
-        uuid: id,
-      },
-      {},
-      [TeamType.Morale]
-    );
-
-    return models.map((models) => models.map(membershipModelToResource));
+    return new AsyncResult(
+      this.personRepository.findMembershipsOfPerson(
+        {
+          uuid: id,
+        },
+        {},
+        [TeamType.Morale]
+      )
+    ).map((models) => models.map(membershipModelToResource)).promise;
   }
 
   @QueryAccessControl(
@@ -472,14 +467,15 @@ export class PersonResolver {
   async primaryCommittee(
     @Root() { id: { id } }: PersonNode
   ): Promise<ConcreteResult<Option<CommitteeMembershipNode>>> {
-    const models = await this.personRepository.getPrimaryCommitteeOfPerson({
-      uuid: id,
-    });
-    const resources = models.map(([membership, committee]) =>
-      committeeMembershipModelToResource(membership, committee.identifier)
+    return extractNotFound(
+      await new AsyncResult(
+        this.personRepository.getPrimaryCommitteeOfPerson({
+          uuid: id,
+        })
+      ).map(([membership, committee]) =>
+        committeeMembershipModelToResource(membership, committee.identifier)
+      ).promise
     );
-
-    return extractNotFound(resources);
   }
 
   @QueryAccessControl(
@@ -509,14 +505,27 @@ export class PersonResolver {
   }
 
   @QueryAccessControl<FundraisingEntryNode>(
-    async (
-      { id: { id } },
-      { teamMemberships, userData: { userId } }
-    ): Promise<boolean> => {
+    async ({ id: { id } }, context): Promise<boolean> => {
       // We can't grant blanket access as otherwise people would see who else was assigned to an entry
       // You can view all assignments for an entry if you are:
       // 1. A fundraising coordinator or chair
-      globalFundraisingAccessParam;
+      const globalFundraisingAccess = await checkParam(
+        globalFundraisingAccessParam,
+        context.authorization,
+        {},
+        {},
+        context
+      );
+      if (globalFundraisingAccess.isErr()) {
+        return false;
+      }
+      if (globalFundraisingAccess.value) {
+        return true;
+      }
+      const {
+        teamMemberships,
+        userData: { userId },
+      } = context;
       // 2. The captain of the team the entry is associated with
       if (userId == null) {
         return false;
@@ -637,18 +646,13 @@ export class PersonResolver {
   @FieldResolver(() => [FundraisingAssignmentNode])
   async fundraisingAssignments(
     @Root() { id: { id } }: PersonNode
-  ): Promise<FundraisingAssignmentNode[]> {
-    const models =
-      await this.fundraisingEntryRepository.getAssignmentsForPerson({
+  ): Promise<Result<FundraisingAssignmentNode[], ConcreteError>> {
+    return new AsyncResult(
+      this.fundraisingEntryRepository.getAssignmentsForPerson({
         uuid: id,
-      });
-
-    if (models.isErr()) {
-      throw new FormattedConcreteError(models);
-    }
-
-    return Promise.all(
-      models.value.map((row) => fundraisingAssignmentModelToNode(row))
-    );
+      })
+    ).map((models) =>
+      Promise.all(models.map((row) => fundraisingAssignmentModelToNode(row)))
+    ).promise;
   }
 }

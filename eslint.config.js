@@ -37,15 +37,14 @@ export default eslintTs.config(
     name: "Global Ignored Files",
     ignores: [
       "*.d.ts",
-      "node_modules/",
-      "coverage/",
-      "dist/",
-      "build/",
-      ".next/",
+      "node_modules/**/*",
+      "coverage/**/*",
+      "packages/*/dist/**/*",
+      "build/**/*",
+      ".next/**/*",
       "*.json",
-      ".yarn/",
-      "compose-volumes/",
-      "eslint.config.js",
+      ".yarn/**/*",
+      "compose-volumes/**/*",
       "packages/mobile/.expo",
     ],
   },
@@ -238,6 +237,7 @@ export default eslintTs.config(
     },
     rules: getTsEslintRulesFrom(
       {
+        "@typescript-eslint/no-deprecated": "off",
         "@typescript-eslint/no-var-requires": "off",
         "@typescript-eslint/require-await": "error",
         "@typescript-eslint/return-await": "error",
@@ -249,13 +249,7 @@ export default eslintTs.config(
             prefer: "type-imports",
           },
         ],
-        "@typescript-eslint/no-unused-vars": [
-          "error",
-          {
-            varsIgnorePattern: "^_",
-            argsIgnorePattern: "^_",
-          },
-        ],
+        "@typescript-eslint/no-unused-vars": "off",
         "@typescript-eslint/consistent-type-exports": [
           "error",
           { fixMixedExportsWithInlineTypeSpecifier: false },

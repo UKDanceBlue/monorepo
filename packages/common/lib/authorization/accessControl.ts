@@ -329,10 +329,7 @@ export function QueryAccessControl<
 >(
   params: CustomQueryAuthorizationFunction<RootType, ResultType>
 ): MethodDecorator & PropertyDecorator;
-export function QueryAccessControl<
-  RootType extends object = never,
-  ResultType extends object = never,
->(
+export function QueryAccessControl<RootType extends object = never>(
   ...params: AccessControlParam<RootType>[]
 ): MethodDecorator & PropertyDecorator;
 export function QueryAccessControl<
@@ -400,7 +397,9 @@ export function QueryAccessControl<
       }
 
       if (!ok) {
-        return info.returnType instanceof GraphQLNonNull ? Err(new AccessControlError(info)) : null;
+        return info.returnType instanceof GraphQLNonNull
+          ? Err(new AccessControlError(info))
+          : null;
       }
 
       return next();
@@ -465,7 +464,9 @@ export function MutationAccessControl(
       }
 
       if (!ok) {
-        return info.returnType instanceof GraphQLNonNull ? Err(new AccessControlError(info)) : null;
+        return info.returnType instanceof GraphQLNonNull
+          ? Err(new AccessControlError(info))
+          : null;
       }
 
       return next();
