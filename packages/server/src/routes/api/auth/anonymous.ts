@@ -1,25 +1,24 @@
-import { makeUserJwt } from "#auth/index.js";
-
 import { AuthSource } from "@ukdanceblue/common";
+import type { Request, Response } from "express";
 import { DateTime } from "luxon";
 
-import type { Context } from "koa";
+import { makeUserJwt } from "#auth/index.js";
 
-export const anonymousLogin = (ctx: Context) => {
+export const anonymousLogin = (req: Request, res: Response) => {
   let redirectTo = "/";
-  const queryRedirectTo = Array.isArray(ctx.query.redirectTo)
-    ? ctx.query.redirectTo[0]
-    : ctx.query.redirectTo;
-  if (queryRedirectTo && queryRedirectTo.length > 0) {
-    redirectTo = queryRedirectTo;
+  const queryRedirectTo = Array.isArray(req.query.redirectTo)
+    ? req.query.redirectTo[0]
+    : req.query.redirectTo;
+  if (queryRedirectTo && (queryRedirectTo as string).length > 0) {
+    redirectTo = queryRedirectTo as string;
   } else {
-    return ctx.throw("Missing redirectTo query parameter", 400);
+    return void res.status(400).send("Missing redirectTo query parameter");
   }
   let setCookie = false;
   let sendToken = false;
-  const returning = Array.isArray(ctx.query.returning)
-    ? ctx.query.returning
-    : [ctx.query.returning];
+  const returning = Array.isArray(req.query.returning)
+    ? req.query.returning
+    : [req.query.returning];
   if (returning.includes("cookie")) {
     setCookie = true;
   }
@@ -31,7 +30,7 @@ export const anonymousLogin = (ctx: Context) => {
     authSource: AuthSource.Anonymous,
   });
   if (setCookie) {
-    ctx.cookies.set("token", jwt, {
+    res.cookie("token", jwt, {
       httpOnly: true,
       sameSite: "lax",
       expires: DateTime.utc().plus({ weeks: 2 }).toJSDate(),
@@ -40,5 +39,5 @@ export const anonymousLogin = (ctx: Context) => {
   if (sendToken) {
     redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;
   }
-  return ctx.redirect(redirectTo);
+  return res.redirect(redirectTo);
 };

@@ -1,35 +1,29 @@
-import { applicationPort, isDevelopment, loggingLevel } from "#environment";
-
-import { logger } from "#logging/logger.js";
-import eventsApiRouter from "#routes/api/events/index.js";
-import fileRouter from "#routes/api/file/index.js";
-import healthCheckRouter from "#routes/api/healthcheck/index.js";
-import uploadRouter from "#routes/api/upload/index.js";
-
-import { ApolloServer } from "@apollo/server";
-import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import { koaMiddleware } from "@as-integrations/koa";
-import cors from "@koa/cors";
-import Router from "@koa/router";
-import Koa from "koa";
-import { koaBody } from "koa-body";
-import serveStatic from "koa-static";
-
+import { readFile } from "node:fs/promises";
 import http from "node:http";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-import { createServer as createViteServer } from "vite";
-
-import type { GraphQLContext } from "#resolvers/context.js";
 import type {
   ApolloServerPlugin,
   GraphQLRequestListener,
 } from "@apollo/server";
-import type { DefaultState } from "koa";
+import { ApolloServer } from "@apollo/server";
+import { expressMiddleware } from "@apollo/server/express4";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { Container } from "@freshgum/typedi";
-import { setupKoaErrorHandler } from "@sentry/node";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { setupExpressErrorHandler } from "@sentry/node";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import type {
+  Application as ExpressApplication,
+  NextFunction,
+  Request,
+} from "express";
+import express from "express";
+
+import { applicationPort, loggingLevel } from "#environment";
+import { logger } from "#logging/logger.js";
+import type { GraphQLContext } from "#resolvers/context.js";
 
 const basicLoggingPlugin: ApolloServerPlugin = {
   requestDidStart(requestContext) {
@@ -65,17 +59,21 @@ export async function createServer() {
   const { default: graphqlSchema } = await import("./lib/graphqlSchema.js");
   const { formatError } = await import("./lib/formatError.js");
 
-  const app = new Koa({
-    proxy: true,
-  });
-  app.silent = true;
-  app.on("error", (err, ctx) => {
-    logger.error("Koa app error", err, ctx);
-  });
+  const app = express();
 
-  setupKoaErrorHandler(app);
+  setupExpressErrorHandler(app);
 
-  const httpServer = http.createServer(app.callback());
+  if (loggingLevel === "trace") {
+    app.use((err: unknown, req: Request, _: unknown, next: NextFunction) => {
+      logger.error("Koa app error", err, {
+        method: req.method,
+        url: req.url,
+      });
+      next(err);
+    });
+  }
+
+  const httpServer = http.createServer(app);
 
   const apolloServerPlugins = [
     ApolloServerPluginDrainHttpServer({ httpServer }),
@@ -135,63 +133,76 @@ export async function startHttpServer(httpServer: http.Server) {
  */
 export async function startServer(
   apolloServer: ApolloServer<GraphQLContext>,
-  app: Koa
+  app: ExpressApplication
 ) {
   await apolloServer.start();
 
   if (loggingLevel === "trace") {
-    app.use(async (ctx, next) => {
+    app.use((req, _res, next) => {
       logger.trace("request received", {
-        method: ctx.method,
-        url: ctx.url,
+        method: req.method,
+        url: req.url,
       });
-      await next();
+      next();
     });
   }
 
   const { default: authApiRouter } = await import("./routes/api/auth/index.js");
+  const { default: eventsApiRouter } = await import(
+    "./routes/api/events/index.js"
+  );
+  const { default: healthCheckRouter } = await import(
+    "./routes/api/healthcheck/index.js"
+  );
+  const { default: fileRouter } = await import("./routes/api/file/index.js");
+  const { default: uploadRouter } = await import(
+    "./routes/api/upload/index.js"
+  );
   const { graphqlContextFunction } = await import("./resolvers/context.js");
 
-  const apiRouter = new Router<DefaultState, GraphQLContext>();
-  app.use(apiRouter.routes());
+  app.use(cookieParser());
 
-  apiRouter.all(
+  app.use(
     "/graphql",
-    koaBody({
-      patchNode: true,
-      text: false,
-      urlencoded: false,
-    }),
-    koaMiddleware<DefaultState, GraphQLContext>(
-      // @ts-expect-error This is a bug in the type definitions
-      apolloServer,
-      {
-        context: graphqlContextFunction,
-      }
-    )
-  );
-  apiRouter.use(
-    "/api",
-    Container.get(authApiRouter).routes,
-    Container.get(eventsApiRouter).routes,
-    Container.get(healthCheckRouter).routes,
-    Container.get(fileRouter).routes,
-    Container.get(uploadRouter).routes
-  );
 
-  apiRouter.use(
-    "/assets",
-    serveStatic(
-      resolve(fileURLToPath(import.meta.resolve("@ukdanceblue/portal/assets")))
-    )
-  );
+    cors(),
 
-  apiRouter.get(
-    "*",
-    serveStatic(
-      resolve(
-        fileURLToPath(import.meta.resolve("@ukdanceblue/portal/index.html"))
+    express.json(),
+
+    expressMiddleware<GraphQLContext>(apolloServer, {
+      context: graphqlContextFunction,
+    })
+  );
+  const apiRouter = express.Router();
+
+  Container.get(authApiRouter).mount(apiRouter);
+  Container.get(eventsApiRouter).mount(apiRouter);
+  Container.get(healthCheckRouter).mount(apiRouter);
+  Container.get(fileRouter).mount(apiRouter);
+  Container.get(uploadRouter).mount(apiRouter);
+
+  app.use("/api", apiRouter);
+
+  const portalIndex = await readFile(
+    resolve(
+      fileURLToPath(import.meta.resolve("@ukdanceblue/portal/index.html"))
+    )
+  ).catch(() => undefined);
+
+  if (portalIndex) {
+    app.use(
+      "/assets",
+      express.static(
+        resolve(
+          fileURLToPath(import.meta.resolve("@ukdanceblue/portal/assets"))
+        ),
+        {}
       )
-    )
-  );
+    );
+
+    app.get("*", (_req, res) => {
+      res.type("html");
+      res.send(portalIndex);
+    });
+  }
 }

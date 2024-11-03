@@ -1,3 +1,7 @@
+import type { Request } from "express";
+import type { Client } from "openid-client";
+import { Issuer } from "openid-client";
+
 import {
   isDevelopment,
   msClientId,
@@ -5,14 +9,9 @@ import {
   msOidcUrl,
 } from "#environment";
 
-import { Issuer } from "openid-client";
-
-import type { Request } from "koa";
-import type { Client } from "openid-client";
-
 export async function makeOidcClient(req: Request): Promise<Client> {
   const forwardedProto = req.get("x-forwarded-proto");
-  const url = req.URL;
+  const url = new URL(req.originalUrl, `${req.protocol}://${req.get("host")}`);
   if (forwardedProto) {
     url.protocol = forwardedProto;
   } else if (

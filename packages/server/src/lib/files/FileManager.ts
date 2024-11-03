@@ -1,20 +1,17 @@
-import { LocalStorageProvider } from "./storage/LocalStorageProvider.js";
-import { UnsupportedAccessMethod } from "./storage/StorageProvider.js";
+import { Service } from "@freshgum/typedi";
+import type { File } from "@prisma/client";
+import { MIMEType } from "util";
 
 import { serveOrigin } from "#environment";
-
 import { logger } from "#logging/standardLogging.js";
 import { FileRepository } from "#repositories/file/fileRepository.js";
 
-import { Service } from "@freshgum/typedi";
-
-import { MIMEType } from "util";
-
+import { LocalStorageProvider } from "./storage/LocalStorageProvider.js";
 import type {
   StorableFile,
   StorageProvider,
 } from "./storage/StorageProvider.js";
-import type { File } from "@prisma/client";
+import { UnsupportedAccessMethod } from "./storage/StorageProvider.js";
 
 const FILE_API = new URL("/api/file/download/", serveOrigin);
 
@@ -57,6 +54,7 @@ export class FileManager {
     } else {
       let storageProvider: StorageProvider;
       switch (target) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         case "local": {
           storageProvider = this.localStorage;
           break;

@@ -20,7 +20,7 @@
     "common:watch": "yarn workspace @ukdanceblue/common run watch",
     "docker:server:start": "docker-compose up -d --build",
     "docker:server:stop": "docker-compose down",
-    "gql:build": "graphql-codegen-esm --config codegen.ts && tsx scripts/fix-codegen.ts && eslint packages/mobile/src/graphql packages/portal/graphql --fix || prettier --write packages/mobile/src/graphql packages/portal/graphql",
+    "gql:build": "graphql-codegen-esm --config codegen.ts && ts-node scripts/fix-codegen.ts && eslint packages/mobile/src/graphql packages/portal/graphql --fix || prettier --write packages/mobile/src/graphql packages/portal/graphql",
     "gql:watch": "chokidar \"packages/mobile/src/**/*\" \"packages/portal/src/**/*\" --ignore \"packages/mobile/src/graphql/**/*\" --initial --silent --verbose --command \"yarn gql:build\"",
     "postinstall": "yarn constraints",
     "mobile:check": "yarn workspace @ukdanceblue/mobile check && echo 'Mobile \t\tOK'",
@@ -34,13 +34,13 @@
     "repo:coverage-browser": "vitest run --coverage --reporter html && yarn dlx vite preview --outDir html",
     "repo:format": "prettier --check --log-level warn . && echo 'Prettier \tOK'",
     "repo:format:fix": "prettier --write --log-level warn . && echo 'Prettier \tOK'",
+    "repo:licenses:check": "yarn licenses audit --allowed MIT --allowed Beerware --allowed MPL-2.0 --allowed BSD-3-Clause --allowed BSD-2-Clause --allowed Apache-2.0",
+    "repo:licenses:gen-disclaimer": "yarn licenses generate-disclaimer -R > DISCLAIMER",
     "repo:lint": "eslint . && echo 'ESLint \t\tOK'",
     "repo:lint:fix": "eslint --fix . && echo 'ESLint \t\tOK'",
-    "repo:lint:view-config": "yarn dlx @eslint/config-inspector@latest",
     "repo:lint:report": "eslint --output-file eslint_report.json --format json .",
-    "repo:licenses:gen-disclaimer": "yarn licenses generate-disclaimer -R > DISCLAIMER",
-    "repo:licenses:check": "yarn licenses audit --allowed MIT --allowed Beerware --allowed MPL-2.0 --allowed BSD-3-Clause --allowed BSD-2-Clause --allowed Apache-2.0",
-    "repo:sort-package-json": "yarn dlx sort-package-json package.json ./packages/*/package.json",
+    "repo:lint:view-config": "yarn dlx @eslint/config-inspector@latest",
+    "repo:sort-package-json": "sort-package-json package.json ./packages/*/package.json",
     "repo:test": "vitest",
     "repo:test-ui": "vitest --ui --coverage",
     "server:bs": "yarn workspace @ukdanceblue/server run bs",
@@ -52,9 +52,9 @@
     "server:start": "yarn workspace @ukdanceblue/server run start"
   },
   "resolutions": {
+    "@graphql-codegen/client-preset@npm:^4.4.0": "patch:@graphql-codegen/client-preset@npm%3A4.4.0#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.4.0-d441b92060.patch",
     "promise": "npm:promise@^8.3.0",
-    "urijs": "npm:uri-js-replace",
-    "@graphql-codegen/client-preset@npm:^4.4.0": "patch:@graphql-codegen/client-preset@npm%3A4.4.0#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.4.0-d441b92060.patch"
+    "urijs": "npm:uri-js-replace"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.1",
@@ -92,7 +92,8 @@
     "graphql-scalars": "^1.23.0",
     "node-gyp": "^10.2.0",
     "prettier": "^3.3.3",
-    "tsx": "^4.19.2",
+    "sort-package-json": "^2.10.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.11.0",
     "vitest": "^2.1.3"

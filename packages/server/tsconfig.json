@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
-    "noEmit": false,
+    "noEmit": true,
     "incremental": true,
-    "lib": ["ES2022"],
-    "target": "ES2020",
+    "lib": ["ESNext"],
+    "target": "ESNext",
     "module": "NodeNext",
-    "moduleResolution": "nodenext",
+    "moduleResolution": "NodeNext",
     "outDir": "./dist",
     "rootDir": "./src",
     "sourceMap": true,
+    "inlineSources": true,
     "allowJs": true,
     "checkJs": true,
     "emitDecoratorMetadata": true,
@@ -28,8 +29,6 @@
       "#routes/*": ["./src/routes/*"],
       "#environment": ["./src/environment.ts"]
     },
-
-    "inlineSources": true,
 
     // Set `sourceRoot` to  "/" to strip the build path prefix
     // from generated source code references.

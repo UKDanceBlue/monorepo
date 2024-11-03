@@ -1,4 +1,4 @@
-import AppLogo from "@assets/app-icon.png";
+import AppLogo from "#assets/app-icon.png";
 import { Avatar, Typography } from "antd";
 
 export const NotificationPreview = ({

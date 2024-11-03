@@ -1,36 +1,35 @@
-import { makeOidcClient } from "./oidcClient.js";
+import { Container } from "@freshgum/typedi";
+import type { Request, Response } from "express";
+import { generators } from "openid-client";
 
 import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
 
-import { generators } from "openid-client";
-import { Container } from "@freshgum/typedi";
-
-import type { Context } from "koa";
+import { makeOidcClient } from "./oidcClient.js";
 
 // TODO: convert to OAuth2
-export const login = async (ctx: Context) => {
-  const oidcClient = await makeOidcClient(ctx.request);
+export const login = async (req: Request, res: Response): Promise<void> => {
+  const oidcClient = await makeOidcClient(req);
 
   const loginFlowSessionRepository = Container.get(LoginFlowSessionRepository);
 
-  const queryRedirectTo = Array.isArray(ctx.query.redirectTo)
-    ? ctx.query.redirectTo[0]
-    : ctx.query.redirectTo;
+  const queryRedirectTo = Array.isArray(req.query.redirectTo)
+    ? req.query.redirectTo[0]
+    : req.query.redirectTo;
   if (!queryRedirectTo || queryRedirectTo.length === 0) {
-    return ctx.throw("Missing redirectTo query parameter", 400);
+    return void res.status(400).send("Missing redirectTo query parameter");
   }
 
-  const returning = Array.isArray(ctx.query.returning)
-    ? ctx.query.returning
-    : [ctx.query.returning];
+  const returning = Array.isArray(req.query.returning)
+    ? req.query.returning
+    : [req.query.returning];
 
   const session = await loginFlowSessionRepository.startLoginFlow({
-    redirectToAfterLogin: queryRedirectTo,
+    redirectToAfterLogin: queryRedirectTo as string,
     setCookie: returning.includes("cookie"),
     sendToken: returning.includes("token"),
   });
   const codeChallenge = generators.codeChallenge(session.codeVerifier);
-  return ctx.redirect(
+  return res.redirect(
     oidcClient.authorizationUrl({
       scope: "openid email profile offline_access User.read",
       response_mode: "form_post",

@@ -1,11 +1,12 @@
 import { Service } from "@freshgum/typedi";
+import express from "express";
+
+import { RouterService } from "#routes/RouteService.js";
+
 import { anonymousLogin } from "./anonymous.js";
 import { demoLogin } from "./demo.js";
 import { login } from "./login.js";
 import { oidcCallback } from "./oidcCallback.js";
-
-import { koaBody } from "koa-body";
-import { RouterService } from "#routes/RouteService.js";
 
 // TODO: Replace custom OAuth2 + middleware implementation with Passport.js and oauth2orize
 // https://www.passportjs.org
@@ -16,28 +17,23 @@ export default class AuthRouter extends RouterService {
   constructor() {
     super("/auth");
 
-    this.addGetRoute("/logout", (ctx) => {
-      ctx.cookies.set("token", null);
+    this.addGetRoute("/logout", (req, res) => {
+      res.clearCookie("token");
 
       let redirectTo = "/";
-      const queryRedirectTo = Array.isArray(ctx.query.redirectTo)
-        ? ctx.query.redirectTo[0]
-        : ctx.query.redirectTo;
-      if (queryRedirectTo && queryRedirectTo.length > 0) {
-        redirectTo = queryRedirectTo;
+      const queryRedirectTo = Array.isArray(req.query.redirectTo)
+        ? req.query.redirectTo[0]
+        : req.query.redirectTo;
+      if (queryRedirectTo && (queryRedirectTo as string).length > 0) {
+        redirectTo = queryRedirectTo as string;
       }
 
-      ctx.redirect(redirectTo);
+      res.redirect(redirectTo);
     });
 
     this.addPostRoute(
       "/oidc-callback",
-      koaBody({
-        text: false,
-        json: false,
-        urlencoded: true,
-        multipart: false,
-      }),
+      express.urlencoded({ extended: false }),
       oidcCallback
     );
 

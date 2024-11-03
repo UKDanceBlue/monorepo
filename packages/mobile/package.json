@@ -1,5 +1,6 @@
 {
   "name": "@ukdanceblue/mobile",
+  "version": "1.0.0",
   "private": true,
   "repository": {
     "type": "git",
@@ -15,6 +16,7 @@
   "type": "commonjs",
   "main": "./index.js",
   "scripts": {
+    "android": "expo run:android",
     "check": "tsc --noEmit",
     "doctor": "npx expo-doctor@latest",
     "eas-android-dev-client": "npx eas-cli@latest build --no-wait --platform=android --profile=dev-client",
@@ -27,11 +29,10 @@
     "eas-ios-preview": "npx eas-cli@latest build --no-wait --platform=ios --auto-submit --profile=preview",
     "eas-ios-production": "npx eas-cli@latest build --no-wait --platform=ios --auto-submit --profile=production",
     "postinstall": "cd ../.. && yarn workspace @ukdanceblue/common build",
+    "ios": "expo run:ios",
     "start": "expo start --dev-client --tunnel",
     "test": "vitest",
-    "test-with-coverage": "vitest --collect-coverage --collect-coverage-from=\"src/**/*.{js,jsx,ts,tsx}\"",
-    "android": "expo run:android",
-    "ios": "expo run:ios"
+    "test-with-coverage": "vitest --collect-coverage --collect-coverage-from=\"src/**/*.{js,jsx,ts,tsx}\""
   },
   "dependencies": {
     "@apollo/client": "3.11.8",
@@ -152,6 +153,5 @@
   "packageManager": "yarn@4.1.1+sha256.f3cc0eda8e5560e529c7147565b30faa43b4e472d90e8634d7134a37c7f59781",
   "installConfig": {
     "hoistingLimits": "workspaces"
-  },
-  "version": "1.0.0"
+  }
 }

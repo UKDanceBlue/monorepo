@@ -1,17 +1,24 @@
-import { maxFileSize } from "#environment";
+import { Service } from "@freshgum/typedi";
+import type { File } from "@prisma/client";
+import { open } from "fs/promises";
+import multer from "multer";
 
+import { maxFileSize } from "#environment";
 import { FileManager } from "#files/FileManager.js";
 import { generateThumbHash } from "#lib/thumbHash.js";
 import { logger } from "#logging/standardLogging.js";
 import { ImageRepository } from "#repositories/image/ImageRepository.js";
-
-import { koaBody } from "koa-body";
-import { Service } from "@freshgum/typedi";
-
-import { open } from "fs/promises";
-
-import type { File } from "@prisma/client";
 import { RouterService } from "#routes/RouteService.js";
+
+const upload = multer({
+  limits: { fileSize: maxFileSize * 1024 * 1024 },
+  fileFilter: (_, file, cb) => {
+    if (!file.mimetype.startsWith("image/")) {
+      return cb(new Error("Only image files are allowed!"));
+    }
+    cb(null, true);
+  },
+});
 
 @Service([ImageRepository, FileManager])
 export default class HealthCheckRouter extends RouterService {
@@ -20,68 +27,47 @@ export default class HealthCheckRouter extends RouterService {
 
     this.addPostRoute(
       "/image/:uuid",
-      koaBody({
-        multipart: true,
-        formidable: {
-          allowEmptyFiles: false,
-        },
-      }),
-      async (ctx) => {
-        const { uuid } = ctx.params;
+      upload.single("file"),
+      async (req, res): Promise<void> => {
+        const { uuid } = req.params;
 
         // Check the image in the database
         if (!uuid) {
-          return ctx.throw(400, "No image UUID provided");
+          return void res.status(400).send("No image UUID provided");
         }
         const dbImage = await imageRepository.findImageByUnique({ uuid });
         if (!dbImage) {
-          return ctx.throw(404, "Image not found");
+          return void res.status(404).send("Image not found");
         }
 
         // Check the uploaded file
-        const uploadedFiles = ctx.request.files
-          ? Object.values(ctx.request.files)
-          : [];
-        if (uploadedFiles.length === 0) {
-          return ctx.throw(400, "No image uploaded");
-        } else if (uploadedFiles.length > 1) {
-          return ctx.throw(400, "Only one image can be uploaded at a time");
-        }
-
-        const uploadedFile = uploadedFiles[0];
-        if (uploadedFiles.length === 0 || !uploadedFile) {
-          return ctx.throw(400, "No image uploaded");
-        }
-        if (uploadedFiles.length > 1 || Array.isArray(uploadedFile)) {
-          return ctx.throw(400, "Only one image can be uploaded at a time");
-        }
-
-        if (uploadedFile.size * 1024 * 1024 > maxFileSize) {
-          return ctx.throw(400, "File too large");
+        const uploadedFile = req.file;
+        if (!uploadedFile) {
+          return void res.status(400).send("No image uploaded");
         }
 
         const {
           thumbHash: thumbHashArray,
           height,
           width,
-        } = await generateThumbHash(uploadedFile.filepath);
+        } = await generateThumbHash(uploadedFile.path);
 
         const thumbHash = Buffer.from(thumbHashArray);
 
         let file: File;
         try {
-          const tmpFileHandle = await open(uploadedFile.filepath);
+          const tmpFileHandle = await open(uploadedFile.path);
           try {
             file = await fileManager.storeFile(
               {
                 type: "stream",
-                name: uploadedFile.originalFilename ?? uploadedFile.newFilename,
+                name: uploadedFile.originalname,
                 stream: tmpFileHandle.createReadStream({
                   autoClose: true,
                   emitClose: true,
                 }),
               },
-              uploadedFile.mimetype ?? "application/octet-stream",
+              uploadedFile.mimetype,
               // TODO: Implement file ownership
               undefined,
               undefined,
@@ -92,7 +78,7 @@ export default class HealthCheckRouter extends RouterService {
           }
         } catch (error) {
           logger.warning("Error while storing file", { error });
-          return ctx.throw(500, "Error while storing file");
+          return void res.status(500).send("Error while storing file");
         }
 
         try {
@@ -117,10 +103,10 @@ export default class HealthCheckRouter extends RouterService {
 
           // Log and throw error
           logger.warning("Error while updating image", { error });
-          return ctx.throw(500, "Error while updating image");
+          return void res.status(500).send("Error while updating image");
         }
 
-        ctx.status = 204;
+        return void res.status(204).send();
       }
     );
   }

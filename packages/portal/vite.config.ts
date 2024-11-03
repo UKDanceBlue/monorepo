@@ -24,7 +24,7 @@ export const literalConfig = {
       "#tools": resolveRelative("src", "tools"),
       "#documents": resolveRelative("src", "documents"),
       "#assets": resolveRelative("assets"),
-      "#graphql/common": resolveRelative("graphql"),
+      "#graphql": resolveRelative("graphql"),
       "#mocks": resolveRelative("mocks"),
     },
   },

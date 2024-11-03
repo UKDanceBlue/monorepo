@@ -1,8 +1,10 @@
-import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
-import { logger } from "#logging/logger.js";
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
-
+import type { ContextFunction } from "@apollo/server";
+import type { ExpressContextFunctionArgument } from "@apollo/server/express4";
+import { Container } from "@freshgum/typedi";
+import type {
+  AuthorizationContext,
+  EffectiveCommitteeRole,
+} from "@ukdanceblue/common";
 import {
   AccessLevel,
   AuthSource,
@@ -13,29 +15,27 @@ import {
   roleToAccessLevel,
   TeamType,
 } from "@ukdanceblue/common";
+import type { ConcreteResult } from "@ukdanceblue/common/error";
 import { ErrorCode } from "@ukdanceblue/common/error";
 import { Ok } from "ts-results-es";
-import { Container } from "@freshgum/typedi";
 
-import type { ContextFunction } from "@apollo/server";
-import type { KoaContextFunctionArgument } from "@as-integrations/koa";
-import type {
-  AuthorizationContext,
-  EffectiveCommitteeRole,
-} from "@ukdanceblue/common";
-import type { ConcreteResult } from "@ukdanceblue/common/error";
-import type { DefaultState } from "koa";
+import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
 import { superAdminLinkblues } from "#environment";
+import { logger } from "#logging/logger.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface GraphQLContext extends AuthorizationContext {}
 
 function isSuperAdmin(
   committeeRoles: EffectiveCommitteeRole[],
-  linkblue?: string | null | undefined
+  linkblue?: string | null
 ): boolean {
   return (
     (typeof superAdminLinkblues !== "symbol" &&
       linkblue &&
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       superAdminLinkblues.includes(linkblue)) ||
     committeeRoles.some(
       (role) =>
@@ -149,14 +149,17 @@ const anonymousContext: Readonly<GraphQLContext> =
   });
 
 export const graphqlContextFunction: ContextFunction<
-  [KoaContextFunctionArgument<DefaultState, GraphQLContext>],
+  [ExpressContextFunctionArgument],
   GraphQLContext
-> = async ({ ctx }): Promise<GraphQLContext> => {
+> = async ({ req }): Promise<GraphQLContext> => {
   // Get the token from the cookies or the Authorization header
-  let token = ctx.cookies.get("token");
+  let token = req.cookies.token ? String(req.cookies.token) : undefined;
   if (!token) {
-    const authorizationHeader = ctx.get("Authorization");
-    if (authorizationHeader && authorizationHeader.startsWith("Bearer ")) {
+    let authorizationHeader = req.headers.Authorization;
+    if (Array.isArray(authorizationHeader)) {
+      authorizationHeader = authorizationHeader[0];
+    }
+    if (authorizationHeader?.startsWith("Bearer ")) {
       token = authorizationHeader.substring("Bearer ".length);
     }
   }
@@ -173,12 +176,10 @@ export const graphqlContextFunction: ContextFunction<
   }
 
   // Set the dbRole based on the auth source
-  let authSourceDbRole: DbRole;
-  if (authSource === AuthSource.LinkBlue || authSource === AuthSource.Demo) {
-    authSourceDbRole = DbRole.UKY;
-  } else {
-    authSourceDbRole = DbRole.None;
-  }
+  const authSourceDbRole: DbRole =
+    authSource === AuthSource.LinkBlue || authSource === AuthSource.Demo
+      ? DbRole.UKY
+      : DbRole.None;
 
   if (!userId) {
     logger.trace("graphqlContextFunction No user ID");
@@ -209,10 +210,10 @@ export const graphqlContextFunction: ContextFunction<
   );
   if (
     superAdmin &&
-    ctx.request.headers["x-ukdb-masquerade"] &&
-    typeof ctx.request.headers["x-ukdb-masquerade"] === "string"
+    req.headers["x-ukdb-masquerade"] &&
+    typeof req.headers["x-ukdb-masquerade"] === "string"
   ) {
-    const parsedId = parseGlobalId(ctx.request.headers["x-ukdb-masquerade"]);
+    const parsedId = parseGlobalId(req.headers["x-ukdb-masquerade"]);
     if (parsedId.isErr()) {
       logger.error(
         "graphqlContextFunction Error parsing masquerade ID",

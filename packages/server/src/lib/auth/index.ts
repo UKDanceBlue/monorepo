@@ -1,10 +1,9 @@
-import { jwtSecret } from "#environment";
-
+import type { JwtPayload, UserData } from "@ukdanceblue/common";
 import { AuthSource } from "@ukdanceblue/common";
+import type { Request } from "express";
 import jsonwebtoken from "jsonwebtoken";
 
-import type { JwtPayload, UserData } from "@ukdanceblue/common";
-import type { Request } from "koa";
+import { jwtSecret } from "#environment";
 
 const jwtIssuer = "https://app.danceblue.org";
 
@@ -98,7 +97,7 @@ export function tokenFromRequest(
   try {
     // Prefer cookie
     let jsonWebToken: string | undefined = undefined;
-    const cookies = req.ctx.cookies as unknown;
+    const cookies = req.cookies as unknown;
     if (
       typeof cookies === "object" &&
       cookies &&
@@ -123,7 +122,7 @@ export function tokenFromRequest(
     }
 
     return [jsonWebToken, null];
-  } catch (error) {
+  } catch {
     return [undefined, "unknown"];
   }
 }

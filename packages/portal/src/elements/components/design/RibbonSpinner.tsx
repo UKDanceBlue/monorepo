@@ -1,6 +1,6 @@
 import "./RibbonSpinner.css";
 
-import Ribbon from "@assets/ribbon.svg";
+import Ribbon from "#assets/ribbon.svg";
 
 export function SpinningRibbon({ size }: { size: string | number }) {
   return (
