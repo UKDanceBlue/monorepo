@@ -21,7 +21,7 @@ WORKDIR /builddir/packages/server
 
 RUN corepack yarn prisma generate
 
-RUN corepack yarn run build
+RUN corepack yarn build
 
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required \
   corepack yarn sentry-cli sourcemaps inject --org ukdanceblue --project server ./dist && \
@@ -52,6 +52,7 @@ COPY --from=build /builddir/yarn.lock /app/yarn.lock
 
 WORKDIR /app/packages/server
 
-ENTRYPOINT ["corepack", "yarn", "run", "migrate-and-start"]
+ENTRYPOINT ["/app/packages/server/docker-entrypoint.sh"]
+CMD [ "node", "." ]
 
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD bash -c '[[ "$(curl -fs http://localhost:8000/api/healthcheck)" == "OK" ]] || exit 1'
