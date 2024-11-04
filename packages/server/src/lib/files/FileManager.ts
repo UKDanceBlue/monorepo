@@ -1,8 +1,8 @@
-import { Service } from "@freshgum/typedi";
+import { Container, Service } from "@freshgum/typedi";
 import type { File } from "@prisma/client";
 import { MIMEType } from "util";
 
-import { serveOrigin } from "#environment";
+import { serveOriginToken } from "#lib/environmentTokens.js";
 import { logger } from "#logging/standardLogging.js";
 import { FileRepository } from "#repositories/file/fileRepository.js";
 
@@ -13,6 +13,7 @@ import type {
 } from "./storage/StorageProvider.js";
 import { UnsupportedAccessMethod } from "./storage/StorageProvider.js";
 
+const serveOrigin = Container.get(serveOriginToken);
 const FILE_API = new URL("/api/file/download/", serveOrigin);
 
 logger.info(`Serving files from ${FILE_API.href}`);

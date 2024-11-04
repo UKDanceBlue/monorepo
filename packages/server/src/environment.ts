@@ -1,23 +1,27 @@
 // This file is first imported by index.ts
 
-import { Container, Token } from "@freshgum/typedi";
+import { Container } from "@freshgum/typedi";
 import dotenv from "dotenv";
 import { Expo } from "expo-server-sdk";
 import { statSync } from "fs";
 import { readFile } from "fs/promises";
 import path, { isAbsolute } from "path";
 
-import { type SyslogLevels } from "#logging/standardLogging.js";
+import { setEnvironment } from "#lib/environmentTokens.js";
+import { isDevelopment } from "#lib/nodeEnv.js";
+import { type SyslogLevels } from "#logging/SyslogLevels.js";
 // NOTE: You cannot import any files that depend on environment variables from this file
 import { expoServiceToken } from "#notification/expoServiceToken.js";
 
 dotenv.config({ override: true });
 
-export const isDevelopment = process.env.NODE_ENV === "development";
+if (process.env.NODE_ENV === "test") {
+  throw new Error(
+    "Environment variables are not set in test environment, instead add mock values to the container"
+  );
+}
 
-const isTest = process.env.NODE_ENV === "test";
-
-// These are all of the environment variables that the server uses
+// Load environment variables
 const LOGGING_LEVEL = getEnv(
   "LOGGING_LEVEL",
   isDevelopment ? "debug" : "notice"
@@ -31,76 +35,39 @@ const MS_CLIENT_SECRET = getEnv("MS_CLIENT_SECRET", null);
 const EXPO_ACCESS_TOKEN = getEnv("EXPO_ACCESS_TOKEN", null);
 const DBFUNDS_API_KEY = getEnv("DBFUNDS_API_KEY", null);
 const DBFUNDS_API_ORIGIN = getEnv("DBFUNDS_API_ORIGIN", null);
+const SERVE_ORIGIN = getEnv("SERVE_ORIGIN", "http://localhost:8000");
 const MAX_FILE_SIZE = getEnv("MAX_FILE_SIZE", "10");
 const SERVE_PATH = getEnv("SERVE_PATH", "/data/serve");
 const UPLOAD_PATH = getEnv("UPLOAD_PATH", "/data/serve/uploads");
-const SERVE_ORIGIN = getEnv("SERVE_ORIGIN", "http://localhost:8000");
 const LOG_DIR = getEnv("LOG_DIR", null);
 const SUPER_ADMIN_LINKBLUE = getEnv("SUPER_ADMIN_LINKBLUE", Symbol());
 
-// Core env
-export const loggingLevel: SyslogLevels = (await LOGGING_LEVEL) as SyslogLevels;
+// Validation
 
 // Port, Host, and Protocol
-export const applicationPort = Number.parseInt(await APPLICATION_PORT, 10);
+const applicationPort = Number.parseInt(await APPLICATION_PORT, 10);
 if (Number.isNaN(applicationPort)) {
-  throw new TypeError("Env variable 'APPLICATION_PORT' is not a number");
+  throw new TypeError("APPLICATION_PORT is not a number");
 }
 if (applicationPort < 0 || applicationPort > 65_535) {
-  throw new RangeError(
-    "Env variable 'APPLICATION_PORT' is not a valid port number"
-  );
+  throw new RangeError("APPLICATION_PORT is not a valid port number");
 }
 
-// Secrets
-export const cookieSecret = await COOKIE_SECRET;
-export const jwtSecret = await JWT_SECRET;
-
-// MS Auth
-export const msOidcUrl = await MS_OIDC_URL;
-export const msClientId = await MS_CLIENT_ID;
-export const msClientSecret = await MS_CLIENT_SECRET;
-
-// Expo access token
-export const expoAccessToken = await EXPO_ACCESS_TOKEN;
-
-Container.setValue(
-  expoServiceToken,
-  new Expo({ accessToken: expoAccessToken })
-);
-
-// DBFunds
-export const dbFundsApiKeyToken = new Token<string>("DBFUNDS_API_KEY");
-export const dbFundsApiOriginToken = new Token<string>("DBFUNDS_API_ORIGIN");
-
-Container.setValue(dbFundsApiKeyToken, await DBFUNDS_API_KEY);
-Container.setValue(dbFundsApiOriginToken, await DBFUNDS_API_ORIGIN);
-
-// File upload settings
-export const serveOrigin = await SERVE_ORIGIN;
+// Serve origin
+const serveOrigin = await SERVE_ORIGIN;
 try {
   new URL(serveOrigin);
 } catch {
   throw new Error("SERVE_ORIGIN is not a valid URL");
 }
-export const servePath = await SERVE_PATH;
-export const uploadPath = await UPLOAD_PATH;
 
-export const maxFileSize = Number.parseInt(await MAX_FILE_SIZE, 10);
-if (Number.isNaN(maxFileSize)) {
-  throw new TypeError("MAX_FILE_SIZE is not a number");
-}
-if (maxFileSize < 10) {
-  throw new RangeError("MAX_FILE_SIZE must be at least 10 (MB)");
-}
-
+// File upload settings
+const servePath = await SERVE_PATH;
+const uploadPath = await UPLOAD_PATH;
 if (!isAbsolute(servePath) || !isAbsolute(uploadPath)) {
   throw new Error("SERVE_PATH and UPLOAD_PATH must be absolute paths");
 }
-if (
-  !isTest &&
-  (statSync(servePath).isFile() || statSync(uploadPath).isFile())
-) {
+if (statSync(servePath).isFile() || statSync(uploadPath).isFile()) {
   throw new Error("SERVE_PATH and UPLOAD_PATH must be directories");
 }
 let uploadParentPath = uploadPath;
@@ -116,15 +83,44 @@ if (!isUploadInServe) {
   throw new Error("UPLOAD_PATH must be a subdirectory of SERVE_PATH");
 }
 
-// Log directory
-export const logDir = await LOG_DIR;
+const maxFileSize = Number.parseInt(await MAX_FILE_SIZE, 10);
+if (Number.isNaN(maxFileSize)) {
+  throw new TypeError("MAX_FILE_SIZE is not a number");
+}
+if (maxFileSize < 10) {
+  throw new RangeError("MAX_FILE_SIZE must be at least 10 (MB)");
+}
 
 // Super admin
-export const superAdminLinkblues = await SUPER_ADMIN_LINKBLUE.then((value) => {
+const superAdminLinkblues = await SUPER_ADMIN_LINKBLUE.then((value) => {
   if (typeof value === "string") {
     return value.toLowerCase().split(",");
   }
   return value;
+});
+
+// Save values to the container
+
+Container.setValue(
+  expoServiceToken,
+  new Expo({ accessToken: await EXPO_ACCESS_TOKEN })
+);
+setEnvironment({
+  loggingLevel: (await LOGGING_LEVEL) as SyslogLevels,
+  applicationPort,
+  cookieSecret: await COOKIE_SECRET,
+  jwtSecret: await JWT_SECRET,
+  msOidcUrl: await MS_OIDC_URL,
+  msClientId: await MS_CLIENT_ID,
+  msClientSecret: await MS_CLIENT_SECRET,
+  dbFundsApiKey: await DBFUNDS_API_KEY,
+  dbFundsApiOrigin: await DBFUNDS_API_ORIGIN,
+  serveOrigin,
+  maxFileSize,
+  servePath,
+  uploadPath,
+  logDir: await LOG_DIR,
+  superAdminLinkblues,
 });
 
 /**
@@ -155,9 +151,6 @@ async function getEnv(
   name: string,
   def?: string | symbol | null
 ): Promise<string | symbol | undefined> {
-  if (isTest) {
-    return def ?? "TEST";
-  }
   let value;
   if (process.env[name]) {
     value = process.env[name];

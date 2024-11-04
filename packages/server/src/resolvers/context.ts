@@ -20,13 +20,15 @@ import { ErrorCode } from "@ukdanceblue/common/error";
 import { Ok } from "ts-results-es";
 
 import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
-import { superAdminLinkblues } from "#environment";
+import { superAdminLinkbluesToken } from "#lib/environmentTokens.js";
 import { logger } from "#logging/logger.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface GraphQLContext extends AuthorizationContext {}
+
+const superAdminLinkblues = Container.get(superAdminLinkbluesToken);
 
 function isSuperAdmin(
   committeeRoles: EffectiveCommitteeRole[],

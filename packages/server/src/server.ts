@@ -21,9 +21,15 @@ import type {
 } from "express";
 import express from "express";
 
-import { applicationPort, loggingLevel } from "#environment";
+import {
+  applicationPortToken,
+  loggingLevelToken,
+} from "#lib/environmentTokens.js";
 import { logger } from "#logging/logger.js";
 import type { GraphQLContext } from "#resolvers/context.js";
+
+const applicationPort = Container.get(applicationPortToken);
+const loggingLevel = Container.get(loggingLevelToken);
 
 const basicLoggingPlugin: ApolloServerPlugin = {
   requestDidStart(requestContext) {

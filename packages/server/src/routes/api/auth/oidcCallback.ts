@@ -7,12 +7,14 @@ import jsonwebtoken from "jsonwebtoken";
 import { DateTime } from "luxon";
 
 import { makeUserJwt } from "#auth/index.js";
-import { serveOrigin } from "#environment";
+import { serveOriginToken } from "#lib/environmentTokens.js";
 import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 import { makeOidcClient } from "./oidcClient.js";
+
+const serveOrigin = Container.get(serveOriginToken);
 
 export const oidcCallback = async (
   req: Request,

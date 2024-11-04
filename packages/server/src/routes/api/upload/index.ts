@@ -1,14 +1,16 @@
-import { Service } from "@freshgum/typedi";
+import { Container, Service } from "@freshgum/typedi";
 import type { File } from "@prisma/client";
 import { open } from "fs/promises";
 import multer from "multer";
 
-import { maxFileSize } from "#environment";
 import { FileManager } from "#files/FileManager.js";
+import { maxFileSizeToken } from "#lib/environmentTokens.js";
 import { generateThumbHash } from "#lib/thumbHash.js";
 import { logger } from "#logging/standardLogging.js";
 import { ImageRepository } from "#repositories/image/ImageRepository.js";
 import { RouterService } from "#routes/RouteService.js";
+
+const maxFileSize = Container.get(maxFileSizeToken);
 
 const upload = multer({
   limits: { fileSize: maxFileSize * 1024 * 1024 },

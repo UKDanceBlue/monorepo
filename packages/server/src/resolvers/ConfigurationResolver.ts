@@ -27,16 +27,17 @@ import { join } from "path";
 import { Err, Ok } from "ts-results-es";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 
-import { logDir } from "#environment";
+import { logDirToken } from "#lib/environmentTokens.js";
 import { auditLogger, auditLoggerFileName } from "#logging/auditLogging.js";
 import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
 import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
 
 @Resolver(() => ConfigurationNode)
-@Service([ConfigurationRepository])
+@Service([ConfigurationRepository, logDirToken])
 export class ConfigurationResolver {
   constructor(
-    private readonly configurationRepository: ConfigurationRepository
+    private readonly configurationRepository: ConfigurationRepository,
+    private readonly logDir: string
   ) {}
 
   @Query(() => GetConfigurationResponse, {
@@ -191,7 +192,7 @@ export class ConfigurationResolver {
     @Arg("offset", { defaultValue: 0 }) offset: number
   ): Promise<ConcreteResult<string>> {
     try {
-      const fileLookup = await readFile(join(logDir, auditLoggerFileName));
+      const fileLookup = await readFile(join(this.logDir, auditLoggerFileName));
       return Ok(
         fileLookup
           .toString("utf8")

@@ -1,4 +1,4 @@
-import { Service } from "@freshgum/typedi";
+import { Container, Service } from "@freshgum/typedi";
 import type { FileHandle } from "fs/promises";
 import { mkdir, open, stat, unlink } from "fs/promises";
 import { DateTime } from "luxon";
@@ -6,7 +6,7 @@ import { format, join, resolve } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import type { MIMEType } from "util";
 
-import { servePath, uploadPath } from "#environment";
+import { servePathToken, uploadPathToken } from "#lib/environmentTokens.js";
 import { logger } from "#logging/standardLogging.js";
 
 import type {
@@ -15,6 +15,9 @@ import type {
   UnsupportedAccessMethod,
 } from "./StorageProvider.js";
 import { BaseStorageProvider } from "./StorageProvider.js";
+
+const servePath = Container.get(servePathToken);
+const uploadPath = Container.get(uploadPathToken);
 
 /**
  * Determines if the location a path refers to is within `servePath`

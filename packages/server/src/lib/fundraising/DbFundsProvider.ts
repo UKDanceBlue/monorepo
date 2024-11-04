@@ -12,7 +12,10 @@ import { DateTime } from "luxon";
 import { Err, Ok } from "ts-results-es";
 import { z } from "zod";
 
-import { dbFundsApiKeyToken, dbFundsApiOriginToken } from "#environment";
+import {
+  dbFundsApiKeyToken,
+  dbFundsApiOriginToken,
+} from "#lib/environmentTokens.js";
 import { ZodError } from "#error/zod.js";
 
 import type {

@@ -21,7 +21,7 @@ import { Expo } from "expo-server-sdk";
 import { DateTime } from "luxon";
 import { AsyncResult, Err, Ok, Result } from "ts-results-es";
 
-import { isDevelopment } from "#environment";
+import { isDevelopment } from "#lib/nodeEnv.js";
 import { ExpoPushFailureError, ExpoPushTicketError } from "#error/expo.js";
 import { logger } from "#logging/standardLogging.js";
 import { DeviceRepository } from "#repositories/device/DeviceRepository.js";

@@ -1,7 +1,11 @@
+import { Container } from "@freshgum/typedi";
 import type { LeveledLogMethod, Logger } from "winston";
 import { createLogger, format, transports } from "winston";
 
-import { isDevelopment, logDir } from "#environment";
+import { logDirToken } from "#lib/environmentTokens.js";
+import { isDevelopment } from "#lib/nodeEnv.js";
+
+const logDir = Container.get(logDirToken);
 
 export interface AuditLogger extends Logger {
   /**
