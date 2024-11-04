@@ -42,6 +42,7 @@ RUN mkdir -p /app/node_modules
 COPY --from=build /builddir/packages/server/dist /app/packages/server/dist
 COPY --from=build /builddir/packages/server/prisma /app/packages/server/prisma
 COPY --from=build /builddir/packages/server/package.json /app/packages/server/package.json
+COPY --from=build /builddir/packages/server/docker-entrypoint.sh /app/packages/server/docker-entrypoint.sh
 COPY --from=build /builddir/packages/portal/dist /app/packages/portal/dist
 COPY --from=build /builddir/packages/portal/package.json /app/packages/portal/package.json
 COPY --from=build /builddir/packages/common/dist /app/packages/common/dist
