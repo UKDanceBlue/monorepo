@@ -79,6 +79,7 @@ export async function createServer() {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   const httpServer = http.createServer(app);
 
   const apolloServerPlugins = [
@@ -189,10 +190,12 @@ export async function startServer(
 
   app.use("/api", apiRouter);
 
-  const portalIndex = await readFile(
-    resolve(
-      fileURLToPath(import.meta.resolve("@ukdanceblue/portal/index.html"))
-    )
+  const portalIndex = await (
+    readFile(
+      resolve(
+        fileURLToPath(import.meta.resolve("@ukdanceblue/portal/index.html"))
+      )
+    ) as Promise<Awaited<ReturnType<typeof readFile>> | undefined>
   ).catch(() => undefined);
 
   if (portalIndex) {

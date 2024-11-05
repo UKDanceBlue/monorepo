@@ -72,7 +72,9 @@ export function usePersonCreatorForm(
 
       const { data } = await createPerson({
         input: {
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           name: values.name || null,
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           linkblue: values.linkblue?.toLowerCase() || null,
           email: values.email,
           captainOf: values.captainOf ?? [],

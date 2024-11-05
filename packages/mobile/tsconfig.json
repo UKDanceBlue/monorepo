@@ -40,6 +40,10 @@
     "src",
     "assets",
     "config-plugins",
-    "test-helpers"
+    "test-helpers",
+
+    "app.config.ts",
+    "babel.config.cjs",
+    "metro.config.cjs"
   ]
 }

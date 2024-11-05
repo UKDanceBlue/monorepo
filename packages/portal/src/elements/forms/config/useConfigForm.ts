@@ -73,7 +73,6 @@ export function useConfigForm() {
     },
     [formApi]
   );
-  [];
 
   const setConfigValue = useCallback(
     (key: string, value: ConfigValue) => {

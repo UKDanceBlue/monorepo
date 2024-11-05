@@ -15,9 +15,7 @@ export class HttpError<
     return getReasonPhrase(this.code);
   }
 
-  get expose(): boolean {
-    return true;
-  }
+  readonly expose = true;
 
   get tag(): ErrorCode.HttpError {
     return ErrorCode.HttpError;

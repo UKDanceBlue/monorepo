@@ -40,7 +40,6 @@
   },
   "dependencies": {
     "@apollo/server": "^4.11.0",
-    "@as-integrations/koa": "^1.1.1",
     "@azure/msal-node": "^2.15.0",
     "@faker-js/faker": "^9.0.3",
     "@freshgum/typedi": "^0.7.2",
@@ -98,6 +97,7 @@
     "@types/multer": "^1.4.12",
     "@types/pg": "^8.11.10",
     "@types/serve-static": "^1.15.7",
+    "@total-typescript/ts-reset": "^0.6.1",
     "nodemon": "^3.1.7",
     "prisma": "^5.21.1",
     "vitest": "^2.1.3"

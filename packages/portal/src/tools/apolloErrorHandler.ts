@@ -59,7 +59,7 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
           (e) => typeof e === "object" && e !== null
         )
       ) {
-        const errors = error.networkError.result.errors as object[];
+        const {errors} = error.networkError.result;
         for (const maybeAnApiError of errors) {
           console.error("maybeAnApiError", maybeAnApiError);
         }

@@ -38,7 +38,7 @@ export function useAllowedLoginTypes(): {
 
     try {
       if (configValue) {
-        const parsed = JSON.parse(configValue.value) as unknown;
+        const parsed = JSON.parse(configValue.value);
         if (Array.isArray(parsed)) {
           for (const type of parsed) {
             if (type === "anonymous") {
@@ -46,7 +46,7 @@ export function useAllowedLoginTypes(): {
             } else if (type === "ms-oath-linkblue") {
               allowedTypes.push("ms-oath-linkblue");
             } else {
-              log(`Unrecognized login type: ${type}`, "warn");
+              log(`Unrecognized login type: ${String(type)}`, "warn");
             }
           }
         } else {

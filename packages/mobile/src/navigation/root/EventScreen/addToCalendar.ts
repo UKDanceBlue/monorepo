@@ -35,7 +35,7 @@ export async function onAddToCalendar(
       permissionStatus === PermissionStatus.UNDETERMINED ||
       canAskAgain
     ) {
-      permissionStatus = (await requestCalendarPermissionsAsync()).status;
+      ({ status: permissionStatus } = await requestCalendarPermissionsAsync());
     }
 
     if (permissionStatus === PermissionStatus.GRANTED) {

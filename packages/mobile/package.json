@@ -147,6 +147,7 @@
     "@types/uuid": "^10.0.0",
     "@types/xdate": "^0.8.35",
     "babel-plugin-module-resolver": "^5.0.2",
+    "@total-typescript/ts-reset": "^0.6.1",
     "metro-babel-register": "^0.71.1",
     "react-native-bundle-visualizer": "^3.1.3"
   },

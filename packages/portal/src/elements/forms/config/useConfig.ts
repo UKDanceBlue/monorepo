@@ -93,8 +93,8 @@ export function useConfig(): {
 
       // Decide if this is an active value
       const isActive = Interval.fromDateTimes(
-        configValue.validAfter || DateTime.fromMillis(0),
-        configValue.validUntil || DateTime.fromObject({ year: 9999 })
+        configValue.validAfter ?? DateTime.fromMillis(0),
+        configValue.validUntil ?? DateTime.fromObject({ year: 9999 })
       ).contains(DateTime.now());
 
       // If this is an active value and is newer than the current active value,

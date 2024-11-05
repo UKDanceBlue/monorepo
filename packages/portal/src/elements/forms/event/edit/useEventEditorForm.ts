@@ -12,7 +12,7 @@ import type { FragmentType } from "#graphql/index.js";
 import { getFragmentData } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
-import { eventEditorDocument,EventEditorFragment } from "./EventEditorGQL";
+import { eventEditorDocument, EventEditorFragment } from "./EventEditorGQL";
 
 export function useEventEditorForm(
   eventFragment: FragmentType<typeof EventEditorFragment> | undefined,
@@ -39,8 +39,11 @@ export function useEventEditorForm(
     defaultValues: {
       title: eventData?.title ?? "",
       // Logical OR is intentional, we we want to replace empty strings with nulls
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       summary: eventData?.summary || null,
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       location: eventData?.location || null,
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       description: eventData?.description || null,
       occurrences:
         eventData?.occurrences.map((occurrence) => ({

@@ -30,7 +30,7 @@ export const CustomImageRenderer = ({
   useEffect(() => {
     // we check that the source starts with at least one of the elements in allowedImageHandlers
     const show = allowedImageHandlers.some((value) => {
-      return src?.toLowerCase().startsWith(value.toLowerCase());
+      return src?.toLowerCase().startsWith(value.toLowerCase()) ?? false;
     });
 
     if (!show) {

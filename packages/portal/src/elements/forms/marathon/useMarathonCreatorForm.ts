@@ -57,10 +57,10 @@ export function useMarathonCreatorForm() {
           year: values.year,
           startDate: values.startDate
             ?.set({ minute: 0, second: 0, millisecond: 0 })
-            .toISO()!,
+            .toISO(),
           endDate: values.endDate
             ?.set({ minute: 0, second: 0, millisecond: 0 })
-            .toISO()!,
+            .toISO(),
         },
       });
 

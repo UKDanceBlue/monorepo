@@ -5,17 +5,10 @@ import { Platform } from "react-native";
 export async function discoverDefaultCalendar(): Promise<Calendar | null> {
   if (Platform.OS === "ios") {
     return getDefaultCalendarAsync();
-  } else {
+  } else if (Platform.OS === "android") {
     const calendars = await getCalendarsAsync();
-    for (let i = 0; i < calendars.length; i++) {
-      if (Platform.OS === "android" && calendars[i].isPrimary) {
-        return calendars[i];
-      }
-    }
-    if (calendars.length > 0) {
-      return calendars[0];
-    }
+    return calendars.find((calendar) => calendar.isPrimary ?? false) ?? null;
+  } else {
+    throw new Error(`Unsupported platform: ${Platform.OS}`);
   }
-
-  return null;
 }

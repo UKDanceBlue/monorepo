@@ -40,7 +40,7 @@ export type AccessLevel = (typeof AccessLevel)[keyof typeof AccessLevel];
 export function stringifyAccessLevel(val: unknown): string {
   let accessLevel: AccessLevel | undefined = undefined;
   if (typeof val === "number") {
-    const accessLevels = Object.values(AccessLevel);
+    const accessLevels = Object.values(AccessLevel) as AccessLevel[];
     for (const value of accessLevels) {
       if (value === val) {
         accessLevel = value;

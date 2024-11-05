@@ -74,7 +74,6 @@ export default eslintTs.config(
     },
     rules: {
       // Possible Errors
-      "no-undef": "off",
       "radix": "error",
       "yoda": "error",
       "prefer-template": "warn",
@@ -219,6 +218,7 @@ export default eslintTs.config(
       "react-refresh/only-export-components": "warn",
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
+      // We don't need to import React in every file for JSX
       "react/react-in-jsx-scope": "off",
       "react/jsx-uses-react": "off",
     },
@@ -237,19 +237,33 @@ export default eslintTs.config(
     },
     rules: getTsEslintRulesFrom(
       {
+        // We can disable this one because we're using better-typescript-lib
+        "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
+        // This is disabled because vscode already shows us deprecated methods
         "@typescript-eslint/no-deprecated": "off",
-        "@typescript-eslint/no-var-requires": "off",
+        // This is disabled because typescript already shows us unused variables
+        "@typescript-eslint/no-unused-vars": "off",
+        // Non-null assertions are fine in limited cases
+        "@typescript-eslint/no-non-null-assertion": "off",
+        // We don't need to enforce this
+        "@typescript-eslint/no-confusing-void-expression": "off",
+
+        "@typescript-eslint/no-misused-promises": [
+          "error",
+          {
+            checksVoidReturn: {
+              attributes: false,
+            },
+          },
+        ],
         "@typescript-eslint/require-await": "error",
         "@typescript-eslint/return-await": "error",
-        "@typescript-eslint/no-misused-promises": "off",
-        "@typescript-eslint/prefer-for-of": "off",
         "@typescript-eslint/consistent-type-imports": [
           "error",
           {
             prefer: "type-imports",
           },
         ],
-        "@typescript-eslint/no-unused-vars": "off",
         "@typescript-eslint/consistent-type-exports": [
           "error",
           { fixMixedExportsWithInlineTypeSpecifier: false },
@@ -260,8 +274,6 @@ export default eslintTs.config(
             ignoreStatic: true,
           },
         ],
-        "@typescript-eslint/no-non-null-assertion": "off",
-        "@typescript-eslint/no-confusing-void-expression": "off",
         "no-restricted-syntax": [
           "error",
           {
@@ -269,8 +281,6 @@ export default eslintTs.config(
             message: "Use an object with `as const` instead of an enum.",
           },
         ],
-        "no-redeclare": "off",
-        "no-dupe-class-members": "off",
         "@typescript-eslint/restrict-template-expressions": [
           "error",
           {
@@ -327,7 +337,9 @@ export default eslintTs.config(
       },
     },
     rules: {
+      // There is no top-level await in React Native
       "unicorn/prefer-top-level-await": "off",
+      // Sometimes we need to use require in React Native
       "@typescript-eslint/no-require-imports": "off",
     },
   },
@@ -349,7 +361,7 @@ export default eslintTs.config(
       "node/no-unpublished-bin": "error",
       "node/no-unpublished-require": "error",
       "node/process-exit-as-throw": "error",
-      "node/no-unpublished-import": "off",
+      // "node/no-unpublished-import": "off",
     },
   },
   {
@@ -424,6 +436,7 @@ export default eslintTs.config(
       sourceType: "commonjs",
     },
     rules: {
+      // We can't use import/export in CJS
       "@typescript-eslint/no-require-imports": "off",
     },
   },

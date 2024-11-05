@@ -31,7 +31,7 @@ async function doSyncForActive(): Promise<
 
   const activeMarathon = await new AsyncResult(
     marathonRepository.findActiveMarathon()
-  ).andThen(async (activeMarathon) =>
+  ).andThen((activeMarathon) =>
     activeMarathon.toResult(new NotFoundError({ what: "active marathon" }))
   ).promise;
   if (activeMarathon.isErr()) {
@@ -49,7 +49,7 @@ async function doSyncForPastMarathons(): Promise<
 
   const activeMarathon = await new AsyncResult(
     marathonRepository.findActiveMarathon()
-  ).andThen(async (activeMarathon) =>
+  ).andThen((activeMarathon) =>
     activeMarathon.toResult(new NotFoundError({ what: "active marathon" }))
   ).promise;
   if (activeMarathon.isErr()) {
@@ -63,6 +63,7 @@ async function doSyncForPastMarathons(): Promise<
   );
 
   for (const marathon of pastMarathons) {
+    // eslint-disable-next-line no-await-in-loop
     const result = await doSyncForMarathon(marathon);
     if (result.isErr()) {
       return result;
@@ -173,4 +174,7 @@ export const syncDbFundsPast = new Cron(
 syncDbFunds.options.startAt =
   await jobStateRepository.getNextJobDate(syncDbFunds);
 syncDbFunds.resume();
-syncDbFunds.trigger();
+// eslint-disable-next-line unicorn/prefer-top-level-await
+syncDbFunds.trigger().catch((error: unknown) => {
+  console.error("Failed to trigger syncDbFunds", error);
+});

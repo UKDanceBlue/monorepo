@@ -40,8 +40,14 @@
     },
     {
       "type": "npm",
+      "script": "repo:check",
+      "problemMatcher": ["$tsc"],
+      "label": "Repo: Check"
+    },
+    {
+      "type": "npm",
       "script": "repo:lint",
-      "problemMatcher": [],
+      "problemMatcher": ["$eslint-stylish"],
       "label": "Repo: Lint",
       "detail": "eslint ."
     },

@@ -38,7 +38,10 @@ export function roleToAccessLevel({
         let thisLevel: AccessLevel;
 
         if (committee.identifier === CommitteeIdentifier.techCommittee) {
-          thisLevel = committee.role === CommitteeRole.Chair ? AccessLevel.SuperAdmin : AccessLevel.Admin;
+          thisLevel =
+            committee.role === CommitteeRole.Chair
+              ? AccessLevel.SuperAdmin
+              : AccessLevel.Admin;
         } else if (
           committee.role === CommitteeRole.Coordinator ||
           committee.role === CommitteeRole.Chair
@@ -60,7 +63,7 @@ export function roleToAccessLevel({
     default: {
       dbRole satisfies never;
       try {
-        throw new Error(`Illegal DbRole: ${JSON.stringify(dbRole)}`);
+        throw new Error(`Illegal DbRole: ${String(dbRole)}`);
       } catch (error) {
         throw new Error(
           `Illegal DbRole: [Parsing of '${String(dbRole)}' failed]`

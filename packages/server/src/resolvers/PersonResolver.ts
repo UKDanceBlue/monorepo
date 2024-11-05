@@ -509,7 +509,7 @@ export class PersonResolver {
       // We can't grant blanket access as otherwise people would see who else was assigned to an entry
       // You can view all assignments for an entry if you are:
       // 1. A fundraising coordinator or chair
-      const globalFundraisingAccess = await checkParam(
+      const globalFundraisingAccess = checkParam(
         globalFundraisingAccessParam,
         context.authorization,
         {},

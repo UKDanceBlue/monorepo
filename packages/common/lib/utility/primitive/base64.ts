@@ -35,7 +35,7 @@ export function base64StringToArray(
   let nOutIdx = 0;
   for (let nInIdx = 0; nInIdx < nInLen; nInIdx++) {
     nMod4 = nInIdx & 3;
-    nUint24 |= b64ToUint6(sB64Enc.charCodeAt(nInIdx)) << (6 * (3 - nMod4));
+    nUint24 |= b64ToUint6(sB64Enc.codePointAt(nInIdx)!) << (6 * (3 - nMod4));
     if (nMod4 === 3 || nInLen - nInIdx === 1) {
       nMod3 = 0;
       while (nMod3 < 3 && nOutIdx < nOutLen) {

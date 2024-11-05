@@ -71,7 +71,6 @@ const markdownTextStyleKeys = new Set<keyof Partial<TextStyle>>([
   "writingDirection",
 ]);
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const styleRuleKeys = [
   "body",
   "heading1",
@@ -249,6 +248,7 @@ export const rules: RenderRules = {
 
     const modifiedInheritedStylesObj: TextStyle = {};
 
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let b = 0; b < arr.length; b++) {
       if (markdownTextStyleKeys.has(arr[b])) {
         // @ts-expect-error Dunno why this is angry, but it's fine
@@ -298,7 +298,7 @@ export const rules: RenderRules = {
             style={[modifiedInheritedStylesObj, styles.ordered_list_icon]}
             selectable
           >
-            {listItemNumber}
+            {String(listItemNumber)}
             {node.markup}
           </Text>
           {/* @ts-expect-error - TODO: Fix these errors, seems ok for now */}

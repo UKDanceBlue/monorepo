@@ -206,11 +206,10 @@ export class NotificationRepository {
     data: Prisma.NotificationUpdateInput
   ) {
     return new AsyncResult(
-      this.prisma.notification
-        .update({ where: param, data })
-        .then((result) => Ok(result))
-        .catch(handleRepositoryError)
-    );
+      Result.wrapAsync(() =>
+        this.prisma.notification.update({ where: param, data })
+      )
+    ).orElse(handleRepositoryError);
   }
 
   deleteNotification(param: Prisma.NotificationWhereUniqueInput) {

@@ -229,8 +229,8 @@ export const PeopleTable = () => {
             },
             sorter: false,
             filters: Object.values(CommitteeRole).map((role) => ({
-              text: role,
-              value: role,
+              text: String(role),
+              value: String(role),
             })),
           },
           {

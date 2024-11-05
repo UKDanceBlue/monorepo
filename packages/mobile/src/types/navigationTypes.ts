@@ -9,15 +9,17 @@ import type { FragmentType } from "#graphql/index";
 
 import type { EventScreenFragment } from "../navigation/root/EventScreen/EventScreenFragment";
 
-export interface SpiritStackParamList {
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type SpiritStackParamList = {
   MyTeam: undefined;
   Scoreboard: undefined;
-}
+};
 
 export type SpiritStackScreenProps<T extends keyof SpiritStackParamList> =
   NativeStackScreenProps<SpiritStackParamList, T>;
 
-export interface TabNavigatorParamList {
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type TabNavigatorParamList = {
   "Home": undefined;
   "Events": undefined;
   "Explore": undefined;
@@ -25,7 +27,7 @@ export interface TabNavigatorParamList {
   "Marathon": undefined;
   "DB Moments": undefined;
   "Info": undefined;
-}
+};
 
 export type TabNavigatorProps<T extends keyof TabNavigatorParamList> =
   CompositeScreenProps<
@@ -33,7 +35,8 @@ export type TabNavigatorProps<T extends keyof TabNavigatorParamList> =
     RootStackScreenProps<keyof RootStackParamList>
   >;
 
-export interface RootStackParamList {
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type RootStackParamList = {
   "Main": undefined;
   "SplashLogin": undefined;
   "Tab": NavigatorScreenParams<TabNavigatorParamList>;
@@ -45,7 +48,7 @@ export interface RootStackParamList {
   };
   "Explorer": undefined;
   "Hour Details": undefined; // { firestoreHour: FirestoreHour };
-}
+};
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, T>;
@@ -53,6 +56,7 @@ export type RootStackScreenProps<T extends keyof RootStackParamList> =
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace ReactNavigation {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface RootParamList extends RootStackParamList {}
   }
 }

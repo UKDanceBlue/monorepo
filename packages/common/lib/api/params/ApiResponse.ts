@@ -82,9 +82,7 @@ export abstract class AbstractGraphQLCreatedResponse<
   >(this: ClassType<OkRes>, data: T): OkRes {
     const response = new this();
     response.ok = true;
-    if (data != null) {
-      response.data = data;
-    }
+    response.data = data;
 
     response.uuid = data.id;
 

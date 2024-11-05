@@ -113,7 +113,7 @@ export type SelfOrArray<T> = T | T[];
 
 export type RecursiveArray<T> = T | RecursiveArray<T>[];
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export type Abstract<T> = Function & { prototype: T };
 export type Constructor<T> = new (...args: unknown[]) => T;
 export type Class<T> = Abstract<T> | Constructor<T>;

@@ -346,7 +346,7 @@ export class NotificationResolver {
             )
           : Ok(notification)
       )
-      .andThen(async (notification) => {
+      .andThen((notification) => {
         try {
           return Ok(
             this.notificationRepository.deleteNotification({

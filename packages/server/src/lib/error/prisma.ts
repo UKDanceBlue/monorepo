@@ -32,9 +32,7 @@ export abstract class PrismaError extends ConcreteError {
     return this.error.stack;
   }
 
-  get expose(): boolean {
-    return false;
-  }
+  readonly expose = false;
 
   get tag(): ErrorCode.PrismaError {
     return ErrorCode.PrismaError;

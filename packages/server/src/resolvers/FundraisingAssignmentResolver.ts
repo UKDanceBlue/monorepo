@@ -49,7 +49,7 @@ export class FundraisingAssignmentResolver {
       context: AccessControlContext,
       result: Option<FundraisingAssignmentNode>
     ): Promise<boolean | null> => {
-      const globalFundraisingAccess = await checkParam(
+      const globalFundraisingAccess = checkParam(
         globalFundraisingAccessParam,
         context.authorization,
         root,
@@ -104,7 +104,7 @@ export class FundraisingAssignmentResolver {
   }
 
   @MutationAccessControl(async (context, args): Promise<boolean | null> => {
-    const globalFundraisingAccess = await checkParam(
+    const globalFundraisingAccess = checkParam(
       globalFundraisingAccessParam,
       context.authorization,
       {},
@@ -168,7 +168,7 @@ export class FundraisingAssignmentResolver {
       context,
       { id: fundraisingAssignmentId }
     ): Promise<boolean | null> => {
-      const globalFundraisingAccess = await checkParam(
+      const globalFundraisingAccess = checkParam(
         globalFundraisingAccessParam,
         context.authorization,
         {},
@@ -226,7 +226,7 @@ export class FundraisingAssignmentResolver {
       context,
       { id: fundraisingAssignmentId }
     ): Promise<boolean | null> => {
-      const globalFundraisingAccess = await checkParam(
+      const globalFundraisingAccess = checkParam(
         globalFundraisingAccessParam,
         context.authorization,
         {},
@@ -281,7 +281,7 @@ export class FundraisingAssignmentResolver {
     async (root, context, result): Promise<boolean | null> => {
       // We can't grant blanket access as otherwise people would see who else was assigned to an entry
 
-      const globalFundraisingAccess = await checkParam(
+      const globalFundraisingAccess = checkParam(
         globalFundraisingAccessParam,
         context.authorization,
         root,
@@ -346,7 +346,7 @@ export class FundraisingAssignmentResolver {
     async (root, context, result): Promise<boolean | null> => {
       // We can't grant blanket access as otherwise people would see who else was assigned to an entry
 
-      const globalFundraisingAccess = await checkParam(
+      const globalFundraisingAccess = checkParam(
         globalFundraisingAccessParam,
         context.authorization,
         root,

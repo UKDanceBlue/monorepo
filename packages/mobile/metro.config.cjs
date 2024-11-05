@@ -1,5 +1,7 @@
 // Learn more https://docs.expo.io/guides/customizing-metro
+// @ts-expect-error - CommonJS
 const { withSentryConfig } = require("@sentry/react-native/metro");
+// @ts-expect-error - CommonJS
 const { getDefaultConfig } = require("expo/metro-config");
 
 // Find the project and workspace directories
@@ -24,8 +26,10 @@ const getTransformOptions = () =>
 /** @return {import("expo/metro-config").MetroConfig} */
 const config = () => {
   /** @type {import("expo/metro-config").MetroConfig}*/
+  // @ts-expect-error - This is fine
   const config = getDefaultConfig(projectRoot);
 
+  // @ts-expect-error - This is fine
   return withSentryConfig({
     ...config,
     resolver: {

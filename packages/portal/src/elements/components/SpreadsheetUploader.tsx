@@ -109,7 +109,7 @@ export function SpreadsheetUploader<
                     return (
                       <ul>
                         {value.map((item, idx) => (
-                          <li key={idx}>{item}</li>
+                          <li key={idx}>{String(item)}</li>
                         ))}
                       </ul>
                     );
