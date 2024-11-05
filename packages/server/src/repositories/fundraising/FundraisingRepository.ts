@@ -469,6 +469,7 @@ export class FundraisingEntryRepository {
         },
         include: { team: true, person: true },
       });
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!result || !result.team || !result.person) {
         return Err(new NotFoundError({ what: "Membership" }));
       }

@@ -2,9 +2,9 @@ import { useForm } from "@tanstack/react-form";
 import { Form, Input, Modal } from "antd";
 import { useClient } from "urql";
 
-import { TanAntFormItem } from "#elements/components/form/TanAntFormItem";
+import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
 import { graphql } from "#graphql/index.js";
-import { useAntFeedback } from "#hooks/useAntFeedback";
+import { useAntFeedback } from "#hooks/useAntFeedback.js";
 
 const createImageDocument = graphql(/* GraphQL */ `
   mutation CreateImage($input: CreateImageInput!) {

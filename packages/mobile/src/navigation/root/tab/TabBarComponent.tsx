@@ -10,8 +10,8 @@ import type {
 import { Box, useTheme, View, VStack, ZStack } from "native-base";
 import { Text, TouchableOpacity, useWindowDimensions } from "react-native";
 
-import { useColorModeValue, useThemeColors } from "#common/customHooks";
-import { colors } from "#theme/colors";
+import { useColorModeValue, useThemeColors } from "#common/customHooks.js";
+import { colors } from "#theme/colors.js";
 
 import BackgroundCutout from "../../../../assets/screens/navigation/background-cutout";
 import DanceBlueRibbon from "../../../../assets/svgs/DBRibbon";

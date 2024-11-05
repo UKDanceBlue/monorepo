@@ -69,18 +69,20 @@ const codegenConfig: CodegenConfig = {
       "eslint --fix",
       "prettier --write",
     ],
-    beforeOneFileWrite: (_, content) => {
-      return content
-        .replace("from './graphql.js';", "from './graphql';")
-        .replace("from './fragment-masking.js'", "from './fragment-masking'")
-        .replace("from './gql.js';", "from './gql';")
-        .replace('from "./graphql.js";', 'from "./graphql";')
-        .replace('from "./fragment-masking.js"', 'from "./fragment-masking"')
-        .replace('from "./gql.js";', 'from "./gql";')
-        .replace(
-          "/* eslint-disable */",
-          "/* eslint-disable @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/no-unnecessary-type-parameters, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-invalid-void-type, @typescript-eslint/consistent-indexed-object-style, @typescript-eslint/consistent-type-definitions, @typescript-eslint/array-type, unicorn/prefer-export-from, sort-imports/exports */"
-        );
+    beforeOneFileWrite: (file, content) => {
+      if (file.includes("mobile")) {
+        content = content
+          .replace("from './graphql.js';", "from './graphql';")
+          .replace("from './fragment-masking.js'", "from './fragment-masking'")
+          .replace("from './gql.js';", "from './gql';")
+          .replace('from "./graphql.js";', 'from "./graphql";')
+          .replace('from "./fragment-masking.js"', 'from "./fragment-masking"')
+          .replace('from "./gql.js";', 'from "./gql";');
+      }
+      return content.replace(
+        "/* eslint-disable */",
+        "/* eslint-disable @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/no-unnecessary-type-parameters, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-invalid-void-type, @typescript-eslint/consistent-indexed-object-style, @typescript-eslint/consistent-type-definitions, @typescript-eslint/array-type, unicorn/prefer-export-from, sort-imports/exports */"
+      );
     },
   },
   noSilentErrors: true,

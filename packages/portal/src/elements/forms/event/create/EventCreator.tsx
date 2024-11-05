@@ -3,7 +3,7 @@ import { App, Button, Form, Input, List } from "antd";
 import { Interval } from "luxon";
 
 import { EventOccurrencePicker } from "../../../components/event/EventOccurrencePicker";
-import { useEventCreatorForm } from "./useEventCreatorForm";
+import { useEventCreatorForm } from "./useEventCreatorForm.js";
 
 export function EventCreator() {
   const { message } = App.useApp();

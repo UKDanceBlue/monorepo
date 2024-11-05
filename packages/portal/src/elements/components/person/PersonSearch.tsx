@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { useQuery } from "urql";
 
 import { graphql } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const personSearchDocument = graphql(/* GraphQL */ `
   query PersonSearch($search: String!) {

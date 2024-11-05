@@ -13,7 +13,7 @@ import type { AuthorizationRule } from "@ukdanceblue/common";
 import { devtoolsExchange } from "@urql/devtools";
 import { App, Empty, Spin } from "antd";
 import { App as AntApp } from "antd";
-import type { useAppProps } from "antd/es/app/context";
+import type { useAppProps } from "antd/es/app/context.js";
 import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
@@ -23,11 +23,11 @@ import {
   Provider as UrqlProvider,
 } from "urql";
 
-import { AntConfigProvider, ThemeConfigProvider } from "#config/ant.tsx";
-import { API_BASE_URL } from "#config/api.ts";
-import { MarathonConfigProvider } from "#config/marathon.tsx";
-import { SessionStorageKeys } from "#config/storage";
-import { SpinningRibbon } from "#elements/components/design/RibbonSpinner";
+import { AntConfigProvider, ThemeConfigProvider } from "#config/ant.js";
+import { API_BASE_URL } from "#config/api.js";
+import { MarathonConfigProvider } from "#config/marathon.js";
+import { SessionStorageKeys } from "#config/storage.js";
+import { SpinningRibbon } from "#elements/components/design/RibbonSpinner.js";
 
 init({
   dsn: "https://f149f5546299b507f5e7b9b4aeafc2f4@o4507762130681856.ingest.us.sentry.io/4508071881932800",
@@ -42,7 +42,7 @@ init({
   ),
 });
 
-const routeTreePromise = import("./routeTree.gen");
+const routeTreePromise = import("./routeTree.gen.js");
 
 const API_URL = `${API_BASE_URL}/graphql`;
 const urqlClient = new Client({

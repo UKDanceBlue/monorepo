@@ -3,9 +3,9 @@ import { Form, Input, Space } from "antd";
 import { DateTime } from "luxon";
 import { useMemo } from "react";
 
-import { LuxonDatePicker } from "#elements/components/antLuxonComponents";
+import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
 
-import type { ConfigValue } from "./useConfig";
+import type { ConfigValue } from "./useConfig.js";
 
 export function ConfigItem<Editable extends boolean>({
   editable,

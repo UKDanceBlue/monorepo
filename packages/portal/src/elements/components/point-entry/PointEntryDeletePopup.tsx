@@ -1,5 +1,5 @@
 import { Modal } from "antd";
-import useNotification from "antd/es/notification/useNotification";
+import useNotification from "antd/es/notification/useNotification.js";
 import { useEffect, useState } from "react";
 import { useMutation } from "urql";
 

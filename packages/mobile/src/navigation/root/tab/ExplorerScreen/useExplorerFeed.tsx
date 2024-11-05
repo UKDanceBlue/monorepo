@@ -5,10 +5,10 @@ import type { FeedItem } from "react-native-rss-parser";
 import { parse } from "react-native-rss-parser";
 import { useQuery } from "urql";
 
-import { API_BASE_URL } from "#common/apiUrl";
-import { useNetworkStatus } from "#common/customHooks";
-import { Logger } from "#common/logger/Logger";
-import { graphql } from "#graphql/index";
+import { API_BASE_URL } from "#common/apiUrl.js";
+import { useNetworkStatus } from "#common/customHooks.js";
+import { Logger } from "#common/logger/Logger.js";
+import { graphql } from "#graphql/index.js";
 
 const serverFeedDocument = graphql(/* GraphQL */ `
   query ServerFeed {

@@ -8,11 +8,11 @@ import { useEffect, useMemo } from "react";
 import { RefreshControl } from "react-native";
 
 import JumbotronGeometric from "#common/components/JumbotronGeometric";
-import { NotificationDeliveryFragment } from "#common/fragments/NotificationScreenGQL";
-import { Logger } from "#common/logger/Logger";
-import { universalCatch } from "#common/logging";
-import type { FragmentType } from "#graphql/index";
-import { getFragmentData } from "#graphql/index";
+import { NotificationDeliveryFragment } from "#common/fragments/NotificationScreenGQL.js";
+import { Logger } from "#common/logger/Logger.js";
+import { universalCatch } from "#common/logging.js";
+import type { FragmentType } from "#graphql/index.js";
+import { getFragmentData } from "#graphql/index.js";
 
 import { useDeviceData, useLoading } from "../../../context";
 import { NotificationRow } from "./NotificationRow";

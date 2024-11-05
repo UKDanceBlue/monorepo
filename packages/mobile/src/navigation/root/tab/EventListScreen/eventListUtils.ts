@@ -6,11 +6,11 @@ import type { DateData } from "react-native-calendars";
 import type { MarkedDates } from "react-native-calendars/src/types";
 import { useQuery } from "urql";
 
-import { Logger } from "#common/logger/Logger";
-import { showMessage } from "#common/util/alertUtils";
-import type { FragmentType } from "#graphql/index";
-import { getFragmentData, graphql } from "#graphql/index";
-import { EventScreenFragment } from "#navigation/root/EventScreen/EventScreenFragment";
+import { Logger } from "#common/logger/Logger.js";
+import { showMessage } from "#common/util/alertUtils.js";
+import type { FragmentType } from "#graphql/index.js";
+import { getFragmentData, graphql } from "#graphql/index.js";
+import { EventScreenFragment } from "#navigation/root/EventScreen/EventScreenFragment.js";
 
 import { RNCAL_DATE_FORMAT, RNCAL_DATE_FORMAT_NO_DAY } from "./constants";
 

@@ -3,13 +3,13 @@ import { DateTime } from "luxon";
 import { useCallback, useEffect, useState } from "react";
 import { useClient } from "urql";
 
-import type { NotificationDeliveryFragment } from "#common/fragments/NotificationScreenGQL";
-import { useAsyncStorage } from "#common/hooks/useAsyncStorage";
-import { Logger } from "#common/logger/Logger";
-import { showMessage } from "#common/util/alertUtils";
-import { useDeviceData } from "#context/device";
-import type { FragmentType } from "#graphql/index";
-import { graphql } from "#graphql/index";
+import type { NotificationDeliveryFragment } from "#common/fragments/NotificationScreenGQL.js";
+import { useAsyncStorage } from "#common/hooks/useAsyncStorage.js";
+import { Logger } from "#common/logger/Logger.js";
+import { showMessage } from "#common/util/alertUtils.js";
+import { useDeviceData } from "#context/device.js";
+import type { FragmentType } from "#graphql/index.js";
+import { graphql } from "#graphql/index.js";
 
 const NOTIFICATION_PAGE_SIZE = 8;
 const INCOMPLETE_PAGE_TIMEOUT = 10_000;

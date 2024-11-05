@@ -91,13 +91,13 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@total-typescript/ts-reset": "^0.6.1",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/multer": "^1.4.12",
     "@types/pg": "^8.11.10",
     "@types/serve-static": "^1.15.7",
-    "@total-typescript/ts-reset": "^0.6.1",
     "nodemon": "^3.1.7",
     "prisma": "^5.21.1",
     "vitest": "^2.1.3"

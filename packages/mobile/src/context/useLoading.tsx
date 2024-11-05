@@ -1,7 +1,7 @@
 import { useCallback, useContext, useId, useState } from "react";
 
-import { useTimeout } from "#common/hooks/useTimeout";
-import { Logger } from "#common/logger/Logger";
+import { useTimeout } from "#common/hooks/useTimeout.js";
+import { Logger } from "#common/logger/Logger.js";
 
 import { LoadingContext } from "./loading";
 

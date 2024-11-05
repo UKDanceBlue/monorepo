@@ -1,4 +1,4 @@
-import type { BasicError,NotFoundError } from "@ukdanceblue/common/error";
+import type { BasicError, NotFoundError } from "@ukdanceblue/common/error";
 import { toBasicError } from "@ukdanceblue/common/error";
 import { Err } from "ts-results-es";
 

@@ -4,10 +4,10 @@ import { useMutation } from "urql";
 
 import { type CreateTeamInput } from "#graphql/graphql.js";
 import type { DocumentType } from "#graphql/index.js";
-import { useAntFeedback } from "#hooks/useAntFeedback";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useAntFeedback } from "#hooks/useAntFeedback.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
-import { teamCreatorDocument } from "./TeamCreatorGQL";
+import { teamCreatorDocument } from "./TeamCreatorGQL.js";
 
 export function useTeamCreatorForm(
   afterSubmit:

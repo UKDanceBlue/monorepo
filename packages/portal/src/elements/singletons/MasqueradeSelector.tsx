@@ -2,7 +2,7 @@ import { AutoComplete } from "antd";
 import { useMemo, useRef, useState } from "react";
 import { useQuery } from "urql";
 
-import { SessionStorageKeys } from "#config/storage";
+import { SessionStorageKeys } from "#config/storage.js";
 import { graphql } from "#graphql/index.js";
 
 export function MasqueradeSelector() {

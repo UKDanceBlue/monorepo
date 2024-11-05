@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex } from "antd";
 
-import { useAuthorizationRequirement } from "#hooks/useLoginState";
-import { routerAuthCheck } from "#tools/routerAuthCheck";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function ViewTeamPage() {
   const canSeePoints = useAuthorizationRequirement({

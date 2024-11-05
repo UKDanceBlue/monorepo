@@ -1,8 +1,8 @@
 import { Heading, View } from "native-base";
 import type { SectionListProps } from "react-native";
 
-import type { NotificationDeliveryFragment } from "#common/fragments/NotificationScreenGQL";
-import type { FragmentType } from "#graphql/index";
+import type { NotificationDeliveryFragment } from "#common/fragments/NotificationScreenGQL.js";
+import type { FragmentType } from "#graphql/index.js";
 
 type NotificationSectionHeaderType = NonNullable<
   SectionListProps<

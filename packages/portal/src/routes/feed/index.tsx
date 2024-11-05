@@ -19,9 +19,9 @@ import { useState } from "react";
 import { useClient, useQuery } from "urql";
 
 import { graphql } from "#graphql/index.js";
-import { useImagePicker } from "#hooks/useImagePicker";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
-import { routerAuthCheck } from "#tools/routerAuthCheck";
+import { useImagePicker } from "#hooks/useImagePicker.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const feedPageDocument = graphql(/* GraphQL */ `
   query FeedPage {

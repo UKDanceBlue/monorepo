@@ -60,7 +60,7 @@ export type Scalars = {
 export { AccessLevel };
 
 export type AssignEntryToPersonInput = {
-  amount: Scalars["Float"]["input"];
+  readonly amount: Scalars["Float"]["input"];
 };
 
 export { AuthSource };
@@ -68,19 +68,23 @@ export { AuthSource };
 export { BatchType };
 
 export type BulkPersonInput = {
-  committee?: InputMaybe<CommitteeIdentifier>;
-  email: Scalars["EmailAddress"]["input"];
-  linkblue: Scalars["String"]["input"];
-  name: Scalars["String"]["input"];
-  role?: InputMaybe<CommitteeRole>;
+  readonly committee?: InputMaybe<CommitteeIdentifier>;
+  readonly email: Scalars["EmailAddress"]["input"];
+  readonly linkblue: Scalars["String"]["input"];
+  readonly name: Scalars["String"]["input"];
+  readonly role?: InputMaybe<CommitteeRole>;
 };
 
 export type BulkTeamInput = {
-  captainLinkblues?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  legacyStatus: TeamLegacyStatus;
-  memberLinkblues?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  name: Scalars["String"]["input"];
-  type: TeamType;
+  readonly captainLinkblues?: InputMaybe<
+    ReadonlyArray<Scalars["String"]["input"]>
+  >;
+  readonly legacyStatus: TeamLegacyStatus;
+  readonly memberLinkblues?: InputMaybe<
+    ReadonlyArray<Scalars["String"]["input"]>
+  >;
+  readonly name: Scalars["String"]["input"];
+  readonly type: TeamType;
 };
 
 export { CommitteeIdentifier };
@@ -88,115 +92,115 @@ export { CommitteeIdentifier };
 export { CommitteeRole };
 
 export type CreateConfigurationInput = {
-  key: Scalars["String"]["input"];
-  validAfter?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
-  validUntil?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
-  value: Scalars["String"]["input"];
+  readonly key: Scalars["String"]["input"];
+  readonly validAfter?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
+  readonly validUntil?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
+  readonly value: Scalars["String"]["input"];
 };
 
 export type CreateEventInput = {
-  description?: InputMaybe<Scalars["String"]["input"]>;
-  location?: InputMaybe<Scalars["String"]["input"]>;
-  occurrences: Array<CreateEventOccurrenceInput>;
-  summary?: InputMaybe<Scalars["String"]["input"]>;
-  title: Scalars["String"]["input"];
+  readonly description?: InputMaybe<Scalars["String"]["input"]>;
+  readonly location?: InputMaybe<Scalars["String"]["input"]>;
+  readonly occurrences: ReadonlyArray<CreateEventOccurrenceInput>;
+  readonly summary?: InputMaybe<Scalars["String"]["input"]>;
+  readonly title: Scalars["String"]["input"];
 };
 
 export type CreateEventOccurrenceInput = {
-  fullDay: Scalars["Boolean"]["input"];
-  interval: IntervalIsoInput;
+  readonly fullDay: Scalars["Boolean"]["input"];
+  readonly interval: IntervalIsoInput;
 };
 
 export type CreateFeedInput = {
-  imageUuid?: InputMaybe<Scalars["String"]["input"]>;
-  textContent?: InputMaybe<Scalars["String"]["input"]>;
-  title: Scalars["String"]["input"];
+  readonly imageUuid?: InputMaybe<Scalars["String"]["input"]>;
+  readonly textContent?: InputMaybe<Scalars["String"]["input"]>;
+  readonly title: Scalars["String"]["input"];
 };
 
 export type CreateImageInput = {
-  alt?: InputMaybe<Scalars["String"]["input"]>;
-  url?: InputMaybe<Scalars["URL"]["input"]>;
+  readonly alt?: InputMaybe<Scalars["String"]["input"]>;
+  readonly url?: InputMaybe<Scalars["URL"]["input"]>;
 };
 
 export type CreateMarathonHourInput = {
-  details?: InputMaybe<Scalars["String"]["input"]>;
-  durationInfo: Scalars["String"]["input"];
-  shownStartingAt: Scalars["DateTimeISO"]["input"];
-  title: Scalars["String"]["input"];
+  readonly details?: InputMaybe<Scalars["String"]["input"]>;
+  readonly durationInfo: Scalars["String"]["input"];
+  readonly shownStartingAt: Scalars["DateTimeISO"]["input"];
+  readonly title: Scalars["String"]["input"];
 };
 
 export type CreateMarathonInput = {
-  endDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
-  startDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
-  year: Scalars["String"]["input"];
+  readonly endDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
+  readonly startDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
+  readonly year: Scalars["String"]["input"];
 };
 
 export type CreatePersonInput = {
-  captainOf?: Array<MemberOf>;
+  readonly captainOf?: ReadonlyArray<MemberOf>;
   /** @deprecated DBRole can no longer be set directly */
-  dbRole?: InputMaybe<DbRole>;
-  email: Scalars["EmailAddress"]["input"];
-  linkblue?: InputMaybe<Scalars["String"]["input"]>;
-  memberOf?: Array<MemberOf>;
-  name?: InputMaybe<Scalars["String"]["input"]>;
+  readonly dbRole?: InputMaybe<DbRole>;
+  readonly email: Scalars["EmailAddress"]["input"];
+  readonly linkblue?: InputMaybe<Scalars["String"]["input"]>;
+  readonly memberOf?: ReadonlyArray<MemberOf>;
+  readonly name?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type CreatePointEntryInput = {
-  comment?: InputMaybe<Scalars["String"]["input"]>;
-  opportunityUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
-  personFromUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
-  points: Scalars["Int"]["input"];
-  teamUuid: Scalars["GlobalId"]["input"];
+  readonly comment?: InputMaybe<Scalars["String"]["input"]>;
+  readonly opportunityUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
+  readonly personFromUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
+  readonly points: Scalars["Int"]["input"];
+  readonly teamUuid: Scalars["GlobalId"]["input"];
 };
 
 export type CreatePointOpportunityInput = {
-  eventUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
-  marathonUuid: Scalars["GlobalId"]["input"];
-  name: Scalars["String"]["input"];
-  opportunityDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
-  type: TeamType;
+  readonly eventUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
+  readonly marathonUuid: Scalars["GlobalId"]["input"];
+  readonly name: Scalars["String"]["input"];
+  readonly opportunityDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
+  readonly type: TeamType;
 };
 
 export type CreateTeamInput = {
-  legacyStatus: TeamLegacyStatus;
-  name: Scalars["String"]["input"];
-  type: TeamType;
+  readonly legacyStatus: TeamLegacyStatus;
+  readonly name: Scalars["String"]["input"];
+  readonly type: TeamType;
 };
 
 export type DailyDepartmentNotificationInput = {
-  accountName: Scalars["String"]["input"];
-  accountNumber: Scalars["String"]["input"];
-  batchId: Scalars["String"]["input"];
-  behalfHonorMemorial?: InputMaybe<Scalars["String"]["input"]>;
-  combinedAmount: Scalars["Float"]["input"];
-  combinedDonorName: Scalars["String"]["input"];
-  combinedDonorSalutation: Scalars["String"]["input"];
-  combinedDonorSort?: InputMaybe<Scalars["String"]["input"]>;
-  comment?: InputMaybe<Scalars["String"]["input"]>;
-  department?: InputMaybe<Scalars["String"]["input"]>;
-  divFirstGift: Scalars["Boolean"]["input"];
-  division?: InputMaybe<Scalars["String"]["input"]>;
-  donor1Amount?: InputMaybe<Scalars["Float"]["input"]>;
-  donor2Amount?: InputMaybe<Scalars["Float"]["input"]>;
-  effectiveDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
-  endDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
-  gikDescription?: InputMaybe<Scalars["String"]["input"]>;
-  gikType?: InputMaybe<Scalars["String"]["input"]>;
-  holdingDestination?: InputMaybe<Scalars["String"]["input"]>;
-  idSorter: Scalars["String"]["input"];
-  matchingGift?: InputMaybe<Scalars["String"]["input"]>;
-  onlineGift: Scalars["Boolean"]["input"];
-  pledgedAmount: Scalars["Float"]["input"];
-  pledgedDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
-  processDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
-  secShares?: InputMaybe<Scalars["String"]["input"]>;
-  secType?: InputMaybe<Scalars["String"]["input"]>;
-  solicitation?: InputMaybe<Scalars["String"]["input"]>;
-  solicitationCode?: InputMaybe<Scalars["String"]["input"]>;
-  startDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
-  transactionDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
-  transactionType: Scalars["String"]["input"];
-  ukFirstGift: Scalars["Boolean"]["input"];
+  readonly accountName: Scalars["String"]["input"];
+  readonly accountNumber: Scalars["String"]["input"];
+  readonly batchId: Scalars["String"]["input"];
+  readonly behalfHonorMemorial?: InputMaybe<Scalars["String"]["input"]>;
+  readonly combinedAmount: Scalars["Float"]["input"];
+  readonly combinedDonorName: Scalars["String"]["input"];
+  readonly combinedDonorSalutation: Scalars["String"]["input"];
+  readonly combinedDonorSort?: InputMaybe<Scalars["String"]["input"]>;
+  readonly comment?: InputMaybe<Scalars["String"]["input"]>;
+  readonly department?: InputMaybe<Scalars["String"]["input"]>;
+  readonly divFirstGift: Scalars["Boolean"]["input"];
+  readonly division?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor1Amount?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly donor2Amount?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly effectiveDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  readonly endDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
+  readonly gikDescription?: InputMaybe<Scalars["String"]["input"]>;
+  readonly gikType?: InputMaybe<Scalars["String"]["input"]>;
+  readonly holdingDestination?: InputMaybe<Scalars["String"]["input"]>;
+  readonly idSorter: Scalars["String"]["input"];
+  readonly matchingGift?: InputMaybe<Scalars["String"]["input"]>;
+  readonly onlineGift: Scalars["Boolean"]["input"];
+  readonly pledgedAmount: Scalars["Float"]["input"];
+  readonly pledgedDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  readonly processDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  readonly secShares?: InputMaybe<Scalars["String"]["input"]>;
+  readonly secType?: InputMaybe<Scalars["String"]["input"]>;
+  readonly solicitation?: InputMaybe<Scalars["String"]["input"]>;
+  readonly solicitationCode?: InputMaybe<Scalars["String"]["input"]>;
+  readonly startDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
+  readonly transactionDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  readonly transactionType: Scalars["String"]["input"];
+  readonly ukFirstGift: Scalars["Boolean"]["input"];
 };
 
 export { DbRole };
@@ -220,37 +224,37 @@ export type DeviceResolverDateFilterKeys =
   (typeof DeviceResolverDateFilterKeys)[keyof typeof DeviceResolverDateFilterKeys];
 export type DeviceResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: DeviceResolverDateFilterKeys;
+  readonly field: DeviceResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["DateTimeISO"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["DateTimeISO"]["input"];
 };
 
 export type DeviceResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: DeviceResolverAllKeys;
+  readonly field: DeviceResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type DeviceResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: Scalars["Void"]["input"];
+  readonly field: Scalars["Void"]["input"];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Array<Scalars["String"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: ReadonlyArray<Scalars["String"]["input"]>;
 };
 
 export type DeviceResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: DeviceResolverStringFilterKeys;
+  readonly field: DeviceResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["String"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["String"]["input"];
 };
 
 export const DeviceResolverStringFilterKeys = {
@@ -285,37 +289,37 @@ export type EventResolverDateFilterKeys =
   (typeof EventResolverDateFilterKeys)[keyof typeof EventResolverDateFilterKeys];
 export type EventResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: EventResolverDateFilterKeys;
+  readonly field: EventResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["DateTimeISO"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["DateTimeISO"]["input"];
 };
 
 export type EventResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: EventResolverAllKeys;
+  readonly field: EventResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type EventResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: Scalars["Void"]["input"];
+  readonly field: Scalars["Void"]["input"];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Array<Scalars["String"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: ReadonlyArray<Scalars["String"]["input"]>;
 };
 
 export type EventResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: EventResolverStringFilterKeys;
+  readonly field: EventResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["String"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["String"]["input"];
 };
 
 export const EventResolverStringFilterKeys = {
@@ -350,47 +354,47 @@ export type FundraisingEntryResolverDateFilterKeys =
   (typeof FundraisingEntryResolverDateFilterKeys)[keyof typeof FundraisingEntryResolverDateFilterKeys];
 export type FundraisingEntryResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: FundraisingEntryResolverDateFilterKeys;
+  readonly field: FundraisingEntryResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["DateTimeISO"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["DateTimeISO"]["input"];
 };
 
 export type FundraisingEntryResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: FundraisingEntryResolverAllKeys;
+  readonly field: FundraisingEntryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type FundraisingEntryResolverKeyedNumericFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: FundraisingEntryResolverNumericFilterKeys;
+  readonly field: FundraisingEntryResolverNumericFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["Float"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["Float"]["input"];
 };
 
 export type FundraisingEntryResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: FundraisingEntryResolverOneOfFilterKeys;
+  readonly field: FundraisingEntryResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Array<Scalars["String"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: ReadonlyArray<Scalars["String"]["input"]>;
 };
 
 export type FundraisingEntryResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: FundraisingEntryResolverStringFilterKeys;
+  readonly field: FundraisingEntryResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["String"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["String"]["input"];
 };
 
 export const FundraisingEntryResolverNumericFilterKeys = {
@@ -432,47 +436,47 @@ export type ImageResolverDateFilterKeys =
   (typeof ImageResolverDateFilterKeys)[keyof typeof ImageResolverDateFilterKeys];
 export type ImageResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: ImageResolverDateFilterKeys;
+  readonly field: ImageResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["DateTimeISO"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["DateTimeISO"]["input"];
 };
 
 export type ImageResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: ImageResolverAllKeys;
+  readonly field: ImageResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type ImageResolverKeyedNumericFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: ImageResolverNumericFilterKeys;
+  readonly field: ImageResolverNumericFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["Float"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["Float"]["input"];
 };
 
 export type ImageResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: Scalars["Void"]["input"];
+  readonly field: Scalars["Void"]["input"];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Array<Scalars["String"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: ReadonlyArray<Scalars["String"]["input"]>;
 };
 
 export type ImageResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: ImageResolverStringFilterKeys;
+  readonly field: ImageResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["String"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["String"]["input"];
 };
 
 export const ImageResolverNumericFilterKeys = {
@@ -489,8 +493,8 @@ export const ImageResolverStringFilterKeys = {
 export type ImageResolverStringFilterKeys =
   (typeof ImageResolverStringFilterKeys)[keyof typeof ImageResolverStringFilterKeys];
 export type IntervalIsoInput = {
-  end: Scalars["DateTimeISO"]["input"];
-  start: Scalars["DateTimeISO"]["input"];
+  readonly end: Scalars["DateTimeISO"]["input"];
+  readonly start: Scalars["DateTimeISO"]["input"];
 };
 
 export const MarathonHourResolverAllKeys = {
@@ -515,37 +519,37 @@ export type MarathonHourResolverDateFilterKeys =
   (typeof MarathonHourResolverDateFilterKeys)[keyof typeof MarathonHourResolverDateFilterKeys];
 export type MarathonHourResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: MarathonHourResolverDateFilterKeys;
+  readonly field: MarathonHourResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["DateTimeISO"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["DateTimeISO"]["input"];
 };
 
 export type MarathonHourResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: MarathonHourResolverAllKeys;
+  readonly field: MarathonHourResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type MarathonHourResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: MarathonHourResolverOneOfFilterKeys;
+  readonly field: MarathonHourResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Array<Scalars["String"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: ReadonlyArray<Scalars["String"]["input"]>;
 };
 
 export type MarathonHourResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: MarathonHourResolverStringFilterKeys;
+  readonly field: MarathonHourResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["String"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["String"]["input"];
 };
 
 export const MarathonHourResolverOneOfFilterKeys = {
@@ -583,33 +587,35 @@ export type MarathonResolverDateFilterKeys =
   (typeof MarathonResolverDateFilterKeys)[keyof typeof MarathonResolverDateFilterKeys];
 export type MarathonResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: MarathonResolverDateFilterKeys;
+  readonly field: MarathonResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["DateTimeISO"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["DateTimeISO"]["input"];
 };
 
 export type MarathonResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: MarathonResolverAllKeys;
+  readonly field: MarathonResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type MemberOf = {
-  committeeRole?: InputMaybe<CommitteeRole>;
-  id: Scalars["GlobalId"]["input"];
+  readonly committeeRole?: InputMaybe<CommitteeRole>;
+  readonly id: Scalars["GlobalId"]["input"];
 };
 
 export { MembershipPositionType };
 
 export type NotificationAudienceInput = {
-  all?: InputMaybe<Scalars["Boolean"]["input"]>;
-  memberOfTeamType?: InputMaybe<TeamType>;
-  memberOfTeams?: InputMaybe<Array<Scalars["GlobalId"]["input"]>>;
-  users?: InputMaybe<Array<Scalars["GlobalId"]["input"]>>;
+  readonly all?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly memberOfTeamType?: InputMaybe<TeamType>;
+  readonly memberOfTeams?: InputMaybe<
+    ReadonlyArray<Scalars["GlobalId"]["input"]>
+  >;
+  readonly users?: InputMaybe<ReadonlyArray<Scalars["GlobalId"]["input"]>>;
 };
 
 export const NotificationDeliveryResolverAllKeys = {
@@ -633,19 +639,19 @@ export type NotificationDeliveryResolverDateFilterKeys =
   (typeof NotificationDeliveryResolverDateFilterKeys)[keyof typeof NotificationDeliveryResolverDateFilterKeys];
 export type NotificationDeliveryResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: NotificationDeliveryResolverDateFilterKeys;
+  readonly field: NotificationDeliveryResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["DateTimeISO"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["DateTimeISO"]["input"];
 };
 
 export type NotificationDeliveryResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: NotificationDeliveryResolverAllKeys;
+  readonly field: NotificationDeliveryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export const NotificationResolverAllKeys = {
@@ -671,37 +677,37 @@ export type NotificationResolverDateFilterKeys =
   (typeof NotificationResolverDateFilterKeys)[keyof typeof NotificationResolverDateFilterKeys];
 export type NotificationResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: NotificationResolverDateFilterKeys;
+  readonly field: NotificationResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["DateTimeISO"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["DateTimeISO"]["input"];
 };
 
 export type NotificationResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: NotificationResolverAllKeys;
+  readonly field: NotificationResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type NotificationResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: NotificationResolverOneOfFilterKeys;
+  readonly field: NotificationResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Array<Scalars["String"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: ReadonlyArray<Scalars["String"]["input"]>;
 };
 
 export type NotificationResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: NotificationResolverStringFilterKeys;
+  readonly field: NotificationResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["String"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["String"]["input"];
 };
 
 export const NotificationResolverOneOfFilterKeys = {
@@ -732,27 +738,27 @@ export type PersonResolverAllKeys =
   (typeof PersonResolverAllKeys)[keyof typeof PersonResolverAllKeys];
 export type PersonResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: PersonResolverAllKeys;
+  readonly field: PersonResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type PersonResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: PersonResolverOneOfFilterKeys;
+  readonly field: PersonResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Array<Scalars["String"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: ReadonlyArray<Scalars["String"]["input"]>;
 };
 
 export type PersonResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: PersonResolverStringFilterKeys;
+  readonly field: PersonResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["String"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["String"]["input"];
 };
 
 export const PersonResolverOneOfFilterKeys = {
@@ -787,19 +793,19 @@ export type PointEntryResolverDateFilterKeys =
   (typeof PointEntryResolverDateFilterKeys)[keyof typeof PointEntryResolverDateFilterKeys];
 export type PointEntryResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: PointEntryResolverDateFilterKeys;
+  readonly field: PointEntryResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["DateTimeISO"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["DateTimeISO"]["input"];
 };
 
 export type PointEntryResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: PointEntryResolverAllKeys;
+  readonly field: PointEntryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export const PointOpportunityResolverAllKeys = {
@@ -823,37 +829,37 @@ export type PointOpportunityResolverDateFilterKeys =
   (typeof PointOpportunityResolverDateFilterKeys)[keyof typeof PointOpportunityResolverDateFilterKeys];
 export type PointOpportunityResolverKeyedDateFilterItem = {
   /** The comparator to use for the filter */
-  comparison: NumericComparator;
+  readonly comparison: NumericComparator;
   /** The field to filter on */
-  field: PointOpportunityResolverDateFilterKeys;
+  readonly field: PointOpportunityResolverDateFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["DateTimeISO"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["DateTimeISO"]["input"];
 };
 
 export type PointOpportunityResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: PointOpportunityResolverAllKeys;
+  readonly field: PointOpportunityResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type PointOpportunityResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: PointOpportunityResolverOneOfFilterKeys;
+  readonly field: PointOpportunityResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Array<Scalars["String"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: ReadonlyArray<Scalars["String"]["input"]>;
 };
 
 export type PointOpportunityResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: PointOpportunityResolverStringFilterKeys;
+  readonly field: PointOpportunityResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["String"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["String"]["input"];
 };
 
 export const PointOpportunityResolverOneOfFilterKeys = {
@@ -871,68 +877,68 @@ export type PointOpportunityResolverStringFilterKeys =
   (typeof PointOpportunityResolverStringFilterKeys)[keyof typeof PointOpportunityResolverStringFilterKeys];
 export type RegisterDeviceInput = {
   /** For legacy reasons, this can be a GlobalId or a raw UUID */
-  deviceId: Scalars["String"]["input"];
+  readonly deviceId: Scalars["String"]["input"];
   /** The Expo push token of the device */
-  expoPushToken?: InputMaybe<Scalars["String"]["input"]>;
+  readonly expoPushToken?: InputMaybe<Scalars["String"]["input"]>;
   /** The ID of the last user to log in on this device */
-  lastUserId?: InputMaybe<Scalars["GlobalId"]["input"]>;
+  readonly lastUserId?: InputMaybe<Scalars["GlobalId"]["input"]>;
   /** base64 encoded SHA-256 hash of a secret known to the device */
-  verifier: Scalars["String"]["input"];
+  readonly verifier: Scalars["String"]["input"];
 };
 
 export type SetEventInput = {
-  description?: InputMaybe<Scalars["String"]["input"]>;
-  location?: InputMaybe<Scalars["String"]["input"]>;
-  occurrences: Array<SetEventOccurrenceInput>;
-  summary?: InputMaybe<Scalars["String"]["input"]>;
-  title: Scalars["String"]["input"];
+  readonly description?: InputMaybe<Scalars["String"]["input"]>;
+  readonly location?: InputMaybe<Scalars["String"]["input"]>;
+  readonly occurrences: ReadonlyArray<SetEventOccurrenceInput>;
+  readonly summary?: InputMaybe<Scalars["String"]["input"]>;
+  readonly title: Scalars["String"]["input"];
 };
 
 export type SetEventOccurrenceInput = {
-  fullDay: Scalars["Boolean"]["input"];
-  interval: IntervalIsoInput;
+  readonly fullDay: Scalars["Boolean"]["input"];
+  readonly interval: IntervalIsoInput;
   /** If updating an existing occurrence, the UUID of the occurrence to update */
-  uuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
+  readonly uuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
 };
 
 export type SetFeedInput = {
-  textContent?: InputMaybe<Scalars["String"]["input"]>;
-  title: Scalars["String"]["input"];
+  readonly textContent?: InputMaybe<Scalars["String"]["input"]>;
+  readonly title: Scalars["String"]["input"];
 };
 
 export type SetMarathonHourInput = {
-  details?: InputMaybe<Scalars["String"]["input"]>;
-  durationInfo: Scalars["String"]["input"];
-  shownStartingAt: Scalars["DateTimeISO"]["input"];
-  title: Scalars["String"]["input"];
+  readonly details?: InputMaybe<Scalars["String"]["input"]>;
+  readonly durationInfo: Scalars["String"]["input"];
+  readonly shownStartingAt: Scalars["DateTimeISO"]["input"];
+  readonly title: Scalars["String"]["input"];
 };
 
 export type SetMarathonInput = {
-  endDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
-  startDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
-  year: Scalars["String"]["input"];
+  readonly endDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
+  readonly startDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
+  readonly year: Scalars["String"]["input"];
 };
 
 export type SetPersonInput = {
-  captainOf?: InputMaybe<Array<MemberOf>>;
-  email?: InputMaybe<Scalars["EmailAddress"]["input"]>;
-  linkblue?: InputMaybe<Scalars["String"]["input"]>;
-  memberOf?: InputMaybe<Array<MemberOf>>;
-  name?: InputMaybe<Scalars["String"]["input"]>;
+  readonly captainOf?: InputMaybe<ReadonlyArray<MemberOf>>;
+  readonly email?: InputMaybe<Scalars["EmailAddress"]["input"]>;
+  readonly linkblue?: InputMaybe<Scalars["String"]["input"]>;
+  readonly memberOf?: InputMaybe<ReadonlyArray<MemberOf>>;
+  readonly name?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type SetPointOpportunityInput = {
-  eventUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
-  name?: InputMaybe<Scalars["String"]["input"]>;
-  opportunityDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
-  type?: InputMaybe<TeamType>;
+  readonly eventUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
+  readonly name?: InputMaybe<Scalars["String"]["input"]>;
+  readonly opportunityDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
+  readonly type?: InputMaybe<TeamType>;
 };
 
 export type SetTeamInput = {
-  legacyStatus?: InputMaybe<TeamLegacyStatus>;
-  name?: InputMaybe<Scalars["String"]["input"]>;
-  persistentIdentifier?: InputMaybe<Scalars["String"]["input"]>;
-  type?: InputMaybe<TeamType>;
+  readonly legacyStatus?: InputMaybe<TeamLegacyStatus>;
+  readonly name?: InputMaybe<Scalars["String"]["input"]>;
+  readonly persistentIdentifier?: InputMaybe<Scalars["String"]["input"]>;
+  readonly type?: InputMaybe<TeamType>;
 };
 
 export { SortDirection };
@@ -952,27 +958,27 @@ export type TeamResolverAllKeys =
   (typeof TeamResolverAllKeys)[keyof typeof TeamResolverAllKeys];
 export type TeamResolverKeyedIsNullFilterItem = {
   /** The field to filter on */
-  field: TeamResolverAllKeys;
+  readonly field: TeamResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type TeamResolverKeyedOneOfFilterItem = {
   /** The field to filter on */
-  field: TeamResolverOneOfFilterKeys;
+  readonly field: TeamResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Array<Scalars["String"]["input"]>;
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: ReadonlyArray<Scalars["String"]["input"]>;
 };
 
 export type TeamResolverKeyedStringFilterItem = {
   /** The comparator to use for the filter */
-  comparison: StringComparator;
+  readonly comparison: StringComparator;
   /** The field to filter on */
-  field: TeamResolverStringFilterKeys;
+  readonly field: TeamResolverStringFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
-  negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-  value: Scalars["String"]["input"];
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["String"]["input"];
 };
 
 export const TeamResolverOneOfFilterKeys = {
@@ -992,49 +998,49 @@ export type TeamResolverStringFilterKeys =
 export { TeamType };
 
 export type UpdateFundraisingAssignmentInput = {
-  amount: Scalars["Float"]["input"];
+  readonly amount: Scalars["Float"]["input"];
 };
 
 export type ImageViewFragmentFragment = {
-  __typename?: "ImageNode";
-  id: string;
-  url?: URL | string | null;
-  thumbHash?: string | null;
-  alt?: string | null;
-  width: number;
-  height: number;
-  mimeType: string;
+  readonly __typename?: "ImageNode";
+  readonly id: string;
+  readonly url?: URL | string | null;
+  readonly thumbHash?: string | null;
+  readonly alt?: string | null;
+  readonly width: number;
+  readonly height: number;
+  readonly mimeType: string;
 } & { " $fragmentName"?: "ImageViewFragmentFragment" };
 
 export type SimpleConfigFragment = {
-  __typename?: "ConfigurationNode";
-  id: string;
-  key: string;
-  value: string;
+  readonly __typename?: "ConfigurationNode";
+  readonly id: string;
+  readonly key: string;
+  readonly value: string;
 } & { " $fragmentName"?: "SimpleConfigFragment" };
 
 export type FullConfigFragment = ({
-  __typename?: "ConfigurationNode";
-  validAfter?: Date | string | null;
-  validUntil?: Date | string | null;
-  createdAt?: Date | string | null;
+  readonly __typename?: "ConfigurationNode";
+  readonly validAfter?: Date | string | null;
+  readonly validUntil?: Date | string | null;
+  readonly createdAt?: Date | string | null;
 } & { " $fragmentRefs"?: { SimpleConfigFragment: SimpleConfigFragment } }) & {
   " $fragmentName"?: "FullConfigFragment";
 };
 
 export type NotificationFragmentFragment = {
-  __typename?: "NotificationNode";
-  id: string;
-  title: string;
-  body: string;
-  url?: URL | string | null;
+  readonly __typename?: "NotificationNode";
+  readonly id: string;
+  readonly title: string;
+  readonly body: string;
+  readonly url?: URL | string | null;
 } & { " $fragmentName"?: "NotificationFragmentFragment" };
 
 export type NotificationDeliveryFragmentFragment = {
-  __typename?: "NotificationDeliveryNode";
-  id: string;
-  sentAt?: Date | string | null;
-  notification: { __typename?: "NotificationNode" } & {
+  readonly __typename?: "NotificationDeliveryNode";
+  readonly id: string;
+  readonly sentAt?: Date | string | null;
+  readonly notification: { readonly __typename?: "NotificationNode" } & {
     " $fragmentRefs"?: {
       NotificationFragmentFragment: NotificationFragmentFragment;
     };
@@ -1046,10 +1052,10 @@ export type UseAllowedLoginTypesQueryVariables = Exact<{
 }>;
 
 export type UseAllowedLoginTypesQuery = {
-  __typename?: "Query";
-  activeConfiguration: {
-    __typename?: "GetConfigurationByUuidResponse";
-    data: { __typename?: "ConfigurationNode" } & {
+  readonly __typename?: "Query";
+  readonly activeConfiguration: {
+    readonly __typename?: "GetConfigurationByUuidResponse";
+    readonly data: { readonly __typename?: "ConfigurationNode" } & {
       " $fragmentRefs"?: { SimpleConfigFragment: SimpleConfigFragment };
     };
   };
@@ -1058,42 +1064,49 @@ export type UseAllowedLoginTypesQuery = {
 export type MarathonTimeQueryVariables = Exact<{ [key: string]: never }>;
 
 export type MarathonTimeQuery = {
-  __typename?: "Query";
-  latestMarathon?: {
-    __typename?: "MarathonNode";
-    startDate?: Date | string | null;
-    endDate?: Date | string | null;
+  readonly __typename?: "Query";
+  readonly latestMarathon?: {
+    readonly __typename?: "MarathonNode";
+    readonly startDate?: Date | string | null;
+    readonly endDate?: Date | string | null;
   } | null;
 };
 
 export type UseTabBarConfigQueryVariables = Exact<{ [key: string]: never }>;
 
 export type UseTabBarConfigQuery = {
-  __typename?: "Query";
-  activeConfiguration: {
-    __typename?: "GetConfigurationByUuidResponse";
-    data: { __typename?: "ConfigurationNode" } & {
+  readonly __typename?: "Query";
+  readonly activeConfiguration: {
+    readonly __typename?: "GetConfigurationByUuidResponse";
+    readonly data: { readonly __typename?: "ConfigurationNode" } & {
       " $fragmentRefs"?: { SimpleConfigFragment: SimpleConfigFragment };
     };
   };
-  me?: { __typename?: "PersonNode"; linkblue?: string | null } | null;
+  readonly me?: {
+    readonly __typename?: "PersonNode";
+    readonly linkblue?: string | null;
+  } | null;
 };
 
 export type TriviaCrackQueryVariables = Exact<{ [key: string]: never }>;
 
 export type TriviaCrackQuery = {
-  __typename?: "Query";
-  activeConfiguration: {
-    __typename?: "GetConfigurationByUuidResponse";
-    data: { __typename?: "ConfigurationNode" } & {
+  readonly __typename?: "Query";
+  readonly activeConfiguration: {
+    readonly __typename?: "GetConfigurationByUuidResponse";
+    readonly data: { readonly __typename?: "ConfigurationNode" } & {
       " $fragmentRefs"?: { SimpleConfigFragment: SimpleConfigFragment };
     };
   };
-  me?: {
-    __typename?: "PersonNode";
-    teams: Array<{
-      __typename?: "MembershipNode";
-      team: { __typename?: "TeamNode"; type: TeamType; name: string };
+  readonly me?: {
+    readonly __typename?: "PersonNode";
+    readonly teams: ReadonlyArray<{
+      readonly __typename?: "MembershipNode";
+      readonly team: {
+        readonly __typename?: "TeamNode";
+        readonly type: TeamType;
+        readonly name: string;
+      };
     }>;
   } | null;
 };
@@ -1101,13 +1114,17 @@ export type TriviaCrackQuery = {
 export type AuthStateQueryVariables = Exact<{ [key: string]: never }>;
 
 export type AuthStateQuery = {
-  __typename?: "Query";
-  me?: { __typename?: "PersonNode"; id: string; email: string } | null;
-  loginState: {
-    __typename?: "LoginState";
-    dbRole: DbRole;
-    loggedIn: boolean;
-    authSource: AuthSource;
+  readonly __typename?: "Query";
+  readonly me?: {
+    readonly __typename?: "PersonNode";
+    readonly id: string;
+    readonly email: string;
+  } | null;
+  readonly loginState: {
+    readonly __typename?: "LoginState";
+    readonly dbRole: DbRole;
+    readonly loggedIn: boolean;
+    readonly authSource: AuthSource;
   };
 };
 
@@ -1116,35 +1133,38 @@ export type SetDeviceMutationVariables = Exact<{
 }>;
 
 export type SetDeviceMutation = {
-  __typename?: "Mutation";
-  registerDevice: { __typename?: "RegisterDeviceResponse"; ok: boolean };
+  readonly __typename?: "Mutation";
+  readonly registerDevice: {
+    readonly __typename?: "RegisterDeviceResponse";
+    readonly ok: boolean;
+  };
 };
 
 export type EventScreenFragmentFragment = {
-  __typename?: "EventNode";
-  id: string;
-  title: string;
-  summary?: string | null;
-  description?: string | null;
-  location?: string | null;
-  occurrences: Array<{
-    __typename?: "EventOccurrenceNode";
-    id: string;
-    fullDay: boolean;
-    interval: {
-      __typename?: "IntervalISO";
-      start: Date | string;
-      end: Date | string;
+  readonly __typename?: "EventNode";
+  readonly id: string;
+  readonly title: string;
+  readonly summary?: string | null;
+  readonly description?: string | null;
+  readonly location?: string | null;
+  readonly occurrences: ReadonlyArray<{
+    readonly __typename?: "EventOccurrenceNode";
+    readonly id: string;
+    readonly fullDay: boolean;
+    readonly interval: {
+      readonly __typename?: "IntervalISO";
+      readonly start: Date | string;
+      readonly end: Date | string;
     };
   }>;
-  images: Array<{
-    __typename?: "ImageNode";
-    thumbHash?: string | null;
-    url?: URL | string | null;
-    height: number;
-    width: number;
-    alt?: string | null;
-    mimeType: string;
+  readonly images: ReadonlyArray<{
+    readonly __typename?: "ImageNode";
+    readonly thumbHash?: string | null;
+    readonly url?: URL | string | null;
+    readonly height: number;
+    readonly width: number;
+    readonly alt?: string | null;
+    readonly mimeType: string;
   }>;
 } & { " $fragmentName"?: "EventScreenFragmentFragment" };
 
@@ -1156,13 +1176,13 @@ export type DeviceNotificationsQueryVariables = Exact<{
 }>;
 
 export type DeviceNotificationsQuery = {
-  __typename?: "Query";
-  device: {
-    __typename?: "GetDeviceByUuidResponse";
-    data: {
-      __typename?: "DeviceNode";
-      notificationDeliveries: Array<
-        { __typename?: "NotificationDeliveryNode" } & {
+  readonly __typename?: "Query";
+  readonly device: {
+    readonly __typename?: "GetDeviceByUuidResponse";
+    readonly data: {
+      readonly __typename?: "DeviceNode";
+      readonly notificationDeliveries: ReadonlyArray<
+        { readonly __typename?: "NotificationDeliveryNode" } & {
           " $fragmentRefs"?: {
             NotificationDeliveryFragmentFragment: NotificationDeliveryFragmentFragment;
           };
@@ -1173,39 +1193,39 @@ export type DeviceNotificationsQuery = {
 };
 
 export type ProfileScreenAuthFragmentFragment = {
-  __typename?: "LoginState";
-  dbRole: DbRole;
-  authSource: AuthSource;
+  readonly __typename?: "LoginState";
+  readonly dbRole: DbRole;
+  readonly authSource: AuthSource;
 } & { " $fragmentName"?: "ProfileScreenAuthFragmentFragment" };
 
 export type ProfileScreenUserFragmentFragment = {
-  __typename?: "PersonNode";
-  name?: string | null;
-  linkblue?: string | null;
-  teams: Array<{
-    __typename?: "MembershipNode";
-    position: MembershipPositionType;
-    team: { __typename?: "TeamNode"; name: string };
+  readonly __typename?: "PersonNode";
+  readonly name?: string | null;
+  readonly linkblue?: string | null;
+  readonly teams: ReadonlyArray<{
+    readonly __typename?: "MembershipNode";
+    readonly position: MembershipPositionType;
+    readonly team: { readonly __typename?: "TeamNode"; readonly name: string };
   }>;
-  primaryCommittee?: {
-    __typename?: "CommitteeMembershipNode";
-    identifier: CommitteeIdentifier;
-    role: CommitteeRole;
+  readonly primaryCommittee?: {
+    readonly __typename?: "CommitteeMembershipNode";
+    readonly identifier: CommitteeIdentifier;
+    readonly role: CommitteeRole;
   } | null;
 } & { " $fragmentName"?: "ProfileScreenUserFragmentFragment" };
 
 export type RootScreenDocumentQueryVariables = Exact<{ [key: string]: never }>;
 
 export type RootScreenDocumentQuery = {
-  __typename?: "Query";
-  loginState: { __typename?: "LoginState" } & {
+  readonly __typename?: "Query";
+  readonly loginState: { readonly __typename?: "LoginState" } & {
     " $fragmentRefs"?: {
       ProfileScreenAuthFragmentFragment: ProfileScreenAuthFragmentFragment;
       RootScreenAuthFragmentFragment: RootScreenAuthFragmentFragment;
     };
   };
-  me?:
-    | ({ __typename?: "PersonNode" } & {
+  readonly me?:
+    | ({ readonly __typename?: "PersonNode" } & {
         " $fragmentRefs"?: {
           ProfileScreenUserFragmentFragment: ProfileScreenUserFragmentFragment;
         };
@@ -1214,8 +1234,8 @@ export type RootScreenDocumentQuery = {
 };
 
 export type RootScreenAuthFragmentFragment = {
-  __typename?: "LoginState";
-  dbRole: DbRole;
+  readonly __typename?: "LoginState";
+  readonly dbRole: DbRole;
 } & { " $fragmentName"?: "RootScreenAuthFragmentFragment" };
 
 export type EventsQueryVariables = Exact<{
@@ -1224,11 +1244,11 @@ export type EventsQueryVariables = Exact<{
 }>;
 
 export type EventsQuery = {
-  __typename?: "Query";
-  events: {
-    __typename?: "ListEventsResponse";
-    data: Array<
-      { __typename?: "EventNode" } & {
+  readonly __typename?: "Query";
+  readonly events: {
+    readonly __typename?: "ListEventsResponse";
+    readonly data: ReadonlyArray<
+      { readonly __typename?: "EventNode" } & {
         " $fragmentRefs"?: {
           EventScreenFragmentFragment: EventScreenFragmentFragment;
         };
@@ -1240,32 +1260,32 @@ export type EventsQuery = {
 export type ServerFeedQueryVariables = Exact<{ [key: string]: never }>;
 
 export type ServerFeedQuery = {
-  __typename?: "Query";
-  feed: Array<{
-    __typename?: "FeedNode";
-    id: string;
-    title: string;
-    createdAt?: Date | string | null;
-    textContent?: string | null;
-    image?: {
-      __typename?: "ImageNode";
-      url?: URL | string | null;
-      alt?: string | null;
-      width: number;
-      height: number;
-      thumbHash?: string | null;
+  readonly __typename?: "Query";
+  readonly feed: ReadonlyArray<{
+    readonly __typename?: "FeedNode";
+    readonly id: string;
+    readonly title: string;
+    readonly createdAt?: Date | string | null;
+    readonly textContent?: string | null;
+    readonly image?: {
+      readonly __typename?: "ImageNode";
+      readonly url?: URL | string | null;
+      readonly alt?: string | null;
+      readonly width: number;
+      readonly height: number;
+      readonly thumbHash?: string | null;
     } | null;
   }>;
 };
 
 export type HourScreenFragmentFragment = {
-  __typename?: "MarathonHourNode";
-  id: string;
-  title: string;
-  details?: string | null;
-  durationInfo: string;
-  mapImages: Array<
-    { __typename?: "ImageNode" } & {
+  readonly __typename?: "MarathonHourNode";
+  readonly id: string;
+  readonly title: string;
+  readonly details?: string | null;
+  readonly durationInfo: string;
+  readonly mapImages: ReadonlyArray<
+    { readonly __typename?: "ImageNode" } & {
       " $fragmentRefs"?: {
         ImageViewFragmentFragment: ImageViewFragmentFragment;
       };
@@ -1276,20 +1296,20 @@ export type HourScreenFragmentFragment = {
 export type MarathonScreenQueryVariables = Exact<{ [key: string]: never }>;
 
 export type MarathonScreenQuery = {
-  __typename?: "Query";
-  currentMarathonHour?:
-    | ({ __typename?: "MarathonHourNode" } & {
+  readonly __typename?: "Query";
+  readonly currentMarathonHour?:
+    | ({ readonly __typename?: "MarathonHourNode" } & {
         " $fragmentRefs"?: {
           HourScreenFragmentFragment: HourScreenFragmentFragment;
         };
       })
     | null;
-  latestMarathon?: {
-    __typename?: "MarathonNode";
-    startDate?: Date | string | null;
-    endDate?: Date | string | null;
-    hours: Array<
-      { __typename?: "MarathonHourNode" } & {
+  readonly latestMarathon?: {
+    readonly __typename?: "MarathonNode";
+    readonly startDate?: Date | string | null;
+    readonly endDate?: Date | string | null;
+    readonly hours: ReadonlyArray<
+      { readonly __typename?: "MarathonHourNode" } & {
         " $fragmentRefs"?: {
           HourScreenFragmentFragment: HourScreenFragmentFragment;
         };
@@ -1299,20 +1319,20 @@ export type MarathonScreenQuery = {
 };
 
 export type ScoreBoardFragmentFragment = {
-  __typename?: "TeamNode";
-  id: string;
-  name: string;
-  totalPoints: number;
-  legacyStatus: TeamLegacyStatus;
-  type: TeamType;
+  readonly __typename?: "TeamNode";
+  readonly id: string;
+  readonly name: string;
+  readonly totalPoints: number;
+  readonly legacyStatus: TeamLegacyStatus;
+  readonly type: TeamType;
 } & { " $fragmentName"?: "ScoreBoardFragmentFragment" };
 
 export type HighlightedTeamFragmentFragment = {
-  __typename?: "TeamNode";
-  id: string;
-  name: string;
-  legacyStatus: TeamLegacyStatus;
-  type: TeamType;
+  readonly __typename?: "TeamNode";
+  readonly id: string;
+  readonly name: string;
+  readonly legacyStatus: TeamLegacyStatus;
+  readonly type: TeamType;
 } & { " $fragmentName"?: "HighlightedTeamFragmentFragment" };
 
 export type ScoreBoardDocumentQueryVariables = Exact<{
@@ -1321,14 +1341,14 @@ export type ScoreBoardDocumentQueryVariables = Exact<{
 }>;
 
 export type ScoreBoardDocumentQuery = {
-  __typename?: "Query";
-  me?:
+  readonly __typename?: "Query";
+  readonly me?:
     | ({
-        __typename?: "PersonNode";
-        id: string;
-        primaryTeam?: {
-          __typename?: "MembershipNode";
-          team: { __typename?: "TeamNode" } & {
+        readonly __typename?: "PersonNode";
+        readonly id: string;
+        readonly primaryTeam?: {
+          readonly __typename?: "MembershipNode";
+          readonly team: { readonly __typename?: "TeamNode" } & {
             " $fragmentRefs"?: {
               HighlightedTeamFragmentFragment: HighlightedTeamFragmentFragment;
               MyTeamFragmentFragment: MyTeamFragmentFragment;
@@ -1341,10 +1361,10 @@ export type ScoreBoardDocumentQuery = {
         };
       })
     | null;
-  teams: {
-    __typename?: "ListTeamsResponse";
-    data: Array<
-      { __typename?: "TeamNode" } & {
+  readonly teams: {
+    readonly __typename?: "ListTeamsResponse";
+    readonly data: ReadonlyArray<
+      { readonly __typename?: "TeamNode" } & {
         " $fragmentRefs"?: {
           ScoreBoardFragmentFragment: ScoreBoardFragmentFragment;
         };
@@ -1358,49 +1378,55 @@ export type ActiveMarathonDocumentQueryVariables = Exact<{
 }>;
 
 export type ActiveMarathonDocumentQuery = {
-  __typename?: "Query";
-  currentMarathon?: { __typename?: "MarathonNode"; id: string } | null;
-  latestMarathon?: { __typename?: "MarathonNode"; id: string } | null;
+  readonly __typename?: "Query";
+  readonly currentMarathon?: {
+    readonly __typename?: "MarathonNode";
+    readonly id: string;
+  } | null;
+  readonly latestMarathon?: {
+    readonly __typename?: "MarathonNode";
+    readonly id: string;
+  } | null;
 };
 
 export type MyTeamFragmentFragment = {
-  __typename?: "TeamNode";
-  id: string;
-  name: string;
-  totalPoints: number;
-  fundraisingTotalAmount?: number | null;
-  pointEntries: Array<{
-    __typename?: "PointEntryNode";
-    points: number;
-    personFrom?: {
-      __typename?: "PersonNode";
-      id: string;
-      name?: string | null;
-      linkblue?: string | null;
+  readonly __typename?: "TeamNode";
+  readonly id: string;
+  readonly name: string;
+  readonly totalPoints: number;
+  readonly fundraisingTotalAmount?: number | null;
+  readonly pointEntries: ReadonlyArray<{
+    readonly __typename?: "PointEntryNode";
+    readonly points: number;
+    readonly personFrom?: {
+      readonly __typename?: "PersonNode";
+      readonly id: string;
+      readonly name?: string | null;
+      readonly linkblue?: string | null;
     } | null;
   }>;
-  members: Array<{
-    __typename?: "MembershipNode";
-    position: MembershipPositionType;
-    person: {
-      __typename?: "PersonNode";
-      linkblue?: string | null;
-      name?: string | null;
+  readonly members: ReadonlyArray<{
+    readonly __typename?: "MembershipNode";
+    readonly position: MembershipPositionType;
+    readonly person: {
+      readonly __typename?: "PersonNode";
+      readonly linkblue?: string | null;
+      readonly name?: string | null;
     };
   }>;
 } & { " $fragmentName"?: "MyTeamFragmentFragment" };
 
 export type MyFundraisingFragmentFragment = {
-  __typename?: "PersonNode";
-  fundraisingTotalAmount?: number | null;
-  fundraisingAssignments: Array<{
-    __typename?: "FundraisingAssignmentNode";
-    amount: number;
-    entry: {
-      __typename?: "FundraisingEntryNode";
-      donatedToText?: string | null;
-      donatedByText?: string | null;
-      donatedOn: Date | string;
+  readonly __typename?: "PersonNode";
+  readonly fundraisingTotalAmount?: number | null;
+  readonly fundraisingAssignments: ReadonlyArray<{
+    readonly __typename?: "FundraisingAssignmentNode";
+    readonly amount: number;
+    readonly entry: {
+      readonly __typename?: "FundraisingEntryNode";
+      readonly donatedToText?: string | null;
+      readonly donatedByText?: string | null;
+      readonly donatedOn: Date | string;
     };
   }>;
 } & { " $fragmentName"?: "MyFundraisingFragmentFragment" };

@@ -3,11 +3,11 @@ import { useCallback } from "react";
 import { useMutation } from "urql";
 
 import { graphql } from "#graphql/index.js";
-import { useAntFeedback } from "#hooks/useAntFeedback";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useAntFeedback } from "#hooks/useAntFeedback.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
-import { ConfigChangeView } from "./ConfigChangeView";
-import type { ConfigValue } from "./useConfig";
+import { ConfigChangeView } from "./ConfigChangeView.js";
+import type { ConfigValue } from "./useConfig.js";
 
 const commitConfigChangesMutation = graphql(/* GraphQL */ `
   mutation CommitConfigChanges($changes: [CreateConfigurationInput!]!) {

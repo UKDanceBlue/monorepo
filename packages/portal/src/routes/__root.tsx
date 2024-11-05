@@ -1,12 +1,12 @@
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { Layout } from "antd";
-import type { useAppProps } from "antd/es/app/context";
+import type { useAppProps } from "antd/es/app/context.js";
 import { lazy, Suspense } from "react";
 import type { Client as UrqlClient } from "urql";
 
-import { NavigationMenu } from "#elements/singletons/NavigationMenu";
-import { refreshLoginState } from "#hooks/useLoginState";
-import { routerAuthCheck } from "#tools/routerAuthCheck";
+import { NavigationMenu } from "#elements/singletons/NavigationMenu.js";
+import { refreshLoginState } from "#hooks/useLoginState.js";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === "production"

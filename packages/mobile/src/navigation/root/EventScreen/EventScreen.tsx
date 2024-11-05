@@ -23,9 +23,9 @@ import openMaps from "react-native-open-maps";
 import { WebView } from "react-native-webview";
 
 import NativeBaseMarkdown from "#common/components/NativeBaseMarkdown";
-import { Logger } from "#common/logger/Logger";
-import { showMessage } from "#common/util/alertUtils";
-import { getFragmentData } from "#graphql/index";
+import { Logger } from "#common/logger/Logger.js";
+import { showMessage } from "#common/util/alertUtils.js";
+import { getFragmentData } from "#graphql/index.js";
 
 import type { RootStackScreenProps } from "../../../types/navigationTypes";
 import { onAddToCalendar } from "./addToCalendar";

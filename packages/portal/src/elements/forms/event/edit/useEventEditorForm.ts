@@ -10,9 +10,9 @@ import type {
 } from "#graphql/graphql.js";
 import type { FragmentType } from "#graphql/index.js";
 import { getFragmentData } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
-import { eventEditorDocument, EventEditorFragment } from "./EventEditorGQL";
+import { eventEditorDocument, EventEditorFragment } from "./EventEditorGQL.js";
 
 export function useEventEditorForm(
   eventFragment: FragmentType<typeof EventEditorFragment> | undefined,

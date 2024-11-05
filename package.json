@@ -33,7 +33,7 @@
     "portal:check": "yarn workspace @ukdanceblue/portal check",
     "portal:dev": "yarn workspace @ukdanceblue/portal dev",
     "repo:check": "yarn server:check && echo 'Server \t\tOK' && yarn portal:check && echo 'Portal \t\tOK' && yarn mobile:check&& echo 'Mobile \t\tOK'",
-    "repo:check-and-lint": "yarn repo:check && yarn repo:lint",
+    "repo:check-and-lint": "yarn repo:check && yarn repo:lint && echo 'Lint \t\tOK'",
     "repo:coverage": "vitest run --coverage",
     "repo:coverage-browser": "vitest run --coverage --reporter html && yarn dlx vite preview --outDir html",
     "repo:format": "prettier --check --log-level warn . && echo 'Prettier \tOK'",

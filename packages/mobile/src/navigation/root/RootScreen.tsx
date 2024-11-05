@@ -8,9 +8,9 @@ import { useQuery } from "urql";
 
 import ErrorBoundary, {
   withErrorBoundary,
-} from "#common/components/ErrorBoundary";
-import { Logger } from "#common/logger/Logger";
-import { getFragmentData, graphql } from "#graphql/index";
+} from "#common/components/ErrorBoundary.js";
+import { Logger } from "#common/logger/Logger.js";
+import { getFragmentData, graphql } from "#graphql/index.js";
 
 import { useColorModeValue } from "../../common/customHooks";
 import { useLoading } from "../../context";
@@ -142,8 +142,8 @@ const RootScreen = () => {
                   );
                   if (eventData.title) {
                     eventTitle = eventData.title;
-                    for (let i = 0; i < eventTitle.length; i++) {
-                      if (eventTitle[i] === " ") {
+                    for (const char of eventTitle) {
+                      if (char === " ") {
                         spacesInTitle++;
                       }
                     }

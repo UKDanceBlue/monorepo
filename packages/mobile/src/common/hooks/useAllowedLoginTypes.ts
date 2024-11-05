@@ -1,9 +1,9 @@
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 
-import { SimpleConfigFragment } from "#common/fragments/Configuration";
-import { log, logError } from "#common/logging";
-import { getFragmentData, graphql } from "#graphql/index";
+import { SimpleConfigFragment } from "#common/fragments/Configuration.js";
+import { log, logError } from "#common/logging.js";
+import { getFragmentData, graphql } from "#graphql/index.js";
 
 const useAllowedLoginTypesQuery = graphql(/* GraphQL */ `
   query useAllowedLoginTypes {

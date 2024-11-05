@@ -2,7 +2,7 @@ import type { ThemeConfig } from "antd";
 import { ConfigProvider, theme } from "antd";
 import { useContext, useState } from "react";
 
-import { themeConfigContext } from "./antThemeConfig";
+import { themeConfigContext } from "./antThemeConfig.js";
 
 function makeAntDesignTheme({ dark }: { dark: boolean }): ThemeConfig {
   return {

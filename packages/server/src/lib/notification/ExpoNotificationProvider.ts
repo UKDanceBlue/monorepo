@@ -6,7 +6,6 @@ import {
   ActionDeniedError,
   CompositeError,
   InvariantError,
-  NotFoundError,
   toBasicError,
   UnknownError,
 } from "@ukdanceblue/common/error";
@@ -353,7 +352,7 @@ export class ExpoNotificationProvider implements NotificationProvider {
             deliveryUuid,
           })),
           sentAt: DateTime.utc(),
-        }).promise;
+        });
         for (const [ticket, deliveryUuid] of ticketChunk) {
           if (ticket.status === "error") {
             failedTickets.push([ticket, deliveryUuid]);

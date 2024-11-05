@@ -11,15 +11,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { Alert, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import ErrorBoundary from "#common/components/ErrorBoundary";
-import { useUpdateChecker } from "#common/hooks/useUpdateChecker";
-import { Logger } from "#common/logger/Logger";
-import { universalCatch } from "#common/logging";
-import { showMessage } from "#common/util/alertUtils";
-import { AuthStateProvider } from "#context/auth";
-import { DeviceDataProvider } from "#context/device";
-import { LoadingWrapper } from "#context/loading";
-import { UrqlContext } from "#context/urql";
+import ErrorBoundary from "#common/components/ErrorBoundary.js";
+import { useUpdateChecker } from "#common/hooks/useUpdateChecker.js";
+import { Logger } from "#common/logger/Logger.js";
+import { universalCatch } from "#common/logging.js";
+import { showMessage } from "#common/util/alertUtils.js";
+import { AuthStateProvider } from "#context/auth.js";
+import { DeviceDataProvider } from "#context/device.js";
+import { LoadingWrapper } from "#context/loading.js";
+import { UrqlContext } from "#context/urql.js";
 
 import BoldoniFlfBoldFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold.ttf";
 import BoldoniFlfBoldItalicFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold-Italic.ttf";

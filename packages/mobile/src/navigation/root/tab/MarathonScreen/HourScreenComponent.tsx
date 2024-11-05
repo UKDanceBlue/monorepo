@@ -8,11 +8,11 @@ import {
 
 import ImageView, {
   ImageViewFragment,
-} from "#common/components/ImageView/ImageView";
+} from "#common/components/ImageView/ImageView.js";
 import NativeBaseMarkdown from "#common/components/NativeBaseMarkdown";
-import { TriviaCrack } from "#common/marathonComponents/TriviaCrack";
-import type { FragmentType } from "#graphql/index";
-import { getFragmentData, graphql } from "#graphql/index";
+import { TriviaCrack } from "#common/marathonComponents/TriviaCrack.js";
+import type { FragmentType } from "#graphql/index.js";
+import { getFragmentData, graphql } from "#graphql/index.js";
 
 const HourScreenFragment = graphql(/* GraphQL */ `
   fragment HourScreenFragment on MarathonHourNode {

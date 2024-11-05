@@ -8,9 +8,9 @@ import { useEffect, useState } from "react";
 import { PixelRatio, useWindowDimensions } from "react-native";
 
 import AudioPlayer from "#common/components/AudioPlayer";
-import ErrorBoundary from "#common/components/ErrorBoundary";
-import { universalCatch } from "#common/logging";
-import { showMessage } from "#common/util/alertUtils";
+import ErrorBoundary from "#common/components/ErrorBoundary.js";
+import { universalCatch } from "#common/logging.js";
+import { showMessage } from "#common/util/alertUtils.js";
 
 import DBRibbon from "../../../../../assets/svgs/DBRibbon";
 import { parseBlogText } from "./parseBlogText";
@@ -21,9 +21,7 @@ function cleanupTextContent(textContent: string) {
 
   let state: "leadingWhiteSpace" | "normal" | "newline" | "doubleNewline" =
     "leadingWhiteSpace";
-  for (let i = 0; i < textContent.length; i++) {
-    const char = textContent[i];
-
+  for (const char of textContent) {
     if (state === "leadingWhiteSpace") {
       if (char === " " || char === "\n") {
         continue;

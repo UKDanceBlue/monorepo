@@ -10736,159 +10736,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript/lib-decorators@npm:@better-typescript-lib/decorators@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/decorators@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/5b3143d10f74c2f0f1011a4f209eec120c12750396418e8c039c045ec1e31a97de10849dcc2095ddd2a208b06b5b4ed7ddc5dcea9fb35266ba53a013b2028d75
-  languageName: node
-  linkType: hard
-
-"@typescript/lib-dom@npm:@better-typescript-lib/dom@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/dom@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/b0adba8f3d7ad30973f9ee668a77ed5e6bc68f40041a28f6a523d4a6091b42285d2b3b513250a126dd2aa1662895b5db30335d1a8b5ce763dbe52f4d85e964da
-  languageName: node
-  linkType: hard
-
-"@typescript/lib-es2015@npm:@better-typescript-lib/es2015@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/es2015@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/e32ae11930a659f915e1cff5d5ad0706f673c2af618113acaa84cdc7c946a0d4d62880bb4a01c80233af5fffbd2eb56e9d4248859b759204ae82ceb678cc713b
-  languageName: node
-  linkType: hard
-
-"@typescript/lib-es2016@npm:@better-typescript-lib/es2016@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/es2016@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/8d5dbe5101b08a05d99ae2813a63f2eb6f56136479b0de67138d21cddb9656ff3b26cbf237d1f38a406ff3cbc158e47c7f96fb1630f8eaf678bfd84c8c2670a4
-  languageName: node
-  linkType: hard
-
-"@typescript/lib-es2017@npm:@better-typescript-lib/es2017@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/es2017@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/f7b9f113b9b0a608af881dedbf6c8c33841a9c62759e984470b3cdf4949d2f7a02ddad11aba48e83ea8417eb24547a4c513f3f1a42ba271a5c7fa5488d491675
-  languageName: node
-  linkType: hard
-
-"@typescript/lib-es2018@npm:@better-typescript-lib/es2018@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/es2018@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/ced3144f10bef26adffe07a4697b53ffb5eaaa4cdd55a6d148d6ab096e86cb0f1fc66e250d571a5b787bfeb83af9ba986f7fd13a458649364140b5f81bb890b4
-  languageName: node
-  linkType: hard
-
-"@typescript/lib-es2019@npm:@better-typescript-lib/es2019@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/es2019@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/de411dc33d5792f98e0219bf19727022e5396ca53c0a982ea47fcaf7e8f7db4bd52e18745dad2f2384d799c24676f799edc17353c0b3223b9e3f1f17cb0c56fb
-  languageName: node
-  linkType: hard
-
-"@typescript/lib-es2020@npm:@better-typescript-lib/es2020@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/es2020@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/63948abf3af98f25a1596ab963e3089a4d2768664aa206eec698a646a7981c34438023ac502a30c1473c30305383330915a885a97a9694a0a3035c0bafc0effa
-  languageName: node
-  linkType: hard
-
-"@typescript/lib-es2021@npm:@better-typescript-lib/es2021@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/es2021@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/1cb01ebfff8dc29b91956ddeac32b4d4150b3fafe7951ca2a6d2cb60b47791200965a1a523198f5d53f747e03366f7e56e47bf682e78625a2e99b578f97892d3
-  languageName: node
-  linkType: hard
-
-"@typescript/lib-es2022@npm:@better-typescript-lib/es2022@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/es2022@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/37290c0b41b4773a3346f430edff33660abe9c3b81f434ab7d83d28a7818bb94a5815ffd0b2d0ee387f2c789242be1995be7aefccf069744ef1038c726505951
-  languageName: node
-  linkType: hard
-
-"@typescript/lib-es2023@npm:@better-typescript-lib/es2023@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/es2023@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/e86586aad7b7e82ffc3162cedb5812fada9597892bb7b65657a46dcfe3611f9508d2c5f86dd80b3c82e04f51367a892f93bd19069b551103919dc5afdbc5bf1a
-  languageName: node
-  linkType: hard
-
-"@typescript/lib-es5@npm:@better-typescript-lib/es5@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/es5@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/1f2d296bc5218a4c83d2ebfdb1d44dc8fa826cd941d7b94e4cad1d8219b0411e487ce8d95d8a2008e97bef0b202339592f40d9468061b5587e5e748e3e8cbbfd
-  languageName: node
-  linkType: hard
-
-"@typescript/lib-es6@npm:@better-typescript-lib/es6@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/es6@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/2a59cb5707f751f26b3629116cb892fca25f5b51c63a880aa6e11b116abc2cfbc9eb7ba0a508538e0861566288172a9cbdc39706ce6e75485034511c0d542e92
-  languageName: node
-  linkType: hard
-
-"@typescript/lib-esnext@npm:@better-typescript-lib/esnext@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/esnext@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/700d0505f0b8e3eb264dff6c02c369ba91457bb7a94f9089fadfae490981edffa7164df8dadf655ca028cc54acb8c04fb196ea3e6f24587298ede6992dd45b5e
-  languageName: node
-  linkType: hard
-
-"@typescript/lib-scripthost@npm:@better-typescript-lib/scripthost@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/scripthost@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/c311c12f928dc1030e67e90023d0b13172e29b7ad5e43cde98d5ab0e41ff11b3fb10d8c360973c62f61b6476c69b943f05762431a62da127f02137e1725add70
-  languageName: node
-  linkType: hard
-
-"@typescript/lib-webworker@npm:@better-typescript-lib/webworker@2.9.0":
-  version: 2.9.0
-  resolution: "@better-typescript-lib/webworker@npm:2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/86642fcdb7652f5a1edfa00cf3fd75d5b8693b48dfd5da4d10df2967baf85038f391323188124baa560c068d7340060571085b70258a93d493ff0f5ff44bb3f5
-  languageName: node
-  linkType: hard
-
 "@ukdanceblue/common@workspace:^, @ukdanceblue/common@workspace:packages/common":
   version: 0.0.0-use.local
   resolution: "@ukdanceblue/common@workspace:packages/common"
   dependencies:
     "@graphql-typed-document-node/core": "npm:^3.2.0"
+    "@total-typescript/ts-reset": "npm:^0.6.1"
     "@types/luxon": "npm:^3.4.2"
     "@types/react": "npm:~18.3.11"
     "@types/validator": "npm:^13.12.2"
-    better-typescript-lib: "npm:^2.9.0"
     class-validator: "npm:^0.14.1"
     graphql: "npm:^16.9.0"
     graphql-scalars: "npm:^1.23.0"
@@ -10941,6 +10797,7 @@ __metadata:
     "@sentry/react-native": "npm:~5.22.0"
     "@shopify/react-native-skia": "npm:1.3.10"
     "@testing-library/react-native": "npm:^12.7.2"
+    "@total-typescript/ts-reset": "npm:^0.6.1"
     "@types/babel__core": "npm:^7.20.5"
     "@types/lodash": "npm:^4.17.12"
     "@types/luxon": "npm:^3.4.2"
@@ -10956,7 +10813,6 @@ __metadata:
     "@ukdanceblue/common": "workspace:^"
     "@urql/exchange-auth": "npm:^2.2.0"
     babel-plugin-module-resolver: "npm:^5.0.2"
-    better-typescript-lib: "npm:^2.9.0"
     class-validator: "npm:^0.14.1"
     expo: "npm:51"
     expo-application: "npm:~5.9.1"
@@ -11084,6 +10940,7 @@ __metadata:
     "@tanstack/react-router": "npm:^1.74.5"
     "@tanstack/router-devtools": "npm:^1.74.5"
     "@tanstack/router-plugin": "npm:^1.74.2"
+    "@total-typescript/ts-reset": "npm:^0.6.1"
     "@types/lodash.isequal": "npm:^4.5.8"
     "@types/luxon": "npm:^3.4.2"
     "@types/react": "npm:~18.3.11"
@@ -11094,7 +10951,6 @@ __metadata:
     "@vitejs/plugin-react-swc": "npm:^3.7.1"
     "@wysimark/react": "npm:^3.0.20"
     antd: "npm:^5.21.5"
-    better-typescript-lib: "npm:^2.9.0"
     class-validator: "npm:^0.14.1"
     cypress: "npm:^13.15.0"
     cypress-vite: "npm:^1.5.0"
@@ -11133,6 +10989,7 @@ __metadata:
     "@sentry/cli": "npm:^2.37.0"
     "@sentry/node": "npm:^8.35.0"
     "@sentry/profiling-node": "npm:^8.35.0"
+    "@total-typescript/ts-reset": "npm:^0.6.1"
     "@types/cookie-parser": "npm:^1.4.7"
     "@types/cors": "npm:^2.8.17"
     "@types/express": "npm:^5.0.0"
@@ -11148,7 +11005,6 @@ __metadata:
     "@types/serve-static": "npm:^1.15.7"
     "@ukdanceblue/common": "workspace:^"
     "@ukdanceblue/portal": "workspace:^"
-    better-typescript-lib: "npm:^2.9.0"
     class-validator: "npm:^0.14.1"
     cookie-parser: "npm:^1.4.7"
     cors: "npm:^2.8.5"
@@ -12757,32 +12613,6 @@ __metadata:
   dependencies:
     open: "npm:^8.0.4"
   checksum: 10/24668e5a837d0d2c0edf17ad5ebcfeb00a8a5578a5eb09f7a409e1a60617cdfea40b8ebfc95e5f12d9568157930d033e6805788fcf0780413ac982c95d3745d1
-  languageName: node
-  linkType: hard
-
-"better-typescript-lib@npm:^2.9.0":
-  version: 2.9.0
-  resolution: "better-typescript-lib@npm:2.9.0"
-  dependencies:
-    "@typescript/lib-decorators": "npm:@better-typescript-lib/decorators@2.9.0"
-    "@typescript/lib-dom": "npm:@better-typescript-lib/dom@2.9.0"
-    "@typescript/lib-es2015": "npm:@better-typescript-lib/es2015@2.9.0"
-    "@typescript/lib-es2016": "npm:@better-typescript-lib/es2016@2.9.0"
-    "@typescript/lib-es2017": "npm:@better-typescript-lib/es2017@2.9.0"
-    "@typescript/lib-es2018": "npm:@better-typescript-lib/es2018@2.9.0"
-    "@typescript/lib-es2019": "npm:@better-typescript-lib/es2019@2.9.0"
-    "@typescript/lib-es2020": "npm:@better-typescript-lib/es2020@2.9.0"
-    "@typescript/lib-es2021": "npm:@better-typescript-lib/es2021@2.9.0"
-    "@typescript/lib-es2022": "npm:@better-typescript-lib/es2022@2.9.0"
-    "@typescript/lib-es2023": "npm:@better-typescript-lib/es2023@2.9.0"
-    "@typescript/lib-es5": "npm:@better-typescript-lib/es5@2.9.0"
-    "@typescript/lib-es6": "npm:@better-typescript-lib/es6@2.9.0"
-    "@typescript/lib-esnext": "npm:@better-typescript-lib/esnext@2.9.0"
-    "@typescript/lib-scripthost": "npm:@better-typescript-lib/scripthost@2.9.0"
-    "@typescript/lib-webworker": "npm:@better-typescript-lib/webworker@2.9.0"
-  peerDependencies:
-    typescript: ">=4.5.2"
-  checksum: 10/37d307d73081c7d6c25aa6f42d0a35a2d2ba7f583974779264adfa14972d9512c4e6ea1c56b11fae0e33cc719ecddded8b7f4f5e2394482ea3f9d289a0f2ec17
   languageName: node
   linkType: hard
 

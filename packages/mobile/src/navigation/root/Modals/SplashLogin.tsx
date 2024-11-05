@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import type { ImageSourcePropType } from "react-native";
 import { ActivityIndicator, Dimensions, StatusBar } from "react-native";
 
-import { useLogin } from "#common/auth";
-import { useAllowedLoginTypes } from "#common/hooks/useAllowedLoginTypes";
+import { useLogin } from "#common/auth.js";
+import { useAllowedLoginTypes } from "#common/hooks/useAllowedLoginTypes.js";
 
 import { getRandomSplashLoginBackground } from "./SplashLoginBackgrounds";
 

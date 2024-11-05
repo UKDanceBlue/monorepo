@@ -20,7 +20,7 @@ export interface MarathonContextData {
 
 // TODO replace marathon and setMarathon with Router context and move marathons to a simple hook
 export const marathonContext = createContext<MarathonContextData>({
-  setMarathon: () => {},
+  setMarathon: () => undefined,
   marathon: null,
   marathons: [],
   loading: true,

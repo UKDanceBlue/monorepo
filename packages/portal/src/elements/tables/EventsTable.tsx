@@ -10,8 +10,8 @@ import { useCallback, useMemo } from "react";
 import { useQuery } from "urql";
 
 import { getFragmentData, graphql } from "#graphql/index.js";
-import { useListQuery } from "#hooks/useListQuery";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useListQuery } from "#hooks/useListQuery.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const EventsTableFragment = graphql(/* GraphQL */ `
   fragment EventsTableFragment on EventNode {

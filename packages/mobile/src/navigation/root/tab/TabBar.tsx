@@ -4,8 +4,8 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { ReactElement } from "react";
 import { useEffect, useState } from "react";
 
-import { withErrorBoundary } from "#common/components/ErrorBoundary";
-import { useTabBarConfig } from "#common/hooks/useTabBarConfig";
+import { withErrorBoundary } from "#common/components/ErrorBoundary.js";
+import { useTabBarConfig } from "#common/hooks/useTabBarConfig.js";
 
 import type {
   RootStackParamList,
@@ -101,10 +101,10 @@ const TabBar = () => {
           (screen) => screen !== fancyTab
         );
 
-        for (let i = 0; i < enabledScreens.length; i++) {
-          if (enabledScreens[i] !== fancyTab) {
+        for (const enabledScreen of enabledScreens) {
+          if (enabledScreen !== fancyTab) {
             tempCurrentTabs.push(
-              possibleTabs[enabledScreens[i] as keyof typeof possibleTabs]
+              possibleTabs[enabledScreen as keyof typeof possibleTabs]
             );
           }
         }

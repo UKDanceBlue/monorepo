@@ -7,13 +7,13 @@ import { Button, Input } from "antd";
 import type { DateTime } from "luxon";
 import { useMutation } from "urql";
 
-import { LuxonDatePicker } from "#elements/components/antLuxonComponents";
-import { TanAntForm } from "#elements/components/form/TanAntForm";
-import type { TanAntChildInputProps } from "#elements/components/form/TanAntFormItem";
-import { TanAntFormItem } from "#elements/components/form/TanAntFormItem";
+import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
+import { TanAntForm } from "#elements/components/form/TanAntForm.js";
+import type { TanAntChildInputProps } from "#elements/components/form/TanAntFormItem.js";
+import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
 import { graphql } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
-import { routerAuthCheck } from "#tools/routerAuthCheck";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function AddMarathonHourPage() {
   const [{ fetching, error }, addMarathonHour] = useMutation(
