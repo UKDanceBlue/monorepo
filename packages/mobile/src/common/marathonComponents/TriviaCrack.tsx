@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { useQuery } from "urql";
 
-import { SimpleConfigFragment } from "#common/fragments/Configuration.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
+import { SimpleConfigFragment } from "#common/fragments/Configuration";
+import { getFragmentData, graphql } from "#graphql/index";
 
 const stationNumberToName = (stationNumber: number) => {
   switch (stationNumber) {

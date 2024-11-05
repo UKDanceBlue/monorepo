@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 import { createContext, useContext, useMemo, useReducer } from "react";
 import { cacheExchange, Client, fetchExchange, Provider } from "urql";
 
-import { API_BASE_URL } from "#common/apiUrl.js";
-import { DANCEBLUE_TOKEN_KEY } from "#common/auth.js";
+import { API_BASE_URL } from "#common/apiUrl";
+import { DANCEBLUE_TOKEN_KEY } from "#common/auth";
 
 const invalidateCacheContext = createContext<() => void>(() => undefined);
 

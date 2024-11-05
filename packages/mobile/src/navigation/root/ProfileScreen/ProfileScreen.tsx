@@ -18,12 +18,12 @@ import {
 } from "native-base";
 import { useMemo } from "react";
 
-import { useLogin } from "#common/auth.js";
+import { useLogin } from "#common/auth";
 import JumbotronGeometric from "#common/components/JumbotronGeometric";
-import { useThemeFonts } from "#common/customHooks.js";
-import { universalCatch } from "#common/logging.js";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
+import { useThemeFonts } from "#common/customHooks";
+import { universalCatch } from "#common/logging";
+import type { FragmentType } from "#graphql/index";
+import { getFragmentData, graphql } from "#graphql/index";
 
 import { ProfileFooter } from "./ProfileFooter";
 

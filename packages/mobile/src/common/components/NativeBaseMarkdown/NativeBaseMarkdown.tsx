@@ -4,7 +4,7 @@ import Markdown, {
 } from "@jonasmerlin/react-native-markdown-display";
 import { canOpenURL, openURL } from "expo-linking";
 
-import { Logger } from "#common/logger/Logger.js";
+import { Logger } from "#common/logger/Logger";
 
 import { rules as defaultRules } from "../../markdownRules";
 

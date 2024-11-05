@@ -3,7 +3,7 @@ import React from "react";
 import { useWindowDimensions } from "react-native";
 import { Circle, Svg, Text } from "react-native-svg";
 
-import { fontSizes } from "#theme/typography.js";
+import { fontSizes } from "#theme/typography";
 
 // const validUnits = ["sec", "min", "hours", "days", "months", "years"] as const;
 type TimeUnit = "sec" | "min" | "hours" | "days" | "months" | "years";

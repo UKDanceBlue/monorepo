@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { View } from "react-native";
 import type { FeedItem } from "react-native-rss-parser";
 
-import { Logger } from "#common/logger/Logger.js";
+import { Logger } from "#common/logger/Logger";
 
 import { ExplorerItem } from "./ExplorerItem";
 import { useExplorerFeed } from "./useExplorerFeed";

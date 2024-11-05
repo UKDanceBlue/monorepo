@@ -9,9 +9,9 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
-import type { NotificationDeliveryFragment } from "#common/fragments/NotificationScreenGQL.js";
-import { showMessage } from "#common/util/alertUtils.js";
-import type { FragmentType } from "#graphql/index.js";
+import type { NotificationDeliveryFragment } from "#common/fragments/NotificationScreenGQL";
+import { showMessage } from "#common/util/alertUtils";
+import type { FragmentType } from "#graphql/index";
 
 import { NotificationRowContent } from "./NotificationRowContent";
 

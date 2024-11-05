@@ -1,4 +1,4 @@
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#graphql/index";
 
 export const EventScreenFragment = graphql(/* GraphQL */ `
   fragment EventScreenFragment on EventNode {

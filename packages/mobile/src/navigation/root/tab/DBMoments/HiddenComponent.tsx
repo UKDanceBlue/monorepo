@@ -13,7 +13,7 @@ import dbMonogram from "#assets/logo/monogram.png";
 import {
   type MarathonTime,
   useMarathonTime,
-} from "#common/hooks/useMarathonTime.js";
+} from "#common/hooks/useMarathonTime";
 
 function calculateDBYear() {
   const currentYear = DateTime.now().year.toString().slice(-2);

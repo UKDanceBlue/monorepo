@@ -6,8 +6,8 @@ import {
 } from "expo-updates";
 import { useEffect, useState } from "react";
 
-import { Logger } from "#common/logger/Logger.js";
-import { showPrompt } from "#common/util/alertUtils.js";
+import { Logger } from "#common/logger/Logger";
+import { showPrompt } from "#common/util/alertUtils";
 
 export function useUpdateChecker() {
   const {

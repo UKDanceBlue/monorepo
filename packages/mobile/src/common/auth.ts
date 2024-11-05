@@ -7,8 +7,8 @@ import {
   WebBrowserResultType,
 } from "expo-web-browser";
 
-import { useInvalidateCache } from "#context/urql.js";
-import { useLoading } from "#context/useLoading.js";
+import { useInvalidateCache } from "#context/urql";
+import { useLoading } from "#context/useLoading";
 
 import { API_BASE_URL } from "./apiUrl";
 import { Logger } from "./logger/Logger";

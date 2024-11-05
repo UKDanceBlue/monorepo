@@ -14,14 +14,14 @@ import {
 import { memo } from "react";
 import { useWindowDimensions } from "react-native";
 
-import { useThemeFonts } from "#common/customHooks.js";
+import { useThemeFonts } from "#common/customHooks";
 import {
   NotificationDeliveryFragment,
   NotificationFragment,
-} from "#common/fragments/NotificationScreenGQL.js";
-import { Logger } from "#common/logger/Logger.js";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
+} from "#common/fragments/NotificationScreenGQL";
+import { Logger } from "#common/logger/Logger";
+import type { FragmentType } from "#graphql/index";
+import { getFragmentData } from "#graphql/index";
 
 import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
 

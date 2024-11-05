@@ -14,11 +14,11 @@ import {
 import { useState } from "react";
 import { TextInput } from "react-native";
 
-import { useLogin, useLogOut } from "#common/auth.js";
-import { useColorModeValue } from "#common/customHooks.js";
-import { universalCatch } from "#common/logging.js";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
+import { useLogin, useLogOut } from "#common/auth";
+import { useColorModeValue } from "#common/customHooks";
+import { universalCatch } from "#common/logging";
+import type { FragmentType } from "#graphql/index";
+import { getFragmentData } from "#graphql/index";
 
 import { ProfileScreenAuthFragment } from ".";
 
