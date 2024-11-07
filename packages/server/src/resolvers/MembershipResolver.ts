@@ -6,6 +6,7 @@ import {
   TeamNode,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
+import { AsyncResult } from "ts-results-es";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 
 import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
@@ -57,8 +58,8 @@ export class MembershipResolver {
   async committeeRole(
     @Root() { id: { id } }: MembershipNode
   ): Promise<ConcreteResult<CommitteeRole | null>> {
-    return (
-      await this.membershipRepository.findMembershipByUnique({ uuid: id })
-    ).map((row) => row.committeeRole);
+    return new AsyncResult(
+      this.membershipRepository.findMembershipByUnique({ uuid: id })
+    ).map((row) => row.committeeRole).promise;
   }
 }

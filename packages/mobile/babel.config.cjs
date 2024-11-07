@@ -4,8 +4,7 @@
  * @returns {import('@babel/core').TransformOptions}
  */
 module.exports = function babel(api) {
-  api.cache(true);
-  return {
+  const config = {
     presets: ["babel-preset-expo"],
     plugins: [
       [
@@ -32,4 +31,6 @@ module.exports = function babel(api) {
       "react-native-reanimated/plugin",
     ],
   };
+  api.cache.using(() => JSON.stringify(config));
+  return config;
 };

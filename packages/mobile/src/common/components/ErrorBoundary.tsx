@@ -24,7 +24,10 @@ function ErrorBoundaryFallback({
 }) {
   let stringifiedError = "";
   try {
-    stringifiedError = JSON.stringify(untypedError, null, 2);
+    stringifiedError =
+      typeof untypedError === "object"
+        ? JSON.stringify(untypedError, null, 2)
+        : String(untypedError);
   } catch {
     stringifiedError = String(untypedError);
   }

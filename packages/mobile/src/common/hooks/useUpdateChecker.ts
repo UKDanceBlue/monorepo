@@ -26,7 +26,7 @@ export function useUpdateChecker() {
 
   useEffect(() => {
     Logger.info("Checking for updates", { context: { currentlyRunning } });
-    checkForUpdateAsync().catch((error: unknown) => {
+    void checkForUpdateAsync().catch((error: unknown) => {
       if (
         !(
           typeof error === "object" &&
@@ -37,6 +37,7 @@ export function useUpdateChecker() {
       ) {
         Logger.error("Error checking for updates", { error });
       }
+      throw error;
     });
   }, [currentlyRunning]);
 

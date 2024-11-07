@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-imports */
 declare module "*.png" {
   const value: import("react-native").ImageSourcePropType;
   export default value;

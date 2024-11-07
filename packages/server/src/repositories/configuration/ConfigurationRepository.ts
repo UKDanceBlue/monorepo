@@ -45,8 +45,8 @@ export class ConfigurationRepository {
   findConfigurations(
     filters: readonly ConfigurationFilters[] | null | undefined,
     order: readonly [key: string, sort: SortDirection][] | null | undefined,
-    limit?: number  ,
-    offset?: number  
+    limit?: number,
+    offset?: number
   ) {
     const where = buildConfigurationWhere(filters);
     const orderBy = buildConfigurationOrder(order);

@@ -5,9 +5,12 @@ import { useMutation } from "urql";
 import { type MemberOf } from "#graphql/graphql.js";
 import type { DocumentType, FragmentType } from "#graphql/index.js";
 import { getFragmentData } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
-import { personEditorDocument,PersonEditorFragment } from "./PersonEditorGQL";
+import {
+  personEditorDocument,
+  PersonEditorFragment,
+} from "./PersonEditorGQL.js";
 
 export function usePersonEditorForm(
   personFragment: FragmentType<typeof PersonEditorFragment> | undefined | null,
@@ -104,7 +107,9 @@ export function usePersonEditorForm(
       const { data } = await setPerson({
         uuid: personData.id,
         input: {
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           name: values.name || null,
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           linkblue: values.linkblue?.toLowerCase() || null,
           email: values.email,
           captainOf: (values.captainOf ?? []).map(({ id, committeeRole }) => ({

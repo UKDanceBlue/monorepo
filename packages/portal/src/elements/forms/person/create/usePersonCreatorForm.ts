@@ -3,9 +3,9 @@ import { useMutation } from "urql";
 
 import { type CreatePersonInput } from "#graphql/graphql.js";
 import type { DocumentType } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
-import { personCreatorDocument } from "./PersonCreatorGQL";
+import { personCreatorDocument } from "./PersonCreatorGQL.js";
 
 export function usePersonCreatorForm(
   afterSubmit:
@@ -72,7 +72,9 @@ export function usePersonCreatorForm(
 
       const { data } = await createPerson({
         input: {
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           name: values.name || null,
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           linkblue: values.linkblue?.toLowerCase() || null,
           email: values.email,
           captainOf: values.captainOf ?? [],

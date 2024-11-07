@@ -6,13 +6,7 @@ import {
 import type { ExpoPushErrorTicket } from "expo-server-sdk";
 
 export abstract class ExpoError extends ConcreteError {
-  constructor() {
-    super();
-  }
-
-  get expose() {
-    return false;
-  }
+  readonly expose = false;
 }
 
 export class ExpoPushTicketError extends ExpoError {

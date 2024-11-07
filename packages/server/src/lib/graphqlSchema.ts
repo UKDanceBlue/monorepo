@@ -11,6 +11,10 @@ import { fileURLToPath } from "url";
 
 import { logger } from "#logging/logger.js";
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
+import {
+  DailyDepartmentNotificationBatchResolver,
+  DailyDepartmentNotificationResolver,
+} from "#resolvers/DailyDepartmentNotification.js";
 import { DeviceResolver } from "#resolvers/DeviceResolver.js";
 import { EventResolver } from "#resolvers/EventResolver.js";
 import { FeedResolver } from "#resolvers/FeedResolver.js";
@@ -45,10 +49,10 @@ const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
   try {
     result = (await next()) as unknown;
   } catch (error) {
-    if (typeof error !== "object") {
-      error = { error };
-    }
-    logger.error("An error occurred in a resolver", error);
+    logger.error(
+      "An error occurred in a resolver",
+      typeof error !== "object" ? { error } : error
+    );
     throw error;
   }
 
@@ -85,6 +89,8 @@ const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
 const resolvers = [
   ConfigurationResolver,
   DeviceResolver,
+  DailyDepartmentNotificationResolver,
+  DailyDepartmentNotificationBatchResolver,
   EventResolver,
   ImageResolver,
   PersonResolver,
@@ -119,6 +125,7 @@ export default await buildSchema({
   globalMiddlewares: [errorHandlingMiddleware],
   container: {
     get(someClass) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument
       return Container.get(someClass, false);
     },
   },

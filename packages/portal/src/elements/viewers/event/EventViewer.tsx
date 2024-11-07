@@ -5,7 +5,7 @@ import {
   intervalFromSomething,
 } from "@ukdanceblue/common";
 import { Button, Descriptions, Flex, Image, List, Typography } from "antd";
-import DescriptionsItem from "antd/es/descriptions/Item";
+import DescriptionsItem from "antd/es/descriptions/Item.js";
 import type { Interval } from "luxon";
 import { DateTime } from "luxon";
 import { useMemo } from "react";

@@ -6,7 +6,6 @@ import {
   ActionDeniedError,
   CompositeError,
   InvariantError,
-  NotFoundError,
   toBasicError,
   UnknownError,
 } from "@ukdanceblue/common/error";
@@ -21,8 +20,8 @@ import { Expo } from "expo-server-sdk";
 import { DateTime } from "luxon";
 import { AsyncResult, Err, Ok, Result } from "ts-results-es";
 
-import { isDevelopment } from "#environment";
 import { ExpoPushFailureError, ExpoPushTicketError } from "#error/expo.js";
+import { isDevelopment } from "#lib/nodeEnv.js";
 import { logger } from "#logging/standardLogging.js";
 import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
 import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
@@ -165,12 +164,6 @@ export class ExpoNotificationProvider implements NotificationProvider {
         (
           databaseNotification
         ): AsyncResult<Notification, RepositoryError | InvariantError> => {
-          if (databaseNotification == null) {
-            return Err(
-              new NotFoundError({ what: "Notification" })
-            ).toAsyncResult();
-          }
-
           if (databaseNotification.startedSendingAt != null) {
             return Err(
               new InvariantError("Notification has already been sent")
@@ -257,14 +250,15 @@ export class ExpoNotificationProvider implements NotificationProvider {
               "FAILSAFE TRIGGERED: you are in a development environment and trying to send a notification to more than 12 devices. This is likely a mistake.",
             sendAt: null,
           }
-        );
-      } finally {
-        return Err(
-          new ActionDeniedError(
-            "FAILSAFE TRIGGERED: you are in a development environment and trying to send a notification to more than 12 devices. This is likely a mistake."
-          )
-        );
+        ).promise;
+      } catch (error) {
+        logger.error("Error updating notification", { error });
       }
+      return Err(
+        new ActionDeniedError(
+          "FAILSAFE TRIGGERED: you are in a development environment and trying to send a notification to more than 12 devices. This is likely a mistake."
+        )
+      );
     }
 
     let chunks: ExpoPushMessage[][] = [];
@@ -305,6 +299,7 @@ export class ExpoNotificationProvider implements NotificationProvider {
       try {
         // Lifecycle step 6
         const rawTicketChunk =
+          // eslint-disable-next-line no-await-in-loop
           await this.expoSdk.sendPushNotificationsAsync(chunk);
         for (let i = 0; i < chunk.length; i++) {
           const notificationData = chunk[i]!.data;
@@ -337,10 +332,11 @@ export class ExpoNotificationProvider implements NotificationProvider {
           if ("message" in error) {
             errorString += ` - ${String(error.message)}`;
           }
+          // eslint-disable-next-line no-await-in-loop
           await this.notificationRepository.updateNotification(
             { id: databaseNotification.id },
             { deliveryIssue: errorString }
-          );
+          ).promise;
         }
 
         continue;
@@ -348,6 +344,7 @@ export class ExpoNotificationProvider implements NotificationProvider {
 
       // Lifecycle step 7,8
       try {
+        // eslint-disable-next-line no-await-in-loop
         await this.notificationDeliveryRepository.updateTicketChunk({
           chunkUuid: randomUUID(),
           tickets: ticketChunk.map(([ticket, deliveryUuid]) => ({

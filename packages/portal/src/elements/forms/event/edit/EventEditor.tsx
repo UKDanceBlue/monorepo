@@ -9,8 +9,8 @@ import type { FragmentType } from "#graphql/index.js";
 import { getFragmentData } from "#graphql/index.js";
 
 import { EventOccurrencePicker } from "../../../components/event/EventOccurrencePicker";
-import { EventEditorFragment } from "./EventEditorGQL";
-import { useEventEditorForm } from "./useEventEditorForm";
+import { EventEditorFragment } from "./EventEditorGQL.js";
+import { useEventEditorForm } from "./useEventEditorForm.js";
 
 export function EventEditor({
   eventFragment,

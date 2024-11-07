@@ -1,6 +1,6 @@
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 
-import { createNodeClasses,Node } from "../relay.js";
+import { createNodeClasses, Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
@@ -10,6 +10,7 @@ export const TeamType = {
   Morale: "Morale",
 } as const;
 export type TeamType = (typeof TeamType)[keyof typeof TeamType];
+export const TeamTypeValues: TeamType[] = Object.values(TeamType) as TeamType[];
 
 // Registering the TeamType enum with TypeGraphQL
 registerEnumType(TeamType, {
@@ -24,6 +25,9 @@ export const TeamLegacyStatus = {
 } as const;
 export type TeamLegacyStatus =
   (typeof TeamLegacyStatus)[keyof typeof TeamLegacyStatus];
+export const TeamLegacyStatusValues: TeamLegacyStatus[] = Object.values(
+  TeamLegacyStatus
+) as TeamLegacyStatus[];
 
 // Registering the TeamLegacyStatus enum with TypeGraphQL
 registerEnumType(TeamLegacyStatus, {

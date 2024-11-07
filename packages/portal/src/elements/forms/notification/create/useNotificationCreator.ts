@@ -3,9 +3,9 @@ import type { TeamType } from "@ukdanceblue/common";
 import { useMutation } from "urql";
 
 import type { DocumentType } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
-import { createNotificationDocument } from "./CreateNotificationGQL";
+import { createNotificationDocument } from "./CreateNotificationGQL.js";
 
 export function useNotificationCreator(
   afterSubmit:

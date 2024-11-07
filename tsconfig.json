@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "lib": ["ES5"],
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -13,6 +13,7 @@
     "noImplicitThis": true,
     "strictNullChecks": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
     "useUnknownInCatchVariables": true,
@@ -20,13 +21,17 @@
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "allowJs": true,
+    "checkJs": true
   },
   "include": [
     "./*.ts",
-    "./scripts/*.ts",
+    "./*.js",
+    "./*.cjs",
+    "./scripts/*",
     "./packages/portal/vite.config.ts",
-    "packages/common/jest.config.ts",
-    "yarn.config.cjs"
+    "./packages/common/jest.config.ts",
+    "./scripts/fix-codegen.mts"
   ]
 }

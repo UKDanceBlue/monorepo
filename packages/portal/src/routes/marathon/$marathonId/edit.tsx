@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 
-import { EditMarathonForm } from "#elements/forms/marathon/EditMarathonForm";
-import { routerAuthCheck } from "#tools/routerAuthCheck";
+import { EditMarathonForm } from "#elements/forms/marathon/EditMarathonForm.js";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function EditMarathonPage() {
   return (

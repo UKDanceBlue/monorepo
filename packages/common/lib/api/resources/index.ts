@@ -14,6 +14,7 @@ export { EffectiveCommitteeRole } from "../types/EffectiveCommitteeRole.js";
 export { IntervalISO } from "../types/IntervalISO.js";
 export * from "./Committee.js";
 export * from "./Configuration.js";
+export * from "./DailyDepartmentNotification.js";
 export * from "./Device.js";
 export * from "./Event.js";
 export * from "./Feed.js";

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-parameters */
 import { Field, InterfaceType, ObjectType } from "type-graphql";
 
 import { Errorable, ResourceError } from "./resourceError.js";

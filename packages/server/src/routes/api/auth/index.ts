@@ -1,5 +1,5 @@
 import { Service } from "@freshgum/typedi";
-import { koaBody } from "koa-body";
+import express from "express";
 
 import { RouterService } from "#routes/RouteService.js";
 
@@ -17,28 +17,23 @@ export default class AuthRouter extends RouterService {
   constructor() {
     super("/auth");
 
-    this.addGetRoute("/logout", (ctx) => {
-      ctx.cookies.set("token", null);
+    this.addGetRoute("/logout", (req, res) => {
+      res.clearCookie("token");
 
       let redirectTo = "/";
-      const queryRedirectTo = Array.isArray(ctx.query.redirectTo)
-        ? ctx.query.redirectTo[0]
-        : ctx.query.redirectTo;
-      if (queryRedirectTo && queryRedirectTo.length > 0) {
-        redirectTo = queryRedirectTo;
+      const queryRedirectTo = Array.isArray(req.query.redirectTo)
+        ? req.query.redirectTo[0]
+        : req.query.redirectTo;
+      if (queryRedirectTo && (queryRedirectTo as string).length > 0) {
+        redirectTo = queryRedirectTo as string;
       }
 
-      ctx.redirect(redirectTo);
+      res.redirect(redirectTo);
     });
 
     this.addPostRoute(
       "/oidc-callback",
-      koaBody({
-        text: false,
-        json: false,
-        urlencoded: true,
-        multipart: false,
-      }),
+      express.urlencoded({ extended: false }),
       oidcCallback
     );
 

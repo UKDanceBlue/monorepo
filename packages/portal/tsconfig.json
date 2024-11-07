@@ -29,7 +29,6 @@
 
     "baseUrl": "./src"
   },
-  "include": ["./src", "./graphql", "./mocks"],
-  "references": [{ "path": "./tsconfig.node.json" }],
+  "include": ["./src", "./graphql", "./mocks", "./vite.config.ts"],
   "extends": "../../tsconfig.json"
 }

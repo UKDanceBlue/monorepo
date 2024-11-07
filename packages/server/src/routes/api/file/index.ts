@@ -1,4 +1,5 @@
 import { Service } from "@freshgum/typedi";
+import { Request, Response } from "express";
 
 import { FileManager } from "#files/FileManager.js";
 import { combineMimePartsToString } from "#files/mime.js";
@@ -9,9 +10,9 @@ export default class FileRouter extends RouterService {
   constructor(fileManager: FileManager) {
     super("/file");
 
-    this.addGetRoute("/download/:uuid", async (ctx) => {
-      const { uuid } = ctx.params;
-      const { download } = ctx.query;
+    this.addGetRoute("/download/:uuid", async (req: Request, res: Response) => {
+      const { uuid } = req.params;
+      const { download } = req.query;
 
       let disposition: "inline" | "attachment" = "inline";
       if (download === "true") {
@@ -19,22 +20,26 @@ export default class FileRouter extends RouterService {
       }
 
       if (!uuid) {
-        ctx.throw(400, "No file UUID provided");
+        res.status(400).send("No file UUID provided");
       } else {
         const val = await fileManager.getFileStream({ uuid });
         if (!val) {
-          ctx.throw(404, "File not found");
+          res.status(404).send("File not found");
         } else {
-          ctx.body = val.stream;
-          ctx.type = combineMimePartsToString(
-            val.file.mimeTypeName,
-            val.file.mimeSubtypeName,
-            val.file.mimeParameters
+          res.setHeader(
+            "Content-Type",
+            combineMimePartsToString(
+              val.file.mimeTypeName,
+              val.file.mimeSubtypeName,
+              val.file.mimeParameters
+            )
           );
-          ctx.attachment(val.file.filename, {
-            type: disposition,
-          });
-          ctx.status = 200;
+          res.setHeader(
+            "Content-Disposition",
+            `${disposition}; filename="${val.file.filename}"`
+          );
+          res.status(200);
+          val.stream.pipe(res);
         }
       }
     });

@@ -4,9 +4,9 @@ import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
 import { useState } from "react";
 
-import { CreateImagePopup } from "#elements/components/image/CreateImagePopup";
-import { ImagesTable } from "#elements/tables/ImagesTable";
-import { routerAuthCheck } from "#tools/routerAuthCheck";
+import { CreateImagePopup } from "#elements/components/image/CreateImagePopup.js";
+import { ImagesTable } from "#elements/tables/ImagesTable.js";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function ListImagesPage() {
   const [createImageOpen, setCreateImageOpen] = useState(false);

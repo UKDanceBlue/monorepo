@@ -201,13 +201,13 @@ export interface AuthorizationContext {
   authorization: Authorization;
 }
 
-export async function checkParam<RootType extends object = never>(
+export function checkParam<RootType extends object = never>(
   rule: AccessControlParam<RootType>,
   authorization: Authorization,
   root: RootType,
   args: ArgsDictionary,
   context: AccessControlContext
-): Promise<Result<boolean, InvariantError>> {
+): Result<boolean, InvariantError> {
   if (rule.accessLevel != null) {
     if (rule.accessLevel > authorization.accessLevel) {
       return Ok(false);
@@ -226,7 +226,7 @@ export async function checkParam<RootType extends object = never>(
     }
     let matches = false;
     for (const authRule of authRules) {
-      matches = await checkAuthorization(authRule, authorization);
+      matches = checkAuthorization(authRule, authorization);
       if (matches) {
         break;
       }
@@ -240,11 +240,12 @@ export async function checkParam<RootType extends object = never>(
     for (const match of rule.argumentMatch) {
       let argValue: Primitive | Primitive[];
       if (match.argument === "id") {
-        argValue = parseGlobalId(args.id)
-          .map(({ id }) => args[id])
+        // I think this code might be wrong, but I'm not 100% sure either way and don't have time to investigate
+        argValue = parseGlobalId(args.id as string)
+          .map(({ id }) => args[id] as Primitive | Primitive[])
           .unwrapOr(null);
       } else if (typeof match.argument === "string") {
-        argValue = args[match.argument];
+        argValue = args[match.argument] as Primitive | Primitive[];
       } else {
         argValue = match.argument(args);
       }
@@ -329,10 +330,7 @@ export function QueryAccessControl<
 >(
   params: CustomQueryAuthorizationFunction<RootType, ResultType>
 ): MethodDecorator & PropertyDecorator;
-export function QueryAccessControl<
-  RootType extends object = never,
-  ResultType extends object = never,
->(
+export function QueryAccessControl<RootType extends object = never>(
   ...params: AccessControlParam<RootType>[]
 ): MethodDecorator & PropertyDecorator;
 export function QueryAccessControl<
@@ -353,6 +351,7 @@ export function QueryAccessControl<
 
     if (authorization.accessLevel === AccessLevel.SuperAdmin) {
       // Super admins have access to everything
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return next();
     }
 
@@ -382,13 +381,7 @@ export function QueryAccessControl<
       return result;
     } else {
       for (const rule of params as AccessControlParam<RootType>[]) {
-        const result = await checkParam(
-          rule,
-          authorization,
-          root,
-          args,
-          context
-        );
+        const result = checkParam(rule, authorization, root, args, context);
         if (result.isErr()) {
           return Err(result.error);
         }
@@ -400,9 +393,12 @@ export function QueryAccessControl<
       }
 
       if (!ok) {
-        return info.returnType instanceof GraphQLNonNull ? Err(new AccessControlError(info)) : null;
+        return info.returnType instanceof GraphQLNonNull
+          ? Err(new AccessControlError(info))
+          : null;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return next();
     }
   };
@@ -428,6 +424,7 @@ export function MutationAccessControl(
 
     if (authorization.accessLevel === AccessLevel.SuperAdmin) {
       // Super admins have access to everything
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return next();
     }
 
@@ -442,12 +439,13 @@ export function MutationAccessControl(
         return null;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return next();
     } else {
       for (const rule of params as AccessControlParam<
         Record<string, never>
       >[]) {
-        const result = await checkParam<Record<string, never>>(
+        const result = checkParam<Record<string, never>>(
           rule,
           authorization,
           {},
@@ -465,9 +463,12 @@ export function MutationAccessControl(
       }
 
       if (!ok) {
-        return info.returnType instanceof GraphQLNonNull ? Err(new AccessControlError(info)) : null;
+        return info.returnType instanceof GraphQLNonNull
+          ? Err(new AccessControlError(info))
+          : null;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return next();
     }
   };

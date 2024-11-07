@@ -21,9 +21,7 @@ function cleanupTextContent(textContent: string) {
 
   let state: "leadingWhiteSpace" | "normal" | "newline" | "doubleNewline" =
     "leadingWhiteSpace";
-  for (let i = 0; i < textContent.length; i++) {
-    const char = textContent[i];
-
+  for (const char of textContent) {
     if (state === "leadingWhiteSpace") {
       if (char === " " || char === "\n") {
         continue;

@@ -1,16 +1,25 @@
 import "reflect-metadata";
+
+import { logDirToken, loggingLevelToken } from "#lib/environmentTokens.js";
+import { expressToken } from "#routes/expressToken.js";
+
 // No top level imports that cause side effects should be used in this file
 // We want to control the order of execution
 
-const { logDir, loggingLevel } = await import("#environment");
+await import("#environment");
+
+await import("./instrument.js");
+
+const { Container } = await import("@freshgum/typedi");
+
+const logDir = Container.get(logDirToken);
+const loggingLevel = Container.get(loggingLevelToken);
 
 const { logger } = await import("#logging/logger.js");
 
 logger.info(
   `Logger initialized with level "${loggingLevel}", writing log files to "${logDir}"`
 );
-
-await import("./instrument.js");
 
 await import("./prisma.js");
 
@@ -20,9 +29,7 @@ const { createServer, startHttpServer, startServer } = await import(
 const { app, httpServer, apolloServer } = await createServer();
 logger.info("Created server");
 
-const { koaToken } = await import("#routes/koaToken.js");
-const { Container } = await import("@freshgum/typedi");
-Container.setValue(koaToken, app);
+Container.setValue(expressToken, app);
 
 await startHttpServer(httpServer);
 const httpServerAddress = httpServer.address();

@@ -64,9 +64,7 @@ export class TimeoutError extends ConcreteError {
     return `${this.#what ?? "A task"} took too long`;
   }
 
-  get expose() {
-    return false;
-  }
+  readonly expose = false;
 
   get tag(): ErrorCode.Timeout {
     return ErrorCode.Timeout;
@@ -85,9 +83,7 @@ export class InvalidOperationError extends ConcreteError {
     return `Invalid operation: ${this.#what}`;
   }
 
-  get expose() {
-    return false;
-  }
+  readonly expose = false;
 
   get tag(): ErrorCode.InvalidOperation {
     return ErrorCode.InvalidOperation;
@@ -106,9 +102,7 @@ export class InvalidArgumentError extends ConcreteError {
     return `Invalid argument: ${this.#what}`;
   }
 
-  get expose() {
-    return false;
-  }
+  readonly expose = false;
 
   get tag(): ErrorCode.InvalidArgument {
     return ErrorCode.InvalidArgument;
@@ -127,9 +121,7 @@ export class InvalidStateError extends ConcreteError {
     return `Invalid state: ${this.#what}`;
   }
 
-  get expose() {
-    return false;
-  }
+  readonly expose = false;
 
   get tag(): ErrorCode.InvalidState {
     return ErrorCode.InvalidState;
@@ -148,9 +140,7 @@ export class InvariantError extends ConcreteError {
     return `Invariant violation: ${this.#what}`;
   }
 
-  get expose() {
-    return false;
-  }
+  readonly expose = false;
 
   get tag(): ErrorCode.InvariantViolation {
     return ErrorCode.InvariantViolation;

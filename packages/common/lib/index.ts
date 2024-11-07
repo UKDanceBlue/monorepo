@@ -26,6 +26,7 @@ export * from "./authorization/accessControl.js";
 export * from "./authorization/role.js";
 export * from "./authorization/structures.js";
 export * from "./utility/errors/ApiError.js";
+export * from "./utility/errors/debugStringify.js";
 export * from "./utility/errors/DetailedError.js";
 export * from "./utility/primitive/base64.js";
 export * from "./utility/primitive/formData.js";

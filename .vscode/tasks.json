@@ -19,16 +19,35 @@
     },
     {
       "type": "npm",
+      "script": "gql:build:mobile",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "GraphQL: Build Mobile"
+    },
+    {
+      "type": "npm",
+      "script": "gql:build:portal",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "GraphQL: Build Portal"
+    },
+    {
+      "type": "npm",
       "script": "gql:build",
       "group": "build",
       "problemMatcher": [],
-      "label": "GraphQL: Build",
-      "detail": "graphql-codegen-esm --config codegen.ts"
+      "label": "GraphQL: Build"
+    },
+    {
+      "type": "npm",
+      "script": "repo:check",
+      "problemMatcher": ["$tsc"],
+      "label": "Repo: Check"
     },
     {
       "type": "npm",
       "script": "repo:lint",
-      "problemMatcher": [],
+      "problemMatcher": ["$eslint-stylish"],
       "label": "Repo: Lint",
       "detail": "eslint ."
     },
@@ -95,7 +114,7 @@
       "problemMatcher": [],
       "label": "Portal: Build",
       "detail": "yarn workspace @ukdanceblue/portal build",
-      "dependsOn": ["GraphQL: Build", "Common: Build"]
+      "dependsOn": ["GraphQL: Build Portal", "Common: Build"]
     },
     {
       "type": "npm",

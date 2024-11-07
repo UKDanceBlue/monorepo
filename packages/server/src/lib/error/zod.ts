@@ -9,9 +9,7 @@ export class ZodError extends ConcreteError {
   get message() {
     return this.error.message;
   }
-  get expose() {
-    return false;
-  }
+  readonly expose = false;
 
   get tag(): ErrorCode.ZodError {
     return ErrorCode.ZodError;

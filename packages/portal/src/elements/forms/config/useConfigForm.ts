@@ -1,9 +1,9 @@
 import { useForm } from "@tanstack/react-form";
 import { useCallback, useEffect, useMemo } from "react";
 
-import { useCommitChanges } from "./useCommitChanges";
-import type { ConfigValue } from "./useConfig";
-import { useConfig } from "./useConfig";
+import { useCommitChanges } from "./useCommitChanges.js";
+import type { ConfigValue } from "./useConfig.js";
+import { useConfig } from "./useConfig.js";
 
 export function useConfigForm() {
   const {
@@ -73,7 +73,6 @@ export function useConfigForm() {
     },
     [formApi]
   );
-  [];
 
   const setConfigValue = useCallback(
     (key: string, value: ConfigValue) => {

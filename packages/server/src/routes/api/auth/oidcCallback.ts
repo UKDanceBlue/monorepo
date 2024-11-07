@@ -2,28 +2,35 @@ import type { IncomingMessage } from "node:http";
 
 import { Container } from "@freshgum/typedi";
 import { AuthSource, makeUserData } from "@ukdanceblue/common";
+import type { NextFunction, Request, Response } from "express";
 import jsonwebtoken from "jsonwebtoken";
-import type { Context } from "koa";
 import { DateTime } from "luxon";
 
 import { makeUserJwt } from "#auth/index.js";
+import { serveOriginToken } from "#lib/environmentTokens.js";
 import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 import { makeOidcClient } from "./oidcClient.js";
 
-export const oidcCallback = async (ctx: Context) => {
-  const oidcClient = await makeOidcClient(ctx.request);
+const serveOrigin = Container.get(serveOriginToken);
+
+export const oidcCallback = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const oidcClient = await makeOidcClient(req);
 
   const parameters = oidcClient.callbackParams(
     // This is alright because callbackParams only uses the body and method properties, if this changes, we'll need to do something else
-    ctx.request as unknown as IncomingMessage
+    req as unknown as IncomingMessage
   );
   const flowSessionId = parameters.state;
 
   if (!flowSessionId) {
-    return ctx.throw("Missing state parameter", 400);
+    return void res.status(400).send("Missing state parameter");
   }
 
   let sessionDeleted = false;
@@ -43,7 +50,7 @@ export const oidcCallback = async (ctx: Context) => {
     }
     // Perform OIDC validation
     const tokenSet = await oidcClient.callback(
-      new URL("/api/auth/oidc-callback", ctx.request.URL).toString(),
+      new URL("/api/auth/oidc-callback", serveOrigin).toString(),
       parameters,
       { code_verifier: session.codeVerifier, state: flowSessionId }
     );
@@ -75,7 +82,7 @@ export const oidcCallback = async (ctx: Context) => {
       linkblue = userPrincipalName.replace(/@uky\.edu$/, "").toLowerCase();
     }
     if (typeof objectId !== "string") {
-      return ctx.throw("Missing OID", 500);
+      return void res.status(500).send("Missing OID");
     }
     const findPersonForLoginResult = await personRepository.findPersonForLogin(
       [[AuthSource.LinkBlue, objectId]],
@@ -83,12 +90,13 @@ export const oidcCallback = async (ctx: Context) => {
     );
 
     if (findPersonForLoginResult.isErr()) {
-      return ctx.throw(
-        findPersonForLoginResult.error.expose
-          ? findPersonForLoginResult.error.message
-          : "Error finding person",
-        500
-      );
+      return void res
+        .status(500)
+        .send(
+          findPersonForLoginResult.error.expose
+            ? findPersonForLoginResult.error.message
+            : "Error finding person"
+        );
     }
     const { currentPerson } = findPersonForLoginResult.value;
 
@@ -134,7 +142,7 @@ export const oidcCallback = async (ctx: Context) => {
     );
 
     if (updatedPerson.isErr()) {
-      return ctx.throw("Failed to update database entry", 500);
+      return void res.status(500).send("Failed to update database entry");
     }
 
     const personNode = await personModelToResource(
@@ -142,12 +150,13 @@ export const oidcCallback = async (ctx: Context) => {
       personRepository
     ).promise;
     if (personNode.isErr()) {
-      return ctx.throw(
-        personNode.error.expose
-          ? personNode.error.message
-          : "Error creating person node",
-        500
-      );
+      return void res
+        .status(500)
+        .send(
+          personNode.error.expose
+            ? personNode.error.message
+            : "Error creating person node"
+        );
     }
     const jwt = makeUserJwt(
       makeUserData(personNode.value, AuthSource.LinkBlue)
@@ -157,14 +166,16 @@ export const oidcCallback = async (ctx: Context) => {
       redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;
     }
     if (session.setCookie) {
-      ctx.cookies.set("token", jwt, {
+      res.cookie("token", jwt, {
         httpOnly: true,
-        sameSite: ctx.secure ? "none" : "lax",
-        secure: ctx.secure,
+        sameSite: req.secure ? "none" : "lax",
+        secure: req.secure,
         expires: DateTime.now().plus({ days: 7 }).toJSDate(),
       });
     }
-    return ctx.redirect(redirectTo);
+    return res.redirect(redirectTo);
+  } catch (error) {
+    next(error);
   } finally {
     if (!sessionDeleted) {
       await loginFlowSessionRepository.completeLoginFlow({

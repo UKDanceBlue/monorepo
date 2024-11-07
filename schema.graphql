@@ -71,6 +71,16 @@ enum AuthSource {
   None
 }
 
+enum BatchType {
+  ACH
+  Check
+  CreditCard
+  NonCash
+  PayrollDeduction
+  Transmittal
+  Unknown
+}
+
 input BulkPersonInput {
   committee: CommitteeIdentifier
   email: EmailAddress!
@@ -242,6 +252,112 @@ type CreateTeamResponse implements AbstractGraphQLCreatedResponse & AbstractGrap
   data: TeamNode!
   ok: Boolean!
   uuid: GlobalId!
+}
+
+type DailyDepartmentNotificationBatchNode {
+  batchType: BatchType!
+  dailyDepartmentNotifications: [DailyDepartmentNotificationNode!]!
+  id: GlobalId!
+}
+
+input DailyDepartmentNotificationInput {
+  accountName: String!
+  accountNumber: String!
+  batchId: String!
+  behalfHonorMemorial: String
+  combinedAmount: Float!
+  combinedDonorName: String!
+  combinedDonorSalutation: String!
+  combinedDonorSort: String
+  comment: String
+  department: String
+  divFirstGift: Boolean!
+  division: String
+  donor1Amount: Float
+  donor2Amount: Float
+  effectiveDate: LocalDate
+  endDate: DateTimeISO
+  gikDescription: String
+  gikType: String
+  holdingDestination: String
+  idSorter: String!
+  matchingGift: String
+  onlineGift: Boolean!
+  pledgedAmount: Float!
+  pledgedDate: LocalDate
+  processDate: LocalDate
+  secShares: String
+  secType: String
+  solicitation: String
+  solicitationCode: String
+  startDate: DateTimeISO
+  transactionDate: LocalDate
+  transactionType: String!
+  ukFirstGift: Boolean!
+}
+
+type DailyDepartmentNotificationNode {
+  accountName: String!
+  accountNumber: String!
+  advFeeAmtPhil: Float
+  advFeeAmtUnit: Float
+  advFeeCcPhil: String
+  advFeeCcUnit: String
+  advFeeStatus: String
+  batch: DailyDepartmentNotificationBatchNode!
+  behalfHonorMemorial: String
+  combinedAmount: Float!
+  combinedDonorName: String!
+  combinedDonorSalutation: String!
+  combinedDonorSort: String
+  comment: String
+  department: String
+  divFirstGift: Boolean!
+  division: String
+  donor1Amount: Float
+  donor1Constituency: String
+  donor1Deceased: Boolean
+  donor1Degrees: String
+  donor1GiftKey: String
+  donor1Id: String
+  donor1Name: String
+  donor1Pm: String
+  donor1Relation: String
+  donor1TitleBar: String
+  donor2Amount: Float
+  donor2Constituency: String
+  donor2Deceased: Boolean
+  donor2Degrees: String
+  donor2GiftKey: String
+  donor2Id: String
+  donor2Name: String
+  donor2Pm: String
+  donor2Relation: String
+  donor2TitleBar: String
+  effectiveDate: LocalDate
+  gikDescription: String
+  gikType: String
+  hcUnit: String
+  holdingDestination: String
+  id: GlobalId!
+  idSorter: String!
+  jvDocDate: LocalDate
+  jvDocNum: String
+  matchingGift: String
+  onlineGift: Boolean!
+  pledgedAmount: Float!
+  pledgedDate: LocalDate
+  processDate: LocalDate
+  sapDocDate: LocalDate
+  sapDocNum: String
+  secShares: String
+  secType: String
+  solicitation: String
+  solicitationCode: String
+  transactionDate: LocalDate
+  transactionType: String!
+  transmittalSn: String
+  ukFirstGift: Boolean!
 }
 
 """
@@ -766,6 +882,20 @@ input IntervalISOInput {
   start: DateTimeISO!
 }
 
+type ListDailyDepartmentNotificationsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+  data: [DailyDepartmentNotificationNode!]!
+  ok: Boolean!
+
+  """The current page number (1-indexed)"""
+  page: PositiveInt!
+
+  """The number of items per page"""
+  pageSize: NonNegativeInt!
+
+  """The total number of items"""
+  total: NonNegativeInt!
+}
+
 type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
   data: [DeviceNode!]!
   ok: Boolean!
@@ -933,6 +1063,11 @@ type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraph
   """The total number of items"""
   total: NonNegativeInt!
 }
+
+"""
+A local date string (i.e., with no associated timezone) in `YYYY-MM-DD` format, e.g. `2020-01-01`.
+"""
+scalar LocalDate
 
 type LoginState {
   accessLevel: AccessLevel!
@@ -1123,6 +1258,7 @@ type Mutation {
 
   """Attach an image to a feed item"""
   attachImageToFeedItem(feedItemUuid: GlobalId!, imageUuid: GlobalId!): FeedNode!
+  batchUploadDailyDepartmentNotifications(input: [DailyDepartmentNotificationInput!]!): [DailyDepartmentNotificationNode!]!
   bulkLoadPeople(marathonId: GlobalId!, people: [BulkPersonInput!]!): [PersonNode!]!
   bulkLoadTeams(marathonId: GlobalId!, teams: [BulkTeamInput!]!): [TeamNode!]!
 
@@ -1135,6 +1271,7 @@ type Mutation {
   Create multiple configurations, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)
   """
   createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
+  createDailyDepartmentNotification(input: DailyDepartmentNotificationInput!): DailyDepartmentNotificationNode!
 
   """Create a new event"""
   createEvent(input: CreateEventInput!): CreateEventResponse!
@@ -1151,6 +1288,8 @@ type Mutation {
 
   """Delete a configuration by UUID"""
   deleteConfiguration(uuid: GlobalId!): DeleteConfigurationResponse!
+  deleteDailyDepartmentNotification(id: GlobalId!): DailyDepartmentNotificationNode!
+  deleteDailyDepartmentNotificationBatch(id: GlobalId!): DailyDepartmentNotificationBatchNode!
 
   """Delete a device by it's UUID"""
   deleteDevice(uuid: GlobalId!): DeleteDeviceResponse!
@@ -1190,6 +1329,7 @@ type Mutation {
 
   """Send a notification immediately."""
   sendNotification(uuid: GlobalId!): SendNotificationResponse!
+  setDailyDepartmentNotification(id: GlobalId!, input: DailyDepartmentNotificationInput!): DailyDepartmentNotificationNode!
 
   """Update an event by UUID"""
   setEvent(input: SetEventInput!, uuid: GlobalId!): SetEventResponse!
@@ -1660,6 +1800,51 @@ type Query {
   """
   currentMarathon: MarathonNode
   currentMarathonHour: MarathonHourNode
+  dailyDepartmentNotification(id: GlobalId!): DailyDepartmentNotificationNode!
+  dailyDepartmentNotificationBatch(id: GlobalId!): DailyDepartmentNotificationBatchNode!
+  dailyDepartmentNotifications(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: Void
+
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: Void
+
+    """The numeric filters to apply to the query"""
+    numericFilters: Void
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: Void
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: Void
+  ): ListDailyDepartmentNotificationsResponse!
   dbFundsTeams(search: String!): [DbFundsTeamInfo!]!
 
   """Get a device by it's UUID"""

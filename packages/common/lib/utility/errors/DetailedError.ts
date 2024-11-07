@@ -43,7 +43,7 @@ export function lookupLegacyErrorCode(
       const code = (
         LegacyErrorCode as Record<string, LegacyErrorCode | undefined>
       )[error];
-      return code == null ? LegacyErrorCode.Unknown : code;
+      return code ?? LegacyErrorCode.Unknown;
     }
   } else if (error instanceof Error) {
     return LegacyErrorCode.Unknown;

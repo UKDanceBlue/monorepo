@@ -1,20 +1,13 @@
+import { Container } from "@freshgum/typedi";
 import type winston from "winston";
 import { createLogger, format, transports } from "winston";
 
-import { logDir, loggingLevel } from "#environment";
+import { logDirToken, loggingLevelToken } from "#lib/environmentTokens.js";
 
-export const SyslogLevels = {
-  emerg: 0,
-  alert: 1,
-  crit: 2,
-  error: 3,
-  warning: 4,
-  notice: 5,
-  info: 6,
-  debug: 7,
-  trace: 8,
-} as const satisfies winston.config.AbstractConfigSetLevels;
-export type SyslogLevels = keyof typeof SyslogLevels;
+import { SyslogLevels } from "./SyslogLevels.js";
+
+const logDir = Container.get(logDirToken);
+const loggingLevel = Container.get(loggingLevelToken);
 
 interface StandardLogger extends winston.Logger {
   emerg: winston.LeveledLogMethod;

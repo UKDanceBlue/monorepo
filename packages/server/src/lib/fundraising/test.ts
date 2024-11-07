@@ -11,6 +11,7 @@ dbfunds
       result.unwrap().sort(({ identifier: a }, { identifier: b }) => a - b)
     )
   )
+  // eslint-disable-next-line unicorn/prefer-top-level-await
   .catch(console.error);
 
 dbfunds
@@ -20,4 +21,5 @@ dbfunds
       result.unwrap().sort(({ identifier: a }, { identifier: b }) => a - b)
     )
   )
+  // eslint-disable-next-line unicorn/prefer-top-level-await
   .catch(console.error);

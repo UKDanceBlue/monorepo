@@ -46,7 +46,7 @@ export function useAllowedLoginTypes(): {
             } else if (type === "ms-oath-linkblue") {
               allowedTypes.push("ms-oath-linkblue");
             } else {
-              log(`Unrecognized login type: ${type}`, "warn");
+              log(`Unrecognized login type: ${String(type)}`, "warn");
             }
           }
         } else {

@@ -32,6 +32,7 @@ export class ExpoPushReceiptHandler {
     for (const chunk of chunkedIds) {
       try {
         const receipts =
+          // eslint-disable-next-line no-await-in-loop
           await this.expoSdk.getPushNotificationReceiptsAsync(chunk);
         const updateParam: { receipt: ExpoPushReceipt; deliveryId: number }[] =
           [];
@@ -48,6 +49,7 @@ export class ExpoPushReceiptHandler {
             devicesToUnsubscribe.push(delivery.device.id);
           }
         }
+        // eslint-disable-next-line no-await-in-loop
         await this.notificationDeliveryRepository.updateReceiptChunk({
           receipts: updateParam,
         });

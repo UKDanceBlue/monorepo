@@ -17,15 +17,15 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import type { UseQueryExecute } from "urql";
 
-import { useMarathon } from "#config/marathonContext";
-import { TanAntFormItem } from "#elements/components/form/TanAntFormItem";
+import { useMarathon } from "#config/marathonContext.js";
+import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
 import type { FragmentType } from "#graphql/index.js";
 import { getFragmentData } from "#graphql/index.js";
-import { useAuthorizationRequirement } from "#hooks/useLoginState";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
 import { TeamNameFragment } from "../PersonFormsGQL";
-import { PersonEditorFragment } from "./PersonEditorGQL";
-import { usePersonEditorForm } from "./usePersonEditorForm";
+import { PersonEditorFragment } from "./PersonEditorGQL.js";
+import { usePersonEditorForm } from "./usePersonEditorForm.js";
 
 export function PersonEditor({
   personFragment,

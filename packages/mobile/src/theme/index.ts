@@ -40,6 +40,7 @@ type CustomThemeType = ReturnType<typeof getCustomTheme>;
 
 // 3. Extend the internal NativeBase Theme
 declare module "native-base" {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface ICustomTheme extends CustomThemeType {}
 }
 

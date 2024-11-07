@@ -4,9 +4,9 @@ import { DateTime } from "luxon";
 import { useQuery } from "urql";
 
 import { getFragmentData, graphql } from "#graphql/index.js";
-import { useListQuery } from "#hooks/useListQuery";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
-import { renderDateTime } from "#tools/luxonTools";
+import { useListQuery } from "#hooks/useListQuery.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { renderDateTime } from "#tools/luxonTools.js";
 
 const NotificationDeliveriesTableFragment = graphql(/* GraphQL */ `
   fragment NotificationDeliveriesTableFragment on NotificationDeliveryNode {

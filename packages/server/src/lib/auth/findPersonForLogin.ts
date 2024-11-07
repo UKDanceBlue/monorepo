@@ -61,6 +61,7 @@ export async function findPersonForLogin(
       continue;
     }
 
+    // eslint-disable-next-line no-await-in-loop
     currentPerson = await client.person.findFirst({
       where: { authIdPairs: { some: { source, value: id } } },
       include,

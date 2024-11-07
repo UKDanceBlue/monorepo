@@ -24,6 +24,7 @@ export abstract class Resource {
     return new this();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   protected withValues<R extends { id: GlobalId }, D extends { id: string }>(
     this: R,
     values: D

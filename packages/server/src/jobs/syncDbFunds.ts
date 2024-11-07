@@ -15,6 +15,7 @@ import {
   type DBFundsFundraisingProviderError,
 } from "#lib/fundraising/DbFundsProvider.js";
 import { logger } from "#logging/standardLogging.js";
+import { prismaToken } from "#prisma";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { JobStateRepository } from "#repositories/JobState.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
@@ -31,7 +32,7 @@ async function doSyncForActive(): Promise<
 
   const activeMarathon = await new AsyncResult(
     marathonRepository.findActiveMarathon()
-  ).andThen(async (activeMarathon) =>
+  ).andThen((activeMarathon) =>
     activeMarathon.toResult(new NotFoundError({ what: "active marathon" }))
   ).promise;
   if (activeMarathon.isErr()) {
@@ -49,7 +50,7 @@ async function doSyncForPastMarathons(): Promise<
 
   const activeMarathon = await new AsyncResult(
     marathonRepository.findActiveMarathon()
-  ).andThen(async (activeMarathon) =>
+  ).andThen((activeMarathon) =>
     activeMarathon.toResult(new NotFoundError({ what: "active marathon" }))
   ).promise;
   if (activeMarathon.isErr()) {
@@ -63,6 +64,7 @@ async function doSyncForPastMarathons(): Promise<
   );
 
   for (const marathon of pastMarathons) {
+    // eslint-disable-next-line no-await-in-loop
     const result = await doSyncForMarathon(marathon);
     if (result.isErr()) {
       return result;
@@ -77,6 +79,7 @@ async function doSyncForMarathon(
 ): Promise<Result<None, DoSyncError | CompositeError<DoSyncError>>> {
   const fundraisingRepository = Container.get(DBFundsRepository);
   const fundraisingProvider = Container.get(DBFundsFundraisingProvider);
+  const prisma = Container.get(prismaToken);
 
   const teams = await fundraisingProvider.getTeams(
     marathon.year as MarathonYearString
@@ -123,6 +126,40 @@ async function doSyncForMarathon(
     }
   }
 
+  logger.trace("Associating teams with identical names");
+  const teamNames = new Map<string, number>();
+  teams.value.forEach((team) => {
+    teamNames.set(team.name, team.identifier);
+  });
+  await Promise.all(
+    teamNames.entries().map(async ([name, dbNum]) => {
+      const team = await prisma.team.findFirst({
+        where: {
+          name,
+          marathonId: marathon.id,
+          dbFundsTeamId: null,
+        },
+      });
+      if (team) {
+        return prisma.team.update({
+          where: { id: team.id },
+          data: {
+            dbFundsTeam: {
+              connect: {
+                dbNum_marathonId: {
+                  dbNum,
+                  marathonId: marathon.id,
+                },
+              },
+            },
+          },
+        });
+      } else {
+        return null;
+      }
+    })
+  );
+
   return errors.length > 0 ? Err(new CompositeError(errors)) : Ok(None);
 }
 
@@ -149,7 +186,7 @@ export const syncDbFunds = new Cron(
 );
 
 export const syncDbFundsPast = new Cron(
-  "0 0 2 * * *",
+  "0 0 */2 * * *",
   {
     name: "sync-db-funds-past",
     paused: true,
@@ -173,4 +210,7 @@ export const syncDbFundsPast = new Cron(
 syncDbFunds.options.startAt =
   await jobStateRepository.getNextJobDate(syncDbFunds);
 syncDbFunds.resume();
-syncDbFunds.trigger();
+// eslint-disable-next-line unicorn/prefer-top-level-await
+syncDbFunds.trigger().catch((error: unknown) => {
+  console.error("Failed to trigger syncDbFunds", error);
+});

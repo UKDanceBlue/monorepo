@@ -3,11 +3,11 @@ import { DateTime } from "luxon";
 import { useEffect } from "react";
 import type { UseQueryExecute } from "urql";
 
-import { NotificationPreview } from "#elements/components/notification/NotificationPreview";
-import { SingleNotificationFragment } from "#elements/forms/notification/SingleNotificationGQL";
+import { NotificationPreview } from "#elements/components/notification/NotificationPreview.js";
+import { SingleNotificationFragment } from "#elements/forms/notification/SingleNotificationGQL.js";
 import type { FragmentType } from "#graphql/index.js";
 import { getFragmentData } from "#graphql/index.js";
-import { renderDateTime } from "#tools/luxonTools";
+import { renderDateTime } from "#tools/luxonTools.js";
 
 export const NotificationViewer = ({
   notificationFragment,
@@ -44,7 +44,8 @@ export const NotificationViewer = ({
   const totalDeliveryIssues = Object.values(
     notification.deliveryIssueCount
   ).reduce<number>(
-    (acc, val) => (val === "NotificationDeliveryIssueCount" ? acc : acc + val),
+    (acc, val) =>
+      val === "NotificationDeliveryIssueCount" ? acc : acc + Number(val),
     0
   );
 
@@ -111,7 +112,7 @@ export const NotificationViewer = ({
                       children:
                         value === "NotificationDeliveryIssueCount"
                           ? "No issues"
-                          : value,
+                          : Number(value),
                     }))}
                 />
               ),

@@ -17,18 +17,14 @@ export abstract class ControlError extends ConcreteError {
   get detailedMessage(): string {
     return this.message;
   }
-  get expose() {
-    return true;
-  }
+  readonly expose = true;
   get stack(): string | undefined {
     return undefined;
   }
 }
 
 export class AuthorizationRuleFailedError extends ControlError {
-  get message() {
-    return "Unauthorized";
-  }
+  readonly message = "Unauthorized";
 
   constructor(protected readonly requiredAuthorization: AuthorizationRule[]) {
     super();
@@ -66,9 +62,7 @@ export class AccessControlError extends ControlError {
     return `Access denied to ${this.info.fieldName} (${this.info.returnType.toString()}) at ${this.errorPath()} within ${this.info.parentType.toString()}`;
   }
 
-  get expose() {
-    return true;
-  }
+  readonly expose = true;
 
   get tag(): ErrorCode.AccessControlError {
     return ErrorCode.AccessControlError;
@@ -76,9 +70,7 @@ export class AccessControlError extends ControlError {
 }
 
 export class UnauthenticatedError extends ControlError {
-  get message() {
-    return "Unauthenticated";
-  }
+  readonly message = "Unauthenticated";
 
   get tag(): ErrorCode.Unauthenticated {
     return ErrorCode.Unauthenticated;

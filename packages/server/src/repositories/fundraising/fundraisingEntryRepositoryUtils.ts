@@ -2,7 +2,7 @@ import type { Prisma } from "@prisma/client";
 import { parseGlobalId, SortDirection } from "@ukdanceblue/common";
 import type { InvalidArgumentError } from "@ukdanceblue/common/error";
 import { ActionDeniedError } from "@ukdanceblue/common/error";
-import { Err, Ok,Result } from "ts-results-es";
+import { Err, Ok, Result } from "ts-results-es";
 
 import {
   dateFilterToPrisma,

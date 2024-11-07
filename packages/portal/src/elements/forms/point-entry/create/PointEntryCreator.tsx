@@ -15,10 +15,10 @@ import { useReducer, useRef, useState } from "react";
 import type { FragmentType } from "#graphql/index.js";
 import { getFragmentData } from "#graphql/index.js";
 
-import { PointEntryCreatorFragment } from "./PointEntryCreatorGQL";
-import { PointEntryOpportunityLookup } from "./PointEntryOpportunityLookup";
-import { PointEntryPersonLookup } from "./PointEntryPersonLookup";
-import { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
+import { PointEntryCreatorFragment } from "./PointEntryCreatorGQL.js";
+import { PointEntryOpportunityLookup } from "./PointEntryOpportunityLookup.js";
+import { PointEntryPersonLookup } from "./PointEntryPersonLookup.js";
+import { usePointEntryCreatorForm } from "./usePointEntryCreatorForm.js";
 
 export function PointEntryCreator({
   team,

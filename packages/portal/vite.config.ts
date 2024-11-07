@@ -1,10 +1,10 @@
-import { sentryVitePlugin } from "@sentry/vite-plugin";
-import react from "@vitejs/plugin-react-swc";
-import { defineConfig } from "vite";
-
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import react from "@vitejs/plugin-react-swc";
+import { defineConfig } from "vite";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -24,7 +24,7 @@ export const literalConfig = {
       "#tools": resolveRelative("src", "tools"),
       "#documents": resolveRelative("src", "documents"),
       "#assets": resolveRelative("assets"),
-      "#graphql/common": resolveRelative("graphql"),
+      "#graphql": resolveRelative("graphql"),
       "#mocks": resolveRelative("mocks"),
     },
   },

@@ -108,10 +108,10 @@ const TabBar = () => {
           (screen) => screen !== fancyTab
         );
 
-        for (let i = 0; i < enabledScreens.length; i++) {
-          if (enabledScreens[i] !== fancyTab) {
+        for (const enabledScreen of enabledScreens) {
+          if (enabledScreen !== fancyTab) {
             tempCurrentTabs.push(
-              possibleTabs[enabledScreens[i] as keyof typeof possibleTabs]
+              possibleTabs[enabledScreen as keyof typeof possibleTabs]
             );
           }
         }

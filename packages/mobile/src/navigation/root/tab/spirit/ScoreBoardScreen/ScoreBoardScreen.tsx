@@ -139,7 +139,6 @@ const ScoreBoardScreen = ({
             subTitle=""
             bodyText="If you believe this is an error and you have submitted your spirit points, please contact your team captain or the DanceBlue committee."
             icon="users"
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             iconType={FontAwesome5}
             iconColor="blue.500"
           />
@@ -159,7 +158,6 @@ const ScoreBoardScreen = ({
               }
               bodyText="Click here to go to your Team Dashboard!"
               icon="users"
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               iconType={FontAwesome5}
               iconColor="secondary.100"
               iconSize={40}

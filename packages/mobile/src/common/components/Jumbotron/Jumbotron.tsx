@@ -20,7 +20,7 @@ const JumbotronIcon = <IconFontName extends string, IconName extends string>({
     let cssIconColor = iconColor;
     if (iconColor.includes(".")) {
       // @ts-expect-error We should probably fix this, but it's not a big deal
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       cssIconColor = colors[iconColor.split(".")[0]]?.[iconColor.split(".")[1]];
       if (!cssIconColor) {
         cssIconColor = iconColor;

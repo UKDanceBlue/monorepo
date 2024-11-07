@@ -71,8 +71,8 @@ export class CommitteeRepository {
   async findCommittees(
     filters: readonly CommitteeFilters[] | null | undefined,
     order: readonly [key: string, sort: SortDirection][] | null | undefined,
-    limit?: number  ,
-    offset?: number  
+    limit?: number,
+    offset?: number
   ): Promise<Result<Committee[], RepositoryError>> {
     try {
       const where = buildCommitteeWhere(filters);
@@ -267,8 +267,10 @@ export class CommitteeRepository {
         await this.ensureCommitteeTeams(vice, marathons);
       }
       for (const committee of Object.values(childCommittees)) {
+        // eslint-disable-next-line no-await-in-loop
         const child = await this.prisma.committee.upsert(committee);
         if (marathons) {
+          // eslint-disable-next-line no-await-in-loop
           await this.ensureCommitteeTeams(child, marathons);
         }
       }
@@ -286,12 +288,14 @@ export class CommitteeRepository {
     try {
       for (const marathonParam of marathons) {
         const marathon =
+          // eslint-disable-next-line no-await-in-loop
           await this.marathonRepository.findMarathonByUnique(marathonParam);
 
         if (marathon.isErr()) {
           return Err(marathon.error);
         }
 
+        // eslint-disable-next-line no-await-in-loop
         await this.prisma.team.upsert({
           where: {
             marathonId_correspondingCommitteeId: {

@@ -1,13 +1,13 @@
 import { Calendar, DatePicker } from "antd";
 import type { PickerProps } from "antd/es/date-picker/generatePicker";
 import type { DateTime } from "luxon";
-import luxonGenerateConfig from "rc-picker/lib/generate/luxon";
+import generateConfig from "rc-picker/lib/generate/luxon.js";
 import { forwardRef } from "react";
 
 export const LuxonDatePicker =
-  DatePicker.generatePicker<DateTime>(luxonGenerateConfig);
+  DatePicker.generatePicker<DateTime>(generateConfig);
 export const CalendarWithLuxon =
-  Calendar.generateCalendar<DateTime>(luxonGenerateConfig);
+  Calendar.generateCalendar<DateTime>(generateConfig);
 
 export type TimePickerProps = Omit<PickerProps<DateTime>, "picker">;
 

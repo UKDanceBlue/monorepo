@@ -23,6 +23,9 @@ export const AuthSource = {
   None: "None",
 } as const;
 export type AuthSource = (typeof AuthSource)[keyof typeof AuthSource];
+export const AuthSourceValues: AuthSource[] = Object.values(
+  AuthSource
+) as AuthSource[];
 
 export const AccessLevel = {
   None: -1,
@@ -36,11 +39,13 @@ export const AccessLevel = {
   SuperAdmin: 5,
 } as const;
 export type AccessLevel = (typeof AccessLevel)[keyof typeof AccessLevel];
+export const AccessLevelValues: [keyof typeof AccessLevel, AccessLevel][] =
+  Object.entries(AccessLevel) as [keyof typeof AccessLevel, AccessLevel][];
 
 export function stringifyAccessLevel(val: unknown): string {
   let accessLevel: AccessLevel | undefined = undefined;
   if (typeof val === "number") {
-    const accessLevels = Object.values(AccessLevel);
+    const accessLevels = Object.values(AccessLevel) as AccessLevel[];
     for (const value of accessLevels) {
       if (value === val) {
         accessLevel = value;
@@ -105,6 +110,7 @@ export const DbRole = {
   Committee: "Committee",
 } as const;
 export type DbRole = (typeof DbRole)[keyof typeof DbRole];
+export const DbRoleValues: DbRole[] = Object.values(DbRole) as DbRole[];
 
 export function isDbRole(val: unknown): val is DbRole {
   if (typeof val !== "string") {
@@ -187,6 +193,9 @@ export const CommitteeRole = {
   Member: "Member",
 } as const;
 export type CommitteeRole = (typeof CommitteeRole)[keyof typeof CommitteeRole];
+export const CommitteeRoleValues: CommitteeRole[] = Object.values(
+  CommitteeRole
+) as CommitteeRole[];
 
 export function isCommitteeRole(val: unknown): val is CommitteeRole {
   if (typeof val !== "string") {
@@ -242,6 +251,9 @@ export const CommitteeIdentifier = {
 } as const;
 export type CommitteeIdentifier =
   (typeof CommitteeIdentifier)[keyof typeof CommitteeIdentifier];
+export const CommitteeIdentifierValues: CommitteeIdentifier[] = Object.values(
+  CommitteeIdentifier
+) as CommitteeIdentifier[];
 
 export function isCommitteeIdentifier(
   val: unknown

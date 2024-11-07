@@ -17,7 +17,7 @@ const BackgroundCutoutBase = ({
   <Svg
     viewBox={`0 0 ${ratio.x} ${ratio.y}`}
     // @ts-expect-error This is fine
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
     style={{ padding: 0, margin: 0, ...(svgProps?.style ?? {}) }}
     {...svgProps}
   >
@@ -62,7 +62,6 @@ const BackgroundCutout = ({
           ...svgProps,
           width: svgWidth,
           height: svgProps.height,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           style: {
             // @ts-expect-error This is fine
             ...(svgProps.style ?? {}),

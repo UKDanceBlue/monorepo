@@ -108,7 +108,7 @@ const none: Authorization = {
   effectiveCommitteeRoles: [],
 };
 describe("checkAuthorization", () => {
-  it("should return true when the user's access level matches the required access level", async () => {
+  it("should return true when the user's access level matches the required access level", () => {
     expect.hasAssertions();
 
     expect(
@@ -157,7 +157,7 @@ describe("checkAuthorization", () => {
 
   // TODO: Make the rest of these async
 
-  it("should return true when the user's access level is higher than the required access level", async () => {
+  it("should return true when the user's access level is higher than the required access level", () => {
     expect.assertions(3);
     expect(
       checkAuthorization({ accessLevel: AccessLevel.Committee }, techChair)
@@ -173,7 +173,7 @@ describe("checkAuthorization", () => {
     ).toBe(true);
   });
 
-  it("should return false when the user's access level is lower than the required access level", async () => {
+  it("should return false when the user's access level is lower than the required access level", () => {
     expect.assertions(4);
     expect(
       checkAuthorization(
@@ -195,7 +195,7 @@ describe("checkAuthorization", () => {
     ).toBe(false);
   });
 
-  it("should work with committeeIdentifier matching", async () => {
+  it("should work with committeeIdentifier matching", () => {
     expect.assertions(2);
     expect(
       checkAuthorization(
@@ -215,7 +215,7 @@ describe("checkAuthorization", () => {
     ).toBe(false);
   });
 
-  it("should work with committeeIdentifiers matching", async () => {
+  it("should work with committeeIdentifiers matching", () => {
     expect.assertions(2);
     expect(
       checkAuthorization(
@@ -241,7 +241,7 @@ describe("checkAuthorization", () => {
     ).toBe(false);
   });
 
-  it("should work with minimum committeeRole matching", async () => {
+  it("should work with minimum committeeRole matching", () => {
     expect.assertions(3);
     expect(
       checkAuthorization(

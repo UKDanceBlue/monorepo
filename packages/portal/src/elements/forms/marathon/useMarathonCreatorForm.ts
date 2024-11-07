@@ -4,7 +4,7 @@ import type { DateTime } from "luxon";
 import { useMutation } from "urql";
 
 import { graphql } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 export function useMarathonCreatorForm() {
   // Form
@@ -57,10 +57,10 @@ export function useMarathonCreatorForm() {
           year: values.year,
           startDate: values.startDate
             ?.set({ minute: 0, second: 0, millisecond: 0 })
-            .toISO()!,
+            .toISO(),
           endDate: values.endDate
             ?.set({ minute: 0, second: 0, millisecond: 0 })
-            .toISO()!,
+            .toISO(),
         },
       });
 

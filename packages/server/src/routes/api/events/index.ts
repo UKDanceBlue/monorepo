@@ -1,7 +1,5 @@
 import { Service } from "@freshgum/typedi";
-import type { Context } from "koa";
 import { DateTime } from "luxon";
-import type { NextFn } from "type-graphql";
 
 import { FileManager } from "#files/FileManager.js";
 import { combineMimePartsToString } from "#files/mime.js";
@@ -32,103 +30,107 @@ const EMPTY_PNG_URL =
 
 @Service([EventRepository, FileManager])
 export default class EventsRouter extends RouterService {
-  constructor(eventRepository: EventRepository, fileManager: FileManager) {
+  constructor(
+    private eventRepository: EventRepository,
+    private fileManager: FileManager
+  ) {
     super("/events");
 
-    this.addGetRoute("/upcoming", async (ctx: Context, next: NextFn) => {
-      let eventsToSend = 10;
-      if (ctx.query.count) {
-        const parsedCountParam =
-          typeof ctx.query.count === "string"
-            ? Number.parseInt(ctx.query.count, 10)
-            : Number.parseInt(String(ctx.query.count[0]), 10);
-        if (!Number.isNaN(parsedCountParam)) {
-          eventsToSend = parsedCountParam;
+    this.addGetRoute("/upcoming", async (req, res, next) => {
+      try {
+        let eventsToSend = 10;
+        if (req.query.count) {
+          const parsedCountParam =
+            typeof req.query.count === "string"
+              ? Number.parseInt(req.query.count, 10)
+              : Number.parseInt(String((req.query.count as string[])[0]), 10);
+          if (!Number.isNaN(parsedCountParam)) {
+            eventsToSend = parsedCountParam;
+          }
         }
-      }
-      let until = DateTime.now().plus({ years: 1 }).toJSDate();
-      if (ctx.query.until) {
-        const parsedUntilParam =
-          typeof ctx.query.until === "string"
-            ? DateTime.fromISO(ctx.query.until)
-            : DateTime.fromISO(String(ctx.query.until[0]));
-        if (parsedUntilParam.isValid) {
-          until = parsedUntilParam.toJSDate();
+        let until = DateTime.now().plus({ years: 1 }).toJSDate();
+        if (req.query.until) {
+          const parsedUntilParam =
+            typeof req.query.until === "string"
+              ? DateTime.fromISO(req.query.until)
+              : DateTime.fromISO(String((req.query.until as string[])[0]));
+          if (parsedUntilParam.isValid) {
+            until = parsedUntilParam.toJSDate();
+          }
         }
-      }
 
-      const upcomingEvents = await eventRepository.getUpcomingEvents({
-        count: eventsToSend,
-        until,
-      });
+        const upcomingEvents = await this.eventRepository.getUpcomingEvents({
+          count: eventsToSend,
+          until,
+        });
 
-      const eventsJson: UpcomingEvent[] = await Promise.all(
-        upcomingEvents.map(async (event) => {
-          const occurrences = event.eventOccurrences;
+        const eventsJson: UpcomingEvent[] = await Promise.all(
+          upcomingEvents.map(async (event) => {
+            const occurrences = event.eventOccurrences;
 
-          const images = await Promise.all(
-            event.eventImages.map(async ({ image }) => {
-              let fileData:
-                | {
-                    url: URL;
-                    mimeType: string;
-                    width?: number;
-                    height?: number;
+            const images = await Promise.all(
+              event.eventImages.map(async ({ image }) => {
+                let fileData:
+                  | {
+                      url: URL;
+                      mimeType: string;
+                      width?: number;
+                      height?: number;
+                    }
+                  | undefined = undefined;
+
+                if (image.file) {
+                  const externalUrl = await this.fileManager.getExternalUrl(
+                    image.file
+                  );
+                  if (externalUrl) {
+                    fileData = {
+                      url: externalUrl,
+                      mimeType: combineMimePartsToString(
+                        image.file.mimeTypeName,
+                        image.file.mimeSubtypeName,
+                        image.file.mimeParameters
+                      ),
+                    };
                   }
-                | undefined = undefined;
-
-              if (image.file) {
-                const externalUrl = await fileManager.getExternalUrl(
-                  image.file
-                );
-                if (externalUrl) {
+                }
+                if (!fileData) {
                   fileData = {
-                    url: externalUrl,
-                    mimeType: combineMimePartsToString(
-                      image.file.mimeTypeName,
-                      image.file.mimeSubtypeName,
-                      image.file.mimeParameters
-                    ),
+                    url: new URL(EMPTY_PNG_URL),
+                    mimeType: "image/png",
+                    width: 1,
+                    height: 1,
                   };
                 }
-              }
-              if (!fileData) {
-                fileData = {
-                  url: new URL(EMPTY_PNG_URL),
-                  mimeType: "image/png",
-                  width: 1,
-                  height: 1,
+
+                return {
+                  alt: image.alt ?? null,
+                  thumbHash: image.thumbHash?.toString("base64") ?? null,
+                  width: image.width,
+                  height: image.height,
+                  url: fileData.url.toString(),
+                  mimeType: fileData.mimeType,
                 };
-              }
+              })
+            );
+            return {
+              title: event.title,
+              summary: event.summary,
+              description: event.description,
+              location: event.location,
+              occurrences: occurrences.map((occurrence) => ({
+                start: occurrence.date,
+                end: occurrence.endDate,
+              })),
+              images,
+            };
+          })
+        );
 
-              return {
-                alt: image.alt ?? null,
-                thumbHash: image.thumbHash?.toString("base64") ?? null,
-                width: image.width,
-                height: image.height,
-                url: fileData.url.toString(),
-                mimeType: fileData.mimeType,
-              };
-            })
-          );
-          return {
-            title: event.title,
-            summary: event.summary,
-            description: event.description,
-            location: event.location,
-            occurrences: occurrences.map((occurrence) => ({
-              start: occurrence.date,
-              end: occurrence.endDate,
-            })),
-            images,
-          };
-        })
-      );
-
-      ctx.body = eventsJson;
-      ctx.type = "application/json";
-
-      await next();
+        res.json(eventsJson);
+      } catch (error) {
+        next(error);
+      }
     });
   }
 }

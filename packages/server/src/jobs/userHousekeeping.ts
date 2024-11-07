@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { Container } from "@freshgum/typedi";
 import { Cron } from "croner";
 
@@ -8,7 +9,7 @@ import { JobStateRepository } from "#repositories/JobState.js";
 const jobStateRepository = Container.get(JobStateRepository);
 
 export const garbageCollectLoginFlowSessions = new Cron(
-  "0 * * * * *",
+  "1 0 * * * *",
   {
     name: "user-housekeeping",
     paused: true,

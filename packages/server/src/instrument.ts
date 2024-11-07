@@ -3,7 +3,7 @@
 import { init } from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 
-import { isDevelopment } from "#environment";
+import { isDevelopment } from "#lib/nodeEnv.js";
 import { logger } from "#logging/standardLogging.js";
 
 init({

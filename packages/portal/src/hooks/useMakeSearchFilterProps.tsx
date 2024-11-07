@@ -7,7 +7,7 @@ import { NumericComparator } from "@ukdanceblue/common";
 import { Input, type InputRef } from "antd";
 import { useRef } from "react";
 
-import { FilterSearchDropdown } from "#elements/components/FilterDropdown";
+import { FilterSearchDropdown } from "#elements/components/FilterDropdown.js";
 
 export function useMakeStringSearchFilterProps<Field extends string>(
   field: Field,

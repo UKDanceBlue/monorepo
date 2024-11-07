@@ -115,9 +115,7 @@ export class JsError extends ConcreteError {
     return this.error.message;
   }
 
-  get expose(): boolean {
-    return false;
-  }
+  readonly expose = false;
 
   get stack(): string | undefined {
     return this.error.stack;
@@ -143,9 +141,7 @@ export class UnknownError extends ConcreteError {
     return this.#message;
   }
 
-  get expose(): boolean {
-    return false;
-  }
+  readonly expose = false;
 
   get tag(): ErrorCode.Unknown {
     return ErrorCode.Unknown;

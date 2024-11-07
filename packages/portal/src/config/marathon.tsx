@@ -4,9 +4,9 @@ import { useQuery } from "urql";
 
 import { graphql } from "#graphql/index.js";
 
-import type { MarathonContextData } from "./marathonContext";
-import { marathonContext } from "./marathonContext";
-import { LocalStorageKeys } from "./storage";
+import type { MarathonContextData } from "./marathonContext.js";
+import { marathonContext } from "./marathonContext.js";
+import { LocalStorageKeys } from "./storage.js";
 
 const latestMarathonDocument = graphql(/* GraphQL */ `
   query ActiveMarathon {

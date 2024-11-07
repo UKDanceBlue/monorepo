@@ -32,7 +32,7 @@ services:
       MAX_FILE_SIZE: 200
       LOG_DIR: /data/logs
       DATABASE_URL: postgres://danceblue:danceblue@postgres:5432/danceblue?schema=danceblue
-      SERVE_ORIGIN: http://127.0.0.1:8000
+      SERVE_ORIGIN: https://${HOST_PREFIX:-}.danceblue.org
       LOGGING_LEVEL: ${LOGGING_LEVEL:-info}
       SUPER_ADMIN_LINKBLUE: ${SUPER_ADMIN_LINKBLUE}
     secrets:
@@ -45,16 +45,6 @@ services:
       - dbfunds_api_key
     volumes:
       - content:/data/serve
-    restart: unless-stopped
-  portal:
-    image: ghcr.io/ukdanceblue/app-portal:${VERSION:-latest}
-    networks:
-      proxy:
-        aliases:
-          - ${HOST_PREFIX:-}-portal
-    build:
-      context: .
-      target: portal
     restart: unless-stopped
 
 networks:

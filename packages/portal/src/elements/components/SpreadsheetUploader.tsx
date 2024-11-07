@@ -4,7 +4,7 @@ import type { ColumnType } from "antd/es/table";
 import { useState } from "react";
 import { read, utils } from "xlsx";
 
-import { useAntFeedback } from "#hooks/useAntFeedback";
+import { useAntFeedback } from "#hooks/useAntFeedback.js";
 
 export function SpreadsheetUploader<
   RowType extends object,
@@ -109,7 +109,7 @@ export function SpreadsheetUploader<
                     return (
                       <ul>
                         {value.map((item, idx) => (
-                          <li key={idx}>{item}</li>
+                          <li key={idx}>{String(item)}</li>
                         ))}
                       </ul>
                     );

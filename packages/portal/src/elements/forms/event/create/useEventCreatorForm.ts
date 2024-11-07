@@ -7,9 +7,9 @@ import type {
   SetEventInput,
   SetEventOccurrenceInput,
 } from "#graphql/graphql.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
-import { eventCreatorDocument } from "./EventCreatorGQL";
+import { eventCreatorDocument } from "./EventCreatorGQL.js";
 
 export function useEventCreatorForm() {
   // Form

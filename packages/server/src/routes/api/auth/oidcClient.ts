@@ -1,17 +1,22 @@
-import type { Request } from "koa";
+import { Container } from "@freshgum/typedi";
+import type { Request } from "express";
 import type { Client } from "openid-client";
 import { Issuer } from "openid-client";
 
 import {
-  isDevelopment,
-  msClientId,
-  msClientSecret,
-  msOidcUrl,
-} from "#environment";
+  msClientIdToken,
+  msClientSecretToken,
+  msOidcUrlToken,
+} from "#lib/environmentTokens.js";
+import { isDevelopment } from "#lib/nodeEnv.js";
+
+const msOidcUrl = Container.get(msOidcUrlToken);
+const msClientId = Container.get(msClientIdToken);
+const msClientSecret = Container.get(msClientSecretToken);
 
 export async function makeOidcClient(req: Request): Promise<Client> {
   const forwardedProto = req.get("x-forwarded-proto");
-  const url = req.URL;
+  const url = new URL(req.originalUrl, `${req.protocol}://${req.get("host")}`);
   if (forwardedProto) {
     url.protocol = forwardedProto;
   } else if (

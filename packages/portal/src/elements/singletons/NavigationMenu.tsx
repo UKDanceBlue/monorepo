@@ -11,17 +11,17 @@ import {
 import { Button, Menu, Select } from "antd";
 import { useContext, useEffect, useState } from "react";
 
-import { themeConfigContext } from "#config/antThemeConfig";
-import { API_BASE_URL } from "#config/api";
-import { marathonContext } from "#config/marathonContext";
-import { SessionStorageKeys } from "#config/storage";
-import { useAntFeedback } from "#hooks/useAntFeedback";
+import { themeConfigContext } from "#config/antThemeConfig.js";
+import { API_BASE_URL } from "#config/api.js";
+import { marathonContext } from "#config/marathonContext.js";
+import { SessionStorageKeys } from "#config/storage.js";
+import { useAntFeedback } from "#hooks/useAntFeedback.js";
 import {
   useAuthorizationRequirement,
   useLoginState,
-} from "#hooks/useLoginState";
+} from "#hooks/useLoginState.js";
 
-import { MasqueradeSelector } from "./MasqueradeSelector";
+import { MasqueradeSelector } from "./MasqueradeSelector.js";
 
 const routes: {
   path: keyof Register["router"]["routesByPath"];

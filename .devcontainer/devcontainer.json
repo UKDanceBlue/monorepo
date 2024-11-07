@@ -83,7 +83,7 @@
         "cmstead.jsrefactor",
         "ecmel.vscode-html-css",
         "GraphQL.vscode-graphql-syntax",
-        "GraphQL.vscode-graphql",
+        "GraphQL.vscode-graphql@0.9.3",
         "eamodio.gitlens",
         "github.vscode-github-actions",
         "expo.vscode-expo-tools",

@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+
 import eslintJs from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
 import eslintPluginJsdoc from "eslint-plugin-jsdoc";
@@ -5,14 +7,12 @@ import eslintPluginNode from "eslint-plugin-n";
 import eslintPluginReact from "eslint-plugin-react";
 import eslintPluginReactHooks from "eslint-plugin-react-hooks";
 import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
+import eslintPluginSortImports from "eslint-plugin-simple-import-sort";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import eslintPluginVitest from "eslint-plugin-vitest";
-import eslintPluginSortImports from "eslint-plugin-simple-import-sort";
 import globals from "globals";
-import eslintTs from "typescript-eslint";
-
-import { fileURLToPath } from "node:url";
 import { dirname } from "path";
+import eslintTs from "typescript-eslint";
 
 const projectRoot = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 
@@ -37,15 +37,14 @@ export default eslintTs.config(
     name: "Global Ignored Files",
     ignores: [
       "*.d.ts",
-      "node_modules/",
-      "coverage/",
-      "dist/",
-      "build/",
-      ".next/",
+      "node_modules/**/*",
+      "coverage/**/*",
+      "packages/*/dist/**/*",
+      "build/**/*",
+      ".next/**/*",
       "*.json",
-      ".yarn/",
-      "compose-volumes/",
-      "eslint.config.js",
+      ".yarn/**/*",
+      "compose-volumes/**/*",
       "packages/mobile/.expo",
     ],
   },
@@ -75,7 +74,6 @@ export default eslintTs.config(
     },
     rules: {
       // Possible Errors
-      "no-undef": "off",
       "radix": "error",
       "yoda": "error",
       "prefer-template": "warn",
@@ -220,6 +218,7 @@ export default eslintTs.config(
       "react-refresh/only-export-components": "warn",
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
+      // We don't need to import React in every file for JSX
       "react/react-in-jsx-scope": "off",
       "react/jsx-uses-react": "off",
     },
@@ -238,23 +237,26 @@ export default eslintTs.config(
     },
     rules: getTsEslintRulesFrom(
       {
-        "@typescript-eslint/no-var-requires": "off",
+        // We can disable this one because we're using better-typescript-lib
+        "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
+        // This is disabled because vscode already shows us deprecated methods
+        "@typescript-eslint/no-deprecated": "off",
+        // This is disabled because typescript already shows us unused variables
+        "@typescript-eslint/no-unused-vars": "off",
+        // Non-null assertions are fine in limited cases
+        "@typescript-eslint/no-non-null-assertion": "off",
+        // We don't need to enforce this
+        "@typescript-eslint/no-confusing-void-expression": "off",
+        // Disabled for performance
+        "@typescript-eslint/no-misused-promises": "off",
+        // Disabled for performance
+        "@typescript-eslint/no-unsafe-assignment": "off",
         "@typescript-eslint/require-await": "error",
         "@typescript-eslint/return-await": "error",
-        "@typescript-eslint/no-misused-promises": "off",
-        "@typescript-eslint/prefer-for-of": "off",
-        "@typescript-eslint/no-deprecated": "off",
         "@typescript-eslint/consistent-type-imports": [
           "error",
           {
             prefer: "type-imports",
-          },
-        ],
-        "@typescript-eslint/no-unused-vars": [
-          "error",
-          {
-            varsIgnorePattern: "^_",
-            argsIgnorePattern: "^_",
           },
         ],
         "@typescript-eslint/consistent-type-exports": [
@@ -267,8 +269,6 @@ export default eslintTs.config(
             ignoreStatic: true,
           },
         ],
-        "@typescript-eslint/no-non-null-assertion": "off",
-        "@typescript-eslint/no-confusing-void-expression": "off",
         "no-restricted-syntax": [
           "error",
           {
@@ -276,8 +276,6 @@ export default eslintTs.config(
             message: "Use an object with `as const` instead of an enum.",
           },
         ],
-        "no-redeclare": "off",
-        "no-dupe-class-members": "off",
         "@typescript-eslint/restrict-template-expressions": [
           "error",
           {
@@ -334,7 +332,9 @@ export default eslintTs.config(
       },
     },
     rules: {
+      // There is no top-level await in React Native
       "unicorn/prefer-top-level-await": "off",
+      // Sometimes we need to use require in React Native
       "@typescript-eslint/no-require-imports": "off",
     },
   },
@@ -356,7 +356,7 @@ export default eslintTs.config(
       "node/no-unpublished-bin": "error",
       "node/no-unpublished-require": "error",
       "node/process-exit-as-throw": "error",
-      "node/no-unpublished-import": "off",
+      // "node/no-unpublished-import": "off",
     },
   },
   {
@@ -431,6 +431,7 @@ export default eslintTs.config(
       sourceType: "commonjs",
     },
     rules: {
+      // We can't use import/export in CJS
       "@typescript-eslint/no-require-imports": "off",
     },
   },

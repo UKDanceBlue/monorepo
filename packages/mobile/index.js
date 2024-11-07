@@ -76,19 +76,32 @@ if (isDevelopmentBuild()) {
   DevMenu.registerDevMenuItems([
     {
       name: "Clear AsyncStorage",
-      callback: async () => {
+      callback: () => {
         Logger.log("Clearing AsyncStorage");
-        await AsyncStorage.clear();
-        Alert.alert("AsyncStorage cleared successfully");
+        AsyncStorage.clear()
+          .then(() => {
+            Alert.alert("AsyncStorage cleared successfully");
+          })
+          .catch((error) => {
+            Logger.error("Error clearing AsyncStorage", { error });
+            Alert.alert("Error clearing AsyncStorage");
+          });
       },
     },
     {
       name: "Print AsyncStorage",
-      callback: async () => {
+      callback: () => {
         Logger.log("Printing AsyncStorage");
-        const keys = await AsyncStorage.getAllKeys();
-        const values = await AsyncStorage.multiGet(keys);
-        console.log(values);
+        AsyncStorage.getAllKeys()
+          .then((keys) => AsyncStorage.multiGet(keys))
+          .then((values) => {
+            Logger.log(
+              `AsyncStorage values:\n${JSON.stringify(values, null, 2)}`
+            );
+          })
+          .catch((error) => {
+            Logger.error("Error printing AsyncStorage", { error });
+          });
       },
     },
     {
@@ -100,10 +113,9 @@ if (isDevelopmentBuild()) {
           "",
           overrideApiBaseUrl
         );
-
-        return Promise.resolve();
       },
     },
+    // eslint-disable-next-line unicorn/prefer-top-level-await
   ]).catch(/** @param {unknown} error */ (error) => console.error(error));
 }
 
