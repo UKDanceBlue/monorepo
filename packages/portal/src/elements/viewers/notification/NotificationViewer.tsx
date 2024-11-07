@@ -44,7 +44,8 @@ export const NotificationViewer = ({
   const totalDeliveryIssues = Object.values(
     notification.deliveryIssueCount
   ).reduce<number>(
-    (acc, val) => (val === "NotificationDeliveryIssueCount" ? acc : acc + val),
+    (acc, val) =>
+      val === "NotificationDeliveryIssueCount" ? acc : acc + Number(val),
     0
   );
 
@@ -111,7 +112,7 @@ export const NotificationViewer = ({
                       children:
                         value === "NotificationDeliveryIssueCount"
                           ? "No issues"
-                          : value,
+                          : Number(value),
                     }))}
                 />
               ),

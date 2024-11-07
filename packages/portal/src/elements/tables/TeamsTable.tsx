@@ -1,6 +1,11 @@
 import { DollarOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { Link } from "@tanstack/react-router";
-import { SortDirection, TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
+import {
+  SortDirection,
+  TeamLegacyStatus,
+  TeamLegacyStatusValues,
+  TeamTypeValues,
+} from "@ukdanceblue/common";
 import { Button, Flex, Table } from "antd";
 import { useEffect } from "react";
 import { useQuery } from "urql";
@@ -116,16 +121,16 @@ export const TeamsTable = ({
           title: "Type",
           dataIndex: "type",
           sorter: true,
-          filters: Object.entries(TeamType).map(([key, value]) => ({
+          filters: TeamTypeValues.map((key) => ({
             text: key,
-            value,
+            value: key,
           })),
         },
         {
           title: "Legacy Status",
           dataIndex: "legacyStatus",
           sorter: true,
-          filters: Object.values(TeamLegacyStatus).map((value) => {
+          filters: TeamLegacyStatusValues.map((value) => {
             let text: string;
             switch (value) {
               case TeamLegacyStatus.NewTeam: {

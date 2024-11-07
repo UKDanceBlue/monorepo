@@ -1,5 +1,5 @@
 import type { ApiError } from "@ukdanceblue/common";
-import { isLegacyErrorCode,LegacyErrorCode } from "@ukdanceblue/common";
+import { isLegacyErrorCode, LegacyErrorCode } from "@ukdanceblue/common";
 import type { TypeOpen } from "antd/es/message/interface";
 import type { ModalFunc } from "antd/es/modal/confirm";
 import type { NotificationInstance } from "antd/es/notification/interface";
@@ -59,7 +59,7 @@ export function extractServerError(error: CombinedError): ExtendedApiError[] {
           (e) => typeof e === "object" && e !== null
         )
       ) {
-        const {errors} = error.networkError.result;
+        const { errors } = error.networkError.result;
         for (const maybeAnApiError of errors) {
           console.error("maybeAnApiError", maybeAnApiError);
         }
@@ -112,7 +112,7 @@ export function handleUnknownError(
   } else if (error instanceof Error) {
     apiError.message = error.message;
   } else if (typeof error === "object" && error !== null) {
-    apiError.message = JSON.stringify(error);
+    apiError.message = JSON.stringify(error) ?? "An unknown error occurred.";
   } else {
     apiError.message = String(error);
   }
@@ -141,9 +141,9 @@ export function handleApiError(
   console.error(error);
 
   if (options.message) {
-    void options
-      .message(error.explanation ?? error.message)
-      .then(options.onClose);
+    void options.message(error.explanation ?? error.message).then(() => {
+      options.onClose?.();
+    });
   }
 
   if (options.modal) {

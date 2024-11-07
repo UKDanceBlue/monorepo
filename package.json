@@ -69,7 +69,6 @@
     "@graphql-codegen/cli": "^5.0.3",
     "@graphql-codegen/client-preset": "patch:@graphql-codegen/client-preset@npm%3A4.4.0#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.4.0-d441b92060.patch",
     "@parcel/watcher": "^2.4.1",
-    "@total-typescript/ts-reset": "^0.6.1",
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/eslint__eslintrc": "^2.1.2",
     "@types/eslint__js": "^8.42.3",
