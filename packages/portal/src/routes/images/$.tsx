@@ -1,3 +1,6 @@
+console.log(
+  "This page shows you how to add images on the app! You will add a photo, make sure you have a name for it and a description. "
+);
 import { PlusOutlined } from "@ant-design/icons";
 import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";

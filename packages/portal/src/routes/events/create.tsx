@@ -1,3 +1,5 @@
+console.log("Events on calendar. ");
+import { EventCreator } from "@elements/forms/event/create/EventCreator";
 import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
 
