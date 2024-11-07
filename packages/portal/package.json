@@ -58,6 +58,7 @@
   "devDependencies": {
     "@tanstack/router-devtools": "^1.74.5",
     "@tanstack/router-plugin": "^1.74.2",
+    "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash.isequal": "^4.5.8",
     "@types/luxon": "^3.4.2",
     "@types/react": "~18.3.11",

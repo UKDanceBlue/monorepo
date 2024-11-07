@@ -70,6 +70,7 @@ export function booleanFilterToPrisma<T extends string>(
   filter: AbstractBooleanFilterItem<T> | AbstractIsNullFilterItem<T>
 ): Prisma.BoolFilter {
   switch (filter.comparison) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     case IsComparator.IS: {
       if (filter.negate) {
         return { not: { equals: filter.value } };

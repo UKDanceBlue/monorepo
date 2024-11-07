@@ -142,8 +142,8 @@ const RootScreen = () => {
                   );
                   if (eventData.title) {
                     eventTitle = eventData.title;
-                    for (let i = 0; i < eventTitle.length; i++) {
-                      if (eventTitle[i] === " ") {
+                    for (const char of eventTitle) {
+                      if (char === " ") {
                         spacesInTitle++;
                       }
                     }

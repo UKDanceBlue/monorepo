@@ -1,9 +1,9 @@
 import { App } from "antd";
-import type { ModalFunc } from "antd/es/modal/confirm";
+import type { ModalFunc } from "antd/es/modal/confirm.js";
 import type { ReactNode } from "react";
 import { useCallback, useState } from "react";
 
-import { handleUnknownError } from "#tools/apolloErrorHandler";
+import { handleUnknownError } from "#tools/apolloErrorHandler.js";
 
 export const useAntFeedback = () => {
   const { message, notification, modal } = App.useApp();

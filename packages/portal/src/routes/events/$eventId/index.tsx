@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
-import { EventViewer } from "#elements/viewers/event/EventViewer";
+import { EventViewer } from "#elements/viewers/event/EventViewer.js";
 import { graphql } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
-import { routerAuthCheck } from "#tools/routerAuthCheck";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const viewEventPageDocument = graphql(/* GraphQL */ `
   query ViewEventPage($uuid: GlobalId!) {

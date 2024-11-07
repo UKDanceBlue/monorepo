@@ -1,14 +1,14 @@
 import type { DateTime } from "luxon";
 import { useMutation } from "urql";
 
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import {
   cancelNotificationScheduleDocument,
   deleteNotificationDocument,
   scheduleNotificationDocument,
   sendNotificationDocument,
-} from "./NotificationManagerGQL";
+} from "./NotificationManagerGQL.js";
 
 export const useNotificationManagerForm = ({
   uuid,

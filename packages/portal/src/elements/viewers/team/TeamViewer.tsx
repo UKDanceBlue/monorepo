@@ -14,15 +14,18 @@ import { Button, Descriptions, Empty, Flex } from "antd";
 import { useState } from "react";
 import { useMutation } from "urql";
 
-import { PersonSearch } from "#elements/components/person/PersonSearch";
+import { PersonSearch } from "#elements/components/person/PersonSearch.js";
 import type { FragmentType } from "#graphql/index.js";
 import { getFragmentData, graphql } from "#graphql/index.js";
-import { useAuthorizationRequirement } from "#hooks/useLoginState";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import { useTeamDeletePopup } from "../../components/team/TeamDeletePopup";
-import { AssignToTeamPopup } from "./AssignToTeamPopup";
-import { assignToTeamDocument, removeFromTeamDocument } from "./TeamViewerGql";
+import { AssignToTeamPopup } from "./AssignToTeamPopup.js";
+import {
+  assignToTeamDocument,
+  removeFromTeamDocument,
+} from "./TeamViewerGql.js";
 
 export const TeamViewerFragment = graphql(/* GraphQL */ `
   fragment TeamViewerFragment on TeamNode {

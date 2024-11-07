@@ -1,8 +1,8 @@
 import type { ApiError } from "@ukdanceblue/common";
 import { isLegacyErrorCode, LegacyErrorCode } from "@ukdanceblue/common";
-import type { TypeOpen } from "antd/es/message/interface";
-import type { ModalFunc } from "antd/es/modal/confirm";
-import type { NotificationInstance } from "antd/es/notification/interface";
+import type { TypeOpen } from "antd/es/message/interface.js";
+import type { ModalFunc } from "antd/es/modal/confirm.js";
+import type { NotificationInstance } from "antd/es/notification/interface.js";
 import { CombinedError } from "urql";
 
 export type ExtendedApiError = ApiError;

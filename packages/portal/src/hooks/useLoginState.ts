@@ -9,7 +9,7 @@ import {
   roleToAccessLevel,
 } from "@ukdanceblue/common";
 import { useMemo } from "react";
-import type { Client, OperationResult} from "urql";
+import type { Client, OperationResult } from "urql";
 import { useQuery } from "urql";
 
 import type { LoginStateQuery } from "#graphql/graphql.js";
@@ -34,10 +34,8 @@ export interface PortalAuthData {
 }
 
 function parseLoginState(
-  result:
-    | { data?: OperationResult<LoginStateQuery, {}>["data"] }
-    | undefined
-    | null
+  result: // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  { data?: OperationResult<LoginStateQuery, {}>["data"] } | undefined | null
 ): PortalAuthData {
   if (result?.data == null) {
     return {

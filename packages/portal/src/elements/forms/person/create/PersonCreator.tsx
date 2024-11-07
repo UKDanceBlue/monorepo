@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { App, Button, Flex, Form, Input } from "antd";
 
-import { usePersonCreatorForm } from "./usePersonCreatorForm";
+import { usePersonCreatorForm } from "./usePersonCreatorForm.js";
 
 export function PersonCreator() {
   const navigate = useNavigate();

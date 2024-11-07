@@ -312,12 +312,9 @@ export class PersonRepository {
               CommitteeIdentifier.overallCommittee
           ) {
             for (const child of team.correspondingCommittee.childCommittees) {
-              addRole(child.identifier, committeeRole ?? CommitteeRole.Member);
+              addRole(child.identifier, committeeRole);
               for (const grandchild of child.childCommittees) {
-                addRole(
-                  grandchild.identifier,
-                  committeeRole ?? CommitteeRole.Member
-                );
+                addRole(grandchild.identifier, committeeRole);
               }
             }
           }
@@ -820,79 +817,69 @@ export class PersonRepository {
                     deleteMany: {
                       teamId: {
                         notIn: [
-                          ...(okMemberOfIds ?? []).map(({ id }) => id),
-                          ...(okCaptainOfIds ?? []).map(({ id }) => id),
+                          ...okMemberOfIds.map(({ id }) => id),
+                          ...okCaptainOfIds.map(({ id }) => id),
                         ],
                       },
                       personId,
                     },
                     upsert: [
-                      ...(okMemberOfIds
-                        .filter(
-                          (id): id is Exclude<typeof id, undefined> =>
-                            id != null
-                        )
-                        .map(
-                          ({
-                            id: teamId,
-                            committeeRole,
-                          }): Prisma.MembershipUpsertWithWhereUniqueWithoutPersonInput => {
-                            return {
-                              where: { personId_teamId: { personId, teamId } },
-                              create: {
-                                position: MembershipPositionType.Member,
-                                committeeRole,
-                                team: {
-                                  connect: {
-                                    id: teamId,
-                                    correspondingCommitteeId: committeeRole
-                                      ? {
-                                          not: null,
-                                        }
-                                      : undefined,
-                                  },
+                      ...okMemberOfIds.map(
+                        ({
+                          id: teamId,
+                          committeeRole,
+                        }): Prisma.MembershipUpsertWithWhereUniqueWithoutPersonInput => {
+                          return {
+                            where: { personId_teamId: { personId, teamId } },
+                            create: {
+                              position: MembershipPositionType.Member,
+                              committeeRole,
+                              team: {
+                                connect: {
+                                  id: teamId,
+                                  correspondingCommitteeId: committeeRole
+                                    ? {
+                                        not: null,
+                                      }
+                                    : undefined,
                                 },
                               },
-                              update: {
-                                position: MembershipPositionType.Member,
-                                committeeRole,
-                              },
-                            };
-                          }
-                        ) ?? []),
-                      ...(okCaptainOfIds
-                        .filter(
-                          (id): id is Exclude<typeof id, undefined> =>
-                            id != null
-                        )
-                        .map(
-                          ({
-                            id: teamId,
-                            committeeRole,
-                          }): Prisma.MembershipUpsertWithWhereUniqueWithoutPersonInput => {
-                            return {
-                              where: { personId_teamId: { personId, teamId } },
-                              create: {
-                                position: MembershipPositionType.Captain,
-                                committeeRole,
-                                team: {
-                                  connect: {
-                                    id: teamId,
-                                    correspondingCommitteeId: committeeRole
-                                      ? {
-                                          not: null,
-                                        }
-                                      : undefined,
-                                  },
+                            },
+                            update: {
+                              position: MembershipPositionType.Member,
+                              committeeRole,
+                            },
+                          };
+                        }
+                      ),
+                      ...okCaptainOfIds.map(
+                        ({
+                          id: teamId,
+                          committeeRole,
+                        }): Prisma.MembershipUpsertWithWhereUniqueWithoutPersonInput => {
+                          return {
+                            where: { personId_teamId: { personId, teamId } },
+                            create: {
+                              position: MembershipPositionType.Captain,
+                              committeeRole,
+                              team: {
+                                connect: {
+                                  id: teamId,
+                                  correspondingCommitteeId: committeeRole
+                                    ? {
+                                        not: null,
+                                      }
+                                    : undefined,
                                 },
                               },
-                              update: {
-                                position: MembershipPositionType.Captain,
-                                committeeRole,
-                              },
-                            };
-                          }
-                        ) ?? []),
+                            },
+                            update: {
+                              position: MembershipPositionType.Captain,
+                              committeeRole,
+                            },
+                          };
+                        }
+                      ),
                     ],
                   }
                 : undefined,
@@ -1039,6 +1026,7 @@ export class PersonRepository {
       );
 
       for (const person of addToVice) {
+        // eslint-disable-next-line no-await-in-loop
         await this.prisma.membership.upsert({
           create: {
             person: {

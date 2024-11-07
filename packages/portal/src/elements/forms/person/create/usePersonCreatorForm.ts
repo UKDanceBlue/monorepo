@@ -3,9 +3,9 @@ import { useMutation } from "urql";
 
 import { type CreatePersonInput } from "#graphql/graphql.js";
 import type { DocumentType } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
-import { personCreatorDocument } from "./PersonCreatorGQL";
+import { personCreatorDocument } from "./PersonCreatorGQL.js";
 
 export function usePersonCreatorForm(
   afterSubmit:

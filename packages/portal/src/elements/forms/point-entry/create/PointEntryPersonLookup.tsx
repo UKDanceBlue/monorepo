@@ -5,16 +5,19 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 import { useDebouncedCallback } from "use-debounce";
 
-import { useAskConfirm, useUnknownErrorHandler } from "#hooks/useAntFeedback";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import {
+  useAskConfirm,
+  useUnknownErrorHandler,
+} from "#hooks/useAntFeedback.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import {
   createPersonByLinkBlue,
   getPersonByLinkBlueDocument,
   getPersonByUuidDocument,
   searchPersonByNameDocument,
-} from "./PointEntryCreatorGQL";
-import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm";
+} from "./PointEntryCreatorGQL.js";
+import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm.js";
 
 const generalLinkblueRegex = new RegExp(/^[A-Za-z]{3,4}\d{3}$/);
 export function PointEntryPersonLookup({

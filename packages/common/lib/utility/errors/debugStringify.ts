@@ -18,22 +18,19 @@ export function debugStringify(value: unknown, colors = false): string {
   if (typeof value === "object" && value && !(value instanceof Error)) {
     try {
       const cache = new Set<unknown>();
-      return (
-        JSON.stringify(
-          value,
-          //@ts-expect-error - The declaration is weird
-          (_key, value: unknown) => {
-            if (value !== null && typeof value === "object") {
-              // Duplicate reference found, discard key
-              if (cache.has(value)) return;
+      return JSON.stringify(
+        value,
+        (_key, value: unknown) => {
+          if (value !== null && typeof value === "object") {
+            // Duplicate reference found, discard key
+            if (cache.has(value)) return;
 
-              // Store value in our collection
-              cache.add(value);
-            }
-            return value;
-          },
-          2
-        ) ?? "[UNKNOWN]"
+            // Store value in our collection
+            cache.add(value);
+          }
+          return value;
+        },
+        2
       );
     } catch {
       return String(value);

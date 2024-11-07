@@ -49,10 +49,10 @@ const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
   try {
     result = (await next()) as unknown;
   } catch (error) {
-    if (typeof error !== "object") {
-      error = { error };
-    }
-    logger.error("An error occurred in a resolver", error);
+    logger.error(
+      "An error occurred in a resolver",
+      typeof error !== "object" ? { error } : error
+    );
     throw error;
   }
 
@@ -125,6 +125,7 @@ export default await buildSchema({
   globalMiddlewares: [errorHandlingMiddleware],
   container: {
     get(someClass) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument
       return Container.get(someClass, false);
     },
   },

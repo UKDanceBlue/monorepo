@@ -4,7 +4,7 @@ import type { ColumnType } from "antd/es/table";
 import { useState } from "react";
 import { read, utils } from "xlsx";
 
-import { useAntFeedback } from "#hooks/useAntFeedback";
+import { useAntFeedback } from "#hooks/useAntFeedback.js";
 
 export function SpreadsheetUploader<
   RowType extends object,

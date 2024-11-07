@@ -1,6 +1,6 @@
 import { Service } from "@freshgum/typedi";
 import type { Notification } from "@prisma/client";
-import { ConcreteResult } from "@ukdanceblue/common/error";
+import { ConcreteResult, ErrorCode } from "@ukdanceblue/common/error";
 import { Cron, scheduledJobs } from "croner";
 
 import { logger } from "#logging/standardLogging.js";
@@ -169,23 +169,27 @@ export class NotificationScheduler {
               uuid: notification.uuid,
             }).promise;
           if (updatedNotification.isErr()) {
-            logger.error("Failed to find scheduled notification, not sending", {
-              notificationUuid: notification.uuid,
-              error: updatedNotification.error,
-            });
-            return;
-          }
-          if (!updatedNotification.value) {
-            logger.info(
-              "Scheduled notification was deleted since it was scheduled, not sending",
-              {
-                notificationUuid: notification.uuid,
-                deletedNotification: {
-                  title: notification.title,
-                },
-              }
-            );
-            return;
+            if (updatedNotification.error.tag === ErrorCode.NotFound) {
+              logger.info(
+                "Scheduled notification was deleted since it was scheduled, not sending",
+                {
+                  notificationUuid: notification.uuid,
+                  deletedNotification: {
+                    title: notification.title,
+                  },
+                }
+              );
+              return;
+            } else {
+              logger.error(
+                "Failed to find scheduled notification, not sending",
+                {
+                  notificationUuid: notification.uuid,
+                  error: updatedNotification.error,
+                }
+              );
+              return;
+            }
           }
           if (notification.sendAt !== updatedNotification.value.sendAt) {
             logger.info(

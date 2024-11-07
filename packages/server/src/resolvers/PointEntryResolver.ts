@@ -23,7 +23,7 @@ import {
   ListPointEntriesArgs,
   ListPointEntriesResponse,
 } from "@ukdanceblue/common";
-import { ConcreteResult,NotFoundError } from "@ukdanceblue/common/error";
+import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Some } from "ts-results-es";
 import {
   Arg,

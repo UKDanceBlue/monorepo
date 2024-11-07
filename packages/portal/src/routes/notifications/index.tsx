@@ -3,8 +3,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
 
-import { NotificationsTable } from "#elements/tables/notification/NotificationsTable";
-import { routerAuthCheck } from "#tools/routerAuthCheck";
+import { NotificationsTable } from "#elements/tables/notification/NotificationsTable.js";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function ListNotificationsPage() {
   return (

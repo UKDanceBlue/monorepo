@@ -7,10 +7,10 @@ import { useMemo, useState } from "react";
 import { useClient, useQuery } from "urql";
 import { utils, write, writeFile } from "xlsx";
 
-import { useMarathon } from "#config/marathonContext";
-import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader";
-import { graphql } from "#graphql/index";
-import { routerAuthCheck } from "#tools/routerAuthCheck";
+import { useMarathon } from "#config/marathonContext.js";
+import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader.js";
+import { graphql } from "#graphql/index.js";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 interface FundraisingTeam {
   name: string;

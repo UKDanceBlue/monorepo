@@ -5,5 +5,5 @@ export const themeConfigContext = createContext<{
   setDark: (dark: boolean) => void;
 }>({
   dark: false,
-  setDark: () => {},
+  setDark: () => undefined,
 });

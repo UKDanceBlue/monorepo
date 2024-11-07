@@ -5,9 +5,9 @@ import { useMutation } from "urql";
 import { type SetTeamInput } from "#graphql/graphql.js";
 import type { DocumentType, FragmentType } from "#graphql/index.js";
 import { getFragmentData } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
-import { teamEditorDocument,TeamEditorFragment } from "./TeamEditorGQL";
+import { teamEditorDocument, TeamEditorFragment } from "./TeamEditorGQL.js";
 
 export function useTeamEditorForm(
   teamFragment: FragmentType<typeof TeamEditorFragment> | undefined,

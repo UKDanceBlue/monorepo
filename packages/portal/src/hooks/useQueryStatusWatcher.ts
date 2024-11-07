@@ -1,6 +1,6 @@
 import { useLocation } from "@tanstack/react-router";
 import { App } from "antd";
-import type { MessageType } from "antd/es/message/interface";
+import type { MessageType } from "antd/es/message/interface.js";
 import { useCallback, useEffect, useRef } from "react";
 import type { CombinedError } from "urql";
 

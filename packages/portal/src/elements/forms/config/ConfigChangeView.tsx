@@ -1,7 +1,7 @@
 import { Descriptions } from "antd";
 import { DateTime } from "luxon";
 
-import type { ConfigValue } from "./useConfig";
+import type { ConfigValue } from "./useConfig.js";
 
 export function ConfigChangeView({
   oldConfig,

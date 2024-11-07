@@ -4,10 +4,10 @@ import {
   checkAuthorization,
   prettyPrintAuthorizationRule,
 } from "@ukdanceblue/common";
-import type { useAppProps } from "antd/es/app/context";
+import type { useAppProps } from "antd/es/app/context.js";
 import type { Client } from "urql";
 
-import { getLoginState } from "#hooks/useLoginState";
+import { getLoginState } from "#hooks/useLoginState.js";
 
 export function routerAuthCheck(
   route: {

@@ -4,12 +4,10 @@ import type {
   CameraProps,
   CameraType,
   CameraViewRef,
-  FlashMode} from "expo-camera";
-import {
-  PermissionStatus,
-  useCameraPermissions,
+  FlashMode,
 } from "expo-camera";
-import type { MutableRefObject} from "react";
+import { PermissionStatus, useCameraPermissions } from "expo-camera";
+import type { MutableRefObject } from "react";
 import { useEffect, useRef, useState } from "react";
 
 import { Logger } from "#common/logger/Logger";
@@ -95,7 +93,7 @@ export function useCameraState(): {
   };
 
   const startTakingPictures = () => {
-    if (cameraRef.current === null) {
+    if (cameraRef.current == null) {
       Logger.error("Camera ref is null");
       return;
     } else if (currentlyTaking[facing]) {
