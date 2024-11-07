@@ -112,7 +112,7 @@ export function handleUnknownError(
   } else if (error instanceof Error) {
     apiError.message = error.message;
   } else if (typeof error === "object" && error !== null) {
-    apiError.message = JSON.stringify(error) ?? "An unknown error occurred.";
+    apiError.message = JSON.stringify(error);
   } else {
     apiError.message = String(error);
   }

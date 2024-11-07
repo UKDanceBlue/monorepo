@@ -47,7 +47,7 @@ export function useTabBarConfig(): {
 
     try {
       if (tabBarConfig) {
-        const parsed = JSON.parse(tabBarConfig.value);
+        const parsed = JSON.parse(tabBarConfig.value) as unknown;
         if (typeof parsed === "object" && parsed !== null) {
           if ("fancyTab" in parsed) {
             if (typeof parsed.fancyTab === "string") {

@@ -26,7 +26,7 @@ export function useUpdateChecker() {
 
   useEffect(() => {
     Logger.info("Checking for updates", { context: { currentlyRunning } });
-    void checkForUpdateAsync().catch((error) => {
+    void checkForUpdateAsync().catch((error: unknown) => {
       if (
         !(
           typeof error === "object" &&

@@ -38,7 +38,7 @@ export function useAllowedLoginTypes(): {
 
     try {
       if (configValue) {
-        const parsed = JSON.parse(configValue.value);
+        const parsed = JSON.parse(configValue.value) as unknown;
         if (Array.isArray(parsed)) {
           for (const type of parsed) {
             if (type === "anonymous") {
