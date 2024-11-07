@@ -12,40 +12,40 @@ import { createFileRoute } from "@tanstack/react-router";
 
 // Import Routes
 
-import { Route as rootRoute } from "./routes/__root.js";
-import { Route as IndexImport } from "./routes/index.js";
-import { Route as TeamsIndexImport } from "./routes/teams/index.js";
-import { Route as PeopleIndexImport } from "./routes/people/index.js";
-import { Route as NotificationsIndexImport } from "./routes/notifications/index.js";
-import { Route as MarathonIndexImport } from "./routes/marathon/index.js";
-import { Route as FeedIndexImport } from "./routes/feed/index.js";
-import { Route as EventsIndexImport } from "./routes/events/index.js";
-import { Route as DbfundsIndexImport } from "./routes/dbfunds/index.js";
-import { Route as ConfigIndexImport } from "./routes/config/index.js";
-import { Route as TeamsCreateImport } from "./routes/teams/create.js";
-import { Route as TeamsBulkImport } from "./routes/teams/bulk.js";
-import { Route as PeopleCreateImport } from "./routes/people/create.js";
-import { Route as PeopleBulkImport } from "./routes/people/bulk.js";
-import { Route as NotificationsCreateImport } from "./routes/notifications/create.js";
-import { Route as MarathonCreateImport } from "./routes/marathon/create.js";
-import { Route as ImagesSplatImport } from "./routes/images/$.js";
-import { Route as EventsCreateImport } from "./routes/events/create.js";
-import { Route as AdminLogsImport } from "./routes/admin/logs.js";
-import { Route as PeoplePersonIdIndexImport } from "./routes/people/$personId/index.js";
-import { Route as NotificationsNotificationIdIndexImport } from "./routes/notifications/$notificationId/index.js";
-import { Route as MarathonMarathonIdIndexImport } from "./routes/marathon/$marathonId/index.js";
-import { Route as EventsEventIdIndexImport } from "./routes/events/$eventId/index.js";
-import { Route as TeamsTeamIdEditImport } from "./routes/teams/$teamId/edit.js";
-import { Route as TeamsTeamIdLayoutImport } from "./routes/teams/$teamId/_layout.js";
-import { Route as PeoplePersonIdEditImport } from "./routes/people/$personId/edit.js";
-import { Route as NotificationsNotificationIdManageImport } from "./routes/notifications/$notificationId/manage.js";
-import { Route as MarathonMarathonIdEditImport } from "./routes/marathon/$marathonId/edit.js";
-import { Route as EventsEventIdEditImport } from "./routes/events/$eventId/edit.js";
-import { Route as TeamsTeamIdLayoutIndexImport } from "./routes/teams/$teamId/_layout/index.js";
-import { Route as TeamsTeamIdLayoutPointsImport } from "./routes/teams/$teamId/_layout/points.js";
-import { Route as TeamsTeamIdLayoutFundraisingImport } from "./routes/teams/$teamId/_layout/fundraising.js";
-import { Route as MarathonMarathonIdHoursAddImport } from "./routes/marathon/$marathonId/hours/add.js";
-import { Route as MarathonMarathonIdHoursHourIdIndexImport } from "./routes/marathon/$marathonId/hours/$hourId/index.js";
+import { Route as rootRoute } from "./routes/__root";
+import { Route as IndexImport } from "./routes/index";
+import { Route as TeamsIndexImport } from "./routes/teams/index";
+import { Route as PeopleIndexImport } from "./routes/people/index";
+import { Route as NotificationsIndexImport } from "./routes/notifications/index";
+import { Route as MarathonIndexImport } from "./routes/marathon/index";
+import { Route as FeedIndexImport } from "./routes/feed/index";
+import { Route as EventsIndexImport } from "./routes/events/index";
+import { Route as DbfundsIndexImport } from "./routes/dbfunds/index";
+import { Route as ConfigIndexImport } from "./routes/config/index";
+import { Route as TeamsCreateImport } from "./routes/teams/create";
+import { Route as TeamsBulkImport } from "./routes/teams/bulk";
+import { Route as PeopleCreateImport } from "./routes/people/create";
+import { Route as PeopleBulkImport } from "./routes/people/bulk";
+import { Route as NotificationsCreateImport } from "./routes/notifications/create";
+import { Route as MarathonCreateImport } from "./routes/marathon/create";
+import { Route as ImagesSplatImport } from "./routes/images/$";
+import { Route as EventsCreateImport } from "./routes/events/create";
+import { Route as AdminLogsImport } from "./routes/admin/logs";
+import { Route as PeoplePersonIdIndexImport } from "./routes/people/$personId/index";
+import { Route as NotificationsNotificationIdIndexImport } from "./routes/notifications/$notificationId/index";
+import { Route as MarathonMarathonIdIndexImport } from "./routes/marathon/$marathonId/index";
+import { Route as EventsEventIdIndexImport } from "./routes/events/$eventId/index";
+import { Route as TeamsTeamIdEditImport } from "./routes/teams/$teamId/edit";
+import { Route as TeamsTeamIdLayoutImport } from "./routes/teams/$teamId/_layout";
+import { Route as PeoplePersonIdEditImport } from "./routes/people/$personId/edit";
+import { Route as NotificationsNotificationIdManageImport } from "./routes/notifications/$notificationId/manage";
+import { Route as MarathonMarathonIdEditImport } from "./routes/marathon/$marathonId/edit";
+import { Route as EventsEventIdEditImport } from "./routes/events/$eventId/edit";
+import { Route as TeamsTeamIdLayoutIndexImport } from "./routes/teams/$teamId/_layout/index";
+import { Route as TeamsTeamIdLayoutPointsImport } from "./routes/teams/$teamId/_layout/points";
+import { Route as TeamsTeamIdLayoutFundraisingImport } from "./routes/teams/$teamId/_layout/fundraising";
+import { Route as MarathonMarathonIdHoursAddImport } from "./routes/marathon/$marathonId/hours/add";
+import { Route as MarathonMarathonIdHoursHourIdIndexImport } from "./routes/marathon/$marathonId/hours/$hourId/index";
 
 // Create Virtual Routes
 
@@ -252,7 +252,7 @@ const MarathonMarathonIdHoursAddRoute = MarathonMarathonIdHoursAddImport.update(
     id: "/marathon/$marathonId/hours/add",
     path: "/marathon/$marathonId/hours/add",
     getParentRoute: () => rootRoute,
-  } as any
+  } as any,
 );
 
 const MarathonMarathonIdHoursHourIdIndexRoute =
@@ -535,7 +535,7 @@ const TeamsTeamIdRouteChildren: TeamsTeamIdRouteChildren = {
 };
 
 const TeamsTeamIdRouteWithChildren = TeamsTeamIdRoute._addFileChildren(
-  TeamsTeamIdRouteChildren
+  TeamsTeamIdRouteChildren,
 );
 
 export interface FileRoutesByFullPath {
@@ -610,7 +610,7 @@ export interface FileRoutesByTo {
 }
 
 export interface FileRoutesById {
-  "__root__": typeof rootRoute;
+  __root__: typeof rootRoute;
   "/": typeof IndexRoute;
   "/admin/logs": typeof AdminLogsRoute;
   "/events/create": typeof EventsCreateRoute;
