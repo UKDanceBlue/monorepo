@@ -1,14 +1,13 @@
+import { describe, expect, it } from "vitest";
+
 import { checkAuthorization } from "../../authorization/accessControl.js";
+import type { Authorization } from "../../index.js";
 import {
   AccessLevel,
   CommitteeIdentifier,
   CommitteeRole,
   DbRole,
 } from "../../index.js";
-
-import { describe, expect, it } from "vitest";
-
-import type { Authorization } from "../../index.js";
 
 const techChair: Authorization = {
   accessLevel: AccessLevel.Admin,

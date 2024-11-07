@@ -1,8 +1,10 @@
-import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
-import { logger } from "#logging/logger.js";
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
-
+import type { ContextFunction } from "@apollo/server";
+import type { KoaContextFunctionArgument } from "@as-integrations/koa";
+import { Container } from "@freshgum/typedi";
+import type {
+  AuthorizationContext,
+  EffectiveCommitteeRole,
+} from "@ukdanceblue/common";
 import {
   AccessLevel,
   AuthSource,
@@ -13,25 +15,22 @@ import {
   roleToAccessLevel,
   TeamType,
 } from "@ukdanceblue/common";
-import { ErrorCode } from "@ukdanceblue/common/error";
-import { Ok } from "ts-results-es";
-import { Container } from "@freshgum/typedi";
-
-import type { ContextFunction } from "@apollo/server";
-import type { KoaContextFunctionArgument } from "@as-integrations/koa";
-import type {
-  AuthorizationContext,
-  EffectiveCommitteeRole,
-} from "@ukdanceblue/common";
 import type { ConcreteResult } from "@ukdanceblue/common/error";
+import { ErrorCode } from "@ukdanceblue/common/error";
 import type { DefaultState } from "koa";
+import { Ok } from "ts-results-es";
+
+import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
 import { superAdminLinkblues } from "#environment";
+import { logger } from "#logging/logger.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 export interface GraphQLContext extends AuthorizationContext {}
 
 function isSuperAdmin(
   committeeRoles: EffectiveCommitteeRole[],
-  linkblue?: string | null | undefined
+  linkblue?: string | null  
 ): boolean {
   return (
     (typeof superAdminLinkblues !== "symbol" &&
@@ -174,11 +173,7 @@ export const graphqlContextFunction: ContextFunction<
 
   // Set the dbRole based on the auth source
   let authSourceDbRole: DbRole;
-  if (authSource === AuthSource.LinkBlue || authSource === AuthSource.Demo) {
-    authSourceDbRole = DbRole.UKY;
-  } else {
-    authSourceDbRole = DbRole.None;
-  }
+  authSourceDbRole = authSource === AuthSource.LinkBlue || authSource === AuthSource.Demo ? DbRole.UKY : DbRole.None;
 
   if (!userId) {
     logger.trace("graphqlContextFunction No user ID");

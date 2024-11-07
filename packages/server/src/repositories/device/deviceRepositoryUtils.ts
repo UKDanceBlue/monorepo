@@ -1,12 +1,12 @@
+import type { Prisma } from "@prisma/client";
+import { SortDirection } from "@ukdanceblue/common";
+
 import {
   dateFilterToPrisma,
   stringFilterToPrisma,
 } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
-import { SortDirection } from "@ukdanceblue/common";
-
 import type { DeviceFilters } from "./DeviceRepository.js";
-import type { Prisma } from "@prisma/client";
 
 export function buildDeviceOrder(
   order: readonly [key: string, sort: SortDirection][] | null | undefined

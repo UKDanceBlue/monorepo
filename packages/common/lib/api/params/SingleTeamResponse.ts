@@ -1,14 +1,15 @@
-import { ObjectType, Field, InputType, ArgsType, Int } from "type-graphql";
+import { ArgsType, Field, InputType, Int,ObjectType } from "type-graphql";
+
+import { DbRole } from "../../authorization/structures.js";
+import { OptionalToNullable } from "../../utility/primitive/TypeUtils.js";
+import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
+import { TeamLegacyStatus, TeamNode, TeamType } from "../resources/Team.js";
+import { type GlobalId,GlobalIdScalar } from "../scalars/GlobalId.js";
 import {
+  AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
   AbstractGraphQLPaginatedResponse,
-  AbstractGraphQLCreatedResponse,
 } from "./ApiResponse.js";
-import { TeamLegacyStatus, TeamNode, TeamType } from "../resources/Team.js";
-import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
-import { DbRole } from "../../authorization/structures.js";
-import { GlobalIdScalar, type GlobalId } from "../scalars/GlobalId.js";
-import { OptionalToNullable } from "../../utility/primitive/TypeUtils.js";
 
 @ObjectType("SingleTeamResponse", {
   implements: AbstractGraphQLOkResponse<TeamNode>,

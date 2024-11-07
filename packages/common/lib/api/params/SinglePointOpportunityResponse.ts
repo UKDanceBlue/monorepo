@@ -1,14 +1,15 @@
 import { DateTimeISOResolver } from "graphql-scalars";
-import { ObjectType, Field, InputType, ArgsType } from "type-graphql";
-import {
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-  AbstractGraphQLCreatedResponse,
-} from "./ApiResponse.js";
+import { ArgsType,Field, InputType, ObjectType } from "type-graphql";
+
+import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { PointOpportunityNode } from "../resources/PointOpportunity.js";
 import { TeamType } from "../resources/Team.js";
-import { GlobalIdScalar, type GlobalId } from "../scalars/GlobalId.js";
-import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
+import { type GlobalId,GlobalIdScalar } from "../scalars/GlobalId.js";
+import {
+  AbstractGraphQLCreatedResponse,
+  AbstractGraphQLOkResponse,
+  AbstractGraphQLPaginatedResponse,
+} from "./ApiResponse.js";
 
 @ObjectType("SinglePointOpportunityResponse", {
   implements: AbstractGraphQLOkResponse<PointOpportunityNode>,

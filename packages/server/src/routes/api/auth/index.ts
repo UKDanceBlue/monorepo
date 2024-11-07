@@ -1,11 +1,12 @@
 import { Service } from "@freshgum/typedi";
+import { koaBody } from "koa-body";
+
+import { RouterService } from "#routes/RouteService.js";
+
 import { anonymousLogin } from "./anonymous.js";
 import { demoLogin } from "./demo.js";
 import { login } from "./login.js";
 import { oidcCallback } from "./oidcCallback.js";
-
-import { koaBody } from "koa-body";
-import { RouterService } from "#routes/RouteService.js";
 
 // TODO: Replace custom OAuth2 + middleware implementation with Passport.js and oauth2orize
 // https://www.passportjs.org

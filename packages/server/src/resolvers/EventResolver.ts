@@ -1,24 +1,29 @@
-import { FileManager } from "#files/FileManager.js";
-import { auditLogger } from "#logging/auditLogging.js";
-import { EventRepository } from "#repositories/event/EventRepository.js";
+import { Service } from "@freshgum/typedi";
+import type { Prisma } from "@prisma/client";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
-  eventModelToResource,
-  eventOccurrenceModelToResource,
-} from "#repositories/event/eventModelToResource.js";
-import { EventImagesRepository } from "#repositories/event/images/EventImagesRepository.js";
-import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
-
-import {
-  QueryAccessControl,
   AccessLevel,
   CommitteeRole,
-  LegacyError,
-  LegacyErrorCode,
   EventNode,
   GlobalIdScalar,
   ImageNode,
-  SortDirection,
+  LegacyError,
+  LegacyErrorCode,
   MutationAccessControl,
+  QueryAccessControl,
+  SortDirection,
+} from "@ukdanceblue/common";
+import {
+  AddEventImageResponse,
+  CreateEventInput,
+  CreateEventResponse,
+  DeleteEventResponse,
+  GetEventByUuidResponse,
+  ListEventsArgs,
+  ListEventsResponse,
+  RemoveEventImageResponse,
+  SetEventInput,
+  SetEventResponse,
 } from "@ukdanceblue/common";
 import {
   Arg,
@@ -29,22 +34,16 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Service } from "@freshgum/typedi";
 
-import type { Prisma } from "@prisma/client";
-import type { GlobalId } from "@ukdanceblue/common";
+import { FileManager } from "#files/FileManager.js";
+import { auditLogger } from "#logging/auditLogging.js";
 import {
-  GetEventByUuidResponse,
-  ListEventsResponse,
-  ListEventsArgs,
-  CreateEventResponse,
-  CreateEventInput,
-  DeleteEventResponse,
-  SetEventResponse,
-  SetEventInput,
-  RemoveEventImageResponse,
-  AddEventImageResponse,
-} from "@ukdanceblue/common";
+  eventModelToResource,
+  eventOccurrenceModelToResource,
+} from "#repositories/event/eventModelToResource.js";
+import { EventRepository } from "#repositories/event/EventRepository.js";
+import { EventImagesRepository } from "#repositories/event/images/EventImagesRepository.js";
+import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
 @Service([EventRepository, EventImagesRepository, FileManager])
 @Resolver(() => EventNode)

@@ -1,8 +1,9 @@
 import { DateTimeISOResolver } from "graphql-scalars";
-import { ObjectType, Field, InputType, ArgsType } from "type-graphql";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
-import { MarathonNode } from "../resources/Marathon.js";
+import { ArgsType,Field, InputType, ObjectType } from "type-graphql";
+
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
+import { MarathonNode } from "../resources/Marathon.js";
+import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 @ObjectType("ListMarathonsResponse", {
   implements: AbstractGraphQLPaginatedResponse<MarathonNode[]>,

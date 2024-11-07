@@ -1,8 +1,7 @@
 import { ConsoleTransport } from "./ConsoleTransport";
 import { SentryTransport } from "./SentryTransport";
-import { LogLevel } from "./transport";
-
 import type { ExtraLogArgs, LoggerTransport } from "./transport";
+import { LogLevel } from "./transport";
 
 export class Logger {
   static #instance: Logger = new Logger(

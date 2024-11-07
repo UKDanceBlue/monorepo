@@ -1,14 +1,13 @@
-import * as ErrorCode from "./errorCode.js";
-
-import { getLocation, GraphQLError } from "graphql";
-
 import type {
   GraphQLFormattedError,
   GraphQLResolveInfo,
   SourceLocation,
 } from "graphql";
-import { Err } from "ts-results-es";
-import { ErrorCodeType } from "./index.js";
+import { getLocation, GraphQLError } from "graphql";
+import type { Err } from "ts-results-es";
+
+import * as ErrorCode from "./errorCode.js";
+import type { ErrorCodeType } from "./index.js";
 
 export abstract class ConcreteError {
   graphqlError: GraphQLError;

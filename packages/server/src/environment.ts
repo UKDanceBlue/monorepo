@@ -1,15 +1,13 @@
 // This file is first imported by index.ts
 
+import { Container, Token } from "@freshgum/typedi";
 import dotenv from "dotenv";
 import { Expo } from "expo-server-sdk";
-import { Container, Token } from "@freshgum/typedi";
-
 import { statSync } from "fs";
 import { readFile } from "fs/promises";
 import path, { isAbsolute } from "path";
 
 import { type SyslogLevels } from "#logging/standardLogging.js";
-
 // NOTE: You cannot import any files that depend on environment variables from this file
 import { expoServiceToken } from "#notification/expoServiceToken.js";
 

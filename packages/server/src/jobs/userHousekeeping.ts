@@ -1,10 +1,9 @@
-import { logger } from "#logging/standardLogging.js";
-
-import { Cron } from "croner";
 import { Container } from "@freshgum/typedi";
+import { Cron } from "croner";
 
-import { JobStateRepository } from "#repositories/JobState.js";
+import { logger } from "#logging/standardLogging.js";
 import { prismaToken } from "#prisma";
+import { JobStateRepository } from "#repositories/JobState.js";
 
 const jobStateRepository = Container.get(JobStateRepository);
 

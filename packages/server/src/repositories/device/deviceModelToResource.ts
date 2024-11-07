@@ -1,6 +1,5 @@
-import { DeviceNode } from "@ukdanceblue/common";
-
 import type { Device } from "@prisma/client";
+import { DeviceNode } from "@ukdanceblue/common";
 
 export function deviceModelToResource(deviceModel: Device): DeviceNode {
   return DeviceNode.init({

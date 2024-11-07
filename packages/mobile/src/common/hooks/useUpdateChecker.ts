@@ -1,5 +1,3 @@
-import { Logger } from "#common/logger/Logger";
-import { showPrompt } from "#common/util/alertUtils";
 import {
   checkForUpdateAsync,
   fetchUpdateAsync,
@@ -7,6 +5,9 @@ import {
   useUpdates,
 } from "expo-updates";
 import { useEffect, useState } from "react";
+
+import { Logger } from "#common/logger/Logger";
+import { showPrompt } from "#common/util/alertUtils";
 
 export function useUpdateChecker() {
   const {

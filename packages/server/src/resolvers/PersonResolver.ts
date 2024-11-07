@@ -1,24 +1,11 @@
-import { auditLogger } from "#logging/auditLogging.js";
-import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
-import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
-import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
-import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
-import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
-import {
-  committeeMembershipModelToResource,
-  membershipModelToResource,
-} from "#repositories/membership/membershipModelToResource.js";
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
+import { Container, Service } from "@freshgum/typedi";
+import type { GlobalId } from "@ukdanceblue/common";
 import {
   ListFundraisingEntriesArgs,
   ListFundraisingEntriesResponse,
   MutationAccessControl,
 } from "@ukdanceblue/common";
-import { globalFundraisingAccessParam } from "./accessParams.js";
-
 import {
-  QueryAccessControl,
   AccessLevel,
   CommitteeMembershipNode,
   FundraisingAssignmentNode,
@@ -27,8 +14,16 @@ import {
   MembershipNode,
   MembershipPositionType,
   PersonNode,
+  QueryAccessControl,
   SortDirection,
   TeamType,
+} from "@ukdanceblue/common";
+import {
+  BulkPersonInput,
+  CreatePersonInput,
+  ListPeopleArgs,
+  ListPeopleResponse,
+  SetPersonInput,
 } from "@ukdanceblue/common";
 import {
   ActionDeniedError,
@@ -50,17 +45,22 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Container, Service } from "@freshgum/typedi";
 
-import type { GraphQLContext } from "#resolvers/context.js";
-import type { GlobalId } from "@ukdanceblue/common";
+import { auditLogger } from "#logging/auditLogging.js";
+import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
+import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
+import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
+import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import {
-  ListPeopleResponse,
-  ListPeopleArgs,
-  CreatePersonInput,
-  SetPersonInput,
-  BulkPersonInput,
-} from "@ukdanceblue/common";
+  committeeMembershipModelToResource,
+  membershipModelToResource,
+} from "#repositories/membership/membershipModelToResource.js";
+import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import type { GraphQLContext } from "#resolvers/context.js";
+
+import { globalFundraisingAccessParam } from "./accessParams.js";
 
 @Resolver(() => PersonNode)
 @Service([PersonRepository, MembershipRepository, FundraisingEntryRepository])
@@ -92,7 +92,7 @@ export class PersonResolver {
     @Arg("linkBlueId") linkBlueId: string
   ): Promise<ConcreteResult<Option<PersonNode>>> {
     const row = await this.personRepository.findPersonByUnique({
-      linkblue: linkBlueId?.toLowerCase(),
+      linkblue: linkBlueId.toLowerCase(),
     });
 
     if (row.isErr()) {

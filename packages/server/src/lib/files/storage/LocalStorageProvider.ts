@@ -1,23 +1,20 @@
-import { BaseStorageProvider } from "./StorageProvider.js";
-
-import { servePath, uploadPath } from "#environment";
-
-import { logger } from "#logging/standardLogging.js";
-
-import { DateTime } from "luxon";
 import { Service } from "@freshgum/typedi";
-
+import type { FileHandle } from "fs/promises";
 import { mkdir, open, stat, unlink } from "fs/promises";
+import { DateTime } from "luxon";
 import { format, join, resolve } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
+import type { MIMEType } from "util";
+
+import { servePath, uploadPath } from "#environment";
+import { logger } from "#logging/standardLogging.js";
 
 import type {
   StorableFile,
   StorageProvider,
   UnsupportedAccessMethod,
 } from "./StorageProvider.js";
-import type { FileHandle } from "fs/promises";
-import type { MIMEType } from "util";
+import { BaseStorageProvider } from "./StorageProvider.js";
 
 /**
  * Determines if the location a path refers to is within `servePath`

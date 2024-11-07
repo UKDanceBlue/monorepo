@@ -1,14 +1,14 @@
+import { Service } from "@freshgum/typedi";
+import { Notification, Prisma, PrismaClient } from "@prisma/client";
+import { NotificationError } from "@prisma/client";
+import type { SortDirection } from "@ukdanceblue/common";
+
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+
 import {
   buildNotificationOrder,
   buildNotificationWhere,
 } from "./notificationRepositoryUtils.js";
-
-import { Notification, Prisma, PrismaClient } from "@prisma/client";
-import { Service } from "@freshgum/typedi";
-
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import { NotificationError } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
 
 const notificationBooleanKeys = [] as const;
 type NotificationBooleanKey = (typeof notificationBooleanKeys)[number];
@@ -60,13 +60,14 @@ export type NotificationFilters = FilterItems<
   NotificationStringKey
 >;
 
+import { NotFoundError } from "@ukdanceblue/common/error";
+import { AsyncResult, Err, Ok, Result } from "ts-results-es";
+
 import { prismaToken } from "#prisma";
 import {
   handleRepositoryError,
   RepositoryError,
 } from "#repositories/shared.js";
-import { AsyncResult, Err, Ok, Result } from "ts-results-es";
-import { NotFoundError } from "@ukdanceblue/common/error";
 
 @Service([prismaToken])
 export class NotificationRepository {

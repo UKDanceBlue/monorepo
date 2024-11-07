@@ -1,15 +1,13 @@
-import { TimestampedResource } from "./Resource.js";
+import { Field, ObjectType, registerEnumType } from "type-graphql";
 
 import {
   CommitteeIdentifier,
   CommitteeRole,
 } from "../../authorization/structures.js";
-import { Node, createNodeClasses } from "../relay.js";
-import { GlobalIdScalar } from "../scalars/GlobalId.js";
-
-import { Field, ObjectType, registerEnumType } from "type-graphql";
-
+import { createNodeClasses,Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalIdScalar } from "../scalars/GlobalId.js";
+import { TimestampedResource } from "./Resource.js";
 
 export const MembershipPositionType = {
   Member: "Member",

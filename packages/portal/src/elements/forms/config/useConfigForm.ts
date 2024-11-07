@@ -1,10 +1,9 @@
-import { useCommitChanges } from "./useCommitChanges";
-import { useConfig } from "./useConfig";
-
 import { useForm } from "@tanstack/react-form";
 import { useCallback, useEffect, useMemo } from "react";
 
+import { useCommitChanges } from "./useCommitChanges";
 import type { ConfigValue } from "./useConfig";
+import { useConfig } from "./useConfig";
 
 export function useConfigForm() {
   const {

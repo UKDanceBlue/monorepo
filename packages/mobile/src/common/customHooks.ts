@@ -1,14 +1,13 @@
+import type {
+  NetInfoState,
+  NetInfoUnknownState,
+} from "@react-native-community/netinfo";
 import NetInfo, { NetInfoStateType } from "@react-native-community/netinfo";
 import {
   useColorModeValue as useColorModeValueNativeBase,
   useTheme,
 } from "native-base";
 import { useEffect, useState } from "react";
-
-import type {
-  NetInfoState,
-  NetInfoUnknownState,
-} from "@react-native-community/netinfo";
 
 export function useNetworkStatus() {
   const [connectionInfo, setConnectionInfo] = useState<NetInfoState>({

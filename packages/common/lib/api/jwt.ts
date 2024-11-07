@@ -1,5 +1,5 @@
-import type { PersonNode } from "./resources/Person.js";
 import type { AuthSource } from "../authorization/structures.js";
+import type { PersonNode } from "./resources/Person.js";
 
 export interface UserData {
   userId?: string;

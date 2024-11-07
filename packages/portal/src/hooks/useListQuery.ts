@@ -1,5 +1,3 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-
 import type {
   BooleanFilterItemInterface,
   DateFilterItemInterface,
@@ -12,6 +10,7 @@ import type {
   StringFilterItemInterface,
 } from "@ukdanceblue/common";
 import type { Dispatch, SetStateAction } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface FilterObject<
   DateFields extends string,

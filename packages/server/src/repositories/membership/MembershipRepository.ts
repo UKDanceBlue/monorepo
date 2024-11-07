@@ -1,16 +1,15 @@
+import { Service } from "@freshgum/typedi";
+import { Membership, Person, PrismaClient, Team } from "@prisma/client";
+import { CommitteeRole, MembershipPositionType } from "@ukdanceblue/common";
+import { NotFoundError } from "@ukdanceblue/common/error";
+import { Err, Ok, Result } from "ts-results-es";
+
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import {
   handleRepositoryError,
   type RepositoryError,
   type SimpleUniqueParam,
 } from "#repositories/shared.js";
-
-import { Membership, Person, PrismaClient, Team } from "@prisma/client";
-import { CommitteeRole, MembershipPositionType } from "@ukdanceblue/common";
-import { NotFoundError } from "@ukdanceblue/common/error";
-import { Err, Ok, Result } from "ts-results-es";
-import { Service } from "@freshgum/typedi";
-
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 const membershipBooleanKeys = [] as const;
 type MembershipBooleanKey = (typeof membershipBooleanKeys)[number];

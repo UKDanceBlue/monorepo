@@ -1,7 +1,7 @@
+import { Service } from "@freshgum/typedi";
+
 import { FileManager } from "#files/FileManager.js";
 import { combineMimePartsToString } from "#files/mime.js";
-
-import { Service } from "@freshgum/typedi";
 import { RouterService } from "#routes/RouteService.js";
 
 @Service([FileManager])

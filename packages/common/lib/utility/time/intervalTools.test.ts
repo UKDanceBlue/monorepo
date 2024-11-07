@@ -1,7 +1,7 @@
-import { validateInterval } from "./intervalTools.js";
-
 import { DateTime, Interval } from "luxon";
 import { describe, expect, it } from "vitest";
+
+import { validateInterval } from "./intervalTools.js";
 
 const firstDateTime = DateTime.fromObject({ year: 2020 });
 const secondDateTime = DateTime.fromObject({ year: 2021 });

@@ -1,10 +1,9 @@
-import { GraphQLResolveInfo } from "graphql";
+import type { AuthorizationRule } from "@ukdanceblue/common";
+import { prettyPrintAuthorizationRule } from "@ukdanceblue/common";
+import type { GraphQLResolveInfo } from "graphql";
+
 import { ConcreteError } from "./error.js";
 import * as ErrorCode from "./errorCode.js";
-
-import { prettyPrintAuthorizationRule } from "@ukdanceblue/common";
-
-import type { AuthorizationRule } from "@ukdanceblue/common";
 
 /**
  * These errors are caused when the server can do something, but doesn't want to. For example

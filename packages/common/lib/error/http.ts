@@ -1,9 +1,8 @@
-import { ConcreteError } from "./error.js";
-import * as ErrorCode from "./errorCode.js";
-
+import type { StatusCodes } from "http-status-codes";
 import { getReasonPhrase } from "http-status-codes";
 
-import type { StatusCodes } from "http-status-codes";
+import { ConcreteError } from "./error.js";
+import * as ErrorCode from "./errorCode.js";
 
 export class HttpError<
   Code extends StatusCodes = StatusCodes,

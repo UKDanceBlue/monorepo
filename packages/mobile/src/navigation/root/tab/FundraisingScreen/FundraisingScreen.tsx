@@ -1,11 +1,12 @@
-import type { StandingType } from "@common-types/StandingType";
 import { FontAwesome5 } from "@expo/vector-icons";
-import type { FragmentType } from "@graphql/index.js";
-import { getFragmentData, graphql } from "@graphql/index.js";
 import { MembershipPositionType } from "@ukdanceblue/common";
 import { Center, Text } from "native-base";
 import { useEffect, useState } from "react";
 import { useWindowDimensions } from "react-native";
+
+import type { StandingType } from "#common-types/StandingType";
+import type { FragmentType } from "#graphql/index.js";
+import { getFragmentData, graphql } from "#graphql/index.js";
 
 export const MyTeamFragment = graphql(/* GraphQL */ `
   fragment MyTeamFragment on TeamNode {
@@ -132,35 +133,34 @@ const TeamScreen = ({
   } else {
     const { name, member, doners } = team;
 
-    return (
-      <FundraisingInformation
-        captains={members
-          .filter(
-            (member) =>
-              member.position === MembershipPositionType.Captain &&
-              (member.person.name ?? member.person.linkblue)
-          )
-          .map(
-            (captain) =>
-              captain.person.name ?? captain.person.linkblue ?? "Unknown"
-          )}
-        members={members
-          .filter(
-            (member) =>
-              member.position === MembershipPositionType.Member &&
-              (member.person.name ?? member.person.linkblue)
-          )
-          .map(
-            (member) =>
-              member.person.name ?? member.person.linkblue ?? "Unknown"
-          )}
-        name={name}
-        scoreboardData={doners}
-        personalTotal={fundraisingPersonalAmount}
-        teamFundraisingTotal={fundraising?.fundraisingTotalAmount ?? 0}
-        myFundraisingEntries={fundraising?.fundraisingAssignments ?? []}
-      />
-    );
+    return undefined;
+    // <FundraisingInformation
+    //   captains={members
+    //     .filter(
+    //       (member) =>
+    //         member.position === MembershipPositionType.Captain &&
+    //         (member.person.name ?? member.person.linkblue)
+    //     )
+    //     .map(
+    //       (captain) =>
+    //         captain.person.name ?? captain.person.linkblue ?? "Unknown"
+    //     )}
+    //   members={members
+    //     .filter(
+    //       (member) =>
+    //         member.position === MembershipPositionType.Member &&
+    //         (member.person.name ?? member.person.linkblue)
+    //     )
+    //     .map(
+    //       (member) =>
+    //         member.person.name ?? member.person.linkblue ?? "Unknown"
+    //     )}
+    //   name={name}
+    //   scoreboardData={doners}
+    //   personalTotal={fundraisingPersonalAmount}
+    //   teamFundraisingTotal={fundraising?.fundraisingTotalAmount ?? 0}
+    //   myFundraisingEntries={fundraising?.fundraisingAssignments ?? []}
+    // />
   }
 };
 
