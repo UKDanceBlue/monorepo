@@ -100,7 +100,7 @@ const codegenConfig: CodegenConfig = {
           writeFileSync(file, newContent);
         }
       },
-      "eslint --fix",
+      "eslint --cache --fix",
       "prettier --write",
     ],
     beforeOneFileWrite: (file, content) => {
