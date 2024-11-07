@@ -247,15 +247,10 @@ export default eslintTs.config(
         "@typescript-eslint/no-non-null-assertion": "off",
         // We don't need to enforce this
         "@typescript-eslint/no-confusing-void-expression": "off",
-
-        "@typescript-eslint/no-misused-promises": [
-          "error",
-          {
-            checksVoidReturn: {
-              attributes: false,
-            },
-          },
-        ],
+        // Disabled for performance
+        "@typescript-eslint/no-misused-promises": "off",
+        // Disabled for performance
+        "@typescript-eslint/no-unsafe-assignment": "off",
         "@typescript-eslint/require-await": "error",
         "@typescript-eslint/return-await": "error",
         "@typescript-eslint/consistent-type-imports": [

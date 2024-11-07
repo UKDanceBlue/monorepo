@@ -79,7 +79,6 @@ export async function createServer() {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   const httpServer = http.createServer(app);
 
   const apolloServerPlugins = [

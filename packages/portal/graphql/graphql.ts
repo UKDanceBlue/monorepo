@@ -2131,25 +2131,6 @@ export type LogsPageQuery = {
   readonly auditLog: string;
 };
 
-export type DbFundsEntryViewerQueryVariables = Exact<{
-  year: Scalars["String"]["input"];
-  dbNum: Scalars["Int"]["input"];
-}>;
-
-export type DbFundsEntryViewerQuery = {
-  readonly __typename?: "Query";
-  readonly rawFundraisingEntries: string;
-};
-
-export type DbFundsViewerQueryVariables = Exact<{
-  year: Scalars["String"]["input"];
-}>;
-
-export type DbFundsViewerQuery = {
-  readonly __typename?: "Query";
-  readonly rawFundraisingTotals: string;
-};
-
 export type EditEventPageQueryVariables = Exact<{
   uuid: Scalars["GlobalId"]["input"];
 }>;
@@ -2219,6 +2200,25 @@ export type DeleteFeedItemMutationVariables = Exact<{
 export type DeleteFeedItemMutation = {
   readonly __typename?: "Mutation";
   readonly deleteFeedItem: boolean;
+};
+
+export type DbFundsEntryViewerQueryVariables = Exact<{
+  year: Scalars["String"]["input"];
+  dbNum: Scalars["Int"]["input"];
+}>;
+
+export type DbFundsEntryViewerQuery = {
+  readonly __typename?: "Query";
+  readonly rawFundraisingEntries: string;
+};
+
+export type DbFundsViewerQueryVariables = Exact<{
+  year: Scalars["String"]["input"];
+}>;
+
+export type DbFundsViewerQuery = {
+  readonly __typename?: "Query";
+  readonly rawFundraisingTotals: string;
 };
 
 export type HomePageQueryVariables = Exact<{ [key: string]: never }>;
@@ -7733,112 +7733,6 @@ export const LogsPageDocument = {
     },
   ],
 } as unknown as DocumentNode<LogsPageQuery, LogsPageQueryVariables>;
-export const DbFundsEntryViewerDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "DbFundsEntryViewer" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "year" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "String" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "dbNum" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "rawFundraisingEntries" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "marathonYear" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "year" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "identifier" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "dbNum" },
-                },
-              },
-            ],
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  DbFundsEntryViewerQuery,
-  DbFundsEntryViewerQueryVariables
->;
-export const DbFundsViewerDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "DbFundsViewer" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "year" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "String" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "rawFundraisingTotals" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "marathonYear" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "year" },
-                },
-              },
-            ],
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<DbFundsViewerQuery, DbFundsViewerQueryVariables>;
 export const EditEventPageDocument = {
   kind: "Document",
   definitions: [
@@ -8213,6 +8107,112 @@ export const DeleteFeedItemDocument = {
   DeleteFeedItemMutation,
   DeleteFeedItemMutationVariables
 >;
+export const DbFundsEntryViewerDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "DbFundsEntryViewer" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "year" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "dbNum" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "rawFundraisingEntries" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "marathonYear" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "year" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "identifier" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "dbNum" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  DbFundsEntryViewerQuery,
+  DbFundsEntryViewerQueryVariables
+>;
+export const DbFundsViewerDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "DbFundsViewer" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "year" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "rawFundraisingTotals" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "marathonYear" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "year" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<DbFundsViewerQuery, DbFundsViewerQueryVariables>;
 export const HomePageDocument = {
   kind: "Document",
   definitions: [

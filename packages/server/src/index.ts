@@ -8,6 +8,8 @@ import { expressToken } from "#routes/expressToken.js";
 
 await import("#environment");
 
+await import("./instrument.js");
+
 const { Container } = await import("@freshgum/typedi");
 
 const logDir = Container.get(logDirToken);
@@ -18,8 +20,6 @@ const { logger } = await import("#logging/logger.js");
 logger.info(
   `Logger initialized with level "${loggingLevel}", writing log files to "${logDir}"`
 );
-
-await import("./instrument.js");
 
 await import("./prisma.js");
 
