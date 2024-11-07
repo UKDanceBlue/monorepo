@@ -182,7 +182,7 @@ export async function startServer(
   );
 
   apiRouter.get(
-    "*",
+    "/(.*)",
     serveStatic(
       resolve(
         fileURLToPath(import.meta.resolve("@ukdanceblue/portal/index.html"))
