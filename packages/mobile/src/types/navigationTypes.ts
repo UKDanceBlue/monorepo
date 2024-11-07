@@ -13,7 +13,7 @@ import type { EventScreenFragment } from "../navigation/root/EventScreen/EventSc
 export type SpiritStackParamList = {
   MyTeam: undefined;
   Scoreboard: undefined;
-}
+};
 
 export type SpiritStackScreenProps<T extends keyof SpiritStackParamList> =
   NativeStackScreenProps<SpiritStackParamList, T>;
@@ -26,8 +26,9 @@ export type TabNavigatorParamList = {
   "Teams": NavigatorScreenParams<SpiritStackParamList>;
   "Marathon": undefined;
   "DB Moments": undefined;
+  "DB Funds": undefined;
   "Info": undefined;
-}
+};
 
 export type TabNavigatorProps<T extends keyof TabNavigatorParamList> =
   CompositeScreenProps<
@@ -48,7 +49,7 @@ export type RootStackParamList = {
   };
   "Explorer": undefined;
   "Hour Details": undefined; // { firestoreHour: FirestoreHour };
-}
+};
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, T>;
