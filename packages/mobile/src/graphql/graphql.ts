@@ -1278,6 +1278,48 @@ export type ServerFeedQuery = {
   }>;
 };
 
+export type MyTeamFragmentFragment = {
+  readonly __typename?: "TeamNode";
+  readonly id: string;
+  readonly name: string;
+  readonly totalPoints: number;
+  readonly fundraisingTotalAmount?: number | null;
+  readonly pointEntries: ReadonlyArray<{
+    readonly __typename?: "PointEntryNode";
+    readonly points: number;
+    readonly personFrom?: {
+      readonly __typename?: "PersonNode";
+      readonly id: string;
+      readonly name?: string | null;
+      readonly linkblue?: string | null;
+    } | null;
+  }>;
+  readonly members: ReadonlyArray<{
+    readonly __typename?: "MembershipNode";
+    readonly position: MembershipPositionType;
+    readonly person: {
+      readonly __typename?: "PersonNode";
+      readonly linkblue?: string | null;
+      readonly name?: string | null;
+    };
+  }>;
+} & { " $fragmentName"?: "MyTeamFragmentFragment" };
+
+export type MyFundraisingFragmentFragment = {
+  readonly __typename?: "PersonNode";
+  readonly fundraisingTotalAmount?: number | null;
+  readonly fundraisingAssignments: ReadonlyArray<{
+    readonly __typename?: "FundraisingAssignmentNode";
+    readonly amount: number;
+    readonly entry: {
+      readonly __typename?: "FundraisingEntryNode";
+      readonly donatedToText?: string | null;
+      readonly donatedByText?: string | null;
+      readonly donatedOn: Date | string;
+    };
+  }>;
+} & { " $fragmentName"?: "MyFundraisingFragmentFragment" };
+
 export type HourScreenFragmentFragment = {
   readonly __typename?: "MarathonHourNode";
   readonly id: string;
@@ -1388,48 +1430,6 @@ export type ActiveMarathonDocumentQuery = {
     readonly id: string;
   } | null;
 };
-
-export type MyTeamFragmentFragment = {
-  readonly __typename?: "TeamNode";
-  readonly id: string;
-  readonly name: string;
-  readonly totalPoints: number;
-  readonly fundraisingTotalAmount?: number | null;
-  readonly pointEntries: ReadonlyArray<{
-    readonly __typename?: "PointEntryNode";
-    readonly points: number;
-    readonly personFrom?: {
-      readonly __typename?: "PersonNode";
-      readonly id: string;
-      readonly name?: string | null;
-      readonly linkblue?: string | null;
-    } | null;
-  }>;
-  readonly members: ReadonlyArray<{
-    readonly __typename?: "MembershipNode";
-    readonly position: MembershipPositionType;
-    readonly person: {
-      readonly __typename?: "PersonNode";
-      readonly linkblue?: string | null;
-      readonly name?: string | null;
-    };
-  }>;
-} & { " $fragmentName"?: "MyTeamFragmentFragment" };
-
-export type MyFundraisingFragmentFragment = {
-  readonly __typename?: "PersonNode";
-  readonly fundraisingTotalAmount?: number | null;
-  readonly fundraisingAssignments: ReadonlyArray<{
-    readonly __typename?: "FundraisingAssignmentNode";
-    readonly amount: number;
-    readonly entry: {
-      readonly __typename?: "FundraisingEntryNode";
-      readonly donatedToText?: string | null;
-      readonly donatedByText?: string | null;
-      readonly donatedOn: Date | string;
-    };
-  }>;
-} & { " $fragmentName"?: "MyFundraisingFragmentFragment" };
 
 export const SimpleConfigFragmentDoc = {
   kind: "Document",
@@ -1715,131 +1715,6 @@ export const RootScreenAuthFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<RootScreenAuthFragmentFragment, unknown>;
-export const ImageViewFragmentFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "ImageViewFragment" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "ImageNode" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "url" } },
-          { kind: "Field", name: { kind: "Name", value: "thumbHash" } },
-          { kind: "Field", name: { kind: "Name", value: "alt" } },
-          { kind: "Field", name: { kind: "Name", value: "width" } },
-          { kind: "Field", name: { kind: "Name", value: "height" } },
-          { kind: "Field", name: { kind: "Name", value: "mimeType" } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<ImageViewFragmentFragment, unknown>;
-export const HourScreenFragmentFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "HourScreenFragment" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "MarathonHourNode" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "title" } },
-          { kind: "Field", name: { kind: "Name", value: "details" } },
-          { kind: "Field", name: { kind: "Name", value: "durationInfo" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "mapImages" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "ImageViewFragment" },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "ImageViewFragment" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "ImageNode" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "url" } },
-          { kind: "Field", name: { kind: "Name", value: "thumbHash" } },
-          { kind: "Field", name: { kind: "Name", value: "alt" } },
-          { kind: "Field", name: { kind: "Name", value: "width" } },
-          { kind: "Field", name: { kind: "Name", value: "height" } },
-          { kind: "Field", name: { kind: "Name", value: "mimeType" } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<HourScreenFragmentFragment, unknown>;
-export const ScoreBoardFragmentFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "ScoreBoardFragment" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "TeamNode" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "name" } },
-          { kind: "Field", name: { kind: "Name", value: "totalPoints" } },
-          { kind: "Field", name: { kind: "Name", value: "legacyStatus" } },
-          { kind: "Field", name: { kind: "Name", value: "type" } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<ScoreBoardFragmentFragment, unknown>;
-export const HighlightedTeamFragmentFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "HighlightedTeamFragment" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "TeamNode" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "name" } },
-          { kind: "Field", name: { kind: "Name", value: "legacyStatus" } },
-          { kind: "Field", name: { kind: "Name", value: "type" } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<HighlightedTeamFragmentFragment, unknown>;
 export const MyTeamFragmentFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -1967,6 +1842,131 @@ export const MyFundraisingFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<MyFundraisingFragmentFragment, unknown>;
+export const ImageViewFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ImageViewFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ImageNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "url" } },
+          { kind: "Field", name: { kind: "Name", value: "thumbHash" } },
+          { kind: "Field", name: { kind: "Name", value: "alt" } },
+          { kind: "Field", name: { kind: "Name", value: "width" } },
+          { kind: "Field", name: { kind: "Name", value: "height" } },
+          { kind: "Field", name: { kind: "Name", value: "mimeType" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ImageViewFragmentFragment, unknown>;
+export const HourScreenFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "HourScreenFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "MarathonHourNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
+          { kind: "Field", name: { kind: "Name", value: "details" } },
+          { kind: "Field", name: { kind: "Name", value: "durationInfo" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "mapImages" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "ImageViewFragment" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ImageViewFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ImageNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "url" } },
+          { kind: "Field", name: { kind: "Name", value: "thumbHash" } },
+          { kind: "Field", name: { kind: "Name", value: "alt" } },
+          { kind: "Field", name: { kind: "Name", value: "width" } },
+          { kind: "Field", name: { kind: "Name", value: "height" } },
+          { kind: "Field", name: { kind: "Name", value: "mimeType" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<HourScreenFragmentFragment, unknown>;
+export const ScoreBoardFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ScoreBoardFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "TeamNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "totalPoints" } },
+          { kind: "Field", name: { kind: "Name", value: "legacyStatus" } },
+          { kind: "Field", name: { kind: "Name", value: "type" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ScoreBoardFragmentFragment, unknown>;
+export const HighlightedTeamFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "HighlightedTeamFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "TeamNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "legacyStatus" } },
+          { kind: "Field", name: { kind: "Name", value: "type" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<HighlightedTeamFragmentFragment, unknown>;
 export const UseAllowedLoginTypesDocument = {
   kind: "Document",
   definitions: [

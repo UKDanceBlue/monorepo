@@ -10810,7 +10810,6 @@ __metadata:
     expo-asset: "npm:~10.0.10"
     expo-auth-session: "npm:~5.5.2"
     expo-av: "npm:~14.0.6"
-    expo-barcode-scanner: "npm:~13.0.1"
     expo-blur: "npm:~13.0.2"
     expo-build-properties: "npm:~0.12.5"
     expo-calendar: "npm:~13.0.5"
@@ -16214,17 +16213,6 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: 10/846760ffef921c047ad096b1122dca423f262cfc4d658eff217ac3c2d6a8148619a32af969678a4221cc39e48463566b9ecef73edb611b3e809d2e4b031b9379
-  languageName: node
-  linkType: hard
-
-"expo-barcode-scanner@npm:~13.0.1":
-  version: 13.0.1
-  resolution: "expo-barcode-scanner@npm:13.0.1"
-  dependencies:
-    expo-image-loader: "npm:~4.7.0"
-  peerDependencies:
-    expo: "*"
-  checksum: 10/8218ef88fb7fd8eef7a8e17bef21ec087158426c9ccc2842ff9dd2346486ed27023b909a9717207140e0965e3bc272dda1dd888548e3723d38d7c8be0fedea86
   languageName: node
   linkType: hard
 
