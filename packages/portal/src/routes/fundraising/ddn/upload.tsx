@@ -5,8 +5,25 @@ import {
   CommitteeRole,
 } from "@ukdanceblue/common";
 
+import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader";
+
+function DDNSpreadsheetUploader() {
+  return (
+    <SpreadsheetUploader
+      rowValidator={(_row: unknown): _row is object => {
+        return true;
+      }}
+      rowMapper={(row) => row}
+      onUpload={async (output) => {
+        console.log(output);
+      }}
+      text="Upload DDN Spreadsheet"
+    />
+  );
+}
+
 export const Route = createFileRoute("/fundraising/ddn/upload")({
-  component: () => <div>Hello /fundraising/ddn/upload!</div>,
+  component: DDNSpreadsheetUploader,
   staticData: {
     authorizationRules: [
       {
