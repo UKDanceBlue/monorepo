@@ -34,3 +34,5 @@ export const ExpoPushTicketError = Symbol("ExpoError");
 export type ExpoPushTicketError = typeof ExpoPushTicketError;
 export const ExpoPushFailureError = Symbol("ExpoError");
 export type ExpoPushFailureError = typeof ExpoPushFailureError;
+export const LuxonError = Symbol("LuxonError");
+export type LuxonError = typeof LuxonError;

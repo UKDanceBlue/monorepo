@@ -5,20 +5,19 @@ import {
   CommitteeRole,
 } from "@ukdanceblue/common";
 
-import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader";
+import { DDNUploadForm } from "#elements/forms/ddn/DDNUploadForm";
 
 function DDNSpreadsheetUploader() {
   return (
-    <SpreadsheetUploader
-      rowValidator={(_row: unknown): _row is object => {
-        return true;
-      }}
-      rowMapper={(row) => row}
-      onUpload={async (output) => {
-        console.log(output);
-      }}
-      text="Upload DDN Spreadsheet"
-    />
+    <div>
+      <h1>DDN Spreadsheet Uploader</h1>
+      <p>
+        This page allows you to upload a spreadsheet of DDN data. The data will
+        be validated and imported into the system. You will be able to review
+        the data before it is imported.
+      </p>
+      <DDNUploadForm />
+    </div>
   );
 }
 

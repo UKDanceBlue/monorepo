@@ -410,6 +410,15 @@ model FeedItem {
   @@map("feed_items")
 }
 
+model SolicitationCode {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique(map: "solicitation_codes_uuid_unique") @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  code      Int      @unique
+  name      String?
+}
+
 /// This table is kept in sync with the DBFunds API and should not be modified
 model DBFundsTeam {
   /// Unrelated to the 'id' field in the DBFunds API

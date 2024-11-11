@@ -1,6 +1,7 @@
-import { DateTimeISOResolver, LocalDateResolver } from "graphql-scalars";
+import { LocalDateResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
+import { LocalDate } from "../../utility/time/localDate.js";
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { DailyDepartmentNotificationNode } from "../resources/DailyDepartmentNotification.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
@@ -8,10 +9,10 @@ import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 export interface DDNInit {
   division?: string;
   department?: string;
-  effectiveDate?: string;
-  processDate?: string;
-  pledgedDate?: string;
-  transactionDate?: string;
+  effectiveDate?: LocalDate;
+  processDate?: LocalDate;
+  pledgedDate?: LocalDate;
+  transactionDate?: LocalDate;
   transactionType: string;
   donor1Amount?: number;
   donor2Amount?: number;
@@ -38,7 +39,7 @@ export interface DDNInit {
   combinedDonorSalutation: string;
   combinedDonorSort?: string;
   donor1Id?: string;
-  donor1GiftKey?: string;
+  donor1GiftKey?: number;
   donor1Name?: string;
   donor1Deceased?: boolean;
   donor1Constituency?: string;
@@ -46,7 +47,7 @@ export interface DDNInit {
   donor1Pm?: string;
   donor1Degrees?: string;
   donor2Id?: string;
-  donor2GiftKey?: string;
+  donor2GiftKey?: number;
   donor2Name?: string;
   donor2Deceased?: boolean;
   donor2Constituency?: string;
@@ -57,9 +58,9 @@ export interface DDNInit {
   donor2Relation?: string;
   transmittalSn?: string;
   sapDocNum?: string;
-  sapDocDate?: string;
+  sapDocDate?: LocalDate;
   jvDocNum?: string;
-  jvDocDate?: string;
+  jvDocDate?: LocalDate;
   advFeeCcPhil?: string;
   advFeeAmtPhil?: number;
   advFeeCcUnit?: string;
@@ -87,16 +88,16 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   department?: string | undefined;
 
   @Field(() => LocalDateResolver, { nullable: true })
-  effectiveDate?: string | undefined;
+  effectiveDate?: LocalDate | undefined;
 
   @Field(() => LocalDateResolver, { nullable: true })
-  processDate?: string | undefined;
+  processDate?: LocalDate | undefined;
 
   @Field(() => LocalDateResolver, { nullable: true })
-  pledgedDate?: string | undefined;
+  pledgedDate?: LocalDate | undefined;
 
   @Field(() => LocalDateResolver, { nullable: true })
-  transactionDate?: string | undefined;
+  transactionDate?: LocalDate | undefined;
 
   @Field(() => String)
   transactionType!: string;
@@ -172,12 +173,6 @@ export class DailyDepartmentNotificationInput implements DDNInit {
 
   @Field(() => String, { nullable: true })
   combinedDonorSort?: string | undefined;
-
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  startDate?: string | null;
-
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  endDate?: string | null;
 }
 
 @ArgsType()

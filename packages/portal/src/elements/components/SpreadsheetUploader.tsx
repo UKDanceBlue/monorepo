@@ -3,6 +3,7 @@ import { Button, Flex, Table, Upload } from "antd";
 import type { ColumnType } from "antd/es/table";
 import { useState } from "react";
 import { read, utils } from "xlsx";
+import type { ZodSchema, ZodTypeDef } from "zod";
 
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
 
@@ -10,24 +11,33 @@ export function SpreadsheetUploader<
   RowType extends object,
   OutputType extends object = RowType,
 >({
-  rowValidator,
-  rowMapper,
   onUpload,
   onFail,
   noPreview,
   showIcon = true,
   showUploadList = false,
   text,
-}: {
-  rowValidator: (row: unknown) => row is RowType;
-  rowMapper: (row: RowType) => OutputType | Promise<OutputType>;
-  onUpload: (output: OutputType[]) => void | Promise<void>;
-  onFail?: (error: Error) => void;
-  noPreview?: boolean;
-  showIcon?: boolean;
-  showUploadList?: boolean;
-  text?: string;
-}) {
+  ...props
+}:
+  | {
+      rowValidator: (row: unknown) => row is RowType;
+      rowMapper: (row: RowType) => OutputType | Promise<OutputType>;
+      onUpload: (output: OutputType[]) => void | Promise<void>;
+      onFail?: (error: Error) => void;
+      noPreview?: boolean;
+      showIcon?: boolean;
+      showUploadList?: boolean;
+      text?: string;
+    }
+  | {
+      rowSchema: ZodSchema<OutputType, ZodTypeDef, RowType>;
+      onUpload: (output: OutputType[]) => void | Promise<void>;
+      onFail?: (error: Error) => void;
+      noPreview?: boolean;
+      showIcon?: boolean;
+      showUploadList?: boolean;
+      text?: string;
+    }) {
   const { showErrorMessage, showSuccessNotification } = useAntFeedback();
   const [data, setData] = useState<OutputType[] | null>(null);
 
@@ -54,19 +64,37 @@ export function SpreadsheetUploader<
 
             const json = utils.sheet_to_json(sheet, { header: 2 });
 
-            if (!json.every(rowValidator)) {
-              throw new Error("Invalid row format");
-            }
-
-            const output = await Promise.all(
-              json.map(rowMapper).map((row) => {
-                if (row instanceof Promise) {
-                  return row;
+            let output: OutputType[] = [];
+            if ("rowSchema" in props) {
+              const results = json.map((row) => props.rowSchema.safeParse(row));
+              for (const result of results) {
+                if (result.success) {
+                  output.push(result.data);
+                } else {
+                  throw new Error(
+                    `Invalid row format: ${result.error.errors
+                      .map(
+                        (error) => `${error.path.join(".")}: ${error.message}`
+                      )
+                      .join("; ")}`
+                  );
                 }
+              }
+            } else {
+              if (!json.every(props.rowValidator)) {
+                throw new Error("Invalid row format");
+              }
 
-                return Promise.resolve(row);
-              })
-            );
+              output = await Promise.all(
+                json.map(props.rowMapper).map((row) => {
+                  if (row instanceof Promise) {
+                    return row;
+                  }
+
+                  return Promise.resolve(row);
+                })
+              );
+            }
 
             setData(output);
             showSuccessNotification({ message: "File parsed successfully" });

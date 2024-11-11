@@ -10962,6 +10962,7 @@ __metadata:
     vite: "npm:^5.4.9"
     wonka: "npm:^6.3.4"
     xlsx: "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+    zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
 

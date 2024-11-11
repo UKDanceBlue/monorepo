@@ -32,7 +32,7 @@ on:
 
 jobs:
   run-eslint:
-    name: Run ESLint
+    name: Check Repository
     runs-on: ubuntu-latest
 
     steps:
@@ -56,6 +56,9 @@ jobs:
 
       - name: Build common
         run: yarn run common:build
+
+      - name: Run Check
+        run: yarn run repo:check
 
       - name: Save Code Linting Report JSON
         # npm script for ESLint
