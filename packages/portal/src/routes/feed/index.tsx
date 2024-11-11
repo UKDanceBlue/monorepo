@@ -1,3 +1,7 @@
+console.log(
+  "This page is associated with media related content. On the explore page we will add the content link and the title! The date stamp will be on there as well. "
+);
+
 import { createFileRoute } from "@tanstack/react-router";
 import {
   AccessLevel,

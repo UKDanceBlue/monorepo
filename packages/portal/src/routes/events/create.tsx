@@ -1,3 +1,4 @@
+console.log("Events on calendar. ");
 import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
 
