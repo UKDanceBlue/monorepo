@@ -1,5 +1,11 @@
 import { Service } from "@freshgum/typedi";
-import { DBFundsTeam, Prisma, PrismaClient, Team } from "@prisma/client";
+import {
+  DBFundsTeam,
+  FundraisingEntryType,
+  Prisma,
+  PrismaClient,
+  Team,
+} from "@prisma/client";
 import {
   BasicError,
   CompositeError,
@@ -109,6 +115,7 @@ export class DBFundsRepository {
         dBFundsTeam.fundraisingEntries.map((entry) => entry.id)
       );
 
+      // Populate the entries to create, update, and delete
       for (const entry of dbFundsEntries) {
         const entryDonatedOnMillis = entry.donatedOn.toMillis();
         const existingEntry = dBFundsTeam.fundraisingEntries.find(
@@ -125,7 +132,9 @@ export class DBFundsRepository {
             date: entry.donatedOn.toJSDate(),
             amount: entry.amount,
             fundraisingEntry: {
-              create: {},
+              create: {
+                type: FundraisingEntryType.Legacy,
+              },
             },
           });
         } else {
@@ -139,6 +148,7 @@ export class DBFundsRepository {
         }
       }
 
+      // If there are any entries to create, update, or delete, do so
       if (
         entriesToCreate.length > 0 ||
         entriesToUpdate.length > 0 ||
@@ -153,40 +163,34 @@ export class DBFundsRepository {
           },
         });
 
-        await this.prisma.dBFundsTeam.update({
-          where: {
-            id: dBFundsTeam.id,
-          },
-          data: {
-            fundraisingEntries: {
-              deleteMany: {
-                id: {
-                  in: [...entryIdsToDelete],
-                },
+        await this.prisma.$transaction([
+          this.prisma.dBFundsFundraisingEntry.deleteMany({
+            where: {
+              id: {
+                in: [...entryIdsToDelete],
               },
-              create: entriesToCreate,
-              update: entriesToUpdate.map(({ amount, id }) => ({
-                where: { id },
-                data: {
-                  amount,
-                  fundraisingEntry: {
-                    upsert: {
-                      update: {
-                        assignments: {
-                          deleteMany: {},
-                        },
-                      },
-                      create: {},
-                    },
-                  },
-                },
-              })),
             },
-          },
-          include: {
-            fundraisingEntries: true,
-          },
-        });
+          }),
+          this.prisma.dBFundsFundraisingEntry.createMany({
+            data: entriesToCreate.map((entry) => ({
+              amount: entry.amount,
+              date: entry.date,
+              donatedBy: entry.donatedBy,
+              donatedTo: entry.donatedTo,
+              
+            })),
+          }),
+          this.prisma.dBFundsFundraisingEntry.updateMany({
+            where: {
+              id: {
+                in: entriesToUpdate.map((entry) => entry.id),
+              },
+            },
+            data: entriesToUpdate.map((entry) => ({
+              amount: entry.amount,
+            })),
+          }),
+        ]);
       }
 
       return Ok(None);
