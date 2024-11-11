@@ -11,23 +11,22 @@ datasource db {
 
 model Configuration {
   id         Int       @id @default(autoincrement())
-  uuid       String    @unique(map: "configurations_uuid_unique") @default(uuid()) @db.Uuid
+  uuid       String    @unique() @default(uuid()) @db.Uuid
   key        String
   value      String
-  validAfter DateTime? @map("valid_after") @db.Timestamptz(6)
-  validUntil DateTime? @map("valid_until") @db.Timestamptz(6)
-  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  validAfter DateTime? @db.Timestamptz(6)
+  validUntil DateTime? @db.Timestamptz(6)
+  createdAt  DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(6)
 
-  @@index([uuid], map: "configurations_uuid")
-  @@map("configurations")
+  @@index([uuid])
 }
 
 model Device {
   id                     Int                    @id @default(autoincrement())
-  uuid                   String                 @unique(map: "devices_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt              DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  uuid                   String                 @unique() @default(uuid()) @db.Uuid
+  createdAt              DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt              DateTime               @updatedAt @db.Timestamptz(6)
   /// Verifier for the device, this is a base64 encoded SHA512 digest of a secret the device knows
   ///
   /// This is nullable for devices that were registered before we started using the
@@ -36,51 +35,48 @@ model Device {
   /// This means that when this is null, simply trust the device
   verifier               String?
   /// The Expo push token for the device, if available
-  expoPushToken          String?                @map("expo_push_token")
+  expoPushToken          String?
   /// The last time the device was seen
-  lastSeen               DateTime?              @map("last_login") @db.Timestamptz(6)
-  lastSeenPersonId       Int?                   @map("last_user_id")
+  lastSeen               DateTime?              @db.Timestamptz(6)
+  lastSeenPersonId       Int?
   /// The last person to use the device
   lastSeenPerson         Person?                @relation(fields: [lastSeenPersonId], references: [id])
   /// The notifications that have been sent to this device
   deliveredNotifications NotificationDelivery[]
 
-  @@index([uuid], map: "devices_uuid")
-  @@map("devices")
+  @@index([uuid])
 }
 
 model EventImage {
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  eventId   Int      @map("event_id")
-  imageId   Int      @map("image_id")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  eventId   Int
+  imageId   Int
   event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   image     Image    @relation(fields: [imageId], references: [id], onDelete: Cascade)
 
   @@id([eventId, imageId])
-  @@map("event_images")
 }
 
 model EventOccurrence {
   id        Int      @id @default(autoincrement())
-  uuid      String   @unique(map: "event_occurrences_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  fullDay   Boolean  @default(false) @map("full_day")
+  uuid      String   @unique() @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  fullDay   Boolean  @default(false)
   date      DateTime @db.Timestamptz(6)
-  endDate   DateTime @map("end_date") @db.Timestamptz(6)
-  eventId   Int      @map("event_id")
+  endDate   DateTime @db.Timestamptz(6)
+  eventId   Int
   event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
-  @@index([uuid], map: "event_occurrences_uuid")
-  @@map("event_occurrences")
+  @@index([uuid])
 }
 
 model Event {
   id                 Int                @id @default(autoincrement())
-  uuid               String             @unique(map: "events_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  uuid               String             @unique() @default(uuid()) @db.Uuid
+  createdAt          DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime           @updatedAt @db.Timestamptz(6)
   title              String
   summary            String?
   description        String?
@@ -89,189 +85,181 @@ model Event {
   eventOccurrences   EventOccurrence[]
   pointOpportunities PointOpportunity[]
 
-  @@index([uuid], map: "events_uuid")
-  @@map("events")
+  @@index([uuid])
 }
 
 model Image {
   id        Int      @id @default(autoincrement())
-  uuid      String   @unique(map: "images_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  thumbHash Bytes?   @map("thumb_hash")
+  uuid      String   @unique() @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  thumbHash Bytes?
   alt       String?
   width     Int
   height    Int
 
   file   File? @relation(fields: [fileId], references: [id], onDelete: Cascade)
-  fileId Int?  @map("file_id")
+  fileId Int?
 
   eventImages           EventImage[]
   marathonHourMapImages MarathonHourMapImage[]
-  FeedItem              FeedItem[]
+  feedItems             FeedItem[]
 
-  @@index([uuid], map: "images_uuid")
-  @@map("images")
+  @@index([uuid])
 }
 
 model File {
   id   Int    @id @default(autoincrement())
-  uuid String @unique(map: "uploaded_files_uuid_unique") @default(uuid()) @db.Uuid
+  uuid String @unique() @default(uuid()) @db.Uuid
 
   filename        String
-  mimeTypeName    String   @map("mime_type") @db.VarChar(127)
-  mimeSubtypeName String   @map("mime_subtype") @db.VarChar(127)
-  mimeParameters  String[] @map("mime_parameters")
-  locationUrl     String   @map("location_url")
+  mimeTypeName    String   @db.VarChar(127)
+  mimeSubtypeName String   @db.VarChar(127)
+  mimeParameters  String[]
+  locationUrl     String
 
-  requiresLogin Boolean @default(false) @map("requires_login")
+  requiresLogin Boolean @default(false)
 
   owner   Person? @relation(fields: [ownedBy], references: [id])
-  ownedBy Int?    @map("owned_by")
+  ownedBy Int?
 
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  Image     Image[]
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  images    Image[]
 
-  @@index([uuid], map: "uploaded_files_uuid")
-  @@map("uploaded_files")
+  @@index([uuid])
 }
 
 model LoginFlowSession {
   id                   Int      @id @default(autoincrement())
-  uuid                 String   @unique(map: "login_flow_sessions_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  codeVerifier         String   @map("code_verifier")
-  redirectToAfterLogin String   @map("redirect_to_after_login")
-  setCookie            Boolean  @default(false) @map("set_cookie")
-  sendToken            Boolean  @default(false) @map("send_token")
+  uuid                 String   @unique() @default(uuid()) @db.Uuid
+  createdAt            DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime @updatedAt @db.Timestamptz(6)
+  codeVerifier         String
+  redirectToAfterLogin String
+  setCookie            Boolean  @default(false)
+  sendToken            Boolean  @default(false)
 
-  @@index([uuid], map: "login_flow_sessions_uuid")
-  @@map("login_flow_sessions")
+  @@index([uuid])
 }
 
 model Membership {
   id            Int                @id @default(autoincrement())
-  uuid          String             @unique(map: "memberships_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt     DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
-  personId      Int                @map("person_id")
-  teamId        Int                @map("team_id")
-  committeeRole CommitteeRole?     @map("committee_role")
+  uuid          String             @unique() @default(uuid()) @db.Uuid
+  createdAt     DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime           @updatedAt @db.Timestamptz(6)
+  personId      Int
+  teamId        Int
+  committeeRole CommitteeRole?
   position      MembershipPosition
   person        Person             @relation(fields: [personId], references: [id], onDelete: Cascade)
   team          Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
-  @@unique([personId, teamId], map: "memberships_person_id_team_id_key")
-  @@index([uuid], map: "memberships_uuid")
-  @@map("memberships")
+  @@unique([personId, teamId])
+  @@index([uuid])
 }
 
 model Person {
-  id                         Int                     @id @default(autoincrement())
-  uuid                       String                  @unique(map: "people_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt                  DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt                  DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
-  name                       String?                 @db.Citext
-  email                      String                  @unique(map: "people_email_unique") @db.Citext
-  linkblue                   String?                 @unique(map: "people_linkblue_unique") @db.Citext
+  id                         Int                        @id @default(autoincrement())
+  uuid                       String                     @unique() @default(uuid()) @db.Uuid
+  createdAt                  DateTime                   @default(now()) @db.Timestamptz(6)
+  updatedAt                  DateTime                   @updatedAt @db.Timestamptz(6)
+  name                       String?                    @db.Citext
+  email                      String                     @unique() @db.Citext
+  linkblue                   String?                    @unique() @db.Citext
   authIdPairs                AuthIdPair[]
   devices                    Device[]
   memberships                Membership[]
   pointEntries               PointEntry[]
   ownedFiles                 File[]
-  assignedFundraisingEntries FundraisingAssignment[]
+  fundraisingEntry           FundraisingEntryWithMeta[]
+  fundraisingAssignment      FundraisingAssignment[]
+  assignedFundraisingEntries FundraisingAssignment[]    @relation("fundraising_assignment_assigned_by_person")
+  FundraisingEntry           FundraisingEntry[]
 
-  @@index([uuid], map: "people_uuid")
-  @@map("people")
+  @@index([uuid])
 }
 
 model AuthIdPair {
-  source   AuthSource @map("source")
-  value    String     @map("value")
-  personId Int        @map("person_id")
+  source   AuthSource
+  value    String
+  personId Int
   person   Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
 
   @@id([personId, source])
-  @@map("auth_id_pairs")
 }
 
 model PointEntry {
   id                 Int               @id @default(autoincrement())
-  uuid               String            @unique(map: "point_entries_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt          DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  uuid               String            @unique() @default(uuid()) @db.Uuid
+  createdAt          DateTime          @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime          @updatedAt @db.Timestamptz(6)
   comment            String?
   points             Int
-  personFromId       Int?              @map("person_from_id")
-  teamId             Int               @map("team_id")
-  pointOpportunityId Int?              @map("point_opportunity_id")
+  personFromId       Int?
+  teamId             Int
+  pointOpportunityId Int?
   person             Person?           @relation(fields: [personFromId], references: [id])
   pointOpportunity   PointOpportunity? @relation(fields: [pointOpportunityId], references: [id])
   team               Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
-  @@index([uuid], map: "point_entries_uuid")
-  @@map("point_entries")
+  @@index([uuid])
 }
 
 model PointOpportunity {
   id              Int                  @id @default(autoincrement())
-  uuid            String               @unique(map: "point_opportunities_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt       DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  uuid            String               @unique() @default(uuid()) @db.Uuid
+  createdAt       DateTime             @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime             @updatedAt @db.Timestamptz(6)
   name            String
-  opportunityDate DateTime?            @map("opportunity_date") @db.Timestamptz(6)
+  opportunityDate DateTime?            @db.Timestamptz(6)
   type            PointOpportunityType
-  eventId         Int?                 @map("event_id")
+  eventId         Int?
   pointEntries    PointEntry[]
   event           Event?               @relation(fields: [eventId], references: [id])
-  marathonId      Int                  @map("marathon_id")
+  marathonId      Int
   marathon        Marathon             @relation(fields: [marathonId], references: [id])
 
-  @@index([uuid], map: "point_opportunities_uuid")
-  @@map("point_opportunities")
+  @@index([uuid])
 }
 
 model Team {
   id                       Int              @id @default(autoincrement())
-  uuid                     String           @unique(map: "teams_uuid_unique") @default(uuid()) @db.Uuid
+  uuid                     String           @unique() @default(uuid()) @db.Uuid
   name                     String
   type                     TeamType
-  legacyStatus             TeamLegacyStatus @map("legacy_status")
+  legacyStatus             TeamLegacyStatus
   marathon                 Marathon         @relation(fields: [marathonId], references: [id], onDelete: Cascade)
-  marathonId               Int              @map("marathon_id")
-  persistentIdentifier     String?          @map("persistent_identifier")
+  marathonId               Int
+  persistentIdentifier     String?
   memberships              Membership[]
   pointEntries             PointEntry[]
   correspondingCommittee   Committee?       @relation(fields: [correspondingCommitteeId], references: [id])
-  correspondingCommitteeId Int?             @map("committee_id")
+  correspondingCommitteeId Int?
   dbFundsTeam              DBFundsTeam?     @relation(fields: [dbFundsTeamId], references: [id])
-  dbFundsTeamId            Int?             @map("db_funds_team_id")
+  dbFundsTeamId            Int?
 
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
-  @@unique([marathonId, persistentIdentifier], map: "teams_marathon_id_persistent_identifier_key")
-  @@unique([marathonId, correspondingCommitteeId], map: "teams_marathon_id_committee_id_key")
-  @@index([uuid], map: "teams_uuid")
-  @@map("teams")
+  @@unique([marathonId, persistentIdentifier])
+  @@unique([marathonId, correspondingCommitteeId])
+  @@index([uuid])
 }
 
 model Committee {
   id                 Int           @id @default(autoincrement())
-  uuid               String        @unique(map: "committees_uuid_unique") @default(uuid()) @db.Uuid
-  identifier         CommitteeName @unique @map("identifier")
+  uuid               String        @unique() @default(uuid()) @db.Uuid
+  identifier         CommitteeName @unique
   correspondingTeams Team[]
   parentCommittee    Committee?    @relation(fields: [parentCommitteeId], references: [id], name: "parent_committee")
   childCommittees    Committee[]   @relation("parent_committee")
-  parentCommitteeId  Int?          @map("parent_committee_id")
+  parentCommitteeId  Int?
 
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
-  @@index([uuid], map: "committees_uuid")
-  @@map("committees")
+  @@index([uuid])
 }
 
 view TeamsWithTotalPoints {
@@ -279,135 +267,127 @@ view TeamsWithTotalPoints {
   uuid                 String           @unique @db.Uuid
   name                 String
   type                 TeamType
-  legacyStatus         TeamLegacyStatus @map("legacystatus")
-  persistentIdentifier String?          @unique @map("persistentidentifier")
+  legacyStatus         TeamLegacyStatus
+  persistentIdentifier String?          @unique
   marathon             Marathon         @relation(fields: [marathonId], references: [id])
-  marathonId           Int              @map("marathonid")
-  createdAt            DateTime         @map("createdat") @db.Timestamptz(6)
-  updatedAt            DateTime         @map("updatedat") @db.Timestamptz(6)
-  totalPoints          BigInt           @map("totalpoints")
-
-  @@map("teams_with_total_points")
+  marathonId           Int
+  createdAt            DateTime         @db.Timestamptz(6)
+  updatedAt            DateTime         @db.Timestamptz(6)
+  totalPoints          BigInt
 }
 
 model Notification {
   id                          Int                    @id @default(autoincrement())
-  uuid                        String                 @unique(map: "notifications_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt                   DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt                   DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  uuid                        String                 @unique() @default(uuid()) @db.Uuid
+  createdAt                   DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt                   DateTime               @updatedAt @db.Timestamptz(6)
   title                       String
   body                        String
   /// The time at which the notification should be sent, if null it's already been sent
-  sendAt                      DateTime?              @map("send_at") @db.Timestamptz(6)
+  sendAt                      DateTime?              @db.Timestamptz(6)
   /// The time at which the process of sending the notification was started
-  startedSendingAt            DateTime?              @map("started_sending_at") @db.Timestamptz(6)
+  startedSendingAt            DateTime?              @db.Timestamptz(6)
   /// URL to open when the notification is tapped
   url                         String?
   /// Every individual delivery of the notification
   deliveries                  NotificationDelivery[]
   /// If set, indicates a potential issue with delivery of the entire notification
-  deliveryIssue               String?                @map("delivery_issue")
+  deliveryIssue               String?
   /// If set, indicates the time at which the delivery issue was acknowledged, null until then
-  deliveryIssueAcknowledgedAt DateTime?              @map("delivery_issue_acknowledged_at") @db.Timestamptz(6)
+  deliveryIssueAcknowledgedAt DateTime?              @db.Timestamptz(6)
 
-  @@index([uuid], map: "notifications_uuid")
-  @@map("notifications")
+  @@index([uuid])
 }
 
 /// A record of a notification being sent to a device
 model NotificationDelivery {
   id               Int                @id @default(autoincrement())
-  uuid             String             @unique(map: "notification_deliveries_uuid_unique") @default(uuid()) @db.Uuid
-  deviceId         Int                @map("device_id")
-  notificationId   Int                @map("notification_id")
+  uuid             String             @unique() @default(uuid()) @db.Uuid
+  deviceId         Int
+  notificationId   Int
   /// The device to which the notification was sent
   device           Device             @relation(fields: [deviceId], references: [id], onDelete: Cascade)
   /// The notification that was sent
   notification     Notification       @relation(fields: [notificationId], references: [id], onDelete: Cascade)
   /// A unique ID for each chunk of notifications sent to Expo
-  chunkUuid        String?            @map("chunk_uuid") @db.Uuid
+  chunkUuid        String?            @db.Uuid
   /// The receipt ID from Expo (I *think* this is unique, but I'm not 100% sure)
-  receiptId        String?            @unique @map("receipt_id")
+  receiptId        String?            @unique
   /// Null by default, set to true once the notification has been sent to Expo
-  sentAt           DateTime?          @map("sent_at") @db.Timestamptz(6)
+  sentAt           DateTime?          @db.Timestamptz(6)
   /// The time we checked the push receipt from Expo, remains null until the receipt is checked and is always set once it is
   ///
   /// This is set to the time that the receipt was checked, not necessarily the time the notification was actually delivered
   ///
   /// Furthermore, this is never set if we got an error from the push ticket down below
-  receiptCheckedAt DateTime?          @map("delivered_by") @db.Timestamptz(6)
+  receiptCheckedAt DateTime?          @db.Timestamptz(6)
   /// If set, either the push ticket or receipt indicated an error
   ///
   /// If it is null we assume the notification made it to the device and should be considered delivered
-  deliveryError    NotificationError? @map("delivery_error")
-  createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt        DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deliveryError    NotificationError?
+  createdAt        DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt        DateTime           @updatedAt @db.Timestamptz(6)
 
-  @@index([uuid], map: "notification_deliveries_uuid")
-  @@map("notification_deliveries")
+  @@index([uuid])
 }
 
 model Marathon {
   id                   Int                    @id @default(autoincrement())
-  uuid                 String                 @unique(map: "marathons_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt            DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt            DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  uuid                 String                 @unique() @default(uuid()) @db.Uuid
+  createdAt            DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime               @updatedAt @db.Timestamptz(6)
   year                 String                 @unique
-  startDate            DateTime?              @map("start_date") @db.Timestamptz(6)
-  endDate              DateTime?              @map("end_date") @db.Timestamptz(6)
+  startDate            DateTime?              @db.Timestamptz(6)
+  endDate              DateTime?              @db.Timestamptz(6)
   hours                MarathonHour[]
   teams                Team[]
   teamsWithTotalPoints TeamsWithTotalPoints[]
   dbFundsTeams         DBFundsTeam[]
   pointOpportunities   PointOpportunity[]
 
-  @@index([uuid], map: "marathons_uuid")
-  @@map("marathons")
+  @@index([uuid])
 }
 
 model MarathonHour {
   id              Int                    @id @default(autoincrement())
-  uuid            String                 @unique(map: "marathon_hours_uuid_unique") @default(uuid()) @db.Uuid
+  uuid            String                 @unique() @default(uuid()) @db.Uuid
   marathon        Marathon               @relation(fields: [marathonId], references: [id], onDelete: Cascade)
-  marathonId      Int                    @map("marathon_id")
+  marathonId      Int
   maps            MarathonHourMapImage[]
   title           String
   details         String?
-  shownStartingAt DateTime               @map("shown_starting_at") @db.Timestamptz(6)
-  durationInfo    String                 @map("duration_info")
-  createdAt       DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  shownStartingAt DateTime               @db.Timestamptz(6)
+  durationInfo    String
+  createdAt       DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime               @updatedAt @db.Timestamptz(6)
 
-  @@index([uuid], map: "marathon_hours_uuid")
-  @@map("marathon_hours")
+  @@index([uuid])
 }
 
 model MarathonHourMapImage {
   id             Int          @id @default(autoincrement())
-  uuid           String       @unique(map: "marathon_hour_map_images_uuid_unique") @default(uuid()) @db.Uuid
+  uuid           String       @unique() @default(uuid()) @db.Uuid
   marathonHour   MarathonHour @relation(fields: [marathonHourId], references: [id], onDelete: Cascade)
-  marathonHourId Int          @map("marathon_hour_id")
+  marathonHourId Int
   image          Image        @relation(fields: [imageId], references: [id], onDelete: Cascade)
-  imageId        Int          @map("image_id")
-  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt      DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  imageId        Int
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(6)
 
-  @@index([uuid], map: "marathon_hour_map_images_uuid")
-  @@map("marathon_hour_map_images")
+  @@index([uuid])
 }
 
 model FeedItem {
   id          Int      @id @default(autoincrement())
-  uuid        String   @unique(map: "feed_items_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  uuid        String   @unique() @default(uuid()) @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(6)
   title       String
   textContent String?
   image       Image?   @relation(fields: [imageId], references: [id], onDelete: SetNull)
-  imageId     Int?     @map("image_id")
+  imageId     Int?
 
-  @@index([uuid], map: "feed_items_uuid")
-  @@map("feed_items")
+  @@index([uuid])
 }
 
 /// This table is kept in sync with the DBFunds API and should not be modified
@@ -416,11 +396,11 @@ model DBFundsTeam {
   id                 Int                       @id @default(autoincrement())
   uuid               String                    @unique @default(uuid()) @db.Uuid
   /// The team's DbNum from the DBFunds API
-  dbNum              Int                       @map("db_num")
+  dbNum              Int
   /// The team's name from the DBFunds API
   name               String
   /// The team's total fundraising amount from the DBFunds API
-  totalAmount        Float                     @map("total_amount")
+  totalAmount        Float
   /// Whether the team is active in DBFunds
   active             Boolean
   /// All fundraising entries for the team
@@ -428,13 +408,12 @@ model DBFundsTeam {
 
   /// The marathon the team is associated with
   marathon   Marathon? @relation(fields: [marathonId], references: [id])
-  marathonId Int?      @map("marathon_id")
+  marathonId Int?
 
   /// The corresponding teams in our database
   teams Team[]
 
-  @@unique([dbNum, marathonId], map: "db_funds_teams_db_num_marathon_id_key")
-  @@map("db_funds_teams")
+  @@unique([dbNum, marathonId])
 }
 
 /// This table is kept in sync with the DBFunds API and should not be modified
@@ -445,157 +424,192 @@ model DBFundsFundraisingEntry {
   /// The amount of the entry
   amount        Decimal
   /// Who made the donation
-  donatedBy     String?     @map("donated_by")
+  donatedBy     String?
   /// Who the donation was made for
-  donatedTo     String?     @map("donated_to")
+  donatedTo     String?
   /// The date of the donation
   date          DateTime
   /// The team's DbNum from the DBFunds API
-  dbFundsTeamId Int         @map("team_db_num")
+  dbFundsTeamId Int
   dbFundsTeam   DBFundsTeam @relation(fields: [dbFundsTeamId], references: [id], onDelete: Cascade)
 
   /// The corresponding fundraising entry in our database
-  fundraisingEntry FundraisingEntryWithMeta?
+  fundraisingEntry       FundraisingEntryWithMeta? @relation(fields: [fundraisingEntryId], references: [id])
+  fundraisingEntrySource FundraisingEntrySource?
+  fundraisingEntryId     Int?
 
   @@unique([donatedTo, donatedBy, date, dbFundsTeamId])
-  @@map("db_funds_team_entries")
+}
+
+model FundraisingEntrySource {
+  id Int @id @default(autoincrement())
+
+  entryId       Int                      @unique
+  entryWithMeta FundraisingEntryWithMeta @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  entry         FundraisingEntry         @relation(fields: [fundraisingEntryId], references: [id])
+
+  dbFundsEntryId Int?                     @unique
+  dbFundsEntry   DBFundsFundraisingEntry? @relation(fields: [dbFundsEntryId], references: [id])
+
+  ddnId              Int?                         @unique
+  ddn                DailyDepartmentNotification? @relation(fields: [ddnId], references: [id])
+  fundraisingEntryId Int
+}
+
+enum FundraisingEntryType {
+  Cash
+  Check
+  Online
+  Legacy
 }
 
 model FundraisingEntry {
   id        Int      @id @default(autoincrement())
-  uuid      String   @unique(map: "fundraising_entries_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  uuid      String   @unique() @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
-  dbFundsEntryId Int @unique @map("db_funds_entry_id")
+  notes                    String?
+  type                     FundraisingEntryType
+  enteredBy                Int?
+  enteredByPerson          Person?                 @relation(fields: [enteredBy], references: [id], onDelete: SetNull)
+  entrySourceId            Int?                    @unique
+  entrySource              FundraisingEntrySource? @relation(fields: [fundraisingEntrySourceId], references: [id])
+  fundraisingEntrySourceId Int?
 
-  @@index([uuid], map: "fundraising_entries_uuid")
-  @@map("fundraising_entries")
+  @@index([uuid])
 }
 
 view FundraisingEntryWithMeta {
   id        Int      @id @default(autoincrement())
   uuid      String   @unique @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
-  unassigned Decimal? @map("unassigned")
+  unassigned Decimal?
 
-  dbFundsEntry   DBFundsFundraisingEntry @relation(fields: [dbFundsEntryId], references: [id], onDelete: Cascade)
-  dbFundsEntryId Int                     @unique @map("db_funds_entry_id")
+  notes           String?
+  type            FundraisingEntryType
+  enteredBy       Int?
+  enteredByPerson Person?                 @relation(fields: [enteredBy], references: [id], onDelete: SetNull)
+  entrySourceId   Int?                    @unique
+  entrySource     FundraisingEntrySource?
 
-  assignments FundraisingAssignment[]
+  assignments             FundraisingAssignment[]
+  dbFundsFundraisingEntry DBFundsFundraisingEntry[]
 
-  @@index([uuid], map: "fundraising_entries_with_meta_uuid")
-  @@map("fundraising_entries_with_meta")
+  @@index([uuid])
 }
 
 model FundraisingAssignment {
-  id            Int                      @id @default(autoincrement())
-  uuid          String                   @unique(map: "fundraising_assignments_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt     DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
-  amount        Decimal
-  personId      Int                      @map("person_id")
-  person        Person                   @relation(fields: [personId], references: [id], onDelete: Cascade)
-  parentEntry   FundraisingEntryWithMeta @relation(fields: [fundraisingId], references: [id], onDelete: Cascade)
-  fundraisingId Int                      @map("fundraising_id")
+  id               Int                      @id @default(autoincrement())
+  uuid             String                   @unique() @default(uuid()) @db.Uuid
+  createdAt        DateTime                 @default(now()) @db.Timestamptz(6)
+  updatedAt        DateTime                 @updatedAt @db.Timestamptz(6)
+  amount           Decimal
+  personId         Int
+  person           Person                   @relation(fields: [personId], references: [id], onDelete: Cascade)
+  parentEntry      FundraisingEntryWithMeta @relation(fields: [fundraisingId], references: [id], onDelete: Cascade)
+  fundraisingId    Int
+  assignedBy       Int?
+  assignedByPerson Person?                  @relation(fields: [assignedBy], references: [id], onDelete: SetNull, name: "fundraising_assignment_assigned_by_person")
 
-  @@unique([fundraisingId, personId], map: "fundraising_assignments_fundraising_id_person_id_key")
-  @@index([uuid], map: "fundraising_assignments_uuid")
-  @@map("fundraising_assignments")
+  @@unique([fundraisingId, personId])
+  @@index([uuid])
 }
 
 model JobState {
-  jobName String   @id @map("job_name")
-  lastRun DateTime @map("last_run") @db.Timestamptz(6)
-
-  @@map("job_states")
+  jobName String   @id
+  lastRun DateTime @db.Timestamptz(6)
 }
 
 model DailyDepartmentNotification {
+  id Int @id @default(autoincrement())
+
   division                String?
   department              String?
-  effectiveDate           DateTime?                        @map("effective_date") @db.Date
-  processDate             DateTime?                        @map("process_date") @db.Date
-  pledgedDate             DateTime?                        @map("pledged_date") @db.Date
-  transactionDate         DateTime?                        @map("transaction_date") @db.Date
-  transactionType         String                           @map("transaction_type")
-  donor1Amount            Decimal?                         @map("donor1_amount")
-  donor2Amount            Decimal?                         @map("donor2_amount")
-  combinedAmount          Decimal                          @map("combined_amount")
-  pledgedAmount           Decimal                          @map("pledged_amount")
-  accountNumber           String                           @map("account_number")
-  accountName             String                           @map("account_name")
-  holdingDestination      String?                          @map("holding_destination")
+  effectiveDate           DateTime?                        @db.Date
+  processDate             DateTime?                        @db.Date
+  pledgedDate             DateTime?                        @db.Date
+  transactionDate         DateTime?                        @db.Date
+  transactionType         String
+  donor1Amount            Decimal?
+  donor2Amount            Decimal?
+  combinedAmount          Decimal
+  pledgedAmount           Decimal
+  accountNumber           String
+  accountName             String
+  holdingDestination      String?
   comment                 String?
-  secShares               String?                          @map("sec_shares")
-  secType                 String?                          @map("sec_type")
-  gikType                 String?                          @map("gik_type")
-  gikDescription          String?                          @map("gik_description")
-  onlineGift              Boolean                          @map("online_gift")
-  solicitationCode        String?                          @map("solicitation_code")
+  secShares               String?
+  secType                 String?
+  gikType                 String?
+  gikDescription          String?
+  onlineGift              Boolean
+  solicitationCode        String?
   solicitation            String?
-  behalfHonorMemorial     String?                          @map("behalf_honor_memorial")
-  matchingGift            String?                          @map("matching_gift")
-  batchId                 String                           @map("batch_id")
+  behalfHonorMemorial     String?
+  matchingGift            String?
+  batchId                 String
   batch                   DailyDepartmentNotificationBatch @relation(fields: [batchId], references: [batchId], onDelete: Cascade, onUpdate: Cascade)
-  ukFirstGift             Boolean                          @map("uk_first_gift")
-  divFirstGift            Boolean                          @map("div_first_gift")
-  idSorter                String                           @id @map("id_sorter")
-  combinedDonorName       String                           @map("combined_donor_name")
-  combinedDonorSalutation String                           @map("combined_donor_salutation")
-  combinedDonorSort       String?                          @map("combined_donor_sort")
-  donor1Id                String?                          @map("donor1_id")
-  donor1GiftKey           String?                          @map("donor1_gift_key")
-  donor1Name              String?                          @map("donor1_name")
-  donor1Deceased          Boolean?                         @map("donor1_deceased")
-  donor1Constituency      String?                          @map("donor1_constituency")
-  donor1TitleBar          String?                          @map("donor1_title_bar")
-  donor1Pm                String?                          @map("donor1_pm")
-  donor1Degrees           String?                          @map("donor1_degrees")
-  donor2Id                String?                          @map("donor2_id")
-  donor2GiftKey           String?                          @map("donor2_gift_key")
-  donor2Name              String?                          @map("donor2_name")
-  donor2Deceased          Boolean?                         @map("donor2_deceased")
-  donor2Constituency      String?                          @map("donor2_constituency")
-  donor2TitleBar          String?                          @map("donor2_title_bar")
-  donor2Pm                String?                          @map("donor2_pm")
-  donor2Degrees           String?                          @map("donor2_degrees")
-  donor1Relation          String?                          @map("donor1_relation")
-  donor2Relation          String?                          @map("donor2_relation")
+  ukFirstGift             Boolean
+  divFirstGift            Boolean
+  idSorter                String                           @unique
+  combinedDonorName       String
+  combinedDonorSalutation String
+  combinedDonorSort       String?
+  donor1Id                String?
+  donor1GiftKey           String?
+  donor1Name              String?
+  donor1Deceased          Boolean?
+  donor1Constituency      String?
+  donor1TitleBar          String?
+  donor1Pm                String?
+  donor1Degrees           String?
+  donor2Id                String?
+  donor2GiftKey           String?
+  donor2Name              String?
+  donor2Deceased          Boolean?
+  donor2Constituency      String?
+  donor2TitleBar          String?
+  donor2Pm                String?
+  donor2Degrees           String?
+  donor1Relation          String?
+  donor2Relation          String?
 
   // For privacy reasons, the following fields are never actually stored in the database
-  pLine1                   String? @map("p_line1")
-  pLine2                   String? @map("p_line2")
-  pLine3                   String? @map("p_line3")
-  pCity                    String? @map("p_city")
-  pState                   String? @map("p_state")
-  pZip                     String? @map("p_zip")
-  homePhone                String? @map("home_phone")
-  homePhoneRestriction     String? @map("home_phone_restriction")
-  businessPhone            String? @map("business_phone")
-  businessPhoneRestriction String? @map("business_phone_restriction")
-  email                    String? @map("email")
-  emailRestriction         String? @map("email_restriction")
+  pLine1                   String?
+  pLine2                   String?
+  pLine3                   String?
+  pCity                    String?
+  pState                   String?
+  pZip                     String?
+  homePhone                String?
+  homePhoneRestriction     String?
+  businessPhone            String?
+  businessPhoneRestriction String?
+  email                    String?
+  emailRestriction         String?
 
-  transmittalSn String?   @map("transmittal_sn")
-  sapDocNum     String?   @map("sap_doc_num")
-  sapDocDate    DateTime? @map("sap_doc_date") @db.Date
-  jvDocNum      String?   @map("jv_doc_num")
-  jvDocDate     DateTime? @map("jv_doc_date") @db.Date
-  advFeeCcPhil  String?   @map("adv_fee_cc_phil")
-  advFeeAmtPhil Decimal?  @map("adv_fee_amt_phil")
-  advFeeCcUnit  String?   @map("adv_fee_cc_unit")
-  advFeeAmtUnit Decimal?  @map("adv_fee_amt_unit")
-  advFeeStatus  String?   @map("adv_fee_status")
-  hcUnit        String?   @map("hc_unit")
+  transmittalSn String?
+  sapDocNum     String?
+  sapDocDate    DateTime? @db.Date
+  jvDocNum      String?
+  jvDocDate     DateTime? @db.Date
+  advFeeCcPhil  String?
+  advFeeAmtPhil Decimal?
+  advFeeCcUnit  String?
+  advFeeAmtUnit Decimal?
+  advFeeStatus  String?
+  hcUnit        String?
+
+  fundraisingEntrySource FundraisingEntrySource?
 }
 
 model DailyDepartmentNotificationBatch {
-  batchId   String                        @id @map("batch_id")
-  batchType BatchType                     @map("batch_type")
-  DDNs      DailyDepartmentNotification[]
+  batchId    String                        @id
+  batchType  BatchType
+  memberDDNs DailyDepartmentNotification[]
 }
 
 enum BatchType {
@@ -634,8 +648,6 @@ enum NotificationError {
 enum MembershipPosition {
   Member
   Captain
-
-  @@map("enum_memberships_position")
 }
 
 enum CommitteeName {
@@ -651,16 +663,12 @@ enum CommitteeName {
   miniMarathonsCommittee
   viceCommittee
   overallCommittee
-
-  @@map("enum_people_committee_name")
 }
 
 enum CommitteeRole {
   Chair
   Coordinator
   Member
-
-  @@map("enum_people_committee_role")
 }
 
 enum PointOpportunityType {
@@ -668,16 +676,12 @@ enum PointOpportunityType {
   Morale
   // TODO: Get rid of committee type
   Committee
-
-  @@map("enum_point_opportunities_type")
 }
 
 enum TeamLegacyStatus {
   NewTeam
   ReturningTeam
   DemoTeam
-
-  @@map("enum_teams_legacy_status")
 }
 
 enum TeamType {
@@ -685,8 +689,6 @@ enum TeamType {
   Morale
   // TODO: Get rid of committee type
   Committee
-
-  @@map("enum_teams_type")
 }
 
 enum AuthSource {

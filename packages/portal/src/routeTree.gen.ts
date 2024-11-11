@@ -20,6 +20,7 @@ import { Route as NotificationsIndexImport } from "./routes/notifications/index"
 import { Route as MarathonIndexImport } from "./routes/marathon/index";
 import { Route as FeedIndexImport } from "./routes/feed/index";
 import { Route as EventsIndexImport } from "./routes/events/index";
+import { Route as DbfundsIndexImport } from "./routes/dbfunds/index";
 import { Route as ConfigIndexImport } from "./routes/config/index";
 import { Route as TeamsCreateImport } from "./routes/teams/create";
 import { Route as TeamsBulkImport } from "./routes/teams/bulk";
