@@ -1,0 +1,122 @@
+model Team {
+  id                       Int              @id @default(autoincrement())
+  uuid                     String           @unique() @default(uuid()) @db.Uuid
+  name                     String
+  type                     TeamType
+  legacyStatus             TeamLegacyStatus
+  marathon                 Marathon         @relation(fields: [marathonId], references: [id], onDelete: Cascade)
+  marathonId               Int
+  persistentIdentifier     String?
+  memberships              Membership[]
+  pointEntries             PointEntry[]
+  correspondingCommittee   Committee?       @relation(fields: [correspondingCommitteeId], references: [id])
+  correspondingCommitteeId Int?
+  dbFundsTeam              DBFundsTeam?     @relation(fields: [dbFundsTeamId], references: [id])
+  dbFundsTeamId            Int?
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  @@unique([marathonId, persistentIdentifier])
+  @@unique([marathonId, correspondingCommitteeId])
+  @@index([uuid])
+}
+
+// SQL code for TeamsWithTotalPoints, must include an updated copy in a migration when changing the view
+// create view "TeamsWithTotalPoints" (
+//   "id",
+//   "uuid",
+//   "name",
+//   "type",
+//   "legacyStatus",
+//   "persistentIdentifier",
+//   "marathonId",
+//   "createdAt",
+//   "updatedAt",
+//   "totalPoints"
+// ) as
+// SELECT "Team"."id",
+//   "Team"."uuid",
+//   "Team"."name",
+//   "Team"."type",
+//   "Team"."legacyStatus",
+//   "Team"."persistentIdentifier",
+//   "Team"."marathonId",
+//   "Team"."createdAt",
+//   "Team"."updatedAt",
+//   COALESCE("points"."totalPoints", 0::bigint) AS "totalPoints"
+// FROM "Team"
+//   LEFT JOIN (
+//     SELECT sum("entry"."points") AS "totalPoints",
+//       "entry"."teamId"
+//     FROM "PointEntry" "entry"
+//     GROUP BY "entry"."teamId"
+//   ) "points" ON "Team"."id" = "points"."teamId";
+
+view TeamsWithTotalPoints {
+  id                   Int              @id @unique
+  uuid                 String           @unique @db.Uuid
+  name                 String
+  type                 TeamType
+  legacyStatus         TeamLegacyStatus
+  persistentIdentifier String?          @unique
+  marathon             Marathon         @relation(fields: [marathonId], references: [id])
+  marathonId           Int
+  createdAt            DateTime         @db.Timestamptz(6)
+  updatedAt            DateTime         @db.Timestamptz(6)
+  totalPoints          BigInt
+}
+
+enum TeamLegacyStatus {
+  NewTeam
+  ReturningTeam
+  DemoTeam
+}
+
+enum TeamType {
+  Spirit
+  Morale
+  // TODO: Get rid of committee type
+  Committee
+}
+
+model PointEntry {
+  id                 Int               @id @default(autoincrement())
+  uuid               String            @unique() @default(uuid()) @db.Uuid
+  createdAt          DateTime          @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime          @updatedAt @db.Timestamptz(6)
+  comment            String?
+  points             Int
+  personFromId       Int?
+  teamId             Int
+  pointOpportunityId Int?
+  person             Person?           @relation(fields: [personFromId], references: [id])
+  pointOpportunity   PointOpportunity? @relation(fields: [pointOpportunityId], references: [id])
+  team               Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([uuid])
+}
+
+model PointOpportunity {
+  id              Int                  @id @default(autoincrement())
+  uuid            String               @unique() @default(uuid()) @db.Uuid
+  createdAt       DateTime             @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime             @updatedAt @db.Timestamptz(6)
+  name            String
+  opportunityDate DateTime?            @db.Timestamptz(6)
+  type            PointOpportunityType
+  eventId         Int?
+  pointEntries    PointEntry[]
+  event           Event?               @relation(fields: [eventId], references: [id])
+  marathonId      Int
+  marathon        Marathon             @relation(fields: [marathonId], references: [id])
+
+  @@index([uuid])
+}
+
+enum PointOpportunityType {
+  Spirit
+  Morale
+  // TODO: Get rid of committee type
+  Committee
+}

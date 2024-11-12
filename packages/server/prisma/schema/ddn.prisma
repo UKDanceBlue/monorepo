@@ -1,0 +1,106 @@
+model DailyDepartmentNotification {
+  id Int @id @default(autoincrement())
+
+  division                String?
+  department              String?
+  effectiveDate           DateTime?                        @db.Date
+  processDate             DateTime?                        @db.Date
+  pledgedDate             DateTime?                        @db.Date
+  transactionDate         DateTime?                        @db.Date
+  transactionType         String
+  donor1Amount            Decimal?
+  donor2Amount            Decimal?
+  combinedAmount          Decimal
+  pledgedAmount           Decimal
+  accountNumber           String
+  accountName             String
+  holdingDestination      String?
+  comment                 String?
+  secShares               String?
+  secType                 String?
+  gikType                 String?
+  gikDescription          String?
+  onlineGift              Boolean
+  solicitationCodeId      Int
+  solicitationCode        SolicitationCode                 @relation(fields: [solicitationCodeId], references: [id])
+  solicitation            String?
+  behalfHonorMemorial     String?
+  matchingGift            String?
+  batchId                 String
+  batch                   DailyDepartmentNotificationBatch @relation(fields: [batchId], references: [batchId], onDelete: Cascade, onUpdate: Cascade)
+  ukFirstGift             Boolean
+  divFirstGift            Boolean
+  idSorter                String                           @unique
+  combinedDonorName       String
+  combinedDonorSalutation String
+  combinedDonorSort       String?
+  donor1Id                String?
+  donor1GiftKey           String?
+  donor1Name              String?
+  donor1Deceased          Boolean?
+  donor1Constituency      String?
+  donor1TitleBar          String?
+  donor1Pm                String?
+  donor1Degrees           String?
+  donor2Id                String?
+  donor2GiftKey           String?
+  donor2Name              String?
+  donor2Deceased          Boolean?
+  donor2Constituency      String?
+  donor2TitleBar          String?
+  donor2Pm                String?
+  donor2Degrees           String?
+  donor1Relation          String?
+  donor2Relation          String?
+
+  // For privacy reasons, the following fields are never actually stored in the database
+  pLine1                   String?
+  pLine2                   String?
+  pLine3                   String?
+  pCity                    String?
+  pState                   String?
+  pZip                     String?
+  homePhone                String?
+  homePhoneRestriction     String?
+  businessPhone            String?
+  businessPhoneRestriction String?
+  email                    String?
+  emailRestriction         String?
+
+  transmittalSn String?
+  sapDocNum     String?
+  sapDocDate    DateTime? @db.Date
+  jvDocNum      String?
+  jvDocDate     DateTime? @db.Date
+  advFeeCcPhil  String?
+  advFeeAmtPhil Decimal?
+  advFeeCcUnit  String?
+  advFeeAmtUnit Decimal?
+  advFeeStatus  String?
+  hcUnit        String?
+
+  fundraisingEntrySource FundraisingEntrySource?
+}
+
+model DailyDepartmentNotificationBatch {
+  batchId    String                        @id
+  batchType  BatchType
+  memberDDNs DailyDepartmentNotification[]
+}
+
+enum BatchType {
+  /// Check batches (C) include gifts to UK mailed directly to the Office of Development or to Gift Receiving, generally response to a phonathon solicitation
+  Check
+  /// Transmittal batches (T) include gifts to UK mailed directly to another department.
+  Transmittal
+  /// Credit Card batches (D) include credit card gifts approved by Gift Receiving office or Phonathon/Annual Giving, those made by a donor through the Office of Development online giving page, or by recurring subscription
+  CreditCard
+  /// ACH batches (A) include gifts set-up by the Gift Receiving office as a recurring subscription
+  ACH
+  /// Non-cash batches (N) include any gift to UK that is not received, processed or approved by the Gift Receiving office – gift was deposited by another department or gift-in-kind
+  NonCash
+  /// Payroll Deduction batches (X) include gifts from UK employees through bi-weekly or monthly payroll deductions
+  PayrollDeduction
+  /// Fallback batch type for when the batch type is unknown
+  Unknown
+}

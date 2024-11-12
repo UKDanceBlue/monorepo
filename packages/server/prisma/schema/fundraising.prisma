@@ -1,0 +1,123 @@
+model FundraisingEntrySource {
+  id Int @id @default(autoincrement())
+
+  entryId       Int                      @unique
+  entryWithMeta FundraisingEntryWithMeta @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  dbFundsEntryId Int?                     @unique
+  dbFundsEntry   DBFundsFundraisingEntry? @relation(fields: [dbFundsEntryId], references: [id])
+
+  ddnId Int?                         @unique
+  ddn   DailyDepartmentNotification? @relation(fields: [ddnId], references: [id])
+}
+
+model FundraisingEntry {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique() @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  notes           String?
+  type            FundraisingEntryType
+  enteredBy       Int?
+  enteredByPerson Person?              @relation(fields: [enteredBy], references: [id], onDelete: SetNull)
+  entrySourceId   Int?                 @unique
+
+  @@index([uuid])
+}
+
+// SQL code for FundraisingEntriesWithMeta, must include an updated copy in a migration when changing the view
+// CREATE VIEW "FundraisingEntriesWithMeta" AS
+// SELECT fe.id,
+//   fe.uuid,
+//   fe."createdAt",
+//   fe."updatedAt",
+//   COALESCE(
+//     -- Calculate unassigned using db_funds_team_entries if available
+//     (
+//       SELECT "dft"."amount"
+//       FROM "DBFundsFundraisingEntry" "dft"
+//         JOIN "FundraisingEntrySource" "fes" ON "dft"."id" = "fes"."dbFundsEntryId"
+//       WHERE "fes"."id" = "fe"."entrySourceId"
+//     ),
+//     -- Otherwise, use combinedAmount from DailyDepartmentNotification
+//     (
+//       SELECT "ddn"."combinedAmount"
+//       FROM "DailyDepartmentNotification" "ddn"
+//         JOIN "FundraisingEntrySource" "fes" ON "ddn"."id" = "fes"."ddnId"
+//       WHERE "fes"."id" = "fe"."entrySourceId"
+//     )
+//   ) - COALESCE(
+//     (
+//       SELECT SUM("assignment"."amount")
+//       FROM "FundraisingAssignment" "assignment"
+//       WHERE "assignment"."fundraisingId" = "fe"."id"
+//     ),
+//     0::numeric(65, 30)
+//   ) AS "unassigned",
+//   "fe"."notes",
+//   "fe"."type",
+//   "fe"."enteredBy",
+//   "fe"."entrySourceId"
+// FROM "FundraisingEntry" "fe";
+
+view FundraisingEntryWithMeta {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  unassigned Decimal?
+
+  notes           String?
+  type            FundraisingEntryType
+  enteredBy       Int?
+  enteredByPerson Person?                 @relation(fields: [enteredBy], references: [id], onDelete: SetNull)
+  entrySourceId   Int?                    @unique
+  entrySource     FundraisingEntrySource?
+
+  assignments             FundraisingAssignment[]
+  dbFundsFundraisingEntry DBFundsFundraisingEntry[]
+
+  @@index([uuid])
+}
+
+enum FundraisingEntryType {
+  Cash
+  Check
+  Online
+  Legacy
+}
+
+model FundraisingAssignment {
+  id               Int                      @id @default(autoincrement())
+  uuid             String                   @unique() @default(uuid()) @db.Uuid
+  createdAt        DateTime                 @default(now()) @db.Timestamptz(6)
+  updatedAt        DateTime                 @updatedAt @db.Timestamptz(6)
+  amount           Decimal
+  personId         Int
+  person           Person                   @relation(fields: [personId], references: [id], onDelete: Cascade)
+  parentEntry      FundraisingEntryWithMeta @relation(fields: [fundraisingId], references: [id], onDelete: Cascade)
+  fundraisingId    Int
+  assignedBy       Int?
+  assignedByPerson Person?                  @relation(fields: [assignedBy], references: [id], onDelete: SetNull, name: "fundraising_assignment_assigned_by_person")
+
+  @@unique([fundraisingId, personId])
+  @@index([uuid])
+}
+
+model SolicitationCode {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  prefix    String
+  code      Int
+  name      String?
+
+  dbFundsTeams DBFundsTeam[]
+  ddns         DailyDepartmentNotification[]
+
+  @@unique([prefix, code])
+  @@index([uuid])
+}

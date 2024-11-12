@@ -1,0 +1,45 @@
+model Marathon {
+  id                   Int                    @id @default(autoincrement())
+  uuid                 String                 @unique() @default(uuid()) @db.Uuid
+  createdAt            DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime               @updatedAt @db.Timestamptz(6)
+  year                 String                 @unique
+  startDate            DateTime?              @db.Timestamptz(6)
+  endDate              DateTime?              @db.Timestamptz(6)
+  hours                MarathonHour[]
+  teams                Team[]
+  teamsWithTotalPoints TeamsWithTotalPoints[]
+  dbFundsTeams         DBFundsTeam[]
+  pointOpportunities   PointOpportunity[]
+
+  @@index([uuid])
+}
+
+model MarathonHour {
+  id              Int                    @id @default(autoincrement())
+  uuid            String                 @unique() @default(uuid()) @db.Uuid
+  marathon        Marathon               @relation(fields: [marathonId], references: [id], onDelete: Cascade)
+  marathonId      Int
+  maps            MarathonHourMapImage[]
+  title           String
+  details         String?
+  shownStartingAt DateTime               @db.Timestamptz(6)
+  durationInfo    String
+  createdAt       DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime               @updatedAt @db.Timestamptz(6)
+
+  @@index([uuid])
+}
+
+model MarathonHourMapImage {
+  id             Int          @id @default(autoincrement())
+  uuid           String       @unique() @default(uuid()) @db.Uuid
+  marathonHour   MarathonHour @relation(fields: [marathonHourId], references: [id], onDelete: Cascade)
+  marathonHourId Int
+  image          Image        @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  imageId        Int
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(6)
+
+  @@index([uuid])
+}

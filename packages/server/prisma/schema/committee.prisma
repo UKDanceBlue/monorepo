@@ -1,0 +1,35 @@
+model Committee {
+  id                 Int           @id @default(autoincrement())
+  uuid               String        @unique() @default(uuid()) @db.Uuid
+  identifier         CommitteeName @unique
+  correspondingTeams Team[]
+  parentCommittee    Committee?    @relation(fields: [parentCommitteeId], references: [id], name: "parent_committee")
+  childCommittees    Committee[]   @relation("parent_committee")
+  parentCommitteeId  Int?
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  @@index([uuid])
+}
+
+enum CommitteeName {
+  programmingCommittee
+  fundraisingCommittee
+  communityDevelopmentCommittee
+  dancerRelationsCommittee
+  familyRelationsCommittee
+  techCommittee
+  operationsCommittee
+  marketingCommittee
+  corporateCommittee
+  miniMarathonsCommittee
+  viceCommittee
+  overallCommittee
+}
+
+enum CommitteeRole {
+  Chair
+  Coordinator
+  Member
+}

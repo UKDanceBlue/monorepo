@@ -1,0 +1,108 @@
+model Device {
+  id                     Int                    @id @default(autoincrement())
+  uuid                   String                 @unique() @default(uuid()) @db.Uuid
+  createdAt              DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt              DateTime               @updatedAt @db.Timestamptz(6)
+  /// Verifier for the device, this is a base64 encoded SHA512 digest of a secret the device knows
+  ///
+  /// This is nullable for devices that were registered before we started using the
+  /// verifier and will be set once the device registers next and will never be null again
+  ///
+  /// This means that when this is null, simply trust the device
+  verifier               String?
+  /// The Expo push token for the device, if available
+  expoPushToken          String?
+  /// The last time the device was seen
+  lastSeen               DateTime?              @db.Timestamptz(6)
+  lastSeenPersonId       Int?
+  /// The last person to use the device
+  lastSeenPerson         Person?                @relation(fields: [lastSeenPersonId], references: [id])
+  /// The notifications that have been sent to this device
+  deliveredNotifications NotificationDelivery[]
+
+  @@index([uuid])
+}
+
+model Notification {
+  id                          Int                    @id @default(autoincrement())
+  uuid                        String                 @unique() @default(uuid()) @db.Uuid
+  createdAt                   DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt                   DateTime               @updatedAt @db.Timestamptz(6)
+  title                       String
+  body                        String
+  /// The time at which the notification should be sent, if null it's already been sent
+  sendAt                      DateTime?              @db.Timestamptz(6)
+  /// The time at which the process of sending the notification was started
+  startedSendingAt            DateTime?              @db.Timestamptz(6)
+  /// URL to open when the notification is tapped
+  url                         String?
+  /// Every individual delivery of the notification
+  deliveries                  NotificationDelivery[]
+  /// If set, indicates a potential issue with delivery of the entire notification
+  deliveryIssue               String?
+  /// If set, indicates the time at which the delivery issue was acknowledged, null until then
+  deliveryIssueAcknowledgedAt DateTime?              @db.Timestamptz(6)
+
+  @@index([uuid])
+}
+
+/// A record of a notification being sent to a device
+model NotificationDelivery {
+  id               Int                @id @default(autoincrement())
+  uuid             String             @unique() @default(uuid()) @db.Uuid
+  deviceId         Int
+  notificationId   Int
+  /// The device to which the notification was sent
+  device           Device             @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  /// The notification that was sent
+  notification     Notification       @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  /// A unique ID for each chunk of notifications sent to Expo
+  chunkUuid        String?            @db.Uuid
+  /// The receipt ID from Expo (I *think* this is unique, but I'm not 100% sure)
+  receiptId        String?            @unique
+  /// Null by default, set to true once the notification has been sent to Expo
+  sentAt           DateTime?          @db.Timestamptz(6)
+  /// The time we checked the push receipt from Expo, remains null until the receipt is checked and is always set once it is
+  ///
+  /// This is set to the time that the receipt was checked, not necessarily the time the notification was actually delivered
+  ///
+  /// Furthermore, this is never set if we got an error from the push ticket down below
+  receiptCheckedAt DateTime?          @db.Timestamptz(6)
+  /// If set, either the push ticket or receipt indicated an error
+  ///
+  /// If it is null we assume the notification made it to the device and should be considered delivered
+  deliveryError    NotificationError?
+  createdAt        DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt        DateTime           @updatedAt @db.Timestamptz(6)
+
+  @@index([uuid])
+}
+
+model FeedItem {
+  id          Int      @id @default(autoincrement())
+  uuid        String   @unique() @default(uuid()) @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(6)
+  title       String
+  textContent String?
+  image       Image?   @relation(fields: [imageId], references: [id], onDelete: SetNull)
+  imageId     Int?
+
+  @@index([uuid])
+}
+
+/// Potential errors after sending a notification to Expo (see https://docs.expo.dev/push-notifications/sending-notifications/#individual-errors)
+enum NotificationError {
+  /// The device cannot receive push notifications anymore and you should stop sending messages to the corresponding Expo push token.
+  DeviceNotRegistered
+  /// Your push notification credentials for your standalone app are invalid (for example, you may have revoked them).
+  InvalidCredentials
+  /// The total notification payload was too large. On Android and iOS, the total payload must be at most 4096 bytes.
+  MessageTooBig
+  /// You are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
+  MessageRateExceeded
+  /// This indicates that there is an issue with your FCM push credentials.
+  MismatchSenderId
+  /// This is for any unknown errors that don't have a specific error code, this is not one of Expo's error codes.
+  Unknown
+}
