@@ -21,18 +21,24 @@
   "javascript.inlayHints.parameterNames.enabled": "all",
   "cSpell.words": [
     "antd",
+    "autoincrement",
     "Catchable",
+    "Citext",
     "codegen",
     "collapsable",
     "cooldown",
+    "datasource",
+    "ddns",
     "Errorable",
     "jonasmerlin",
     "Leaderboards",
     "linkblue",
     "Linkblues",
     "luxon",
+    "phonathon",
     "Spinnable",
     "tanstack",
+    "Timestamptz",
     "typecheck",
     "ukdanceblue",
     "urql",
@@ -61,5 +67,6 @@
     "editor.defaultFormatter": "mtxr.sqltools"
   },
   "react-native-tools.projectRoot": "./packages/mobile",
-  "dependi.npm.lockFileEnabled": true
+  "dependi.npm.lockFileEnabled": true,
+  "cSpell.enableFiletypes": ["prisma"]
 }

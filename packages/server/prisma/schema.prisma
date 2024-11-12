@@ -392,11 +392,18 @@ model FeedItem {
 
 model SolicitationCode {
   id        Int      @id @default(autoincrement())
-  uuid      String   @unique(map: "solicitation_codes_uuid_unique") @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  code      Int      @unique
+  uuid      String   @unique @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  prefix    String
+  code      Int
   name      String?
+
+  dbFundsTeams DBFundsTeam[]
+  ddns         DailyDepartmentNotification[]
+
+  @@unique([prefix, code])
+  @@index([uuid])
 }
 
 /// This table is kept in sync with the DBFunds API and should not be modified
@@ -404,8 +411,9 @@ model DBFundsTeam {
   /// Unrelated to the 'id' field in the DBFunds API
   id                 Int                       @id @default(autoincrement())
   uuid               String                    @unique @default(uuid()) @db.Uuid
-  /// The team's DbNum from the DBFunds API
-  dbNum              Int
+  /// The team's DbNum from the DBFunds API is actually a solicitation code
+  solicitationCodeId Int
+  solicitationCode   SolicitationCode          @relation(fields: [solicitationCodeId], references: [id])
   /// The team's name from the DBFunds API
   name               String
   /// The team's total fundraising amount from the DBFunds API
@@ -422,7 +430,7 @@ model DBFundsTeam {
   /// The corresponding teams in our database
   teams Team[]
 
-  @@unique([dbNum, marathonId])
+  @@unique([solicitationCodeId, marathonId])
 }
 
 /// This table is kept in sync with the DBFunds API and should not be modified
@@ -455,14 +463,12 @@ model FundraisingEntrySource {
 
   entryId       Int                      @unique
   entryWithMeta FundraisingEntryWithMeta @relation(fields: [entryId], references: [id], onDelete: Cascade)
-  entry         FundraisingEntry         @relation(fields: [fundraisingEntryId], references: [id])
 
   dbFundsEntryId Int?                     @unique
   dbFundsEntry   DBFundsFundraisingEntry? @relation(fields: [dbFundsEntryId], references: [id])
 
-  ddnId              Int?                         @unique
-  ddn                DailyDepartmentNotification? @relation(fields: [ddnId], references: [id])
-  fundraisingEntryId Int
+  ddnId Int?                         @unique
+  ddn   DailyDepartmentNotification? @relation(fields: [ddnId], references: [id])
 }
 
 enum FundraisingEntryType {
@@ -478,13 +484,11 @@ model FundraisingEntry {
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
-  notes                    String?
-  type                     FundraisingEntryType
-  enteredBy                Int?
-  enteredByPerson          Person?                 @relation(fields: [enteredBy], references: [id], onDelete: SetNull)
-  entrySourceId            Int?                    @unique
-  entrySource              FundraisingEntrySource? @relation(fields: [fundraisingEntrySourceId], references: [id])
-  fundraisingEntrySourceId Int?
+  notes           String?
+  type            FundraisingEntryType
+  enteredBy       Int?
+  enteredByPerson Person?              @relation(fields: [enteredBy], references: [id], onDelete: SetNull)
+  entrySourceId   Int?                 @unique
 
   @@index([uuid])
 }
@@ -555,7 +559,8 @@ model DailyDepartmentNotification {
   gikType                 String?
   gikDescription          String?
   onlineGift              Boolean
-  solicitationCode        String?
+  solicitationCodeId      Int
+  solicitationCode        SolicitationCode                 @relation(fields: [solicitationCodeId], references: [id])
   solicitation            String?
   behalfHonorMemorial     String?
   matchingGift            String?

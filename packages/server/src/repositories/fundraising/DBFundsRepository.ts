@@ -177,7 +177,6 @@ export class DBFundsRepository {
               date: entry.date,
               donatedBy: entry.donatedBy,
               donatedTo: entry.donatedTo,
-              
             })),
           }),
           this.prisma.dBFundsFundraisingEntry.updateMany({

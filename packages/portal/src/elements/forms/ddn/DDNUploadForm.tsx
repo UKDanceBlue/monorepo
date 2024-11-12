@@ -29,17 +29,17 @@ const inputTypeSchema = z.object({
   "Pledged Amount": z.coerce.number(),
   "Account Number": z.string().trim(),
   "Account Name": z.string().trim(),
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   "Holding Destination": z
     .string()
     .trim()
     .optional()
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     .transform((v) => v || undefined),
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   "Comment": z
     .string()
     .trim()
     .optional()
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     .transform((v) => v || undefined),
   "SECShares": z.string().trim().optional(),
   "SECType": z.string().trim().optional(),

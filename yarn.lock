@@ -4394,6 +4394,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@faker-js/faker@npm:^9.2.0":
+  version: 9.2.0
+  resolution: "@faker-js/faker@npm:9.2.0"
+  checksum: 10/c233aaa41ebc4f4bed36c1304c399c424b9e5abca9cb8fe54ce73d4162ec7acd66f294b90c85ed7a5df774400e44f0a10364bdd41f49e72cb519a48b5948939f
+  languageName: node
+  linkType: hard
+
 "@formatjs/ecma402-abstract@npm:1.18.2":
   version: 1.18.2
   resolution: "@formatjs/ecma402-abstract@npm:1.18.2"
@@ -10972,7 +10979,7 @@ __metadata:
   dependencies:
     "@apollo/server": "npm:^4.11.0"
     "@azure/msal-node": "npm:^2.15.0"
-    "@faker-js/faker": "npm:^9.0.3"
+    "@faker-js/faker": "npm:^9.2.0"
     "@freshgum/typedi": "npm:^0.7.2"
     "@prisma/client": "npm:^5.21.1"
     "@sentry/cli": "npm:^2.37.0"
