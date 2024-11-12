@@ -28,7 +28,10 @@ export const ManageNotificationForm = ({
   notificationFragment,
   refetchNotification,
 }: {
-  notificationFragment?: FragmentType<typeof SingleNotificationFragment> | null;
+  notificationFragment?:
+    | FragmentType<typeof SingleNotificationFragment>
+    | undefined
+    | null;
   refetchNotification: UseQueryExecute;
 }) => {
   const notification = getFragmentData(

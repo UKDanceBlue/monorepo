@@ -149,7 +149,7 @@ async function getEnv(name: string, def: string | null): Promise<string>;
 async function getEnv(name: string, def: symbol): Promise<string | symbol>;
 async function getEnv(
   name: string,
-  def?: string | symbol | null
+  def?: string | symbol | undefined | null
 ): Promise<string | symbol | undefined> {
   let value;
   if (process.env[name]) {

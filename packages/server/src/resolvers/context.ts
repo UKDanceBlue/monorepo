@@ -32,7 +32,7 @@ const superAdminLinkblues = Container.get(superAdminLinkbluesToken);
 
 function isSuperAdmin(
   committeeRoles: EffectiveCommitteeRole[],
-  linkblue?: string | null
+  linkblue?: string | undefined | null
 ): boolean {
   return (
     (typeof superAdminLinkblues !== "symbol" &&

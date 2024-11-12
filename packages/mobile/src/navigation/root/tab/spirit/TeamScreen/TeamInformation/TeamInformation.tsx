@@ -28,8 +28,8 @@ const TeamInformation = ({
   myFundraisingEntries: readonly {
     amount: number;
     entry: {
-      donatedToText?: string | null | undefined;
-      donatedByText?: string | null | undefined;
+      donatedToText?: string | undefined | null | undefined;
+      donatedByText?: string | undefined | null | undefined;
       donatedOn: string | Date;
     };
   }[];

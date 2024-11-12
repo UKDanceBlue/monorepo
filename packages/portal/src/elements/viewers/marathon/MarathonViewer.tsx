@@ -24,7 +24,11 @@ export const MarathonViewerFragment = graphql(/* GraphQL */ `
 export const MarathonViewer = ({
   marathon,
 }: {
-  marathon?: FragmentType<typeof MarathonViewerFragment> | null | undefined;
+  marathon?:
+    | FragmentType<typeof MarathonViewerFragment>
+    | undefined
+    | null
+    | undefined;
 }) => {
   const marathonData = getFragmentData(MarathonViewerFragment, marathon);
 

@@ -37,14 +37,14 @@ export class ImageNode extends TimestampedResource implements Node {
 
   public static init(init: {
     id: string;
-    url?: URL | null;
+    url?: URL | undefined | null;
     mimeType: string;
-    thumbHash?: string | null;
-    alt?: string | null;
+    thumbHash?: string | undefined | null;
+    alt?: string | undefined | null;
     width: number;
     height: number;
-    updatedAt?: Date | null;
-    createdAt?: Date | null;
+    updatedAt?: Date | undefined | null;
+    createdAt?: Date | undefined | null;
   }) {
     return this.createInstance().withValues(init);
   }

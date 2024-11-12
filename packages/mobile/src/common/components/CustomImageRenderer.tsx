@@ -25,7 +25,7 @@ export const CustomImageRenderer = ({
     : undefined;
 
   const [imageProps, setImageProps] = useState<
-    (IFitImageProps & { key?: Key }) | null
+    (IFitImageProps & { key?: Key }) | undefined | null
   >(null);
   useEffect(() => {
     // we check that the source starts with at least one of the elements in allowedImageHandlers

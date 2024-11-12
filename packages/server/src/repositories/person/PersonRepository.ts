@@ -113,11 +113,11 @@ export class PersonRepository {
   async findPersonForLogin(
     authIds: [Exclude<AuthSource, "None">, string][],
     userInfo: {
-      uuid?: string | null;
-      email?: string | null;
-      linkblue?: string | null;
-      name?: string | null;
-      dbRole?: DbRole | null;
+      uuid?: string | undefined | null;
+      email?: string | undefined | null;
+      linkblue?: string | undefined | null;
+      name?: string | undefined | null;
+      dbRole?: DbRole | undefined | null;
     },
     memberOf?: (string | number)[],
     captainOf?: (string | number)[]
@@ -524,10 +524,13 @@ export class PersonRepository {
     memberOf,
     captainOf,
   }: {
-    name?: string | null;
+    name?: string | undefined | null;
     email: string;
-    linkblue?: string | null;
-    authIds?: { source: Exclude<AuthSource, "None">; value: string }[] | null;
+    linkblue?: string | undefined | null;
+    authIds?:
+      | { source: Exclude<AuthSource, "None">; value: string }[]
+      | undefined
+      | null;
     memberOf?: SimpleUniqueParam[] | undefined | null;
     captainOf?: SimpleUniqueParam[] | undefined | null;
   }): Promise<
@@ -659,14 +662,14 @@ export class PersonRepository {
       memberOf?:
         | {
             id: string | number;
-            committeeRole?: CommitteeRole | null | undefined;
+            committeeRole?: CommitteeRole | undefined | null | undefined;
           }[]
         | undefined
         | null;
       captainOf?:
         | {
             id: string | number;
-            committeeRole?: CommitteeRole | null | undefined;
+            committeeRole?: CommitteeRole | undefined | null | undefined;
           }[]
         | undefined
         | null;

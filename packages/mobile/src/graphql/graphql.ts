@@ -33,7 +33,7 @@ export type Incremental<T> =
       [P in keyof T]?: P extends " $fragmentName" | "__typename" ? T[P] : never;
     };
 /** All built-in and custom scalars, mapped to their actual values */
-export type Scalars = {
+export interface Scalars {
   ID: { input: string; output: string };
   String: { input: string; output: string };
   Boolean: { input: boolean; output: boolean };
@@ -55,27 +55,27 @@ export type Scalars = {
   URL: { input: URL | string; output: URL | string };
   /** Represents NULL values */
   Void: { input: void; output: void };
-};
+}
 
 export { AccessLevel };
 
-export type AssignEntryToPersonInput = {
+export interface AssignEntryToPersonInput {
   readonly amount: Scalars["Float"]["input"];
-};
+}
 
 export { AuthSource };
 
 export { BatchType };
 
-export type BulkPersonInput = {
+export interface BulkPersonInput {
   readonly committee?: InputMaybe<CommitteeIdentifier>;
   readonly email: Scalars["EmailAddress"]["input"];
   readonly linkblue: Scalars["String"]["input"];
   readonly name: Scalars["String"]["input"];
   readonly role?: InputMaybe<CommitteeRole>;
-};
+}
 
-export type BulkTeamInput = {
+export interface BulkTeamInput {
   readonly captainLinkblues?: InputMaybe<
     ReadonlyArray<Scalars["String"]["input"]>
   >;
@@ -85,57 +85,57 @@ export type BulkTeamInput = {
   >;
   readonly name: Scalars["String"]["input"];
   readonly type: TeamType;
-};
+}
 
 export { CommitteeIdentifier };
 
 export { CommitteeRole };
 
-export type CreateConfigurationInput = {
+export interface CreateConfigurationInput {
   readonly key: Scalars["String"]["input"];
   readonly validAfter?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly validUntil?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
-export type CreateEventInput = {
+export interface CreateEventInput {
   readonly description?: InputMaybe<Scalars["String"]["input"]>;
   readonly location?: InputMaybe<Scalars["String"]["input"]>;
   readonly occurrences: ReadonlyArray<CreateEventOccurrenceInput>;
   readonly summary?: InputMaybe<Scalars["String"]["input"]>;
   readonly title: Scalars["String"]["input"];
-};
+}
 
-export type CreateEventOccurrenceInput = {
+export interface CreateEventOccurrenceInput {
   readonly fullDay: Scalars["Boolean"]["input"];
   readonly interval: IntervalIsoInput;
-};
+}
 
-export type CreateFeedInput = {
+export interface CreateFeedInput {
   readonly imageUuid?: InputMaybe<Scalars["String"]["input"]>;
   readonly textContent?: InputMaybe<Scalars["String"]["input"]>;
   readonly title: Scalars["String"]["input"];
-};
+}
 
-export type CreateImageInput = {
+export interface CreateImageInput {
   readonly alt?: InputMaybe<Scalars["String"]["input"]>;
   readonly url?: InputMaybe<Scalars["URL"]["input"]>;
-};
+}
 
-export type CreateMarathonHourInput = {
+export interface CreateMarathonHourInput {
   readonly details?: InputMaybe<Scalars["String"]["input"]>;
   readonly durationInfo: Scalars["String"]["input"];
   readonly shownStartingAt: Scalars["DateTimeISO"]["input"];
   readonly title: Scalars["String"]["input"];
-};
+}
 
-export type CreateMarathonInput = {
+export interface CreateMarathonInput {
   readonly endDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly startDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly year: Scalars["String"]["input"];
-};
+}
 
-export type CreatePersonInput = {
+export interface CreatePersonInput {
   readonly captainOf?: ReadonlyArray<MemberOf>;
   /** @deprecated DBRole can no longer be set directly */
   readonly dbRole?: InputMaybe<DbRole>;
@@ -143,31 +143,31 @@ export type CreatePersonInput = {
   readonly linkblue?: InputMaybe<Scalars["String"]["input"]>;
   readonly memberOf?: ReadonlyArray<MemberOf>;
   readonly name?: InputMaybe<Scalars["String"]["input"]>;
-};
+}
 
-export type CreatePointEntryInput = {
+export interface CreatePointEntryInput {
   readonly comment?: InputMaybe<Scalars["String"]["input"]>;
   readonly opportunityUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
   readonly personFromUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
   readonly points: Scalars["Int"]["input"];
   readonly teamUuid: Scalars["GlobalId"]["input"];
-};
+}
 
-export type CreatePointOpportunityInput = {
+export interface CreatePointOpportunityInput {
   readonly eventUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
   readonly marathonUuid: Scalars["GlobalId"]["input"];
   readonly name: Scalars["String"]["input"];
   readonly opportunityDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly type: TeamType;
-};
+}
 
-export type CreateTeamInput = {
+export interface CreateTeamInput {
   readonly legacyStatus: TeamLegacyStatus;
   readonly name: Scalars["String"]["input"];
   readonly type: TeamType;
-};
+}
 
-export type DailyDepartmentNotificationInput = {
+export interface DailyDepartmentNotificationInput {
   readonly accountName: Scalars["String"]["input"];
   readonly accountNumber: Scalars["String"]["input"];
   readonly batchId: Scalars["String"]["input"];
@@ -201,7 +201,7 @@ export type DailyDepartmentNotificationInput = {
   readonly transactionDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
   readonly transactionType: Scalars["String"]["input"];
   readonly ukFirstGift: Scalars["Boolean"]["input"];
-};
+}
 
 export { DbRole };
 
@@ -222,7 +222,7 @@ export const DeviceResolverDateFilterKeys = {
 
 export type DeviceResolverDateFilterKeys =
   (typeof DeviceResolverDateFilterKeys)[keyof typeof DeviceResolverDateFilterKeys];
-export type DeviceResolverKeyedDateFilterItem = {
+export interface DeviceResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -230,24 +230,24 @@ export type DeviceResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type DeviceResolverKeyedIsNullFilterItem = {
+export interface DeviceResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: DeviceResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type DeviceResolverKeyedOneOfFilterItem = {
+export interface DeviceResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: Scalars["Void"]["input"];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type DeviceResolverKeyedStringFilterItem = {
+export interface DeviceResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -255,7 +255,7 @@ export type DeviceResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const DeviceResolverStringFilterKeys = {
   ExpoPushToken: "expoPushToken",
@@ -287,7 +287,7 @@ export const EventResolverDateFilterKeys = {
 
 export type EventResolverDateFilterKeys =
   (typeof EventResolverDateFilterKeys)[keyof typeof EventResolverDateFilterKeys];
-export type EventResolverKeyedDateFilterItem = {
+export interface EventResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -295,24 +295,24 @@ export type EventResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type EventResolverKeyedIsNullFilterItem = {
+export interface EventResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: EventResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type EventResolverKeyedOneOfFilterItem = {
+export interface EventResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: Scalars["Void"]["input"];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type EventResolverKeyedStringFilterItem = {
+export interface EventResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -320,7 +320,7 @@ export type EventResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const EventResolverStringFilterKeys = {
   Description: "description",
@@ -352,7 +352,7 @@ export const FundraisingEntryResolverDateFilterKeys = {
 
 export type FundraisingEntryResolverDateFilterKeys =
   (typeof FundraisingEntryResolverDateFilterKeys)[keyof typeof FundraisingEntryResolverDateFilterKeys];
-export type FundraisingEntryResolverKeyedDateFilterItem = {
+export interface FundraisingEntryResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -360,16 +360,16 @@ export type FundraisingEntryResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type FundraisingEntryResolverKeyedIsNullFilterItem = {
+export interface FundraisingEntryResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: FundraisingEntryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type FundraisingEntryResolverKeyedNumericFilterItem = {
+export interface FundraisingEntryResolverKeyedNumericFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -377,17 +377,17 @@ export type FundraisingEntryResolverKeyedNumericFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["Float"]["input"];
-};
+}
 
-export type FundraisingEntryResolverKeyedOneOfFilterItem = {
+export interface FundraisingEntryResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: FundraisingEntryResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type FundraisingEntryResolverKeyedStringFilterItem = {
+export interface FundraisingEntryResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -395,7 +395,7 @@ export type FundraisingEntryResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const FundraisingEntryResolverNumericFilterKeys = {
   Amount: "amount",
@@ -434,7 +434,7 @@ export const ImageResolverDateFilterKeys = {
 
 export type ImageResolverDateFilterKeys =
   (typeof ImageResolverDateFilterKeys)[keyof typeof ImageResolverDateFilterKeys];
-export type ImageResolverKeyedDateFilterItem = {
+export interface ImageResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -442,16 +442,16 @@ export type ImageResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type ImageResolverKeyedIsNullFilterItem = {
+export interface ImageResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: ImageResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type ImageResolverKeyedNumericFilterItem = {
+export interface ImageResolverKeyedNumericFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -459,17 +459,17 @@ export type ImageResolverKeyedNumericFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["Float"]["input"];
-};
+}
 
-export type ImageResolverKeyedOneOfFilterItem = {
+export interface ImageResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: Scalars["Void"]["input"];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type ImageResolverKeyedStringFilterItem = {
+export interface ImageResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -477,7 +477,7 @@ export type ImageResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const ImageResolverNumericFilterKeys = {
   Height: "height",
@@ -492,10 +492,10 @@ export const ImageResolverStringFilterKeys = {
 
 export type ImageResolverStringFilterKeys =
   (typeof ImageResolverStringFilterKeys)[keyof typeof ImageResolverStringFilterKeys];
-export type IntervalIsoInput = {
+export interface IntervalIsoInput {
   readonly end: Scalars["DateTimeISO"]["input"];
   readonly start: Scalars["DateTimeISO"]["input"];
-};
+}
 
 export const MarathonHourResolverAllKeys = {
   CreatedAt: "createdAt",
@@ -517,7 +517,7 @@ export const MarathonHourResolverDateFilterKeys = {
 
 export type MarathonHourResolverDateFilterKeys =
   (typeof MarathonHourResolverDateFilterKeys)[keyof typeof MarathonHourResolverDateFilterKeys];
-export type MarathonHourResolverKeyedDateFilterItem = {
+export interface MarathonHourResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -525,24 +525,24 @@ export type MarathonHourResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type MarathonHourResolverKeyedIsNullFilterItem = {
+export interface MarathonHourResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: MarathonHourResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type MarathonHourResolverKeyedOneOfFilterItem = {
+export interface MarathonHourResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: MarathonHourResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type MarathonHourResolverKeyedStringFilterItem = {
+export interface MarathonHourResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -550,7 +550,7 @@ export type MarathonHourResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const MarathonHourResolverOneOfFilterKeys = {
   MarathonYear: "marathonYear",
@@ -585,7 +585,7 @@ export const MarathonResolverDateFilterKeys = {
 
 export type MarathonResolverDateFilterKeys =
   (typeof MarathonResolverDateFilterKeys)[keyof typeof MarathonResolverDateFilterKeys];
-export type MarathonResolverKeyedDateFilterItem = {
+export interface MarathonResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -593,30 +593,30 @@ export type MarathonResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type MarathonResolverKeyedIsNullFilterItem = {
+export interface MarathonResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: MarathonResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type MemberOf = {
+export interface MemberOf {
   readonly committeeRole?: InputMaybe<CommitteeRole>;
   readonly id: Scalars["GlobalId"]["input"];
-};
+}
 
 export { MembershipPositionType };
 
-export type NotificationAudienceInput = {
+export interface NotificationAudienceInput {
   readonly all?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly memberOfTeamType?: InputMaybe<TeamType>;
   readonly memberOfTeams?: InputMaybe<
     ReadonlyArray<Scalars["GlobalId"]["input"]>
   >;
   readonly users?: InputMaybe<ReadonlyArray<Scalars["GlobalId"]["input"]>>;
-};
+}
 
 export const NotificationDeliveryResolverAllKeys = {
   CreatedAt: "createdAt",
@@ -637,7 +637,7 @@ export const NotificationDeliveryResolverDateFilterKeys = {
 
 export type NotificationDeliveryResolverDateFilterKeys =
   (typeof NotificationDeliveryResolverDateFilterKeys)[keyof typeof NotificationDeliveryResolverDateFilterKeys];
-export type NotificationDeliveryResolverKeyedDateFilterItem = {
+export interface NotificationDeliveryResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -645,14 +645,14 @@ export type NotificationDeliveryResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type NotificationDeliveryResolverKeyedIsNullFilterItem = {
+export interface NotificationDeliveryResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: NotificationDeliveryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
 export const NotificationResolverAllKeys = {
   Body: "body",
@@ -675,7 +675,7 @@ export const NotificationResolverDateFilterKeys = {
 
 export type NotificationResolverDateFilterKeys =
   (typeof NotificationResolverDateFilterKeys)[keyof typeof NotificationResolverDateFilterKeys];
-export type NotificationResolverKeyedDateFilterItem = {
+export interface NotificationResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -683,24 +683,24 @@ export type NotificationResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type NotificationResolverKeyedIsNullFilterItem = {
+export interface NotificationResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: NotificationResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type NotificationResolverKeyedOneOfFilterItem = {
+export interface NotificationResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: NotificationResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type NotificationResolverKeyedStringFilterItem = {
+export interface NotificationResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -708,7 +708,7 @@ export type NotificationResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const NotificationResolverOneOfFilterKeys = {
   DeliveryIssue: "deliveryIssue",
@@ -736,22 +736,22 @@ export const PersonResolverAllKeys = {
 
 export type PersonResolverAllKeys =
   (typeof PersonResolverAllKeys)[keyof typeof PersonResolverAllKeys];
-export type PersonResolverKeyedIsNullFilterItem = {
+export interface PersonResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: PersonResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type PersonResolverKeyedOneOfFilterItem = {
+export interface PersonResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: PersonResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type PersonResolverKeyedStringFilterItem = {
+export interface PersonResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -759,7 +759,7 @@ export type PersonResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const PersonResolverOneOfFilterKeys = {
   CommitteeName: "committeeName",
@@ -791,7 +791,7 @@ export const PointEntryResolverDateFilterKeys = {
 
 export type PointEntryResolverDateFilterKeys =
   (typeof PointEntryResolverDateFilterKeys)[keyof typeof PointEntryResolverDateFilterKeys];
-export type PointEntryResolverKeyedDateFilterItem = {
+export interface PointEntryResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -799,14 +799,14 @@ export type PointEntryResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type PointEntryResolverKeyedIsNullFilterItem = {
+export interface PointEntryResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: PointEntryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
 export const PointOpportunityResolverAllKeys = {
   CreatedAt: "createdAt",
@@ -827,7 +827,7 @@ export const PointOpportunityResolverDateFilterKeys = {
 
 export type PointOpportunityResolverDateFilterKeys =
   (typeof PointOpportunityResolverDateFilterKeys)[keyof typeof PointOpportunityResolverDateFilterKeys];
-export type PointOpportunityResolverKeyedDateFilterItem = {
+export interface PointOpportunityResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -835,24 +835,24 @@ export type PointOpportunityResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type PointOpportunityResolverKeyedIsNullFilterItem = {
+export interface PointOpportunityResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: PointOpportunityResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type PointOpportunityResolverKeyedOneOfFilterItem = {
+export interface PointOpportunityResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: PointOpportunityResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type PointOpportunityResolverKeyedStringFilterItem = {
+export interface PointOpportunityResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -860,7 +860,7 @@ export type PointOpportunityResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const PointOpportunityResolverOneOfFilterKeys = {
   MarathonUuid: "marathonUuid",
@@ -875,7 +875,7 @@ export const PointOpportunityResolverStringFilterKeys = {
 
 export type PointOpportunityResolverStringFilterKeys =
   (typeof PointOpportunityResolverStringFilterKeys)[keyof typeof PointOpportunityResolverStringFilterKeys];
-export type RegisterDeviceInput = {
+export interface RegisterDeviceInput {
   /** For legacy reasons, this can be a GlobalId or a raw UUID */
   readonly deviceId: Scalars["String"]["input"];
   /** The Expo push token of the device */
@@ -884,62 +884,62 @@ export type RegisterDeviceInput = {
   readonly lastUserId?: InputMaybe<Scalars["GlobalId"]["input"]>;
   /** base64 encoded SHA-256 hash of a secret known to the device */
   readonly verifier: Scalars["String"]["input"];
-};
+}
 
-export type SetEventInput = {
+export interface SetEventInput {
   readonly description?: InputMaybe<Scalars["String"]["input"]>;
   readonly location?: InputMaybe<Scalars["String"]["input"]>;
   readonly occurrences: ReadonlyArray<SetEventOccurrenceInput>;
   readonly summary?: InputMaybe<Scalars["String"]["input"]>;
   readonly title: Scalars["String"]["input"];
-};
+}
 
-export type SetEventOccurrenceInput = {
+export interface SetEventOccurrenceInput {
   readonly fullDay: Scalars["Boolean"]["input"];
   readonly interval: IntervalIsoInput;
   /** If updating an existing occurrence, the UUID of the occurrence to update */
   readonly uuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
-};
+}
 
-export type SetFeedInput = {
+export interface SetFeedInput {
   readonly textContent?: InputMaybe<Scalars["String"]["input"]>;
   readonly title: Scalars["String"]["input"];
-};
+}
 
-export type SetMarathonHourInput = {
+export interface SetMarathonHourInput {
   readonly details?: InputMaybe<Scalars["String"]["input"]>;
   readonly durationInfo: Scalars["String"]["input"];
   readonly shownStartingAt: Scalars["DateTimeISO"]["input"];
   readonly title: Scalars["String"]["input"];
-};
+}
 
-export type SetMarathonInput = {
+export interface SetMarathonInput {
   readonly endDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly startDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly year: Scalars["String"]["input"];
-};
+}
 
-export type SetPersonInput = {
+export interface SetPersonInput {
   readonly captainOf?: InputMaybe<ReadonlyArray<MemberOf>>;
   readonly email?: InputMaybe<Scalars["EmailAddress"]["input"]>;
   readonly linkblue?: InputMaybe<Scalars["String"]["input"]>;
   readonly memberOf?: InputMaybe<ReadonlyArray<MemberOf>>;
   readonly name?: InputMaybe<Scalars["String"]["input"]>;
-};
+}
 
-export type SetPointOpportunityInput = {
+export interface SetPointOpportunityInput {
   readonly eventUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
   readonly name?: InputMaybe<Scalars["String"]["input"]>;
   readonly opportunityDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly type?: InputMaybe<TeamType>;
-};
+}
 
-export type SetTeamInput = {
+export interface SetTeamInput {
   readonly legacyStatus?: InputMaybe<TeamLegacyStatus>;
   readonly name?: InputMaybe<Scalars["String"]["input"]>;
   readonly persistentIdentifier?: InputMaybe<Scalars["String"]["input"]>;
   readonly type?: InputMaybe<TeamType>;
-};
+}
 
 export { SortDirection };
 
@@ -956,22 +956,22 @@ export const TeamResolverAllKeys = {
 
 export type TeamResolverAllKeys =
   (typeof TeamResolverAllKeys)[keyof typeof TeamResolverAllKeys];
-export type TeamResolverKeyedIsNullFilterItem = {
+export interface TeamResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: TeamResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type TeamResolverKeyedOneOfFilterItem = {
+export interface TeamResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: TeamResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type TeamResolverKeyedStringFilterItem = {
+export interface TeamResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -979,7 +979,7 @@ export type TeamResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const TeamResolverOneOfFilterKeys = {
   LegacyStatus: "legacyStatus",
@@ -997,9 +997,9 @@ export type TeamResolverStringFilterKeys =
   (typeof TeamResolverStringFilterKeys)[keyof typeof TeamResolverStringFilterKeys];
 export { TeamType };
 
-export type UpdateFundraisingAssignmentInput = {
+export interface UpdateFundraisingAssignmentInput {
   readonly amount: Scalars["Float"]["input"];
-};
+}
 
 export type ImageViewFragmentFragment = {
   readonly __typename?: "ImageNode";

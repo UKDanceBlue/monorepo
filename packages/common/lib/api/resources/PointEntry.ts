@@ -1,6 +1,6 @@
 import { Field, Int, ObjectType } from "type-graphql";
 
-import { createNodeClasses,Node } from "../relay.js";
+import { createNodeClasses, Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
@@ -22,10 +22,10 @@ export class PointEntryNode extends TimestampedResource implements Node {
 
   public static init(init: {
     id: string;
-    comment?: string | null;
+    comment?: string | undefined | null;
     points: number;
-    createdAt?: Date | null;
-    updatedAt?: Date | null;
+    createdAt?: Date | undefined | null;
+    updatedAt?: Date | undefined | null;
   }) {
     return this.createInstance().withValues(init);
   }

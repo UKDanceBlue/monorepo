@@ -16,7 +16,7 @@ export const ImageViewFragment = graphql(/* GraphQL */ `
 `);
 
 interface ImageViewProps extends ImageProps {
-  imageFragment?: FragmentType<typeof ImageViewFragment> | null;
+  imageFragment?: FragmentType<typeof ImageViewFragment> | undefined | null;
   renderWidth?: number;
   renderHeight?: number;
   source?: never;

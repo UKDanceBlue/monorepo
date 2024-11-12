@@ -28,8 +28,8 @@ export class FeedRepository {
     imageUuid,
   }: {
     title: string;
-    textContent?: string | null | undefined;
-    imageUuid?: string | null | undefined;
+    textContent?: string | undefined | null | undefined;
+    imageUuid?: string | undefined | null | undefined;
   }) {
     return this.prisma.feedItem.create({
       data: {
@@ -51,7 +51,7 @@ export class FeedRepository {
     {
       title,
       textContent,
-    }: { title: string; textContent?: string | null | undefined }
+    }: { title: string; textContent?: string | undefined | null | undefined }
   ): Promise<FeedItem | null> {
     try {
       return await this.prisma.feedItem.update({

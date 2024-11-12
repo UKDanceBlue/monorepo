@@ -1,5 +1,5 @@
 import { EmailAddressResolver } from "graphql-scalars";
-import { ArgsType,Field, InputType, ObjectType } from "type-graphql";
+import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import {
   CommitteeIdentifier,
@@ -25,7 +25,7 @@ class MemberOf {
   id!: GlobalId;
 
   @Field(() => CommitteeRole, { nullable: true })
-  committeeRole?: CommitteeRole | null | undefined;
+  committeeRole?: CommitteeRole | undefined | null | undefined;
 }
 
 @ArgsType()

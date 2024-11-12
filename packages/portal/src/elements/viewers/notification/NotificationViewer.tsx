@@ -13,7 +13,10 @@ export const NotificationViewer = ({
   notificationFragment,
   refetch,
 }: {
-  notificationFragment?: FragmentType<typeof SingleNotificationFragment> | null;
+  notificationFragment?:
+    | FragmentType<typeof SingleNotificationFragment>
+    | undefined
+    | null;
   refetch: UseQueryExecute;
 }) => {
   const notification = getFragmentData(

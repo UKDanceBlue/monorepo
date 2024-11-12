@@ -17,10 +17,10 @@ function ErrorBoundaryFallback({
   isComponentError,
   untypedError,
 }: {
-  error?: ErrorWithCause | null;
+  error?: ErrorWithCause | undefined | null;
   untypedError?: unknown;
-  componentStack?: string | null;
-  isComponentError?: boolean | null;
+  componentStack?: string | undefined | null;
+  isComponentError?: boolean | undefined | null;
 }) {
   let stringifiedError = "";
   try {

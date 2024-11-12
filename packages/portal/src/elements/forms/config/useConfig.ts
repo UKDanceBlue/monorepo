@@ -19,9 +19,9 @@ export const ConfigFragment = graphql(/* GraphQL */ `
 
 export interface ConfigValue {
   value: string;
-  validAfter?: DateTime | null;
-  validUntil?: DateTime | null;
-  createdAt?: DateTime | null;
+  validAfter?: DateTime | undefined | null;
+  validUntil?: DateTime | undefined | null;
+  createdAt?: DateTime | undefined | null;
 }
 
 interface ConfigValueCollection {
