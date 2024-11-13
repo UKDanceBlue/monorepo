@@ -19,9 +19,6 @@ model DBFundsTeam {
   marathon   Marathon? @relation(fields: [marathonId], references: [id])
   marathonId Int?
 
-  /// The corresponding teams in our database
-  teams Team[]
-
   @@unique([solicitationCodeId, marathonId])
 }
 
@@ -43,7 +40,6 @@ model DBFundsFundraisingEntry {
   dbFundsTeam   DBFundsTeam @relation(fields: [dbFundsTeamId], references: [id], onDelete: Cascade)
 
   /// The corresponding fundraising entry in our database
-  fundraisingEntry       FundraisingEntryWithMeta? @relation(fields: [fundraisingEntryId], references: [id])
   fundraisingEntrySource FundraisingEntrySource?
   fundraisingEntryId     Int?
 

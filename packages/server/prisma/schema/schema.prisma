@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["views", "strictUndefinedChecks", "relationJoins", "nativeDistinct", "omitApi", "prismaSchemaFolder", "typedSql"]
+  previewFeatures = ["views", "relationJoins", "nativeDistinct", "omitApi", "prismaSchemaFolder", "typedSql"]
   binaryTargets   = ["native", "debian-openssl-3.0.x"]
 }
 

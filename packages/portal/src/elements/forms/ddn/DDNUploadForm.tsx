@@ -1,7 +1,10 @@
 import { type DDNInit, localDateFromJs } from "@ukdanceblue/common";
+import { useMutation } from "urql";
 import { z } from "zod";
 
 import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader";
+import { graphql } from "#graphql/gql";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 const inputTypeSchema = z.object({
   "Division": z.string().trim(),
@@ -115,7 +118,20 @@ const inputTypeSchema = z.object({
     .transform((v) => v && localDateFromJs(v).unwrap()),
 });
 
+const UploadDdnDocument = graphql(/* GraphQL */ `
+  mutation UploadDdnDocument($ddnData: [DailyDepartmentNotificationInput!]!) {
+    batchUploadDailyDepartmentNotifications(input: $ddnData) {
+      id
+    }
+  }
+`);
+
 export function DDNUploadForm() {
+  const [uploadDdnDocumentStatus, uploadDdn] = useMutation(UploadDdnDocument);
+  useQueryStatusWatcher({
+    ...uploadDdnDocumentStatus,
+    loadingMessage: "Uploading DDN data...",
+  });
   return (
     <SpreadsheetUploader
       rowSchema={inputTypeSchema}
@@ -185,6 +201,10 @@ export function DDNUploadForm() {
           })
         );
         console.table(ddnData);
+
+        await uploadDdn({
+          ddnData,
+        });
       }}
       text="Upload DDN Spreadsheet"
     />

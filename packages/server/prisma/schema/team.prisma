@@ -1,18 +1,19 @@
 model Team {
-  id                       Int              @id @default(autoincrement())
-  uuid                     String           @unique() @default(uuid()) @db.Uuid
+  id                       Int               @id @default(autoincrement())
+  uuid                     String            @unique() @default(uuid()) @db.Uuid
   name                     String
   type                     TeamType
   legacyStatus             TeamLegacyStatus
-  marathon                 Marathon         @relation(fields: [marathonId], references: [id], onDelete: Cascade)
+  marathon                 Marathon          @relation(fields: [marathonId], references: [id], onDelete: Cascade)
   marathonId               Int
   persistentIdentifier     String?
   memberships              Membership[]
   pointEntries             PointEntry[]
-  correspondingCommittee   Committee?       @relation(fields: [correspondingCommitteeId], references: [id])
+  correspondingCommittee   Committee?        @relation(fields: [correspondingCommitteeId], references: [id])
   correspondingCommitteeId Int?
-  dbFundsTeam              DBFundsTeam?     @relation(fields: [dbFundsTeamId], references: [id])
   dbFundsTeamId            Int?
+  solicitationCode         SolicitationCode? @relation(fields: [solicitationCodeId], references: [id])
+  solicitationCodeId       Int?
 
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)

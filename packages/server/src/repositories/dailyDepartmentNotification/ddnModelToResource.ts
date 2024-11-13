@@ -1,6 +1,7 @@
 import type {
   DailyDepartmentNotification,
   DailyDepartmentNotificationBatch,
+  SolicitationCode,
 } from "@prisma/client";
 import {
   DailyDepartmentNotificationBatchNode,
@@ -18,7 +19,7 @@ function stringifyDate(date: Date | null): string | undefined {
 }
 
 export function dailyDepartmentNotificationModelToResource(
-  ddn: DailyDepartmentNotification
+  ddn: DailyDepartmentNotification & { solicitationCode: SolicitationCode }
 ): DailyDepartmentNotificationNode {
   return DailyDepartmentNotificationNode.init({
     division: ddn.division ?? undefined,
@@ -41,7 +42,7 @@ export function dailyDepartmentNotificationModelToResource(
     gikType: ddn.gikType ?? undefined,
     gikDescription: ddn.gikDescription ?? undefined,
     onlineGift: ddn.onlineGift,
-    solicitationCode: ddn.solicitationCode ?? undefined,
+    solicitationCode: `${ddn.solicitationCode.prefix}${ddn.solicitationCode.code.toString().padStart(4, "0")}`,
     solicitation: ddn.solicitation ?? undefined,
     behalfHonorMemorial: ddn.behalfHonorMemorial ?? undefined,
     matchingGift: ddn.matchingGift ?? undefined,

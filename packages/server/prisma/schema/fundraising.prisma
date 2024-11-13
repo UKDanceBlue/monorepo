@@ -76,8 +76,7 @@ view FundraisingEntryWithMeta {
   entrySourceId   Int?                    @unique
   entrySource     FundraisingEntrySource?
 
-  assignments             FundraisingAssignment[]
-  dbFundsFundraisingEntry DBFundsFundraisingEntry[]
+  assignments FundraisingAssignment[]
 
   @@index([uuid])
 }
@@ -117,6 +116,7 @@ model SolicitationCode {
 
   dbFundsTeams DBFundsTeam[]
   ddns         DailyDepartmentNotification[]
+  teams        Team[]
 
   @@unique([prefix, code])
   @@index([uuid])

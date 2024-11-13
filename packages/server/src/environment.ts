@@ -110,7 +110,7 @@ setEnvironment({
   applicationPort,
   cookieSecret: await COOKIE_SECRET,
   jwtSecret: await JWT_SECRET,
-  msOidcUrl: await MS_OIDC_URL,
+  msOidcUrl: new URL(await MS_OIDC_URL),
   msClientId: await MS_CLIENT_ID,
   msClientSecret: await MS_CLIENT_SECRET,
   dbFundsApiKey: await DBFUNDS_API_KEY,
@@ -149,7 +149,7 @@ async function getEnv(name: string, def: string | null): Promise<string>;
 async function getEnv(name: string, def: symbol): Promise<string | symbol>;
 async function getEnv(
   name: string,
-  def?: string | symbol | undefined | null
+  def?: string | symbol | null
 ): Promise<string | symbol | undefined> {
   let value;
   if (process.env[name]) {

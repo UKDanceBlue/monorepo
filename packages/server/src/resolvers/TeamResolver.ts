@@ -394,7 +394,7 @@ export class TeamResolver {
     return result.map((row) =>
       row.map((row) => {
         const teamInfoInstance = new DbFundsTeamInfo();
-        teamInfoInstance.dbNum = row.dbNum;
+        teamInfoInstance.dbNum = row.solicitationCode.code;
         teamInfoInstance.name = row.name;
         return teamInfoInstance;
       })
@@ -504,7 +504,7 @@ export class TeamResolver {
 
     return rows.value.map((row) => {
       const teamInfoInstance = new DbFundsTeamInfo();
-      teamInfoInstance.dbNum = row.dbNum;
+      teamInfoInstance.dbNum = row.solicitationCode.code;
       teamInfoInstance.name = row.name;
       return teamInfoInstance;
     });

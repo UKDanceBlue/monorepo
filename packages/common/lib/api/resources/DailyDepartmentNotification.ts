@@ -274,7 +274,7 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
     gikType?: string;
     gikDescription?: string;
     onlineGift: boolean;
-    solicitationCode?: string;
+    solicitationCode: string;
     solicitation?: string;
     behalfHonorMemorial?: string;
     matchingGift?: string;
@@ -285,7 +285,7 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
     combinedDonorSalutation: string;
     combinedDonorSort?: string;
     donor1Id?: string;
-    donor1GiftKey?: string;
+    donor1GiftKey?: number;
     donor1Name?: string;
     donor1Deceased?: boolean;
     donor1Constituency?: string;
@@ -293,7 +293,7 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
     donor1Pm?: string;
     donor1Degrees?: string;
     donor2Id?: string;
-    donor2GiftKey?: string;
+    donor2GiftKey?: number;
     donor2Name?: string;
     donor2Deceased?: boolean;
     donor2Constituency?: string;

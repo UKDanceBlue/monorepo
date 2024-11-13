@@ -28,7 +28,6 @@ import {
 
 import { DBFundsFundraisingProvider } from "#lib/fundraising/DbFundsProvider.js";
 import type { FundraisingProvider } from "#lib/fundraising/FundraisingProvider.js";
-import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
@@ -135,21 +134,19 @@ export class FundraisingEntryResolver {
       const fundraisingEntryRepository = Container.get(
         FundraisingEntryRepository
       );
-      const entry = await fundraisingEntryRepository.findEntryByUnique({
-        uuid: id,
-      });
-      if (entry.isErr()) {
+      const solicitationCode =
+        await fundraisingEntryRepository.getSolicitationCodeForEntry(
+          {
+            uuid: id,
+          },
+          true
+        );
+      if (solicitationCode.isErr()) {
         return false;
       }
-      const dbFundsRepository = Container.get(DBFundsRepository);
-      const teams = await dbFundsRepository.getTeamsForDbFundsTeam({
-        id: entry.value.dbFundsEntry.dbFundsTeamId,
-      });
-      if (teams.isErr()) {
-        return false;
-      }
+
       return captainOf.some(({ teamId }) =>
-        teams.value.some((team) => team.uuid === teamId)
+        solicitationCode.value.teams.some((team) => team.uuid === teamId)
       );
     }
   )

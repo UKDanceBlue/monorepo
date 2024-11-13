@@ -1,6 +1,9 @@
 import { Container } from "@freshgum/typedi";
 import type { Request, Response } from "express";
-import { generators } from "openid-client";
+import {
+  buildAuthorizationUrl,
+  calculatePKCECodeChallenge,
+} from "openid-client";
 
 import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
 
@@ -28,14 +31,14 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     setCookie: returning.includes("cookie"),
     sendToken: returning.includes("token"),
   });
-  const codeChallenge = generators.codeChallenge(session.codeVerifier);
+  const codeChallenge = await calculatePKCECodeChallenge(session.codeVerifier);
   return res.redirect(
-    oidcClient.authorizationUrl({
+    buildAuthorizationUrl(oidcClient, {
       scope: "openid email profile offline_access User.read",
       response_mode: "form_post",
       code_challenge: codeChallenge,
       code_challenge_method: "S256",
       state: session.uuid,
-    })
+    }).href
   );
 };

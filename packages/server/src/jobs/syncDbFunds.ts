@@ -144,11 +144,17 @@ async function doSyncForMarathon(
         return prisma.team.update({
           where: { id: team.id },
           data: {
-            dbFundsTeam: {
-              connect: {
-                dbNum_marathonId: {
-                  dbNum,
-                  marathonId: marathon.id,
+            solicitationCode: {
+              connectOrCreate: {
+                where: {
+                  prefix_code: {
+                    code: dbNum,
+                    prefix: "DB",
+                  },
+                },
+                create: {
+                  code: dbNum,
+                  prefix: "DB",
                 },
               },
             },

@@ -27,7 +27,7 @@ export interface DDNInit {
   gikType?: string | undefined;
   gikDescription?: string | undefined;
   onlineGift: boolean;
-  solicitationCode?: string | undefined;
+  solicitationCode: string;
   solicitation?: string | undefined;
   behalfHonorMemorial?: string | undefined;
   matchingGift?: string | undefined;
@@ -141,8 +141,8 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => Boolean)
   onlineGift!: boolean;
 
-  @Field(() => String, { nullable: true })
-  solicitationCode?: string | undefined;
+  @Field(() => String)
+  solicitationCode!: string;
 
   @Field(() => String, { nullable: true })
   solicitation?: string | undefined;

@@ -1,7 +1,7 @@
 import { Container } from "@freshgum/typedi";
 import type { Request } from "express";
-import type { Client } from "openid-client";
-import { Issuer } from "openid-client";
+import type { Configuration } from "openid-client";
+import { discovery } from "openid-client";
 
 import {
   msClientIdToken,
@@ -14,7 +14,7 @@ const msOidcUrl = Container.get(msOidcUrlToken);
 const msClientId = Container.get(msClientIdToken);
 const msClientSecret = Container.get(msClientSecretToken);
 
-export async function makeOidcClient(req: Request): Promise<Client> {
+export async function makeOidcClient(req: Request): Promise<Configuration> {
   const forwardedProto = req.get("x-forwarded-proto");
   const url = new URL(req.originalUrl, `${req.protocol}://${req.get("host")}`);
   if (forwardedProto) {
@@ -30,8 +30,7 @@ export async function makeOidcClient(req: Request): Promise<Client> {
     url.protocol = "https";
   }
 
-  const microsoftGateway = await Issuer.discover(msOidcUrl);
-  return new microsoftGateway.Client({
+  return discovery(msOidcUrl, msClientId, {
     client_id: msClientId,
     client_secret: msClientSecret,
     redirect_uris: [new URL("/api/auth/oidc-callback", url).toString()],

@@ -4,6 +4,7 @@ import {
   FundraisingEntryType,
   Prisma,
   PrismaClient,
+  SolicitationCode,
   Team,
 } from "@prisma/client";
 import {
@@ -74,34 +75,48 @@ export class DBFundsRepository {
         marathonId = marathon.value.id;
       }
 
-      let dBFundsTeam = await this.prisma.dBFundsTeam.findUnique({
+      const solicitationCode = await this.prisma.solicitationCode.upsert({
         where: {
-          dbNum_marathonId: {
-            dbNum: team.dbNum,
+          prefix_code: {
+            code: team.dbNum,
+            prefix: "DB",
+          },
+        },
+        create: {
+          code: team.dbNum,
+          prefix: "DB",
+          name: team.name,
+        },
+        update: {},
+      });
+
+      const dBFundsTeam = await this.prisma.dBFundsTeam.upsert({
+        where: {
+          solicitationCodeId_marathonId: {
+            solicitationCodeId: solicitationCode.id,
             marathonId,
           },
         },
         include: {
           fundraisingEntries: true,
         },
+        create: {
+          solicitationCode: {
+            connect: { id: solicitationCode.id },
+          },
+          totalAmount: team.total,
+          active: team.active,
+          name: team.name,
+          marathon: {
+            connect: { id: marathonId },
+          },
+        },
+        update: {
+          totalAmount: team.total,
+          active: team.active,
+          name: team.name,
+        },
       });
-
-      if (!dBFundsTeam) {
-        dBFundsTeam = await this.prisma.dBFundsTeam.create({
-          data: {
-            dbNum: team.dbNum,
-            totalAmount: team.total,
-            active: team.active,
-            name: team.name,
-            marathon: {
-              connect: { id: marathonId },
-            },
-          },
-          include: {
-            fundraisingEntries: true,
-          },
-        });
-      }
 
       const entriesToCreate: Prisma.DBFundsFundraisingEntryCreateWithoutDbFundsTeamInput[] =
         [];
@@ -131,9 +146,13 @@ export class DBFundsRepository {
             donatedTo: entry.donatedTo.unwrapOr(null),
             date: entry.donatedOn.toJSDate(),
             amount: entry.amount,
-            fundraisingEntry: {
+            fundraisingEntrySource: {
               create: {
-                type: FundraisingEntryType.Legacy,
+                entryWithMeta: {
+                  create: {
+                    type: FundraisingEntryType.Legacy,
+                  },
+                },
               },
             },
           });
@@ -173,6 +192,7 @@ export class DBFundsRepository {
           }),
           this.prisma.dBFundsFundraisingEntry.createMany({
             data: entriesToCreate.map((entry) => ({
+              dbFundsTeamId: dBFundsTeam.id,
               amount: entry.amount,
               date: entry.date,
               donatedBy: entry.donatedBy,
@@ -202,22 +222,36 @@ export class DBFundsRepository {
     dbFundsTeamParam: UniqueDbFundsTeamParam
   ): Promise<Result<Team[], RepositoryError>> {
     try {
+      let where: Prisma.DBFundsTeamWhereUniqueInput;
+      if ("marathon" in dbFundsTeamParam) {
+        const solicitationCode = await this.prisma.solicitationCode.findUnique({
+          where: {
+            prefix_code: {
+              code: dbFundsTeamParam.dbNum,
+              prefix: "DB",
+            },
+          },
+        });
+        if (!solicitationCode) {
+          return Err(new NotFoundError({ what: "Solicitation Code" }));
+        }
+        where = {
+          solicitationCodeId_marathonId: {
+            solicitationCodeId: solicitationCode.id,
+            marathonId: dbFundsTeamParam.marathon.id,
+          },
+        };
+      } else {
+        where = dbFundsTeamParam;
+      }
       const team = await this.prisma.dBFundsTeam.findUnique({
-        where:
-          "marathon" in dbFundsTeamParam
-            ? {
-                dbNum_marathonId: {
-                  dbNum: dbFundsTeamParam.dbNum,
-                  marathonId: dbFundsTeamParam.marathon.id,
-                },
-              }
-            : dbFundsTeamParam,
-        include: { teams: true },
+        where,
+        include: { solicitationCode: { select: { teams: true } } },
       });
       if (!team) {
         return Err(new NotFoundError({ what: "Team" }));
       }
-      return Ok(team.teams);
+      return Ok(team.solicitationCode.teams);
     } catch (error) {
       return handleRepositoryError(error);
     }
@@ -225,19 +259,32 @@ export class DBFundsRepository {
 
   async getDbFundsTeamForTeam(
     teamParam: SimpleUniqueParam
-  ): Promise<Result<Option<DBFundsTeam>, RepositoryError>> {
+  ): Promise<
+    Result<
+      Option<DBFundsTeam & { solicitationCode: SolicitationCode }>,
+      RepositoryError
+    >
+  > {
     try {
       const team = await this.prisma.team.findUnique({
         where: teamParam,
-        include: { dbFundsTeam: true },
+        include: { solicitationCode: { include: { dbFundsTeams: true } } },
       });
       if (!team) {
         return Err(new NotFoundError({ what: "Team" }));
       }
-      if (team.dbFundsTeam == null) {
+      if (
+        !team.solicitationCode ||
+        team.solicitationCode.dbFundsTeams.length === 0
+      ) {
         return Ok(None);
       }
-      return Ok(Some(team.dbFundsTeam));
+      return Ok(
+        Some({
+          ...team.solicitationCode.dbFundsTeams[0]!,
+          solicitationCode: team.solicitationCode,
+        })
+      );
     } catch (error) {
       return handleRepositoryError(error);
     }
@@ -258,25 +305,40 @@ export class DBFundsRepository {
       if (!team) {
         return Err(new NotFoundError({ what: "Team" }));
       }
-      await this.prisma.dBFundsTeam.update({
-        where:
-          "dbNum" in dbFundsTeamParam
-            ? {
-                dbNum_marathonId: {
-                  dbNum: dbFundsTeamParam.dbNum,
-                  marathonId:
-                    "marathon" in dbFundsTeamParam
-                      ? dbFundsTeamParam.marathon.id
-                      : team.marathonId,
+      if ("dbNum" in dbFundsTeamParam) {
+        await this.prisma.team.update({
+          where: { id: team.id },
+          data: {
+            solicitationCode: {
+              connect: {
+                prefix_code: {
+                  code: dbFundsTeamParam.dbNum,
+                  prefix: "DB",
                 },
-              }
-            : dbFundsTeamParam,
-        data: {
-          teams: {
-            connect: { id: team.id },
+              },
+            },
           },
-        },
-      });
+        });
+      } else {
+        const dbfTeam = await this.prisma.dBFundsTeam.findUnique({
+          where: dbFundsTeamParam,
+        });
+        if (!dbfTeam) {
+          return Err(new NotFoundError({ what: "DB Funds Team" }));
+        }
+
+        await this.prisma.team.update({
+          where: { id: team.id },
+          data: {
+            solicitationCode: {
+              connect: {
+                id: dbfTeam.solicitationCodeId,
+              },
+            },
+          },
+        });
+      }
+
       return Ok(None);
     } catch (error) {
       return handleRepositoryError(error);
@@ -287,13 +349,23 @@ export class DBFundsRepository {
     byDbNum?: number;
     byName?: string;
     onlyActive?: boolean;
-  }): Promise<Result<DBFundsTeam[], RepositoryError>> {
+  }): Promise<
+    Result<
+      (DBFundsTeam & {
+        solicitationCode: SolicitationCode;
+      })[],
+      RepositoryError
+    >
+  > {
     try {
       return Ok(
         await this.prisma.dBFundsTeam.findMany({
           where: {
             active: search.onlyActive ? true : undefined,
-            dbNum: search.byDbNum,
+            solicitationCode: {
+              code: search.byDbNum,
+              prefix: "DB",
+            },
             name: {
               contains: search.byName,
               mode: "insensitive",
@@ -301,6 +373,9 @@ export class DBFundsRepository {
           },
           orderBy: {
             name: "asc",
+          },
+          include: {
+            solicitationCode: true,
           },
         })
       );

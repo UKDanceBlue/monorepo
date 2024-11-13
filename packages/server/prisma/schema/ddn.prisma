@@ -35,7 +35,7 @@ model DailyDepartmentNotification {
   combinedDonorSalutation String
   combinedDonorSort       String?
   donor1Id                String?
-  donor1GiftKey           String?
+  donor1GiftKey           Int?
   donor1Name              String?
   donor1Deceased          Boolean?
   donor1Constituency      String?
@@ -43,7 +43,7 @@ model DailyDepartmentNotification {
   donor1Pm                String?
   donor1Degrees           String?
   donor2Id                String?
-  donor2GiftKey           String?
+  donor2GiftKey           Int?
   donor2Name              String?
   donor2Deceased          Boolean?
   donor2Constituency      String?

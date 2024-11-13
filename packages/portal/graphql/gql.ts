@@ -41,6 +41,8 @@ const documents = {
     types.ConfigFragmentFragmentDoc,
   "\n      query ConfigQuery {\n        allConfigurations {\n          data {\n            ...ConfigFragment\n          }\n        }\n      }\n    ":
     types.ConfigQueryDocument,
+  "\n  mutation UploadDdnDocument($ddnData: [DailyDepartmentNotificationInput!]!) {\n    batchUploadDailyDepartmentNotifications(input: $ddnData) {\n      id\n    }\n  }\n":
+    types.UploadDdnDocumentDocument,
   "\n  mutation CreateEvent($input: CreateEventInput!) {\n    createEvent(input: $input) {\n      data {\n        id\n      }\n    }\n  }\n":
     types.CreateEventDocument,
   "\n  fragment EventEditorFragment on EventNode {\n    id\n    title\n    summary\n    description\n    location\n    occurrences {\n      id\n      interval {\n        start\n        end\n      }\n      fullDay\n    }\n    images {\n      url\n      width\n      height\n      thumbHash\n      alt\n    }\n  }\n":
@@ -288,6 +290,12 @@ export function graphql(
 export function graphql(
   source: "\n      query ConfigQuery {\n        allConfigurations {\n          data {\n            ...ConfigFragment\n          }\n        }\n      }\n    "
 ): (typeof documents)["\n      query ConfigQuery {\n        allConfigurations {\n          data {\n            ...ConfigFragment\n          }\n        }\n      }\n    "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation UploadDdnDocument($ddnData: [DailyDepartmentNotificationInput!]!) {\n    batchUploadDailyDepartmentNotifications(input: $ddnData) {\n      id\n    }\n  }\n"
+): (typeof documents)["\n  mutation UploadDdnDocument($ddnData: [DailyDepartmentNotificationInput!]!) {\n    batchUploadDailyDepartmentNotifications(input: $ddnData) {\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

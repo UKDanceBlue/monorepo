@@ -1,7 +1,7 @@
 import { Service } from "@freshgum/typedi";
 import { PrismaClient } from "@prisma/client";
 import { DateTime } from "luxon";
-import { generators } from "openid-client";
+import { randomPKCECodeVerifier } from "openid-client";
 
 type LoginFlowSessionUniqueParam = { id: number } | { uuid: string };
 
@@ -39,7 +39,7 @@ export class LoginFlowSessionRepository {
         redirectToAfterLogin,
         setCookie,
         sendToken,
-        codeVerifier: generators.codeVerifier(),
+        codeVerifier: randomPKCECodeVerifier(),
       },
     });
   }

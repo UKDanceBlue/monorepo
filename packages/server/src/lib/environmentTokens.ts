@@ -9,7 +9,7 @@ export const loggingLevelToken = new Token<SyslogLevels>("LOGGING_LEVEL");
 export const applicationPortToken = new Token<number>("APPLICATION_PORT");
 export const cookieSecretToken = new Token<string>("COOKIE_SECRET");
 export const jwtSecretToken = new Token<string>("JWT_SECRET");
-export const msOidcUrlToken = new Token<string>("MS_OIDC_URL");
+export const msOidcUrlToken = new Token<URL>("MS_OIDC_URL");
 export const msClientIdToken = new Token<string>("MS_CLIENT_ID");
 export const msClientSecretToken = new Token<string>("MS_CLIENT_SECRET");
 export const dbFundsApiKeyToken = new Token<string>("DBFUNDS_API_KEY");
@@ -28,7 +28,7 @@ export interface Environment {
   applicationPort: number;
   cookieSecret: string;
   jwtSecret: string;
-  msOidcUrl: string;
+  msOidcUrl: URL;
   msClientId: string;
   msClientSecret: string;
   dbFundsApiKey: string;

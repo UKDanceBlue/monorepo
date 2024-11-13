@@ -1199,6 +1199,20 @@ export type ConfigQueryQuery = {
   };
 };
 
+export type UploadDdnDocumentMutationVariables = Exact<{
+  ddnData:
+    | ReadonlyArray<DailyDepartmentNotificationInput>
+    | DailyDepartmentNotificationInput;
+}>;
+
+export type UploadDdnDocumentMutation = {
+  readonly __typename?: "Mutation";
+  readonly batchUploadDailyDepartmentNotifications: ReadonlyArray<{
+    readonly __typename?: "DailyDepartmentNotificationNode";
+    readonly id: string;
+  }>;
+};
+
 export type CreateEventMutationVariables = Exact<{
   input: CreateEventInput;
 }>;
@@ -4160,6 +4174,72 @@ export const ConfigQueryDocument = {
     },
   ],
 } as unknown as DocumentNode<ConfigQueryQuery, ConfigQueryQueryVariables>;
+export const UploadDdnDocumentDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "UploadDdnDocument" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "ddnData" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "ListType",
+              type: {
+                kind: "NonNullType",
+                type: {
+                  kind: "NamedType",
+                  name: {
+                    kind: "Name",
+                    value: "DailyDepartmentNotificationInput",
+                  },
+                },
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: {
+              kind: "Name",
+              value: "batchUploadDailyDepartmentNotifications",
+            },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "ddnData" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UploadDdnDocumentMutation,
+  UploadDdnDocumentMutationVariables
+>;
 export const CreateEventDocument = {
   kind: "Document",
   definitions: [

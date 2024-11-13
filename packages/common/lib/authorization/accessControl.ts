@@ -242,7 +242,7 @@ export function checkParam<RootType extends object = never>(
       if (match.argument === "id") {
         // I think this code might be wrong, but I'm not 100% sure either way and don't have time to investigate
         argValue = parseGlobalId(args.id as string)
-          .map(({ id }) => args[id] as Primitive | Primitive[])
+          .map(({ id: id }) => args[id] as Primitive | Primitive[])
           .unwrapOr(null);
       } else if (typeof match.argument === "string") {
         argValue = args[match.argument] as Primitive | Primitive[];
