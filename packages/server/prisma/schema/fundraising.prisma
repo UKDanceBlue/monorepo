@@ -22,6 +22,8 @@ model FundraisingEntry {
   enteredBy       Int?
   enteredByPerson Person?              @relation(fields: [enteredBy], references: [id], onDelete: SetNull)
   entrySourceId   Int?                 @unique
+  teamOverrideId  Int?
+  teamOverride    Team?                @relation(fields: [teamOverrideId], references: [id])
 
   @@index([uuid])
 }
@@ -32,6 +34,7 @@ model FundraisingEntry {
 //   fe.uuid,
 //   fe."createdAt",
 //   fe."updatedAt",
+//   fe."teamOverrideId",
 //   COALESCE(
 //     -- Calculate unassigned using db_funds_team_entries if available
 //     (
@@ -75,6 +78,8 @@ view FundraisingEntryWithMeta {
   enteredByPerson Person?                 @relation(fields: [enteredBy], references: [id], onDelete: SetNull)
   entrySourceId   Int?                    @unique
   entrySource     FundraisingEntrySource?
+  teamOverrideId  Int?
+  teamOverride    Team?                   @relation(fields: [teamOverrideId], references: [id])
 
   assignments FundraisingAssignment[]
 

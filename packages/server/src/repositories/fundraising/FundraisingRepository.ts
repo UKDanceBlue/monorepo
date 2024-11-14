@@ -273,6 +273,9 @@ export class FundraisingEntryRepository {
               },
             },
           },
+          {
+            teamOverride: limits.forTeam,
+          },
         ];
       }
 
@@ -309,15 +312,6 @@ export class FundraisingEntryRepository {
         return Err(where.error);
       }
 
-      if (limits.assignedToPerson) {
-        where.value.assignments = {
-          ...where.value.assignments,
-          every: {
-            ...where.value.assignments?.every,
-            person: limits.assignedToPerson,
-          },
-        };
-      }
       if (limits.forTeam) {
         where.value.entrySource = {
           ...where.value.entrySource,
@@ -326,8 +320,10 @@ export class FundraisingEntryRepository {
             {
               dbFundsEntry: {
                 dbFundsTeam: {
-                  teams: {
-                    some: limits.forTeam,
+                  solicitationCode: {
+                    teams: {
+                      some: limits.forTeam,
+                    },
                   },
                 },
               },
@@ -339,6 +335,11 @@ export class FundraisingEntryRepository {
                     some: limits.forTeam,
                   },
                 },
+              },
+            },
+            {
+              entryWithMeta: {
+                teamOverride: limits.forTeam,
               },
             },
           ],
@@ -554,6 +555,7 @@ export class FundraisingEntryRepository {
           person: true,
           parentEntry: {
             select: {
+              teamOverride: { select: { id: true } },
               entrySource: {
                 select: {
                   dbFundsEntry: {
@@ -588,7 +590,9 @@ export class FundraisingEntryRepository {
       }
 
       let teams: { id: number }[];
-      if (assignment.parentEntry.entrySource?.ddn) {
+      if (assignment.parentEntry.teamOverride) {
+        teams = [{ id: assignment.parentEntry.teamOverride.id }];
+      } else if (assignment.parentEntry.entrySource?.ddn) {
         teams = assignment.parentEntry.entrySource.ddn.solicitationCode.teams;
       } else if (assignment.parentEntry.entrySource?.dbFundsEntry) {
         teams =
@@ -685,6 +689,7 @@ export class FundraisingEntryRepository {
       const entry = await this.prisma.fundraisingEntryWithMeta.findUnique({
         where: entryParam,
         include: {
+          teamOverride: { include: { solicitationCode: true } },
           entrySource: {
             select: {
               ddn: {
@@ -712,6 +717,20 @@ export class FundraisingEntryRepository {
       });
       if (!entry) {
         return Err(new NotFoundError({ what: "FundraisingEntry" }));
+      }
+
+      if (entry.teamOverride) {
+        if (!entry.teamOverride.solicitationCode) {
+          return Err(new NotFoundError({ what: "SolicitationCode" }));
+        }
+        return Ok(
+          includeTeams
+            ? {
+                ...entry.teamOverride.solicitationCode,
+                teams: [{ ...entry.teamOverride, solicitationCode: undefined }],
+              }
+            : entry.teamOverride.solicitationCode
+        );
       }
 
       if (!entry.entrySource) {
