@@ -242,8 +242,10 @@ export class TeamRepository {
         },
         where: {
           dbFundsTeam: {
-            teams: {
-              some: param,
+            solicitationCode: {
+              teams: {
+                some: param,
+              },
             },
           },
         },

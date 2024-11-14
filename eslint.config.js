@@ -2,7 +2,6 @@ import { fileURLToPath } from "node:url";
 
 import eslintJs from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
-import eslintPluginJsdoc from "eslint-plugin-jsdoc";
 import eslintPluginNode from "eslint-plugin-n";
 import eslintPluginReact from "eslint-plugin-react";
 import eslintPluginReactHooks from "eslint-plugin-react-hooks";
@@ -62,15 +61,7 @@ export default eslintTs.config(
       reportUnusedDisableDirectives: true,
     },
     plugins: {
-      jsdoc: eslintPluginJsdoc,
       unicorn: eslintPluginUnicorn,
-    },
-    settings: {
-      jsdoc: {
-        tagNamePreference: {
-          returns: "return",
-        },
-      },
     },
     rules: {
       // Possible Errors
@@ -117,12 +108,6 @@ export default eslintTs.config(
       "no-self-compare": "error",
       "require-atomic-updates": ["error", { allowProperties: true }],
       "eqeqeq": ["error", "smart"],
-      // jsdoc
-      "jsdoc/no-types": "off",
-      "jsdoc/require-param-type": "off",
-      "jsdoc/require-returns-type": "off",
-      // Don't require jsdoc
-      "jsdoc/require-jsdoc": "off",
       // Unicorn Plugin
       "unicorn/better-regex": "error",
       "unicorn/catch-error-name": "error",
