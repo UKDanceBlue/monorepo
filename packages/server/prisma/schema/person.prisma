@@ -1,20 +1,20 @@
 model Person {
-  id                         Int                        @id @default(autoincrement())
-  uuid                       String                     @unique() @default(uuid()) @db.Uuid
-  createdAt                  DateTime                   @default(now()) @db.Timestamptz(6)
-  updatedAt                  DateTime                   @updatedAt @db.Timestamptz(6)
-  name                       String?                    @db.Citext
-  email                      String                     @unique() @db.Citext
-  linkblue                   String?                    @unique() @db.Citext
-  authIdPairs                AuthIdPair[]
-  devices                    Device[]
-  memberships                Membership[]
-  pointEntries               PointEntry[]
-  ownedFiles                 File[]
-  fundraisingEntry           FundraisingEntryWithMeta[]
-  fundraisingAssignment      FundraisingAssignment[]
-  assignedFundraisingEntries FundraisingAssignment[]    @relation("fundraising_assignment_assigned_by_person")
-  FundraisingEntry           FundraisingEntry[]
+  id                                Int                        @id @default(autoincrement())
+  uuid                              String                     @unique() @default(uuid()) @db.Uuid
+  createdAt                         DateTime                   @default(now()) @db.Timestamptz(6)
+  updatedAt                         DateTime                   @updatedAt @db.Timestamptz(6)
+  name                              String?                    @db.Citext
+  email                             String                     @unique() @db.Citext
+  linkblue                          String?                    @unique() @db.Citext
+  authIdPairs                       AuthIdPair[]
+  devices                           Device[]
+  memberships                       Membership[]
+  pointEntries                      PointEntry[]
+  ownedFiles                        File[]
+  createdFundraisingEntriesWithMeta FundraisingEntryWithMeta[]
+  createdFundraisingEntries         FundraisingEntry[]
+  fundraisingAssignment             FundraisingAssignment[]
+  assignedFundraisingEntries        FundraisingAssignment[]    @relation("fundraising_assignment_assigned_by_person")
 
   @@index([uuid])
 }

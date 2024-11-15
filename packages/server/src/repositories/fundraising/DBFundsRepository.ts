@@ -182,34 +182,40 @@ export class DBFundsRepository {
           },
         });
 
-        await this.prisma.$transaction([
-          this.prisma.dBFundsFundraisingEntry.deleteMany({
-            where: {
-              id: {
-                in: [...entryIdsToDelete],
+        await this.prisma.$transaction(async (prisma) => {
+          if (entryIdsToDelete.size > 0) {
+            await prisma.dBFundsFundraisingEntry.deleteMany({
+              where: {
+                id: {
+                  in: [...entryIdsToDelete],
+                },
               },
-            },
-          }),
-          this.prisma.dBFundsFundraisingEntry.createMany({
-            data: entriesToCreate.map((entry) => ({
-              dbFundsTeamId: dBFundsTeam.id,
-              amount: entry.amount,
-              date: entry.date,
-              donatedBy: entry.donatedBy,
-              donatedTo: entry.donatedTo,
-            })),
-          }),
-          this.prisma.dBFundsFundraisingEntry.updateMany({
-            where: {
-              id: {
-                in: entriesToUpdate.map((entry) => entry.id),
+            });
+          }
+          if (entriesToCreate.length > 0) {
+            await prisma.dBFundsFundraisingEntry.createMany({
+              data: entriesToCreate.map((entry) => ({
+                dbFundsTeamId: dBFundsTeam.id,
+                amount: entry.amount,
+                date: entry.date,
+                donatedBy: entry.donatedBy,
+                donatedTo: entry.donatedTo,
+              })),
+            });
+          }
+          if (entriesToUpdate.length > 0) {
+            await prisma.dBFundsFundraisingEntry.updateMany({
+              where: {
+                id: {
+                  in: entriesToUpdate.map((entry) => entry.id),
+                },
               },
-            },
-            data: entriesToUpdate.map((entry) => ({
-              amount: entry.amount,
-            })),
-          }),
-        ]);
+              data: entriesToUpdate.map((entry) => ({
+                amount: entry.amount,
+              })),
+            });
+          }
+        });
       }
 
       return Ok(None);

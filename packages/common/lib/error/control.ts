@@ -1,6 +1,7 @@
 import type { AuthorizationRule } from "@ukdanceblue/common";
 import { prettyPrintAuthorizationRule } from "@ukdanceblue/common";
 import type { GraphQLResolveInfo } from "graphql";
+import type { Path } from "graphql/jsutils/Path.js";
 
 import { ConcreteError } from "./error.js";
 import * as ErrorCode from "./errorCode.js";
@@ -59,7 +60,13 @@ export class AccessControlError extends ControlError {
   }
 
   get detailedMessage() {
-    return `Access denied to ${this.info.fieldName} (${this.info.returnType.toString()}) at ${this.errorPath()} within ${this.info.parentType.toString()}`;
+    let path = "";
+    let pathIter: Path | undefined = this.info.path;
+    while (pathIter) {
+      path = `${path}.${pathIter.key}`;
+      pathIter = pathIter.prev;
+    }
+    return `Access denied to ${this.info.fieldName} (${this.info.returnType.toString()}) at ${this.errorPath()} within ${this.info.operation.operation} ${this.info.operation.name?.value ?? "unknown operation"}`;
   }
 
   readonly expose = true;

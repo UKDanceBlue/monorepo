@@ -61,6 +61,7 @@ export class LoginFlowSessionRepository {
    * Complete a login flow by deleting it
    */
   async completeLoginFlow(param: LoginFlowSessionUniqueParam) {
-    return this.prisma.loginFlowSession.delete({ where: param });
+    // Using deleteMany instead of delete means we don't throw an error if the session was already deleted
+    return this.prisma.loginFlowSession.deleteMany({ where: param });
   }
 }

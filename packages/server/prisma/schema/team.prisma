@@ -14,8 +14,8 @@ model Team {
   dbFundsTeamId                            Int?
   solicitationCode                         SolicitationCode?          @relation(fields: [solicitationCodeId], references: [id])
   solicitationCodeId                       Int?
-  directAssignedFundraisingEntries         FundraisingEntry[]
   directAssignedFundraisingEntriesWithMeta FundraisingEntryWithMeta[]
+  directAssignedFundraisingEntries         FundraisingEntry[]
 
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)

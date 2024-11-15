@@ -8,7 +8,6 @@ import { readFile } from "fs/promises";
 import path, { isAbsolute } from "path";
 
 import { setEnvironment } from "#lib/environmentTokens.js";
-import { isDevelopment } from "#lib/nodeEnv.js";
 import { type SyslogLevels } from "#logging/SyslogLevels.js";
 // NOTE: You cannot import any files that depend on environment variables from this file
 import { expoServiceToken } from "#notification/expoServiceToken.js";
@@ -20,6 +19,8 @@ if (process.env.NODE_ENV === "test") {
     "Environment variables are not set in test environment, instead add mock values to the container"
   );
 }
+
+const isDevelopment = process.env.NODE_ENV === "development";
 
 // Load environment variables
 const LOGGING_LEVEL = getEnv(
@@ -121,6 +122,7 @@ setEnvironment({
   uploadPath,
   logDir: await LOG_DIR,
   superAdminLinkblues,
+  isDevelopmentToken: isDevelopment,
 });
 
 /**

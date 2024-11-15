@@ -276,7 +276,6 @@ input DailyDepartmentNotificationInput {
   donor1Amount: Float
   donor2Amount: Float
   effectiveDate: LocalDate
-  endDate: DateTimeISO
   gikDescription: String
   gikType: String
   holdingDestination: String
@@ -289,8 +288,7 @@ input DailyDepartmentNotificationInput {
   secShares: String
   secType: String
   solicitation: String
-  solicitationCode: String
-  startDate: DateTimeISO
+  solicitationCode: String!
   transactionDate: LocalDate
   transactionType: String!
   ukFirstGift: Boolean!
@@ -631,6 +629,7 @@ type FundraisingEntryNode implements Node {
   amountUnassigned: Float!
   assignments: [FundraisingAssignmentNode!]!
   createdAt: DateTimeISO
+  dailyDepartmentNotification: DailyDepartmentNotificationNode!
   donatedByText: String
   donatedOn: DateTimeISO!
   donatedToText: String
@@ -1564,7 +1563,7 @@ type PersonNode implements Node {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -1830,7 +1829,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -1882,7 +1881,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -1930,7 +1929,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -1980,7 +1979,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2025,7 +2024,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2073,7 +2072,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2120,7 +2119,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2163,7 +2162,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2210,7 +2209,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2253,7 +2252,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2298,7 +2297,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2342,7 +2341,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2392,7 +2391,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2577,7 +2576,7 @@ type TeamNode implements Node {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined

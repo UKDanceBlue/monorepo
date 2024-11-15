@@ -75,8 +75,8 @@ SELECT gen_random_uuid(),
 FROM "DBFundsTeam"
 WHERE "dbNum" IS NOT NULL;
 ALTER TABLE "DBFundsTeam" DROP COLUMN "dbNum";
-DROP VIEW "FundraisingEntriesWithMeta";
-CREATE VIEW "FundraisingEntriesWithMeta" AS
+DROP VIEW "FundraisingEntryWithMeta";
+CREATE VIEW "FundraisingEntryWithMeta" AS
 SELECT fe.id,
   fe."uuid",
   fe."createdAt",

@@ -19,6 +19,10 @@
   "remote.localPortHost": "allInterfaces",
   "typescript.inlayHints.parameterNames.enabled": "all",
   "javascript.inlayHints.parameterNames.enabled": "all",
+  "sqltools.format": {
+    "linesBetweenQueries": 2,
+    "reservedWordCase": "upper"
+  },
   "cSpell.words": [
     "antd",
     "autoincrement",

@@ -69,10 +69,9 @@ const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
       }
 
       const error = new FormattedConcreteError(concreteError, info);
-      logger.error("An error occurred in a resolver", {
-        message: concreteError.error.detailedMessage,
-        stack,
-      });
+      logger.error(
+        `An error occurred in a resolver: ${concreteError.error.detailedMessage}\nStack: ${stack && stack.length > 0 ? `${stack.slice(0, 1000)}...` : stack}`
+      );
       throw error;
     } else {
       result = result.value as unknown;

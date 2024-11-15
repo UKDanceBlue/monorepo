@@ -22,6 +22,7 @@ export const logDirToken = new Token<string>("LOG_DIR");
 export const superAdminLinkbluesToken = new Token<string[] | symbol>(
   "SUPER_ADMIN_LINKBLUE"
 );
+export const isDevelopmentToken = new Token<boolean>("IS_DEVELOPMENT");
 
 export interface Environment {
   loggingLevel: SyslogLevels;
@@ -39,6 +40,7 @@ export interface Environment {
   uploadPath: string;
   logDir: string;
   superAdminLinkblues: string[] | symbol;
+  isDevelopmentToken: boolean;
 }
 
 export function setEnvironment(env: Environment) {
@@ -57,4 +59,5 @@ export function setEnvironment(env: Environment) {
   Container.setValue(uploadPathToken, env.uploadPath);
   Container.setValue(logDirToken, env.logDir);
   Container.setValue(superAdminLinkbluesToken, env.superAdminLinkblues);
+  Container.setValue(isDevelopmentToken, env.isDevelopmentToken);
 }

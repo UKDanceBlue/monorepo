@@ -321,7 +321,7 @@ ALTER TABLE "fundraising_assignments"
 -- AlterTable
 ALTER TABLE "fundraising_entries"
   RENAME TO "FundraisingEntry";
-CREATE VIEW "FundraisingEntriesWithMeta" AS
+CREATE VIEW "FundraisingEntryWithMeta" AS
 SELECT fe.id,
   fe.uuid,
   fe."createdAt",

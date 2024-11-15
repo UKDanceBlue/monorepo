@@ -3,6 +3,7 @@ import type { GlobalId, MarathonYearString } from "@ukdanceblue/common";
 import {
   AccessLevel,
   checkParam,
+  DailyDepartmentNotificationNode,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
   GlobalIdScalar,
@@ -28,6 +29,7 @@ import {
 
 import { DBFundsFundraisingProvider } from "#lib/fundraising/DbFundsProvider.js";
 import type { FundraisingProvider } from "#lib/fundraising/FundraisingProvider.js";
+import { dailyDepartmentNotificationModelToResource } from "#repositories/dailyDepartmentNotification/ddnModelToResource.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
@@ -203,5 +205,19 @@ export class FundraisingEntryResolver {
         }))
       )
       .map((data) => JSON.stringify(data));
+  }
+
+  @FieldResolver(() => DailyDepartmentNotificationNode)
+  async dailyDepartmentNotification(
+    @Root()
+    fundraisingEntry: FundraisingEntryNode
+  ): Promise<ConcreteResult<DailyDepartmentNotificationNode>> {
+    const dailyDepartmentNotification =
+      await this.fundraisingEntryRepository.getDdnForEntry({
+        uuid: fundraisingEntry.id.id,
+      });
+    return dailyDepartmentNotification
+      .toAsyncResult()
+      .map(dailyDepartmentNotificationModelToResource).promise;
   }
 }

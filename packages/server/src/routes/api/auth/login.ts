@@ -5,14 +5,15 @@ import {
   calculatePKCECodeChallenge,
 } from "openid-client";
 
+import { serveOriginToken } from "#lib/environmentTokens.js";
 import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
 
-import { makeOidcClient } from "./oidcClient.js";
+import { oidcConfiguration } from "./oidcClient.js";
+
+const serveOrigin = Container.get(serveOriginToken);
 
 // TODO: convert to OAuth2
 export const login = async (req: Request, res: Response): Promise<void> => {
-  const oidcClient = await makeOidcClient(req);
-
   const loginFlowSessionRepository = Container.get(LoginFlowSessionRepository);
 
   const queryRedirectTo = Array.isArray(req.query.redirectTo)
@@ -32,13 +33,15 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     sendToken: returning.includes("token"),
   });
   const codeChallenge = await calculatePKCECodeChallenge(session.codeVerifier);
+
   return res.redirect(
-    buildAuthorizationUrl(oidcClient, {
+    buildAuthorizationUrl(oidcConfiguration, {
       scope: "openid email profile offline_access User.read",
       response_mode: "form_post",
       code_challenge: codeChallenge,
       code_challenge_method: "S256",
       state: session.uuid,
+      redirect_uri: new URL("/api/auth/oidc-callback", serveOrigin).href,
     }).href
   );
 };

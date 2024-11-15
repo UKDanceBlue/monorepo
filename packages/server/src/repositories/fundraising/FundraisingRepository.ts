@@ -79,10 +79,10 @@ export type FundraisingEntryFilters = FilterItems<
 const defaultInclude = {
   entrySource: {
     select: {
+      solicitationCode: true,
       ddn: {
         include: {
           batch: true,
-          solicitationCode: true,
         },
       },
       dbFundsEntry: true,
@@ -93,12 +93,13 @@ const defaultInclude = {
 export type WideFundraisingEntryWithMeta = FundraisingEntryWithMeta & {
   entrySource:
     | {
+        solicitationCode: SolicitationCode;
         ddn: DailyDepartmentNotification & {
           batch: DailyDepartmentNotificationBatch;
-          solicitationCode: SolicitationCode;
         };
       }
     | {
+        solicitationCode: SolicitationCode;
         dbFundsEntry: DBFundsFundraisingEntry;
       }
     | null;
@@ -107,10 +108,10 @@ export type WideFundraisingEntryWithMeta = FundraisingEntryWithMeta & {
 function asWideFundraisingEntryWithMeta(
   entry: FundraisingEntryWithMeta & {
     entrySource: {
+      solicitationCode: SolicitationCode;
       ddn:
         | (DailyDepartmentNotification & {
             batch: DailyDepartmentNotificationBatch;
-            solicitationCode: SolicitationCode;
           })
         | null;
       dbFundsEntry: DBFundsFundraisingEntry | null;
@@ -124,12 +125,21 @@ function asWideFundraisingEntryWithMeta(
     return Err(new InvariantError("Fundraising entry has multiple sources"));
   }
   if (entry.entrySource.ddn) {
-    return Ok({ ...entry, entrySource: { ddn: entry.entrySource.ddn } });
+    return Ok({
+      ...entry,
+      entrySource: {
+        ddn: entry.entrySource.ddn,
+        solicitationCode: entry.entrySource.solicitationCode,
+      },
+    });
   }
   if (entry.entrySource.dbFundsEntry) {
     return Ok({
       ...entry,
-      entrySource: { dbFundsEntry: entry.entrySource.dbFundsEntry },
+      entrySource: {
+        dbFundsEntry: entry.entrySource.dbFundsEntry,
+        solicitationCode: entry.entrySource.solicitationCode,
+      },
     });
   }
   return Ok({ ...entry, entrySource: null });
@@ -653,6 +663,43 @@ export class FundraisingEntryRepository {
         where: { person: personParam },
       });
       return Ok(assignments);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async getDdnForEntry(entryParam: FundraisingEntryUniqueParam): Promise<
+    Result<
+      DailyDepartmentNotification & {
+        batch: DailyDepartmentNotificationBatch;
+        solicitationCode: SolicitationCode;
+      },
+      RepositoryError | ActionDeniedError | InvariantError | NotFoundError
+    >
+  > {
+    try {
+      const entry = await this.prisma.fundraisingEntryWithMeta.findUnique({
+        where: entryParam,
+        include: {
+          entrySource: {
+            select: {
+              ddn: {
+                include: {
+                  batch: true,
+                  solicitationCode: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      if (!entry) {
+        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+      }
+      if (!entry.entrySource?.ddn) {
+        return Err(new NotFoundError({ what: "DailyDepartmentNotification" }));
+      }
+      return Ok(entry.entrySource.ddn);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }

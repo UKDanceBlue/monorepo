@@ -11,7 +11,7 @@ import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
-import { makeOidcClient } from "./oidcClient.js";
+import { oidcConfiguration } from "./oidcClient.js";
 
 const serveOrigin = Container.get(serveOriginToken);
 
@@ -20,8 +20,6 @@ export const oidcCallback = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const oidcClient = await makeOidcClient(req);
-
   let flowSessionId;
   if (typeof req.body === "object" && "state" in req.body) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -49,15 +47,18 @@ export const oidcCallback = async (
         `No ${session == null ? "session" : "codeVerifier"} found`
       );
     }
+    const query = new URLSearchParams(
+      req.body as Record<string, string | readonly string[]>
+    );
     // Perform OIDC validation
     const tokenSet = await authorizationCodeGrant(
-      oidcClient,
-      new URL("/api/auth/oidc-callback", serveOrigin),
+      oidcConfiguration,
+      new URL(`${serveOrigin}/api/auth/oidc-callback?${query.toString()}`),
       {
-        expectedState: flowSessionId,
         pkceCodeVerifier: session.codeVerifier,
-      },
-      { code_verifier: session.codeVerifier, state: flowSessionId }
+        expectedState: flowSessionId,
+        idTokenExpected: true,
+      }
     );
     // Destroy the session
     await loginFlowSessionRepository.completeLoginFlow({

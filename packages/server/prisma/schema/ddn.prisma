@@ -21,8 +21,6 @@ model DailyDepartmentNotification {
   gikType                 String?
   gikDescription          String?
   onlineGift              Boolean
-  solicitationCodeId      Int
-  solicitationCode        SolicitationCode                 @relation(fields: [solicitationCodeId], references: [id])
   solicitation            String?
   behalfHonorMemorial     String?
   matchingGift            String?
@@ -79,7 +77,9 @@ model DailyDepartmentNotification {
   advFeeStatus  String?
   hcUnit        String?
 
-  fundraisingEntrySource FundraisingEntrySource?
+  fundraisingEntryWithMeta FundraisingEntryWithMeta @relation(fields: [fundraisingEntryId], references: [id], map: "DailyDepartmentNotification_fundraisingEntryWithMeta")
+  fundraisingEntry         FundraisingEntry         @relation(fields: [fundraisingEntryId], references: [id], map: "DailyDepartmentNotification_fundraisingEntry")
+  fundraisingEntryId       Int                      @unique
 }
 
 model DailyDepartmentNotificationBatch {

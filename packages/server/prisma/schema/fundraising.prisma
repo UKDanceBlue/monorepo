@@ -1,35 +1,27 @@
-model FundraisingEntrySource {
-  id Int @id @default(autoincrement())
-
-  entryId       Int                      @unique
-  entryWithMeta FundraisingEntryWithMeta @relation(fields: [entryId], references: [id], onDelete: Cascade)
-
-  dbFundsEntryId Int?                     @unique
-  dbFundsEntry   DBFundsFundraisingEntry? @relation(fields: [dbFundsEntryId], references: [id])
-
-  ddnId Int?                         @unique
-  ddn   DailyDepartmentNotification? @relation(fields: [ddnId], references: [id])
-}
-
 model FundraisingEntry {
   id        Int      @id @default(autoincrement())
   uuid      String   @unique() @default(uuid()) @db.Uuid
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
-  notes           String?
-  type            FundraisingEntryType
-  enteredBy       Int?
-  enteredByPerson Person?              @relation(fields: [enteredBy], references: [id], onDelete: SetNull)
-  entrySourceId   Int?                 @unique
-  teamOverrideId  Int?
-  teamOverride    Team?                @relation(fields: [teamOverrideId], references: [id])
+  notes              String?
+  type               FundraisingEntryType
+  enteredByPersonId  Int?
+  teamOverrideId     Int?
+  solicitationCodeId Int
+
+  enteredByPerson  Person?                      @relation(fields: [enteredByPersonId], references: [id], onDelete: SetNull)
+  teamOverride     Team?                        @relation(fields: [teamOverrideId], references: [id])
+  assignments      FundraisingAssignment[]
+  ddn              DailyDepartmentNotification?
+  dbFundsEntry     DBFundsFundraisingEntry?
+  solicitationCode SolicitationCode             @relation(fields: [solicitationCodeId], references: [id])
 
   @@index([uuid])
 }
 
-// SQL code for FundraisingEntriesWithMeta, must include an updated copy in a migration when changing the view
-// CREATE VIEW "FundraisingEntriesWithMeta" AS
+// SQL code for FundraisingEntryWithMeta, must include an updated copy in a migration when changing the view
+// CREATE VIEW "FundraisingEntryWithMeta" AS
 // SELECT fe.id,
 //   fe.uuid,
 //   fe."createdAt",
@@ -60,8 +52,11 @@ model FundraisingEntry {
 //   ) AS "unassigned",
 //   "fe"."notes",
 //   "fe"."type",
-//   "fe"."enteredBy",
-//   "fe"."entrySourceId"
+//   "fe"."enteredByPersonId" AS "enteredBy",
+//   "fe"."teamOverrideId",
+//   "fe"."solicitationCodeId",
+//   "fe"."dbFundsEntryId",
+//   "fe"."ddnId"
 // FROM "FundraisingEntry" "fe";
 
 view FundraisingEntryWithMeta {
@@ -72,16 +67,18 @@ view FundraisingEntryWithMeta {
 
   unassigned Decimal?
 
-  notes           String?
-  type            FundraisingEntryType
-  enteredBy       Int?
-  enteredByPerson Person?                 @relation(fields: [enteredBy], references: [id], onDelete: SetNull)
-  entrySourceId   Int?                    @unique
-  entrySource     FundraisingEntrySource?
-  teamOverrideId  Int?
-  teamOverride    Team?                   @relation(fields: [teamOverrideId], references: [id])
+  notes              String?
+  type               FundraisingEntryType
+  enteredByPersonId  Int?
+  teamOverrideId     Int?
+  solicitationCodeId Int
 
-  assignments FundraisingAssignment[]
+  enteredByPerson  Person?                      @relation(fields: [enteredByPersonId], references: [id], onDelete: SetNull)
+  teamOverride     Team?                        @relation(fields: [teamOverrideId], references: [id])
+  assignments      FundraisingAssignment[]
+  ddn              DailyDepartmentNotification?
+  dbFundsEntry     DBFundsFundraisingEntry?
+  solicitationCode SolicitationCode             @relation(fields: [solicitationCodeId], references: [id])
 
   @@index([uuid])
 }
@@ -94,17 +91,18 @@ enum FundraisingEntryType {
 }
 
 model FundraisingAssignment {
-  id               Int                      @id @default(autoincrement())
-  uuid             String                   @unique() @default(uuid()) @db.Uuid
-  createdAt        DateTime                 @default(now()) @db.Timestamptz(6)
-  updatedAt        DateTime                 @updatedAt @db.Timestamptz(6)
-  amount           Decimal
-  personId         Int
-  person           Person                   @relation(fields: [personId], references: [id], onDelete: Cascade)
-  parentEntry      FundraisingEntryWithMeta @relation(fields: [fundraisingId], references: [id], onDelete: Cascade)
-  fundraisingId    Int
-  assignedBy       Int?
-  assignedByPerson Person?                  @relation(fields: [assignedBy], references: [id], onDelete: SetNull, name: "fundraising_assignment_assigned_by_person")
+  id                  Int                      @id @default(autoincrement())
+  uuid                String                   @unique() @default(uuid()) @db.Uuid
+  createdAt           DateTime                 @default(now()) @db.Timestamptz(6)
+  updatedAt           DateTime                 @updatedAt @db.Timestamptz(6)
+  amount              Decimal
+  personId            Int
+  person              Person                   @relation(fields: [personId], references: [id], onDelete: Cascade)
+  parentEntryWithMeta FundraisingEntryWithMeta @relation(fields: [fundraisingId], references: [id], onDelete: Cascade, map: "fundraising_assignment_parent_entry_with_meta")
+  parentEntry         FundraisingEntry         @relation(fields: [fundraisingId], references: [id], onDelete: Cascade, map: "fundraising_assignment_parent_entry")
+  fundraisingId       Int
+  assignedBy          Int?
+  assignedByPerson    Person?                  @relation(fields: [assignedBy], references: [id], onDelete: SetNull, name: "fundraising_assignment_assigned_by_person")
 
   @@unique([fundraisingId, personId])
   @@index([uuid])
@@ -119,9 +117,10 @@ model SolicitationCode {
   code      Int
   name      String?
 
-  dbFundsTeams DBFundsTeam[]
-  ddns         DailyDepartmentNotification[]
-  teams        Team[]
+  teams                     Team[]
+  dbFundsTeams              DBFundsTeam[]
+  fundraisingEntriesWitMeta FundraisingEntryWithMeta[]
+  fundraisingEntries        FundraisingEntry[]
 
   @@unique([prefix, code])
   @@index([uuid])
