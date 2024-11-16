@@ -44,6 +44,7 @@ export const literalConfig = {
     TanStackRouterVite({
       quoteStyle: "double",
       semicolons: true,
+      autoCodeSplitting: true,
     }),
     react(),
     sentryVitePlugin({
