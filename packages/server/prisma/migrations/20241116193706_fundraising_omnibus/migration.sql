@@ -1,5 +1,3 @@
-BEGIN;
-
 DROP VIEW fundraising_entries_with_meta;
 
 DROP VIEW "teams_with_total_points";
@@ -26,15 +24,14 @@ ADD COLUMN "assigned_by" INTEGER;
 -- AlterTable
 ALTER TABLE "fundraising_entries"
 ADD COLUMN "entered_by" INTEGER,
-    ADD COLUMN "entry_source_id" INTEGER,
     ADD COLUMN "notes" TEXT,
-    ADD COLUMN "type" "FundraisingEntryType";
+    ADD COLUMN "type" "FundraisingEntryType" DEFAULT 'Legacy' NOT NULL;
+
+ALTER TABLE "fundraising_entries"
+ALTER COLUMN "type" DROP DEFAULT;
 
 -- CreateIndex
 CREATE UNIQUE INDEX "DailyDepartmentNotification_id_sorter_key" ON "DailyDepartmentNotification"("id_sorter");
-
--- CreateIndex
-CREATE UNIQUE INDEX "fundraising_entries_entry_source_id_key" ON "fundraising_entries"("entry_source_id");
 
 -- AddForeignKey
 ALTER TABLE "fundraising_assignments"
@@ -1187,7 +1184,7 @@ DROP INDEX "DBFundsTeam_dbNum_marathonId_key";
 
 -- AlterTable
 ALTER TABLE "DBFundsTeam"
-ADD COLUMN "solicitationCodeId" INTEGER NOT NULL;
+ADD COLUMN "solicitationCodeId" INTEGER;
 
 -- AlterTable
 ALTER TABLE "DailyDepartmentNotification" DROP COLUMN "solicitationCode",
@@ -1260,7 +1257,20 @@ SELECT gen_random_uuid(),
 FROM "DBFundsTeam"
 WHERE "dbNum" IS NOT NULL;
 
+UPDATE "DBFundsTeam"
+SET "solicitationCodeId" = "SolicitationCode"."id"
+FROM "SolicitationCode"
+WHERE "DBFundsTeam"."dbNum" IS NOT NULL
+    AND "SolicitationCode"."prefix" = 'DB'
+    AND "SolicitationCode"."code" = "DBFundsTeam"."dbNum";
+
+-- AlterTable
 ALTER TABLE "DBFundsTeam" DROP COLUMN "dbNum";
+
+-- AlterTable
+ALTER TABLE "DBFundsTeam"
+ALTER COLUMN "solicitationCodeId"
+SET NOT NULL;
 
 -- DropForeignKey
 ALTER TABLE "DailyDepartmentNotification" DROP CONSTRAINT "DailyDepartmentNotification_solicitationCodeId_fkey";
@@ -1275,7 +1285,31 @@ ADD COLUMN "fundraisingEntryId" INTEGER;
 -- AlterTable
 ALTER TABLE "FundraisingEntry" DROP COLUMN "enteredBy",
     ADD COLUMN "enteredByPersonId" INTEGER,
-    ADD COLUMN "solicitationCodeId" INTEGER;
+    ADD COLUMN "solicitationCodeId" INTEGER,
+    ADD COLUMN "tempDbFundsEntryId" INTEGER;
+
+INSERT INTO "FundraisingEntry" (
+        "uuid",
+        "createdAt",
+        "updatedAt",
+        "type",
+        "tempDbFundsEntryId"
+    )
+SELECT gen_random_uuid(),
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP,
+    'Legacy',
+    "DBFundsFundraisingEntry"."id"
+FROM "DBFundsFundraisingEntry"
+    LEFT JOIN "DBFundsTeam" ON "DBFundsFundraisingEntry"."dbFundsTeamId" = "DBFundsTeam"."id"
+WHERE "DBFundsFundraisingEntry"."fundraisingEntryId" IS NULL;
+
+UPDATE "DBFundsFundraisingEntry"
+SET "fundraisingEntryId" = "FundraisingEntry"."id"
+FROM "FundraisingEntry"
+WHERE "DBFundsFundraisingEntry"."id" = "FundraisingEntry"."tempDbFundsEntryId";
+
+ALTER TABLE "FundraisingEntry" DROP COLUMN "tempDbFundsEntryId";
 
 -- AlterTable
 ALTER TABLE "DBFundsFundraisingEntry"
@@ -1404,16 +1438,3 @@ SELECT "fe"."id",
     "fe"."enteredByPersonId",
     "fe"."solicitationCodeId"
 FROM "FundraisingEntry" "fe";
-
--- DropIndex
-DROP INDEX "fundraising_entries_entry_source_id_key";
-
--- AlterTable
-ALTER TABLE "FundraisingEntry" DROP COLUMN "teamOverrideId",
-    DROP COLUMN "entry_source_id",
-    ALTER COLUMN "type"
-SET NOT NULL;
-
-;
-
-COMMIT;
