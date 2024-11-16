@@ -6,6 +6,7 @@ import { Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { Resource } from "./Resource.js";
+import { SolicitationCodeNode } from "./SolicitationCode.js";
 
 export const BatchType = {
   /**
@@ -132,8 +133,8 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
   @Field(() => Boolean)
   onlineGift!: boolean;
 
-  @Field(() => String, { nullable: true })
-  solicitationCode?: string;
+  @Field(() => SolicitationCodeNode)
+  solicitationCode!: SolicitationCodeNode;
 
   @Field(() => String, { nullable: true })
   solicitation?: string;

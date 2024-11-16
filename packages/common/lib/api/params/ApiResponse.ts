@@ -128,8 +128,8 @@ export abstract class AbstractGraphQLPaginatedResponse<
     }: {
       data: T[];
       total: number;
-      page?: number | undefined | null | undefined;
-      pageSize?: number | undefined | null | undefined;
+      page?: number | undefined | null;
+      pageSize?: number | undefined | null;
     }
   ): PRes {
     const response = new this();

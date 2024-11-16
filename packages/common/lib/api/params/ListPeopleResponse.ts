@@ -25,7 +25,7 @@ class MemberOf {
   id!: GlobalId;
 
   @Field(() => CommitteeRole, { nullable: true })
-  committeeRole?: CommitteeRole | undefined | null | undefined;
+  committeeRole?: CommitteeRole | undefined | null;
 }
 
 @ArgsType()

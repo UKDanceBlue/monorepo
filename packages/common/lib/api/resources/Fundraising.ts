@@ -1,13 +1,26 @@
 import { DateTimeISOResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
-import { None, Option, Some } from "ts-results-es";
-import { Field, Float, ObjectType } from "type-graphql";
+import { Field, Float, ObjectType, registerEnumType } from "type-graphql";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { createNodeClasses, Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
+import { SolicitationCodeNode } from "./SolicitationCode.js";
+
+export const FundraisingEntryType = {
+  Cash: "Cash",
+  Check: "Check",
+  Online: "Online",
+  Legacy: "Legacy",
+} as const;
+export type FundraisingEntryType =
+  (typeof FundraisingEntryType)[keyof typeof FundraisingEntryType];
+
+registerEnumType(FundraisingEntryType, {
+  name: "FundraisingEntryType",
+});
 
 @ObjectType({
   implements: [Node],
@@ -15,31 +28,33 @@ import { TimestampedResource } from "./Resource.js";
 export class FundraisingEntryNode extends TimestampedResource implements Node {
   @Field(() => GlobalIdScalar)
   id!: GlobalId;
+
   @Field(() => String, { nullable: true, name: "donatedByText" })
-  private _donatedByText!: string | null;
-  get donatedByText(): Option<string> {
-    return this._donatedByText ? Some(this._donatedByText) : None;
-  }
-  set donatedByText(value: Option<string>) {
-    this._donatedByText = value.unwrapOr(null);
-  }
+  donatedByText!: string | null | undefined;
+
   @Field(() => String, { nullable: true, name: "donatedToText" })
-  private _donatedToText!: string | null;
-  get donatedToText(): Option<string> {
-    return this._donatedToText ? Some(this._donatedToText) : None;
-  }
-  set donatedToText(value: Option<string>) {
-    this._donatedToText = value.unwrapOr(null);
-  }
+  donatedToText!: string | null | undefined;
+
   @Field(() => DateTimeISOResolver)
   donatedOn!: Date;
   get donatedOnDateTime(): DateTime {
     return dateTimeFromSomething(this.donatedOn);
   }
+
   @Field(() => Float)
   amount!: number;
+
   @Field(() => Float)
   amountUnassigned!: number;
+
+  @Field(() => FundraisingEntryType)
+  type!: FundraisingEntryType;
+
+  @Field(() => String, { nullable: true })
+  notes?: string | null | undefined;
+
+  @Field(() => SolicitationCodeNode, { nullable: true })
+  solicitationCodeOverride?: SolicitationCodeNode | null | undefined;
 
   public getUniqueId(): string {
     return this.id.id;
@@ -47,38 +62,18 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
 
   public static init(init: {
     id: string;
-    donatedByText: Option<string> | string | null;
-    donatedToText: Option<string> | string | null;
+    donatedByText: string | null;
+    donatedToText: string | null;
     donatedOn: Date;
     amount: number;
     amountUnassigned: number;
     createdAt: Date;
     updatedAt: Date;
+    type: FundraisingEntryType;
+    notes?: string | null;
+    solicitationCodeOverride?: SolicitationCodeNode | null;
   }) {
-    const node = new FundraisingEntryNode();
-    node.id = {
-      id: init.id,
-      typename: "FundraisingEntryNode",
-    };
-    node.donatedByText =
-      init.donatedByText == null
-        ? None
-        : typeof init.donatedByText === "string"
-          ? Some(init.donatedByText)
-          : init.donatedByText;
-    node.donatedToText =
-      init.donatedToText == null
-        ? None
-        : typeof init.donatedToText === "string"
-          ? Some(init.donatedToText)
-          : init.donatedToText;
-    node.donatedOn = init.donatedOn;
-    node.amount = init.amount;
-    node.amountUnassigned = init.amountUnassigned;
-    node.createdAt = init.createdAt;
-    node.updatedAt = init.updatedAt;
-
-    return node;
+    return FundraisingEntryNode.createInstance().withValues(init);
   }
 }
 

@@ -27,7 +27,7 @@ export class FeedNode extends TimestampedResource implements Node {
   title!: string;
 
   @Field(() => String, { nullable: true })
-  textContent?: string | undefined | null | undefined;
+  textContent?: string | undefined | null;
 
   public getUniqueId(): string {
     return this.id.id;
@@ -36,7 +36,7 @@ export class FeedNode extends TimestampedResource implements Node {
   public static init(init: {
     id: string;
     title: string;
-    textContent?: string | undefined | null | undefined;
+    textContent?: string | undefined | null;
     createdAt?: Date;
     updatedAt?: Date;
   }) {
