@@ -40,9 +40,9 @@ model DBFundsFundraisingEntry {
   dbFundsTeam   DBFundsTeam @relation(fields: [dbFundsTeamId], references: [id], onDelete: Cascade)
 
   /// The corresponding fundraising entry in our database
-  fundraisingEntryWithMeta FundraisingEntryWithMeta @relation(fields: [fundraisingEntryId], references: [id], map: "DBFundsFundraisingEntry_fundraisingEntryWithMeta")
-  fundraisingEntry         FundraisingEntry         @relation(fields: [fundraisingEntryId], references: [id], map: "DBFundsFundraisingEntry_fundraisingEntry")
-  fundraisingEntryId       Int                      @unique
+  fundraisingEntryWithMeta FundraisingEntryWithMeta? @relation(fields: [fundraisingEntryId], references: [id], map: "DBFundsFundraisingEntry_fundraisingEntryWithMeta")
+  fundraisingEntry         FundraisingEntry          @relation(fields: [fundraisingEntryId], references: [id], map: "DBFundsFundraisingEntry_fundraisingEntry", onDelete: Cascade)
+  fundraisingEntryId       Int                       @unique
 
   @@unique([donatedTo, donatedBy, date, dbFundsTeamId])
 }

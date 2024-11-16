@@ -2,6 +2,7 @@ import { Service } from "@freshgum/typedi";
 import {
   DailyDepartmentNotification,
   DailyDepartmentNotificationBatch,
+  FundraisingEntryType,
   Prisma,
   PrismaClient,
   SolicitationCode,
@@ -236,6 +237,12 @@ export class DailyDepartmentNotificationRepository {
                 },
               },
             },
+            fundraisingEntry: {
+              create: {
+                // TODO: Get the type from the data
+                type: FundraisingEntryType.Legacy,
+              },
+            },
           },
           include: { batch: true, solicitationCode: true },
         })
@@ -420,6 +427,12 @@ export class DailyDepartmentNotificationRepository {
                         .prefix,
                     },
                   },
+                },
+              },
+              fundraisingEntry: {
+                create: {
+                  // TODO: Get the type from the data
+                  type: FundraisingEntryType.Legacy,
                 },
               },
             },

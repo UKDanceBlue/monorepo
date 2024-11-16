@@ -52,7 +52,7 @@
     "server:check": "yarn workspace @ukdanceblue/server run check",
     "server:dev": "yarn workspace @ukdanceblue/server run dev",
     "server:prisma": "yarn workspace @ukdanceblue/server prisma",
-    "server:prisma-generate": "yarn workspace @ukdanceblue/server prisma generate",
+    "server:prisma-generate": "yarn workspace @ukdanceblue/server prisma generate --no-hints",
     "server:start": "yarn workspace @ukdanceblue/server run start"
   },
   "resolutions": {

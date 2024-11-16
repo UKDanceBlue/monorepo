@@ -183,7 +183,6 @@ export interface DailyDepartmentNotificationInput {
   readonly donor1Amount?: InputMaybe<Scalars["Float"]["input"]>;
   readonly donor2Amount?: InputMaybe<Scalars["Float"]["input"]>;
   readonly effectiveDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
-  readonly endDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly gikDescription?: InputMaybe<Scalars["String"]["input"]>;
   readonly gikType?: InputMaybe<Scalars["String"]["input"]>;
   readonly holdingDestination?: InputMaybe<Scalars["String"]["input"]>;
@@ -196,8 +195,7 @@ export interface DailyDepartmentNotificationInput {
   readonly secShares?: InputMaybe<Scalars["String"]["input"]>;
   readonly secType?: InputMaybe<Scalars["String"]["input"]>;
   readonly solicitation?: InputMaybe<Scalars["String"]["input"]>;
-  readonly solicitationCode?: InputMaybe<Scalars["String"]["input"]>;
-  readonly startDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
+  readonly solicitationCode: Scalars["String"]["input"];
   readonly transactionDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
   readonly transactionType: Scalars["String"]["input"];
   readonly ukFirstGift: Scalars["Boolean"]["input"];

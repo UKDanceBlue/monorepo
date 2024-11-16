@@ -79,10 +79,8 @@ export function buildFundraisingEntryOrder(
   }
 
   if (Object.keys(dbFundsEntryOrderBy).length > 0) {
-    orderBy.entrySource = {
-      dbFundsEntry: dbFundsEntryOrderBy,
-      ddn: ddnOrderBy,
-    };
+    orderBy.dbFundsEntry = dbFundsEntryOrderBy;
+    orderBy.ddn = ddnOrderBy;
   }
 
   return Ok(orderBy);
@@ -180,11 +178,11 @@ export function buildFundraisingEntryWhere(
   }
 
   if (Object.keys(dbFundsEntryWhere).length > 0) {
-    where.entrySource = {
-      OR: [
-        { dbFundsEntry: { AND: dbFundsEntryWhere } },
-        { ddn: { AND: ddnWhere } },
-      ],
+    where.dbFundsEntry = {
+      AND: dbFundsEntryWhere,
+    };
+    where.ddn = {
+      AND: ddnWhere,
     };
   }
 

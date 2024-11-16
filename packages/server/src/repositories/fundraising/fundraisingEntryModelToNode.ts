@@ -10,31 +10,31 @@ export function fundraisingEntryModelToNode(
   let donatedToText;
   let donatedOn;
 
-  if (!entryModel.entrySource) {
+  if (!entryModel) {
     throw new Error("entrySource is missing");
   }
-  if ("dbFundsEntry" in entryModel.entrySource) {
+  if ("dbFundsEntry" in entryModel) {
     ({
       amount,
       donatedBy: donatedByText,
       donatedTo: donatedToText,
       date: donatedOn,
-    } = entryModel.entrySource.dbFundsEntry);
-  } else if ("ddn" in entryModel.entrySource) {
+    } = entryModel.dbFundsEntry);
+  } else if ("ddn" in entryModel) {
     ({
       combinedAmount: amount,
       comment: donatedToText,
       combinedDonorName: donatedByText,
-    } = entryModel.entrySource.ddn);
+    } = entryModel.ddn);
     donatedOn =
-      entryModel.entrySource.ddn.pledgedDate ??
-      entryModel.entrySource.ddn.transactionDate ??
-      entryModel.entrySource.ddn.effectiveDate;
+      entryModel.ddn.pledgedDate ??
+      entryModel.ddn.transactionDate ??
+      entryModel.ddn.effectiveDate;
     if (!donatedOn) {
       throw new Error("donatedOn is missing");
     }
   } else {
-    entryModel.entrySource satisfies never;
+    entryModel satisfies never;
     throw new Error("entrySource is not a valid type");
   }
 

@@ -234,13 +234,13 @@ function ViewTeamFundraising() {
     return (
       <p>
         Please reach out to Dancer Relations and ask them to assign your team to
-        a DBFunds team
+        a Solicitation Code
       </p>
     );
   } else {
     return (
       <Flex vertical>
-        <Form.Item label="DBFunds Team">
+        <Form.Item label="Solicitation Code">
           {!data?.team.data.dbFundsTeam?.dbNum ? (
             <AutoComplete
               options={dbFundsTeamData?.dbFundsTeams.map(
@@ -263,17 +263,21 @@ function ViewTeamFundraising() {
                       );
                     })
                     .finally(() => {
-                      refreshFundraisingEntries();
+                      refreshFundraisingEntries({
+                        requestPolicy: "network-only",
+                      });
                     });
                 }
               }}
               defaultValue={data?.team.data.dbFundsTeam?.dbNum}
               disabled={data?.team.data.dbFundsTeam?.dbNum != null}
+              prefix="DB"
+              style={{ maxWidth: "15ch" }}
             />
           ) : (
             <p>
               This team is linked to <i>{data.team.data.dbFundsTeam.name}</i> (#
-              {data.team.data.dbFundsTeam.dbNum}) in DBFunds
+              {data.team.data.dbFundsTeam.dbNum})
             </p>
           )}
         </Form.Item>

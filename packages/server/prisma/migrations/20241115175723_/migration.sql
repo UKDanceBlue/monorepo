@@ -29,7 +29,7 @@ ALTER TABLE "FundraisingEntrySource" DROP CONSTRAINT "FundraisingEntrySource_ddn
 -- DropIndex
 DROP INDEX "FundraisingEntry_entrySourceId_key";
 
-DROP VIEW "FundraisingEntryWithMeta";
+DROP VIEW "FundraisingEntriesWithMeta";
 
 -- AlterTable
 ALTER TABLE "DailyDepartmentNotification"

@@ -12,11 +12,14 @@
  */
 -- DropForeignKey
 ALTER TABLE "Team" DROP CONSTRAINT "Team_dbFundsTeamId_fkey";
+
 -- DropIndex
 DROP INDEX "DBFundsTeam_dbNum_marathonId_key";
+
 -- AlterTable
 ALTER TABLE "DBFundsTeam"
 ADD COLUMN "solicitationCodeId" INTEGER NOT NULL;
+
 -- AlterTable
 ALTER TABLE "DailyDepartmentNotification" DROP COLUMN "solicitationCode",
   ADD COLUMN "solicitationCodeId" INTEGER NOT NULL,
@@ -24,12 +27,15 @@ ALTER TABLE "DailyDepartmentNotification" DROP COLUMN "solicitationCode",
   ADD COLUMN "donor1GiftKey" INTEGER,
   DROP COLUMN "donor2GiftKey",
   ADD COLUMN "donor2GiftKey" INTEGER;
+
 -- AlterTable
 ALTER TABLE "FundraisingEntry"
 ADD COLUMN "teamOverrideId" INTEGER;
+
 -- AlterTable
 ALTER TABLE "Team"
 ADD COLUMN "solicitationCodeId" INTEGER;
+
 -- CreateTable
 CREATE TABLE "SolicitationCode" (
   "id" SERIAL NOT NULL,
@@ -41,32 +47,42 @@ CREATE TABLE "SolicitationCode" (
   "name" TEXT,
   CONSTRAINT "SolicitationCode_pkey" PRIMARY KEY ("id")
 );
+
 -- CreateIndex
 CREATE UNIQUE INDEX "SolicitationCode_uuid_key" ON "SolicitationCode"("uuid");
+
 -- CreateIndex
 CREATE INDEX "SolicitationCode_uuid_idx" ON "SolicitationCode"("uuid");
+
 -- CreateIndex
 CREATE UNIQUE INDEX "SolicitationCode_prefix_code_key" ON "SolicitationCode"("prefix", "code");
+
 -- CreateIndex
 CREATE UNIQUE INDEX "DBFundsTeam_solicitationCodeId_marathonId_key" ON "DBFundsTeam"("solicitationCodeId", "marathonId");
+
 -- AddForeignKey
 ALTER TABLE "DBFundsTeam"
 ADD CONSTRAINT "DBFundsTeam_solicitationCodeId_fkey" FOREIGN KEY ("solicitationCodeId") REFERENCES "SolicitationCode"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
 -- AddForeignKey
 ALTER TABLE "DailyDepartmentNotification"
 ADD CONSTRAINT "DailyDepartmentNotification_solicitationCodeId_fkey" FOREIGN KEY ("solicitationCodeId") REFERENCES "SolicitationCode"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
 -- AddForeignKey
 ALTER TABLE "FundraisingEntry"
 ADD CONSTRAINT "FundraisingEntry_enteredBy_fkey" FOREIGN KEY ("enteredBy") REFERENCES "Person"("id") ON DELETE
 SET NULL ON UPDATE CASCADE;
+
 -- AddForeignKey
 ALTER TABLE "FundraisingEntry"
 ADD CONSTRAINT "FundraisingEntry_teamOverrideId_fkey" FOREIGN KEY ("teamOverrideId") REFERENCES "Team"("id") ON DELETE
 SET NULL ON UPDATE CASCADE;
+
 -- AddForeignKey
 ALTER TABLE "Team"
 ADD CONSTRAINT "Team_solicitationCodeId_fkey" FOREIGN KEY ("solicitationCodeId") REFERENCES "SolicitationCode"("id") ON DELETE
 SET NULL ON UPDATE CASCADE;
+
 INSERT INTO "SolicitationCode" ("uuid", "updatedAt", "prefix", "code")
 SELECT gen_random_uuid(),
   CURRENT_TIMESTAMP,
@@ -74,9 +90,12 @@ SELECT gen_random_uuid(),
   "dbNum"
 FROM "DBFundsTeam"
 WHERE "dbNum" IS NOT NULL;
+
 ALTER TABLE "DBFundsTeam" DROP COLUMN "dbNum";
-DROP VIEW "FundraisingEntryWithMeta";
-CREATE VIEW "FundraisingEntryWithMeta" AS
+
+DROP VIEW "FundraisingEntriesWithMeta";
+
+CREATE VIEW "FundraisingEntriesWithMeta" AS
 SELECT fe.id,
   fe."uuid",
   fe."createdAt",

@@ -118,105 +118,74 @@ export class DBFundsRepository {
         },
       });
 
-      const entriesToCreate: Prisma.DBFundsFundraisingEntryCreateWithoutDbFundsTeamInput[] =
-        [];
-      const entriesToUpdate: {
-        amount: number;
-        id: number;
-      }[] = [];
-
-      // Unlike the other lists, this one is removed from rather than added to
-      const entryIdsToDelete = new Set<number>(
-        dBFundsTeam.fundraisingEntries.map((entry) => entry.id)
-      );
-
-      // Populate the entries to create, update, and delete
-      for (const entry of dbFundsEntries) {
-        const entryDonatedOnMillis = entry.donatedOn.toMillis();
-        const existingEntry = dBFundsTeam.fundraisingEntries.find(
-          (e) =>
-            e.donatedBy === entry.donatedBy.unwrapOr(null) &&
-            e.donatedTo === entry.donatedTo.unwrapOr(null) &&
-            e.date.getTime() === entryDonatedOnMillis
+      let deleted = 0;
+      let updated = 0;
+      let created = 0;
+      await this.prisma.$transaction(async (prisma) => {
+        const entryIdsToDelete = new Set<number>(
+          dBFundsTeam.fundraisingEntries.map((entry) => entry.id)
         );
 
-        if (!existingEntry) {
-          entriesToCreate.push({
-            donatedBy: entry.donatedBy.unwrapOr(null),
-            donatedTo: entry.donatedTo.unwrapOr(null),
-            date: entry.donatedOn.toJSDate(),
-            amount: entry.amount,
-            fundraisingEntrySource: {
-              create: {
-                entryWithMeta: {
+        for (const entry of dbFundsEntries) {
+          const entryDonatedOnMillis = entry.donatedOn.toMillis();
+          const existingDbFundsEntry = dBFundsTeam.fundraisingEntries.find(
+            (e) =>
+              e.donatedBy === entry.donatedBy.unwrapOr(null) &&
+              e.donatedTo === entry.donatedTo.unwrapOr(null) &&
+              e.date.getTime() === entryDonatedOnMillis
+          );
+
+          if (!existingDbFundsEntry) {
+            // eslint-disable-next-line no-await-in-loop
+            await prisma.fundraisingEntry.create({
+              data: {
+                type: FundraisingEntryType.Legacy,
+                dbFundsEntry: {
                   create: {
-                    type: FundraisingEntryType.Legacy,
+                    donatedBy: entry.donatedBy.unwrapOr(null),
+                    donatedTo: entry.donatedTo.unwrapOr(null),
+                    date: entry.donatedOn.toJSDate(),
+                    amount: entry.amount,
+                    dbFundsTeam: {
+                      connect: { id: dBFundsTeam.id },
+                    },
                   },
                 },
               },
-            },
-          });
-        } else {
-          entryIdsToDelete.delete(existingEntry.id);
-          if (existingEntry.amount.toNumber() !== entry.amount) {
-            entriesToUpdate.push({
-              amount: entry.amount,
-              id: existingEntry.id,
             });
+            created++;
+          } else {
+            entryIdsToDelete.delete(existingDbFundsEntry.id);
+            if (existingDbFundsEntry.amount.toNumber() !== entry.amount) {
+              // eslint-disable-next-line no-await-in-loop
+              await prisma.dBFundsFundraisingEntry.update({
+                where: { id: existingDbFundsEntry.id },
+                data: { amount: entry.amount },
+              });
+              updated++;
+            }
           }
         }
-      }
 
-      // If there are any entries to create, update, or delete, do so
-      if (
-        entriesToCreate.length > 0 ||
-        entriesToUpdate.length > 0 ||
-        entryIdsToDelete.size > 0
-      ) {
-        logger.debug(`Fundraising Sync`, {
-          team: { name: team.name, dbNum: team.dbNum },
-          entries: {
-            toCreate: entriesToCreate.length,
-            toUpdate: entriesToUpdate.length,
-            toDelete: entryIdsToDelete.size,
-          },
-        });
+        for (const id of entryIdsToDelete) {
+          // eslint-disable-next-line no-await-in-loop
+          await prisma.fundraisingEntry.deleteMany({
+            where: { dbFundsEntry: { id } },
+          });
+          deleted++;
+        }
 
-        await this.prisma.$transaction(async (prisma) => {
-          if (entryIdsToDelete.size > 0) {
-            await prisma.dBFundsFundraisingEntry.deleteMany({
-              where: {
-                id: {
-                  in: [...entryIdsToDelete],
-                },
-              },
-            });
-          }
-          if (entriesToCreate.length > 0) {
-            await prisma.dBFundsFundraisingEntry.createMany({
-              data: entriesToCreate.map((entry) => ({
-                dbFundsTeamId: dBFundsTeam.id,
-                amount: entry.amount,
-                date: entry.date,
-                donatedBy: entry.donatedBy,
-                donatedTo: entry.donatedTo,
-              })),
-            });
-          }
-          if (entriesToUpdate.length > 0) {
-            await prisma.dBFundsFundraisingEntry.updateMany({
-              where: {
-                id: {
-                  in: entriesToUpdate.map((entry) => entry.id),
-                },
-              },
-              data: entriesToUpdate.map((entry) => ({
-                amount: entry.amount,
-              })),
-            });
-          }
-        });
-      }
+        if (created + updated + deleted > 0) {
+          logger.debug(`Fundraising Sync`, {
+            team: { name: team.name, dbNum: team.dbNum },
+            entries: {
+              created,
+              updated,
+              deleted,
+            },
+          });
+        }
+      });
 
       return Ok(None);
     } catch (error) {

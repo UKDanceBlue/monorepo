@@ -8,14 +8,13 @@ model FundraisingEntry {
   type               FundraisingEntryType
   enteredByPersonId  Int?
   teamOverrideId     Int?
-  solicitationCodeId Int
+  solicitationCodeId Int?
 
-  enteredByPerson  Person?                      @relation(fields: [enteredByPersonId], references: [id], onDelete: SetNull)
-  teamOverride     Team?                        @relation(fields: [teamOverrideId], references: [id])
-  assignments      FundraisingAssignment[]
-  ddn              DailyDepartmentNotification?
-  dbFundsEntry     DBFundsFundraisingEntry?
-  solicitationCode SolicitationCode             @relation(fields: [solicitationCodeId], references: [id])
+  enteredByPerson          Person?                      @relation(fields: [enteredByPersonId], references: [id], onDelete: SetNull)
+  assignments              FundraisingAssignment[]
+  ddn                      DailyDepartmentNotification?
+  dbFundsEntry             DBFundsFundraisingEntry?
+  solicitationCodeOverride SolicitationCode?            @relation(fields: [solicitationCodeId], references: [id])
 
   @@index([uuid])
 }
@@ -71,14 +70,13 @@ view FundraisingEntryWithMeta {
   type               FundraisingEntryType
   enteredByPersonId  Int?
   teamOverrideId     Int?
-  solicitationCodeId Int
+  solicitationCodeId Int?
 
-  enteredByPerson  Person?                      @relation(fields: [enteredByPersonId], references: [id], onDelete: SetNull)
-  teamOverride     Team?                        @relation(fields: [teamOverrideId], references: [id])
-  assignments      FundraisingAssignment[]
-  ddn              DailyDepartmentNotification?
-  dbFundsEntry     DBFundsFundraisingEntry?
-  solicitationCode SolicitationCode             @relation(fields: [solicitationCodeId], references: [id])
+  enteredByPerson          Person?                      @relation(fields: [enteredByPersonId], references: [id], onDelete: SetNull)
+  assignments              FundraisingAssignment[]
+  ddn                      DailyDepartmentNotification?
+  dbFundsEntry             DBFundsFundraisingEntry?
+  solicitationCodeOverride SolicitationCode?            @relation(fields: [solicitationCodeId], references: [id])
 
   @@index([uuid])
 }
@@ -91,18 +89,18 @@ enum FundraisingEntryType {
 }
 
 model FundraisingAssignment {
-  id                  Int                      @id @default(autoincrement())
-  uuid                String                   @unique() @default(uuid()) @db.Uuid
-  createdAt           DateTime                 @default(now()) @db.Timestamptz(6)
-  updatedAt           DateTime                 @updatedAt @db.Timestamptz(6)
+  id                  Int                       @id @default(autoincrement())
+  uuid                String                    @unique() @default(uuid()) @db.Uuid
+  createdAt           DateTime                  @default(now()) @db.Timestamptz(6)
+  updatedAt           DateTime                  @updatedAt @db.Timestamptz(6)
   amount              Decimal
   personId            Int
-  person              Person                   @relation(fields: [personId], references: [id], onDelete: Cascade)
-  parentEntryWithMeta FundraisingEntryWithMeta @relation(fields: [fundraisingId], references: [id], onDelete: Cascade, map: "fundraising_assignment_parent_entry_with_meta")
-  parentEntry         FundraisingEntry         @relation(fields: [fundraisingId], references: [id], onDelete: Cascade, map: "fundraising_assignment_parent_entry")
+  person              Person                    @relation(fields: [personId], references: [id], onDelete: Cascade)
+  parentEntryWithMeta FundraisingEntryWithMeta? @relation(fields: [fundraisingId], references: [id], onDelete: Cascade, map: "fundraising_assignment_parent_entry_with_meta")
+  parentEntry         FundraisingEntry          @relation(fields: [fundraisingId], references: [id], onDelete: Cascade, map: "fundraising_assignment_parent_entry")
   fundraisingId       Int
   assignedBy          Int?
-  assignedByPerson    Person?                  @relation(fields: [assignedBy], references: [id], onDelete: SetNull, name: "fundraising_assignment_assigned_by_person")
+  assignedByPerson    Person?                   @relation(fields: [assignedBy], references: [id], onDelete: SetNull, name: "fundraising_assignment_assigned_by_person")
 
   @@unique([fundraisingId, personId])
   @@index([uuid])
@@ -119,6 +117,7 @@ model SolicitationCode {
 
   teams                     Team[]
   dbFundsTeams              DBFundsTeam[]
+  ddns                      DailyDepartmentNotification[]
   fundraisingEntriesWitMeta FundraisingEntryWithMeta[]
   fundraisingEntries        FundraisingEntry[]
 
