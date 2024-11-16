@@ -7,7 +7,6 @@ model FundraisingEntry {
   notes              String?
   type               FundraisingEntryType
   enteredByPersonId  Int?
-  teamOverrideId     Int?
   solicitationCodeId Int?
 
   enteredByPerson          Person?                      @relation(fields: [enteredByPersonId], references: [id], onDelete: SetNull)
@@ -21,25 +20,22 @@ model FundraisingEntry {
 
 // SQL code for FundraisingEntryWithMeta, must include an updated copy in a migration when changing the view
 // CREATE VIEW "FundraisingEntryWithMeta" AS
-// SELECT fe.id,
-//   fe.uuid,
-//   fe."createdAt",
-//   fe."updatedAt",
-//   fe."teamOverrideId",
+// SELECT "fe"."id",
+//   "fe"."uuid",
+//   "fe"."createdAt",
+//   "fe"."updatedAt",
 //   COALESCE(
 //     -- Calculate unassigned using db_funds_team_entries if available
 //     (
 //       SELECT "dft"."amount"
 //       FROM "DBFundsFundraisingEntry" "dft"
-//         JOIN "FundraisingEntrySource" "fes" ON "dft"."id" = "fes"."dbFundsEntryId"
-//       WHERE "fes"."id" = "fe"."entrySourceId"
+//       WHERE "fe"."id" = "dft"."fundraisingEntryId"
 //     ),
 //     -- Otherwise, use combinedAmount from DailyDepartmentNotification
 //     (
 //       SELECT "ddn"."combinedAmount"
 //       FROM "DailyDepartmentNotification" "ddn"
-//         JOIN "FundraisingEntrySource" "fes" ON "ddn"."id" = "fes"."ddnId"
-//       WHERE "fes"."id" = "fe"."entrySourceId"
+//       WHERE "fe"."id" = "ddn"."fundraisingEntryId"
 //     )
 //   ) - COALESCE(
 //     (
@@ -51,11 +47,8 @@ model FundraisingEntry {
 //   ) AS "unassigned",
 //   "fe"."notes",
 //   "fe"."type",
-//   "fe"."enteredByPersonId" AS "enteredBy",
-//   "fe"."teamOverrideId",
-//   "fe"."solicitationCodeId",
-//   "fe"."dbFundsEntryId",
-//   "fe"."ddnId"
+//   "fe"."enteredByPersonId",
+//   "fe"."solicitationCodeId"
 // FROM "FundraisingEntry" "fe";
 
 view FundraisingEntryWithMeta {
@@ -69,7 +62,6 @@ view FundraisingEntryWithMeta {
   notes              String?
   type               FundraisingEntryType
   enteredByPersonId  Int?
-  teamOverrideId     Int?
   solicitationCodeId Int?
 
   enteredByPerson          Person?                      @relation(fields: [enteredByPersonId], references: [id], onDelete: SetNull)
