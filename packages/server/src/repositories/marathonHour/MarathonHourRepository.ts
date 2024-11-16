@@ -124,7 +124,7 @@ export class MarathonHourRepository {
     durationInfo,
   }: {
     title: string;
-    details?: string | undefined | null | undefined;
+    details?: string | undefined | null;
     marathon: UniqueParam;
     shownStartingAt: string;
     durationInfo: string;

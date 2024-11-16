@@ -662,14 +662,14 @@ export class PersonRepository {
       memberOf?:
         | {
             id: string | number;
-            committeeRole?: CommitteeRole | undefined | null | undefined;
+            committeeRole?: CommitteeRole | undefined | null;
           }[]
         | undefined
         | null;
       captainOf?:
         | {
             id: string | number;
-            committeeRole?: CommitteeRole | undefined | null | undefined;
+            committeeRole?: CommitteeRole | undefined | null;
           }[]
         | undefined
         | null;

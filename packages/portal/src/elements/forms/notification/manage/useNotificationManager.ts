@@ -13,7 +13,7 @@ import {
 export const useNotificationManagerForm = ({
   uuid,
 }: {
-  uuid?: string | undefined | null | undefined;
+  uuid?: string | undefined | null;
 }) => {
   const [
     { fetching: cancelFetching, error: cancelError },

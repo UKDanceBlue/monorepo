@@ -9,6 +9,7 @@ import {
   GlobalIdScalar,
   MembershipPositionType,
   QueryAccessControl,
+  SolicitationCodeNode,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -16,7 +17,7 @@ import {
   ListFundraisingEntriesResponse,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
-import { Ok } from "ts-results-es";
+import { AsyncResult, Ok } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -219,5 +220,48 @@ export class FundraisingEntryResolver {
     return dailyDepartmentNotification
       .toAsyncResult()
       .map(dailyDepartmentNotificationModelToResource).promise;
+  }
+
+  @FieldResolver(() => SolicitationCodeNode)
+  async solicitationCode(
+    @Root() { solicitationCodeOverride, id: { id: uuid } }: FundraisingEntryNode
+  ): Promise<ConcreteResult<SolicitationCodeNode>> {
+    if (solicitationCodeOverride != null) {
+      return Ok(solicitationCodeOverride);
+    }
+    const solicitationCode =
+      await this.fundraisingEntryRepository.getSolicitationCodeForEntry({
+        uuid,
+      });
+    return new AsyncResult(solicitationCode).map(
+      ({ uuid, id, ...solicitationCode }) =>
+        SolicitationCodeNode.init({
+          ...solicitationCode,
+          id: uuid,
+        })
+    ).promise;
+  }
+}
+
+@Resolver(() => SolicitationCodeNode)
+@Service([FundraisingEntryRepository])
+export class SolicitationCodeResolver {
+  constructor(
+    private readonly fundraisingEntryRepository: FundraisingEntryRepository
+  ) {}
+
+  @FieldResolver(() => [FundraisingEntryNode])
+  async entries(
+    @Root() { id: { id } }: SolicitationCodeNode
+  ): Promise<ConcreteResult<FundraisingEntryNode[]>> {
+    const entries =
+      await this.fundraisingEntryRepository.getEntriesForSolicitationCode({
+        uuid: id,
+      });
+    return entries
+      .toAsyncResult()
+      .map((entries) =>
+        Promise.all(entries.map((entry) => fundraisingEntryModelToNode(entry)))
+      ).promise;
   }
 }

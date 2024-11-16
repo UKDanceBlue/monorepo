@@ -97,14 +97,17 @@ const defaultInclude = {
 
 export type WideFundraisingEntryWithMeta =
   | (FundraisingEntryWithMeta & {
-      solicitationCode: SolicitationCode;
+      solicitationCodeOverride: SolicitationCode | null;
       ddn: DailyDepartmentNotification & {
         batch: DailyDepartmentNotificationBatch;
+        solicitationCode: SolicitationCode;
       };
     })
   | (FundraisingEntryWithMeta & {
-      solicitationCode: SolicitationCode;
-      dbFundsEntry: DBFundsFundraisingEntry;
+      solicitationCodeOverride: SolicitationCode | null;
+      dbFundsEntry: DBFundsFundraisingEntry & {
+        dbFundsTeam: { solicitationCode: SolicitationCode };
+      };
     })
   | null;
 
@@ -131,17 +134,14 @@ function asWideFundraisingEntryWithMeta(
     return Ok({
       ...entry,
       ddn: entry.ddn,
-      solicitationCode:
-        entry.solicitationCodeOverride ?? entry.ddn.solicitationCode,
+      solicitationCodeOverride: entry.solicitationCodeOverride,
     });
   }
   if (entry.dbFundsEntry) {
     return Ok({
       ...entry,
       dbFundsEntry: entry.dbFundsEntry,
-      solicitationCode:
-        entry.solicitationCodeOverride ??
-        entry.dbFundsEntry.dbFundsTeam.solicitationCode,
+      solicitationCodeOverride: entry.solicitationCodeOverride,
     });
   }
   return Err(new InvariantError("Fundraising entry has no source"));
@@ -275,11 +275,13 @@ export class FundraisingEntryRepository {
                 solicitationCode: solicitationCodeWhere,
               },
             },
+            solicitationCodeOverride: null,
           },
           {
             ddn: {
               solicitationCode: solicitationCodeWhere,
             },
+            solicitationCodeOverride: null,
           },
         ];
       }
@@ -333,11 +335,13 @@ export class FundraisingEntryRepository {
                 solicitationCode: solicitationCodeWhere,
               },
             },
+            solicitationCodeOverride: null,
           },
           {
             ddn: {
               solicitationCode: solicitationCodeWhere,
             },
+            solicitationCodeOverride: null,
           },
         ];
       }
@@ -744,6 +748,39 @@ export class FundraisingEntryRepository {
         );
       }
       return Ok(solicitationCode);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async getEntriesForSolicitationCode(
+    solicitationCodeParam: SimpleUniqueParam
+  ): Promise<
+    Result<
+      readonly WideFundraisingEntryWithMeta[],
+      InvariantError | RepositoryError
+    >
+  > {
+    try {
+      const entries = await this.prisma.fundraisingEntryWithMeta.findMany({
+        where: {
+          OR: [
+            { solicitationCodeOverride: solicitationCodeParam },
+            {
+              ddn: { solicitationCode: solicitationCodeParam },
+              solicitationCodeOverride: null,
+            },
+            {
+              dbFundsEntry: {
+                dbFundsTeam: { solicitationCode: solicitationCodeParam },
+              },
+              solicitationCodeOverride: null,
+            },
+          ],
+        },
+        include: defaultInclude,
+      });
+      return Result.all(entries.map(asWideFundraisingEntryWithMeta));
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }

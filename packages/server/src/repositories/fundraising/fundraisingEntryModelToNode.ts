@@ -1,4 +1,7 @@
-import { FundraisingEntryNode } from "@ukdanceblue/common";
+import {
+  FundraisingEntryNode,
+  SolicitationCodeNode,
+} from "@ukdanceblue/common";
 
 import type { WideFundraisingEntryWithMeta } from "./FundraisingRepository.js";
 
@@ -49,6 +52,18 @@ export function fundraisingEntryModelToNode(
       donatedOn,
       createdAt: entryModel.createdAt,
       updatedAt: entryModel.updatedAt,
+      type: entryModel.type,
+      notes: entryModel.notes,
+      solicitationCodeOverride:
+        entryModel.solicitationCodeOverride &&
+        SolicitationCodeNode.init({
+          id: entryModel.solicitationCodeOverride.uuid,
+          prefix: entryModel.solicitationCodeOverride.prefix,
+          code: entryModel.solicitationCodeOverride.code,
+          name: entryModel.solicitationCodeOverride.name,
+          createdAt: entryModel.solicitationCodeOverride.createdAt,
+          updatedAt: entryModel.solicitationCodeOverride.updatedAt,
+        }),
     })
   );
 }
