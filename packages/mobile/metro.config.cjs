@@ -3,6 +3,8 @@
 const { withSentryConfig } = require("@sentry/react-native/metro");
 // @ts-expect-error - CommonJS
 const { getDefaultConfig } = require("expo/metro-config");
+// @ts-expect-error - CommonJS
+const { resolve } = require("node:path");
 
 // Find the project and workspace directories
 const projectRoot = __dirname;
@@ -14,14 +16,6 @@ const resolveRequest = (context, moduleName, platform) => {
   }
   return context.resolveRequest(context, moduleName, platform);
 };
-
-const getTransformOptions = () =>
-  Promise.resolve({
-    transform: {
-      experimentalImportSupport: true,
-      inlineRequires: true,
-    },
-  });
 
 /** @return {import("expo/metro-config").MetroConfig} */
 const config = () => {
@@ -37,10 +31,8 @@ const config = () => {
       resolveRequest,
       unstable_enablePackageExports: true,
     },
-    transformer: {
-      ...config.transformer,
-      getTransformOptions,
-    },
+    projectRoot,
+    watchFolders: [projectRoot, resolve(projectRoot, "..", "..")],
   });
 };
 

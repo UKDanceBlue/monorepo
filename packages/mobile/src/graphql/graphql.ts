@@ -415,6 +415,15 @@ export const FundraisingEntryResolverStringFilterKeys = {
 
 export type FundraisingEntryResolverStringFilterKeys =
   (typeof FundraisingEntryResolverStringFilterKeys)[keyof typeof FundraisingEntryResolverStringFilterKeys];
+export const FundraisingEntryType = {
+  Cash: "Cash",
+  Check: "Check",
+  Legacy: "Legacy",
+  Online: "Online",
+} as const;
+
+export type FundraisingEntryType =
+  (typeof FundraisingEntryType)[keyof typeof FundraisingEntryType];
 export const ImageResolverAllKeys = {
   Alt: "alt",
   CreatedAt: "createdAt",
@@ -1107,23 +1116,6 @@ export type TriviaCrackQuery = {
       };
     }>;
   } | null;
-};
-
-export type AuthStateQueryVariables = Exact<{ [key: string]: never }>;
-
-export type AuthStateQuery = {
-  readonly __typename?: "Query";
-  readonly me?: {
-    readonly __typename?: "PersonNode";
-    readonly id: string;
-    readonly email: string;
-  } | null;
-  readonly loginState: {
-    readonly __typename?: "LoginState";
-    readonly dbRole: DbRole;
-    readonly loggedIn: boolean;
-    readonly authSource: AuthSource;
-  };
 };
 
 export type SetDeviceMutationVariables = Exact<{
@@ -2234,44 +2226,6 @@ export const TriviaCrackDocument = {
     },
   ],
 } as unknown as DocumentNode<TriviaCrackQuery, TriviaCrackQueryVariables>;
-export const AuthStateDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "AuthState" },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "me" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "email" } },
-              ],
-            },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "loginState" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "dbRole" } },
-                { kind: "Field", name: { kind: "Name", value: "loggedIn" } },
-                { kind: "Field", name: { kind: "Name", value: "authSource" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<AuthStateQuery, AuthStateQueryVariables>;
 export const SetDeviceDocument = {
   kind: "Document",
   definitions: [

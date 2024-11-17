@@ -48,13 +48,13 @@ const App = () => {
   useAsyncStorageDevTools();
 
   const [fontsLoaded, error] = useFonts({
-    "bodoni-flf-bold": BoldoniFlfBoldFont,
-    "bodoni-flf-bold-italic": BoldoniFlfBoldItalicFont,
-    "bodoni-flf-italic": BoldoniFlfItalicFont,
-    "bodoni-flf-roman": BoldoniFlfRomanFont,
-    "opensans-condensed-bold": OpenSansCondensedBoldFont,
-    "opensans-condensed-light": OpenSansCondensedLightFont,
-    "opensans-condensed-light-italic": OpenSansCondensedLightItalicFont,
+    // "bodoni-flf-bold": BoldoniFlfBoldFont,
+    // "bodoni-flf-bold-italic": BoldoniFlfBoldItalicFont,
+    // "bodoni-flf-italic": BoldoniFlfItalicFont,
+    // "bodoni-flf-roman": BoldoniFlfRomanFont,
+    // "opensans-condensed-bold": OpenSansCondensedBoldFont,
+    // "opensans-condensed-light": OpenSansCondensedLightFont,
+    // "opensans-condensed-light-italic": OpenSansCondensedLightItalicFont,
   });
 
   useEffect(() => {
