@@ -50,15 +50,15 @@ import {
   Root,
 } from "type-graphql";
 
-import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
-import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
-import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
-import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
-import { membershipModelToResource } from "#repositories/membership/membershipModelToResource.js";
-import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
-import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
-import { TeamRepository } from "#repositories/team/TeamRepository.js";
-import * as Context from "#resolvers/context.js";
+import { DBFundsRepository } from "@/repositories/fundraising/DBFundsRepository.js";
+import { fundraisingEntryModelToNode } from "@/repositories/fundraising/fundraisingEntryModelToNode.js";
+import { FundraisingEntryRepository } from "@/repositories/fundraising/FundraisingRepository.js";
+import { marathonModelToResource } from "@/repositories/marathon/marathonModelToResource.js";
+import { membershipModelToResource } from "@/repositories/membership/membershipModelToResource.js";
+import { pointEntryModelToResource } from "@/repositories/pointEntry/pointEntryModelToResource.js";
+import { teamModelToResource } from "@/repositories/team/teamModelToResource.js";
+import { TeamRepository } from "@/repositories/team/TeamRepository.js";
+import * as Context from "@/resolvers/context.js";
 
 import { globalFundraisingAccessParam } from "./accessParams.js";
 

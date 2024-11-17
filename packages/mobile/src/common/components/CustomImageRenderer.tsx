@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import type { IFitImageProps } from "react-native-fit-image";
 import FitImage from "react-native-fit-image";
 
-import { Logger } from "#common/logger/Logger";
-import type { MarkdownRuleStyles } from "#common/markdownRules";
+import { Logger } from "@/common/logger/Logger";
+import type { MarkdownRuleStyles } from "@/common/markdownRules";
 
 export const CustomImageRenderer = ({
   node,

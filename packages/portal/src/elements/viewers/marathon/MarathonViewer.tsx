@@ -4,8 +4,8 @@ import { Descriptions, Empty, Flex } from "antd";
 import { DateTime } from "luxon";
 import { useMemo } from "react";
 
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
+import type { FragmentType } from "@/graphql/index.js";
+import { getFragmentData, graphql } from "@/graphql/index.js";
 
 export const MarathonViewerFragment = graphql(/* GraphQL */ `
   fragment MarathonViewerFragment on MarathonNode {
@@ -28,7 +28,7 @@ export const MarathonViewer = ({
     | FragmentType<typeof MarathonViewerFragment>
     | undefined
     | null
-    | undefined;
+     ;
 }) => {
   const marathonData = getFragmentData(MarathonViewerFragment, marathon);
 

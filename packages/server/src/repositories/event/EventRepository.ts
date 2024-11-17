@@ -2,7 +2,7 @@ import { Service } from "@freshgum/typedi";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { FilterItems } from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 import { buildEventOrder, buildEventWhere } from "./eventRepositoryUtils.js";
 
@@ -57,7 +57,7 @@ export type EventFilters = FilterItems<
 
 type UniqueEventParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "@/prisma";
 
 @Service([prismaToken])
 export class EventRepository {

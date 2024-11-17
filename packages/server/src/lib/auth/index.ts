@@ -4,7 +4,7 @@ import { AuthSource } from "@ukdanceblue/common";
 import type { Request } from "express";
 import jsonwebtoken from "jsonwebtoken";
 
-import { jwtSecretToken } from "#lib/environmentTokens.js";
+import { jwtSecretToken } from "@/lib/environmentTokens.js";
 
 const jwtSecret = Container.get(jwtSecretToken);
 const jwtIssuer = "https://app.danceblue.org";

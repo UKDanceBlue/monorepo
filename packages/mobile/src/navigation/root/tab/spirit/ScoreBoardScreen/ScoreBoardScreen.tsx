@@ -12,9 +12,9 @@ import {
 } from "native-base";
 import { useEffect, useMemo, useState } from "react";
 
-import Jumbotron from "#common/components/Jumbotron";
-import type { FragmentType } from "#graphql/index";
-import { getFragmentData, graphql } from "#graphql/index";
+import Jumbotron from "@/common/components/Jumbotron";
+import type { FragmentType } from "@/graphql/index";
+import { getFragmentData, graphql } from "@/graphql/index";
 
 import type { SpiritStackScreenProps } from "../../../../../types/navigationTypes";
 import type { StandingType } from "../../../../../types/StandingType";

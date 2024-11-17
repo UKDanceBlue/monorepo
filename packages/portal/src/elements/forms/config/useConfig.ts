@@ -3,8 +3,8 @@ import { DateTime, Interval } from "luxon";
 import { useMemo } from "react";
 import { useQuery } from "urql";
 
-import { getFragmentData, graphql } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { getFragmentData, graphql } from "@/graphql/index.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
 
 export const ConfigFragment = graphql(/* GraphQL */ `
   fragment ConfigFragment on ConfigurationNode {

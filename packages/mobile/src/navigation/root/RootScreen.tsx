@@ -8,9 +8,9 @@ import { useQuery } from "urql";
 
 import ErrorBoundary, {
   withErrorBoundary,
-} from "#common/components/ErrorBoundary";
-import { Logger } from "#common/logger/Logger";
-import { getFragmentData, graphql } from "#graphql/index";
+} from "@/common/components/ErrorBoundary";
+import { Logger } from "@/common/logger/Logger";
+import { getFragmentData, graphql } from "@/graphql/index";
 
 import { useColorModeValue } from "../../common/customHooks";
 import { useLoading } from "../../context";

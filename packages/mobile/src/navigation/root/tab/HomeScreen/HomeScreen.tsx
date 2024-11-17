@@ -9,7 +9,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 
-import { universalCatch } from "#common/logging";
+import { universalCatch } from "@/common/logging";
 
 import { useReactNavigationTheme } from "../../../../theme";
 import HeaderImage from "./HeaderImage";

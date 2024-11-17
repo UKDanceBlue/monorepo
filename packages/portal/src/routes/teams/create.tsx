@@ -4,9 +4,9 @@ console.log(
 import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 
-import { useMarathon } from "#config/marathonContext.js";
-import { TeamCreator } from "#elements/forms/team/create/TeamCreator.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
+import { useMarathon } from "@/config/marathonContext.js";
+import { TeamCreator } from "@/elements/forms/team/create/TeamCreator.js";
+import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
 
 function CreateTeamPage() {
   const selectedMarathon = useMarathon();

@@ -28,12 +28,12 @@ import {
   Root,
 } from "type-graphql";
 
-import { DBFundsFundraisingProvider } from "#lib/fundraising/DbFundsProvider.js";
-import type { FundraisingProvider } from "#lib/fundraising/FundraisingProvider.js";
-import { dailyDepartmentNotificationModelToResource } from "#repositories/dailyDepartmentNotification/ddnModelToResource.js";
-import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
-import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
-import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
+import { DBFundsFundraisingProvider } from "@/lib/fundraising/DbFundsProvider.js";
+import type { FundraisingProvider } from "@/lib/fundraising/FundraisingProvider.js";
+import { dailyDepartmentNotificationModelToResource } from "@/repositories/dailyDepartmentNotification/ddnModelToResource.js";
+import { fundraisingAssignmentModelToNode } from "@/repositories/fundraising/fundraisingAssignmentModelToNode.js";
+import { fundraisingEntryModelToNode } from "@/repositories/fundraising/fundraisingEntryModelToNode.js";
+import { FundraisingEntryRepository } from "@/repositories/fundraising/FundraisingRepository.js";
 
 import { globalFundraisingAccessParam } from "./accessParams.js";
 

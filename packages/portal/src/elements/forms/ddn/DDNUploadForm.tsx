@@ -2,9 +2,9 @@ import { type DDNInit, localDateFromJs } from "@ukdanceblue/common";
 import { useMutation } from "urql";
 import { z } from "zod";
 
-import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader";
-import { graphql } from "#graphql/gql";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { SpreadsheetUploader } from "@/elements/components/SpreadsheetUploader";
+import { graphql } from "@/graphql/gql";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher";
 
 const inputTypeSchema = z.object({
   "Division": z.string().trim(),

@@ -10,8 +10,8 @@ import { PermissionStatus, useCameraPermissions } from "expo-camera";
 import type { MutableRefObject } from "react";
 import { useEffect, useRef, useState } from "react";
 
-import { Logger } from "#common/logger/Logger";
-import { asyncWait } from "#common/util/wait";
+import { Logger } from "@/common/logger/Logger";
+import { asyncWait } from "@/common/util/wait";
 
 type CameraState =
   | "permission-blocked"

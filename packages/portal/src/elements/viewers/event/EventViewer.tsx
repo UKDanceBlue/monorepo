@@ -11,8 +11,8 @@ import { DateTime } from "luxon";
 import { useMemo } from "react";
 import { thumbHashToDataURL } from "thumbhash";
 
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
+import type { FragmentType } from "@/graphql/index.js";
+import { getFragmentData, graphql } from "@/graphql/index.js";
 
 import { useEventDeletePopup } from "../../components/event/EventDeletePopup";
 

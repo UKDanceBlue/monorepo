@@ -4,7 +4,7 @@ import { SortDirection } from "@ukdanceblue/common";
 import {
   dateFilterToPrisma,
   stringFilterToPrisma,
-} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+} from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 import type { DeviceFilters } from "./DeviceRepository.js";
 

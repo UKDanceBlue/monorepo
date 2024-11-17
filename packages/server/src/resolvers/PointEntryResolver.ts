@@ -35,12 +35,12 @@ import {
   Root,
 } from "type-graphql";
 
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
-import { PointEntryRepository } from "#repositories/pointEntry/PointEntryRepository.js";
-import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
-import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
+import { personModelToResource } from "@/repositories/person/personModelToResource.js";
+import { PersonRepository } from "@/repositories/person/PersonRepository.js";
+import { pointEntryModelToResource } from "@/repositories/pointEntry/pointEntryModelToResource.js";
+import { PointEntryRepository } from "@/repositories/pointEntry/PointEntryRepository.js";
+import { pointOpportunityModelToResource } from "@/repositories/pointOpportunity/pointOpportunityModelToResource.js";
+import { teamModelToResource } from "@/repositories/team/teamModelToResource.js";
 
 @Resolver(() => PointEntryNode)
 @Service([PointEntryRepository, PersonRepository])

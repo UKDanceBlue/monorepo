@@ -23,11 +23,11 @@ import {
   Provider as UrqlProvider,
 } from "urql";
 
-import { AntConfigProvider, ThemeConfigProvider } from "#config/ant.js";
-import { API_BASE_URL } from "#config/api.js";
-import { MarathonConfigProvider } from "#config/marathon.js";
-import { SessionStorageKeys } from "#config/storage.js";
-import { SpinningRibbon } from "#elements/components/design/RibbonSpinner.js";
+import { AntConfigProvider, ThemeConfigProvider } from "@/config/ant.js";
+import { API_BASE_URL } from "@/config/api.js";
+import { MarathonConfigProvider } from "@/config/marathon.js";
+import { SessionStorageKeys } from "@/config/storage.js";
+import { SpinningRibbon } from "@/elements/components/design/RibbonSpinner.js";
 
 init({
   dsn: "https://f149f5546299b507f5e7b9b4aeafc2f4@o4507762130681856.ingest.us.sentry.io/4508071881932800",

@@ -4,6 +4,7 @@ const { withSentryConfig } = require("@sentry/react-native/metro");
 // @ts-expect-error - CommonJS
 const { getDefaultConfig } = require("expo/metro-config");
 // @ts-expect-error - CommonJS
+// eslint-disable-next-line @typescript-eslint/unbound-method
 const { resolve } = require("node:path");
 
 // Find the project and workspace directories

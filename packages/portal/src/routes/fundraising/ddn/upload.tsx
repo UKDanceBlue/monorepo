@@ -5,7 +5,7 @@ import {
   CommitteeRole,
 } from "@ukdanceblue/common";
 
-import { DDNUploadForm } from "#elements/forms/ddn/DDNUploadForm";
+import { DDNUploadForm } from "@/elements/forms/ddn/DDNUploadForm";
 
 function DDNSpreadsheetUploader() {
   return (

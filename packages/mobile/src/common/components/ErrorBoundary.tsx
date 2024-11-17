@@ -3,6 +3,7 @@ import {
   ErrorBoundary as SentryErrorBoundary,
   withErrorBoundary as withSentryErrorBoundary,
 } from "@sentry/react-native";
+import { debugStringify } from "@ukdanceblue/common";
 import { openURL } from "expo-linking";
 import type { ReactNode } from "react";
 import { Button, SafeAreaView, ScrollView, Text, View } from "react-native";
@@ -67,9 +68,7 @@ Error Info: ${stringifiedError}
                 Error Cause:
               </Text>
               <Text style={{ marginBottom: 15 }}>
-                {error.cause instanceof Error
-                  ? error.cause.message
-                  : String(error.cause)}
+                {debugStringify(error.cause)}
               </Text>
             </>
           ) : null}

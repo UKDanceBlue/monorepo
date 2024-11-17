@@ -10,14 +10,14 @@ import { MembershipPositionType, TeamLegacyStatus } from "@ukdanceblue/common";
 import { BasicError, ConcreteResult } from "@ukdanceblue/common/error";
 import { None, Ok, Option, Result, Some } from "ts-results-es";
 
-import { SomePrismaError } from "#error/prisma.js";
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
+import { SomePrismaError } from "@/error/prisma.js";
+import type { FilterItems } from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { UniqueMarathonParam } from "@/repositories/marathon/MarathonRepository.js";
 import {
   handleRepositoryError,
   RepositoryError,
   type SimpleUniqueParam,
-} from "#repositories/shared.js";
+} from "@/repositories/shared.js";
 
 import { buildTeamOrder, buildTeamWhere } from "./teamRepositoryUtils.js";
 
@@ -83,7 +83,7 @@ function makeMarathonWhere(param: MarathonParam[]) {
   };
 }
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "@/prisma";
 
 @Service([prismaToken])
 export class TeamRepository {

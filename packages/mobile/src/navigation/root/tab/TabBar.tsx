@@ -4,8 +4,8 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { ReactElement } from "react";
 import { useEffect, useState } from "react";
 
-import { withErrorBoundary } from "#common/components/ErrorBoundary";
-import { useTabBarConfig } from "#common/hooks/useTabBarConfig";
+import { withErrorBoundary } from "@/common/components/ErrorBoundary";
+import { useTabBarConfig } from "@/common/hooks/useTabBarConfig";
 
 import type {
   RootStackParamList,

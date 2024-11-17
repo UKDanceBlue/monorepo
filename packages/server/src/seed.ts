@@ -14,27 +14,29 @@ if (process.env.NODE_ENV !== "development") {
   throw new Error("Seeding is only allowed in development mode");
 }
 
-await import("#environment");
+await import("@/environment");
 
 const { CommitteeRepository } = await import(
-  "#repositories/committee/CommitteeRepository.js"
+  "@/repositories/committee/CommitteeRepository.js"
 );
 const { ConfigurationRepository } = await import(
-  "#repositories/configuration/ConfigurationRepository.js"
+  "@/repositories/configuration/ConfigurationRepository.js"
 );
 const { EventRepository } = await import(
-  "#repositories/event/EventRepository.js"
+  "@/repositories/event/EventRepository.js"
 );
 const { ImageRepository } = await import(
-  "#repositories/image/ImageRepository.js"
+  "@/repositories/image/ImageRepository.js"
 );
 const { MarathonRepository } = await import(
-  "#repositories/marathon/MarathonRepository.js"
+  "@/repositories/marathon/MarathonRepository.js"
 );
 const { PersonRepository } = await import(
-  "#repositories/person/PersonRepository.js"
+  "@/repositories/person/PersonRepository.js"
 );
-const { TeamRepository } = await import("#repositories/team/TeamRepository.js");
+const { TeamRepository } = await import(
+  "@/repositories/team/TeamRepository.js"
+);
 
 const { prisma } = await import("./prisma.js");
 

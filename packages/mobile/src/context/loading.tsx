@@ -1,10 +1,8 @@
 import { Center, Spinner, ZStack } from "native-base";
 import type { ReactNode } from "react";
-import { createContext, useCallback, useReducer } from "react";
+import { useCallback, useReducer } from "react";
 
-export const LoadingContext = createContext<
-  [Partial<Record<string, boolean>>, (state: boolean, id: string) => void]
->([{}, () => undefined]);
+import { LoadingContext } from "./useLoading";
 
 /**
  * Provides a loading context for the app, accessed via the useLoading hook. If any loading state is true, a spinner will be displayed.

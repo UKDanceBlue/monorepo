@@ -2,7 +2,7 @@ import { Service } from "@freshgum/typedi";
 import { PrismaClient } from "@prisma/client";
 import { Cron } from "croner";
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "@/prisma";
 
 @Service([prismaToken])
 export class JobStateRepository {

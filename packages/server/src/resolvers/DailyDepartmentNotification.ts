@@ -30,8 +30,8 @@ import {
 import {
   dailyDepartmentNotificationBatchModelToResource,
   dailyDepartmentNotificationModelToResource,
-} from "#repositories/dailyDepartmentNotification/ddnModelToResource.js";
-import { DailyDepartmentNotificationRepository } from "#repositories/dailyDepartmentNotification/DDNRepository.js";
+} from "@/repositories/dailyDepartmentNotification/ddnModelToResource.js";
+import { DailyDepartmentNotificationRepository } from "@/repositories/dailyDepartmentNotification/DDNRepository.js";
 
 @Resolver(() => DailyDepartmentNotificationNode)
 @Service([DailyDepartmentNotificationRepository])

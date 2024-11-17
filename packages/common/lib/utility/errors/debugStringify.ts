@@ -15,7 +15,11 @@ export function debugStringify(value: unknown, colors = false): string {
     return inspect(value, { depth: 2, colors });
   }
 
-  if (typeof value === "object" && value && !(value instanceof Error)) {
+  if (typeof value === "object" && !(value instanceof Error)) {
+    if (value === null) {
+      return "[null]";
+    }
+
     try {
       const cache = new Set<unknown>();
       return JSON.stringify(
@@ -33,9 +37,19 @@ export function debugStringify(value: unknown, colors = false): string {
         2
       );
     } catch {
-      return String(value);
+      return String(value as unknown);
     }
   } else {
-    return String(value);
+    switch (typeof value) {
+      case "undefined": {
+        return "[undefined]";
+      }
+      case "function": {
+        return `[function: ${value.name}]`;
+      }
+      default: {
+        return String(value as unknown);
+      }
+    }
   }
 }

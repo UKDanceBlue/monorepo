@@ -2,8 +2,8 @@ import { useForm } from "@tanstack/react-form";
 import type { TeamType } from "@ukdanceblue/common";
 import { useMutation } from "urql";
 
-import type { DocumentType } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import type { DocumentType } from "@/graphql/index.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
 
 import { createNotificationDocument } from "./CreateNotificationGQL.js";
 

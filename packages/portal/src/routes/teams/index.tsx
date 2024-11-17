@@ -7,10 +7,10 @@ import {
 } from "@ukdanceblue/common";
 import { Button, Flex } from "antd";
 
-import { useMarathon } from "#config/marathonContext.js";
-import { TeamsTable } from "#elements/tables/TeamsTable.js";
-import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
+import { useMarathon } from "@/config/marathonContext.js";
+import { TeamsTable } from "@/elements/tables/TeamsTable.js";
+import { useAuthorizationRequirement } from "@/hooks/useLoginState.js";
+import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
 
 export function ListTeamsPage() {
   const selectedMarathon = useMarathon();

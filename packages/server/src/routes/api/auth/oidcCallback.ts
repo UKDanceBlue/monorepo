@@ -5,11 +5,11 @@ import jsonwebtoken from "jsonwebtoken";
 import { DateTime } from "luxon";
 import { authorizationCodeGrant } from "openid-client";
 
-import { makeUserJwt } from "#auth/index.js";
-import { serveOriginToken } from "#lib/environmentTokens.js";
-import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { makeUserJwt } from "@/auth/index.js";
+import { serveOriginToken } from "@/lib/environmentTokens.js";
+import { LoginFlowSessionRepository } from "@/repositories/LoginFlowSession.js";
+import { personModelToResource } from "@/repositories/person/personModelToResource.js";
+import { PersonRepository } from "@/repositories/person/PersonRepository.js";
 
 import { oidcConfiguration } from "./oidcClient.js";
 

@@ -4,7 +4,7 @@ import { Empty, Spin } from "antd";
 import type { useAppProps } from "antd/es/app/context.js";
 import type { Client as UrqlClient } from "urql";
 
-import { SpinningRibbon } from "#elements/components/design/RibbonSpinner.js";
+import { SpinningRibbon } from "@/elements/components/design/RibbonSpinner.js";
 
 import { routeTree } from "./routeTree.gen.js";
 

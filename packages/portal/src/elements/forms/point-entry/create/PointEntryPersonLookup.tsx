@@ -8,8 +8,8 @@ import { useDebouncedCallback } from "use-debounce";
 import {
   useAskConfirm,
   useUnknownErrorHandler,
-} from "#hooks/useAntFeedback.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+} from "@/hooks/useAntFeedback.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
 
 import {
   createPersonByLinkBlue,

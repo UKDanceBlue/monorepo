@@ -34,12 +34,12 @@ import {
 } from "type-graphql";
 import Validator from "validator";
 
-import { auditLogger } from "#logging/auditLogging.js";
-import { deviceModelToResource } from "#repositories/device/deviceModelToResource.js";
-import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
-import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
-import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { auditLogger } from "@/logging/auditLogging.js";
+import { deviceModelToResource } from "@/repositories/device/deviceModelToResource.js";
+import { DeviceRepository } from "@/repositories/device/DeviceRepository.js";
+import { notificationDeliveryModelToResource } from "@/repositories/notificationDelivery/notificationDeliveryModelToResource.js";
+import { personModelToResource } from "@/repositories/person/personModelToResource.js";
+import { PersonRepository } from "@/repositories/person/PersonRepository.js";
 
 @Resolver(() => DeviceNode)
 @Service([DeviceRepository, PersonRepository])

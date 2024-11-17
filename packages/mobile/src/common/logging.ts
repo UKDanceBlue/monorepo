@@ -47,7 +47,7 @@ export function universalCatch(error: unknown) {
       typeof error === "boolean" ||
       (typeof error === "object" && error !== null)
     ) {
-      Logger.error(String(error));
+      Logger.error(String(error as unknown));
     } else {
       console.error(error);
     }

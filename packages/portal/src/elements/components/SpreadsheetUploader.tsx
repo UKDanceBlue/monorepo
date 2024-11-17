@@ -5,7 +5,7 @@ import { useState } from "react";
 import { read, utils } from "xlsx";
 import type { ZodSchema, ZodTypeDef } from "zod";
 
-import { useAntFeedback } from "#hooks/useAntFeedback.js";
+import { useAntFeedback } from "@/hooks/useAntFeedback.js";
 
 export function SpreadsheetUploader<
   RowType extends object,

@@ -2,8 +2,8 @@ import { TeamLegacyStatus } from "@ukdanceblue/common";
 import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
 import type { UseQueryExecute } from "urql";
 
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
+import type { FragmentType } from "@/graphql/index.js";
+import { getFragmentData } from "@/graphql/index.js";
 
 import { TeamEditorFragment } from "./TeamEditorGQL.js";
 import { useTeamEditorForm } from "./useTeamEditorForm.js";

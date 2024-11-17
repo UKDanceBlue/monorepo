@@ -5,8 +5,8 @@ import {
   CommitteeRole,
 } from "@ukdanceblue/common";
 
-import { BulkTeamCreator } from "#elements/forms/team/create/BulkTeamCreator.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
+import { BulkTeamCreator } from "@/elements/forms/team/create/BulkTeamCreator.js";
+import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
 
 function BulkCreateTeamPage() {
   return (

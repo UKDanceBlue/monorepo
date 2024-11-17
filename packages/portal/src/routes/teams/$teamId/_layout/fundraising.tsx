@@ -21,12 +21,12 @@ import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
 
-import { graphql } from "#graphql/index.js";
-import { useListQuery } from "#hooks/useListQuery.js";
-import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
-import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
+import { graphql } from "@/graphql/index.js";
+import { useListQuery } from "@/hooks/useListQuery.js";
+import { useAuthorizationRequirement } from "@/hooks/useLoginState.js";
+import { useMakeStringSearchFilterProps } from "@/hooks/useMakeSearchFilterProps.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
+import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
 
 const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
   query ViewTeamFundraisingDocument(

@@ -5,8 +5,8 @@ import {
   calculatePKCECodeChallenge,
 } from "openid-client";
 
-import { serveOriginToken } from "#lib/environmentTokens.js";
-import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
+import { serveOriginToken } from "@/lib/environmentTokens.js";
+import { LoginFlowSessionRepository } from "@/repositories/LoginFlowSession.js";
 
 import { oidcConfiguration } from "./oidcClient.js";
 

@@ -29,11 +29,11 @@ import {
   Root,
 } from "type-graphql";
 
-import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
-import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
-import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
-import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
-import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
+import { CommitteeRepository } from "@/repositories/committee/CommitteeRepository.js";
+import { marathonModelToResource } from "@/repositories/marathon/marathonModelToResource.js";
+import { MarathonRepository } from "@/repositories/marathon/MarathonRepository.js";
+import { marathonHourModelToResource } from "@/repositories/marathonHour/marathonHourModelToResource.js";
+import { teamModelToResource } from "@/repositories/team/teamModelToResource.js";
 
 @Resolver(() => MarathonNode)
 @Service([MarathonRepository, CommitteeRepository])

@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
-import { ManageNotificationForm } from "#elements/forms/notification/manage/ManageNotificationForm.js";
-import { graphql } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
+import { ManageNotificationForm } from "@/elements/forms/notification/manage/ManageNotificationForm.js";
+import { graphql } from "@/graphql/index.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
+import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
 
 const notificationManagerDocument = graphql(/* GraphQL */ `
   query NotificationManager($uuid: GlobalId!) {

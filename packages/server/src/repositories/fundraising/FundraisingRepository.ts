@@ -22,13 +22,13 @@ import {
 } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
+import type { FilterItems } from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import { UniquePersonParam } from "@/repositories/person/PersonRepository.js";
 import {
   handleRepositoryError,
   RepositoryError,
   SimpleUniqueParam,
-} from "#repositories/shared.js";
+} from "@/repositories/shared.js";
 
 import {
   buildFundraisingEntryOrder,
@@ -152,7 +152,7 @@ export type FundraisingAssignmentUniqueParam = SimpleUniqueParam;
 
 import { Decimal } from "@prisma/client/runtime/library";
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "@/prisma";
 
 @Service([prismaToken])
 export class FundraisingEntryRepository {

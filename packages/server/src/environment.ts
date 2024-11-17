@@ -7,10 +7,10 @@ import { statSync } from "fs";
 import { readFile } from "fs/promises";
 import path, { isAbsolute } from "path";
 
-import { setEnvironment } from "#lib/environmentTokens.js";
-import { type SyslogLevels } from "#logging/SyslogLevels.js";
+import { setEnvironment } from "@/lib/environmentTokens.js";
+import { type SyslogLevels } from "@/logging/SyslogLevels.js";
 // NOTE: You cannot import any files that depend on environment variables from this file
-import { expoServiceToken } from "#notification/expoServiceToken.js";
+import { expoServiceToken } from "@/notification/expoServiceToken.js";
 
 dotenv.config({ override: true });
 

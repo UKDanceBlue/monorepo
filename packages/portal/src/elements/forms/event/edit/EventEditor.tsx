@@ -5,8 +5,8 @@ import { DateTime, Interval } from "luxon";
 import { thumbHashToDataURL } from "thumbhash";
 import type { UseQueryExecute } from "urql";
 
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
+import type { FragmentType } from "@/graphql/index.js";
+import { getFragmentData } from "@/graphql/index.js";
 
 import { EventOccurrencePicker } from "../../../components/event/EventOccurrencePicker";
 import { EventEditorFragment } from "./EventEditorGQL.js";

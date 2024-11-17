@@ -23,7 +23,7 @@ type UniqueParam =
 
 type BasicUniqueParam = { id: number } | { uuid: string };
 
-// import { prismaToken } from "#prisma";
+// import { prismaToken } from "@/prisma";
 
 // @Service([prismaToken])
 // export class EventOccurrenceRepository {
@@ -42,7 +42,7 @@ type BasicUniqueParam = { id: number } | { uuid: string };
 //   }
 // }
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "@/prisma";
 
 @Service([prismaToken])
 export class EventImagesRepository {

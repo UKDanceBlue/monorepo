@@ -4,12 +4,12 @@ import { CommitteeRole, MembershipPositionType } from "@ukdanceblue/common";
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok, Result } from "ts-results-es";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { FilterItems } from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import {
   handleRepositoryError,
   type RepositoryError,
   type SimpleUniqueParam,
-} from "#repositories/shared.js";
+} from "@/repositories/shared.js";
 
 const membershipBooleanKeys = [] as const;
 type MembershipBooleanKey = (typeof membershipBooleanKeys)[number];
@@ -40,7 +40,7 @@ export type MembershipFilters = FilterItems<
 
 type UniqueMembershipParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "@/prisma";
 
 @Service([prismaToken])
 export class MembershipRepository {

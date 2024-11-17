@@ -2,9 +2,9 @@ import { Container, Service } from "@freshgum/typedi";
 import type { File } from "@prisma/client";
 import { MIMEType } from "util";
 
-import { serveOriginToken } from "#lib/environmentTokens.js";
-import { logger } from "#logging/standardLogging.js";
-import { FileRepository } from "#repositories/file/fileRepository.js";
+import { serveOriginToken } from "@/lib/environmentTokens.js";
+import { logger } from "@/logging/standardLogging.js";
+import { FileRepository } from "@/repositories/file/fileRepository.js";
 
 import { LocalStorageProvider } from "./storage/LocalStorageProvider.js";
 import type {

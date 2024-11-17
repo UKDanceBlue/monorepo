@@ -21,20 +21,20 @@ import { ConcreteResult } from "@ukdanceblue/common/error";
 import { Ok } from "ts-results-es";
 import { Arg, Query, Resolver } from "type-graphql";
 
-import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
-import { DeviceResolver } from "#resolvers/DeviceResolver.js";
-import { EventResolver } from "#resolvers/EventResolver.js";
-// import { FeedResolver } from "#resolvers/FeedResolver.js";
-import { FundraisingAssignmentResolver } from "#resolvers/FundraisingAssignmentResolver.js";
-import { FundraisingEntryResolver } from "#resolvers/FundraisingEntryResolver.js";
-import { ImageResolver } from "#resolvers/ImageResolver.js";
-import { MarathonHourResolver } from "#resolvers/MarathonHourResolver.js";
-import { MarathonResolver } from "#resolvers/MarathonResolver.js";
-import { NotificationResolver } from "#resolvers/NotificationResolver.js";
-import { PersonResolver } from "#resolvers/PersonResolver.js";
-import { PointEntryResolver } from "#resolvers/PointEntryResolver.js";
-import { PointOpportunityResolver } from "#resolvers/PointOpportunityResolver.js";
-import { TeamResolver } from "#resolvers/TeamResolver.js";
+import { ConfigurationResolver } from "@/resolvers/ConfigurationResolver.js";
+import { DeviceResolver } from "@/resolvers/DeviceResolver.js";
+import { EventResolver } from "@/resolvers/EventResolver.js";
+// import { FeedResolver } from "@/resolvers/FeedResolver.js";
+import { FundraisingAssignmentResolver } from "@/resolvers/FundraisingAssignmentResolver.js";
+import { FundraisingEntryResolver } from "@/resolvers/FundraisingEntryResolver.js";
+import { ImageResolver } from "@/resolvers/ImageResolver.js";
+import { MarathonHourResolver } from "@/resolvers/MarathonHourResolver.js";
+import { MarathonResolver } from "@/resolvers/MarathonResolver.js";
+import { NotificationResolver } from "@/resolvers/NotificationResolver.js";
+import { PersonResolver } from "@/resolvers/PersonResolver.js";
+import { PointEntryResolver } from "@/resolvers/PointEntryResolver.js";
+import { PointOpportunityResolver } from "@/resolvers/PointOpportunityResolver.js";
+import { TeamResolver } from "@/resolvers/TeamResolver.js";
 
 import { FeedResolver } from "./FeedResolver.js";
 

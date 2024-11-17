@@ -3,7 +3,7 @@ import { FeedItem, Prisma, PrismaClient } from "@prisma/client";
 
 type UniqueParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "@/prisma";
 
 @Service([prismaToken])
 export class FeedRepository {

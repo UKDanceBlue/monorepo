@@ -5,7 +5,7 @@ import type {
 } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-import type { FragmentType } from "#graphql/index";
+import type { FragmentType } from "@/graphql/index";
 
 import type { EventScreenFragment } from "../navigation/root/EventScreen/EventScreenFragment";
 

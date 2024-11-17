@@ -9,16 +9,16 @@ import { CompositeError, toBasicError } from "@ukdanceblue/common/error";
 import { Cron } from "croner";
 import { AsyncResult, Err, None, Ok, type Result } from "ts-results-es";
 
-import type { PrismaError } from "#error/prisma.js";
+import type { PrismaError } from "@/error/prisma.js";
 import {
   DBFundsFundraisingProvider,
   type DBFundsFundraisingProviderError,
-} from "#lib/fundraising/DbFundsProvider.js";
-import { logger } from "#logging/standardLogging.js";
-import { prismaToken } from "#prisma";
-import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
-import { JobStateRepository } from "#repositories/JobState.js";
-import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
+} from "@/lib/fundraising/DbFundsProvider.js";
+import { logger } from "@/logging/standardLogging.js";
+import { prismaToken } from "@/prisma";
+import { DBFundsRepository } from "@/repositories/fundraising/DBFundsRepository.js";
+import { JobStateRepository } from "@/repositories/JobState.js";
+import { MarathonRepository } from "@/repositories/marathon/MarathonRepository.js";
 
 type DoSyncError =
   | NotFoundError

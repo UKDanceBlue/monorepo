@@ -2,9 +2,9 @@ import { List } from "antd";
 import { useCallback } from "react";
 import { useMutation } from "urql";
 
-import { graphql } from "#graphql/index.js";
-import { useAntFeedback } from "#hooks/useAntFeedback.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { graphql } from "@/graphql/index.js";
+import { useAntFeedback } from "@/hooks/useAntFeedback.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
 
 import { ConfigChangeView } from "./ConfigChangeView.js";
 import type { ConfigValue } from "./useConfig.js";

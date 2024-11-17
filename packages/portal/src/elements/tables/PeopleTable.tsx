@@ -10,10 +10,10 @@ import {
 import { Button, Flex, Table } from "antd";
 import { useQuery } from "urql";
 
-import { getFragmentData, graphql } from "#graphql/index.js";
-import { useListQuery } from "#hooks/useListQuery.js";
-import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { getFragmentData, graphql } from "@/graphql/index.js";
+import { useListQuery } from "@/hooks/useListQuery.js";
+import { useMakeStringSearchFilterProps } from "@/hooks/useMakeSearchFilterProps.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
 
 const PeopleTableFragment = graphql(/* GraphQL */ `
   fragment PeopleTableFragment on PersonNode {

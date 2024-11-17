@@ -5,7 +5,7 @@ import "./userHousekeeping.js";
 
 import { Container } from "@freshgum/typedi";
 
-import { logger } from "#logging/standardLogging.js";
+import { logger } from "@/logging/standardLogging.js";
 
 import { NotificationScheduler } from "./NotificationScheduler.js";
 
