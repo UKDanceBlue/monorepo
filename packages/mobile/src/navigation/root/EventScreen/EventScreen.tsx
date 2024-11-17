@@ -175,7 +175,7 @@ const EventScreen = () => {
         </Button>
 
         <Box mx={2}>
-          <NativeBaseMarkdown>{eventData.description}</NativeBaseMarkdown>
+          <NativeBaseMarkdown>{eventData.description ?? ""}</NativeBaseMarkdown>
         </Box>
 
         {eventData.location && (
