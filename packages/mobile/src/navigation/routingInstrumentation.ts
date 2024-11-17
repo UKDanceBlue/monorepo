@@ -1,3 +1,3 @@
-import { ReactNavigationInstrumentation } from "@sentry/react-native";
+import { reactNavigationIntegration } from "@sentry/react-native";
 
-export const routingInstrumentation = new ReactNavigationInstrumentation();
+export const routingInstrumentation = reactNavigationIntegration();

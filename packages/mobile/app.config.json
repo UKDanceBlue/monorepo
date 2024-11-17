@@ -3,7 +3,7 @@
     "name": "UK DanceBlue",
     "description": "University of Kentucky DanceBlue Mobile Application",
     "slug": "danceblue-mobile",
-    "privacy": "unlisted",
+    "newArchEnabled": true,
     "owner": "ukdanceblue",
     "scheme": "danceblue",
     "jsEngine": "hermes",

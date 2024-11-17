@@ -10,15 +10,13 @@ import { Button, SafeAreaView, ScrollView, Text, View } from "react-native";
 
 import { universalCatch } from "../logging";
 
-type ErrorWithCause = Error & { cause?: unknown };
-
 function ErrorBoundaryFallback({
   componentStack,
   error,
   isComponentError,
   untypedError,
 }: {
-  error?: ErrorWithCause | undefined | null;
+  error?: unknown | undefined | null;
   untypedError?: unknown;
   componentStack?: string | undefined | null;
   isComponentError?: boolean | undefined | null;
@@ -37,9 +35,11 @@ function ErrorBoundaryFallback({
     return (
       <SafeAreaView>
         <ScrollView>
-          <Text
-            style={{ fontSize: 20, marginBottom: 15, fontWeight: "bold" }}
-          >{`Something went wrong: ${error.name} - ${error.message}`}</Text>
+          <Text style={{ fontSize: 20, marginBottom: 15, fontWeight: "bold" }}>
+            {error instanceof Error
+              ? `Something went wrong: ${error.name} - ${error.message}`
+              : "Something went wrong"}
+          </Text>
           <Text style={{ marginBottom: 15 }}>
             An error occurred in
             {isComponentError ? " a component. " : " the app. "}
@@ -50,19 +50,29 @@ function ErrorBoundaryFallback({
             onPress={() => {
               // Send an email
               openURL(
-                `mailto:app@danceblue.org?subject=Bug%20Report&body=${encodeURIComponent(
-                  `
+                `mailto:app@danceblue.org?subject=Bug%20Report&body=${
+                  error instanceof Error
+                    ? encodeURIComponent(
+                        `
 Error: ${error.name} - ${error.message} (${error.stack ?? ""})
 --------------------
 Component Stack: ${componentStack ?? ""}
 --------------------
 Error Info: ${stringifiedError}
 `
-                )}`
+                      )
+                    : encodeURIComponent(
+                        `
+Error: ${stringifiedError}
+--------------------
+Component Stack: ${componentStack ?? ""}
+`
+                      )
+                }`
               ).catch(universalCatch);
             }}
           />
-          {error.cause ? (
+          {typeof error === "object" && "cause" in error ? (
             <>
               <Text style={{ fontSize: 15, fontWeight: "bold" }}>
                 Error Cause:
@@ -73,7 +83,9 @@ Error Info: ${stringifiedError}
             </>
           ) : null}
           <Text style={{ fontSize: 15, fontWeight: "bold" }}>JS stack:</Text>
-          <Text style={{ marginBottom: 15 }}>{error.stack}</Text>
+          {typeof error === "object" && "stack" in error && (
+            <Text style={{ marginBottom: 15 }}>{String(error.stack)}</Text>
+          )}
           {componentStack && (
             <>
               <Text style={{ fontSize: 15, fontWeight: "bold" }}>

@@ -1,10 +1,22 @@
 // Import third-party dependencies
 import { useAsyncStorageDevTools } from "@dev-plugins/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
+import {
+  configureScope as configureSentryScope,
+  init as initSentry,
+  ReactNativeTracing,
+  wrap as wrapWithSentry,
+} from "@sentry/react-native";
+import { isRunningInExpoGo } from "expo";
+import { DevMenu, isDevelopmentBuild } from "expo-dev-client";
 import { useFonts } from "expo-font";
+import { setNotificationHandler } from "expo-notifications";
 import { hideAsync } from "expo-splash-screen";
+import { preventAutoHideAsync } from "expo-splash-screen";
 // TODO: Switch away from native-base https://nativebase.io/blogs/road-ahead-with-gluestack-ui
 import { isEmergencyLaunch } from "expo-updates";
+import { channel, isEmbeddedLaunch, manifest, updateId } from "expo-updates";
 import type { ICustomTheme } from "native-base";
 import { NativeBaseProvider } from "native-base";
 import React, { useEffect, useRef, useState } from "react";
@@ -21,6 +33,7 @@ import { DeviceDataProvider } from "@/context/device";
 import { LoadingWrapper } from "@/context/loading";
 import { UrqlContext } from "@/context/urql";
 
+import { overrideApiBaseUrl } from "./src/common/apiUrl";
 // import BoldoniFlfBoldFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold.ttf";
 // import BoldoniFlfBoldItalicFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold-Italic.ttf";
 // import BoldoniFlfItalicFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Italic.ttf";
@@ -29,7 +42,13 @@ import { UrqlContext } from "@/context/urql";
 // import OpenSansCondensedLightFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light.ttf";
 // import OpenSansCondensedLightItalicFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light-Italic.ttf";
 import { FilledNavigationContainer } from "./src/navigation/NavigationContainer";
+import { routingInstrumentation } from "./src/navigation/routingInstrumentation";
 import { getCustomTheme } from "./src/theme";
+
+const metadata = "metadata" in manifest ? manifest.metadata : undefined;
+const extra = "extra" in manifest ? manifest.extra : undefined;
+const updateGroup =
+  metadata && "updateGroup" in metadata ? metadata.updateGroup : undefined;
 
 if (isEmergencyLaunch) {
   Alert.alert(
@@ -38,10 +57,106 @@ if (isEmergencyLaunch) {
   );
 }
 
+Logger.debug("Starting app");
+
+void preventAutoHideAsync();
+
+initSentry({
+  dsn: "https://f8d08f6f2a9dd8d627a9ed4b99fb4ba4@o4507762130681856.ingest.us.sentry.io/4507762137825280",
+  tracesSampleRate: 0.2,
+  _experiments: {
+    profilesSampleRate: 0.2,
+  },
+  debug: false,
+  integrations: [
+    new ReactNativeTracing({
+      routingInstrumentation,
+      enableNativeFramesTracking: !isRunningInExpoGo(),
+    }),
+  ],
+  environment: channel ?? (isDevelopmentBuild() ? "dev-client" : "unknown"),
+  enabled: !__DEV__,
+});
+
+configureSentryScope((scope) => {
+  scope.setTag("expo-update-id", updateId);
+  scope.setTag("expo-is-embedded-update", isEmbeddedLaunch);
+
+  if (typeof updateGroup === "string") {
+    scope.setTag("expo-update-group-id", updateGroup);
+
+    const owner = extra?.expoClient?.owner ?? "[account]";
+    const slug = extra?.expoClient?.slug ?? "[project]";
+    scope.setTag(
+      "expo-update-debug-url",
+      `https://expo.dev/accounts/${owner}/projects/${slug}/updates/${updateGroup}`
+    );
+  } else if (isEmbeddedLaunch) {
+    // This will be `true` if the update is the one embedded in the build, and not one downloaded from the updates server.
+    scope.setTag("expo-update-debug-url", "embedded");
+  }
+});
+
+if (isDevelopmentBuild()) {
+  DevMenu.registerDevMenuItems([
+    {
+      name: "Clear AsyncStorage",
+      callback: () => {
+        Logger.log("Clearing AsyncStorage");
+        AsyncStorage.clear()
+          .then(() => {
+            Alert.alert("AsyncStorage cleared successfully");
+          })
+          .catch((error) => {
+            Logger.error("Error clearing AsyncStorage", { error });
+            Alert.alert("Error clearing AsyncStorage");
+          });
+      },
+    },
+    {
+      name: "Print AsyncStorage",
+      callback: () => {
+        Logger.log("Printing AsyncStorage");
+        AsyncStorage.getAllKeys()
+          .then((keys) => AsyncStorage.multiGet(keys))
+          .then((values) => {
+            Logger.log(
+              `AsyncStorage values:\n${JSON.stringify(values, null, 2)}`
+            );
+          })
+          .catch((error) => {
+            Logger.error("Error printing AsyncStorage", { error });
+          });
+      },
+    },
+    {
+      name: "Override url",
+      callback: () => {
+        Logger.log("Overriding url");
+        Alert.prompt(
+          "Enter the url to override or blank for default",
+          "",
+          overrideApiBaseUrl
+        );
+      },
+    },
+  ]).catch(/** @param {unknown} error */ (error) => console.error(error));
+}
+
+// Configure the notifications handler to decide what to do when a notification is received if the app is open
+setNotificationHandler({
+  handleNotification: () =>
+    Promise.resolve({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
+});
+
 /**
  * Main app container
  */
-const App = () => {
+const App = wrapWithSentry(() => {
   const isOfflineInternal = useRef(false);
   const [theme, setTheme] = useState<ICustomTheme | undefined>(undefined);
 
@@ -116,7 +231,7 @@ const App = () => {
       </NativeBaseProvider>
     )
   );
-};
+});
 
 function AppWrapper() {
   return (

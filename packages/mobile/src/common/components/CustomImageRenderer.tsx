@@ -1,4 +1,4 @@
-import type { ASTNode } from "@jonasmerlin/react-native-markdown-display";
+import type { ASTNode } from "@ukdanceblue/react-native-markdown-display";
 import type { Key } from "react";
 import { useEffect, useState } from "react";
 import type { IFitImageProps } from "react-native-fit-image";
@@ -18,9 +18,9 @@ export const CustomImageRenderer = ({
   allowedImageHandlers: string[];
   defaultImageHandler: string | null | undefined;
 }) => {
-  const src = node.attributes.src ? String(node.attributes.src) : undefined;
-  const alt = node.attributes.alt ? String(node.attributes.alt) : undefined;
-  const title = node.attributes.title
+  const src = node.attributes?.src ? String(node.attributes.src) : undefined;
+  const alt = node.attributes?.alt ? String(node.attributes.alt) : undefined;
+  const title = node.attributes?.title
     ? String(node.attributes.title)
     : undefined;
 
@@ -50,7 +50,6 @@ export const CustomImageRenderer = ({
           );
         }
         setImageProps({
-          // @ts-expect-error - TODO: Fix these errors, seems ok for now
           style: styles._VIEW_SAFE_image,
           accessibilityLabel: alt ?? title,
           source: { uri: `${defaultImageHandler}${srcWithoutProtocol}` },
@@ -58,7 +57,6 @@ export const CustomImageRenderer = ({
       }
     } else {
       setImageProps({
-        // @ts-expect-error - TODO: Fix these errors, seems ok for now
         style: styles._VIEW_SAFE_image,
         accessibilityLabel: alt ?? title,
         source: { uri: src },

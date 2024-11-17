@@ -1,40 +1,39 @@
-// Learn more https://docs.expo.io/guides/customizing-metro
+// Learn more https://docs.expo.io/guides/cus tomizing-metro
 // @ts-expect-error - CommonJS
 const { withSentryConfig } = require("@sentry/react-native/metro");
 // @ts-expect-error - CommonJS
 const { getDefaultConfig } = require("expo/metro-config");
 // @ts-expect-error - CommonJS
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const { resolve } = require("node:path");
+const { mergeConfig } = require("metro-config");
 
 // Find the project and workspace directories
 const projectRoot = __dirname;
 
-/** @type {import("metro-resolver").CustomResolver} */
-const resolveRequest = (context, moduleName, platform) => {
-  if (moduleName === "type-graphql") {
-    return context.resolveRequest(context, "type-graphql/shim", platform);
-  }
-  return context.resolveRequest(context, moduleName, platform);
+const config = withSentryConfig(getDefaultConfig(projectRoot));
+
+/** @type {Partial<Record<string, string>>} */
+const ALIASES = {
+  "type-graphql": "type-graphql/shim",
 };
 
-/** @return {import("expo/metro-config").MetroConfig} */
-const config = () => {
-  /** @type {import("expo/metro-config").MetroConfig}*/
-  // @ts-expect-error - This is fine
-  const config = getDefaultConfig(projectRoot);
+// @ts-expect-error - It is defined by expo/metro-config
+config.resolver /*
+Only ignore the first bit
+ */.resolveRequest =
+  /** @type {import("metro-resolver").CustomResolver} */
+  (context, moduleName, platform) => {
+    // Ensure you call the default resolver.
+    return context.resolveRequest(
+      context,
+      // Use an alias if one exists.
+      ALIASES[moduleName] ?? moduleName,
+      platform
+    );
+  };
 
-  // @ts-expect-error - This is fine
-  return withSentryConfig({
-    ...config,
-    resolver: {
-      ...config.resolver,
-      resolveRequest,
-      unstable_enablePackageExports: true,
-    },
-    projectRoot,
-    watchFolders: [projectRoot, resolve(projectRoot, "..", "..")],
-  });
-};
+// @ts-expect-error - It is defined by expo/metro-config
+config.resolver /*
+Only ignore the first bit
+ */.unstable_enablePackageExports = true;
 
-module.exports = config();
+module.exports = config;
