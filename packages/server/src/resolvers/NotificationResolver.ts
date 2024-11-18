@@ -43,14 +43,14 @@ import {
   Root,
 } from "type-graphql";
 
-import { NotificationScheduler } from "@/jobs/NotificationScheduler.js";
-import { ExpoNotificationProvider } from "@/notification/ExpoNotificationProvider.js";
-import * as NotificationProviderJs from "@/notification/NotificationProvider.js";
-import { notificationModelToResource } from "@/repositories/notification/notificationModelToResource.js";
-import { NotificationRepository } from "@/repositories/notification/NotificationRepository.js";
-import { notificationDeliveryModelToResource } from "@/repositories/notificationDelivery/notificationDeliveryModelToResource.js";
-import { NotificationDeliveryRepository } from "@/repositories/notificationDelivery/NotificationDeliveryRepository.js";
-import { handleRepositoryError } from "@/repositories/shared.js";
+import { NotificationScheduler } from "#jobs/NotificationScheduler.js";
+import { ExpoNotificationProvider } from "#notification/ExpoNotificationProvider.js";
+import * as NotificationProviderJs from "#notification/NotificationProvider.js";
+import { notificationModelToResource } from "#repositories/notification/notificationModelToResource.js";
+import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
+import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
+import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
+import { handleRepositoryError } from "#repositories/shared.js";
 
 @Resolver(() => NotificationNode)
 @Service([

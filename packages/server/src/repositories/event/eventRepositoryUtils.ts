@@ -5,7 +5,7 @@ import { SortDirection } from "@ukdanceblue/common";
 import {
   dateFilterToPrisma,
   stringFilterToPrisma,
-} from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 import type { EventFilters, EventOrderKeys } from "./EventRepository.ts";
 

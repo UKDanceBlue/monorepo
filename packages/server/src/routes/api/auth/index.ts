@@ -1,7 +1,7 @@
 import { Service } from "@freshgum/typedi";
 import express from "express";
 
-import { RouterService } from "@/routes/RouteService.js";
+import { RouterService } from "#routes/RouteService.js";
 
 import { anonymousLogin } from "./anonymous.js";
 import { demoLogin } from "./demo.js";

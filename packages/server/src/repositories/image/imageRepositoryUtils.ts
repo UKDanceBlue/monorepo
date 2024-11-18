@@ -5,7 +5,7 @@ import {
   dateFilterToPrisma,
   numericFilterToPrisma,
   stringFilterToPrisma,
-} from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 import type { ImageFilters } from "./ImageRepository.ts";
 

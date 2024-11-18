@@ -9,10 +9,10 @@ import { ConcreteResult } from "@ukdanceblue/common/error";
 import { AsyncResult } from "ts-results-es";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 
-import { MembershipRepository } from "@/repositories/membership/MembershipRepository.js";
-import { personModelToResource } from "@/repositories/person/personModelToResource.js";
-import { PersonRepository } from "@/repositories/person/PersonRepository.js";
-import { teamModelToResource } from "@/repositories/team/teamModelToResource.js";
+import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
 @Resolver(() => MembershipNode)
 @Service([MembershipRepository, PersonRepository])

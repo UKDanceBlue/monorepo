@@ -1,10 +1,10 @@
 import { Service } from "@freshgum/typedi";
 import { DateTime } from "luxon";
 
-import { FileManager } from "@/files/FileManager.js";
-import { combineMimePartsToString } from "@/files/mime.js";
-import { EventRepository } from "@/repositories/event/EventRepository.js";
-import { RouterService } from "@/routes/RouteService.js";
+import { FileManager } from "#files/FileManager.js";
+import { combineMimePartsToString } from "#files/mime.js";
+import { EventRepository } from "#repositories/event/EventRepository.js";
+import { RouterService } from "#routes/RouteService.js";
 
 interface UpcomingEvent {
   title: string;

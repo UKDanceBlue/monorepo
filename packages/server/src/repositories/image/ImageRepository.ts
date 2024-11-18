@@ -2,7 +2,7 @@ import { Service } from "@freshgum/typedi";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 
-import type { FilterItems } from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 import { buildImageOrder, buildImageWhere } from "./imageRepositoryUtils.js";
 
@@ -35,7 +35,7 @@ export type ImageFilters = FilterItems<
 
 type UniqueImageParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "@/prisma";
+import { prismaToken } from "#prisma";
 
 @Service([prismaToken])
 export class ImageRepository {

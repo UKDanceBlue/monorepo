@@ -3,7 +3,7 @@ import { Notification, Prisma, PrismaClient } from "@prisma/client";
 import { NotificationError } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 
-import type { FilterItems } from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 import {
   buildNotificationOrder,
@@ -63,11 +63,11 @@ export type NotificationFilters = FilterItems<
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { AsyncResult, Err, Ok, Result } from "ts-results-es";
 
-import { prismaToken } from "@/prisma";
+import { prismaToken } from "#prisma";
 import {
   handleRepositoryError,
   RepositoryError,
-} from "@/repositories/shared.js";
+} from "#repositories/shared.js";
 
 @Service([prismaToken])
 export class NotificationRepository {

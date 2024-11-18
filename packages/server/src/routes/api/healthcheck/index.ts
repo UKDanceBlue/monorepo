@@ -1,7 +1,7 @@
 import { Service } from "@freshgum/typedi";
 import { PrismaClient } from "@prisma/client";
 
-import { RouterService } from "@/routes/RouteService.js";
+import { RouterService } from "#routes/RouteService.js";
 
 import { prismaToken } from "../../../prisma.js";
 

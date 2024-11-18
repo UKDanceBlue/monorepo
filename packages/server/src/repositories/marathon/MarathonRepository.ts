@@ -4,11 +4,11 @@ import type { SortDirection } from "@ukdanceblue/common";
 import { NotFoundError, optionOf } from "@ukdanceblue/common/error";
 import { Err, Ok, Option, Result } from "ts-results-es";
 
-import type { FilterItems } from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import {
   handleRepositoryError,
   type RepositoryError,
-} from "@/repositories/shared.js";
+} from "#repositories/shared.js";
 
 import {
   buildMarathonOrder,
@@ -60,7 +60,7 @@ export type UniqueMarathonParam =
   | { uuid: string }
   | { year: string };
 
-import { prismaToken } from "@/prisma";
+import { prismaToken } from "#prisma";
 
 @Service([prismaToken])
 export class MarathonRepository {

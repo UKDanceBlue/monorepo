@@ -23,12 +23,12 @@ import { URLResolver } from "graphql-scalars";
 import fetch from "node-fetch";
 import { Arg, Args, Mutation, Query, Resolver } from "type-graphql";
 
-import { FileManager } from "@/files/FileManager.js";
-import { generateThumbHash } from "@/lib/thumbHash.js";
-import { auditLogger } from "@/logging/auditLogging.js";
-import { logger } from "@/logging/standardLogging.js";
-import { imageModelToResource } from "@/repositories/image/imageModelToResource.js";
-import { ImageRepository } from "@/repositories/image/ImageRepository.js";
+import { FileManager } from "#files/FileManager.js";
+import { generateThumbHash } from "#lib/thumbHash.js";
+import { auditLogger } from "#logging/auditLogging.js";
+import { logger } from "#logging/standardLogging.js";
+import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
+import { ImageRepository } from "#repositories/image/ImageRepository.js";
 
 @Resolver(() => ImageNode)
 @Service([ImageRepository, FileManager])

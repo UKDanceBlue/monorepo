@@ -3,8 +3,8 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
 
-import type { FilterItems } from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import { SimpleUniqueParam } from "@/repositories/shared.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import { SimpleUniqueParam } from "#repositories/shared.js";
 
 import {
   buildConfigurationOrder,
@@ -31,7 +31,7 @@ export type ConfigurationFilters = FilterItems<
   ConfigurationStringKey
 >;
 
-import { prismaToken } from "@/prisma";
+import { prismaToken } from "#prisma";
 
 @Service([prismaToken])
 export class ConfigurationRepository {

@@ -2,7 +2,7 @@ import type { Person } from "@prisma/client";
 import { PersonNode } from "@ukdanceblue/common";
 import { AsyncResult } from "ts-results-es";
 
-import type { RepositoryError } from "@/repositories/shared.js";
+import type { RepositoryError } from "#repositories/shared.js";
 
 import type { PersonRepository } from "./PersonRepository.js";
 

@@ -32,20 +32,20 @@ import {
   Some,
 } from "ts-results-es";
 
-import { findPersonForLogin } from "@/auth/findPersonForLogin.js";
-import { SomePrismaError } from "@/error/prisma.js";
-import type { FilterItems } from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import { findPersonForLogin } from "#auth/findPersonForLogin.js";
+import { SomePrismaError } from "#error/prisma.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import {
   MarathonRepository,
   UniqueMarathonParam,
-} from "@/repositories/marathon/MarathonRepository.js";
-import { MembershipRepository } from "@/repositories/membership/MembershipRepository.js";
+} from "#repositories/marathon/MarathonRepository.js";
+import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
 import {
   handleRepositoryError,
   type RepositoryError,
   type SimpleUniqueParam,
   unwrapRepositoryError,
-} from "@/repositories/shared.js";
+} from "#repositories/shared.js";
 
 import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
 
@@ -91,8 +91,8 @@ export type UniquePersonParam =
       linkblue: string;
     };
 
-import { prismaToken } from "@/prisma";
-import { CommitteeRepository } from "@/repositories/committee/CommitteeRepository.js";
+import { prismaToken } from "#prisma";
+import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
 
 @Service([
   prismaToken,

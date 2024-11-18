@@ -3,7 +3,7 @@ import type { PointOpportunityType } from "@prisma/client";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 
-import type { FilterItems } from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 import {
   buildPointOpportunityOrder,
@@ -51,9 +51,9 @@ export type PointOpportunityFilters = FilterItems<
 
 type UniquePointOpportunityParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "@/prisma";
-import { UniqueMarathonParam } from "@/repositories/marathon/MarathonRepository.js";
-import { SimpleUniqueParam } from "@/repositories/shared.js";
+import { prismaToken } from "#prisma";
+import { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
+import { SimpleUniqueParam } from "#repositories/shared.js";
 
 @Service([prismaToken])
 export class PointOpportunityRepository {

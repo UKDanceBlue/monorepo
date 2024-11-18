@@ -28,8 +28,8 @@ import {
   Root,
 } from "type-graphql";
 
-import { marathonHourModelToResource } from "@/repositories/marathonHour/marathonHourModelToResource.js";
-import { MarathonHourRepository } from "@/repositories/marathonHour/MarathonHourRepository.js";
+import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
+import { MarathonHourRepository } from "#repositories/marathonHour/MarathonHourRepository.js";
 
 @Resolver(() => MarathonHourNode)
 @Service([MarathonHourRepository])

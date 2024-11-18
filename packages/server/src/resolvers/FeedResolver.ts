@@ -24,10 +24,10 @@ import {
   Root,
 } from "type-graphql";
 
-import { FileManager } from "@/files/FileManager.js";
-import { feedItemModelToResource } from "@/repositories/feed/feedModelToResource.js";
-import { FeedRepository } from "@/repositories/feed/FeedRepository.js";
-import { imageModelToResource } from "@/repositories/image/imageModelToResource.js";
+import { FileManager } from "#files/FileManager.js";
+import { feedItemModelToResource } from "#repositories/feed/feedModelToResource.js";
+import { FeedRepository } from "#repositories/feed/FeedRepository.js";
+import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
 @Resolver(() => FeedNode)
 @Service([FeedRepository, FileManager])

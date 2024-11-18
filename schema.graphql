@@ -351,7 +351,7 @@ type DailyDepartmentNotificationNode {
   secShares: String
   secType: String
   solicitation: String
-  solicitationCode: String
+  solicitationCode: SolicitationCodeNode!
   transactionDate: LocalDate
   transactionType: String!
   transmittalSn: String
@@ -634,6 +634,10 @@ type FundraisingEntryNode implements Node {
   donatedOn: DateTimeISO!
   donatedToText: String
   id: GlobalId!
+  notes: String
+  solicitationCode: SolicitationCodeNode!
+  solicitationCodeOverride: SolicitationCodeNode
+  type: FundraisingEntryType!
   updatedAt: DateTimeISO
 }
 
@@ -729,6 +733,13 @@ enum FundraisingEntryResolverOneOfFilterKeys {
 enum FundraisingEntryResolverStringFilterKeys {
   donatedBy
   donatedTo
+}
+
+enum FundraisingEntryType {
+  Cash
+  Check
+  Legacy
+  Online
 }
 
 type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
@@ -2515,6 +2526,15 @@ type SinglePointOpportunityResponse implements AbstractGraphQLOkResponse & Graph
 type SingleTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
   data: TeamNode!
   ok: Boolean!
+}
+
+type SolicitationCodeNode implements Node {
+  code: NonNegativeInt!
+  createdAt: DateTimeISO
+  id: GlobalId!
+  name: String
+  prefix: String!
+  updatedAt: DateTimeISO
 }
 
 enum SortDirection {

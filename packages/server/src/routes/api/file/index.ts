@@ -1,9 +1,9 @@
 import { Service } from "@freshgum/typedi";
 import { Request, Response } from "express";
 
-import { FileManager } from "@/files/FileManager.js";
-import { combineMimePartsToString } from "@/files/mime.js";
-import { RouterService } from "@/routes/RouteService.js";
+import { FileManager } from "#files/FileManager.js";
+import { combineMimePartsToString } from "#files/mime.js";
+import { RouterService } from "#routes/RouteService.js";
 
 @Service([FileManager])
 export default class FileRouter extends RouterService {

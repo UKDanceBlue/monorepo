@@ -5,10 +5,10 @@ import type { SortDirection } from "@ukdanceblue/common";
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok, Result } from "ts-results-es";
 
-import type { FilterItems } from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import type { NotificationAudience } from "@/notification/NotificationProvider.js";
-import { PersonRepository } from "@/repositories/person/PersonRepository.js";
-import { RepositoryError } from "@/repositories/shared.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { NotificationAudience } from "#notification/NotificationProvider.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { RepositoryError } from "#repositories/shared.js";
 
 import { buildDeviceOrder, buildDeviceWhere } from "./deviceRepositoryUtils.js";
 
@@ -27,7 +27,7 @@ export type DeviceFilters = FilterItems<
   DeviceStringKey
 >;
 
-import { prismaToken } from "@/prisma";
+import { prismaToken } from "#prisma";
 
 @Service([prismaToken, PersonRepository])
 export class DeviceRepository {

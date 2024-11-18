@@ -4,7 +4,7 @@ import type { MIMEType } from "util";
 
 type UniqueParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "@/prisma";
+import { prismaToken } from "#prisma";
 
 @Service([prismaToken])
 /**

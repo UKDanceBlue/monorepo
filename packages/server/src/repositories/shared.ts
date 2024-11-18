@@ -2,8 +2,8 @@ import type { BasicError, NotFoundError } from "@ukdanceblue/common/error";
 import { toBasicError } from "@ukdanceblue/common/error";
 import { Err } from "ts-results-es";
 
-import type { SomePrismaError } from "@/error/prisma.js";
-import { toPrismaError } from "@/error/prisma.js";
+import type { SomePrismaError } from "#error/prisma.js";
+import { toPrismaError } from "#error/prisma.js";
 
 /**
  * Either a Primary Key numeric ID or a UUID string

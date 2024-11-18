@@ -1,12 +1,12 @@
 import "reflect-metadata";
 
-import { logDirToken, loggingLevelToken } from "@/lib/environmentTokens.js";
-import { expressToken } from "@/routes/expressToken.js";
+import { logDirToken, loggingLevelToken } from "#lib/environmentTokens.js";
+import { expressToken } from "#routes/expressToken.js";
 
 // No top level imports that cause side effects should be used in this file
 // We want to control the order of execution
 
-await import("@/environment");
+await import("#environment");
 
 await import("./instrument.js");
 
@@ -15,7 +15,7 @@ const { Container } = await import("@freshgum/typedi");
 const logDir = Container.get(logDirToken);
 const loggingLevel = Container.get(loggingLevelToken);
 
-const { logger } = await import("@/logging/logger.js");
+const { logger } = await import("#logging/logger.js");
 
 logger.info(
   `Logger initialized with level "${loggingLevel}", writing log files to "${logDir}"`
@@ -50,4 +50,4 @@ logger.info("API started");
 logger.info("DanceBlue Server Started");
 
 // Start any manual cron jobs
-await import("@/jobs/index.js");
+await import("#jobs/index.js");

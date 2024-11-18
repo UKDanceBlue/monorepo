@@ -55,18 +55,18 @@ import {
   Root,
 } from "type-graphql";
 
-import { auditLogger } from "@/logging/auditLogging.js";
-import { fundraisingAssignmentModelToNode } from "@/repositories/fundraising/fundraisingAssignmentModelToNode.js";
-import { fundraisingEntryModelToNode } from "@/repositories/fundraising/fundraisingEntryModelToNode.js";
-import { FundraisingEntryRepository } from "@/repositories/fundraising/FundraisingRepository.js";
+import { auditLogger } from "#logging/auditLogging.js";
+import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
+import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
+import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import {
   committeeMembershipModelToResource,
   membershipModelToResource,
-} from "@/repositories/membership/membershipModelToResource.js";
-import { MembershipRepository } from "@/repositories/membership/MembershipRepository.js";
-import { personModelToResource } from "@/repositories/person/personModelToResource.js";
-import { PersonRepository } from "@/repositories/person/PersonRepository.js";
-import type { GraphQLContext } from "@/resolvers/context.js";
+} from "#repositories/membership/membershipModelToResource.js";
+import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
+import { personModelToResource } from "#repositories/person/personModelToResource.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import type { GraphQLContext } from "#resolvers/context.js";
 
 import { globalFundraisingAccessParam } from "./accessParams.js";
 

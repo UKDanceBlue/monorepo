@@ -2,8 +2,8 @@ import { Container } from "@freshgum/typedi";
 import type winston from "winston";
 import { createLogger, format, transports } from "winston";
 
-import { logDirToken } from "@/lib/environmentTokens.js";
-import { isDevelopment } from "@/lib/nodeEnv.js";
+import { logDirToken } from "#lib/environmentTokens.js";
+import { isDevelopment } from "#lib/nodeEnv.js";
 
 const logDir = Container.get(logDirToken);
 

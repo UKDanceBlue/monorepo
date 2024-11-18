@@ -1,8 +1,8 @@
 import type { File, Image } from "@prisma/client";
 import { ImageNode } from "@ukdanceblue/common";
 
-import type { FileManager } from "@/files/FileManager.js";
-import { combineMimePartsToString } from "@/files/mime.js";
+import type { FileManager } from "#files/FileManager.js";
+import { combineMimePartsToString } from "#files/mime.js";
 
 export async function imageModelToResource(
   imageModel: Image,

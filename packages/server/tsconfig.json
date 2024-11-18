@@ -15,18 +15,18 @@
     "experimentalDecorators": true,
 
     "paths": {
-      "@/prisma": ["./src/prisma.js"],
-      "@/auth/*": ["./src/lib/auth/*"],
-      "@/error/*": ["./src/lib/error/*"],
-      "@/files/*": ["./src/lib/files/*"],
-      "@/logging/*": ["./src/lib/logging/*"],
-      "@/notification/*": ["./src/lib/notification/*"],
-      "@/lib/*": ["./src/lib/*"],
-      "@/jobs/*": ["./src/jobs/*"],
-      "@/repositories/*": ["./src/repositories/*"],
-      "@/resolvers/*": ["./src/resolvers/*"],
-      "@/routes/*": ["./src/routes/*"],
-      "@/environment": ["./src/environment.ts"]
+      "#prisma": ["./src/prisma.js"],
+      "#auth/*": ["./src/lib/auth/*"],
+      "#error/*": ["./src/lib/error/*"],
+      "#files/*": ["./src/lib/files/*"],
+      "#logging/*": ["./src/lib/logging/*"],
+      "#notification/*": ["./src/lib/notification/*"],
+      "#lib/*": ["./src/lib/*"],
+      "#jobs/*": ["./src/jobs/*"],
+      "#repositories/*": ["./src/repositories/*"],
+      "#resolvers/*": ["./src/resolvers/*"],
+      "#routes/*": ["./src/routes/*"],
+      "#environment": ["./src/environment.ts"]
     },
 
     // Set `sourceRoot` to  "/" to strip the build path prefix

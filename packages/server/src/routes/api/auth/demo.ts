@@ -2,8 +2,8 @@ import { AuthSource } from "@ukdanceblue/common";
 import type { Request, Response } from "express";
 import { DateTime } from "luxon";
 
-import { makeUserJwt } from "@/auth/index.js";
-import { getOrMakeDemoUser } from "@/lib/demo.js";
+import { makeUserJwt } from "#auth/index.js";
+import { getOrMakeDemoUser } from "#lib/demo.js";
 
 export const demoLogin = async (req: Request, res: Response) => {
   let redirectTo = "/";

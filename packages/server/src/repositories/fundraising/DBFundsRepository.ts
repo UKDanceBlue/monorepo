@@ -15,14 +15,14 @@ import {
 import { DateTime } from "luxon";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
-import { logger } from "@/logging/standardLogging.js";
-import type { UniqueMarathonParam } from "@/repositories/marathon/MarathonRepository.js";
-import { MarathonRepository } from "@/repositories/marathon/MarathonRepository.js";
+import { logger } from "#logging/standardLogging.js";
+import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
+import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
 import {
   handleRepositoryError,
   RepositoryError,
   SimpleUniqueParam,
-} from "@/repositories/shared.js";
+} from "#repositories/shared.js";
 
 export type UniqueDbFundsTeamParam =
   | {
@@ -36,7 +36,7 @@ export type UniqueDbFundsTeamParam =
       marathon: { id: number };
     };
 
-import { prismaToken } from "@/prisma";
+import { prismaToken } from "#prisma";
 
 @Service([prismaToken, MarathonRepository])
 export class DBFundsRepository {

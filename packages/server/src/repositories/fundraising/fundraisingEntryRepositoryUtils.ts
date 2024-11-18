@@ -9,7 +9,7 @@ import {
   numericFilterToPrisma,
   oneOfFilterToPrisma,
   stringFilterToPrisma,
-} from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
+} from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 import type {
   FundraisingEntryFilters,

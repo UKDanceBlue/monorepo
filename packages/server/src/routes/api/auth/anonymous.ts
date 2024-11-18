@@ -2,7 +2,7 @@ import { AuthSource } from "@ukdanceblue/common";
 import type { Request, Response } from "express";
 import { DateTime } from "luxon";
 
-import { makeUserJwt } from "@/auth/index.js";
+import { makeUserJwt } from "#auth/index.js";
 
 export const anonymousLogin = (req: Request, res: Response) => {
   let redirectTo = "/";

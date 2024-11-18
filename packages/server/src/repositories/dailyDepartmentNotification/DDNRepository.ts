@@ -14,7 +14,7 @@ import {
   SortDirection,
 } from "@ukdanceblue/common";
 
-import type { FilterItems } from "@/lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
 import {
   buildDailyDepartmentNotificationOrder,
@@ -64,11 +64,11 @@ interface UniqueDailyDepartmentNotificationParam {
 import { InvalidArgumentError, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
-import { prismaToken } from "@/prisma";
+import { prismaToken } from "#prisma";
 import {
   handleRepositoryError,
   RepositoryError,
-} from "@/repositories/shared.js";
+} from "#repositories/shared.js";
 
 function parseSolicitationCode(
   solicitationCodeString: string

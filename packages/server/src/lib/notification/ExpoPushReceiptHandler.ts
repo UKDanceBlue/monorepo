@@ -2,8 +2,8 @@ import { Service } from "@freshgum/typedi";
 import type { ExpoPushReceipt } from "expo-server-sdk";
 import { Expo } from "expo-server-sdk";
 
-import { DeviceRepository } from "@/repositories/device/DeviceRepository.js";
-import { NotificationDeliveryRepository } from "@/repositories/notificationDelivery/NotificationDeliveryRepository.js";
+import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
+import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
 
 import { expoServiceToken } from "./expoServiceToken.js";
 

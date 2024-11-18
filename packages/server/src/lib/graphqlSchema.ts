@@ -9,31 +9,31 @@ import type { MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
 import { fileURLToPath } from "url";
 
-import { logger } from "@/logging/logger.js";
-import { ConfigurationResolver } from "@/resolvers/ConfigurationResolver.js";
+import { logger } from "#logging/logger.js";
+import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
 import {
   DailyDepartmentNotificationBatchResolver,
   DailyDepartmentNotificationResolver,
-} from "@/resolvers/DailyDepartmentNotification.js";
-import { DeviceResolver } from "@/resolvers/DeviceResolver.js";
-import { EventResolver } from "@/resolvers/EventResolver.js";
-import { FeedResolver } from "@/resolvers/FeedResolver.js";
-import { FundraisingAssignmentResolver } from "@/resolvers/FundraisingAssignmentResolver.js";
-import { FundraisingEntryResolver } from "@/resolvers/FundraisingEntryResolver.js";
-import { ImageResolver } from "@/resolvers/ImageResolver.js";
-import { LoginStateResolver } from "@/resolvers/LoginState.js";
-import { MarathonHourResolver } from "@/resolvers/MarathonHourResolver.js";
-import { MarathonResolver } from "@/resolvers/MarathonResolver.js";
-import { MembershipResolver } from "@/resolvers/MembershipResolver.js";
-import { NodeResolver } from "@/resolvers/NodeResolver.js";
+} from "#resolvers/DailyDepartmentNotification.js";
+import { DeviceResolver } from "#resolvers/DeviceResolver.js";
+import { EventResolver } from "#resolvers/EventResolver.js";
+import { FeedResolver } from "#resolvers/FeedResolver.js";
+import { FundraisingAssignmentResolver } from "#resolvers/FundraisingAssignmentResolver.js";
+import { FundraisingEntryResolver } from "#resolvers/FundraisingEntryResolver.js";
+import { ImageResolver } from "#resolvers/ImageResolver.js";
+import { LoginStateResolver } from "#resolvers/LoginState.js";
+import { MarathonHourResolver } from "#resolvers/MarathonHourResolver.js";
+import { MarathonResolver } from "#resolvers/MarathonResolver.js";
+import { MembershipResolver } from "#resolvers/MembershipResolver.js";
+import { NodeResolver } from "#resolvers/NodeResolver.js";
 import {
   NotificationDeliveryResolver,
   NotificationResolver,
-} from "@/resolvers/NotificationResolver.js";
-import { PersonResolver } from "@/resolvers/PersonResolver.js";
-import { PointEntryResolver } from "@/resolvers/PointEntryResolver.js";
-import { PointOpportunityResolver } from "@/resolvers/PointOpportunityResolver.js";
-import { TeamResolver } from "@/resolvers/TeamResolver.js";
+} from "#resolvers/NotificationResolver.js";
+import { PersonResolver } from "#resolvers/PersonResolver.js";
+import { PointEntryResolver } from "#resolvers/PointEntryResolver.js";
+import { PointOpportunityResolver } from "#resolvers/PointOpportunityResolver.js";
+import { TeamResolver } from "#resolvers/TeamResolver.js";
 
 const schemaPath = fileURLToPath(
   new URL("../../../../schema.graphql", import.meta.url)

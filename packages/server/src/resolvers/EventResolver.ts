@@ -35,15 +35,15 @@ import {
   Root,
 } from "type-graphql";
 
-import { FileManager } from "@/files/FileManager.js";
-import { auditLogger } from "@/logging/auditLogging.js";
+import { FileManager } from "#files/FileManager.js";
+import { auditLogger } from "#logging/auditLogging.js";
 import {
   eventModelToResource,
   eventOccurrenceModelToResource,
-} from "@/repositories/event/eventModelToResource.js";
-import { EventRepository } from "@/repositories/event/EventRepository.js";
-import { EventImagesRepository } from "@/repositories/event/images/EventImagesRepository.js";
-import { imageModelToResource } from "@/repositories/image/imageModelToResource.js";
+} from "#repositories/event/eventModelToResource.js";
+import { EventRepository } from "#repositories/event/EventRepository.js";
+import { EventImagesRepository } from "#repositories/event/images/EventImagesRepository.js";
+import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
 @Service([EventRepository, EventImagesRepository, FileManager])
 @Resolver(() => EventNode)

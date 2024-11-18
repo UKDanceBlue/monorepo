@@ -3,7 +3,7 @@ import { DbRole } from "@ukdanceblue/common";
 import { LoginState } from "@ukdanceblue/common";
 import { Ctx, Query, Resolver } from "type-graphql";
 
-import * as Context from "@/resolvers/context.js";
+import * as Context from "#resolvers/context.js";
 
 @Resolver(() => LoginState)
 @Service([])
