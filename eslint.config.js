@@ -1,6 +1,7 @@
 import { fileURLToPath } from "node:url";
 
 import eslintJs from "@eslint/js";
+import eslintPluginVitest from "@vitest/eslint-plugin";
 import eslintConfigPrettier from "eslint-config-prettier";
 import eslintPluginNode from "eslint-plugin-n";
 import eslintPluginReact from "eslint-plugin-react";
@@ -8,7 +9,6 @@ import eslintPluginReactHooks from "eslint-plugin-react-hooks";
 import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
 import eslintPluginSortImports from "eslint-plugin-simple-import-sort";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
-import eslintPluginVitest from "eslint-plugin-vitest";
 import globals from "globals";
 import { dirname } from "path";
 import eslintTs from "typescript-eslint";
