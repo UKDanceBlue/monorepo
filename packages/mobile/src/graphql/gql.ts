@@ -1,6 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/no-unnecessary-type-parameters, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-invalid-void-type, @typescript-eslint/consistent-indexed-object-style, @typescript-eslint/consistent-type-definitions, @typescript-eslint/array-type, unicorn/prefer-export-from, sort-imports/exports */
-import * as types from './graphql';
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access */
 import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+
+import * as types from './graphql';
 
 /**
  * Map of all GraphQL operations in the project.

@@ -1,5 +1,4 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { useNavigation } from "@react-navigation/native";
 import type { ReactElement } from "react";
 import { useEffect, useState } from "react";
 
@@ -137,7 +136,7 @@ const TabBar = () => {
         // ),
         headerLeft: DBHeaderText,
         headerTitle: () => null,
-        headerRight: () => <HeaderIcons navigation={useNavigation()} />,
+        headerRight: HeaderIcons,
         headerStyle: [
           {
             borderBottomWidth: 1.5,

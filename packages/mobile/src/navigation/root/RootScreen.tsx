@@ -1,4 +1,3 @@
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DbRole } from "@ukdanceblue/common";
 import { useTheme } from "native-base";
@@ -90,21 +89,11 @@ const RootScreen = () => {
     <>
       {!rootScreenLoading && (
         <RootStack.Navigator
-          screenOptions={({
-            navigation,
-          }: {
-            navigation: NativeStackNavigationProp<RootStackParamList>;
-          }) => {
-            return {
-              headerStyle: { backgroundColor: headerBgColor },
-              headerTitleStyle: { color: headerFgColor },
-              headerRight: () => (
-                <HeaderIcons
-                  navigation={navigation} /* color={headerFgColor}*/
-                />
-              ),
-              headerBackTitle: "Back",
-            };
+          screenOptions={{
+            headerStyle: { backgroundColor: headerBgColor },
+            headerTitleStyle: { color: headerFgColor },
+            headerRight: HeaderIcons,
+            headerBackTitle: "Back",
           }}
         >
           {isLoggedIn ? (

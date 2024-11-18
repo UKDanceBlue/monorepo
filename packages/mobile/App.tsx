@@ -27,6 +27,7 @@ import { AuthStateProvider } from "@/context/auth";
 import { DeviceDataProvider } from "@/context/device";
 import { LoadingWrapper } from "@/context/loading";
 import { UrqlContext } from "@/context/urql";
+import { navigationIntegration } from "@/navigation/routingInstrumentation";
 
 import { overrideApiBaseUrl } from "./src/common/apiUrl";
 // import BoldoniFlfBoldFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold.ttf";
@@ -38,7 +39,6 @@ import { overrideApiBaseUrl } from "./src/common/apiUrl";
 // import OpenSansCondensedLightItalicFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light-Italic.ttf";
 import { FilledNavigationContainer } from "./src/navigation/NavigationContainer";
 import { getCustomTheme } from "./src/theme";
-import { navigationIntegration } from "@/navigation/routingInstrumentation";
 
 const metadata = "metadata" in manifest ? manifest.metadata : undefined;
 const extra = "extra" in manifest ? manifest.extra : undefined;

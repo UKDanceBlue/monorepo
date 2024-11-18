@@ -18,10 +18,14 @@ export const CustomImageRenderer = ({
   allowedImageHandlers: string[];
   defaultImageHandler: string | null | undefined;
 }) => {
-  const src = node.attributes?.src ? String(node.attributes.src) : undefined;
-  const alt = node.attributes?.alt ? String(node.attributes.alt) : undefined;
+  const src = node.attributes?.src
+    ? String(node.attributes.src as unknown)
+    : undefined;
+  const alt = node.attributes?.alt
+    ? String(node.attributes.alt as unknown)
+    : undefined;
   const title = node.attributes?.title
-    ? String(node.attributes.title)
+    ? String(node.attributes.title as unknown)
     : undefined;
 
   const [imageProps, setImageProps] = useState<

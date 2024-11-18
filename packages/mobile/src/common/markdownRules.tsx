@@ -3,7 +3,6 @@ import {
   openUrl,
   renderRules,
 } from "@ukdanceblue/react-native-markdown-display";
-
 import { Platform } from "expo-modules-core";
 import { Box, Divider, Heading, Link, Row, Text, VStack } from "native-base";
 import type { FlexAlignType, TextStyle } from "react-native";
@@ -267,10 +266,10 @@ export const rules: typeof renderRules = {
 
       const orderedList = parent[orderedListIndex];
       const listItemNumber = (
-        orderedList.attributes as undefined | Record<string, unknown>
+        orderedList.attributes
       )?.start
-        ? Number(orderedList.attributes?.start) + (node.index ?? NaN)
-        : (node.index ?? NaN) + 1;
+        ? Number(orderedList.attributes.start) + (node.index ?? Number.NaN)
+        : (node.index ?? Number.NaN) + 1;
 
       return (
         <Box key={node.key} style={styles._VIEW_SAFE_list_item}>

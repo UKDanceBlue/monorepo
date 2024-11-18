@@ -14,22 +14,12 @@ function ErrorBoundaryFallback({
   componentStack,
   error,
   isComponentError,
-  untypedError,
 }: {
-  error?: unknown | undefined | null;
-  untypedError?: unknown;
+  error?: unknown;
   componentStack?: string | undefined | null;
   isComponentError?: boolean | undefined | null;
 }) {
-  let stringifiedError = "";
-  try {
-    stringifiedError =
-      typeof untypedError === "object"
-        ? JSON.stringify(untypedError, null, 2)
-        : String(untypedError);
-  } catch {
-    stringifiedError = String(untypedError);
-  }
+  const stringifiedError = debugStringify(error);
 
   if (error) {
     return (
@@ -47,30 +37,11 @@ function ErrorBoundaryFallback({
           </Text>
           <Button
             title={"Send Report"}
-            onPress={() => {
-              // Send an email
-              openURL(
-                `mailto:app@danceblue.org?subject=Bug%20Report&body=${
-                  error instanceof Error
-                    ? encodeURIComponent(
-                        `
-Error: ${error.name} - ${error.message} (${error.stack ?? ""})
---------------------
-Component Stack: ${componentStack ?? ""}
---------------------
-Error Info: ${stringifiedError}
-`
-                      )
-                    : encodeURIComponent(
-                        `
-Error: ${stringifiedError}
---------------------
-Component Stack: ${componentStack ?? ""}
-`
-                      )
-                }`
-              ).catch(universalCatch);
-            }}
+            onPress={() =>
+              sendEmail(error, componentStack, stringifiedError).catch(
+                universalCatch
+              )
+            }
           />
           {typeof error === "object" && "cause" in error ? (
             <>
@@ -107,13 +78,41 @@ Component Stack: ${componentStack ?? ""}
           <Text style={{ marginBottom: 15 }}>
             An error occurred in the app. This is likely a bug in the app.
           </Text>
-          <Text style={{ marginBottom: 15 }}>{String(untypedError)}</Text>
           <Text style={{ marginBottom: 15 }}>{stringifiedError}</Text>
           <Text style={{ marginBottom: 15 }}>{componentStack}</Text>
         </View>
       </SafeAreaView>
     );
   }
+}
+
+async function sendEmail(
+  error: unknown,
+  componentStack: string | null | undefined,
+  stringifiedError: string
+) {
+  // Send an email
+  return openURL(
+    `mailto:app@danceblue.org?subject=Bug%20Report&body=${
+      error instanceof Error
+        ? encodeURIComponent(
+            `
+Error: ${error.name} - ${error.message} (${error.stack ?? ""})
+--------------------
+Component Stack: ${componentStack ?? ""}
+--------------------
+Error Info: ${stringifiedError}
+`
+          )
+        : encodeURIComponent(
+            `
+Error: ${stringifiedError}
+--------------------
+Component Stack: ${componentStack ?? ""}
+`
+          )
+    }`
+  );
 }
 
 function ErrorBoundary({ children }: { children: ReactNode }) {

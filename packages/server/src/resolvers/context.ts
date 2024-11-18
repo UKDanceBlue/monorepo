@@ -155,7 +155,9 @@ export const graphqlContextFunction: ContextFunction<
   GraphQLContext
 > = async ({ req }): Promise<GraphQLContext> => {
   // Get the token from the cookies or the Authorization header
-  let token = req.cookies.token ? String(req.cookies.token) : undefined;
+  let token = (req.cookies as Partial<Record<string, string>>).token
+    ? String((req.cookies as Partial<Record<string, string>>).token)
+    : undefined;
   if (!token) {
     let authorizationHeader = req.headers.Authorization;
     if (Array.isArray(authorizationHeader)) {
