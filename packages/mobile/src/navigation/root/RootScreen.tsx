@@ -94,14 +94,18 @@ const RootScreen = () => {
             navigation,
           }: {
             navigation: NativeStackNavigationProp<RootStackParamList>;
-          }) => ({
-            headerStyle: { backgroundColor: headerBgColor },
-            headerTitleStyle: { color: headerFgColor },
-            headerRight: () => (
-              <HeaderIcons navigation={navigation} /* color={headerFgColor}*/ />
-            ),
-            headerBackTitle: "Back",
-          })}
+          }) => {
+            return {
+              headerStyle: { backgroundColor: headerBgColor },
+              headerTitleStyle: { color: headerFgColor },
+              headerRight: () => (
+                <HeaderIcons
+                  navigation={navigation} /* color={headerFgColor}*/
+                />
+              ),
+              headerBackTitle: "Back",
+            };
+          }}
         >
           {isLoggedIn ? (
             <>

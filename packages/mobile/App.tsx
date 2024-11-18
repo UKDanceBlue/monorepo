@@ -2,14 +2,9 @@
 import { useAsyncStorageDevTools } from "@dev-plugins/async-storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
-import {
-  configureScope as configureSentryScope,
-  init as initSentry,
-  ReactNativeTracing,
-  wrap as wrapWithSentry,
-} from "@sentry/react-native";
+import * as Sentry from "@sentry/react-native";
 import { isRunningInExpoGo } from "expo";
-import { DevMenu, isDevelopmentBuild } from "expo-dev-client";
+import { isDevelopmentBuild, registerDevMenuItems } from "expo-dev-client";
 import { useFonts } from "expo-font";
 import { setNotificationHandler } from "expo-notifications";
 import { hideAsync } from "expo-splash-screen";
@@ -42,8 +37,8 @@ import { overrideApiBaseUrl } from "./src/common/apiUrl";
 // import OpenSansCondensedLightFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light.ttf";
 // import OpenSansCondensedLightItalicFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light-Italic.ttf";
 import { FilledNavigationContainer } from "./src/navigation/NavigationContainer";
-import { routingInstrumentation } from "./src/navigation/routingInstrumentation";
 import { getCustomTheme } from "./src/theme";
+import { navigationIntegration } from "@/navigation/routingInstrumentation";
 
 const metadata = "metadata" in manifest ? manifest.metadata : undefined;
 const extra = "extra" in manifest ? manifest.extra : undefined;
@@ -61,44 +56,39 @@ Logger.debug("Starting app");
 
 void preventAutoHideAsync();
 
-initSentry({
+Sentry.init({
   dsn: "https://f8d08f6f2a9dd8d627a9ed4b99fb4ba4@o4507762130681856.ingest.us.sentry.io/4507762137825280",
   tracesSampleRate: 0.2,
   _experiments: {
     profilesSampleRate: 0.2,
   },
   debug: false,
-  integrations: [
-    new ReactNativeTracing({
-      routingInstrumentation,
-      enableNativeFramesTracking: !isRunningInExpoGo(),
-    }),
-  ],
+  integrations: [navigationIntegration],
+  enableNativeFramesTracking: !isRunningInExpoGo(),
   environment: channel ?? (isDevelopmentBuild() ? "dev-client" : "unknown"),
   enabled: !__DEV__,
+  initialScope: {},
 });
 
-configureSentryScope((scope) => {
-  scope.setTag("expo-update-id", updateId);
-  scope.setTag("expo-is-embedded-update", isEmbeddedLaunch);
+Sentry.setTag("expo-update-id", updateId);
+Sentry.setTag("expo-is-embedded-update", isEmbeddedLaunch);
 
-  if (typeof updateGroup === "string") {
-    scope.setTag("expo-update-group-id", updateGroup);
+if (typeof updateGroup === "string") {
+  Sentry.setTag("expo-update-group-id", updateGroup);
 
-    const owner = extra?.expoClient?.owner ?? "[account]";
-    const slug = extra?.expoClient?.slug ?? "[project]";
-    scope.setTag(
-      "expo-update-debug-url",
-      `https://expo.dev/accounts/${owner}/projects/${slug}/updates/${updateGroup}`
-    );
-  } else if (isEmbeddedLaunch) {
-    // This will be `true` if the update is the one embedded in the build, and not one downloaded from the updates server.
-    scope.setTag("expo-update-debug-url", "embedded");
-  }
-});
+  const owner = extra?.expoClient?.owner ?? "[account]";
+  const slug = extra?.expoClient?.slug ?? "[project]";
+  Sentry.setTag(
+    "expo-update-debug-url",
+    `https://expo.dev/accounts/${owner}/projects/${slug}/updates/${updateGroup}`
+  );
+} else if (isEmbeddedLaunch) {
+  // This will be `true` if the update is the one embedded in the build, and not one downloaded from the updates server.
+  Sentry.setTag("expo-update-debug-url", "embedded");
+}
 
 if (isDevelopmentBuild()) {
-  DevMenu.registerDevMenuItems([
+  registerDevMenuItems([
     {
       name: "Clear AsyncStorage",
       callback: () => {
@@ -156,7 +146,7 @@ setNotificationHandler({
 /**
  * Main app container
  */
-const App = wrapWithSentry(() => {
+const App = Sentry.wrap(() => {
   const isOfflineInternal = useRef(false);
   const [theme, setTheme] = useState<ICustomTheme | undefined>(undefined);
 

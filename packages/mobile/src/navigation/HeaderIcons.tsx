@@ -48,7 +48,9 @@ const HeaderIcons = ({
         />
       </TouchableOpacity> */}
       <View>
-        <TouchableOpacity onPress={() => navigation.navigate("Notifications")}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Notifications", {})}
+        >
           <FontAwesome
             name="bell"
             color="#0032A0"
@@ -59,7 +61,7 @@ const HeaderIcons = ({
           />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+      <TouchableOpacity onPress={() => navigation.navigate("Profile", {})}>
         <FontAwesome5
           name="user-alt"
           color="#0032A0"

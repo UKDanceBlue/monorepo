@@ -1,16 +1,12 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import type { RouteProp } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 import type { ReactElement } from "react";
 import { useEffect, useState } from "react";
 
 import { withErrorBoundary } from "@/common/components/ErrorBoundary";
 import { useTabBarConfig } from "@/common/hooks/useTabBarConfig";
 
-import type {
-  RootStackParamList,
-  TabNavigatorParamList,
-} from "../../../types/navigationTypes";
+import type { TabNavigatorParamList } from "../../../types/navigationTypes";
 import HeaderIcons from "../../HeaderIcons";
 import { DBHeaderText } from "./DBHeaderText";
 import DBMomentsScreen from "./DBMoments";
@@ -131,12 +127,7 @@ const TabBar = () => {
 
   return (
     <Tabs.Navigator
-      screenOptions={({
-        navigation,
-      }: {
-        navigation: NativeStackNavigationProp<RootStackParamList>;
-        route: RouteProp<TabNavigatorParamList>;
-      }) => ({
+      screenOptions={{
         // tabBarBackground: () => (
         //   <Image
         //     source={require("../../../../assets/screens/navigation/standardBG.png") as ImageSourcePropType}
@@ -146,7 +137,7 @@ const TabBar = () => {
         // ),
         headerLeft: DBHeaderText,
         headerTitle: () => null,
-        headerRight: () => <HeaderIcons navigation={navigation} />,
+        headerRight: () => <HeaderIcons navigation={useNavigation()} />,
         headerStyle: [
           {
             borderBottomWidth: 1.5,
@@ -162,7 +153,7 @@ const TabBar = () => {
           },
           null,
         ],
-      })}
+      }}
       tabBar={(props) => <TabBarComponent {...props} fancyTab={fancyTab} />}
     >
       {!tabConfigLoading && currentTabs.length > 0

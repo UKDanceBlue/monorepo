@@ -145,7 +145,7 @@ const ScoreBoardScreen = ({
         ) : (
           <Pressable
             onPress={() => {
-              navigate("MyTeam");
+              navigate("MyTeam", {});
             }}
             _pressed={{ opacity: 0.5 }}
           >
@@ -200,7 +200,9 @@ const ScoreBoardScreen = ({
         data={standingData}
         refreshing={loading}
         onRefresh={refresh}
-        onTeamClick={userTeamData?.id ? () => navigate("MyTeam") : undefined}
+        onTeamClick={
+          userTeamData?.id ? () => navigate("MyTeam", {}) : undefined
+        }
       />
     </View>
   );

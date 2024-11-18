@@ -61,23 +61,21 @@
           "icon": "./assets/app/icon-2.png",
           "color": "#ffffff"
         }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold-Italic.ttf",
+            "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold.ttf",
+            "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Italic.ttf",
+            "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Roman.ttf",
+            "./assets/fonts/opensans-condensed/OpenSans-Condensed-Bold.ttf",
+            "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light-Italic.ttf",
+            "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light.ttf"
+          ]
+        }
       ]
-      // TODO: Use this to load fonts instead of loading them at runtime
-      //       We need to rename the files to be the same as the font name in the font file, and change the font names in the app
-      // [
-      //   "expo-font",
-      //   {
-      //     "fonts": [
-      //       "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold-Italic.ttf",
-      //       "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold.ttf",
-      //       "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Italic.ttf",
-      //       "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Roman.ttf",
-      //       "./assets/fonts/opensans-condensed/OpenSans-Condensed-Bold.ttf",
-      //       "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light-Italic.ttf",
-      //       "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light.ttf"
-      //     ]
-      //   }
-      // ]
     ],
     "updates": {
       "enabled": true,
