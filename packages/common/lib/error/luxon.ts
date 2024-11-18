@@ -2,7 +2,8 @@ import type { DateTime, Duration, Interval } from "luxon";
 import type { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 
-import { ConcreteError, ErrorCode } from "./index.js";
+import { ConcreteError } from "./error.js";
+import { LuxonError as ErrorCodeLuxonError } from "./errorCode.js";
 
 export class LuxonError extends ConcreteError {
   constructor(
@@ -22,8 +23,8 @@ export class LuxonError extends ConcreteError {
     return this.value.invalidExplanation ?? this.message;
   }
 
-  get tag(): ErrorCode.LuxonError {
-    return ErrorCode.LuxonError;
+  get tag(): ErrorCodeLuxonError {
+    return ErrorCodeLuxonError;
   }
 
   readonly expose = true;

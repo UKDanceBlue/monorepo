@@ -5,7 +5,7 @@ import { createContext, useContext, useMemo, useReducer } from "react";
 import { cacheExchange, Client, fetchExchange, Provider } from "urql";
 
 import { API_BASE_URL } from "@/common/apiUrl";
-import { DANCEBLUE_TOKEN_KEY } from "@/common/auth";
+import { DANCEBLUE_TOKEN_KEY } from "@/common/storage-tokens";
 
 const invalidateCacheContext = createContext<() => void>(() => undefined);
 

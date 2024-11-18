@@ -1,8 +1,8 @@
-import type { AuthorizationRule } from "@ukdanceblue/common";
-import { prettyPrintAuthorizationRule } from "@ukdanceblue/common";
 import type { GraphQLResolveInfo } from "graphql";
 import type { Path } from "graphql/jsutils/Path.js";
 
+import type { AuthorizationRule } from "../authorization/accessControl.js";
+import { prettyPrintAuthorizationRule } from "../authorization/accessControl.js";
 import { ConcreteError } from "./error.js";
 import * as ErrorCode from "./errorCode.js";
 

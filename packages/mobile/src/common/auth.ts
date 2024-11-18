@@ -12,8 +12,7 @@ import { useLoading } from "@/context/useLoading";
 
 import { API_BASE_URL } from "./apiUrl";
 import { Logger } from "./logger/Logger";
-
-export const DANCEBLUE_TOKEN_KEY = "danceblue-auth-token";
+import { DANCEBLUE_TOKEN_KEY } from "./storage-tokens";
 
 function getLoginUrl(source: AuthSource): string {
   let urlComponent = "";
