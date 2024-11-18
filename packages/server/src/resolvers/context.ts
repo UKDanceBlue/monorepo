@@ -54,7 +54,7 @@ async function withUserInfo(
   inputContext: GraphQLContext,
   userId: string
 ): Promise<ConcreteResult<GraphQLContext>> {
-  const outputContext = structuredClone(inputContext);
+  const outputContext = { ...inputContext };
   const personRepository = Container.get(PersonRepository);
   const person = await personRepository.findPersonAndTeamsByUnique({
     uuid: userId,
@@ -79,7 +79,10 @@ async function withUserInfo(
   }
   logger.trace("graphqlContextFunction Found user", personResource.value);
   outputContext.authenticatedUser = personResource.value;
-  outputContext.userData.userId = userId;
+  outputContext.userData = {
+    ...outputContext.userData,
+    userId: userId,
+  };
 
   // Set the teams the user is on
   let teamMemberships = await personRepository.findMembershipsOfPerson(
@@ -122,12 +125,17 @@ async function withUserInfo(
     "graphqlContextFunction Effective committee roles",
     ...effectiveCommitteeRoles.value
   );
-  outputContext.authorization.effectiveCommitteeRoles =
-    effectiveCommitteeRoles.value;
+  outputContext.authorization = {
+    ...outputContext.authorization,
+    effectiveCommitteeRoles: effectiveCommitteeRoles.value,
+  };
 
   // If the user is on a committee, override the dbRole
   if (effectiveCommitteeRoles.value.length > 0) {
-    outputContext.authorization.dbRole = DbRole.Committee;
+    outputContext.authorization = {
+      ...outputContext.authorization,
+      dbRole: DbRole.Committee,
+    };
   }
 
   return Ok(outputContext);

@@ -1,5 +1,5 @@
 import type { ExtraLogArgs } from "./transport";
-import { LoggerTransport,LogLevel } from "./transport";
+import { LoggerTransport, LogLevel } from "./transport";
 
 function safeStringify(value: unknown): string {
   try {

@@ -95,7 +95,6 @@
         "group": "4mobile"
       },
       "env": {
-        "REACT_NATIVE_PACKAGER_HOSTNAME": "${env:ZROK_NAME}",
         "REACT_EDITOR": "code"
       },
 
@@ -151,25 +150,13 @@
       "name": "Tunnel Server",
       "request": "launch",
       "type": "node",
-      "runtimeExecutable": "node",
-      "args": ["${workspaceFolder}/scripts/connect-tunnel.js", "server"],
-      "autoAttachChildProcesses": false
-    },
-    {
-      "name": "Tunnel Mobile",
-      "request": "launch",
-      "type": "node",
-      "runtimeExecutable": "node",
-      "args": ["${workspaceFolder}/scripts/connect-tunnel.js", "mobile"],
-      "autoAttachChildProcesses": false
-    },
-    {
-      "name": "Tunnel Portal",
-      "request": "launch",
-      "type": "node",
-      "runtimeExecutable": "node",
-      "args": ["${workspaceFolder}/scripts/connect-tunnel.js", "portal"],
-      "autoAttachChildProcesses": false
+      "runtimeExecutable": "bash",
+      "args": ["${workspaceFolder}/.devcontainer/tunnel.sh", "server"],
+      "autoAttachChildProcesses": false,
+      "presentation": {
+        "hidden": true
+      },
+      "console": "integratedTerminal"
     }
   ],
   "compounds": [
@@ -200,9 +187,7 @@
         "Server: Start",
         "Portal: Dev",
         "Common: Watch",
-        "GraphQL: Watch Portal",
-        "Tunnel Server",
-        "Tunnel Portal"
+        "GraphQL: Watch Portal"
       ],
       "presentation": {
         "group": "0dev-enviroment",
@@ -216,8 +201,7 @@
         "Mobile: Start",
         "Common: Watch",
         "GraphQL: Watch Mobile",
-        "Tunnel Server",
-        "Tunnel Mobile"
+        "Tunnel Server"
       ],
       "presentation": {
         "group": "0dev-enviroment",
@@ -233,9 +217,7 @@
         "Common: Watch",
         "GraphQL: Watch Portal",
         "GraphQL: Watch Mobile",
-        "Tunnel Server",
-        "Tunnel Portal",
-        "Tunnel Mobile"
+        "Tunnel Server"
       ],
       "preLaunchTask": "Server: Prisma Generate",
       "presentation": {

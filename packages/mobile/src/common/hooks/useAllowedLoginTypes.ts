@@ -28,6 +28,7 @@ export function useAllowedLoginTypes(): {
   );
 
   useEffect(() => {
+    console.log(error?.response);
     if (error) {
       logError(error);
     }

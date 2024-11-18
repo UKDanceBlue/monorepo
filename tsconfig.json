@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "lib": ["ES5"],
-    "module": "Preserve",
+    "lib": ["ES2017"],
+    "target": "es2018",
+    "module": "preserve",
     "moduleResolution": "Bundler",
     "strict": true,
     "noUnusedLocals": true,

@@ -29,6 +29,7 @@
     "postinstall": "yarn constraints",
     "mobile:check": "yarn workspace @ukdanceblue/mobile check",
     "mobile:start": "yarn workspace @ukdanceblue/mobile start",
+    "mobile:start:tunnel": "yarn workspace @ukdanceblue/mobile start:tunnel",
     "portal:build": "yarn workspace @ukdanceblue/portal build",
     "portal:check": "yarn workspace @ukdanceblue/portal check",
     "portal:dev": "yarn workspace @ukdanceblue/portal dev",

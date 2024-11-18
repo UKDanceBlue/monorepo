@@ -14,8 +14,8 @@ RUN curl -sSLfo ./zrok-install.bash https://get.openziti.io/install.bash && chmo
 # [Optional] Uncomment if you want to install more global node modules
 # RUN su node -c "npm install -g <your-package-list-here>"
 
-COPY ./.bashrc /home/node/.bashrc
-COPY ./git-prompt.sh /home/node/.git-prompt.sh
+COPY --chown=node:node ./.bashrc /home/node/.bashrc
+COPY --chown=node:node ./git-prompt.sh /home/node/.git-prompt.sh
 
 # Enable corepack
 RUN corepack enable
