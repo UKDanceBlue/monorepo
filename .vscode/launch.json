@@ -95,7 +95,7 @@
         "group": "4mobile"
       },
       "env": {
-        "REACT_NATIVE_PACKAGER_HOSTNAME": "${input:ip}",
+        "REACT_NATIVE_PACKAGER_HOSTNAME": "${env:ZROK_NAME}",
         "REACT_EDITOR": "code"
       },
 
@@ -146,13 +146,30 @@
       "presentation": {
         "group": "4mobile"
       }
-    }
-  ],
-  "inputs": [
+    },
     {
-      "type": "promptString",
-      "id": "ip",
-      "description": "Enter the IP address of your machine, on Windows you can use `ipconfig` to find it, on Mac you can use `ifconfig`"
+      "name": "Tunnel Server",
+      "request": "launch",
+      "type": "node",
+      "runtimeExecutable": "node",
+      "args": ["${workspaceFolder}/scripts/connect-tunnel.js", "server"],
+      "autoAttachChildProcesses": false
+    },
+    {
+      "name": "Tunnel Mobile",
+      "request": "launch",
+      "type": "node",
+      "runtimeExecutable": "node",
+      "args": ["${workspaceFolder}/scripts/connect-tunnel.js", "mobile"],
+      "autoAttachChildProcesses": false
+    },
+    {
+      "name": "Tunnel Portal",
+      "request": "launch",
+      "type": "node",
+      "runtimeExecutable": "node",
+      "args": ["${workspaceFolder}/scripts/connect-tunnel.js", "portal"],
+      "autoAttachChildProcesses": false
     }
   ],
   "compounds": [
@@ -170,7 +187,7 @@
     },
     {
       "name": "Dev Environment: Server",
-      "configurations": ["Server: Start", "Common: Watch"],
+      "configurations": ["Server: Start", "Common: Watch", "Tunnel Server"],
       "preLaunchTask": "Server: Prisma Generate",
       "presentation": {
         "group": "0dev-enviroment",
@@ -183,7 +200,9 @@
         "Server: Start",
         "Portal: Dev",
         "Common: Watch",
-        "GraphQL: Watch Portal"
+        "GraphQL: Watch Portal",
+        "Tunnel Server",
+        "Tunnel Portal"
       ],
       "presentation": {
         "group": "0dev-enviroment",
@@ -196,7 +215,9 @@
         "Server: Start",
         "Mobile: Start",
         "Common: Watch",
-        "GraphQL: Watch Mobile"
+        "GraphQL: Watch Mobile",
+        "Tunnel Server",
+        "Tunnel Mobile"
       ],
       "presentation": {
         "group": "0dev-enviroment",
@@ -211,7 +232,10 @@
         "Mobile: Start",
         "Common: Watch",
         "GraphQL: Watch Portal",
-        "GraphQL: Watch Mobile"
+        "GraphQL: Watch Mobile",
+        "Tunnel Server",
+        "Tunnel Portal",
+        "Tunnel Mobile"
       ],
       "preLaunchTask": "Server: Prisma Generate",
       "presentation": {

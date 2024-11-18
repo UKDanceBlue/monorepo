@@ -1,4 +1,5 @@
 #!/bin/bash
+#cSpell:disable
 
 # corepack use yarn@*
 # pushd packages/portal
@@ -16,10 +17,10 @@
 
 # yarn install
 
-zrok config set apiEndpoint https://zrok.tunnel.danceblue.org
+zrok config set apiEndpoint https://tunnel.danceblue.org
 
 echo "DanceBlue Dev Container automatic setup complete!"
-echo "To enable Zrok, go to https://zrok.tunnel.danceblue.org and log in with your Zrok account."
+echo "To enable Zrok, go to https://tunnel.danceblue.org and log in with your Zrok account."
 echo "Once logged in, open the 'Detail' tab and copy your Token, then paste it here"
 
 read -p "Zrok Token: " zrokToken
@@ -27,14 +28,16 @@ read -p "Zrok Token: " zrokToken
 if [ -z "$zrokToken" ]; then
   echo "No Zrok Token provided, skipping Zrok setup"
 else
-  read -p "Name for Zrok tunnel (only lowercase letters): " zrokName
+  read -p "Name for this computer: " computerName
+  # Set zrokName to computerName with all non-alphanumeric characters removed and converted to lowercase
+  zrokName=$(echo $computerName | tr -dc 'a-zA-Z0-9' | tr '[:upper:]' '[:lower:]')
   if [ -z "$zrokName" ]; then
     echo "No Zrok tunnel name provided, skipping Zrok setup"
   else
-    if [[ "$zrokName" =~ ^[a-z]+$ ]]; then
+    if [[ "$zrokName" =~ ^[a-z0-9]+$ ]]; then
       zrok disable
       zrok enable $zrokToken -d $zrokName
-      echo $zrokName > .zrokname
+      echo $zrokName > .devcontainer/.zrokname
 
       echo "Just ignore the below error messages and logs"
       
@@ -44,6 +47,8 @@ else
       zrok reserve public 8081 --unique-name "${zrokName}metro"
       zrok reserve public 8000 --unique-name "${zrokName}server"
       zrok reserve public 5173 --unique-name "${zrokName}portal"
+
+      sudo bash -c "echo 'ZROK_NAME=${zrokName}' >> /etc/environment"
     else
       echo "Invalid Zrok tunnel name provided, skipping Zrok setup"
     fi

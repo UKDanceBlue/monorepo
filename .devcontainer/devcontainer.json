@@ -55,22 +55,6 @@
 
   "customizations": {
     "vscode": {
-      "settings": {
-        "git.autofetch": true,
-        "cSpell.words": ["emerg", "healthcheck", "maxsize", "RNCAL", "umzug"],
-        "[typescriptreact]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "[typescript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "[javascript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "[json]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        }
-      },
       "extensions": [
         "dbaeumer.vscode-eslint",
         "msjsdiag.vscode-react-native",

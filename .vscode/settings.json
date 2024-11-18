@@ -23,34 +23,6 @@
     "linesBetweenQueries": 2,
     "reservedWordCase": "upper"
   },
-  "cSpell.words": [
-    "antd",
-    "autoincrement",
-    "Catchable",
-    "Citext",
-    "codegen",
-    "collapsable",
-    "cooldown",
-    "DANCEBLUE",
-    "datasource",
-    "ddns",
-    "Errorable",
-    "jonasmerlin",
-    "Leaderboards",
-    "linkblue",
-    "Linkblues",
-    "luxon",
-    "Oidc",
-    "phonathon",
-    "Spinnable",
-    "tanstack",
-    "Timestamptz",
-    "typecheck",
-    "ukdanceblue",
-    "urql",
-    "Whatwg",
-    "wysimark"
-  ],
   "eslint.codeActionsOnSave.mode": "problems",
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
@@ -73,6 +45,5 @@
     "editor.defaultFormatter": "mtxr.sqltools"
   },
   "react-native-tools.projectRoot": "./packages/mobile",
-  "dependi.npm.lockFileEnabled": true,
-  "cSpell.enableFiletypes": ["prisma"]
+  "dependi.npm.lockFileEnabled": true
 }
