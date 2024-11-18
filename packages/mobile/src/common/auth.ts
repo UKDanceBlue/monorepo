@@ -14,7 +14,7 @@ import { API_BASE_URL } from "./apiUrl";
 import { Logger } from "./logger/Logger";
 import { DANCEBLUE_TOKEN_KEY } from "./storage-tokens";
 
-function getLoginUrl(source: AuthSource): string {
+function getLoginUrl(source: AuthSource): [string, string] {
   let urlComponent = "";
   switch (source) {
     case AuthSource.LinkBlue: {
@@ -33,10 +33,12 @@ function getLoginUrl(source: AuthSource): string {
       throw new Error(`Unknown auth source: ${source}`);
     }
   }
+
+  const redirectUrl = createURL("/auth/login");
   const urlString = `${API_BASE_URL}/api/auth/${urlComponent}?returning=token&redirectTo=${encodeURIComponent(
-    createURL("/auth/login")
+    redirectUrl
   )}`;
-  return urlString;
+  return [urlString, redirectUrl];
 }
 
 export const useLogin = (): [boolean, (source: AuthSource) => void] => {
@@ -49,10 +51,8 @@ export const useLogin = (): [boolean, (source: AuthSource) => void] => {
     }
     setLoading(true);
     try {
-      const result = await openAuthSessionAsync(
-        getLoginUrl(source),
-        createURL("/auth/login")
-      );
+      const result = await openAuthSessionAsync(...getLoginUrl(source));
+      Logger.debug("Auth session result", { context: { result } });
       switch (result.type) {
         case "success": {
           const url = new URL(result.url);
@@ -77,7 +77,7 @@ export const useLogin = (): [boolean, (source: AuthSource) => void] => {
       }
       invalidateCache();
     } catch (error) {
-      console.error(error);
+      Logger.error("Error logging in", { error });
     } finally {
       setLoading(false);
     }

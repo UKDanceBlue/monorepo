@@ -159,7 +159,9 @@ export const graphqlContextFunction: ContextFunction<
     ? String((req.cookies as Partial<Record<string, string>>).token)
     : undefined;
   if (!token) {
-    let authorizationHeader = req.headers.Authorization;
+    let authorizationHeader =
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+      req.headers.Authorization || req.headers.authorization;
     if (Array.isArray(authorizationHeader)) {
       authorizationHeader = authorizationHeader[0];
     }
