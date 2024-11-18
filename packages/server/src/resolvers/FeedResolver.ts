@@ -16,6 +16,7 @@ import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok } from "ts-results-es";
 import {
   Arg,
+  Ctx,
   FieldResolver,
   Int,
   Mutation,
@@ -28,6 +29,8 @@ import { FileManager } from "#files/FileManager.js";
 import { feedItemModelToResource } from "#repositories/feed/feedModelToResource.js";
 import { FeedRepository } from "#repositories/feed/FeedRepository.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
+
+import type { GraphQLContext } from "./context.js";
 
 @Resolver(() => FeedNode)
 @Service([FeedRepository, FileManager])
@@ -181,11 +184,14 @@ export class FeedResolver {
     nullable: true,
     description: "The image associated with this feed item",
   })
-  async image(@Root() { id: { id } }: FeedNode) {
+  async image(
+    @Root() { id: { id } }: FeedNode,
+    @Ctx() { serverUrl }: GraphQLContext
+  ) {
     const row = await this.feedRepository.getFeedItemImage({ uuid: id });
     if (row == null) {
       return null;
     }
-    return imageModelToResource(row, row.file, this.fileManager);
+    return imageModelToResource(row, row.file, this.fileManager, serverUrl);
   }
 }

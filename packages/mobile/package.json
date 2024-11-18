@@ -30,7 +30,8 @@
     "eas-ios-production": "npx eas-cli@latest build --no-wait --platform=ios --auto-submit --profile=production",
     "postinstall": "cd ../.. && yarn workspace @ukdanceblue/common build",
     "ios": "expo run:ios",
-    "start": "expo start --dev-client --tunnel",
+    "start": "expo start --dev-client",
+    "start:tunnel": "expo start --dev-client --tunnel",
     "test": "vitest",
     "test-with-coverage": "vitest --collect-coverage --collect-coverage-from=\"src/**/*..jsx,ts,tsx}\""
   },

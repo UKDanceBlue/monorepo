@@ -66,6 +66,7 @@ export async function createServer() {
   const { formatError } = await import("./lib/formatError.js");
 
   const app = express();
+  app.set("trust proxy", true);
 
   setupExpressErrorHandler(app);
 

@@ -30,85 +30,89 @@ export default class HealthCheckRouter extends RouterService {
     this.addPostRoute(
       "/image/:uuid",
       upload.single("file"),
-      async (req, res): Promise<void> => {
-        const { uuid } = req.params;
-
-        // Check the image in the database
-        if (!uuid) {
-          return void res.status(400).send("No image UUID provided");
-        }
-        const dbImage = await imageRepository.findImageByUnique({ uuid });
-        if (!dbImage) {
-          return void res.status(404).send("Image not found");
-        }
-
-        // Check the uploaded file
-        const uploadedFile = req.file;
-        if (!uploadedFile) {
-          return void res.status(400).send("No image uploaded");
-        }
-
-        const {
-          thumbHash: thumbHashArray,
-          height,
-          width,
-        } = await generateThumbHash(uploadedFile.path);
-
-        const thumbHash = Buffer.from(thumbHashArray);
-
-        let file: File;
+      async (req, res, next): Promise<void> => {
         try {
-          const tmpFileHandle = await open(uploadedFile.path);
-          try {
-            file = await fileManager.storeFile(
-              {
-                type: "stream",
-                name: uploadedFile.originalname,
-                stream: tmpFileHandle.createReadStream({
-                  autoClose: true,
-                  emitClose: true,
-                }),
-              },
-              uploadedFile.mimetype,
-              // TODO: Implement file ownership
-              undefined,
-              undefined,
-              "local"
-            );
-          } finally {
-            await tmpFileHandle.close();
+          const { uuid } = req.params;
+
+          // Check the image in the database
+          if (!uuid) {
+            return void res.status(400).send("No image UUID provided");
           }
-        } catch (error) {
-          logger.warning("Error while storing file", { error });
-          return void res.status(500).send("Error while storing file");
-        }
+          const dbImage = await imageRepository.findImageByUnique({ uuid });
+          if (!dbImage) {
+            return void res.status(404).send("Image not found");
+          }
 
-        try {
-          await imageRepository.updateImage(
-            {
-              uuid,
-            },
-            {
-              file: {
-                connect: {
-                  id: file.id,
+          // Check the uploaded file
+          const uploadedFile = req.file;
+          if (!uploadedFile) {
+            return void res.status(400).send("No image uploaded");
+          }
+
+          const {
+            thumbHash: thumbHashArray,
+            height,
+            width,
+          } = await generateThumbHash(uploadedFile.path);
+
+          const thumbHash = Buffer.from(thumbHashArray);
+
+          let file: File;
+          try {
+            const tmpFileHandle = await open(uploadedFile.path);
+            try {
+              file = await fileManager.storeFile(
+                {
+                  type: "stream",
+                  name: uploadedFile.originalname,
+                  stream: tmpFileHandle.createReadStream({
+                    autoClose: true,
+                    emitClose: true,
+                  }),
                 },
-              },
-              thumbHash,
-              width,
-              height,
+                uploadedFile.mimetype,
+                // TODO: Implement file ownership
+                undefined,
+                undefined,
+                "local"
+              );
+            } finally {
+              await tmpFileHandle.close();
             }
-          );
+          } catch (error) {
+            logger.warning("Error while storing file", { error });
+            return void res.status(500).send("Error while storing file");
+          }
+
+          try {
+            await imageRepository.updateImage(
+              {
+                uuid,
+              },
+              {
+                file: {
+                  connect: {
+                    id: file.id,
+                  },
+                },
+                thumbHash,
+                width,
+                height,
+              }
+            );
+          } catch (error) {
+            // Roll back file creation
+            await fileManager.deleteFile({ id: file.id });
+
+            // Log and throw error
+            logger.warning("Error while updating image", { error });
+            return void res.status(500).send("Error while updating image");
+          }
+
+          return void res.status(204).send();
         } catch (error) {
-          // Roll back file creation
-          await fileManager.deleteFile({ id: file.id });
-
-          // Log and throw error
-          logger.warning("Error while updating image", { error });
-          return void res.status(500).send("Error while updating image");
+          next(error);
         }
-
-        return void res.status(204).send();
       }
     );
   }

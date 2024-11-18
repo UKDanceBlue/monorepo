@@ -21,12 +21,14 @@ import { Ok } from "ts-results-es";
 
 import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
 import { superAdminLinkbluesToken } from "#lib/environmentTokens.js";
+import { getHostUrl } from "#lib/host.js";
 import { logger } from "#logging/logger.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface GraphQLContext extends AuthorizationContext {}
+export interface GraphQLContext extends AuthorizationContext {
+  serverUrl: URL;
+}
 
 const superAdminLinkblues = Container.get(superAdminLinkbluesToken);
 
@@ -131,29 +133,29 @@ async function withUserInfo(
   return Ok(outputContext);
 }
 
-const defaultContext: Readonly<GraphQLContext> = Object.freeze<GraphQLContext>({
-  authenticatedUser: null,
-  teamMemberships: [],
-  userData: {
-    authSource: AuthSource.None,
-  },
-  authorization: defaultAuthorization,
-});
+export const graphqlContextFunction: ContextFunction<
+  [ExpressContextFunctionArgument],
+  GraphQLContext
+> = async ({ req }): Promise<GraphQLContext> => {
+  const defaultContext: Readonly<GraphQLContext> = {
+    authenticatedUser: null,
+    teamMemberships: [],
+    userData: {
+      authSource: AuthSource.None,
+    },
+    authorization: defaultAuthorization,
+    serverUrl: getHostUrl(req),
+  };
 
-const anonymousContext: Readonly<GraphQLContext> =
-  Object.freeze<GraphQLContext>({
+  const anonymousContext: Readonly<GraphQLContext> = {
     ...defaultContext,
     authorization: {
       accessLevel: AccessLevel.Public,
       effectiveCommitteeRoles: [],
       dbRole: DbRole.Public,
     },
-  });
+  };
 
-export const graphqlContextFunction: ContextFunction<
-  [ExpressContextFunctionArgument],
-  GraphQLContext
-> = async ({ req }): Promise<GraphQLContext> => {
   // Get the token from the cookies or the Authorization header
   let token = (req.cookies as Partial<Record<string, string>>).token
     ? String((req.cookies as Partial<Record<string, string>>).token)

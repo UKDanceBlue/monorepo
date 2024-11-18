@@ -1,9 +1,7 @@
-import { Container, Service } from "@freshgum/typedi";
+import { Service } from "@freshgum/typedi";
 import type { File } from "@prisma/client";
 import { MIMEType } from "util";
 
-import { serveOriginToken } from "#lib/environmentTokens.js";
-import { logger } from "#logging/standardLogging.js";
 import { FileRepository } from "#repositories/file/fileRepository.js";
 
 import { LocalStorageProvider } from "./storage/LocalStorageProvider.js";
@@ -12,11 +10,6 @@ import type {
   StorageProvider,
 } from "./storage/StorageProvider.js";
 import { UnsupportedAccessMethod } from "./storage/StorageProvider.js";
-
-const serveOrigin = Container.get(serveOriginToken);
-const FILE_API = new URL("/api/file/download/", serveOrigin);
-
-logger.info(`Serving files from ${FILE_API.href}`);
 
 @Service([LocalStorageProvider, FileRepository])
 export class FileManager {
@@ -111,7 +104,8 @@ export class FileManager {
    * @throws Error if the file's location is not supported
    */
   async getExternalUrl(
-    file: { uuid: string } | { uuid: string; locationUrl: string }
+    file: { uuid: string } | { uuid: string; locationUrl: string },
+    serverOrigin: string | URL
   ): Promise<URL | null> {
     let locationUrl: URL;
     let fileUuid: string;
@@ -128,7 +122,7 @@ export class FileManager {
     }
     switch (locationUrl.protocol) {
       case "file:": {
-        return new URL(fileUuid, FILE_API);
+        return new URL(fileUuid, serverOrigin);
       }
       case "http:":
       case "https:": {

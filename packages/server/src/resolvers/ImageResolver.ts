@@ -21,7 +21,7 @@ import {
 } from "@ukdanceblue/common";
 import { URLResolver } from "graphql-scalars";
 import fetch from "node-fetch";
-import { Arg, Args, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Args, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
 import { FileManager } from "#files/FileManager.js";
 import { generateThumbHash } from "#lib/thumbHash.js";
@@ -29,6 +29,8 @@ import { auditLogger } from "#logging/auditLogging.js";
 import { logger } from "#logging/standardLogging.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 import { ImageRepository } from "#repositories/image/ImageRepository.js";
+
+import type { GraphQLContext } from "./context.js";
 
 @Resolver(() => ImageNode)
 @Service([ImageRepository, FileManager])
@@ -40,7 +42,8 @@ export class ImageResolver {
 
   @Query(() => GetImageByUuidResponse, { name: "image" })
   async getByUuid(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Ctx() { serverUrl }: GraphQLContext
   ): Promise<GetImageByUuidResponse> {
     const result = await this.imageRepository.findImageByUnique({ uuid: id });
 
@@ -49,7 +52,12 @@ export class ImageResolver {
     }
 
     return GetImageByUuidResponse.newOk(
-      await imageModelToResource(result, result.file, this.fileManager)
+      await imageModelToResource(
+        result,
+        result.file,
+        this.fileManager,
+        serverUrl
+      )
     );
   }
 
@@ -58,7 +66,8 @@ export class ImageResolver {
   })
   @Query(() => ListImagesResponse, { name: "images" })
   async list(
-    @Args(() => ListImagesArgs) args: ListImagesArgs
+    @Args(() => ListImagesArgs) args: ListImagesArgs,
+    @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ListImagesResponse> {
     const result = await this.imageRepository.listImages({
       filters: args.filters,
@@ -80,7 +89,7 @@ export class ImageResolver {
     return ListImagesResponse.newPaginated({
       data: await Promise.all(
         result.map((model) =>
-          imageModelToResource(model, model.file, this.fileManager)
+          imageModelToResource(model, model.file, this.fileManager, serverUrl)
         )
       ),
       total: count,
@@ -93,7 +102,10 @@ export class ImageResolver {
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => ImageNode, { name: "createImage" })
-  async create(@Arg("input") input: CreateImageInput): Promise<ImageNode> {
+  async create(
+    @Arg("input") input: CreateImageInput,
+    @Ctx() { serverUrl }: GraphQLContext
+  ): Promise<ImageNode> {
     const { mime, thumbHash, width, height } = await handleImageUrl(input.url);
     const result = await this.imageRepository.createImage({
       width,
@@ -128,7 +140,7 @@ export class ImageResolver {
       thumbHash: thumbHash != null ? Buffer.from(thumbHash) : null,
     });
 
-    return imageModelToResource(result, null, this.fileManager);
+    return imageModelToResource(result, null, this.fileManager, serverUrl);
   }
 
   @MutationAccessControl({
@@ -137,7 +149,8 @@ export class ImageResolver {
   @Mutation(() => ImageNode, { name: "setImageAltText" })
   async setAltText(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
-    @Arg("alt") alt: string
+    @Arg("alt") alt: string,
+    @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ImageNode> {
     const result = await this.imageRepository.updateImage(
       {
@@ -154,7 +167,12 @@ export class ImageResolver {
 
     auditLogger.secure("Image alt text set", { image: result });
 
-    return imageModelToResource(result, result.file, this.fileManager);
+    return imageModelToResource(
+      result,
+      result.file,
+      this.fileManager,
+      serverUrl
+    );
   }
 
   @MutationAccessControl({
@@ -163,7 +181,8 @@ export class ImageResolver {
   @Mutation(() => ImageNode, { name: "setImageUrl" })
   async setImageUrl(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
-    @Arg("url", () => URLResolver) url: URL
+    @Arg("url", () => URLResolver) url: URL,
+    @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ImageNode> {
     const { mime, thumbHash, width, height } = await handleImageUrl(url);
     const result = await this.imageRepository.updateImage(
@@ -199,7 +218,12 @@ export class ImageResolver {
 
     auditLogger.secure("Image URL set", { image: result });
 
-    return imageModelToResource(result, result.file, this.fileManager);
+    return imageModelToResource(
+      result,
+      result.file,
+      this.fileManager,
+      serverUrl
+    );
   }
 
   @MutationAccessControl({

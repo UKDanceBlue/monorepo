@@ -36,7 +36,6 @@ const MS_CLIENT_SECRET = getEnv("MS_CLIENT_SECRET", null);
 const EXPO_ACCESS_TOKEN = getEnv("EXPO_ACCESS_TOKEN", null);
 const DBFUNDS_API_KEY = getEnv("DBFUNDS_API_KEY", null);
 const DBFUNDS_API_ORIGIN = getEnv("DBFUNDS_API_ORIGIN", null);
-const SERVE_ORIGIN = getEnv("SERVE_ORIGIN", "http://localhost:8000");
 const MAX_FILE_SIZE = getEnv("MAX_FILE_SIZE", "10");
 const SERVE_PATH = getEnv("SERVE_PATH", "/data/serve");
 const UPLOAD_PATH = getEnv("UPLOAD_PATH", "/data/serve/uploads");
@@ -52,14 +51,6 @@ if (Number.isNaN(applicationPort)) {
 }
 if (applicationPort < 0 || applicationPort > 65_535) {
   throw new RangeError("APPLICATION_PORT is not a valid port number");
-}
-
-// Serve origin
-const serveOrigin = await SERVE_ORIGIN;
-try {
-  new URL(serveOrigin);
-} catch {
-  throw new Error("SERVE_ORIGIN is not a valid URL");
 }
 
 // File upload settings
@@ -116,7 +107,6 @@ setEnvironment({
   msClientSecret: await MS_CLIENT_SECRET,
   dbFundsApiKey: await DBFUNDS_API_KEY,
   dbFundsApiOrigin: await DBFUNDS_API_ORIGIN,
-  serveOrigin,
   maxFileSize,
   servePath,
   uploadPath,

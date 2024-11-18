@@ -28,6 +28,7 @@ import {
 import {
   Arg,
   Args,
+  Ctx,
   FieldResolver,
   Mutation,
   Query,
@@ -44,6 +45,8 @@ import {
 import { EventRepository } from "#repositories/event/EventRepository.js";
 import { EventImagesRepository } from "#repositories/event/images/EventImagesRepository.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
+
+import type { GraphQLContext } from "./context.js";
 
 @Service([EventRepository, EventImagesRepository, FileManager])
 @Resolver(() => EventNode)
@@ -300,6 +303,7 @@ export class EventResolver {
     description: "Add an existing image to an event",
   })
   async addExistingImage(
+    @Ctx() { serverUrl }: GraphQLContext,
     @Arg("eventId", () => GlobalIdScalar) eventId: GlobalId,
     @Arg("imageId", () => GlobalIdScalar) imageId: GlobalId
   ): Promise<AddEventImageResponse> {
@@ -309,21 +313,34 @@ export class EventResolver {
     );
 
     return AddEventImageResponse.newOk(
-      await imageModelToResource(row.image, row.image.file, this.fileManager)
+      await imageModelToResource(
+        row.image,
+        row.image.file,
+        this.fileManager,
+        serverUrl
+      )
     );
   }
 
   @FieldResolver(() => [ImageNode], {
     description: "List all images for this event",
   })
-  async images(@Root() event: EventNode): Promise<ImageNode[]> {
+  async images(
+    @Root() event: EventNode,
+    @Ctx() { serverUrl }: GraphQLContext
+  ): Promise<ImageNode[]> {
     const rows = await this.eventImageRepository.findEventImagesByEventUnique({
       uuid: event.id.id,
     });
 
     return Promise.all(
       rows.map((row) =>
-        imageModelToResource(row.image, row.image.file, this.fileManager)
+        imageModelToResource(
+          row.image,
+          row.image.file,
+          this.fileManager,
+          serverUrl
+        )
       )
     );
   }

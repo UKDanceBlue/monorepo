@@ -415,6 +415,15 @@ export const FundraisingEntryResolverStringFilterKeys = {
 
 export type FundraisingEntryResolverStringFilterKeys =
   (typeof FundraisingEntryResolverStringFilterKeys)[keyof typeof FundraisingEntryResolverStringFilterKeys];
+export const FundraisingEntryType = {
+  Cash: "Cash",
+  Check: "Check",
+  Legacy: "Legacy",
+  Online: "Online",
+} as const;
+
+export type FundraisingEntryType =
+  (typeof FundraisingEntryType)[keyof typeof FundraisingEntryType];
 export const ImageResolverAllKeys = {
   Alt: "alt",
   CreatedAt: "createdAt",

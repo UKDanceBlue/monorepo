@@ -95,7 +95,25 @@
         "group": "4mobile"
       },
       "env": {
-        "REACT_NATIVE_PACKAGER_HOSTNAME": "0.0.0.0",
+        "REACT_NATIVE_PACKAGER_HOSTNAME": "${input:ip}",
+        "REACT_EDITOR": "code"
+      },
+
+      "autoAttachChildProcesses": false
+    },
+    {
+      "name": "Mobile: Start (Tunnel)",
+      "request": "launch",
+      "runtimeArgs": ["run", "mobile:start:tunnel"],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/packages/mobile",
+      "presentation": {
+        "group": "4mobile"
+      },
+      "env": {
         "REACT_EDITOR": "code"
       },
       "autoAttachChildProcesses": false
@@ -128,6 +146,13 @@
       "presentation": {
         "group": "4mobile"
       }
+    }
+  ],
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "ip",
+      "description": "Enter the IP address of your machine, on Windows you can use `ipconfig` to find it, on Mac you can use `ifconfig`"
     }
   ],
   "compounds": [

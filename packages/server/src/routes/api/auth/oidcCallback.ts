@@ -6,38 +6,38 @@ import { DateTime } from "luxon";
 import { authorizationCodeGrant } from "openid-client";
 
 import { makeUserJwt } from "#auth/index.js";
-import { serveOriginToken } from "#lib/environmentTokens.js";
+import { getHostUrl } from "#lib/host.js";
 import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 import { oidcConfiguration } from "./oidcClient.js";
 
-const serveOrigin = Container.get(serveOriginToken);
-
 export const oidcCallback = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  let flowSessionId;
-  if (typeof req.body === "object" && "state" in req.body) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    flowSessionId = req.body.state;
-  } else {
-    throw new Error("Missing state parameter");
-  }
-
-  if (!flowSessionId) {
-    return void res.status(400).send("Missing state parameter");
-  }
-
-  let sessionDeleted = false;
+  let sessionDeleted = true;
 
   const personRepository = Container.get(PersonRepository);
   const loginFlowSessionRepository = Container.get(LoginFlowSessionRepository);
 
+  let flowSessionId;
   try {
+    if (typeof req.body === "object" && "state" in req.body) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      flowSessionId = req.body.state;
+    } else {
+      throw new Error("Missing state parameter");
+    }
+
+    if (!flowSessionId) {
+      return void res.status(400).send("Missing state parameter");
+    }
+
+    sessionDeleted = false;
+
     const session =
       await loginFlowSessionRepository.findLoginFlowSessionByUnique({
         uuid: flowSessionId,
@@ -50,10 +50,15 @@ export const oidcCallback = async (
     const query = new URLSearchParams(
       req.body as Record<string, string | readonly string[]>
     );
+
+    const currentUrl = getHostUrl(req);
+    currentUrl.pathname = `/api/auth/oidc-callback`;
+    currentUrl.search = query.toString();
+
     // Perform OIDC validation
     const tokenSet = await authorizationCodeGrant(
       oidcConfiguration,
-      new URL(`${serveOrigin}/api/auth/oidc-callback?${query.toString()}`),
+      currentUrl,
       {
         pkceCodeVerifier: session.codeVerifier,
         expectedState: flowSessionId,
@@ -185,6 +190,7 @@ export const oidcCallback = async (
     }
     return res.redirect(redirectTo);
   } catch (error) {
+    res.clearCookie("token");
     next(error);
   } finally {
     if (!sessionDeleted) {

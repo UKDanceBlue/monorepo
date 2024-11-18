@@ -14,7 +14,6 @@ export const msClientIdToken = new Token<string>("MS_CLIENT_ID");
 export const msClientSecretToken = new Token<string>("MS_CLIENT_SECRET");
 export const dbFundsApiKeyToken = new Token<string>("DBFUNDS_API_KEY");
 export const dbFundsApiOriginToken = new Token<string>("DBFUNDS_API_ORIGIN");
-export const serveOriginToken = new Token<string>("SERVE_ORIGIN");
 export const maxFileSizeToken = new Token<number>("MAX_FILE_SIZE");
 export const servePathToken = new Token<string>("SERVE_PATH");
 export const uploadPathToken = new Token<string>("UPLOAD_PATH");
@@ -34,7 +33,6 @@ export interface Environment {
   msClientSecret: string;
   dbFundsApiKey: string;
   dbFundsApiOrigin: string;
-  serveOrigin: string;
   maxFileSize: number;
   servePath: string;
   uploadPath: string;
@@ -53,7 +51,6 @@ export function setEnvironment(env: Environment) {
   Container.setValue(msClientSecretToken, env.msClientSecret);
   Container.setValue(dbFundsApiKeyToken, env.dbFundsApiKey);
   Container.setValue(dbFundsApiOriginToken, env.dbFundsApiOrigin);
-  Container.setValue(serveOriginToken, env.serveOrigin);
   Container.setValue(maxFileSizeToken, env.maxFileSize);
   Container.setValue(servePathToken, env.servePath);
   Container.setValue(uploadPathToken, env.uploadPath);
