@@ -105,6 +105,10 @@ const documents = {
     types.TeamEditorDocument,
   "\n      query MasqueradeSelector($search: String!) {\n        searchPeopleByName(name: $search) {\n          id\n          name\n        }\n      }\n    ":
     types.MasqueradeSelectorDocument,
+  "\n  fragment DDNsTableFragment on DailyDepartmentNotificationNode {\n    id\n    combinedDonorName\n    comment\n    combinedAmount\n    solicitationCode {\n      prefix\n      code\n      name\n    }\n    batch {\n      id\n      batchType\n    }\n  }\n":
+    types.DdNsTableFragmentFragmentDoc,
+  "\n  query DdnsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n  ) {\n    dailyDepartmentNotifications(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...DDNsTableFragment\n      }\n    }\n  }\n":
+    types.DdnsTableDocument,
   "\n  fragment EventsTableFragment on EventNode {\n    id\n    title\n    description\n    occurrences {\n      id\n      interval {\n        start\n        end\n      }\n      fullDay\n    }\n    summary\n  }\n":
     types.EventsTableFragmentFragmentDoc,
   "\n  query EventsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [EventResolverKeyedDateFilterItem!]\n    $isNullFilters: [EventResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]\n    $stringFilters: [EventResolverKeyedStringFilterItem!]\n  ) {\n    events(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...EventsTableFragment\n      }\n    }\n  }\n":
@@ -482,6 +486,18 @@ export function graphql(
 export function graphql(
   source: "\n      query MasqueradeSelector($search: String!) {\n        searchPeopleByName(name: $search) {\n          id\n          name\n        }\n      }\n    "
 ): (typeof documents)["\n      query MasqueradeSelector($search: String!) {\n        searchPeopleByName(name: $search) {\n          id\n          name\n        }\n      }\n    "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  fragment DDNsTableFragment on DailyDepartmentNotificationNode {\n    id\n    combinedDonorName\n    comment\n    combinedAmount\n    solicitationCode {\n      prefix\n      code\n      name\n    }\n    batch {\n      id\n      batchType\n    }\n  }\n"
+): (typeof documents)["\n  fragment DDNsTableFragment on DailyDepartmentNotificationNode {\n    id\n    combinedDonorName\n    comment\n    combinedAmount\n    solicitationCode {\n      prefix\n      code\n      name\n    }\n    batch {\n      id\n      batchType\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  query DdnsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n  ) {\n    dailyDepartmentNotifications(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...DDNsTableFragment\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query DdnsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n  ) {\n    dailyDepartmentNotifications(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...DDNsTableFragment\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

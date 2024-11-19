@@ -35,10 +35,12 @@ export function useMakeStringSearchFilterProps<Field extends string>(
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
     ),
-    onFilterDropdownOpenChange: () => {
-      setTimeout(() => {
-        focusRef.current?.focus();
-      }, 100);
+    filterDropdownProps: {
+      onOpenChange: () => {
+        setTimeout(() => {
+          focusRef.current?.focus();
+        }, 100);
+      },
     },
   };
 }
@@ -83,10 +85,12 @@ export function useMakeNumberSearchFilterProps<Field extends string>(
     filterIcon: (filtered: boolean) => (
       <NumberOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
     ),
-    onFilterDropdownOpenChange: () => {
-      setTimeout(() => {
-        focusRef.current?.focus();
-      }, 100);
+    filterDropdownProps: {
+      onOpenChange: () => {
+        setTimeout(() => {
+          focusRef.current?.focus();
+        }, 100);
+      },
     },
   };
 }

@@ -22,10 +22,15 @@ import {
 } from "@/hooks/useLoginState.js";
 
 import { MasqueradeSelector } from "./MasqueradeSelector.js";
+import { ItemType, MenuItemType } from "antd/es/menu/interface.js";
 
 const routes: {
   path: keyof Register["router"]["routesByPath"];
   title: string;
+  children?: {
+    path: keyof Register["router"]["routesByPath"];
+    title: string;
+  }[];
 }[] = [
   {
     path: "/",
@@ -40,8 +45,18 @@ const routes: {
     title: "Teams",
   },
   {
-    path: "/fundraising/dbfunds",
-    title: "DB Funds",
+    path: "/fundraising",
+    title: "Fundraising",
+    children: [
+      {
+        path: "/fundraising/dbfunds",
+        title: "DB Funds",
+      },
+      {
+        path: "/fundraising/ddn/upload",
+        title: "DDN Upload",
+      },
+    ],
   },
   {
     path: "/people",
@@ -90,13 +105,7 @@ export const NavigationMenu = () => {
   const router = useRouter();
   const location = useLocation();
 
-  const [menuItems, setMenuItems] = useState<
-    {
-      key: string;
-      title: string;
-      label: React.JSX.Element;
-    }[]
-  >([]);
+  const [menuItems, setMenuItems] = useState<ItemType<MenuItemType>[]>([]);
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
 
   useEffect(() => {
@@ -105,6 +114,10 @@ export const NavigationMenu = () => {
       const filteredItems: {
         route: (typeof router)["routesByPath"][keyof (typeof router)["routesByPath"]];
         title: string;
+        children: {
+          route: (typeof router)["routesByPath"][keyof (typeof router)["routesByPath"]];
+          title: string;
+        }[];
       }[] = [];
       const matchedRoutes = new Set(
         router.matchRoutes(location).map(({ id }) => id)
@@ -113,38 +126,79 @@ export const NavigationMenu = () => {
       for (const routeInfo of routes) {
         const route = router.routesByPath[routeInfo.path];
         const { authorizationRules } = route.options.staticData;
-        if (!authorizationRules) {
-          filteredItems.push({ route, title: routeInfo.title });
-          if (matchedRoutes.has(route.id)) {
+        const [valid, active] = shouldShowMenuItem(
+          authorizationRules,
+          route.id,
+          matchedRoutes,
+          authorization
+        );
+        if (valid) {
+          const filteredChildren: {
+            route: (typeof router)["routesByPath"][keyof (typeof router)["routesByPath"]];
+            title: string;
+          }[] = [];
+          if (routeInfo.children) {
+            for (const childInfo of routeInfo.children) {
+              const childRoute = router.routesByPath[childInfo.path];
+              const [childValid, childActive] = shouldShowMenuItem(
+                childRoute.options.staticData.authorizationRules,
+                childRoute.id,
+                matchedRoutes,
+                authorization
+              );
+              if (childValid) {
+                filteredChildren.push({
+                  route: childRoute,
+                  title: childInfo.title,
+                });
+                if (childActive) {
+                  activeKeys.push(childRoute.id);
+                }
+              }
+            }
+          }
+          filteredItems.push({
+            route,
+            title: routeInfo.title,
+            children: filteredChildren,
+          });
+          if (active) {
             activeKeys.push(route.id);
-          }
-        } else {
-          let isAuthorized = false;
-          for (const authorizationRule of authorizationRules) {
-            if (
-              checkAuthorization(
-                authorizationRule,
-                authorization ?? defaultAuthorization
-              )
-            ) {
-              isAuthorized = true;
-              break;
-            }
-          }
-          if (isAuthorized) {
-            filteredItems.push({ route, title: routeInfo.title });
-            if (matchedRoutes.has(route.id)) {
-              activeKeys.push(route.id);
-            }
           }
         }
       }
 
-      const updatedMenuItems = filteredItems.map(({ route, title }) => ({
-        key: route.id,
-        title,
-        label: <Link to={route.to}>{title}</Link>,
-      }));
+      const updatedMenuItems = filteredItems.map(
+        ({ route, title, children }): ItemType<MenuItemType> => ({
+          key: route.id,
+          title,
+          type: children.length ? "submenu" : "item",
+          label: (
+            <Link
+              to={route.to}
+              style={{
+                color: "rgba(255, 255, 255, 0.65)",
+              }}
+            >
+              {title}
+            </Link>
+          ),
+          children: children.map(({ route, title }) => ({
+            key: route.id,
+            title,
+            label: (
+              <Link
+                style={{
+                  color: "rgba(255, 255, 255, 0.65)",
+                }}
+                to={route.to}
+              >
+                {title}
+              </Link>
+            ),
+          })),
+        })
+      );
 
       setMenuItems(updatedMenuItems);
       setActiveKeys(activeKeys);
@@ -271,3 +325,32 @@ export const NavigationMenu = () => {
     />
   );
 };
+
+function shouldShowMenuItem(
+  authorizationRules:
+    | import("/workspaces/monorepo/packages/common/dist/index").AuthorizationRule[]
+    | null,
+  routeId: string,
+  matchedRoutes: Set<string>,
+  authorization:
+    | import("/workspaces/monorepo/packages/common/dist/index").Authorization
+    | undefined
+): [boolean, boolean] {
+  if (!authorizationRules) {
+    return [true, matchedRoutes.has(routeId)];
+  } else {
+    let isAuthorized = false;
+    for (const authorizationRule of authorizationRules) {
+      if (
+        checkAuthorization(
+          authorizationRule,
+          authorization ?? defaultAuthorization
+        )
+      ) {
+        isAuthorized = true;
+        break;
+      }
+    }
+    return [isAuthorized, matchedRoutes.has(routeId)];
+  }
+}

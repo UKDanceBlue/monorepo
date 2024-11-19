@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react-swc";
+import type { UserConfig } from "vite";
 import { defineConfig } from "vite";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -12,7 +13,7 @@ function resolveRelative(...relativePath: string[]) {
   return resolve(__dirname, ...relativePath);
 }
 
-export const literalConfig = {
+export const literalConfig: UserConfig = {
   resolve: {
     alias: {
       "type-graphql": "type-graphql/shim",
@@ -29,14 +30,6 @@ export const literalConfig = {
     },
   },
   build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          react: ["react", "react-dom"],
-          common: ["@ukdanceblue/common"],
-        },
-      },
-    },
     chunkSizeWarningLimit: 1000,
     sourcemap: true,
   },

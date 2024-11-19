@@ -1674,6 +1674,51 @@ export type MasqueradeSelectorQuery = {
   }>;
 };
 
+export type DdNsTableFragmentFragment = {
+  readonly __typename?: "DailyDepartmentNotificationNode";
+  readonly id: string;
+  readonly combinedDonorName: string;
+  readonly comment?: string | null;
+  readonly combinedAmount: number;
+  readonly solicitationCode: {
+    readonly __typename?: "SolicitationCodeNode";
+    readonly prefix: string;
+    readonly code: number;
+    readonly name?: string | null;
+  };
+  readonly batch: {
+    readonly __typename?: "DailyDepartmentNotificationBatchNode";
+    readonly id: string;
+    readonly batchType: BatchType;
+  };
+} & { " $fragmentName"?: "DdNsTableFragmentFragment" };
+
+export type DdnsTableQueryVariables = Exact<{
+  page?: InputMaybe<Scalars["Int"]["input"]>;
+  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
+  sortBy?: InputMaybe<
+    ReadonlyArray<Scalars["String"]["input"]> | Scalars["String"]["input"]
+  >;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection> | SortDirection>;
+}>;
+
+export type DdnsTableQuery = {
+  readonly __typename?: "Query";
+  readonly dailyDepartmentNotifications: {
+    readonly __typename?: "ListDailyDepartmentNotificationsResponse";
+    readonly page: number;
+    readonly pageSize: number;
+    readonly total: number;
+    readonly data: ReadonlyArray<
+      { readonly __typename?: "DailyDepartmentNotificationNode" } & {
+        " $fragmentRefs"?: {
+          DdNsTableFragmentFragment: DdNsTableFragmentFragment;
+        };
+      }
+    >;
+  };
+};
+
 export type EventsTableFragmentFragment = {
   readonly __typename?: "EventNode";
   readonly id: string;
@@ -2873,6 +2918,51 @@ export const TeamEditorFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<TeamEditorFragmentFragment, unknown>;
+export const DdNsTableFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "DDNsTableFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "DailyDepartmentNotificationNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "combinedDonorName" } },
+          { kind: "Field", name: { kind: "Name", value: "comment" } },
+          { kind: "Field", name: { kind: "Name", value: "combinedAmount" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "solicitationCode" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "prefix" } },
+                { kind: "Field", name: { kind: "Name", value: "code" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "batch" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "batchType" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<DdNsTableFragmentFragment, unknown>;
 export const EventsTableFragmentFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -6092,6 +6182,169 @@ export const MasqueradeSelectorDocument = {
   MasqueradeSelectorQuery,
   MasqueradeSelectorQueryVariables
 >;
+export const DdnsTableDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "DdnsTable" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "page" } },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "pageSize" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sortBy" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "String" },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sortDirection" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "SortDirection" },
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "dailyDepartmentNotifications" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "page" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "page" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "pageSize" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "pageSize" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sortBy" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sortBy" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sortDirection" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sortDirection" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "page" } },
+                { kind: "Field", name: { kind: "Name", value: "pageSize" } },
+                { kind: "Field", name: { kind: "Name", value: "total" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "data" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "DDNsTableFragment" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "DDNsTableFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "DailyDepartmentNotificationNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "combinedDonorName" } },
+          { kind: "Field", name: { kind: "Name", value: "comment" } },
+          { kind: "Field", name: { kind: "Name", value: "combinedAmount" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "solicitationCode" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "prefix" } },
+                { kind: "Field", name: { kind: "Name", value: "code" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "batch" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "batchType" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<DdnsTableQuery, DdnsTableQueryVariables>;
 export const EventsTableDocument = {
   kind: "Document",
   definitions: [

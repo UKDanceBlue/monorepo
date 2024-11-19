@@ -200,7 +200,10 @@ export default eslintTs.config(
       },
     },
     rules: {
-      "react-refresh/only-export-components": "warn",
+      "react-refresh/only-export-components": [
+        "warn",
+        { allowConstantExport: true },
+      ],
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
       // We don't need to import React in every file for JSX
