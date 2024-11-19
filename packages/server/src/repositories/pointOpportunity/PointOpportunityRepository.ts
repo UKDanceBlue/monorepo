@@ -51,7 +51,7 @@ export type PointOpportunityFilters = FilterItems<
 
 type UniquePointOpportunityParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 import { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import { SimpleUniqueParam } from "#repositories/shared.js";
 

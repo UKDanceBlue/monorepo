@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 
 import { RouterService } from "#routes/RouteService.js";
 
-import { prismaToken } from "../../../prisma.js";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export default class HealthCheckRouter extends RouterService {

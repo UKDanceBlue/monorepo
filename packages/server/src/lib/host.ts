@@ -1,7 +1,7 @@
 import { Container } from "@freshgum/typedi";
 import type { Request } from "express";
 
-import { applicationPortToken } from "./environmentTokens.js";
+import { applicationPortToken } from "./typediTokens.js";
 
 export function getHostUrl(req: Request): URL {
   const { protocol, hostname } = req;

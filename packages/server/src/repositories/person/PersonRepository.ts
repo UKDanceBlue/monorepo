@@ -91,7 +91,7 @@ export type UniquePersonParam =
       linkblue: string;
     };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
 
 @Service([

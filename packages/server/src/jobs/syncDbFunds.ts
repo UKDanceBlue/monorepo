@@ -15,7 +15,7 @@ import {
   type DBFundsFundraisingProviderError,
 } from "#lib/fundraising/DbFundsProvider.js";
 import { logger } from "#logging/standardLogging.js";
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { JobStateRepository } from "#repositories/JobState.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";

@@ -20,7 +20,7 @@ import { ErrorCode } from "@ukdanceblue/common/error";
 import { Ok } from "ts-results-es";
 
 import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
-import { superAdminLinkbluesToken } from "#lib/environmentTokens.js";
+import { superAdminLinkbluesToken } from "#lib/typediTokens.js";
 import { getHostUrl } from "#lib/host.js";
 import { logger } from "#logging/logger.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";

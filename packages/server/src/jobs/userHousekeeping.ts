@@ -3,7 +3,7 @@ import { Container } from "@freshgum/typedi";
 import { Cron } from "croner";
 
 import { logger } from "#logging/standardLogging.js";
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 import { JobStateRepository } from "#repositories/JobState.js";
 
 const jobStateRepository = Container.get(JobStateRepository);

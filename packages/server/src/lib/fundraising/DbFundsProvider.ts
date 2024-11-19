@@ -16,7 +16,7 @@ import { ZodError } from "#error/zod.js";
 import {
   dbFundsApiKeyToken,
   dbFundsApiOriginToken,
-} from "#lib/environmentTokens.js";
+} from "#lib/typediTokens.js";
 
 import type {
   FundraisingEntry,

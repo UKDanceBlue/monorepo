@@ -83,7 +83,7 @@ function makeMarathonWhere(param: MarathonParam[]) {
   };
 }
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export class TeamRepository {

@@ -27,7 +27,7 @@ export type DeviceFilters = FilterItems<
   DeviceStringKey
 >;
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken, PersonRepository])
 export class DeviceRepository {

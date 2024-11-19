@@ -5,7 +5,7 @@ import {
   msClientIdToken,
   msClientSecretToken,
   msOidcUrlToken,
-} from "#lib/environmentTokens.js";
+} from "#lib/typediTokens.js";
 
 const msOidcUrl = Container.get(msOidcUrlToken);
 const msClientId = Container.get(msClientIdToken);

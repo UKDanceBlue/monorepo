@@ -152,7 +152,7 @@ export type FundraisingAssignmentUniqueParam = SimpleUniqueParam;
 
 import { Decimal } from "@prisma/client/runtime/library";
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export class FundraisingEntryRepository {

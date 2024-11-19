@@ -2,8 +2,8 @@ import { Container } from "@freshgum/typedi";
 import type winston from "winston";
 import { createLogger, format, transports } from "winston";
 
-import { logDirToken } from "#lib/environmentTokens.js";
-import { isDevelopment } from "#lib/nodeEnv.js";
+import { logDirToken } from "#lib/typediTokens.js";
+import { isDevelopmentToken } from "#lib/typediTokens.js";
 
 const logDir = Container.get(logDirToken);
 
@@ -46,11 +46,11 @@ export const sqlLogger = createLogger({
     warning: 1,
     error: 0,
   },
-  transports: isDevelopment ? databaseLogTransport : [],
-  silent: !isDevelopment,
+  transports: Container.get(isDevelopmentToken) ? databaseLogTransport : [],
+  silent: !Container.get(isDevelopmentToken),
   format: format.combine(format.timestamp(), format.simple()),
 }) as SqlLogger;
 
-if (isDevelopment) {
+if (Container.get(isDevelopmentToken)) {
   sqlLogger.info("SQL Logger initialized");
 }

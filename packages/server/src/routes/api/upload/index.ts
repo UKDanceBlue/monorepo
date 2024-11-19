@@ -4,7 +4,7 @@ import { open } from "fs/promises";
 import multer from "multer";
 
 import { FileManager } from "#files/FileManager.js";
-import { maxFileSizeToken } from "#lib/environmentTokens.js";
+import { maxFileSizeToken } from "#lib/typediTokens.js";
 import { generateThumbHash } from "#lib/thumbHash.js";
 import { logger } from "#logging/standardLogging.js";
 import { ImageRepository } from "#repositories/image/ImageRepository.js";

@@ -51,7 +51,7 @@ export type MarathonHourFilters = FilterItems<
 
 type UniqueParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export class MarathonHourRepository {

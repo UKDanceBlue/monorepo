@@ -7,7 +7,7 @@ import { statSync } from "fs";
 import { readFile } from "fs/promises";
 import path, { isAbsolute } from "path";
 
-import { setEnvironment } from "#lib/environmentTokens.js";
+import { setEnvironment } from "#lib/typediTokens.js";
 import { type SyslogLevels } from "#logging/SyslogLevels.js";
 // NOTE: You cannot import any files that depend on environment variables from this file
 import { expoServiceToken } from "#notification/expoServiceToken.js";
@@ -113,6 +113,7 @@ setEnvironment({
   logDir: await LOG_DIR,
   superAdminLinkblues,
   isDevelopmentToken: isDevelopment,
+  isRepl: false,
 });
 
 /**

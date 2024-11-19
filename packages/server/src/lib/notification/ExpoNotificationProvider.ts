@@ -1,6 +1,7 @@
 // We allow awaits in loops here because we actually do want to slow down processing
 
 import { Service } from "@freshgum/typedi";
+import { Container } from "@freshgum/typedi";
 import type { Notification, Prisma } from "@prisma/client";
 import {
   ActionDeniedError,
@@ -21,7 +22,7 @@ import { DateTime } from "luxon";
 import { AsyncResult, Err, Ok, Result } from "ts-results-es";
 
 import { ExpoPushFailureError, ExpoPushTicketError } from "#error/expo.js";
-import { isDevelopment } from "#lib/nodeEnv.js";
+import { isDevelopmentToken } from "#lib/typediTokens.js";
 import { logger } from "#logging/standardLogging.js";
 import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
 import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
@@ -241,7 +242,7 @@ export class ExpoNotificationProvider implements NotificationProvider {
       return deliveryRows;
     }
 
-    if (isDevelopment && deliveryRows.value.length > 12) {
+    if (Container.get(isDevelopmentToken) && deliveryRows.value.length > 12) {
       try {
         await this.notificationRepository.updateNotification(
           { id: databaseNotification.id },

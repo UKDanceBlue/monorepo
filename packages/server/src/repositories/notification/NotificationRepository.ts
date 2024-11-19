@@ -63,7 +63,7 @@ export type NotificationFilters = FilterItems<
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { AsyncResult, Err, Ok, Result } from "ts-results-es";
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 import {
   handleRepositoryError,
   RepositoryError,

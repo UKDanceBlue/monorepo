@@ -60,7 +60,7 @@ export type UniqueMarathonParam =
   | { uuid: string }
   | { year: string };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export class MarathonRepository {

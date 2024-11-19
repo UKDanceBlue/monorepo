@@ -1,6 +1,7 @@
 // This file is first imported by index.ts
 
 import { Container, Token } from "@freshgum/typedi";
+import type { PrismaClient } from "@prisma/client";
 
 import type { SyslogLevels } from "./logging/SyslogLevels.js";
 
@@ -22,6 +23,7 @@ export const superAdminLinkbluesToken = new Token<string[] | symbol>(
   "SUPER_ADMIN_LINKBLUE"
 );
 export const isDevelopmentToken = new Token<boolean>("IS_DEVELOPMENT");
+export const isReplToken = new Token<boolean>("IS_REPL");
 
 export interface Environment {
   loggingLevel: SyslogLevels;
@@ -39,6 +41,7 @@ export interface Environment {
   logDir: string;
   superAdminLinkblues: string[] | symbol;
   isDevelopmentToken: boolean;
+  isRepl: boolean;
 }
 
 export function setEnvironment(env: Environment) {
@@ -57,4 +60,27 @@ export function setEnvironment(env: Environment) {
   Container.setValue(logDirToken, env.logDir);
   Container.setValue(superAdminLinkbluesToken, env.superAdminLinkblues);
   Container.setValue(isDevelopmentToken, env.isDevelopmentToken);
+  Container.setValue(isReplToken, env.isRepl);
 }
+
+export function getEnvironment(): Environment {
+  return {
+    loggingLevel: Container.get(loggingLevelToken),
+    applicationPort: Container.get(applicationPortToken),
+    cookieSecret: Container.get(cookieSecretToken),
+    jwtSecret: Container.get(jwtSecretToken),
+    msOidcUrl: Container.get(msOidcUrlToken),
+    msClientId: Container.get(msClientIdToken),
+    msClientSecret: Container.get(msClientSecretToken),
+    dbFundsApiKey: Container.get(dbFundsApiKeyToken),
+    dbFundsApiOrigin: Container.get(dbFundsApiOriginToken),
+    maxFileSize: Container.get(maxFileSizeToken),
+    servePath: Container.get(servePathToken),
+    uploadPath: Container.get(uploadPathToken),
+    logDir: Container.get(logDirToken),
+    superAdminLinkblues: Container.get(superAdminLinkbluesToken),
+    isDevelopmentToken: Container.get(isDevelopmentToken),
+    isRepl: Container.get(isReplToken),
+  };
+}
+export const prismaToken = new Token<PrismaClient>("PrismaClient");

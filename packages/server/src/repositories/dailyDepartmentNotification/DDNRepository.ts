@@ -64,7 +64,7 @@ interface UniqueDailyDepartmentNotificationParam {
 import { InvalidArgumentError, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 import {
   handleRepositoryError,
   RepositoryError,
