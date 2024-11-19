@@ -31,6 +31,8 @@ export type Scalars = {
   EmailAddress: { input: string; output: string; }
   /** GlobalId custom scalar type */
   GlobalId: { input: string; output: string; }
+  /** A local date string (i.e., with no associated timezone) in `YYYY-MM-DD` format, e.g. `2020-01-01`. */
+  LocalDate: { input: string; output: string; }
   /** Integers that will have a value of 0 or more. */
   NonNegativeInt: { input: number; output: number; }
   /** Integers that will have a value greater than 0. */
@@ -94,6 +96,17 @@ export type AssignEntryToPersonInput = {
 
 export { AuthSource };
 
+export const BatchType = {
+  Ach: 'ACH',
+  Check: 'Check',
+  CreditCard: 'CreditCard',
+  NonCash: 'NonCash',
+  PayrollDeduction: 'PayrollDeduction',
+  Transmittal: 'Transmittal',
+  Unknown: 'Unknown'
+} as const;
+
+export type BatchType = typeof BatchType[keyof typeof BatchType];
 export type BulkPersonInput = {
   readonly committee?: InputMaybe<CommitteeIdentifier>;
   readonly email: Scalars['EmailAddress']['input'];
@@ -257,6 +270,207 @@ export type CreateTeamResponse = AbstractGraphQlCreatedResponse & AbstractGraphQ
   readonly uuid: Scalars['GlobalId']['output'];
 };
 
+export type DailyDepartmentNotificationBatchNode = {
+  readonly __typename?: 'DailyDepartmentNotificationBatchNode';
+  readonly batchNumber: Scalars['String']['output'];
+  readonly batchType: BatchType;
+  readonly dailyDepartmentNotifications: ReadonlyArray<DailyDepartmentNotificationNode>;
+  readonly id: Scalars['GlobalId']['output'];
+};
+
+export type DailyDepartmentNotificationInput = {
+  readonly accountName: Scalars['String']['input'];
+  readonly accountNumber: Scalars['String']['input'];
+  readonly advFeeAmtPhil?: InputMaybe<Scalars['Float']['input']>;
+  readonly advFeeAmtUnit?: InputMaybe<Scalars['Float']['input']>;
+  readonly advFeeCcPhil?: InputMaybe<Scalars['String']['input']>;
+  readonly advFeeCcUnit?: InputMaybe<Scalars['String']['input']>;
+  readonly advFeeStatus?: InputMaybe<Scalars['String']['input']>;
+  readonly batchId: Scalars['String']['input'];
+  readonly behalfHonorMemorial?: InputMaybe<Scalars['String']['input']>;
+  readonly combinedAmount: Scalars['Float']['input'];
+  readonly combinedDonorName: Scalars['String']['input'];
+  readonly combinedDonorSalutation: Scalars['String']['input'];
+  readonly combinedDonorSort?: InputMaybe<Scalars['String']['input']>;
+  readonly comment?: InputMaybe<Scalars['String']['input']>;
+  readonly department?: InputMaybe<Scalars['String']['input']>;
+  readonly divFirstGift: Scalars['Boolean']['input'];
+  readonly division?: InputMaybe<Scalars['String']['input']>;
+  readonly donor1Amount?: InputMaybe<Scalars['Float']['input']>;
+  readonly donor1Constituency?: InputMaybe<Scalars['String']['input']>;
+  readonly donor1Deceased?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly donor1Degrees?: InputMaybe<Scalars['String']['input']>;
+  readonly donor1GiftKey?: InputMaybe<Scalars['Float']['input']>;
+  readonly donor1Id?: InputMaybe<Scalars['String']['input']>;
+  readonly donor1Name?: InputMaybe<Scalars['String']['input']>;
+  readonly donor1Pm?: InputMaybe<Scalars['String']['input']>;
+  readonly donor1Relation?: InputMaybe<Scalars['String']['input']>;
+  readonly donor1TitleBar?: InputMaybe<Scalars['String']['input']>;
+  readonly donor2Amount?: InputMaybe<Scalars['Float']['input']>;
+  readonly donor2Constituency?: InputMaybe<Scalars['String']['input']>;
+  readonly donor2Deceased?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly donor2Degrees?: InputMaybe<Scalars['String']['input']>;
+  readonly donor2GiftKey?: InputMaybe<Scalars['Float']['input']>;
+  readonly donor2Id?: InputMaybe<Scalars['String']['input']>;
+  readonly donor2Name?: InputMaybe<Scalars['String']['input']>;
+  readonly donor2Pm?: InputMaybe<Scalars['String']['input']>;
+  readonly donor2Relation?: InputMaybe<Scalars['String']['input']>;
+  readonly donor2TitleBar?: InputMaybe<Scalars['String']['input']>;
+  readonly effectiveDate?: InputMaybe<Scalars['LocalDate']['input']>;
+  readonly gikDescription?: InputMaybe<Scalars['String']['input']>;
+  readonly gikType?: InputMaybe<Scalars['String']['input']>;
+  readonly hcUnit?: InputMaybe<Scalars['String']['input']>;
+  readonly holdingDestination?: InputMaybe<Scalars['String']['input']>;
+  readonly idSorter: Scalars['String']['input'];
+  readonly jvDocDate?: InputMaybe<Scalars['LocalDate']['input']>;
+  readonly jvDocNum?: InputMaybe<Scalars['String']['input']>;
+  readonly matchingGift?: InputMaybe<Scalars['String']['input']>;
+  readonly onlineGift: Scalars['Boolean']['input'];
+  readonly pledgedAmount: Scalars['Float']['input'];
+  readonly pledgedDate?: InputMaybe<Scalars['LocalDate']['input']>;
+  readonly processDate?: InputMaybe<Scalars['LocalDate']['input']>;
+  readonly sapDocDate?: InputMaybe<Scalars['LocalDate']['input']>;
+  readonly sapDocNum?: InputMaybe<Scalars['String']['input']>;
+  readonly secShares?: InputMaybe<Scalars['String']['input']>;
+  readonly secType?: InputMaybe<Scalars['String']['input']>;
+  readonly solicitation?: InputMaybe<Scalars['String']['input']>;
+  readonly solicitationCode: Scalars['String']['input'];
+  readonly transactionDate?: InputMaybe<Scalars['LocalDate']['input']>;
+  readonly transactionType: Scalars['String']['input'];
+  readonly transmittalSn?: InputMaybe<Scalars['String']['input']>;
+  readonly ukFirstGift: Scalars['Boolean']['input'];
+};
+
+export type DailyDepartmentNotificationNode = {
+  readonly __typename?: 'DailyDepartmentNotificationNode';
+  readonly accountName: Scalars['String']['output'];
+  readonly accountNumber: Scalars['String']['output'];
+  readonly advFeeAmtPhil?: Maybe<Scalars['Float']['output']>;
+  readonly advFeeAmtUnit?: Maybe<Scalars['Float']['output']>;
+  readonly advFeeCcPhil?: Maybe<Scalars['String']['output']>;
+  readonly advFeeCcUnit?: Maybe<Scalars['String']['output']>;
+  readonly advFeeStatus?: Maybe<Scalars['String']['output']>;
+  readonly batch: DailyDepartmentNotificationBatchNode;
+  readonly behalfHonorMemorial?: Maybe<Scalars['String']['output']>;
+  readonly combinedAmount: Scalars['Float']['output'];
+  readonly combinedDonorName: Scalars['String']['output'];
+  readonly combinedDonorSalutation: Scalars['String']['output'];
+  readonly combinedDonorSort?: Maybe<Scalars['String']['output']>;
+  readonly comment?: Maybe<Scalars['String']['output']>;
+  readonly department?: Maybe<Scalars['String']['output']>;
+  readonly divFirstGift: Scalars['Boolean']['output'];
+  readonly division?: Maybe<Scalars['String']['output']>;
+  readonly donor1Amount?: Maybe<Scalars['Float']['output']>;
+  readonly donor1Constituency?: Maybe<Scalars['String']['output']>;
+  readonly donor1Deceased?: Maybe<Scalars['Boolean']['output']>;
+  readonly donor1Degrees?: Maybe<Scalars['String']['output']>;
+  readonly donor1GiftKey?: Maybe<Scalars['String']['output']>;
+  readonly donor1Id?: Maybe<Scalars['String']['output']>;
+  readonly donor1Name?: Maybe<Scalars['String']['output']>;
+  readonly donor1Pm?: Maybe<Scalars['String']['output']>;
+  readonly donor1Relation?: Maybe<Scalars['String']['output']>;
+  readonly donor1TitleBar?: Maybe<Scalars['String']['output']>;
+  readonly donor2Amount?: Maybe<Scalars['Float']['output']>;
+  readonly donor2Constituency?: Maybe<Scalars['String']['output']>;
+  readonly donor2Deceased?: Maybe<Scalars['Boolean']['output']>;
+  readonly donor2Degrees?: Maybe<Scalars['String']['output']>;
+  readonly donor2GiftKey?: Maybe<Scalars['String']['output']>;
+  readonly donor2Id?: Maybe<Scalars['String']['output']>;
+  readonly donor2Name?: Maybe<Scalars['String']['output']>;
+  readonly donor2Pm?: Maybe<Scalars['String']['output']>;
+  readonly donor2Relation?: Maybe<Scalars['String']['output']>;
+  readonly donor2TitleBar?: Maybe<Scalars['String']['output']>;
+  readonly effectiveDate?: Maybe<Scalars['LocalDate']['output']>;
+  readonly gikDescription?: Maybe<Scalars['String']['output']>;
+  readonly gikType?: Maybe<Scalars['String']['output']>;
+  readonly hcUnit?: Maybe<Scalars['String']['output']>;
+  readonly holdingDestination?: Maybe<Scalars['String']['output']>;
+  readonly id: Scalars['GlobalId']['output'];
+  readonly idSorter: Scalars['String']['output'];
+  readonly jvDocDate?: Maybe<Scalars['LocalDate']['output']>;
+  readonly jvDocNum?: Maybe<Scalars['String']['output']>;
+  readonly matchingGift?: Maybe<Scalars['String']['output']>;
+  readonly onlineGift: Scalars['Boolean']['output'];
+  readonly pledgedAmount: Scalars['Float']['output'];
+  readonly pledgedDate?: Maybe<Scalars['LocalDate']['output']>;
+  readonly processDate?: Maybe<Scalars['LocalDate']['output']>;
+  readonly sapDocDate?: Maybe<Scalars['LocalDate']['output']>;
+  readonly sapDocNum?: Maybe<Scalars['String']['output']>;
+  readonly secShares?: Maybe<Scalars['String']['output']>;
+  readonly secType?: Maybe<Scalars['String']['output']>;
+  readonly solicitation?: Maybe<Scalars['String']['output']>;
+  readonly solicitationCode: SolicitationCodeNode;
+  readonly transactionDate?: Maybe<Scalars['LocalDate']['output']>;
+  readonly transactionType: Scalars['String']['output'];
+  readonly transmittalSn?: Maybe<Scalars['String']['output']>;
+  readonly ukFirstGift: Scalars['Boolean']['output'];
+};
+
+export const DailyDepartmentNotificationResolverAllKeys = {
+  Amount: 'Amount',
+  BatchType: 'BatchType',
+  Comment: 'Comment',
+  Donor: 'Donor',
+  SolicitationCodeName: 'SolicitationCodeName',
+  SolicitationCodeNumber: 'SolicitationCodeNumber',
+  SolicitationCodePrefix: 'SolicitationCodePrefix'
+} as const;
+
+export type DailyDepartmentNotificationResolverAllKeys = typeof DailyDepartmentNotificationResolverAllKeys[keyof typeof DailyDepartmentNotificationResolverAllKeys];
+export type DailyDepartmentNotificationResolverKeyedIsNullFilterItem = {
+  /** The field to filter on */
+  readonly field: DailyDepartmentNotificationResolverAllKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type DailyDepartmentNotificationResolverKeyedNumericFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: NumericComparator;
+  /** The field to filter on */
+  readonly field: DailyDepartmentNotificationResolverNumericFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['Float']['input'];
+};
+
+export type DailyDepartmentNotificationResolverKeyedOneOfFilterItem = {
+  /** The field to filter on */
+  readonly field: DailyDepartmentNotificationResolverOneOfFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
+};
+
+export type DailyDepartmentNotificationResolverKeyedStringFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: StringComparator;
+  /** The field to filter on */
+  readonly field: DailyDepartmentNotificationResolverStringFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
+};
+
+export const DailyDepartmentNotificationResolverNumericFilterKeys = {
+  Amount: 'Amount'
+} as const;
+
+export type DailyDepartmentNotificationResolverNumericFilterKeys = typeof DailyDepartmentNotificationResolverNumericFilterKeys[keyof typeof DailyDepartmentNotificationResolverNumericFilterKeys];
+export const DailyDepartmentNotificationResolverOneOfFilterKeys = {
+  BatchType: 'BatchType',
+  SolicitationCodeNumber: 'SolicitationCodeNumber',
+  SolicitationCodePrefix: 'SolicitationCodePrefix'
+} as const;
+
+export type DailyDepartmentNotificationResolverOneOfFilterKeys = typeof DailyDepartmentNotificationResolverOneOfFilterKeys[keyof typeof DailyDepartmentNotificationResolverOneOfFilterKeys];
+export const DailyDepartmentNotificationResolverStringFilterKeys = {
+  Comment: 'Comment',
+  Donor: 'Donor',
+  SolicitationCodeName: 'SolicitationCodeName'
+} as const;
+
+export type DailyDepartmentNotificationResolverStringFilterKeys = typeof DailyDepartmentNotificationResolverStringFilterKeys[keyof typeof DailyDepartmentNotificationResolverStringFilterKeys];
 export type DbFundsTeamInfo = {
   readonly __typename?: 'DbFundsTeamInfo';
   readonly dbNum: Scalars['Int']['output'];
@@ -499,10 +713,14 @@ export type FundraisingEntryNode = Node & {
   readonly amountUnassigned: Scalars['Float']['output'];
   readonly assignments: ReadonlyArray<FundraisingAssignmentNode>;
   readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly dailyDepartmentNotification: DailyDepartmentNotificationNode;
   readonly donatedByText?: Maybe<Scalars['String']['output']>;
   readonly donatedOn: Scalars['DateTimeISO']['output'];
   readonly donatedToText?: Maybe<Scalars['String']['output']>;
   readonly id: Scalars['GlobalId']['output'];
+  readonly notes?: Maybe<Scalars['String']['output']>;
+  readonly solicitationCode: SolicitationCodeNode;
+  readonly solicitationCodeOverride?: Maybe<SolicitationCodeNode>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
@@ -513,6 +731,7 @@ export const FundraisingEntryResolverAllKeys = {
   DonatedBy: 'donatedBy',
   DonatedOn: 'donatedOn',
   DonatedTo: 'donatedTo',
+  TeamId: 'teamId',
   UpdatedAt: 'updatedAt'
 } as const;
 
@@ -728,6 +947,18 @@ export type IntervalIsoInput = {
   readonly start: Scalars['DateTimeISO']['input'];
 };
 
+export type ListDailyDepartmentNotificationsResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'ListDailyDepartmentNotificationsResponse';
+  readonly data: ReadonlyArray<DailyDepartmentNotificationNode>;
+  readonly ok: Scalars['Boolean']['output'];
+  /** The current page number (1-indexed) */
+  readonly page: Scalars['PositiveInt']['output'];
+  /** The number of items per page */
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
+  /** The total number of items */
+  readonly total: Scalars['NonNegativeInt']['output'];
+};
+
 export type ListDevicesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListDevicesResponse';
   readonly data: ReadonlyArray<DeviceNode>;
@@ -767,6 +998,18 @@ export type ListFundraisingEntriesResponse = AbstractGraphQlArrayOkResponse & Ab
 export type ListImagesResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
   readonly __typename?: 'ListImagesResponse';
   readonly data: ReadonlyArray<ImageNode>;
+  readonly ok: Scalars['Boolean']['output'];
+  /** The current page number (1-indexed) */
+  readonly page: Scalars['PositiveInt']['output'];
+  /** The number of items per page */
+  readonly pageSize: Scalars['NonNegativeInt']['output'];
+  /** The total number of items */
+  readonly total: Scalars['NonNegativeInt']['output'];
+};
+
+export type ListMarathonHoursResponse = AbstractGraphQlArrayOkResponse & AbstractGraphQlPaginatedResponse & GraphQlBaseResponse & {
+  readonly __typename?: 'ListMarathonHoursResponse';
+  readonly data: ReadonlyArray<MarathonHourNode>;
   readonly ok: Scalars['Boolean']['output'];
   /** The current page number (1-indexed) */
   readonly page: Scalars['PositiveInt']['output'];
@@ -881,6 +1124,71 @@ export type MarathonHourNode = Node & {
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
+export const MarathonHourResolverAllKeys = {
+  CreatedAt: 'createdAt',
+  Details: 'details',
+  DurationInfo: 'durationInfo',
+  MarathonYear: 'marathonYear',
+  ShownStartingAt: 'shownStartingAt',
+  Title: 'title',
+  UpdatedAt: 'updatedAt'
+} as const;
+
+export type MarathonHourResolverAllKeys = typeof MarathonHourResolverAllKeys[keyof typeof MarathonHourResolverAllKeys];
+export const MarathonHourResolverDateFilterKeys = {
+  CreatedAt: 'createdAt',
+  ShownStartingAt: 'shownStartingAt',
+  UpdatedAt: 'updatedAt'
+} as const;
+
+export type MarathonHourResolverDateFilterKeys = typeof MarathonHourResolverDateFilterKeys[keyof typeof MarathonHourResolverDateFilterKeys];
+export type MarathonHourResolverKeyedDateFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: NumericComparator;
+  /** The field to filter on */
+  readonly field: MarathonHourResolverDateFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['DateTimeISO']['input'];
+};
+
+export type MarathonHourResolverKeyedIsNullFilterItem = {
+  /** The field to filter on */
+  readonly field: MarathonHourResolverAllKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type MarathonHourResolverKeyedOneOfFilterItem = {
+  /** The field to filter on */
+  readonly field: MarathonHourResolverOneOfFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: ReadonlyArray<Scalars['String']['input']>;
+};
+
+export type MarathonHourResolverKeyedStringFilterItem = {
+  /** The comparator to use for the filter */
+  readonly comparison: StringComparator;
+  /** The field to filter on */
+  readonly field: MarathonHourResolverStringFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars['Boolean']['input']>;
+  readonly value: Scalars['String']['input'];
+};
+
+export const MarathonHourResolverOneOfFilterKeys = {
+  MarathonYear: 'marathonYear'
+} as const;
+
+export type MarathonHourResolverOneOfFilterKeys = typeof MarathonHourResolverOneOfFilterKeys[keyof typeof MarathonHourResolverOneOfFilterKeys];
+export const MarathonHourResolverStringFilterKeys = {
+  Details: 'details',
+  DurationInfo: 'durationInfo',
+  Title: 'title'
+} as const;
+
+export type MarathonHourResolverStringFilterKeys = typeof MarathonHourResolverStringFilterKeys[keyof typeof MarathonHourResolverStringFilterKeys];
 export type MarathonNode = Node & {
   readonly __typename?: 'MarathonNode';
   readonly communityDevelopmentCommitteeTeam: TeamNode;
@@ -965,15 +1273,16 @@ export type Mutation = {
   readonly addMap: MarathonHourNode;
   readonly addPersonToTeam: MembershipNode;
   readonly assignEntryToPerson: FundraisingAssignmentNode;
-  readonly assignTeamToDbFundsTeam: Scalars['Void']['output'];
   /** Attach an image to a feed item */
   readonly attachImageToFeedItem: FeedNode;
+  readonly batchUploadDailyDepartmentNotifications: ReadonlyArray<DailyDepartmentNotificationNode>;
   readonly bulkLoadPeople: ReadonlyArray<PersonNode>;
   readonly bulkLoadTeams: ReadonlyArray<TeamNode>;
   /** Create a new configuration, superseding existing configurations with the same key (depending on the validAfter and validUntil fields) */
   readonly createConfiguration: CreateConfigurationResponse;
   /** Create multiple configurations, superseding existing configurations with the same key (depending on the validAfter and validUntil fields) */
   readonly createConfigurations: CreateConfigurationResponse;
+  readonly createDailyDepartmentNotification: DailyDepartmentNotificationNode;
   /** Create a new event */
   readonly createEvent: CreateEventResponse;
   /** Add a new item to the feed */
@@ -987,6 +1296,8 @@ export type Mutation = {
   readonly createTeam: CreateTeamResponse;
   /** Delete a configuration by UUID */
   readonly deleteConfiguration: DeleteConfigurationResponse;
+  readonly deleteDailyDepartmentNotification: DailyDepartmentNotificationNode;
+  readonly deleteDailyDepartmentNotificationBatch: DailyDepartmentNotificationBatchNode;
   /** Delete a device by it's UUID */
   readonly deleteDevice: DeleteDeviceResponse;
   /** Delete an event by UUID */
@@ -1013,6 +1324,7 @@ export type Mutation = {
   readonly scheduleNotification: ScheduleNotificationResponse;
   /** Send a notification immediately. */
   readonly sendNotification: SendNotificationResponse;
+  readonly setDailyDepartmentNotification: DailyDepartmentNotificationNode;
   /** Update an event by UUID */
   readonly setEvent: SetEventResponse;
   /** Set the content of a feed item */
@@ -1065,15 +1377,14 @@ export type MutationAssignEntryToPersonArgs = {
 };
 
 
-export type MutationAssignTeamToDbFundsTeamArgs = {
-  dbFundsTeamDbNum: Scalars['Int']['input'];
-  teamId: Scalars['GlobalId']['input'];
-};
-
-
 export type MutationAttachImageToFeedItemArgs = {
   feedItemUuid: Scalars['GlobalId']['input'];
   imageUuid: Scalars['GlobalId']['input'];
+};
+
+
+export type MutationBatchUploadDailyDepartmentNotificationsArgs = {
+  input: ReadonlyArray<DailyDepartmentNotificationInput>;
 };
 
 
@@ -1096,6 +1407,11 @@ export type MutationCreateConfigurationArgs = {
 
 export type MutationCreateConfigurationsArgs = {
   input: ReadonlyArray<CreateConfigurationInput>;
+};
+
+
+export type MutationCreateDailyDepartmentNotificationArgs = {
+  input: DailyDepartmentNotificationInput;
 };
 
 
@@ -1148,6 +1464,16 @@ export type MutationCreateTeamArgs = {
 
 export type MutationDeleteConfigurationArgs = {
   uuid: Scalars['GlobalId']['input'];
+};
+
+
+export type MutationDeleteDailyDepartmentNotificationArgs = {
+  id: Scalars['GlobalId']['input'];
+};
+
+
+export type MutationDeleteDailyDepartmentNotificationBatchArgs = {
+  id: Scalars['GlobalId']['input'];
 };
 
 
@@ -1248,6 +1574,12 @@ export type MutationScheduleNotificationArgs = {
 
 export type MutationSendNotificationArgs = {
   uuid: Scalars['GlobalId']['input'];
+};
+
+
+export type MutationSetDailyDepartmentNotificationArgs = {
+  id: Scalars['GlobalId']['input'];
+  input: DailyDepartmentNotificationInput;
 };
 
 
@@ -1489,6 +1821,7 @@ export type PersonNode = Node & {
   readonly moraleTeams: ReadonlyArray<MembershipNode>;
   readonly name?: Maybe<Scalars['String']['output']>;
   readonly primaryCommittee?: Maybe<CommitteeMembershipNode>;
+  readonly primaryTeam?: Maybe<MembershipNode>;
   readonly teams: ReadonlyArray<MembershipNode>;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
 };
@@ -1507,6 +1840,11 @@ export type PersonNodeAssignedDonationEntriesArgs = {
   sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
   sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
   stringFilters?: InputMaybe<ReadonlyArray<FundraisingEntryResolverKeyedStringFilterItem>>;
+};
+
+
+export type PersonNodePrimaryTeamArgs = {
+  teamType: TeamType;
 };
 
 export const PersonResolverAllKeys = {
@@ -1686,6 +2024,9 @@ export type Query = {
   /** The marathon that is currently happening, i.e. the marathon with the latest start date that has not yet ended. */
   readonly currentMarathon?: Maybe<MarathonNode>;
   readonly currentMarathonHour?: Maybe<MarathonHourNode>;
+  readonly dailyDepartmentNotification: DailyDepartmentNotificationNode;
+  readonly dailyDepartmentNotificationBatch: DailyDepartmentNotificationBatchNode;
+  readonly dailyDepartmentNotifications: ListDailyDepartmentNotificationsResponse;
   readonly dbFundsTeams: ReadonlyArray<DbFundsTeamInfo>;
   /** Get a device by it's UUID */
   readonly device: GetDeviceByUuidResponse;
@@ -1711,6 +2052,7 @@ export type Query = {
   readonly marathon: MarathonNode;
   readonly marathonForYear: MarathonNode;
   readonly marathonHour: MarathonHourNode;
+  readonly marathonHours: ListMarathonHoursResponse;
   readonly marathons: ListMarathonsResponse;
   readonly me?: Maybe<PersonNode>;
   readonly node: Node;
@@ -1723,6 +2065,8 @@ export type Query = {
   readonly pointEntry: GetPointEntryByUuidResponse;
   readonly pointOpportunities: ListPointOpportunitiesResponse;
   readonly pointOpportunity: SinglePointOpportunityResponse;
+  readonly rawFundraisingEntries: Scalars['String']['output'];
+  readonly rawFundraisingTotals: Scalars['String']['output'];
   readonly searchPeopleByName: ReadonlyArray<PersonNode>;
   readonly team: SingleTeamResponse;
   readonly teams: ListTeamsResponse;
@@ -1742,6 +2086,32 @@ export type QueryAuditLogArgs = {
 
 export type QueryConfigurationArgs = {
   id: Scalars['GlobalId']['input'];
+};
+
+
+export type QueryDailyDepartmentNotificationArgs = {
+  id: Scalars['GlobalId']['input'];
+};
+
+
+export type QueryDailyDepartmentNotificationBatchArgs = {
+  id: Scalars['GlobalId']['input'];
+};
+
+
+export type QueryDailyDepartmentNotificationsArgs = {
+  booleanFilters?: InputMaybe<Scalars['Void']['input']>;
+  dateFilters?: InputMaybe<Scalars['Void']['input']>;
+  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  isNullFilters?: InputMaybe<ReadonlyArray<DailyDepartmentNotificationResolverKeyedIsNullFilterItem>>;
+  numericFilters?: InputMaybe<ReadonlyArray<DailyDepartmentNotificationResolverKeyedNumericFilterItem>>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<DailyDepartmentNotificationResolverKeyedOneOfFilterItem>>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sendAll?: InputMaybe<Scalars['Boolean']['input']>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<DailyDepartmentNotificationResolverKeyedStringFilterItem>>;
 };
 
 
@@ -1880,6 +2250,22 @@ export type QueryMarathonHourArgs = {
 };
 
 
+export type QueryMarathonHoursArgs = {
+  booleanFilters?: InputMaybe<Scalars['Void']['input']>;
+  dateFilters?: InputMaybe<ReadonlyArray<MarathonHourResolverKeyedDateFilterItem>>;
+  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  isNullFilters?: InputMaybe<ReadonlyArray<MarathonHourResolverKeyedIsNullFilterItem>>;
+  numericFilters?: InputMaybe<Scalars['Void']['input']>;
+  oneOfFilters?: InputMaybe<ReadonlyArray<MarathonHourResolverKeyedOneOfFilterItem>>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sendAll?: InputMaybe<Scalars['Boolean']['input']>;
+  sortBy?: InputMaybe<ReadonlyArray<Scalars['String']['input']>>;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection>>;
+  stringFilters?: InputMaybe<ReadonlyArray<MarathonHourResolverKeyedStringFilterItem>>;
+};
+
+
 export type QueryMarathonsArgs = {
   booleanFilters?: InputMaybe<Scalars['Void']['input']>;
   dateFilters?: InputMaybe<ReadonlyArray<MarathonResolverKeyedDateFilterItem>>;
@@ -1988,6 +2374,17 @@ export type QueryPointOpportunitiesArgs = {
 
 export type QueryPointOpportunityArgs = {
   uuid: Scalars['GlobalId']['input'];
+};
+
+
+export type QueryRawFundraisingEntriesArgs = {
+  identifier: Scalars['Int']['input'];
+  marathonYear: Scalars['String']['input'];
+};
+
+
+export type QueryRawFundraisingTotalsArgs = {
+  marathonYear: Scalars['String']['input'];
 };
 
 
@@ -2128,6 +2525,16 @@ export type SingleTeamResponse = AbstractGraphQlOkResponse & GraphQlBaseResponse
   readonly ok: Scalars['Boolean']['output'];
 };
 
+export type SolicitationCodeNode = Node & {
+  readonly __typename?: 'SolicitationCodeNode';
+  readonly code: Scalars['NonNegativeInt']['output'];
+  readonly createdAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  readonly id: Scalars['GlobalId']['output'];
+  readonly name?: Maybe<Scalars['String']['output']>;
+  readonly prefix: Scalars['String']['output'];
+  readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+};
+
 export { SortDirection };
 
 export type StageNotificationResponse = AbstractGraphQlCreatedResponse & AbstractGraphQlOkResponse & GraphQlBaseResponse & {
@@ -2156,6 +2563,7 @@ export type TeamNode = Node & {
   readonly members: ReadonlyArray<MembershipNode>;
   readonly name: Scalars['String']['output'];
   readonly pointEntries: ReadonlyArray<PointEntryNode>;
+  readonly solicitationCode?: Maybe<SolicitationCodeNode>;
   readonly totalPoints: Scalars['Int']['output'];
   readonly type: TeamType;
   readonly updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -2354,16 +2762,16 @@ export type ScoreBoardFragmentFragment = { readonly __typename?: 'TeamNode', rea
 export type HighlightedTeamFragmentFragment = { readonly __typename?: 'TeamNode', readonly id: string, readonly name: string, readonly legacyStatus: TeamLegacyStatus, readonly type: TeamType } & { ' $fragmentName'?: 'HighlightedTeamFragmentFragment' };
 
 export type ScoreBoardDocumentQueryVariables = Exact<{
-  type?: InputMaybe<ReadonlyArray<TeamType> | TeamType>;
+  type: TeamType;
   marathonId: Scalars['GlobalId']['input'];
 }>;
 
 
 export type ScoreBoardDocumentQuery = { readonly __typename?: 'Query', readonly me?: (
-    { readonly __typename?: 'PersonNode', readonly id: string, readonly teams: ReadonlyArray<{ readonly __typename?: 'MembershipNode', readonly team: (
+    { readonly __typename?: 'PersonNode', readonly id: string, readonly primaryTeam?: { readonly __typename?: 'MembershipNode', readonly team: (
         { readonly __typename?: 'TeamNode' }
         & { ' $fragmentRefs'?: { 'HighlightedTeamFragmentFragment': HighlightedTeamFragmentFragment;'MyTeamFragmentFragment': MyTeamFragmentFragment } }
-      ) }> }
+      ) } | null }
     & { ' $fragmentRefs'?: { 'MyFundraisingFragmentFragment': MyFundraisingFragmentFragment } }
   ) | null, readonly teams: { readonly __typename?: 'ListTeamsResponse', readonly data: ReadonlyArray<(
       { readonly __typename?: 'TeamNode' }
@@ -2404,5 +2812,5 @@ export const RootScreenDocumentDocument = {"kind":"Document","definitions":[{"ki
 export const EventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Events"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"earliestTimestamp"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTimeISO"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"lastTimestamp"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTimeISO"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"events"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"dateFilters"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"comparison"},"value":{"kind":"EnumValue","value":"GREATER_THAN_OR_EQUAL_TO"}},{"kind":"ObjectField","name":{"kind":"Name","value":"field"},"value":{"kind":"EnumValue","value":"occurrenceStart"}},{"kind":"ObjectField","name":{"kind":"Name","value":"value"},"value":{"kind":"Variable","name":{"kind":"Name","value":"earliestTimestamp"}}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"comparison"},"value":{"kind":"EnumValue","value":"LESS_THAN_OR_EQUAL_TO"}},{"kind":"ObjectField","name":{"kind":"Name","value":"field"},"value":{"kind":"EnumValue","value":"occurrenceStart"}},{"kind":"ObjectField","name":{"kind":"Name","value":"value"},"value":{"kind":"Variable","name":{"kind":"Name","value":"lastTimestamp"}}}]}]}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"EnumValue","value":"asc"}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"StringValue","value":"occurrence","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventScreenFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventScreenFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"occurrences"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"interval"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"end"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fullDay"}}]}},{"kind":"Field","name":{"kind":"Name","value":"images"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}}]}}]}}]} as unknown as DocumentNode<EventsQuery, EventsQueryVariables>;
 export const ServerFeedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ServerFeed"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"feed"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"20"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"textContent"}},{"kind":"Field","name":{"kind":"Name","value":"image"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}}]}}]}}]}}]} as unknown as DocumentNode<ServerFeedQuery, ServerFeedQueryVariables>;
 export const MarathonScreenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MarathonScreen"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentMarathonHour"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"HourScreenFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"latestMarathon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"hours"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"HourScreenFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ImageViewFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbHash"}},{"kind":"Field","name":{"kind":"Name","value":"alt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"HourScreenFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MarathonHourNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"details"}},{"kind":"Field","name":{"kind":"Name","value":"durationInfo"}},{"kind":"Field","name":{"kind":"Name","value":"mapImages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ImageViewFragment"}}]}}]}}]} as unknown as DocumentNode<MarathonScreenQuery, MarathonScreenQueryVariables>;
-export const ScoreBoardDocumentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ScoreBoardDocument"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"type"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamType"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"marathonId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GlobalId"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"HighlightedTeamFragment"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MyTeamFragment"}}]}}]}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MyFundraisingFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"sendAll"},"value":{"kind":"BooleanValue","value":true}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"totalPoints","block":false},{"kind":"StringValue","value":"name","block":false}]}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"desc"},{"kind":"EnumValue","value":"asc"}]}},{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"Variable","name":{"kind":"Name","value":"type"}}},{"kind":"Argument","name":{"kind":"Name","value":"marathonId"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"marathonId"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ScoreBoardFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"HighlightedTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"fundraisingTotalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"pointEntries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personFrom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"points"}}]}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyFundraisingFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fundraisingTotalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"fundraisingAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"entry"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"donatedToText"}},{"kind":"Field","name":{"kind":"Name","value":"donatedByText"}},{"kind":"Field","name":{"kind":"Name","value":"donatedOn"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScoreBoardFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<ScoreBoardDocumentQuery, ScoreBoardDocumentQueryVariables>;
+export const ScoreBoardDocumentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ScoreBoardDocument"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"type"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TeamType"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"marathonId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GlobalId"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"primaryTeam"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"teamType"},"value":{"kind":"Variable","name":{"kind":"Name","value":"type"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"team"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"HighlightedTeamFragment"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MyTeamFragment"}}]}}]}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MyFundraisingFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"teams"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"sendAll"},"value":{"kind":"BooleanValue","value":true}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"totalPoints","block":false},{"kind":"StringValue","value":"name","block":false}]}},{"kind":"Argument","name":{"kind":"Name","value":"sortDirection"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"desc"},{"kind":"EnumValue","value":"asc"}]}},{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"type"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"marathonId"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"marathonId"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ScoreBoardFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"HighlightedTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyTeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"fundraisingTotalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"pointEntries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personFrom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"linkblue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"points"}}]}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"linkblue"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyFundraisingFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PersonNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fundraisingTotalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"fundraisingAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"entry"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"donatedToText"}},{"kind":"Field","name":{"kind":"Name","value":"donatedByText"}},{"kind":"Field","name":{"kind":"Name","value":"donatedOn"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScoreBoardFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TeamNode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"legacyStatus"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<ScoreBoardDocumentQuery, ScoreBoardDocumentQueryVariables>;
 export const ActiveMarathonDocumentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ActiveMarathonDocument"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentMarathon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"latestMarathon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<ActiveMarathonDocumentQuery, ActiveMarathonDocumentQueryVariables>;
