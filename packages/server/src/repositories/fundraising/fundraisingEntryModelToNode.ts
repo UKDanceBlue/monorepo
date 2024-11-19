@@ -1,3 +1,4 @@
+import type { SolicitationCode } from "@prisma/client";
 import {
   FundraisingEntryNode,
   SolicitationCodeNode,
@@ -52,18 +53,23 @@ export function fundraisingEntryModelToNode(
       donatedOn,
       createdAt: entryModel.createdAt,
       updatedAt: entryModel.updatedAt,
-      type: entryModel.type,
       notes: entryModel.notes,
       solicitationCodeOverride:
         entryModel.solicitationCodeOverride &&
-        SolicitationCodeNode.init({
-          id: entryModel.solicitationCodeOverride.uuid,
-          prefix: entryModel.solicitationCodeOverride.prefix,
-          code: entryModel.solicitationCodeOverride.code,
-          name: entryModel.solicitationCodeOverride.name,
-          createdAt: entryModel.solicitationCodeOverride.createdAt,
-          updatedAt: entryModel.solicitationCodeOverride.updatedAt,
-        }),
+        solicitationCodeModelToNode(entryModel.solicitationCodeOverride),
     })
   );
+}
+
+export function solicitationCodeModelToNode(
+  solicitationCode: SolicitationCode
+): SolicitationCodeNode {
+  return SolicitationCodeNode.init({
+    id: solicitationCode.uuid,
+    prefix: solicitationCode.prefix,
+    code: solicitationCode.code,
+    name: solicitationCode.name,
+    createdAt: solicitationCode.createdAt,
+    updatedAt: solicitationCode.updatedAt,
+  });
 }

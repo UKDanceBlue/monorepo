@@ -1,5 +1,10 @@
 import { Container, Service } from "@freshgum/typedi";
-import type { GlobalId, MarathonYearString } from "@ukdanceblue/common";
+import {
+  type GlobalId,
+  type MarathonYearString,
+  TeamNode,
+  VoidScalar,
+} from "@ukdanceblue/common";
 import {
   AccessLevel,
   checkParam,
@@ -8,6 +13,7 @@ import {
   FundraisingEntryNode,
   GlobalIdScalar,
   MembershipPositionType,
+  MutationAccessControl,
   QueryAccessControl,
   SolicitationCodeNode,
   SortDirection,
@@ -17,12 +23,14 @@ import {
   ListFundraisingEntriesResponse,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
+import { VoidResolver } from "graphql-scalars";
 import { AsyncResult, Ok } from "ts-results-es";
 import {
   Arg,
   Args,
   FieldResolver,
   Int,
+  Mutation,
   Query,
   Resolver,
   Root,
@@ -34,6 +42,7 @@ import { dailyDepartmentNotificationModelToResource } from "#repositories/dailyD
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
+import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
 import { globalFundraisingAccessParam } from "./accessParams.js";
 
@@ -250,6 +259,38 @@ export class SolicitationCodeResolver {
     private readonly fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
+  @QueryAccessControl(globalFundraisingAccessParam)
+  async solicitationCodes(): Promise<ConcreteResult<SolicitationCodeNode[]>> {
+    const codes =
+      await this.fundraisingEntryRepository.findAllSolicitationCodes();
+    return codes.toAsyncResult().map((codes) =>
+      codes.map(({ uuid, id, ...code }) =>
+        SolicitationCodeNode.init({
+          ...code,
+          id: uuid,
+        })
+      )
+    ).promise;
+  }
+
+  @QueryAccessControl(globalFundraisingAccessParam)
+  @Query(() => SolicitationCodeNode)
+  async solicitationCode(
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
+  ): Promise<ConcreteResult<SolicitationCodeNode>> {
+    const code =
+      await this.fundraisingEntryRepository.findSolicitationCodeByUnique({
+        uuid: id,
+      });
+    return code.toAsyncResult().map(({ uuid, id, ...code }) =>
+      SolicitationCodeNode.init({
+        ...code,
+        id: uuid,
+      })
+    ).promise;
+  }
+
+  @QueryAccessControl(globalFundraisingAccessParam)
   @FieldResolver(() => [FundraisingEntryNode])
   async entries(
     @Root() { id: { id } }: SolicitationCodeNode
@@ -263,5 +304,56 @@ export class SolicitationCodeResolver {
       .map((entries) =>
         Promise.all(entries.map((entry) => fundraisingEntryModelToNode(entry)))
       ).promise;
+  }
+
+  @QueryAccessControl(globalFundraisingAccessParam)
+  @FieldResolver(() => [TeamNode])
+  async teams(
+    @Root() { id: { id } }: SolicitationCodeNode,
+    @Arg("marathonId", () => GlobalIdScalar) { id: marathonId }: GlobalId
+  ): Promise<ConcreteResult<TeamNode[]>> {
+    const teams =
+      await this.fundraisingEntryRepository.getTeamsForSolitationCode(
+        {
+          uuid: id,
+        },
+        { marathonParam: { uuid: marathonId } }
+      );
+
+    return teams
+      .toAsyncResult()
+      .map((entries) => entries.map((entry) => teamModelToResource(entry)))
+      .promise;
+  }
+
+  @MutationAccessControl(globalFundraisingAccessParam)
+  @Mutation(() => VoidResolver, { name: "assignSolicitationCodeToTeam" })
+  async assignSolicitationCodeToTeam(
+    @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId,
+    @Arg("solicitationCode", () => GlobalIdScalar)
+    { id: solicitationCodeId }: GlobalId
+  ): Promise<ConcreteResult<typeof VoidScalar>> {
+    const result =
+      await this.fundraisingEntryRepository.assignSolitationCodeToTeam(
+        { uuid: teamId },
+        {
+          uuid: solicitationCodeId,
+        }
+      );
+
+    return result.map(() => VoidScalar);
+  }
+
+  @MutationAccessControl(globalFundraisingAccessParam)
+  @Mutation(() => VoidResolver, { name: "removeSolicitationCodeFromTeam" })
+  async removeSolicitationCodeFromTeam(
+    @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId
+  ): Promise<ConcreteResult<typeof VoidScalar>> {
+    const result =
+      await this.fundraisingEntryRepository.removeSolicitationCodeFromTeam({
+        uuid: teamId,
+      });
+
+    return result.map(() => VoidScalar);
   }
 }

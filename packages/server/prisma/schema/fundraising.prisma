@@ -5,7 +5,6 @@ model FundraisingEntry {
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
   notes              String?
-  type               FundraisingEntryType
   enteredByPersonId  Int?
   solicitationCodeId Int?
 
@@ -46,7 +45,6 @@ model FundraisingEntry {
 //     0::numeric(65, 30)
 //   ) AS "unassigned",
 //   "fe"."notes",
-//   "fe"."type",
 //   "fe"."enteredByPersonId",
 //   "fe"."solicitationCodeId"
 // FROM "FundraisingEntry" "fe";
@@ -60,7 +58,6 @@ view FundraisingEntryWithMeta {
   unassigned Decimal?
 
   notes              String?
-  type               FundraisingEntryType
   enteredByPersonId  Int?
   solicitationCodeId Int?
 
@@ -71,13 +68,6 @@ view FundraisingEntryWithMeta {
   solicitationCodeOverride SolicitationCode?            @relation(fields: [solicitationCodeId], references: [id])
 
   @@index([uuid])
-}
-
-enum FundraisingEntryType {
-  Cash
-  Check
-  Online
-  Legacy
 }
 
 model FundraisingAssignment {

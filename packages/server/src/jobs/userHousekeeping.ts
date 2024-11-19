@@ -2,8 +2,8 @@
 import { Container } from "@freshgum/typedi";
 import { Cron } from "croner";
 
-import { logger } from "#logging/standardLogging.js";
 import { prismaToken } from "#lib/typediTokens.js";
+import { logger } from "#logging/standardLogging.js";
 import { JobStateRepository } from "#repositories/JobState.js";
 
 const jobStateRepository = Container.get(JobStateRepository);

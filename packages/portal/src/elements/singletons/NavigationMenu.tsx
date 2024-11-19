@@ -3,12 +3,14 @@ import "./NavigationMenu.css";
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import type { Register } from "@tanstack/react-router";
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
+import type { Authorization, AuthorizationRule } from "@ukdanceblue/common";
 import {
   AccessLevel,
   checkAuthorization,
   defaultAuthorization,
 } from "@ukdanceblue/common";
 import { Button, Menu, Select } from "antd";
+import type { ItemType } from "antd/es/menu/interface.js";
 import { useContext, useEffect, useState } from "react";
 
 import { themeConfigContext } from "@/config/antThemeConfig.js";
@@ -22,7 +24,6 @@ import {
 } from "@/hooks/useLoginState.js";
 
 import { MasqueradeSelector } from "./MasqueradeSelector.js";
-import { ItemType, MenuItemType } from "antd/es/menu/interface.js";
 
 const routes: {
   path: keyof Register["router"]["routesByPath"];
@@ -53,8 +54,8 @@ const routes: {
         title: "DB Funds",
       },
       {
-        path: "/fundraising/ddn/upload",
-        title: "DDN Upload",
+        path: "/fundraising/ddn",
+        title: "DDNs",
       },
     ],
   },
@@ -105,7 +106,7 @@ export const NavigationMenu = () => {
   const router = useRouter();
   const location = useLocation();
 
-  const [menuItems, setMenuItems] = useState<ItemType<MenuItemType>[]>([]);
+  const [menuItems, setMenuItems] = useState<ItemType[]>([]);
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
 
   useEffect(() => {
@@ -169,10 +170,10 @@ export const NavigationMenu = () => {
       }
 
       const updatedMenuItems = filteredItems.map(
-        ({ route, title, children }): ItemType<MenuItemType> => ({
+        ({ route, title, children }): ItemType => ({
           key: route.id,
           title,
-          type: children.length ? "submenu" : "item",
+          type: children.length > 0 ? "submenu" : "item",
           label: (
             <Link
               to={route.to}
@@ -327,14 +328,10 @@ export const NavigationMenu = () => {
 };
 
 function shouldShowMenuItem(
-  authorizationRules:
-    | import("/workspaces/monorepo/packages/common/dist/index").AuthorizationRule[]
-    | null,
+  authorizationRules: AuthorizationRule[] | null,
   routeId: string,
   matchedRoutes: Set<string>,
-  authorization:
-    | import("/workspaces/monorepo/packages/common/dist/index").Authorization
-    | undefined
+  authorization: Authorization | undefined
 ): [boolean, boolean] {
   if (!authorizationRules) {
     return [true, matchedRoutes.has(routeId)];

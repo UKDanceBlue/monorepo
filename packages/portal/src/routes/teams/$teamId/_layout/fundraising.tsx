@@ -42,9 +42,11 @@ const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
   ) {
     team(uuid: $teamUuid) {
       data {
-        dbFundsTeam {
-          dbNum
+        solicitationCode {
+          id
           name
+          prefix
+          code
         }
         members {
           person {
@@ -98,12 +100,10 @@ const SearchFundraisingTeamDocument = graphql(/* GraphQL */ `
   }
 `);
 
-const SetDbFundsTeamDocument = graphql(/* GraphQL */ `
-  mutation SetDbFundsTeam($teamUuid: GlobalId!, $dbFundsTeamDbNum: Int!) {
-    assignTeamToDbFundsTeam(
-      dbFundsTeamDbNum: $dbFundsTeamDbNum
-      teamId: $teamUuid
-    )
+const SetTeamSolicitationCodeDocument = graphql(/* GraphQL */ `
+  mutation SetTeamSolicitationCode($teamUuid: GlobalId!, $solCodeId: GlobalId!) {
+    assignSolicitationCodeToTeam(teamUuid: $teamUuid, solicitationCode: $solCodeId) {
+    }
   }
 `);
 

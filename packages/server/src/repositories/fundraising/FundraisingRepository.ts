@@ -149,10 +149,17 @@ function asWideFundraisingEntryWithMeta(
 
 export type FundraisingEntryUniqueParam = SimpleUniqueParam;
 export type FundraisingAssignmentUniqueParam = SimpleUniqueParam;
+export type SolicitationCodeUniqueParam =
+  | SimpleUniqueParam
+  | {
+      code: number;
+      prefix: string;
+    };
 
 import { Decimal } from "@prisma/client/runtime/library";
 
 import { prismaToken } from "#lib/typediTokens.js";
+import { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 
 @Service([prismaToken])
 export class FundraisingEntryRepository {
@@ -781,6 +788,175 @@ export class FundraisingEntryRepository {
         include: defaultInclude,
       });
       return Result.all(entries.map(asWideFundraisingEntryWithMeta));
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async getTeamsForSolitationCode(
+    solicitationCodeParam: SimpleUniqueParam,
+    {
+      marathonParam,
+    }: {
+      marathonParam?: UniqueMarathonParam;
+    }
+  ): Promise<
+    Result<readonly Team[], RepositoryError | ActionDeniedError | NotFoundError>
+  > {
+    try {
+      const teams = await this.prisma.team.findMany({
+        where: {
+          solicitationCode: solicitationCodeParam,
+          marathon: marathonParam,
+        },
+      });
+      return Ok(teams);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async assignSolitationCodeToTeam(
+    teamParam: SimpleUniqueParam,
+    solicitationCodeParam: SimpleUniqueParam
+  ): Promise<Result<None, RepositoryError | ActionDeniedError>> {
+    try {
+      const team = await this.prisma.team.findUnique({
+        where: teamParam,
+        include: { solicitationCode: true },
+      });
+      if (!team) {
+        return Err(new NotFoundError({ what: "Team" }));
+      }
+      if (team.solicitationCode) {
+        return Err(
+          new ActionDeniedError("Team already has a solicitation code")
+        );
+      }
+
+      await this.prisma.team.update({
+        where: teamParam,
+        data: {
+          solicitationCode: { connect: solicitationCodeParam },
+        },
+      });
+
+      return Ok(None);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async removeSolicitationCodeFromTeam(
+    teamParam: SimpleUniqueParam
+  ): Promise<Result<None, RepositoryError | ActionDeniedError>> {
+    try {
+      const team = await this.prisma.team.findUnique({
+        where: teamParam,
+        include: { solicitationCode: true },
+      });
+      if (!team) {
+        return Err(new NotFoundError({ what: "Team" }));
+      }
+      if (!team.solicitationCode) {
+        return Err(
+          new ActionDeniedError("Team does not have a solicitation code")
+        );
+      }
+
+      await this.prisma.team.update({
+        where: teamParam,
+        data: {
+          solicitationCode: { disconnect: true },
+        },
+      });
+
+      return Ok(None);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async overrideSolicitationCodeForEntry(
+    entryParam: FundraisingEntryUniqueParam,
+    solicitationCodeParam: SimpleUniqueParam
+  ): Promise<
+    Result<
+      FundraisingEntry,
+      RepositoryError | ActionDeniedError | NotFoundError
+    >
+  > {
+    try {
+      const entry = await this.prisma.fundraisingEntry.findUnique({
+        where: entryParam,
+      });
+      if (!entry) {
+        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+      }
+
+      await this.prisma.fundraisingEntry.update({
+        where: entryParam,
+        data: {
+          solicitationCodeOverride: { connect: solicitationCodeParam },
+        },
+      });
+
+      return Ok(entry);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async removeSolicitationCodeOverrideForEntry(
+    entryParam: FundraisingEntryUniqueParam
+  ): Promise<
+    Result<
+      FundraisingEntry,
+      RepositoryError | ActionDeniedError | NotFoundError
+    >
+  > {
+    try {
+      const entry = await this.prisma.fundraisingEntry.findUnique({
+        where: entryParam,
+      });
+      if (!entry) {
+        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+      }
+
+      await this.prisma.fundraisingEntry.update({
+        where: entryParam,
+        data: {
+          solicitationCodeOverride: { disconnect: true },
+        },
+      });
+
+      return Ok(entry);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async findAllSolicitationCodes(): Promise<
+    Result<readonly SolicitationCode[], RepositoryError>
+  > {
+    try {
+      return Ok(await this.prisma.solicitationCode.findMany());
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async findSolicitationCodeByUnique(
+    param: SolicitationCodeUniqueParam
+  ): Promise<Result<SolicitationCode, RepositoryError | NotFoundError>> {
+    try {
+      const code = await this.prisma.solicitationCode.findUnique({
+        where: "code" in param ? { prefix_code: param } : param,
+      });
+      if (!code) {
+        return Err(new NotFoundError({ what: "SolicitationCode" }));
+      }
+      return Ok(code);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }

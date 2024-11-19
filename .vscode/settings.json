@@ -45,5 +45,10 @@
     "editor.defaultFormatter": "mtxr.sqltools"
   },
   "react-native-tools.projectRoot": "./packages/mobile",
-  "dependi.npm.lockFileEnabled": true
+  "dependi.npm.lockFileEnabled": true,
+  "workbench.colorCustomizations": {
+    "editorError.foreground": "#ff000077",
+    "editorWarning.foreground": "#00ff0055",
+    "editorInfo.foreground": "#99999988"
+  }
 }

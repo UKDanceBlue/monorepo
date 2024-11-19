@@ -2,17 +2,11 @@ import { Service } from "@freshgum/typedi";
 import {
   DailyDepartmentNotification,
   DailyDepartmentNotificationBatch,
-  FundraisingEntryType,
   Prisma,
   PrismaClient,
   SolicitationCode,
 } from "@prisma/client";
-import {
-  BatchType,
-  DDNInit,
-  extractDDNBatchType,
-  SortDirection,
-} from "@ukdanceblue/common";
+import { DDNInit, localDateToJs, SortDirection } from "@ukdanceblue/common";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
@@ -21,7 +15,6 @@ import {
   buildDailyDepartmentNotificationWhere,
 } from "./ddnRepositoryUtils.js";
 
-// TODO: Add the keys for the DailyDepartmentNotification model
 const dailyDepartmentNotificationBooleanKeys = [] as const;
 type DailyDepartmentNotificationBooleanKey =
   (typeof dailyDepartmentNotificationBooleanKeys)[number];
@@ -34,19 +27,30 @@ const dailyDepartmentNotificationIsNullKeys = [] as const;
 type DailyDepartmentNotificationIsNullKey =
   (typeof dailyDepartmentNotificationIsNullKeys)[number];
 
-const dailyDepartmentNotificationNumericKeys = [] as const;
+const dailyDepartmentNotificationNumericKeys = ["Amount"] as const;
 type DailyDepartmentNotificationNumericKey =
   (typeof dailyDepartmentNotificationNumericKeys)[number];
 
-const dailyDepartmentNotificationOneOfKeys = [] as const;
+const dailyDepartmentNotificationOneOfKeys = [
+  "BatchType",
+  "SolicitationCodePrefix",
+  "SolicitationCodeNumber",
+] as const;
 type DailyDepartmentNotificationOneOfKey =
   (typeof dailyDepartmentNotificationOneOfKeys)[number];
 
-const dailyDepartmentNotificationStringKeys = [] as const;
+const dailyDepartmentNotificationStringKeys = [
+  "Donor",
+  "Comment",
+  "SolicitationCodeName",
+] as const;
 type DailyDepartmentNotificationStringKey =
   (typeof dailyDepartmentNotificationStringKeys)[number];
 
-export type DailyDepartmentNotificationOrderKeys = never;
+export type DailyDepartmentNotificationOrderKeys =
+  | DailyDepartmentNotificationNumericKey
+  | DailyDepartmentNotificationStringKey
+  | DailyDepartmentNotificationOneOfKey;
 
 export type DailyDepartmentNotificationFilters = FilterItems<
   DailyDepartmentNotificationBooleanKey,
@@ -57,9 +61,17 @@ export type DailyDepartmentNotificationFilters = FilterItems<
   DailyDepartmentNotificationStringKey
 >;
 
-interface UniqueDailyDepartmentNotificationParam {
-  idSorter: string;
-}
+type UniqueDailyDepartmentNotificationParam =
+  | SimpleUniqueParam
+  | {
+      idSorter: string;
+    };
+
+type UniqueDailyDepartmentNotificationBatchParam =
+  | SimpleUniqueParam
+  | {
+      batchId: string;
+    };
 
 import { InvalidArgumentError, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
@@ -68,6 +80,7 @@ import { prismaToken } from "#lib/typediTokens.js";
 import {
   handleRepositoryError,
   RepositoryError,
+  SimpleUniqueParam,
 } from "#repositories/shared.js";
 
 function parseSolicitationCode(
@@ -123,7 +136,7 @@ export class DailyDepartmentNotificationRepository {
         include: { batch: true, solicitationCode: true },
       });
       if (!row) {
-        return Err(new NotFoundError({ what: "Marathon" }));
+        return Err(new NotFoundError({ what: "DDN" }));
       }
       return Ok(row);
     } catch (error) {
@@ -210,14 +223,19 @@ export class DailyDepartmentNotificationRepository {
         await this.prisma.dailyDepartmentNotification.create({
           data: {
             ...data,
+            jvDocDate: data.jvDocDate && localDateToJs(data.jvDocDate),
+            sapDocDate: data.sapDocDate && localDateToJs(data.sapDocDate),
+            pledgedDate: data.pledgedDate && localDateToJs(data.pledgedDate),
+            processDate: data.processDate && localDateToJs(data.processDate),
+            effectiveDate:
+              data.effectiveDate && localDateToJs(data.effectiveDate),
+            transactionDate:
+              data.transactionDate && localDateToJs(data.transactionDate),
             batchId: undefined,
             batch: {
               connectOrCreate: {
                 create: {
                   batchId: data.batchId,
-                  batchType: extractDDNBatchType(data.batchId).unwrapOr(
-                    BatchType.Unknown
-                  ),
                 },
                 where: { batchId: data.batchId },
               },
@@ -238,10 +256,7 @@ export class DailyDepartmentNotificationRepository {
               },
             },
             fundraisingEntry: {
-              create: {
-                // TODO: Get the type from the data
-                type: FundraisingEntryType.Legacy,
-              },
+              create: {},
             },
           },
           include: { batch: true, solicitationCode: true },
@@ -277,6 +292,14 @@ export class DailyDepartmentNotificationRepository {
             where: param,
             data: {
               ...data,
+              jvDocDate: data.jvDocDate && localDateToJs(data.jvDocDate),
+              sapDocDate: data.sapDocDate && localDateToJs(data.sapDocDate),
+              pledgedDate: data.pledgedDate && localDateToJs(data.pledgedDate),
+              processDate: data.processDate && localDateToJs(data.processDate),
+              effectiveDate:
+                data.effectiveDate && localDateToJs(data.effectiveDate),
+              transactionDate:
+                data.transactionDate && localDateToJs(data.transactionDate),
               batchId: undefined,
               batch: undefined,
               solicitationCode: {
@@ -370,14 +393,19 @@ export class DailyDepartmentNotificationRepository {
             where: { idSorter: row.idSorter },
             update: {
               ...row,
+              jvDocDate: row.jvDocDate && localDateToJs(row.jvDocDate),
+              sapDocDate: row.sapDocDate && localDateToJs(row.sapDocDate),
+              pledgedDate: row.pledgedDate && localDateToJs(row.pledgedDate),
+              processDate: row.processDate && localDateToJs(row.processDate),
+              effectiveDate:
+                row.effectiveDate && localDateToJs(row.effectiveDate),
+              transactionDate:
+                row.transactionDate && localDateToJs(row.transactionDate),
               batchId: undefined,
               batch: {
                 connectOrCreate: {
                   create: {
                     batchId: row.batchId,
-                    batchType: extractDDNBatchType(row.batchId).unwrapOr(
-                      BatchType.Unknown
-                    ),
                   },
                   where: { batchId: row.batchId },
                 },
@@ -401,14 +429,19 @@ export class DailyDepartmentNotificationRepository {
             },
             create: {
               ...row,
+              jvDocDate: row.jvDocDate && localDateToJs(row.jvDocDate),
+              sapDocDate: row.sapDocDate && localDateToJs(row.sapDocDate),
+              pledgedDate: row.pledgedDate && localDateToJs(row.pledgedDate),
+              processDate: row.processDate && localDateToJs(row.processDate),
+              effectiveDate:
+                row.effectiveDate && localDateToJs(row.effectiveDate),
+              transactionDate:
+                row.transactionDate && localDateToJs(row.transactionDate),
               batchId: undefined,
               batch: {
                 connectOrCreate: {
                   create: {
                     batchId: row.batchId,
-                    batchType: extractDDNBatchType(row.batchId).unwrapOr(
-                      BatchType.Unknown
-                    ),
                   },
                   where: { batchId: row.batchId },
                 },
@@ -430,10 +463,7 @@ export class DailyDepartmentNotificationRepository {
                 },
               },
               fundraisingEntry: {
-                create: {
-                  // TODO: Get the type from the data
-                  type: FundraisingEntryType.Legacy,
-                },
+                create: {},
               },
             },
             include: { batch: true, solicitationCode: true },
@@ -456,7 +486,7 @@ export class DailyDepartmentNotificationRepository {
         select: { batch: true },
       });
       if (!row) {
-        return Err(new NotFoundError({ what: "Marathon" }));
+        return Err(new NotFoundError({ what: "DDN" }));
       }
       return Ok(row.batch);
     } catch (error) {
@@ -464,17 +494,17 @@ export class DailyDepartmentNotificationRepository {
     }
   }
 
-  async findBatchByBatchId(
-    batchId: string
+  async findBatchByUnique(
+    param: UniqueDailyDepartmentNotificationBatchParam
   ): Promise<Result<DailyDepartmentNotificationBatch, RepositoryError>> {
     try {
       const row = await this.prisma.dailyDepartmentNotificationBatch.findUnique(
         {
-          where: { batchId },
+          where: param,
         }
       );
       if (!row) {
-        return Err(new NotFoundError({ what: "Marathon" }));
+        return Err(new NotFoundError({ what: "Batch" }));
       }
       return Ok(row);
     } catch (error) {
@@ -483,7 +513,7 @@ export class DailyDepartmentNotificationRepository {
   }
 
   async deleteDDNBatch(
-    batchId: string
+    param: UniqueDailyDepartmentNotificationBatchParam
   ): Promise<
     Result<Option<DailyDepartmentNotificationBatch>, RepositoryError>
   > {
@@ -491,7 +521,7 @@ export class DailyDepartmentNotificationRepository {
       return Ok(
         Some(
           await this.prisma.dailyDepartmentNotificationBatch.delete({
-            where: { batchId },
+            where: param,
           })
         )
       );
@@ -507,7 +537,9 @@ export class DailyDepartmentNotificationRepository {
     }
   }
 
-  async findDDNsByBatchId(batchId: string): Promise<
+  async findDDNsByBatch(
+    batchParam: UniqueDailyDepartmentNotificationBatchParam
+  ): Promise<
     Result<
       (DailyDepartmentNotification & {
         batch: DailyDepartmentNotificationBatch;
@@ -518,7 +550,7 @@ export class DailyDepartmentNotificationRepository {
   > {
     try {
       const rows = await this.prisma.dailyDepartmentNotification.findMany({
-        where: { batchId },
+        where: { batch: batchParam },
         include: { batch: true, solicitationCode: true },
       });
 

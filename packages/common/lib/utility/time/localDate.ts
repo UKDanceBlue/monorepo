@@ -26,13 +26,17 @@ export function localDateFromLuxon(date: DateTime<true>): LocalDate {
 }
 
 export function localDateToJs(date: LocalDate): Date {
-  return DateTime.fromFormat(date, "yyyy-MM-dd").toJSDate();
+  return DateTime.fromFormat(date, "yyyy-MM-dd", {
+    zone: "America/New_York",
+  }).toJSDate();
 }
 
 export function localDateToLuxon(
   date: LocalDate
 ): Result<DateTime, LuxonError> {
   return LuxonError.luxonObjectToResult(
-    DateTime.fromFormat(date, "yyyy-MM-dd")
+    DateTime.fromFormat(date, "yyyy-MM-dd", {
+      zone: "America/New_York",
+    })
   );
 }

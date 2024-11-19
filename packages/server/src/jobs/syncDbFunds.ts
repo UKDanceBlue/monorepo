@@ -5,7 +5,7 @@ const jobStateRepository = Container.get(JobStateRepository);
 
 import { Container } from "@freshgum/typedi";
 import type { Marathon } from "@prisma/client";
-import { CompositeError, toBasicError } from "@ukdanceblue/common/error";
+import { CompositeError } from "@ukdanceblue/common/error";
 import { Cron } from "croner";
 import { AsyncResult, Err, None, Ok, type Result } from "ts-results-es";
 
@@ -14,8 +14,8 @@ import {
   DBFundsFundraisingProvider,
   type DBFundsFundraisingProviderError,
 } from "#lib/fundraising/DbFundsProvider.js";
-import { logger } from "#logging/standardLogging.js";
 import { prismaToken } from "#lib/typediTokens.js";
+import { logger } from "#logging/standardLogging.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { JobStateRepository } from "#repositories/JobState.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
@@ -91,37 +91,40 @@ async function doSyncForMarathon(
     teamCount: teams.value.length,
   });
 
-  const promises = teams.value.map(async (team) => {
+  const results = [];
+
+  for (const team of teams.value) {
+    // eslint-disable-next-line no-await-in-loop
     const entries = await fundraisingProvider.getTeamEntries(
       marathon.year as MarathonYearString,
       team.identifier
     );
     if (entries.isErr()) {
-      return Err(entries.error);
+      results.push(entries);
+      continue;
     }
-    return fundraisingRepository.overwriteTeamForFiscalYear(
-      {
-        active: team.active,
-        dbNum: team.identifier,
-        name: team.name,
-        total: team.total,
-      },
-      { id: marathon.id },
-      entries.value
+    results.push(
+      // eslint-disable-next-line no-await-in-loop
+      await fundraisingRepository.overwriteTeamForFiscalYear(
+        {
+          active: team.active,
+          dbNum: team.identifier,
+          name: team.name,
+          total: team.total,
+        },
+        { id: marathon.id },
+        entries.value
+      )
     );
-  });
-
-  const results = await Promise.allSettled(promises);
+  }
 
   const errors: DoSyncError[] = [];
   for (const result of results) {
-    if (result.status === "rejected") {
-      errors.push(toBasicError(result.reason));
-    } else if (result.value.isErr()) {
-      if (result.value.error instanceof CompositeError) {
-        errors.push(...result.value.error.errors);
+    if (result.isErr()) {
+      if (result.error instanceof CompositeError) {
+        errors.push(...result.error.errors);
       } else {
-        errors.push(result.value.error);
+        errors.push(result.error);
       }
     }
   }

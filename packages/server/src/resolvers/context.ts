@@ -20,8 +20,8 @@ import { ErrorCode } from "@ukdanceblue/common/error";
 import { Ok } from "ts-results-es";
 
 import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
-import { superAdminLinkbluesToken } from "#lib/typediTokens.js";
 import { getHostUrl } from "#lib/host.js";
+import { superAdminLinkbluesToken } from "#lib/typediTokens.js";
 import { logger } from "#logging/logger.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
@@ -81,7 +81,7 @@ async function withUserInfo(
   outputContext.authenticatedUser = personResource.value;
   outputContext.userData = {
     ...outputContext.userData,
-    userId: userId,
+    userId,
   };
 
   // Set the teams the user is on

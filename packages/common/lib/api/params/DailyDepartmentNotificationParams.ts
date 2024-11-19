@@ -265,12 +265,29 @@ export class DailyDepartmentNotificationInput implements DDNInit {
 
 @ArgsType()
 export class ListDailyDepartmentNotificationsArgs extends FilteredListQueryArgs<
-  never,
-  never,
-  never,
-  never,
+  | "Amount"
+  | "Donor"
+  | "Comment"
+  | "SolicitationCodeName"
+  | "SolicitationCodeNumber"
+  | "SolicitationCodePrefix"
+  | "BatchType",
+  "Donor" | "Comment" | "SolicitationCodeName",
+  "SolicitationCodePrefix" | "SolicitationCodeNumber" | "BatchType",
+  "Amount",
   never,
   never
 >("DailyDepartmentNotificationResolver", {
-  all: [],
+  all: [
+    "Amount",
+    "Donor",
+    "Comment",
+    "SolicitationCodeName",
+    "SolicitationCodeNumber",
+    "SolicitationCodePrefix",
+    "BatchType",
+  ],
+  string: ["Donor", "Comment", "SolicitationCodeName"],
+  numeric: ["Amount"],
+  oneOf: ["BatchType", "SolicitationCodePrefix", "SolicitationCodeNumber"],
 }) {}

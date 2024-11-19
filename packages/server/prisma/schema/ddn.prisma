@@ -1,5 +1,6 @@
 model DailyDepartmentNotification {
-  id Int @id @default(autoincrement())
+  id   Int    @id @default(autoincrement())
+  uuid String @unique @default(uuid()) @db.Uuid
 
   division                String?
   department              String?
@@ -82,27 +83,16 @@ model DailyDepartmentNotification {
   fundraisingEntryWithMeta FundraisingEntryWithMeta? @relation(fields: [fundraisingEntryId], references: [id], map: "DailyDepartmentNotification_fundraisingEntryWithMeta")
   fundraisingEntry         FundraisingEntry          @relation(fields: [fundraisingEntryId], references: [id], map: "DailyDepartmentNotification_fundraisingEntry", onDelete: Cascade)
   fundraisingEntryId       Int                       @unique
+
+  @@index([uuid])
 }
 
 model DailyDepartmentNotificationBatch {
-  batchId    String                        @id
-  batchType  BatchType
-  memberDDNs DailyDepartmentNotification[]
-}
+  id   Int    @id @default(autoincrement())
+  uuid String @unique @default(uuid()) @db.Uuid
 
-enum BatchType {
-  /// Check batches (C) include gifts to UK mailed directly to the Office of Development or to Gift Receiving, generally response to a phonathon solicitation
-  Check
-  /// Transmittal batches (T) include gifts to UK mailed directly to another department.
-  Transmittal
-  /// Credit Card batches (D) include credit card gifts approved by Gift Receiving office or Phonathon/Annual Giving, those made by a donor through the Office of Development online giving page, or by recurring subscription
-  CreditCard
-  /// ACH batches (A) include gifts set-up by the Gift Receiving office as a recurring subscription
-  ACH
-  /// Non-cash batches (N) include any gift to UK that is not received, processed or approved by the Gift Receiving office – gift was deposited by another department or gift-in-kind
-  NonCash
-  /// Payroll Deduction batches (X) include gifts from UK employees through bi-weekly or monthly payroll deductions
-  PayrollDeduction
-  /// Fallback batch type for when the batch type is unknown
-  Unknown
+  batchId    String                        @unique
+  memberDDNs DailyDepartmentNotification[]
+
+  @@index([uuid])
 }

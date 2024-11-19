@@ -98,6 +98,15 @@ export default eslintTs.config(
           enforceForRenamedProperties: false,
         },
       ],
+      // TODO: Enable these rules and use them to guide cleaning up the codebase, figure out exact limits later
+      // "complexity": ["warn", { max: 10, variant: "modified" }],
+      // "max-lines": [
+      //   "warn",
+      //   { max: 300, skipBlankLines: true, skipComments: true },
+      // ],
+      // "max-nested-callbacks": ["warn", { max: 4 }],
+      // "max-depth": ["warn", { max: 4 }],
+      // "max-params": ["warn", { max: 4 }],
       "no-useless-concat": "error",
       "prefer-numeric-literals": "error",
       "prefer-object-spread": "error",

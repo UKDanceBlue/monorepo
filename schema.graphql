@@ -255,6 +255,7 @@ type CreateTeamResponse implements AbstractGraphQLCreatedResponse & AbstractGrap
 }
 
 type DailyDepartmentNotificationBatchNode {
+  batchNumber: String!
   batchType: BatchType!
   dailyDepartmentNotifications: [DailyDepartmentNotificationNode!]!
   id: GlobalId!
@@ -385,6 +386,81 @@ type DailyDepartmentNotificationNode {
   transactionType: String!
   transmittalSn: String
   ukFirstGift: Boolean!
+}
+
+enum DailyDepartmentNotificationResolverAllKeys {
+  Amount
+  BatchType
+  Comment
+  Donor
+  SolicitationCodeName
+  SolicitationCodeNumber
+  SolicitationCodePrefix
+}
+
+input DailyDepartmentNotificationResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: DailyDepartmentNotificationResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+input DailyDepartmentNotificationResolverKeyedNumericFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: DailyDepartmentNotificationResolverNumericFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: Float!
+}
+
+input DailyDepartmentNotificationResolverKeyedOneOfFilterItem {
+  """The field to filter on"""
+  field: DailyDepartmentNotificationResolverOneOfFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: [String!]!
+}
+
+input DailyDepartmentNotificationResolverKeyedStringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The field to filter on"""
+  field: DailyDepartmentNotificationResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: String!
+}
+
+enum DailyDepartmentNotificationResolverNumericFilterKeys {
+  Amount
+}
+
+enum DailyDepartmentNotificationResolverOneOfFilterKeys {
+  BatchType
+  SolicitationCodeNumber
+  SolicitationCodePrefix
+}
+
+enum DailyDepartmentNotificationResolverStringFilterKeys {
+  Comment
+  Donor
+  SolicitationCodeName
 }
 
 """
@@ -666,7 +742,6 @@ type FundraisingEntryNode implements Node {
   notes: String
   solicitationCode: SolicitationCodeNode!
   solicitationCodeOverride: SolicitationCodeNode
-  type: FundraisingEntryType!
   updatedAt: DateTimeISO
 }
 
@@ -762,13 +837,6 @@ enum FundraisingEntryResolverOneOfFilterKeys {
 enum FundraisingEntryResolverStringFilterKeys {
   donatedBy
   donatedTo
-}
-
-enum FundraisingEntryType {
-  Cash
-  Check
-  Legacy
-  Online
 }
 
 type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
@@ -1293,7 +1361,6 @@ type Mutation {
   addMap(imageUuid: GlobalId!, uuid: GlobalId!): MarathonHourNode!
   addPersonToTeam(personUuid: GlobalId!, position: MembershipPositionType! = Member, teamUuid: GlobalId!): MembershipNode!
   assignEntryToPerson(entryId: GlobalId!, input: AssignEntryToPersonInput!, personId: GlobalId!): FundraisingAssignmentNode!
-  assignTeamToDbFundsTeam(dbFundsTeamDbNum: Int!, teamId: GlobalId!): Void!
 
   """Attach an image to a feed item"""
   attachImageToFeedItem(feedItemUuid: GlobalId!, imageUuid: GlobalId!): FeedNode!
@@ -1852,13 +1919,13 @@ type Query {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
-    isNullFilters: Void
+    isNullFilters: [DailyDepartmentNotificationResolverKeyedIsNullFilterItem!]
 
     """The numeric filters to apply to the query"""
-    numericFilters: Void
+    numericFilters: [DailyDepartmentNotificationResolverKeyedNumericFilterItem!]
 
     """The one-of filters to apply to the query"""
-    oneOfFilters: Void
+    oneOfFilters: [DailyDepartmentNotificationResolverKeyedOneOfFilterItem!]
 
     """The page number to return, defaults to 1"""
     page: Int
@@ -1882,7 +1949,7 @@ type Query {
     sortDirection: [SortDirection!]
 
     """The string filters to apply to the query"""
-    stringFilters: Void
+    stringFilters: [DailyDepartmentNotificationResolverKeyedStringFilterItem!]
   ): ListDailyDepartmentNotificationsResponse!
   dbFundsTeams(search: String!): [DbFundsTeamInfo!]!
 
@@ -2647,6 +2714,7 @@ type TeamNode implements Node {
   members: [MembershipNode!]!
   name: String!
   pointEntries: [PointEntryNode!]!
+  solicitationCode: SolicitationCodeNode
   totalPoints: Int!
   type: TeamType!
   updatedAt: DateTimeISO

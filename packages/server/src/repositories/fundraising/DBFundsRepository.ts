@@ -1,7 +1,6 @@
 import { Service } from "@freshgum/typedi";
 import {
   DBFundsTeam,
-  FundraisingEntryType,
   Prisma,
   PrismaClient,
   SolicitationCode,
@@ -139,7 +138,6 @@ export class DBFundsRepository {
             // eslint-disable-next-line no-await-in-loop
             await prisma.fundraisingEntry.create({
               data: {
-                type: FundraisingEntryType.Legacy,
                 dbFundsEntry: {
                   create: {
                     donatedBy: entry.donatedBy.unwrapOr(null),

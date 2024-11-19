@@ -8,6 +8,8 @@ import {
   DailyDepartmentNotificationNode,
 } from "@ukdanceblue/common";
 
+import { solicitationCodeModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
+
 function stringifyDate(date: Date | null): string | undefined {
   if (date == null) {
     return undefined;
@@ -22,6 +24,7 @@ export function dailyDepartmentNotificationModelToResource(
   ddn: DailyDepartmentNotification & { solicitationCode: SolicitationCode }
 ): DailyDepartmentNotificationNode {
   return DailyDepartmentNotificationNode.init({
+    id: ddn.uuid,
     division: ddn.division ?? undefined,
     department: ddn.department ?? undefined,
     effectiveDate: stringifyDate(ddn.effectiveDate),
@@ -42,7 +45,7 @@ export function dailyDepartmentNotificationModelToResource(
     gikType: ddn.gikType ?? undefined,
     gikDescription: ddn.gikDescription ?? undefined,
     onlineGift: ddn.onlineGift,
-    solicitationCode: `${ddn.solicitationCode.prefix}${ddn.solicitationCode.code.toString().padStart(4, "0")}`,
+    solicitationCode: solicitationCodeModelToNode(ddn.solicitationCode),
     solicitation: ddn.solicitation ?? undefined,
     behalfHonorMemorial: ddn.behalfHonorMemorial ?? undefined,
     matchingGift: ddn.matchingGift ?? undefined,
@@ -85,10 +88,10 @@ export function dailyDepartmentNotificationModelToResource(
 }
 
 export function dailyDepartmentNotificationBatchModelToResource(
-  ddn: DailyDepartmentNotificationBatch
+  batch: DailyDepartmentNotificationBatch
 ): DailyDepartmentNotificationBatchNode {
   return DailyDepartmentNotificationBatchNode.init({
-    batchId: ddn.batchId,
-    batchType: ddn.batchType,
+    batchNumber: batch.batchId,
+    id: batch.uuid,
   });
 }

@@ -26,6 +26,7 @@ import { API_BASE_URL } from "@/config/api.js";
 import { MarathonConfigProvider } from "@/config/marathon.js";
 import { SessionStorageKeys } from "@/config/storage.js";
 import { SpinningRibbon } from "@/elements/components/design/RibbonSpinner.js";
+
 import { routeTree } from "./routeTree.gen.js";
 
 init({

@@ -1,6 +1,6 @@
 import { DateTimeISOResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
-import { Field, Float, ObjectType, registerEnumType } from "type-graphql";
+import { Field, Float, ObjectType } from "type-graphql";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { createNodeClasses, Node } from "../relay.js";
@@ -8,19 +8,6 @@ import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
 import { SolicitationCodeNode } from "./SolicitationCode.js";
-
-export const FundraisingEntryType = {
-  Cash: "Cash",
-  Check: "Check",
-  Online: "Online",
-  Legacy: "Legacy",
-} as const;
-export type FundraisingEntryType =
-  (typeof FundraisingEntryType)[keyof typeof FundraisingEntryType];
-
-registerEnumType(FundraisingEntryType, {
-  name: "FundraisingEntryType",
-});
 
 @ObjectType({
   implements: [Node],
@@ -47,9 +34,6 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   @Field(() => Float)
   amountUnassigned!: number;
 
-  @Field(() => FundraisingEntryType)
-  type!: FundraisingEntryType;
-
   @Field(() => String, { nullable: true })
   notes?: string | null | undefined;
 
@@ -69,7 +53,6 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
     amountUnassigned: number;
     createdAt: Date;
     updatedAt: Date;
-    type: FundraisingEntryType;
     notes?: string | null;
     solicitationCodeOverride?: SolicitationCodeNode | null;
   }) {
