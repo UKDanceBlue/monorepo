@@ -10,9 +10,19 @@ try {
   // ignore
 }
 
-export function debugStringify(value: unknown, colors = false): string {
+export function debugStringify(
+  value: unknown,
+  colors = false,
+  useGetters = false
+): string {
   if (inspect) {
-    return inspect(value, { depth: 2, colors });
+    return inspect(value, {
+      depth: 10,
+      colors,
+      compact: false,
+      getters: useGetters,
+      numericSeparator: true,
+    });
   }
 
   if (typeof value === "object" && !(value instanceof Error)) {

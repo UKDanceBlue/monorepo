@@ -173,6 +173,94 @@ export class DailyDepartmentNotificationInput implements DDNInit {
 
   @Field(() => String, { nullable: true })
   combinedDonorSort?: string | undefined;
+
+  // Unused by the server (for now)
+  @Field(() => String, { nullable: true })
+  donor1Id?: string | undefined;
+
+  @Field(() => Number, { nullable: true })
+  donor1GiftKey?: number | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor1Name?: string | undefined;
+
+  @Field(() => Boolean, { nullable: true })
+  donor1Deceased?: boolean | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor1Constituency?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor1TitleBar?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor1Pm?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor1Degrees?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor2Id?: string | undefined;
+
+  @Field(() => Number, { nullable: true })
+  donor2GiftKey?: number | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor2Name?: string | undefined;
+
+  @Field(() => Boolean, { nullable: true })
+  donor2Deceased?: boolean | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor2Constituency?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor2TitleBar?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor2Pm?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor2Degrees?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor1Relation?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor2Relation?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  transmittalSn?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  sapDocNum?: string | undefined;
+
+  @Field(() => LocalDateResolver, { nullable: true })
+  sapDocDate?: LocalDate | undefined;
+
+  @Field(() => String, { nullable: true })
+  jvDocNum?: string | undefined;
+
+  @Field(() => LocalDateResolver, { nullable: true })
+  jvDocDate?: LocalDate | undefined;
+
+  @Field(() => String, { nullable: true })
+  advFeeCcPhil?: string | undefined;
+
+  @Field(() => Number, { nullable: true })
+  advFeeAmtPhil?: number | undefined;
+
+  @Field(() => String, { nullable: true })
+  advFeeCcUnit?: string | undefined;
+
+  @Field(() => Number, { nullable: true })
+  advFeeAmtUnit?: number | undefined;
+
+  @Field(() => String, { nullable: true })
+  advFeeStatus?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  hcUnit?: string | undefined;
 }
 
 @ArgsType()

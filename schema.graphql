@@ -263,6 +263,11 @@ type DailyDepartmentNotificationBatchNode {
 input DailyDepartmentNotificationInput {
   accountName: String!
   accountNumber: String!
+  advFeeAmtPhil: Float
+  advFeeAmtUnit: Float
+  advFeeCcPhil: String
+  advFeeCcUnit: String
+  advFeeStatus: String
   batchId: String!
   behalfHonorMemorial: String
   combinedAmount: Float!
@@ -274,23 +279,47 @@ input DailyDepartmentNotificationInput {
   divFirstGift: Boolean!
   division: String
   donor1Amount: Float
+  donor1Constituency: String
+  donor1Deceased: Boolean
+  donor1Degrees: String
+  donor1GiftKey: Float
+  donor1Id: String
+  donor1Name: String
+  donor1Pm: String
+  donor1Relation: String
+  donor1TitleBar: String
   donor2Amount: Float
+  donor2Constituency: String
+  donor2Deceased: Boolean
+  donor2Degrees: String
+  donor2GiftKey: Float
+  donor2Id: String
+  donor2Name: String
+  donor2Pm: String
+  donor2Relation: String
+  donor2TitleBar: String
   effectiveDate: LocalDate
   gikDescription: String
   gikType: String
+  hcUnit: String
   holdingDestination: String
   idSorter: String!
+  jvDocDate: LocalDate
+  jvDocNum: String
   matchingGift: String
   onlineGift: Boolean!
   pledgedAmount: Float!
   pledgedDate: LocalDate
   processDate: LocalDate
+  sapDocDate: LocalDate
+  sapDocNum: String
   secShares: String
   secType: String
   solicitation: String
   solicitationCode: String!
   transactionDate: LocalDate
   transactionType: String!
+  transmittalSn: String
   ukFirstGift: Boolean!
 }
 
