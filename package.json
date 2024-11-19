@@ -54,7 +54,8 @@
     "server:dev": "yarn workspace @ukdanceblue/server run dev",
     "server:prisma": "yarn workspace @ukdanceblue/server prisma",
     "server:prisma-generate": "yarn workspace @ukdanceblue/server prisma generate --no-hints",
-    "server:start": "yarn workspace @ukdanceblue/server run start"
+    "server:start": "yarn workspace @ukdanceblue/server run start",
+    "server:repl": "yarn workspace @ukdanceblue/server run repl"
   },
   "resolutions": {
     "@graphql-codegen/client-preset@npm:^4.4.0": "patch:@graphql-codegen/client-preset@npm%3A4.4.0#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.4.0-d441b92060.patch",

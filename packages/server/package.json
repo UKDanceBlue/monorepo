@@ -36,6 +36,7 @@
     "lint": "eslint .",
     "migrate-and-start": "yarn dlx prisma migrate deploy && yarn run start",
     "start": "node --enable-source-maps ./dist/index.js",
+    "repl": "node --enable-source-maps ./dist/repl.js",
     "test": "jest"
   },
   "dependencies": {
