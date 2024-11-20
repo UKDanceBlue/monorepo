@@ -7,7 +7,7 @@ import {
 } from "@ukdanceblue/common";
 import { Button, Flex } from "antd";
 
-import { DDNTable } from "@/elements/tables/DDNTable";
+import { DDNTable } from "@/elements/tables/fundraising.tsx/DDNTable";
 
 export const Route = createFileRoute("/fundraising/ddn/")({
   component: RouteComponent,

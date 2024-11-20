@@ -1,31 +1,17 @@
-import { FilterFilled } from "@ant-design/icons";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   AccessLevel,
   CommitteeIdentifier,
   CommitteeRole,
-  SortDirection,
 } from "@ukdanceblue/common";
-import {
-  AutoComplete,
-  Button,
-  Empty,
-  Flex,
-  Form,
-  InputNumber,
-  Select,
-  Space,
-  Table,
-} from "antd";
-import { useForm } from "antd/es/form/Form.js";
-import { DateTime } from "luxon";
-import { useEffect, useState } from "react";
+import { AutoComplete, Button, Flex, Form, Space } from "antd";
+import { useState } from "react";
 import { useMutation, useQuery } from "urql";
 
+import { FundraisingEntriesTable } from "@/elements/tables/fundraising.tsx/FundraisingEntriesTable";
 import { graphql } from "@/graphql/index.js";
 import { useListQuery } from "@/hooks/useListQuery.js";
 import { useAuthorizationRequirement } from "@/hooks/useLoginState.js";
-import { useMakeStringSearchFilterProps } from "@/hooks/useMakeSearchFilterProps.js";
 import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
 import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
 
@@ -66,26 +52,7 @@ const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
           stringFilters: $stringFilters
           numericFilters: $numericFilters
         ) {
-          data {
-            id
-            amount
-            amountUnassigned
-            donatedByText
-            donatedToText
-            donatedOn
-            assignments {
-              id
-              amount
-              person {
-                id
-                name
-                linkblue
-              }
-            }
-          }
-          page
-          pageSize
-          total
+          ...FundraisingEntryTableFragment
         }
       }
     }
@@ -121,42 +88,6 @@ const ClearTeamSolicitationCodeDocument = graphql(/* GraphQL */ `
   }
 `);
 
-const AddFundraisingAssignmentDocument = graphql(/* GraphQL */ `
-  mutation AddFundraisingAssignment(
-    $entryId: GlobalId!
-    $personId: GlobalId!
-    $amount: Float!
-  ) {
-    assignEntryToPerson(
-      entryId: $entryId
-      personId: $personId
-      input: { amount: $amount }
-    ) {
-      id
-    }
-  }
-`);
-
-const UpdateFundraisingAssignmentDocument = graphql(/* GraphQL */ `
-  mutation UpdateFundraisingAssignment($id: GlobalId!, $amount: Float!) {
-    updateFundraisingAssignment(id: $id, input: { amount: $amount }) {
-      id
-      amount
-      person {
-        name
-      }
-    }
-  }
-`);
-
-const DeleteFundraisingAssignmentDocument = graphql(/* GraphQL */ `
-  mutation DeleteFundraisingAssignment($id: GlobalId!) {
-    deleteFundraisingAssignment(id: $id) {
-      id
-    }
-  }
-`);
-
 function ViewTeamFundraising() {
   const { teamId: teamUuid } = Route.useParams();
   const [fundraisingTeamSearchEnabled, setFundraisingTeamSearchEnabled] =
@@ -172,14 +103,7 @@ function ViewTeamFundraising() {
     }
   );
 
-  const {
-    queryOptions,
-    updatePagination,
-    clearSorting,
-    pushSorting,
-    updateFilter,
-    clearFilter,
-  } = useListQuery(
+  const listQuery = useListQuery(
     {
       initPage: 1,
       initPageSize: 10,
@@ -207,7 +131,7 @@ function ViewTeamFundraising() {
 
   const [{ data, fetching, error }, refreshFundraisingEntries] = useQuery({
     query: ViewTeamFundraisingDocument,
-    variables: { ...queryOptions, teamUuid },
+    variables: { ...listQuery.queryOptions, teamUuid },
   });
   useQueryStatusWatcher({ fetching, error });
 
@@ -228,28 +152,6 @@ function ViewTeamFundraising() {
     ClearTeamSolicitationCodeDocument
   );
   useQueryStatusWatcher(clearSolicitationCodeState);
-
-  const [addFundraisingAssignmentState, addFundraisingAssignment] = useMutation(
-    AddFundraisingAssignmentDocument
-  );
-  useQueryStatusWatcher(addFundraisingAssignmentState);
-  const [updateFundraisingAssignmentState, updateFundraisingAssignment] =
-    useMutation(UpdateFundraisingAssignmentDocument);
-  useQueryStatusWatcher(updateFundraisingAssignmentState);
-  const [deleteFundraisingAssignmentState, deleteFundraisingAssignment] =
-    useMutation(DeleteFundraisingAssignmentDocument);
-  useQueryStatusWatcher(deleteFundraisingAssignmentState);
-
-  const donatedByStringFilterProps = useMakeStringSearchFilterProps(
-    "donatedBy",
-    updateFilter,
-    clearFilter
-  );
-  const donatedToStringFilterProps = useMakeStringSearchFilterProps(
-    "donatedTo",
-    updateFilter,
-    clearFilter
-  );
 
   const [solCodeSearch, setSolCodeSearch] = useState("");
   const solCodeOptions = solicitationCodesData?.solicitationCodes.map(
@@ -338,437 +240,25 @@ function ViewTeamFundraising() {
             </Button>
           </Space.Compact>
         </Form.Item>
-        <Table
-          style={{ width: "100%" }}
-          dataSource={data?.team.data.fundraisingEntries.data ?? undefined}
-          rowKey={({ id }) => id}
-          loading={fetching}
-          pagination={
-            data
-              ? {
-                  current: data.team.data.fundraisingEntries.page,
-                  pageSize: data.team.data.fundraisingEntries.pageSize,
-                  total: data.team.data.fundraisingEntries.total,
-                  showSizeChanger: true,
-                }
-              : false
+        <FundraisingEntriesTable
+          data={data?.team.data.fundraisingEntries}
+          form={listQuery}
+          refresh={() =>
+            refreshFundraisingEntries({ requestPolicy: "network-only" })
           }
-          sortDirections={["ascend", "descend"]}
-          onChange={(pagination, _filters, sorter, _extra) => {
-            updatePagination({
-              page: pagination.current,
-              pageSize: pagination.pageSize,
-            });
-            clearSorting();
-            for (const sort of Array.isArray(sorter) ? sorter : [sorter]) {
-              let { field } = sort;
-              const { order } = sort;
-
-              if (!order) {
-                continue;
-              }
-
-              if (field === "donatedToText") {
-                field = "donatedTo";
-              } else if (field === "donatedByText") {
-                field = "donatedBy";
-              }
-              pushSorting({
-                field: field as
-                  | "teamId"
-                  | "donatedOn"
-                  | "amount"
-                  | "donatedTo"
-                  | "donatedBy"
-                  | "createdAt"
-                  | "updatedAt",
-                direction:
-                  order === "ascend" ? SortDirection.asc : SortDirection.desc,
-              });
-            }
-          }}
-          columns={[
-            {
-              title: "Donated By",
-              dataIndex: "donatedByText",
-              key: "donatedByText",
-              sorter: true,
-              ...donatedByStringFilterProps,
-            },
-            {
-              title: "Donated To",
-              dataIndex: "donatedToText",
-              key: "donatedToText",
-              sorter: true,
-              ...donatedToStringFilterProps,
-            },
-            {
-              title: "Donated On",
-              dataIndex: "donatedOn",
-              key: "donatedOn",
-              sorter: true,
-              render: (date: string) => DateTime.fromISO(date).toLocaleString(),
-            },
-            {
-              title: "Amount",
-              dataIndex: "amount",
-              key: "amount",
-              sorter: true,
-              filterIcon() {
-                return (
-                  <FilterFilled
-                    style={{
-                      color:
-                        queryOptions.numericFilters.find(
-                          ({ field }) => field === "amount"
-                        )?.value != null
-                          ? "#1890ff"
-                          : undefined,
-                    }}
-                  />
-                );
-              },
-              filterDropdown: () => (
-                <div
-                  style={{
-                    padding: 8,
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <InputNumber
-                    addonBefore=">"
-                    onChange={(value) => {
-                      if (value == null) {
-                        clearFilter("amount");
-                      } else {
-                        const numericValue = Number.parseFloat(
-                          value.toString()
-                        );
-                        if (Number.isNaN(numericValue)) {
-                          return;
-                        }
-                        updateFilter("amount", {
-                          field: "amount",
-                          value: numericValue,
-                          comparison: "GREATER_THAN",
-                        });
-                      }
-                    }}
-                  />
-                  <InputNumber
-                    addonBefore="≤"
-                    onChange={(value) => {
-                      if (value == null) {
-                        clearFilter("amount");
-                      } else {
-                        const numericValue = Number.parseFloat(
-                          value.toString()
-                        );
-                        if (Number.isNaN(numericValue)) {
-                          return;
-                        }
-                        updateFilter("amount", {
-                          field: "amount",
-                          value: numericValue,
-                          comparison: "LESS_THAN_OR_EQUAL_TO",
-                        });
-                      }
-                    }}
-                  />
-                </div>
-              ),
-            },
-            Table.EXPAND_COLUMN,
-            {
-              title: "Amount Unassigned",
-              dataIndex: "amountUnassigned",
-              key: "amountUnassigned",
-              sorter: true,
-              filterIcon() {
-                return (
-                  <FilterFilled
-                    style={{
-                      color:
-                        queryOptions.numericFilters.find(
-                          ({ field }) => field === "amountUnassigned"
-                        )?.value != null
-                          ? "#1890ff"
-                          : undefined,
-                    }}
-                  />
-                );
-              },
-              filterDropdown: () => (
-                <div
-                  style={{
-                    padding: 8,
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <InputNumber
-                    addonBefore=">"
-                    onChange={(value) => {
-                      if (value == null) {
-                        clearFilter("amountUnassigned");
-                      } else {
-                        const numericValue = Number.parseFloat(
-                          value.toString()
-                        );
-                        if (Number.isNaN(numericValue)) {
-                          return;
-                        }
-                        updateFilter("amountUnassigned", {
-                          field: "amountUnassigned",
-                          value: numericValue,
-                          comparison: "GREATER_THAN",
-                        });
-                      }
-                    }}
-                  />
-                  <InputNumber
-                    addonBefore="≤"
-                    onChange={(value) => {
-                      if (value == null) {
-                        clearFilter("amountUnassigned");
-                      } else {
-                        const numericValue = Number.parseFloat(
-                          value.toString()
-                        );
-                        if (Number.isNaN(numericValue)) {
-                          return;
-                        }
-                        updateFilter("amountUnassigned", {
-                          field: "amountUnassigned",
-                          value: numericValue,
-                          comparison: "LESS_THAN_OR_EQUAL_TO",
-                        });
-                      }
-                    }}
-                  />
-                </div>
-              ),
-            },
-          ]}
-          expandable={{
-            rowExpandable: () => true,
-            expandedRowRender: ({ assignments, id, amountUnassigned }) => (
-              <Table
-                dataSource={assignments}
-                pagination={false}
-                locale={{
-                  emptyText: (
-                    <Empty
-                      description="No Assignments"
-                      image={null}
-                      imageStyle={{ height: 0, margin: 0 }}
-                    />
-                  ),
-                }}
-                footer={() => (
-                  <FundraisingTableNewAssignment
-                    addFundraisingAssignment={addFundraisingAssignment}
-                    refreshFundraisingEntries={refreshFundraisingEntries}
-                    amountUnassigned={amountUnassigned}
-                    id={id}
-                    members={
-                      data?.team.data.members.map(
-                        ({ person: { id, linkblue, name } }) => ({
-                          value: id,
-                          label: name ?? linkblue ?? id,
-                        })
-                      ) ?? []
-                    }
-                    loading={
-                      addFundraisingAssignmentState.fetching ||
-                      updateFundraisingAssignmentState.fetching
-                    }
-                  />
-                )}
-                columns={[
-                  {
-                    title: "Person",
-                    dataIndex: ["person"],
-                    render: ({
-                      id,
-                      name,
-                      linkblue,
-                    }: {
-                      id: string;
-                      name?: string;
-                      linkblue?: string;
-                    }) =>
-                      name ?? (linkblue ? <i>{linkblue}</i> : <pre>{id}</pre>),
-                    key: "person",
-                    width: "60%",
-                  },
-                  {
-                    title: "Amount",
-                    dataIndex: "amount",
-                    key: "amount",
-                    width: "40%",
-                    render: (amount: number, { id }: { id: string }) => (
-                      <Form
-                        layout="inline"
-                        onFinish={(values: { amount: number }) => {
-                          updateFundraisingAssignment({
-                            id,
-                            amount: values.amount,
-                          })
-                            .then(() => {
-                              refreshFundraisingEntries({
-                                requestPolicy: "network-only",
-                              });
-                            })
-                            .catch(() => {
-                              alert(
-                                "An error occurred while updating the assignment."
-                              );
-                            });
-                        }}
-                        initialValues={{ amount }}
-                        style={{ display: "flex", gap: 8 }}
-                      >
-                        <Form.Item name="amount">
-                          <InputNumber prefix="$" />
-                        </Form.Item>
-                        <Form.Item>
-                          <Button
-                            type="primary"
-                            htmlType="submit"
-                            loading={
-                              addFundraisingAssignmentState.fetching ||
-                              updateFundraisingAssignmentState.fetching
-                            }
-                          >
-                            Update
-                          </Button>
-                        </Form.Item>
-                      </Form>
-                    ),
-                  },
-                  {
-                    title: "Actions",
-                    key: "actions",
-                    render: (_, { id }: { id: string }) => (
-                      <Button
-                        type="primary"
-                        danger
-                        onClick={() => {
-                          if (
-                            confirm(
-                              "Are you sure you want to delete this assignment?"
-                            )
-                          ) {
-                            deleteFundraisingAssignment({ id })
-                              .then(() => {
-                                refreshFundraisingEntries({
-                                  requestPolicy: "network-only",
-                                });
-                              })
-                              .catch(() => {
-                                alert(
-                                  "An error occurred while deleting the assignment."
-                                );
-                              });
-                          }
-                        }}
-                        loading={deleteFundraisingAssignmentState.fetching}
-                      >
-                        Delete
-                      </Button>
-                    ),
-                  },
-                ]}
-              />
-            ),
-          }}
+          loading={fetching}
+          potentialAssignees={
+            data?.team.data.members.map(
+              ({ person: { id, linkblue, name } }) => ({
+                value: id,
+                label: name ?? linkblue ?? id,
+              })
+            ) ?? []
+          }
         />
       </Flex>
     );
   }
-}
-
-function FundraisingTableNewAssignment({
-  addFundraisingAssignment,
-  amountUnassigned,
-  members,
-  id,
-  refreshFundraisingEntries,
-  loading,
-}: {
-  addFundraisingAssignment: ({
-    entryId,
-    personId,
-    amount,
-  }: {
-    entryId: string;
-    personId: string;
-    amount: number;
-  }) => Promise<unknown>;
-  refreshFundraisingEntries: (options?: {
-    requestPolicy: "network-only";
-  }) => void;
-  amountUnassigned: number;
-  id: string;
-  members: { label: string; value: string }[];
-  loading: boolean;
-}) {
-  const [form] = useForm<{
-    personId: string;
-    amount: number;
-  }>();
-
-  useEffect(() => {
-    form.setFieldsValue({ amount: amountUnassigned });
-  }, [amountUnassigned, form]);
-
-  return (
-    <Form
-      form={form}
-      layout="inline"
-      onFinish={(values: { personId: string; amount: number }) => {
-        addFundraisingAssignment({
-          entryId: id,
-          personId: values.personId,
-          amount: values.amount,
-        })
-          .then(() => {
-            refreshFundraisingEntries({
-              requestPolicy: "network-only",
-            });
-            form.resetFields(["personId"]);
-          })
-          .catch(() => {
-            alert("An error occurred while adding the assignment.");
-          });
-      }}
-      initialValues={{ amount: amountUnassigned }}
-      style={{ display: "flex", gap: 8 }}
-    >
-      <Form.Item
-        label="Person"
-        name="personId"
-        rules={[{ required: true, message: "Person is required" }]}
-        style={{ flex: 4 }}
-      >
-        <Select options={members} />
-      </Form.Item>
-      <Form.Item
-        name="amount"
-        rules={[{ required: true, message: "Amount is required" }]}
-        style={{ flex: 1 }}
-      >
-        <InputNumber prefix="$" />
-      </Form.Item>
-      <Form.Item style={{ flex: 1 }}>
-        <Button type="primary" htmlType="submit" loading={loading}>
-          Add Assignment
-        </Button>
-      </Form.Item>
-    </Form>
-  );
 }
 
 export const Route = createFileRoute("/teams/$teamId/_layout/fundraising")({

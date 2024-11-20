@@ -2,7 +2,9 @@
   "version": "0.2",
   "ignorePaths": [],
   "dictionaryDefinitions": [],
-  "enabledFileTypes": { "prisma": true },
+  "enabledFileTypes": {
+    "prisma": true
+  },
   "dictionaries": [],
   "words": [
     "autoincrement",
@@ -24,6 +26,7 @@
     "timestamptz",
     "typedi",
     "uk",
+    "ukdanceblue",
     "uky",
     "urql",
     "whatwg",

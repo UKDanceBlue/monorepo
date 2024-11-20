@@ -72,7 +72,7 @@ export function SpreadsheetUploader<
                   output.push(result.data);
                 } else {
                   throw new Error(
-                    `Invalid row format: ${result.error.errors
+                    `Invalid row format: ${result.error.issues
                       .map(
                         (error) => `${error.path.join(".")}: ${error.message}`
                       )

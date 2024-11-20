@@ -1763,68 +1763,6 @@ export type MasqueradeSelectorQuery = {
   }>;
 };
 
-export type DdNsTableFragmentFragment = {
-  readonly __typename?: "DailyDepartmentNotificationNode";
-  readonly id: string;
-  readonly combinedDonorName: string;
-  readonly comment?: string | null;
-  readonly combinedAmount: number;
-  readonly solicitationCode: {
-    readonly __typename?: "SolicitationCodeNode";
-    readonly prefix: string;
-    readonly code: number;
-    readonly name?: string | null;
-  };
-  readonly batch: {
-    readonly __typename?: "DailyDepartmentNotificationBatchNode";
-    readonly id: string;
-    readonly batchType: BatchType;
-    readonly batchNumber: string;
-  };
-} & { " $fragmentName"?: "DdNsTableFragmentFragment" };
-
-export type DdnsTableQueryVariables = Exact<{
-  page?: InputMaybe<Scalars["Int"]["input"]>;
-  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
-  sortBy?: InputMaybe<
-    ReadonlyArray<Scalars["String"]["input"]> | Scalars["String"]["input"]
-  >;
-  sortDirection?: InputMaybe<ReadonlyArray<SortDirection> | SortDirection>;
-  isNullFilters?: InputMaybe<
-    | ReadonlyArray<DailyDepartmentNotificationResolverKeyedIsNullFilterItem>
-    | DailyDepartmentNotificationResolverKeyedIsNullFilterItem
-  >;
-  oneOfFilters?: InputMaybe<
-    | ReadonlyArray<DailyDepartmentNotificationResolverKeyedOneOfFilterItem>
-    | DailyDepartmentNotificationResolverKeyedOneOfFilterItem
-  >;
-  stringFilters?: InputMaybe<
-    | ReadonlyArray<DailyDepartmentNotificationResolverKeyedStringFilterItem>
-    | DailyDepartmentNotificationResolverKeyedStringFilterItem
-  >;
-  numericFilters?: InputMaybe<
-    | ReadonlyArray<DailyDepartmentNotificationResolverKeyedNumericFilterItem>
-    | DailyDepartmentNotificationResolverKeyedNumericFilterItem
-  >;
-}>;
-
-export type DdnsTableQuery = {
-  readonly __typename?: "Query";
-  readonly dailyDepartmentNotifications: {
-    readonly __typename?: "ListDailyDepartmentNotificationsResponse";
-    readonly page: number;
-    readonly pageSize: number;
-    readonly total: number;
-    readonly data: ReadonlyArray<
-      { readonly __typename?: "DailyDepartmentNotificationNode" } & {
-        " $fragmentRefs"?: {
-          DdNsTableFragmentFragment: DdNsTableFragmentFragment;
-        };
-      }
-    >;
-  };
-};
-
 export type EventsTableFragmentFragment = {
   readonly __typename?: "EventNode";
   readonly id: string;
@@ -2041,6 +1979,139 @@ export type TeamsTableFragmentFragment = {
   readonly legacyStatus: TeamLegacyStatus;
   readonly totalPoints: number;
 } & { " $fragmentName"?: "TeamsTableFragmentFragment" };
+
+export type DdNsTableFragmentFragment = {
+  readonly __typename?: "DailyDepartmentNotificationNode";
+  readonly id: string;
+  readonly combinedDonorName: string;
+  readonly comment?: string | null;
+  readonly combinedAmount: number;
+  readonly solicitationCode: {
+    readonly __typename?: "SolicitationCodeNode";
+    readonly prefix: string;
+    readonly code: number;
+    readonly name?: string | null;
+  };
+  readonly batch: {
+    readonly __typename?: "DailyDepartmentNotificationBatchNode";
+    readonly id: string;
+    readonly batchType: BatchType;
+    readonly batchNumber: string;
+  };
+} & { " $fragmentName"?: "DdNsTableFragmentFragment" };
+
+export type DdnsTableQueryVariables = Exact<{
+  page?: InputMaybe<Scalars["Int"]["input"]>;
+  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
+  sortBy?: InputMaybe<
+    ReadonlyArray<Scalars["String"]["input"]> | Scalars["String"]["input"]
+  >;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection> | SortDirection>;
+  isNullFilters?: InputMaybe<
+    | ReadonlyArray<DailyDepartmentNotificationResolverKeyedIsNullFilterItem>
+    | DailyDepartmentNotificationResolverKeyedIsNullFilterItem
+  >;
+  oneOfFilters?: InputMaybe<
+    | ReadonlyArray<DailyDepartmentNotificationResolverKeyedOneOfFilterItem>
+    | DailyDepartmentNotificationResolverKeyedOneOfFilterItem
+  >;
+  stringFilters?: InputMaybe<
+    | ReadonlyArray<DailyDepartmentNotificationResolverKeyedStringFilterItem>
+    | DailyDepartmentNotificationResolverKeyedStringFilterItem
+  >;
+  numericFilters?: InputMaybe<
+    | ReadonlyArray<DailyDepartmentNotificationResolverKeyedNumericFilterItem>
+    | DailyDepartmentNotificationResolverKeyedNumericFilterItem
+  >;
+}>;
+
+export type DdnsTableQuery = {
+  readonly __typename?: "Query";
+  readonly dailyDepartmentNotifications: {
+    readonly __typename?: "ListDailyDepartmentNotificationsResponse";
+    readonly page: number;
+    readonly pageSize: number;
+    readonly total: number;
+    readonly data: ReadonlyArray<
+      { readonly __typename?: "DailyDepartmentNotificationNode" } & {
+        " $fragmentRefs"?: {
+          DdNsTableFragmentFragment: DdNsTableFragmentFragment;
+        };
+      }
+    >;
+  };
+};
+
+export type AddFundraisingAssignmentMutationVariables = Exact<{
+  entryId: Scalars["GlobalId"]["input"];
+  personId: Scalars["GlobalId"]["input"];
+  amount: Scalars["Float"]["input"];
+}>;
+
+export type AddFundraisingAssignmentMutation = {
+  readonly __typename?: "Mutation";
+  readonly assignEntryToPerson: {
+    readonly __typename?: "FundraisingAssignmentNode";
+    readonly id: string;
+  };
+};
+
+export type UpdateFundraisingAssignmentMutationVariables = Exact<{
+  id: Scalars["GlobalId"]["input"];
+  amount: Scalars["Float"]["input"];
+}>;
+
+export type UpdateFundraisingAssignmentMutation = {
+  readonly __typename?: "Mutation";
+  readonly updateFundraisingAssignment: {
+    readonly __typename?: "FundraisingAssignmentNode";
+    readonly id: string;
+    readonly amount: number;
+    readonly person?: {
+      readonly __typename?: "PersonNode";
+      readonly name?: string | null;
+    } | null;
+  };
+};
+
+export type DeleteFundraisingAssignmentMutationVariables = Exact<{
+  id: Scalars["GlobalId"]["input"];
+}>;
+
+export type DeleteFundraisingAssignmentMutation = {
+  readonly __typename?: "Mutation";
+  readonly deleteFundraisingAssignment: {
+    readonly __typename?: "FundraisingAssignmentNode";
+    readonly id: string;
+  };
+};
+
+export type FundraisingEntryTableFragmentFragment = {
+  readonly __typename?: "ListFundraisingEntriesResponse";
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+  readonly data: ReadonlyArray<{
+    readonly __typename?: "FundraisingEntryNode";
+    readonly id: string;
+    readonly amount: number;
+    readonly amountUnassigned: number;
+    readonly donatedByText?: string | null;
+    readonly donatedToText?: string | null;
+    readonly donatedOn: Date | string;
+    readonly assignments: ReadonlyArray<{
+      readonly __typename?: "FundraisingAssignmentNode";
+      readonly id: string;
+      readonly amount: number;
+      readonly person?: {
+        readonly __typename?: "PersonNode";
+        readonly id: string;
+        readonly name?: string | null;
+        readonly linkblue?: string | null;
+      } | null;
+    }>;
+  }>;
+} & { " $fragmentName"?: "FundraisingEntryTableFragmentFragment" };
 
 export type MarathonTableFragmentFragment = {
   readonly __typename?: "MarathonNode";
@@ -2482,6 +2553,42 @@ export type ViewDdnDocumentQuery = {
   };
 };
 
+export type ViewFundraisingEntriesDocumentQueryVariables = Exact<{
+  page?: InputMaybe<Scalars["Int"]["input"]>;
+  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
+  sortBy?: InputMaybe<
+    ReadonlyArray<Scalars["String"]["input"]> | Scalars["String"]["input"]
+  >;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection> | SortDirection>;
+  dateFilters?: InputMaybe<
+    | ReadonlyArray<FundraisingEntryResolverKeyedDateFilterItem>
+    | FundraisingEntryResolverKeyedDateFilterItem
+  >;
+  oneOfFilters?: InputMaybe<
+    | ReadonlyArray<FundraisingEntryResolverKeyedOneOfFilterItem>
+    | FundraisingEntryResolverKeyedOneOfFilterItem
+  >;
+  stringFilters?: InputMaybe<
+    | ReadonlyArray<FundraisingEntryResolverKeyedStringFilterItem>
+    | FundraisingEntryResolverKeyedStringFilterItem
+  >;
+  numericFilters?: InputMaybe<
+    | ReadonlyArray<FundraisingEntryResolverKeyedNumericFilterItem>
+    | FundraisingEntryResolverKeyedNumericFilterItem
+  >;
+}>;
+
+export type ViewFundraisingEntriesDocumentQuery = {
+  readonly __typename?: "Query";
+  readonly fundraisingEntries: {
+    readonly __typename?: "ListFundraisingEntriesResponse";
+  } & {
+    " $fragmentRefs"?: {
+      FundraisingEntryTableFragmentFragment: FundraisingEntryTableFragmentFragment;
+    };
+  };
+};
+
 export type HomePageQueryVariables = Exact<{ [key: string]: never }>;
 
 export type HomePageQuery = {
@@ -2692,29 +2799,10 @@ export type ViewTeamFundraisingDocumentQuery = {
       }>;
       readonly fundraisingEntries: {
         readonly __typename?: "ListFundraisingEntriesResponse";
-        readonly page: number;
-        readonly pageSize: number;
-        readonly total: number;
-        readonly data: ReadonlyArray<{
-          readonly __typename?: "FundraisingEntryNode";
-          readonly id: string;
-          readonly amount: number;
-          readonly amountUnassigned: number;
-          readonly donatedByText?: string | null;
-          readonly donatedToText?: string | null;
-          readonly donatedOn: Date | string;
-          readonly assignments: ReadonlyArray<{
-            readonly __typename?: "FundraisingAssignmentNode";
-            readonly id: string;
-            readonly amount: number;
-            readonly person?: {
-              readonly __typename?: "PersonNode";
-              readonly id: string;
-              readonly name?: string | null;
-              readonly linkblue?: string | null;
-            } | null;
-          }>;
-        }>;
+      } & {
+        " $fragmentRefs"?: {
+          FundraisingEntryTableFragmentFragment: FundraisingEntryTableFragmentFragment;
+        };
       };
     };
   };
@@ -2750,50 +2838,6 @@ export type ClearTeamSolicitationCodeMutationVariables = Exact<{
 export type ClearTeamSolicitationCodeMutation = {
   readonly __typename?: "Mutation";
   readonly removeSolicitationCodeFromTeam: void;
-};
-
-export type AddFundraisingAssignmentMutationVariables = Exact<{
-  entryId: Scalars["GlobalId"]["input"];
-  personId: Scalars["GlobalId"]["input"];
-  amount: Scalars["Float"]["input"];
-}>;
-
-export type AddFundraisingAssignmentMutation = {
-  readonly __typename?: "Mutation";
-  readonly assignEntryToPerson: {
-    readonly __typename?: "FundraisingAssignmentNode";
-    readonly id: string;
-  };
-};
-
-export type UpdateFundraisingAssignmentMutationVariables = Exact<{
-  id: Scalars["GlobalId"]["input"];
-  amount: Scalars["Float"]["input"];
-}>;
-
-export type UpdateFundraisingAssignmentMutation = {
-  readonly __typename?: "Mutation";
-  readonly updateFundraisingAssignment: {
-    readonly __typename?: "FundraisingAssignmentNode";
-    readonly id: string;
-    readonly amount: number;
-    readonly person?: {
-      readonly __typename?: "PersonNode";
-      readonly name?: string | null;
-    } | null;
-  };
-};
-
-export type DeleteFundraisingAssignmentMutationVariables = Exact<{
-  id: Scalars["GlobalId"]["input"];
-}>;
-
-export type DeleteFundraisingAssignmentMutation = {
-  readonly __typename?: "Mutation";
-  readonly deleteFundraisingAssignment: {
-    readonly __typename?: "FundraisingAssignmentNode";
-    readonly id: string;
-  };
 };
 
 export type EditTeamPageQueryVariables = Exact<{
@@ -3124,52 +3168,6 @@ export const TeamEditorFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<TeamEditorFragmentFragment, unknown>;
-export const DdNsTableFragmentFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "DDNsTableFragment" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "DailyDepartmentNotificationNode" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "combinedDonorName" } },
-          { kind: "Field", name: { kind: "Name", value: "comment" } },
-          { kind: "Field", name: { kind: "Name", value: "combinedAmount" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "solicitationCode" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "prefix" } },
-                { kind: "Field", name: { kind: "Name", value: "code" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
-              ],
-            },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "batch" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "batchType" } },
-                { kind: "Field", name: { kind: "Name", value: "batchNumber" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<DdNsTableFragmentFragment, unknown>;
 export const EventsTableFragmentFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -3297,6 +3295,132 @@ export const TeamsTableFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<TeamsTableFragmentFragment, unknown>;
+export const DdNsTableFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "DDNsTableFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "DailyDepartmentNotificationNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "combinedDonorName" } },
+          { kind: "Field", name: { kind: "Name", value: "comment" } },
+          { kind: "Field", name: { kind: "Name", value: "combinedAmount" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "solicitationCode" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "prefix" } },
+                { kind: "Field", name: { kind: "Name", value: "code" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "batch" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "batchType" } },
+                { kind: "Field", name: { kind: "Name", value: "batchNumber" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<DdNsTableFragmentFragment, unknown>;
+export const FundraisingEntryTableFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "FundraisingEntryTableFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ListFundraisingEntriesResponse" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "data" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "amount" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "amountUnassigned" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "donatedByText" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "donatedToText" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "donatedOn" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "assignments" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "amount" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "person" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "name" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "linkblue" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          { kind: "Field", name: { kind: "Name", value: "page" } },
+          { kind: "Field", name: { kind: "Name", value: "pageSize" } },
+          { kind: "Field", name: { kind: "Name", value: "total" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<FundraisingEntryTableFragmentFragment, unknown>;
 export const MarathonTableFragmentFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -6506,286 +6630,6 @@ export const MasqueradeSelectorDocument = {
   MasqueradeSelectorQuery,
   MasqueradeSelectorQueryVariables
 >;
-export const DdnsTableDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "DdnsTable" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "page" } },
-          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "pageSize" },
-          },
-          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "sortBy" },
-          },
-          type: {
-            kind: "ListType",
-            type: {
-              kind: "NonNullType",
-              type: {
-                kind: "NamedType",
-                name: { kind: "Name", value: "String" },
-              },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "sortDirection" },
-          },
-          type: {
-            kind: "ListType",
-            type: {
-              kind: "NonNullType",
-              type: {
-                kind: "NamedType",
-                name: { kind: "Name", value: "SortDirection" },
-              },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "isNullFilters" },
-          },
-          type: {
-            kind: "ListType",
-            type: {
-              kind: "NonNullType",
-              type: {
-                kind: "NamedType",
-                name: {
-                  kind: "Name",
-                  value:
-                    "DailyDepartmentNotificationResolverKeyedIsNullFilterItem",
-                },
-              },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "oneOfFilters" },
-          },
-          type: {
-            kind: "ListType",
-            type: {
-              kind: "NonNullType",
-              type: {
-                kind: "NamedType",
-                name: {
-                  kind: "Name",
-                  value:
-                    "DailyDepartmentNotificationResolverKeyedOneOfFilterItem",
-                },
-              },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "stringFilters" },
-          },
-          type: {
-            kind: "ListType",
-            type: {
-              kind: "NonNullType",
-              type: {
-                kind: "NamedType",
-                name: {
-                  kind: "Name",
-                  value:
-                    "DailyDepartmentNotificationResolverKeyedStringFilterItem",
-                },
-              },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "numericFilters" },
-          },
-          type: {
-            kind: "ListType",
-            type: {
-              kind: "NonNullType",
-              type: {
-                kind: "NamedType",
-                name: {
-                  kind: "Name",
-                  value:
-                    "DailyDepartmentNotificationResolverKeyedNumericFilterItem",
-                },
-              },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "dailyDepartmentNotifications" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "page" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "page" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "pageSize" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "pageSize" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "sortBy" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "sortBy" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "sortDirection" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "sortDirection" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "isNullFilters" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "isNullFilters" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "oneOfFilters" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "oneOfFilters" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "stringFilters" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "stringFilters" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "numericFilters" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "numericFilters" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "page" } },
-                { kind: "Field", name: { kind: "Name", value: "pageSize" } },
-                { kind: "Field", name: { kind: "Name", value: "total" } },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "data" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "FragmentSpread",
-                        name: { kind: "Name", value: "DDNsTableFragment" },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "DDNsTableFragment" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "DailyDepartmentNotificationNode" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "combinedDonorName" } },
-          { kind: "Field", name: { kind: "Name", value: "comment" } },
-          { kind: "Field", name: { kind: "Name", value: "combinedAmount" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "solicitationCode" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "prefix" } },
-                { kind: "Field", name: { kind: "Name", value: "code" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
-              ],
-            },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "batch" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "batchType" } },
-                { kind: "Field", name: { kind: "Name", value: "batchNumber" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<DdnsTableQuery, DdnsTableQueryVariables>;
 export const EventsTableDocument = {
   kind: "Document",
   definitions: [
@@ -7805,6 +7649,531 @@ export const TeamsTableDocument = {
     },
   ],
 } as unknown as DocumentNode<TeamsTableQuery, TeamsTableQueryVariables>;
+export const DdnsTableDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "DdnsTable" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "page" } },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "pageSize" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sortBy" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "String" },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sortDirection" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "SortDirection" },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "isNullFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value:
+                    "DailyDepartmentNotificationResolverKeyedIsNullFilterItem",
+                },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "oneOfFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value:
+                    "DailyDepartmentNotificationResolverKeyedOneOfFilterItem",
+                },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "stringFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value:
+                    "DailyDepartmentNotificationResolverKeyedStringFilterItem",
+                },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "numericFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value:
+                    "DailyDepartmentNotificationResolverKeyedNumericFilterItem",
+                },
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "dailyDepartmentNotifications" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "page" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "page" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "pageSize" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "pageSize" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sortBy" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sortBy" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sortDirection" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sortDirection" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "isNullFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "isNullFilters" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "oneOfFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "oneOfFilters" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "stringFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "stringFilters" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "numericFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "numericFilters" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "page" } },
+                { kind: "Field", name: { kind: "Name", value: "pageSize" } },
+                { kind: "Field", name: { kind: "Name", value: "total" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "data" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "DDNsTableFragment" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "DDNsTableFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "DailyDepartmentNotificationNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "combinedDonorName" } },
+          { kind: "Field", name: { kind: "Name", value: "comment" } },
+          { kind: "Field", name: { kind: "Name", value: "combinedAmount" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "solicitationCode" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "prefix" } },
+                { kind: "Field", name: { kind: "Name", value: "code" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "batch" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "batchType" } },
+                { kind: "Field", name: { kind: "Name", value: "batchNumber" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<DdnsTableQuery, DdnsTableQueryVariables>;
+export const AddFundraisingAssignmentDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "AddFundraisingAssignment" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "entryId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "personId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "amount" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "Float" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "assignEntryToPerson" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "entryId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "entryId" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "personId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "personId" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "ObjectValue",
+                  fields: [
+                    {
+                      kind: "ObjectField",
+                      name: { kind: "Name", value: "amount" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "amount" },
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  AddFundraisingAssignmentMutation,
+  AddFundraisingAssignmentMutationVariables
+>;
+export const UpdateFundraisingAssignmentDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "UpdateFundraisingAssignment" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "amount" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "Float" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "updateFundraisingAssignment" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "ObjectValue",
+                  fields: [
+                    {
+                      kind: "ObjectField",
+                      name: { kind: "Name", value: "amount" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "amount" },
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "amount" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "person" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UpdateFundraisingAssignmentMutation,
+  UpdateFundraisingAssignmentMutationVariables
+>;
+export const DeleteFundraisingAssignmentDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "DeleteFundraisingAssignment" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "deleteFundraisingAssignment" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  DeleteFundraisingAssignmentMutation,
+  DeleteFundraisingAssignmentMutationVariables
+>;
 export const NotificationDeliveriesTableQueryDocument = {
   kind: "Document",
   definitions: [
@@ -9160,6 +9529,310 @@ export const ViewDdnDocumentDocument = {
   ViewDdnDocumentQuery,
   ViewDdnDocumentQueryVariables
 >;
+export const ViewFundraisingEntriesDocumentDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "ViewFundraisingEntriesDocument" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "page" } },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "pageSize" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sortBy" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "String" },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sortDirection" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "SortDirection" },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "dateFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value: "FundraisingEntryResolverKeyedDateFilterItem",
+                },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "oneOfFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value: "FundraisingEntryResolverKeyedOneOfFilterItem",
+                },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "stringFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value: "FundraisingEntryResolverKeyedStringFilterItem",
+                },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "numericFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value: "FundraisingEntryResolverKeyedNumericFilterItem",
+                },
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "fundraisingEntries" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "page" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "page" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "pageSize" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "pageSize" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sortBy" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sortBy" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sortDirection" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sortDirection" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "dateFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "dateFilters" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "oneOfFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "oneOfFilters" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "stringFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "stringFilters" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "numericFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "numericFilters" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "FundraisingEntryTableFragment",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "FundraisingEntryTableFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ListFundraisingEntriesResponse" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "data" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "amount" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "amountUnassigned" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "donatedByText" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "donatedToText" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "donatedOn" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "assignments" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "amount" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "person" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "name" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "linkblue" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          { kind: "Field", name: { kind: "Name", value: "page" } },
+          { kind: "Field", name: { kind: "Name", value: "pageSize" } },
+          { kind: "Field", name: { kind: "Name", value: "total" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ViewFundraisingEntriesDocumentQuery,
+  ViewFundraisingEntriesDocumentQueryVariables
+>;
 export const HomePageDocument = {
   kind: "Document",
   definitions: [
@@ -10497,114 +11170,11 @@ export const ViewTeamFundraisingDocumentDocument = {
                           kind: "SelectionSet",
                           selections: [
                             {
-                              kind: "Field",
-                              name: { kind: "Name", value: "data" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "id" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "amount" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: {
-                                      kind: "Name",
-                                      value: "amountUnassigned",
-                                    },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: {
-                                      kind: "Name",
-                                      value: "donatedByText",
-                                    },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: {
-                                      kind: "Name",
-                                      value: "donatedToText",
-                                    },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "donatedOn" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: {
-                                      kind: "Name",
-                                      value: "assignments",
-                                    },
-                                    selectionSet: {
-                                      kind: "SelectionSet",
-                                      selections: [
-                                        {
-                                          kind: "Field",
-                                          name: { kind: "Name", value: "id" },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "amount",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "person",
-                                          },
-                                          selectionSet: {
-                                            kind: "SelectionSet",
-                                            selections: [
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "id",
-                                                },
-                                              },
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "name",
-                                                },
-                                              },
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "linkblue",
-                                                },
-                                              },
-                                            ],
-                                          },
-                                        },
-                                      ],
-                                    },
-                                  },
-                                ],
+                              kind: "FragmentSpread",
+                              name: {
+                                kind: "Name",
+                                value: "FundraisingEntryTableFragment",
                               },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "page" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "pageSize" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "total" },
                             },
                           ],
                         },
@@ -10615,6 +11185,81 @@ export const ViewTeamFundraisingDocumentDocument = {
               ],
             },
           },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "FundraisingEntryTableFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ListFundraisingEntriesResponse" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "data" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "amount" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "amountUnassigned" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "donatedByText" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "donatedToText" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "donatedOn" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "assignments" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "amount" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "person" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "name" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "linkblue" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          { kind: "Field", name: { kind: "Name", value: "page" } },
+          { kind: "Field", name: { kind: "Name", value: "pageSize" } },
+          { kind: "Field", name: { kind: "Name", value: "total" } },
         ],
       },
     },
@@ -10771,251 +11416,6 @@ export const ClearTeamSolicitationCodeDocument = {
 } as unknown as DocumentNode<
   ClearTeamSolicitationCodeMutation,
   ClearTeamSolicitationCodeMutationVariables
->;
-export const AddFundraisingAssignmentDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "AddFundraisingAssignment" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "entryId" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "personId" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "amount" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Float" } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "assignEntryToPerson" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "entryId" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "entryId" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "personId" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "personId" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "input" },
-                value: {
-                  kind: "ObjectValue",
-                  fields: [
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "amount" },
-                      value: {
-                        kind: "Variable",
-                        name: { kind: "Name", value: "amount" },
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  AddFundraisingAssignmentMutation,
-  AddFundraisingAssignmentMutationVariables
->;
-export const UpdateFundraisingAssignmentDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "UpdateFundraisingAssignment" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "amount" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Float" } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "updateFundraisingAssignment" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "id" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "id" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "input" },
-                value: {
-                  kind: "ObjectValue",
-                  fields: [
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "amount" },
-                      value: {
-                        kind: "Variable",
-                        name: { kind: "Name", value: "amount" },
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "amount" } },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "person" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "name" } },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  UpdateFundraisingAssignmentMutation,
-  UpdateFundraisingAssignmentMutationVariables
->;
-export const DeleteFundraisingAssignmentDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "DeleteFundraisingAssignment" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "deleteFundraisingAssignment" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "id" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "id" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  DeleteFundraisingAssignmentMutation,
-  DeleteFundraisingAssignmentMutationVariables
 >;
 export const EditTeamPageDocument = {
   kind: "Document",

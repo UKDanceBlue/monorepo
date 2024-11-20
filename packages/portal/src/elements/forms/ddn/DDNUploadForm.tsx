@@ -200,7 +200,6 @@ export function DDNUploadForm() {
             hcUnit: row.HCUnit,
           })
         );
-        console.table(ddnData);
 
         await uploadDdn({
           ddnData,

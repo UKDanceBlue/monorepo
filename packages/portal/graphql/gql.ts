@@ -105,10 +105,6 @@ const documents = {
     types.TeamEditorDocument,
   "\n      query MasqueradeSelector($search: String!) {\n        searchPeopleByName(name: $search) {\n          id\n          name\n        }\n      }\n    ":
     types.MasqueradeSelectorDocument,
-  "\n  fragment DDNsTableFragment on DailyDepartmentNotificationNode {\n    id\n    combinedDonorName\n    comment\n    combinedAmount\n    solicitationCode {\n      prefix\n      code\n      name\n    }\n    batch {\n      id\n      batchType\n      batchNumber\n    }\n  }\n":
-    types.DdNsTableFragmentFragmentDoc,
-  "\n  query DdnsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [DailyDepartmentNotificationResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [DailyDepartmentNotificationResolverKeyedOneOfFilterItem!]\n    $stringFilters: [DailyDepartmentNotificationResolverKeyedStringFilterItem!]\n    $numericFilters: [DailyDepartmentNotificationResolverKeyedNumericFilterItem!]\n  ) {\n    dailyDepartmentNotifications(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n      numericFilters: $numericFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...DDNsTableFragment\n      }\n    }\n  }\n":
-    types.DdnsTableDocument,
   "\n  fragment EventsTableFragment on EventNode {\n    id\n    title\n    description\n    occurrences {\n      id\n      interval {\n        start\n        end\n      }\n      fullDay\n    }\n    summary\n  }\n":
     types.EventsTableFragmentFragmentDoc,
   "\n  query EventsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [EventResolverKeyedDateFilterItem!]\n    $isNullFilters: [EventResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]\n    $stringFilters: [EventResolverKeyedStringFilterItem!]\n  ) {\n    events(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...EventsTableFragment\n      }\n    }\n  }\n":
@@ -125,6 +121,18 @@ const documents = {
     types.TeamsTableDocument,
   "\n  fragment TeamsTableFragment on TeamNode {\n    id\n    type\n    name\n    legacyStatus\n    totalPoints\n  }\n":
     types.TeamsTableFragmentFragmentDoc,
+  "\n  fragment DDNsTableFragment on DailyDepartmentNotificationNode {\n    id\n    combinedDonorName\n    comment\n    combinedAmount\n    solicitationCode {\n      prefix\n      code\n      name\n    }\n    batch {\n      id\n      batchType\n      batchNumber\n    }\n  }\n":
+    types.DdNsTableFragmentFragmentDoc,
+  "\n  query DdnsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [DailyDepartmentNotificationResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [DailyDepartmentNotificationResolverKeyedOneOfFilterItem!]\n    $stringFilters: [DailyDepartmentNotificationResolverKeyedStringFilterItem!]\n    $numericFilters: [DailyDepartmentNotificationResolverKeyedNumericFilterItem!]\n  ) {\n    dailyDepartmentNotifications(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n      numericFilters: $numericFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...DDNsTableFragment\n      }\n    }\n  }\n":
+    types.DdnsTableDocument,
+  "\n  mutation AddFundraisingAssignment(\n    $entryId: GlobalId!\n    $personId: GlobalId!\n    $amount: Float!\n  ) {\n    assignEntryToPerson(\n      entryId: $entryId\n      personId: $personId\n      input: { amount: $amount }\n    ) {\n      id\n    }\n  }\n":
+    types.AddFundraisingAssignmentDocument,
+  "\n  mutation UpdateFundraisingAssignment($id: GlobalId!, $amount: Float!) {\n    updateFundraisingAssignment(id: $id, input: { amount: $amount }) {\n      id\n      amount\n      person {\n        name\n      }\n    }\n  }\n":
+    types.UpdateFundraisingAssignmentDocument,
+  "\n  mutation DeleteFundraisingAssignment($id: GlobalId!) {\n    deleteFundraisingAssignment(id: $id) {\n      id\n    }\n  }\n":
+    types.DeleteFundraisingAssignmentDocument,
+  "\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n":
+    types.FundraisingEntryTableFragmentFragmentDoc,
   "\n  fragment MarathonTableFragment on MarathonNode {\n    id\n    year\n    startDate\n    endDate\n  }\n":
     types.MarathonTableFragmentFragmentDoc,
   "\n  fragment NotificationDeliveriesTableFragment on NotificationDeliveryNode {\n    id\n    deliveryError\n    receiptCheckedAt\n    sentAt\n  }\n":
@@ -170,6 +178,8 @@ const documents = {
     types.ViewDdnFragmentFragmentDoc,
   "\n  query viewDdnDocument($id: GlobalId!) {\n    dailyDepartmentNotification(id: $id) {\n      ...ViewDdnFragment\n    }\n  }\n":
     types.ViewDdnDocumentDocument,
+  "\n  query ViewFundraisingEntriesDocument(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]\n    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]\n    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]\n    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]\n  ) {\n    fundraisingEntries(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n      numericFilters: $numericFilters\n    ) {\n      ...FundraisingEntryTableFragment\n    }\n  }\n":
+    types.ViewFundraisingEntriesDocumentDocument,
   "\n  query HomePage {\n    me {\n      ...PersonViewerFragment\n    }\n  }\n":
     types.HomePageDocument,
   "\n  query EditMarathonHourData($marathonHourUuid: GlobalId!) {\n    marathonHour(uuid: $marathonHourUuid) {\n      details\n      durationInfo\n      shownStartingAt\n      title\n    }\n  }\n":
@@ -190,7 +200,7 @@ const documents = {
     types.EditPersonPageDocument,
   "\n  query ViewPersonPage($uuid: GlobalId!) {\n    person(uuid: $uuid) {\n      ...PersonViewerFragment\n    }\n  }\n":
     types.ViewPersonPageDocument,
-  "\n  query ViewTeamFundraisingDocument(\n    $teamUuid: GlobalId!\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]\n    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]\n    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]\n    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]\n  ) {\n    team(uuid: $teamUuid) {\n      data {\n        solicitationCode {\n          id\n          name\n          prefix\n          code\n        }\n        members {\n          person {\n            id\n            name\n            linkblue\n          }\n        }\n        fundraisingEntries(\n          page: $page\n          pageSize: $pageSize\n          sortBy: $sortBy\n          sortDirection: $sortDirection\n          dateFilters: $dateFilters\n          oneOfFilters: $oneOfFilters\n          stringFilters: $stringFilters\n          numericFilters: $numericFilters\n        ) {\n          data {\n            id\n            amount\n            amountUnassigned\n            donatedByText\n            donatedToText\n            donatedOn\n            assignments {\n              id\n              amount\n              person {\n                id\n                name\n                linkblue\n              }\n            }\n          }\n          page\n          pageSize\n          total\n        }\n      }\n    }\n  }\n":
+  "\n  query ViewTeamFundraisingDocument(\n    $teamUuid: GlobalId!\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]\n    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]\n    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]\n    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]\n  ) {\n    team(uuid: $teamUuid) {\n      data {\n        solicitationCode {\n          id\n          name\n          prefix\n          code\n        }\n        members {\n          person {\n            id\n            name\n            linkblue\n          }\n        }\n        fundraisingEntries(\n          page: $page\n          pageSize: $pageSize\n          sortBy: $sortBy\n          sortDirection: $sortDirection\n          dateFilters: $dateFilters\n          oneOfFilters: $oneOfFilters\n          stringFilters: $stringFilters\n          numericFilters: $numericFilters\n        ) {\n          ...FundraisingEntryTableFragment\n        }\n      }\n    }\n  }\n":
     types.ViewTeamFundraisingDocumentDocument,
   "\n  query SolicitationCodes {\n    solicitationCodes {\n      id\n      prefix\n      code\n      name\n    }\n  }\n":
     types.SolicitationCodesDocument,
@@ -198,12 +208,6 @@ const documents = {
     types.SetTeamSolicitationCodeDocument,
   "\n  mutation ClearTeamSolicitationCode($teamUuid: GlobalId!) {\n    removeSolicitationCodeFromTeam(teamId: $teamUuid)\n  }\n":
     types.ClearTeamSolicitationCodeDocument,
-  "\n  mutation AddFundraisingAssignment(\n    $entryId: GlobalId!\n    $personId: GlobalId!\n    $amount: Float!\n  ) {\n    assignEntryToPerson(\n      entryId: $entryId\n      personId: $personId\n      input: { amount: $amount }\n    ) {\n      id\n    }\n  }\n":
-    types.AddFundraisingAssignmentDocument,
-  "\n  mutation UpdateFundraisingAssignment($id: GlobalId!, $amount: Float!) {\n    updateFundraisingAssignment(id: $id, input: { amount: $amount }) {\n      id\n      amount\n      person {\n        name\n      }\n    }\n  }\n":
-    types.UpdateFundraisingAssignmentDocument,
-  "\n  mutation DeleteFundraisingAssignment($id: GlobalId!) {\n    deleteFundraisingAssignment(id: $id) {\n      id\n    }\n  }\n":
-    types.DeleteFundraisingAssignmentDocument,
   "\n  query EditTeamPage($uuid: GlobalId!) {\n    team(uuid: $uuid) {\n      data {\n        ...TeamEditorFragment\n      }\n    }\n  }\n":
     types.EditTeamPageDocument,
 };
@@ -496,18 +500,6 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  fragment DDNsTableFragment on DailyDepartmentNotificationNode {\n    id\n    combinedDonorName\n    comment\n    combinedAmount\n    solicitationCode {\n      prefix\n      code\n      name\n    }\n    batch {\n      id\n      batchType\n      batchNumber\n    }\n  }\n"
-): (typeof documents)["\n  fragment DDNsTableFragment on DailyDepartmentNotificationNode {\n    id\n    combinedDonorName\n    comment\n    combinedAmount\n    solicitationCode {\n      prefix\n      code\n      name\n    }\n    batch {\n      id\n      batchType\n      batchNumber\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  query DdnsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [DailyDepartmentNotificationResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [DailyDepartmentNotificationResolverKeyedOneOfFilterItem!]\n    $stringFilters: [DailyDepartmentNotificationResolverKeyedStringFilterItem!]\n    $numericFilters: [DailyDepartmentNotificationResolverKeyedNumericFilterItem!]\n  ) {\n    dailyDepartmentNotifications(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n      numericFilters: $numericFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...DDNsTableFragment\n      }\n    }\n  }\n"
-): (typeof documents)["\n  query DdnsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [DailyDepartmentNotificationResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [DailyDepartmentNotificationResolverKeyedOneOfFilterItem!]\n    $stringFilters: [DailyDepartmentNotificationResolverKeyedStringFilterItem!]\n    $numericFilters: [DailyDepartmentNotificationResolverKeyedNumericFilterItem!]\n  ) {\n    dailyDepartmentNotifications(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n      numericFilters: $numericFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...DDNsTableFragment\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
   source: "\n  fragment EventsTableFragment on EventNode {\n    id\n    title\n    description\n    occurrences {\n      id\n      interval {\n        start\n        end\n      }\n      fullDay\n    }\n    summary\n  }\n"
 ): (typeof documents)["\n  fragment EventsTableFragment on EventNode {\n    id\n    title\n    description\n    occurrences {\n      id\n      interval {\n        start\n        end\n      }\n      fullDay\n    }\n    summary\n  }\n"];
 /**
@@ -552,6 +544,42 @@ export function graphql(
 export function graphql(
   source: "\n  fragment TeamsTableFragment on TeamNode {\n    id\n    type\n    name\n    legacyStatus\n    totalPoints\n  }\n"
 ): (typeof documents)["\n  fragment TeamsTableFragment on TeamNode {\n    id\n    type\n    name\n    legacyStatus\n    totalPoints\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  fragment DDNsTableFragment on DailyDepartmentNotificationNode {\n    id\n    combinedDonorName\n    comment\n    combinedAmount\n    solicitationCode {\n      prefix\n      code\n      name\n    }\n    batch {\n      id\n      batchType\n      batchNumber\n    }\n  }\n"
+): (typeof documents)["\n  fragment DDNsTableFragment on DailyDepartmentNotificationNode {\n    id\n    combinedDonorName\n    comment\n    combinedAmount\n    solicitationCode {\n      prefix\n      code\n      name\n    }\n    batch {\n      id\n      batchType\n      batchNumber\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  query DdnsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [DailyDepartmentNotificationResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [DailyDepartmentNotificationResolverKeyedOneOfFilterItem!]\n    $stringFilters: [DailyDepartmentNotificationResolverKeyedStringFilterItem!]\n    $numericFilters: [DailyDepartmentNotificationResolverKeyedNumericFilterItem!]\n  ) {\n    dailyDepartmentNotifications(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n      numericFilters: $numericFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...DDNsTableFragment\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query DdnsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [DailyDepartmentNotificationResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [DailyDepartmentNotificationResolverKeyedOneOfFilterItem!]\n    $stringFilters: [DailyDepartmentNotificationResolverKeyedStringFilterItem!]\n    $numericFilters: [DailyDepartmentNotificationResolverKeyedNumericFilterItem!]\n  ) {\n    dailyDepartmentNotifications(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n      numericFilters: $numericFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...DDNsTableFragment\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation AddFundraisingAssignment(\n    $entryId: GlobalId!\n    $personId: GlobalId!\n    $amount: Float!\n  ) {\n    assignEntryToPerson(\n      entryId: $entryId\n      personId: $personId\n      input: { amount: $amount }\n    ) {\n      id\n    }\n  }\n"
+): (typeof documents)["\n  mutation AddFundraisingAssignment(\n    $entryId: GlobalId!\n    $personId: GlobalId!\n    $amount: Float!\n  ) {\n    assignEntryToPerson(\n      entryId: $entryId\n      personId: $personId\n      input: { amount: $amount }\n    ) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation UpdateFundraisingAssignment($id: GlobalId!, $amount: Float!) {\n    updateFundraisingAssignment(id: $id, input: { amount: $amount }) {\n      id\n      amount\n      person {\n        name\n      }\n    }\n  }\n"
+): (typeof documents)["\n  mutation UpdateFundraisingAssignment($id: GlobalId!, $amount: Float!) {\n    updateFundraisingAssignment(id: $id, input: { amount: $amount }) {\n      id\n      amount\n      person {\n        name\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation DeleteFundraisingAssignment($id: GlobalId!) {\n    deleteFundraisingAssignment(id: $id) {\n      id\n    }\n  }\n"
+): (typeof documents)["\n  mutation DeleteFundraisingAssignment($id: GlobalId!) {\n    deleteFundraisingAssignment(id: $id) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n"
+): (typeof documents)["\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -694,6 +722,12 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
+  source: "\n  query ViewFundraisingEntriesDocument(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]\n    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]\n    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]\n    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]\n  ) {\n    fundraisingEntries(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n      numericFilters: $numericFilters\n    ) {\n      ...FundraisingEntryTableFragment\n    }\n  }\n"
+): (typeof documents)["\n  query ViewFundraisingEntriesDocument(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]\n    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]\n    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]\n    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]\n  ) {\n    fundraisingEntries(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n      numericFilters: $numericFilters\n    ) {\n      ...FundraisingEntryTableFragment\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
   source: "\n  query HomePage {\n    me {\n      ...PersonViewerFragment\n    }\n  }\n"
 ): (typeof documents)["\n  query HomePage {\n    me {\n      ...PersonViewerFragment\n    }\n  }\n"];
 /**
@@ -754,8 +788,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  query ViewTeamFundraisingDocument(\n    $teamUuid: GlobalId!\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]\n    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]\n    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]\n    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]\n  ) {\n    team(uuid: $teamUuid) {\n      data {\n        solicitationCode {\n          id\n          name\n          prefix\n          code\n        }\n        members {\n          person {\n            id\n            name\n            linkblue\n          }\n        }\n        fundraisingEntries(\n          page: $page\n          pageSize: $pageSize\n          sortBy: $sortBy\n          sortDirection: $sortDirection\n          dateFilters: $dateFilters\n          oneOfFilters: $oneOfFilters\n          stringFilters: $stringFilters\n          numericFilters: $numericFilters\n        ) {\n          data {\n            id\n            amount\n            amountUnassigned\n            donatedByText\n            donatedToText\n            donatedOn\n            assignments {\n              id\n              amount\n              person {\n                id\n                name\n                linkblue\n              }\n            }\n          }\n          page\n          pageSize\n          total\n        }\n      }\n    }\n  }\n"
-): (typeof documents)["\n  query ViewTeamFundraisingDocument(\n    $teamUuid: GlobalId!\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]\n    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]\n    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]\n    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]\n  ) {\n    team(uuid: $teamUuid) {\n      data {\n        solicitationCode {\n          id\n          name\n          prefix\n          code\n        }\n        members {\n          person {\n            id\n            name\n            linkblue\n          }\n        }\n        fundraisingEntries(\n          page: $page\n          pageSize: $pageSize\n          sortBy: $sortBy\n          sortDirection: $sortDirection\n          dateFilters: $dateFilters\n          oneOfFilters: $oneOfFilters\n          stringFilters: $stringFilters\n          numericFilters: $numericFilters\n        ) {\n          data {\n            id\n            amount\n            amountUnassigned\n            donatedByText\n            donatedToText\n            donatedOn\n            assignments {\n              id\n              amount\n              person {\n                id\n                name\n                linkblue\n              }\n            }\n          }\n          page\n          pageSize\n          total\n        }\n      }\n    }\n  }\n"];
+  source: "\n  query ViewTeamFundraisingDocument(\n    $teamUuid: GlobalId!\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]\n    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]\n    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]\n    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]\n  ) {\n    team(uuid: $teamUuid) {\n      data {\n        solicitationCode {\n          id\n          name\n          prefix\n          code\n        }\n        members {\n          person {\n            id\n            name\n            linkblue\n          }\n        }\n        fundraisingEntries(\n          page: $page\n          pageSize: $pageSize\n          sortBy: $sortBy\n          sortDirection: $sortDirection\n          dateFilters: $dateFilters\n          oneOfFilters: $oneOfFilters\n          stringFilters: $stringFilters\n          numericFilters: $numericFilters\n        ) {\n          ...FundraisingEntryTableFragment\n        }\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query ViewTeamFundraisingDocument(\n    $teamUuid: GlobalId!\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]\n    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]\n    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]\n    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]\n  ) {\n    team(uuid: $teamUuid) {\n      data {\n        solicitationCode {\n          id\n          name\n          prefix\n          code\n        }\n        members {\n          person {\n            id\n            name\n            linkblue\n          }\n        }\n        fundraisingEntries(\n          page: $page\n          pageSize: $pageSize\n          sortBy: $sortBy\n          sortDirection: $sortDirection\n          dateFilters: $dateFilters\n          oneOfFilters: $oneOfFilters\n          stringFilters: $stringFilters\n          numericFilters: $numericFilters\n        ) {\n          ...FundraisingEntryTableFragment\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -774,24 +808,6 @@ export function graphql(
 export function graphql(
   source: "\n  mutation ClearTeamSolicitationCode($teamUuid: GlobalId!) {\n    removeSolicitationCodeFromTeam(teamId: $teamUuid)\n  }\n"
 ): (typeof documents)["\n  mutation ClearTeamSolicitationCode($teamUuid: GlobalId!) {\n    removeSolicitationCodeFromTeam(teamId: $teamUuid)\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation AddFundraisingAssignment(\n    $entryId: GlobalId!\n    $personId: GlobalId!\n    $amount: Float!\n  ) {\n    assignEntryToPerson(\n      entryId: $entryId\n      personId: $personId\n      input: { amount: $amount }\n    ) {\n      id\n    }\n  }\n"
-): (typeof documents)["\n  mutation AddFundraisingAssignment(\n    $entryId: GlobalId!\n    $personId: GlobalId!\n    $amount: Float!\n  ) {\n    assignEntryToPerson(\n      entryId: $entryId\n      personId: $personId\n      input: { amount: $amount }\n    ) {\n      id\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation UpdateFundraisingAssignment($id: GlobalId!, $amount: Float!) {\n    updateFundraisingAssignment(id: $id, input: { amount: $amount }) {\n      id\n      amount\n      person {\n        name\n      }\n    }\n  }\n"
-): (typeof documents)["\n  mutation UpdateFundraisingAssignment($id: GlobalId!, $amount: Float!) {\n    updateFundraisingAssignment(id: $id, input: { amount: $amount }) {\n      id\n      amount\n      person {\n        name\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation DeleteFundraisingAssignment($id: GlobalId!) {\n    deleteFundraisingAssignment(id: $id) {\n      id\n    }\n  }\n"
-): (typeof documents)["\n  mutation DeleteFundraisingAssignment($id: GlobalId!) {\n    deleteFundraisingAssignment(id: $id) {\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
