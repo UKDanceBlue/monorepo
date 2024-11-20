@@ -100,12 +100,19 @@ const SearchFundraisingTeamDocument = graphql(/* GraphQL */ `
   }
 `);
 
-const SetTeamSolicitationCodeDocument = graphql(/* GraphQL */ `
-  mutation SetTeamSolicitationCode($teamUuid: GlobalId!, $solCodeId: GlobalId!) {
-    assignSolicitationCodeToTeam(teamUuid: $teamUuid, solicitationCode: $solCodeId) {
-    }
-  }
-`);
+// const SetTeamSolicitationCodeDocument = graphql(/* GraphQL */ `
+//   mutation SetTeamSolicitationCode(
+//     $teamUuid: GlobalId!
+//     $solCodeId: GlobalId!
+//   ) {
+//     assignSolicitationCodeToTeam(
+//       teamUuid: $teamUuid
+//       solicitationCode: $solCodeId
+//     ) {
+//       id
+//     }
+//   }
+// `);
 
 const AddFundraisingAssignmentDocument = graphql(/* GraphQL */ `
   mutation AddFundraisingAssignment(

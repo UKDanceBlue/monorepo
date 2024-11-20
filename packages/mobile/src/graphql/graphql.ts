@@ -170,6 +170,11 @@ export interface CreateTeamInput {
 export interface DailyDepartmentNotificationInput {
   readonly accountName: Scalars["String"]["input"];
   readonly accountNumber: Scalars["String"]["input"];
+  readonly advFeeAmtPhil?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly advFeeAmtUnit?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly advFeeCcPhil?: InputMaybe<Scalars["String"]["input"]>;
+  readonly advFeeCcUnit?: InputMaybe<Scalars["String"]["input"]>;
+  readonly advFeeStatus?: InputMaybe<Scalars["String"]["input"]>;
   readonly batchId: Scalars["String"]["input"];
   readonly behalfHonorMemorial?: InputMaybe<Scalars["String"]["input"]>;
   readonly combinedAmount: Scalars["Float"]["input"];
@@ -181,26 +186,119 @@ export interface DailyDepartmentNotificationInput {
   readonly divFirstGift: Scalars["Boolean"]["input"];
   readonly division?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor1Amount?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly donor1Constituency?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor1Deceased?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly donor1Degrees?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor1GiftKey?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly donor1Id?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor1Name?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor1Pm?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor1Relation?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor1TitleBar?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor2Amount?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly donor2Constituency?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor2Deceased?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly donor2Degrees?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor2GiftKey?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly donor2Id?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor2Name?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor2Pm?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor2Relation?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor2TitleBar?: InputMaybe<Scalars["String"]["input"]>;
   readonly effectiveDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
   readonly gikDescription?: InputMaybe<Scalars["String"]["input"]>;
   readonly gikType?: InputMaybe<Scalars["String"]["input"]>;
+  readonly hcUnit?: InputMaybe<Scalars["String"]["input"]>;
   readonly holdingDestination?: InputMaybe<Scalars["String"]["input"]>;
   readonly idSorter: Scalars["String"]["input"];
+  readonly jvDocDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  readonly jvDocNum?: InputMaybe<Scalars["String"]["input"]>;
   readonly matchingGift?: InputMaybe<Scalars["String"]["input"]>;
   readonly onlineGift: Scalars["Boolean"]["input"];
   readonly pledgedAmount: Scalars["Float"]["input"];
   readonly pledgedDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
   readonly processDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  readonly sapDocDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  readonly sapDocNum?: InputMaybe<Scalars["String"]["input"]>;
   readonly secShares?: InputMaybe<Scalars["String"]["input"]>;
   readonly secType?: InputMaybe<Scalars["String"]["input"]>;
   readonly solicitation?: InputMaybe<Scalars["String"]["input"]>;
   readonly solicitationCode: Scalars["String"]["input"];
   readonly transactionDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
   readonly transactionType: Scalars["String"]["input"];
+  readonly transmittalSn?: InputMaybe<Scalars["String"]["input"]>;
   readonly ukFirstGift: Scalars["Boolean"]["input"];
 }
 
+export const DailyDepartmentNotificationResolverAllKeys = {
+  Amount: "Amount",
+  BatchType: "BatchType",
+  Comment: "Comment",
+  Donor: "Donor",
+  SolicitationCodeName: "SolicitationCodeName",
+  SolicitationCodeNumber: "SolicitationCodeNumber",
+  SolicitationCodePrefix: "SolicitationCodePrefix",
+} as const;
+
+export type DailyDepartmentNotificationResolverAllKeys =
+  (typeof DailyDepartmentNotificationResolverAllKeys)[keyof typeof DailyDepartmentNotificationResolverAllKeys];
+export interface DailyDepartmentNotificationResolverKeyedIsNullFilterItem {
+  /** The field to filter on */
+  readonly field: DailyDepartmentNotificationResolverAllKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+}
+
+export interface DailyDepartmentNotificationResolverKeyedNumericFilterItem {
+  /** The comparator to use for the filter */
+  readonly comparison: NumericComparator;
+  /** The field to filter on */
+  readonly field: DailyDepartmentNotificationResolverNumericFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["Float"]["input"];
+}
+
+export interface DailyDepartmentNotificationResolverKeyedOneOfFilterItem {
+  /** The field to filter on */
+  readonly field: DailyDepartmentNotificationResolverOneOfFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: ReadonlyArray<Scalars["String"]["input"]>;
+}
+
+export interface DailyDepartmentNotificationResolverKeyedStringFilterItem {
+  /** The comparator to use for the filter */
+  readonly comparison: StringComparator;
+  /** The field to filter on */
+  readonly field: DailyDepartmentNotificationResolverStringFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["String"]["input"];
+}
+
+export const DailyDepartmentNotificationResolverNumericFilterKeys = {
+  Amount: "Amount",
+} as const;
+
+export type DailyDepartmentNotificationResolverNumericFilterKeys =
+  (typeof DailyDepartmentNotificationResolverNumericFilterKeys)[keyof typeof DailyDepartmentNotificationResolverNumericFilterKeys];
+export const DailyDepartmentNotificationResolverOneOfFilterKeys = {
+  BatchType: "BatchType",
+  SolicitationCodeNumber: "SolicitationCodeNumber",
+  SolicitationCodePrefix: "SolicitationCodePrefix",
+} as const;
+
+export type DailyDepartmentNotificationResolverOneOfFilterKeys =
+  (typeof DailyDepartmentNotificationResolverOneOfFilterKeys)[keyof typeof DailyDepartmentNotificationResolverOneOfFilterKeys];
+export const DailyDepartmentNotificationResolverStringFilterKeys = {
+  Comment: "Comment",
+  Donor: "Donor",
+  SolicitationCodeName: "SolicitationCodeName",
+} as const;
+
+export type DailyDepartmentNotificationResolverStringFilterKeys =
+  (typeof DailyDepartmentNotificationResolverStringFilterKeys)[keyof typeof DailyDepartmentNotificationResolverStringFilterKeys];
 export { DbRole };
 
 export const DeviceResolverAllKeys = {
@@ -415,15 +513,6 @@ export const FundraisingEntryResolverStringFilterKeys = {
 
 export type FundraisingEntryResolverStringFilterKeys =
   (typeof FundraisingEntryResolverStringFilterKeys)[keyof typeof FundraisingEntryResolverStringFilterKeys];
-export const FundraisingEntryType = {
-  Cash: "Cash",
-  Check: "Check",
-  Legacy: "Legacy",
-  Online: "Online",
-} as const;
-
-export type FundraisingEntryType =
-  (typeof FundraisingEntryType)[keyof typeof FundraisingEntryType];
 export const ImageResolverAllKeys = {
   Alt: "alt",
   CreatedAt: "createdAt",
