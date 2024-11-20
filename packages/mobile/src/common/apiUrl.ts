@@ -15,9 +15,15 @@ import { Logger } from "./logger/Logger";
 import { reloadAsync } from "expo-updates";
 
 export let API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL || "https://app.danceblue.org";
+  process.env.NODE_ENV === "development"
+    ? process.env.EXPO_PUBLIC_API_BASE_URL || "https://app.danceblue.org"
+    : "https://app.danceblue.org";
 
 export function overrideApiBaseUrl(newUrl: string) {
+  if (process.env.NODE_ENV !== "development") {
+    return;
+  }
+
   API_BASE_URL =
     newUrl ||
     process.env.EXPO_PUBLIC_API_BASE_URL ||
