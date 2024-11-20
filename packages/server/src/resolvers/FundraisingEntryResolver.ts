@@ -260,6 +260,7 @@ export class SolicitationCodeResolver {
   ) {}
 
   @QueryAccessControl(globalFundraisingAccessParam)
+  @Query(() => [SolicitationCodeNode])
   async solicitationCodes(): Promise<ConcreteResult<SolicitationCodeNode[]>> {
     const codes =
       await this.fundraisingEntryRepository.findAllSolicitationCodes();

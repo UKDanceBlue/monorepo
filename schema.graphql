@@ -1361,6 +1361,7 @@ type Mutation {
   addMap(imageUuid: GlobalId!, uuid: GlobalId!): MarathonHourNode!
   addPersonToTeam(personUuid: GlobalId!, position: MembershipPositionType! = Member, teamUuid: GlobalId!): MembershipNode!
   assignEntryToPerson(entryId: GlobalId!, input: AssignEntryToPersonInput!, personId: GlobalId!): FundraisingAssignmentNode!
+  assignSolicitationCodeToTeam(solicitationCode: GlobalId!, teamId: GlobalId!): Void!
 
   """Attach an image to a feed item"""
   attachImageToFeedItem(feedItemUuid: GlobalId!, imageUuid: GlobalId!): FeedNode!
@@ -1431,6 +1432,7 @@ type Mutation {
   removeImageFromFeedItem(feedItemUuid: GlobalId!): FeedNode!
   removeMap(imageUuid: GlobalId!, uuid: GlobalId!): Void!
   removePersonFromTeam(personUuid: GlobalId!, teamUuid: GlobalId!): MembershipNode!
+  removeSolicitationCodeFromTeam(teamId: GlobalId!): Void!
   scheduleNotification(sendAt: DateTimeISO!, uuid: GlobalId!): ScheduleNotificationResponse!
 
   """Send a notification immediately."""
@@ -2467,6 +2469,8 @@ type Query {
   rawFundraisingEntries(identifier: Int!, marathonYear: String!): String!
   rawFundraisingTotals(marathonYear: String!): String!
   searchPeopleByName(name: String!): [PersonNode!]!
+  solicitationCode(id: GlobalId!): SolicitationCodeNode!
+  solicitationCodes: [SolicitationCodeNode!]!
   team(uuid: GlobalId!): SingleTeamResponse!
   teams(
     """The boolean filters to apply to the query"""
@@ -2627,9 +2631,11 @@ type SingleTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseRespon
 type SolicitationCodeNode implements Node {
   code: NonNegativeInt!
   createdAt: DateTimeISO
+  entries: [FundraisingEntryNode!]!
   id: GlobalId!
   name: String
   prefix: String!
+  teams(marathonId: GlobalId!): [TeamNode!]!
   updatedAt: DateTimeISO
 }
 
