@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@common/apiUrl";
 import ErrorBoundary, {
   withErrorBoundary,
 } from "@common/components/ErrorBoundary";
@@ -85,7 +86,7 @@ const RootScreen = () => {
         <Center>
           {console.error(error)}
           <ScrollView>
-            <Text>Error: {error.message}</Text>
+            <Text>Error: {API_BASE_URL}</Text>
           </ScrollView>
         </Center>
       )}
