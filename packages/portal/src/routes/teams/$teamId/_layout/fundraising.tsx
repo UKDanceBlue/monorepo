@@ -14,6 +14,7 @@ import {
   Form,
   InputNumber,
   Select,
+  Space,
   Table,
 } from "antd";
 import { useForm } from "antd/es/form/Form.js";
@@ -91,28 +92,34 @@ const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
   }
 `);
 
-const SearchFundraisingTeamDocument = graphql(/* GraphQL */ `
-  query SearchFundraisingTeam($fundraisingTeamSearch: String!) {
-    dbFundsTeams(search: $fundraisingTeamSearch) {
-      dbNum
+const SolicitationCodesDocument = graphql(/* GraphQL */ `
+  query SolicitationCodes {
+    solicitationCodes {
+      id
+      prefix
+      code
       name
     }
   }
 `);
 
-// const SetTeamSolicitationCodeDocument = graphql(/* GraphQL */ `
-//   mutation SetTeamSolicitationCode(
-//     $teamUuid: GlobalId!
-//     $solCodeId: GlobalId!
-//   ) {
-//     assignSolicitationCodeToTeam(
-//       teamUuid: $teamUuid
-//       solicitationCode: $solCodeId
-//     ) {
-//       id
-//     }
-//   }
-// `);
+const SetTeamSolicitationCodeDocument = graphql(/* GraphQL */ `
+  mutation SetTeamSolicitationCode(
+    $teamUuid: GlobalId!
+    $solCodeId: GlobalId!
+  ) {
+    assignSolicitationCodeToTeam(
+      teamId: $teamUuid
+      solicitationCode: $solCodeId
+    )
+  }
+`);
+
+const ClearTeamSolicitationCodeDocument = graphql(/* GraphQL */ `
+  mutation ClearTeamSolicitationCode($teamUuid: GlobalId!) {
+    removeSolicitationCodeFromTeam(teamId: $teamUuid)
+  }
+`);
 
 const AddFundraisingAssignmentDocument = graphql(/* GraphQL */ `
   mutation AddFundraisingAssignment(
@@ -152,9 +159,10 @@ const DeleteFundraisingAssignmentDocument = graphql(/* GraphQL */ `
 
 function ViewTeamFundraising() {
   const { teamId: teamUuid } = Route.useParams();
-  const [fundraisingTeamSearch, setFundraisingTeamSearch] = useState("");
+  const [fundraisingTeamSearchEnabled, setFundraisingTeamSearchEnabled] =
+    useState(false);
 
-  const canSetDbNum = useAuthorizationRequirement(
+  const canSetSolicitationCode = useAuthorizationRequirement(
     {
       committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
       minCommitteeRole: CommitteeRole.Coordinator,
@@ -203,17 +211,23 @@ function ViewTeamFundraising() {
   });
   useQueryStatusWatcher({ fetching, error });
 
-  const [{ data: dbFundsTeamData, ...dbFundsTeamState }] = useQuery({
-    query: SearchFundraisingTeamDocument,
-    variables: { fundraisingTeamSearch },
-    pause: fundraisingTeamSearch.length < 3,
-  });
-  useQueryStatusWatcher(dbFundsTeamState);
-
-  const [setDbFundsTeamState, setDbFundsTeam] = useMutation(
-    SetDbFundsTeamDocument
+  const [{ data: solicitationCodesData, ...solicitationCodesState }] = useQuery(
+    {
+      query: SolicitationCodesDocument,
+      pause: !fundraisingTeamSearchEnabled,
+    }
   );
-  useQueryStatusWatcher(setDbFundsTeamState);
+  useQueryStatusWatcher(solicitationCodesState);
+
+  const [setSolicitationCodeState, setSolicitationCode] = useMutation(
+    SetTeamSolicitationCodeDocument
+  );
+  useQueryStatusWatcher(setSolicitationCodeState);
+
+  const [clearSolicitationCodeState, clearSolicitationCode] = useMutation(
+    ClearTeamSolicitationCodeDocument
+  );
+  useQueryStatusWatcher(clearSolicitationCodeState);
 
   const [addFundraisingAssignmentState, addFundraisingAssignment] = useMutation(
     AddFundraisingAssignmentDocument
@@ -237,7 +251,18 @@ function ViewTeamFundraising() {
     clearFilter
   );
 
-  if (!canSetDbNum && !data?.team.data.dbFundsTeam?.dbNum) {
+  const [solCodeSearch, setSolCodeSearch] = useState("");
+  const solCodeOptions = solicitationCodesData?.solicitationCodes.map(
+    ({ code, prefix, name, id }) => ({
+      label: `${prefix}${code.toString().padStart(4, "0")} - ${name}`,
+      value: id,
+    })
+  );
+  const filteredSolCodeOptions = solCodeOptions?.filter(({ label }) =>
+    label.toLowerCase().includes(solCodeSearch.toLowerCase())
+  );
+
+  if (!canSetSolicitationCode && !data?.team.data.solicitationCode) {
     return (
       <p>
         Please reach out to Dancer Relations and ask them to assign your team to
@@ -248,25 +273,23 @@ function ViewTeamFundraising() {
     return (
       <Flex vertical>
         <Form.Item label="Solicitation Code">
-          {!data?.team.data.dbFundsTeam?.dbNum ? (
+          <Space.Compact style={{ width: "100%" }}>
             <AutoComplete
-              options={dbFundsTeamData?.dbFundsTeams.map(
-                ({ dbNum, name }: { dbNum: number; name: string }) => ({
-                  value: dbNum,
-                  label: name,
-                })
-              )}
-              onSearch={setFundraisingTeamSearch}
-              onSelect={(value: number) => {
+              options={filteredSolCodeOptions}
+              showSearch
+              onSearch={setSolCodeSearch}
+              searchValue={solCodeSearch}
+              onDropdownVisibleChange={setFundraisingTeamSearchEnabled}
+              onSelect={(value: string) => {
                 if (
                   confirm(
-                    "Are you sure you want to assign this team to the selected fundraising team? This can only be undone by the Tech Committee."
+                    "Are you sure you want to assign this team to the selected solicitation code?"
                   )
                 ) {
-                  setDbFundsTeam({ teamUuid, dbFundsTeamDbNum: value })
+                  setSolicitationCode({ teamUuid, solCodeId: value })
                     .catch(() => {
                       alert(
-                        "An error occurred while assigning the team to the fundraising team."
+                        "An error occurred while assigning the team to the solicitation code."
                       );
                     })
                     .finally(() => {
@@ -276,17 +299,44 @@ function ViewTeamFundraising() {
                     });
                 }
               }}
-              defaultValue={data?.team.data.dbFundsTeam?.dbNum}
-              disabled={data?.team.data.dbFundsTeam?.dbNum != null}
-              prefix="DB"
-              style={{ maxWidth: "15ch" }}
+              value={
+                data?.team.data.solicitationCode
+                  ? `${data.team.data.solicitationCode.prefix}${data.team.data.solicitationCode.code
+                      .toString()
+                      .padStart(
+                        4,
+                        "0"
+                      )} - ${data.team.data.solicitationCode.name}`
+                  : undefined
+              }
+              disabled={data?.team.data.solicitationCode != null}
             />
-          ) : (
-            <p>
-              This team is linked to <i>{data.team.data.dbFundsTeam.name}</i> (#
-              {data.team.data.dbFundsTeam.dbNum})
-            </p>
-          )}
+            <Button
+              danger
+              name="clear"
+              onClick={() => {
+                if (
+                  confirm(
+                    "Are you sure you want to remove the solicitation code from this team?"
+                  )
+                ) {
+                  clearSolicitationCode({ teamUuid })
+                    .catch(() => {
+                      alert(
+                        "An error occurred while removing the solicitation code from the team."
+                      );
+                    })
+                    .finally(() => {
+                      refreshFundraisingEntries({
+                        requestPolicy: "network-only",
+                      });
+                    });
+                }
+              }}
+            >
+              Clear
+            </Button>
+          </Space.Compact>
         </Form.Item>
         <Table
           style={{ width: "100%" }}

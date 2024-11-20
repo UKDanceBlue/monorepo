@@ -2720,17 +2720,36 @@ export type ViewTeamFundraisingDocumentQuery = {
   };
 };
 
-export type SearchFundraisingTeamQueryVariables = Exact<{
-  fundraisingTeamSearch: Scalars["String"]["input"];
+export type SolicitationCodesQueryVariables = Exact<{ [key: string]: never }>;
+
+export type SolicitationCodesQuery = {
+  readonly __typename?: "Query";
+  readonly solicitationCodes: ReadonlyArray<{
+    readonly __typename?: "SolicitationCodeNode";
+    readonly id: string;
+    readonly prefix: string;
+    readonly code: number;
+    readonly name?: string | null;
+  }>;
+};
+
+export type SetTeamSolicitationCodeMutationVariables = Exact<{
+  teamUuid: Scalars["GlobalId"]["input"];
+  solCodeId: Scalars["GlobalId"]["input"];
 }>;
 
-export type SearchFundraisingTeamQuery = {
-  readonly __typename?: "Query";
-  readonly dbFundsTeams: ReadonlyArray<{
-    readonly __typename?: "DbFundsTeamInfo";
-    readonly dbNum: number;
-    readonly name: string;
-  }>;
+export type SetTeamSolicitationCodeMutation = {
+  readonly __typename?: "Mutation";
+  readonly assignSolicitationCodeToTeam: void;
+};
+
+export type ClearTeamSolicitationCodeMutationVariables = Exact<{
+  teamUuid: Scalars["GlobalId"]["input"];
+}>;
+
+export type ClearTeamSolicitationCodeMutation = {
+  readonly __typename?: "Mutation";
+  readonly removeSolicitationCodeFromTeam: void;
 };
 
 export type AddFundraisingAssignmentMutationVariables = Exact<{
@@ -10604,49 +10623,25 @@ export const ViewTeamFundraisingDocumentDocument = {
   ViewTeamFundraisingDocumentQuery,
   ViewTeamFundraisingDocumentQueryVariables
 >;
-export const SearchFundraisingTeamDocument = {
+export const SolicitationCodesDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "query",
-      name: { kind: "Name", value: "SearchFundraisingTeam" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "fundraisingTeamSearch" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "String" },
-            },
-          },
-        },
-      ],
+      name: { kind: "Name", value: "SolicitationCodes" },
       selectionSet: {
         kind: "SelectionSet",
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "dbFundsTeams" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "search" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "fundraisingTeamSearch" },
-                },
-              },
-            ],
+            name: { kind: "Name", value: "solicitationCodes" },
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "dbNum" } },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "prefix" } },
+                { kind: "Field", name: { kind: "Name", value: "code" } },
                 { kind: "Field", name: { kind: "Name", value: "name" } },
               ],
             },
@@ -10656,8 +10651,126 @@ export const SearchFundraisingTeamDocument = {
     },
   ],
 } as unknown as DocumentNode<
-  SearchFundraisingTeamQuery,
-  SearchFundraisingTeamQueryVariables
+  SolicitationCodesQuery,
+  SolicitationCodesQueryVariables
+>;
+export const SetTeamSolicitationCodeDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "SetTeamSolicitationCode" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "teamUuid" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "solCodeId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "assignSolicitationCodeToTeam" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "teamId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "teamUuid" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "solicitationCode" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "solCodeId" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  SetTeamSolicitationCodeMutation,
+  SetTeamSolicitationCodeMutationVariables
+>;
+export const ClearTeamSolicitationCodeDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "ClearTeamSolicitationCode" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "teamUuid" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "removeSolicitationCodeFromTeam" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "teamId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "teamUuid" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ClearTeamSolicitationCodeMutation,
+  ClearTeamSolicitationCodeMutationVariables
 >;
 export const AddFundraisingAssignmentDocument = {
   kind: "Document",

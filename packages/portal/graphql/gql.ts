@@ -192,8 +192,12 @@ const documents = {
     types.ViewPersonPageDocument,
   "\n  query ViewTeamFundraisingDocument(\n    $teamUuid: GlobalId!\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]\n    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]\n    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]\n    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]\n  ) {\n    team(uuid: $teamUuid) {\n      data {\n        solicitationCode {\n          id\n          name\n          prefix\n          code\n        }\n        members {\n          person {\n            id\n            name\n            linkblue\n          }\n        }\n        fundraisingEntries(\n          page: $page\n          pageSize: $pageSize\n          sortBy: $sortBy\n          sortDirection: $sortDirection\n          dateFilters: $dateFilters\n          oneOfFilters: $oneOfFilters\n          stringFilters: $stringFilters\n          numericFilters: $numericFilters\n        ) {\n          data {\n            id\n            amount\n            amountUnassigned\n            donatedByText\n            donatedToText\n            donatedOn\n            assignments {\n              id\n              amount\n              person {\n                id\n                name\n                linkblue\n              }\n            }\n          }\n          page\n          pageSize\n          total\n        }\n      }\n    }\n  }\n":
     types.ViewTeamFundraisingDocumentDocument,
-  "\n  query SearchFundraisingTeam($fundraisingTeamSearch: String!) {\n    dbFundsTeams(search: $fundraisingTeamSearch) {\n      dbNum\n      name\n    }\n  }\n":
-    types.SearchFundraisingTeamDocument,
+  "\n  query SolicitationCodes {\n    solicitationCodes {\n      id\n      prefix\n      code\n      name\n    }\n  }\n":
+    types.SolicitationCodesDocument,
+  "\n  mutation SetTeamSolicitationCode(\n    $teamUuid: GlobalId!\n    $solCodeId: GlobalId!\n  ) {\n    assignSolicitationCodeToTeam(\n      teamId: $teamUuid\n      solicitationCode: $solCodeId\n    )\n  }\n":
+    types.SetTeamSolicitationCodeDocument,
+  "\n  mutation ClearTeamSolicitationCode($teamUuid: GlobalId!) {\n    removeSolicitationCodeFromTeam(teamId: $teamUuid)\n  }\n":
+    types.ClearTeamSolicitationCodeDocument,
   "\n  mutation AddFundraisingAssignment(\n    $entryId: GlobalId!\n    $personId: GlobalId!\n    $amount: Float!\n  ) {\n    assignEntryToPerson(\n      entryId: $entryId\n      personId: $personId\n      input: { amount: $amount }\n    ) {\n      id\n    }\n  }\n":
     types.AddFundraisingAssignmentDocument,
   "\n  mutation UpdateFundraisingAssignment($id: GlobalId!, $amount: Float!) {\n    updateFundraisingAssignment(id: $id, input: { amount: $amount }) {\n      id\n      amount\n      person {\n        name\n      }\n    }\n  }\n":
@@ -756,8 +760,20 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  query SearchFundraisingTeam($fundraisingTeamSearch: String!) {\n    dbFundsTeams(search: $fundraisingTeamSearch) {\n      dbNum\n      name\n    }\n  }\n"
-): (typeof documents)["\n  query SearchFundraisingTeam($fundraisingTeamSearch: String!) {\n    dbFundsTeams(search: $fundraisingTeamSearch) {\n      dbNum\n      name\n    }\n  }\n"];
+  source: "\n  query SolicitationCodes {\n    solicitationCodes {\n      id\n      prefix\n      code\n      name\n    }\n  }\n"
+): (typeof documents)["\n  query SolicitationCodes {\n    solicitationCodes {\n      id\n      prefix\n      code\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation SetTeamSolicitationCode(\n    $teamUuid: GlobalId!\n    $solCodeId: GlobalId!\n  ) {\n    assignSolicitationCodeToTeam(\n      teamId: $teamUuid\n      solicitationCode: $solCodeId\n    )\n  }\n"
+): (typeof documents)["\n  mutation SetTeamSolicitationCode(\n    $teamUuid: GlobalId!\n    $solCodeId: GlobalId!\n  ) {\n    assignSolicitationCodeToTeam(\n      teamId: $teamUuid\n      solicitationCode: $solCodeId\n    )\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation ClearTeamSolicitationCode($teamUuid: GlobalId!) {\n    removeSolicitationCodeFromTeam(teamId: $teamUuid)\n  }\n"
+): (typeof documents)["\n  mutation ClearTeamSolicitationCode($teamUuid: GlobalId!) {\n    removeSolicitationCodeFromTeam(teamId: $teamUuid)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
