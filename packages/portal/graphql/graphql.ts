@@ -189,7 +189,7 @@ export interface DailyDepartmentNotificationInput {
   readonly donor1Constituency?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor1Deceased?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly donor1Degrees?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor1GiftKey?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly donor1GiftKey?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor1Id?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor1Name?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor1Pm?: InputMaybe<Scalars["String"]["input"]>;
@@ -199,7 +199,7 @@ export interface DailyDepartmentNotificationInput {
   readonly donor2Constituency?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor2Deceased?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly donor2Degrees?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor2GiftKey?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly donor2GiftKey?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor2Id?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor2Name?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor2Pm?: InputMaybe<Scalars["String"]["input"]>;
@@ -2121,6 +2121,33 @@ export type FundraisingEntryTableFragmentFragment = {
   }>;
 } & { " $fragmentName"?: "FundraisingEntryTableFragmentFragment" };
 
+export type SolicitationCodeTableQueryVariables = Exact<{
+  marathonId: Scalars["GlobalId"]["input"];
+}>;
+
+export type SolicitationCodeTableQuery = {
+  readonly __typename?: "Query";
+  readonly solicitationCodes: ReadonlyArray<
+    { readonly __typename?: "SolicitationCodeNode" } & {
+      " $fragmentRefs"?: {
+        SolicitationCodeTableFragmentFragment: SolicitationCodeTableFragmentFragment;
+      };
+    }
+  >;
+};
+
+export type SolicitationCodeTableFragmentFragment = {
+  readonly __typename?: "SolicitationCodeNode";
+  readonly id: string;
+  readonly text: string;
+  readonly prefix: string;
+  readonly code: number;
+  readonly teams: ReadonlyArray<{
+    readonly __typename?: "TeamNode";
+    readonly name: string;
+  }>;
+} & { " $fragmentName"?: "SolicitationCodeTableFragmentFragment" };
+
 export type MarathonTableFragmentFragment = {
   readonly __typename?: "MarathonNode";
   readonly id: string;
@@ -3444,6 +3471,48 @@ export const FundraisingEntryTableFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<FundraisingEntryTableFragmentFragment, unknown>;
+export const SolicitationCodeTableFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "SolicitationCodeTableFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "SolicitationCodeNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "text" } },
+          { kind: "Field", name: { kind: "Name", value: "prefix" } },
+          { kind: "Field", name: { kind: "Name", value: "code" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "teams" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "marathonId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "marathonId" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<SolicitationCodeTableFragmentFragment, unknown>;
 export const MarathonTableFragmentFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -8196,6 +8265,93 @@ export const DeleteFundraisingAssignmentDocument = {
 } as unknown as DocumentNode<
   DeleteFundraisingAssignmentMutation,
   DeleteFundraisingAssignmentMutationVariables
+>;
+export const SolicitationCodeTableDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "SolicitationCodeTable" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "marathonId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "solicitationCodes" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "SolicitationCodeTableFragment",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "SolicitationCodeTableFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "SolicitationCodeNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "text" } },
+          { kind: "Field", name: { kind: "Name", value: "prefix" } },
+          { kind: "Field", name: { kind: "Name", value: "code" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "teams" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "marathonId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "marathonId" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  SolicitationCodeTableQuery,
+  SolicitationCodeTableQueryVariables
 >;
 export const NotificationDeliveriesTableQueryDocument = {
   kind: "Document",

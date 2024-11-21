@@ -22,6 +22,17 @@ export class SolicitationCodeNode extends TimestampedResource implements Node {
   @Field(() => String, { nullable: true })
   name?: string | undefined | null;
 
+  @Field(() => String)
+  text(): string {
+    if (!this.name) {
+      return `${this.prefix}${this.code.toString().padStart(4, "0")}`;
+    } else {
+      return `${this.prefix}${this.code.toString().padStart(4, "0")} - ${
+        this.name
+      }`;
+    }
+  }
+
   public getUniqueId(): string {
     return this.id.id;
   }

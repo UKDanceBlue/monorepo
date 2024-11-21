@@ -283,7 +283,7 @@ input DailyDepartmentNotificationInput {
   donor1Constituency: String
   donor1Deceased: Boolean
   donor1Degrees: String
-  donor1GiftKey: Float
+  donor1GiftKey: String
   donor1Id: String
   donor1Name: String
   donor1Pm: String
@@ -293,7 +293,7 @@ input DailyDepartmentNotificationInput {
   donor2Constituency: String
   donor2Deceased: Boolean
   donor2Degrees: String
-  donor2GiftKey: Float
+  donor2GiftKey: String
   donor2Id: String
   donor2Name: String
   donor2Pm: String
@@ -2638,6 +2638,7 @@ type SolicitationCodeNode implements Node {
   name: String
   prefix: String!
   teams(marathonId: GlobalId!): [TeamNode!]!
+  text: String!
   updatedAt: DateTimeISO
 }
 

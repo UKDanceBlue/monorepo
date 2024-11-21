@@ -9,22 +9,30 @@ import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher";
 const inputTypeSchema = z.object({
   "Division": z.string().trim(),
   "Department": z.string().trim(),
-  "Effective Date": z.coerce
-    .date()
-    .optional()
-    .transform((v) => v && localDateFromJs(v).unwrap()),
-  "Process Date": z.coerce
-    .date()
-    .optional()
-    .transform((v) => v && localDateFromJs(v).unwrap()),
-  "Pledged Date": z.coerce
-    .date()
-    .optional()
-    .transform((v) => v && localDateFromJs(v).unwrap()),
-  "Transaction Date": z.coerce
-    .date()
-    .optional()
-    .transform((v) => v && localDateFromJs(v).unwrap()),
+  "Effective Date": z
+    .string()
+    .transform((v) =>
+      v ? localDateFromJs(new Date(v)).unwrapOr(undefined) : undefined
+    )
+    .optional(),
+  "Process Date": z
+    .string()
+    .transform((v) =>
+      v ? localDateFromJs(new Date(v)).unwrapOr(undefined) : undefined
+    )
+    .optional(),
+  "Pledged Date": z
+    .string()
+    .transform((v) =>
+      v ? localDateFromJs(new Date(v)).unwrapOr(undefined) : undefined
+    )
+    .optional(),
+  "Transaction Date": z
+    .string()
+    .transform((v) =>
+      v ? localDateFromJs(new Date(v)).unwrapOr(undefined) : undefined
+    )
+    .optional(),
   "Transaction  Type": z.string().trim(),
   "Donor1 Amount": z.coerce.number().optional(),
   "Donor2 Amount": z.coerce.number().optional(),
@@ -87,10 +95,12 @@ const inputTypeSchema = z.object({
   "Email Restriction": z.string().trim().optional(),
   "Transmittal SN": z.string().trim().optional(),
   "SAP Doc  Num": z.coerce.string().trim().optional(),
-  "SAP Doc  Date": z.coerce
-    .date()
-    .optional()
-    .transform((v) => v && localDateFromJs(v).unwrap()),
+  "SAP Doc  Date": z
+    .string()
+    .transform((v) =>
+      v ? localDateFromJs(new Date(v)).unwrapOr(undefined) : undefined
+    )
+    .optional(),
   "JV Doc Num": z.string().trim().optional(),
   "Adv Fee CC PHIL": z.coerce.string().trim().optional(),
   "Adv Fee Amt PHIL": z.coerce.number().optional(),
@@ -112,10 +122,12 @@ const inputTypeSchema = z.object({
   "Donor2 Degrees": z.string().trim().optional(),
   "Donor1 Relation": z.string().trim().optional(),
   "Donor2 Relation": z.string().trim().optional(),
-  "JV Doc Date": z.coerce
-    .date()
-    .optional()
-    .transform((v) => v && localDateFromJs(v).unwrap()),
+  "JV Doc Date": z
+    .string()
+    .transform((v) =>
+      v ? localDateFromJs(new Date(v)).unwrapOr(undefined) : undefined
+    )
+    .optional(),
 });
 
 const UploadDdnDocument = graphql(/* GraphQL */ `

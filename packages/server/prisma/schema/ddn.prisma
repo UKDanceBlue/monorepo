@@ -9,8 +9,6 @@ model DailyDepartmentNotification {
   pledgedDate             DateTime?                        @db.Date
   transactionDate         DateTime?                        @db.Date
   transactionType         String
-  donor1Amount            Decimal?
-  donor2Amount            Decimal?
   combinedAmount          Decimal
   pledgedAmount           Decimal
   accountNumber           String
@@ -35,38 +33,8 @@ model DailyDepartmentNotification {
   combinedDonorName       String
   combinedDonorSalutation String
   combinedDonorSort       String?
-  donor1Id                String?
-  donor1GiftKey           Int?
-  donor1Name              String?
-  donor1Deceased          Boolean?
-  donor1Constituency      String?
-  donor1TitleBar          String?
-  donor1Pm                String?
-  donor1Degrees           String?
-  donor2Id                String?
-  donor2GiftKey           Int?
-  donor2Name              String?
-  donor2Deceased          Boolean?
-  donor2Constituency      String?
-  donor2TitleBar          String?
-  donor2Pm                String?
-  donor2Degrees           String?
-  donor1Relation          String?
-  donor2Relation          String?
 
-  // For privacy reasons, the following fields are never actually stored in the database
-  pLine1                   String?
-  pLine2                   String?
-  pLine3                   String?
-  pCity                    String?
-  pState                   String?
-  pZip                     String?
-  homePhone                String?
-  homePhoneRestriction     String?
-  businessPhone            String?
-  businessPhoneRestriction String?
-  email                    String?
-  emailRestriction         String?
+  donors DDNDonorLink[]
 
   transmittalSn String?
   sapDocNum     String?
@@ -85,6 +53,38 @@ model DailyDepartmentNotification {
   fundraisingEntryId       Int                       @unique
 
   @@index([uuid])
+}
+
+model DDNDonor {
+  id   Int    @id @default(autoincrement())
+  uuid String @unique @default(uuid()) @db.Uuid
+
+  donorId      String   @unique
+  giftKey      String?
+  name         String?
+  deceased     Boolean
+  constituency String?
+  titleBar     String?
+  pm           String?
+  degrees      String[]
+  emails       String[]
+
+  donations DDNDonorLink[]
+
+  @@index([uuid])
+}
+
+model DDNDonorLink {
+  donorId Int
+  ddnId   Int
+
+  amount   Decimal
+  relation String?
+
+  donor DDNDonor                    @relation(fields: [donorId], references: [id])
+  ddn   DailyDepartmentNotification @relation(fields: [ddnId], references: [id])
+
+  @@id([donorId, ddnId])
 }
 
 model DailyDepartmentNotificationBatch {

@@ -3,6 +3,8 @@ import {
   DailyDepartmentNotification,
   DailyDepartmentNotificationBatch,
   DBFundsFundraisingEntry,
+  DDNDonor,
+  DDNDonorLink,
   FundraisingAssignment,
   FundraisingEntry,
   FundraisingEntryWithMeta,
@@ -87,6 +89,11 @@ const defaultInclude = {
     include: {
       batch: true,
       solicitationCode: true,
+      donors: {
+        include: {
+          donor: true,
+        },
+      },
     },
   },
   dbFundsEntry: {
@@ -683,6 +690,7 @@ export class FundraisingEntryRepository {
     Result<
       DailyDepartmentNotification & {
         batch: DailyDepartmentNotificationBatch;
+        donors: (DDNDonorLink & { donor: DDNDonor })[];
         solicitationCode: SolicitationCode;
       },
       RepositoryError | ActionDeniedError | InvariantError | NotFoundError
@@ -695,6 +703,11 @@ export class FundraisingEntryRepository {
           ddn: {
             include: {
               batch: true,
+              donors: {
+                include: {
+                  donor: true,
+                },
+              },
               solicitationCode: true,
             },
           },

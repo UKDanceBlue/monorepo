@@ -2,6 +2,8 @@ import { Service } from "@freshgum/typedi";
 import {
   DailyDepartmentNotification,
   DailyDepartmentNotificationBatch,
+  DDNDonor,
+  DDNDonorLink,
   Prisma,
   PrismaClient,
   SolicitationCode,
@@ -125,6 +127,7 @@ export class DailyDepartmentNotificationRepository {
     Result<
       DailyDepartmentNotification & {
         batch: DailyDepartmentNotificationBatch;
+        donors: (DDNDonorLink & { donor: DDNDonor })[];
         solicitationCode: SolicitationCode;
       },
       RepositoryError
@@ -133,7 +136,15 @@ export class DailyDepartmentNotificationRepository {
     try {
       const row = await this.prisma.dailyDepartmentNotification.findUnique({
         where: param,
-        include: { batch: true, solicitationCode: true },
+        include: {
+          batch: true,
+          solicitationCode: true,
+          donors: {
+            include: {
+              donor: true,
+            },
+          },
+        },
       });
       if (!row) {
         return Err(new NotFoundError({ what: "DDN" }));
@@ -164,6 +175,7 @@ export class DailyDepartmentNotificationRepository {
     Result<
       (DailyDepartmentNotification & {
         batch: DailyDepartmentNotificationBatch;
+        donors: (DDNDonorLink & { donor: DDNDonor })[];
         solicitationCode: SolicitationCode;
       })[],
       RepositoryError
@@ -178,7 +190,15 @@ export class DailyDepartmentNotificationRepository {
         orderBy,
         skip: skip ?? undefined,
         take: take ?? undefined,
-        include: { batch: true, solicitationCode: true },
+        include: {
+          batch: true,
+          donors: {
+            include: {
+              donor: true,
+            },
+          },
+          solicitationCode: true,
+        },
       });
 
       return Ok(rows);
@@ -204,64 +224,245 @@ export class DailyDepartmentNotificationRepository {
       return handleRepositoryError(error);
     }
   }
+  parseDDNInit(
+    data: DDNInit
+  ): Result<
+    Prisma.DailyDepartmentNotificationCreateInput &
+      Prisma.DailyDepartmentNotificationUpdateInput,
+    InvalidArgumentError
+  >;
+  parseDDNInit(
+    data: Omit<DDNInit, "batchId"> & { batchId?: undefined }
+  ): Result<
+    Prisma.DailyDepartmentNotificationCreateInput,
+    InvalidArgumentError
+  >;
+  parseDDNInit(
+    data: (Omit<DDNInit, "batchId"> & { batchId?: undefined }) | DDNInit
+  ): Result<
+    | (Prisma.DailyDepartmentNotificationCreateInput &
+        Prisma.DailyDepartmentNotificationUpdateInput)
+    | Prisma.DailyDepartmentNotificationUpdateInput,
+    InvalidArgumentError
+  > {
+    const {
+      accountName,
+      accountNumber,
+      batchId,
+      combinedAmount,
+      combinedDonorName,
+      combinedDonorSalutation,
+      divFirstGift,
+      idSorter,
+      onlineGift,
+      pledgedAmount,
+      transactionType,
+      ukFirstGift,
+      advFeeAmtPhil,
+      advFeeAmtUnit,
+      advFeeCcPhil,
+      advFeeCcUnit,
+      advFeeStatus,
+      behalfHonorMemorial,
+      combinedDonorSort,
+      comment,
+      department,
+      division,
+      donor1Amount,
+      donor1Constituency,
+      donor1Deceased,
+      donor1Degrees,
+      donor1GiftKey,
+      donor1Id,
+      donor1Name,
+      donor1Pm,
+      donor1Relation,
+      donor1TitleBar,
+      donor2Amount,
+      donor2Constituency,
+      donor2Deceased,
+      donor2Degrees,
+      donor2GiftKey,
+      donor2Id,
+      donor2Name,
+      donor2Pm,
+      donor2Relation,
+      donor2TitleBar,
+      effectiveDate,
+      gikDescription,
+      gikType,
+      hcUnit,
+      holdingDestination,
+      jvDocDate,
+      jvDocNum,
+      matchingGift,
+      pledgedDate,
+      processDate,
+      sapDocDate,
+      sapDocNum,
+      secShares,
+      secType,
+      solicitation,
+      transactionDate,
+      transmittalSn,
+      email,
+    } = data;
+    const solicitationCode = parseSolicitationCode(data.solicitationCode);
+    if (solicitationCode.isErr()) {
+      return Err(solicitationCode.error);
+    }
+
+    const donors: Prisma.DDNDonorLinkCreateWithoutDdnInput[] = [];
+    if (donor1Id) {
+      donors.push({
+        amount: donor1Amount ?? 0,
+        relation: donor1Relation,
+        donor: {
+          connectOrCreate: {
+            where: {
+              donorId: donor1Id,
+            },
+            create: {
+              donorId: donor1Id,
+              constituency: donor1Constituency ?? "Unknown",
+              deceased: donor1Deceased ?? false,
+              giftKey: donor1GiftKey ?? "",
+              name: donor1Name ?? "Unknown",
+              titleBar: donor1TitleBar ?? "",
+              degrees: donor1Degrees ? donor1Degrees.split(", ") : [],
+              emails: email ? [email] : [],
+              pm: donor1Pm ?? "",
+            },
+          },
+        },
+      });
+    }
+    if (donor2Id) {
+      donors.push({
+        amount: donor2Amount ?? 0,
+        relation: donor2Relation,
+        donor: {
+          connectOrCreate: {
+            where: {
+              donorId: donor2Id,
+            },
+            create: {
+              donorId: donor2Id,
+              constituency: donor2Constituency ?? "Unknown",
+              deceased: donor2Deceased ?? false,
+              giftKey: donor2GiftKey ?? "",
+              name: donor2Name ?? "Unknown",
+              titleBar: donor2TitleBar ?? "",
+              degrees: donor2Degrees ? donor2Degrees.split(", ") : [],
+              emails: email ? [email] : [],
+              pm: donor2Pm ?? "",
+            },
+          },
+        },
+      });
+    }
+
+    return Ok({
+      jvDocDate: jvDocDate && localDateToJs(jvDocDate),
+      sapDocDate: sapDocDate && localDateToJs(sapDocDate),
+      pledgedDate: pledgedDate && localDateToJs(pledgedDate),
+      processDate: processDate && localDateToJs(processDate),
+      effectiveDate: effectiveDate && localDateToJs(effectiveDate),
+      transactionDate: transactionDate && localDateToJs(transactionDate),
+
+      accountName,
+      accountNumber,
+      combinedAmount,
+      combinedDonorName,
+      combinedDonorSalutation,
+      divFirstGift,
+      idSorter,
+      onlineGift,
+      pledgedAmount,
+      transactionType,
+      ukFirstGift,
+      advFeeAmtPhil,
+      advFeeAmtUnit,
+      advFeeCcPhil,
+      advFeeCcUnit,
+      advFeeStatus,
+      behalfHonorMemorial,
+      combinedDonorSort,
+      comment,
+      department,
+      division,
+      donors: {
+        create: donors,
+      },
+      gikDescription,
+      gikType,
+      hcUnit,
+      holdingDestination,
+      jvDocNum,
+      matchingGift,
+      sapDocNum,
+      secShares,
+      secType,
+      solicitation,
+      transmittalSn,
+      batch: batchId
+        ? {
+            connectOrCreate: {
+              create: {
+                batchId,
+              },
+              where: { batchId },
+            },
+          }
+        : undefined,
+      solicitationCode: {
+        connectOrCreate: {
+          create: {
+            prefix: solicitationCode.value.prefix,
+            code: solicitationCode.value.code,
+            name: solicitation,
+          },
+          where: {
+            prefix_code: {
+              code: solicitationCode.value.code,
+              prefix: solicitationCode.value.prefix,
+            },
+          },
+        },
+      },
+      fundraisingEntry: {
+        create: {},
+      },
+    });
+  }
 
   async createDDN(data: DDNInit): Promise<
     Result<
       DailyDepartmentNotification & {
         batch: DailyDepartmentNotificationBatch;
+        donors: (DDNDonorLink & { donor: DDNDonor })[];
         solicitationCode: SolicitationCode;
       },
       RepositoryError | InvalidArgumentError
     >
   > {
     try {
-      const solicitationCode = parseSolicitationCode(data.solicitationCode);
-      if (solicitationCode.isErr()) {
-        return Err(solicitationCode.error);
-      }
-      return Ok(
-        await this.prisma.dailyDepartmentNotification.create({
-          data: {
-            ...data,
-            jvDocDate: data.jvDocDate && localDateToJs(data.jvDocDate),
-            sapDocDate: data.sapDocDate && localDateToJs(data.sapDocDate),
-            pledgedDate: data.pledgedDate && localDateToJs(data.pledgedDate),
-            processDate: data.processDate && localDateToJs(data.processDate),
-            effectiveDate:
-              data.effectiveDate && localDateToJs(data.effectiveDate),
-            transactionDate:
-              data.transactionDate && localDateToJs(data.transactionDate),
-            batchId: undefined,
-            batch: {
-              connectOrCreate: {
-                create: {
-                  batchId: data.batchId,
-                },
-                where: { batchId: data.batchId },
-              },
-            },
-            solicitationCode: {
-              connectOrCreate: {
-                create: {
-                  prefix: solicitationCode.value.prefix,
-                  code: solicitationCode.value.code,
-                  name: data.solicitation,
-                },
-                where: {
-                  prefix_code: {
-                    code: solicitationCode.value.code,
-                    prefix: solicitationCode.value.prefix,
-                  },
+      return await this.parseDDNInit(data)
+        .toAsyncResult()
+        .map((data) =>
+          this.prisma.dailyDepartmentNotification.create({
+            data,
+            include: {
+              batch: true,
+              donors: {
+                include: {
+                  donor: true,
                 },
               },
+              solicitationCode: true,
             },
-            fundraisingEntry: {
-              create: {},
-            },
-          },
-          include: { batch: true, solicitationCode: true },
-        })
-      );
+          })
+        ).promise;
     } catch (error) {
       return handleRepositoryError(error);
     }
@@ -275,6 +476,7 @@ export class DailyDepartmentNotificationRepository {
       Option<
         DailyDepartmentNotification & {
           batch: DailyDepartmentNotificationBatch;
+          donors: (DDNDonorLink & { donor: DDNDonor })[];
           solicitationCode: SolicitationCode;
         }
       >,
@@ -286,42 +488,25 @@ export class DailyDepartmentNotificationRepository {
       if (solicitationCode.isErr()) {
         return Err(solicitationCode.error);
       }
-      return Ok(
-        Some(
-          await this.prisma.dailyDepartmentNotification.update({
-            where: param,
-            data: {
-              ...data,
-              jvDocDate: data.jvDocDate && localDateToJs(data.jvDocDate),
-              sapDocDate: data.sapDocDate && localDateToJs(data.sapDocDate),
-              pledgedDate: data.pledgedDate && localDateToJs(data.pledgedDate),
-              processDate: data.processDate && localDateToJs(data.processDate),
-              effectiveDate:
-                data.effectiveDate && localDateToJs(data.effectiveDate),
-              transactionDate:
-                data.transactionDate && localDateToJs(data.transactionDate),
-              batchId: undefined,
-              batch: undefined,
-              solicitationCode: {
-                connectOrCreate: {
-                  create: {
-                    prefix: solicitationCode.value.prefix,
-                    code: solicitationCode.value.code,
-                    name: data.solicitation,
-                  },
-                  where: {
-                    prefix_code: {
-                      code: solicitationCode.value.code,
-                      prefix: solicitationCode.value.prefix,
-                    },
+      return await this.parseDDNInit(data)
+        .toAsyncResult()
+        .map(async (data) =>
+          Some(
+            await this.prisma.dailyDepartmentNotification.update({
+              where: param,
+              data,
+              include: {
+                batch: true,
+                donors: {
+                  include: {
+                    donor: true,
                   },
                 },
+                solicitationCode: true,
               },
-            },
-            include: { batch: true, solicitationCode: true },
-          })
-        )
-      );
+            })
+          )
+        ).promise;
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -339,6 +524,7 @@ export class DailyDepartmentNotificationRepository {
       Option<
         DailyDepartmentNotification & {
           batch: DailyDepartmentNotificationBatch;
+          donors: (DDNDonorLink & { donor: DDNDonor })[];
           solicitationCode: SolicitationCode;
         }
       >,
@@ -350,7 +536,15 @@ export class DailyDepartmentNotificationRepository {
         Some(
           await this.prisma.dailyDepartmentNotification.delete({
             where: param,
-            include: { batch: true, solicitationCode: true },
+            include: {
+              batch: true,
+              donors: {
+                include: {
+                  donor: true,
+                },
+              },
+              solicitationCode: true,
+            },
           })
         )
       );
@@ -370,6 +564,7 @@ export class DailyDepartmentNotificationRepository {
     Result<
       (DailyDepartmentNotification & {
         batch: DailyDepartmentNotificationBatch;
+        donors: (DDNDonorLink & { donor: DDNDonor })[];
         solicitationCode: SolicitationCode;
       })[],
       RepositoryError | InvalidArgumentError
@@ -380,6 +575,7 @@ export class DailyDepartmentNotificationRepository {
         string,
         { prefix: string; code: number }
       >();
+
       for (const row of data) {
         const solicitationCode = parseSolicitationCode(row.solicitationCode);
         if (solicitationCode.isErr()) {
@@ -387,6 +583,7 @@ export class DailyDepartmentNotificationRepository {
         }
         solicitationCodes.set(row.solicitationCode, solicitationCode.value);
       }
+
       const results = await this.prisma.$transaction(
         data.map((row) =>
           this.prisma.dailyDepartmentNotification.upsert({
@@ -466,7 +663,15 @@ export class DailyDepartmentNotificationRepository {
                 create: {},
               },
             },
-            include: { batch: true, solicitationCode: true },
+            include: {
+              batch: true,
+              donors: {
+                include: {
+                  donor: true,
+                },
+              },
+              solicitationCode: true,
+            },
           })
         )
       );
@@ -543,6 +748,7 @@ export class DailyDepartmentNotificationRepository {
     Result<
       (DailyDepartmentNotification & {
         batch: DailyDepartmentNotificationBatch;
+        donors: (DDNDonorLink & { donor: DDNDonor })[];
         solicitationCode: SolicitationCode;
       })[],
       RepositoryError
@@ -551,7 +757,15 @@ export class DailyDepartmentNotificationRepository {
     try {
       const rows = await this.prisma.dailyDepartmentNotification.findMany({
         where: { batch: batchParam },
-        include: { batch: true, solicitationCode: true },
+        include: {
+          batch: true,
+          donors: {
+            include: {
+              donor: true,
+            },
+          },
+          solicitationCode: true,
+        },
       });
 
       return Ok(rows);

@@ -133,6 +133,10 @@ const documents = {
     types.DeleteFundraisingAssignmentDocument,
   "\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      solicitationCode {\n        code\n        name\n        prefix\n      }\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n":
     types.FundraisingEntryTableFragmentFragmentDoc,
+  "\n  query SolicitationCodeTable($marathonId: GlobalId!) {\n    solicitationCodes {\n      ...SolicitationCodeTableFragment\n    }\n  }\n":
+    types.SolicitationCodeTableDocument,
+  "\n  fragment SolicitationCodeTableFragment on SolicitationCodeNode {\n    id\n    text\n    prefix\n    code\n    teams(marathonId: $marathonId) {\n      name\n    }\n  }\n":
+    types.SolicitationCodeTableFragmentFragmentDoc,
   "\n  fragment MarathonTableFragment on MarathonNode {\n    id\n    year\n    startDate\n    endDate\n  }\n":
     types.MarathonTableFragmentFragmentDoc,
   "\n  fragment NotificationDeliveriesTableFragment on NotificationDeliveryNode {\n    id\n    deliveryError\n    receiptCheckedAt\n    sentAt\n  }\n":
@@ -580,6 +584,18 @@ export function graphql(
 export function graphql(
   source: "\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      solicitationCode {\n        code\n        name\n        prefix\n      }\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n"
 ): (typeof documents)["\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      solicitationCode {\n        code\n        name\n        prefix\n      }\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  query SolicitationCodeTable($marathonId: GlobalId!) {\n    solicitationCodes {\n      ...SolicitationCodeTableFragment\n    }\n  }\n"
+): (typeof documents)["\n  query SolicitationCodeTable($marathonId: GlobalId!) {\n    solicitationCodes {\n      ...SolicitationCodeTableFragment\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  fragment SolicitationCodeTableFragment on SolicitationCodeNode {\n    id\n    text\n    prefix\n    code\n    teams(marathonId: $marathonId) {\n      name\n    }\n  }\n"
+): (typeof documents)["\n  fragment SolicitationCodeTableFragment on SolicitationCodeNode {\n    id\n    text\n    prefix\n    code\n    teams(marathonId: $marathonId) {\n      name\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

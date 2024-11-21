@@ -39,7 +39,7 @@ export interface DDNInit {
   combinedDonorSalutation: string;
   combinedDonorSort?: string | undefined;
   donor1Id?: string | undefined;
-  donor1GiftKey?: number | undefined;
+  donor1GiftKey?: string | undefined;
   donor1Name?: string | undefined;
   donor1Deceased?: boolean | undefined;
   donor1Constituency?: string | undefined;
@@ -47,7 +47,7 @@ export interface DDNInit {
   donor1Pm?: string | undefined;
   donor1Degrees?: string | undefined;
   donor2Id?: string | undefined;
-  donor2GiftKey?: number | undefined;
+  donor2GiftKey?: string | undefined;
   donor2Name?: string | undefined;
   donor2Deceased?: boolean | undefined;
   donor2Constituency?: string | undefined;
@@ -67,6 +67,7 @@ export interface DDNInit {
   advFeeAmtUnit?: number | undefined;
   advFeeStatus?: string | undefined;
   hcUnit?: string | undefined;
+  email?: string | undefined;
 }
 
 @ObjectType("ListDailyDepartmentNotificationsResponse", {
@@ -178,8 +179,8 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => String, { nullable: true })
   donor1Id?: string | undefined;
 
-  @Field(() => Number, { nullable: true })
-  donor1GiftKey?: number | undefined;
+  @Field(() => String, { nullable: true })
+  donor1GiftKey?: string | undefined;
 
   @Field(() => String, { nullable: true })
   donor1Name?: string | undefined;
@@ -202,8 +203,8 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => String, { nullable: true })
   donor2Id?: string | undefined;
 
-  @Field(() => Number, { nullable: true })
-  donor2GiftKey?: number | undefined;
+  @Field(() => String, { nullable: true })
+  donor2GiftKey?: string | undefined;
 
   @Field(() => String, { nullable: true })
   donor2Name?: string | undefined;
