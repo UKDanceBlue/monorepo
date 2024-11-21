@@ -1,0 +1,55 @@
+import type { BasicError } from "@ukdanceblue/common/error";
+import { toBasicError } from "@ukdanceblue/common/error";
+import type { Result } from "ts-results-es";
+import { Err, Ok } from "ts-results-es";
+import type { z } from "zod";
+import { Service } from "@freshgum/typedi";
+
+import { ZodError } from "#error/zod.js";
+import { FeedNode } from "@ukdanceblue/common";
+
+async function instagramApiRequest<T extends z.ZodRawShape>(
+  path: string,
+  fields: string[],
+  accessToken: string,
+  zodSchema: z.ZodType<T>
+): Promise<Result<T, BasicError | ZodError>> {
+  try {
+    const queryParams = new URLSearchParams({
+      fields: fields.join(","),
+      access_token: accessToken,
+    });
+    const url = `https://graph.instagram.com/v11.0/${path}?${queryParams.toString()}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    const parsedData = zodSchema.safeParse(data);
+    return parsedData.error
+      ? Err(new ZodError(parsedData.error))
+      : Ok(parsedData.data);
+  } catch (error) {
+    return Err(toBasicError(error));
+  }
+}
+
+@Service([])
+class InsagramApi {
+  private feedRepository: any;
+
+  constructor(feedRepository: any) {
+    this.feedRepository = feedRepository;
+  }
+
+  async getFeed(): Promise<FeedNode> {
+    const rows = await this.feedRepository.getCompleteFeed({ limit });
+    return rows.map((row) => {
+      return {
+        id: row.id,
+        title: row.title,
+        description: row.description,
+        image: row.image,
+        link: row.link,
+        date: row.date,
+      };
+    });
+  }
+}

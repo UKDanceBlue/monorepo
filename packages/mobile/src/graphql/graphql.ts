@@ -434,6 +434,7 @@ export const FundraisingEntryResolverAllKeys = {
   DonatedBy: "donatedBy",
   DonatedOn: "donatedOn",
   DonatedTo: "donatedTo",
+  SolicitationCode: "solicitationCode",
   TeamId: "teamId",
   UpdatedAt: "updatedAt",
 } as const;
@@ -509,6 +510,7 @@ export type FundraisingEntryResolverOneOfFilterKeys =
 export const FundraisingEntryResolverStringFilterKeys = {
   DonatedBy: "donatedBy",
   DonatedTo: "donatedTo",
+  SolicitationCode: "solicitationCode",
 } as const;
 
 export type FundraisingEntryResolverStringFilterKeys =

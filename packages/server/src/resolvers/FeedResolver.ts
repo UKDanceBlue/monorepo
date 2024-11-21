@@ -67,6 +67,13 @@ export class FeedResolver {
     const rows = await this.feedRepository.getCompleteFeed({ limit });
     return rows.map(feedItemModelToResource);
   }
+  async instagramfeed(
+    @Arg("limit", () => Int, { defaultValue: 10, nullable: true })
+    limit: number | null
+  ): Promise<FeedNode[]> {
+    const rows = await this.feedRepository.getCompleteFeed({ limit });
+    return rows.map(feedItemModelToResource);
+  }
 
   @MutationAccessControl(
     {
