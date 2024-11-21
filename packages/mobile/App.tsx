@@ -16,7 +16,7 @@ import { useUpdateChecker } from "#common/hooks/useUpdateChecker";
 import { Logger } from "#common/logger/Logger";
 import { universalCatch } from "#common/logging";
 import { showMessage } from "#common/util/alertUtils";
-import { AuthStateProvider } from "#context/auth";
+import AuthStateProvider from "#context/auth";
 import { DeviceDataProvider } from "#context/device";
 import { LoadingWrapper } from "#context/loading";
 import { UrqlContext } from "#context/urql";
@@ -48,13 +48,13 @@ const App = () => {
   useAsyncStorageDevTools();
 
   const [fontsLoaded, error] = useFonts({
-    "bodoni-flf-bold": BoldoniFlfBoldFont,
-    "bodoni-flf-bold-italic": BoldoniFlfBoldItalicFont,
-    "bodoni-flf-italic": BoldoniFlfItalicFont,
-    "bodoni-flf-roman": BoldoniFlfRomanFont,
-    "opensans-condensed-bold": OpenSansCondensedBoldFont,
-    "opensans-condensed-light": OpenSansCondensedLightFont,
-    "opensans-condensed-light-italic": OpenSansCondensedLightItalicFont,
+    // "bodoni-flf-bold": BoldoniFlfBoldFont,
+    // "bodoni-flf-bold-italic": BoldoniFlfBoldItalicFont,
+    // "bodoni-flf-italic": BoldoniFlfItalicFont,
+    // "bodoni-flf-roman": BoldoniFlfRomanFont,
+    // "opensans-condensed-bold": OpenSansCondensedBoldFont,
+    // "opensans-condensed-light": OpenSansCondensedLightFont,
+    // "opensans-condensed-light-italic": OpenSansCondensedLightItalicFont,
   });
 
   useEffect(() => {

@@ -37,7 +37,11 @@ const authStateDocument = graphql(/* GraphQL */ `
   }
 `);
 
-export function AuthStateProvider({ children }: { children: ReactNode }) {
+export default function AuthStateProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const [{ fetching, error, data }] = useQuery({
     query: authStateDocument,
   });
