@@ -1,8 +1,8 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "urql";
 
-import type { CreatePointEntryInput } from "#graphql/graphql.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import type { CreatePointEntryInput } from "@/graphql/graphql.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
 
 import {
   createPointEntryAndAssignDocument,

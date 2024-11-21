@@ -1,13 +1,13 @@
-import { Field,InputType } from "type-graphql";
+import { Field, InputType } from "type-graphql";
 
 @InputType()
 export class CreateFeedInput {
   @Field(() => String)
   title!: string;
   @Field(() => String, { nullable: true })
-  textContent?: string | null | undefined;
+  textContent?: string | undefined | null;
   @Field(() => String, { nullable: true })
-  imageUuid?: string | null | undefined;
+  imageUuid?: string | undefined | null;
 }
 
 @InputType()
@@ -15,5 +15,5 @@ export class SetFeedInput {
   @Field(() => String)
   title!: string;
   @Field(() => String, { nullable: true })
-  textContent?: string | null | undefined;
+  textContent?: string | undefined | null;
 }

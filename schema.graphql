@@ -255,6 +255,7 @@ type CreateTeamResponse implements AbstractGraphQLCreatedResponse & AbstractGrap
 }
 
 type DailyDepartmentNotificationBatchNode {
+  batchNumber: String!
   batchType: BatchType!
   dailyDepartmentNotifications: [DailyDepartmentNotificationNode!]!
   id: GlobalId!
@@ -263,6 +264,11 @@ type DailyDepartmentNotificationBatchNode {
 input DailyDepartmentNotificationInput {
   accountName: String!
   accountNumber: String!
+  advFeeAmtPhil: Float
+  advFeeAmtUnit: Float
+  advFeeCcPhil: String
+  advFeeCcUnit: String
+  advFeeStatus: String
   batchId: String!
   behalfHonorMemorial: String
   combinedAmount: Float!
@@ -274,25 +280,47 @@ input DailyDepartmentNotificationInput {
   divFirstGift: Boolean!
   division: String
   donor1Amount: Float
+  donor1Constituency: String
+  donor1Deceased: Boolean
+  donor1Degrees: String
+  donor1GiftKey: Float
+  donor1Id: String
+  donor1Name: String
+  donor1Pm: String
+  donor1Relation: String
+  donor1TitleBar: String
   donor2Amount: Float
+  donor2Constituency: String
+  donor2Deceased: Boolean
+  donor2Degrees: String
+  donor2GiftKey: Float
+  donor2Id: String
+  donor2Name: String
+  donor2Pm: String
+  donor2Relation: String
+  donor2TitleBar: String
   effectiveDate: LocalDate
-  endDate: DateTimeISO
   gikDescription: String
   gikType: String
+  hcUnit: String
   holdingDestination: String
   idSorter: String!
+  jvDocDate: LocalDate
+  jvDocNum: String
   matchingGift: String
   onlineGift: Boolean!
   pledgedAmount: Float!
   pledgedDate: LocalDate
   processDate: LocalDate
+  sapDocDate: LocalDate
+  sapDocNum: String
   secShares: String
   secType: String
   solicitation: String
-  solicitationCode: String
-  startDate: DateTimeISO
+  solicitationCode: String!
   transactionDate: LocalDate
   transactionType: String!
+  transmittalSn: String
   ukFirstGift: Boolean!
 }
 
@@ -353,11 +381,86 @@ type DailyDepartmentNotificationNode {
   secShares: String
   secType: String
   solicitation: String
-  solicitationCode: String
+  solicitationCode: SolicitationCodeNode!
   transactionDate: LocalDate
   transactionType: String!
   transmittalSn: String
   ukFirstGift: Boolean!
+}
+
+enum DailyDepartmentNotificationResolverAllKeys {
+  Amount
+  BatchType
+  Comment
+  Donor
+  SolicitationCodeName
+  SolicitationCodeNumber
+  SolicitationCodePrefix
+}
+
+input DailyDepartmentNotificationResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: DailyDepartmentNotificationResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+input DailyDepartmentNotificationResolverKeyedNumericFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: DailyDepartmentNotificationResolverNumericFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: Float!
+}
+
+input DailyDepartmentNotificationResolverKeyedOneOfFilterItem {
+  """The field to filter on"""
+  field: DailyDepartmentNotificationResolverOneOfFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: [String!]!
+}
+
+input DailyDepartmentNotificationResolverKeyedStringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The field to filter on"""
+  field: DailyDepartmentNotificationResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: String!
+}
+
+enum DailyDepartmentNotificationResolverNumericFilterKeys {
+  Amount
+}
+
+enum DailyDepartmentNotificationResolverOneOfFilterKeys {
+  BatchType
+  SolicitationCodeNumber
+  SolicitationCodePrefix
+}
+
+enum DailyDepartmentNotificationResolverStringFilterKeys {
+  Comment
+  Donor
+  SolicitationCodeName
 }
 
 """
@@ -631,10 +734,14 @@ type FundraisingEntryNode implements Node {
   amountUnassigned: Float!
   assignments: [FundraisingAssignmentNode!]!
   createdAt: DateTimeISO
+  dailyDepartmentNotification: DailyDepartmentNotificationNode!
   donatedByText: String
   donatedOn: DateTimeISO!
   donatedToText: String
   id: GlobalId!
+  notes: String
+  solicitationCode: SolicitationCodeNode!
+  solicitationCodeOverride: SolicitationCodeNode
   updatedAt: DateTimeISO
 }
 
@@ -645,6 +752,7 @@ enum FundraisingEntryResolverAllKeys {
   donatedBy
   donatedOn
   donatedTo
+  solicitationCode
   teamId
   updatedAt
 }
@@ -730,6 +838,7 @@ enum FundraisingEntryResolverOneOfFilterKeys {
 enum FundraisingEntryResolverStringFilterKeys {
   donatedBy
   donatedTo
+  solicitationCode
 }
 
 type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
@@ -1254,7 +1363,7 @@ type Mutation {
   addMap(imageUuid: GlobalId!, uuid: GlobalId!): MarathonHourNode!
   addPersonToTeam(personUuid: GlobalId!, position: MembershipPositionType! = Member, teamUuid: GlobalId!): MembershipNode!
   assignEntryToPerson(entryId: GlobalId!, input: AssignEntryToPersonInput!, personId: GlobalId!): FundraisingAssignmentNode!
-  assignTeamToDbFundsTeam(dbFundsTeamDbNum: Int!, teamId: GlobalId!): Void!
+  assignSolicitationCodeToTeam(solicitationCode: GlobalId!, teamId: GlobalId!): Void!
 
   """Attach an image to a feed item"""
   attachImageToFeedItem(feedItemUuid: GlobalId!, imageUuid: GlobalId!): FeedNode!
@@ -1325,6 +1434,7 @@ type Mutation {
   removeImageFromFeedItem(feedItemUuid: GlobalId!): FeedNode!
   removeMap(imageUuid: GlobalId!, uuid: GlobalId!): Void!
   removePersonFromTeam(personUuid: GlobalId!, teamUuid: GlobalId!): MembershipNode!
+  removeSolicitationCodeFromTeam(teamId: GlobalId!): Void!
   scheduleNotification(sendAt: DateTimeISO!, uuid: GlobalId!): ScheduleNotificationResponse!
 
   """Send a notification immediately."""
@@ -1564,7 +1674,7 @@ type PersonNode implements Node {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -1813,13 +1923,13 @@ type Query {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
-    isNullFilters: Void
+    isNullFilters: [DailyDepartmentNotificationResolverKeyedIsNullFilterItem!]
 
     """The numeric filters to apply to the query"""
-    numericFilters: Void
+    numericFilters: [DailyDepartmentNotificationResolverKeyedNumericFilterItem!]
 
     """The one-of filters to apply to the query"""
-    oneOfFilters: Void
+    oneOfFilters: [DailyDepartmentNotificationResolverKeyedOneOfFilterItem!]
 
     """The page number to return, defaults to 1"""
     page: Int
@@ -1830,7 +1940,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -1843,7 +1953,7 @@ type Query {
     sortDirection: [SortDirection!]
 
     """The string filters to apply to the query"""
-    stringFilters: Void
+    stringFilters: [DailyDepartmentNotificationResolverKeyedStringFilterItem!]
   ): ListDailyDepartmentNotificationsResponse!
   dbFundsTeams(search: String!): [DbFundsTeamInfo!]!
 
@@ -1882,7 +1992,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -1930,7 +2040,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -1980,7 +2090,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2025,7 +2135,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2073,7 +2183,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2120,7 +2230,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2163,7 +2273,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2210,7 +2320,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2253,7 +2363,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2298,7 +2408,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2342,7 +2452,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2361,6 +2471,8 @@ type Query {
   rawFundraisingEntries(identifier: Int!, marathonYear: String!): String!
   rawFundraisingTotals(marathonYear: String!): String!
   searchPeopleByName(name: String!): [PersonNode!]!
+  solicitationCode(id: GlobalId!): SolicitationCodeNode!
+  solicitationCodes: [SolicitationCodeNode!]!
   team(uuid: GlobalId!): SingleTeamResponse!
   teams(
     """The boolean filters to apply to the query"""
@@ -2392,7 +2504,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2518,6 +2630,17 @@ type SingleTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseRespon
   ok: Boolean!
 }
 
+type SolicitationCodeNode implements Node {
+  code: NonNegativeInt!
+  createdAt: DateTimeISO
+  entries: [FundraisingEntryNode!]!
+  id: GlobalId!
+  name: String
+  prefix: String!
+  teams(marathonId: GlobalId!): [TeamNode!]!
+  updatedAt: DateTimeISO
+}
+
 enum SortDirection {
   asc
   desc
@@ -2577,7 +2700,7 @@ type TeamNode implements Node {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2599,6 +2722,7 @@ type TeamNode implements Node {
   members: [MembershipNode!]!
   name: String!
   pointEntries: [PointEntryNode!]!
+  solicitationCode: SolicitationCodeNode
   totalPoints: Int!
   type: TeamType!
   updatedAt: DateTimeISO

@@ -1,71 +1,72 @@
-import { DateTimeISOResolver, LocalDateResolver } from "graphql-scalars";
+import { LocalDateResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
+import { LocalDate } from "../../utility/time/localDate.js";
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { DailyDepartmentNotificationNode } from "../resources/DailyDepartmentNotification.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 export interface DDNInit {
-  division?: string;
-  department?: string;
-  effectiveDate?: string;
-  processDate?: string;
-  pledgedDate?: string;
-  transactionDate?: string;
+  division?: string | undefined;
+  department?: string | undefined;
+  effectiveDate?: LocalDate | undefined;
+  processDate?: LocalDate | undefined;
+  pledgedDate?: LocalDate | undefined;
+  transactionDate?: LocalDate | undefined;
   transactionType: string;
-  donor1Amount?: number;
-  donor2Amount?: number;
+  donor1Amount?: number | undefined;
+  donor2Amount?: number | undefined;
   combinedAmount: number;
   pledgedAmount: number;
   accountNumber: string;
   accountName: string;
-  holdingDestination?: string;
-  comment?: string;
-  secShares?: string;
-  secType?: string;
-  gikType?: string;
-  gikDescription?: string;
+  holdingDestination?: string | undefined;
+  comment?: string | undefined;
+  secShares?: string | undefined;
+  secType?: string | undefined;
+  gikType?: string | undefined;
+  gikDescription?: string | undefined;
   onlineGift: boolean;
-  solicitationCode?: string;
-  solicitation?: string;
-  behalfHonorMemorial?: string;
-  matchingGift?: string;
+  solicitationCode: string;
+  solicitation?: string | undefined;
+  behalfHonorMemorial?: string | undefined;
+  matchingGift?: string | undefined;
   batchId: string;
   ukFirstGift: boolean;
   divFirstGift: boolean;
   idSorter: string;
   combinedDonorName: string;
   combinedDonorSalutation: string;
-  combinedDonorSort?: string;
-  donor1Id?: string;
-  donor1GiftKey?: string;
-  donor1Name?: string;
-  donor1Deceased?: boolean;
-  donor1Constituency?: string;
-  donor1TitleBar?: string;
-  donor1Pm?: string;
-  donor1Degrees?: string;
-  donor2Id?: string;
-  donor2GiftKey?: string;
-  donor2Name?: string;
-  donor2Deceased?: boolean;
-  donor2Constituency?: string;
-  donor2TitleBar?: string;
-  donor2Pm?: string;
-  donor2Degrees?: string;
-  donor1Relation?: string;
-  donor2Relation?: string;
-  transmittalSn?: string;
-  sapDocNum?: string;
-  sapDocDate?: string;
-  jvDocNum?: string;
-  jvDocDate?: string;
-  advFeeCcPhil?: string;
-  advFeeAmtPhil?: number;
-  advFeeCcUnit?: string;
-  advFeeAmtUnit?: number;
-  advFeeStatus?: string;
-  hcUnit?: string;
+  combinedDonorSort?: string | undefined;
+  donor1Id?: string | undefined;
+  donor1GiftKey?: number | undefined;
+  donor1Name?: string | undefined;
+  donor1Deceased?: boolean | undefined;
+  donor1Constituency?: string | undefined;
+  donor1TitleBar?: string | undefined;
+  donor1Pm?: string | undefined;
+  donor1Degrees?: string | undefined;
+  donor2Id?: string | undefined;
+  donor2GiftKey?: number | undefined;
+  donor2Name?: string | undefined;
+  donor2Deceased?: boolean | undefined;
+  donor2Constituency?: string | undefined;
+  donor2TitleBar?: string | undefined;
+  donor2Pm?: string | undefined;
+  donor2Degrees?: string | undefined;
+  donor1Relation?: string | undefined;
+  donor2Relation?: string | undefined;
+  transmittalSn?: string | undefined;
+  sapDocNum?: string | undefined;
+  sapDocDate?: LocalDate | undefined;
+  jvDocNum?: string | undefined;
+  jvDocDate?: LocalDate | undefined;
+  advFeeCcPhil?: string | undefined;
+  advFeeAmtPhil?: number | undefined;
+  advFeeCcUnit?: string | undefined;
+  advFeeAmtUnit?: number | undefined;
+  advFeeStatus?: string | undefined;
+  hcUnit?: string | undefined;
 }
 
 @ObjectType("ListDailyDepartmentNotificationsResponse", {
@@ -87,16 +88,16 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   department?: string | undefined;
 
   @Field(() => LocalDateResolver, { nullable: true })
-  effectiveDate?: string | undefined;
+  effectiveDate?: LocalDate | undefined;
 
   @Field(() => LocalDateResolver, { nullable: true })
-  processDate?: string | undefined;
+  processDate?: LocalDate | undefined;
 
   @Field(() => LocalDateResolver, { nullable: true })
-  pledgedDate?: string | undefined;
+  pledgedDate?: LocalDate | undefined;
 
   @Field(() => LocalDateResolver, { nullable: true })
-  transactionDate?: string | undefined;
+  transactionDate?: LocalDate | undefined;
 
   @Field(() => String)
   transactionType!: string;
@@ -140,8 +141,8 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => Boolean)
   onlineGift!: boolean;
 
-  @Field(() => String, { nullable: true })
-  solicitationCode?: string | undefined;
+  @Field(() => String)
+  solicitationCode!: string;
 
   @Field(() => String, { nullable: true })
   solicitation?: string | undefined;
@@ -173,21 +174,120 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => String, { nullable: true })
   combinedDonorSort?: string | undefined;
 
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  startDate?: string | null;
+  // Unused by the server (for now)
+  @Field(() => String, { nullable: true })
+  donor1Id?: string | undefined;
 
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  endDate?: string | null;
+  @Field(() => Number, { nullable: true })
+  donor1GiftKey?: number | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor1Name?: string | undefined;
+
+  @Field(() => Boolean, { nullable: true })
+  donor1Deceased?: boolean | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor1Constituency?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor1TitleBar?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor1Pm?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor1Degrees?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor2Id?: string | undefined;
+
+  @Field(() => Number, { nullable: true })
+  donor2GiftKey?: number | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor2Name?: string | undefined;
+
+  @Field(() => Boolean, { nullable: true })
+  donor2Deceased?: boolean | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor2Constituency?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor2TitleBar?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor2Pm?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor2Degrees?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor1Relation?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  donor2Relation?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  transmittalSn?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  sapDocNum?: string | undefined;
+
+  @Field(() => LocalDateResolver, { nullable: true })
+  sapDocDate?: LocalDate | undefined;
+
+  @Field(() => String, { nullable: true })
+  jvDocNum?: string | undefined;
+
+  @Field(() => LocalDateResolver, { nullable: true })
+  jvDocDate?: LocalDate | undefined;
+
+  @Field(() => String, { nullable: true })
+  advFeeCcPhil?: string | undefined;
+
+  @Field(() => Number, { nullable: true })
+  advFeeAmtPhil?: number | undefined;
+
+  @Field(() => String, { nullable: true })
+  advFeeCcUnit?: string | undefined;
+
+  @Field(() => Number, { nullable: true })
+  advFeeAmtUnit?: number | undefined;
+
+  @Field(() => String, { nullable: true })
+  advFeeStatus?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  hcUnit?: string | undefined;
 }
 
 @ArgsType()
 export class ListDailyDepartmentNotificationsArgs extends FilteredListQueryArgs<
-  never,
-  never,
-  never,
-  never,
+  | "Amount"
+  | "Donor"
+  | "Comment"
+  | "SolicitationCodeName"
+  | "SolicitationCodeNumber"
+  | "SolicitationCodePrefix"
+  | "BatchType",
+  "Donor" | "Comment" | "SolicitationCodeName",
+  "SolicitationCodePrefix" | "SolicitationCodeNumber" | "BatchType",
+  "Amount",
   never,
   never
 >("DailyDepartmentNotificationResolver", {
-  all: [],
+  all: [
+    "Amount",
+    "Donor",
+    "Comment",
+    "SolicitationCodeName",
+    "SolicitationCodeNumber",
+    "SolicitationCodePrefix",
+    "BatchType",
+  ],
+  string: ["Donor", "Comment", "SolicitationCodeName"],
+  numeric: ["Amount"],
+  oneOf: ["BatchType", "SolicitationCodePrefix", "SolicitationCodeNumber"],
 }) {}

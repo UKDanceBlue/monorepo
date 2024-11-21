@@ -4,13 +4,9 @@ import {
   DailyDepartmentNotificationBatch,
   Prisma,
   PrismaClient,
+  SolicitationCode,
 } from "@prisma/client";
-import {
-  BatchType,
-  DDNInit,
-  extractDDNBatchType,
-  SortDirection,
-} from "@ukdanceblue/common";
+import { DDNInit, localDateToJs, SortDirection } from "@ukdanceblue/common";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 
@@ -19,7 +15,6 @@ import {
   buildDailyDepartmentNotificationWhere,
 } from "./ddnRepositoryUtils.js";
 
-// TODO: Add the keys for the DailyDepartmentNotification model
 const dailyDepartmentNotificationBooleanKeys = [] as const;
 type DailyDepartmentNotificationBooleanKey =
   (typeof dailyDepartmentNotificationBooleanKeys)[number];
@@ -32,19 +27,30 @@ const dailyDepartmentNotificationIsNullKeys = [] as const;
 type DailyDepartmentNotificationIsNullKey =
   (typeof dailyDepartmentNotificationIsNullKeys)[number];
 
-const dailyDepartmentNotificationNumericKeys = [] as const;
+const dailyDepartmentNotificationNumericKeys = ["Amount"] as const;
 type DailyDepartmentNotificationNumericKey =
   (typeof dailyDepartmentNotificationNumericKeys)[number];
 
-const dailyDepartmentNotificationOneOfKeys = [] as const;
+const dailyDepartmentNotificationOneOfKeys = [
+  "BatchType",
+  "SolicitationCodePrefix",
+  "SolicitationCodeNumber",
+] as const;
 type DailyDepartmentNotificationOneOfKey =
   (typeof dailyDepartmentNotificationOneOfKeys)[number];
 
-const dailyDepartmentNotificationStringKeys = [] as const;
+const dailyDepartmentNotificationStringKeys = [
+  "Donor",
+  "Comment",
+  "SolicitationCodeName",
+] as const;
 type DailyDepartmentNotificationStringKey =
   (typeof dailyDepartmentNotificationStringKeys)[number];
 
-export type DailyDepartmentNotificationOrderKeys = never;
+export type DailyDepartmentNotificationOrderKeys =
+  | DailyDepartmentNotificationNumericKey
+  | DailyDepartmentNotificationStringKey
+  | DailyDepartmentNotificationOneOfKey;
 
 export type DailyDepartmentNotificationFilters = FilterItems<
   DailyDepartmentNotificationBooleanKey,
@@ -55,18 +61,61 @@ export type DailyDepartmentNotificationFilters = FilterItems<
   DailyDepartmentNotificationStringKey
 >;
 
-interface UniqueDailyDepartmentNotificationParam {
-  idSorter: string;
-}
+type UniqueDailyDepartmentNotificationParam =
+  | SimpleUniqueParam
+  | {
+      idSorter: string;
+    };
 
-import { NotFoundError } from "@ukdanceblue/common/error";
+type UniqueDailyDepartmentNotificationBatchParam =
+  | SimpleUniqueParam
+  | {
+      batchId: string;
+    };
+
+import { InvalidArgumentError, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 import {
   handleRepositoryError,
   RepositoryError,
+  SimpleUniqueParam,
 } from "#repositories/shared.js";
+
+function parseSolicitationCode(
+  solicitationCodeString: string
+): Result<{ prefix: string; code: number }, InvalidArgumentError> {
+  let prefix = "";
+  // Read the string prefix character by character until a digit is found
+  for (const char of solicitationCodeString) {
+    if (char >= "0" && char <= "9") {
+      break;
+    }
+    prefix += char;
+  }
+  if (prefix.length === 0) {
+    return Err(
+      new InvalidArgumentError(
+        "Solicitation code must start with a alphabetic prefix"
+      )
+    );
+  }
+  const code = Number.parseInt(solicitationCodeString.slice(prefix.length), 10);
+  if (Number.isNaN(code)) {
+    return Err(
+      new InvalidArgumentError("Solicitation code must end with a number")
+    );
+  }
+  if (code < 0 || code > 9999) {
+    return Err(
+      new InvalidArgumentError(
+        "Solicitation codes outside the range 0-9999 are not allowed"
+      )
+    );
+  }
+  return Ok({ prefix, code });
+}
 
 @Service([prismaToken])
 export class DailyDepartmentNotificationRepository {
@@ -76,6 +125,7 @@ export class DailyDepartmentNotificationRepository {
     Result<
       DailyDepartmentNotification & {
         batch: DailyDepartmentNotificationBatch;
+        solicitationCode: SolicitationCode;
       },
       RepositoryError
     >
@@ -83,10 +133,10 @@ export class DailyDepartmentNotificationRepository {
     try {
       const row = await this.prisma.dailyDepartmentNotification.findUnique({
         where: param,
-        include: { batch: true },
+        include: { batch: true, solicitationCode: true },
       });
       if (!row) {
-        return Err(new NotFoundError({ what: "Marathon" }));
+        return Err(new NotFoundError({ what: "DDN" }));
       }
       return Ok(row);
     } catch (error) {
@@ -114,6 +164,7 @@ export class DailyDepartmentNotificationRepository {
     Result<
       (DailyDepartmentNotification & {
         batch: DailyDepartmentNotificationBatch;
+        solicitationCode: SolicitationCode;
       })[],
       RepositoryError
     >
@@ -127,7 +178,7 @@ export class DailyDepartmentNotificationRepository {
         orderBy,
         skip: skip ?? undefined,
         take: take ?? undefined,
-        include: { batch: true },
+        include: { batch: true, solicitationCode: true },
       });
 
       return Ok(rows);
@@ -158,29 +209,57 @@ export class DailyDepartmentNotificationRepository {
     Result<
       DailyDepartmentNotification & {
         batch: DailyDepartmentNotificationBatch;
+        solicitationCode: SolicitationCode;
       },
-      RepositoryError
+      RepositoryError | InvalidArgumentError
     >
   > {
     try {
+      const solicitationCode = parseSolicitationCode(data.solicitationCode);
+      if (solicitationCode.isErr()) {
+        return Err(solicitationCode.error);
+      }
       return Ok(
         await this.prisma.dailyDepartmentNotification.create({
           data: {
             ...data,
+            jvDocDate: data.jvDocDate && localDateToJs(data.jvDocDate),
+            sapDocDate: data.sapDocDate && localDateToJs(data.sapDocDate),
+            pledgedDate: data.pledgedDate && localDateToJs(data.pledgedDate),
+            processDate: data.processDate && localDateToJs(data.processDate),
+            effectiveDate:
+              data.effectiveDate && localDateToJs(data.effectiveDate),
+            transactionDate:
+              data.transactionDate && localDateToJs(data.transactionDate),
             batchId: undefined,
             batch: {
               connectOrCreate: {
                 create: {
                   batchId: data.batchId,
-                  batchType: extractDDNBatchType(data.batchId).unwrapOr(
-                    BatchType.Unknown
-                  ),
                 },
                 where: { batchId: data.batchId },
               },
             },
+            solicitationCode: {
+              connectOrCreate: {
+                create: {
+                  prefix: solicitationCode.value.prefix,
+                  code: solicitationCode.value.code,
+                  name: data.solicitation,
+                },
+                where: {
+                  prefix_code: {
+                    code: solicitationCode.value.code,
+                    prefix: solicitationCode.value.prefix,
+                  },
+                },
+              },
+            },
+            fundraisingEntry: {
+              create: {},
+            },
           },
-          include: { batch: true },
+          include: { batch: true, solicitationCode: true },
         })
       );
     } catch (error) {
@@ -196,22 +275,50 @@ export class DailyDepartmentNotificationRepository {
       Option<
         DailyDepartmentNotification & {
           batch: DailyDepartmentNotificationBatch;
+          solicitationCode: SolicitationCode;
         }
       >,
-      RepositoryError
+      RepositoryError | InvalidArgumentError
     >
   > {
     try {
+      const solicitationCode = parseSolicitationCode(data.solicitationCode);
+      if (solicitationCode.isErr()) {
+        return Err(solicitationCode.error);
+      }
       return Ok(
         Some(
           await this.prisma.dailyDepartmentNotification.update({
             where: param,
             data: {
               ...data,
+              jvDocDate: data.jvDocDate && localDateToJs(data.jvDocDate),
+              sapDocDate: data.sapDocDate && localDateToJs(data.sapDocDate),
+              pledgedDate: data.pledgedDate && localDateToJs(data.pledgedDate),
+              processDate: data.processDate && localDateToJs(data.processDate),
+              effectiveDate:
+                data.effectiveDate && localDateToJs(data.effectiveDate),
+              transactionDate:
+                data.transactionDate && localDateToJs(data.transactionDate),
               batchId: undefined,
               batch: undefined,
+              solicitationCode: {
+                connectOrCreate: {
+                  create: {
+                    prefix: solicitationCode.value.prefix,
+                    code: solicitationCode.value.code,
+                    name: data.solicitation,
+                  },
+                  where: {
+                    prefix_code: {
+                      code: solicitationCode.value.code,
+                      prefix: solicitationCode.value.prefix,
+                    },
+                  },
+                },
+              },
             },
-            include: { batch: true },
+            include: { batch: true, solicitationCode: true },
           })
         )
       );
@@ -232,6 +339,7 @@ export class DailyDepartmentNotificationRepository {
       Option<
         DailyDepartmentNotification & {
           batch: DailyDepartmentNotificationBatch;
+          solicitationCode: SolicitationCode;
         }
       >,
       RepositoryError
@@ -242,7 +350,7 @@ export class DailyDepartmentNotificationRepository {
         Some(
           await this.prisma.dailyDepartmentNotification.delete({
             where: param,
-            include: { batch: true },
+            include: { batch: true, solicitationCode: true },
           })
         )
       );
@@ -262,46 +370,103 @@ export class DailyDepartmentNotificationRepository {
     Result<
       (DailyDepartmentNotification & {
         batch: DailyDepartmentNotificationBatch;
+        solicitationCode: SolicitationCode;
       })[],
-      RepositoryError
+      RepositoryError | InvalidArgumentError
     >
   > {
     try {
+      const solicitationCodes = new Map<
+        string,
+        { prefix: string; code: number }
+      >();
+      for (const row of data) {
+        const solicitationCode = parseSolicitationCode(row.solicitationCode);
+        if (solicitationCode.isErr()) {
+          return Err(solicitationCode.error);
+        }
+        solicitationCodes.set(row.solicitationCode, solicitationCode.value);
+      }
       const results = await this.prisma.$transaction(
         data.map((row) =>
           this.prisma.dailyDepartmentNotification.upsert({
             where: { idSorter: row.idSorter },
             update: {
               ...row,
+              jvDocDate: row.jvDocDate && localDateToJs(row.jvDocDate),
+              sapDocDate: row.sapDocDate && localDateToJs(row.sapDocDate),
+              pledgedDate: row.pledgedDate && localDateToJs(row.pledgedDate),
+              processDate: row.processDate && localDateToJs(row.processDate),
+              effectiveDate:
+                row.effectiveDate && localDateToJs(row.effectiveDate),
+              transactionDate:
+                row.transactionDate && localDateToJs(row.transactionDate),
               batchId: undefined,
               batch: {
                 connectOrCreate: {
                   create: {
                     batchId: row.batchId,
-                    batchType: extractDDNBatchType(row.batchId).unwrapOr(
-                      BatchType.Unknown
-                    ),
                   },
                   where: { batchId: row.batchId },
+                },
+              },
+              solicitationCode: {
+                connectOrCreate: {
+                  create: {
+                    prefix: solicitationCodes.get(row.solicitationCode)!.prefix,
+                    code: solicitationCodes.get(row.solicitationCode)!.code,
+                    name: row.solicitation,
+                  },
+                  where: {
+                    prefix_code: {
+                      code: solicitationCodes.get(row.solicitationCode)!.code,
+                      prefix: solicitationCodes.get(row.solicitationCode)!
+                        .prefix,
+                    },
+                  },
                 },
               },
             },
             create: {
               ...row,
+              jvDocDate: row.jvDocDate && localDateToJs(row.jvDocDate),
+              sapDocDate: row.sapDocDate && localDateToJs(row.sapDocDate),
+              pledgedDate: row.pledgedDate && localDateToJs(row.pledgedDate),
+              processDate: row.processDate && localDateToJs(row.processDate),
+              effectiveDate:
+                row.effectiveDate && localDateToJs(row.effectiveDate),
+              transactionDate:
+                row.transactionDate && localDateToJs(row.transactionDate),
               batchId: undefined,
               batch: {
                 connectOrCreate: {
                   create: {
                     batchId: row.batchId,
-                    batchType: extractDDNBatchType(row.batchId).unwrapOr(
-                      BatchType.Unknown
-                    ),
                   },
                   where: { batchId: row.batchId },
                 },
               },
+              solicitationCode: {
+                connectOrCreate: {
+                  create: {
+                    prefix: solicitationCodes.get(row.solicitationCode)!.prefix,
+                    code: solicitationCodes.get(row.solicitationCode)!.code,
+                    name: row.solicitation,
+                  },
+                  where: {
+                    prefix_code: {
+                      code: solicitationCodes.get(row.solicitationCode)!.code,
+                      prefix: solicitationCodes.get(row.solicitationCode)!
+                        .prefix,
+                    },
+                  },
+                },
+              },
+              fundraisingEntry: {
+                create: {},
+              },
             },
-            include: { batch: true },
+            include: { batch: true, solicitationCode: true },
           })
         )
       );
@@ -321,7 +486,7 @@ export class DailyDepartmentNotificationRepository {
         select: { batch: true },
       });
       if (!row) {
-        return Err(new NotFoundError({ what: "Marathon" }));
+        return Err(new NotFoundError({ what: "DDN" }));
       }
       return Ok(row.batch);
     } catch (error) {
@@ -329,17 +494,17 @@ export class DailyDepartmentNotificationRepository {
     }
   }
 
-  async findBatchByBatchId(
-    batchId: string
+  async findBatchByUnique(
+    param: UniqueDailyDepartmentNotificationBatchParam
   ): Promise<Result<DailyDepartmentNotificationBatch, RepositoryError>> {
     try {
       const row = await this.prisma.dailyDepartmentNotificationBatch.findUnique(
         {
-          where: { batchId },
+          where: param,
         }
       );
       if (!row) {
-        return Err(new NotFoundError({ what: "Marathon" }));
+        return Err(new NotFoundError({ what: "Batch" }));
       }
       return Ok(row);
     } catch (error) {
@@ -348,7 +513,7 @@ export class DailyDepartmentNotificationRepository {
   }
 
   async deleteDDNBatch(
-    batchId: string
+    param: UniqueDailyDepartmentNotificationBatchParam
   ): Promise<
     Result<Option<DailyDepartmentNotificationBatch>, RepositoryError>
   > {
@@ -356,7 +521,7 @@ export class DailyDepartmentNotificationRepository {
       return Ok(
         Some(
           await this.prisma.dailyDepartmentNotificationBatch.delete({
-            where: { batchId },
+            where: param,
           })
         )
       );
@@ -372,18 +537,21 @@ export class DailyDepartmentNotificationRepository {
     }
   }
 
-  async findDDNsByBatchId(batchId: string): Promise<
+  async findDDNsByBatch(
+    batchParam: UniqueDailyDepartmentNotificationBatchParam
+  ): Promise<
     Result<
       (DailyDepartmentNotification & {
         batch: DailyDepartmentNotificationBatch;
+        solicitationCode: SolicitationCode;
       })[],
       RepositoryError
     >
   > {
     try {
       const rows = await this.prisma.dailyDepartmentNotification.findMany({
-        where: { batchId },
-        include: { batch: true },
+        where: { batch: batchParam },
+        include: { batch: true, solicitationCode: true },
       });
 
       return Ok(rows);

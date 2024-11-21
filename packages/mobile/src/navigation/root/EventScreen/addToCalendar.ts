@@ -7,11 +7,11 @@ import {
   requestCalendarPermissionsAsync,
 } from "expo-calendar";
 
-import { universalCatch } from "#common/logging";
-import { showMessage, showPrompt } from "#common/util/alertUtils";
-import { discoverDefaultCalendar } from "#common/util/calendar";
-import type { FragmentType } from "#graphql/index";
-import { getFragmentData } from "#graphql/index";
+import { universalCatch } from "@/common/logging";
+import { showMessage, showPrompt } from "@/common/util/alertUtils";
+import { discoverDefaultCalendar } from "@/common/util/calendar";
+import type { FragmentType } from "@/graphql/index";
+import { getFragmentData } from "@/graphql/index";
 
 import { EventScreenFragment } from "./EventScreenFragment";
 

@@ -1,4 +1,5 @@
 import { captureException, captureMessage } from "@sentry/react-native";
+import { debugStringify } from "@ukdanceblue/common";
 
 import type { ExtraLogArgs, LogLevel } from "./transport";
 import { LoggerTransport, logLevelToString } from "./transport";
@@ -20,11 +21,7 @@ export class SentryTransport extends LoggerTransport {
     const levelString = logLevelToString(level);
     let contextString: string | undefined = undefined;
     if (extra.context) {
-      try {
-        contextString = JSON.stringify(extra.context, null, 2);
-      } catch {
-        contextString = String(extra.context);
-      }
+      contextString = debugStringify(extra.context);
     }
     const tagsObject: Record<string, boolean> = {};
     for (const tag of extra.tags ?? []) {

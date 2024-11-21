@@ -1,4 +1,4 @@
-import { ArgsType, Field, InputType, Int,ObjectType } from "type-graphql";
+import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { DeviceNode } from "../resources/Device.js";
@@ -45,7 +45,7 @@ export class RegisterDeviceInput {
     description: "The Expo push token of the device",
     nullable: true,
   })
-  expoPushToken?: string | null;
+  expoPushToken?: string | undefined | null;
 
   @Field(() => String, {
     description: "base64 encoded SHA-256 hash of a secret known to the device",
@@ -56,7 +56,7 @@ export class RegisterDeviceInput {
     description: "The ID of the last user to log in on this device",
     nullable: true,
   })
-  lastUserId?: GlobalId | null;
+  lastUserId?: GlobalId | undefined | null;
 }
 
 @ArgsType()

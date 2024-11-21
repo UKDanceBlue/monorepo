@@ -7,10 +7,10 @@ import { useMutation } from "urql";
 import type {
   SetEventInput,
   SetEventOccurrenceInput,
-} from "#graphql/graphql.js";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+} from "@/graphql/graphql.js";
+import type { FragmentType } from "@/graphql/index.js";
+import { getFragmentData } from "@/graphql/index.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
 
 import { eventEditorDocument, EventEditorFragment } from "./EventEditorGQL.js";
 

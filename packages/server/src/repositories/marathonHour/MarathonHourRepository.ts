@@ -51,7 +51,7 @@ export type MarathonHourFilters = FilterItems<
 
 type UniqueParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export class MarathonHourRepository {
@@ -124,7 +124,7 @@ export class MarathonHourRepository {
     durationInfo,
   }: {
     title: string;
-    details?: string | null | undefined;
+    details?: string | undefined | null;
     marathon: UniqueParam;
     shownStartingAt: string;
     durationInfo: string;

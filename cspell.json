@@ -1,0 +1,38 @@
+{
+  "version": "0.2",
+  "ignorePaths": [],
+  "dictionaryDefinitions": [],
+  "enabledFileTypes": {
+    "prisma": true
+  },
+  "dictionaries": [],
+  "words": [
+    "autoincrement",
+    "catchable",
+    "citext",
+    "codegen",
+    "collapsable",
+    "cooldown",
+    "danceblue",
+    "datasource",
+    "ddns",
+    "errorable",
+    "freshgum",
+    "jonasmerlin",
+    "linkblue",
+    "luxon",
+    "phonathon",
+    "spinnable",
+    "timestamptz",
+    "typedi",
+    "uk",
+    "ukdanceblue",
+    "uky",
+    "urql",
+    "whatwg",
+    "wysimark"
+  ],
+  "allowCompoundWords": true,
+  "ignoreWords": [],
+  "import": []
+}

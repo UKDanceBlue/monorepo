@@ -19,7 +19,7 @@ import {
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
 import { Ok } from "ts-results-es";
-import { Arg, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Query, Resolver } from "type-graphql";
 
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
 import { DeviceResolver } from "#resolvers/DeviceResolver.js";
@@ -36,6 +36,7 @@ import { PointEntryResolver } from "#resolvers/PointEntryResolver.js";
 import { PointOpportunityResolver } from "#resolvers/PointOpportunityResolver.js";
 import { TeamResolver } from "#resolvers/TeamResolver.js";
 
+import type { GraphQLContext } from "./context.js";
 import { FeedResolver } from "./FeedResolver.js";
 
 @Resolver(() => Node)
@@ -75,7 +76,8 @@ export class NodeResolver {
 
   @Query(() => Node)
   async node(
-    @Arg("id", () => GlobalIdScalar) id: GlobalId
+    @Arg("id", () => GlobalIdScalar) id: GlobalId,
+    @Ctx() ctx: GraphQLContext
   ): Promise<ConcreteResult<Node>> {
     switch (id.typename) {
       case ConfigurationNode.constructor.name: {
@@ -100,7 +102,7 @@ export class NodeResolver {
         return this.fundraisingEntryResolver.fundraisingEntry(id);
       }
       case ImageNode.constructor.name: {
-        const { data } = await this.imageResolver.getByUuid(id);
+        const { data } = await this.imageResolver.getByUuid(id, ctx);
         return Ok(data);
       }
       case MarathonHourNode.constructor.name: {

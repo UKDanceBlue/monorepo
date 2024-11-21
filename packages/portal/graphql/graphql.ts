@@ -33,7 +33,7 @@ export type Incremental<T> =
       [P in keyof T]?: P extends " $fragmentName" | "__typename" ? T[P] : never;
     };
 /** All built-in and custom scalars, mapped to their actual values */
-export type Scalars = {
+export interface Scalars {
   ID: { input: string; output: string };
   String: { input: string; output: string };
   Boolean: { input: boolean; output: boolean };
@@ -55,27 +55,27 @@ export type Scalars = {
   URL: { input: URL | string; output: URL | string };
   /** Represents NULL values */
   Void: { input: void; output: void };
-};
+}
 
 export { AccessLevel };
 
-export type AssignEntryToPersonInput = {
+export interface AssignEntryToPersonInput {
   readonly amount: Scalars["Float"]["input"];
-};
+}
 
 export { AuthSource };
 
 export { BatchType };
 
-export type BulkPersonInput = {
+export interface BulkPersonInput {
   readonly committee?: InputMaybe<CommitteeIdentifier>;
   readonly email: Scalars["EmailAddress"]["input"];
   readonly linkblue: Scalars["String"]["input"];
   readonly name: Scalars["String"]["input"];
   readonly role?: InputMaybe<CommitteeRole>;
-};
+}
 
-export type BulkTeamInput = {
+export interface BulkTeamInput {
   readonly captainLinkblues?: InputMaybe<
     ReadonlyArray<Scalars["String"]["input"]>
   >;
@@ -85,57 +85,57 @@ export type BulkTeamInput = {
   >;
   readonly name: Scalars["String"]["input"];
   readonly type: TeamType;
-};
+}
 
 export { CommitteeIdentifier };
 
 export { CommitteeRole };
 
-export type CreateConfigurationInput = {
+export interface CreateConfigurationInput {
   readonly key: Scalars["String"]["input"];
   readonly validAfter?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly validUntil?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
-export type CreateEventInput = {
+export interface CreateEventInput {
   readonly description?: InputMaybe<Scalars["String"]["input"]>;
   readonly location?: InputMaybe<Scalars["String"]["input"]>;
   readonly occurrences: ReadonlyArray<CreateEventOccurrenceInput>;
   readonly summary?: InputMaybe<Scalars["String"]["input"]>;
   readonly title: Scalars["String"]["input"];
-};
+}
 
-export type CreateEventOccurrenceInput = {
+export interface CreateEventOccurrenceInput {
   readonly fullDay: Scalars["Boolean"]["input"];
   readonly interval: IntervalIsoInput;
-};
+}
 
-export type CreateFeedInput = {
+export interface CreateFeedInput {
   readonly imageUuid?: InputMaybe<Scalars["String"]["input"]>;
   readonly textContent?: InputMaybe<Scalars["String"]["input"]>;
   readonly title: Scalars["String"]["input"];
-};
+}
 
-export type CreateImageInput = {
+export interface CreateImageInput {
   readonly alt?: InputMaybe<Scalars["String"]["input"]>;
   readonly url?: InputMaybe<Scalars["URL"]["input"]>;
-};
+}
 
-export type CreateMarathonHourInput = {
+export interface CreateMarathonHourInput {
   readonly details?: InputMaybe<Scalars["String"]["input"]>;
   readonly durationInfo: Scalars["String"]["input"];
   readonly shownStartingAt: Scalars["DateTimeISO"]["input"];
   readonly title: Scalars["String"]["input"];
-};
+}
 
-export type CreateMarathonInput = {
+export interface CreateMarathonInput {
   readonly endDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly startDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly year: Scalars["String"]["input"];
-};
+}
 
-export type CreatePersonInput = {
+export interface CreatePersonInput {
   readonly captainOf?: ReadonlyArray<MemberOf>;
   /** @deprecated DBRole can no longer be set directly */
   readonly dbRole?: InputMaybe<DbRole>;
@@ -143,33 +143,38 @@ export type CreatePersonInput = {
   readonly linkblue?: InputMaybe<Scalars["String"]["input"]>;
   readonly memberOf?: ReadonlyArray<MemberOf>;
   readonly name?: InputMaybe<Scalars["String"]["input"]>;
-};
+}
 
-export type CreatePointEntryInput = {
+export interface CreatePointEntryInput {
   readonly comment?: InputMaybe<Scalars["String"]["input"]>;
   readonly opportunityUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
   readonly personFromUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
   readonly points: Scalars["Int"]["input"];
   readonly teamUuid: Scalars["GlobalId"]["input"];
-};
+}
 
-export type CreatePointOpportunityInput = {
+export interface CreatePointOpportunityInput {
   readonly eventUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
   readonly marathonUuid: Scalars["GlobalId"]["input"];
   readonly name: Scalars["String"]["input"];
   readonly opportunityDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly type: TeamType;
-};
+}
 
-export type CreateTeamInput = {
+export interface CreateTeamInput {
   readonly legacyStatus: TeamLegacyStatus;
   readonly name: Scalars["String"]["input"];
   readonly type: TeamType;
-};
+}
 
-export type DailyDepartmentNotificationInput = {
+export interface DailyDepartmentNotificationInput {
   readonly accountName: Scalars["String"]["input"];
   readonly accountNumber: Scalars["String"]["input"];
+  readonly advFeeAmtPhil?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly advFeeAmtUnit?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly advFeeCcPhil?: InputMaybe<Scalars["String"]["input"]>;
+  readonly advFeeCcUnit?: InputMaybe<Scalars["String"]["input"]>;
+  readonly advFeeStatus?: InputMaybe<Scalars["String"]["input"]>;
   readonly batchId: Scalars["String"]["input"];
   readonly behalfHonorMemorial?: InputMaybe<Scalars["String"]["input"]>;
   readonly combinedAmount: Scalars["Float"]["input"];
@@ -181,28 +186,119 @@ export type DailyDepartmentNotificationInput = {
   readonly divFirstGift: Scalars["Boolean"]["input"];
   readonly division?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor1Amount?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly donor1Constituency?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor1Deceased?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly donor1Degrees?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor1GiftKey?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly donor1Id?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor1Name?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor1Pm?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor1Relation?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor1TitleBar?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor2Amount?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly donor2Constituency?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor2Deceased?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly donor2Degrees?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor2GiftKey?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly donor2Id?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor2Name?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor2Pm?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor2Relation?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor2TitleBar?: InputMaybe<Scalars["String"]["input"]>;
   readonly effectiveDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
-  readonly endDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly gikDescription?: InputMaybe<Scalars["String"]["input"]>;
   readonly gikType?: InputMaybe<Scalars["String"]["input"]>;
+  readonly hcUnit?: InputMaybe<Scalars["String"]["input"]>;
   readonly holdingDestination?: InputMaybe<Scalars["String"]["input"]>;
   readonly idSorter: Scalars["String"]["input"];
+  readonly jvDocDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  readonly jvDocNum?: InputMaybe<Scalars["String"]["input"]>;
   readonly matchingGift?: InputMaybe<Scalars["String"]["input"]>;
   readonly onlineGift: Scalars["Boolean"]["input"];
   readonly pledgedAmount: Scalars["Float"]["input"];
   readonly pledgedDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
   readonly processDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  readonly sapDocDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  readonly sapDocNum?: InputMaybe<Scalars["String"]["input"]>;
   readonly secShares?: InputMaybe<Scalars["String"]["input"]>;
   readonly secType?: InputMaybe<Scalars["String"]["input"]>;
   readonly solicitation?: InputMaybe<Scalars["String"]["input"]>;
-  readonly solicitationCode?: InputMaybe<Scalars["String"]["input"]>;
-  readonly startDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
+  readonly solicitationCode: Scalars["String"]["input"];
   readonly transactionDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
   readonly transactionType: Scalars["String"]["input"];
+  readonly transmittalSn?: InputMaybe<Scalars["String"]["input"]>;
   readonly ukFirstGift: Scalars["Boolean"]["input"];
-};
+}
 
+export const DailyDepartmentNotificationResolverAllKeys = {
+  Amount: "Amount",
+  BatchType: "BatchType",
+  Comment: "Comment",
+  Donor: "Donor",
+  SolicitationCodeName: "SolicitationCodeName",
+  SolicitationCodeNumber: "SolicitationCodeNumber",
+  SolicitationCodePrefix: "SolicitationCodePrefix",
+} as const;
+
+export type DailyDepartmentNotificationResolverAllKeys =
+  (typeof DailyDepartmentNotificationResolverAllKeys)[keyof typeof DailyDepartmentNotificationResolverAllKeys];
+export interface DailyDepartmentNotificationResolverKeyedIsNullFilterItem {
+  /** The field to filter on */
+  readonly field: DailyDepartmentNotificationResolverAllKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+}
+
+export interface DailyDepartmentNotificationResolverKeyedNumericFilterItem {
+  /** The comparator to use for the filter */
+  readonly comparison: NumericComparator;
+  /** The field to filter on */
+  readonly field: DailyDepartmentNotificationResolverNumericFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["Float"]["input"];
+}
+
+export interface DailyDepartmentNotificationResolverKeyedOneOfFilterItem {
+  /** The field to filter on */
+  readonly field: DailyDepartmentNotificationResolverOneOfFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: ReadonlyArray<Scalars["String"]["input"]>;
+}
+
+export interface DailyDepartmentNotificationResolverKeyedStringFilterItem {
+  /** The comparator to use for the filter */
+  readonly comparison: StringComparator;
+  /** The field to filter on */
+  readonly field: DailyDepartmentNotificationResolverStringFilterKeys;
+  /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
+  readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly value: Scalars["String"]["input"];
+}
+
+export const DailyDepartmentNotificationResolverNumericFilterKeys = {
+  Amount: "Amount",
+} as const;
+
+export type DailyDepartmentNotificationResolverNumericFilterKeys =
+  (typeof DailyDepartmentNotificationResolverNumericFilterKeys)[keyof typeof DailyDepartmentNotificationResolverNumericFilterKeys];
+export const DailyDepartmentNotificationResolverOneOfFilterKeys = {
+  BatchType: "BatchType",
+  SolicitationCodeNumber: "SolicitationCodeNumber",
+  SolicitationCodePrefix: "SolicitationCodePrefix",
+} as const;
+
+export type DailyDepartmentNotificationResolverOneOfFilterKeys =
+  (typeof DailyDepartmentNotificationResolverOneOfFilterKeys)[keyof typeof DailyDepartmentNotificationResolverOneOfFilterKeys];
+export const DailyDepartmentNotificationResolverStringFilterKeys = {
+  Comment: "Comment",
+  Donor: "Donor",
+  SolicitationCodeName: "SolicitationCodeName",
+} as const;
+
+export type DailyDepartmentNotificationResolverStringFilterKeys =
+  (typeof DailyDepartmentNotificationResolverStringFilterKeys)[keyof typeof DailyDepartmentNotificationResolverStringFilterKeys];
 export { DbRole };
 
 export const DeviceResolverAllKeys = {
@@ -222,7 +318,7 @@ export const DeviceResolverDateFilterKeys = {
 
 export type DeviceResolverDateFilterKeys =
   (typeof DeviceResolverDateFilterKeys)[keyof typeof DeviceResolverDateFilterKeys];
-export type DeviceResolverKeyedDateFilterItem = {
+export interface DeviceResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -230,24 +326,24 @@ export type DeviceResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type DeviceResolverKeyedIsNullFilterItem = {
+export interface DeviceResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: DeviceResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type DeviceResolverKeyedOneOfFilterItem = {
+export interface DeviceResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: Scalars["Void"]["input"];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type DeviceResolverKeyedStringFilterItem = {
+export interface DeviceResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -255,7 +351,7 @@ export type DeviceResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const DeviceResolverStringFilterKeys = {
   ExpoPushToken: "expoPushToken",
@@ -287,7 +383,7 @@ export const EventResolverDateFilterKeys = {
 
 export type EventResolverDateFilterKeys =
   (typeof EventResolverDateFilterKeys)[keyof typeof EventResolverDateFilterKeys];
-export type EventResolverKeyedDateFilterItem = {
+export interface EventResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -295,24 +391,24 @@ export type EventResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type EventResolverKeyedIsNullFilterItem = {
+export interface EventResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: EventResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type EventResolverKeyedOneOfFilterItem = {
+export interface EventResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: Scalars["Void"]["input"];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type EventResolverKeyedStringFilterItem = {
+export interface EventResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -320,7 +416,7 @@ export type EventResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const EventResolverStringFilterKeys = {
   Description: "description",
@@ -338,6 +434,7 @@ export const FundraisingEntryResolverAllKeys = {
   DonatedBy: "donatedBy",
   DonatedOn: "donatedOn",
   DonatedTo: "donatedTo",
+  SolicitationCode: "solicitationCode",
   TeamId: "teamId",
   UpdatedAt: "updatedAt",
 } as const;
@@ -352,7 +449,7 @@ export const FundraisingEntryResolverDateFilterKeys = {
 
 export type FundraisingEntryResolverDateFilterKeys =
   (typeof FundraisingEntryResolverDateFilterKeys)[keyof typeof FundraisingEntryResolverDateFilterKeys];
-export type FundraisingEntryResolverKeyedDateFilterItem = {
+export interface FundraisingEntryResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -360,16 +457,16 @@ export type FundraisingEntryResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type FundraisingEntryResolverKeyedIsNullFilterItem = {
+export interface FundraisingEntryResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: FundraisingEntryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type FundraisingEntryResolverKeyedNumericFilterItem = {
+export interface FundraisingEntryResolverKeyedNumericFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -377,17 +474,17 @@ export type FundraisingEntryResolverKeyedNumericFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["Float"]["input"];
-};
+}
 
-export type FundraisingEntryResolverKeyedOneOfFilterItem = {
+export interface FundraisingEntryResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: FundraisingEntryResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type FundraisingEntryResolverKeyedStringFilterItem = {
+export interface FundraisingEntryResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -395,7 +492,7 @@ export type FundraisingEntryResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const FundraisingEntryResolverNumericFilterKeys = {
   Amount: "amount",
@@ -413,6 +510,7 @@ export type FundraisingEntryResolverOneOfFilterKeys =
 export const FundraisingEntryResolverStringFilterKeys = {
   DonatedBy: "donatedBy",
   DonatedTo: "donatedTo",
+  SolicitationCode: "solicitationCode",
 } as const;
 
 export type FundraisingEntryResolverStringFilterKeys =
@@ -434,7 +532,7 @@ export const ImageResolverDateFilterKeys = {
 
 export type ImageResolverDateFilterKeys =
   (typeof ImageResolverDateFilterKeys)[keyof typeof ImageResolverDateFilterKeys];
-export type ImageResolverKeyedDateFilterItem = {
+export interface ImageResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -442,16 +540,16 @@ export type ImageResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type ImageResolverKeyedIsNullFilterItem = {
+export interface ImageResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: ImageResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type ImageResolverKeyedNumericFilterItem = {
+export interface ImageResolverKeyedNumericFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -459,17 +557,17 @@ export type ImageResolverKeyedNumericFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["Float"]["input"];
-};
+}
 
-export type ImageResolverKeyedOneOfFilterItem = {
+export interface ImageResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: Scalars["Void"]["input"];
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type ImageResolverKeyedStringFilterItem = {
+export interface ImageResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -477,7 +575,7 @@ export type ImageResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const ImageResolverNumericFilterKeys = {
   Height: "height",
@@ -492,10 +590,10 @@ export const ImageResolverStringFilterKeys = {
 
 export type ImageResolverStringFilterKeys =
   (typeof ImageResolverStringFilterKeys)[keyof typeof ImageResolverStringFilterKeys];
-export type IntervalIsoInput = {
+export interface IntervalIsoInput {
   readonly end: Scalars["DateTimeISO"]["input"];
   readonly start: Scalars["DateTimeISO"]["input"];
-};
+}
 
 export const MarathonHourResolverAllKeys = {
   CreatedAt: "createdAt",
@@ -517,7 +615,7 @@ export const MarathonHourResolverDateFilterKeys = {
 
 export type MarathonHourResolverDateFilterKeys =
   (typeof MarathonHourResolverDateFilterKeys)[keyof typeof MarathonHourResolverDateFilterKeys];
-export type MarathonHourResolverKeyedDateFilterItem = {
+export interface MarathonHourResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -525,24 +623,24 @@ export type MarathonHourResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type MarathonHourResolverKeyedIsNullFilterItem = {
+export interface MarathonHourResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: MarathonHourResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type MarathonHourResolverKeyedOneOfFilterItem = {
+export interface MarathonHourResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: MarathonHourResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type MarathonHourResolverKeyedStringFilterItem = {
+export interface MarathonHourResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -550,7 +648,7 @@ export type MarathonHourResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const MarathonHourResolverOneOfFilterKeys = {
   MarathonYear: "marathonYear",
@@ -585,7 +683,7 @@ export const MarathonResolverDateFilterKeys = {
 
 export type MarathonResolverDateFilterKeys =
   (typeof MarathonResolverDateFilterKeys)[keyof typeof MarathonResolverDateFilterKeys];
-export type MarathonResolverKeyedDateFilterItem = {
+export interface MarathonResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -593,30 +691,30 @@ export type MarathonResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type MarathonResolverKeyedIsNullFilterItem = {
+export interface MarathonResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: MarathonResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type MemberOf = {
+export interface MemberOf {
   readonly committeeRole?: InputMaybe<CommitteeRole>;
   readonly id: Scalars["GlobalId"]["input"];
-};
+}
 
 export { MembershipPositionType };
 
-export type NotificationAudienceInput = {
+export interface NotificationAudienceInput {
   readonly all?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly memberOfTeamType?: InputMaybe<TeamType>;
   readonly memberOfTeams?: InputMaybe<
     ReadonlyArray<Scalars["GlobalId"]["input"]>
   >;
   readonly users?: InputMaybe<ReadonlyArray<Scalars["GlobalId"]["input"]>>;
-};
+}
 
 export const NotificationDeliveryResolverAllKeys = {
   CreatedAt: "createdAt",
@@ -637,7 +735,7 @@ export const NotificationDeliveryResolverDateFilterKeys = {
 
 export type NotificationDeliveryResolverDateFilterKeys =
   (typeof NotificationDeliveryResolverDateFilterKeys)[keyof typeof NotificationDeliveryResolverDateFilterKeys];
-export type NotificationDeliveryResolverKeyedDateFilterItem = {
+export interface NotificationDeliveryResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -645,14 +743,14 @@ export type NotificationDeliveryResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type NotificationDeliveryResolverKeyedIsNullFilterItem = {
+export interface NotificationDeliveryResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: NotificationDeliveryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
 export const NotificationResolverAllKeys = {
   Body: "body",
@@ -675,7 +773,7 @@ export const NotificationResolverDateFilterKeys = {
 
 export type NotificationResolverDateFilterKeys =
   (typeof NotificationResolverDateFilterKeys)[keyof typeof NotificationResolverDateFilterKeys];
-export type NotificationResolverKeyedDateFilterItem = {
+export interface NotificationResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -683,24 +781,24 @@ export type NotificationResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type NotificationResolverKeyedIsNullFilterItem = {
+export interface NotificationResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: NotificationResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type NotificationResolverKeyedOneOfFilterItem = {
+export interface NotificationResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: NotificationResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type NotificationResolverKeyedStringFilterItem = {
+export interface NotificationResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -708,7 +806,7 @@ export type NotificationResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const NotificationResolverOneOfFilterKeys = {
   DeliveryIssue: "deliveryIssue",
@@ -736,22 +834,22 @@ export const PersonResolverAllKeys = {
 
 export type PersonResolverAllKeys =
   (typeof PersonResolverAllKeys)[keyof typeof PersonResolverAllKeys];
-export type PersonResolverKeyedIsNullFilterItem = {
+export interface PersonResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: PersonResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type PersonResolverKeyedOneOfFilterItem = {
+export interface PersonResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: PersonResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type PersonResolverKeyedStringFilterItem = {
+export interface PersonResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -759,7 +857,7 @@ export type PersonResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const PersonResolverOneOfFilterKeys = {
   CommitteeName: "committeeName",
@@ -791,7 +889,7 @@ export const PointEntryResolverDateFilterKeys = {
 
 export type PointEntryResolverDateFilterKeys =
   (typeof PointEntryResolverDateFilterKeys)[keyof typeof PointEntryResolverDateFilterKeys];
-export type PointEntryResolverKeyedDateFilterItem = {
+export interface PointEntryResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -799,14 +897,14 @@ export type PointEntryResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type PointEntryResolverKeyedIsNullFilterItem = {
+export interface PointEntryResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: PointEntryResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
 export const PointOpportunityResolverAllKeys = {
   CreatedAt: "createdAt",
@@ -827,7 +925,7 @@ export const PointOpportunityResolverDateFilterKeys = {
 
 export type PointOpportunityResolverDateFilterKeys =
   (typeof PointOpportunityResolverDateFilterKeys)[keyof typeof PointOpportunityResolverDateFilterKeys];
-export type PointOpportunityResolverKeyedDateFilterItem = {
+export interface PointOpportunityResolverKeyedDateFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: NumericComparator;
   /** The field to filter on */
@@ -835,24 +933,24 @@ export type PointOpportunityResolverKeyedDateFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["DateTimeISO"]["input"];
-};
+}
 
-export type PointOpportunityResolverKeyedIsNullFilterItem = {
+export interface PointOpportunityResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: PointOpportunityResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type PointOpportunityResolverKeyedOneOfFilterItem = {
+export interface PointOpportunityResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: PointOpportunityResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type PointOpportunityResolverKeyedStringFilterItem = {
+export interface PointOpportunityResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -860,7 +958,7 @@ export type PointOpportunityResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const PointOpportunityResolverOneOfFilterKeys = {
   MarathonUuid: "marathonUuid",
@@ -875,7 +973,7 @@ export const PointOpportunityResolverStringFilterKeys = {
 
 export type PointOpportunityResolverStringFilterKeys =
   (typeof PointOpportunityResolverStringFilterKeys)[keyof typeof PointOpportunityResolverStringFilterKeys];
-export type RegisterDeviceInput = {
+export interface RegisterDeviceInput {
   /** For legacy reasons, this can be a GlobalId or a raw UUID */
   readonly deviceId: Scalars["String"]["input"];
   /** The Expo push token of the device */
@@ -884,62 +982,62 @@ export type RegisterDeviceInput = {
   readonly lastUserId?: InputMaybe<Scalars["GlobalId"]["input"]>;
   /** base64 encoded SHA-256 hash of a secret known to the device */
   readonly verifier: Scalars["String"]["input"];
-};
+}
 
-export type SetEventInput = {
+export interface SetEventInput {
   readonly description?: InputMaybe<Scalars["String"]["input"]>;
   readonly location?: InputMaybe<Scalars["String"]["input"]>;
   readonly occurrences: ReadonlyArray<SetEventOccurrenceInput>;
   readonly summary?: InputMaybe<Scalars["String"]["input"]>;
   readonly title: Scalars["String"]["input"];
-};
+}
 
-export type SetEventOccurrenceInput = {
+export interface SetEventOccurrenceInput {
   readonly fullDay: Scalars["Boolean"]["input"];
   readonly interval: IntervalIsoInput;
   /** If updating an existing occurrence, the UUID of the occurrence to update */
   readonly uuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
-};
+}
 
-export type SetFeedInput = {
+export interface SetFeedInput {
   readonly textContent?: InputMaybe<Scalars["String"]["input"]>;
   readonly title: Scalars["String"]["input"];
-};
+}
 
-export type SetMarathonHourInput = {
+export interface SetMarathonHourInput {
   readonly details?: InputMaybe<Scalars["String"]["input"]>;
   readonly durationInfo: Scalars["String"]["input"];
   readonly shownStartingAt: Scalars["DateTimeISO"]["input"];
   readonly title: Scalars["String"]["input"];
-};
+}
 
-export type SetMarathonInput = {
+export interface SetMarathonInput {
   readonly endDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly startDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly year: Scalars["String"]["input"];
-};
+}
 
-export type SetPersonInput = {
+export interface SetPersonInput {
   readonly captainOf?: InputMaybe<ReadonlyArray<MemberOf>>;
   readonly email?: InputMaybe<Scalars["EmailAddress"]["input"]>;
   readonly linkblue?: InputMaybe<Scalars["String"]["input"]>;
   readonly memberOf?: InputMaybe<ReadonlyArray<MemberOf>>;
   readonly name?: InputMaybe<Scalars["String"]["input"]>;
-};
+}
 
-export type SetPointOpportunityInput = {
+export interface SetPointOpportunityInput {
   readonly eventUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
   readonly name?: InputMaybe<Scalars["String"]["input"]>;
   readonly opportunityDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly type?: InputMaybe<TeamType>;
-};
+}
 
-export type SetTeamInput = {
+export interface SetTeamInput {
   readonly legacyStatus?: InputMaybe<TeamLegacyStatus>;
   readonly name?: InputMaybe<Scalars["String"]["input"]>;
   readonly persistentIdentifier?: InputMaybe<Scalars["String"]["input"]>;
   readonly type?: InputMaybe<TeamType>;
-};
+}
 
 export { SortDirection };
 
@@ -956,22 +1054,22 @@ export const TeamResolverAllKeys = {
 
 export type TeamResolverAllKeys =
   (typeof TeamResolverAllKeys)[keyof typeof TeamResolverAllKeys];
-export type TeamResolverKeyedIsNullFilterItem = {
+export interface TeamResolverKeyedIsNullFilterItem {
   /** The field to filter on */
   readonly field: TeamResolverAllKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
+}
 
-export type TeamResolverKeyedOneOfFilterItem = {
+export interface TeamResolverKeyedOneOfFilterItem {
   /** The field to filter on */
   readonly field: TeamResolverOneOfFilterKeys;
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: ReadonlyArray<Scalars["String"]["input"]>;
-};
+}
 
-export type TeamResolverKeyedStringFilterItem = {
+export interface TeamResolverKeyedStringFilterItem {
   /** The comparator to use for the filter */
   readonly comparison: StringComparator;
   /** The field to filter on */
@@ -979,7 +1077,7 @@ export type TeamResolverKeyedStringFilterItem = {
   /** Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation. */
   readonly negate?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly value: Scalars["String"]["input"];
-};
+}
 
 export const TeamResolverOneOfFilterKeys = {
   LegacyStatus: "legacyStatus",
@@ -997,9 +1095,9 @@ export type TeamResolverStringFilterKeys =
   (typeof TeamResolverStringFilterKeys)[keyof typeof TeamResolverStringFilterKeys];
 export { TeamType };
 
-export type UpdateFundraisingAssignmentInput = {
+export interface UpdateFundraisingAssignmentInput {
   readonly amount: Scalars["Float"]["input"];
-};
+}
 
 export type ActiveMarathonQueryVariables = Exact<{ [key: string]: never }>;
 
@@ -1197,6 +1295,20 @@ export type ConfigQueryQuery = {
       }
     >;
   };
+};
+
+export type UploadDdnDocumentMutationVariables = Exact<{
+  ddnData:
+    | ReadonlyArray<DailyDepartmentNotificationInput>
+    | DailyDepartmentNotificationInput;
+}>;
+
+export type UploadDdnDocumentMutation = {
+  readonly __typename?: "Mutation";
+  readonly batchUploadDailyDepartmentNotifications: ReadonlyArray<{
+    readonly __typename?: "DailyDepartmentNotificationNode";
+    readonly id: string;
+  }>;
 };
 
 export type CreateEventMutationVariables = Exact<{
@@ -1870,6 +1982,145 @@ export type TeamsTableFragmentFragment = {
   readonly totalPoints: number;
 } & { " $fragmentName"?: "TeamsTableFragmentFragment" };
 
+export type DdNsTableFragmentFragment = {
+  readonly __typename?: "DailyDepartmentNotificationNode";
+  readonly id: string;
+  readonly combinedDonorName: string;
+  readonly comment?: string | null;
+  readonly combinedAmount: number;
+  readonly solicitationCode: {
+    readonly __typename?: "SolicitationCodeNode";
+    readonly prefix: string;
+    readonly code: number;
+    readonly name?: string | null;
+  };
+  readonly batch: {
+    readonly __typename?: "DailyDepartmentNotificationBatchNode";
+    readonly id: string;
+    readonly batchType: BatchType;
+    readonly batchNumber: string;
+  };
+} & { " $fragmentName"?: "DdNsTableFragmentFragment" };
+
+export type DdnsTableQueryVariables = Exact<{
+  page?: InputMaybe<Scalars["Int"]["input"]>;
+  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
+  sortBy?: InputMaybe<
+    ReadonlyArray<Scalars["String"]["input"]> | Scalars["String"]["input"]
+  >;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection> | SortDirection>;
+  isNullFilters?: InputMaybe<
+    | ReadonlyArray<DailyDepartmentNotificationResolverKeyedIsNullFilterItem>
+    | DailyDepartmentNotificationResolverKeyedIsNullFilterItem
+  >;
+  oneOfFilters?: InputMaybe<
+    | ReadonlyArray<DailyDepartmentNotificationResolverKeyedOneOfFilterItem>
+    | DailyDepartmentNotificationResolverKeyedOneOfFilterItem
+  >;
+  stringFilters?: InputMaybe<
+    | ReadonlyArray<DailyDepartmentNotificationResolverKeyedStringFilterItem>
+    | DailyDepartmentNotificationResolverKeyedStringFilterItem
+  >;
+  numericFilters?: InputMaybe<
+    | ReadonlyArray<DailyDepartmentNotificationResolverKeyedNumericFilterItem>
+    | DailyDepartmentNotificationResolverKeyedNumericFilterItem
+  >;
+}>;
+
+export type DdnsTableQuery = {
+  readonly __typename?: "Query";
+  readonly dailyDepartmentNotifications: {
+    readonly __typename?: "ListDailyDepartmentNotificationsResponse";
+    readonly page: number;
+    readonly pageSize: number;
+    readonly total: number;
+    readonly data: ReadonlyArray<
+      { readonly __typename?: "DailyDepartmentNotificationNode" } & {
+        " $fragmentRefs"?: {
+          DdNsTableFragmentFragment: DdNsTableFragmentFragment;
+        };
+      }
+    >;
+  };
+};
+
+export type AddFundraisingAssignmentMutationVariables = Exact<{
+  entryId: Scalars["GlobalId"]["input"];
+  personId: Scalars["GlobalId"]["input"];
+  amount: Scalars["Float"]["input"];
+}>;
+
+export type AddFundraisingAssignmentMutation = {
+  readonly __typename?: "Mutation";
+  readonly assignEntryToPerson: {
+    readonly __typename?: "FundraisingAssignmentNode";
+    readonly id: string;
+  };
+};
+
+export type UpdateFundraisingAssignmentMutationVariables = Exact<{
+  id: Scalars["GlobalId"]["input"];
+  amount: Scalars["Float"]["input"];
+}>;
+
+export type UpdateFundraisingAssignmentMutation = {
+  readonly __typename?: "Mutation";
+  readonly updateFundraisingAssignment: {
+    readonly __typename?: "FundraisingAssignmentNode";
+    readonly id: string;
+    readonly amount: number;
+    readonly person?: {
+      readonly __typename?: "PersonNode";
+      readonly name?: string | null;
+    } | null;
+  };
+};
+
+export type DeleteFundraisingAssignmentMutationVariables = Exact<{
+  id: Scalars["GlobalId"]["input"];
+}>;
+
+export type DeleteFundraisingAssignmentMutation = {
+  readonly __typename?: "Mutation";
+  readonly deleteFundraisingAssignment: {
+    readonly __typename?: "FundraisingAssignmentNode";
+    readonly id: string;
+  };
+};
+
+export type FundraisingEntryTableFragmentFragment = {
+  readonly __typename?: "ListFundraisingEntriesResponse";
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+  readonly data: ReadonlyArray<{
+    readonly __typename?: "FundraisingEntryNode";
+    readonly id: string;
+    readonly amount: number;
+    readonly amountUnassigned: number;
+    readonly donatedByText?: string | null;
+    readonly donatedToText?: string | null;
+    readonly donatedOn: Date | string;
+    readonly solicitationCode: {
+      readonly __typename?: "SolicitationCodeNode";
+      readonly code: number;
+      readonly name?: string | null;
+      readonly prefix: string;
+    };
+    readonly assignments: ReadonlyArray<{
+      readonly __typename?: "FundraisingAssignmentNode";
+      readonly id: string;
+      readonly amount: number;
+      readonly person?: {
+        readonly __typename?: "PersonNode";
+        readonly id: string;
+        readonly name?: string | null;
+        readonly linkblue?: string | null;
+      } | null;
+    }>;
+  }>;
+} & { " $fragmentName"?: "FundraisingEntryTableFragmentFragment" };
+
 export type MarathonTableFragmentFragment = {
   readonly __typename?: "MarathonNode";
   readonly id: string;
@@ -2221,6 +2472,131 @@ export type DbFundsViewerQuery = {
   readonly rawFundraisingTotals: string;
 };
 
+export type ViewDdnFragmentFragment = {
+  readonly __typename?: "DailyDepartmentNotificationNode";
+  readonly accountName: string;
+  readonly accountNumber: string;
+  readonly advFeeAmtPhil?: number | null;
+  readonly advFeeAmtUnit?: number | null;
+  readonly advFeeCcPhil?: string | null;
+  readonly advFeeCcUnit?: string | null;
+  readonly advFeeStatus?: string | null;
+  readonly behalfHonorMemorial?: string | null;
+  readonly combinedAmount: number;
+  readonly combinedDonorName: string;
+  readonly combinedDonorSalutation: string;
+  readonly combinedDonorSort?: string | null;
+  readonly comment?: string | null;
+  readonly department?: string | null;
+  readonly divFirstGift: boolean;
+  readonly division?: string | null;
+  readonly donor1Amount?: number | null;
+  readonly donor1Constituency?: string | null;
+  readonly donor1Deceased?: boolean | null;
+  readonly donor1Degrees?: string | null;
+  readonly donor1GiftKey?: string | null;
+  readonly donor1Id?: string | null;
+  readonly donor1Name?: string | null;
+  readonly donor1Pm?: string | null;
+  readonly donor1Relation?: string | null;
+  readonly donor1TitleBar?: string | null;
+  readonly donor2Amount?: number | null;
+  readonly donor2Constituency?: string | null;
+  readonly donor2Deceased?: boolean | null;
+  readonly donor2Degrees?: string | null;
+  readonly donor2GiftKey?: string | null;
+  readonly donor2Id?: string | null;
+  readonly donor2Name?: string | null;
+  readonly donor2Pm?: string | null;
+  readonly donor2Relation?: string | null;
+  readonly donor2TitleBar?: string | null;
+  readonly effectiveDate?: string | null;
+  readonly gikDescription?: string | null;
+  readonly gikType?: string | null;
+  readonly hcUnit?: string | null;
+  readonly holdingDestination?: string | null;
+  readonly id: string;
+  readonly idSorter: string;
+  readonly jvDocDate?: string | null;
+  readonly jvDocNum?: string | null;
+  readonly matchingGift?: string | null;
+  readonly onlineGift: boolean;
+  readonly pledgedAmount: number;
+  readonly pledgedDate?: string | null;
+  readonly processDate?: string | null;
+  readonly sapDocDate?: string | null;
+  readonly sapDocNum?: string | null;
+  readonly secShares?: string | null;
+  readonly secType?: string | null;
+  readonly solicitation?: string | null;
+  readonly transactionDate?: string | null;
+  readonly transactionType: string;
+  readonly transmittalSn?: string | null;
+  readonly ukFirstGift: boolean;
+  readonly batch: {
+    readonly __typename?: "DailyDepartmentNotificationBatchNode";
+    readonly id: string;
+    readonly batchNumber: string;
+    readonly batchType: BatchType;
+  };
+  readonly solicitationCode: {
+    readonly __typename?: "SolicitationCodeNode";
+    readonly id: string;
+    readonly prefix: string;
+    readonly code: number;
+    readonly name?: string | null;
+  };
+} & { " $fragmentName"?: "ViewDdnFragmentFragment" };
+
+export type ViewDdnDocumentQueryVariables = Exact<{
+  id: Scalars["GlobalId"]["input"];
+}>;
+
+export type ViewDdnDocumentQuery = {
+  readonly __typename?: "Query";
+  readonly dailyDepartmentNotification: {
+    readonly __typename?: "DailyDepartmentNotificationNode";
+  } & {
+    " $fragmentRefs"?: { ViewDdnFragmentFragment: ViewDdnFragmentFragment };
+  };
+};
+
+export type ViewFundraisingEntriesDocumentQueryVariables = Exact<{
+  page?: InputMaybe<Scalars["Int"]["input"]>;
+  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
+  sortBy?: InputMaybe<
+    ReadonlyArray<Scalars["String"]["input"]> | Scalars["String"]["input"]
+  >;
+  sortDirection?: InputMaybe<ReadonlyArray<SortDirection> | SortDirection>;
+  dateFilters?: InputMaybe<
+    | ReadonlyArray<FundraisingEntryResolverKeyedDateFilterItem>
+    | FundraisingEntryResolverKeyedDateFilterItem
+  >;
+  oneOfFilters?: InputMaybe<
+    | ReadonlyArray<FundraisingEntryResolverKeyedOneOfFilterItem>
+    | FundraisingEntryResolverKeyedOneOfFilterItem
+  >;
+  stringFilters?: InputMaybe<
+    | ReadonlyArray<FundraisingEntryResolverKeyedStringFilterItem>
+    | FundraisingEntryResolverKeyedStringFilterItem
+  >;
+  numericFilters?: InputMaybe<
+    | ReadonlyArray<FundraisingEntryResolverKeyedNumericFilterItem>
+    | FundraisingEntryResolverKeyedNumericFilterItem
+  >;
+}>;
+
+export type ViewFundraisingEntriesDocumentQuery = {
+  readonly __typename?: "Query";
+  readonly fundraisingEntries: {
+    readonly __typename?: "ListFundraisingEntriesResponse";
+  } & {
+    " $fragmentRefs"?: {
+      FundraisingEntryTableFragmentFragment: FundraisingEntryTableFragmentFragment;
+    };
+  };
+};
+
 export type HomePageQueryVariables = Exact<{ [key: string]: never }>;
 
 export type HomePageQuery = {
@@ -2413,10 +2789,12 @@ export type ViewTeamFundraisingDocumentQuery = {
     readonly __typename?: "SingleTeamResponse";
     readonly data: {
       readonly __typename?: "TeamNode";
-      readonly dbFundsTeam?: {
-        readonly __typename?: "DbFundsTeamInfo";
-        readonly dbNum: number;
-        readonly name: string;
+      readonly solicitationCode?: {
+        readonly __typename?: "SolicitationCodeNode";
+        readonly id: string;
+        readonly name?: string | null;
+        readonly prefix: string;
+        readonly code: number;
       } | null;
       readonly members: ReadonlyArray<{
         readonly __typename?: "MembershipNode";
@@ -2429,99 +2807,45 @@ export type ViewTeamFundraisingDocumentQuery = {
       }>;
       readonly fundraisingEntries: {
         readonly __typename?: "ListFundraisingEntriesResponse";
-        readonly page: number;
-        readonly pageSize: number;
-        readonly total: number;
-        readonly data: ReadonlyArray<{
-          readonly __typename?: "FundraisingEntryNode";
-          readonly id: string;
-          readonly amount: number;
-          readonly amountUnassigned: number;
-          readonly donatedByText?: string | null;
-          readonly donatedToText?: string | null;
-          readonly donatedOn: Date | string;
-          readonly assignments: ReadonlyArray<{
-            readonly __typename?: "FundraisingAssignmentNode";
-            readonly id: string;
-            readonly amount: number;
-            readonly person?: {
-              readonly __typename?: "PersonNode";
-              readonly id: string;
-              readonly name?: string | null;
-              readonly linkblue?: string | null;
-            } | null;
-          }>;
-        }>;
+      } & {
+        " $fragmentRefs"?: {
+          FundraisingEntryTableFragmentFragment: FundraisingEntryTableFragmentFragment;
+        };
       };
     };
   };
 };
 
-export type SearchFundraisingTeamQueryVariables = Exact<{
-  fundraisingTeamSearch: Scalars["String"]["input"];
-}>;
+export type SolicitationCodesQueryVariables = Exact<{ [key: string]: never }>;
 
-export type SearchFundraisingTeamQuery = {
+export type SolicitationCodesQuery = {
   readonly __typename?: "Query";
-  readonly dbFundsTeams: ReadonlyArray<{
-    readonly __typename?: "DbFundsTeamInfo";
-    readonly dbNum: number;
-    readonly name: string;
+  readonly solicitationCodes: ReadonlyArray<{
+    readonly __typename?: "SolicitationCodeNode";
+    readonly id: string;
+    readonly prefix: string;
+    readonly code: number;
+    readonly name?: string | null;
   }>;
 };
 
-export type SetDbFundsTeamMutationVariables = Exact<{
+export type SetTeamSolicitationCodeMutationVariables = Exact<{
   teamUuid: Scalars["GlobalId"]["input"];
-  dbFundsTeamDbNum: Scalars["Int"]["input"];
+  solCodeId: Scalars["GlobalId"]["input"];
 }>;
 
-export type SetDbFundsTeamMutation = {
+export type SetTeamSolicitationCodeMutation = {
   readonly __typename?: "Mutation";
-  readonly assignTeamToDbFundsTeam: void;
+  readonly assignSolicitationCodeToTeam: void;
 };
 
-export type AddFundraisingAssignmentMutationVariables = Exact<{
-  entryId: Scalars["GlobalId"]["input"];
-  personId: Scalars["GlobalId"]["input"];
-  amount: Scalars["Float"]["input"];
+export type ClearTeamSolicitationCodeMutationVariables = Exact<{
+  teamUuid: Scalars["GlobalId"]["input"];
 }>;
 
-export type AddFundraisingAssignmentMutation = {
+export type ClearTeamSolicitationCodeMutation = {
   readonly __typename?: "Mutation";
-  readonly assignEntryToPerson: {
-    readonly __typename?: "FundraisingAssignmentNode";
-    readonly id: string;
-  };
-};
-
-export type UpdateFundraisingAssignmentMutationVariables = Exact<{
-  id: Scalars["GlobalId"]["input"];
-  amount: Scalars["Float"]["input"];
-}>;
-
-export type UpdateFundraisingAssignmentMutation = {
-  readonly __typename?: "Mutation";
-  readonly updateFundraisingAssignment: {
-    readonly __typename?: "FundraisingAssignmentNode";
-    readonly id: string;
-    readonly amount: number;
-    readonly person?: {
-      readonly __typename?: "PersonNode";
-      readonly name?: string | null;
-    } | null;
-  };
-};
-
-export type DeleteFundraisingAssignmentMutationVariables = Exact<{
-  id: Scalars["GlobalId"]["input"];
-}>;
-
-export type DeleteFundraisingAssignmentMutation = {
-  readonly __typename?: "Mutation";
-  readonly deleteFundraisingAssignment: {
-    readonly __typename?: "FundraisingAssignmentNode";
-    readonly id: string;
-  };
+  readonly removeSolicitationCodeFromTeam: void;
 };
 
 export type EditTeamPageQueryVariables = Exact<{
@@ -2979,6 +3303,147 @@ export const TeamsTableFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<TeamsTableFragmentFragment, unknown>;
+export const DdNsTableFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "DDNsTableFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "DailyDepartmentNotificationNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "combinedDonorName" } },
+          { kind: "Field", name: { kind: "Name", value: "comment" } },
+          { kind: "Field", name: { kind: "Name", value: "combinedAmount" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "solicitationCode" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "prefix" } },
+                { kind: "Field", name: { kind: "Name", value: "code" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "batch" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "batchType" } },
+                { kind: "Field", name: { kind: "Name", value: "batchNumber" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<DdNsTableFragmentFragment, unknown>;
+export const FundraisingEntryTableFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "FundraisingEntryTableFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ListFundraisingEntriesResponse" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "data" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "amount" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "amountUnassigned" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "donatedByText" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "donatedToText" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "donatedOn" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "solicitationCode" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "code" } },
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "prefix" },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "assignments" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "amount" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "person" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "name" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "linkblue" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          { kind: "Field", name: { kind: "Name", value: "page" } },
+          { kind: "Field", name: { kind: "Name", value: "pageSize" } },
+          { kind: "Field", name: { kind: "Name", value: "total" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<FundraisingEntryTableFragmentFragment, unknown>;
 export const MarathonTableFragmentFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -3321,6 +3786,123 @@ export const TeamViewerFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<TeamViewerFragmentFragment, unknown>;
+export const ViewDdnFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ViewDdnFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "DailyDepartmentNotificationNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "accountName" } },
+          { kind: "Field", name: { kind: "Name", value: "accountNumber" } },
+          { kind: "Field", name: { kind: "Name", value: "advFeeAmtPhil" } },
+          { kind: "Field", name: { kind: "Name", value: "advFeeAmtUnit" } },
+          { kind: "Field", name: { kind: "Name", value: "advFeeCcPhil" } },
+          { kind: "Field", name: { kind: "Name", value: "advFeeCcUnit" } },
+          { kind: "Field", name: { kind: "Name", value: "advFeeStatus" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "batch" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "batchNumber" } },
+                { kind: "Field", name: { kind: "Name", value: "batchType" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "behalfHonorMemorial" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "combinedAmount" } },
+          { kind: "Field", name: { kind: "Name", value: "combinedDonorName" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "combinedDonorSalutation" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "combinedDonorSort" } },
+          { kind: "Field", name: { kind: "Name", value: "comment" } },
+          { kind: "Field", name: { kind: "Name", value: "department" } },
+          { kind: "Field", name: { kind: "Name", value: "divFirstGift" } },
+          { kind: "Field", name: { kind: "Name", value: "division" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1Amount" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "donor1Constituency" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "donor1Deceased" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1Degrees" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1GiftKey" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1Id" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1Name" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1Pm" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1Relation" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1TitleBar" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2Amount" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "donor2Constituency" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "donor2Deceased" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2Degrees" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2GiftKey" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2Id" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2Name" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2Pm" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2Relation" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2TitleBar" } },
+          { kind: "Field", name: { kind: "Name", value: "effectiveDate" } },
+          { kind: "Field", name: { kind: "Name", value: "gikDescription" } },
+          { kind: "Field", name: { kind: "Name", value: "gikType" } },
+          { kind: "Field", name: { kind: "Name", value: "hcUnit" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "holdingDestination" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "idSorter" } },
+          { kind: "Field", name: { kind: "Name", value: "jvDocDate" } },
+          { kind: "Field", name: { kind: "Name", value: "jvDocNum" } },
+          { kind: "Field", name: { kind: "Name", value: "matchingGift" } },
+          { kind: "Field", name: { kind: "Name", value: "onlineGift" } },
+          { kind: "Field", name: { kind: "Name", value: "pledgedAmount" } },
+          { kind: "Field", name: { kind: "Name", value: "pledgedDate" } },
+          { kind: "Field", name: { kind: "Name", value: "processDate" } },
+          { kind: "Field", name: { kind: "Name", value: "sapDocDate" } },
+          { kind: "Field", name: { kind: "Name", value: "sapDocNum" } },
+          { kind: "Field", name: { kind: "Name", value: "secShares" } },
+          { kind: "Field", name: { kind: "Name", value: "secType" } },
+          { kind: "Field", name: { kind: "Name", value: "solicitation" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "solicitationCode" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "prefix" } },
+                { kind: "Field", name: { kind: "Name", value: "code" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          { kind: "Field", name: { kind: "Name", value: "transactionDate" } },
+          { kind: "Field", name: { kind: "Name", value: "transactionType" } },
+          { kind: "Field", name: { kind: "Name", value: "transmittalSn" } },
+          { kind: "Field", name: { kind: "Name", value: "ukFirstGift" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ViewDdnFragmentFragment, unknown>;
 export const ActiveMarathonDocument = {
   kind: "Document",
   definitions: [
@@ -4160,6 +4742,72 @@ export const ConfigQueryDocument = {
     },
   ],
 } as unknown as DocumentNode<ConfigQueryQuery, ConfigQueryQueryVariables>;
+export const UploadDdnDocumentDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "UploadDdnDocument" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "ddnData" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "ListType",
+              type: {
+                kind: "NonNullType",
+                type: {
+                  kind: "NamedType",
+                  name: {
+                    kind: "Name",
+                    value: "DailyDepartmentNotificationInput",
+                  },
+                },
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: {
+              kind: "Name",
+              value: "batchUploadDailyDepartmentNotifications",
+            },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "ddnData" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UploadDdnDocumentMutation,
+  UploadDdnDocumentMutationVariables
+>;
 export const CreateEventDocument = {
   kind: "Document",
   definitions: [
@@ -7024,6 +7672,531 @@ export const TeamsTableDocument = {
     },
   ],
 } as unknown as DocumentNode<TeamsTableQuery, TeamsTableQueryVariables>;
+export const DdnsTableDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "DdnsTable" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "page" } },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "pageSize" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sortBy" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "String" },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sortDirection" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "SortDirection" },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "isNullFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value:
+                    "DailyDepartmentNotificationResolverKeyedIsNullFilterItem",
+                },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "oneOfFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value:
+                    "DailyDepartmentNotificationResolverKeyedOneOfFilterItem",
+                },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "stringFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value:
+                    "DailyDepartmentNotificationResolverKeyedStringFilterItem",
+                },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "numericFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value:
+                    "DailyDepartmentNotificationResolverKeyedNumericFilterItem",
+                },
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "dailyDepartmentNotifications" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "page" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "page" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "pageSize" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "pageSize" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sortBy" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sortBy" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sortDirection" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sortDirection" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "isNullFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "isNullFilters" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "oneOfFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "oneOfFilters" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "stringFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "stringFilters" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "numericFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "numericFilters" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "page" } },
+                { kind: "Field", name: { kind: "Name", value: "pageSize" } },
+                { kind: "Field", name: { kind: "Name", value: "total" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "data" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "DDNsTableFragment" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "DDNsTableFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "DailyDepartmentNotificationNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "combinedDonorName" } },
+          { kind: "Field", name: { kind: "Name", value: "comment" } },
+          { kind: "Field", name: { kind: "Name", value: "combinedAmount" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "solicitationCode" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "prefix" } },
+                { kind: "Field", name: { kind: "Name", value: "code" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "batch" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "batchType" } },
+                { kind: "Field", name: { kind: "Name", value: "batchNumber" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<DdnsTableQuery, DdnsTableQueryVariables>;
+export const AddFundraisingAssignmentDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "AddFundraisingAssignment" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "entryId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "personId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "amount" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "Float" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "assignEntryToPerson" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "entryId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "entryId" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "personId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "personId" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "ObjectValue",
+                  fields: [
+                    {
+                      kind: "ObjectField",
+                      name: { kind: "Name", value: "amount" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "amount" },
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  AddFundraisingAssignmentMutation,
+  AddFundraisingAssignmentMutationVariables
+>;
+export const UpdateFundraisingAssignmentDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "UpdateFundraisingAssignment" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "amount" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "Float" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "updateFundraisingAssignment" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "ObjectValue",
+                  fields: [
+                    {
+                      kind: "ObjectField",
+                      name: { kind: "Name", value: "amount" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "amount" },
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "amount" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "person" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UpdateFundraisingAssignmentMutation,
+  UpdateFundraisingAssignmentMutationVariables
+>;
+export const DeleteFundraisingAssignmentDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "DeleteFundraisingAssignment" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "deleteFundraisingAssignment" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  DeleteFundraisingAssignmentMutation,
+  DeleteFundraisingAssignmentMutationVariables
+>;
 export const NotificationDeliveriesTableQueryDocument = {
   kind: "Document",
   definitions: [
@@ -8213,6 +9386,491 @@ export const DbFundsViewerDocument = {
     },
   ],
 } as unknown as DocumentNode<DbFundsViewerQuery, DbFundsViewerQueryVariables>;
+export const ViewDdnDocumentDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "viewDdnDocument" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "dailyDepartmentNotification" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "ViewDdnFragment" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ViewDdnFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "DailyDepartmentNotificationNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "accountName" } },
+          { kind: "Field", name: { kind: "Name", value: "accountNumber" } },
+          { kind: "Field", name: { kind: "Name", value: "advFeeAmtPhil" } },
+          { kind: "Field", name: { kind: "Name", value: "advFeeAmtUnit" } },
+          { kind: "Field", name: { kind: "Name", value: "advFeeCcPhil" } },
+          { kind: "Field", name: { kind: "Name", value: "advFeeCcUnit" } },
+          { kind: "Field", name: { kind: "Name", value: "advFeeStatus" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "batch" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "batchNumber" } },
+                { kind: "Field", name: { kind: "Name", value: "batchType" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "behalfHonorMemorial" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "combinedAmount" } },
+          { kind: "Field", name: { kind: "Name", value: "combinedDonorName" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "combinedDonorSalutation" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "combinedDonorSort" } },
+          { kind: "Field", name: { kind: "Name", value: "comment" } },
+          { kind: "Field", name: { kind: "Name", value: "department" } },
+          { kind: "Field", name: { kind: "Name", value: "divFirstGift" } },
+          { kind: "Field", name: { kind: "Name", value: "division" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1Amount" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "donor1Constituency" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "donor1Deceased" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1Degrees" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1GiftKey" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1Id" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1Name" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1Pm" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1Relation" } },
+          { kind: "Field", name: { kind: "Name", value: "donor1TitleBar" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2Amount" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "donor2Constituency" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "donor2Deceased" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2Degrees" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2GiftKey" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2Id" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2Name" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2Pm" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2Relation" } },
+          { kind: "Field", name: { kind: "Name", value: "donor2TitleBar" } },
+          { kind: "Field", name: { kind: "Name", value: "effectiveDate" } },
+          { kind: "Field", name: { kind: "Name", value: "gikDescription" } },
+          { kind: "Field", name: { kind: "Name", value: "gikType" } },
+          { kind: "Field", name: { kind: "Name", value: "hcUnit" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "holdingDestination" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "idSorter" } },
+          { kind: "Field", name: { kind: "Name", value: "jvDocDate" } },
+          { kind: "Field", name: { kind: "Name", value: "jvDocNum" } },
+          { kind: "Field", name: { kind: "Name", value: "matchingGift" } },
+          { kind: "Field", name: { kind: "Name", value: "onlineGift" } },
+          { kind: "Field", name: { kind: "Name", value: "pledgedAmount" } },
+          { kind: "Field", name: { kind: "Name", value: "pledgedDate" } },
+          { kind: "Field", name: { kind: "Name", value: "processDate" } },
+          { kind: "Field", name: { kind: "Name", value: "sapDocDate" } },
+          { kind: "Field", name: { kind: "Name", value: "sapDocNum" } },
+          { kind: "Field", name: { kind: "Name", value: "secShares" } },
+          { kind: "Field", name: { kind: "Name", value: "secType" } },
+          { kind: "Field", name: { kind: "Name", value: "solicitation" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "solicitationCode" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "prefix" } },
+                { kind: "Field", name: { kind: "Name", value: "code" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          { kind: "Field", name: { kind: "Name", value: "transactionDate" } },
+          { kind: "Field", name: { kind: "Name", value: "transactionType" } },
+          { kind: "Field", name: { kind: "Name", value: "transmittalSn" } },
+          { kind: "Field", name: { kind: "Name", value: "ukFirstGift" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ViewDdnDocumentQuery,
+  ViewDdnDocumentQueryVariables
+>;
+export const ViewFundraisingEntriesDocumentDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "ViewFundraisingEntriesDocument" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "page" } },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "pageSize" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sortBy" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "String" },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sortDirection" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "SortDirection" },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "dateFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value: "FundraisingEntryResolverKeyedDateFilterItem",
+                },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "oneOfFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value: "FundraisingEntryResolverKeyedOneOfFilterItem",
+                },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "stringFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value: "FundraisingEntryResolverKeyedStringFilterItem",
+                },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "numericFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value: "FundraisingEntryResolverKeyedNumericFilterItem",
+                },
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "fundraisingEntries" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "page" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "page" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "pageSize" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "pageSize" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sortBy" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sortBy" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sortDirection" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sortDirection" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "dateFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "dateFilters" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "oneOfFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "oneOfFilters" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "stringFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "stringFilters" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "numericFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "numericFilters" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "FundraisingEntryTableFragment",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "FundraisingEntryTableFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ListFundraisingEntriesResponse" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "data" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "amount" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "amountUnassigned" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "donatedByText" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "donatedToText" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "donatedOn" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "solicitationCode" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "code" } },
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "prefix" },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "assignments" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "amount" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "person" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "name" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "linkblue" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          { kind: "Field", name: { kind: "Name", value: "page" } },
+          { kind: "Field", name: { kind: "Name", value: "pageSize" } },
+          { kind: "Field", name: { kind: "Name", value: "total" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ViewFundraisingEntriesDocumentQuery,
+  ViewFundraisingEntriesDocumentQueryVariables
+>;
 export const HomePageDocument = {
   kind: "Document",
   definitions: [
@@ -9424,17 +11082,25 @@ export const ViewTeamFundraisingDocumentDocument = {
                     selections: [
                       {
                         kind: "Field",
-                        name: { kind: "Name", value: "dbFundsTeam" },
+                        name: { kind: "Name", value: "solicitationCode" },
                         selectionSet: {
                           kind: "SelectionSet",
                           selections: [
                             {
                               kind: "Field",
-                              name: { kind: "Name", value: "dbNum" },
+                              name: { kind: "Name", value: "id" },
                             },
                             {
                               kind: "Field",
                               name: { kind: "Name", value: "name" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "prefix" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "code" },
                             },
                           ],
                         },
@@ -9542,114 +11208,11 @@ export const ViewTeamFundraisingDocumentDocument = {
                           kind: "SelectionSet",
                           selections: [
                             {
-                              kind: "Field",
-                              name: { kind: "Name", value: "data" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "id" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "amount" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: {
-                                      kind: "Name",
-                                      value: "amountUnassigned",
-                                    },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: {
-                                      kind: "Name",
-                                      value: "donatedByText",
-                                    },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: {
-                                      kind: "Name",
-                                      value: "donatedToText",
-                                    },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "donatedOn" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: {
-                                      kind: "Name",
-                                      value: "assignments",
-                                    },
-                                    selectionSet: {
-                                      kind: "SelectionSet",
-                                      selections: [
-                                        {
-                                          kind: "Field",
-                                          name: { kind: "Name", value: "id" },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "amount",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "person",
-                                          },
-                                          selectionSet: {
-                                            kind: "SelectionSet",
-                                            selections: [
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "id",
-                                                },
-                                              },
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "name",
-                                                },
-                                              },
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "linkblue",
-                                                },
-                                              },
-                                            ],
-                                          },
-                                        },
-                                      ],
-                                    },
-                                  },
-                                ],
+                              kind: "FragmentSpread",
+                              name: {
+                                kind: "Name",
+                                value: "FundraisingEntryTableFragment",
                               },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "page" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "pageSize" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "total" },
                             },
                           ],
                         },
@@ -9663,54 +11226,120 @@ export const ViewTeamFundraisingDocumentDocument = {
         ],
       },
     },
-  ],
-} as unknown as DocumentNode<
-  ViewTeamFundraisingDocumentQuery,
-  ViewTeamFundraisingDocumentQueryVariables
->;
-export const SearchFundraisingTeamDocument = {
-  kind: "Document",
-  definitions: [
     {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "SearchFundraisingTeam" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "fundraisingTeamSearch" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "String" },
-            },
-          },
-        },
-      ],
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "FundraisingEntryTableFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ListFundraisingEntriesResponse" },
+      },
       selectionSet: {
         kind: "SelectionSet",
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "dbFundsTeams" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "search" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "fundraisingTeamSearch" },
-                },
-              },
-            ],
+            name: { kind: "Name", value: "data" },
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "dbNum" } },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "amount" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "amountUnassigned" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "donatedByText" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "donatedToText" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "donatedOn" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "solicitationCode" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "code" } },
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "prefix" },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "assignments" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "amount" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "person" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "name" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "linkblue" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          { kind: "Field", name: { kind: "Name", value: "page" } },
+          { kind: "Field", name: { kind: "Name", value: "pageSize" } },
+          { kind: "Field", name: { kind: "Name", value: "total" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ViewTeamFundraisingDocumentQuery,
+  ViewTeamFundraisingDocumentQueryVariables
+>;
+export const SolicitationCodesDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "SolicitationCodes" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "solicitationCodes" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "prefix" } },
+                { kind: "Field", name: { kind: "Name", value: "code" } },
                 { kind: "Field", name: { kind: "Name", value: "name" } },
               ],
             },
@@ -9720,16 +11349,16 @@ export const SearchFundraisingTeamDocument = {
     },
   ],
 } as unknown as DocumentNode<
-  SearchFundraisingTeamQuery,
-  SearchFundraisingTeamQueryVariables
+  SolicitationCodesQuery,
+  SolicitationCodesQueryVariables
 >;
-export const SetDbFundsTeamDocument = {
+export const SetTeamSolicitationCodeDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "mutation",
-      name: { kind: "Name", value: "SetDbFundsTeam" },
+      name: { kind: "Name", value: "SetTeamSolicitationCode" },
       variableDefinitions: [
         {
           kind: "VariableDefinition",
@@ -9749,11 +11378,14 @@ export const SetDbFundsTeamDocument = {
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "dbFundsTeamDbNum" },
+            name: { kind: "Name", value: "solCodeId" },
           },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
           },
         },
       ],
@@ -9762,16 +11394,64 @@ export const SetDbFundsTeamDocument = {
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "assignTeamToDbFundsTeam" },
+            name: { kind: "Name", value: "assignSolicitationCodeToTeam" },
             arguments: [
               {
                 kind: "Argument",
-                name: { kind: "Name", value: "dbFundsTeamDbNum" },
+                name: { kind: "Name", value: "teamId" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "dbFundsTeamDbNum" },
+                  name: { kind: "Name", value: "teamUuid" },
                 },
               },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "solicitationCode" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "solCodeId" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  SetTeamSolicitationCodeMutation,
+  SetTeamSolicitationCodeMutationVariables
+>;
+export const ClearTeamSolicitationCodeDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "ClearTeamSolicitationCode" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "teamUuid" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "removeSolicitationCodeFromTeam" },
+            arguments: [
               {
                 kind: "Argument",
                 name: { kind: "Name", value: "teamId" },
@@ -9787,253 +11467,8 @@ export const SetDbFundsTeamDocument = {
     },
   ],
 } as unknown as DocumentNode<
-  SetDbFundsTeamMutation,
-  SetDbFundsTeamMutationVariables
->;
-export const AddFundraisingAssignmentDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "AddFundraisingAssignment" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "entryId" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "personId" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "amount" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Float" } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "assignEntryToPerson" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "entryId" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "entryId" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "personId" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "personId" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "input" },
-                value: {
-                  kind: "ObjectValue",
-                  fields: [
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "amount" },
-                      value: {
-                        kind: "Variable",
-                        name: { kind: "Name", value: "amount" },
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  AddFundraisingAssignmentMutation,
-  AddFundraisingAssignmentMutationVariables
->;
-export const UpdateFundraisingAssignmentDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "UpdateFundraisingAssignment" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "amount" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Float" } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "updateFundraisingAssignment" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "id" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "id" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "input" },
-                value: {
-                  kind: "ObjectValue",
-                  fields: [
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "amount" },
-                      value: {
-                        kind: "Variable",
-                        name: { kind: "Name", value: "amount" },
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "amount" } },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "person" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "name" } },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  UpdateFundraisingAssignmentMutation,
-  UpdateFundraisingAssignmentMutationVariables
->;
-export const DeleteFundraisingAssignmentDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "DeleteFundraisingAssignment" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "deleteFundraisingAssignment" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "id" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "id" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  DeleteFundraisingAssignmentMutation,
-  DeleteFundraisingAssignmentMutationVariables
+  ClearTeamSolicitationCodeMutation,
+  ClearTeamSolicitationCodeMutationVariables
 >;
 export const EditTeamPageDocument = {
   kind: "Document",

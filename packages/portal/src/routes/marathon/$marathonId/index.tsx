@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
-import { MarathonViewer } from "#elements/viewers/marathon/MarathonViewer.js";
-import { graphql } from "#graphql/index.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
+import { MarathonViewer } from "@/elements/viewers/marathon/MarathonViewer.js";
+import { graphql } from "@/graphql/index.js";
+import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
 
 const marathonPageDocument = graphql(/* GraphQL */ `
   query MarathonPage($marathonUuid: GlobalId!) {

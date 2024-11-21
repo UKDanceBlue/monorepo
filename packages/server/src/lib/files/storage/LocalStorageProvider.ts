@@ -6,7 +6,7 @@ import { format, join, resolve } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import type { MIMEType } from "util";
 
-import { servePathToken, uploadPathToken } from "#lib/environmentTokens.js";
+import { servePathToken, uploadPathToken } from "#lib/typediTokens.js";
 import { logger } from "#logging/standardLogging.js";
 
 import type {

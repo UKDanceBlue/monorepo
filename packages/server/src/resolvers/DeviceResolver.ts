@@ -186,13 +186,15 @@ export class DeviceResolver {
     }
 
     const rows =
-      await this.deviceRepository.findNotificationDeliveriesForDevice(id, {
-        skip:
-          query.page != null && query.pageSize != null
-            ? (query.page - 1) * query.pageSize
-            : undefined,
-        take: query.pageSize,
-      });
+      await this.deviceRepository.findNotificationDeliveriesForDevice(
+        id,
+        query.page != null && query.pageSize != null
+          ? {
+              skip: (query.page - 1) * query.pageSize,
+              take: query.pageSize,
+            }
+          : {}
+      );
 
     return rows.map(notificationDeliveryModelToResource);
   }

@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
-import { createNodeClasses,Node } from "../relay.js";
+import { createNodeClasses, Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
@@ -33,13 +33,13 @@ export class ConfigurationNode extends TimestampedResource implements Node {
   value!: string;
 
   @Field(() => DateTimeISOResolver, { nullable: true })
-  validAfter?: Date | null;
+  validAfter?: Date | undefined | null;
   get validAfterDateTime(): DateTime | null {
     return dateTimeFromSomething(this.validAfter ?? null);
   }
 
   @Field(() => DateTimeISOResolver, { nullable: true })
-  validUntil?: Date | null;
+  validUntil?: Date | undefined | null;
   get validUntilDateTime(): DateTime | null {
     return dateTimeFromSomething(this.validUntil ?? null);
   }
@@ -52,10 +52,10 @@ export class ConfigurationNode extends TimestampedResource implements Node {
     id: string;
     key: string;
     value: string;
-    validAfter?: Date | null;
-    validUntil?: Date | null;
-    createdAt?: Date | null;
-    updatedAt?: Date | null;
+    validAfter?: Date | undefined | null;
+    validUntil?: Date | undefined | null;
+    createdAt?: Date | undefined | null;
+    updatedAt?: Date | undefined | null;
   }) {
     return this.createInstance().withValues(init);
   }

@@ -7,7 +7,6 @@ import {
   createRouter,
   ErrorComponent,
   RouterProvider,
-  useAwaited,
 } from "@tanstack/react-router";
 import type { AuthorizationRule } from "@ukdanceblue/common";
 import { devtoolsExchange } from "@urql/devtools";
@@ -15,7 +14,6 @@ import { App, Empty, Spin } from "antd";
 import { App as AntApp } from "antd";
 import type { useAppProps } from "antd/es/app/context.js";
 import { StrictMode, useEffect, useState } from "react";
-import { createRoot } from "react-dom/client";
 import {
   cacheExchange,
   Client,
@@ -23,11 +21,13 @@ import {
   Provider as UrqlProvider,
 } from "urql";
 
-import { AntConfigProvider, ThemeConfigProvider } from "#config/ant.js";
-import { API_BASE_URL } from "#config/api.js";
-import { MarathonConfigProvider } from "#config/marathon.js";
-import { SessionStorageKeys } from "#config/storage.js";
-import { SpinningRibbon } from "#elements/components/design/RibbonSpinner.js";
+import { AntConfigProvider, ThemeConfigProvider } from "@/config/ant.js";
+import { API_BASE_URL } from "@/config/api.js";
+import { MarathonConfigProvider } from "@/config/marathon.js";
+import { SessionStorageKeys } from "@/config/storage.js";
+import { SpinningRibbon } from "@/elements/components/design/RibbonSpinner.js";
+
+import { routeTree } from "./routeTree.gen.js";
 
 init({
   dsn: "https://f149f5546299b507f5e7b9b4aeafc2f4@o4507762130681856.ingest.us.sentry.io/4508071881932800",
@@ -41,8 +41,6 @@ init({
     window.location.origin
   ),
 });
-
-const routeTreePromise = import("./routeTree.gen.js");
 
 const API_URL = `${API_BASE_URL}/graphql`;
 const urqlClient = new Client({
@@ -64,75 +62,67 @@ const urqlClient = new Client({
   },
 });
 
-// eslint-disable-next-line unicorn/prefer-top-level-await
-const routerPromise = routeTreePromise.then(({ routeTree }) =>
-  createRouter({
-    routeTree,
-    defaultPendingComponent: () => (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100%",
-          width: "100%",
-        }}
+const router = createRouter({
+  routeTree,
+  defaultPendingComponent: () => (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+        width: "100%",
+      }}
+    >
+      <Spin
+        size="large"
+        tip="Loading"
+        fullscreen
+        indicator={<SpinningRibbon size={70} />}
       >
-        <Spin
-          size="large"
-          tip="Loading"
-          fullscreen
-          indicator={<SpinningRibbon size={70} />}
-        >
-          <div
-            style={{
-              padding: 64,
-              borderRadius: 4,
-            }}
-          />
-        </Spin>
-      </div>
-    ),
-    defaultNotFoundComponent: () => (
-      <Empty
-        description="Page not found"
-        image={
-          <WarningOutlined
-            style={{
-              fontSize: "96px",
-              color: "#aa0",
-            }}
-          />
-        }
-      />
-    ),
-    defaultErrorComponent: ({ error }) => <ErrorComponent error={error} />,
-    context: {
-      urqlClient,
-      antApp: {} as useAppProps,
-    },
-    defaultPreload: false,
-  })
-);
+        <div
+          style={{
+            padding: 64,
+            borderRadius: 4,
+          }}
+        />
+      </Spin>
+    </div>
+  ),
+  defaultNotFoundComponent: () => (
+    <Empty
+      description="Page not found"
+      image={
+        <WarningOutlined
+          style={{
+            fontSize: "96px",
+            color: "#aa0",
+          }}
+        />
+      }
+    />
+  ),
+  defaultErrorComponent: ({ error }) => <ErrorComponent error={error} />,
+  context: {
+    urqlClient,
+    antApp: {} as useAppProps,
+  },
+  defaultPreload: false,
+});
 
 declare module "@tanstack/react-router" {
   interface Register {
-    router: Awaited<typeof routerPromise>;
+    router: typeof router;
   }
   interface StaticDataRouteOption {
     authorizationRules: AuthorizationRule[] | null;
   }
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 function RouterWrapper() {
   const [isServerReachable, setIsServerReachable] = useState<
     boolean | undefined
   >(undefined);
-
-  const [router] = useAwaited({
-    promise: routerPromise,
-  });
 
   useEffect(() => {
     if (isServerReachable !== undefined) {
@@ -191,10 +181,8 @@ function RouterWrapper() {
   );
 }
 
-const rootElement = document.getElementById("root")!;
-if (!rootElement.innerHTML) {
-  const root = createRoot(rootElement);
-  root.render(
+export function Main() {
+  return (
     <StrictMode>
       <ThemeConfigProvider>
         <AntConfigProvider>

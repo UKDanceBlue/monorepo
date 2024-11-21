@@ -56,7 +56,6 @@ import {
 } from "type-graphql";
 
 import { auditLogger } from "#logging/auditLogging.js";
-import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
@@ -505,7 +504,7 @@ export class PersonResolver {
   }
 
   @QueryAccessControl<FundraisingEntryNode>(
-    async ({ id: { id } }, context): Promise<boolean> => {
+    async ({ id: { id: rootPersonId } }, context): Promise<boolean> => {
       // We can't grant blanket access as otherwise people would see who else was assigned to an entry
       // You can view all assignments for an entry if you are:
       // 1. A fundraising coordinator or chair
@@ -526,10 +525,16 @@ export class PersonResolver {
         teamMemberships,
         userData: { userId },
       } = context;
-      // 2. The captain of the team the entry is associated with
+
       if (userId == null) {
         return false;
       }
+      // 2. The user themselves
+      if (rootPersonId === userId) {
+        return true;
+      }
+
+      // 3. The captain of the team the user is on
       const captainOf = teamMemberships.filter(
         (membership) => membership.position === MembershipPositionType.Captain
       );
@@ -537,24 +542,19 @@ export class PersonResolver {
         return false;
       }
 
-      const fundraisingEntryRepository = Container.get(
-        FundraisingEntryRepository
-      );
-      const entry = await fundraisingEntryRepository.findEntryByUnique({
-        uuid: id,
+      const rootPersonMembership = await Container.get(
+        PersonRepository
+      ).findMembershipsOfPerson({
+        uuid: rootPersonId,
       });
-      if (entry.isErr()) {
+      if (rootPersonMembership.isErr()) {
         return false;
       }
-      const dbFundsRepository = Container.get(DBFundsRepository);
-      const teams = await dbFundsRepository.getTeamsForDbFundsTeam({
-        id: entry.value.dbFundsEntry.dbFundsTeamId,
-      });
-      if (teams.isErr()) {
-        return false;
-      }
-      return captainOf.some(({ teamId }) =>
-        teams.value.some((team) => team.uuid === teamId)
+
+      return captainOf.some((captain) =>
+        rootPersonMembership.value.some(
+          (membership) => membership.team.uuid === captain.teamId
+        )
       );
     }
   )

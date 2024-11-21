@@ -1,5 +1,5 @@
 import { Service } from "@freshgum/typedi";
-import { Prisma, PrismaClient, Team } from "@prisma/client";
+import { Prisma, PrismaClient, SolicitationCode, Team } from "@prisma/client";
 import type {
   BulkTeamInput,
   MarathonYearString,
@@ -7,7 +7,11 @@ import type {
   TeamType,
 } from "@ukdanceblue/common";
 import { MembershipPositionType, TeamLegacyStatus } from "@ukdanceblue/common";
-import { BasicError, ConcreteResult } from "@ukdanceblue/common/error";
+import {
+  BasicError,
+  ConcreteResult,
+  optionOf,
+} from "@ukdanceblue/common/error";
 import { None, Ok, Option, Result, Some } from "ts-results-es";
 
 import { SomePrismaError } from "#error/prisma.js";
@@ -83,7 +87,7 @@ function makeMarathonWhere(param: MarathonParam[]) {
   };
 }
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export class TeamRepository {
@@ -242,8 +246,10 @@ export class TeamRepository {
         },
         where: {
           dbFundsTeam: {
-            teams: {
-              some: param,
+            solicitationCode: {
+              teams: {
+                some: param,
+              },
             },
           },
         },
@@ -402,6 +408,24 @@ export class TeamRepository {
       } else {
         throw error;
       }
+    }
+  }
+
+  async getSolicitationCodeForTeam(
+    param: SimpleUniqueParam
+  ): Promise<
+    ConcreteResult<Option<SolicitationCode>, SomePrismaError | BasicError>
+  > {
+    try {
+      const team = await this.prisma.team.findUnique({
+        where: param,
+        include: {
+          solicitationCode: true,
+        },
+      });
+      return Ok(optionOf(team?.solicitationCode));
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
     }
   }
 }

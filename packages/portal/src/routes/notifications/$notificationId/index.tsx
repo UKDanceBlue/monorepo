@@ -4,11 +4,11 @@ import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
 import { useQuery } from "urql";
 
-import { NotificationDeliveriesTable } from "#elements/tables/notification/NotificationDeliveriesTable.js";
-import { NotificationViewer } from "#elements/viewers/notification/NotificationViewer.js";
-import { graphql } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
+import { NotificationDeliveriesTable } from "@/elements/tables/notification/NotificationDeliveriesTable.js";
+import { NotificationViewer } from "@/elements/viewers/notification/NotificationViewer.js";
+import { graphql } from "@/graphql/index.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
+import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
 
 const notificationViewerDocument = graphql(/* GraphQL */ `
   query NotificationViewer($uuid: GlobalId!) {

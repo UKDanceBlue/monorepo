@@ -1,15 +1,14 @@
 import { fileURLToPath } from "node:url";
 
 import eslintJs from "@eslint/js";
+import eslintPluginVitest from "@vitest/eslint-plugin";
 import eslintConfigPrettier from "eslint-config-prettier";
-import eslintPluginJsdoc from "eslint-plugin-jsdoc";
 import eslintPluginNode from "eslint-plugin-n";
 import eslintPluginReact from "eslint-plugin-react";
 import eslintPluginReactHooks from "eslint-plugin-react-hooks";
 import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
 import eslintPluginSortImports from "eslint-plugin-simple-import-sort";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
-import eslintPluginVitest from "eslint-plugin-vitest";
 import globals from "globals";
 import { dirname } from "path";
 import eslintTs from "typescript-eslint";
@@ -62,15 +61,7 @@ export default eslintTs.config(
       reportUnusedDisableDirectives: true,
     },
     plugins: {
-      jsdoc: eslintPluginJsdoc,
       unicorn: eslintPluginUnicorn,
-    },
-    settings: {
-      jsdoc: {
-        tagNamePreference: {
-          returns: "return",
-        },
-      },
     },
     rules: {
       // Possible Errors
@@ -107,6 +98,15 @@ export default eslintTs.config(
           enforceForRenamedProperties: false,
         },
       ],
+      // TODO: Enable these rules and use them to guide cleaning up the codebase, figure out exact limits later
+      // "complexity": ["warn", { max: 10, variant: "modified" }],
+      // "max-lines": [
+      //   "warn",
+      //   { max: 300, skipBlankLines: true, skipComments: true },
+      // ],
+      // "max-nested-callbacks": ["warn", { max: 4 }],
+      // "max-depth": ["warn", { max: 4 }],
+      // "max-params": ["warn", { max: 4 }],
       "no-useless-concat": "error",
       "prefer-numeric-literals": "error",
       "prefer-object-spread": "error",
@@ -117,12 +117,6 @@ export default eslintTs.config(
       "no-self-compare": "error",
       "require-atomic-updates": ["error", { allowProperties: true }],
       "eqeqeq": ["error", "smart"],
-      // jsdoc
-      "jsdoc/no-types": "off",
-      "jsdoc/require-param-type": "off",
-      "jsdoc/require-returns-type": "off",
-      // Don't require jsdoc
-      "jsdoc/require-jsdoc": "off",
       // Unicorn Plugin
       "unicorn/better-regex": "error",
       "unicorn/catch-error-name": "error",
@@ -215,7 +209,10 @@ export default eslintTs.config(
       },
     },
     rules: {
-      "react-refresh/only-export-components": "warn",
+      "react-refresh/only-export-components": [
+        "warn",
+        { allowConstantExport: true },
+      ],
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
       // We don't need to import React in every file for JSX

@@ -1,16 +1,14 @@
 console.log(
   "This page shows different possible formats. the very top config is of our tab bar for example."
 );
-import { ConfigItem } from "@elements/forms/config/ConfigItem";
-import { useConfigForm } from "@elements/forms/config/useConfigForm";
 import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Collapse, Divider, Flex, Form, Input, Space } from "antd";
 import { useState } from "react";
 
-import { ConfigItem } from "#elements/forms/config/ConfigItem.js";
-import { useConfigForm } from "#elements/forms/config/useConfigForm.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
+import { ConfigItem } from "@/elements/forms/config/ConfigItem.js";
+import { useConfigForm } from "@/elements/forms/config/useConfigForm.js";
+import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
 
 // Form keys can only contain uppercase letters and underscores
 const FORM_KEY_REGEX = /^[A-Z_]+$/;

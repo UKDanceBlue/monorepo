@@ -4,7 +4,7 @@ import type { DateTime } from "luxon";
 import { Interval } from "luxon";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
+import { LuxonDatePicker } from "@/elements/components/antLuxonComponents.js";
 
 export function EventOccurrencePicker<
   XEventOccurrenceInput extends

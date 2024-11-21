@@ -14,7 +14,8 @@
       "console": "integratedTerminal",
       "presentation": {
         "group": "2graphql"
-      }
+      },
+      "autoAttachChildProcesses": false
     },
     {
       "name": "GraphQL: Watch Mobile",
@@ -26,7 +27,8 @@
       "console": "integratedTerminal",
       "presentation": {
         "group": "2graphql"
-      }
+      },
+      "autoAttachChildProcesses": false
     },
     {
       "name": "Common: Watch",
@@ -38,7 +40,8 @@
       "console": "integratedTerminal",
       "presentation": {
         "group": "3shared"
-      }
+      },
+      "autoAttachChildProcesses": false
     },
     {
       "name": "Server: Start",
@@ -63,7 +66,8 @@
       "console": "integratedTerminal",
       "presentation": {
         "group": "6server"
-      }
+      },
+      "autoAttachChildProcesses": false
     },
     {
       "name": "Portal: Dev",
@@ -75,7 +79,8 @@
       "console": "integratedTerminal",
       "presentation": {
         "group": "5portal"
-      }
+      },
+      "autoAttachChildProcesses": false
     },
     {
       "name": "Mobile: Start",
@@ -85,12 +90,32 @@
       "skipFiles": ["<node_internals>/**"],
       "type": "node",
       "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/packages/mobile",
       "presentation": {
         "group": "4mobile"
       },
       "env": {
-        "REACT_NATIVE_PACKAGER_HOSTNAME": "0.0.0.0"
-      }
+        "REACT_EDITOR": "code"
+      },
+
+      "autoAttachChildProcesses": false
+    },
+    {
+      "name": "Mobile: Start (Tunnel)",
+      "request": "launch",
+      "runtimeArgs": ["run", "mobile:start:tunnel"],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/packages/mobile",
+      "presentation": {
+        "group": "4mobile"
+      },
+      "env": {
+        "REACT_EDITOR": "code"
+      },
+      "autoAttachChildProcesses": false
     },
     {
       "name": "Debug Portal (firefox)",
@@ -120,6 +145,18 @@
       "presentation": {
         "group": "4mobile"
       }
+    },
+    {
+      "name": "Tunnel Server",
+      "request": "launch",
+      "type": "node",
+      "runtimeExecutable": "bash",
+      "args": ["${workspaceFolder}/.devcontainer/tunnel.sh", "server"],
+      "autoAttachChildProcesses": false,
+      "presentation": {
+        "hidden": true
+      },
+      "console": "integratedTerminal"
     }
   ],
   "compounds": [
@@ -137,7 +174,7 @@
     },
     {
       "name": "Dev Environment: Server",
-      "configurations": ["Server: Start", "Common: Watch"],
+      "configurations": ["Server: Start", "Common: Watch", "Tunnel Server"],
       "preLaunchTask": "Server: Prisma Generate",
       "presentation": {
         "group": "0dev-enviroment",
@@ -163,7 +200,8 @@
         "Server: Start",
         "Mobile: Start",
         "Common: Watch",
-        "GraphQL: Watch Mobile"
+        "GraphQL: Watch Mobile",
+        "Tunnel Server"
       ],
       "presentation": {
         "group": "0dev-enviroment",
@@ -178,7 +216,8 @@
         "Mobile: Start",
         "Common: Watch",
         "GraphQL: Watch Portal",
-        "GraphQL: Watch Mobile"
+        "GraphQL: Watch Mobile",
+        "Tunnel Server"
       ],
       "preLaunchTask": "Server: Prisma Generate",
       "presentation": {

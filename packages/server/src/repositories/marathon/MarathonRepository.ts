@@ -60,7 +60,7 @@ export type UniqueMarathonParam =
   | { uuid: string }
   | { year: string };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export class MarathonRepository {
@@ -172,8 +172,8 @@ export class MarathonRepository {
     endDate,
   }: {
     year: string;
-    startDate?: string | null;
-    endDate?: string | null;
+    startDate?: string | undefined | null;
+    endDate?: string | undefined | null;
   }): Promise<Result<Marathon, RepositoryError>> {
     try {
       const marathon = await this.prisma.marathon.create({
@@ -197,8 +197,8 @@ export class MarathonRepository {
       endDate,
     }: {
       year?: string;
-      startDate?: string | null;
-      endDate?: string | null;
+      startDate?: string | undefined | null;
+      endDate?: string | undefined | null;
     }
   ): Promise<Result<Marathon, RepositoryError>> {
     try {

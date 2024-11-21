@@ -18,16 +18,16 @@ To bump the app's version:
 const bundleVersion: Version = {
   major: 2,
   minor: 8,
-  patch: 0,
+  patch: 1,
 } as const;
 const nativeVersion: Version = {
   major: 2,
   minor: 8,
-  patch: 0,
+  patch: 1,
 } as const;
 
 // Both the sum of version.patch + buildsThisVersion and the sum of baseBuildCount + buildsThisVersion must increase each time a native build is submitted.
-const baseBuildCount = 44;
+const baseBuildCount = 45;
 const buildsThisVersion = 1;
 
 /*
@@ -93,6 +93,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     iosBuildString: buildNumber,
     runtimeVersion,
     qualifiedName,
+    allowHttp: IS_DEV,
   });
 };
 
@@ -112,6 +113,7 @@ function makeExpoConfig({
   iosBuildString,
   runtimeVersion,
   qualifiedName,
+  allowHttp,
 }: {
   baseConfig: Partial<ExpoConfig>;
   name: "DB DEV CLIENT" | "DanceBlue";
@@ -121,6 +123,7 @@ function makeExpoConfig({
   iosBuildString: SemVer;
   runtimeVersion: SemVer;
   qualifiedName: DanceBlueQualifiedName;
+  allowHttp: boolean;
 }): ExpoConfig {
   const iosConfig = baseConfig.ios ?? {};
   const androidConfig = baseConfig.android ?? {};
@@ -130,6 +133,12 @@ function makeExpoConfig({
   androidConfig.versionCode = androidBuildNumber;
 
   iosConfig.bundleIdentifier = qualifiedName;
+  iosConfig.infoPlist = {
+    ...iosConfig.infoPlist,
+    NSAppTransportSecurity: {
+      NSAllowsArbitraryLoads: allowHttp,
+    },
+  };
   androidConfig.package = qualifiedName;
 
   return {

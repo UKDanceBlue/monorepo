@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 
 import { FileManager } from "#files/FileManager.js";
 import { combineMimePartsToString } from "#files/mime.js";
+import { getHostUrl } from "#lib/host.js";
 import { EventRepository } from "#repositories/event/EventRepository.js";
 import { RouterService } from "#routes/RouteService.js";
 
@@ -81,7 +82,8 @@ export default class EventsRouter extends RouterService {
 
                 if (image.file) {
                   const externalUrl = await this.fileManager.getExternalUrl(
-                    image.file
+                    image.file,
+                    getHostUrl(req)
                   );
                   if (externalUrl) {
                     fileData = {

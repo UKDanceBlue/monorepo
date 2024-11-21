@@ -3,8 +3,8 @@ import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { Button, Table } from "antd";
 import type { UseQueryExecute } from "urql";
 
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
+import type { FragmentType } from "@/graphql/index.js";
+import { getFragmentData, graphql } from "@/graphql/index.js";
 
 import { usePointEntryDeletePopup } from "../../components/point-entry/PointEntryDeletePopup";
 

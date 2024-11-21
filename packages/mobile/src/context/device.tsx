@@ -25,9 +25,9 @@ import {
 import { createContext, useContext, useEffect, useState } from "react";
 import { useMutation } from "urql";
 
-import { useNetworkStatus } from "#common/customHooks";
-import { Logger } from "#common/logger/Logger";
-import { graphql } from "#graphql/index";
+import { useNetworkStatus } from "@/common/customHooks";
+import { Logger } from "@/common/logger/Logger";
+import { graphql } from "@/graphql/index";
 
 import { universalCatch } from "../common/logging";
 import { useAuthState } from "./auth";
@@ -117,7 +117,6 @@ async function registerPushNotifications() {
           allowCriticalAlerts: true,
           provideAppNotificationSettings: false,
           allowProvisional: false,
-          allowAnnouncements: false,
         },
       });
     }

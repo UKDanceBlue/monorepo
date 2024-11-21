@@ -3,7 +3,7 @@ import { FeedItem, Prisma, PrismaClient } from "@prisma/client";
 
 type UniqueParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export class FeedRepository {
@@ -28,8 +28,8 @@ export class FeedRepository {
     imageUuid,
   }: {
     title: string;
-    textContent?: string | null | undefined;
-    imageUuid?: string | null | undefined;
+    textContent?: string | undefined | null;
+    imageUuid?: string | undefined | null;
   }) {
     return this.prisma.feedItem.create({
       data: {
@@ -51,7 +51,7 @@ export class FeedRepository {
     {
       title,
       textContent,
-    }: { title: string; textContent?: string | null | undefined }
+    }: { title: string; textContent?: string | undefined | null }
   ): Promise<FeedItem | null> {
     try {
       return await this.prisma.feedItem.update({

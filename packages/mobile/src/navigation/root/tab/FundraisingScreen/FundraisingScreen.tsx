@@ -1,12 +1,11 @@
 import { FontAwesome5 } from "@expo/vector-icons";
-import { MembershipPositionType } from "@ukdanceblue/common";
 import { Center, Text } from "native-base";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useWindowDimensions } from "react-native";
 
-import type { StandingType } from "#common-types/StandingType";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
+import type { StandingType } from "@/common-types/StandingType";
+import type { FragmentType } from "@/graphql/index.js";
+import { getFragmentData, graphql } from "@/graphql/index.js";
 
 export const MyTeamFragment = graphql(/* GraphQL */ `
   fragment MyTeamFragment on TeamNode {
@@ -48,7 +47,7 @@ export const MyFundraisingFragment = graphql(/* GraphQL */ `
 
 const TeamScreen = ({
   myTeamFragment,
-  myFundraisingFragment,
+  // myFundraisingFragment,
   userUuid,
   loading: _loading,
   refresh: _refresh,
@@ -60,16 +59,16 @@ const TeamScreen = ({
   refresh: () => void;
 }) => {
   const team = getFragmentData(MyTeamFragment, myTeamFragment);
-  const fundraising = getFragmentData(
-    MyFundraisingFragment,
-    myFundraisingFragment
-  );
+  // const fundraising = getFragmentData(
+  //   MyFundraisingFragment,
+  //   myFundraisingFragment
+  // );
 
-  const [teamStandings, setTeamStandings] = useState<StandingType[]>([]);
+  // const [teamStandings, setTeamStandings] = useState<StandingType[]>([]);
 
   useEffect(() => {
     if (team?.pointEntries == null) {
-      setTeamStandings([]);
+      // setTeamStandings([]);
       return;
     } else {
       const entriesRecord = new Map<string, StandingType>();
@@ -102,9 +101,9 @@ const TeamScreen = ({
           }
         }
       }
-      setTeamStandings(
-        [...entriesRecord.values()].sort((a, b) => b.points - a.points)
-      );
+      // setTeamStandings(
+      //   [...entriesRecord.values()].sort((a, b) => b.points - a.points)
+      // );
     }
   }, [team?.pointEntries, userUuid]);
 
@@ -131,7 +130,7 @@ const TeamScreen = ({
       </Center>
     );
   } else {
-    const { name, member, doners } = team;
+    // const { name, member, doners } = team;
 
     return undefined;
     // <FundraisingInformation

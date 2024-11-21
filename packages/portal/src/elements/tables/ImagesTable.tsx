@@ -6,11 +6,11 @@ import { useMemo, useState } from "react";
 import { thumbHashToDataURL } from "thumbhash";
 import { useQuery } from "urql";
 
-import { API_BASE_URL } from "#config/api.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
-import { useAntFeedback } from "#hooks/useAntFeedback.js";
-import { useListQuery } from "#hooks/useListQuery.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { API_BASE_URL } from "@/config/api.js";
+import { getFragmentData, graphql } from "@/graphql/index.js";
+import { useAntFeedback } from "@/hooks/useAntFeedback.js";
+import { useListQuery } from "@/hooks/useListQuery.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
 
 const ImagesTableFragment = graphql(/* GraphQL */ `
   fragment ImagesTableFragment on ImageNode {

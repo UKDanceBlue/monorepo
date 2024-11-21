@@ -38,7 +38,7 @@ export type PointEntryFilters = FilterItems<
 
 type UniquePointEntryParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export class PointEntryRepository {

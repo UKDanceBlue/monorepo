@@ -57,8 +57,8 @@ export class TeamNode extends TimestampedResource implements Node {
     name: string;
     type: TeamType;
     legacyStatus: TeamLegacyStatus;
-    createdAt?: Date | null;
-    updatedAt?: Date | null;
+    createdAt?: Date | undefined | null;
+    updatedAt?: Date | undefined | null;
   }) {
     return TeamNode.createInstance().withValues(init);
   }

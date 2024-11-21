@@ -1,5 +1,5 @@
 import { DateTimeISOResolver } from "graphql-scalars";
-import { ArgsType,Field, InputType, ObjectType } from "type-graphql";
+import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { MarathonHourNode } from "../resources/MarathonHour.js";
@@ -19,7 +19,7 @@ export class CreateMarathonHourInput {
   title!: string;
 
   @Field(() => String, { nullable: true })
-  details?: string | null;
+  details?: string | undefined | null;
 
   @Field(() => String)
   durationInfo!: string;
@@ -34,7 +34,7 @@ export class SetMarathonHourInput {
   title!: string;
 
   @Field(() => String, { nullable: true })
-  details?: string | null;
+  details?: string | undefined | null;
 
   @Field(() => String)
   durationInfo!: string;

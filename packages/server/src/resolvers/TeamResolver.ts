@@ -16,6 +16,7 @@ import {
   MutationAccessControl,
   PointEntryNode,
   QueryAccessControl,
+  SolicitationCodeNode,
   SortDirection,
   TeamNode,
 } from "@ukdanceblue/common";
@@ -35,8 +36,7 @@ import {
   FormattedConcreteError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
-import { VoidResolver } from "graphql-scalars";
-import { Err, Ok, Option } from "ts-results-es";
+import { AsyncResult, Err, Ok, Option } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -51,7 +51,10 @@ import {
 } from "type-graphql";
 
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
-import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
+import {
+  fundraisingEntryModelToNode,
+  solicitationCodeModelToNode,
+} from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
 import { membershipModelToResource } from "#repositories/membership/membershipModelToResource.js";
@@ -394,7 +397,7 @@ export class TeamResolver {
     return result.map((row) =>
       row.map((row) => {
         const teamInfoInstance = new DbFundsTeamInfo();
-        teamInfoInstance.dbNum = row.dbNum;
+        teamInfoInstance.dbNum = row.solicitationCode.code;
         teamInfoInstance.name = row.name;
         return teamInfoInstance;
       })
@@ -504,27 +507,21 @@ export class TeamResolver {
 
     return rows.value.map((row) => {
       const teamInfoInstance = new DbFundsTeamInfo();
-      teamInfoInstance.dbNum = row.dbNum;
+      teamInfoInstance.dbNum = row.solicitationCode.code;
       teamInfoInstance.name = row.name;
       return teamInfoInstance;
     });
   }
 
-  @MutationAccessControl(globalFundraisingAccessParam)
-  @Mutation(() => VoidResolver, { name: "assignTeamToDbFundsTeam" })
-  async assignTeamToDbFundsTeam(
-    @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId,
-    @Arg("dbFundsTeamDbNum", () => Int) dbFundsTeamDbNum: number
-  ): Promise<typeof Common.VoidScalar> {
-    const result = await this.dbFundsRepository.assignTeamToDbFundsTeam(
-      { uuid: teamId },
-      { dbNum: dbFundsTeamDbNum }
-    );
-
-    if (result.isErr()) {
-      throw new FormattedConcreteError(result);
-    }
-
-    return Common.VoidScalar;
+  @QueryAccessControl(globalFundraisingAccessParam)
+  @FieldResolver(() => SolicitationCodeNode, { nullable: true })
+  async solicitationCode(
+    @Root() { id: { id } }: TeamNode
+  ): Promise<ConcreteResult<Option<SolicitationCodeNode>>> {
+    return new AsyncResult(
+      this.teamRepository.getSolicitationCodeForTeam({
+        uuid: id,
+      })
+    ).map((row) => row.map(solicitationCodeModelToNode)).promise;
   }
 }

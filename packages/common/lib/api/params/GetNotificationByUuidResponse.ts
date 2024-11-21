@@ -1,4 +1,4 @@
-import { ArgsType, Field, InputType, Int,ObjectType } from "type-graphql";
+import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import {
@@ -34,13 +34,13 @@ class NotificationAudienceInput {
   all?: boolean;
 
   @Field(() => TeamType, { nullable: true })
-  memberOfTeamType?: TeamType | null;
+  memberOfTeamType?: TeamType | undefined | null;
 
   @Field(() => [GlobalIdScalar], { nullable: true })
-  memberOfTeams?: GlobalId[] | null;
+  memberOfTeams?: GlobalId[] | undefined | null;
 
   @Field(() => [GlobalIdScalar], { nullable: true })
-  users?: GlobalId[] | null;
+  users?: GlobalId[] | undefined | null;
 }
 
 @ArgsType()
@@ -52,7 +52,7 @@ export class StageNotificationArgs {
   body!: string;
 
   @Field(() => String, { nullable: true })
-  url?: string | null;
+  url?: string | undefined | null;
 
   @Field(() => NotificationAudienceInput)
   audience!: NotificationAudienceInput;

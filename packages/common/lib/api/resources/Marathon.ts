@@ -3,7 +3,7 @@ import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
-import { createNodeClasses,Node } from "../relay.js";
+import { createNodeClasses, Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
@@ -37,10 +37,10 @@ export class MarathonNode extends TimestampedResource implements Node {
   }: {
     id: string;
     year: string;
-    startDate?: Date | null;
-    endDate?: Date | null;
-    createdAt?: Date | null;
-    updatedAt?: Date | null;
+    startDate?: Date | undefined | null;
+    endDate?: Date | undefined | null;
+    createdAt?: Date | undefined | null;
+    updatedAt?: Date | undefined | null;
   }): MarathonNode {
     return this.createInstance().withValues({
       id,

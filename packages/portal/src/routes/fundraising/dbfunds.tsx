@@ -7,9 +7,9 @@ import { useMemo, useState } from "react";
 import { useClient, useQuery } from "urql";
 import { utils, writeFile } from "xlsx";
 
-import { useMarathon } from "#config/marathonContext.js";
-import { graphql } from "#graphql/index.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
+import { useMarathon } from "@/config/marathonContext.js";
+import { graphql } from "@/graphql/index.js";
+import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
 
 interface FundraisingTeam {
   name: string;

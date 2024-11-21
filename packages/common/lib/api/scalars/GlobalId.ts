@@ -2,7 +2,7 @@ import { GraphQLScalarType, Kind } from "graphql";
 import type { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 
-import { InvalidArgumentError } from "../../error/direct.js";
+import { InvalidArgumentError } from "../../error/index.js";
 import {
   arrayToBase64String,
   base64StringToArray,

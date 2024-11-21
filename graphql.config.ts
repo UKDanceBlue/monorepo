@@ -55,6 +55,8 @@ const config: TypeScriptPluginConfig = {
   },
   strictScalars: true,
   immutableTypes: true,
+  declarationKind: "interface",
+  useImplementingTypes: true,
 };
 
 const generates: CodegenConfig["generates"] = {};
@@ -91,8 +93,6 @@ const codegenConfig: CodegenConfig = {
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-invalid-void-type */
-/* eslint-disable @typescript-eslint/consistent-indexed-object-style */
-/* eslint-disable @typescript-eslint/consistent-type-definitions */
 /* eslint-disable @typescript-eslint/array-type */
 /* eslint-disable unicorn/prefer-export-from */
 /* eslint-disable sort-imports/exports */`

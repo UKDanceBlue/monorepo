@@ -1,10 +1,9 @@
-import { Container, Token } from "@freshgum/typedi";
+import { Container } from "@freshgum/typedi";
 import { PrismaClient } from "@prisma/client";
 
+import { prismaToken } from "#lib/typediTokens.js";
 import { sqlLogger } from "#logging/sqlLogging.js";
 import { logger } from "#logging/standardLogging.js";
-
-export const prismaToken = new Token<PrismaClient>("PrismaClient");
 
 export const prisma = new PrismaClient({
   log: [

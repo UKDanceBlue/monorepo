@@ -14,11 +14,11 @@ import { Button, Descriptions, Empty, Flex } from "antd";
 import { useState } from "react";
 import { useMutation } from "urql";
 
-import { PersonSearch } from "#elements/components/person/PersonSearch.js";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
-import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { PersonSearch } from "@/elements/components/person/PersonSearch.js";
+import type { FragmentType } from "@/graphql/index.js";
+import { getFragmentData, graphql } from "@/graphql/index.js";
+import { useAuthorizationRequirement } from "@/hooks/useLoginState.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
 
 import { useTeamDeletePopup } from "../../components/team/TeamDeletePopup";
 import { AssignToTeamPopup } from "./AssignToTeamPopup.js";

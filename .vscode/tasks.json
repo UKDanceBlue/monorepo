@@ -3,16 +3,9 @@
   "tasks": [
     {
       "type": "npm",
-      "script": "server:prisma-generate",
-      "problemMatcher": [],
-      "label": "Server: Prisma Generate",
-      "detail": "yarn workspace @ukdanceblue/server prisma generate"
-    },
-    {
-      "type": "npm",
       "script": "common:build",
       "group": "build",
-      "problemMatcher": [],
+      "problemMatcher": "$tsc",
       "label": "Common: Build",
       "detail": "yarn workspace @ukdanceblue/common run build",
       "dependsOn": []
@@ -41,13 +34,13 @@
     {
       "type": "npm",
       "script": "repo:check",
-      "problemMatcher": ["$tsc"],
+      "problemMatcher": "$tsc",
       "label": "Repo: Check"
     },
     {
       "type": "npm",
       "script": "repo:lint",
-      "problemMatcher": ["$eslint-stylish"],
+      "problemMatcher": "$eslint-stylish",
       "label": "Repo: Lint",
       "detail": "eslint ."
     },
@@ -118,12 +111,19 @@
     },
     {
       "type": "npm",
+      "script": "server:prisma-generate",
+      "problemMatcher": [],
+      "label": "Server: Prisma Generate",
+      "detail": "yarn workspace @ukdanceblue/server prisma generate"
+    },
+    {
+      "type": "npm",
       "script": "server:build",
       "group": "build",
-      "problemMatcher": [],
+      "problemMatcher": "$tsc",
       "label": "Server: Build",
       "detail": "yarn workspace @ukdanceblue/server run build",
-      "dependsOn": ["Common: Build"]
+      "dependsOn": ["Common: Build", "Server: Prisma Generate"]
     }
   ]
 }

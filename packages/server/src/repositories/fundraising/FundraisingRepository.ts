@@ -1,5 +1,7 @@
 import { Service } from "@freshgum/typedi";
 import {
+  DailyDepartmentNotification,
+  DailyDepartmentNotificationBatch,
   DBFundsFundraisingEntry,
   FundraisingAssignment,
   FundraisingEntry,
@@ -8,12 +10,14 @@ import {
   Person,
   Prisma,
   PrismaClient,
+  SolicitationCode,
   Team,
 } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 import {
   ActionDeniedError,
   InvalidArgumentError,
+  InvariantError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
@@ -50,10 +54,15 @@ type FundraisingEntryNumericKey = (typeof fundraisingEntryNumericKeys)[number];
 const fundraisingEntryOneOfKeys = ["teamId"] as const;
 type FundraisingEntryOneOfKey = (typeof fundraisingEntryOneOfKeys)[number];
 
-const fundraisingEntryStringKeys = ["donatedTo", "donatedBy"] as const;
+const fundraisingEntryStringKeys = [
+  "donatedTo",
+  "donatedBy",
+  "solicitationCode",
+] as const;
 type FundraisingEntryStringKey = (typeof fundraisingEntryStringKeys)[number];
 
 export type FundraisingEntryOrderKeys =
+  | "solicitationCode"
   | "teamId"
   | "donatedOn"
   | "amount"
@@ -73,13 +82,113 @@ export type FundraisingEntryFilters = FilterItems<
 >;
 
 const defaultInclude = {
-  dbFundsEntry: true,
+  solicitationCodeOverride: true,
+  ddn: {
+    include: {
+      batch: true,
+      solicitationCode: true,
+    },
+  },
+  dbFundsEntry: {
+    include: {
+      dbFundsTeam: {
+        select: {
+          solicitationCode: true,
+        },
+      },
+    },
+  },
 } satisfies Prisma.FundraisingEntryWithMetaInclude;
+
+export type WideFundraisingEntryWithMeta =
+  | (FundraisingEntryWithMeta & {
+      solicitationCodeOverride: SolicitationCode | null;
+      ddn: DailyDepartmentNotification & {
+        batch: DailyDepartmentNotificationBatch;
+        solicitationCode: SolicitationCode;
+      };
+    })
+  | (FundraisingEntryWithMeta & {
+      solicitationCodeOverride: SolicitationCode | null;
+      dbFundsEntry: DBFundsFundraisingEntry & {
+        dbFundsTeam: { solicitationCode: SolicitationCode };
+      };
+    })
+  | null;
+
+function asWideFundraisingEntryWithMeta(
+  entry: FundraisingEntryWithMeta & {
+    solicitationCodeOverride: SolicitationCode | null;
+    ddn:
+      | (DailyDepartmentNotification & {
+          batch: DailyDepartmentNotificationBatch;
+          solicitationCode: SolicitationCode;
+        })
+      | null;
+    dbFundsEntry:
+      | (DBFundsFundraisingEntry & {
+          dbFundsTeam: { solicitationCode: SolicitationCode };
+        })
+      | null;
+  }
+): Result<WideFundraisingEntryWithMeta, InvariantError> {
+  if (entry.ddn && entry.dbFundsEntry) {
+    return Err(new InvariantError("Fundraising entry has multiple sources"));
+  }
+  if (entry.ddn) {
+    return Ok({
+      id: entry.id,
+      uuid: entry.uuid,
+      unassigned: entry.unassigned,
+      notes: entry.notes,
+      enteredByPersonId: entry.enteredByPersonId,
+      solicitationCodeOverrideId: entry.solicitationCodeOverrideId,
+      createdAt: entry.createdAt,
+      updatedAt: entry.updatedAt,
+      ddn: entry.ddn,
+      solicitationCodeOverride: entry.solicitationCodeOverride,
+      amount: entry.amount,
+      donatedBy: entry.donatedBy,
+      donatedOn: entry.donatedOn,
+      donatedTo: entry.donatedTo,
+      solicitationCodeText: entry.solicitationCodeText,
+    });
+  }
+  if (entry.dbFundsEntry) {
+    return Ok({
+      id: entry.id,
+      uuid: entry.uuid,
+      unassigned: entry.unassigned,
+      notes: entry.notes,
+      enteredByPersonId: entry.enteredByPersonId,
+      solicitationCodeOverrideId: entry.solicitationCodeOverrideId,
+      createdAt: entry.createdAt,
+      updatedAt: entry.updatedAt,
+      dbFundsEntry: entry.dbFundsEntry,
+      solicitationCodeOverride: entry.solicitationCodeOverride,
+      amount: entry.amount,
+      donatedBy: entry.donatedBy,
+      donatedOn: entry.donatedOn,
+      donatedTo: entry.donatedTo,
+      solicitationCodeText: entry.solicitationCodeText,
+    });
+  }
+  return Err(new InvariantError("Fundraising entry has no source"));
+}
 
 export type FundraisingEntryUniqueParam = SimpleUniqueParam;
 export type FundraisingAssignmentUniqueParam = SimpleUniqueParam;
+export type SolicitationCodeUniqueParam =
+  | SimpleUniqueParam
+  | {
+      code: number;
+      prefix: string;
+    };
 
-import { prismaToken } from "#prisma";
+import { Decimal } from "@prisma/client/runtime/library";
+
+import { prismaToken } from "#lib/typediTokens.js";
+import { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 
 @Service([prismaToken])
 export class FundraisingEntryRepository {
@@ -88,10 +197,7 @@ export class FundraisingEntryRepository {
   async findEntryByUnique(
     param: FundraisingEntryUniqueParam
   ): Promise<
-    Result<
-      FundraisingEntryWithMeta & { dbFundsEntry: DBFundsFundraisingEntry },
-      RepositoryError
-    >
+    Result<WideFundraisingEntryWithMeta, RepositoryError | InvariantError>
   > {
     try {
       const row = await this.prisma.fundraisingEntryWithMeta.findUnique({
@@ -101,7 +207,7 @@ export class FundraisingEntryRepository {
       if (!row) {
         return Err(new NotFoundError({ what: "FundraisingEntry" }));
       }
-      return Ok(row);
+      return asWideFundraisingEntryWithMeta(row);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }
@@ -161,10 +267,11 @@ export class FundraisingEntryRepository {
     } = {}
   ): Promise<
     Result<
-      readonly (FundraisingEntryWithMeta & {
-        dbFundsEntry: DBFundsFundraisingEntry;
-      })[],
-      RepositoryError | ActionDeniedError | InvalidArgumentError
+      WideFundraisingEntryWithMeta[],
+      | RepositoryError
+      | ActionDeniedError
+      | InvalidArgumentError
+      | InvariantError
     >
   > {
     try {
@@ -189,35 +296,41 @@ export class FundraisingEntryRepository {
         };
       }
       if (limits.forTeam) {
-        where.dbFundsEntry = {
-          ...where.dbFundsEntry,
-          // @ts-expect-error Don't know why this is causing an error, but I'm not going to worry about it
-          dbFundsTeam: {
-            teams: {
-              some: limits.forTeam,
-            },
-            // This 'satisfies' is to make sure that we don't accidentally ignore errors due to the ts-expect-error above
-          } satisfies Prisma.DBFundsTeamWhereInput,
+        const solicitationCodeWhere: Prisma.SolicitationCodeWhereInput = {
+          teams: {
+            some: limits.forTeam,
+          },
         };
+        where.OR = [
+          {
+            solicitationCodeOverride: solicitationCodeWhere,
+          },
+          {
+            dbFundsEntry: {
+              dbFundsTeam: {
+                solicitationCode: solicitationCodeWhere,
+              },
+            },
+            solicitationCodeOverride: null,
+          },
+          {
+            ddn: {
+              solicitationCode: solicitationCodeWhere,
+            },
+            solicitationCodeOverride: null,
+          },
+        ];
       }
 
       const rows = await this.prisma.fundraisingEntryWithMeta.findMany({
         include: defaultInclude,
         where,
-        orderBy,
+        orderBy: [orderBy],
         skip: skip ?? undefined,
         take: take ?? undefined,
       });
 
-      return Ok(
-        rows.filter(
-          (
-            row
-          ): row is typeof row & {
-            dbFundsEntry: NonNullable<typeof row.dbFundsEntry>;
-          } => Boolean(row.dbFundsEntry)
-        )
-      );
+      return Result.all(rows.map(asWideFundraisingEntryWithMeta));
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }
@@ -242,26 +355,31 @@ export class FundraisingEntryRepository {
         return Err(where.error);
       }
 
-      if (limits.assignedToPerson) {
-        where.value.assignments = {
-          ...where.value.assignments,
-          every: {
-            ...where.value.assignments?.every,
-            person: limits.assignedToPerson,
+      if (limits.forTeam) {
+        const solicitationCodeWhere: Prisma.SolicitationCodeWhereInput = {
+          teams: {
+            some: limits.forTeam,
           },
         };
-      }
-      if (limits.forTeam) {
-        where.value.dbFundsEntry = {
-          ...where.value.dbFundsEntry,
-          // @ts-expect-error Don't know why this is causing an error, but I'm not going to worry about it
-          dbFundsTeam: {
-            teams: {
-              some: limits.forTeam,
+        where.value.OR = [
+          {
+            solicitationCodeOverride: solicitationCodeWhere,
+          },
+          {
+            dbFundsEntry: {
+              dbFundsTeam: {
+                solicitationCode: solicitationCodeWhere,
+              },
             },
-            // This 'satisfies' is to make sure that we don't accidentally ignore errors due to the ts-expect-error above
-          } satisfies Prisma.DBFundsTeamWhereInput,
-        };
+            solicitationCodeOverride: null,
+          },
+          {
+            ddn: {
+              solicitationCode: solicitationCodeWhere,
+            },
+            solicitationCodeOverride: null,
+          },
+        ];
       }
 
       return Ok(
@@ -296,7 +414,10 @@ export class FundraisingEntryRepository {
     personParam: SimpleUniqueParam,
     { amount }: { amount: number }
   ): Promise<
-    Result<FundraisingAssignment, RepositoryError | ActionDeniedError>
+    Result<
+      FundraisingAssignment,
+      RepositoryError | ActionDeniedError | InvariantError
+    >
   > {
     if (amount < 0) {
       return Err(new ActionDeniedError("Amount must be non-negative"));
@@ -311,12 +432,25 @@ export class FundraisingEntryRepository {
       if (assignments.isErr()) {
         return Err(assignments.error);
       }
+      if (entry.value == null) {
+        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+      }
 
       const totalAssigned = assignments.value.reduce(
         (acc, assignment) => acc.add(assignment.amount),
         new Prisma.Decimal(0)
       );
-      if (entry.value.dbFundsEntry.amount.lessThan(totalAssigned.add(amount))) {
+      let entryAmount: Decimal;
+      if ("ddn" in entry.value) {
+        entryAmount = entry.value.ddn.combinedAmount;
+      } else if ("dbFundsEntry" in entry.value) {
+        entryAmount = entry.value.dbFundsEntry.amount;
+      } else {
+        entry.value satisfies never;
+        return Err(new InvariantError("Unexpected entry source type"));
+      }
+
+      if (entryAmount.lessThan(totalAssigned.add(amount))) {
         return Err(
           new ActionDeniedError("Total assigned amount exceeds entry amount")
         );
@@ -366,7 +500,11 @@ export class FundraisingEntryRepository {
         select: {
           id: true,
           parentEntry: {
-            select: { dbFundsEntry: { select: { amount: true } }, id: true },
+            select: {
+              ddn: { select: { combinedAmount: true } },
+              dbFundsEntry: { select: { amount: true } },
+              id: true,
+            },
           },
         },
       });
@@ -386,11 +524,16 @@ export class FundraisingEntryRepository {
           (acc, assignment) => acc.add(assignment.amount),
           new Prisma.Decimal(0)
         );
-      if (
-        assignment.parentEntry.dbFundsEntry.amount.lessThan(
-          totalAssigned.add(amount)
-        )
-      ) {
+
+      let entryAmount: Decimal;
+      if (assignment.parentEntry.ddn) {
+        entryAmount = assignment.parentEntry.ddn.combinedAmount;
+      } else if (assignment.parentEntry.dbFundsEntry) {
+        entryAmount = assignment.parentEntry.dbFundsEntry.amount;
+      } else {
+        return Err(new NotFoundError({ what: "FundraisingEntrySource" }));
+      }
+      if (entryAmount.lessThan(totalAssigned.add(amount))) {
         return Err(
           new ActionDeniedError("Total assigned amount exceeds entry amount")
         );
@@ -442,10 +585,25 @@ export class FundraisingEntryRepository {
           person: true,
           parentEntry: {
             select: {
+              solicitationCodeOverride: {
+                select: { teams: { select: { id: true } } },
+              },
+              ddn: {
+                select: {
+                  solicitationCode: {
+                    select: { teams: { select: { id: true } } },
+                  },
+                  batch: true,
+                },
+              },
               dbFundsEntry: {
                 select: {
                   dbFundsTeam: {
-                    select: { teams: { select: { id: true } } },
+                    select: {
+                      solicitationCode: {
+                        select: { teams: { select: { id: true } } },
+                      },
+                    },
                   },
                 },
               },
@@ -458,13 +616,18 @@ export class FundraisingEntryRepository {
         return Err(new NotFoundError({ what: "FundraisingAssignment" }));
       }
 
+      const teams =
+        assignment.parentEntry.solicitationCodeOverride?.teams ??
+        assignment.parentEntry.ddn?.solicitationCode.teams ??
+        assignment.parentEntry.dbFundsEntry?.dbFundsTeam.solicitationCode
+          .teams ??
+        [];
+
       const result = await this.prisma.membership.findFirst({
         where: {
           person: assignment.person,
           teamId: {
-            in: assignment.parentEntry.dbFundsEntry.dbFundsTeam.teams.map(
-              (t) => t.id
-            ),
+            in: teams.map((t) => t.id),
           },
         },
         include: { team: true, person: true },
@@ -483,18 +646,13 @@ export class FundraisingEntryRepository {
   async getEntryForAssignment(
     assignmentParam: FundraisingAssignmentUniqueParam
   ): Promise<
-    Result<
-      FundraisingEntryWithMeta & {
-        dbFundsEntry: DBFundsFundraisingEntry;
-      },
-      RepositoryError
-    >
+    Result<WideFundraisingEntryWithMeta, RepositoryError | InvariantError>
   > {
     try {
       const assignment = await this.prisma.fundraisingAssignment.findUnique({
         where: assignmentParam,
         select: {
-          parentEntry: {
+          parentEntryWithMeta: {
             include: defaultInclude,
           },
         },
@@ -502,7 +660,7 @@ export class FundraisingEntryRepository {
       if (!assignment) {
         return Err(new NotFoundError({ what: "FundraisingAssignment" }));
       }
-      return Ok(assignment.parentEntry);
+      return asWideFundraisingEntryWithMeta(assignment.parentEntryWithMeta!);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }
@@ -516,6 +674,318 @@ export class FundraisingEntryRepository {
         where: { person: personParam },
       });
       return Ok(assignments);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async getDdnForEntry(entryParam: FundraisingEntryUniqueParam): Promise<
+    Result<
+      DailyDepartmentNotification & {
+        batch: DailyDepartmentNotificationBatch;
+        solicitationCode: SolicitationCode;
+      },
+      RepositoryError | ActionDeniedError | InvariantError | NotFoundError
+    >
+  > {
+    try {
+      const entry = await this.prisma.fundraisingEntryWithMeta.findUnique({
+        where: entryParam,
+        include: {
+          ddn: {
+            include: {
+              batch: true,
+              solicitationCode: true,
+            },
+          },
+        },
+      });
+      if (!entry) {
+        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+      }
+      if (!entry.ddn) {
+        return Err(new NotFoundError({ what: "DailyDepartmentNotification" }));
+      }
+      return Ok(entry.ddn);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async getSolicitationCodeForEntry(
+    entryParam: FundraisingEntryUniqueParam,
+    includeTeams?: false
+  ): Promise<
+    Result<
+      SolicitationCode,
+      RepositoryError | ActionDeniedError | InvariantError | NotFoundError
+    >
+  >;
+  async getSolicitationCodeForEntry(
+    entryParam: FundraisingEntryUniqueParam,
+    includeTeams: true
+  ): Promise<
+    Result<
+      SolicitationCode & { teams: readonly Team[] },
+      RepositoryError | ActionDeniedError | InvariantError | NotFoundError
+    >
+  >;
+  async getSolicitationCodeForEntry(
+    entryParam: FundraisingEntryUniqueParam,
+    includeTeams?: boolean
+  ): Promise<
+    Result<
+      SolicitationCode | (SolicitationCode & { teams: readonly Team[] }),
+      RepositoryError | ActionDeniedError | InvariantError | NotFoundError
+    >
+  > {
+    try {
+      const entry = await this.prisma.fundraisingEntryWithMeta.findUnique({
+        where: entryParam,
+        include: {
+          solicitationCodeOverride: includeTeams
+            ? { include: { teams: true } }
+            : true,
+          ddn: {
+            select: {
+              solicitationCode: includeTeams
+                ? { include: { teams: true } }
+                : true,
+            },
+          },
+          dbFundsEntry: {
+            select: {
+              dbFundsTeam: {
+                select: {
+                  solicitationCode: includeTeams
+                    ? { include: { teams: true } }
+                    : true,
+                },
+              },
+            },
+          },
+        },
+      });
+      if (!entry) {
+        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+      }
+
+      const solicitationCode =
+        entry.solicitationCodeOverride ??
+        entry.ddn?.solicitationCode ??
+        entry.dbFundsEntry?.dbFundsTeam.solicitationCode;
+
+      if (!solicitationCode) {
+        return Err(
+          new NotFoundError({
+            what: "SolicitationCode",
+            where: "FundraisingEntry",
+          })
+        );
+      }
+      return Ok(solicitationCode);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async getEntriesForSolicitationCode(
+    solicitationCodeParam: SimpleUniqueParam
+  ): Promise<
+    Result<
+      readonly WideFundraisingEntryWithMeta[],
+      InvariantError | RepositoryError
+    >
+  > {
+    try {
+      const entries = await this.prisma.fundraisingEntryWithMeta.findMany({
+        where: {
+          OR: [
+            { solicitationCodeOverride: solicitationCodeParam },
+            {
+              ddn: { solicitationCode: solicitationCodeParam },
+              solicitationCodeOverride: null,
+            },
+            {
+              dbFundsEntry: {
+                dbFundsTeam: { solicitationCode: solicitationCodeParam },
+              },
+              solicitationCodeOverride: null,
+            },
+          ],
+        },
+        include: defaultInclude,
+      });
+      return Result.all(entries.map(asWideFundraisingEntryWithMeta));
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async getTeamsForSolitationCode(
+    solicitationCodeParam: SimpleUniqueParam,
+    {
+      marathonParam,
+    }: {
+      marathonParam?: UniqueMarathonParam;
+    }
+  ): Promise<
+    Result<readonly Team[], RepositoryError | ActionDeniedError | NotFoundError>
+  > {
+    try {
+      const teams = await this.prisma.team.findMany({
+        where: {
+          solicitationCode: solicitationCodeParam,
+          marathon: marathonParam,
+        },
+      });
+      return Ok(teams);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async assignSolitationCodeToTeam(
+    teamParam: SimpleUniqueParam,
+    solicitationCodeParam: SimpleUniqueParam
+  ): Promise<Result<None, RepositoryError | ActionDeniedError>> {
+    try {
+      const team = await this.prisma.team.findUnique({
+        where: teamParam,
+        include: { solicitationCode: true },
+      });
+      if (!team) {
+        return Err(new NotFoundError({ what: "Team" }));
+      }
+      if (team.solicitationCode) {
+        return Err(
+          new ActionDeniedError("Team already has a solicitation code")
+        );
+      }
+
+      await this.prisma.team.update({
+        where: teamParam,
+        data: {
+          solicitationCode: { connect: solicitationCodeParam },
+        },
+      });
+
+      return Ok(None);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async removeSolicitationCodeFromTeam(
+    teamParam: SimpleUniqueParam
+  ): Promise<Result<None, RepositoryError | ActionDeniedError>> {
+    try {
+      const team = await this.prisma.team.findUnique({
+        where: teamParam,
+        include: { solicitationCode: true },
+      });
+      if (!team) {
+        return Err(new NotFoundError({ what: "Team" }));
+      }
+      if (!team.solicitationCode) {
+        return Err(
+          new ActionDeniedError("Team does not have a solicitation code")
+        );
+      }
+
+      await this.prisma.team.update({
+        where: teamParam,
+        data: {
+          solicitationCode: { disconnect: true },
+        },
+      });
+
+      return Ok(None);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async overrideSolicitationCodeForEntry(
+    entryParam: FundraisingEntryUniqueParam,
+    solicitationCodeParam: SimpleUniqueParam
+  ): Promise<
+    Result<
+      FundraisingEntry,
+      RepositoryError | ActionDeniedError | NotFoundError
+    >
+  > {
+    try {
+      const entry = await this.prisma.fundraisingEntry.findUnique({
+        where: entryParam,
+      });
+      if (!entry) {
+        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+      }
+
+      await this.prisma.fundraisingEntry.update({
+        where: entryParam,
+        data: {
+          solicitationCodeOverride: { connect: solicitationCodeParam },
+        },
+      });
+
+      return Ok(entry);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async removeSolicitationCodeOverrideForEntry(
+    entryParam: FundraisingEntryUniqueParam
+  ): Promise<
+    Result<
+      FundraisingEntry,
+      RepositoryError | ActionDeniedError | NotFoundError
+    >
+  > {
+    try {
+      const entry = await this.prisma.fundraisingEntry.findUnique({
+        where: entryParam,
+      });
+      if (!entry) {
+        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+      }
+
+      await this.prisma.fundraisingEntry.update({
+        where: entryParam,
+        data: {
+          solicitationCodeOverride: { disconnect: true },
+        },
+      });
+
+      return Ok(entry);
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async findAllSolicitationCodes(): Promise<
+    Result<readonly SolicitationCode[], RepositoryError>
+  > {
+    try {
+      return Ok(await this.prisma.solicitationCode.findMany());
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async findSolicitationCodeByUnique(
+    param: SolicitationCodeUniqueParam
+  ): Promise<Result<SolicitationCode, RepositoryError | NotFoundError>> {
+    try {
+      const code = await this.prisma.solicitationCode.findUnique({
+        where: "code" in param ? { prefix_code: param } : param,
+      });
+      if (!code) {
+        return Err(new NotFoundError({ what: "SolicitationCode" }));
+      }
+      return Ok(code);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }

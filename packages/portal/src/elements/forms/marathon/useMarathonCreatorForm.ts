@@ -3,8 +3,8 @@ import { useNavigate } from "@tanstack/react-router";
 import type { DateTime } from "luxon";
 import { useMutation } from "urql";
 
-import { graphql } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { graphql } from "@/graphql/index.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
 
 export function useMarathonCreatorForm() {
   // Form

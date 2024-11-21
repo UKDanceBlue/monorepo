@@ -1,7 +1,7 @@
 import type { DateTime } from "luxon";
 import { useMutation } from "urql";
 
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
 
 import {
   cancelNotificationScheduleDocument,
@@ -13,7 +13,7 @@ import {
 export const useNotificationManagerForm = ({
   uuid,
 }: {
-  uuid?: string | null | undefined;
+  uuid?: string | undefined | null;
 }) => {
   const [
     { fetching: cancelFetching, error: cancelError },

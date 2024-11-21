@@ -13,10 +13,10 @@ import {
 import { useState } from "react";
 import { useMutation, useQuery } from "urql";
 
-import { useMarathon } from "#config/marathonContext.js";
-import type { CreatePointOpportunityInput } from "#graphql/graphql.js";
-import { graphql } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { useMarathon } from "@/config/marathonContext.js";
+import type { CreatePointOpportunityInput } from "@/graphql/graphql.js";
+import { graphql } from "@/graphql/index.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
 
 import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm.js";
 

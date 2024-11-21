@@ -6,7 +6,7 @@ import { View } from "react-native";
 import type { InfinitePagerPageComponent } from "react-native-infinite-pager";
 import InfinitePager from "react-native-infinite-pager";
 
-import { useNetworkStatus } from "#common/customHooks";
+import { useNetworkStatus } from "@/common/customHooks";
 
 import { EventListPage } from "./EventListPage";
 import { useEvents } from "./eventListUtils";

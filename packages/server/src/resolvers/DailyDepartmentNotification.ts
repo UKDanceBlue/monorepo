@@ -52,7 +52,7 @@ export class DailyDepartmentNotificationResolver {
   ): Promise<ConcreteResult<DailyDepartmentNotificationNode>> {
     const dailyDepartmentNotification =
       await this.dailyDepartmentNotificationRepository.findDDNByUnique({
-        idSorter: id,
+        uuid: id,
       });
     return dailyDepartmentNotification.map(
       dailyDepartmentNotificationModelToResource
@@ -137,7 +137,7 @@ export class DailyDepartmentNotificationResolver {
   ) {
     const dailyDepartmentNotification =
       await this.dailyDepartmentNotificationRepository.updateDDN(
-        { idSorter: id },
+        { uuid: id },
         input
       );
     return dailyDepartmentNotification.map((dailyDepartmentNotification) =>
@@ -179,7 +179,7 @@ export class DailyDepartmentNotificationResolver {
   ) {
     const dailyDepartmentNotification =
       await this.dailyDepartmentNotificationRepository.deleteDDN({
-        idSorter: id,
+        uuid: id,
       });
     return dailyDepartmentNotification.map((dailyDepartmentNotification) =>
       dailyDepartmentNotification.map(
@@ -194,7 +194,7 @@ export class DailyDepartmentNotificationResolver {
   ): Promise<Result<DailyDepartmentNotificationBatchNode, ConcreteError>> {
     return new AsyncResult(
       this.dailyDepartmentNotificationRepository.findBatchForDDN({
-        idSorter: dailyDepartmentNotification.id.id,
+        uuid: dailyDepartmentNotification.id.id,
       })
     ).map(dailyDepartmentNotificationBatchModelToResource).promise;
   }
@@ -218,7 +218,9 @@ export class DailyDepartmentNotificationBatchResolver {
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<DailyDepartmentNotificationBatchNode>> {
     const dailyDepartmentNotificationBatch =
-      await this.dailyDepartmentNotificationRepository.findBatchByBatchId(id);
+      await this.dailyDepartmentNotificationRepository.findBatchByUnique({
+        uuid: id,
+      });
     return dailyDepartmentNotificationBatch.map(
       dailyDepartmentNotificationBatchModelToResource
     );
@@ -235,7 +237,9 @@ export class DailyDepartmentNotificationBatchResolver {
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ) {
     const dailyDepartmentNotificationBatch =
-      await this.dailyDepartmentNotificationRepository.deleteDDNBatch(id);
+      await this.dailyDepartmentNotificationRepository.deleteDDNBatch({
+        uuid: id,
+      });
     return dailyDepartmentNotificationBatch.map(
       (dailyDepartmentNotificationBatch) =>
         dailyDepartmentNotificationBatch.map(
@@ -250,9 +254,9 @@ export class DailyDepartmentNotificationBatchResolver {
     dailyDepartmentNotificationBatch: DailyDepartmentNotificationBatchNode
   ): Promise<Result<DailyDepartmentNotificationNode[], ConcreteError>> {
     return new AsyncResult(
-      this.dailyDepartmentNotificationRepository.findDDNsByBatchId(
-        dailyDepartmentNotificationBatch.id.id
-      )
+      this.dailyDepartmentNotificationRepository.findDDNsByBatch({
+        uuid: dailyDepartmentNotificationBatch.id.id,
+      })
     ).map((dailyDepartmentNotifications) =>
       dailyDepartmentNotifications.map(
         dailyDepartmentNotificationModelToResource

@@ -1,11 +1,11 @@
 import { Service } from "@freshgum/typedi";
 import { PrismaClient } from "@prisma/client";
 import { DateTime } from "luxon";
-import { generators } from "openid-client";
+import { randomPKCECodeVerifier } from "openid-client";
 
 type LoginFlowSessionUniqueParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export class LoginFlowSessionRepository {
@@ -39,7 +39,7 @@ export class LoginFlowSessionRepository {
         redirectToAfterLogin,
         setCookie,
         sendToken,
-        codeVerifier: generators.codeVerifier(),
+        codeVerifier: randomPKCECodeVerifier(),
       },
     });
   }
@@ -61,6 +61,7 @@ export class LoginFlowSessionRepository {
    * Complete a login flow by deleting it
    */
   async completeLoginFlow(param: LoginFlowSessionUniqueParam) {
-    return this.prisma.loginFlowSession.delete({ where: param });
+    // Using deleteMany instead of delete means we don't throw an error if the session was already deleted
+    return this.prisma.loginFlowSession.deleteMany({ where: param });
   }
 }

@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
-    "lib": ["ES5"],
-    "module": "Preserve",
+    "lib": ["ES2017"],
+    "target": "es2018",
+    "module": "preserve",
     "moduleResolution": "Bundler",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    // "exactOptionalPropertyTypes": true,  // This is really just more trouble than it's worth
+    // "exactOptionalPropertyTypes": true, // This is really just more trouble than it's worth
     "noEmit": true,
     "noImplicitAny": true,
     "noImplicitThis": true,

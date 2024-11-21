@@ -4,10 +4,10 @@ import type {
   StringFilterItemInterface,
 } from "@ukdanceblue/common";
 import { NumericComparator } from "@ukdanceblue/common";
-import { Input, type InputRef } from "antd";
-import { useRef } from "react";
+import { Input, type InputRef, Select, Space } from "antd";
+import { useEffect, useRef, useState } from "react";
 
-import { FilterSearchDropdown } from "#elements/components/FilterDropdown.js";
+import { FilterSearchDropdown } from "@/elements/components/FilterDropdown.js";
 
 export function useMakeStringSearchFilterProps<Field extends string>(
   field: Field,
@@ -35,10 +35,12 @@ export function useMakeStringSearchFilterProps<Field extends string>(
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
     ),
-    onFilterDropdownOpenChange: () => {
-      setTimeout(() => {
-        focusRef.current?.focus();
-      }, 100);
+    filterDropdownProps: {
+      onOpenChange: () => {
+        setTimeout(() => {
+          focusRef.current?.focus();
+        }, 100);
+      },
     },
   };
 }
@@ -54,39 +56,76 @@ export function useMakeNumberSearchFilterProps<Field extends string>(
 ) {
   const focusRef = useRef<InputRef | undefined>(undefined);
 
+  const [mode, setMode] = useState<NumericComparator>(
+    NumericComparator.GREATER_THAN_OR_EQUAL_TO
+  );
+  const [val, setVal] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    if (!val) {
+      clearFilter(field);
+    } else {
+      updateFilter(field, {
+        comparison: mode,
+        field,
+        value: val,
+      });
+    }
+  }, [val, mode, clearFilter, field, updateFilter]);
+
   return {
     filterDropdown: () => (
-      <Input
-        ref={(inputRef) => {
-          focusRef.current = inputRef ?? undefined;
-        }}
-        placeholder="Search"
-        onPressEnter={(e) => {
-          let value = Number.NaN;
-          if (e.currentTarget.value) {
-            value = integerOnly
-              ? Number.parseInt(e.currentTarget.value, 10)
-              : Number.parseFloat(e.currentTarget.value);
-          }
-          if (Number.isNaN(value)) {
-            clearFilter(field);
-          } else {
-            updateFilter(field, {
-              comparison: NumericComparator.EQUALS,
-              field,
-              value,
-            });
-          }
-        }}
-      />
+      <Space.Compact>
+        <Select
+          value={mode}
+          onChange={(value) => {
+            setMode(value);
+          }}
+        >
+          <Select.Option value={NumericComparator.EQUALS}>=</Select.Option>
+          <Select.Option value={NumericComparator.GREATER_THAN}>
+            {">"}
+          </Select.Option>
+          <Select.Option value={NumericComparator.LESS_THAN}>
+            {"<"}
+          </Select.Option>
+          <Select.Option value={NumericComparator.GREATER_THAN_OR_EQUAL_TO}>
+            {"≥"}
+          </Select.Option>
+          <Select.Option value={NumericComparator.LESS_THAN_OR_EQUAL_TO}>
+            {"≤"}
+          </Select.Option>
+        </Select>
+        <Input
+          ref={(inputRef) => {
+            focusRef.current = inputRef ?? undefined;
+          }}
+          placeholder="Search"
+          onPressEnter={(e) => {
+            let value = Number.NaN;
+            if (e.currentTarget.value) {
+              value = integerOnly
+                ? Number.parseInt(e.currentTarget.value, 10)
+                : Number.parseFloat(e.currentTarget.value);
+            }
+            if (Number.isNaN(value)) {
+              clearFilter(field);
+            } else {
+              setVal(value);
+            }
+          }}
+        />
+      </Space.Compact>
     ),
     filterIcon: (filtered: boolean) => (
       <NumberOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
     ),
-    onFilterDropdownOpenChange: () => {
-      setTimeout(() => {
-        focusRef.current?.focus();
-      }, 100);
+    filterDropdownProps: {
+      onOpenChange: () => {
+        setTimeout(() => {
+          focusRef.current?.focus();
+        }, 100);
+      },
     },
   };
 }

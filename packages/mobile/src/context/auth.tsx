@@ -1,47 +1,12 @@
-import { setUser as setSentryUser } from "@sentry/react-native";
-import { AuthSource } from "@ukdanceblue/common";
 import type { ReactNode } from "react";
-import { createContext, useContext, useEffect } from "react";
-import { useQuery } from "urql";
-
-import { Logger } from "#common/logger/Logger";
-import { graphql } from "#graphql/index";
-
 export interface AuthState {
   personUuid: string | null;
   loggedIn: boolean;
-  authSource: AuthSource;
 
   ready: boolean;
 }
 
-const authStateContext = createContext<AuthState>({
-  personUuid: null,
-  loggedIn: false,
-  authSource: AuthSource.None,
-
-  ready: false,
-});
-
-const authStateDocument = graphql(/* GraphQL */ `
-  query AuthState {
-    me {
-      id
-      email
-    }
-    loginState {
-      dbRole
-      loggedIn
-      authSource
-    }
-  }
-`);
-
-export default function AuthStateProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function AuthStateProvider({ children }: { children: ReactNode }) {
   const [{ fetching, error, data }] = useQuery({
     query: authStateDocument,
   });
@@ -92,5 +57,9 @@ export default function AuthStateProvider({
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function useAuthState() {
-  return useContext(authStateContext);
+  return {
+    personUuid: "",
+    loggedIn: false,
+    ready: false,
+  };
 }

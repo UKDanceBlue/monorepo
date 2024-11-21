@@ -7,10 +7,10 @@ import { Box, Button, HStack, Text, View } from "native-base";
 import { useEffect, useState } from "react";
 import { PixelRatio, useWindowDimensions } from "react-native";
 
-import AudioPlayer from "#common/components/AudioPlayer";
-import ErrorBoundary from "#common/components/ErrorBoundary";
-import { universalCatch } from "#common/logging";
-import { showMessage } from "#common/util/alertUtils";
+import AudioPlayer from "@/common/components/AudioPlayer";
+import ErrorBoundary from "@/common/components/ErrorBoundary";
+import { universalCatch } from "@/common/logging";
+import { showMessage } from "@/common/util/alertUtils";
 
 import DBRibbon from "../../../../../assets/svgs/DBRibbon";
 import { parseBlogText } from "./parseBlogText";

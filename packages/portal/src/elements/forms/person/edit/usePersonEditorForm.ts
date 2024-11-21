@@ -2,10 +2,10 @@ import { useForm } from "@tanstack/react-form";
 import { MembershipPositionType } from "@ukdanceblue/common";
 import { useMutation } from "urql";
 
-import { type MemberOf } from "#graphql/graphql.js";
-import type { DocumentType, FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { type MemberOf } from "@/graphql/graphql.js";
+import type { DocumentType, FragmentType } from "@/graphql/index.js";
+import { getFragmentData } from "@/graphql/index.js";
+import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
 
 import {
   personEditorDocument,

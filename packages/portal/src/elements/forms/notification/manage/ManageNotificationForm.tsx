@@ -4,11 +4,11 @@ import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import type { UseQueryExecute } from "urql";
 
-import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
-import { NotificationViewer } from "#elements/viewers/notification/NotificationViewer.js";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
-import { useAntFeedback } from "#hooks/useAntFeedback.js";
+import { LuxonDatePicker } from "@/elements/components/antLuxonComponents.js";
+import { NotificationViewer } from "@/elements/viewers/notification/NotificationViewer.js";
+import type { FragmentType } from "@/graphql/index.js";
+import { getFragmentData } from "@/graphql/index.js";
+import { useAntFeedback } from "@/hooks/useAntFeedback.js";
 
 import { SingleNotificationFragment } from "../SingleNotificationGQL";
 import { useNotificationManagerForm } from "./useNotificationManager.js";
@@ -28,7 +28,10 @@ export const ManageNotificationForm = ({
   notificationFragment,
   refetchNotification,
 }: {
-  notificationFragment?: FragmentType<typeof SingleNotificationFragment> | null;
+  notificationFragment?:
+    | FragmentType<typeof SingleNotificationFragment>
+    | undefined
+    | null;
   refetchNotification: UseQueryExecute;
 }) => {
   const notification = getFragmentData(

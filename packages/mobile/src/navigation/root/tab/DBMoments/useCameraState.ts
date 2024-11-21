@@ -1,7 +1,6 @@
 import type {
   CameraCapturedPicture,
   CameraPictureOptions,
-  CameraProps,
   CameraType,
   CameraViewRef,
   FlashMode,
@@ -10,8 +9,8 @@ import { PermissionStatus, useCameraPermissions } from "expo-camera";
 import type { MutableRefObject } from "react";
 import { useEffect, useRef, useState } from "react";
 
-import { Logger } from "#common/logger/Logger";
-import { asyncWait } from "#common/util/wait";
+import { Logger } from "@/common/logger/Logger";
+import { asyncWait } from "@/common/util/wait";
 
 type CameraState =
   | "permission-blocked"
@@ -38,7 +37,7 @@ export function useCameraState(): {
   facing: CameraType;
   toggleFacing: (set?: CameraType) => void;
   cameraRef: MutableRefObject<CameraViewRef | undefined>;
-  onCameraReady: CameraProps["onCameraReady"];
+  onCameraReady: () => void;
   images: Partial<Record<CameraType, CameraCapturedPicture>>;
   state: CameraState;
   requestPermission: () => void;
@@ -104,7 +103,7 @@ export function useCameraState(): {
     }
   };
 
-  const onCameraReady: CameraProps["onCameraReady"] = () => {
+  const onCameraReady = () => {
     console.log("Camera is ready");
     setCameraLoading(false);
   };

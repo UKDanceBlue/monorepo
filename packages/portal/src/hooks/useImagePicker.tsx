@@ -2,7 +2,7 @@ import { Modal } from "antd";
 import type { ReactElement } from "react";
 import { useCallback, useState } from "react";
 
-import { ImagePicker } from "#elements/components/image/ImagePicker.js";
+import { ImagePicker } from "@/elements/components/image/ImagePicker.js";
 
 export function useImagePicker() {
   const [queue, setQueue] = useState<ReactElement[]>([]);

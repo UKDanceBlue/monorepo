@@ -7,7 +7,8 @@ import { combineMimePartsToString } from "#files/mime.js";
 export async function imageModelToResource(
   imageModel: Image,
   fileModel: File | undefined | null,
-  fileManager: FileManager
+  fileManager: FileManager,
+  serverUrl: URL
 ): Promise<ImageNode> {
   let fileData:
     | {
@@ -17,7 +18,7 @@ export async function imageModelToResource(
     | undefined = undefined;
 
   if (fileModel) {
-    const externalUrl = await fileManager.getExternalUrl(fileModel);
+    const externalUrl = await fileManager.getExternalUrl(fileModel, serverUrl);
     if (externalUrl) {
       fileData = {
         url: externalUrl,

@@ -1,7 +1,7 @@
-import type { Node, OptionalToNullable } from "@ukdanceblue/common";
+import type { GlobalId, Node, OptionalToNullable } from "@ukdanceblue/common";
 import { ArgsType, Field, Int } from "type-graphql";
 
-import type { ListQueryType } from "../ListQueryTypes.js";
+import type { FilterItem, ListQueryType } from "../ListQueryTypes.js";
 import { SortDirection } from "../ListQueryTypes.js";
 import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./common.js";
 
@@ -9,6 +9,7 @@ import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./common.js";
 export class UnfilteredListQueryArgs<SortByKeys extends string = never>
   implements OptionalToNullable<Partial<ListQueryType<Node>>>
 {
+  filter?: Partial<Record<"id", FilterItem<"id", GlobalId>>> | null;
   @Field(() => Boolean, {
     nullable: true,
     description: "Whether to include deleted items in the results",
@@ -21,8 +22,9 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
     nullable: true,
     description:
       "Whether to send all results in a single page, defaults to false (should generally be avoided)",
+    defaultValue: false,
   })
-  sendAll!: boolean | null;
+  sendAll = false;
 
   @Field(() => Int, {
     nullable: true,
@@ -53,5 +55,5 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
     description:
       "The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match",
   })
-  sortDirection?: SortDirection[] | null;
+  sortDirection!: SortDirection[] | null;
 }

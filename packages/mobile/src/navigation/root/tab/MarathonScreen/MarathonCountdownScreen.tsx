@@ -1,4 +1,4 @@
-// import CountdownView from "#common/components/CountdownView/CountdownView";
+// import CountdownView from "@/common/components/CountdownView/CountdownView";
 import type { DateTime } from "luxon";
 import { Text, View } from "native-base";
 import { useState } from "react";
@@ -6,8 +6,8 @@ import type { ImageSourcePropType } from "react-native";
 import { ImageBackground, useWindowDimensions } from "react-native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
-import CountdownViewNew from "#common/components/CountdownView";
-import { useThemeColors } from "#common/customHooks";
+import CountdownViewNew from "@/common/components/CountdownView";
+import { useThemeColors } from "@/common/customHooks";
 
 import CommitteeHoldingSign from "../../../../../assets/svgs/CommitteeHoldingSign";
 

@@ -1,3 +1,5 @@
+import { debugStringify } from "@ukdanceblue/common";
+
 import { ConsoleTransport } from "./ConsoleTransport";
 import { SentryTransport } from "./SentryTransport";
 import type { ExtraLogArgs, LoggerTransport } from "./transport";
@@ -20,39 +22,14 @@ export class Logger {
     message: string | boolean | bigint | number | object,
     extra: ExtraLogArgs = {}
   ) {
-    let messageString = "ERROR: Message could not be stringified";
-    switch (typeof message) {
-      case "string":
-      case "boolean":
-      case "bigint":
-      case "number":
-      case "symbol": {
-        messageString = message.toString();
-        break;
-      }
-      case "object": {
-        try {
-          messageString = JSON.stringify(message, null, 2);
-        } catch (error) {
-          messageString = `[object: '${String(
-            message
-          )}' - could not be stringified due to ${String(error)}]`;
-        }
-        break;
-      }
-      case "undefined": {
-        messageString = "[undefined]";
-        break;
-      }
-      case "function": {
-        messageString = `[function: ${message.name}]`;
-        break;
-      }
-    }
-
     for (const transport of this.#transports) {
       try {
-        transport.log({ level, message, messageString, extra });
+        transport.log({
+          level,
+          message,
+          messageString: debugStringify(message),
+          extra,
+        });
       } catch (error) {
         console.error(
           `Error writing log to ${transport.name}Transport: ${String(error)}`

@@ -28,4 +28,5 @@ export * from "./Person.js";
 export * from "./PointEntry.js";
 export * from "./PointOpportunity.js";
 export * from "./Resource.js";
+export * from "./SolicitationCode.js";
 export * from "./Team.js";

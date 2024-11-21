@@ -4,9 +4,9 @@ import { Flex, HStack, Text, View } from "native-base";
 import { useWindowDimensions } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import Breadcrumbs from "#common/components/Breadcrumbs";
-import { useThemeFonts } from "#common/customHooks";
-import { universalCatch } from "#common/logging";
+import Breadcrumbs from "@/common/components/Breadcrumbs";
+import { useThemeFonts } from "@/common/customHooks";
+import { universalCatch } from "@/common/logging";
 
 import CommitteeHoldingSign from "../../../../../../../assets/svgs/CommitteeHoldingSign";
 import DanceBlueRibbon from "../../../../../../../assets/svgs/DBRibbon";
@@ -28,8 +28,8 @@ const TeamInformation = ({
   myFundraisingEntries: readonly {
     amount: number;
     entry: {
-      donatedToText?: string | null | undefined;
-      donatedByText?: string | null | undefined;
+      donatedToText?: string | undefined | null;
+      donatedByText?: string | undefined | null;
       donatedOn: string | Date;
     };
   }[];

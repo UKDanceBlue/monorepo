@@ -1,11 +1,14 @@
 import type {
   DailyDepartmentNotification,
   DailyDepartmentNotificationBatch,
+  SolicitationCode,
 } from "@prisma/client";
 import {
   DailyDepartmentNotificationBatchNode,
   DailyDepartmentNotificationNode,
 } from "@ukdanceblue/common";
+
+import { solicitationCodeModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 
 function stringifyDate(date: Date | null): string | undefined {
   if (date == null) {
@@ -18,9 +21,10 @@ function stringifyDate(date: Date | null): string | undefined {
 }
 
 export function dailyDepartmentNotificationModelToResource(
-  ddn: DailyDepartmentNotification
+  ddn: DailyDepartmentNotification & { solicitationCode: SolicitationCode }
 ): DailyDepartmentNotificationNode {
   return DailyDepartmentNotificationNode.init({
+    id: ddn.uuid,
     division: ddn.division ?? undefined,
     department: ddn.department ?? undefined,
     effectiveDate: stringifyDate(ddn.effectiveDate),
@@ -41,7 +45,7 @@ export function dailyDepartmentNotificationModelToResource(
     gikType: ddn.gikType ?? undefined,
     gikDescription: ddn.gikDescription ?? undefined,
     onlineGift: ddn.onlineGift,
-    solicitationCode: ddn.solicitationCode ?? undefined,
+    solicitationCode: solicitationCodeModelToNode(ddn.solicitationCode),
     solicitation: ddn.solicitation ?? undefined,
     behalfHonorMemorial: ddn.behalfHonorMemorial ?? undefined,
     matchingGift: ddn.matchingGift ?? undefined,
@@ -84,10 +88,10 @@ export function dailyDepartmentNotificationModelToResource(
 }
 
 export function dailyDepartmentNotificationBatchModelToResource(
-  ddn: DailyDepartmentNotificationBatch
+  batch: DailyDepartmentNotificationBatch
 ): DailyDepartmentNotificationBatchNode {
   return DailyDepartmentNotificationBatchNode.init({
-    batchId: ddn.batchId,
-    batchType: ddn.batchType,
+    batchNumber: batch.batchId,
+    id: batch.uuid,
   });
 }

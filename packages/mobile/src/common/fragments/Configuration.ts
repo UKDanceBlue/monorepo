@@ -1,4 +1,4 @@
-import { graphql } from "#graphql/index";
+import { graphql } from "@/graphql/index";
 
 export const SimpleConfigFragment = graphql(/* GraphQL */ `
   fragment SimpleConfig on ConfigurationNode {

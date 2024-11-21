@@ -14,9 +14,9 @@ import {
 } from "@ukdanceblue/common";
 import { Button, Card, Descriptions, Empty, Flex, Typography } from "antd";
 
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
-import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
+import type { FragmentType } from "@/graphql/index.js";
+import { getFragmentData, graphql } from "@/graphql/index.js";
+import { useAuthorizationRequirement } from "@/hooks/useLoginState.js";
 
 import { usePersonDeletePopup } from "../../components/person/PersonDeletePopup";
 

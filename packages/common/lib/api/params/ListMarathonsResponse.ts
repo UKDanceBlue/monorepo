@@ -1,5 +1,5 @@
 import { DateTimeISOResolver } from "graphql-scalars";
-import { ArgsType,Field, InputType, ObjectType } from "type-graphql";
+import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { MarathonNode } from "../resources/Marathon.js";
@@ -19,10 +19,10 @@ export class CreateMarathonInput {
   year!: string;
 
   @Field(() => DateTimeISOResolver, { nullable: true })
-  startDate?: string | null;
+  startDate?: string | undefined | null;
 
   @Field(() => DateTimeISOResolver, { nullable: true })
-  endDate?: string | null;
+  endDate?: string | undefined | null;
 }
 
 @InputType()
@@ -31,10 +31,10 @@ export class SetMarathonInput {
   year!: string;
 
   @Field(() => DateTimeISOResolver, { nullable: true })
-  startDate?: string | null;
+  startDate?: string | undefined | null;
 
   @Field(() => DateTimeISOResolver, { nullable: true })
-  endDate?: string | null;
+  endDate?: string | undefined | null;
 }
 
 @ArgsType()

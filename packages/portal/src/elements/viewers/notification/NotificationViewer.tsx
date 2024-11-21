@@ -3,17 +3,20 @@ import { DateTime } from "luxon";
 import { useEffect } from "react";
 import type { UseQueryExecute } from "urql";
 
-import { NotificationPreview } from "#elements/components/notification/NotificationPreview.js";
-import { SingleNotificationFragment } from "#elements/forms/notification/SingleNotificationGQL.js";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
-import { renderDateTime } from "#tools/luxonTools.js";
+import { NotificationPreview } from "@/elements/components/notification/NotificationPreview.js";
+import { SingleNotificationFragment } from "@/elements/forms/notification/SingleNotificationGQL.js";
+import type { FragmentType } from "@/graphql/index.js";
+import { getFragmentData } from "@/graphql/index.js";
+import { renderDateTime } from "@/tools/luxonTools.js";
 
 export const NotificationViewer = ({
   notificationFragment,
   refetch,
 }: {
-  notificationFragment?: FragmentType<typeof SingleNotificationFragment> | null;
+  notificationFragment?:
+    | FragmentType<typeof SingleNotificationFragment>
+    | undefined
+    | null;
   refetch: UseQueryExecute;
 }) => {
   const notification = getFragmentData(

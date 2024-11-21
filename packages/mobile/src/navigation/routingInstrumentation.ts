@@ -1,3 +1,5 @@
-import { ReactNavigationInstrumentation } from "@sentry/react-native";
+import * as Sentry from "@sentry/react-native";
 
-export const routingInstrumentation = new ReactNavigationInstrumentation();
+export const navigationIntegration = Sentry.reactNavigationIntegration({
+  enableTimeToInitialDisplay: true,
+});

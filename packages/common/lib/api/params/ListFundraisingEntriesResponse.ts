@@ -1,4 +1,4 @@
-import { ArgsType, Field,ObjectType } from "type-graphql";
+import { ArgsType, Field, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { FundraisingEntryNode } from "../resources/Fundraising.js";
@@ -13,8 +13,9 @@ export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<
   | "donatedBy"
   | "teamId"
   | "createdAt"
-  | "updatedAt",
-  "donatedTo" | "donatedBy",
+  | "updatedAt"
+  | "solicitationCode",
+  "donatedTo" | "donatedBy" | "solicitationCode",
   "teamId",
   "amount" | "amountUnassigned",
   "donatedOn" | "createdAt" | "updatedAt",
@@ -29,8 +30,9 @@ export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<
     "teamId",
     "createdAt",
     "updatedAt",
+    "solicitationCode",
   ],
-  string: ["donatedTo", "donatedBy"],
+  string: ["donatedTo", "donatedBy", "solicitationCode"],
   numeric: ["amount", "amountUnassigned"],
   oneOf: ["teamId"],
   date: ["donatedOn", "createdAt", "updatedAt"],

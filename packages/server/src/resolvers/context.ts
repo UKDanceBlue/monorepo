@@ -20,13 +20,15 @@ import { ErrorCode } from "@ukdanceblue/common/error";
 import { Ok } from "ts-results-es";
 
 import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
-import { superAdminLinkbluesToken } from "#lib/environmentTokens.js";
+import { getHostUrl } from "#lib/host.js";
+import { superAdminLinkbluesToken } from "#lib/typediTokens.js";
 import { logger } from "#logging/logger.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface GraphQLContext extends AuthorizationContext {}
+export interface GraphQLContext extends AuthorizationContext {
+  serverUrl: URL;
+}
 
 const superAdminLinkblues = Container.get(superAdminLinkbluesToken);
 
@@ -52,7 +54,7 @@ async function withUserInfo(
   inputContext: GraphQLContext,
   userId: string
 ): Promise<ConcreteResult<GraphQLContext>> {
-  const outputContext = structuredClone(inputContext);
+  const outputContext = { ...inputContext };
   const personRepository = Container.get(PersonRepository);
   const person = await personRepository.findPersonAndTeamsByUnique({
     uuid: userId,
@@ -77,7 +79,10 @@ async function withUserInfo(
   }
   logger.trace("graphqlContextFunction Found user", personResource.value);
   outputContext.authenticatedUser = personResource.value;
-  outputContext.userData.userId = userId;
+  outputContext.userData = {
+    ...outputContext.userData,
+    userId,
+  };
 
   // Set the teams the user is on
   let teamMemberships = await personRepository.findMembershipsOfPerson(
@@ -120,44 +125,53 @@ async function withUserInfo(
     "graphqlContextFunction Effective committee roles",
     ...effectiveCommitteeRoles.value
   );
-  outputContext.authorization.effectiveCommitteeRoles =
-    effectiveCommitteeRoles.value;
+  outputContext.authorization = {
+    ...outputContext.authorization,
+    effectiveCommitteeRoles: effectiveCommitteeRoles.value,
+  };
 
   // If the user is on a committee, override the dbRole
   if (effectiveCommitteeRoles.value.length > 0) {
-    outputContext.authorization.dbRole = DbRole.Committee;
+    outputContext.authorization = {
+      ...outputContext.authorization,
+      dbRole: DbRole.Committee,
+    };
   }
 
   return Ok(outputContext);
 }
 
-const defaultContext: Readonly<GraphQLContext> = Object.freeze<GraphQLContext>({
-  authenticatedUser: null,
-  teamMemberships: [],
-  userData: {
-    authSource: AuthSource.None,
-  },
-  authorization: defaultAuthorization,
-});
+export const graphqlContextFunction: ContextFunction<
+  [ExpressContextFunctionArgument],
+  GraphQLContext
+> = async ({ req }): Promise<GraphQLContext> => {
+  const defaultContext: Readonly<GraphQLContext> = {
+    authenticatedUser: null,
+    teamMemberships: [],
+    userData: {
+      authSource: AuthSource.None,
+    },
+    authorization: defaultAuthorization,
+    serverUrl: getHostUrl(req),
+  };
 
-const anonymousContext: Readonly<GraphQLContext> =
-  Object.freeze<GraphQLContext>({
+  const anonymousContext: Readonly<GraphQLContext> = {
     ...defaultContext,
     authorization: {
       accessLevel: AccessLevel.Public,
       effectiveCommitteeRoles: [],
       dbRole: DbRole.Public,
     },
-  });
+  };
 
-export const graphqlContextFunction: ContextFunction<
-  [ExpressContextFunctionArgument],
-  GraphQLContext
-> = async ({ req }): Promise<GraphQLContext> => {
   // Get the token from the cookies or the Authorization header
-  let token = req.cookies.token ? String(req.cookies.token) : undefined;
+  let token = (req.cookies as Partial<Record<string, string>>).token
+    ? String((req.cookies as Partial<Record<string, string>>).token)
+    : undefined;
   if (!token) {
-    let authorizationHeader = req.headers.Authorization;
+    let authorizationHeader =
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+      req.headers.Authorization || req.headers.authorization;
     if (Array.isArray(authorizationHeader)) {
       authorizationHeader = authorizationHeader[0];
     }

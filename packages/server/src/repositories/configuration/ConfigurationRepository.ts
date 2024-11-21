@@ -31,7 +31,7 @@ export type ConfigurationFilters = FilterItems<
   ConfigurationStringKey
 >;
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export class ConfigurationRepository {
