@@ -17,6 +17,7 @@ export function SpreadsheetUploader<
   showIcon = true,
   showUploadList = false,
   text,
+  paginate = true,
   ...props
 }:
   | {
@@ -28,6 +29,7 @@ export function SpreadsheetUploader<
       showIcon?: boolean;
       showUploadList?: boolean;
       text?: string;
+      paginate?: boolean;
     }
   | {
       rowSchema: ZodSchema<OutputType, ZodTypeDef, RowType>;
@@ -37,6 +39,7 @@ export function SpreadsheetUploader<
       showIcon?: boolean;
       showUploadList?: boolean;
       text?: string;
+      paginate?: boolean;
     }) {
   const { showErrorMessage, showSuccessNotification } = useAntFeedback();
   const [data, setData] = useState<OutputType[] | null>(null);
@@ -127,6 +130,8 @@ export function SpreadsheetUploader<
         <Flex vertical gap={8}>
           <Table
             dataSource={data}
+            pagination={paginate ? undefined : false}
+            scroll={{ x: true }}
             columns={Object.keys(data[0]!).map(
               (key): ColumnType<OutputType> => ({
                 title: key,

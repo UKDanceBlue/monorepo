@@ -6,64 +6,71 @@ import { SpreadsheetUploader } from "@/elements/components/SpreadsheetUploader";
 import { graphql } from "@/graphql/gql";
 import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher";
 
+const defaultStringValidator = z
+  .string()
+  .trim()
+  .optional()
+  .transform((v) => v || undefined);
+
+const defaultDateValidator = z
+  .string()
+  .transform((v) =>
+    v ? localDateFromJs(new Date(v)).unwrapOr(undefined) : undefined
+  )
+  .optional();
+
+const defaultFloatValidator = z
+  .string()
+  .trim()
+  .default("")
+  .transform((v) => (v === "" ? 0 : Number.parseFloat(v)));
+
 const inputTypeSchema = z.object({
   "Division": z.string().trim(),
   "Department": z.string().trim(),
-  "Effective Date": z
-    .string()
-    .transform((v) =>
-      v ? localDateFromJs(new Date(v)).unwrapOr(undefined) : undefined
-    )
-    .optional(),
-  "Process Date": z
-    .string()
-    .transform((v) =>
-      v ? localDateFromJs(new Date(v)).unwrapOr(undefined) : undefined
-    )
-    .optional(),
-  "Pledged Date": z
-    .string()
-    .transform((v) =>
-      v ? localDateFromJs(new Date(v)).unwrapOr(undefined) : undefined
-    )
-    .optional(),
-  "Transaction Date": z
-    .string()
-    .transform((v) =>
-      v ? localDateFromJs(new Date(v)).unwrapOr(undefined) : undefined
-    )
-    .optional(),
+  "Effective Date": defaultDateValidator,
+  "Process Date": defaultDateValidator,
+  "Pledged Date": defaultDateValidator,
+  "Transaction Date": defaultDateValidator,
   "Transaction  Type": z.string().trim(),
-  "Donor1 Amount": z.coerce.number().optional(),
-  "Donor2 Amount": z.coerce.number().optional(),
-  "Combined Amount": z.coerce.number(),
-  "Pledged Amount": z.coerce.number(),
+  "Donor1 Amount": z
+    .string()
+    .trim()
+    .transform((v) => (v === "" ? undefined : Number.parseFloat(v)))
+    .optional(),
+  "Donor2 Amount": z
+    .string()
+    .trim()
+    .transform((v) => (v === "" ? undefined : Number.parseFloat(v)))
+    .optional(),
+  "Combined Amount": defaultFloatValidator,
+  "Pledged Amount": defaultFloatValidator,
   "Account Number": z.string().trim(),
   "Account Name": z.string().trim(),
   "Holding Destination": z
     .string()
     .trim()
     .optional()
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+
     .transform((v) => v || undefined),
   "Comment": z
     .string()
     .trim()
     .optional()
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+
     .transform((v) => v || undefined),
-  "SECShares": z.string().trim().optional(),
-  "SECType": z.string().trim().optional(),
-  "GIKType": z.string().trim().optional(),
-  "GIKDescription": z.string().trim().optional(),
+  "SECShares": defaultStringValidator,
+  "SECType": defaultStringValidator,
+  "GIKType": defaultStringValidator,
+  "GIKDescription": defaultStringValidator,
   "Online Gift": z
     .enum(["X", ""])
     .default("")
     .transform((v) => v === "X"),
   "Solicitation Code": z.string().trim(),
   "Solicitation": z.string().trim(),
-  "Behalf Honor Memorial": z.string().trim().optional(),
-  "Matching Gift": z.string().trim().optional(),
+  "Behalf Honor Memorial": defaultStringValidator,
+  "Matching Gift": defaultStringValidator,
   "Batch": z.string().trim(),
   "UK First Gift": z.enum(["Y", "N"]).transform((v) => v === "Y"),
   "Div First Gift": z.enum(["Y", "N"]).transform((v) => v === "Y"),
@@ -71,63 +78,77 @@ const inputTypeSchema = z.object({
   "Combined Donor Name": z.string().trim(),
   "Combined Donor Salutation": z.string().trim(),
   "Combined Donor Sort": z.string().trim(),
-  "Donor1 ID": z.coerce.string().trim().optional(),
-  "Donor1 Gift Key": z.coerce.number().optional(),
-  "Donor1 Name": z.string().trim().optional(),
+  "Donor1 ID": z.coerce
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => v || undefined),
+  "Donor1 Gift Key": z.coerce
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => v || undefined),
+  "Donor1 Name": defaultStringValidator,
   "Donor1 Deceased": z
     .enum(["X", ""])
     .default("")
     .transform((v) => v === "X"),
-  "Donor1 Constituency": z.string().trim().optional(),
-  "Donor1 PM": z.string().trim().optional(),
-  "Donor2 PM": z.string().trim().optional(),
+  "Donor1 Constituency": defaultStringValidator,
+  "Donor1 PM": defaultStringValidator,
+  "Donor2 PM": defaultStringValidator,
   "PLine1": z.string().trim(),
-  "PLine2": z.string().trim().optional(),
-  "PLine3": z.string().trim().optional(),
+  "PLine2": defaultStringValidator,
+  "PLine3": defaultStringValidator,
   "PCity": z.string().trim(),
   "PState": z.string().trim(),
   "PZip": z.string().trim(),
-  "Home Phone": z.string().trim().optional(),
-  "Home Phone Restriction": z.string().trim().optional(),
-  "Business Phone": z.string().trim().optional(),
-  "Business Phone Restriction": z.string().trim().optional(),
-  "Email": z.string().trim().optional(),
-  "Email Restriction": z.string().trim().optional(),
-  "Transmittal SN": z.string().trim().optional(),
-  "SAP Doc  Num": z.coerce.string().trim().optional(),
-  "SAP Doc  Date": z
+  "Home Phone": defaultStringValidator,
+  "Home Phone Restriction": defaultStringValidator,
+  "Business Phone": defaultStringValidator,
+  "Business Phone Restriction": defaultStringValidator,
+  "Email": defaultStringValidator,
+  "Email Restriction": defaultStringValidator,
+  "Transmittal SN": defaultStringValidator,
+  "SAP Doc  Num": z.coerce
     .string()
-    .transform((v) =>
-      v ? localDateFromJs(new Date(v)).unwrapOr(undefined) : undefined
-    )
-    .optional(),
-  "JV Doc Num": z.string().trim().optional(),
-  "Adv Fee CC PHIL": z.coerce.string().trim().optional(),
+    .trim()
+    .optional()
+    .transform((v) => v || undefined),
+  "SAP Doc  Date": defaultDateValidator,
+  "JV Doc Num": defaultStringValidator,
+  "Adv Fee CC PHIL": z.coerce
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => v || undefined),
   "Adv Fee Amt PHIL": z.coerce.number().optional(),
-  "Adv Fee CC UNIT": z.coerce.string().trim().optional(),
+  "Adv Fee CC UNIT": z.coerce
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => v || undefined),
   "Adv Fee Amt UNIT": z.coerce.number().optional(),
   "Adv Fee Status": z.string().trim(),
   "HCUnit": z.string().trim(),
-  "Donor1 Title Bar": z.string().trim().optional(),
-  "Donor1 Degrees": z.string().trim().optional(),
-  "Donor2 ID": z.string().trim().optional(),
-  "Donor2 Gift Key": z.coerce.number().optional(),
-  "Donor2 Name": z.string().trim().optional(),
+  "Donor1 Title Bar": defaultStringValidator,
+  "Donor1 Degrees": defaultStringValidator,
+  "Donor2 ID": defaultStringValidator,
+  "Donor2 Gift Key": z.coerce
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => v || undefined),
+  "Donor2 Name": defaultStringValidator,
   "Donor2 Deceased": z
     .enum(["X", ""])
     .default("")
     .transform((v) => v === "X"),
-  "Donor2 Constituency": z.string().trim().optional(),
-  "Donor2 Title Bar": z.string().trim().optional(),
-  "Donor2 Degrees": z.string().trim().optional(),
-  "Donor1 Relation": z.string().trim().optional(),
-  "Donor2 Relation": z.string().trim().optional(),
-  "JV Doc Date": z
-    .string()
-    .transform((v) =>
-      v ? localDateFromJs(new Date(v)).unwrapOr(undefined) : undefined
-    )
-    .optional(),
+  "Donor2 Constituency": defaultStringValidator,
+  "Donor2 Title Bar": defaultStringValidator,
+  "Donor2 Degrees": defaultStringValidator,
+  "Donor1 Relation": defaultStringValidator,
+  "Donor2 Relation": defaultStringValidator,
+  "JV Doc Date": defaultDateValidator,
 });
 
 const UploadDdnDocument = graphql(/* GraphQL */ `
@@ -147,6 +168,7 @@ export function DDNUploadForm() {
   return (
     <SpreadsheetUploader
       rowSchema={inputTypeSchema}
+      paginate={false}
       onUpload={async (output) => {
         const ddnData: DDNInit[] = output.map(
           (row): DDNInit => ({

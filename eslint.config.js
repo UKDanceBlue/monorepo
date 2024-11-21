@@ -279,7 +279,7 @@ export default eslintTs.config(
             allowNumber: true,
           },
         ],
-        "@typescript-eslint/prefer-nullish-coalescing": "warn",
+        "@typescript-eslint/prefer-nullish-coalescing": "off",
       },
       eslintTs.configs.strictTypeChecked,
       eslintTs.configs.stylisticTypeChecked

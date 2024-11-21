@@ -324,14 +324,14 @@ export class DailyDepartmentNotificationRepository {
             },
             create: {
               donorId: donor1Id,
-              constituency: donor1Constituency ?? "Unknown",
+              constituency: donor1Constituency,
               deceased: donor1Deceased ?? false,
-              giftKey: donor1GiftKey ?? "",
-              name: donor1Name ?? "Unknown",
-              titleBar: donor1TitleBar ?? "",
+              giftKey: donor1GiftKey,
+              name: donor1Name,
+              titleBar: donor1TitleBar,
               degrees: donor1Degrees ? donor1Degrees.split(", ") : [],
               emails: email ? [email] : [],
-              pm: donor1Pm ?? "",
+              pm: donor1Pm,
             },
           },
         },
@@ -348,14 +348,14 @@ export class DailyDepartmentNotificationRepository {
             },
             create: {
               donorId: donor2Id,
-              constituency: donor2Constituency ?? "Unknown",
+              constituency: donor2Constituency,
               deceased: donor2Deceased ?? false,
-              giftKey: donor2GiftKey ?? "",
-              name: donor2Name ?? "Unknown",
-              titleBar: donor2TitleBar ?? "",
+              giftKey: donor2GiftKey,
+              name: donor2Name,
+              titleBar: donor2TitleBar,
               degrees: donor2Degrees ? donor2Degrees.split(", ") : [],
               emails: email ? [email] : [],
-              pm: donor2Pm ?? "",
+              pm: donor2Pm,
             },
           },
         },
@@ -584,99 +584,30 @@ export class DailyDepartmentNotificationRepository {
         solicitationCodes.set(row.solicitationCode, solicitationCode.value);
       }
 
-      const results = await this.prisma.$transaction(
-        data.map((row) =>
-          this.prisma.dailyDepartmentNotification.upsert({
-            where: { idSorter: row.idSorter },
-            update: {
-              ...row,
-              jvDocDate: row.jvDocDate && localDateToJs(row.jvDocDate),
-              sapDocDate: row.sapDocDate && localDateToJs(row.sapDocDate),
-              pledgedDate: row.pledgedDate && localDateToJs(row.pledgedDate),
-              processDate: row.processDate && localDateToJs(row.processDate),
-              effectiveDate:
-                row.effectiveDate && localDateToJs(row.effectiveDate),
-              transactionDate:
-                row.transactionDate && localDateToJs(row.transactionDate),
-              batchId: undefined,
-              batch: {
-                connectOrCreate: {
-                  create: {
-                    batchId: row.batchId,
-                  },
-                  where: { batchId: row.batchId },
-                },
-              },
-              solicitationCode: {
-                connectOrCreate: {
-                  create: {
-                    prefix: solicitationCodes.get(row.solicitationCode)!.prefix,
-                    code: solicitationCodes.get(row.solicitationCode)!.code,
-                    name: row.solicitation,
-                  },
-                  where: {
-                    prefix_code: {
-                      code: solicitationCodes.get(row.solicitationCode)!.code,
-                      prefix: solicitationCodes.get(row.solicitationCode)!
-                        .prefix,
-                    },
+      const toLoad = Result.all(data.map((row) => this.parseDDNInit(row)));
+
+      const results = toLoad.toAsyncResult().map((toLoad) =>
+        this.prisma.$transaction(
+          toLoad.map((row) =>
+            this.prisma.dailyDepartmentNotification.upsert({
+              where: { idSorter: row.idSorter },
+              update: row,
+              create: row,
+              include: {
+                batch: true,
+                donors: {
+                  include: {
+                    donor: true,
                   },
                 },
+                solicitationCode: true,
               },
-            },
-            create: {
-              ...row,
-              jvDocDate: row.jvDocDate && localDateToJs(row.jvDocDate),
-              sapDocDate: row.sapDocDate && localDateToJs(row.sapDocDate),
-              pledgedDate: row.pledgedDate && localDateToJs(row.pledgedDate),
-              processDate: row.processDate && localDateToJs(row.processDate),
-              effectiveDate:
-                row.effectiveDate && localDateToJs(row.effectiveDate),
-              transactionDate:
-                row.transactionDate && localDateToJs(row.transactionDate),
-              batchId: undefined,
-              batch: {
-                connectOrCreate: {
-                  create: {
-                    batchId: row.batchId,
-                  },
-                  where: { batchId: row.batchId },
-                },
-              },
-              solicitationCode: {
-                connectOrCreate: {
-                  create: {
-                    prefix: solicitationCodes.get(row.solicitationCode)!.prefix,
-                    code: solicitationCodes.get(row.solicitationCode)!.code,
-                    name: row.solicitation,
-                  },
-                  where: {
-                    prefix_code: {
-                      code: solicitationCodes.get(row.solicitationCode)!.code,
-                      prefix: solicitationCodes.get(row.solicitationCode)!
-                        .prefix,
-                    },
-                  },
-                },
-              },
-              fundraisingEntry: {
-                create: {},
-              },
-            },
-            include: {
-              batch: true,
-              donors: {
-                include: {
-                  donor: true,
-                },
-              },
-              solicitationCode: true,
-            },
-          })
+            })
+          )
         )
       );
 
-      return Ok(results);
+      return await results.promise;
     } catch (error) {
       return handleRepositoryError(error);
     }
