@@ -56,15 +56,23 @@ export const oidcCallback = async (
     currentUrl.search = query.toString();
 
     // Perform OIDC validation
-    const tokenSet = await authorizationCodeGrant(
-      oidcConfiguration,
-      currentUrl,
-      {
+    let tokenSet;
+    try {
+      tokenSet = await authorizationCodeGrant(oidcConfiguration, currentUrl, {
         pkceCodeVerifier: session.codeVerifier,
         expectedState: flowSessionId,
         idTokenExpected: true,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        if ("error_description" in error) {
+          error.message = String(error.error_description);
+        } else if ("code" in error) {
+          error.message += ` (${String(error.code)})`;
+        }
       }
-    );
+      throw error;
+    }
     // Destroy the session
     await loginFlowSessionRepository.completeLoginFlow({
       uuid: flowSessionId,
