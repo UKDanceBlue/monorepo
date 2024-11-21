@@ -752,6 +752,7 @@ enum FundraisingEntryResolverAllKeys {
   donatedBy
   donatedOn
   donatedTo
+  solicitationCode
   teamId
   updatedAt
 }
@@ -837,6 +838,7 @@ enum FundraisingEntryResolverOneOfFilterKeys {
 enum FundraisingEntryResolverStringFilterKeys {
   donatedBy
   donatedTo
+  solicitationCode
 }
 
 type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {

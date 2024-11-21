@@ -22,23 +22,23 @@ export function buildDailyDepartmentNotificationOrder(
     | null
     | undefined
 ) {
-  const orderBy: Prisma.DailyDepartmentNotificationOrderByWithRelationInput =
-    {};
+  const orderBy: Prisma.DailyDepartmentNotificationOrderByWithRelationInput[] =
+    [];
   const solicitationCodeOrderBy: Prisma.DailyDepartmentNotificationOrderByWithRelationInput["solicitationCode"] =
     {};
 
   for (const [key, sort] of order ?? []) {
     switch (key) {
       case "Amount": {
-        orderBy.combinedAmount = sort;
+        orderBy.push({ combinedAmount: sort });
         break;
       }
       case "Donor": {
-        orderBy.combinedDonorSort = sort;
+        orderBy.push({ combinedDonorSort: sort });
         break;
       }
       case "Comment": {
-        orderBy.comment = sort;
+        orderBy.push({ comment: sort });
         break;
       }
       case "SolicitationCodeNumber": {
@@ -54,9 +54,7 @@ export function buildDailyDepartmentNotificationOrder(
         break;
       }
       case "BatchType": {
-        orderBy.batch = {
-          batchId: sort,
-        };
+        orderBy.push({ batch: { batchId: sort } });
         break;
       }
       default: {
@@ -64,7 +62,8 @@ export function buildDailyDepartmentNotificationOrder(
       }
     }
   }
-  orderBy.solicitationCode = solicitationCodeOrderBy;
+  if (Object.keys(solicitationCodeOrderBy).length > 0)
+    orderBy.push({ solicitationCode: solicitationCodeOrderBy });
   return orderBy;
 }
 

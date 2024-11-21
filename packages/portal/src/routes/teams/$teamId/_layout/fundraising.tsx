@@ -8,7 +8,7 @@ import { AutoComplete, Button, Flex, Form, Space } from "antd";
 import { useState } from "react";
 import { useMutation, useQuery } from "urql";
 
-import { FundraisingEntriesTable } from "@/elements/tables/fundraising.tsx/FundraisingEntriesTable";
+import { FundraisingEntriesTable } from "@/elements/tables/fundraising/FundraisingEntriesTable";
 import { graphql } from "@/graphql/index.js";
 import { useListQuery } from "@/hooks/useListQuery.js";
 import { useAuthorizationRequirement } from "@/hooks/useLoginState.js";
@@ -119,11 +119,12 @@ function ViewTeamFundraising() {
         "teamId",
         "donatedTo",
         "donatedBy",
+        "solicitationCode",
       ],
       dateFields: ["donatedOn", "createdAt", "updatedAt"],
       numericFields: ["amount", "amountUnassigned"],
       oneOfFields: ["teamId"],
-      stringFields: ["donatedTo", "donatedBy"],
+      stringFields: ["donatedTo", "donatedBy", "solicitationCode"],
       booleanFields: [],
       isNullFields: [],
     }

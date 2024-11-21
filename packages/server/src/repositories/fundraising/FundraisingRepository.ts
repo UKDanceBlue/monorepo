@@ -54,10 +54,15 @@ type FundraisingEntryNumericKey = (typeof fundraisingEntryNumericKeys)[number];
 const fundraisingEntryOneOfKeys = ["teamId"] as const;
 type FundraisingEntryOneOfKey = (typeof fundraisingEntryOneOfKeys)[number];
 
-const fundraisingEntryStringKeys = ["donatedTo", "donatedBy"] as const;
+const fundraisingEntryStringKeys = [
+  "donatedTo",
+  "donatedBy",
+  "solicitationCode",
+] as const;
 type FundraisingEntryStringKey = (typeof fundraisingEntryStringKeys)[number];
 
 export type FundraisingEntryOrderKeys =
+  | "solicitationCode"
   | "teamId"
   | "donatedOn"
   | "amount"
@@ -132,16 +137,40 @@ function asWideFundraisingEntryWithMeta(
   }
   if (entry.ddn) {
     return Ok({
-      ...entry,
+      id: entry.id,
+      uuid: entry.uuid,
+      unassigned: entry.unassigned,
+      notes: entry.notes,
+      enteredByPersonId: entry.enteredByPersonId,
+      solicitationCodeOverrideId: entry.solicitationCodeOverrideId,
+      createdAt: entry.createdAt,
+      updatedAt: entry.updatedAt,
       ddn: entry.ddn,
       solicitationCodeOverride: entry.solicitationCodeOverride,
+      amount: entry.amount,
+      donatedBy: entry.donatedBy,
+      donatedOn: entry.donatedOn,
+      donatedTo: entry.donatedTo,
+      solicitationCodeText: entry.solicitationCodeText,
     });
   }
   if (entry.dbFundsEntry) {
     return Ok({
-      ...entry,
+      id: entry.id,
+      uuid: entry.uuid,
+      unassigned: entry.unassigned,
+      notes: entry.notes,
+      enteredByPersonId: entry.enteredByPersonId,
+      solicitationCodeOverrideId: entry.solicitationCodeOverrideId,
+      createdAt: entry.createdAt,
+      updatedAt: entry.updatedAt,
       dbFundsEntry: entry.dbFundsEntry,
       solicitationCodeOverride: entry.solicitationCodeOverride,
+      amount: entry.amount,
+      donatedBy: entry.donatedBy,
+      donatedOn: entry.donatedOn,
+      donatedTo: entry.donatedTo,
+      solicitationCodeText: entry.solicitationCodeText,
     });
   }
   return Err(new InvariantError("Fundraising entry has no source"));
@@ -296,7 +325,7 @@ export class FundraisingEntryRepository {
       const rows = await this.prisma.fundraisingEntryWithMeta.findMany({
         include: defaultInclude,
         where,
-        orderBy,
+        orderBy: [orderBy],
         skip: skip ?? undefined,
         take: take ?? undefined,
       });

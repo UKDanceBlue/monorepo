@@ -434,6 +434,7 @@ export const FundraisingEntryResolverAllKeys = {
   DonatedBy: "donatedBy",
   DonatedOn: "donatedOn",
   DonatedTo: "donatedTo",
+  SolicitationCode: "solicitationCode",
   TeamId: "teamId",
   UpdatedAt: "updatedAt",
 } as const;
@@ -509,6 +510,7 @@ export type FundraisingEntryResolverOneOfFilterKeys =
 export const FundraisingEntryResolverStringFilterKeys = {
   DonatedBy: "donatedBy",
   DonatedTo: "donatedTo",
+  SolicitationCode: "solicitationCode",
 } as const;
 
 export type FundraisingEntryResolverStringFilterKeys =
@@ -2099,6 +2101,12 @@ export type FundraisingEntryTableFragmentFragment = {
     readonly donatedByText?: string | null;
     readonly donatedToText?: string | null;
     readonly donatedOn: Date | string;
+    readonly solicitationCode: {
+      readonly __typename?: "SolicitationCodeNode";
+      readonly code: number;
+      readonly name?: string | null;
+      readonly prefix: string;
+    };
     readonly assignments: ReadonlyArray<{
       readonly __typename?: "FundraisingAssignmentNode";
       readonly id: string;
@@ -3375,6 +3383,21 @@ export const FundraisingEntryTableFragmentFragmentDoc = {
                   name: { kind: "Name", value: "donatedToText" },
                 },
                 { kind: "Field", name: { kind: "Name", value: "donatedOn" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "solicitationCode" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "code" } },
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "prefix" },
+                      },
+                    ],
+                  },
+                },
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "assignments" },
@@ -9786,6 +9809,21 @@ export const ViewFundraisingEntriesDocumentDocument = {
                 { kind: "Field", name: { kind: "Name", value: "donatedOn" } },
                 {
                   kind: "Field",
+                  name: { kind: "Name", value: "solicitationCode" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "code" } },
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "prefix" },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
                   name: { kind: "Name", value: "assignments" },
                   selectionSet: {
                     kind: "SelectionSet",
@@ -11219,6 +11257,21 @@ export const ViewTeamFundraisingDocumentDocument = {
                   name: { kind: "Name", value: "donatedToText" },
                 },
                 { kind: "Field", name: { kind: "Name", value: "donatedOn" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "solicitationCode" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "code" } },
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "prefix" },
+                      },
+                    ],
+                  },
+                },
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "assignments" },

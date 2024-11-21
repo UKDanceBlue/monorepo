@@ -57,6 +57,11 @@ export const FundraisingEntryTableFragment = graphql(/* GraphQL */ `
       donatedByText
       donatedToText
       donatedOn
+      solicitationCode {
+        code
+        name
+        prefix
+      }
       assignments {
         id
         amount
@@ -86,6 +91,7 @@ export function FundraisingEntriesTable({
   loading,
   refresh,
   potentialAssignees,
+  showSolicitationCode = false,
 }: {
   form: UseListQueryHookReturn<
     | "donatedOn"
@@ -95,10 +101,11 @@ export function FundraisingEntriesTable({
     | "amountUnassigned"
     | "teamId"
     | "donatedTo"
+    | "solicitationCode"
     | "donatedBy",
     "donatedOn" | "createdAt" | "updatedAt",
     "amount" | "amountUnassigned",
-    "donatedTo" | "donatedBy",
+    "donatedTo" | "donatedBy" | "solicitationCode",
     "teamId",
     never,
     never
@@ -107,6 +114,7 @@ export function FundraisingEntriesTable({
   loading: boolean;
   refresh: () => void;
   potentialAssignees?: { value: string; label: string }[];
+  showSolicitationCode?: boolean;
 }) {
   const [addFundraisingAssignmentState, addFundraisingAssignment] = useMutation(
     AddFundraisingAssignmentDocument
@@ -126,6 +134,11 @@ export function FundraisingEntriesTable({
   );
   const donatedToStringFilterProps = useMakeStringSearchFilterProps(
     "donatedTo",
+    updateFilter,
+    clearFilter
+  );
+  const solicitationCodeStringFilterProps = useMakeStringSearchFilterProps(
+    "solicitationCode",
     updateFilter,
     clearFilter
   );
@@ -336,6 +349,27 @@ export function FundraisingEntriesTable({
               />
             </div>
           ),
+        },
+        // TODO: replace with a picker to select a new solicitation code
+        {
+          hidden: !showSolicitationCode,
+          title: "Solicitation Code",
+          dataIndex: "solicitationCode",
+          key: "solicitationCode",
+          sorter: true,
+          ...solicitationCodeStringFilterProps,
+          render: (
+            solicitationCode: {
+              prefix: string;
+              code: string;
+              name: string | null;
+            } | null
+          ) =>
+            solicitationCode
+              ? solicitationCode.name
+                ? `${solicitationCode.prefix}${solicitationCode.code} - ${solicitationCode.name}`
+                : `${solicitationCode.prefix}${solicitationCode.code}`
+              : null,
         },
       ]}
       expandable={{

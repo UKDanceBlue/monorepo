@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
-import { FundraisingEntriesTable } from "@/elements/tables/fundraising.tsx/FundraisingEntriesTable";
+import { FundraisingEntriesTable } from "@/elements/tables/fundraising/FundraisingEntriesTable";
 import { graphql } from "@/graphql/gql";
 import { useListQuery } from "@/hooks/useListQuery";
 import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher";
@@ -75,11 +75,12 @@ function RouteComponent() {
         "teamId",
         "donatedTo",
         "donatedBy",
+        "solicitationCode",
       ],
       dateFields: ["donatedOn", "createdAt", "updatedAt"],
       numericFields: ["amount", "amountUnassigned"],
       oneOfFields: ["teamId"],
-      stringFields: ["donatedTo", "donatedBy"],
+      stringFields: ["donatedTo", "donatedBy", "solicitationCode"],
       booleanFields: [],
       isNullFields: [],
     }
@@ -99,6 +100,7 @@ function RouteComponent() {
         refreshFundraisingEntries({ requestPolicy: "network-only" })
       }
       loading={fetching}
+      showSolicitationCode
     />
   );
 }
