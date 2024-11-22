@@ -27,6 +27,16 @@ export const PersonViewerFragment = graphql(/* GraphQL */ `
     linkblue
     email
     dbRole
+    primarySpiritTeam: primaryTeam(teamType: Spirit) {
+      team {
+        id
+      }
+    }
+    primaryMoraleTeam: primaryTeam(teamType: Morale) {
+      team {
+        id
+      }
+    }
     teams {
       position
       team {
@@ -170,7 +180,17 @@ export function PersonViewer({
 
                         return (
                           <div key={team.team.id}>
-                            <dt>
+                            <dt
+                              style={{
+                                fontWeight:
+                                  personData.primarySpiritTeam?.team.id ===
+                                    team.team.id ||
+                                  personData.primaryMoraleTeam?.team.id ===
+                                    team.team.id
+                                    ? "bold"
+                                    : "normal",
+                              }}
+                            >
                               {team.team.name} ({team.team.marathon.year})
                             </dt>
                             <dd>{children}</dd>

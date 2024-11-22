@@ -153,7 +153,7 @@ const documents = {
     types.EventViewerFragmentFragmentDoc,
   "\n  fragment MarathonViewerFragment on MarathonNode {\n    id\n    year\n    startDate\n    endDate\n    hours {\n      id\n      shownStartingAt\n      title\n    }\n  }\n":
     types.MarathonViewerFragmentFragmentDoc,
-  "\n  fragment PersonViewerFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    teams {\n      position\n      team {\n        marathon {\n          year\n        }\n        id\n        name\n        committeeIdentifier\n      }\n      committeeRole\n    }\n  }\n":
+  "\n  fragment PersonViewerFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    primarySpiritTeam: primaryTeam(teamType: Spirit) {\n      team {\n        id\n      }\n    }\n    primaryMoraleTeam: primaryTeam(teamType: Morale) {\n      team {\n        id\n      }\n    }\n    teams {\n      position\n      team {\n        marathon {\n          year\n        }\n        id\n        name\n        committeeIdentifier\n      }\n      committeeRole\n    }\n  }\n":
     types.PersonViewerFragmentFragmentDoc,
   "\n  fragment TeamViewerFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    totalPoints\n    type\n    members {\n      person {\n        id\n        name\n        linkblue\n      }\n      position\n    }\n  }\n":
     types.TeamViewerFragmentFragmentDoc,
@@ -648,8 +648,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  fragment PersonViewerFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    teams {\n      position\n      team {\n        marathon {\n          year\n        }\n        id\n        name\n        committeeIdentifier\n      }\n      committeeRole\n    }\n  }\n"
-): (typeof documents)["\n  fragment PersonViewerFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    teams {\n      position\n      team {\n        marathon {\n          year\n        }\n        id\n        name\n        committeeIdentifier\n      }\n      committeeRole\n    }\n  }\n"];
+  source: "\n  fragment PersonViewerFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    primarySpiritTeam: primaryTeam(teamType: Spirit) {\n      team {\n        id\n      }\n    }\n    primaryMoraleTeam: primaryTeam(teamType: Morale) {\n      team {\n        id\n      }\n    }\n    teams {\n      position\n      team {\n        marathon {\n          year\n        }\n        id\n        name\n        committeeIdentifier\n      }\n      committeeRole\n    }\n  }\n"
+): (typeof documents)["\n  fragment PersonViewerFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    dbRole\n    primarySpiritTeam: primaryTeam(teamType: Spirit) {\n      team {\n        id\n      }\n    }\n    primaryMoraleTeam: primaryTeam(teamType: Morale) {\n      team {\n        id\n      }\n    }\n    teams {\n      position\n      team {\n        marathon {\n          year\n        }\n        id\n        name\n        committeeIdentifier\n      }\n      committeeRole\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

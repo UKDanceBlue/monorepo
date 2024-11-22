@@ -2318,6 +2318,14 @@ export type PersonViewerFragmentFragment = {
   readonly linkblue?: string | null;
   readonly email: string;
   readonly dbRole: DbRole;
+  readonly primarySpiritTeam?: {
+    readonly __typename?: "MembershipNode";
+    readonly team: { readonly __typename?: "TeamNode"; readonly id: string };
+  } | null;
+  readonly primaryMoraleTeam?: {
+    readonly __typename?: "MembershipNode";
+    readonly team: { readonly __typename?: "TeamNode"; readonly id: string };
+  } | null;
   readonly teams: ReadonlyArray<{
     readonly __typename?: "MembershipNode";
     readonly position: MembershipPositionType;
@@ -3749,6 +3757,60 @@ export const PersonViewerFragmentFragmentDoc = {
           { kind: "Field", name: { kind: "Name", value: "linkblue" } },
           { kind: "Field", name: { kind: "Name", value: "email" } },
           { kind: "Field", name: { kind: "Name", value: "dbRole" } },
+          {
+            kind: "Field",
+            alias: { kind: "Name", value: "primarySpiritTeam" },
+            name: { kind: "Name", value: "primaryTeam" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "teamType" },
+                value: { kind: "EnumValue", value: "Spirit" },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "team" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            alias: { kind: "Name", value: "primaryMoraleTeam" },
+            name: { kind: "Name", value: "primaryTeam" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "teamType" },
+                value: { kind: "EnumValue", value: "Morale" },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "team" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
           {
             kind: "Field",
             name: { kind: "Name", value: "teams" },
@@ -10070,6 +10132,60 @@ export const HomePageDocument = {
           { kind: "Field", name: { kind: "Name", value: "dbRole" } },
           {
             kind: "Field",
+            alias: { kind: "Name", value: "primarySpiritTeam" },
+            name: { kind: "Name", value: "primaryTeam" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "teamType" },
+                value: { kind: "EnumValue", value: "Spirit" },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "team" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            alias: { kind: "Name", value: "primaryMoraleTeam" },
+            name: { kind: "Name", value: "primaryTeam" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "teamType" },
+                value: { kind: "EnumValue", value: "Morale" },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "team" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: "Field",
             name: { kind: "Name", value: "teams" },
             selectionSet: {
               kind: "SelectionSet",
@@ -11014,6 +11130,60 @@ export const ViewPersonPageDocument = {
           { kind: "Field", name: { kind: "Name", value: "linkblue" } },
           { kind: "Field", name: { kind: "Name", value: "email" } },
           { kind: "Field", name: { kind: "Name", value: "dbRole" } },
+          {
+            kind: "Field",
+            alias: { kind: "Name", value: "primarySpiritTeam" },
+            name: { kind: "Name", value: "primaryTeam" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "teamType" },
+                value: { kind: "EnumValue", value: "Spirit" },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "team" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            alias: { kind: "Name", value: "primaryMoraleTeam" },
+            name: { kind: "Name", value: "primaryTeam" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "teamType" },
+                value: { kind: "EnumValue", value: "Morale" },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "team" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
           {
             kind: "Field",
             name: { kind: "Name", value: "teams" },
