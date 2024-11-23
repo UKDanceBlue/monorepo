@@ -14,8 +14,14 @@ import { reloadAsync } from "expo-updates";
 
 import { Logger } from "./logger/Logger";
 
-export let API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL || "https://app.danceblue.org";
+export let API_BASE_URL = "https://app.danceblue.org";
+
+if (
+  process.env.NODE_ENV === "development" &&
+  process.env.EXPO_PUBLIC_API_BASE_URL
+) {
+  API_BASE_URL = String(process.env.EXPO_PUBLIC_API_BASE_URL);
+}
 
 export function overrideApiBaseUrl(newUrl: string) {
   API_BASE_URL =

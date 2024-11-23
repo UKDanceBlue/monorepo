@@ -33,6 +33,8 @@ const documents = {
     types.UseTabBarConfigDocument,
   '\n      query TriviaCrack {\n        activeConfiguration(key: "TRIVIA_CRACK") {\n          data {\n            ...SimpleConfig\n          }\n        }\n\n        me {\n          teams {\n            team {\n              type\n              name\n            }\n          }\n        }\n      }\n    ':
     types.TriviaCrackDocument,
+  "\n  query AuthState {\n    me {\n      id\n      email\n    }\n    loginState {\n      dbRole\n      loggedIn\n      authSource\n    }\n  }\n":
+    types.AuthStateDocument,
   "\n  mutation SetDevice($input: RegisterDeviceInput!) {\n    registerDevice(input: $input) {\n      ok\n    }\n  }\n":
     types.SetDeviceDocument,
   "\n  fragment EventScreenFragment on EventNode {\n    id\n    title\n    summary\n    description\n    location\n    occurrences {\n      id\n      interval {\n        start\n        end\n      }\n      fullDay\n    }\n    images {\n      thumbHash\n      url\n      height\n      width\n      alt\n      mimeType\n    }\n  }\n":
@@ -137,6 +139,12 @@ export function graphql(
 export function graphql(
   source: '\n      query TriviaCrack {\n        activeConfiguration(key: "TRIVIA_CRACK") {\n          data {\n            ...SimpleConfig\n          }\n        }\n\n        me {\n          teams {\n            team {\n              type\n              name\n            }\n          }\n        }\n      }\n    '
 ): (typeof documents)['\n      query TriviaCrack {\n        activeConfiguration(key: "TRIVIA_CRACK") {\n          data {\n            ...SimpleConfig\n          }\n        }\n\n        me {\n          teams {\n            team {\n              type\n              name\n            }\n          }\n        }\n      }\n    '];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  query AuthState {\n    me {\n      id\n      email\n    }\n    loginState {\n      dbRole\n      loggedIn\n      authSource\n    }\n  }\n"
+): (typeof documents)["\n  query AuthState {\n    me {\n      id\n      email\n    }\n    loginState {\n      dbRole\n      loggedIn\n      authSource\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -18,15 +18,16 @@ import React, { useEffect, useRef, useState } from "react";
 import { Alert, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import ErrorBoundary from "#common/components/ErrorBoundary";
-import { useUpdateChecker } from "#common/hooks/useUpdateChecker";
-import { Logger } from "#common/logger/Logger";
-import { universalCatch } from "#common/logging";
-import { showMessage } from "#common/util/alertUtils";
-import { AuthStateProvider } from "#context/auth";
-import { DeviceDataProvider } from "#context/device";
-import { LoadingWrapper } from "#context/loading";
-import { UrqlContext } from "#context/urql";
+import ErrorBoundary from "@/common/components/ErrorBoundary";
+import { useUpdateChecker } from "@/common/hooks/useUpdateChecker";
+import { Logger } from "@/common/logger/Logger";
+import { universalCatch } from "@/common/logging";
+import { showMessage } from "@/common/util/alertUtils";
+import { AuthStateProvider } from "@/context/auth";
+import { DeviceDataProvider } from "@/context/device";
+import { LoadingWrapper } from "@/context/loading";
+import { UrqlContext } from "@/context/urql";
+import { navigationIntegration } from "@/navigation/routingInstrumentation";
 
 import BoldoniFlfBoldFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold.ttf";
 import BoldoniFlfBoldItalicFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold-Italic.ttf";
@@ -152,13 +153,13 @@ const App = Sentry.wrap(() => {
   useAsyncStorageDevTools();
 
   const [fontsLoaded, error] = useFonts({
-    // "bodoni-flf-bold": BoldoniFlfBoldFont,
-    // "bodoni-flf-bold-italic": BoldoniFlfBoldItalicFont,
-    // "bodoni-flf-italic": BoldoniFlfItalicFont,
-    // "bodoni-flf-roman": BoldoniFlfRomanFont,
-    // "opensans-condensed-bold": OpenSansCondensedBoldFont,
-    // "opensans-condensed-light": OpenSansCondensedLightFont,
-    // "opensans-condensed-light-italic": OpenSansCondensedLightItalicFont,
+    "bodoni-flf-bold": BoldoniFlfBoldFont,
+    "bodoni-flf-bold-italic": BoldoniFlfBoldItalicFont,
+    "bodoni-flf-italic": BoldoniFlfItalicFont,
+    "bodoni-flf-roman": BoldoniFlfRomanFont,
+    "opensans-condensed-bold": OpenSansCondensedBoldFont,
+    "opensans-condensed-light": OpenSansCondensedLightFont,
+    "opensans-condensed-light-italic": OpenSansCondensedLightItalicFont,
   });
 
   useEffect(() => {

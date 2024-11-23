@@ -189,7 +189,7 @@ export interface DailyDepartmentNotificationInput {
   readonly donor1Constituency?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor1Deceased?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly donor1Degrees?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor1GiftKey?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly donor1GiftKey?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor1Id?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor1Name?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor1Pm?: InputMaybe<Scalars["String"]["input"]>;
@@ -199,7 +199,7 @@ export interface DailyDepartmentNotificationInput {
   readonly donor2Constituency?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor2Deceased?: InputMaybe<Scalars["Boolean"]["input"]>;
   readonly donor2Degrees?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor2GiftKey?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly donor2GiftKey?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor2Id?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor2Name?: InputMaybe<Scalars["String"]["input"]>;
   readonly donor2Pm?: InputMaybe<Scalars["String"]["input"]>;
@@ -1207,6 +1207,23 @@ export type TriviaCrackQuery = {
       };
     }>;
   } | null;
+};
+
+export type AuthStateQueryVariables = Exact<{ [key: string]: never }>;
+
+export type AuthStateQuery = {
+  readonly __typename?: "Query";
+  readonly me?: {
+    readonly __typename?: "PersonNode";
+    readonly id: string;
+    readonly email: string;
+  } | null;
+  readonly loginState: {
+    readonly __typename?: "LoginState";
+    readonly dbRole: DbRole;
+    readonly loggedIn: boolean;
+    readonly authSource: AuthSource;
+  };
 };
 
 export type SetDeviceMutationVariables = Exact<{
@@ -2317,6 +2334,44 @@ export const TriviaCrackDocument = {
     },
   ],
 } as unknown as DocumentNode<TriviaCrackQuery, TriviaCrackQueryVariables>;
+export const AuthStateDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "AuthState" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "me" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "email" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "loginState" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "dbRole" } },
+                { kind: "Field", name: { kind: "Name", value: "loggedIn" } },
+                { kind: "Field", name: { kind: "Name", value: "authSource" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<AuthStateQuery, AuthStateQueryVariables>;
 export const SetDeviceDocument = {
   kind: "Document",
   definitions: [
