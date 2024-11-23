@@ -39,7 +39,7 @@ function isSuperAdmin(
   return (
     (typeof superAdminLinkblues !== "symbol" &&
       linkblue &&
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+       
       superAdminLinkblues.includes(linkblue)) ||
     committeeRoles.some(
       (role) =>
@@ -170,7 +170,7 @@ export const graphqlContextFunction: ContextFunction<
     : undefined;
   if (!token) {
     let authorizationHeader =
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+       
       req.headers.Authorization || req.headers.authorization;
     if (Array.isArray(authorizationHeader)) {
       authorizationHeader = authorizationHeader[0];

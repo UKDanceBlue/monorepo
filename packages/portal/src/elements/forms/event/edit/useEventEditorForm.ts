@@ -39,11 +39,11 @@ export function useEventEditorForm(
     defaultValues: {
       title: eventData?.title ?? "",
       // Logical OR is intentional, we we want to replace empty strings with nulls
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+       
       summary: eventData?.summary || null,
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+       
       location: eventData?.location || null,
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+       
       description: eventData?.description || null,
       occurrences:
         eventData?.occurrences.map((occurrence) => ({
