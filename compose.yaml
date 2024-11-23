@@ -12,6 +12,7 @@ services:
       database:
         aliases:
           - postgres
+      monitoring:
     restart: unless-stopped
   server:
     build:
@@ -22,6 +23,7 @@ services:
       proxy:
         aliases:
           - ${HOST_PREFIX:-}-server
+      monitoring:
       database:
     depends_on:
       - postgres
@@ -53,6 +55,9 @@ networks:
     name: proxy
   database:
     internal: true
+  monitoring:
+    external: true
+    name: monitoring
 
 volumes:
   content:

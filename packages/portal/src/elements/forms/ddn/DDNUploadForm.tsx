@@ -51,13 +51,11 @@ const inputTypeSchema = z.object({
     .string()
     .trim()
     .optional()
-
     .transform((v) => v || undefined),
   "Comment": z
     .string()
     .trim()
     .optional()
-
     .transform((v) => v || undefined),
   "SECShares": defaultStringValidator,
   "SECType": defaultStringValidator,
