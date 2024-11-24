@@ -3,8 +3,8 @@ import { Button, Flex, Image, Input } from "antd";
 import { useState } from "react";
 import { useQuery } from "urql";
 
-import { graphql } from "@/graphql/index.js";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
+import { graphql } from "#graphql/index.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const imagePickerDocument = graphql(/* GraphQL */ `
   query ImagePicker($stringFilters: [ImageResolverKeyedStringFilterItem!]) {
@@ -103,7 +103,7 @@ export function ImagePicker({
                         </Button>
                         <p style={{ textAlign: "center" }}>
                           {}
-                          { }
+                          {}
                           Alt text: {image.alt || "N/A"}
                         </p>
                         {node}

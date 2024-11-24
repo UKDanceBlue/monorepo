@@ -7,7 +7,7 @@ import {
 import type { useAppProps } from "antd/es/app/context.js";
 import type { Client } from "urql";
 
-import { getLoginState } from "@/hooks/useLoginState.js";
+import { getLoginState } from "#hooks/useLoginState.js";
 
 export function routerAuthCheck(
   route: {

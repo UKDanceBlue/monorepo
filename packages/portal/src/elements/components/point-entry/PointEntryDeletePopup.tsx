@@ -3,7 +3,7 @@ import useNotification from "antd/es/notification/useNotification.js";
 import { useEffect, useState } from "react";
 import { useMutation } from "urql";
 
-import { graphql } from "@/graphql/index.js";
+import { graphql } from "#graphql/index.js";
 
 const deletePointEntryDocument = graphql(/* GraphQL */ `
   mutation DeletePointEntry($uuid: GlobalId!) {

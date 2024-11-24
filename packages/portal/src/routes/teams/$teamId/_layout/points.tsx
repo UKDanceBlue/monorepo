@@ -3,12 +3,12 @@ import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Flex } from "antd";
 import { useQuery } from "urql";
 
-import { teamPageDocument } from "@/documents/teamPageDocument.js";
-import { PointEntryCreator } from "@/elements/forms/point-entry/create/PointEntryCreator.js";
-import { PointEntryTable } from "@/elements/tables/point-entry/PointEntryTable.js";
-import { useAuthorizationRequirement } from "@/hooks/useLoginState.js";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
+import { teamPageDocument } from "#documents/teamPageDocument.js";
+import { PointEntryCreator } from "#elements/forms/point-entry/create/PointEntryCreator.js";
+import { PointEntryTable } from "#elements/tables/point-entry/PointEntryTable.js";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function ViewTeamPoints() {
   const { teamId: teamUuid } = Route.useParams();

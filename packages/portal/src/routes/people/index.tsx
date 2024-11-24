@@ -3,9 +3,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
 
-import { PeopleTable } from "@/elements/tables/PeopleTable.js";
-import { useAuthorizationRequirement } from "@/hooks/useLoginState.js";
-import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
+import { PeopleTable } from "#elements/tables/PeopleTable.js";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function ListPeoplePage() {
   const canCreate = useAuthorizationRequirement(AccessLevel.Admin);

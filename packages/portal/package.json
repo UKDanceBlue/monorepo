@@ -18,6 +18,18 @@
       "import": "./dist/*"
     }
   },
+  "imports": {
+    "#config/*": "./src/config/*",
+    "#elements/*": "./src/elements/*",
+    "#hooks/*": "./src/hooks/*",
+    "#pages/*": "./src/pages/*",
+    "#routing/*": "./src/routing/*",
+    "#tools/*": "./src/tools/*",
+    "#assets/*": "./assets/*",
+    "#documents/*": "./src/documents/*",
+    "#graphql/*": "./graphql/*",
+    "#mocks/*": "./mocks/*"
+  },
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",

@@ -2,8 +2,8 @@ import { AccessLevel, dateTimeFromSomething } from "@ukdanceblue/common";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "urql";
 
-import { graphql } from "@/graphql/index.js";
-import { useAuthorizationRequirement } from "@/hooks/useLoginState.js";
+import { graphql } from "#graphql/index.js";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
 import type { MarathonContextData } from "./marathonContext.js";
 import { marathonContext } from "./marathonContext.js";

@@ -2,13 +2,15 @@ import { BarsOutlined, FileOutlined, UploadOutlined } from "@ant-design/icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Button, Flex } from "antd";
+import { useState } from "react";
 import { useQuery } from "urql";
 
-import { FundraisingEntriesTable } from "@/elements/tables/fundraising/FundraisingEntriesTable";
-import { graphql } from "@/graphql/gql";
-import { useListQuery } from "@/hooks/useListQuery";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher";
-import { routerAuthCheck } from "@/tools/routerAuthCheck";
+import { FundraisingReportDialog } from "#elements/components/fundraising/FundraisingReportDialog";
+import { FundraisingEntriesTable } from "#elements/tables/fundraising/FundraisingEntriesTable";
+import { graphql } from "#graphql/gql";
+import { useListQuery } from "#hooks/useListQuery";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
   query ViewFundraisingEntriesDocument(
@@ -63,6 +65,8 @@ function RouteComponent() {
     },
   });
 
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+
   useQueryStatusWatcher(result);
 
   const listQuery = useListQuery(
@@ -108,7 +112,11 @@ function RouteComponent() {
               View Raw DDNs
             </Button>
           </Link>
-          <Button icon={<FileOutlined />} size="large">
+          <Button
+            icon={<FileOutlined />}
+            size="large"
+            onClick={() => setReportDialogOpen(true)}
+          >
             Generate Report
           </Button>
           <Link from="/fundraising" to="ddn/upload">
@@ -126,6 +134,10 @@ function RouteComponent() {
         }
         loading={fetching}
         showSolicitationCode
+      />
+      <FundraisingReportDialog
+        open={reportDialogOpen}
+        onClose={() => setReportDialogOpen(false)}
       />
     </>
   );

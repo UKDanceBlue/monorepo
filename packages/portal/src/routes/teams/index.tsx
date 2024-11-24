@@ -9,13 +9,13 @@ import {
 import { Button, Flex } from "antd";
 import { useQuery } from "urql";
 
-import { useMarathon } from "@/config/marathonContext.js";
-import { TeamsTable } from "@/elements/tables/TeamsTable.js";
-import { graphql } from "@/graphql/gql";
-import { useListQuery } from "@/hooks/useListQuery";
-import { useAuthorizationRequirement } from "@/hooks/useLoginState.js";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher";
-import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
+import { useMarathon } from "#config/marathonContext.js";
+import { TeamsTable } from "#elements/tables/TeamsTable.js";
+import { graphql } from "#graphql/gql";
+import { useListQuery } from "#hooks/useListQuery";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const teamsTableQueryDocument = graphql(/* GraphQL */ `
   query TeamsTable(

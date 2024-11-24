@@ -4,14 +4,14 @@ import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Flex } from "antd";
 import { useMutation, useQuery } from "urql";
 
-import { TeamSelect } from "@/elements/components/team/TeamSelect";
-import { FundraisingEntriesTable } from "@/elements/tables/fundraising/FundraisingEntriesTable";
-import { TeamsTable } from "@/elements/tables/TeamsTable";
-import { graphql } from "@/graphql/gql";
-import { useAntFeedback, useAskConfirm } from "@/hooks/useAntFeedback";
-import { useListQuery } from "@/hooks/useListQuery";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher";
-import { routerAuthCheck } from "@/tools/routerAuthCheck";
+import { TeamSelect } from "#elements/components/team/TeamSelect";
+import { FundraisingEntriesTable } from "#elements/tables/fundraising/FundraisingEntriesTable";
+import { TeamsTable } from "#elements/tables/TeamsTable";
+import { graphql } from "#graphql/gql";
+import { useAntFeedback, useAskConfirm } from "#hooks/useAntFeedback";
+import { useListQuery } from "#hooks/useListQuery";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 export const Route = createFileRoute(
   "/fundraising/solicitation-code/$solicitationCodeId/"

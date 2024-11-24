@@ -3,11 +3,11 @@ import { Link } from "@tanstack/react-router";
 import { Button, Table } from "antd";
 import { useQuery } from "urql";
 
-import { useMarathon } from "@/config/marathonContext";
-import { getFragmentData } from "@/graphql/fragment-masking";
-import { graphql } from "@/graphql/gql";
-import type { SolicitationCodeTableFragmentFragment } from "@/graphql/graphql";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher";
+import { useMarathon } from "#config/marathonContext";
+import { getFragmentData } from "#graphql/fragment-masking";
+import { graphql } from "#graphql/gql";
+import type { SolicitationCodeTableFragmentFragment } from "#graphql/graphql";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 const SolicitationCodeTableDocument = graphql(/* GraphQL */ `
   query SolicitationCodeTable($marathonId: GlobalId!) {

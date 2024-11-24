@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import { App, Button, Flex, Form, Input, Select } from "antd";
 
-import { TanAntFormItem } from "@/elements/components/form/TanAntFormItem.js";
+import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
 
 import { useTeamCreatorForm } from "./useTeamCreatorForm.js";
 

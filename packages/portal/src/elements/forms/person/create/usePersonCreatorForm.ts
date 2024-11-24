@@ -1,9 +1,9 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "urql";
 
-import { type CreatePersonInput } from "@/graphql/graphql.js";
-import type { DocumentType } from "@/graphql/index.js";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
+import { type CreatePersonInput } from "#graphql/graphql.js";
+import type { DocumentType } from "#graphql/index.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import { personCreatorDocument } from "./PersonCreatorGQL.js";
 
@@ -72,9 +72,8 @@ export function usePersonCreatorForm(
 
       const { data } = await createPerson({
         input: {
-           
           name: values.name || null,
-           
+
           linkblue: values.linkblue?.toLowerCase() || null,
           email: values.email,
           captainOf: values.captainOf ?? [],

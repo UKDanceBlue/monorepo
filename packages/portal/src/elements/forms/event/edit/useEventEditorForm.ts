@@ -7,10 +7,10 @@ import { useMutation } from "urql";
 import type {
   SetEventInput,
   SetEventOccurrenceInput,
-} from "@/graphql/graphql.js";
-import type { FragmentType } from "@/graphql/index.js";
-import { getFragmentData } from "@/graphql/index.js";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
+} from "#graphql/graphql.js";
+import type { FragmentType } from "#graphql/index.js";
+import { getFragmentData } from "#graphql/index.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import { eventEditorDocument, EventEditorFragment } from "./EventEditorGQL.js";
 
@@ -39,11 +39,11 @@ export function useEventEditorForm(
     defaultValues: {
       title: eventData?.title ?? "",
       // Logical OR is intentional, we we want to replace empty strings with nulls
-       
+
       summary: eventData?.summary || null,
-       
+
       location: eventData?.location || null,
-       
+
       description: eventData?.description || null,
       occurrences:
         eventData?.occurrences.map((occurrence) => ({

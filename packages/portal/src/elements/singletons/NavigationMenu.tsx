@@ -13,15 +13,15 @@ import { Button, Menu, Select } from "antd";
 import type { ItemType } from "antd/es/menu/interface.js";
 import { useContext, useEffect, useState } from "react";
 
-import { themeConfigContext } from "@/config/antThemeConfig.js";
-import { API_BASE_URL } from "@/config/api.js";
-import { marathonContext } from "@/config/marathonContext.js";
-import { SessionStorageKeys } from "@/config/storage.js";
-import { useAntFeedback } from "@/hooks/useAntFeedback.js";
+import { themeConfigContext } from "#config/antThemeConfig.js";
+import { API_BASE_URL } from "#config/api.js";
+import { marathonContext } from "#config/marathonContext.js";
+import { SessionStorageKeys } from "#config/storage.js";
+import { useAntFeedback } from "#hooks/useAntFeedback.js";
 import {
   useAuthorizationRequirement,
   useLoginState,
-} from "@/hooks/useLoginState.js";
+} from "#hooks/useLoginState.js";
 
 import { MasqueradeSelector } from "./MasqueradeSelector.js";
 
@@ -50,12 +50,16 @@ const routes: {
     title: "Fundraising",
     children: [
       {
-        path: "/fundraising/dbfunds",
-        title: "DB Funds",
-      },
-      {
         path: "/fundraising/ddn",
         title: "DDNs",
+      },
+      {
+        path: "/fundraising/solicitation-code",
+        title: "Solicitation Codes",
+      },
+      {
+        path: "/fundraising/dbfunds",
+        title: "DB Funds",
       },
     ],
   },

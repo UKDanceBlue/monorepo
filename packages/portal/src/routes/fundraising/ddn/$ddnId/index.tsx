@@ -8,11 +8,11 @@ import {
 import { Descriptions } from "antd";
 import { useQuery } from "urql";
 
-import { SpinningRibbon } from "@/elements/components/design/RibbonSpinner";
-import { getFragmentData } from "@/graphql/fragment-masking";
-import { graphql } from "@/graphql/gql";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher";
-import { routerAuthCheck } from "@/tools/routerAuthCheck";
+import { SpinningRibbon } from "#elements/components/design/RibbonSpinner";
+import { getFragmentData } from "#graphql/fragment-masking";
+import { graphql } from "#graphql/gql";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 export const Route = createFileRoute("/fundraising/ddn/$ddnId/")({
   component: RouteComponent,

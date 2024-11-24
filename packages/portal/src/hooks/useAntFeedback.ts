@@ -3,7 +3,7 @@ import type { ModalFunc } from "antd/es/modal/confirm.js";
 import type { ReactNode } from "react";
 import { useCallback, useState } from "react";
 
-import { handleUnknownError } from "@/tools/apolloErrorHandler.js";
+import { handleUnknownError } from "#tools/apolloErrorHandler.js";
 
 export const useAntFeedback = () => {
   const { message, notification, modal } = App.useApp();

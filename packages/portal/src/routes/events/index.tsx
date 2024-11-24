@@ -3,8 +3,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
 
-import { EventsTable } from "@/elements/tables/EventsTable.js";
-import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
+import { EventsTable } from "#elements/tables/EventsTable.js";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function Events() {
   return (

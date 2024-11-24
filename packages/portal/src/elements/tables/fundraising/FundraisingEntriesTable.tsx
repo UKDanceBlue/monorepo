@@ -7,11 +7,11 @@ import { DateTime } from "luxon";
 import { useEffect } from "react";
 import { useMutation } from "urql";
 
-import type { FragmentType } from "@/graphql/index.js";
-import { getFragmentData, graphql } from "@/graphql/index.js";
-import type { UseListQueryHookReturn } from "@/hooks/useListQuery";
-import { useMakeStringSearchFilterProps } from "@/hooks/useMakeSearchFilterProps.js";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
+import type { FragmentType } from "#graphql/index.js";
+import { getFragmentData, graphql } from "#graphql/index.js";
+import type { UseListQueryHookReturn } from "#hooks/useListQuery";
+import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const AddFundraisingAssignmentDocument = graphql(/* GraphQL */ `
   mutation AddFundraisingAssignment(

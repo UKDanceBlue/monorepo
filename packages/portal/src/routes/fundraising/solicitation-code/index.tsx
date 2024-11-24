@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Flex } from "antd";
 
-import { SolicitationCodeTable } from "@/elements/tables/fundraising/SolicitationCodeTable";
-import { routerAuthCheck } from "@/tools/routerAuthCheck";
+import { SolicitationCodeTable } from "#elements/tables/fundraising/SolicitationCodeTable";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 export const Route = createFileRoute("/fundraising/solicitation-code/")({
   component: RouteComponent,

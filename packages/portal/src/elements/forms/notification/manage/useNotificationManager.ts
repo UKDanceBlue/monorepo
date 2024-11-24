@@ -1,7 +1,7 @@
 import type { DateTime } from "luxon";
 import { useMutation } from "urql";
 
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import {
   cancelNotificationScheduleDocument,

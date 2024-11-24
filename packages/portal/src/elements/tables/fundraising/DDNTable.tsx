@@ -6,13 +6,13 @@ import { SortDirection, stringifyDDNBatchType } from "@ukdanceblue/common";
 import { Button, Flex, Table } from "antd";
 import { useQuery } from "urql";
 
-import { getFragmentData, graphql } from "@/graphql/index.js";
-import { useListQuery } from "@/hooks/useListQuery.js";
+import { getFragmentData, graphql } from "#graphql/index.js";
+import { useListQuery } from "#hooks/useListQuery.js";
 import {
   useMakeNumberSearchFilterProps,
   useMakeStringSearchFilterProps,
-} from "@/hooks/useMakeSearchFilterProps";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
+} from "#hooks/useMakeSearchFilterProps";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const DDNsTableFragment = graphql(/* GraphQL */ `
   fragment DDNsTableFragment on DailyDepartmentNotificationNode {

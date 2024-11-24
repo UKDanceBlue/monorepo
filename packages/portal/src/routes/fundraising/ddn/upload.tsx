@@ -5,8 +5,8 @@ import {
   CommitteeRole,
 } from "@ukdanceblue/common";
 
-import { DDNUploadForm } from "@/elements/forms/ddn/DDNUploadForm";
-import { routerAuthCheck } from "@/tools/routerAuthCheck";
+import { DDNUploadForm } from "#elements/forms/ddn/DDNUploadForm";
+import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 function DDNSpreadsheetUploader() {
   return (

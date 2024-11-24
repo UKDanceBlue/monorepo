@@ -1,12 +1,12 @@
 import { CommitteeIdentifier, CommitteeRole } from "@ukdanceblue/common";
 import { useMutation } from "urql";
 
-import { useMarathon } from "@/config/marathonContext.js";
-import { SpreadsheetUploader } from "@/elements/components/SpreadsheetUploader.js";
-import type { BulkPersonInput } from "@/graphql/graphql.js";
-import { graphql } from "@/graphql/index.js";
-import { useAntFeedback } from "@/hooks/useAntFeedback.js";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
+import { useMarathon } from "#config/marathonContext.js";
+import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader.js";
+import type { BulkPersonInput } from "#graphql/graphql.js";
+import { graphql } from "#graphql/index.js";
+import { useAntFeedback } from "#hooks/useAntFeedback.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const personBulkCreatorDocument = graphql(/* GraphQL */ `
   mutation PersonBulkCreator(

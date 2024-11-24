@@ -8,8 +8,8 @@ import { useDebouncedCallback } from "use-debounce";
 import {
   useAskConfirm,
   useUnknownErrorHandler,
-} from "@/hooks/useAntFeedback.js";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
+} from "#hooks/useAntFeedback.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import {
   createPersonByLinkBlue,
@@ -259,7 +259,7 @@ export function PointEntryPersonLookup({
                         try {
                           if (!generalLinkblueRegex.test(linkblueFieldValue)) {
                             try {
-                              await openConfirmModal();
+                              await openConfirmModal(undefined);
                             } catch (error) {
                               if (error === "cancel") {
                                 return;

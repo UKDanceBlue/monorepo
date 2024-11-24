@@ -3,7 +3,7 @@ import { Form, Input, Space } from "antd";
 import { DateTime } from "luxon";
 import { useMemo } from "react";
 
-import { LuxonDatePicker } from "@/elements/components/antLuxonComponents.js";
+import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
 
 import type { ConfigValue } from "./useConfig.js";
 

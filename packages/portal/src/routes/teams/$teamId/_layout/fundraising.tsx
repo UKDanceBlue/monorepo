@@ -8,12 +8,12 @@ import { AutoComplete, Button, Flex, Form, Space } from "antd";
 import { useState } from "react";
 import { useMutation, useQuery } from "urql";
 
-import { FundraisingEntriesTable } from "@/elements/tables/fundraising/FundraisingEntriesTable";
-import { graphql } from "@/graphql/index.js";
-import { useListQuery } from "@/hooks/useListQuery.js";
-import { useAuthorizationRequirement } from "@/hooks/useLoginState.js";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
+import { FundraisingEntriesTable } from "#elements/tables/fundraising/FundraisingEntriesTable";
+import { graphql } from "#graphql/index.js";
+import { useListQuery } from "#hooks/useListQuery.js";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
   query ViewTeamFundraisingDocument(

@@ -4,8 +4,8 @@ console.log(
 import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 
-import { CreateNotificationForm } from "@/elements/forms/notification/create/CreateNotificationForm";
-import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
+import { CreateNotificationForm } from "#elements/forms/notification/create/CreateNotificationForm";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function CreateNotificationPage() {
   return (

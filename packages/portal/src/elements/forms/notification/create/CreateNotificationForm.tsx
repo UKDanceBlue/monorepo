@@ -2,8 +2,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { Button, Checkbox, Flex, Form, Input, Select } from "antd";
 import TextArea from "antd/es/input/TextArea.js";
 
-import { PersonSearch } from "@/elements/components/person/PersonSearch.js";
-import { useAntFeedback } from "@/hooks/useAntFeedback.js";
+import { PersonSearch } from "#elements/components/person/PersonSearch.js";
+import { useAntFeedback } from "#hooks/useAntFeedback.js";
 
 import { NotificationPreview } from "../../../components/notification/NotificationPreview";
 import { useNotificationCreator } from "./useNotificationCreator.js";

@@ -9,9 +9,9 @@ import { Button, Flex, Table } from "antd";
 import { useCallback, useMemo } from "react";
 import { useQuery } from "urql";
 
-import { getFragmentData, graphql } from "@/graphql/index.js";
-import { useListQuery } from "@/hooks/useListQuery.js";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
+import { getFragmentData, graphql } from "#graphql/index.js";
+import { useListQuery } from "#hooks/useListQuery.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const EventsTableFragment = graphql(/* GraphQL */ `
   fragment EventsTableFragment on EventNode {

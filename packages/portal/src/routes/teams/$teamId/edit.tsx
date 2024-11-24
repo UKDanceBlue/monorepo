@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
-import { TeamEditor } from "@/elements/forms/team/edit/TeamEditor.js";
-import { graphql } from "@/graphql/index.js";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "@/tools/routerAuthCheck.js";
+import { TeamEditor } from "#elements/forms/team/edit/TeamEditor.js";
+import { graphql } from "#graphql/index.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const viewTeamPageDocument = graphql(/* GraphQL */ `
   query EditTeamPage($uuid: GlobalId!) {

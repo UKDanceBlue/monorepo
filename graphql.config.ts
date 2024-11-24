@@ -1,7 +1,6 @@
 import type { IGraphQLConfig } from "graphql-config";
 
 import { resolvers } from "graphql-scalars";
-import { readFileSync, writeFileSync } from "node:fs";
 
 import type { CodegenConfig } from "@graphql-codegen/cli";
 import type { ClientPresetConfig } from "@graphql-codegen/client-preset";
@@ -67,42 +66,7 @@ const codegenConfig: CodegenConfig = {
     onError: (e) => {
       console.error("Error generating GraphQL client:", e);
     },
-    afterAllFileWrite: [
-      (...files) => {
-        for (const file of files) {
-          const content = readFileSync(file, "utf8");
-          const newContent = content
-            .replace("from './graphql.js';", "from './graphql';")
-            .replace(
-              "from './fragment-masking.js'",
-              "from './fragment-masking'"
-            )
-            .replace("from './gql.js';", "from './gql';")
-            .replace('from "./graphql.js";', 'from "./graphql";')
-            .replace(
-              'from "./fragment-masking.js"',
-              'from "./fragment-masking"'
-            )
-            .replace('from "./gql.js";', 'from "./gql";')
-            .replace(
-              "/* eslint-disable */",
-              `/* eslint-disable @typescript-eslint/no-unnecessary-condition */
-/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
-/* eslint-disable @typescript-eslint/no-unnecessary-type-parameters */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-invalid-void-type */
-/* eslint-disable @typescript-eslint/array-type */
-/* eslint-disable unicorn/prefer-export-from */
-/* eslint-disable sort-imports/exports */`
-            );
-          writeFileSync(file, newContent);
-        }
-      },
-      "eslint --cache --fix",
-      "prettier --write",
-    ],
+    afterAllFileWrite: ["prettier --write"],
     beforeOneFileWrite: (file, content) => {
       if (file.includes("mobile")) {
         content = content
@@ -113,10 +77,7 @@ const codegenConfig: CodegenConfig = {
           .replace('from "./fragment-masking.js"', 'from "./fragment-masking"')
           .replace('from "./gql.js";', 'from "./gql";');
       }
-      return content.replace(
-        "/* eslint-disable */",
-        "/* eslint-disable @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/no-unnecessary-type-parameters, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-invalid-void-type, @typescript-eslint/consistent-indexed-object-style, @typescript-eslint/consistent-type-definitions, @typescript-eslint/array-type, unicorn/prefer-export-from, sort-imports/exports */"
-      );
+      return content;
     },
   },
   noSilentErrors: true,

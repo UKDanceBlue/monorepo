@@ -10,11 +10,11 @@ import { Button, Flex, Table } from "antd";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 
-import type { TeamsTableFragmentFragment } from "@/graphql/graphql";
-import type { FragmentType } from "@/graphql/index.js";
-import { getFragmentData, graphql } from "@/graphql/index.js";
-import type { UseListQueryHookReturn } from "@/hooks/useListQuery.js";
-import { useMakeStringSearchFilterProps } from "@/hooks/useMakeSearchFilterProps.js";
+import type { TeamsTableFragmentFragment } from "#graphql/graphql";
+import type { FragmentType } from "#graphql/index.js";
+import { getFragmentData, graphql } from "#graphql/index.js";
+import type { UseListQueryHookReturn } from "#hooks/useListQuery.js";
+import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps.js";
 
 import { PaginationFragment } from "../fragments/generic";
 

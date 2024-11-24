@@ -15,16 +15,16 @@
     "jsx": "react-jsx",
 
     "paths": {
-      "@/config/*": ["config/*"],
-      "@/elements/*": ["elements/*"],
-      "@/hooks/*": ["hooks/*"],
-      "@/pages/*": ["pages/*"],
-      "@/routing/*": ["routing/*"],
-      "@/tools/*": ["tools/*"],
-      "@/assets/*": ["../assets/*"],
-      "@/documents/*": ["documents/*"],
-      "@/graphql/*": ["../graphql/*"],
-      "@/mocks/*": ["../mocks/*"]
+      "#config/*": ["config/*"],
+      "#elements/*": ["elements/*"],
+      "#hooks/*": ["hooks/*"],
+      "#pages/*": ["pages/*"],
+      "#routing/*": ["routing/*"],
+      "#tools/*": ["tools/*"],
+      "#assets/*": ["../assets/*"],
+      "#documents/*": ["documents/*"],
+      "#graphql/*": ["../graphql/*"],
+      "#mocks/*": ["../mocks/*"]
     },
 
     "baseUrl": "./src"
