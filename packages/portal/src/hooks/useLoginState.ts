@@ -15,7 +15,7 @@ import { useQuery } from "urql";
 import type { LoginStateQuery } from "#graphql/graphql.js";
 import { graphql } from "#graphql/index.js";
 
-export const loginStateDocument = graphql(/* GraphQL */ `
+const loginStateDocument = graphql(/* GraphQL */ `
   query LoginState {
     loginState {
       loggedIn

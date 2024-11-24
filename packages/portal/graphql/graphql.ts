@@ -2250,8 +2250,6 @@ export type SolicitationCodeTableFragmentFragment = {
   readonly __typename?: "SolicitationCodeNode";
   readonly id: string;
   readonly text: string;
-  readonly prefix: string;
-  readonly code: number;
   readonly teams: ReadonlyArray<{
     readonly __typename?: "TeamNode";
     readonly name: string;
@@ -3751,8 +3749,6 @@ export const SolicitationCodeTableFragmentFragmentDoc = {
         selections: [
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "text" } },
-          { kind: "Field", name: { kind: "Name", value: "prefix" } },
-          { kind: "Field", name: { kind: "Name", value: "code" } },
           {
             kind: "Field",
             name: { kind: "Name", value: "teams" },
@@ -8535,8 +8531,6 @@ export const SolicitationCodeTableDocument = {
         selections: [
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "text" } },
-          { kind: "Field", name: { kind: "Name", value: "prefix" } },
-          { kind: "Field", name: { kind: "Name", value: "code" } },
           {
             kind: "Field",
             name: { kind: "Name", value: "teams" },

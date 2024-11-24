@@ -1,5 +1,5 @@
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+// import { dirname, resolve } from "node:path";
+// import { fileURLToPath } from "node:url";
 
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
@@ -7,11 +7,11 @@ import react from "@vitejs/plugin-react-swc";
 import type { UserConfig } from "vite";
 import { defineConfig } from "vite";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+// const __dirname = dirname(fileURLToPath(import.meta.url));
 
-function resolveRelative(...relativePath: string[]) {
-  return resolve(__dirname, ...relativePath);
-}
+// function resolveRelative(...relativePath: string[]) {
+//   return resolve(__dirname, ...relativePath);
+// }
 
 export const literalConfig: UserConfig = {
   resolve: {
@@ -27,6 +27,11 @@ export const literalConfig: UserConfig = {
       // "@/assets": resolveRelative("assets"),
       // "@/graphql": resolveRelative("graphql"),
       // "@/mocks": resolveRelative("mocks"),
+    },
+  },
+  server: {
+    watch: {
+      usePolling: true,
     },
   },
   build: {

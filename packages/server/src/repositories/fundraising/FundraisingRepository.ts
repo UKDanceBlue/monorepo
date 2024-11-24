@@ -1014,7 +1014,21 @@ export class FundraisingEntryRepository {
     Result<readonly SolicitationCode[], RepositoryError>
   > {
     try {
-      return Ok(await this.prisma.solicitationCode.findMany());
+      return Ok(
+        await this.prisma.solicitationCode.findMany({
+          orderBy: [
+            {
+              prefix: "asc",
+            },
+            {
+              code: "asc",
+            },
+            {
+              name: "asc",
+            },
+          ],
+        })
+      );
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }
