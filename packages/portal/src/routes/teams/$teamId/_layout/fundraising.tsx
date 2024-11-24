@@ -107,7 +107,7 @@ function ViewTeamFundraising() {
     {
       initPage: 1,
       initPageSize: 10,
-      initSorting: [],
+      initSorting: [{ field: "donatedOn", direction: "desc" }],
     },
     {
       allFields: [
@@ -117,13 +117,14 @@ function ViewTeamFundraising() {
         "amount",
         "amountUnassigned",
         "teamId",
+        "batchType",
         "donatedTo",
         "donatedBy",
         "solicitationCode",
       ],
       dateFields: ["donatedOn", "createdAt", "updatedAt"],
       numericFields: ["amount", "amountUnassigned"],
-      oneOfFields: ["teamId"],
+      oneOfFields: ["teamId", "batchType"],
       stringFields: ["donatedTo", "donatedBy", "solicitationCode"],
       booleanFields: [],
       isNullFields: [],

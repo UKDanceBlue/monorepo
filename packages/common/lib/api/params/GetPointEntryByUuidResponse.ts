@@ -1,8 +1,9 @@
-import { ArgsType,Field, InputType, Int, ObjectType } from "type-graphql";
+import { NonEmptyStringResolver } from "graphql-scalars";
+import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { PointEntryNode } from "../resources/PointEntry.js";
-import { type GlobalId,GlobalIdScalar } from "../scalars/GlobalId.js";
+import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
@@ -37,7 +38,7 @@ export class DeletePointEntryResponse extends AbstractGraphQLOkResponse<never> {
 
 @InputType()
 export class CreatePointEntryInput implements Partial<PointEntryNode> {
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   comment!: string | null;
 
   @Field(() => Int)

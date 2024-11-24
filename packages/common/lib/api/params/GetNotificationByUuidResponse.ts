@@ -1,3 +1,4 @@
+import { NonEmptyStringResolver, URLResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
@@ -45,13 +46,13 @@ class NotificationAudienceInput {
 
 @ArgsType()
 export class StageNotificationArgs {
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   title!: string;
 
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   body!: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => URLResolver, { nullable: true })
   url?: string | undefined | null;
 
   @Field(() => NotificationAudienceInput)

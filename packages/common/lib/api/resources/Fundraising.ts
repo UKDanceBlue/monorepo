@@ -6,6 +6,7 @@ import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { createNodeClasses, Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
+import { BatchType } from "./DailyDepartmentNotification.js";
 import { TimestampedResource } from "./Resource.js";
 import { SolicitationCodeNode } from "./SolicitationCode.js";
 
@@ -40,6 +41,9 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   @Field(() => SolicitationCodeNode, { nullable: true })
   solicitationCodeOverride?: SolicitationCodeNode | null | undefined;
 
+  @Field(() => BatchType)
+  batchType!: BatchType;
+
   public getUniqueId(): string {
     return this.id.id;
   }
@@ -55,6 +59,7 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
     updatedAt: Date;
     notes?: string | null;
     solicitationCodeOverride?: SolicitationCodeNode | null;
+    batchType: BatchType;
   }) {
     return FundraisingEntryNode.createInstance().withValues(init);
   }

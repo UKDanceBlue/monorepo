@@ -53,7 +53,7 @@ type FundraisingEntryIsNullKey = (typeof fundraisingEntryIsNullKeys)[number];
 const fundraisingEntryNumericKeys = ["amount", "amountUnassigned"] as const;
 type FundraisingEntryNumericKey = (typeof fundraisingEntryNumericKeys)[number];
 
-const fundraisingEntryOneOfKeys = ["teamId"] as const;
+const fundraisingEntryOneOfKeys = ["teamId", "batchType"] as const;
 type FundraisingEntryOneOfKey = (typeof fundraisingEntryOneOfKeys)[number];
 
 const fundraisingEntryStringKeys = [
@@ -66,6 +66,7 @@ type FundraisingEntryStringKey = (typeof fundraisingEntryStringKeys)[number];
 export type FundraisingEntryOrderKeys =
   | "solicitationCode"
   | "teamId"
+  | "batchType"
   | "donatedOn"
   | "amount"
   | "amountUnassigned"
@@ -159,6 +160,7 @@ function asWideFundraisingEntryWithMeta(
       donatedOn: entry.donatedOn,
       donatedTo: entry.donatedTo,
       solicitationCodeText: entry.solicitationCodeText,
+      batchType: entry.batchType,
     });
   }
   if (entry.dbFundsEntry) {
@@ -178,6 +180,7 @@ function asWideFundraisingEntryWithMeta(
       donatedOn: entry.donatedOn,
       donatedTo: entry.donatedTo,
       solicitationCodeText: entry.solicitationCodeText,
+      batchType: entry.batchType,
     });
   }
   return Err(new InvariantError("Fundraising entry has no source"));

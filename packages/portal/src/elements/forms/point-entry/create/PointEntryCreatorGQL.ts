@@ -72,7 +72,10 @@ export const searchPersonByNameDocument = graphql(/* GraphQL */ `
 `);
 
 export const createPersonByLinkBlue = graphql(/* GraphQL */ `
-  mutation CreatePersonByLinkBlue($linkBlue: String!, $email: EmailAddress!) {
+  mutation CreatePersonByLinkBlue(
+    $linkBlue: NonEmptyString!
+    $email: EmailAddress!
+  ) {
     createPerson(input: { email: $email, linkblue: $linkBlue }) {
       id
     }

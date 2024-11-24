@@ -1,10 +1,10 @@
-import { DateTimeISOResolver } from "graphql-scalars";
-import { ArgsType,Field, InputType, ObjectType } from "type-graphql";
+import { DateTimeISOResolver, NonEmptyStringResolver } from "graphql-scalars";
+import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { PointOpportunityNode } from "../resources/PointOpportunity.js";
 import { TeamType } from "../resources/Team.js";
-import { type GlobalId,GlobalIdScalar } from "../scalars/GlobalId.js";
+import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
@@ -39,7 +39,7 @@ export class DeletePointOpportunityResponse extends AbstractGraphQLOkResponse<ne
 
 @InputType()
 export class CreatePointOpportunityInput {
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   name!: string;
 
   @Field(() => DateTimeISOResolver, { nullable: true })
@@ -57,7 +57,7 @@ export class CreatePointOpportunityInput {
 
 @InputType()
 export class SetPointOpportunityInput {
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   name!: string | null;
 
   @Field(() => DateTimeISOResolver, { nullable: true })

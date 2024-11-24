@@ -111,14 +111,18 @@ export function buildDailyDepartmentNotificationWhere(
           return {
             not: {
               OR: filter.value.map((v) => ({
-                batchId: { endsWith: `${getBatchIdChar(v)}1` },
+                batch: {
+                  batchId: { endsWith: `${getBatchIdChar(v)}1` },
+                },
               })),
             },
           };
         }
         return {
           OR: filter.value.map((v) => ({
-            batchId: { endsWith: `${getBatchIdChar(v)}1` },
+            batch: {
+              batchId: { endsWith: `${getBatchIdChar(v)}1` },
+            },
           })),
         };
       }

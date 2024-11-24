@@ -1,6 +1,10 @@
 import { FilterFilled } from "@ant-design/icons";
 import { Link } from "@tanstack/react-router";
-import { SortDirection } from "@ukdanceblue/common";
+import {
+  BatchType,
+  SortDirection,
+  stringifyDDNBatchType,
+} from "@ukdanceblue/common";
 import { Button, Empty, Form, InputNumber, Select, Table } from "antd";
 import { useForm } from "antd/es/form/Form.js";
 import { DateTime } from "luxon";
@@ -58,6 +62,7 @@ export const FundraisingEntryTableFragment = graphql(/* GraphQL */ `
       donatedByText
       donatedToText
       donatedOn
+      batchType
       solicitationCode {
         id
         text
@@ -100,13 +105,14 @@ export function FundraisingEntriesTable({
     | "amount"
     | "amountUnassigned"
     | "teamId"
+    | "batchType"
     | "donatedTo"
     | "solicitationCode"
     | "donatedBy",
     "donatedOn" | "createdAt" | "updatedAt",
     "amount" | "amountUnassigned",
     "donatedTo" | "donatedBy" | "solicitationCode",
-    "teamId",
+    "teamId" | "batchType",
     never,
     never
   >;
@@ -162,12 +168,23 @@ export function FundraisingEntriesTable({
           : false
       }
       sortDirections={["ascend", "descend"]}
-      onChange={(pagination, _filters, sorter, _extra) => {
+      onChange={(pagination, filters, sorter, _extra) => {
         updatePagination({
           page: pagination.current,
           pageSize: pagination.pageSize,
         });
         clearSorting();
+        if (filters.batchType) {
+          updateFilter("batchType", {
+            field: "batchType",
+            value: Array.isArray(filters.batchType)
+              ? filters.batchType.map(String)
+              : [filters.batchType],
+          });
+        } else {
+          clearFilter("batchType");
+        }
+
         for (const sort of Array.isArray(sorter) ? sorter : [sorter]) {
           let { field } = sort;
           const { order } = sort;
@@ -292,7 +309,6 @@ export function FundraisingEntriesTable({
             </div>
           ),
         },
-        Table.EXPAND_COLUMN,
         {
           title: "Amount Unassigned",
           dataIndex: "amountUnassigned",
@@ -389,6 +405,18 @@ export function FundraisingEntriesTable({
               </Link>
             ),
         },
+        {
+          title: "Batch Type",
+          dataIndex: "batchType",
+          key: "batchType",
+          sorter: true,
+          render: (batchType: string) => batchType,
+          filters: Object.values(BatchType).map((batchType) => ({
+            text: stringifyDDNBatchType(batchType),
+            value: batchType,
+          })),
+        },
+        Table.EXPAND_COLUMN,
       ]}
       expandable={{
         rowExpandable: () => true,

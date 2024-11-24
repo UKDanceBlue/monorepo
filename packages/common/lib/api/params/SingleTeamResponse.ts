@@ -1,10 +1,11 @@
-import { ArgsType, Field, InputType, Int,ObjectType } from "type-graphql";
+import { NonEmptyStringResolver } from "graphql-scalars";
+import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
 
 import { DbRole } from "../../authorization/structures.js";
 import { OptionalToNullable } from "../../utility/primitive/TypeUtils.js";
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { TeamLegacyStatus, TeamNode, TeamType } from "../resources/Team.js";
-import { type GlobalId,GlobalIdScalar } from "../scalars/GlobalId.js";
+import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
 import {
   AbstractGraphQLCreatedResponse,
   AbstractGraphQLOkResponse,
@@ -39,7 +40,7 @@ export class DeleteTeamResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
 export class CreateTeamInput implements OptionalToNullable<Partial<TeamNode>> {
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   name!: string;
 
   @Field(() => TeamType)
@@ -51,7 +52,7 @@ export class CreateTeamInput implements OptionalToNullable<Partial<TeamNode>> {
 
 @InputType()
 export class SetTeamInput implements OptionalToNullable<Partial<TeamNode>> {
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   name!: string | null;
 
   @Field(() => TeamType, { nullable: true })
@@ -60,13 +61,13 @@ export class SetTeamInput implements OptionalToNullable<Partial<TeamNode>> {
   @Field(() => TeamLegacyStatus, { nullable: true })
   legacyStatus!: TeamLegacyStatus | null;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   persistentIdentifier!: string | null;
 }
 
 @InputType()
 export class BulkTeamInput {
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   name!: string;
 
   @Field(() => TeamType)
@@ -75,10 +76,10 @@ export class BulkTeamInput {
   @Field(() => TeamLegacyStatus)
   legacyStatus!: TeamLegacyStatus;
 
-  @Field(() => [String], { nullable: true })
+  @Field(() => [NonEmptyStringResolver], { nullable: true })
   captainLinkblues!: string[] | null;
 
-  @Field(() => [String], { nullable: true })
+  @Field(() => [NonEmptyStringResolver], { nullable: true })
   memberLinkblues!: string[] | null;
 }
 

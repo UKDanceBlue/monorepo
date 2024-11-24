@@ -20,6 +20,7 @@ import { AsyncResult, Ok, Result } from "ts-results-es";
 import {
   Arg,
   Args,
+  Ctx,
   FieldResolver,
   Mutation,
   Query,
@@ -32,6 +33,8 @@ import {
   dailyDepartmentNotificationModelToResource,
 } from "#repositories/dailyDepartmentNotification/ddnModelToResource.js";
 import { DailyDepartmentNotificationRepository } from "#repositories/dailyDepartmentNotification/DDNRepository.js";
+
+import type { GraphQLContext } from "./context.js";
 
 @Resolver(() => DailyDepartmentNotificationNode)
 @Service([DailyDepartmentNotificationRepository])
@@ -117,10 +120,13 @@ export class DailyDepartmentNotificationResolver {
   )
   @Mutation(() => DailyDepartmentNotificationNode)
   async createDailyDepartmentNotification(
+    @Ctx() { userData: { userId } }: GraphQLContext,
     @Arg("input") input: DailyDepartmentNotificationInput
   ) {
     return new AsyncResult(
-      this.dailyDepartmentNotificationRepository.createDDN(input)
+      this.dailyDepartmentNotificationRepository.createDDN(input, {
+        enteredBy: userId ? { uuid: userId } : null,
+      })
     ).map(dailyDepartmentNotificationModelToResource).promise;
   }
 
@@ -155,11 +161,14 @@ export class DailyDepartmentNotificationResolver {
   )
   @Mutation(() => [DailyDepartmentNotificationNode])
   async batchUploadDailyDepartmentNotifications(
+    @Ctx() { userData: { userId } }: GraphQLContext,
     @Arg("input", () => [DailyDepartmentNotificationInput])
     input: DailyDepartmentNotificationInput[]
   ) {
     return new AsyncResult(
-      this.dailyDepartmentNotificationRepository.batchLoadDDNs(input)
+      this.dailyDepartmentNotificationRepository.batchLoadDDNs(input, {
+        enteredBy: userId ? { uuid: userId } : null,
+      })
     ).map((dailyDepartmentNotifications) =>
       dailyDepartmentNotifications.map(
         dailyDepartmentNotificationModelToResource

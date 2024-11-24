@@ -47,6 +47,8 @@ export interface Scalars {
   GlobalId: { input: string; output: string };
   /** A local date string (i.e., with no associated timezone) in `YYYY-MM-DD` format, e.g. `2020-01-01`. */
   LocalDate: { input: string; output: string };
+  /** A string that cannot be passed as an empty value */
+  NonEmptyString: { input: string; output: string };
   /** Integers that will have a value of 0 or more. */
   NonNegativeInt: { input: number; output: number };
   /** Integers that will have a value greater than 0. */
@@ -70,20 +72,20 @@ export { BatchType };
 export interface BulkPersonInput {
   readonly committee?: InputMaybe<CommitteeIdentifier>;
   readonly email: Scalars["EmailAddress"]["input"];
-  readonly linkblue: Scalars["String"]["input"];
-  readonly name: Scalars["String"]["input"];
+  readonly linkblue: Scalars["NonEmptyString"]["input"];
+  readonly name: Scalars["NonEmptyString"]["input"];
   readonly role?: InputMaybe<CommitteeRole>;
 }
 
 export interface BulkTeamInput {
   readonly captainLinkblues?: InputMaybe<
-    ReadonlyArray<Scalars["String"]["input"]>
+    ReadonlyArray<Scalars["NonEmptyString"]["input"]>
   >;
   readonly legacyStatus: TeamLegacyStatus;
   readonly memberLinkblues?: InputMaybe<
-    ReadonlyArray<Scalars["String"]["input"]>
+    ReadonlyArray<Scalars["NonEmptyString"]["input"]>
   >;
-  readonly name: Scalars["String"]["input"];
+  readonly name: Scalars["NonEmptyString"]["input"];
   readonly type: TeamType;
 }
 
@@ -99,11 +101,11 @@ export interface CreateConfigurationInput {
 }
 
 export interface CreateEventInput {
-  readonly description?: InputMaybe<Scalars["String"]["input"]>;
-  readonly location?: InputMaybe<Scalars["String"]["input"]>;
+  readonly description?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly location?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly occurrences: ReadonlyArray<CreateEventOccurrenceInput>;
-  readonly summary?: InputMaybe<Scalars["String"]["input"]>;
-  readonly title: Scalars["String"]["input"];
+  readonly summary?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly title: Scalars["NonEmptyString"]["input"];
 }
 
 export interface CreateEventOccurrenceInput {
@@ -112,27 +114,27 @@ export interface CreateEventOccurrenceInput {
 }
 
 export interface CreateFeedInput {
-  readonly imageUuid?: InputMaybe<Scalars["String"]["input"]>;
-  readonly textContent?: InputMaybe<Scalars["String"]["input"]>;
-  readonly title: Scalars["String"]["input"];
+  readonly imageUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
+  readonly textContent?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly title: Scalars["NonEmptyString"]["input"];
 }
 
 export interface CreateImageInput {
-  readonly alt?: InputMaybe<Scalars["String"]["input"]>;
+  readonly alt?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly url?: InputMaybe<Scalars["URL"]["input"]>;
 }
 
 export interface CreateMarathonHourInput {
-  readonly details?: InputMaybe<Scalars["String"]["input"]>;
-  readonly durationInfo: Scalars["String"]["input"];
+  readonly details?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly durationInfo: Scalars["NonEmptyString"]["input"];
   readonly shownStartingAt: Scalars["DateTimeISO"]["input"];
-  readonly title: Scalars["String"]["input"];
+  readonly title: Scalars["NonEmptyString"]["input"];
 }
 
 export interface CreateMarathonInput {
   readonly endDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly startDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
-  readonly year: Scalars["String"]["input"];
+  readonly year: Scalars["NonEmptyString"]["input"];
 }
 
 export interface CreatePersonInput {
@@ -140,13 +142,13 @@ export interface CreatePersonInput {
   /** @deprecated DBRole can no longer be set directly */
   readonly dbRole?: InputMaybe<DbRole>;
   readonly email: Scalars["EmailAddress"]["input"];
-  readonly linkblue?: InputMaybe<Scalars["String"]["input"]>;
+  readonly linkblue?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly memberOf?: ReadonlyArray<MemberOf>;
-  readonly name?: InputMaybe<Scalars["String"]["input"]>;
+  readonly name?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
 }
 
 export interface CreatePointEntryInput {
-  readonly comment?: InputMaybe<Scalars["String"]["input"]>;
+  readonly comment?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly opportunityUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
   readonly personFromUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
   readonly points: Scalars["Int"]["input"];
@@ -156,77 +158,77 @@ export interface CreatePointEntryInput {
 export interface CreatePointOpportunityInput {
   readonly eventUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
   readonly marathonUuid: Scalars["GlobalId"]["input"];
-  readonly name: Scalars["String"]["input"];
+  readonly name: Scalars["NonEmptyString"]["input"];
   readonly opportunityDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly type: TeamType;
 }
 
 export interface CreateTeamInput {
   readonly legacyStatus: TeamLegacyStatus;
-  readonly name: Scalars["String"]["input"];
+  readonly name: Scalars["NonEmptyString"]["input"];
   readonly type: TeamType;
 }
 
 export interface DailyDepartmentNotificationInput {
-  readonly accountName: Scalars["String"]["input"];
-  readonly accountNumber: Scalars["String"]["input"];
+  readonly accountName: Scalars["NonEmptyString"]["input"];
+  readonly accountNumber: Scalars["NonEmptyString"]["input"];
   readonly advFeeAmtPhil?: InputMaybe<Scalars["Float"]["input"]>;
   readonly advFeeAmtUnit?: InputMaybe<Scalars["Float"]["input"]>;
-  readonly advFeeCcPhil?: InputMaybe<Scalars["String"]["input"]>;
-  readonly advFeeCcUnit?: InputMaybe<Scalars["String"]["input"]>;
-  readonly advFeeStatus?: InputMaybe<Scalars["String"]["input"]>;
-  readonly batchId: Scalars["String"]["input"];
-  readonly behalfHonorMemorial?: InputMaybe<Scalars["String"]["input"]>;
+  readonly advFeeCcPhil?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly advFeeCcUnit?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly advFeeStatus?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly batchId: Scalars["NonEmptyString"]["input"];
+  readonly behalfHonorMemorial?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly combinedAmount: Scalars["Float"]["input"];
-  readonly combinedDonorName: Scalars["String"]["input"];
-  readonly combinedDonorSalutation: Scalars["String"]["input"];
-  readonly combinedDonorSort?: InputMaybe<Scalars["String"]["input"]>;
-  readonly comment?: InputMaybe<Scalars["String"]["input"]>;
-  readonly department?: InputMaybe<Scalars["String"]["input"]>;
+  readonly combinedDonorName: Scalars["NonEmptyString"]["input"];
+  readonly combinedDonorSalutation: Scalars["NonEmptyString"]["input"];
+  readonly combinedDonorSort?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly comment?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly department?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly divFirstGift: Scalars["Boolean"]["input"];
-  readonly division?: InputMaybe<Scalars["String"]["input"]>;
+  readonly division?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly donor1Amount?: InputMaybe<Scalars["Float"]["input"]>;
-  readonly donor1Constituency?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor1Constituency?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly donor1Deceased?: InputMaybe<Scalars["Boolean"]["input"]>;
-  readonly donor1Degrees?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor1GiftKey?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor1Id?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor1Name?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor1Pm?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor1Relation?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor1TitleBar?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor1Degrees?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly donor1GiftKey?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly donor1Id?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly donor1Name?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly donor1Pm?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly donor1Relation?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly donor1TitleBar?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly donor2Amount?: InputMaybe<Scalars["Float"]["input"]>;
-  readonly donor2Constituency?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor2Constituency?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly donor2Deceased?: InputMaybe<Scalars["Boolean"]["input"]>;
-  readonly donor2Degrees?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor2GiftKey?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor2Id?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor2Name?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor2Pm?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor2Relation?: InputMaybe<Scalars["String"]["input"]>;
-  readonly donor2TitleBar?: InputMaybe<Scalars["String"]["input"]>;
+  readonly donor2Degrees?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly donor2GiftKey?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly donor2Id?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly donor2Name?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly donor2Pm?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly donor2Relation?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly donor2TitleBar?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly effectiveDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
-  readonly gikDescription?: InputMaybe<Scalars["String"]["input"]>;
-  readonly gikType?: InputMaybe<Scalars["String"]["input"]>;
-  readonly hcUnit?: InputMaybe<Scalars["String"]["input"]>;
-  readonly holdingDestination?: InputMaybe<Scalars["String"]["input"]>;
-  readonly idSorter: Scalars["String"]["input"];
+  readonly gikDescription?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly gikType?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly hcUnit?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly holdingDestination?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly idSorter: Scalars["NonEmptyString"]["input"];
   readonly jvDocDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
-  readonly jvDocNum?: InputMaybe<Scalars["String"]["input"]>;
-  readonly matchingGift?: InputMaybe<Scalars["String"]["input"]>;
+  readonly jvDocNum?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly matchingGift?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly onlineGift: Scalars["Boolean"]["input"];
   readonly pledgedAmount: Scalars["Float"]["input"];
   readonly pledgedDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
   readonly processDate: Scalars["LocalDate"]["input"];
   readonly sapDocDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
-  readonly sapDocNum?: InputMaybe<Scalars["String"]["input"]>;
-  readonly secShares?: InputMaybe<Scalars["String"]["input"]>;
-  readonly secType?: InputMaybe<Scalars["String"]["input"]>;
-  readonly solicitation?: InputMaybe<Scalars["String"]["input"]>;
-  readonly solicitationCode: Scalars["String"]["input"];
+  readonly sapDocNum?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly secShares?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly secType?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly solicitation?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly solicitationCode: Scalars["NonEmptyString"]["input"];
   readonly transactionDate?: InputMaybe<Scalars["LocalDate"]["input"]>;
-  readonly transactionType: Scalars["String"]["input"];
-  readonly transmittalSn?: InputMaybe<Scalars["String"]["input"]>;
+  readonly transactionType: Scalars["NonEmptyString"]["input"];
+  readonly transmittalSn?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly ukFirstGift: Scalars["Boolean"]["input"];
 }
 
@@ -430,6 +432,7 @@ export type EventResolverStringFilterKeys =
 export const FundraisingEntryResolverAllKeys = {
   Amount: "amount",
   AmountUnassigned: "amountUnassigned",
+  BatchType: "batchType",
   CreatedAt: "createdAt",
   DonatedBy: "donatedBy",
   DonatedOn: "donatedOn",
@@ -502,6 +505,7 @@ export const FundraisingEntryResolverNumericFilterKeys = {
 export type FundraisingEntryResolverNumericFilterKeys =
   (typeof FundraisingEntryResolverNumericFilterKeys)[keyof typeof FundraisingEntryResolverNumericFilterKeys];
 export const FundraisingEntryResolverOneOfFilterKeys = {
+  BatchType: "batchType",
   TeamId: "teamId",
 } as const;
 
@@ -985,10 +989,10 @@ export interface RegisterDeviceInput {
 }
 
 export interface SetEventInput {
-  readonly description?: InputMaybe<Scalars["String"]["input"]>;
-  readonly location?: InputMaybe<Scalars["String"]["input"]>;
+  readonly description?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly location?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly occurrences: ReadonlyArray<SetEventOccurrenceInput>;
-  readonly summary?: InputMaybe<Scalars["String"]["input"]>;
+  readonly summary?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly title: Scalars["String"]["input"];
 }
 
@@ -1000,42 +1004,44 @@ export interface SetEventOccurrenceInput {
 }
 
 export interface SetFeedInput {
-  readonly textContent?: InputMaybe<Scalars["String"]["input"]>;
-  readonly title: Scalars["String"]["input"];
+  readonly textContent?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly title: Scalars["NonEmptyString"]["input"];
 }
 
 export interface SetMarathonHourInput {
-  readonly details?: InputMaybe<Scalars["String"]["input"]>;
-  readonly durationInfo: Scalars["String"]["input"];
+  readonly details?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly durationInfo: Scalars["NonEmptyString"]["input"];
   readonly shownStartingAt: Scalars["DateTimeISO"]["input"];
-  readonly title: Scalars["String"]["input"];
+  readonly title: Scalars["NonEmptyString"]["input"];
 }
 
 export interface SetMarathonInput {
   readonly endDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly startDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
-  readonly year: Scalars["String"]["input"];
+  readonly year: Scalars["NonEmptyString"]["input"];
 }
 
 export interface SetPersonInput {
   readonly captainOf?: InputMaybe<ReadonlyArray<MemberOf>>;
   readonly email?: InputMaybe<Scalars["EmailAddress"]["input"]>;
-  readonly linkblue?: InputMaybe<Scalars["String"]["input"]>;
+  readonly linkblue?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly memberOf?: InputMaybe<ReadonlyArray<MemberOf>>;
-  readonly name?: InputMaybe<Scalars["String"]["input"]>;
+  readonly name?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
 }
 
 export interface SetPointOpportunityInput {
   readonly eventUuid?: InputMaybe<Scalars["GlobalId"]["input"]>;
-  readonly name?: InputMaybe<Scalars["String"]["input"]>;
+  readonly name?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly opportunityDate?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
   readonly type?: InputMaybe<TeamType>;
 }
 
 export interface SetTeamInput {
   readonly legacyStatus?: InputMaybe<TeamLegacyStatus>;
-  readonly name?: InputMaybe<Scalars["String"]["input"]>;
-  readonly persistentIdentifier?: InputMaybe<Scalars["String"]["input"]>;
+  readonly name?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly persistentIdentifier?: InputMaybe<
+    Scalars["NonEmptyString"]["input"]
+  >;
   readonly type?: InputMaybe<TeamType>;
 }
 
@@ -1176,6 +1182,25 @@ export type DeleteEventMutation = {
   readonly deleteEvent: {
     readonly __typename?: "DeleteEventResponse";
     readonly ok: boolean;
+  };
+};
+
+export type FundraisingReportDialogQueryVariables = Exact<{
+  report: Scalars["NonEmptyString"]["input"];
+  from?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
+  to?: InputMaybe<Scalars["DateTimeISO"]["input"]>;
+}>;
+
+export type FundraisingReportDialogQuery = {
+  readonly __typename?: "Query";
+  readonly report: {
+    readonly __typename?: "Report";
+    readonly pages: ReadonlyArray<{
+      readonly __typename?: "ReportPage";
+      readonly title: string;
+      readonly header: ReadonlyArray<string>;
+      readonly rows: ReadonlyArray<ReadonlyArray<string>>;
+    }>;
   };
 };
 
@@ -1451,10 +1476,10 @@ export type SingleNotificationFragmentFragment = {
 } & { " $fragmentName"?: "SingleNotificationFragmentFragment" };
 
 export type CreateNotificationMutationVariables = Exact<{
-  title: Scalars["String"]["input"];
-  body: Scalars["String"]["input"];
+  title: Scalars["NonEmptyString"]["input"];
+  body: Scalars["NonEmptyString"]["input"];
   audience: NotificationAudienceInput;
-  url?: InputMaybe<Scalars["String"]["input"]>;
+  url?: InputMaybe<Scalars["URL"]["input"]>;
 }>;
 
 export type CreateNotificationMutation = {
@@ -1680,7 +1705,7 @@ export type SearchPersonByNameQuery = {
 };
 
 export type CreatePersonByLinkBlueMutationVariables = Exact<{
-  linkBlue: Scalars["String"]["input"];
+  linkBlue: Scalars["NonEmptyString"]["input"];
   email: Scalars["EmailAddress"]["input"];
 }>;
 
@@ -2212,6 +2237,7 @@ export type FundraisingEntryTableFragmentFragment = {
     readonly donatedByText?: string | null;
     readonly donatedToText?: string | null;
     readonly donatedOn: Date | string;
+    readonly batchType: BatchType;
     readonly solicitationCode: {
       readonly __typename?: "SolicitationCodeNode";
       readonly id: string;
@@ -2516,6 +2542,12 @@ export type LoginStateQuery = {
       readonly identifier: CommitteeIdentifier;
     }>;
   };
+  readonly me?: {
+    readonly __typename?: "PersonNode";
+    readonly name?: string | null;
+    readonly linkblue?: string | null;
+    readonly email: string;
+  } | null;
 };
 
 export type LogsPageQueryVariables = Exact<{ [key: string]: never }>;
@@ -3677,6 +3709,7 @@ export const FundraisingEntryTableFragmentFragmentDoc = {
                   name: { kind: "Name", value: "donatedToText" },
                 },
                 { kind: "Field", name: { kind: "Name", value: "donatedOn" } },
+                { kind: "Field", name: { kind: "Name", value: "batchType" } },
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "solicitationCode" },
@@ -4676,6 +4709,106 @@ export const DeleteEventDocument = {
     },
   ],
 } as unknown as DocumentNode<DeleteEventMutation, DeleteEventMutationVariables>;
+export const FundraisingReportDialogDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "FundraisingReportDialog" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "report" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "NonEmptyString" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "from" } },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "DateTimeISO" },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "to" } },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "DateTimeISO" },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "report" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "report" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "report" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "from" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "from" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "to" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "to" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "pages" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "title" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "header" },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "rows" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  FundraisingReportDialogQuery,
+  FundraisingReportDialogQueryVariables
+>;
 export const CreateImageDocument = {
   kind: "Document",
   definitions: [
@@ -5707,7 +5840,7 @@ export const CreateNotificationDocument = {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "String" },
+              name: { kind: "Name", value: "NonEmptyString" },
             },
           },
         },
@@ -5718,7 +5851,7 @@ export const CreateNotificationDocument = {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "String" },
+              name: { kind: "Name", value: "NonEmptyString" },
             },
           },
         },
@@ -5739,7 +5872,7 @@ export const CreateNotificationDocument = {
         {
           kind: "VariableDefinition",
           variable: { kind: "Variable", name: { kind: "Name", value: "url" } },
-          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+          type: { kind: "NamedType", name: { kind: "Name", value: "URL" } },
         },
       ],
       selectionSet: {
@@ -6627,7 +6760,7 @@ export const CreatePersonByLinkBlueDocument = {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "String" },
+              name: { kind: "Name", value: "NonEmptyString" },
             },
           },
         },
@@ -9247,6 +9380,18 @@ export const LoginStateDocument = {
               ],
             },
           },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "me" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+                { kind: "Field", name: { kind: "Name", value: "linkblue" } },
+                { kind: "Field", name: { kind: "Name", value: "email" } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -10169,6 +10314,7 @@ export const ViewFundraisingEntriesDocumentDocument = {
                   name: { kind: "Name", value: "donatedToText" },
                 },
                 { kind: "Field", name: { kind: "Name", value: "donatedOn" } },
+                { kind: "Field", name: { kind: "Name", value: "batchType" } },
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "solicitationCode" },
@@ -10552,6 +10698,7 @@ export const SolicitationCodeDocumentDocument = {
                   name: { kind: "Name", value: "donatedToText" },
                 },
                 { kind: "Field", name: { kind: "Name", value: "donatedOn" } },
+                { kind: "Field", name: { kind: "Name", value: "batchType" } },
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "solicitationCode" },
@@ -12224,6 +12371,7 @@ export const ViewTeamFundraisingDocumentDocument = {
                   name: { kind: "Name", value: "donatedToText" },
                 },
                 { kind: "Field", name: { kind: "Name", value: "donatedOn" } },
+                { kind: "Field", name: { kind: "Name", value: "batchType" } },
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "solicitationCode" },

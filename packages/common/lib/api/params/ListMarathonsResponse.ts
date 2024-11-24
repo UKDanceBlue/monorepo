@@ -1,4 +1,4 @@
-import { DateTimeISOResolver } from "graphql-scalars";
+import { DateTimeISOResolver, NonEmptyStringResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
@@ -15,7 +15,7 @@ export class ListMarathonsResponse extends AbstractGraphQLPaginatedResponse<Mara
 
 @InputType()
 export class CreateMarathonInput {
-  @Field()
+  @Field(() => NonEmptyStringResolver)
   year!: string;
 
   @Field(() => DateTimeISOResolver, { nullable: true })
@@ -27,7 +27,7 @@ export class CreateMarathonInput {
 
 @InputType()
 export class SetMarathonInput {
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   year!: string;
 
   @Field(() => DateTimeISOResolver, { nullable: true })

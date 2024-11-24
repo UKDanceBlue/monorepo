@@ -1,4 +1,4 @@
-import { EmailAddressResolver } from "graphql-scalars";
+import { EmailAddressResolver, NonEmptyStringResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import {
@@ -50,13 +50,13 @@ export class ListPeopleArgs extends FilteredListQueryArgs<
 }) {}
 @InputType()
 export class CreatePersonInput {
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   name?: string;
 
   @Field(() => EmailAddressResolver)
   email!: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   linkblue?: string;
 
   @Field(() => DbRole, {
@@ -73,13 +73,13 @@ export class CreatePersonInput {
 }
 @InputType()
 export class SetPersonInput {
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   name?: string;
 
   @Field(() => EmailAddressResolver, { nullable: true })
   email?: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   linkblue?: string;
 
   @Field(() => [MemberOf], { nullable: true })
@@ -90,13 +90,13 @@ export class SetPersonInput {
 }
 @InputType()
 export class BulkPersonInput {
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   name!: string;
 
   @Field(() => EmailAddressResolver)
   email!: string;
 
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   linkblue!: string;
 
   @Field(() => CommitteeIdentifier, { nullable: true })

@@ -24,6 +24,7 @@ import {
 import { PersonResolver } from "#resolvers/PersonResolver.js";
 import { PointEntryResolver } from "#resolvers/PointEntryResolver.js";
 import { PointOpportunityResolver } from "#resolvers/PointOpportunityResolver.js";
+import { ReportResolver } from "#resolvers/ReportResolver.js";
 import { TeamResolver } from "#resolvers/TeamResolver.js";
 
 export const resolversList = [
@@ -48,4 +49,5 @@ export const resolversList = [
   FundraisingEntryResolver,
   NodeResolver,
   SolicitationCodeResolver,
+  ReportResolver,
 ] as const;

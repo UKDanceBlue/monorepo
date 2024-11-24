@@ -12,11 +12,12 @@ export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<
   | "donatedTo"
   | "donatedBy"
   | "teamId"
+  | "batchType"
   | "createdAt"
   | "updatedAt"
   | "solicitationCode",
   "donatedTo" | "donatedBy" | "solicitationCode",
-  "teamId",
+  "teamId" | "batchType",
   "amount" | "amountUnassigned",
   "donatedOn" | "createdAt" | "updatedAt",
   never
@@ -28,13 +29,14 @@ export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<
     "donatedTo",
     "donatedBy",
     "teamId",
+    "batchType",
     "createdAt",
     "updatedAt",
     "solicitationCode",
   ],
   string: ["donatedTo", "donatedBy", "solicitationCode"],
   numeric: ["amount", "amountUnassigned"],
-  oneOf: ["teamId"],
+  oneOf: ["teamId", "batchType"],
   date: ["donatedOn", "createdAt", "updatedAt"],
 }) {}
 

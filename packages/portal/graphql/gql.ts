@@ -24,6 +24,8 @@ const documents = {
     types.ViewTeamPageDocument,
   "\n  mutation DeleteEvent($uuid: GlobalId!) {\n    deleteEvent(uuid: $uuid) {\n      ok\n    }\n  }\n":
     types.DeleteEventDocument,
+  "\n  query FundraisingReportDialog(\n    $report: NonEmptyString!\n    $from: DateTimeISO\n    $to: DateTimeISO\n  ) {\n    report(report: $report, from: $from, to: $to) {\n      pages {\n        title\n        header\n        rows\n      }\n    }\n  }\n":
+    types.FundraisingReportDialogDocument,
   "\n  mutation CreateImage($input: CreateImageInput!) {\n    createImage(input: $input) {\n      id\n    }\n  }\n":
     types.CreateImageDocument,
   "\n  query ImagePicker($stringFilters: [ImageResolverKeyedStringFilterItem!]) {\n    images(stringFilters: $stringFilters, pageSize: 9) {\n      data {\n        id\n        alt\n        url\n      }\n    }\n  }\n":
@@ -60,7 +62,7 @@ const documents = {
     types.GetMarathonDocument,
   "\n  fragment SingleNotificationFragment on NotificationNode {\n    id\n    title\n    body\n    deliveryIssue\n    deliveryIssueAcknowledgedAt\n    sendAt\n    startedSendingAt\n    createdAt\n    deliveryCount\n    deliveryIssueCount {\n      DeviceNotRegistered\n      InvalidCredentials\n      MessageRateExceeded\n      MessageTooBig\n      MismatchSenderId\n      Unknown\n    }\n  }\n":
     types.SingleNotificationFragmentFragmentDoc,
-  "\n  mutation CreateNotification(\n    $title: String!\n    $body: String!\n    $audience: NotificationAudienceInput!\n    $url: String\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n":
+  "\n  mutation CreateNotification(\n    $title: NonEmptyString!\n    $body: NonEmptyString!\n    $audience: NotificationAudienceInput!\n    $url: URL\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n":
     types.CreateNotificationDocument,
   "\n  mutation CancelNotificationSchedule($uuid: GlobalId!) {\n    abortScheduledNotification(uuid: $uuid) {\n      ok\n    }\n  }\n":
     types.CancelNotificationScheduleDocument,
@@ -92,7 +94,7 @@ const documents = {
     types.GetPersonByLinkBlueDocument,
   "\n  query SearchPersonByName($name: String!) {\n    searchPeopleByName(name: $name) {\n      id\n      name\n    }\n  }\n":
     types.SearchPersonByNameDocument,
-  "\n  mutation CreatePersonByLinkBlue($linkBlue: String!, $email: EmailAddress!) {\n    createPerson(input: { email: $email, linkblue: $linkBlue }) {\n      id\n    }\n  }\n":
+  "\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: NonEmptyString!\n    $email: EmailAddress!\n  ) {\n    createPerson(input: { email: $email, linkblue: $linkBlue }) {\n      id\n    }\n  }\n":
     types.CreatePersonByLinkBlueDocument,
   "\n  query PointEntryOpportunityLookup($name: String!, $marathonUuid: String!) {\n    pointOpportunities(\n      stringFilters: { field: name, comparison: SUBSTRING, value: $name }\n      oneOfFilters: { field: marathonUuid, value: [$marathonUuid] }\n      sendAll: true\n    ) {\n      data {\n        name\n        id\n      }\n    }\n  }\n":
     types.PointEntryOpportunityLookupDocument,
@@ -136,7 +138,7 @@ const documents = {
     types.UpdateFundraisingAssignmentDocument,
   "\n  mutation DeleteFundraisingAssignment($id: GlobalId!) {\n    deleteFundraisingAssignment(id: $id) {\n      id\n    }\n  }\n":
     types.DeleteFundraisingAssignmentDocument,
-  "\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      solicitationCode {\n        id\n        text\n      }\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n":
+  "\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      batchType\n      solicitationCode {\n        id\n        text\n      }\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n":
     types.FundraisingEntryTableFragmentFragmentDoc,
   "\n  query SolicitationCodeTable($marathonId: GlobalId!) {\n    solicitationCodes {\n      ...SolicitationCodeTableFragment\n    }\n  }\n":
     types.SolicitationCodeTableDocument,
@@ -166,7 +168,7 @@ const documents = {
     types.AssignToTeamDocument,
   "\n  mutation RemoveFromTeam($person: GlobalId!, $team: GlobalId!) {\n    removePersonFromTeam(personUuid: $person, teamUuid: $team) {\n      id\n    }\n  }\n":
     types.RemoveFromTeamDocument,
-  "\n  query LoginState {\n    loginState {\n      loggedIn\n      dbRole\n      effectiveCommitteeRoles {\n        role\n        identifier\n      }\n    }\n  }\n":
+  "\n  query LoginState {\n    loginState {\n      loggedIn\n      dbRole\n      effectiveCommitteeRoles {\n        role\n        identifier\n      }\n    }\n    me {\n      name\n      linkblue\n      email\n    }\n  }\n":
     types.LoginStateDocument,
   "\n  query LogsPage {\n    auditLog\n  }\n": types.LogsPageDocument,
   "\n  query EditEventPage($uuid: GlobalId!) {\n    event(uuid: $uuid) {\n      data {\n        ...EventEditorFragment\n      }\n    }\n  }\n":
@@ -273,6 +275,12 @@ export function graphql(
 export function graphql(
   source: "\n  mutation DeleteEvent($uuid: GlobalId!) {\n    deleteEvent(uuid: $uuid) {\n      ok\n    }\n  }\n"
 ): (typeof documents)["\n  mutation DeleteEvent($uuid: GlobalId!) {\n    deleteEvent(uuid: $uuid) {\n      ok\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  query FundraisingReportDialog(\n    $report: NonEmptyString!\n    $from: DateTimeISO\n    $to: DateTimeISO\n  ) {\n    report(report: $report, from: $from, to: $to) {\n      pages {\n        title\n        header\n        rows\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query FundraisingReportDialog(\n    $report: NonEmptyString!\n    $from: DateTimeISO\n    $to: DateTimeISO\n  ) {\n    report(report: $report, from: $from, to: $to) {\n      pages {\n        title\n        header\n        rows\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -385,8 +393,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  mutation CreateNotification(\n    $title: String!\n    $body: String!\n    $audience: NotificationAudienceInput!\n    $url: String\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n"
-): (typeof documents)["\n  mutation CreateNotification(\n    $title: String!\n    $body: String!\n    $audience: NotificationAudienceInput!\n    $url: String\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n"];
+  source: "\n  mutation CreateNotification(\n    $title: NonEmptyString!\n    $body: NonEmptyString!\n    $audience: NotificationAudienceInput!\n    $url: URL\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n"
+): (typeof documents)["\n  mutation CreateNotification(\n    $title: NonEmptyString!\n    $body: NonEmptyString!\n    $audience: NotificationAudienceInput!\n    $url: URL\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -481,8 +489,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  mutation CreatePersonByLinkBlue($linkBlue: String!, $email: EmailAddress!) {\n    createPerson(input: { email: $email, linkblue: $linkBlue }) {\n      id\n    }\n  }\n"
-): (typeof documents)["\n  mutation CreatePersonByLinkBlue($linkBlue: String!, $email: EmailAddress!) {\n    createPerson(input: { email: $email, linkblue: $linkBlue }) {\n      id\n    }\n  }\n"];
+  source: "\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: NonEmptyString!\n    $email: EmailAddress!\n  ) {\n    createPerson(input: { email: $email, linkblue: $linkBlue }) {\n      id\n    }\n  }\n"
+): (typeof documents)["\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: NonEmptyString!\n    $email: EmailAddress!\n  ) {\n    createPerson(input: { email: $email, linkblue: $linkBlue }) {\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -613,8 +621,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      solicitationCode {\n        id\n        text\n      }\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n"
-): (typeof documents)["\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      solicitationCode {\n        id\n        text\n      }\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n"];
+  source: "\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      batchType\n      solicitationCode {\n        id\n        text\n      }\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n"
+): (typeof documents)["\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      batchType\n      solicitationCode {\n        id\n        text\n      }\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -703,8 +711,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  query LoginState {\n    loginState {\n      loggedIn\n      dbRole\n      effectiveCommitteeRoles {\n        role\n        identifier\n      }\n    }\n  }\n"
-): (typeof documents)["\n  query LoginState {\n    loginState {\n      loggedIn\n      dbRole\n      effectiveCommitteeRoles {\n        role\n        identifier\n      }\n    }\n  }\n"];
+  source: "\n  query LoginState {\n    loginState {\n      loggedIn\n      dbRole\n      effectiveCommitteeRoles {\n        role\n        identifier\n      }\n    }\n    me {\n      name\n      linkblue\n      email\n    }\n  }\n"
+): (typeof documents)["\n  query LoginState {\n    loginState {\n      loggedIn\n      dbRole\n      effectiveCommitteeRoles {\n        role\n        identifier\n      }\n    }\n    me {\n      name\n      linkblue\n      email\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

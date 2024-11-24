@@ -38,6 +38,7 @@ export function buildFundraisingEntryOrder(
       case "donatedBy":
       case "donatedOn":
       case "createdAt":
+      case "batchType":
       case "updatedAt": {
         orderBy[key] = sort === SortDirection.asc ? "asc" : "desc";
         break;
@@ -92,6 +93,10 @@ export function buildFundraisingEntryWhere(
       }
       case "solicitationCode": {
         where.solicitationCodeText = stringFilterToPrisma(filter);
+        break;
+      }
+      case "batchType": {
+        where.batchType = oneOfFilterToPrisma(filter);
         break;
       }
       case "teamId": {

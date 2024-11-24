@@ -14,29 +14,29 @@
   },
   "type": "module",
   "imports": {
-    "#auth/*.js": "./dist/lib/auth/*.js",
-    "#environment": "./dist/environment.js",
-    "#error/*.js": "./dist/lib/error/*.js",
-    "#files/*.js": "./dist/lib/files/*.js",
-    "#jobs/*.js": "./dist/jobs/*.js",
-    "#lib/*.js": "./dist/lib/*.js",
-    "#logging/*.js": "./dist/lib/logging/*.js",
-    "#notification/*.js": "./dist/lib/notification/*.js",
-    "#prisma": "./dist/prisma.js",
-    "#repositories/*.js": "./dist/repositories/*.js",
-    "#resolvers/*.js": "./dist/resolvers/*.js",
-    "#routes/*.js": "./dist/routes/*.js"
+    "#auth/*.js": "./dist/src/lib/auth/*.js",
+    "#environment": "./dist/src/environment.js",
+    "#error/*.js": "./dist/src/lib/error/*.js",
+    "#files/*.js": "./dist/src/lib/files/*.js",
+    "#jobs/*.js": "./dist/src/jobs/*.js",
+    "#lib/*.js": "./dist/src/lib/*.js",
+    "#logging/*.js": "./dist/src/lib/logging/*.js",
+    "#notification/*.js": "./dist/src/lib/notification/*.js",
+    "#prisma": "./dist/src/prisma.js",
+    "#repositories/*.js": "./dist/src/repositories/*.js",
+    "#resolvers/*.js": "./dist/src/resolvers/*.js",
+    "#routes/*.js": "./dist/src/routes/*.js"
   },
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "bs": "yarn run build && yarn run start",
     "build": "tsc",
     "check": "tsc --noEmit",
-    "dev": "tsc --watch & node --enable-source-maps --watch --watch-path=./dist ./dist/index.js",
+    "dev": "tsc --watch & node --enable-source-maps --watch --watch-path=./dist ./dist/src/index.js",
     "lint": "eslint .",
     "migrate-and-start": "yarn dlx prisma migrate deploy && yarn run start",
-    "start": "node --enable-source-maps ./dist/index.js",
-    "repl": "node --enable-source-maps ./dist/repl.js",
+    "start": "node --enable-source-maps ./dist/src/index.js",
+    "repl": "node --enable-source-maps ./dist/src/repl.js",
     "test": "jest"
   },
   "dependencies": {
@@ -107,6 +107,6 @@
     "node": ">=22.0.0"
   },
   "prisma": {
-    "seed": "node ./dist/seed.js"
+    "seed": "node ./dist/src/seed.js"
   }
 }

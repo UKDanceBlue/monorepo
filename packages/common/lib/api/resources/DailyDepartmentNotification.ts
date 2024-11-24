@@ -11,6 +11,10 @@ import { SolicitationCodeNode } from "./SolicitationCode.js";
 
 export const BatchType = {
   /**
+   * Legacy entries from DBFunds
+   */
+  DBFunds: "DBFunds",
+  /**
    * Check batches (C) include gifts to UK mailed directly to the Office of Development or to Gift Receiving, generally response to a phonathon solicitation
    */
   Check: "Check",
@@ -92,17 +96,8 @@ export function extractDDNBatchType(
 
 export function stringifyDDNBatchType(batchType: BatchType): string {
   switch (batchType) {
-    case BatchType.Check: {
-      return "Check";
-    }
-    case BatchType.Transmittal: {
-      return "Transmittal";
-    }
     case BatchType.CreditCard: {
       return "Credit Card";
-    }
-    case BatchType.ACH: {
-      return "ACH";
     }
     case BatchType.NonCash: {
       return "Non-cash";
@@ -110,8 +105,8 @@ export function stringifyDDNBatchType(batchType: BatchType): string {
     case BatchType.PayrollDeduction: {
       return "Payroll Deduction";
     }
-    case BatchType.Unknown: {
-      return "Unknown";
+    default: {
+      return batchType;
     }
   }
 }

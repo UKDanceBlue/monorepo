@@ -1,4 +1,4 @@
-import { LocalDateResolver } from "graphql-scalars";
+import { LocalDateResolver, NonEmptyStringResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import type { LocalDate } from "../../utility/time/localDate.js";
@@ -82,10 +82,10 @@ export class ListDailyDepartmentNotificationsResponse extends AbstractGraphQLPag
 
 @InputType()
 export class DailyDepartmentNotificationInput implements DDNInit {
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   division?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   department?: string | undefined;
 
   @Field(() => LocalDateResolver, { nullable: true })
@@ -100,7 +100,7 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => LocalDateResolver, { nullable: true })
   transactionDate?: LocalDate | undefined;
 
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   transactionType!: string;
 
   @Field(() => Number, { nullable: true })
@@ -115,46 +115,46 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => Number)
   pledgedAmount!: number;
 
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   accountNumber!: string;
 
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   accountName!: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   holdingDestination?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   comment?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   secShares?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   secType?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   gikType?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   gikDescription?: string | undefined;
 
   @Field(() => Boolean)
   onlineGift!: boolean;
 
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   solicitationCode!: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   solicitation?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   behalfHonorMemorial?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   matchingGift?: string | undefined;
 
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   batchId!: string;
 
   @Field(() => Boolean)
@@ -163,104 +163,103 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => Boolean)
   divFirstGift!: boolean;
 
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   idSorter!: string;
 
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   combinedDonorName!: string;
 
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   combinedDonorSalutation!: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   combinedDonorSort?: string | undefined;
 
-  // Unused by the server (for now)
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor1Id?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor1GiftKey?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor1Name?: string | undefined;
 
   @Field(() => Boolean, { nullable: true })
   donor1Deceased?: boolean | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor1Constituency?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor1TitleBar?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor1Pm?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor1Degrees?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor2Id?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor2GiftKey?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor2Name?: string | undefined;
 
   @Field(() => Boolean, { nullable: true })
   donor2Deceased?: boolean | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor2Constituency?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor2TitleBar?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor2Pm?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor2Degrees?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor1Relation?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donor2Relation?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   transmittalSn?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   sapDocNum?: string | undefined;
 
   @Field(() => LocalDateResolver, { nullable: true })
   sapDocDate?: LocalDate | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   jvDocNum?: string | undefined;
 
   @Field(() => LocalDateResolver, { nullable: true })
   jvDocDate?: LocalDate | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   advFeeCcPhil?: string | undefined;
 
   @Field(() => Number, { nullable: true })
   advFeeAmtPhil?: number | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   advFeeCcUnit?: string | undefined;
 
   @Field(() => Number, { nullable: true })
   advFeeAmtUnit?: number | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   advFeeStatus?: string | undefined;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   hcUnit?: string | undefined;
 }
 

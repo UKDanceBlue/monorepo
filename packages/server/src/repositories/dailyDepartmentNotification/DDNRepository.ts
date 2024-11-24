@@ -75,6 +75,7 @@ import { InvalidArgumentError, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
 import { prismaToken } from "#lib/typediTokens.js";
+import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
 import {
   handleRepositoryError,
   RepositoryError,
@@ -421,7 +422,14 @@ export class DailyDepartmentNotificationRepository {
     });
   }
 
-  async createDDN(data: DDNInit): Promise<
+  async createDDN(
+    data: DDNInit,
+    {
+      enteredBy,
+    }: {
+      enteredBy: UniquePersonParam | null;
+    }
+  ): Promise<
     Result<
       DailyDepartmentNotification & {
         batch: DailyDepartmentNotificationBatch;
@@ -474,7 +482,13 @@ export class DailyDepartmentNotificationRepository {
                 })),
               },
               fundraisingEntry: {
-                create: {},
+                create: {
+                  enteredByPerson: enteredBy
+                    ? {
+                        connect: enteredBy,
+                      }
+                    : undefined,
+                },
               },
             },
             include: {
@@ -549,9 +563,6 @@ export class DailyDepartmentNotificationRepository {
                     },
                   })),
                 },
-                fundraisingEntry: {
-                  create: {},
-                },
               },
               include: {
                 batch: true,
@@ -618,7 +629,14 @@ export class DailyDepartmentNotificationRepository {
     }
   }
 
-  async batchLoadDDNs(data: DDNInit[]): Promise<
+  async batchLoadDDNs(
+    data: DDNInit[],
+    {
+      enteredBy,
+    }: {
+      enteredBy: UniquePersonParam | null;
+    }
+  ): Promise<
     Result<
       (DailyDepartmentNotification & {
         batch: DailyDepartmentNotificationBatch;
@@ -694,7 +712,7 @@ export class DailyDepartmentNotificationRepository {
                     {
                       idSorter: row.ddn.idSorter,
                       processDate: row.ddn.processDate,
-                      batchId: batch.batchId,
+                      batchId: batch.id,
                       solicitationCodeId: solicitationCode.id,
                       combinedAmount: row.ddn.combinedAmount,
                     },
@@ -723,7 +741,13 @@ export class DailyDepartmentNotificationRepository {
                     })),
                   },
                   fundraisingEntry: {
-                    create: {},
+                    create: {
+                      enteredByPerson: enteredBy
+                        ? {
+                            connect: enteredBy,
+                          }
+                        : undefined,
+                    },
                   },
                 },
                 update: {

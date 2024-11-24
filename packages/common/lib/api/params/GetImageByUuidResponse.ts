@@ -1,4 +1,4 @@
-import { URLResolver } from "graphql-scalars";
+import { NonEmptyStringResolver, URLResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
@@ -20,7 +20,7 @@ export class GetImageByUuidResponse extends AbstractGraphQLOkResponse<ImageNode>
 export class DeleteImageResponse extends AbstractGraphQLOkResponse<never> {}
 @InputType()
 export class CreateImageInput implements Partial<ImageNode> {
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   alt?: string | undefined | null;
 
   @Field(() => URLResolver, { nullable: true })

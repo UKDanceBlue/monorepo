@@ -1,5 +1,6 @@
 import type { SolicitationCode } from "@prisma/client";
 import {
+  BatchType,
   FundraisingEntryNode,
   SolicitationCodeNode,
 } from "@ukdanceblue/common";
@@ -57,6 +58,7 @@ export function fundraisingEntryModelToNode(
       solicitationCodeOverride:
         entryModel.solicitationCodeOverride &&
         solicitationCodeModelToNode(entryModel.solicitationCodeOverride),
+      batchType: entryModel.batchType ?? BatchType.Unknown,
     })
   );
 }

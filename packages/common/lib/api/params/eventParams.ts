@@ -1,4 +1,5 @@
-import { ArgsType,Field, InputType, ObjectType } from "type-graphql";
+import { NonEmptyStringResolver } from "graphql-scalars";
+import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { EventNode } from "../resources/Event.js";
@@ -71,19 +72,19 @@ export class CreateEventOccurrenceInput {
 
 @InputType()
 export class CreateEventInput {
-  @Field()
+  @Field(() => NonEmptyStringResolver)
   title!: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   summary!: string | null;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   location!: string | null;
 
   @Field(() => [CreateEventOccurrenceInput])
   occurrences!: CreateEventOccurrenceInput[];
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   description!: string | null;
 }
 
@@ -106,16 +107,16 @@ export class SetEventInput {
   @Field()
   title!: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   summary!: string | null;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   location!: string | null;
 
   @Field(() => [SetEventOccurrenceInput])
   occurrences!: SetEventOccurrenceInput[];
 
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   description!: string | null;
 }
 

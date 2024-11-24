@@ -8867,6 +8867,7 @@ __metadata:
     react: "npm:18.3.1"
     react-dom: "npm:~18.3.1"
     react-hook-form: "npm:^7.53.2"
+    react-to-print: "npm:^3.0.2"
     reflect-metadata: "npm:^0.2.2"
     thumbhash: "npm:^0.1.1"
     type-graphql: "npm:^2.0.0-rc.2"
@@ -22027,6 +22028,15 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
   checksum: 10/d53137315c677bdfba702a7179a69828233fc7635ae1e0c03b203923d643400ace72b343cb3dd3dafba8911c20bef53f55bff7aa2e4ddff3ccc423fdd9deeee2
+  languageName: node
+  linkType: hard
+
+"react-to-print@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "react-to-print@npm:3.0.2"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ~19
+  checksum: 10/40ad66ba217c7f7e2ab115c7896bab6075fd89ac2eb6b1766498278ebfcdd834a76bb0e548edf4c5d430b2cc849a60334a392c3cb26b97102d8ad18d43680659
   languageName: node
   linkType: hard
 

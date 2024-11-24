@@ -25,8 +25,8 @@ model DailyDepartmentNotification {
   solicitation            String?
   behalfHonorMemorial     String?
   matchingGift            String?
-  batchId                 String
-  batch                   DailyDepartmentNotificationBatch @relation(fields: [batchId], references: [batchId], onDelete: Cascade, onUpdate: Cascade)
+  batchId                 Int
+  batch                   DailyDepartmentNotificationBatch @relation(fields: [batchId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   ukFirstGift             Boolean
   divFirstGift            Boolean
   idSorter                String
