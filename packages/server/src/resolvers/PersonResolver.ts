@@ -579,7 +579,7 @@ export class PersonResolver {
       },
       {
         // EXTREMELY IMPORTANT FOR SECURITY
-        assignedToPerson: { uuid: id },
+        onlyAssignedToPerson: { uuid: id },
       }
     );
     const count = await this.fundraisingEntryRepository.countEntries(
@@ -587,7 +587,7 @@ export class PersonResolver {
         filters: args.filters,
       },
       {
-        assignedToPerson: { uuid: id },
+        onlyAssignedToPerson: { uuid: id },
       }
     );
 

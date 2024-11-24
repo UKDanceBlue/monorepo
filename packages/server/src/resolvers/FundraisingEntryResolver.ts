@@ -68,24 +68,35 @@ export class FundraisingEntryResolver {
   @QueryAccessControl(globalFundraisingAccessParam)
   @Query(() => ListFundraisingEntriesResponse)
   async fundraisingEntries(
-    @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
+    @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs,
+    solicitationCodeId?: GlobalId
   ): Promise<ConcreteResult<ListFundraisingEntriesResponse>> {
-    const entries = await this.fundraisingEntryRepository.listEntries({
-      filters: args.filters,
-      order:
-        args.sortBy?.map((key, i) => [
-          key,
-          args.sortDirection?.[i] ?? SortDirection.desc,
-        ]) ?? [],
-      skip:
-        args.page != null && args.actualPageSize != null
-          ? (args.page - 1) * args.actualPageSize
-          : null,
-      take: args.actualPageSize,
-    });
-    const count = await this.fundraisingEntryRepository.countEntries({
-      filters: args.filters,
-    });
+    const entries = await this.fundraisingEntryRepository.listEntries(
+      {
+        filters: args.filters,
+        order:
+          args.sortBy?.map((key, i) => [
+            key,
+            args.sortDirection?.[i] ?? SortDirection.desc,
+          ]) ?? [],
+        skip:
+          args.page != null && args.actualPageSize != null
+            ? (args.page - 1) * args.actualPageSize
+            : null,
+        take: args.actualPageSize,
+      },
+      solicitationCodeId
+        ? { solicitationCode: { uuid: solicitationCodeId.id } }
+        : undefined
+    );
+    const count = await this.fundraisingEntryRepository.countEntries(
+      {
+        filters: args.filters,
+      },
+      solicitationCodeId
+        ? { solicitationCode: { uuid: solicitationCodeId.id } }
+        : undefined
+    );
 
     if (entries.isErr()) {
       return entries;
@@ -253,10 +264,11 @@ export class FundraisingEntryResolver {
 }
 
 @Resolver(() => SolicitationCodeNode)
-@Service([FundraisingEntryRepository])
+@Service([FundraisingEntryRepository, FundraisingEntryResolver])
 export class SolicitationCodeResolver {
   constructor(
-    private readonly fundraisingEntryRepository: FundraisingEntryRepository
+    private readonly fundraisingEntryRepository: FundraisingEntryRepository,
+    private readonly fundraisingEntryResolver: FundraisingEntryResolver
   ) {}
 
   @QueryAccessControl(globalFundraisingAccessParam)
@@ -292,33 +304,27 @@ export class SolicitationCodeResolver {
   }
 
   @QueryAccessControl(globalFundraisingAccessParam)
-  @FieldResolver(() => [FundraisingEntryNode])
+  @FieldResolver(() => ListFundraisingEntriesResponse)
   async entries(
-    @Root() { id: { id } }: SolicitationCodeNode
-  ): Promise<ConcreteResult<FundraisingEntryNode[]>> {
-    const entries =
-      await this.fundraisingEntryRepository.getEntriesForSolicitationCode({
-        uuid: id,
-      });
-    return entries
-      .toAsyncResult()
-      .map((entries) =>
-        Promise.all(entries.map((entry) => fundraisingEntryModelToNode(entry)))
-      ).promise;
+    @Root() { id }: SolicitationCodeNode,
+    @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
+  ): Promise<ConcreteResult<ListFundraisingEntriesResponse>> {
+    return this.fundraisingEntryResolver.fundraisingEntries(args, id);
   }
 
   @QueryAccessControl(globalFundraisingAccessParam)
   @FieldResolver(() => [TeamNode])
   async teams(
     @Root() { id: { id } }: SolicitationCodeNode,
-    @Arg("marathonId", () => GlobalIdScalar) { id: marathonId }: GlobalId
+    @Arg("marathonId", () => GlobalIdScalar, { nullable: true })
+    marathonId: GlobalId | null
   ): Promise<ConcreteResult<TeamNode[]>> {
     const teams =
       await this.fundraisingEntryRepository.getTeamsForSolitationCode(
         {
           uuid: id,
         },
-        { marathonParam: { uuid: marathonId } }
+        { marathonParam: marathonId ? { uuid: marathonId.id } : undefined }
       );
 
     return teams

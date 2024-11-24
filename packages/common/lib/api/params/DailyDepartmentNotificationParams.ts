@@ -1,7 +1,7 @@
 import { LocalDateResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
-import { LocalDate } from "../../utility/time/localDate.js";
+import type { LocalDate } from "../../utility/time/localDate.js";
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { DailyDepartmentNotificationNode } from "../resources/DailyDepartmentNotification.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
@@ -10,7 +10,7 @@ export interface DDNInit {
   division?: string | undefined;
   department?: string | undefined;
   effectiveDate?: LocalDate | undefined;
-  processDate?: LocalDate | undefined;
+  processDate: LocalDate;
   pledgedDate?: LocalDate | undefined;
   transactionDate?: LocalDate | undefined;
   transactionType: string;
@@ -91,8 +91,8 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => LocalDateResolver, { nullable: true })
   effectiveDate?: LocalDate | undefined;
 
-  @Field(() => LocalDateResolver, { nullable: true })
-  processDate?: LocalDate | undefined;
+  @Field(() => LocalDateResolver)
+  processDate!: LocalDate;
 
   @Field(() => LocalDateResolver, { nullable: true })
   pledgedDate?: LocalDate | undefined;

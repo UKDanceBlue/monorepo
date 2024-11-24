@@ -1,5 +1,5 @@
 import { BarsOutlined, FileOutlined, UploadOutlined } from "@ant-design/icons";
-import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Button, Flex } from "antd";
 import { useQuery } from "urql";
@@ -8,6 +8,7 @@ import { FundraisingEntriesTable } from "@/elements/tables/fundraising/Fundraisi
 import { graphql } from "@/graphql/gql";
 import { useListQuery } from "@/hooks/useListQuery";
 import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher";
+import { routerAuthCheck } from "@/tools/routerAuthCheck";
 
 const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
   query ViewFundraisingEntriesDocument(
@@ -48,16 +49,8 @@ export const Route = createFileRoute("/fundraising/")({
       },
     ],
   },
-  validateSearch(search: Record<string, unknown>): {
-    solicitationCodeSearch?: string;
-  } {
-    if (
-      "solicitationCode" in search &&
-      typeof search.solicitationCode === "string"
-    ) {
-      return { solicitationCodeSearch: search.solicitationCode };
-    }
-    return {};
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
   },
 });
 
@@ -70,8 +63,6 @@ function RouteComponent() {
     },
   });
 
-  const { solicitationCodeSearch } = useSearch({ from: "/fundraising/" });
-
   useQueryStatusWatcher(result);
 
   const listQuery = useListQuery(
@@ -79,17 +70,6 @@ function RouteComponent() {
       initPage: 1,
       initPageSize: 10,
       initSorting: [],
-      initialStateOverride: {
-        stringFilters: solicitationCodeSearch
-          ? [
-              {
-                field: "solicitationCode",
-                comparison: "STARTS_WITH",
-                value: solicitationCodeSearch,
-              },
-            ]
-          : undefined,
-      },
     },
     {
       allFields: [

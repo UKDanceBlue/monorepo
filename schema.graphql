@@ -311,7 +311,7 @@ input DailyDepartmentNotificationInput {
   onlineGift: Boolean!
   pledgedAmount: Float!
   pledgedDate: LocalDate
-  processDate: LocalDate
+  processDate: LocalDate!
   sapDocDate: LocalDate
   sapDocNum: String
   secShares: String
@@ -2633,11 +2633,53 @@ type SingleTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseRespon
 type SolicitationCodeNode implements Node {
   code: NonNegativeInt!
   createdAt: DateTimeISO
-  entries: [FundraisingEntryNode!]!
+  entries(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
+
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [FundraisingEntryResolverKeyedIsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean = false
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
+  ): ListFundraisingEntriesResponse!
   id: GlobalId!
   name: String
   prefix: String!
-  teams(marathonId: GlobalId!): [TeamNode!]!
+  teams(marathonId: GlobalId): [TeamNode!]!
   text: String!
   updatedAt: DateTimeISO
 }

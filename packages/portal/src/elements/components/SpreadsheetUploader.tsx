@@ -45,7 +45,7 @@ export function SpreadsheetUploader<
   const [data, setData] = useState<OutputType[] | null>(null);
 
   return (
-    <>
+    <Flex vertical gap={8}>
       <Upload.Dragger
         accept=".xlsx,.csv"
         multiple={false}
@@ -127,16 +127,33 @@ export function SpreadsheetUploader<
         </p>
       </Upload.Dragger>
       {data && !noPreview && (
-        <Flex vertical gap={8}>
+        <>
           <Table
             dataSource={data}
             pagination={paginate ? undefined : false}
-            scroll={{ x: true }}
+            scroll={{ x: "max-content", y: 500 }}
             columns={Object.keys(data[0]!).map(
               (key): ColumnType<OutputType> => ({
                 title: key,
                 dataIndex: key,
                 key,
+                width: `${Math.min(
+                  Math.max(
+                    data.reduce(
+                      (max, row) =>
+                        Math.max(
+                          max,
+                          String((row as Record<string, unknown>)[key]).length
+                        ),
+                      key.length
+                    ),
+                    key.length
+                  ) + 5,
+                  100
+                )}ch`,
+                hidden: data.every(
+                  (row) => !(row as Record<string, unknown>)[key]
+                ),
                 render(value) {
                   if (Array.isArray(value)) {
                     return (
@@ -210,8 +227,8 @@ export function SpreadsheetUploader<
               Upload
             </Button>
           </Flex>
-        </Flex>
+        </>
       )}
-    </>
+    </Flex>
   );
 }

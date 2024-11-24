@@ -29,7 +29,10 @@ const inputTypeSchema = z.object({
   "Division": z.string().trim(),
   "Department": z.string().trim(),
   "Effective Date": defaultDateValidator,
-  "Process Date": defaultDateValidator,
+  "Process Date": z
+    .string()
+    .trim()
+    .transform((v) => localDateFromJs(new Date(v)).unwrap()),
   "Pledged Date": defaultDateValidator,
   "Transaction Date": defaultDateValidator,
   "Transaction  Type": z.string().trim(),

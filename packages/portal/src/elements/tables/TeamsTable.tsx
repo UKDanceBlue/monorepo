@@ -7,42 +7,16 @@ import {
   TeamTypeValues,
 } from "@ukdanceblue/common";
 import { Button, Flex, Table } from "antd";
+import type { ReactNode } from "react";
 import { useEffect } from "react";
-import { useQuery } from "urql";
 
+import type { TeamsTableFragmentFragment } from "@/graphql/graphql";
+import type { FragmentType } from "@/graphql/index.js";
 import { getFragmentData, graphql } from "@/graphql/index.js";
-import { useListQuery } from "@/hooks/useListQuery.js";
+import type { UseListQueryHookReturn } from "@/hooks/useListQuery.js";
 import { useMakeStringSearchFilterProps } from "@/hooks/useMakeSearchFilterProps.js";
-import { useQueryStatusWatcher } from "@/hooks/useQueryStatusWatcher.js";
 
-const teamsTableQueryDocument = graphql(/* GraphQL */ `
-  query TeamsTable(
-    $page: Int
-    $pageSize: Int
-    $sortBy: [String!]
-    $sortDirection: [SortDirection!]
-    $isNullFilters: [TeamResolverKeyedIsNullFilterItem!]
-    $oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]
-    $stringFilters: [TeamResolverKeyedStringFilterItem!]
-  ) {
-    teams(
-      page: $page
-      pageSize: $pageSize
-      sortBy: $sortBy
-      sortDirection: $sortDirection
-      isNullFilters: $isNullFilters
-      oneOfFilters: $oneOfFilters
-      stringFilters: $stringFilters
-    ) {
-      page
-      pageSize
-      total
-      data {
-        ...TeamsTableFragment
-      }
-    }
-  }
-`);
+import { PaginationFragment } from "../fragments/generic";
 
 export const TeamsTableFragment = graphql(/* GraphQL */ `
   fragment TeamsTableFragment on TeamNode {
@@ -56,57 +30,52 @@ export const TeamsTableFragment = graphql(/* GraphQL */ `
 
 export const TeamsTable = ({
   selectedMarathonId,
+  dataFragment,
+  paginationFragment,
+  listQuery,
+  loading,
+  additionalActions,
 }: {
-  selectedMarathonId: string | undefined;
+  selectedMarathonId?: string | undefined;
+  dataFragment: readonly FragmentType<typeof TeamsTableFragment>[] | undefined;
+  paginationFragment?: FragmentType<typeof PaginationFragment> | undefined;
+  listQuery?:
+    | UseListQueryHookReturn<
+        "totalPoints" | "name" | "type" | "legacyStatus" | "marathonId",
+        never,
+        "totalPoints",
+        "name",
+        "type" | "legacyStatus" | "marathonId",
+        never,
+        never
+      >
+    | undefined;
+  loading: boolean;
+  additionalActions?: {
+    icon: ReactNode;
+    onClick: (record: TeamsTableFragmentFragment) => void;
+    key?: string;
+  }[];
 }) => {
-  const {
-    queryOptions,
-    updatePagination,
-    clearSorting,
-    pushSorting,
-    clearFilters,
-    updateFilter,
-    clearFilter,
-  } = useListQuery(
-    {
-      initPage: 1,
-      initPageSize: 20,
-      initSorting: [{ field: "totalPoints", direction: SortDirection.desc }],
-    },
-    {
-      allFields: ["name", "type", "legacyStatus", "marathonId", "totalPoints"],
-      dateFields: [],
-      booleanFields: [],
-      isNullFields: [],
-      numericFields: ["totalPoints"],
-      oneOfFields: ["type", "marathonId", "legacyStatus"],
-      stringFields: ["name"],
-    }
-  );
-  const [{ fetching, error, data }] = useQuery({
-    query: teamsTableQueryDocument,
-    variables: queryOptions,
-    requestPolicy: "network-only",
-  });
-  useQueryStatusWatcher({
-    fetching,
-    error,
-    loadingMessage: "Loading teams...",
-  });
-
   useEffect(() => {
+    if (!listQuery) {
+      return;
+    }
     if (
-      queryOptions.oneOfFilters.find((f) => f.field === "marathonId")
+      listQuery.queryOptions.oneOfFilters.find((f) => f.field === "marathonId")
         ?.value[0] !== selectedMarathonId
     ) {
       if (selectedMarathonId) {
-        updateFilter("marathonId", {
+        listQuery.updateFilter("marathonId", {
           field: "marathonId",
           value: [selectedMarathonId],
         });
       }
     }
-  }, [selectedMarathonId, queryOptions.oneOfFilters, updateFilter]);
+  }, [selectedMarathonId, listQuery]);
+
+  const data = getFragmentData(TeamsTableFragment, dataFragment);
+  const pagination = getFragmentData(PaginationFragment, paginationFragment);
 
   return (
     <Table
@@ -114,13 +83,17 @@ export const TeamsTable = ({
         {
           title: "Name",
           dataIndex: "name",
-          sorter: true,
-          ...useMakeStringSearchFilterProps("name", updateFilter, clearFilter),
+          sorter: listQuery != null,
+          ...useMakeStringSearchFilterProps(
+            "name",
+            listQuery?.updateFilter,
+            listQuery?.clearFilter
+          ),
         },
         {
           title: "Type",
           dataIndex: "type",
-          sorter: true,
+          sorter: listQuery != null,
           filters: TeamTypeValues.map((key) => ({
             text: key,
             value: key,
@@ -129,7 +102,7 @@ export const TeamsTable = ({
         {
           title: "Legacy Status",
           dataIndex: "legacyStatus",
-          sorter: true,
+          sorter: listQuery != null,
           filters: TeamLegacyStatusValues.map((value) => {
             let text: string;
             switch (value) {
@@ -173,55 +146,62 @@ export const TeamsTable = ({
         {
           title: "Total Points",
           dataIndex: "totalPoints",
-          sorter: true,
+          sorter: listQuery != null,
         },
         {
           title: "Actions",
           key: "actions",
           render: (_text, record) => (
             <Flex gap="small" align="center">
-              <Link
-                from="/teams"
-                to="$teamId/points"
-                params={{ teamId: record.id }}
-              >
+              <Link to="/teams/$teamId/points" params={{ teamId: record.id }}>
                 <Button icon={<EyeOutlined />} />
               </Link>
               <Link
-                from="/teams"
-                to="$teamId/fundraising"
+                to="/teams/$teamId/fundraising"
                 params={{ teamId: record.id }}
               >
                 <Button icon={<DollarOutlined />} />
               </Link>
-              <Link
-                from="/teams"
-                to="$teamId/edit"
-                params={{ teamId: record.id }}
-              >
+              <Link to="/teams/$teamId/edit" params={{ teamId: record.id }}>
                 <Button icon={<EditOutlined />} />
               </Link>
+              {additionalActions?.map((action, i) => (
+                <Button
+                  key={action.key ?? i}
+                  icon={action.icon}
+                  onClick={() => action.onClick(record)}
+                />
+              ))}
             </Flex>
           ),
         },
       ]}
-      dataSource={
-        getFragmentData(TeamsTableFragment, data?.teams.data) ?? undefined
-      }
-      loading={fetching}
+      dataSource={data ?? undefined}
+      loading={loading}
       rowKey={({ id }) => id}
       pagination={
-        data
+        pagination
           ? {
-              current: data.teams.page,
-              pageSize: data.teams.pageSize,
-              total: data.teams.total,
+              current: pagination.page,
+              pageSize: pagination.pageSize,
+              total: pagination.total,
               showSizeChanger: true,
             }
           : false
       }
       sortDirections={["ascend", "descend"]}
       onChange={(pagination, filters, sorter, _extra) => {
+        if (!listQuery) {
+          return;
+        }
+        const {
+          pushSorting,
+          clearSorting,
+          updatePagination,
+          clearFilters,
+          updateFilter,
+        } = listQuery;
+
         updatePagination({
           page: pagination.current,
           pageSize: pagination.pageSize,

@@ -63,11 +63,7 @@ export type DailyDepartmentNotificationFilters = FilterItems<
   DailyDepartmentNotificationStringKey
 >;
 
-type UniqueDailyDepartmentNotificationParam =
-  | SimpleUniqueParam
-  | {
-      idSorter: string;
-    };
+type UniqueDailyDepartmentNotificationParam = SimpleUniqueParam;
 
 type UniqueDailyDepartmentNotificationBatchParam =
   | SimpleUniqueParam
@@ -88,6 +84,12 @@ import {
 function parseSolicitationCode(
   solicitationCodeString: string
 ): Result<{ prefix: string; code: number }, InvalidArgumentError> {
+  if (solicitationCodeString === "NOCODE") {
+    return Ok({
+      prefix: "NOCODE",
+      code: 0,
+    });
+  }
   let prefix = "";
   // Read the string prefix character by character until a digit is found
   for (const char of solicitationCodeString) {
@@ -117,6 +119,36 @@ function parseSolicitationCode(
     );
   }
   return Ok({ prefix, code });
+}
+
+interface ParsedDDNInit<
+  BatchId extends string | undefined = string | undefined,
+> {
+  ddn: Omit<
+    Prisma.DailyDepartmentNotificationCreateInput,
+    "solicitationCode" | "batch" | "fundraisingEntry"
+  >;
+  batchId: BatchId;
+  donors: {
+    amount: number;
+    relation: string | undefined;
+    donor: {
+      donorId: string;
+      constituency: string | undefined;
+      deceased: boolean;
+      giftKey: string | undefined;
+      name: string | undefined;
+      titleBar: string | undefined;
+      degrees: string[];
+      emails: string[];
+      pm: string | undefined;
+    };
+  }[];
+  solicitationCode: {
+    prefix: string;
+    code: number;
+  };
+  solicitation: string | undefined;
 }
 
 @Service([prismaToken])
@@ -224,27 +256,16 @@ export class DailyDepartmentNotificationRepository {
       return handleRepositoryError(error);
     }
   }
-  parseDDNInit(
-    data: DDNInit
-  ): Result<
-    Prisma.DailyDepartmentNotificationCreateInput &
-      Prisma.DailyDepartmentNotificationUpdateInput,
-    InvalidArgumentError
-  >;
+
   parseDDNInit(
     data: Omit<DDNInit, "batchId"> & { batchId?: undefined }
-  ): Result<
-    Prisma.DailyDepartmentNotificationCreateInput,
-    InvalidArgumentError
-  >;
+  ): Result<ParsedDDNInit<undefined>, InvalidArgumentError>;
+  parseDDNInit(
+    data: DDNInit
+  ): Result<ParsedDDNInit<string>, InvalidArgumentError>;
   parseDDNInit(
     data: (Omit<DDNInit, "batchId"> & { batchId?: undefined }) | DDNInit
-  ): Result<
-    | (Prisma.DailyDepartmentNotificationCreateInput &
-        Prisma.DailyDepartmentNotificationUpdateInput)
-    | Prisma.DailyDepartmentNotificationUpdateInput,
-    InvalidArgumentError
-  > {
+  ): Result<ParsedDDNInit, InvalidArgumentError> {
     const {
       accountName,
       accountNumber,
@@ -312,28 +333,21 @@ export class DailyDepartmentNotificationRepository {
       return Err(solicitationCode.error);
     }
 
-    const donors: Prisma.DDNDonorLinkCreateWithoutDdnInput[] = [];
+    const donors: ParsedDDNInit["donors"] = [];
     if (donor1Id) {
       donors.push({
         amount: donor1Amount ?? 0,
         relation: donor1Relation,
         donor: {
-          connectOrCreate: {
-            where: {
-              donorId: donor1Id,
-            },
-            create: {
-              donorId: donor1Id,
-              constituency: donor1Constituency,
-              deceased: donor1Deceased ?? false,
-              giftKey: donor1GiftKey,
-              name: donor1Name,
-              titleBar: donor1TitleBar,
-              degrees: donor1Degrees ? donor1Degrees.split(", ") : [],
-              emails: email ? [email] : [],
-              pm: donor1Pm,
-            },
-          },
+          donorId: donor1Id,
+          constituency: donor1Constituency,
+          deceased: donor1Deceased ?? false,
+          giftKey: donor1GiftKey,
+          name: donor1Name,
+          titleBar: donor1TitleBar,
+          degrees: donor1Degrees ? donor1Degrees.split(", ") : [],
+          emails: email ? [email] : [],
+          pm: donor1Pm,
         },
       });
     }
@@ -342,97 +356,68 @@ export class DailyDepartmentNotificationRepository {
         amount: donor2Amount ?? 0,
         relation: donor2Relation,
         donor: {
-          connectOrCreate: {
-            where: {
-              donorId: donor2Id,
-            },
-            create: {
-              donorId: donor2Id,
-              constituency: donor2Constituency,
-              deceased: donor2Deceased ?? false,
-              giftKey: donor2GiftKey,
-              name: donor2Name,
-              titleBar: donor2TitleBar,
-              degrees: donor2Degrees ? donor2Degrees.split(", ") : [],
-              emails: email ? [email] : [],
-              pm: donor2Pm,
-            },
-          },
+          donorId: donor2Id,
+          constituency: donor2Constituency,
+          deceased: donor2Deceased ?? false,
+          giftKey: donor2GiftKey,
+          name: donor2Name,
+          titleBar: donor2TitleBar,
+          degrees: donor2Degrees ? donor2Degrees.split(", ") : [],
+          emails: email ? [email] : [],
+          pm: donor2Pm,
         },
       });
     }
 
     return Ok({
-      jvDocDate: jvDocDate && localDateToJs(jvDocDate),
-      sapDocDate: sapDocDate && localDateToJs(sapDocDate),
-      pledgedDate: pledgedDate && localDateToJs(pledgedDate),
-      processDate: processDate && localDateToJs(processDate),
-      effectiveDate: effectiveDate && localDateToJs(effectiveDate),
-      transactionDate: transactionDate && localDateToJs(transactionDate),
+      ddn: {
+        jvDocDate: jvDocDate && localDateToJs(jvDocDate),
+        sapDocDate: sapDocDate && localDateToJs(sapDocDate),
+        pledgedDate: pledgedDate && localDateToJs(pledgedDate),
+        processDate: localDateToJs(processDate),
+        effectiveDate: effectiveDate && localDateToJs(effectiveDate),
+        transactionDate: transactionDate && localDateToJs(transactionDate),
 
-      accountName,
-      accountNumber,
-      combinedAmount,
-      combinedDonorName,
-      combinedDonorSalutation,
-      divFirstGift,
-      idSorter,
-      onlineGift,
-      pledgedAmount,
-      transactionType,
-      ukFirstGift,
-      advFeeAmtPhil,
-      advFeeAmtUnit,
-      advFeeCcPhil,
-      advFeeCcUnit,
-      advFeeStatus,
-      behalfHonorMemorial,
-      combinedDonorSort,
-      comment,
-      department,
-      division,
-      donors: {
-        create: donors,
+        accountName,
+        accountNumber,
+        combinedAmount,
+        combinedDonorName,
+        combinedDonorSalutation,
+        divFirstGift,
+        idSorter,
+        onlineGift,
+        pledgedAmount,
+        transactionType,
+        ukFirstGift,
+        advFeeAmtPhil,
+        advFeeAmtUnit,
+        advFeeCcPhil,
+        advFeeCcUnit,
+        advFeeStatus,
+        behalfHonorMemorial,
+        combinedDonorSort,
+        comment,
+        department,
+        division,
+        gikDescription,
+        gikType,
+        hcUnit,
+        holdingDestination,
+        jvDocNum,
+        matchingGift,
+        sapDocNum,
+        secShares,
+        secType,
+        solicitation,
+        transmittalSn,
       },
-      gikDescription,
-      gikType,
-      hcUnit,
-      holdingDestination,
-      jvDocNum,
-      matchingGift,
-      sapDocNum,
-      secShares,
-      secType,
-      solicitation,
-      transmittalSn,
-      batch: batchId
-        ? {
-            connectOrCreate: {
-              create: {
-                batchId,
-              },
-              where: { batchId },
-            },
-          }
-        : undefined,
+      batchId,
       solicitationCode: {
-        connectOrCreate: {
-          create: {
-            prefix: solicitationCode.value.prefix,
-            code: solicitationCode.value.code,
-            name: solicitation,
-          },
-          where: {
-            prefix_code: {
-              code: solicitationCode.value.code,
-              prefix: solicitationCode.value.prefix,
-            },
-          },
-        },
+        prefix: solicitationCode.value.prefix,
+        code: solicitationCode.value.code,
       },
-      fundraisingEntry: {
-        create: {},
-      },
+      solicitation,
+      donors,
     });
   }
 
@@ -451,7 +436,47 @@ export class DailyDepartmentNotificationRepository {
         .toAsyncResult()
         .map((data) =>
           this.prisma.dailyDepartmentNotification.create({
-            data,
+            data: {
+              ...data.ddn,
+              batch: {
+                connectOrCreate: {
+                  create: {
+                    batchId: data.batchId,
+                  },
+                  where: { batchId: data.batchId },
+                },
+              },
+              solicitationCode: {
+                connectOrCreate: {
+                  create: {
+                    prefix: data.solicitationCode.prefix,
+                    code: data.solicitationCode.code,
+                    name: data.solicitation,
+                  },
+                  where: {
+                    prefix_code: {
+                      code: data.solicitationCode.code,
+                      prefix: data.solicitationCode.prefix,
+                    },
+                  },
+                },
+              },
+              donors: {
+                create: data.donors.map((donor) => ({
+                  amount: donor.amount,
+                  relation: donor.relation,
+                  donor: {
+                    connectOrCreate: {
+                      create: donor.donor,
+                      where: { donorId: donor.donor.donorId },
+                    },
+                  },
+                })),
+              },
+              fundraisingEntry: {
+                create: {},
+              },
+            },
             include: {
               batch: true,
               donors: {
@@ -494,7 +519,40 @@ export class DailyDepartmentNotificationRepository {
           Some(
             await this.prisma.dailyDepartmentNotification.update({
               where: param,
-              data,
+              data: {
+                ...data.ddn,
+                solicitationCode: {
+                  upsert: {
+                    create: {
+                      prefix: data.solicitationCode.prefix,
+                      code: data.solicitationCode.code,
+                      name: data.solicitation,
+                    },
+                    where: {
+                      code: data.solicitationCode.code,
+                      prefix: data.solicitationCode.prefix,
+                    },
+                    update: {
+                      name: data.solicitation,
+                    },
+                  },
+                },
+                donors: {
+                  create: data.donors.map((donor) => ({
+                    amount: donor.amount,
+                    relation: donor.relation,
+                    donor: {
+                      connectOrCreate: {
+                        create: donor.donor,
+                        where: { donorId: donor.donor.donorId },
+                      },
+                    },
+                  })),
+                },
+                fundraisingEntry: {
+                  create: {},
+                },
+              },
               include: {
                 batch: true,
                 donors: {
@@ -571,43 +629,143 @@ export class DailyDepartmentNotificationRepository {
     >
   > {
     try {
-      const solicitationCodes = new Map<
-        string,
-        { prefix: string; code: number }
-      >();
-
-      for (const row of data) {
-        const solicitationCode = parseSolicitationCode(row.solicitationCode);
-        if (solicitationCode.isErr()) {
-          return Err(solicitationCode.error);
-        }
-        solicitationCodes.set(row.solicitationCode, solicitationCode.value);
-      }
-
       const toLoad = Result.all(data.map((row) => this.parseDDNInit(row)));
 
-      const results = toLoad.toAsyncResult().map((toLoad) =>
-        this.prisma.$transaction(
-          toLoad.map((row) =>
-            this.prisma.dailyDepartmentNotification.upsert({
-              where: { idSorter: row.idSorter },
-              update: row,
-              create: row,
-              include: {
-                batch: true,
-                donors: {
-                  include: {
-                    donor: true,
+      return await toLoad.toAsyncResult().map((toLoad) =>
+        this.prisma.$transaction(async (prisma) => {
+          const results = [];
+          const batches = new Map<string, DailyDepartmentNotificationBatch>();
+
+          for (const row of toLoad) {
+            const donors = new Map<string, DDNDonor>();
+            for (const donor of row.donors) {
+              donors.set(
+                donor.donor.donorId,
+                // eslint-disable-next-line no-await-in-loop
+                await prisma.dDNDonor.upsert({
+                  where: {
+                    donorId: donor.donor.donorId,
+                  },
+                  update: {
+                    ...donor.donor,
+                  },
+                  create: {
+                    ...donor.donor,
+                  },
+                })
+              );
+            }
+            // eslint-disable-next-line no-await-in-loop
+            const solicitationCode = await prisma.solicitationCode.upsert({
+              where: {
+                prefix_code: {
+                  prefix: row.solicitationCode.prefix,
+                  code: row.solicitationCode.code,
+                },
+              },
+              update: {
+                name: row.solicitation,
+              },
+              create: {
+                prefix: row.solicitationCode.prefix,
+                code: row.solicitationCode.code,
+                name: row.solicitation,
+              },
+            });
+            let batch = batches.get(row.batchId);
+            if (!batch) {
+              // eslint-disable-next-line no-await-in-loop
+              batch = await prisma.dailyDepartmentNotificationBatch.upsert({
+                where: {
+                  batchId: row.batchId,
+                },
+                update: {},
+                create: {
+                  batchId: row.batchId,
+                },
+              });
+              batches.set(row.batchId, batch);
+            }
+            results.push(
+              // eslint-disable-next-line no-await-in-loop
+              await prisma.dailyDepartmentNotification.upsert({
+                where: {
+                  idSorter_processDate_batchId_solicitationCodeId_combinedAmount:
+                    {
+                      idSorter: row.ddn.idSorter,
+                      processDate: row.ddn.processDate,
+                      batchId: batch.batchId,
+                      solicitationCodeId: solicitationCode.id,
+                      combinedAmount: row.ddn.combinedAmount,
+                    },
+                },
+                create: {
+                  ...row.ddn,
+                  solicitationCode: {
+                    connect: {
+                      id: solicitationCode.id,
+                    },
+                  },
+                  batch: {
+                    connect: {
+                      id: batch.id,
+                    },
+                  },
+                  donors: {
+                    create: row.donors.map((donor) => ({
+                      amount: donor.amount,
+                      relation: donor.relation,
+                      donor: {
+                        connect: {
+                          id: donors.get(donor.donor.donorId)!.id,
+                        },
+                      },
+                    })),
+                  },
+                  fundraisingEntry: {
+                    create: {},
                   },
                 },
-                solicitationCode: true,
-              },
-            })
-          )
-        )
-      );
-
-      return await results.promise;
+                update: {
+                  ...row.ddn,
+                  solicitationCode: {
+                    connect: {
+                      id: solicitationCode.id,
+                    },
+                  },
+                  batch: {
+                    connect: {
+                      id: batch.id,
+                    },
+                  },
+                  donors: {
+                    deleteMany: {},
+                    create: row.donors.map((donor) => ({
+                      amount: donor.amount,
+                      relation: donor.relation,
+                      donor: {
+                        connect: {
+                          id: donors.get(donor.donor.donorId)!.id,
+                        },
+                      },
+                    })),
+                  },
+                },
+                include: {
+                  batch: true,
+                  donors: {
+                    include: {
+                      donor: true,
+                    },
+                  },
+                  solicitationCode: true,
+                },
+              })
+            );
+          }
+          return results;
+        })
+      ).promise;
     } catch (error) {
       return handleRepositoryError(error);
     }

@@ -15,8 +15,10 @@ import * as types from "./graphql";
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 const documents = {
-  "\n  query ActiveMarathon {\n    latestMarathon {\n      id\n      year\n      startDate\n      endDate\n    }\n    marathons(sendAll: true) {\n      data {\n        id\n        year\n      }\n    }\n  }\n":
+  "\n  query ActiveMarathon {\n    latestMarathon {\n      id\n      year\n      startDate\n      endDate\n    }\n  }\n":
     types.ActiveMarathonDocument,
+  "\n  query AllMarathons {\n    marathons(sendAll: true) {\n      data {\n        id\n        year\n      }\n    }\n  }\n":
+    types.AllMarathonsDocument,
   "\n  query SelectedMarathon($marathonId: GlobalId!) {\n    marathon(uuid: $marathonId) {\n      id\n      year\n      startDate\n      endDate\n    }\n  }\n":
     types.SelectedMarathonDocument,
   "\n  query ViewTeamPage($teamUuid: GlobalId!) {\n    team(uuid: $teamUuid) {\n      data {\n        ...PointEntryCreatorFragment\n        ...TeamViewerFragment\n        pointEntries {\n          ...PointEntryTableFragment\n        }\n      }\n    }\n  }\n":
@@ -35,6 +37,8 @@ const documents = {
     types.DeletePointEntryDocument,
   "\n  mutation DeleteTeam($uuid: GlobalId!) {\n    deleteTeam(uuid: $uuid) {\n      ok\n    }\n  }\n":
     types.DeleteTeamDocument,
+  "\n  query TeamSelect($search: String!) {\n    teams(\n      stringFilters: { comparison: SUBSTRING, value: $search, field: name }\n      sendAll: true\n    ) {\n      data {\n        ...TeamSelect\n      }\n    }\n  }\n":
+    types.TeamSelectDocument,
   "\n  mutation CommitConfigChanges($changes: [CreateConfigurationInput!]!) {\n    createConfigurations(input: $changes) {\n      ok\n    }\n  }\n":
     types.CommitConfigChangesDocument,
   "\n  fragment ConfigFragment on ConfigurationNode {\n    id\n    key\n    value\n    validAfter\n    validUntil\n    createdAt\n  }\n":
@@ -103,6 +107,10 @@ const documents = {
     types.TeamEditorFragmentFragmentDoc,
   "\n  mutation TeamEditor($uuid: GlobalId!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n":
     types.TeamEditorDocument,
+  "\n  fragment PaginationFragment on AbstractGraphQLPaginatedResponse {\n    page\n    pageSize\n    total\n  }\n":
+    types.PaginationFragmentFragmentDoc,
+  "\n  fragment TeamSelect on TeamNode {\n    id\n    name\n    type\n  }\n":
+    types.TeamSelectFragmentDoc,
   "\n      query MasqueradeSelector($search: String!) {\n        searchPeopleByName(name: $search) {\n          id\n          name\n        }\n      }\n    ":
     types.MasqueradeSelectorDocument,
   "\n  fragment EventsTableFragment on EventNode {\n    id\n    title\n    description\n    occurrences {\n      id\n      interval {\n        start\n        end\n      }\n      fullDay\n    }\n    summary\n  }\n":
@@ -117,8 +125,6 @@ const documents = {
     types.PeopleTableFragmentFragmentDoc,
   "\n  query PeopleTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [PersonResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [PersonResolverKeyedOneOfFilterItem!]\n    $stringFilters: [PersonResolverKeyedStringFilterItem!]\n  ) {\n    listPeople(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...PeopleTableFragment\n      }\n    }\n  }\n":
     types.PeopleTableDocument,
-  "\n  query TeamsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [TeamResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]\n    $stringFilters: [TeamResolverKeyedStringFilterItem!]\n  ) {\n    teams(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...TeamsTableFragment\n      }\n    }\n  }\n":
-    types.TeamsTableDocument,
   "\n  fragment TeamsTableFragment on TeamNode {\n    id\n    type\n    name\n    legacyStatus\n    totalPoints\n  }\n":
     types.TeamsTableFragmentFragmentDoc,
   "\n  fragment DDNsTableFragment on DailyDepartmentNotificationNode {\n    id\n    combinedDonorName\n    comment\n    combinedAmount\n    solicitationCode {\n      prefix\n      code\n      name\n    }\n    batch {\n      id\n      batchType\n      batchNumber\n    }\n  }\n":
@@ -131,7 +137,7 @@ const documents = {
     types.UpdateFundraisingAssignmentDocument,
   "\n  mutation DeleteFundraisingAssignment($id: GlobalId!) {\n    deleteFundraisingAssignment(id: $id) {\n      id\n    }\n  }\n":
     types.DeleteFundraisingAssignmentDocument,
-  "\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      solicitationCode {\n        code\n        name\n        prefix\n      }\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n":
+  "\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      solicitationCode {\n        id\n        text\n      }\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n":
     types.FundraisingEntryTableFragmentFragmentDoc,
   "\n  query SolicitationCodeTable($marathonId: GlobalId!) {\n    solicitationCodes {\n      ...SolicitationCodeTableFragment\n    }\n  }\n":
     types.SolicitationCodeTableDocument,
@@ -184,6 +190,12 @@ const documents = {
     types.ViewDdnDocumentDocument,
   "\n  query ViewFundraisingEntriesDocument(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]\n    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]\n    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]\n    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]\n  ) {\n    fundraisingEntries(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      dateFilters: $dateFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n      numericFilters: $numericFilters\n    ) {\n      ...FundraisingEntryTableFragment\n    }\n  }\n":
     types.ViewFundraisingEntriesDocumentDocument,
+  "\n  query SolicitationCodeDocument(\n    $solicitationCodeId: GlobalId!\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]\n    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]\n    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]\n    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]\n  ) {\n    solicitationCode(id: $solicitationCodeId) {\n      prefix\n      code\n      name\n      text\n      teams {\n        ...TeamsTableFragment\n      }\n      entries(\n        page: $page\n        pageSize: $pageSize\n        sortBy: $sortBy\n        sortDirection: $sortDirection\n        dateFilters: $dateFilters\n        oneOfFilters: $oneOfFilters\n        stringFilters: $stringFilters\n        numericFilters: $numericFilters\n      ) {\n        ...FundraisingEntryTableFragment\n      }\n    }\n  }\n":
+    types.SolicitationCodeDocumentDocument,
+  "\n  mutation AssignTeamToSolicitationCodeDocument(\n    $teamId: GlobalId!\n    $solicitationCodeId: GlobalId!\n  ) {\n    assignSolicitationCodeToTeam(\n      teamId: $teamId\n      solicitationCode: $solicitationCodeId\n    )\n  }\n":
+    types.AssignTeamToSolicitationCodeDocumentDocument,
+  "\n  mutation UnassignTeamFromSolicitationCodeDocument($teamId: GlobalId!) {\n    removeSolicitationCodeFromTeam(teamId: $teamId)\n  }\n":
+    types.UnassignTeamFromSolicitationCodeDocumentDocument,
   "\n  query HomePage {\n    me {\n      ...PersonViewerFragment\n    }\n  }\n":
     types.HomePageDocument,
   "\n  query EditMarathonHourData($marathonHourUuid: GlobalId!) {\n    marathonHour(uuid: $marathonHourUuid) {\n      details\n      durationInfo\n      shownStartingAt\n      title\n    }\n  }\n":
@@ -214,6 +226,8 @@ const documents = {
     types.ClearTeamSolicitationCodeDocument,
   "\n  query EditTeamPage($uuid: GlobalId!) {\n    team(uuid: $uuid) {\n      data {\n        ...TeamEditorFragment\n      }\n    }\n  }\n":
     types.EditTeamPageDocument,
+  "\n  query TeamsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [TeamResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]\n    $stringFilters: [TeamResolverKeyedStringFilterItem!]\n  ) {\n    teams(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      ...PaginationFragment\n      data {\n        ...TeamsTableFragment\n      }\n    }\n  }\n":
+    types.TeamsTableDocument,
 };
 
 /**
@@ -234,8 +248,14 @@ export function graphql(source: string): unknown;
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  query ActiveMarathon {\n    latestMarathon {\n      id\n      year\n      startDate\n      endDate\n    }\n    marathons(sendAll: true) {\n      data {\n        id\n        year\n      }\n    }\n  }\n"
-): (typeof documents)["\n  query ActiveMarathon {\n    latestMarathon {\n      id\n      year\n      startDate\n      endDate\n    }\n    marathons(sendAll: true) {\n      data {\n        id\n        year\n      }\n    }\n  }\n"];
+  source: "\n  query ActiveMarathon {\n    latestMarathon {\n      id\n      year\n      startDate\n      endDate\n    }\n  }\n"
+): (typeof documents)["\n  query ActiveMarathon {\n    latestMarathon {\n      id\n      year\n      startDate\n      endDate\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  query AllMarathons {\n    marathons(sendAll: true) {\n      data {\n        id\n        year\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query AllMarathons {\n    marathons(sendAll: true) {\n      data {\n        id\n        year\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -290,6 +310,12 @@ export function graphql(
 export function graphql(
   source: "\n  mutation DeleteTeam($uuid: GlobalId!) {\n    deleteTeam(uuid: $uuid) {\n      ok\n    }\n  }\n"
 ): (typeof documents)["\n  mutation DeleteTeam($uuid: GlobalId!) {\n    deleteTeam(uuid: $uuid) {\n      ok\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  query TeamSelect($search: String!) {\n    teams(\n      stringFilters: { comparison: SUBSTRING, value: $search, field: name }\n      sendAll: true\n    ) {\n      data {\n        ...TeamSelect\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query TeamSelect($search: String!) {\n    teams(\n      stringFilters: { comparison: SUBSTRING, value: $search, field: name }\n      sendAll: true\n    ) {\n      data {\n        ...TeamSelect\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -498,6 +524,18 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
+  source: "\n  fragment PaginationFragment on AbstractGraphQLPaginatedResponse {\n    page\n    pageSize\n    total\n  }\n"
+): (typeof documents)["\n  fragment PaginationFragment on AbstractGraphQLPaginatedResponse {\n    page\n    pageSize\n    total\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  fragment TeamSelect on TeamNode {\n    id\n    name\n    type\n  }\n"
+): (typeof documents)["\n  fragment TeamSelect on TeamNode {\n    id\n    name\n    type\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
   source: "\n      query MasqueradeSelector($search: String!) {\n        searchPeopleByName(name: $search) {\n          id\n          name\n        }\n      }\n    "
 ): (typeof documents)["\n      query MasqueradeSelector($search: String!) {\n        searchPeopleByName(name: $search) {\n          id\n          name\n        }\n      }\n    "];
 /**
@@ -540,12 +578,6 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  query TeamsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [TeamResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]\n    $stringFilters: [TeamResolverKeyedStringFilterItem!]\n  ) {\n    teams(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...TeamsTableFragment\n      }\n    }\n  }\n"
-): (typeof documents)["\n  query TeamsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [TeamResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]\n    $stringFilters: [TeamResolverKeyedStringFilterItem!]\n  ) {\n    teams(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      page\n      pageSize\n      total\n      data {\n        ...TeamsTableFragment\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
   source: "\n  fragment TeamsTableFragment on TeamNode {\n    id\n    type\n    name\n    legacyStatus\n    totalPoints\n  }\n"
 ): (typeof documents)["\n  fragment TeamsTableFragment on TeamNode {\n    id\n    type\n    name\n    legacyStatus\n    totalPoints\n  }\n"];
 /**
@@ -582,8 +614,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      solicitationCode {\n        code\n        name\n        prefix\n      }\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n"
-): (typeof documents)["\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      solicitationCode {\n        code\n        name\n        prefix\n      }\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n"];
+  source: "\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      solicitationCode {\n        id\n        text\n      }\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n"
+): (typeof documents)["\n  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {\n    data {\n      id\n      amount\n      amountUnassigned\n      donatedByText\n      donatedToText\n      donatedOn\n      solicitationCode {\n        id\n        text\n      }\n      assignments {\n        id\n        amount\n        person {\n          id\n          name\n          linkblue\n        }\n      }\n    }\n    page\n    pageSize\n    total\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -744,6 +776,24 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
+  source: "\n  query SolicitationCodeDocument(\n    $solicitationCodeId: GlobalId!\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]\n    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]\n    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]\n    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]\n  ) {\n    solicitationCode(id: $solicitationCodeId) {\n      prefix\n      code\n      name\n      text\n      teams {\n        ...TeamsTableFragment\n      }\n      entries(\n        page: $page\n        pageSize: $pageSize\n        sortBy: $sortBy\n        sortDirection: $sortDirection\n        dateFilters: $dateFilters\n        oneOfFilters: $oneOfFilters\n        stringFilters: $stringFilters\n        numericFilters: $numericFilters\n      ) {\n        ...FundraisingEntryTableFragment\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query SolicitationCodeDocument(\n    $solicitationCodeId: GlobalId!\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]\n    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]\n    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]\n    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]\n  ) {\n    solicitationCode(id: $solicitationCodeId) {\n      prefix\n      code\n      name\n      text\n      teams {\n        ...TeamsTableFragment\n      }\n      entries(\n        page: $page\n        pageSize: $pageSize\n        sortBy: $sortBy\n        sortDirection: $sortDirection\n        dateFilters: $dateFilters\n        oneOfFilters: $oneOfFilters\n        stringFilters: $stringFilters\n        numericFilters: $numericFilters\n      ) {\n        ...FundraisingEntryTableFragment\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation AssignTeamToSolicitationCodeDocument(\n    $teamId: GlobalId!\n    $solicitationCodeId: GlobalId!\n  ) {\n    assignSolicitationCodeToTeam(\n      teamId: $teamId\n      solicitationCode: $solicitationCodeId\n    )\n  }\n"
+): (typeof documents)["\n  mutation AssignTeamToSolicitationCodeDocument(\n    $teamId: GlobalId!\n    $solicitationCodeId: GlobalId!\n  ) {\n    assignSolicitationCodeToTeam(\n      teamId: $teamId\n      solicitationCode: $solicitationCodeId\n    )\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation UnassignTeamFromSolicitationCodeDocument($teamId: GlobalId!) {\n    removeSolicitationCodeFromTeam(teamId: $teamId)\n  }\n"
+): (typeof documents)["\n  mutation UnassignTeamFromSolicitationCodeDocument($teamId: GlobalId!) {\n    removeSolicitationCodeFromTeam(teamId: $teamId)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
   source: "\n  query HomePage {\n    me {\n      ...PersonViewerFragment\n    }\n  }\n"
 ): (typeof documents)["\n  query HomePage {\n    me {\n      ...PersonViewerFragment\n    }\n  }\n"];
 /**
@@ -830,6 +880,12 @@ export function graphql(
 export function graphql(
   source: "\n  query EditTeamPage($uuid: GlobalId!) {\n    team(uuid: $uuid) {\n      data {\n        ...TeamEditorFragment\n      }\n    }\n  }\n"
 ): (typeof documents)["\n  query EditTeamPage($uuid: GlobalId!) {\n    team(uuid: $uuid) {\n      data {\n        ...TeamEditorFragment\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  query TeamsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [TeamResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]\n    $stringFilters: [TeamResolverKeyedStringFilterItem!]\n  ) {\n    teams(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      ...PaginationFragment\n      data {\n        ...TeamsTableFragment\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query TeamsTable(\n    $page: Int\n    $pageSize: Int\n    $sortBy: [String!]\n    $sortDirection: [SortDirection!]\n    $isNullFilters: [TeamResolverKeyedIsNullFilterItem!]\n    $oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]\n    $stringFilters: [TeamResolverKeyedStringFilterItem!]\n  ) {\n    teams(\n      page: $page\n      pageSize: $pageSize\n      sortBy: $sortBy\n      sortDirection: $sortDirection\n      isNullFilters: $isNullFilters\n      oneOfFilters: $oneOfFilters\n      stringFilters: $stringFilters\n    ) {\n      ...PaginationFragment\n      data {\n        ...TeamsTableFragment\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

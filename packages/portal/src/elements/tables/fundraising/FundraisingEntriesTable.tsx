@@ -1,4 +1,5 @@
 import { FilterFilled } from "@ant-design/icons";
+import { Link } from "@tanstack/react-router";
 import { SortDirection } from "@ukdanceblue/common";
 import { Button, Empty, Form, InputNumber, Select, Table } from "antd";
 import { useForm } from "antd/es/form/Form.js";
@@ -58,9 +59,8 @@ export const FundraisingEntryTableFragment = graphql(/* GraphQL */ `
       donatedToText
       donatedOn
       solicitationCode {
-        code
-        name
-        prefix
+        id
+        text
       }
       assignments {
         id
@@ -201,6 +201,9 @@ export function FundraisingEntriesTable({
           dataIndex: "donatedByText",
           key: "donatedByText",
           sorter: true,
+          filtered: !!queryOptions.stringFilters.find(
+            ({ field }) => field === "donatedBy"
+          )?.value,
           ...donatedByStringFilterProps,
         },
         {
@@ -208,6 +211,9 @@ export function FundraisingEntriesTable({
           dataIndex: "donatedToText",
           key: "donatedToText",
           sorter: true,
+          filtered: !!queryOptions.stringFilters.find(
+            ({ field }) => field === "donatedTo"
+          )?.value,
           ...donatedToStringFilterProps,
         },
         {
@@ -222,6 +228,9 @@ export function FundraisingEntriesTable({
           dataIndex: "amount",
           key: "amount",
           sorter: true,
+          filtered:
+            queryOptions.numericFilters.find(({ field }) => field === "amount")
+              ?.value != null,
           filterIcon() {
             return (
               <FilterFilled
@@ -289,6 +298,10 @@ export function FundraisingEntriesTable({
           dataIndex: "amountUnassigned",
           key: "amountUnassigned",
           sorter: true,
+          filtered:
+            queryOptions.numericFilters.find(
+              ({ field }) => field === "amountUnassigned"
+            )?.value != null,
           filterIcon() {
             return (
               <FilterFilled
@@ -357,19 +370,24 @@ export function FundraisingEntriesTable({
           dataIndex: "solicitationCode",
           key: "solicitationCode",
           sorter: true,
+          filtered: !!queryOptions.stringFilters.find(
+            ({ field }) => field === "solicitationCode"
+          )?.value,
           ...solicitationCodeStringFilterProps,
           render: (
             solicitationCode: {
-              prefix: string;
-              code: string;
-              name: string | null;
+              text: string;
+              id: string;
             } | null
           ) =>
-            solicitationCode
-              ? solicitationCode.name
-                ? `${solicitationCode.prefix}${solicitationCode.code} - ${solicitationCode.name}`
-                : `${solicitationCode.prefix}${solicitationCode.code}`
-              : null,
+            solicitationCode?.text && (
+              <Link
+                to="/fundraising/solicitation-code/$solicitationCodeId"
+                params={{ solicitationCodeId: solicitationCode.id }}
+              >
+                {solicitationCode.text}
+              </Link>
+            ),
         },
       ]}
       expandable={{

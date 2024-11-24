@@ -8,6 +8,7 @@ import {
 import { Button, Flex } from "antd";
 
 import { DDNTable } from "@/elements/tables/fundraising/DDNTable";
+import { routerAuthCheck } from "@/tools/routerAuthCheck";
 
 export const Route = createFileRoute("/fundraising/ddn/")({
   component: RouteComponent,
@@ -21,6 +22,9 @@ export const Route = createFileRoute("/fundraising/ddn/")({
         accessLevel: AccessLevel.Admin,
       },
     ],
+  },
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
   },
 });
 

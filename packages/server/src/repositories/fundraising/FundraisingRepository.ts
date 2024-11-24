@@ -269,8 +269,9 @@ export class FundraisingEntryRepository {
       take?: number | undefined | null;
     },
     limits: {
-      assignedToPerson?: SimpleUniqueParam | undefined | null;
+      onlyAssignedToPerson?: SimpleUniqueParam | undefined | null;
       forTeam?: SimpleUniqueParam | undefined | null;
+      solicitationCode?: SolicitationCodeUniqueParam | undefined | null;
     } = {}
   ): Promise<
     Result<
@@ -285,29 +286,40 @@ export class FundraisingEntryRepository {
       const whereResult = buildFundraisingEntryWhere(filters);
       const orderByResult = buildFundraisingEntryOrder(order);
       if (whereResult.isErr()) {
-        return Err(whereResult.error);
+        return whereResult;
       }
       if (orderByResult.isErr()) {
-        return Err(orderByResult.error);
+        return orderByResult;
       }
       const where = whereResult.value;
       const orderBy = orderByResult.value;
 
-      if (limits.assignedToPerson) {
+      if (limits.onlyAssignedToPerson) {
         where.assignments = {
           ...where.assignments,
           every: {
             ...where.assignments?.every,
-            person: limits.assignedToPerson,
+            person: limits.onlyAssignedToPerson,
           },
         };
       }
-      if (limits.forTeam) {
-        const solicitationCodeWhere: Prisma.SolicitationCodeWhereInput = {
-          teams: {
-            some: limits.forTeam,
-          },
-        };
+      if (limits.forTeam || limits.solicitationCode) {
+        let solicitationCodeWhere: Prisma.SolicitationCodeWhereInput;
+        if (limits.solicitationCode && !limits.forTeam) {
+          solicitationCodeWhere = limits.solicitationCode;
+        } else if (!limits.solicitationCode && limits.forTeam) {
+          solicitationCodeWhere = {
+            teams: {
+              some: limits.forTeam,
+            },
+          };
+        } else {
+          return Err(
+            new InvalidArgumentError(
+              "Must provide either forTeam or solicitationCode"
+            )
+          );
+        }
         where.OR = [
           {
             solicitationCodeOverride: solicitationCodeWhere,
@@ -350,25 +362,47 @@ export class FundraisingEntryRepository {
       filters?: readonly FundraisingEntryFilters[] | undefined | null;
     },
     limits: {
-      assignedToPerson?: SimpleUniqueParam | undefined | null;
+      onlyAssignedToPerson?: SimpleUniqueParam | undefined | null;
       forTeam?: SimpleUniqueParam | undefined | null;
+      solicitationCode?: SolicitationCodeUniqueParam | undefined | null;
     } = {}
   ): Promise<
     Result<number, RepositoryError | ActionDeniedError | InvalidArgumentError>
   > {
     try {
-      const where = buildFundraisingEntryWhere(filters);
-      if (where.isErr()) {
-        return Err(where.error);
+      const whereResult = buildFundraisingEntryWhere(filters);
+      if (whereResult.isErr()) {
+        return whereResult;
       }
+      const where = whereResult.value;
 
-      if (limits.forTeam) {
-        const solicitationCodeWhere: Prisma.SolicitationCodeWhereInput = {
-          teams: {
-            some: limits.forTeam,
+      if (limits.onlyAssignedToPerson) {
+        where.assignments = {
+          ...where.assignments,
+          every: {
+            ...where.assignments?.every,
+            person: limits.onlyAssignedToPerson,
           },
         };
-        where.value.OR = [
+      }
+      if (limits.forTeam || limits.solicitationCode) {
+        let solicitationCodeWhere: Prisma.SolicitationCodeWhereInput;
+        if (limits.solicitationCode && !limits.forTeam) {
+          solicitationCodeWhere = limits.solicitationCode;
+        } else if (!limits.solicitationCode && limits.forTeam) {
+          solicitationCodeWhere = {
+            teams: {
+              some: limits.forTeam,
+            },
+          };
+        } else {
+          return Err(
+            new InvalidArgumentError(
+              "Must provide either forTeam or solicitationCode"
+            )
+          );
+        }
+        where.OR = [
           {
             solicitationCodeOverride: solicitationCodeWhere,
           },
@@ -389,9 +423,7 @@ export class FundraisingEntryRepository {
         ];
       }
 
-      return Ok(
-        await this.prisma.fundraisingEntryWithMeta.count({ where: where.value })
-      );
+      return Ok(await this.prisma.fundraisingEntryWithMeta.count({ where }));
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }

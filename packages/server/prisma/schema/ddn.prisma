@@ -5,7 +5,7 @@ model DailyDepartmentNotification {
   division                String?
   department              String?
   effectiveDate           DateTime?                        @db.Date
-  processDate             DateTime?                        @db.Date
+  processDate             DateTime                         @db.Date
   pledgedDate             DateTime?                        @db.Date
   transactionDate         DateTime?                        @db.Date
   transactionType         String
@@ -29,7 +29,7 @@ model DailyDepartmentNotification {
   batch                   DailyDepartmentNotificationBatch @relation(fields: [batchId], references: [batchId], onDelete: Cascade, onUpdate: Cascade)
   ukFirstGift             Boolean
   divFirstGift            Boolean
-  idSorter                String                           @unique
+  idSorter                String
   combinedDonorName       String
   combinedDonorSalutation String
   combinedDonorSort       String?
@@ -52,6 +52,7 @@ model DailyDepartmentNotification {
   fundraisingEntry         FundraisingEntry          @relation(fields: [fundraisingEntryId], references: [id], map: "DailyDepartmentNotification_fundraisingEntry", onDelete: Cascade)
   fundraisingEntryId       Int                       @unique
 
+  @@unique([idSorter, processDate, batchId, solicitationCodeId, combinedAmount])
   @@index([uuid])
 }
 

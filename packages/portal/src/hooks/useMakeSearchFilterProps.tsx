@@ -11,14 +11,17 @@ import { FilterSearchDropdown } from "@/elements/components/FilterDropdown.js";
 
 export function useMakeStringSearchFilterProps<Field extends string>(
   field: Field,
-  updateFilter: (
-    field: Field,
-    filter: StringFilterItemInterface<Field>
-  ) => void,
-  clearFilter: (field: Field) => void,
+  updateFilter:
+    | ((field: Field, filter: StringFilterItemInterface<Field>) => void)
+    | undefined,
+  clearFilter: ((field: Field) => void) | undefined,
   placeholderText?: string | false
 ) {
   const focusRef = useRef<InputRef | undefined>(undefined);
+
+  if (!updateFilter || !clearFilter) {
+    return {};
+  }
 
   return {
     filterDropdown: () => (
@@ -33,7 +36,7 @@ export function useMakeStringSearchFilterProps<Field extends string>(
       />
     ),
     filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+      <SearchOutlined color={filtered ? "#1890ff" : undefined} />
     ),
     filterDropdownProps: {
       onOpenChange: () => {

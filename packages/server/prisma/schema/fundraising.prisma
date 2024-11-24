@@ -18,6 +18,7 @@ model FundraisingEntry {
 }
 
 // SQL code for FundraisingEntryWithMeta, must include an updated copy in a migration when changing the view
+// CREATE VIEW "FundraisingEntryWithMeta" AS
 // SELECT "fe"."id",
 //   "fe"."uuid",
 //   "fe"."createdAt",
@@ -50,9 +51,9 @@ model FundraisingEntry {
 //   "fe"."solicitationCodeId" AS "solicitationCodeOverrideId",
 //   (
 //     SELECT format(
-//         '%s%s - %s',
+//         '%s%4s - %s',
 //         "sc"."prefix",
-//         "sc"."code",
+//         to_char("sc"."code", 'fm0000'),
 //         "sc"."name"
 //       )
 //     FROM "SolicitationCode" "sc"
