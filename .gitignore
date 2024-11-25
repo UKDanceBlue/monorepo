@@ -25,3 +25,4 @@ local-uploads/*
 .eslintcache
 .DS_Store
 yarn-error.log
+*.session.sql
