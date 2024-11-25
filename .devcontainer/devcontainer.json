@@ -63,8 +63,6 @@
         "christian-kohler.npm-intellisense",
         "VisualStudioExptTeam.vscodeintellicode",
         "VisualStudioExptTeam.intellicode-api-usage-examples",
-        "cmstead.js-codeformer",
-        "cmstead.jsrefactor",
         "ecmel.vscode-html-css",
         "GraphQL.vscode-graphql-syntax",
         "GraphQL.vscode-graphql@0.9.3",
