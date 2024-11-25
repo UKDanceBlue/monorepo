@@ -20,8 +20,14 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   @Field(() => String, { nullable: true, name: "donatedByText" })
   donatedByText!: string | null | undefined;
 
+  @Field(() => String, { nullable: true, name: "donatedByOverride" })
+  donatedByOverride!: string | null | undefined;
+
   @Field(() => String, { nullable: true, name: "donatedToText" })
   donatedToText!: string | null | undefined;
+
+  @Field(() => String, { nullable: true, name: "donatedToOverride" })
+  donatedToOverride!: string | null | undefined;
 
   @Field(() => DateTimeISOResolver)
   donatedOn!: Date;
@@ -29,8 +35,20 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
     return dateTimeFromSomething(this.donatedOn);
   }
 
+  @Field(() => DateTimeISOResolver, {
+    nullable: true,
+    name: "donatedOnOverride",
+  })
+  donatedOnOverride!: Date | null | undefined;
+  get donatedOnOverrideDateTime(): DateTime | null | undefined {
+    return dateTimeFromSomething(this.donatedOnOverride);
+  }
+
   @Field(() => Float)
   amount!: number;
+
+  @Field(() => Float, { nullable: true })
+  amountOverride!: number | null | undefined;
 
   @Field(() => Float)
   amountUnassigned!: number;
@@ -43,6 +61,9 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
 
   @Field(() => BatchType)
   batchType!: BatchType;
+
+  @Field(() => BatchType, { nullable: true })
+  batchTypeOverride!: BatchType | null | undefined;
 
   public getUniqueId(): string {
     return this.id.id;

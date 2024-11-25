@@ -10,7 +10,7 @@ import {
   NotificationDeliveryNode,
   parseGlobalId,
   PersonNode,
-  QueryAccessControl,
+  CustomQueryAccessControl,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -71,7 +71,7 @@ export class DeviceResolver {
     return GetDeviceByUuidResponse.newOk(deviceModelToResource(row));
   }
 
-  @QueryAccessControl({ accessLevel: AccessLevel.Admin })
+  @CustomQueryAccessControl({ accessLevel: AccessLevel.Admin })
   @Query(() => ListDevicesResponse, {
     name: "devices",
     description: "List all devices",

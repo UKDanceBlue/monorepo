@@ -9,7 +9,7 @@ import {
   LegacyError,
   LegacyErrorCode,
   MutationAccessControl,
-  QueryAccessControl,
+  CustomQueryAccessControl,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -61,7 +61,7 @@ export class ImageResolver {
     );
   }
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListImagesResponse, { name: "images" })

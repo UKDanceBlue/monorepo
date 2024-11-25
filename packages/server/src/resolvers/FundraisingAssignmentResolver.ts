@@ -9,7 +9,7 @@ import {
   MembershipPositionType,
   MutationAccessControl,
   PersonNode,
-  QueryAccessControl,
+  CustomQueryAccessControl,
   TeamType,
 } from "@ukdanceblue/common";
 import {
@@ -43,7 +43,7 @@ export class FundraisingAssignmentResolver {
     private readonly personRepository: PersonRepository
   ) {}
 
-  @QueryAccessControl<never, FundraisingAssignmentNode>(
+  @CustomQueryAccessControl<never, FundraisingAssignmentNode>(
     async (
       root: never,
       context: AccessControlContext,
@@ -277,7 +277,7 @@ export class FundraisingAssignmentResolver {
     return assignment.map(fundraisingAssignmentModelToNode);
   }
 
-  @QueryAccessControl<never, PersonNode>(
+  @CustomQueryAccessControl<never, PersonNode>(
     async (root, context, result): Promise<boolean | null> => {
       // We can't grant blanket access as otherwise people would see who else was assigned to an entry
 
@@ -342,7 +342,7 @@ export class FundraisingAssignmentResolver {
       .promise;
   }
 
-  @QueryAccessControl<never, PersonNode>(
+  @CustomQueryAccessControl<never, PersonNode>(
     async (root, context, result): Promise<boolean | null> => {
       // We can't grant blanket access as otherwise people would see who else was assigned to an entry
 

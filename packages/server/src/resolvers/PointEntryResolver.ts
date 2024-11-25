@@ -11,7 +11,7 @@ import {
   PersonNode,
   PointEntryNode,
   PointOpportunityNode,
-  QueryAccessControl,
+  CustomQueryAccessControl,
   SortDirection,
   TeamNode,
 } from "@ukdanceblue/common";
@@ -50,7 +50,7 @@ export class PointEntryResolver {
     private readonly personRepository: PersonRepository
   ) {}
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => GetPointEntryByUuidResponse, { name: "pointEntry" })
@@ -68,7 +68,7 @@ export class PointEntryResolver {
     return GetPointEntryByUuidResponse.newOk(pointEntryModelToResource(model));
   }
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListPointEntriesResponse, { name: "pointEntries" })

@@ -8,7 +8,7 @@ import {
   MutationAccessControl,
   NotificationDeliveryNode,
   NotificationNode,
-  QueryAccessControl,
+  CustomQueryAccessControl,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -67,7 +67,7 @@ export class NotificationResolver {
     private readonly notificationScheduler: NotificationScheduler
   ) {}
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Query(() => GetNotificationByUuidResponse, { name: "notification" })
@@ -83,7 +83,7 @@ export class NotificationResolver {
       ).promise;
   }
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Query(() => ListNotificationsResponse, { name: "notifications" })
@@ -114,7 +114,7 @@ export class NotificationResolver {
     });
   }
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Query(() => ListNotificationDeliveriesResponse, {
@@ -360,7 +360,7 @@ export class NotificationResolver {
       .map(() => DeleteNotificationResponse.newOk(true)).promise;
   }
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @FieldResolver(() => Int, { name: "deliveryCount" })
@@ -372,7 +372,7 @@ export class NotificationResolver {
     });
   }
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @FieldResolver(() => NotificationDeliveryIssueCount, {

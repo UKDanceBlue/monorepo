@@ -10,7 +10,7 @@ import {
   LegacyError,
   LegacyErrorCode,
   MutationAccessControl,
-  QueryAccessControl,
+  CustomQueryAccessControl,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -57,7 +57,7 @@ export class EventResolver {
     private readonly fileManager: FileManager
   ) {}
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.Public,
   })
   @Query(() => GetEventByUuidResponse, {
@@ -81,7 +81,7 @@ export class EventResolver {
     );
   }
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.Public,
   })
   @Query(() => ListEventsResponse, {

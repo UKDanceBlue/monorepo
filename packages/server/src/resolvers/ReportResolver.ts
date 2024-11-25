@@ -1,8 +1,8 @@
 import { Service } from "@freshgum/typedi";
 import { BatchType, PrismaClient } from "@prisma/client";
 import {
+  CustomQueryAccessControl,
   fundraisingAccess,
-  QueryAccessControl,
   Report,
   ReportArgs,
   stringifyDDNBatchType,
@@ -25,7 +25,7 @@ import { prismaToken } from "#lib/typediTokens.js";
 export class ReportResolver {
   constructor(private readonly prisma: PrismaClient) {}
 
-  @QueryAccessControl(fundraisingAccess)
+  @CustomQueryAccessControl(fundraisingAccess)
   @Query(() => Report, {
     name: "report",
     description:

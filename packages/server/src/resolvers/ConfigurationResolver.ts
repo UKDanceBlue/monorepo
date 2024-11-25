@@ -6,7 +6,7 @@ import {
   dateTimeFromSomething,
   GlobalIdScalar,
   MutationAccessControl,
-  QueryAccessControl,
+  CustomQueryAccessControl,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -67,7 +67,7 @@ export class ConfigurationResolver {
     );
   }
 
-  @QueryAccessControl({ accessLevel: AccessLevel.Admin })
+  @CustomQueryAccessControl({ accessLevel: AccessLevel.Admin })
   @Query(() => GetConfigurationResponse, {
     name: "configuration",
     description: "Get a particular configuration entry by UUID",
@@ -93,7 +93,7 @@ export class ConfigurationResolver {
     );
   }
 
-  @QueryAccessControl({ accessLevel: AccessLevel.Admin })
+  @CustomQueryAccessControl({ accessLevel: AccessLevel.Admin })
   @Query(() => GetAllConfigurationsResponse, {
     name: "allConfigurations",
     description: "Get all configurations, irrespective of time",
@@ -182,7 +182,7 @@ export class ConfigurationResolver {
     return Ok(DeleteConfigurationResponse.newOk(true));
   }
 
-  @QueryAccessControl({ accessLevel: AccessLevel.SuperAdmin })
+  @CustomQueryAccessControl({ accessLevel: AccessLevel.SuperAdmin })
   @Query(() => String, {
     name: "auditLog",
     description: "Get the audit log file from the server",

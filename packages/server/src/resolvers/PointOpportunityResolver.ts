@@ -10,7 +10,7 @@ import {
   LegacyErrorCode,
   MutationAccessControl,
   PointOpportunityNode,
-  QueryAccessControl,
+  CustomQueryAccessControl,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -43,7 +43,7 @@ export class PointOpportunityResolver {
     private readonly pointOpportunityRepository: PointOpportunityRepository
   ) {}
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => SinglePointOpportunityResponse, { name: "pointOpportunity" })
@@ -67,7 +67,7 @@ export class PointOpportunityResolver {
     );
   }
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListPointOpportunitiesResponse, { name: "pointOpportunities" })

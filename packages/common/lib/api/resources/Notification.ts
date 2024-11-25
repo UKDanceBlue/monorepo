@@ -2,7 +2,7 @@ import { DateTimeISOResolver, URLResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
-import { QueryAccessControl } from "../../authorization/accessControl.js";
+import { CustomQueryAccessControl } from "../../authorization/accessControl.js";
 import { AccessLevel } from "../../authorization/structures.js";
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { createNodeClasses, Node } from "../relay.js";
@@ -27,11 +27,15 @@ export class NotificationNode extends TimestampedResource implements Node {
   url?: URL | undefined | null;
 
   @Field(() => String, { nullable: true })
-  @QueryAccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @CustomQueryAccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   deliveryIssue?: string | undefined | null;
 
   @Field(() => DateTimeISOResolver, { nullable: true })
-  @QueryAccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @CustomQueryAccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   deliveryIssueAcknowledgedAt?: Date | undefined | null;
   get deliveryIssueAcknowledgedAtDateTime(): DateTime | null {
     return dateTimeFromSomething(this.deliveryIssueAcknowledgedAt ?? null);
@@ -101,7 +105,9 @@ export class NotificationDeliveryNode
     description:
       "The time the server received a delivery receipt from the user.",
   })
-  @QueryAccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @CustomQueryAccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   receiptCheckedAt?: Date | undefined | null;
 
   @Field(() => String, {
@@ -109,7 +115,9 @@ export class NotificationDeliveryNode
     description:
       "A unique identifier corresponding the group of notifications this was sent to Expo with.",
   })
-  @QueryAccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @CustomQueryAccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   chunkUuid?: string | undefined | null;
 
   @Field(() => String, {
@@ -117,7 +125,9 @@ export class NotificationDeliveryNode
     description:
       "Any error message returned by Expo when sending the notification.",
   })
-  @QueryAccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
+  @CustomQueryAccessControl({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
   deliveryError?: string | undefined | null;
 
   public getUniqueId(): string {

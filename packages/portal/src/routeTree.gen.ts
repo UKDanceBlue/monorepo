@@ -37,6 +37,7 @@ import { Route as NotificationsNotificationIdIndexImport } from "./routes/notifi
 import { Route as MarathonMarathonIdIndexImport } from "./routes/marathon/$marathonId/index";
 import { Route as FundraisingSolicitationCodeIndexImport } from "./routes/fundraising/solicitation-code/index";
 import { Route as FundraisingDdnIndexImport } from "./routes/fundraising/ddn/index";
+import { Route as FundraisingEntryIdIndexImport } from "./routes/fundraising/$entryId/index";
 import { Route as EventsEventIdIndexImport } from "./routes/events/$eventId/index";
 import { Route as TeamsTeamIdEditImport } from "./routes/teams/$teamId/edit";
 import { Route as TeamsTeamIdLayoutImport } from "./routes/teams/$teamId/_layout";
@@ -208,6 +209,12 @@ const FundraisingSolicitationCodeIndexRoute =
 const FundraisingDdnIndexRoute = FundraisingDdnIndexImport.update({
   id: "/fundraising/ddn/",
   path: "/fundraising/ddn/",
+  getParentRoute: () => rootRoute,
+} as any);
+
+const FundraisingEntryIdIndexRoute = FundraisingEntryIdIndexImport.update({
+  id: "/fundraising/$entryId/",
+  path: "/fundraising/$entryId/",
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -506,6 +513,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof EventsEventIdIndexImport;
       parentRoute: typeof rootRoute;
     };
+    "/fundraising/$entryId/": {
+      id: "/fundraising/$entryId/";
+      path: "/fundraising/$entryId";
+      fullPath: "/fundraising/$entryId";
+      preLoaderRoute: typeof FundraisingEntryIdIndexImport;
+      parentRoute: typeof rootRoute;
+    };
     "/fundraising/ddn/": {
       id: "/fundraising/ddn/";
       path: "/fundraising/ddn";
@@ -652,6 +666,7 @@ export interface FileRoutesByFullPath {
   "/teams/$teamId": typeof TeamsTeamIdLayoutRouteWithChildren;
   "/teams/$teamId/edit": typeof TeamsTeamIdEditRoute;
   "/events/$eventId": typeof EventsEventIdIndexRoute;
+  "/fundraising/$entryId": typeof FundraisingEntryIdIndexRoute;
   "/fundraising/ddn": typeof FundraisingDdnIndexRoute;
   "/fundraising/solicitation-code": typeof FundraisingSolicitationCodeIndexRoute;
   "/marathon/$marathonId": typeof MarathonMarathonIdIndexRoute;
@@ -694,6 +709,7 @@ export interface FileRoutesByTo {
   "/teams/$teamId": typeof TeamsTeamIdLayoutIndexRoute;
   "/teams/$teamId/edit": typeof TeamsTeamIdEditRoute;
   "/events/$eventId": typeof EventsEventIdIndexRoute;
+  "/fundraising/$entryId": typeof FundraisingEntryIdIndexRoute;
   "/fundraising/ddn": typeof FundraisingDdnIndexRoute;
   "/fundraising/solicitation-code": typeof FundraisingSolicitationCodeIndexRoute;
   "/marathon/$marathonId": typeof MarathonMarathonIdIndexRoute;
@@ -737,6 +753,7 @@ export interface FileRoutesById {
   "/teams/$teamId/_layout": typeof TeamsTeamIdLayoutRouteWithChildren;
   "/teams/$teamId/edit": typeof TeamsTeamIdEditRoute;
   "/events/$eventId/": typeof EventsEventIdIndexRoute;
+  "/fundraising/$entryId/": typeof FundraisingEntryIdIndexRoute;
   "/fundraising/ddn/": typeof FundraisingDdnIndexRoute;
   "/fundraising/solicitation-code/": typeof FundraisingSolicitationCodeIndexRoute;
   "/marathon/$marathonId/": typeof MarathonMarathonIdIndexRoute;
@@ -781,6 +798,7 @@ export interface FileRouteTypes {
     | "/teams/$teamId"
     | "/teams/$teamId/edit"
     | "/events/$eventId"
+    | "/fundraising/$entryId"
     | "/fundraising/ddn"
     | "/fundraising/solicitation-code"
     | "/marathon/$marathonId"
@@ -822,6 +840,7 @@ export interface FileRouteTypes {
     | "/teams/$teamId"
     | "/teams/$teamId/edit"
     | "/events/$eventId"
+    | "/fundraising/$entryId"
     | "/fundraising/ddn"
     | "/fundraising/solicitation-code"
     | "/marathon/$marathonId"
@@ -863,6 +882,7 @@ export interface FileRouteTypes {
     | "/teams/$teamId/_layout"
     | "/teams/$teamId/edit"
     | "/events/$eventId/"
+    | "/fundraising/$entryId/"
     | "/fundraising/ddn/"
     | "/fundraising/solicitation-code/"
     | "/marathon/$marathonId/"
@@ -905,6 +925,7 @@ export interface RootRouteChildren {
   PeoplePersonIdEditRoute: typeof PeoplePersonIdEditRoute;
   TeamsTeamIdRoute: typeof TeamsTeamIdRouteWithChildren;
   EventsEventIdIndexRoute: typeof EventsEventIdIndexRoute;
+  FundraisingEntryIdIndexRoute: typeof FundraisingEntryIdIndexRoute;
   FundraisingDdnIndexRoute: typeof FundraisingDdnIndexRoute;
   FundraisingSolicitationCodeIndexRoute: typeof FundraisingSolicitationCodeIndexRoute;
   MarathonMarathonIdIndexRoute: typeof MarathonMarathonIdIndexRoute;
@@ -944,6 +965,7 @@ const rootRouteChildren: RootRouteChildren = {
   PeoplePersonIdEditRoute: PeoplePersonIdEditRoute,
   TeamsTeamIdRoute: TeamsTeamIdRouteWithChildren,
   EventsEventIdIndexRoute: EventsEventIdIndexRoute,
+  FundraisingEntryIdIndexRoute: FundraisingEntryIdIndexRoute,
   FundraisingDdnIndexRoute: FundraisingDdnIndexRoute,
   FundraisingSolicitationCodeIndexRoute: FundraisingSolicitationCodeIndexRoute,
   MarathonMarathonIdIndexRoute: MarathonMarathonIdIndexRoute,
@@ -993,6 +1015,7 @@ export const routeTree = rootRoute
         "/people/$personId/edit",
         "/teams/$teamId",
         "/events/$eventId/",
+        "/fundraising/$entryId/",
         "/fundraising/ddn/",
         "/fundraising/solicitation-code/",
         "/marathon/$marathonId/",
@@ -1098,6 +1121,9 @@ export const routeTree = rootRoute
     },
     "/events/$eventId/": {
       "filePath": "events/$eventId/index.tsx"
+    },
+    "/fundraising/$entryId/": {
+      "filePath": "fundraising/$entryId/index.tsx"
     },
     "/fundraising/ddn/": {
       "filePath": "fundraising/ddn/index.tsx"

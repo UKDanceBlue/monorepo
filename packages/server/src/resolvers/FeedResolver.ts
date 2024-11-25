@@ -9,7 +9,7 @@ import {
   LegacyError,
   LegacyErrorCode,
   MutationAccessControl,
-  QueryAccessControl,
+  CustomQueryAccessControl,
 } from "@ukdanceblue/common";
 import { CreateFeedInput, SetFeedInput } from "@ukdanceblue/common";
 import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
@@ -41,7 +41,7 @@ export class FeedResolver {
   ) {}
 
   @Query(() => FeedNode, { description: "Get a feed item by its UUID" })
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.Public,
   })
   async feedItem(
@@ -57,7 +57,7 @@ export class FeedResolver {
   }
 
   @Query(() => [FeedNode], { description: "Get the active feed" })
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.Public,
   })
   async feed(

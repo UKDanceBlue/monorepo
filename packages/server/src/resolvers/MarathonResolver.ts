@@ -3,11 +3,11 @@ import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessLevel,
   CommitteeIdentifier,
+  CustomQueryAccessControl,
   GlobalIdScalar,
   MarathonHourNode,
   MarathonNode,
   MutationAccessControl,
-  QueryAccessControl,
   SortDirection,
   TeamNode,
 } from "@ukdanceblue/common";
@@ -49,7 +49,7 @@ export class MarathonResolver
     private readonly committeeRepository: CommitteeRepository
   ) {}
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.None,
   })
   @Query(() => MarathonNode)
@@ -60,7 +60,7 @@ export class MarathonResolver
     return marathon.map(marathonModelToResource);
   }
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => MarathonNode)
@@ -71,7 +71,7 @@ export class MarathonResolver
     return marathon.map(marathonModelToResource);
   }
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListMarathonsResponse)
@@ -100,7 +100,7 @@ export class MarathonResolver
     });
   }
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.None,
   })
   @Query(() => MarathonNode, {
@@ -113,7 +113,7 @@ export class MarathonResolver
     return marathon.map((m) => m.map(marathonModelToResource));
   }
 
-  @QueryAccessControl({
+  @CustomQueryAccessControl({
     accessLevel: AccessLevel.None,
   })
   @Query(() => MarathonNode, {

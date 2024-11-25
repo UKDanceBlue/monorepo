@@ -155,6 +155,11 @@ function asWideFundraisingEntryWithMeta(
       updatedAt: entry.updatedAt,
       ddn: entry.ddn,
       solicitationCodeOverride: entry.solicitationCodeOverride,
+      amountOverride: entry.amountOverride,
+      batchTypeOverride: entry.batchTypeOverride,
+      donatedByOverride: entry.donatedByOverride,
+      donatedOnOverride: entry.donatedOnOverride,
+      donatedToOverride: entry.donatedToOverride,
       amount: entry.amount,
       donatedBy: entry.donatedBy,
       donatedOn: entry.donatedOn,
@@ -175,6 +180,11 @@ function asWideFundraisingEntryWithMeta(
       updatedAt: entry.updatedAt,
       dbFundsEntry: entry.dbFundsEntry,
       solicitationCodeOverride: entry.solicitationCodeOverride,
+      amountOverride: entry.amountOverride,
+      batchTypeOverride: entry.batchTypeOverride,
+      donatedByOverride: entry.donatedByOverride,
+      donatedOnOverride: entry.donatedOnOverride,
+      donatedToOverride: entry.donatedToOverride,
       amount: entry.amount,
       donatedBy: entry.donatedBy,
       donatedOn: entry.donatedOn,
@@ -723,11 +733,13 @@ export class FundraisingEntryRepository {
 
   async getDdnForEntry(entryParam: FundraisingEntryUniqueParam): Promise<
     Result<
-      DailyDepartmentNotification & {
-        batch: DailyDepartmentNotificationBatch;
-        donors: (DDNDonorLink & { donor: DDNDonor })[];
-        solicitationCode: SolicitationCode;
-      },
+      Option<
+        DailyDepartmentNotification & {
+          batch: DailyDepartmentNotificationBatch;
+          donors: (DDNDonorLink & { donor: DDNDonor })[];
+          solicitationCode: SolicitationCode;
+        }
+      >,
       RepositoryError | ActionDeniedError | InvariantError | NotFoundError
     >
   > {
@@ -752,9 +764,9 @@ export class FundraisingEntryRepository {
         return Err(new NotFoundError({ what: "FundraisingEntry" }));
       }
       if (!entry.ddn) {
-        return Err(new NotFoundError({ what: "DailyDepartmentNotification" }));
+        return Ok(None);
       }
-      return Ok(entry.ddn);
+      return Ok(Some(entry.ddn));
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }

@@ -736,7 +736,7 @@ type FundraisingEntryNode implements Node {
   assignments: [FundraisingAssignmentNode!]!
   batchType: BatchType!
   createdAt: DateTimeISO
-  dailyDepartmentNotification: DailyDepartmentNotificationNode!
+  dailyDepartmentNotification: DailyDepartmentNotificationNode
   donatedByText: String
   donatedOn: DateTimeISO!
   donatedToText: String

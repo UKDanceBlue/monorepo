@@ -1,15 +1,19 @@
 import { Container } from "@freshgum/typedi";
+import type { AccessControlParam } from "@ukdanceblue/common";
+import { AccessLevel, checkParam } from "@ukdanceblue/common";
 import {
   ConcreteError,
   FormattedConcreteError,
   toBasicError,
 } from "@ukdanceblue/common/error";
+import type { GraphQLResolveInfo } from "graphql";
 import { Err, Option, Result } from "ts-results-es";
-import type { MiddlewareFn } from "type-graphql";
+import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
 import { fileURLToPath } from "url";
 
 import { logger } from "#logging/logger.js";
+import type { GraphQLContext } from "#resolvers/context.js";
 
 import { resolversList } from "./resolversList.js";
 
@@ -76,6 +80,44 @@ for (const service of resolversList) {
 export default await buildSchema({
   resolvers: resolversList,
   emitSchemaFile: schemaPath,
+  authChecker<RootType extends object>(
+    resolverData: {
+      root: RootType;
+      args: ArgsDictionary;
+      context: GraphQLContext;
+      info: GraphQLResolveInfo;
+    },
+    params: AccessControlParam<RootType>[]
+  ): boolean {
+    const { context, args, root } = resolverData;
+    const { authorization } = context;
+
+    if (authorization.accessLevel === AccessLevel.SuperAdmin) {
+      return true;
+    }
+
+    let ok = false;
+
+    for (const rule of params) {
+      const result = checkParam<RootType>(
+        rule,
+        authorization,
+        root,
+        args,
+        context
+      );
+      if (result.isErr()) {
+        throw new Error(result.error.detailedMessage);
+      }
+
+      ok = result.value;
+      if (ok) {
+        break;
+      }
+    }
+
+    return ok;
+  },
   globalMiddlewares: [errorHandlingMiddleware],
   container: {
     get(someClass) {

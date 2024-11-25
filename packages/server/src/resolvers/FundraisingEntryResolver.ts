@@ -8,13 +8,13 @@ import {
 import {
   AccessLevel,
   checkParam,
+  CustomQueryAccessControl,
   DailyDepartmentNotificationNode,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
   GlobalIdScalar,
   MembershipPositionType,
   MutationAccessControl,
-  QueryAccessControl,
   SolicitationCodeNode,
   SortDirection,
 } from "@ukdanceblue/common";
@@ -24,7 +24,7 @@ import {
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
 import { VoidResolver } from "graphql-scalars";
-import { AsyncResult, Ok } from "ts-results-es";
+import { AsyncResult, Ok, Option } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -54,7 +54,7 @@ export class FundraisingEntryResolver {
     private readonly fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
-  @QueryAccessControl(globalFundraisingAccessParam)
+  @CustomQueryAccessControl(globalFundraisingAccessParam)
   @Query(() => FundraisingEntryNode)
   async fundraisingEntry(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -65,7 +65,7 @@ export class FundraisingEntryResolver {
     return entry.toAsyncResult().map(fundraisingEntryModelToNode).promise;
   }
 
-  @QueryAccessControl(globalFundraisingAccessParam)
+  @CustomQueryAccessControl(globalFundraisingAccessParam)
   @Query(() => ListFundraisingEntriesResponse)
   async fundraisingEntries(
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs,
@@ -117,7 +117,7 @@ export class FundraisingEntryResolver {
     );
   }
 
-  @QueryAccessControl<FundraisingEntryNode>(
+  @CustomQueryAccessControl<FundraisingEntryNode>(
     async (root, context): Promise<boolean> => {
       // We can't grant blanket access as otherwise people would see who else was assigned to an entry
       // You can view all assignments for an entry if you are:
@@ -193,7 +193,7 @@ export class FundraisingEntryResolver {
       ).promise;
   }
 
-  @QueryAccessControl(globalFundraisingAccessParam, {
+  @CustomQueryAccessControl(globalFundraisingAccessParam, {
     accessLevel: AccessLevel.Admin,
   })
   @Query(() => String)
@@ -204,7 +204,7 @@ export class FundraisingEntryResolver {
     return result.map((data) => JSON.stringify(data));
   }
 
-  @QueryAccessControl(globalFundraisingAccessParam, {
+  @CustomQueryAccessControl(globalFundraisingAccessParam, {
     accessLevel: AccessLevel.Admin,
   })
   @Query(() => String)
@@ -228,18 +228,19 @@ export class FundraisingEntryResolver {
       .map((data) => JSON.stringify(data));
   }
 
-  @FieldResolver(() => DailyDepartmentNotificationNode)
+  @FieldResolver(() => DailyDepartmentNotificationNode, { nullable: true })
   async dailyDepartmentNotification(
     @Root()
     fundraisingEntry: FundraisingEntryNode
-  ): Promise<ConcreteResult<DailyDepartmentNotificationNode>> {
+  ): Promise<ConcreteResult<Option<DailyDepartmentNotificationNode>>> {
     const dailyDepartmentNotification =
       await this.fundraisingEntryRepository.getDdnForEntry({
         uuid: fundraisingEntry.id.id,
       });
     return dailyDepartmentNotification
       .toAsyncResult()
-      .map(dailyDepartmentNotificationModelToResource).promise;
+      .map((option) => option.map(dailyDepartmentNotificationModelToResource))
+      .promise;
   }
 
   @FieldResolver(() => SolicitationCodeNode)
@@ -271,7 +272,7 @@ export class SolicitationCodeResolver {
     private readonly fundraisingEntryResolver: FundraisingEntryResolver
   ) {}
 
-  @QueryAccessControl(globalFundraisingAccessParam)
+  @CustomQueryAccessControl(globalFundraisingAccessParam)
   @Query(() => [SolicitationCodeNode])
   async solicitationCodes(): Promise<ConcreteResult<SolicitationCodeNode[]>> {
     const codes =
@@ -286,7 +287,7 @@ export class SolicitationCodeResolver {
     ).promise;
   }
 
-  @QueryAccessControl(globalFundraisingAccessParam)
+  @CustomQueryAccessControl(globalFundraisingAccessParam)
   @Query(() => SolicitationCodeNode)
   async solicitationCode(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -303,7 +304,7 @@ export class SolicitationCodeResolver {
     ).promise;
   }
 
-  @QueryAccessControl(globalFundraisingAccessParam)
+  @CustomQueryAccessControl(globalFundraisingAccessParam)
   @FieldResolver(() => ListFundraisingEntriesResponse)
   async entries(
     @Root() { id }: SolicitationCodeNode,
@@ -312,7 +313,7 @@ export class SolicitationCodeResolver {
     return this.fundraisingEntryResolver.fundraisingEntries(args, id);
   }
 
-  @QueryAccessControl(globalFundraisingAccessParam)
+  @CustomQueryAccessControl(globalFundraisingAccessParam)
   @FieldResolver(() => [TeamNode])
   async teams(
     @Root() { id: { id } }: SolicitationCodeNode,

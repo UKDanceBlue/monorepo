@@ -1,0 +1,24 @@
+model Edit {
+  id   Int    @id @default(autoincrement())
+  uuid String @unique() @default(uuid()) @db.Uuid
+
+  summary String
+  action  Json
+
+  editingUserId Int?
+  editingUser   Person? @relation(fields: [editingUserId], references: [id])
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  fundraisingEntryId   Int?
+  FundraisingEntryEdit FundraisingEntryEdit?
+}
+
+model FundraisingEntryEdit {
+  table              FundraisingEntry @relation(fields: [fundraisingEntryId], references: [id], onDelete: Cascade)
+  edit               Edit             @relation(fields: [editId], references: [id], onDelete: Cascade)
+  fundraisingEntryId Int
+  editId             Int              @unique
+
+  @@id([fundraisingEntryId, editId])
+}

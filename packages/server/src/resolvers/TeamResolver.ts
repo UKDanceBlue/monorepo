@@ -15,7 +15,7 @@ import {
   MembershipNode,
   MutationAccessControl,
   PointEntryNode,
-  QueryAccessControl,
+  CustomQueryAccessControl,
   SolicitationCodeNode,
   SortDirection,
   TeamNode,
@@ -74,7 +74,7 @@ export class TeamResolver {
     private dbFundsRepository: DBFundsRepository
   ) {}
 
-  @QueryAccessControl<never, SingleTeamResponse>((_, context, result) => {
+  @CustomQueryAccessControl<never, SingleTeamResponse>((_, context, result) => {
     return (
       context.authorization.accessLevel > AccessLevel.Committee ||
       context.teamMemberships.some(({ teamId, position }) =>
@@ -98,7 +98,7 @@ export class TeamResolver {
     return Ok(SingleTeamResponse.newOk(teamModelToResource(row)));
   }
 
-  @QueryAccessControl({ accessLevel: AccessLevel.Public })
+  @CustomQueryAccessControl({ accessLevel: AccessLevel.Public })
   @Query(() => ListTeamsResponse, { name: "teams" })
   async list(
     @Args(() => ListTeamsArgs) query: ListTeamsArgs,
@@ -273,7 +273,7 @@ export class TeamResolver {
     return DeleteTeamResponse.newOk(true);
   }
 
-  @QueryAccessControl(
+  @CustomQueryAccessControl(
     { accessLevel: AccessLevel.Committee },
     {
       rootMatch: [
@@ -294,7 +294,7 @@ export class TeamResolver {
     return memberships.map((row) => membershipModelToResource(row));
   }
 
-  @QueryAccessControl({ accessLevel: AccessLevel.Committee })
+  @CustomQueryAccessControl({ accessLevel: AccessLevel.Committee })
   @FieldResolver(() => [MembershipNode], {
     deprecationReason: "Just query the members field and filter by role",
   })
@@ -307,7 +307,7 @@ export class TeamResolver {
     return memberships.map((row) => membershipModelToResource(row));
   }
 
-  @QueryAccessControl(
+  @CustomQueryAccessControl(
     { accessLevel: AccessLevel.Committee },
     {
       rootMatch: [
@@ -330,7 +330,7 @@ export class TeamResolver {
     return rows.map((row) => pointEntryModelToResource(row));
   }
 
-  @QueryAccessControl(globalFundraisingAccessParam, {
+  @CustomQueryAccessControl(globalFundraisingAccessParam, {
     rootMatch: [
       {
         root: "id",
@@ -348,7 +348,7 @@ export class TeamResolver {
     });
   }
 
-  @QueryAccessControl({ accessLevel: AccessLevel.Public })
+  @CustomQueryAccessControl({ accessLevel: AccessLevel.Public })
   @FieldResolver(() => Int)
   async totalPoints(@Root() { id: { id } }: TeamNode): Promise<number> {
     const result = await this.teamRepository.getTotalTeamPoints({
@@ -358,7 +358,7 @@ export class TeamResolver {
     return result._sum.points ?? 0;
   }
 
-  @QueryAccessControl({ accessLevel: AccessLevel.Public })
+  @CustomQueryAccessControl({ accessLevel: AccessLevel.Public })
   @FieldResolver(() => Common.MarathonNode)
   async marathon(
     @Root() { id: { id } }: TeamNode
@@ -372,7 +372,7 @@ export class TeamResolver {
     return marathonModelToResource(result);
   }
 
-  @QueryAccessControl(globalFundraisingAccessParam, {
+  @CustomQueryAccessControl(globalFundraisingAccessParam, {
     rootMatch: [
       {
         root: "id",
@@ -415,7 +415,7 @@ export class TeamResolver {
     return result ?? null;
   }
 
-  @QueryAccessControl(globalFundraisingAccessParam, {
+  @CustomQueryAccessControl(globalFundraisingAccessParam, {
     rootMatch: [
       {
         root: "id",
@@ -481,7 +481,7 @@ export class TeamResolver {
     );
   }
 
-  @QueryAccessControl(globalFundraisingAccessParam)
+  @CustomQueryAccessControl(globalFundraisingAccessParam)
   @Query(() => [DbFundsTeamInfo], { name: "dbFundsTeams" })
   async dbFundsTeams(
     @Arg("search") search: string
@@ -513,7 +513,7 @@ export class TeamResolver {
     });
   }
 
-  @QueryAccessControl(globalFundraisingAccessParam)
+  @CustomQueryAccessControl(globalFundraisingAccessParam)
   @FieldResolver(() => SolicitationCodeNode, { nullable: true })
   async solicitationCode(
     @Root() { id: { id } }: TeamNode

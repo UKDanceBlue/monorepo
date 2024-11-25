@@ -7,7 +7,7 @@ import {
   fundraisingAccess,
   GlobalIdScalar,
   MutationAccessControl,
-  QueryAccessControl,
+  CustomQueryAccessControl,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -43,7 +43,7 @@ export class DailyDepartmentNotificationResolver {
     private readonly dailyDepartmentNotificationRepository: DailyDepartmentNotificationRepository
   ) {}
 
-  @QueryAccessControl(
+  @CustomQueryAccessControl(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -62,7 +62,7 @@ export class DailyDepartmentNotificationResolver {
     );
   }
 
-  @QueryAccessControl(
+  @CustomQueryAccessControl(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -216,7 +216,7 @@ export class DailyDepartmentNotificationBatchResolver {
     private readonly dailyDepartmentNotificationRepository: DailyDepartmentNotificationRepository
   ) {}
 
-  @QueryAccessControl(
+  @CustomQueryAccessControl(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
