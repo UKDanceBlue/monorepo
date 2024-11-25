@@ -1,12 +1,11 @@
 import { Service } from "@freshgum/typedi";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   ConfigurationNode,
   dateTimeFromSomething,
   GlobalIdScalar,
-  MutationAccessControl,
-  CustomQueryAccessControl,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -67,7 +66,7 @@ export class ConfigurationResolver {
     );
   }
 
-  @CustomQueryAccessControl({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
   @Query(() => GetConfigurationResponse, {
     name: "configuration",
     description: "Get a particular configuration entry by UUID",
@@ -93,7 +92,7 @@ export class ConfigurationResolver {
     );
   }
 
-  @CustomQueryAccessControl({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
   @Query(() => GetAllConfigurationsResponse, {
     name: "allConfigurations",
     description: "Get all configurations, irrespective of time",
@@ -108,7 +107,7 @@ export class ConfigurationResolver {
     );
   }
 
-  @MutationAccessControl({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
   @Mutation(() => CreateConfigurationResponse, {
     name: "createConfiguration",
     description:
@@ -131,7 +130,7 @@ export class ConfigurationResolver {
     );
   }
 
-  @MutationAccessControl({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
   @Mutation(() => CreateConfigurationResponse, {
     name: "createConfigurations",
     description:
@@ -158,7 +157,7 @@ export class ConfigurationResolver {
     return Ok(CreateConfigurationsResponse.newOk(""));
   }
 
-  @MutationAccessControl({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
   @Mutation(() => DeleteConfigurationResponse, {
     name: "deleteConfiguration",
     description: "Delete a configuration by UUID",
@@ -182,7 +181,7 @@ export class ConfigurationResolver {
     return Ok(DeleteConfigurationResponse.newOk(true));
   }
 
-  @CustomQueryAccessControl({ accessLevel: AccessLevel.SuperAdmin })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.SuperAdmin })
   @Query(() => String, {
     name: "auditLog",
     description: "Get the audit log file from the server",

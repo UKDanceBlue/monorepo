@@ -2,15 +2,14 @@ import { Service } from "@freshgum/typedi";
 import { CommitteeRole } from "@prisma/client";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   CommitteeIdentifier,
   EventNode,
   GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
-  MutationAccessControl,
   PointOpportunityNode,
-  CustomQueryAccessControl,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -43,7 +42,7 @@ export class PointOpportunityResolver {
     private readonly pointOpportunityRepository: PointOpportunityRepository
   ) {}
 
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => SinglePointOpportunityResponse, { name: "pointOpportunity" })
@@ -67,7 +66,7 @@ export class PointOpportunityResolver {
     );
   }
 
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListPointOpportunitiesResponse, { name: "pointOpportunities" })
@@ -101,7 +100,7 @@ export class PointOpportunityResolver {
     });
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     authRules: [
       {
         committeeIdentifier: CommitteeIdentifier.viceCommittee,
@@ -128,7 +127,7 @@ export class PointOpportunityResolver {
     );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     authRules: [
       {
         committeeIdentifier: CommitteeIdentifier.viceCommittee,
@@ -165,7 +164,7 @@ export class PointOpportunityResolver {
     );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     authRules: [
       {
         committeeIdentifier: CommitteeIdentifier.viceCommittee,

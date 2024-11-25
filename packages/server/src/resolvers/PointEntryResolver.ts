@@ -1,17 +1,16 @@
 import { Service } from "@freshgum/typedi";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   CommitteeIdentifier,
   CommitteeRole,
   GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
-  MutationAccessControl,
   PersonNode,
   PointEntryNode,
   PointOpportunityNode,
-  CustomQueryAccessControl,
   SortDirection,
   TeamNode,
 } from "@ukdanceblue/common";
@@ -50,7 +49,7 @@ export class PointEntryResolver {
     private readonly personRepository: PersonRepository
   ) {}
 
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => GetPointEntryByUuidResponse, { name: "pointEntry" })
@@ -68,7 +67,7 @@ export class PointEntryResolver {
     return GetPointEntryByUuidResponse.newOk(pointEntryModelToResource(model));
   }
 
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListPointEntriesResponse, { name: "pointEntries" })
@@ -102,7 +101,7 @@ export class PointEntryResolver {
     });
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     authRules: [
       {
         committeeIdentifier: CommitteeIdentifier.viceCommittee,
@@ -131,7 +130,7 @@ export class PointEntryResolver {
     );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     authRules: [
       {
         committeeIdentifier: CommitteeIdentifier.viceCommittee,

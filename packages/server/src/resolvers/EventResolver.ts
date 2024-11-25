@@ -9,8 +9,7 @@ import {
   ImageNode,
   LegacyError,
   LegacyErrorCode,
-  MutationAccessControl,
-  CustomQueryAccessControl,
+  AccessControlAuthorized,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -57,7 +56,7 @@ export class EventResolver {
     private readonly fileManager: FileManager
   ) {}
 
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @Query(() => GetEventByUuidResponse, {
@@ -81,7 +80,7 @@ export class EventResolver {
     );
   }
 
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @Query(() => ListEventsResponse, {
@@ -116,7 +115,7 @@ export class EventResolver {
     });
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -159,7 +158,7 @@ export class EventResolver {
     );
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -185,7 +184,7 @@ export class EventResolver {
     return DeleteEventResponse.newOk(true);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -260,7 +259,7 @@ export class EventResolver {
     );
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -290,7 +289,7 @@ export class EventResolver {
     return RemoveEventImageResponse.newOk(true);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },

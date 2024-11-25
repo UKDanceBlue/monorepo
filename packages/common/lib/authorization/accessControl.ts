@@ -1,13 +1,11 @@
-import { GraphQLNonNull } from "graphql";
-import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
-import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
-import { UseMiddleware } from "type-graphql";
+import type { Result } from "ts-results-es";
+import { Err, Ok } from "ts-results-es";
+import type { ArgsDictionary } from "type-graphql";
+import { Authorized } from "type-graphql";
 import type { Primitive } from "utility-types";
 
 import { parseGlobalId } from "../api/scalars/GlobalId.js";
-import { AccessControlError } from "../error/control.js";
 import { InvariantError } from "../error/direct.js";
-import type { ConcreteResult } from "../error/result.js";
 import {
   type Authorization,
   type CommitteeIdentifier,
@@ -18,8 +16,8 @@ import {
   type TeamType,
   type UserData,
 } from "../index.js";
+import type { AccessLevel } from "./structures.js";
 import {
-  AccessLevel,
   committeeNames,
   compareCommitteeRole,
   stringifyAccessLevel,
@@ -76,6 +74,50 @@ export function prettyPrintAuthorizationRule(rule: AuthorizationRule): string {
   return parts.join(" and ");
 }
 
+export interface AccessControlContext {
+  authenticatedUser: PersonNode | null;
+  teamMemberships: SimpleTeamMembership[];
+  userData: UserData;
+  authorization: Authorization;
+}
+
+/**
+ * An AccessControlParam accepts a user if:
+ *
+ * 1. The user's access level is greater than or equal to the access level specified (AccessLevel.None by default)
+ * 2. The user's role matches one of the specified authorization rules
+ * 3. The resolver arguments match ALL of the specified argument matchers
+ * 4. The root object matches ALL of the specified root matchers
+ * 5. The custom authorization rule returns true
+ */
+export interface AccessControlParam<RootType = never> {
+  authRules?:
+    | readonly AuthorizationRule[]
+    | ((root: RootType) => readonly AuthorizationRule[]);
+  accessLevel?: AccessLevel;
+  argumentMatch?: {
+    argument: string | ((args: ArgsDictionary) => Primitive | Primitive[]);
+    extractor: (param: AccessControlContext) => Primitive | Primitive[];
+  }[];
+  rootMatch?: {
+    root: string | ((root: RootType) => Primitive | Primitive[]);
+    extractor: (param: AccessControlContext) => Primitive | Primitive[];
+  }[];
+}
+
+export interface SimpleTeamMembership {
+  teamType: TeamType;
+  teamId: string;
+  position: MembershipPositionType;
+}
+
+export interface AuthorizationContext {
+  authenticatedUser: PersonNode | null;
+  teamMemberships: SimpleTeamMembership[];
+  userData: UserData;
+  authorization: Authorization;
+}
+
 export function checkAuthorization(
   {
     accessLevel,
@@ -123,82 +165,6 @@ export function checkAuthorization(
   }
 
   return matches;
-}
-
-export interface AccessControlContext {
-  authenticatedUser: PersonNode | null;
-  teamMemberships: SimpleTeamMembership[];
-  userData: UserData;
-  authorization: Authorization;
-}
-
-/**
- * An AccessControlParam accepts a user if:
- *
- * 1. The user's access level is greater than or equal to the access level specified (AccessLevel.None by default)
- * 2. The user's role matches one of the specified authorization rules
- * 3. The resolver arguments match ALL of the specified argument matchers
- * 4. The root object matches ALL of the specified root matchers
- * 5. The custom authorization rule returns true
- */
-export interface AccessControlParam<RootType = never> {
-  authRules?:
-    | readonly AuthorizationRule[]
-    | ((root: RootType) => readonly AuthorizationRule[]);
-  accessLevel?: AccessLevel;
-  argumentMatch?: {
-    argument: string | ((args: ArgsDictionary) => Primitive | Primitive[]);
-    extractor: (param: AccessControlContext) => Primitive | Primitive[];
-  }[];
-  rootMatch?: {
-    root: string | ((root: RootType) => Primitive | Primitive[]);
-    extractor: (param: AccessControlContext) => Primitive | Primitive[];
-  }[];
-}
-
-/**
- * Custom authorization rule
- *
- * Should usually be avoided, but can be used for more complex authorization rules
- *
- * If the custom rule returns a boolean the user is allowed access if the rule returns true and an error is thrown if the rule returns false.
- * If the custom rule returns null the field is set to null (make sure the field is nullable in the schema)
- * If one param returns false and another returns null, an error will be thrown and the null ignored.
- */
-export type CustomQueryAuthorizationFunction<RootType, ResultType> = (
-  root: RootType,
-  context: AccessControlContext,
-  result: Option<ResultType>,
-  args: Record<string, unknown>
-) => boolean | null | Promise<boolean | null>;
-
-/**
- * Custom mutation authorization function
- *
- * Same as CustomAuthorizationFunction, but without root or result
- *
- * Should usually be avoided, but can be used for more complex authorization rules
- *
- * If the custom rule returns a boolean the user is allowed access if the rule returns true and an error is thrown if the rule returns false.
- * If the custom rule returns null the field is set to null (make sure the field is nullable in the schema)
- * If one param returns false and another returns null, an error will be thrown and the null ignored.
- */
-export type CustomMutationAuthorizationFunction = (
-  context: AccessControlContext,
-  args: Record<string, unknown>
-) => boolean | null | Promise<boolean | null>;
-
-export interface SimpleTeamMembership {
-  teamType: TeamType;
-  teamId: string;
-  position: MembershipPositionType;
-}
-
-export interface AuthorizationContext {
-  authenticatedUser: PersonNode | null;
-  teamMemberships: SimpleTeamMembership[];
-  userData: UserData;
-  authorization: Authorization;
 }
 
 export function checkParam<RootType extends object = never>(
@@ -324,154 +290,8 @@ export function checkParam<RootType extends object = never>(
   return Ok(true);
 }
 
-export function QueryAccessControl<
-  RootType extends object = never,
-  ResultType extends object = never,
->(
-  params: CustomQueryAuthorizationFunction<RootType, ResultType>
-): MethodDecorator & PropertyDecorator;
-export function QueryAccessControl<RootType extends object = never>(
-  ...params: AccessControlParam<RootType>[]
-): MethodDecorator & PropertyDecorator;
-export function QueryAccessControl<
-  RootType extends object = never,
-  ResultType extends object = never,
->(
-  ...params:
-    | AccessControlParam<RootType>[]
-    | [CustomQueryAuthorizationFunction<RootType, ResultType>]
-): MethodDecorator & PropertyDecorator {
-  const middleware: MiddlewareFn<AuthorizationContext> = async (
-    resolverData,
-    next
-  ) => {
-    const { context, args, info } = resolverData;
-    const root = resolverData.root as RootType;
-    const { authorization } = context;
-
-    if (authorization.accessLevel === AccessLevel.SuperAdmin) {
-      // Super admins have access to everything
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return next();
-    }
-
-    let ok = false;
-
-    if (typeof params[0] === "function") {
-      let result = (await next()) as
-        | ResultType
-        | Option<ResultType>
-        | ConcreteResult<ResultType>
-        | ConcreteResult<Option<ResultType>>;
-      if (Result.isResult(result)) {
-        result = result.unwrapOr(None);
-      }
-      if (!Option.isOption(result)) {
-        result = Some(result);
-      }
-
-      const customResult = await params[0](root, context, result, args);
-
-      if (customResult === false) {
-        return Err(new AccessControlError(info));
-      } else if (customResult === null) {
-        return null;
-      }
-
-      return result;
-    } else {
-      for (const rule of params as AccessControlParam<RootType>[]) {
-        const result = checkParam(rule, authorization, root, args, context);
-        if (result.isErr()) {
-          return Err(result.error);
-        }
-
-        ok = result.value;
-        if (ok) {
-          break;
-        }
-      }
-
-      if (!ok) {
-        return info.returnType instanceof GraphQLNonNull
-          ? Err(new AccessControlError(info))
-          : null;
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return next();
-    }
-  };
-
-  return UseMiddleware(middleware);
-}
-
-export function MutationAccessControl(
-  params: CustomMutationAuthorizationFunction
-): MethodDecorator & PropertyDecorator;
-export function MutationAccessControl(
-  ...params: AccessControlParam[]
-): MethodDecorator & PropertyDecorator;
-export function MutationAccessControl(
-  ...params: AccessControlParam[] | [CustomMutationAuthorizationFunction]
-): MethodDecorator & PropertyDecorator {
-  const middleware: MiddlewareFn<AuthorizationContext> = async (
-    resolverData,
-    next
-  ) => {
-    const { context, args, info } = resolverData;
-    const { authorization } = context;
-
-    if (authorization.accessLevel === AccessLevel.SuperAdmin) {
-      // Super admins have access to everything
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return next();
-    }
-
-    let ok = false;
-
-    if (typeof params[0] === "function") {
-      const customResult = await params[0](context, args);
-
-      if (customResult === false) {
-        return Err(new AccessControlError(info));
-      } else if (customResult === null) {
-        return null;
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return next();
-    } else {
-      for (const rule of params as AccessControlParam<
-        Record<string, never>
-      >[]) {
-        const result = checkParam<Record<string, never>>(
-          rule,
-          authorization,
-          {},
-          args,
-          context
-        );
-        if (result.isErr()) {
-          return Err(result.error);
-        }
-
-        ok = result.value;
-        if (ok) {
-          break;
-        }
-      }
-
-      if (!ok) {
-        return info.returnType instanceof GraphQLNonNull
-          ? Err(new AccessControlError(info))
-          : null;
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return next();
-    }
-  };
-
-  return UseMiddleware(middleware);
+export function AccessControlAuthorized<RootType extends object>(
+  ...roles: readonly AccessControlParam<RootType>[]
+): PropertyDecorator & MethodDecorator & ClassDecorator {
+  return Authorized<AccessControlParam>(...roles);
 }

@@ -8,8 +8,7 @@ import {
   ImageNode,
   LegacyError,
   LegacyErrorCode,
-  MutationAccessControl,
-  CustomQueryAccessControl,
+  AccessControlAuthorized,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -61,7 +60,7 @@ export class ImageResolver {
     );
   }
 
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListImagesResponse, { name: "images" })
@@ -98,7 +97,7 @@ export class ImageResolver {
     });
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => ImageNode, { name: "createImage" })
@@ -143,7 +142,7 @@ export class ImageResolver {
     return imageModelToResource(result, null, this.fileManager, serverUrl);
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => ImageNode, { name: "setImageAltText" })
@@ -175,7 +174,7 @@ export class ImageResolver {
     );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => ImageNode, { name: "setImageUrl" })
@@ -226,7 +225,7 @@ export class ImageResolver {
     );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => DeleteImageResponse, { name: "deleteImage" })

@@ -1,21 +1,19 @@
 import { Container, Service } from "@freshgum/typedi";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
-  checkParam,
-  ListFundraisingEntriesArgs,
-  ListFundraisingEntriesResponse,
-  MutationAccessControl,
-} from "@ukdanceblue/common";
-import {
+  AccessControlAuthorized,
   AccessLevel,
+  checkParam,
   CommitteeMembershipNode,
+  CustomQueryAccessControl,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
   GlobalIdScalar,
+  ListFundraisingEntriesArgs,
+  ListFundraisingEntriesResponse,
   MembershipNode,
   MembershipPositionType,
   PersonNode,
-  CustomQueryAccessControl,
   SortDirection,
   TeamType,
 } from "@ukdanceblue/common";
@@ -79,7 +77,7 @@ export class PersonResolver {
     private readonly fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
-  @CustomQueryAccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Committee })
   @Query(() => PersonNode, { name: "person" })
   async getByUuid(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -92,7 +90,7 @@ export class PersonResolver {
       .promise;
   }
 
-  @CustomQueryAccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Committee })
   @Query(() => PersonNode, { name: "personByLinkBlue", nullable: true })
   async getByLinkBlueId(
     @Arg("linkBlueId") linkBlueId: string
@@ -112,7 +110,7 @@ export class PersonResolver {
     ).promise;
   }
 
-  @CustomQueryAccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Committee })
   @Query(() => ListPeopleResponse, { name: "listPeople" })
   async list(
     @Args(() => ListPeopleArgs) args: ListPeopleArgs
@@ -165,7 +163,7 @@ export class PersonResolver {
     return ctx.authenticatedUser;
   }
 
-  @CustomQueryAccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Committee })
   @Query(() => [PersonNode], { name: "searchPeopleByName" })
   async searchByName(
     @Arg("name") name: string
@@ -182,7 +180,7 @@ export class PersonResolver {
     ).promise;
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => PersonNode, { name: "createPerson" })
@@ -230,7 +228,7 @@ export class PersonResolver {
       .promise;
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => PersonNode, { name: "setPerson" })
@@ -282,7 +280,7 @@ export class PersonResolver {
       .promise;
   }
 
-  @MutationAccessControl({ accessLevel: AccessLevel.SuperAdmin })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.SuperAdmin })
   @Mutation(() => [PersonNode], { name: "bulkLoadPeople" })
   async bulkLoad(
     @Arg("people", () => [BulkPersonInput]) people: BulkPersonInput[],
@@ -303,7 +301,7 @@ export class PersonResolver {
     ).promise;
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => MembershipNode, { name: "addPersonToTeam" })
@@ -328,7 +326,7 @@ export class PersonResolver {
     ).map(membershipModelToResource).promise;
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => MembershipNode, { name: "removePersonFromTeam" })
@@ -348,7 +346,7 @@ export class PersonResolver {
     ).map(membershipModelToResource).promise;
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => PersonNode, { name: "deletePerson" })
@@ -370,7 +368,7 @@ export class PersonResolver {
       }).promise;
   }
 
-  @CustomQueryAccessControl(
+  @AccessControlAuthorized(
     { accessLevel: AccessLevel.Committee },
     {
       rootMatch: [
@@ -399,7 +397,7 @@ export class PersonResolver {
     ).promise;
   }
 
-  @CustomQueryAccessControl(
+  @AccessControlAuthorized(
     { accessLevel: AccessLevel.Committee },
     {
       rootMatch: [
@@ -425,7 +423,7 @@ export class PersonResolver {
     ).map((models) => models.map(membershipModelToResource)).promise;
   }
 
-  @CustomQueryAccessControl(
+  @AccessControlAuthorized(
     { accessLevel: AccessLevel.Committee },
     {
       rootMatch: [
@@ -451,7 +449,7 @@ export class PersonResolver {
     ).map((models) => models.map(membershipModelToResource)).promise;
   }
 
-  @CustomQueryAccessControl(
+  @AccessControlAuthorized(
     { accessLevel: AccessLevel.Committee },
     {
       rootMatch: [
@@ -477,7 +475,7 @@ export class PersonResolver {
     );
   }
 
-  @CustomQueryAccessControl(
+  @AccessControlAuthorized(
     { accessLevel: AccessLevel.Committee },
     {
       rootMatch: [
@@ -608,7 +606,7 @@ export class PersonResolver {
     });
   }
 
-  @CustomQueryAccessControl(
+  @AccessControlAuthorized(
     // We can't grant blanket access as otherwise people would see who else was assigned to an entry
     // You can view all assignments for an entry if you are:
     // 1. A fundraising coordinator or chair
@@ -635,7 +633,7 @@ export class PersonResolver {
   // This is the only way normal dancers or committee members can access fundraising info
   // as it will only grant them the individual assignment they are associated with plus
   // shallow access to the entry itself
-  @CustomQueryAccessControl<FundraisingAssignmentNode>({
+  @AccessControlAuthorized<FundraisingAssignmentNode>({
     rootMatch: [
       {
         root: "id",

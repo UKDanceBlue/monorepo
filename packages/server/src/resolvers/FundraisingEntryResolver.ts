@@ -1,20 +1,20 @@
 import { Container, Service } from "@freshgum/typedi";
 import {
+  CustomQueryAccessControl,
   type GlobalId,
   type MarathonYearString,
   TeamNode,
   VoidScalar,
 } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   checkParam,
-  CustomQueryAccessControl,
   DailyDepartmentNotificationNode,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
   GlobalIdScalar,
   MembershipPositionType,
-  MutationAccessControl,
   SolicitationCodeNode,
   SortDirection,
 } from "@ukdanceblue/common";
@@ -54,7 +54,7 @@ export class FundraisingEntryResolver {
     private readonly fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
-  @CustomQueryAccessControl(globalFundraisingAccessParam)
+  @AccessControlAuthorized(globalFundraisingAccessParam)
   @Query(() => FundraisingEntryNode)
   async fundraisingEntry(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -65,7 +65,7 @@ export class FundraisingEntryResolver {
     return entry.toAsyncResult().map(fundraisingEntryModelToNode).promise;
   }
 
-  @CustomQueryAccessControl(globalFundraisingAccessParam)
+  @AccessControlAuthorized(globalFundraisingAccessParam)
   @Query(() => ListFundraisingEntriesResponse)
   async fundraisingEntries(
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs,
@@ -193,7 +193,7 @@ export class FundraisingEntryResolver {
       ).promise;
   }
 
-  @CustomQueryAccessControl(globalFundraisingAccessParam, {
+  @AccessControlAuthorized(globalFundraisingAccessParam, {
     accessLevel: AccessLevel.Admin,
   })
   @Query(() => String)
@@ -204,7 +204,7 @@ export class FundraisingEntryResolver {
     return result.map((data) => JSON.stringify(data));
   }
 
-  @CustomQueryAccessControl(globalFundraisingAccessParam, {
+  @AccessControlAuthorized(globalFundraisingAccessParam, {
     accessLevel: AccessLevel.Admin,
   })
   @Query(() => String)
@@ -272,7 +272,7 @@ export class SolicitationCodeResolver {
     private readonly fundraisingEntryResolver: FundraisingEntryResolver
   ) {}
 
-  @CustomQueryAccessControl(globalFundraisingAccessParam)
+  @AccessControlAuthorized(globalFundraisingAccessParam)
   @Query(() => [SolicitationCodeNode])
   async solicitationCodes(): Promise<ConcreteResult<SolicitationCodeNode[]>> {
     const codes =
@@ -287,7 +287,7 @@ export class SolicitationCodeResolver {
     ).promise;
   }
 
-  @CustomQueryAccessControl(globalFundraisingAccessParam)
+  @AccessControlAuthorized(globalFundraisingAccessParam)
   @Query(() => SolicitationCodeNode)
   async solicitationCode(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -304,7 +304,7 @@ export class SolicitationCodeResolver {
     ).promise;
   }
 
-  @CustomQueryAccessControl(globalFundraisingAccessParam)
+  @AccessControlAuthorized(globalFundraisingAccessParam)
   @FieldResolver(() => ListFundraisingEntriesResponse)
   async entries(
     @Root() { id }: SolicitationCodeNode,
@@ -313,7 +313,7 @@ export class SolicitationCodeResolver {
     return this.fundraisingEntryResolver.fundraisingEntries(args, id);
   }
 
-  @CustomQueryAccessControl(globalFundraisingAccessParam)
+  @AccessControlAuthorized(globalFundraisingAccessParam)
   @FieldResolver(() => [TeamNode])
   async teams(
     @Root() { id: { id } }: SolicitationCodeNode,
@@ -334,7 +334,7 @@ export class SolicitationCodeResolver {
       .promise;
   }
 
-  @MutationAccessControl(globalFundraisingAccessParam)
+  @AccessControlAuthorized(globalFundraisingAccessParam)
   @Mutation(() => VoidResolver, { name: "assignSolicitationCodeToTeam" })
   async assignSolicitationCodeToTeam(
     @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId,
@@ -352,7 +352,7 @@ export class SolicitationCodeResolver {
     return result.map(() => VoidScalar);
   }
 
-  @MutationAccessControl(globalFundraisingAccessParam)
+  @AccessControlAuthorized(globalFundraisingAccessParam)
   @Mutation(() => VoidResolver, { name: "removeSolicitationCodeFromTeam" })
   async removeSolicitationCodeFromTeam(
     @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId

@@ -1,16 +1,15 @@
 import { Service } from "@freshgum/typedi";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   DeviceNode,
   GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
-  MutationAccessControl,
   NotificationDeliveryNode,
   parseGlobalId,
   PersonNode,
-  CustomQueryAccessControl,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -71,7 +70,7 @@ export class DeviceResolver {
     return GetDeviceByUuidResponse.newOk(deviceModelToResource(row));
   }
 
-  @CustomQueryAccessControl({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
   @Query(() => ListDevicesResponse, {
     name: "devices",
     description: "List all devices",
@@ -135,7 +134,7 @@ export class DeviceResolver {
     );
   }
 
-  @MutationAccessControl({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
   @Mutation(() => DeleteDeviceResponse, {
     name: "deleteDevice",
     description: "Delete a device by it's UUID",

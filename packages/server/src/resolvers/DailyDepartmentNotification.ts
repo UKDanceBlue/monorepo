@@ -6,8 +6,7 @@ import {
   DailyDepartmentNotificationNode,
   fundraisingAccess,
   GlobalIdScalar,
-  MutationAccessControl,
-  CustomQueryAccessControl,
+  AccessControlAuthorized,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -43,7 +42,7 @@ export class DailyDepartmentNotificationResolver {
     private readonly dailyDepartmentNotificationRepository: DailyDepartmentNotificationRepository
   ) {}
 
-  @CustomQueryAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -62,7 +61,7 @@ export class DailyDepartmentNotificationResolver {
     );
   }
 
-  @CustomQueryAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -112,7 +111,7 @@ export class DailyDepartmentNotificationResolver {
     );
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -130,7 +129,7 @@ export class DailyDepartmentNotificationResolver {
     ).map(dailyDepartmentNotificationModelToResource).promise;
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -153,7 +152,7 @@ export class DailyDepartmentNotificationResolver {
     );
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -176,7 +175,7 @@ export class DailyDepartmentNotificationResolver {
     ).promise;
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -216,7 +215,7 @@ export class DailyDepartmentNotificationBatchResolver {
     private readonly dailyDepartmentNotificationRepository: DailyDepartmentNotificationRepository
   ) {}
 
-  @CustomQueryAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -235,7 +234,7 @@ export class DailyDepartmentNotificationBatchResolver {
     );
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },

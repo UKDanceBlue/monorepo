@@ -9,7 +9,7 @@ import {
   LegacyError,
   LegacyErrorCode,
   MarathonHourNode,
-  MutationAccessControl,
+  AccessControlAuthorized,
 } from "@ukdanceblue/common";
 import {
   CreateMarathonHourInput,
@@ -38,7 +38,7 @@ export class MarathonHourResolver {
     private readonly marathonHourRepository: MarathonHourRepository
   ) {}
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @Query(() => MarathonHourNode)
@@ -53,7 +53,7 @@ export class MarathonHourResolver {
     return marathonHourModelToResource(marathonHour);
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @Query(() => MarathonHourNode, { nullable: true })
@@ -67,7 +67,7 @@ export class MarathonHourResolver {
   }
 
   // TODO: Double check that this access is correct
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListMarathonHoursResponse)
@@ -83,7 +83,7 @@ export class MarathonHourResolver {
     });
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @FieldResolver(() => [ImageNode])
@@ -91,7 +91,7 @@ export class MarathonHourResolver {
     return this.marathonHourRepository.getMaps({ uuid: id });
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -116,7 +116,7 @@ export class MarathonHourResolver {
     return marathonHourModelToResource(marathonHour);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -144,7 +144,7 @@ export class MarathonHourResolver {
     return marathonHourModelToResource(marathonHour);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -169,7 +169,7 @@ export class MarathonHourResolver {
     }
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -197,7 +197,7 @@ export class MarathonHourResolver {
     return marathonHourModelToResource(marathonHour);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },

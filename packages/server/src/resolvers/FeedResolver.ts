@@ -8,8 +8,7 @@ import {
   ImageNode,
   LegacyError,
   LegacyErrorCode,
-  MutationAccessControl,
-  CustomQueryAccessControl,
+  AccessControlAuthorized,
 } from "@ukdanceblue/common";
 import { CreateFeedInput, SetFeedInput } from "@ukdanceblue/common";
 import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
@@ -41,7 +40,7 @@ export class FeedResolver {
   ) {}
 
   @Query(() => FeedNode, { description: "Get a feed item by its UUID" })
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   async feedItem(
@@ -57,7 +56,7 @@ export class FeedResolver {
   }
 
   @Query(() => [FeedNode], { description: "Get the active feed" })
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   async feed(
@@ -75,7 +74,7 @@ export class FeedResolver {
     return rows.map(feedItemModelToResource);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -95,7 +94,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -122,7 +121,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -143,7 +142,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -169,7 +168,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },

@@ -1,14 +1,13 @@
 import { Service } from "@freshgum/typedi";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
-  MutationAccessControl,
   NotificationDeliveryNode,
   NotificationNode,
-  CustomQueryAccessControl,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -67,7 +66,7 @@ export class NotificationResolver {
     private readonly notificationScheduler: NotificationScheduler
   ) {}
 
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Query(() => GetNotificationByUuidResponse, { name: "notification" })
@@ -83,7 +82,7 @@ export class NotificationResolver {
       ).promise;
   }
 
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Query(() => ListNotificationsResponse, { name: "notifications" })
@@ -114,7 +113,7 @@ export class NotificationResolver {
     });
   }
 
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Query(() => ListNotificationDeliveriesResponse, {
@@ -158,7 +157,7 @@ export class NotificationResolver {
     });
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => StageNotificationResponse, { name: "stageNotification" })
@@ -197,7 +196,7 @@ export class NotificationResolver {
     );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => SendNotificationResponse, {
@@ -227,7 +226,7 @@ export class NotificationResolver {
       }).promise;
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => ScheduleNotificationResponse, {
@@ -257,7 +256,7 @@ export class NotificationResolver {
       }).promise;
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => AcknowledgeDeliveryIssueResponse, {
@@ -292,7 +291,7 @@ export class NotificationResolver {
     return Ok(AcknowledgeDeliveryIssueResponse.newOk(true));
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => AbortScheduledNotificationResponse, {
@@ -322,7 +321,7 @@ export class NotificationResolver {
       .map(() => AbortScheduledNotificationResponse.newOk(true)).promise;
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => DeleteNotificationResponse, { name: "deleteNotification" })
@@ -360,7 +359,7 @@ export class NotificationResolver {
       .map(() => DeleteNotificationResponse.newOk(true)).promise;
   }
 
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @FieldResolver(() => Int, { name: "deliveryCount" })
@@ -372,7 +371,7 @@ export class NotificationResolver {
     });
   }
 
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @FieldResolver(() => NotificationDeliveryIssueCount, {

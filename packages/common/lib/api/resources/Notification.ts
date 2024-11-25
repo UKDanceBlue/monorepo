@@ -2,7 +2,7 @@ import { DateTimeISOResolver, URLResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
-import { CustomQueryAccessControl } from "../../authorization/accessControl.js";
+import { AccessControlAuthorized } from "../../authorization/accessControl.js";
 import { AccessLevel } from "../../authorization/structures.js";
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { createNodeClasses, Node } from "../relay.js";
@@ -27,13 +27,13 @@ export class NotificationNode extends TimestampedResource implements Node {
   url?: URL | undefined | null;
 
   @Field(() => String, { nullable: true })
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   deliveryIssue?: string | undefined | null;
 
   @Field(() => DateTimeISOResolver, { nullable: true })
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   deliveryIssueAcknowledgedAt?: Date | undefined | null;
@@ -105,7 +105,7 @@ export class NotificationDeliveryNode
     description:
       "The time the server received a delivery receipt from the user.",
   })
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   receiptCheckedAt?: Date | undefined | null;
@@ -115,7 +115,7 @@ export class NotificationDeliveryNode
     description:
       "A unique identifier corresponding the group of notifications this was sent to Expo with.",
   })
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   chunkUuid?: string | undefined | null;
@@ -125,7 +125,7 @@ export class NotificationDeliveryNode
     description:
       "Any error message returned by Expo when sending the notification.",
   })
-  @CustomQueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   deliveryError?: string | undefined | null;
