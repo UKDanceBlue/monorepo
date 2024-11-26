@@ -15,6 +15,7 @@ const config = {
     blockTags: [...OptionDefaults.blockTags, "@link", "@alias", "@descEN"],
     excludeTags: ["@descCN"],
     skipErrorChecking: true,
+    navigationLeaves: ["common", "mobile", "portal", "server"],
   },
 };
 
