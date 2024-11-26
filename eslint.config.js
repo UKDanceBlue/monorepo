@@ -45,6 +45,7 @@ export default eslintTs.config(
       ".yarn/**/*",
       "compose-volumes/**/*",
       "packages/mobile/.expo",
+      "**/typedoc.config.mjs",
     ],
   },
   {
