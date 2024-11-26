@@ -1,5 +1,6 @@
 import { Service } from "@freshgum/typedi";
 import {
+  BatchType,
   DailyDepartmentNotification,
   DailyDepartmentNotificationBatch,
   DBFundsFundraisingEntry,
@@ -363,6 +364,66 @@ export class FundraisingEntryRepository {
       });
 
       return Result.all(rows.map(asWideFundraisingEntryWithMeta));
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async setEntry(
+    param: FundraisingEntryUniqueParam,
+    {
+      notes,
+      amountOverride,
+      batchTypeOverride,
+      donatedByOverride,
+      donatedOnOverride,
+      donatedToOverride,
+      solicitationCodeOverride,
+    }: {
+      notes: string | null;
+      amountOverride: number | null;
+      batchTypeOverride: BatchType | null;
+      donatedByOverride: string | null;
+      donatedOnOverride: Date | string | null;
+      donatedToOverride: string | null;
+      solicitationCodeOverride: SolicitationCodeUniqueParam | null;
+    }
+  ): Promise<
+    Result<
+      WideFundraisingEntryWithMeta,
+      RepositoryError | InvariantError | NotFoundError
+    >
+  > {
+    try {
+      const entry = await this.prisma.fundraisingEntryWithMeta.findUnique({
+        where: param,
+      });
+      if (!entry) {
+        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+      }
+
+      const ret = await this.prisma.fundraisingEntryWithMeta.update({
+        where: param,
+        data: {
+          notes,
+          amountOverride,
+          batchTypeOverride,
+          donatedByOverride,
+          donatedOnOverride,
+          donatedToOverride,
+          solicitationCodeOverride: solicitationCodeOverride
+            ? {
+                connect:
+                  "code" in solicitationCodeOverride
+                    ? { prefix_code: solicitationCodeOverride }
+                    : solicitationCodeOverride,
+              }
+            : { disconnect: true },
+        },
+        include: defaultInclude,
+      });
+
+      return asWideFundraisingEntryWithMeta(ret);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }

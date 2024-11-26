@@ -3,6 +3,7 @@ import {
   CustomQueryAccessControl,
   type GlobalId,
   type MarathonYearString,
+  SetFundraisingEntryInput,
   TeamNode,
   VoidScalar,
 } from "@ukdanceblue/common";
@@ -191,6 +192,34 @@ export class FundraisingEntryResolver {
           )
         )
       ).promise;
+  }
+
+  @AccessControlAuthorized(globalFundraisingAccessParam, {
+    accessLevel: AccessLevel.Admin,
+  })
+  @Mutation(() => FundraisingEntryNode, { name: "setFundraisingEntry" })
+  async setFundraisingEntry(
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("input", () => SetFundraisingEntryInput)
+    input: SetFundraisingEntryInput
+  ): Promise<ConcreteResult<FundraisingEntryNode>> {
+    const entry = await this.fundraisingEntryRepository.setEntry(
+      {
+        uuid: id,
+      },
+      {
+        amountOverride: input.amountOverride ?? null,
+        batchTypeOverride: input.batchTypeOverride ?? null,
+        donatedByOverride: input.donatedByOverride ?? null,
+        donatedOnOverride: input.donatedOnOverride ?? null,
+        donatedToOverride: input.donatedToOverride ?? null,
+        notes: input.notes ?? null,
+        solicitationCodeOverride: input.solicitationCodeOverrideId
+          ? { uuid: input.solicitationCodeOverrideId.id }
+          : null,
+      }
+    );
+    return entry.toAsyncResult().map(fundraisingEntryModelToNode).promise;
   }
 
   @AccessControlAuthorized(globalFundraisingAccessParam, {

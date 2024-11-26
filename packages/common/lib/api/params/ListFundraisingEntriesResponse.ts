@@ -1,3 +1,4 @@
+import { NonEmptyStringResolver } from "graphql-scalars";
 import { ArgsType, Field, Float, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
@@ -52,7 +53,7 @@ export class ListFundraisingEntriesResponse extends AbstractGraphQLPaginatedResp
 
 @InputType("SetFundraisingEntryInput")
 export class SetFundraisingEntryInput {
-  @Field({ nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   notes?: string;
 
   @Field(() => GlobalIdScalar, { nullable: true })
@@ -61,13 +62,13 @@ export class SetFundraisingEntryInput {
   @Field(() => Float, { nullable: true })
   amountOverride?: number;
 
-  @Field({ nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donatedOnOverride?: string;
 
-  @Field({ nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donatedToOverride?: string;
 
-  @Field({ nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   donatedByOverride?: string;
 
   @Field(() => BatchType, { nullable: true })

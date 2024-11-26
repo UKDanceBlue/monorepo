@@ -8,26 +8,38 @@ import { getFragmentData } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import {
-  personEditorDocument,
-  PersonEditorFragment,
+  fundraisingEntryEditorDocument,
+  FundraisingEntryEditorFragment,
 } from "./FundraisingEntryEditorGQL.js";
 
-export function usePersonEditorForm(
-  personFragment: FragmentType<typeof PersonEditorFragment> | undefined | null,
+export function useFundraisingEntryEditorForm(
+  fundraisingEntryFragment:
+    | FragmentType<typeof FundraisingEntryEditorFragment>
+    | undefined
+    | null,
   afterSubmit:
     | ((
-        ret: DocumentType<typeof personEditorDocument>["setPerson"] | undefined
+        ret:
+          | DocumentType<
+              typeof fundraisingEntryEditorDocument
+            >["setFundraisingEntry"]
+          | undefined
       ) => void | Promise<void>)
     | undefined
 ) {
-  const personData = getFragmentData(PersonEditorFragment, personFragment);
+  const fundraisingEntryData = getFragmentData(
+    FundraisingEntryEditorFragment,
+    fundraisingEntryFragment
+  );
 
   // Form
-  const [{ fetching, error }, setPerson] = useMutation(personEditorDocument);
+  const [{ fetching, error }, setFundraisingEntry] = useMutation(
+    fundraisingEntryEditorDocument
+  );
   useQueryStatusWatcher({
     error,
     fetching,
-    loadingMessage: "Saving person...",
+    loadingMessage: "Saving fundraisingEntry...",
   });
 
   // TODO: Show the user what year the marathon is for each team
@@ -40,11 +52,11 @@ export function usePersonEditorForm(
     readonly memberOf?: MemberOf[];
   }>({
     defaultValues: {
-      name: personData?.name ?? "",
-      linkblue: personData?.linkblue?.toLowerCase() ?? "",
-      email: personData?.email ?? "",
+      name: fundraisingEntryData?.name ?? "",
+      linkblue: fundraisingEntryData?.linkblue?.toLowerCase() ?? "",
+      email: fundraisingEntryData?.email ?? "",
       captainOf:
-        personData?.teams
+        fundraisingEntryData?.teams
           .filter(
             (membership) =>
               membership.position === MembershipPositionType.Captain
@@ -54,7 +66,7 @@ export function usePersonEditorForm(
             committeeRole: membership.committeeRole,
           })) ?? [],
       memberOf:
-        personData?.teams
+        fundraisingEntryData?.teams
           .filter(
             (membership) =>
               membership.position === MembershipPositionType.Member
@@ -96,7 +108,7 @@ export function usePersonEditorForm(
       },
     },
     onSubmit: async ({ value: values }) => {
-      if (!personData) {
+      if (!fundraisingEntryData) {
         return;
       }
 
@@ -104,8 +116,8 @@ export function usePersonEditorForm(
         throw new Error("Email is required");
       }
 
-      const { data } = await setPerson({
-        uuid: personData.id,
+      const { data } = await setFundraisingEntry({
+        uuid: fundraisingEntryData.id,
         input: {
           name: values.name || null,
 
@@ -122,7 +134,7 @@ export function usePersonEditorForm(
         },
       });
 
-      return afterSubmit?.(data?.setPerson);
+      return afterSubmit?.(data?.setFundraisingEntry);
     },
   });
 

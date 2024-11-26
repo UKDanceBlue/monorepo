@@ -23,20 +23,23 @@ import type { FragmentType } from "#graphql/index.js";
 import { getFragmentData } from "#graphql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
-import { TeamNameFragment } from "../PersonFormsGQL";
-import { PersonEditorFragment } from "./FundraisingEntryEditorGQL.js";
-import { usePersonEditorForm } from "./useFundraisingEntryEditor.js";
+import { TeamNameFragment } from "../FundraisingEntryFormsGQL";
+import { FundraisingEntryEditorFragment } from "./FundraisingEntryEditorGQL.js";
+import { useFundraisingEntryEditorForm } from "./useFundraisingEntryEditor.js";
 
-export function PersonEditor({
-  personFragment,
+export function FundraisingEntryEditor({
+  fundraisingEntryFragment,
   teamNamesFragment,
-  refetchPerson,
+  refetchFundraisingEntry,
 }: {
-  personFragment?: FragmentType<typeof PersonEditorFragment> | undefined | null;
+  fundraisingEntryFragment?:
+    | FragmentType<typeof FundraisingEntryEditorFragment>
+    | undefined
+    | null;
   teamNamesFragment?:
     | readonly FragmentType<typeof TeamNameFragment>[]
     | undefined;
-  refetchPerson?: UseQueryExecute | undefined;
+  refetchFundraisingEntry?: UseQueryExecute | undefined;
   authorization?: Authorization | undefined;
 }) {
   const selectedMarathon = useMarathon();
@@ -45,11 +48,14 @@ export function PersonEditor({
 
   const { message } = App.useApp();
 
-  const { formApi } = usePersonEditorForm(personFragment, () => {
-    if (refetchPerson) {
-      refetchPerson({ requestPolicy: "network-only" });
+  const { formApi } = useFundraisingEntryEditorForm(
+    fundraisingEntryFragment,
+    () => {
+      if (refetchFundraisingEntry) {
+        refetchFundraisingEntry({ requestPolicy: "network-only" });
+      }
     }
-  });
+  );
 
   const teamNamesData = (
     getFragmentData(TeamNameFragment, teamNamesFragment) ?? []
@@ -57,7 +63,10 @@ export function PersonEditor({
     year === selectedMarathon?.year ? 0 : 1
   );
 
-  const personData = getFragmentData(PersonEditorFragment, personFragment);
+  const fundraisingEntryData = getFragmentData(
+    FundraisingEntryEditorFragment,
+    fundraisingEntryFragment
+  );
 
   const [captainSearch, setCaptainSearch] = useState("");
   const lowerCaptainSearch = captainSearch.toLowerCase();
@@ -93,9 +102,12 @@ export function PersonEditor({
     );
   }
 
-  if (!personData) {
+  if (!fundraisingEntryData) {
     return (
-      <Empty description="Person not found" style={{ marginTop: "1em" }} />
+      <Empty
+        description="FundraisingEntry not found"
+        style={{ marginTop: "1em" }}
+      />
     );
   }
   if (!teamNamesFragment) {
@@ -123,7 +135,9 @@ export function PersonEditor({
         wrapperCol={{ span: 32 }}
         style={{ minWidth: "25%" }}
       >
-        <Typography.Title level={4}>Personal Information</Typography.Title>
+        <Typography.Title level={4}>
+          FundraisingEntryal Information
+        </Typography.Title>
         <TanAntFormItem
           fieldProps={{
             validate: (value) => (!value ? "Name is required" : undefined),
@@ -195,7 +209,7 @@ export function PersonEditor({
               <List>
                 {field.state.value?.map((team) => {
                   const { name, committeeIdentifier, marathon } =
-                    personData.teams.find(
+                    fundraisingEntryData.teams.find(
                       (option) => option.team.id === team.id
                     )?.team ??
                     teamNamesData.find((option) => option.id === team.id) ??
@@ -277,7 +291,7 @@ export function PersonEditor({
               <List>
                 {field.state.value?.map((team) => {
                   const { name, committeeIdentifier, marathon } =
-                    personData.teams.find(
+                    fundraisingEntryData.teams.find(
                       (option) => option.team.id === team.id
                     )?.team ??
                     teamNamesData.find((option) => option.id === team.id) ??
