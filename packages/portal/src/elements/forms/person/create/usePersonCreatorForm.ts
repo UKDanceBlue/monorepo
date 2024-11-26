@@ -5,7 +5,7 @@ import { type CreatePersonInput } from "#graphql/graphql.js";
 import type { DocumentType } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
-import { personCreatorDocument } from "./PersonCreatorGQL.js";
+import { personCreatorDocument } from "../../../../documents/person.js";
 
 export function usePersonCreatorForm(
   afterSubmit:

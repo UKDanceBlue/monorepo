@@ -7,7 +7,7 @@ import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import {
   createPointEntryAndAssignDocument,
   createPointEntryDocument,
-} from "./PointEntryCreatorGQL.js";
+} from "../../../../documents/pointEntry.js";
 
 export function usePointEntryCreatorForm({
   teamUuid,

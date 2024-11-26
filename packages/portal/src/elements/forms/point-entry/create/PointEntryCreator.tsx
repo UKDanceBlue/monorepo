@@ -15,7 +15,7 @@ import { useReducer, useRef, useState } from "react";
 import type { FragmentType } from "#graphql/index.js";
 import { getFragmentData } from "#graphql/index.js";
 
-import { PointEntryCreatorFragment } from "./PointEntryCreatorGQL.js";
+import { PointEntryCreatorFragment } from "../../../../documents/pointEntry.js";
 import { PointEntryOpportunityLookup } from "./PointEntryOpportunityLookup.js";
 import { PointEntryPersonLookup } from "./PointEntryPersonLookup.js";
 import { usePointEntryCreatorForm } from "./usePointEntryCreatorForm.js";

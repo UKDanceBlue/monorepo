@@ -18,7 +18,7 @@ import type { GraphQLContext } from "#resolvers/context.js";
 import { resolversList } from "./resolversList.js";
 
 const schemaPath = fileURLToPath(
-  new URL("../../../../schema.graphql", import.meta.url)
+  import.meta.resolve("../../../../../schema.graphql")
 );
 
 /**

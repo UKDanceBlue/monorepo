@@ -1008,6 +1008,18 @@ export interface SetFeedInput {
   readonly title: Scalars["NonEmptyString"]["input"];
 }
 
+export interface SetFundraisingEntryInput {
+  readonly amountOverride?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly batchTypeOverride?: InputMaybe<BatchType>;
+  readonly donatedByOverride?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly donatedOnOverride?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly donatedToOverride?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly notes?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
+  readonly solicitationCodeOverrideId?: InputMaybe<
+    Scalars["GlobalId"]["input"]
+  >;
+}
+
 export interface SetMarathonHourInput {
   readonly details?: InputMaybe<Scalars["NonEmptyString"]["input"]>;
   readonly durationInfo: Scalars["NonEmptyString"]["input"];
@@ -1147,6 +1159,305 @@ export type SelectedMarathonQuery = {
   };
 };
 
+export type FundraisingEntryEditorFragmentFragment = {
+  readonly __typename?: "FundraisingEntryNode";
+  readonly id: string;
+  readonly donatedOn: Date | string;
+  readonly amount: number;
+  readonly notes?: string | null;
+  readonly amountUnassigned: number;
+  readonly batchType: BatchType;
+  readonly donatedByText?: string | null;
+  readonly donatedToText?: string | null;
+  readonly solicitationCode: {
+    readonly __typename?: "SolicitationCodeNode";
+    readonly id: string;
+    readonly text: string;
+  };
+  readonly solicitationCodeOverride?: {
+    readonly __typename?: "SolicitationCodeNode";
+    readonly id: string;
+    readonly text: string;
+  } | null;
+  readonly dailyDepartmentNotification?: {
+    readonly __typename?: "DailyDepartmentNotificationNode";
+    readonly id: string;
+  } | null;
+} & { " $fragmentName"?: "FundraisingEntryEditorFragmentFragment" };
+
+export type FundraisingEntryEditorMutationVariables = Exact<{
+  uuid: Scalars["GlobalId"]["input"];
+  input: SetFundraisingEntryInput;
+}>;
+
+export type FundraisingEntryEditorMutation = {
+  readonly __typename?: "Mutation";
+  readonly setFundraisingEntry: {
+    readonly __typename?: "FundraisingEntryNode";
+  } & {
+    " $fragmentRefs"?: {
+      FundraisingEntryEditorFragmentFragment: FundraisingEntryEditorFragmentFragment;
+    };
+  };
+};
+
+export type CreateNotificationMutationVariables = Exact<{
+  title: Scalars["NonEmptyString"]["input"];
+  body: Scalars["NonEmptyString"]["input"];
+  audience: NotificationAudienceInput;
+  url?: InputMaybe<Scalars["URL"]["input"]>;
+}>;
+
+export type CreateNotificationMutation = {
+  readonly __typename?: "Mutation";
+  readonly stageNotification: {
+    readonly __typename?: "StageNotificationResponse";
+    readonly uuid: string;
+  };
+};
+
+export type CancelNotificationScheduleMutationVariables = Exact<{
+  uuid: Scalars["GlobalId"]["input"];
+}>;
+
+export type CancelNotificationScheduleMutation = {
+  readonly __typename?: "Mutation";
+  readonly abortScheduledNotification: {
+    readonly __typename?: "AbortScheduledNotificationResponse";
+    readonly ok: boolean;
+  };
+};
+
+export type DeleteNotificationMutationVariables = Exact<{
+  uuid: Scalars["GlobalId"]["input"];
+  force?: InputMaybe<Scalars["Boolean"]["input"]>;
+}>;
+
+export type DeleteNotificationMutation = {
+  readonly __typename?: "Mutation";
+  readonly deleteNotification: {
+    readonly __typename?: "DeleteNotificationResponse";
+    readonly ok: boolean;
+  };
+};
+
+export type SendNotificationMutationVariables = Exact<{
+  uuid: Scalars["GlobalId"]["input"];
+}>;
+
+export type SendNotificationMutation = {
+  readonly __typename?: "Mutation";
+  readonly sendNotification: {
+    readonly __typename?: "SendNotificationResponse";
+    readonly ok: boolean;
+  };
+};
+
+export type ScheduleNotificationMutationVariables = Exact<{
+  uuid: Scalars["GlobalId"]["input"];
+  sendAt: Scalars["DateTimeISO"]["input"];
+}>;
+
+export type ScheduleNotificationMutation = {
+  readonly __typename?: "Mutation";
+  readonly scheduleNotification: {
+    readonly __typename?: "ScheduleNotificationResponse";
+    readonly ok: boolean;
+  };
+};
+
+export type SingleNotificationFragmentFragment = {
+  readonly __typename?: "NotificationNode";
+  readonly id: string;
+  readonly title: string;
+  readonly body: string;
+  readonly deliveryIssue?: string | null;
+  readonly deliveryIssueAcknowledgedAt?: Date | string | null;
+  readonly sendAt?: Date | string | null;
+  readonly startedSendingAt?: Date | string | null;
+  readonly createdAt?: Date | string | null;
+  readonly deliveryCount: number;
+  readonly deliveryIssueCount: {
+    readonly __typename?: "NotificationDeliveryIssueCount";
+    readonly DeviceNotRegistered: number;
+    readonly InvalidCredentials: number;
+    readonly MessageRateExceeded: number;
+    readonly MessageTooBig: number;
+    readonly MismatchSenderId: number;
+    readonly Unknown: number;
+  };
+} & { " $fragmentName"?: "SingleNotificationFragmentFragment" };
+
+export type PersonCreatorMutationVariables = Exact<{
+  input: CreatePersonInput;
+}>;
+
+export type PersonCreatorMutation = {
+  readonly __typename?: "Mutation";
+  readonly createPerson: {
+    readonly __typename?: "PersonNode";
+    readonly id: string;
+  };
+};
+
+export type PersonEditorFragmentFragment = {
+  readonly __typename?: "PersonNode";
+  readonly id: string;
+  readonly name?: string | null;
+  readonly linkblue?: string | null;
+  readonly email: string;
+  readonly teams: ReadonlyArray<{
+    readonly __typename?: "MembershipNode";
+    readonly position: MembershipPositionType;
+    readonly committeeRole?: CommitteeRole | null;
+    readonly team: {
+      readonly __typename?: "TeamNode";
+      readonly id: string;
+      readonly name: string;
+      readonly committeeIdentifier?: CommitteeIdentifier | null;
+      readonly marathon: {
+        readonly __typename?: "MarathonNode";
+        readonly year: string;
+      };
+    };
+  }>;
+} & { " $fragmentName"?: "PersonEditorFragmentFragment" };
+
+export type PersonEditorMutationVariables = Exact<{
+  uuid: Scalars["GlobalId"]["input"];
+  input: SetPersonInput;
+}>;
+
+export type PersonEditorMutation = {
+  readonly __typename?: "Mutation";
+  readonly setPerson: {
+    readonly __typename?: "PersonNode";
+    readonly id: string;
+  };
+};
+
+export type TeamNameFragmentFragment = {
+  readonly __typename?: "TeamNode";
+  readonly id: string;
+  readonly name: string;
+  readonly committeeIdentifier?: CommitteeIdentifier | null;
+  readonly marathon: {
+    readonly __typename?: "MarathonNode";
+    readonly year: string;
+  };
+} & { " $fragmentName"?: "TeamNameFragmentFragment" };
+
+export type PointEntryCreatorFragmentFragment = {
+  readonly __typename?: "TeamNode";
+  readonly id: string;
+  readonly members: ReadonlyArray<{
+    readonly __typename?: "MembershipNode";
+    readonly person: {
+      readonly __typename?: "PersonNode";
+      readonly id: string;
+    };
+  }>;
+} & { " $fragmentName"?: "PointEntryCreatorFragmentFragment" };
+
+export type CreatePointEntryMutationVariables = Exact<{
+  input: CreatePointEntryInput;
+}>;
+
+export type CreatePointEntryMutation = {
+  readonly __typename?: "Mutation";
+  readonly createPointEntry: {
+    readonly __typename?: "CreatePointEntryResponse";
+    readonly data: {
+      readonly __typename?: "PointEntryNode";
+      readonly id: string;
+    };
+  };
+};
+
+export type CreatePointEntryAndAssignMutationVariables = Exact<{
+  input: CreatePointEntryInput;
+  person: Scalars["GlobalId"]["input"];
+  team: Scalars["GlobalId"]["input"];
+}>;
+
+export type CreatePointEntryAndAssignMutation = {
+  readonly __typename?: "Mutation";
+  readonly addPersonToTeam: {
+    readonly __typename?: "MembershipNode";
+    readonly id: string;
+  };
+  readonly createPointEntry: {
+    readonly __typename?: "CreatePointEntryResponse";
+    readonly data: {
+      readonly __typename?: "PointEntryNode";
+      readonly id: string;
+    };
+  };
+};
+
+export type GetPersonByUuidQueryVariables = Exact<{
+  uuid: Scalars["GlobalId"]["input"];
+}>;
+
+export type GetPersonByUuidQuery = {
+  readonly __typename?: "Query";
+  readonly person: {
+    readonly __typename?: "PersonNode";
+    readonly id: string;
+    readonly name?: string | null;
+    readonly linkblue?: string | null;
+    readonly teams: ReadonlyArray<{
+      readonly __typename?: "MembershipNode";
+      readonly team: { readonly __typename?: "TeamNode"; readonly id: string };
+    }>;
+  };
+};
+
+export type GetPersonByLinkBlueQueryVariables = Exact<{
+  linkBlue: Scalars["String"]["input"];
+}>;
+
+export type GetPersonByLinkBlueQuery = {
+  readonly __typename?: "Query";
+  readonly personByLinkBlue?: {
+    readonly __typename?: "PersonNode";
+    readonly id: string;
+    readonly name?: string | null;
+  } | null;
+};
+
+export type SearchPersonByNameQueryVariables = Exact<{
+  name: Scalars["String"]["input"];
+}>;
+
+export type SearchPersonByNameQuery = {
+  readonly __typename?: "Query";
+  readonly searchPeopleByName: ReadonlyArray<{
+    readonly __typename?: "PersonNode";
+    readonly id: string;
+    readonly name?: string | null;
+  }>;
+};
+
+export type CreatePersonByLinkBlueMutationVariables = Exact<{
+  linkBlue: Scalars["NonEmptyString"]["input"];
+  email: Scalars["EmailAddress"]["input"];
+}>;
+
+export type CreatePersonByLinkBlueMutation = {
+  readonly __typename?: "Mutation";
+  readonly createPerson: {
+    readonly __typename?: "PersonNode";
+    readonly id: string;
+  };
+};
+
+export type SolicitationCodeTextFragment = {
+  readonly __typename?: "SolicitationCodeNode";
+  readonly id: string;
+  readonly text: string;
+} & { " $fragmentName"?: "SolicitationCodeTextFragment" };
+
 export type ViewTeamPageQueryVariables = Exact<{
   teamUuid: Scalars["GlobalId"]["input"];
 }>;
@@ -1172,6 +1483,173 @@ export type ViewTeamPageQuery = {
     };
   };
 };
+
+export type TeamCreatorMutationVariables = Exact<{
+  input: CreateTeamInput;
+  marathonUuid: Scalars["GlobalId"]["input"];
+}>;
+
+export type TeamCreatorMutation = {
+  readonly __typename?: "Mutation";
+  readonly createTeam: {
+    readonly __typename?: "CreateTeamResponse";
+    readonly ok: boolean;
+    readonly uuid: string;
+  };
+};
+
+export type TeamEditorFragmentFragment = {
+  readonly __typename?: "TeamNode";
+  readonly id: string;
+  readonly name: string;
+  readonly legacyStatus: TeamLegacyStatus;
+  readonly type: TeamType;
+  readonly marathon: {
+    readonly __typename?: "MarathonNode";
+    readonly id: string;
+    readonly year: string;
+  };
+} & { " $fragmentName"?: "TeamEditorFragmentFragment" };
+
+export type TeamEditorMutationVariables = Exact<{
+  uuid: Scalars["GlobalId"]["input"];
+  input: SetTeamInput;
+}>;
+
+export type TeamEditorMutation = {
+  readonly __typename?: "Mutation";
+  readonly setTeam: {
+    readonly __typename?: "SingleTeamResponse";
+    readonly ok: boolean;
+  };
+};
+
+export type TeamSelectFragment = {
+  readonly __typename?: "TeamNode";
+  readonly id: string;
+  readonly name: string;
+  readonly type: TeamType;
+} & { " $fragmentName"?: "TeamSelectFragment" };
+
+type PaginationFragment_ListDailyDepartmentNotificationsResponse_Fragment = {
+  readonly __typename?: "ListDailyDepartmentNotificationsResponse";
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+} & {
+  " $fragmentName"?: "PaginationFragment_ListDailyDepartmentNotificationsResponse_Fragment";
+};
+
+type PaginationFragment_ListDevicesResponse_Fragment = {
+  readonly __typename?: "ListDevicesResponse";
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+} & { " $fragmentName"?: "PaginationFragment_ListDevicesResponse_Fragment" };
+
+type PaginationFragment_ListEventsResponse_Fragment = {
+  readonly __typename?: "ListEventsResponse";
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+} & { " $fragmentName"?: "PaginationFragment_ListEventsResponse_Fragment" };
+
+type PaginationFragment_ListFundraisingEntriesResponse_Fragment = {
+  readonly __typename?: "ListFundraisingEntriesResponse";
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+} & {
+  " $fragmentName"?: "PaginationFragment_ListFundraisingEntriesResponse_Fragment";
+};
+
+type PaginationFragment_ListImagesResponse_Fragment = {
+  readonly __typename?: "ListImagesResponse";
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+} & { " $fragmentName"?: "PaginationFragment_ListImagesResponse_Fragment" };
+
+type PaginationFragment_ListMarathonHoursResponse_Fragment = {
+  readonly __typename?: "ListMarathonHoursResponse";
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+} & {
+  " $fragmentName"?: "PaginationFragment_ListMarathonHoursResponse_Fragment";
+};
+
+type PaginationFragment_ListMarathonsResponse_Fragment = {
+  readonly __typename?: "ListMarathonsResponse";
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+} & { " $fragmentName"?: "PaginationFragment_ListMarathonsResponse_Fragment" };
+
+type PaginationFragment_ListNotificationDeliveriesResponse_Fragment = {
+  readonly __typename?: "ListNotificationDeliveriesResponse";
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+} & {
+  " $fragmentName"?: "PaginationFragment_ListNotificationDeliveriesResponse_Fragment";
+};
+
+type PaginationFragment_ListNotificationsResponse_Fragment = {
+  readonly __typename?: "ListNotificationsResponse";
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+} & {
+  " $fragmentName"?: "PaginationFragment_ListNotificationsResponse_Fragment";
+};
+
+type PaginationFragment_ListPeopleResponse_Fragment = {
+  readonly __typename?: "ListPeopleResponse";
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+} & { " $fragmentName"?: "PaginationFragment_ListPeopleResponse_Fragment" };
+
+type PaginationFragment_ListPointEntriesResponse_Fragment = {
+  readonly __typename?: "ListPointEntriesResponse";
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+} & {
+  " $fragmentName"?: "PaginationFragment_ListPointEntriesResponse_Fragment";
+};
+
+type PaginationFragment_ListPointOpportunitiesResponse_Fragment = {
+  readonly __typename?: "ListPointOpportunitiesResponse";
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+} & {
+  " $fragmentName"?: "PaginationFragment_ListPointOpportunitiesResponse_Fragment";
+};
+
+type PaginationFragment_ListTeamsResponse_Fragment = {
+  readonly __typename?: "ListTeamsResponse";
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+} & { " $fragmentName"?: "PaginationFragment_ListTeamsResponse_Fragment" };
+
+export type PaginationFragmentFragment =
+  | PaginationFragment_ListDailyDepartmentNotificationsResponse_Fragment
+  | PaginationFragment_ListDevicesResponse_Fragment
+  | PaginationFragment_ListEventsResponse_Fragment
+  | PaginationFragment_ListFundraisingEntriesResponse_Fragment
+  | PaginationFragment_ListImagesResponse_Fragment
+  | PaginationFragment_ListMarathonHoursResponse_Fragment
+  | PaginationFragment_ListMarathonsResponse_Fragment
+  | PaginationFragment_ListNotificationDeliveriesResponse_Fragment
+  | PaginationFragment_ListNotificationsResponse_Fragment
+  | PaginationFragment_ListPeopleResponse_Fragment
+  | PaginationFragment_ListPointEntriesResponse_Fragment
+  | PaginationFragment_ListPointOpportunitiesResponse_Fragment
+  | PaginationFragment_ListTeamsResponse_Fragment;
 
 export type DeleteEventMutationVariables = Exact<{
   uuid: Scalars["GlobalId"]["input"];
@@ -1414,32 +1892,6 @@ export type SaveEventMutation = {
   };
 };
 
-export type FundraisingEntryEditorFragmentFragment = {
-  readonly __typename?: "FundraisingEntryNode";
-  readonly id: string;
-  readonly donatedOn: Date | string;
-  readonly amount: number;
-  readonly notes?: string | null;
-  readonly amountUnassigned: number;
-  readonly batchType: BatchType;
-  readonly donatedByText?: string | null;
-  readonly donatedToText?: string | null;
-  readonly solicitationCode: {
-    readonly __typename?: "SolicitationCodeNode";
-    readonly id: string;
-    readonly text: string;
-  };
-  readonly solicitationCodeOverride?: {
-    readonly __typename?: "SolicitationCodeNode";
-    readonly id: string;
-    readonly text: string;
-  } | null;
-  readonly dailyDepartmentNotification: {
-    readonly __typename?: "DailyDepartmentNotificationNode";
-    readonly id: string;
-  };
-} & { " $fragmentName"?: "FundraisingEntryEditorFragmentFragment" };
-
 export type CreateMarathonMutationVariables = Exact<{
   input: CreateMarathonInput;
 }>;
@@ -1479,104 +1931,6 @@ export type GetMarathonQuery = {
   };
 };
 
-export type SingleNotificationFragmentFragment = {
-  readonly __typename?: "NotificationNode";
-  readonly id: string;
-  readonly title: string;
-  readonly body: string;
-  readonly deliveryIssue?: string | null;
-  readonly deliveryIssueAcknowledgedAt?: Date | string | null;
-  readonly sendAt?: Date | string | null;
-  readonly startedSendingAt?: Date | string | null;
-  readonly createdAt?: Date | string | null;
-  readonly deliveryCount: number;
-  readonly deliveryIssueCount: {
-    readonly __typename?: "NotificationDeliveryIssueCount";
-    readonly DeviceNotRegistered: number;
-    readonly InvalidCredentials: number;
-    readonly MessageRateExceeded: number;
-    readonly MessageTooBig: number;
-    readonly MismatchSenderId: number;
-    readonly Unknown: number;
-  };
-} & { " $fragmentName"?: "SingleNotificationFragmentFragment" };
-
-export type CreateNotificationMutationVariables = Exact<{
-  title: Scalars["NonEmptyString"]["input"];
-  body: Scalars["NonEmptyString"]["input"];
-  audience: NotificationAudienceInput;
-  url?: InputMaybe<Scalars["URL"]["input"]>;
-}>;
-
-export type CreateNotificationMutation = {
-  readonly __typename?: "Mutation";
-  readonly stageNotification: {
-    readonly __typename?: "StageNotificationResponse";
-    readonly uuid: string;
-  };
-};
-
-export type CancelNotificationScheduleMutationVariables = Exact<{
-  uuid: Scalars["GlobalId"]["input"];
-}>;
-
-export type CancelNotificationScheduleMutation = {
-  readonly __typename?: "Mutation";
-  readonly abortScheduledNotification: {
-    readonly __typename?: "AbortScheduledNotificationResponse";
-    readonly ok: boolean;
-  };
-};
-
-export type DeleteNotificationMutationVariables = Exact<{
-  uuid: Scalars["GlobalId"]["input"];
-  force?: InputMaybe<Scalars["Boolean"]["input"]>;
-}>;
-
-export type DeleteNotificationMutation = {
-  readonly __typename?: "Mutation";
-  readonly deleteNotification: {
-    readonly __typename?: "DeleteNotificationResponse";
-    readonly ok: boolean;
-  };
-};
-
-export type SendNotificationMutationVariables = Exact<{
-  uuid: Scalars["GlobalId"]["input"];
-}>;
-
-export type SendNotificationMutation = {
-  readonly __typename?: "Mutation";
-  readonly sendNotification: {
-    readonly __typename?: "SendNotificationResponse";
-    readonly ok: boolean;
-  };
-};
-
-export type ScheduleNotificationMutationVariables = Exact<{
-  uuid: Scalars["GlobalId"]["input"];
-  sendAt: Scalars["DateTimeISO"]["input"];
-}>;
-
-export type ScheduleNotificationMutation = {
-  readonly __typename?: "Mutation";
-  readonly scheduleNotification: {
-    readonly __typename?: "ScheduleNotificationResponse";
-    readonly ok: boolean;
-  };
-};
-
-export type TeamNameFragmentFragment = {
-  readonly __typename?: "TeamNode";
-  readonly id: string;
-  readonly name: string;
-  readonly committeeIdentifier?: CommitteeIdentifier | null;
-  readonly marathon: {
-    readonly __typename?: "MarathonNode";
-    readonly year: string;
-  };
-} & { " $fragmentName"?: "TeamNameFragmentFragment" };
-
 export type PersonBulkCreatorMutationVariables = Exact<{
   input: ReadonlyArray<BulkPersonInput> | BulkPersonInput;
   marathonId: Scalars["GlobalId"]["input"];
@@ -1588,159 +1942,6 @@ export type PersonBulkCreatorMutation = {
     readonly __typename?: "PersonNode";
     readonly id: string;
   }>;
-};
-
-export type PersonCreatorMutationVariables = Exact<{
-  input: CreatePersonInput;
-}>;
-
-export type PersonCreatorMutation = {
-  readonly __typename?: "Mutation";
-  readonly createPerson: {
-    readonly __typename?: "PersonNode";
-    readonly id: string;
-  };
-};
-
-export type PersonEditorFragmentFragment = {
-  readonly __typename?: "PersonNode";
-  readonly id: string;
-  readonly name?: string | null;
-  readonly linkblue?: string | null;
-  readonly email: string;
-  readonly teams: ReadonlyArray<{
-    readonly __typename?: "MembershipNode";
-    readonly position: MembershipPositionType;
-    readonly committeeRole?: CommitteeRole | null;
-    readonly team: {
-      readonly __typename?: "TeamNode";
-      readonly id: string;
-      readonly name: string;
-      readonly committeeIdentifier?: CommitteeIdentifier | null;
-      readonly marathon: {
-        readonly __typename?: "MarathonNode";
-        readonly year: string;
-      };
-    };
-  }>;
-} & { " $fragmentName"?: "PersonEditorFragmentFragment" };
-
-export type PersonEditorMutationVariables = Exact<{
-  uuid: Scalars["GlobalId"]["input"];
-  input: SetPersonInput;
-}>;
-
-export type PersonEditorMutation = {
-  readonly __typename?: "Mutation";
-  readonly setPerson: {
-    readonly __typename?: "PersonNode";
-    readonly id: string;
-  };
-};
-
-export type PointEntryCreatorFragmentFragment = {
-  readonly __typename?: "TeamNode";
-  readonly id: string;
-  readonly members: ReadonlyArray<{
-    readonly __typename?: "MembershipNode";
-    readonly person: {
-      readonly __typename?: "PersonNode";
-      readonly id: string;
-    };
-  }>;
-} & { " $fragmentName"?: "PointEntryCreatorFragmentFragment" };
-
-export type CreatePointEntryMutationVariables = Exact<{
-  input: CreatePointEntryInput;
-}>;
-
-export type CreatePointEntryMutation = {
-  readonly __typename?: "Mutation";
-  readonly createPointEntry: {
-    readonly __typename?: "CreatePointEntryResponse";
-    readonly data: {
-      readonly __typename?: "PointEntryNode";
-      readonly id: string;
-    };
-  };
-};
-
-export type CreatePointEntryAndAssignMutationVariables = Exact<{
-  input: CreatePointEntryInput;
-  person: Scalars["GlobalId"]["input"];
-  team: Scalars["GlobalId"]["input"];
-}>;
-
-export type CreatePointEntryAndAssignMutation = {
-  readonly __typename?: "Mutation";
-  readonly addPersonToTeam: {
-    readonly __typename?: "MembershipNode";
-    readonly id: string;
-  };
-  readonly createPointEntry: {
-    readonly __typename?: "CreatePointEntryResponse";
-    readonly data: {
-      readonly __typename?: "PointEntryNode";
-      readonly id: string;
-    };
-  };
-};
-
-export type GetPersonByUuidQueryVariables = Exact<{
-  uuid: Scalars["GlobalId"]["input"];
-}>;
-
-export type GetPersonByUuidQuery = {
-  readonly __typename?: "Query";
-  readonly person: {
-    readonly __typename?: "PersonNode";
-    readonly id: string;
-    readonly name?: string | null;
-    readonly linkblue?: string | null;
-    readonly teams: ReadonlyArray<{
-      readonly __typename?: "MembershipNode";
-      readonly team: { readonly __typename?: "TeamNode"; readonly id: string };
-    }>;
-  };
-};
-
-export type GetPersonByLinkBlueQueryVariables = Exact<{
-  linkBlue: Scalars["String"]["input"];
-}>;
-
-export type GetPersonByLinkBlueQuery = {
-  readonly __typename?: "Query";
-  readonly personByLinkBlue?: {
-    readonly __typename?: "PersonNode";
-    readonly id: string;
-    readonly name?: string | null;
-  } | null;
-};
-
-export type SearchPersonByNameQueryVariables = Exact<{
-  name: Scalars["String"]["input"];
-}>;
-
-export type SearchPersonByNameQuery = {
-  readonly __typename?: "Query";
-  readonly searchPeopleByName: ReadonlyArray<{
-    readonly __typename?: "PersonNode";
-    readonly id: string;
-    readonly name?: string | null;
-  }>;
-};
-
-export type CreatePersonByLinkBlueMutationVariables = Exact<{
-  linkBlue: Scalars["NonEmptyString"]["input"];
-  email: Scalars["EmailAddress"]["input"];
-}>;
-
-export type CreatePersonByLinkBlueMutation = {
-  readonly __typename?: "Mutation";
-  readonly createPerson: {
-    readonly __typename?: "PersonNode";
-    readonly id: string;
-  };
 };
 
 export type PointEntryOpportunityLookupQueryVariables = Exact<{
@@ -1784,173 +1985,6 @@ export type TeamBulkCreatorMutation = {
     readonly id: string;
   }>;
 };
-
-export type TeamCreatorMutationVariables = Exact<{
-  input: CreateTeamInput;
-  marathonUuid: Scalars["GlobalId"]["input"];
-}>;
-
-export type TeamCreatorMutation = {
-  readonly __typename?: "Mutation";
-  readonly createTeam: {
-    readonly __typename?: "CreateTeamResponse";
-    readonly ok: boolean;
-    readonly uuid: string;
-  };
-};
-
-export type TeamEditorFragmentFragment = {
-  readonly __typename?: "TeamNode";
-  readonly id: string;
-  readonly name: string;
-  readonly legacyStatus: TeamLegacyStatus;
-  readonly type: TeamType;
-  readonly marathon: {
-    readonly __typename?: "MarathonNode";
-    readonly id: string;
-    readonly year: string;
-  };
-} & { " $fragmentName"?: "TeamEditorFragmentFragment" };
-
-export type TeamEditorMutationVariables = Exact<{
-  uuid: Scalars["GlobalId"]["input"];
-  input: SetTeamInput;
-}>;
-
-export type TeamEditorMutation = {
-  readonly __typename?: "Mutation";
-  readonly setTeam: {
-    readonly __typename?: "SingleTeamResponse";
-    readonly ok: boolean;
-  };
-};
-
-type PaginationFragment_ListDailyDepartmentNotificationsResponse_Fragment = {
-  readonly __typename?: "ListDailyDepartmentNotificationsResponse";
-  readonly page: number;
-  readonly pageSize: number;
-  readonly total: number;
-} & {
-  " $fragmentName"?: "PaginationFragment_ListDailyDepartmentNotificationsResponse_Fragment";
-};
-
-type PaginationFragment_ListDevicesResponse_Fragment = {
-  readonly __typename?: "ListDevicesResponse";
-  readonly page: number;
-  readonly pageSize: number;
-  readonly total: number;
-} & { " $fragmentName"?: "PaginationFragment_ListDevicesResponse_Fragment" };
-
-type PaginationFragment_ListEventsResponse_Fragment = {
-  readonly __typename?: "ListEventsResponse";
-  readonly page: number;
-  readonly pageSize: number;
-  readonly total: number;
-} & { " $fragmentName"?: "PaginationFragment_ListEventsResponse_Fragment" };
-
-type PaginationFragment_ListFundraisingEntriesResponse_Fragment = {
-  readonly __typename?: "ListFundraisingEntriesResponse";
-  readonly page: number;
-  readonly pageSize: number;
-  readonly total: number;
-} & {
-  " $fragmentName"?: "PaginationFragment_ListFundraisingEntriesResponse_Fragment";
-};
-
-type PaginationFragment_ListImagesResponse_Fragment = {
-  readonly __typename?: "ListImagesResponse";
-  readonly page: number;
-  readonly pageSize: number;
-  readonly total: number;
-} & { " $fragmentName"?: "PaginationFragment_ListImagesResponse_Fragment" };
-
-type PaginationFragment_ListMarathonHoursResponse_Fragment = {
-  readonly __typename?: "ListMarathonHoursResponse";
-  readonly page: number;
-  readonly pageSize: number;
-  readonly total: number;
-} & {
-  " $fragmentName"?: "PaginationFragment_ListMarathonHoursResponse_Fragment";
-};
-
-type PaginationFragment_ListMarathonsResponse_Fragment = {
-  readonly __typename?: "ListMarathonsResponse";
-  readonly page: number;
-  readonly pageSize: number;
-  readonly total: number;
-} & { " $fragmentName"?: "PaginationFragment_ListMarathonsResponse_Fragment" };
-
-type PaginationFragment_ListNotificationDeliveriesResponse_Fragment = {
-  readonly __typename?: "ListNotificationDeliveriesResponse";
-  readonly page: number;
-  readonly pageSize: number;
-  readonly total: number;
-} & {
-  " $fragmentName"?: "PaginationFragment_ListNotificationDeliveriesResponse_Fragment";
-};
-
-type PaginationFragment_ListNotificationsResponse_Fragment = {
-  readonly __typename?: "ListNotificationsResponse";
-  readonly page: number;
-  readonly pageSize: number;
-  readonly total: number;
-} & {
-  " $fragmentName"?: "PaginationFragment_ListNotificationsResponse_Fragment";
-};
-
-type PaginationFragment_ListPeopleResponse_Fragment = {
-  readonly __typename?: "ListPeopleResponse";
-  readonly page: number;
-  readonly pageSize: number;
-  readonly total: number;
-} & { " $fragmentName"?: "PaginationFragment_ListPeopleResponse_Fragment" };
-
-type PaginationFragment_ListPointEntriesResponse_Fragment = {
-  readonly __typename?: "ListPointEntriesResponse";
-  readonly page: number;
-  readonly pageSize: number;
-  readonly total: number;
-} & {
-  " $fragmentName"?: "PaginationFragment_ListPointEntriesResponse_Fragment";
-};
-
-type PaginationFragment_ListPointOpportunitiesResponse_Fragment = {
-  readonly __typename?: "ListPointOpportunitiesResponse";
-  readonly page: number;
-  readonly pageSize: number;
-  readonly total: number;
-} & {
-  " $fragmentName"?: "PaginationFragment_ListPointOpportunitiesResponse_Fragment";
-};
-
-type PaginationFragment_ListTeamsResponse_Fragment = {
-  readonly __typename?: "ListTeamsResponse";
-  readonly page: number;
-  readonly pageSize: number;
-  readonly total: number;
-} & { " $fragmentName"?: "PaginationFragment_ListTeamsResponse_Fragment" };
-
-export type PaginationFragmentFragment =
-  | PaginationFragment_ListDailyDepartmentNotificationsResponse_Fragment
-  | PaginationFragment_ListDevicesResponse_Fragment
-  | PaginationFragment_ListEventsResponse_Fragment
-  | PaginationFragment_ListFundraisingEntriesResponse_Fragment
-  | PaginationFragment_ListImagesResponse_Fragment
-  | PaginationFragment_ListMarathonHoursResponse_Fragment
-  | PaginationFragment_ListMarathonsResponse_Fragment
-  | PaginationFragment_ListNotificationDeliveriesResponse_Fragment
-  | PaginationFragment_ListNotificationsResponse_Fragment
-  | PaginationFragment_ListPeopleResponse_Fragment
-  | PaginationFragment_ListPointEntriesResponse_Fragment
-  | PaginationFragment_ListPointOpportunitiesResponse_Fragment
-  | PaginationFragment_ListTeamsResponse_Fragment;
-
-export type TeamSelectFragment = {
-  readonly __typename?: "TeamNode";
-  readonly id: string;
-  readonly name: string;
-  readonly type: TeamType;
-} & { " $fragmentName"?: "TeamSelectFragment" };
 
 export type MasqueradeSelectorQueryVariables = Exact<{
   search: Scalars["String"]["input"];
@@ -3174,89 +3208,6 @@ export type TeamsTableQuery = {
   };
 };
 
-export const ConfigFragmentFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "ConfigFragment" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "ConfigurationNode" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "key" } },
-          { kind: "Field", name: { kind: "Name", value: "value" } },
-          { kind: "Field", name: { kind: "Name", value: "validAfter" } },
-          { kind: "Field", name: { kind: "Name", value: "validUntil" } },
-          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<ConfigFragmentFragment, unknown>;
-export const EventEditorFragmentFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "EventEditorFragment" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "EventNode" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "title" } },
-          { kind: "Field", name: { kind: "Name", value: "summary" } },
-          { kind: "Field", name: { kind: "Name", value: "description" } },
-          { kind: "Field", name: { kind: "Name", value: "location" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "occurrences" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "interval" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "start" } },
-                      { kind: "Field", name: { kind: "Name", value: "end" } },
-                    ],
-                  },
-                },
-                { kind: "Field", name: { kind: "Name", value: "fullDay" } },
-              ],
-            },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "images" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "url" } },
-                { kind: "Field", name: { kind: "Name", value: "width" } },
-                { kind: "Field", name: { kind: "Name", value: "height" } },
-                { kind: "Field", name: { kind: "Name", value: "thumbHash" } },
-                { kind: "Field", name: { kind: "Name", value: "alt" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<EventEditorFragmentFragment, unknown>;
 export const FundraisingEntryEditorFragmentFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -3375,40 +3326,6 @@ export const SingleNotificationFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<SingleNotificationFragmentFragment, unknown>;
-export const TeamNameFragmentFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "TeamNameFragment" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "TeamNode" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "name" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "committeeIdentifier" },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "marathon" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "year" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<TeamNameFragmentFragment, unknown>;
 export const PersonEditorFragmentFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -3473,6 +3390,40 @@ export const PersonEditorFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<PersonEditorFragmentFragment, unknown>;
+export const TeamNameFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "TeamNameFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "TeamNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "committeeIdentifier" },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "marathon" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "year" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<TeamNameFragmentFragment, unknown>;
 export const PointEntryCreatorFragmentFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -3511,6 +3462,26 @@ export const PointEntryCreatorFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<PointEntryCreatorFragmentFragment, unknown>;
+export const SolicitationCodeTextFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "SolicitationCodeText" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "SolicitationCodeNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "text" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<SolicitationCodeTextFragment, unknown>;
 export const TeamEditorFragmentFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -3544,27 +3515,6 @@ export const TeamEditorFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<TeamEditorFragmentFragment, unknown>;
-export const PaginationFragmentFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "PaginationFragment" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "AbstractGraphQLPaginatedResponse" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "page" } },
-          { kind: "Field", name: { kind: "Name", value: "pageSize" } },
-          { kind: "Field", name: { kind: "Name", value: "total" } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<PaginationFragmentFragment, unknown>;
 export const TeamSelectFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -3586,6 +3536,110 @@ export const TeamSelectFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<TeamSelectFragment, unknown>;
+export const PaginationFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "PaginationFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "AbstractGraphQLPaginatedResponse" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "page" } },
+          { kind: "Field", name: { kind: "Name", value: "pageSize" } },
+          { kind: "Field", name: { kind: "Name", value: "total" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<PaginationFragmentFragment, unknown>;
+export const ConfigFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ConfigFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ConfigurationNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "key" } },
+          { kind: "Field", name: { kind: "Name", value: "value" } },
+          { kind: "Field", name: { kind: "Name", value: "validAfter" } },
+          { kind: "Field", name: { kind: "Name", value: "validUntil" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ConfigFragmentFragment, unknown>;
+export const EventEditorFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "EventEditorFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "EventNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
+          { kind: "Field", name: { kind: "Name", value: "summary" } },
+          { kind: "Field", name: { kind: "Name", value: "description" } },
+          { kind: "Field", name: { kind: "Name", value: "location" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "occurrences" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "interval" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "start" } },
+                      { kind: "Field", name: { kind: "Name", value: "end" } },
+                    ],
+                  },
+                },
+                { kind: "Field", name: { kind: "Name", value: "fullDay" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "images" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "url" } },
+                { kind: "Field", name: { kind: "Name", value: "width" } },
+                { kind: "Field", name: { kind: "Name", value: "height" } },
+                { kind: "Field", name: { kind: "Name", value: "thumbHash" } },
+                { kind: "Field", name: { kind: "Name", value: "alt" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<EventEditorFragmentFragment, unknown>;
 export const EventsTableFragmentFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -4531,6 +4585,1061 @@ export const SelectedMarathonDocument = {
   SelectedMarathonQuery,
   SelectedMarathonQueryVariables
 >;
+export const FundraisingEntryEditorDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "FundraisingEntryEditor" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "uuid" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "SetFundraisingEntryInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "setFundraisingEntry" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "uuid" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "FundraisingEntryEditorFragment",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "FundraisingEntryEditorFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "FundraisingEntryNode" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "donatedOn" } },
+          { kind: "Field", name: { kind: "Name", value: "amount" } },
+          { kind: "Field", name: { kind: "Name", value: "notes" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "solicitationCode" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "text" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "solicitationCodeOverride" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "text" } },
+              ],
+            },
+          },
+          { kind: "Field", name: { kind: "Name", value: "amountUnassigned" } },
+          { kind: "Field", name: { kind: "Name", value: "batchType" } },
+          { kind: "Field", name: { kind: "Name", value: "donatedByText" } },
+          { kind: "Field", name: { kind: "Name", value: "donatedToText" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "dailyDepartmentNotification" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  FundraisingEntryEditorMutation,
+  FundraisingEntryEditorMutationVariables
+>;
+export const CreateNotificationDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "CreateNotification" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "title" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "NonEmptyString" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "body" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "NonEmptyString" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "audience" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "NotificationAudienceInput" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "url" } },
+          type: { kind: "NamedType", name: { kind: "Name", value: "URL" } },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "stageNotification" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "title" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "title" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "body" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "body" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "audience" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "audience" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "url" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "url" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "uuid" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateNotificationMutation,
+  CreateNotificationMutationVariables
+>;
+export const CancelNotificationScheduleDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "CancelNotificationSchedule" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "uuid" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "abortScheduledNotification" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "uuid" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "uuid" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "ok" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CancelNotificationScheduleMutation,
+  CancelNotificationScheduleMutationVariables
+>;
+export const DeleteNotificationDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "DeleteNotification" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "uuid" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "force" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Boolean" } },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "deleteNotification" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "uuid" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "uuid" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "force" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "force" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "ok" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  DeleteNotificationMutation,
+  DeleteNotificationMutationVariables
+>;
+export const SendNotificationDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "SendNotification" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "uuid" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "sendNotification" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "uuid" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "uuid" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "ok" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  SendNotificationMutation,
+  SendNotificationMutationVariables
+>;
+export const ScheduleNotificationDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "ScheduleNotification" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "uuid" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sendAt" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "DateTimeISO" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "scheduleNotification" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "uuid" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "uuid" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sendAt" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sendAt" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "ok" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ScheduleNotificationMutation,
+  ScheduleNotificationMutationVariables
+>;
+export const PersonCreatorDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "PersonCreator" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "CreatePersonInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createPerson" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  PersonCreatorMutation,
+  PersonCreatorMutationVariables
+>;
+export const PersonEditorDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "PersonEditor" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "uuid" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "SetPersonInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "setPerson" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "uuid" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "uuid" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  PersonEditorMutation,
+  PersonEditorMutationVariables
+>;
+export const CreatePointEntryDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "CreatePointEntry" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "CreatePointEntryInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createPointEntry" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "data" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreatePointEntryMutation,
+  CreatePointEntryMutationVariables
+>;
+export const CreatePointEntryAndAssignDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "CreatePointEntryAndAssign" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "CreatePointEntryInput" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "person" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "team" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "addPersonToTeam" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "personUuid" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "person" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "teamUuid" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "team" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createPointEntry" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "data" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreatePointEntryAndAssignMutation,
+  CreatePointEntryAndAssignMutationVariables
+>;
+export const GetPersonByUuidDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "GetPersonByUuid" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "uuid" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "person" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "uuid" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "uuid" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+                { kind: "Field", name: { kind: "Name", value: "linkblue" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "teams" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "team" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetPersonByUuidQuery,
+  GetPersonByUuidQueryVariables
+>;
+export const GetPersonByLinkBlueDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "GetPersonByLinkBlue" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "linkBlue" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "personByLinkBlue" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "linkBlueId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "linkBlue" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetPersonByLinkBlueQuery,
+  GetPersonByLinkBlueQueryVariables
+>;
+export const SearchPersonByNameDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "SearchPersonByName" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "name" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "searchPeopleByName" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "name" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "name" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  SearchPersonByNameQuery,
+  SearchPersonByNameQueryVariables
+>;
+export const CreatePersonByLinkBlueDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "CreatePersonByLinkBlue" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "linkBlue" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "NonEmptyString" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "email" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "EmailAddress" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createPerson" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "ObjectValue",
+                  fields: [
+                    {
+                      kind: "ObjectField",
+                      name: { kind: "Name", value: "email" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "email" },
+                      },
+                    },
+                    {
+                      kind: "ObjectField",
+                      name: { kind: "Name", value: "linkblue" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "linkBlue" },
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreatePersonByLinkBlueMutation,
+  CreatePersonByLinkBlueMutationVariables
+>;
 export const ViewTeamPageDocument = {
   kind: "Document",
   definitions: [
@@ -4745,6 +5854,150 @@ export const ViewTeamPageDocument = {
     },
   ],
 } as unknown as DocumentNode<ViewTeamPageQuery, ViewTeamPageQueryVariables>;
+export const TeamCreatorDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "TeamCreator" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "CreateTeamInput" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "marathonUuid" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createTeam" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "marathon" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "marathonUuid" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "ok" } },
+                { kind: "Field", name: { kind: "Name", value: "uuid" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<TeamCreatorMutation, TeamCreatorMutationVariables>;
+export const TeamEditorDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "TeamEditor" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "uuid" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "GlobalId" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "SetTeamInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "setTeam" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "uuid" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "uuid" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "ok" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<TeamEditorMutation, TeamEditorMutationVariables>;
 export const DeleteEventDocument = {
   kind: "Document",
   definitions: [
@@ -5906,356 +7159,6 @@ export const GetMarathonDocument = {
     },
   ],
 } as unknown as DocumentNode<GetMarathonQuery, GetMarathonQueryVariables>;
-export const CreateNotificationDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "CreateNotification" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "title" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "NonEmptyString" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "body" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "NonEmptyString" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "audience" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "NotificationAudienceInput" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "url" } },
-          type: { kind: "NamedType", name: { kind: "Name", value: "URL" } },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "stageNotification" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "title" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "title" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "body" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "body" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "audience" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "audience" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "url" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "url" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "uuid" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  CreateNotificationMutation,
-  CreateNotificationMutationVariables
->;
-export const CancelNotificationScheduleDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "CancelNotificationSchedule" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "uuid" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "abortScheduledNotification" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "uuid" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "uuid" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  CancelNotificationScheduleMutation,
-  CancelNotificationScheduleMutationVariables
->;
-export const DeleteNotificationDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "DeleteNotification" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "uuid" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "force" },
-          },
-          type: { kind: "NamedType", name: { kind: "Name", value: "Boolean" } },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "deleteNotification" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "uuid" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "uuid" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "force" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "force" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  DeleteNotificationMutation,
-  DeleteNotificationMutationVariables
->;
-export const SendNotificationDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "SendNotification" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "uuid" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "sendNotification" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "uuid" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "uuid" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  SendNotificationMutation,
-  SendNotificationMutationVariables
->;
-export const ScheduleNotificationDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "ScheduleNotification" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "uuid" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "sendAt" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "DateTimeISO" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "scheduleNotification" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "uuid" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "uuid" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "sendAt" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "sendAt" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  ScheduleNotificationMutation,
-  ScheduleNotificationMutationVariables
->;
 export const PersonBulkCreatorDocument = {
   kind: "Document",
   definitions: [
@@ -6337,579 +7240,6 @@ export const PersonBulkCreatorDocument = {
 } as unknown as DocumentNode<
   PersonBulkCreatorMutation,
   PersonBulkCreatorMutationVariables
->;
-export const PersonCreatorDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "PersonCreator" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "input" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "CreatePersonInput" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "createPerson" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "input" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "input" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  PersonCreatorMutation,
-  PersonCreatorMutationVariables
->;
-export const PersonEditorDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "PersonEditor" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "uuid" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "input" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "SetPersonInput" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "setPerson" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "uuid" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "uuid" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "input" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "input" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  PersonEditorMutation,
-  PersonEditorMutationVariables
->;
-export const CreatePointEntryDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "CreatePointEntry" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "input" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "CreatePointEntryInput" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "createPointEntry" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "input" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "input" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "data" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "id" } },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  CreatePointEntryMutation,
-  CreatePointEntryMutationVariables
->;
-export const CreatePointEntryAndAssignDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "CreatePointEntryAndAssign" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "input" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "CreatePointEntryInput" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "person" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "team" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "addPersonToTeam" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "personUuid" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "person" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "teamUuid" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "team" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-              ],
-            },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "createPointEntry" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "input" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "input" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "data" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "id" } },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  CreatePointEntryAndAssignMutation,
-  CreatePointEntryAndAssignMutationVariables
->;
-export const GetPersonByUuidDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "GetPersonByUuid" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "uuid" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "person" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "uuid" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "uuid" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
-                { kind: "Field", name: { kind: "Name", value: "linkblue" } },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "teams" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "team" },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "id" },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  GetPersonByUuidQuery,
-  GetPersonByUuidQueryVariables
->;
-export const GetPersonByLinkBlueDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "GetPersonByLinkBlue" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "linkBlue" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "String" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "personByLinkBlue" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "linkBlueId" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "linkBlue" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  GetPersonByLinkBlueQuery,
-  GetPersonByLinkBlueQueryVariables
->;
-export const SearchPersonByNameDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "SearchPersonByName" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "name" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "String" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "searchPeopleByName" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "name" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "name" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  SearchPersonByNameQuery,
-  SearchPersonByNameQueryVariables
->;
-export const CreatePersonByLinkBlueDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "CreatePersonByLinkBlue" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "linkBlue" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "NonEmptyString" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "email" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "EmailAddress" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "createPerson" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "input" },
-                value: {
-                  kind: "ObjectValue",
-                  fields: [
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "email" },
-                      value: {
-                        kind: "Variable",
-                        name: { kind: "Name", value: "email" },
-                      },
-                    },
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "linkblue" },
-                      value: {
-                        kind: "Variable",
-                        name: { kind: "Name", value: "linkBlue" },
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  CreatePersonByLinkBlueMutation,
-  CreatePersonByLinkBlueMutationVariables
 >;
 export const PointEntryOpportunityLookupDocument = {
   kind: "Document",
@@ -7173,150 +7503,6 @@ export const TeamBulkCreatorDocument = {
   TeamBulkCreatorMutation,
   TeamBulkCreatorMutationVariables
 >;
-export const TeamCreatorDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "TeamCreator" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "input" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "CreateTeamInput" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "marathonUuid" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "createTeam" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "input" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "input" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "marathon" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "marathonUuid" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
-                { kind: "Field", name: { kind: "Name", value: "uuid" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<TeamCreatorMutation, TeamCreatorMutationVariables>;
-export const TeamEditorDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "TeamEditor" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "uuid" } },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "GlobalId" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "input" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "SetTeamInput" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "setTeam" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "uuid" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "uuid" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "input" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "input" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<TeamEditorMutation, TeamEditorMutationVariables>;
 export const MasqueradeSelectorDocument = {
   kind: "Document",
   definitions: [

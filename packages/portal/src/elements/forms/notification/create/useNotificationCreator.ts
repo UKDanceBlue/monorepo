@@ -5,7 +5,7 @@ import { useMutation } from "urql";
 import type { DocumentType } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
-import { createNotificationDocument } from "./CreateNotificationGQL.js";
+import { createNotificationDocument } from "../../../../documents/notification.js";
 
 export function useNotificationCreator(
   afterSubmit:

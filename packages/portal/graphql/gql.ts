@@ -20,8 +20,58 @@ const documents = {
     types.AllMarathonsDocument,
   "\n  query SelectedMarathon($marathonId: GlobalId!) {\n    marathon(uuid: $marathonId) {\n      id\n      year\n      startDate\n      endDate\n    }\n  }\n":
     types.SelectedMarathonDocument,
+  "\n  fragment FundraisingEntryEditorFragment on FundraisingEntryNode {\n    id\n    donatedOn\n    amount\n    notes\n    solicitationCode {\n      id\n      text\n    }\n    solicitationCodeOverride {\n      id\n      text\n    }\n    amountUnassigned\n    batchType\n    donatedByText\n    donatedToText\n    dailyDepartmentNotification {\n      id\n    }\n  }\n":
+    types.FundraisingEntryEditorFragmentFragmentDoc,
+  "\n  mutation FundraisingEntryEditor(\n    $uuid: GlobalId!\n    $input: SetFundraisingEntryInput!\n  ) {\n    setFundraisingEntry(id: $uuid, input: $input) {\n      ...FundraisingEntryEditorFragment\n    }\n  }\n":
+    types.FundraisingEntryEditorDocument,
+  "\n  mutation CreateNotification(\n    $title: NonEmptyString!\n    $body: NonEmptyString!\n    $audience: NotificationAudienceInput!\n    $url: URL\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n":
+    types.CreateNotificationDocument,
+  "\n  mutation CancelNotificationSchedule($uuid: GlobalId!) {\n    abortScheduledNotification(uuid: $uuid) {\n      ok\n    }\n  }\n":
+    types.CancelNotificationScheduleDocument,
+  "\n  mutation DeleteNotification($uuid: GlobalId!, $force: Boolean) {\n    deleteNotification(uuid: $uuid, force: $force) {\n      ok\n    }\n  }\n":
+    types.DeleteNotificationDocument,
+  "\n  mutation SendNotification($uuid: GlobalId!) {\n    sendNotification(uuid: $uuid) {\n      ok\n    }\n  }\n":
+    types.SendNotificationDocument,
+  "\n  mutation ScheduleNotification($uuid: GlobalId!, $sendAt: DateTimeISO!) {\n    scheduleNotification(uuid: $uuid, sendAt: $sendAt) {\n      ok\n    }\n  }\n":
+    types.ScheduleNotificationDocument,
+  "\n  fragment SingleNotificationFragment on NotificationNode {\n    id\n    title\n    body\n    deliveryIssue\n    deliveryIssueAcknowledgedAt\n    sendAt\n    startedSendingAt\n    createdAt\n    deliveryCount\n    deliveryIssueCount {\n      DeviceNotRegistered\n      InvalidCredentials\n      MessageRateExceeded\n      MessageTooBig\n      MismatchSenderId\n      Unknown\n    }\n  }\n":
+    types.SingleNotificationFragmentFragmentDoc,
+  "\n  mutation PersonCreator($input: CreatePersonInput!) {\n    createPerson(input: $input) {\n      id\n    }\n  }\n":
+    types.PersonCreatorDocument,
+  "\n  fragment PersonEditorFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    teams {\n      position\n      committeeRole\n      team {\n        id\n        name\n        committeeIdentifier\n        marathon {\n          year\n        }\n      }\n    }\n  }\n":
+    types.PersonEditorFragmentFragmentDoc,
+  "\n  mutation PersonEditor($uuid: GlobalId!, $input: SetPersonInput!) {\n    setPerson(uuid: $uuid, input: $input) {\n      id\n    }\n  }\n":
+    types.PersonEditorDocument,
+  "\n  fragment TeamNameFragment on TeamNode {\n    id\n    name\n    committeeIdentifier\n    marathon {\n      year\n    }\n  }\n":
+    types.TeamNameFragmentFragmentDoc,
+  "\n  fragment PointEntryCreatorFragment on TeamNode {\n    id\n    members {\n      person {\n        id\n      }\n    }\n  }\n":
+    types.PointEntryCreatorFragmentFragmentDoc,
+  "\n  mutation CreatePointEntry($input: CreatePointEntryInput!) {\n    createPointEntry(input: $input) {\n      data {\n        id\n      }\n    }\n  }\n":
+    types.CreatePointEntryDocument,
+  "\n  mutation CreatePointEntryAndAssign(\n    $input: CreatePointEntryInput!\n    $person: GlobalId!\n    $team: GlobalId!\n  ) {\n    addPersonToTeam(personUuid: $person, teamUuid: $team) {\n      id\n    }\n    createPointEntry(input: $input) {\n      data {\n        id\n      }\n    }\n  }\n":
+    types.CreatePointEntryAndAssignDocument,
+  "\n  query GetPersonByUuid($uuid: GlobalId!) {\n    person(uuid: $uuid) {\n      id\n      name\n      linkblue\n      teams {\n        team {\n          id\n        }\n      }\n    }\n  }\n":
+    types.GetPersonByUuidDocument,
+  "\n  query GetPersonByLinkBlue($linkBlue: String!) {\n    personByLinkBlue(linkBlueId: $linkBlue) {\n      id\n      name\n    }\n  }\n":
+    types.GetPersonByLinkBlueDocument,
+  "\n  query SearchPersonByName($name: String!) {\n    searchPeopleByName(name: $name) {\n      id\n      name\n    }\n  }\n":
+    types.SearchPersonByNameDocument,
+  "\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: NonEmptyString!\n    $email: EmailAddress!\n  ) {\n    createPerson(input: { email: $email, linkblue: $linkBlue }) {\n      id\n    }\n  }\n":
+    types.CreatePersonByLinkBlueDocument,
+  "\n  fragment SolicitationCodeText on SolicitationCodeNode {\n    id\n    text\n  }\n":
+    types.SolicitationCodeTextFragmentDoc,
   "\n  query ViewTeamPage($teamUuid: GlobalId!) {\n    team(uuid: $teamUuid) {\n      data {\n        ...PointEntryCreatorFragment\n        ...TeamViewerFragment\n        pointEntries {\n          ...PointEntryTableFragment\n        }\n      }\n    }\n  }\n":
     types.ViewTeamPageDocument,
+  "\n  mutation TeamCreator($input: CreateTeamInput!, $marathonUuid: GlobalId!) {\n    createTeam(input: $input, marathon: $marathonUuid) {\n      ok\n      uuid\n    }\n  }\n":
+    types.TeamCreatorDocument,
+  "\n  fragment TeamEditorFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    type\n  }\n":
+    types.TeamEditorFragmentFragmentDoc,
+  "\n  mutation TeamEditor($uuid: GlobalId!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n":
+    types.TeamEditorDocument,
+  "\n  fragment TeamSelect on TeamNode {\n    id\n    name\n    type\n  }\n":
+    types.TeamSelectFragmentDoc,
+  "\n  fragment PaginationFragment on AbstractGraphQLPaginatedResponse {\n    page\n    pageSize\n    total\n  }\n":
+    types.PaginationFragmentFragmentDoc,
   "\n  mutation DeleteEvent($uuid: GlobalId!) {\n    deleteEvent(uuid: $uuid) {\n      ok\n    }\n  }\n":
     types.DeleteEventDocument,
   "\n  query FundraisingReportDialog(\n    $report: NonEmptyString!\n    $from: DateTimeISO\n    $to: DateTimeISO\n  ) {\n    report(report: $report, from: $from, to: $to) {\n      pages {\n        title\n        header\n        rows\n      }\n    }\n  }\n":
@@ -54,66 +104,20 @@ const documents = {
     types.EventEditorFragmentFragmentDoc,
   "\n  mutation SaveEvent($uuid: GlobalId!, $input: SetEventInput!) {\n    setEvent(uuid: $uuid, input: $input) {\n      data {\n        ...EventEditorFragment\n      }\n    }\n  }\n":
     types.SaveEventDocument,
-  "\n  fragment FundraisingEntryEditorFragment on FundraisingEntryNode {\n    id\n    donatedOn\n    amount\n    notes\n    solicitationCode {\n      id\n      text\n    }\n    solicitationCodeOverride {\n      id\n      text\n    }\n    amountUnassigned\n    batchType\n    donatedByText\n    donatedToText\n    dailyDepartmentNotification {\n      id\n    }\n  }\n":
-    types.FundraisingEntryEditorFragmentFragmentDoc,
   "\n      mutation CreateMarathon($input: CreateMarathonInput!) {\n        createMarathon(input: $input) {\n          id\n        }\n      }\n    ":
     types.CreateMarathonDocument,
   "\n        mutation EditMarathon(\n          $input: SetMarathonInput!\n          $marathonId: GlobalId!\n        ) {\n          setMarathon(input: $input, uuid: $marathonId) {\n            id\n          }\n        }\n      ":
     types.EditMarathonDocument,
   "\n      query GetMarathon($marathonId: GlobalId!) {\n        marathon(uuid: $marathonId) {\n          year\n          startDate\n          endDate\n        }\n      }\n    ":
     types.GetMarathonDocument,
-  "\n  fragment SingleNotificationFragment on NotificationNode {\n    id\n    title\n    body\n    deliveryIssue\n    deliveryIssueAcknowledgedAt\n    sendAt\n    startedSendingAt\n    createdAt\n    deliveryCount\n    deliveryIssueCount {\n      DeviceNotRegistered\n      InvalidCredentials\n      MessageRateExceeded\n      MessageTooBig\n      MismatchSenderId\n      Unknown\n    }\n  }\n":
-    types.SingleNotificationFragmentFragmentDoc,
-  "\n  mutation CreateNotification(\n    $title: NonEmptyString!\n    $body: NonEmptyString!\n    $audience: NotificationAudienceInput!\n    $url: URL\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n":
-    types.CreateNotificationDocument,
-  "\n  mutation CancelNotificationSchedule($uuid: GlobalId!) {\n    abortScheduledNotification(uuid: $uuid) {\n      ok\n    }\n  }\n":
-    types.CancelNotificationScheduleDocument,
-  "\n  mutation DeleteNotification($uuid: GlobalId!, $force: Boolean) {\n    deleteNotification(uuid: $uuid, force: $force) {\n      ok\n    }\n  }\n":
-    types.DeleteNotificationDocument,
-  "\n  mutation SendNotification($uuid: GlobalId!) {\n    sendNotification(uuid: $uuid) {\n      ok\n    }\n  }\n":
-    types.SendNotificationDocument,
-  "\n  mutation ScheduleNotification($uuid: GlobalId!, $sendAt: DateTimeISO!) {\n    scheduleNotification(uuid: $uuid, sendAt: $sendAt) {\n      ok\n    }\n  }\n":
-    types.ScheduleNotificationDocument,
-  "\n  fragment TeamNameFragment on TeamNode {\n    id\n    name\n    committeeIdentifier\n    marathon {\n      year\n    }\n  }\n":
-    types.TeamNameFragmentFragmentDoc,
   "\n  mutation PersonBulkCreator(\n    $input: [BulkPersonInput!]!\n    $marathonId: GlobalId!\n  ) {\n    bulkLoadPeople(people: $input, marathonId: $marathonId) {\n      id\n    }\n  }\n":
     types.PersonBulkCreatorDocument,
-  "\n  mutation PersonCreator($input: CreatePersonInput!) {\n    createPerson(input: $input) {\n      id\n    }\n  }\n":
-    types.PersonCreatorDocument,
-  "\n  fragment PersonEditorFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    teams {\n      position\n      committeeRole\n      team {\n        id\n        name\n        committeeIdentifier\n        marathon {\n          year\n        }\n      }\n    }\n  }\n":
-    types.PersonEditorFragmentFragmentDoc,
-  "\n  mutation PersonEditor($uuid: GlobalId!, $input: SetPersonInput!) {\n    setPerson(uuid: $uuid, input: $input) {\n      id\n    }\n  }\n":
-    types.PersonEditorDocument,
-  "\n  fragment PointEntryCreatorFragment on TeamNode {\n    id\n    members {\n      person {\n        id\n      }\n    }\n  }\n":
-    types.PointEntryCreatorFragmentFragmentDoc,
-  "\n  mutation CreatePointEntry($input: CreatePointEntryInput!) {\n    createPointEntry(input: $input) {\n      data {\n        id\n      }\n    }\n  }\n":
-    types.CreatePointEntryDocument,
-  "\n  mutation CreatePointEntryAndAssign(\n    $input: CreatePointEntryInput!\n    $person: GlobalId!\n    $team: GlobalId!\n  ) {\n    addPersonToTeam(personUuid: $person, teamUuid: $team) {\n      id\n    }\n    createPointEntry(input: $input) {\n      data {\n        id\n      }\n    }\n  }\n":
-    types.CreatePointEntryAndAssignDocument,
-  "\n  query GetPersonByUuid($uuid: GlobalId!) {\n    person(uuid: $uuid) {\n      id\n      name\n      linkblue\n      teams {\n        team {\n          id\n        }\n      }\n    }\n  }\n":
-    types.GetPersonByUuidDocument,
-  "\n  query GetPersonByLinkBlue($linkBlue: String!) {\n    personByLinkBlue(linkBlueId: $linkBlue) {\n      id\n      name\n    }\n  }\n":
-    types.GetPersonByLinkBlueDocument,
-  "\n  query SearchPersonByName($name: String!) {\n    searchPeopleByName(name: $name) {\n      id\n      name\n    }\n  }\n":
-    types.SearchPersonByNameDocument,
-  "\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: NonEmptyString!\n    $email: EmailAddress!\n  ) {\n    createPerson(input: { email: $email, linkblue: $linkBlue }) {\n      id\n    }\n  }\n":
-    types.CreatePersonByLinkBlueDocument,
   "\n  query PointEntryOpportunityLookup($name: String!, $marathonUuid: String!) {\n    pointOpportunities(\n      stringFilters: { field: name, comparison: SUBSTRING, value: $name }\n      oneOfFilters: { field: marathonUuid, value: [$marathonUuid] }\n      sendAll: true\n    ) {\n      data {\n        name\n        id\n      }\n    }\n  }\n":
     types.PointEntryOpportunityLookupDocument,
   "\n  mutation CreatePointOpportunity($input: CreatePointOpportunityInput!) {\n    createPointOpportunity(input: $input) {\n      uuid\n    }\n  }\n":
     types.CreatePointOpportunityDocument,
   "\n  mutation TeamBulkCreator($input: [BulkTeamInput!]!, $marathonId: GlobalId!) {\n    bulkLoadTeams(teams: $input, marathonId: $marathonId) {\n      id\n    }\n  }\n":
     types.TeamBulkCreatorDocument,
-  "\n  mutation TeamCreator($input: CreateTeamInput!, $marathonUuid: GlobalId!) {\n    createTeam(input: $input, marathon: $marathonUuid) {\n      ok\n      uuid\n    }\n  }\n":
-    types.TeamCreatorDocument,
-  "\n  fragment TeamEditorFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    type\n  }\n":
-    types.TeamEditorFragmentFragmentDoc,
-  "\n  mutation TeamEditor($uuid: GlobalId!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n":
-    types.TeamEditorDocument,
-  "\n  fragment PaginationFragment on AbstractGraphQLPaginatedResponse {\n    page\n    pageSize\n    total\n  }\n":
-    types.PaginationFragmentFragmentDoc,
-  "\n  fragment TeamSelect on TeamNode {\n    id\n    name\n    type\n  }\n":
-    types.TeamSelectFragmentDoc,
   "\n      query MasqueradeSelector($search: String!) {\n        searchPeopleByName(name: $search) {\n          id\n          name\n        }\n      }\n    ":
     types.MasqueradeSelectorDocument,
   "\n  fragment EventsTableFragment on EventNode {\n    id\n    title\n    description\n    occurrences {\n      id\n      interval {\n        start\n        end\n      }\n      fullDay\n    }\n    summary\n  }\n":
@@ -269,8 +273,158 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
+  source: "\n  fragment FundraisingEntryEditorFragment on FundraisingEntryNode {\n    id\n    donatedOn\n    amount\n    notes\n    solicitationCode {\n      id\n      text\n    }\n    solicitationCodeOverride {\n      id\n      text\n    }\n    amountUnassigned\n    batchType\n    donatedByText\n    donatedToText\n    dailyDepartmentNotification {\n      id\n    }\n  }\n"
+): (typeof documents)["\n  fragment FundraisingEntryEditorFragment on FundraisingEntryNode {\n    id\n    donatedOn\n    amount\n    notes\n    solicitationCode {\n      id\n      text\n    }\n    solicitationCodeOverride {\n      id\n      text\n    }\n    amountUnassigned\n    batchType\n    donatedByText\n    donatedToText\n    dailyDepartmentNotification {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation FundraisingEntryEditor(\n    $uuid: GlobalId!\n    $input: SetFundraisingEntryInput!\n  ) {\n    setFundraisingEntry(id: $uuid, input: $input) {\n      ...FundraisingEntryEditorFragment\n    }\n  }\n"
+): (typeof documents)["\n  mutation FundraisingEntryEditor(\n    $uuid: GlobalId!\n    $input: SetFundraisingEntryInput!\n  ) {\n    setFundraisingEntry(id: $uuid, input: $input) {\n      ...FundraisingEntryEditorFragment\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation CreateNotification(\n    $title: NonEmptyString!\n    $body: NonEmptyString!\n    $audience: NotificationAudienceInput!\n    $url: URL\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n"
+): (typeof documents)["\n  mutation CreateNotification(\n    $title: NonEmptyString!\n    $body: NonEmptyString!\n    $audience: NotificationAudienceInput!\n    $url: URL\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation CancelNotificationSchedule($uuid: GlobalId!) {\n    abortScheduledNotification(uuid: $uuid) {\n      ok\n    }\n  }\n"
+): (typeof documents)["\n  mutation CancelNotificationSchedule($uuid: GlobalId!) {\n    abortScheduledNotification(uuid: $uuid) {\n      ok\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation DeleteNotification($uuid: GlobalId!, $force: Boolean) {\n    deleteNotification(uuid: $uuid, force: $force) {\n      ok\n    }\n  }\n"
+): (typeof documents)["\n  mutation DeleteNotification($uuid: GlobalId!, $force: Boolean) {\n    deleteNotification(uuid: $uuid, force: $force) {\n      ok\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation SendNotification($uuid: GlobalId!) {\n    sendNotification(uuid: $uuid) {\n      ok\n    }\n  }\n"
+): (typeof documents)["\n  mutation SendNotification($uuid: GlobalId!) {\n    sendNotification(uuid: $uuid) {\n      ok\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation ScheduleNotification($uuid: GlobalId!, $sendAt: DateTimeISO!) {\n    scheduleNotification(uuid: $uuid, sendAt: $sendAt) {\n      ok\n    }\n  }\n"
+): (typeof documents)["\n  mutation ScheduleNotification($uuid: GlobalId!, $sendAt: DateTimeISO!) {\n    scheduleNotification(uuid: $uuid, sendAt: $sendAt) {\n      ok\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  fragment SingleNotificationFragment on NotificationNode {\n    id\n    title\n    body\n    deliveryIssue\n    deliveryIssueAcknowledgedAt\n    sendAt\n    startedSendingAt\n    createdAt\n    deliveryCount\n    deliveryIssueCount {\n      DeviceNotRegistered\n      InvalidCredentials\n      MessageRateExceeded\n      MessageTooBig\n      MismatchSenderId\n      Unknown\n    }\n  }\n"
+): (typeof documents)["\n  fragment SingleNotificationFragment on NotificationNode {\n    id\n    title\n    body\n    deliveryIssue\n    deliveryIssueAcknowledgedAt\n    sendAt\n    startedSendingAt\n    createdAt\n    deliveryCount\n    deliveryIssueCount {\n      DeviceNotRegistered\n      InvalidCredentials\n      MessageRateExceeded\n      MessageTooBig\n      MismatchSenderId\n      Unknown\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation PersonCreator($input: CreatePersonInput!) {\n    createPerson(input: $input) {\n      id\n    }\n  }\n"
+): (typeof documents)["\n  mutation PersonCreator($input: CreatePersonInput!) {\n    createPerson(input: $input) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  fragment PersonEditorFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    teams {\n      position\n      committeeRole\n      team {\n        id\n        name\n        committeeIdentifier\n        marathon {\n          year\n        }\n      }\n    }\n  }\n"
+): (typeof documents)["\n  fragment PersonEditorFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    teams {\n      position\n      committeeRole\n      team {\n        id\n        name\n        committeeIdentifier\n        marathon {\n          year\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation PersonEditor($uuid: GlobalId!, $input: SetPersonInput!) {\n    setPerson(uuid: $uuid, input: $input) {\n      id\n    }\n  }\n"
+): (typeof documents)["\n  mutation PersonEditor($uuid: GlobalId!, $input: SetPersonInput!) {\n    setPerson(uuid: $uuid, input: $input) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  fragment TeamNameFragment on TeamNode {\n    id\n    name\n    committeeIdentifier\n    marathon {\n      year\n    }\n  }\n"
+): (typeof documents)["\n  fragment TeamNameFragment on TeamNode {\n    id\n    name\n    committeeIdentifier\n    marathon {\n      year\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  fragment PointEntryCreatorFragment on TeamNode {\n    id\n    members {\n      person {\n        id\n      }\n    }\n  }\n"
+): (typeof documents)["\n  fragment PointEntryCreatorFragment on TeamNode {\n    id\n    members {\n      person {\n        id\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation CreatePointEntry($input: CreatePointEntryInput!) {\n    createPointEntry(input: $input) {\n      data {\n        id\n      }\n    }\n  }\n"
+): (typeof documents)["\n  mutation CreatePointEntry($input: CreatePointEntryInput!) {\n    createPointEntry(input: $input) {\n      data {\n        id\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation CreatePointEntryAndAssign(\n    $input: CreatePointEntryInput!\n    $person: GlobalId!\n    $team: GlobalId!\n  ) {\n    addPersonToTeam(personUuid: $person, teamUuid: $team) {\n      id\n    }\n    createPointEntry(input: $input) {\n      data {\n        id\n      }\n    }\n  }\n"
+): (typeof documents)["\n  mutation CreatePointEntryAndAssign(\n    $input: CreatePointEntryInput!\n    $person: GlobalId!\n    $team: GlobalId!\n  ) {\n    addPersonToTeam(personUuid: $person, teamUuid: $team) {\n      id\n    }\n    createPointEntry(input: $input) {\n      data {\n        id\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  query GetPersonByUuid($uuid: GlobalId!) {\n    person(uuid: $uuid) {\n      id\n      name\n      linkblue\n      teams {\n        team {\n          id\n        }\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query GetPersonByUuid($uuid: GlobalId!) {\n    person(uuid: $uuid) {\n      id\n      name\n      linkblue\n      teams {\n        team {\n          id\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  query GetPersonByLinkBlue($linkBlue: String!) {\n    personByLinkBlue(linkBlueId: $linkBlue) {\n      id\n      name\n    }\n  }\n"
+): (typeof documents)["\n  query GetPersonByLinkBlue($linkBlue: String!) {\n    personByLinkBlue(linkBlueId: $linkBlue) {\n      id\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  query SearchPersonByName($name: String!) {\n    searchPeopleByName(name: $name) {\n      id\n      name\n    }\n  }\n"
+): (typeof documents)["\n  query SearchPersonByName($name: String!) {\n    searchPeopleByName(name: $name) {\n      id\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: NonEmptyString!\n    $email: EmailAddress!\n  ) {\n    createPerson(input: { email: $email, linkblue: $linkBlue }) {\n      id\n    }\n  }\n"
+): (typeof documents)["\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: NonEmptyString!\n    $email: EmailAddress!\n  ) {\n    createPerson(input: { email: $email, linkblue: $linkBlue }) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  fragment SolicitationCodeText on SolicitationCodeNode {\n    id\n    text\n  }\n"
+): (typeof documents)["\n  fragment SolicitationCodeText on SolicitationCodeNode {\n    id\n    text\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
   source: "\n  query ViewTeamPage($teamUuid: GlobalId!) {\n    team(uuid: $teamUuid) {\n      data {\n        ...PointEntryCreatorFragment\n        ...TeamViewerFragment\n        pointEntries {\n          ...PointEntryTableFragment\n        }\n      }\n    }\n  }\n"
 ): (typeof documents)["\n  query ViewTeamPage($teamUuid: GlobalId!) {\n    team(uuid: $teamUuid) {\n      data {\n        ...PointEntryCreatorFragment\n        ...TeamViewerFragment\n        pointEntries {\n          ...PointEntryTableFragment\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation TeamCreator($input: CreateTeamInput!, $marathonUuid: GlobalId!) {\n    createTeam(input: $input, marathon: $marathonUuid) {\n      ok\n      uuid\n    }\n  }\n"
+): (typeof documents)["\n  mutation TeamCreator($input: CreateTeamInput!, $marathonUuid: GlobalId!) {\n    createTeam(input: $input, marathon: $marathonUuid) {\n      ok\n      uuid\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  fragment TeamEditorFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    type\n  }\n"
+): (typeof documents)["\n  fragment TeamEditorFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    type\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation TeamEditor($uuid: GlobalId!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n"
+): (typeof documents)["\n  mutation TeamEditor($uuid: GlobalId!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  fragment TeamSelect on TeamNode {\n    id\n    name\n    type\n  }\n"
+): (typeof documents)["\n  fragment TeamSelect on TeamNode {\n    id\n    name\n    type\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  fragment PaginationFragment on AbstractGraphQLPaginatedResponse {\n    page\n    pageSize\n    total\n  }\n"
+): (typeof documents)["\n  fragment PaginationFragment on AbstractGraphQLPaginatedResponse {\n    page\n    pageSize\n    total\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -371,12 +525,6 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  fragment FundraisingEntryEditorFragment on FundraisingEntryNode {\n    id\n    donatedOn\n    amount\n    notes\n    solicitationCode {\n      id\n      text\n    }\n    solicitationCodeOverride {\n      id\n      text\n    }\n    amountUnassigned\n    batchType\n    donatedByText\n    donatedToText\n    dailyDepartmentNotification {\n      id\n    }\n  }\n"
-): (typeof documents)["\n  fragment FundraisingEntryEditorFragment on FundraisingEntryNode {\n    id\n    donatedOn\n    amount\n    notes\n    solicitationCode {\n      id\n      text\n    }\n    solicitationCodeOverride {\n      id\n      text\n    }\n    amountUnassigned\n    batchType\n    donatedByText\n    donatedToText\n    dailyDepartmentNotification {\n      id\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
   source: "\n      mutation CreateMarathon($input: CreateMarathonInput!) {\n        createMarathon(input: $input) {\n          id\n        }\n      }\n    "
 ): (typeof documents)["\n      mutation CreateMarathon($input: CreateMarathonInput!) {\n        createMarathon(input: $input) {\n          id\n        }\n      }\n    "];
 /**
@@ -395,110 +543,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  fragment SingleNotificationFragment on NotificationNode {\n    id\n    title\n    body\n    deliveryIssue\n    deliveryIssueAcknowledgedAt\n    sendAt\n    startedSendingAt\n    createdAt\n    deliveryCount\n    deliveryIssueCount {\n      DeviceNotRegistered\n      InvalidCredentials\n      MessageRateExceeded\n      MessageTooBig\n      MismatchSenderId\n      Unknown\n    }\n  }\n"
-): (typeof documents)["\n  fragment SingleNotificationFragment on NotificationNode {\n    id\n    title\n    body\n    deliveryIssue\n    deliveryIssueAcknowledgedAt\n    sendAt\n    startedSendingAt\n    createdAt\n    deliveryCount\n    deliveryIssueCount {\n      DeviceNotRegistered\n      InvalidCredentials\n      MessageRateExceeded\n      MessageTooBig\n      MismatchSenderId\n      Unknown\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation CreateNotification(\n    $title: NonEmptyString!\n    $body: NonEmptyString!\n    $audience: NotificationAudienceInput!\n    $url: URL\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n"
-): (typeof documents)["\n  mutation CreateNotification(\n    $title: NonEmptyString!\n    $body: NonEmptyString!\n    $audience: NotificationAudienceInput!\n    $url: URL\n  ) {\n    stageNotification(\n      title: $title\n      body: $body\n      audience: $audience\n      url: $url\n    ) {\n      uuid\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation CancelNotificationSchedule($uuid: GlobalId!) {\n    abortScheduledNotification(uuid: $uuid) {\n      ok\n    }\n  }\n"
-): (typeof documents)["\n  mutation CancelNotificationSchedule($uuid: GlobalId!) {\n    abortScheduledNotification(uuid: $uuid) {\n      ok\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation DeleteNotification($uuid: GlobalId!, $force: Boolean) {\n    deleteNotification(uuid: $uuid, force: $force) {\n      ok\n    }\n  }\n"
-): (typeof documents)["\n  mutation DeleteNotification($uuid: GlobalId!, $force: Boolean) {\n    deleteNotification(uuid: $uuid, force: $force) {\n      ok\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation SendNotification($uuid: GlobalId!) {\n    sendNotification(uuid: $uuid) {\n      ok\n    }\n  }\n"
-): (typeof documents)["\n  mutation SendNotification($uuid: GlobalId!) {\n    sendNotification(uuid: $uuid) {\n      ok\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation ScheduleNotification($uuid: GlobalId!, $sendAt: DateTimeISO!) {\n    scheduleNotification(uuid: $uuid, sendAt: $sendAt) {\n      ok\n    }\n  }\n"
-): (typeof documents)["\n  mutation ScheduleNotification($uuid: GlobalId!, $sendAt: DateTimeISO!) {\n    scheduleNotification(uuid: $uuid, sendAt: $sendAt) {\n      ok\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  fragment TeamNameFragment on TeamNode {\n    id\n    name\n    committeeIdentifier\n    marathon {\n      year\n    }\n  }\n"
-): (typeof documents)["\n  fragment TeamNameFragment on TeamNode {\n    id\n    name\n    committeeIdentifier\n    marathon {\n      year\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
   source: "\n  mutation PersonBulkCreator(\n    $input: [BulkPersonInput!]!\n    $marathonId: GlobalId!\n  ) {\n    bulkLoadPeople(people: $input, marathonId: $marathonId) {\n      id\n    }\n  }\n"
 ): (typeof documents)["\n  mutation PersonBulkCreator(\n    $input: [BulkPersonInput!]!\n    $marathonId: GlobalId!\n  ) {\n    bulkLoadPeople(people: $input, marathonId: $marathonId) {\n      id\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation PersonCreator($input: CreatePersonInput!) {\n    createPerson(input: $input) {\n      id\n    }\n  }\n"
-): (typeof documents)["\n  mutation PersonCreator($input: CreatePersonInput!) {\n    createPerson(input: $input) {\n      id\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  fragment PersonEditorFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    teams {\n      position\n      committeeRole\n      team {\n        id\n        name\n        committeeIdentifier\n        marathon {\n          year\n        }\n      }\n    }\n  }\n"
-): (typeof documents)["\n  fragment PersonEditorFragment on PersonNode {\n    id\n    name\n    linkblue\n    email\n    teams {\n      position\n      committeeRole\n      team {\n        id\n        name\n        committeeIdentifier\n        marathon {\n          year\n        }\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation PersonEditor($uuid: GlobalId!, $input: SetPersonInput!) {\n    setPerson(uuid: $uuid, input: $input) {\n      id\n    }\n  }\n"
-): (typeof documents)["\n  mutation PersonEditor($uuid: GlobalId!, $input: SetPersonInput!) {\n    setPerson(uuid: $uuid, input: $input) {\n      id\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  fragment PointEntryCreatorFragment on TeamNode {\n    id\n    members {\n      person {\n        id\n      }\n    }\n  }\n"
-): (typeof documents)["\n  fragment PointEntryCreatorFragment on TeamNode {\n    id\n    members {\n      person {\n        id\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation CreatePointEntry($input: CreatePointEntryInput!) {\n    createPointEntry(input: $input) {\n      data {\n        id\n      }\n    }\n  }\n"
-): (typeof documents)["\n  mutation CreatePointEntry($input: CreatePointEntryInput!) {\n    createPointEntry(input: $input) {\n      data {\n        id\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation CreatePointEntryAndAssign(\n    $input: CreatePointEntryInput!\n    $person: GlobalId!\n    $team: GlobalId!\n  ) {\n    addPersonToTeam(personUuid: $person, teamUuid: $team) {\n      id\n    }\n    createPointEntry(input: $input) {\n      data {\n        id\n      }\n    }\n  }\n"
-): (typeof documents)["\n  mutation CreatePointEntryAndAssign(\n    $input: CreatePointEntryInput!\n    $person: GlobalId!\n    $team: GlobalId!\n  ) {\n    addPersonToTeam(personUuid: $person, teamUuid: $team) {\n      id\n    }\n    createPointEntry(input: $input) {\n      data {\n        id\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  query GetPersonByUuid($uuid: GlobalId!) {\n    person(uuid: $uuid) {\n      id\n      name\n      linkblue\n      teams {\n        team {\n          id\n        }\n      }\n    }\n  }\n"
-): (typeof documents)["\n  query GetPersonByUuid($uuid: GlobalId!) {\n    person(uuid: $uuid) {\n      id\n      name\n      linkblue\n      teams {\n        team {\n          id\n        }\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  query GetPersonByLinkBlue($linkBlue: String!) {\n    personByLinkBlue(linkBlueId: $linkBlue) {\n      id\n      name\n    }\n  }\n"
-): (typeof documents)["\n  query GetPersonByLinkBlue($linkBlue: String!) {\n    personByLinkBlue(linkBlueId: $linkBlue) {\n      id\n      name\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  query SearchPersonByName($name: String!) {\n    searchPeopleByName(name: $name) {\n      id\n      name\n    }\n  }\n"
-): (typeof documents)["\n  query SearchPersonByName($name: String!) {\n    searchPeopleByName(name: $name) {\n      id\n      name\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: NonEmptyString!\n    $email: EmailAddress!\n  ) {\n    createPerson(input: { email: $email, linkblue: $linkBlue }) {\n      id\n    }\n  }\n"
-): (typeof documents)["\n  mutation CreatePersonByLinkBlue(\n    $linkBlue: NonEmptyString!\n    $email: EmailAddress!\n  ) {\n    createPerson(input: { email: $email, linkblue: $linkBlue }) {\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -517,36 +563,6 @@ export function graphql(
 export function graphql(
   source: "\n  mutation TeamBulkCreator($input: [BulkTeamInput!]!, $marathonId: GlobalId!) {\n    bulkLoadTeams(teams: $input, marathonId: $marathonId) {\n      id\n    }\n  }\n"
 ): (typeof documents)["\n  mutation TeamBulkCreator($input: [BulkTeamInput!]!, $marathonId: GlobalId!) {\n    bulkLoadTeams(teams: $input, marathonId: $marathonId) {\n      id\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation TeamCreator($input: CreateTeamInput!, $marathonUuid: GlobalId!) {\n    createTeam(input: $input, marathon: $marathonUuid) {\n      ok\n      uuid\n    }\n  }\n"
-): (typeof documents)["\n  mutation TeamCreator($input: CreateTeamInput!, $marathonUuid: GlobalId!) {\n    createTeam(input: $input, marathon: $marathonUuid) {\n      ok\n      uuid\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  fragment TeamEditorFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    type\n  }\n"
-): (typeof documents)["\n  fragment TeamEditorFragment on TeamNode {\n    id\n    name\n    marathon {\n      id\n      year\n    }\n    legacyStatus\n    type\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation TeamEditor($uuid: GlobalId!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n"
-): (typeof documents)["\n  mutation TeamEditor($uuid: GlobalId!, $input: SetTeamInput!) {\n    setTeam(uuid: $uuid, input: $input) {\n      ok\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  fragment PaginationFragment on AbstractGraphQLPaginatedResponse {\n    page\n    pageSize\n    total\n  }\n"
-): (typeof documents)["\n  fragment PaginationFragment on AbstractGraphQLPaginatedResponse {\n    page\n    pageSize\n    total\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  fragment TeamSelect on TeamNode {\n    id\n    name\n    type\n  }\n"
-): (typeof documents)["\n  fragment TeamSelect on TeamNode {\n    id\n    name\n    type\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

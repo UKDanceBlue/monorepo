@@ -10,7 +10,7 @@ import type { FragmentType } from "#graphql/index.js";
 import { getFragmentData } from "#graphql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
 
-import { SingleNotificationFragment } from "../SingleNotificationGQL";
+import { SingleNotificationFragment } from "#documents/notification.js";
 import { useNotificationManagerForm } from "./useNotificationManager.js";
 
 const confirmationModalProps: ModalFuncProps = {

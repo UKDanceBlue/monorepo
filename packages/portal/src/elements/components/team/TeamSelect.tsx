@@ -4,7 +4,7 @@ import { AutoComplete } from "antd";
 import { useState } from "react";
 import { useQuery } from "urql";
 
-import { TeamSelectFragment } from "#elements/fragments/team";
+import { TeamSelectFragment } from "#documents/team.ts";
 import { getFragmentData } from "#graphql/fragment-masking";
 import { graphql } from "#graphql/gql";
 import type { TeamSelectFragment as TeamSelectFragmentData } from "#graphql/graphql";

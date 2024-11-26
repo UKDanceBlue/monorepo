@@ -7,7 +7,7 @@ import type { DocumentType, FragmentType } from "#graphql/index.js";
 import { getFragmentData } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
-import { teamEditorDocument, TeamEditorFragment } from "./TeamEditorGQL.js";
+import { teamEditorDocument, TeamEditorFragment } from "#documents/team.js";
 
 export function useTeamEditorForm(
   teamFragment: FragmentType<typeof TeamEditorFragment> | undefined,

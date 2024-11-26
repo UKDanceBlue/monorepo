@@ -4,7 +4,7 @@ import { AccessLevel } from "@ukdanceblue/common";
 import { Flex } from "antd";
 import { useQuery } from "urql";
 
-import { teamPageDocument } from "#documents/teamPageDocument.js";
+import { teamPageDocument } from "#documents/team.js";
 import { TeamViewer } from "#elements/viewers/team/TeamViewer.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { routerAuthCheck } from "#tools/routerAuthCheck.js";

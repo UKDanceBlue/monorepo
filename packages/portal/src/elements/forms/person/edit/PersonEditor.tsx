@@ -23,8 +23,8 @@ import type { FragmentType } from "#graphql/index.js";
 import { getFragmentData } from "#graphql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
-import { TeamNameFragment } from "../PersonFormsGQL";
-import { PersonEditorFragment } from "./PersonEditorGQL.js";
+import { TeamNameFragment } from "#documents/person.js";
+import { PersonEditorFragment } from "#documents/person.js";
 import { usePersonEditorForm } from "./usePersonEditorForm.js";
 
 export function PersonEditor({

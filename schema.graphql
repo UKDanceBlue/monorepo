@@ -732,13 +732,18 @@ type FundraisingAssignmentNode implements Node {
 
 type FundraisingEntryNode implements Node {
   amount: Float!
+  amountOverride: Float
   amountUnassigned: Float!
   assignments: [FundraisingAssignmentNode!]!
   batchType: BatchType!
+  batchTypeOverride: BatchType
   createdAt: DateTimeISO
-  dailyDepartmentNotification: DailyDepartmentNotificationNode!
+  dailyDepartmentNotification: DailyDepartmentNotificationNode
+  donatedByOverride: String
   donatedByText: String
   donatedOn: DateTimeISO!
+  donatedOnOverride: DateTimeISO
+  donatedToOverride: String
   donatedToText: String
   id: GlobalId!
   notes: String
@@ -1450,6 +1455,7 @@ type Mutation {
 
   """Set the content of a feed item"""
   setFeedItem(feedItemUuid: GlobalId!, input: SetFeedInput!): FeedNode!
+  setFundraisingEntry(id: GlobalId!, input: SetFundraisingEntryInput!): FundraisingEntryNode!
   setImageAltText(alt: String!, uuid: GlobalId!): ImageNode!
   setImageUrl(url: URL!, uuid: GlobalId!): ImageNode!
   setMarathon(input: SetMarathonInput!, uuid: GlobalId!): MarathonNode!
@@ -2605,6 +2611,16 @@ type SetEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse
 input SetFeedInput {
   textContent: NonEmptyString
   title: NonEmptyString!
+}
+
+input SetFundraisingEntryInput {
+  amountOverride: Float
+  batchTypeOverride: BatchType
+  donatedByOverride: NonEmptyString
+  donatedOnOverride: NonEmptyString
+  donatedToOverride: NonEmptyString
+  notes: NonEmptyString
+  solicitationCodeOverrideId: GlobalId
 }
 
 input SetMarathonHourInput {

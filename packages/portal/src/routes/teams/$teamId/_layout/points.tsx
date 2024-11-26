@@ -3,7 +3,7 @@ import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Flex } from "antd";
 import { useQuery } from "urql";
 
-import { teamPageDocument } from "#documents/teamPageDocument.js";
+import { teamPageDocument } from "#documents/team.js";
 import { PointEntryCreator } from "#elements/forms/point-entry/create/PointEntryCreator.js";
 import { PointEntryTable } from "#elements/tables/point-entry/PointEntryTable.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";

@@ -7,7 +7,7 @@ import type { DocumentType } from "#graphql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
-import { teamCreatorDocument } from "./TeamCreatorGQL.js";
+import { teamCreatorDocument } from "#documents/team.js";
 
 export function useTeamCreatorForm(
   afterSubmit:

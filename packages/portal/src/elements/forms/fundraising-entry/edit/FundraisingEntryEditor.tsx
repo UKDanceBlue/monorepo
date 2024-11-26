@@ -18,26 +18,26 @@ import { useState } from "react";
 import type { UseQueryExecute } from "urql";
 
 import { useMarathon } from "#config/marathonContext.js";
+import { SolicitationCodeTextFragment } from "#documents/solicitationCode.js";
 import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
 import type { FragmentType } from "#graphql/index.js";
 import { getFragmentData } from "#graphql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
-import { TeamNameFragment } from "../FundraisingEntryFormsGQL";
-import { FundraisingEntryEditorFragment } from "./FundraisingEntryEditorGQL.js";
+import { FundraisingEntryEditorFragment } from "../../../../documents/fundriaisngEntry.js";
 import { useFundraisingEntryEditorForm } from "./useFundraisingEntryEditor.js";
 
 export function FundraisingEntryEditor({
   fundraisingEntryFragment,
-  teamNamesFragment,
+  solicitationCodesFragment,
   refetchFundraisingEntry,
 }: {
   fundraisingEntryFragment?:
     | FragmentType<typeof FundraisingEntryEditorFragment>
     | undefined
     | null;
-  teamNamesFragment?:
-    | readonly FragmentType<typeof TeamNameFragment>[]
+  solicitationCodesFragment?:
+    | readonly FragmentType<typeof SolicitationCodeTextFragment>[]
     | undefined;
   refetchFundraisingEntry?: UseQueryExecute | undefined;
   authorization?: Authorization | undefined;
@@ -57,11 +57,9 @@ export function FundraisingEntryEditor({
     }
   );
 
-  const teamNamesData = (
-    getFragmentData(TeamNameFragment, teamNamesFragment) ?? []
-  ).toSorted(({ marathon: { year } }) =>
-    year === selectedMarathon?.year ? 0 : 1
-  );
+  const solicitationCodesData =
+    getFragmentData(SolicitationCodeTextFragment, solicitationCodesFragment) ??
+    [];
 
   const fundraisingEntryData = getFragmentData(
     FundraisingEntryEditorFragment,
@@ -71,7 +69,7 @@ export function FundraisingEntryEditor({
   const [captainSearch, setCaptainSearch] = useState("");
   const lowerCaptainSearch = captainSearch.toLowerCase();
   const captainOptions: ReactNode[] = [];
-  for (const team of teamNamesData) {
+  for (const team of solicitationCodesData) {
     if (!team.name.toLowerCase().includes(lowerCaptainSearch)) continue;
     captainOptions.push(
       <AutoComplete.Option key={team.id} value={team.id}>
@@ -88,7 +86,7 @@ export function FundraisingEntryEditor({
   const [membershipSearch, setMembershipSearch] = useState("");
   const lowerMembershipSearch = membershipSearch.toLowerCase();
   const membershipOptions: ReactNode[] = [];
-  for (const team of teamNamesData) {
+  for (const team of solicitationCodesData) {
     if (!team.name.toLowerCase().includes(lowerMembershipSearch)) continue;
     membershipOptions.push(
       <AutoComplete.Option key={team.id} value={team.id}>
@@ -110,7 +108,7 @@ export function FundraisingEntryEditor({
       />
     );
   }
-  if (!teamNamesFragment) {
+  if (!solicitationCodesFragment) {
     return (
       <Empty
         description="Could not load the list of teams"
@@ -212,7 +210,9 @@ export function FundraisingEntryEditor({
                     fundraisingEntryData.teams.find(
                       (option) => option.team.id === team.id
                     )?.team ??
-                    teamNamesData.find((option) => option.id === team.id) ??
+                    solicitationCodesData.find(
+                      (option) => option.id === team.id
+                    ) ??
                     {};
                   return (
                     <List.Item key={team.id}>
@@ -294,7 +294,9 @@ export function FundraisingEntryEditor({
                     fundraisingEntryData.teams.find(
                       (option) => option.team.id === team.id
                     )?.team ??
-                    teamNamesData.find((option) => option.id === team.id) ??
+                    solicitationCodesData.find(
+                      (option) => option.id === team.id
+                    ) ??
                     {};
                   return (
                     <List.Item key={team.id}>

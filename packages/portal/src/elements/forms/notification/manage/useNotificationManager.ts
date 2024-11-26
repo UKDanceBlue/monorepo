@@ -8,7 +8,7 @@ import {
   deleteNotificationDocument,
   scheduleNotificationDocument,
   sendNotificationDocument,
-} from "./NotificationManagerGQL.js";
+} from "#documents/notification.js";
 
 export const useNotificationManagerForm = ({
   uuid,

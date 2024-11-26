@@ -16,7 +16,7 @@ import { getFragmentData, graphql } from "#graphql/index.js";
 import type { UseListQueryHookReturn } from "#hooks/useListQuery.js";
 import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps.js";
 
-import { PaginationFragment } from "../fragments/generic";
+import { PaginationFragment } from "#documents/team.ts";
 
 export const TeamsTableFragment = graphql(/* GraphQL */ `
   fragment TeamsTableFragment on TeamNode {

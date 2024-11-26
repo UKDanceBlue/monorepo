@@ -24,10 +24,13 @@ export const FundraisingEntryEditorFragment = graphql(/* GraphQL */ `
   }
 `);
 
-// export const fundraisingEntryEditorDocument = graphql(/* GraphQL */ `
-//   mutation FundraisingEntryEditor($uuid: ID!, $input: SetFundraisingEntryInput!) {
-//     setFundraisingEntry(uuid: $uuid, input: $input) {
-//       ...FundraisingEntryEditorFragment
-//     }
-//   }
-// `);
+export const fundraisingEntryEditorDocument = graphql(/* GraphQL */ `
+  mutation FundraisingEntryEditor(
+    $uuid: GlobalId!
+    $input: SetFundraisingEntryInput!
+  ) {
+    setFundraisingEntry(id: $uuid, input: $input) {
+      ...FundraisingEntryEditorFragment
+    }
+  }
+`);

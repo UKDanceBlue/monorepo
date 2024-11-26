@@ -10,7 +10,7 @@ import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import {
   personEditorDocument,
   PersonEditorFragment,
-} from "./PersonEditorGQL.js";
+} from "#documents/person.js";
 
 export function usePersonEditorForm(
   personFragment: FragmentType<typeof PersonEditorFragment> | undefined | null,

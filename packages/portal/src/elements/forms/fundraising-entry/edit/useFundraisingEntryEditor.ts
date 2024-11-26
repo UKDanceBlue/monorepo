@@ -10,7 +10,7 @@ import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import {
   fundraisingEntryEditorDocument,
   FundraisingEntryEditorFragment,
-} from "./FundraisingEntryEditorGQL.js";
+} from "../../../../documents/fundriaisngEntry.js";
 
 export function useFundraisingEntryEditorForm(
   fundraisingEntryFragment:
