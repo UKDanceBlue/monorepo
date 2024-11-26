@@ -1,3 +1,5 @@
+import { OptionDefaults } from "typedoc";
+
 /** @type {Partial<import('typedoc').TypeDocOptions>} */
 const config = {
   entryPoints: ["./packages/*"],
@@ -10,8 +12,9 @@ const config = {
     "typedoc-plugin-mdn-links",
   ],
   packageOptions: {
-    blockTags: ["@link", "@alias", "@descEN"],
+    blockTags: [...OptionDefaults.blockTags, "@link", "@alias", "@descEN"],
     excludeTags: ["@descCN"],
+    skipErrorChecking: true,
   },
 };
 
