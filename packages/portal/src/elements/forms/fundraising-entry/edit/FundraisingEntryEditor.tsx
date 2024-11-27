@@ -83,23 +83,6 @@ export function FundraisingEntryEditor({
     );
   }
 
-  const [membershipSearch, setMembershipSearch] = useState("");
-  const lowerMembershipSearch = membershipSearch.toLowerCase();
-  const membershipOptions: ReactNode[] = [];
-  for (const team of solicitationCodesData) {
-    if (!team.name.toLowerCase().includes(lowerMembershipSearch)) continue;
-    membershipOptions.push(
-      <AutoComplete.Option key={team.id} value={team.id}>
-        {team.marathon.year === selectedMarathon?.year ? (
-          <b>{team.marathon.year} </b>
-        ) : (
-          `${team.marathon.year} `
-        )}
-        {team.name}
-      </AutoComplete.Option>
-    );
-  }
-
   if (!fundraisingEntryData) {
     return (
       <Empty

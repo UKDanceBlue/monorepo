@@ -9,22 +9,15 @@ import {
   RouterProvider,
 } from "@tanstack/react-router";
 import type { AuthorizationRule } from "@ukdanceblue/common";
-import { devtoolsExchange } from "@urql/devtools";
 import { App, Empty, Spin } from "antd";
 import { App as AntApp } from "antd";
 import type { useAppProps } from "antd/es/app/context.js";
 import { StrictMode, useEffect, useState } from "react";
-import {
-  cacheExchange,
-  Client,
-  fetchExchange,
-  Provider as UrqlProvider,
-} from "urql";
+import { Provider as UrqlProvider } from "urql";
 
 import { AntConfigProvider, ThemeConfigProvider } from "#config/ant.js";
-import { API_BASE_URL } from "#config/api.js";
+import { API_BASE_URL, urqlClient } from "#config/api.js";
 import { MarathonConfigProvider } from "#config/marathon.js";
-import { SessionStorageKeys } from "#config/storage.js";
 import { SpinningRibbon } from "#elements/components/design/RibbonSpinner.js";
 
 import { routeTree } from "./routeTree.gen.js";
@@ -40,26 +33,6 @@ init({
   enabled: ["https://app.danceblue.org", "https://dev.danceblue.org"].includes(
     window.location.origin
   ),
-});
-
-const API_URL = `${API_BASE_URL}/graphql`;
-const urqlClient = new Client({
-  url: API_URL,
-  exchanges: [devtoolsExchange, cacheExchange, fetchExchange],
-  fetchOptions: () => {
-    // const query = new URLSearchParams(window.location.search).get("masquerade");
-    const masquerade = sessionStorage
-      .getItem(SessionStorageKeys.Masquerade)
-      ?.trim();
-    return {
-      credentials: "include",
-      headers: masquerade
-        ? {
-            "x-ukdb-masquerade": masquerade,
-          }
-        : undefined,
-    };
-  },
 });
 
 const router = createRouter({
