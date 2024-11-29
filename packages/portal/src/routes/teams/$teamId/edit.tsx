@@ -10,9 +10,7 @@ import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 const viewTeamPageDocument = graphql(/* GraphQL */ `
   query EditTeamPage($uuid: GlobalId!) {
     team(uuid: $uuid) {
-      data {
-        ...TeamEditorFragment
-      }
+      ...TeamEditorFragment
     }
   }
 `);
@@ -34,7 +32,7 @@ function EditTeamPage() {
   return (
     <div>
       <h1>Edit Team</h1>
-      <TeamEditor teamFragment={data?.team.data} refetchTeam={refetchTeam} />
+      <TeamEditor teamFragment={data?.team} refetchTeam={refetchTeam} />
     </div>
   );
 }

@@ -46,10 +46,18 @@ import { FundraisingEntryRepository } from "#repositories/fundraising/Fundraisin
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
 import { globalFundraisingAccessParam } from "./accessParams.js";
+import { StandardResolver } from "./standardResolver.js";
 
 @Resolver(() => FundraisingEntryNode)
 @Service([DBFundsFundraisingProvider, FundraisingEntryRepository])
-export class FundraisingEntryResolver {
+export class FundraisingEntryResolver
+  implements
+    StandardResolver<
+      FundraisingEntryNode,
+      "fundraisingEntry",
+      "fundraisingEntries"
+    >
+{
   constructor(
     private readonly fundraisingProvider: FundraisingProvider<number>,
     private readonly fundraisingEntryRepository: FundraisingEntryRepository

@@ -13,9 +13,7 @@ import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 const notificationViewerDocument = graphql(/* GraphQL */ `
   query NotificationViewer($uuid: GlobalId!) {
     notification(uuid: $uuid) {
-      data {
-        ...SingleNotificationFragment
-      }
+      ...SingleNotificationFragment
     }
   }
 `);
@@ -45,7 +43,7 @@ function ViewNotificationPage() {
         </Link>
       </Flex>
       <NotificationViewer
-        notificationFragment={data?.notification.data}
+        notificationFragment={data?.notification}
         refetch={refetch}
       />
       <NotificationDeliveriesTable notificationUuid={notificationId} />

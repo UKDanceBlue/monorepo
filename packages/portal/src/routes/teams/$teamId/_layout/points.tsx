@@ -40,14 +40,14 @@ function ViewTeamPoints() {
         <PointEntryTable
           loading={fetching}
           refetch={refetch}
-          teamFragment={data?.team.data.pointEntries}
+          teamFragment={data?.team.pointEntries}
         />
       </div>
       {canAddPoints && (
         <div style={{ flex: 1 }}>
           <h2>Create Point Entry</h2>
           <PointEntryCreator
-            team={data?.team.data}
+            team={data?.team}
             refetch={() => refetch({ requestPolicy: "network-only" })}
           />
         </div>

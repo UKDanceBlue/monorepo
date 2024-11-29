@@ -8,7 +8,7 @@ import { graphql } from "#graphql/index.js";
 const deleteEventDocument = graphql(/* GraphQL */ `
   mutation DeleteEvent($uuid: GlobalId!) {
     deleteEvent(uuid: $uuid) {
-      ok
+      id
     }
   }
 `);
@@ -34,10 +34,10 @@ export const useEventDeletePopup = ({
   };
 
   useEffect(() => {
-    if (data?.deleteEvent.ok) {
+    if (data?.deleteEvent.id) {
       setOpen(false);
     }
-  }, [data?.deleteEvent.ok]);
+  }, [data?.deleteEvent.id]);
 
   const EventDeletePopup = (
     <>
@@ -47,7 +47,7 @@ export const useEventDeletePopup = ({
         open={open}
         onOk={() =>
           deleteEvent({ uuid }).then((value) => {
-            if (value.data?.deleteEvent.ok) {
+            if (value.data?.deleteEvent.id) {
               showInfoMessage({
                 message: "Event successfully deleted",
               });

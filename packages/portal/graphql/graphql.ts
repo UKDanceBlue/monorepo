@@ -1211,8 +1211,8 @@ export type CreateNotificationMutationVariables = Exact<{
 export type CreateNotificationMutation = {
   readonly __typename?: "Mutation";
   readonly stageNotification: {
-    readonly __typename?: "StageNotificationResponse";
-    readonly uuid: string;
+    readonly __typename?: "NotificationNode";
+    readonly id: string;
   };
 };
 
@@ -1223,8 +1223,8 @@ export type CancelNotificationScheduleMutationVariables = Exact<{
 export type CancelNotificationScheduleMutation = {
   readonly __typename?: "Mutation";
   readonly abortScheduledNotification: {
-    readonly __typename?: "AbortScheduledNotificationResponse";
-    readonly ok: boolean;
+    readonly __typename?: "NotificationNode";
+    readonly id: string;
   };
 };
 
@@ -1236,8 +1236,8 @@ export type DeleteNotificationMutationVariables = Exact<{
 export type DeleteNotificationMutation = {
   readonly __typename?: "Mutation";
   readonly deleteNotification: {
-    readonly __typename?: "DeleteNotificationResponse";
-    readonly ok: boolean;
+    readonly __typename?: "NotificationNode";
+    readonly id: string;
   };
 };
 
@@ -1247,10 +1247,7 @@ export type SendNotificationMutationVariables = Exact<{
 
 export type SendNotificationMutation = {
   readonly __typename?: "Mutation";
-  readonly sendNotification: {
-    readonly __typename?: "SendNotificationResponse";
-    readonly ok: boolean;
-  };
+  readonly sendNotification: void;
 };
 
 export type ScheduleNotificationMutationVariables = Exact<{
@@ -1261,8 +1258,8 @@ export type ScheduleNotificationMutationVariables = Exact<{
 export type ScheduleNotificationMutation = {
   readonly __typename?: "Mutation";
   readonly scheduleNotification: {
-    readonly __typename?: "ScheduleNotificationResponse";
-    readonly ok: boolean;
+    readonly __typename?: "NotificationNode";
+    readonly id: string;
   };
 };
 
@@ -1366,11 +1363,8 @@ export type CreatePointEntryMutationVariables = Exact<{
 export type CreatePointEntryMutation = {
   readonly __typename?: "Mutation";
   readonly createPointEntry: {
-    readonly __typename?: "CreatePointEntryResponse";
-    readonly data: {
-      readonly __typename?: "PointEntryNode";
-      readonly id: string;
-    };
+    readonly __typename?: "PointEntryNode";
+    readonly id: string;
   };
 };
 
@@ -1387,11 +1381,8 @@ export type CreatePointEntryAndAssignMutation = {
     readonly id: string;
   };
   readonly createPointEntry: {
-    readonly __typename?: "CreatePointEntryResponse";
-    readonly data: {
-      readonly __typename?: "PointEntryNode";
-      readonly id: string;
-    };
+    readonly __typename?: "PointEntryNode";
+    readonly id: string;
   };
 };
 
@@ -1465,21 +1456,18 @@ export type ViewTeamPageQueryVariables = Exact<{
 export type ViewTeamPageQuery = {
   readonly __typename?: "Query";
   readonly team: {
-    readonly __typename?: "SingleTeamResponse";
-    readonly data: {
-      readonly __typename?: "TeamNode";
-      readonly pointEntries: ReadonlyArray<
-        { readonly __typename?: "PointEntryNode" } & {
-          " $fragmentRefs"?: {
-            PointEntryTableFragmentFragment: PointEntryTableFragmentFragment;
-          };
-        }
-      >;
-    } & {
-      " $fragmentRefs"?: {
-        PointEntryCreatorFragmentFragment: PointEntryCreatorFragmentFragment;
-        TeamViewerFragmentFragment: TeamViewerFragmentFragment;
-      };
+    readonly __typename?: "TeamNode";
+    readonly pointEntries: ReadonlyArray<
+      { readonly __typename?: "PointEntryNode" } & {
+        " $fragmentRefs"?: {
+          PointEntryTableFragmentFragment: PointEntryTableFragmentFragment;
+        };
+      }
+    >;
+  } & {
+    " $fragmentRefs"?: {
+      PointEntryCreatorFragmentFragment: PointEntryCreatorFragmentFragment;
+      TeamViewerFragmentFragment: TeamViewerFragmentFragment;
     };
   };
 };
@@ -1492,9 +1480,8 @@ export type TeamCreatorMutationVariables = Exact<{
 export type TeamCreatorMutation = {
   readonly __typename?: "Mutation";
   readonly createTeam: {
-    readonly __typename?: "CreateTeamResponse";
-    readonly ok: boolean;
-    readonly uuid: string;
+    readonly __typename?: "TeamNode";
+    readonly id: string;
   };
 };
 
@@ -1518,10 +1505,7 @@ export type TeamEditorMutationVariables = Exact<{
 
 export type TeamEditorMutation = {
   readonly __typename?: "Mutation";
-  readonly setTeam: {
-    readonly __typename?: "SingleTeamResponse";
-    readonly ok: boolean;
-  };
+  readonly setTeam: { readonly __typename?: "TeamNode"; readonly id: string };
 };
 
 export type TeamSelectFragment = {
@@ -1658,8 +1642,8 @@ export type DeleteEventMutationVariables = Exact<{
 export type DeleteEventMutation = {
   readonly __typename?: "Mutation";
   readonly deleteEvent: {
-    readonly __typename?: "DeleteEventResponse";
-    readonly ok: boolean;
+    readonly __typename?: "EventNode";
+    readonly id: string;
   };
 };
 
@@ -1753,8 +1737,8 @@ export type DeletePointEntryMutationVariables = Exact<{
 export type DeletePointEntryMutation = {
   readonly __typename?: "Mutation";
   readonly deletePointEntry: {
-    readonly __typename?: "DeletePointEntryResponse";
-    readonly ok: boolean;
+    readonly __typename?: "PointEntryNode";
+    readonly id: string;
   };
 };
 
@@ -1765,8 +1749,8 @@ export type DeleteTeamMutationVariables = Exact<{
 export type DeleteTeamMutation = {
   readonly __typename?: "Mutation";
   readonly deleteTeam: {
-    readonly __typename?: "DeleteTeamResponse";
-    readonly ok: boolean;
+    readonly __typename?: "TeamNode";
+    readonly id: string;
   };
 };
 
@@ -1792,10 +1776,10 @@ export type CommitConfigChangesMutationVariables = Exact<{
 
 export type CommitConfigChangesMutation = {
   readonly __typename?: "Mutation";
-  readonly createConfigurations: {
-    readonly __typename?: "CreateConfigurationResponse";
-    readonly ok: boolean;
-  };
+  readonly createConfigurations: ReadonlyArray<{
+    readonly __typename?: "ConfigurationNode";
+    readonly id: string;
+  }>;
 };
 
 export type ConfigFragmentFragment = {
@@ -1812,14 +1796,11 @@ export type ConfigQueryQueryVariables = Exact<{ [key: string]: never }>;
 
 export type ConfigQueryQuery = {
   readonly __typename?: "Query";
-  readonly allConfigurations: {
-    readonly __typename?: "GetAllConfigurationsResponse";
-    readonly data: ReadonlyArray<
-      { readonly __typename?: "ConfigurationNode" } & {
-        " $fragmentRefs"?: { ConfigFragmentFragment: ConfigFragmentFragment };
-      }
-    >;
-  };
+  readonly allConfigurations: ReadonlyArray<
+    { readonly __typename?: "ConfigurationNode" } & {
+      " $fragmentRefs"?: { ConfigFragmentFragment: ConfigFragmentFragment };
+    }
+  >;
 };
 
 export type UploadDdnDocumentMutationVariables = Exact<{
@@ -1843,8 +1824,8 @@ export type CreateEventMutationVariables = Exact<{
 export type CreateEventMutation = {
   readonly __typename?: "Mutation";
   readonly createEvent: {
-    readonly __typename?: "CreateEventResponse";
-    readonly data: { readonly __typename?: "EventNode"; readonly id: string };
+    readonly __typename?: "EventNode";
+    readonly id: string;
   };
 };
 
@@ -1882,12 +1863,9 @@ export type SaveEventMutationVariables = Exact<{
 
 export type SaveEventMutation = {
   readonly __typename?: "Mutation";
-  readonly setEvent: {
-    readonly __typename?: "SetEventResponse";
-    readonly data: { readonly __typename?: "EventNode" } & {
-      " $fragmentRefs"?: {
-        EventEditorFragmentFragment: EventEditorFragmentFragment;
-      };
+  readonly setEvent: { readonly __typename?: "EventNode" } & {
+    " $fragmentRefs"?: {
+      EventEditorFragmentFragment: EventEditorFragmentFragment;
     };
   };
 };
@@ -1968,8 +1946,8 @@ export type CreatePointOpportunityMutationVariables = Exact<{
 export type CreatePointOpportunityMutation = {
   readonly __typename?: "Mutation";
   readonly createPointOpportunity: {
-    readonly __typename?: "CreatePointOpportunityResponse";
-    readonly uuid: string;
+    readonly __typename?: "PointOpportunityNode";
+    readonly id: string;
   };
 };
 
@@ -1980,7 +1958,7 @@ export type TeamBulkCreatorMutationVariables = Exact<{
 
 export type TeamBulkCreatorMutation = {
   readonly __typename?: "Mutation";
-  readonly bulkLoadTeams: ReadonlyArray<{
+  readonly createTeams: ReadonlyArray<{
     readonly __typename?: "TeamNode";
     readonly id: string;
   }>;
@@ -2623,12 +2601,9 @@ export type EditEventPageQueryVariables = Exact<{
 
 export type EditEventPageQuery = {
   readonly __typename?: "Query";
-  readonly event: {
-    readonly __typename?: "GetEventByUuidResponse";
-    readonly data: { readonly __typename?: "EventNode" } & {
-      " $fragmentRefs"?: {
-        EventEditorFragmentFragment: EventEditorFragmentFragment;
-      };
+  readonly event: { readonly __typename?: "EventNode" } & {
+    " $fragmentRefs"?: {
+      EventEditorFragmentFragment: EventEditorFragmentFragment;
     };
   };
 };
@@ -2639,12 +2614,9 @@ export type ViewEventPageQueryVariables = Exact<{
 
 export type ViewEventPageQuery = {
   readonly __typename?: "Query";
-  readonly event: {
-    readonly __typename?: "GetEventByUuidResponse";
-    readonly data: { readonly __typename?: "EventNode" } & {
-      " $fragmentRefs"?: {
-        EventViewerFragmentFragment: EventViewerFragmentFragment;
-      };
+  readonly event: { readonly __typename?: "EventNode" } & {
+    " $fragmentRefs"?: {
+      EventViewerFragmentFragment: EventViewerFragmentFragment;
     };
   };
 };
@@ -3000,12 +2972,9 @@ export type NotificationViewerQueryVariables = Exact<{
 
 export type NotificationViewerQuery = {
   readonly __typename?: "Query";
-  readonly notification: {
-    readonly __typename?: "GetNotificationByUuidResponse";
-    readonly data: { readonly __typename?: "NotificationNode" } & {
-      " $fragmentRefs"?: {
-        SingleNotificationFragmentFragment: SingleNotificationFragmentFragment;
-      };
+  readonly notification: { readonly __typename?: "NotificationNode" } & {
+    " $fragmentRefs"?: {
+      SingleNotificationFragmentFragment: SingleNotificationFragmentFragment;
     };
   };
 };
@@ -3016,12 +2985,9 @@ export type NotificationManagerQueryVariables = Exact<{
 
 export type NotificationManagerQuery = {
   readonly __typename?: "Query";
-  readonly notification: {
-    readonly __typename?: "GetNotificationByUuidResponse";
-    readonly data: { readonly __typename?: "NotificationNode" } & {
-      " $fragmentRefs"?: {
-        SingleNotificationFragmentFragment: SingleNotificationFragmentFragment;
-      };
+  readonly notification: { readonly __typename?: "NotificationNode" } & {
+    " $fragmentRefs"?: {
+      SingleNotificationFragmentFragment: SingleNotificationFragmentFragment;
     };
   };
 };
@@ -3091,31 +3057,28 @@ export type ViewTeamFundraisingDocumentQueryVariables = Exact<{
 export type ViewTeamFundraisingDocumentQuery = {
   readonly __typename?: "Query";
   readonly team: {
-    readonly __typename?: "SingleTeamResponse";
-    readonly data: {
-      readonly __typename?: "TeamNode";
-      readonly solicitationCode?: {
-        readonly __typename?: "SolicitationCodeNode";
+    readonly __typename?: "TeamNode";
+    readonly solicitationCode?: {
+      readonly __typename?: "SolicitationCodeNode";
+      readonly id: string;
+      readonly name?: string | null;
+      readonly prefix: string;
+      readonly code: number;
+    } | null;
+    readonly members: ReadonlyArray<{
+      readonly __typename?: "MembershipNode";
+      readonly person: {
+        readonly __typename?: "PersonNode";
         readonly id: string;
         readonly name?: string | null;
-        readonly prefix: string;
-        readonly code: number;
-      } | null;
-      readonly members: ReadonlyArray<{
-        readonly __typename?: "MembershipNode";
-        readonly person: {
-          readonly __typename?: "PersonNode";
-          readonly id: string;
-          readonly name?: string | null;
-          readonly linkblue?: string | null;
-        };
-      }>;
-      readonly fundraisingEntries: {
-        readonly __typename?: "ListFundraisingEntriesResponse";
-      } & {
-        " $fragmentRefs"?: {
-          FundraisingEntryTableFragmentFragment: FundraisingEntryTableFragmentFragment;
-        };
+        readonly linkblue?: string | null;
+      };
+    }>;
+    readonly fundraisingEntries: {
+      readonly __typename?: "ListFundraisingEntriesResponse";
+    } & {
+      " $fragmentRefs"?: {
+        FundraisingEntryTableFragmentFragment: FundraisingEntryTableFragmentFragment;
       };
     };
   };
@@ -3159,12 +3122,9 @@ export type EditTeamPageQueryVariables = Exact<{
 
 export type EditTeamPageQuery = {
   readonly __typename?: "Query";
-  readonly team: {
-    readonly __typename?: "SingleTeamResponse";
-    readonly data: { readonly __typename?: "TeamNode" } & {
-      " $fragmentRefs"?: {
-        TeamEditorFragmentFragment: TeamEditorFragmentFragment;
-      };
+  readonly team: { readonly __typename?: "TeamNode" } & {
+    " $fragmentRefs"?: {
+      TeamEditorFragmentFragment: TeamEditorFragmentFragment;
     };
   };
 };
@@ -4813,7 +4773,7 @@ export const CreateNotificationDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "uuid" } },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
               ],
             },
           },
@@ -4864,7 +4824,7 @@ export const CancelNotificationScheduleDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
               ],
             },
           },
@@ -4931,7 +4891,7 @@ export const DeleteNotificationDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
               ],
             },
           },
@@ -4979,12 +4939,6 @@ export const SendNotificationDocument = {
                 },
               },
             ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
-              ],
-            },
           },
         ],
       },
@@ -5055,7 +5009,7 @@ export const ScheduleNotificationDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
               ],
             },
           },
@@ -5236,16 +5190,7 @@ export const CreatePointEntryDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "data" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "id" } },
-                    ],
-                  },
-                },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
               ],
             },
           },
@@ -5352,16 +5297,7 @@ export const CreatePointEntryAndAssignDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "data" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "id" } },
-                    ],
-                  },
-                },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
               ],
             },
           },
@@ -5683,8 +5619,16 @@ export const ViewTeamPageDocument = {
               kind: "SelectionSet",
               selections: [
                 {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "PointEntryCreatorFragment" },
+                },
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "TeamViewerFragment" },
+                },
+                {
                   kind: "Field",
-                  name: { kind: "Name", value: "data" },
+                  name: { kind: "Name", value: "pointEntries" },
                   selectionSet: {
                     kind: "SelectionSet",
                     selections: [
@@ -5692,27 +5636,7 @@ export const ViewTeamPageDocument = {
                         kind: "FragmentSpread",
                         name: {
                           kind: "Name",
-                          value: "PointEntryCreatorFragment",
-                        },
-                      },
-                      {
-                        kind: "FragmentSpread",
-                        name: { kind: "Name", value: "TeamViewerFragment" },
-                      },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "pointEntries" },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "FragmentSpread",
-                              name: {
-                                kind: "Name",
-                                value: "PointEntryTableFragment",
-                              },
-                            },
-                          ],
+                          value: "PointEntryTableFragment",
                         },
                       },
                     ],
@@ -5918,8 +5842,7 @@ export const TeamCreatorDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
-                { kind: "Field", name: { kind: "Name", value: "uuid" } },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
               ],
             },
           },
@@ -5989,7 +5912,7 @@ export const TeamEditorDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
               ],
             },
           },
@@ -6037,7 +5960,7 @@ export const DeleteEventDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
               ],
             },
           },
@@ -6435,7 +6358,7 @@ export const DeletePointEntryDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
               ],
             },
           },
@@ -6486,7 +6409,7 @@ export const DeleteTeamDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
               ],
             },
           },
@@ -6646,7 +6569,7 @@ export const CommitConfigChangesDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "ok" } },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
               ],
             },
           },
@@ -6675,17 +6598,8 @@ export const ConfigQueryDocument = {
               kind: "SelectionSet",
               selections: [
                 {
-                  kind: "Field",
-                  name: { kind: "Name", value: "data" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "FragmentSpread",
-                        name: { kind: "Name", value: "ConfigFragment" },
-                      },
-                    ],
-                  },
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "ConfigFragment" },
                 },
               ],
             },
@@ -6822,16 +6736,7 @@ export const CreateEventDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "data" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "id" } },
-                    ],
-                  },
-                },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
               ],
             },
           },
@@ -6902,17 +6807,8 @@ export const SaveEventDocument = {
               kind: "SelectionSet",
               selections: [
                 {
-                  kind: "Field",
-                  name: { kind: "Name", value: "data" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "FragmentSpread",
-                        name: { kind: "Name", value: "EventEditorFragment" },
-                      },
-                    ],
-                  },
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "EventEditorFragment" },
                 },
               ],
             },
@@ -7409,7 +7305,7 @@ export const CreatePointOpportunityDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "uuid" } },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
               ],
             },
           },
@@ -7469,7 +7365,7 @@ export const TeamBulkCreatorDocument = {
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "bulkLoadTeams" },
+            name: { kind: "Name", value: "createTeams" },
             arguments: [
               {
                 kind: "Argument",
@@ -9723,17 +9619,8 @@ export const EditEventPageDocument = {
               kind: "SelectionSet",
               selections: [
                 {
-                  kind: "Field",
-                  name: { kind: "Name", value: "data" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "FragmentSpread",
-                        name: { kind: "Name", value: "EventEditorFragment" },
-                      },
-                    ],
-                  },
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "EventEditorFragment" },
                 },
               ],
             },
@@ -9837,17 +9724,8 @@ export const ViewEventPageDocument = {
               kind: "SelectionSet",
               selections: [
                 {
-                  kind: "Field",
-                  name: { kind: "Name", value: "data" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "FragmentSpread",
-                        name: { kind: "Name", value: "EventViewerFragment" },
-                      },
-                    ],
-                  },
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "EventViewerFragment" },
                 },
               ],
             },
@@ -11736,20 +11614,8 @@ export const NotificationViewerDocument = {
               kind: "SelectionSet",
               selections: [
                 {
-                  kind: "Field",
-                  name: { kind: "Name", value: "data" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "FragmentSpread",
-                        name: {
-                          kind: "Name",
-                          value: "SingleNotificationFragment",
-                        },
-                      },
-                    ],
-                  },
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "SingleNotificationFragment" },
                 },
               ],
             },
@@ -11857,20 +11723,8 @@ export const NotificationManagerDocument = {
               kind: "SelectionSet",
               selections: [
                 {
-                  kind: "Field",
-                  name: { kind: "Name", value: "data" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "FragmentSpread",
-                        name: {
-                          kind: "Name",
-                          value: "SingleNotificationFragment",
-                        },
-                      },
-                    ],
-                  },
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "SingleNotificationFragment" },
                 },
               ],
             },
@@ -12460,13 +12314,29 @@ export const ViewTeamFundraisingDocumentDocument = {
               selections: [
                 {
                   kind: "Field",
-                  name: { kind: "Name", value: "data" },
+                  name: { kind: "Name", value: "solicitationCode" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "prefix" },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "code" } },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "members" },
                   selectionSet: {
                     kind: "SelectionSet",
                     selections: [
                       {
                         kind: "Field",
-                        name: { kind: "Name", value: "solicitationCode" },
+                        name: { kind: "Name", value: "person" },
                         selectionSet: {
                           kind: "SelectionSet",
                           selections: [
@@ -12480,125 +12350,91 @@ export const ViewTeamFundraisingDocumentDocument = {
                             },
                             {
                               kind: "Field",
-                              name: { kind: "Name", value: "prefix" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "code" },
+                              name: { kind: "Name", value: "linkblue" },
                             },
                           ],
                         },
                       },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "members" },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "person" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "id" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "name" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "linkblue" },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "fundraisingEntries" },
+                  arguments: [
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "page" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "page" },
                       },
+                    },
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "pageSize" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "pageSize" },
+                      },
+                    },
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "sortBy" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "sortBy" },
+                      },
+                    },
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "sortDirection" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "sortDirection" },
+                      },
+                    },
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "dateFilters" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "dateFilters" },
+                      },
+                    },
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "oneOfFilters" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "oneOfFilters" },
+                      },
+                    },
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "stringFilters" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "stringFilters" },
+                      },
+                    },
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "numericFilters" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "numericFilters" },
+                      },
+                    },
+                  ],
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
                       {
-                        kind: "Field",
-                        name: { kind: "Name", value: "fundraisingEntries" },
-                        arguments: [
-                          {
-                            kind: "Argument",
-                            name: { kind: "Name", value: "page" },
-                            value: {
-                              kind: "Variable",
-                              name: { kind: "Name", value: "page" },
-                            },
-                          },
-                          {
-                            kind: "Argument",
-                            name: { kind: "Name", value: "pageSize" },
-                            value: {
-                              kind: "Variable",
-                              name: { kind: "Name", value: "pageSize" },
-                            },
-                          },
-                          {
-                            kind: "Argument",
-                            name: { kind: "Name", value: "sortBy" },
-                            value: {
-                              kind: "Variable",
-                              name: { kind: "Name", value: "sortBy" },
-                            },
-                          },
-                          {
-                            kind: "Argument",
-                            name: { kind: "Name", value: "sortDirection" },
-                            value: {
-                              kind: "Variable",
-                              name: { kind: "Name", value: "sortDirection" },
-                            },
-                          },
-                          {
-                            kind: "Argument",
-                            name: { kind: "Name", value: "dateFilters" },
-                            value: {
-                              kind: "Variable",
-                              name: { kind: "Name", value: "dateFilters" },
-                            },
-                          },
-                          {
-                            kind: "Argument",
-                            name: { kind: "Name", value: "oneOfFilters" },
-                            value: {
-                              kind: "Variable",
-                              name: { kind: "Name", value: "oneOfFilters" },
-                            },
-                          },
-                          {
-                            kind: "Argument",
-                            name: { kind: "Name", value: "stringFilters" },
-                            value: {
-                              kind: "Variable",
-                              name: { kind: "Name", value: "stringFilters" },
-                            },
-                          },
-                          {
-                            kind: "Argument",
-                            name: { kind: "Name", value: "numericFilters" },
-                            value: {
-                              kind: "Variable",
-                              name: { kind: "Name", value: "numericFilters" },
-                            },
-                          },
-                        ],
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "FragmentSpread",
-                              name: {
-                                kind: "Name",
-                                value: "FundraisingEntryTableFragment",
-                              },
-                            },
-                          ],
+                        kind: "FragmentSpread",
+                        name: {
+                          kind: "Name",
+                          value: "FundraisingEntryTableFragment",
                         },
                       },
                     ],
@@ -12891,17 +12727,8 @@ export const EditTeamPageDocument = {
               kind: "SelectionSet",
               selections: [
                 {
-                  kind: "Field",
-                  name: { kind: "Name", value: "data" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "FragmentSpread",
-                        name: { kind: "Name", value: "TeamEditorFragment" },
-                      },
-                    ],
-                  },
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "TeamEditorFragment" },
                 },
               ],
             },

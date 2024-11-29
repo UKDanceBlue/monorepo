@@ -3,12 +3,10 @@ import { graphql } from "#graphql/index.js";
 export const teamPageDocument = graphql(/* GraphQL */ `
   query ViewTeamPage($teamUuid: GlobalId!) {
     team(uuid: $teamUuid) {
-      data {
-        ...PointEntryCreatorFragment
-        ...TeamViewerFragment
-        pointEntries {
-          ...PointEntryTableFragment
-        }
+      ...PointEntryCreatorFragment
+      ...TeamViewerFragment
+      pointEntries {
+        ...PointEntryTableFragment
       }
     }
   }
@@ -17,8 +15,7 @@ export const teamPageDocument = graphql(/* GraphQL */ `
 export const teamCreatorDocument = graphql(/* GraphQL */ `
   mutation TeamCreator($input: CreateTeamInput!, $marathonUuid: GlobalId!) {
     createTeam(input: $input, marathon: $marathonUuid) {
-      ok
-      uuid
+      id
     }
   }
 `);
@@ -39,7 +36,7 @@ export const TeamEditorFragment = graphql(/* GraphQL */ `
 export const teamEditorDocument = graphql(/* GraphQL */ `
   mutation TeamEditor($uuid: GlobalId!, $input: SetTeamInput!) {
     setTeam(uuid: $uuid, input: $input) {
-      ok
+      id
     }
   }
 `);

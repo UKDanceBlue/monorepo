@@ -4,6 +4,7 @@ import {
   AccessControlAuthorized,
   AccessLevel,
   DeviceNode,
+  GetDeviceByUuidResponse,
   GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
@@ -44,7 +45,7 @@ export class DeviceResolver {
     private readonly personRepository: PersonRepository
   ) {}
 
-  @Query(() => DeviceNode, {
+  @Query(() => GetDeviceByUuidResponse, {
     name: "device",
     description: "Get a device by it's UUID",
   })
@@ -53,7 +54,7 @@ export class DeviceResolver {
       description: "For legacy reasons, this can be a GlobalId or a raw UUID",
     })
     someId: string
-  ): Promise<DeviceNode> {
+  ): Promise<GetDeviceByUuidResponse> {
     const id = parseGlobalId(someId)
       .map((id) => id.id)
       .unwrapOr(someId);
@@ -63,7 +64,9 @@ export class DeviceResolver {
       throw new LegacyError(LegacyErrorCode.NotFound, "Device not found");
     }
 
-    return deviceModelToResource(row);
+    const resp = new GetDeviceByUuidResponse();
+    resp.data = deviceModelToResource(row);
+    return resp;
   }
 
   @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })

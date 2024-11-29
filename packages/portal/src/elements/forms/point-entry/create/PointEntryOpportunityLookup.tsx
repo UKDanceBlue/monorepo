@@ -38,7 +38,7 @@ const pointEntryOpportunityLookup = graphql(/* GraphQL */ `
 const createPointOpportunityDocument = graphql(/* GraphQL */ `
   mutation CreatePointOpportunity($input: CreatePointOpportunityInput!) {
     createPointOpportunity(input: $input) {
-      uuid
+      id
     }
   }
 `);
@@ -118,10 +118,8 @@ export function PointEntryOpportunityLookup({
                   },
                 })
                   .then((result) => {
-                    if (result.data?.createPointOpportunity.uuid) {
-                      field.handleChange(
-                        result.data.createPointOpportunity.uuid
-                      );
+                    if (result.data?.createPointOpportunity.id) {
+                      field.handleChange(result.data.createPointOpportunity.id);
                       setCreateModalVisible(false);
                     }
                   })

@@ -39,9 +39,7 @@ export function useConfig(): {
     query: graphql(/* GraphQL */ `
       query ConfigQuery {
         allConfigurations {
-          data {
-            ...ConfigFragment
-          }
+          ...ConfigFragment
         }
       }
     `),
@@ -58,10 +56,7 @@ export function useConfig(): {
     const configs: ConfigValueCollection[] = [];
     const activeValues: Record<string, ConfigValue> = {};
 
-    const data = getFragmentData(
-      ConfigFragment,
-      response.allConfigurations.data
-    );
+    const data = getFragmentData(ConfigFragment, response.allConfigurations);
 
     for (const config of data) {
       // Add the config key if it doesn't exist

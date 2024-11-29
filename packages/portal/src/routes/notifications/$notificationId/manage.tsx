@@ -10,9 +10,7 @@ import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 const notificationManagerDocument = graphql(/* GraphQL */ `
   query NotificationManager($uuid: GlobalId!) {
     notification(uuid: $uuid) {
-      data {
-        ...SingleNotificationFragment
-      }
+      ...SingleNotificationFragment
     }
   }
 `);
@@ -87,7 +85,7 @@ function ManageNotificationPage() {
         </p>
       </details>
       <ManageNotificationForm
-        notificationFragment={data?.notification.data}
+        notificationFragment={data?.notification}
         refetchNotification={refetchNotification}
       />
     </div>

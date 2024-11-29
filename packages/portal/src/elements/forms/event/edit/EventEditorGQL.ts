@@ -28,9 +28,7 @@ export const EventEditorFragment = graphql(/* GraphQL */ `
 export const eventEditorDocument = graphql(/* GraphQL */ `
   mutation SaveEvent($uuid: GlobalId!, $input: SetEventInput!) {
     setEvent(uuid: $uuid, input: $input) {
-      data {
-        ...EventEditorFragment
-      }
+      ...EventEditorFragment
     }
   }
 `);

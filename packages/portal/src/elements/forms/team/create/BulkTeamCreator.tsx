@@ -10,7 +10,7 @@ import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const teamBulkCreatorDocument = graphql(/* GraphQL */ `
   mutation TeamBulkCreator($input: [BulkTeamInput!]!, $marathonId: GlobalId!) {
-    bulkLoadTeams(teams: $input, marathonId: $marathonId) {
+    createTeams(teams: $input, marathonId: $marathonId) {
       id
     }
   }
