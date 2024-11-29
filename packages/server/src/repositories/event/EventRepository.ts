@@ -212,7 +212,10 @@ export class EventRepository {
 
   deleteEvent(param: UniqueEventParam) {
     try {
-      return this.prisma.event.delete({ where: param });
+      return this.prisma.event.delete({
+        where: param,
+        include: { eventOccurrences: true },
+      });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

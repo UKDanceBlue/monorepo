@@ -23,6 +23,7 @@ import {
   ConcreteResult,
   InvalidArgumentError,
 } from "@ukdanceblue/common/error";
+import { VoidResolver } from "graphql-scalars";
 import { Err, Ok } from "ts-results-es";
 import {
   Arg,
@@ -62,17 +63,15 @@ export class NotificationResolver {
   @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
-  @Query(() => GetNotificationByUuidResponse, { name: "notification" })
+  @Query(() => NotificationNode, { name: "notification" })
   async getByUuid(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<GetNotificationByUuidResponse>> {
+  ): Promise<ConcreteResult<NotificationNode>> {
     return this.notificationRepository
       .findNotificationByUnique({
         uuid: id,
       })
-      .map((row) =>
-        GetNotificationByUuidResponse.newOk(notificationModelToResource(row))
-      ).promise;
+      .map((row) => notificationModelToResource(row)).promise;
   }
 
   @AccessControlAuthorized({
@@ -153,10 +152,10 @@ export class NotificationResolver {
   @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
-  @Mutation(() => StageNotificationResponse, { name: "stageNotification" })
+  @Mutation(() => NotificationNode, { name: "stageNotification" })
   async stage(
     @Args(() => StageNotificationArgs) args: StageNotificationArgs
-  ): Promise<ConcreteResult<StageNotificationResponse>> {
+  ): Promise<ConcreteResult<NotificationNode>> {
     if (Object.keys(args.audience).length === 0) {
       return Err(new InvalidArgumentError("Audience must be specified."));
     }
@@ -184,21 +183,19 @@ export class NotificationResolver {
           }
     ).promise;
 
-    return result.map((result) =>
-      StageNotificationResponse.newCreated(notificationModelToResource(result))
-    );
+    return result.map((result) => notificationModelToResource(result));
   }
 
   @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
-  @Mutation(() => SendNotificationResponse, {
+  @Mutation(() => VoidResolver, {
     name: "sendNotification",
     description: "Send a notification immediately.",
   })
   async send(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<SendNotificationResponse>> {
+  ): Promise<ConcreteResult<void>> {
     return this.notificationRepository
       .findNotificationByUnique({ uuid: id })
       .andThen((notification) =>
@@ -214,21 +211,21 @@ export class NotificationResolver {
         await this.notificationProvider.sendNotification({
           value: databaseNotification,
         }).promise;
-
-        return SendNotificationResponse.newOk(true);
       }).promise;
   }
 
   @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
-  @Mutation(() => ScheduleNotificationResponse, {
+  @Mutation(() => NotificationNode, {
     name: "scheduleNotification",
   })
   async schedule(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("sendAt") sendAt: Date
-  ): Promise<ConcreteResult<ScheduleNotificationResponse>> {
+  ): Promise<ConcreteResult<NotificationNode>> {
+    this.notificationScheduler.ensureNotificationScheduler();
+
     return this.notificationRepository
       .findNotificationByUnique({ uuid: id })
       .andThen((notification) =>
@@ -242,22 +239,18 @@ export class NotificationResolver {
           { sendAt }
         )
       )
-      .map(() => {
-        this.notificationScheduler.ensureNotificationScheduler();
-
-        return ScheduleNotificationResponse.newOk(true);
-      }).promise;
+      .map(notificationModelToResource).promise;
   }
 
   @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
-  @Mutation(() => AcknowledgeDeliveryIssueResponse, {
+  @Mutation(() => NotificationNode, {
     name: "acknowledgeDeliveryIssue",
   })
   async acknowledgeDeliveryIssue(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<AcknowledgeDeliveryIssueResponse>> {
+  ): Promise<ConcreteResult<NotificationNode>> {
     const notification =
       await this.notificationRepository.findNotificationByUnique({ uuid: id })
         .promise;
@@ -273,26 +266,23 @@ export class NotificationResolver {
       );
     }
 
-    const result = await this.notificationRepository.updateNotification(
-      { id: notification.value.id },
-      { deliveryIssueAcknowledgedAt: new Date() }
-    ).promise;
-    if (result.isErr()) {
-      return result;
-    }
-
-    return Ok(AcknowledgeDeliveryIssueResponse.newOk(true));
+    return this.notificationRepository
+      .updateNotification(
+        { id: notification.value.id },
+        { deliveryIssueAcknowledgedAt: new Date() }
+      )
+      .map(notificationModelToResource).promise;
   }
 
   @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
-  @Mutation(() => AbortScheduledNotificationResponse, {
+  @Mutation(() => NotificationNode, {
     name: "abortScheduledNotification",
   })
   async abortScheduled(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<AbortScheduledNotificationResponse>> {
+  ): Promise<ConcreteResult<NotificationNode>> {
     return this.notificationRepository
       .findNotificationByUnique({ uuid: id })
       .andThen((notification) =>
@@ -311,13 +301,13 @@ export class NotificationResolver {
           { sendAt: null }
         )
       )
-      .map(() => AbortScheduledNotificationResponse.newOk(true)).promise;
+      .map((notification) => notificationModelToResource(notification)).promise;
   }
 
   @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
-  @Mutation(() => DeleteNotificationResponse, { name: "deleteNotification" })
+  @Mutation(() => NotificationNode, { name: "deleteNotification" })
   async delete(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("force", {
@@ -326,7 +316,7 @@ export class NotificationResolver {
         "If true, the notification will be deleted even if it has already been sent, which will also delete the delivery records.",
     })
     force?: boolean
-  ): Promise<ConcreteResult<DeleteNotificationResponse>> {
+  ): Promise<ConcreteResult<NotificationNode>> {
     return this.notificationRepository
       .findNotificationByUnique({ uuid: id })
       .andThen((notification) =>
@@ -338,10 +328,10 @@ export class NotificationResolver {
             )
           : Ok(notification)
       )
-      .andThen((notification) => {
+      .andThen(async (notification) => {
         try {
           return Ok(
-            this.notificationRepository.deleteNotification({
+            await this.notificationRepository.deleteNotification({
               id: notification.id,
             })
           );
@@ -349,7 +339,12 @@ export class NotificationResolver {
           return handleRepositoryError(error);
         }
       })
-      .map(() => DeleteNotificationResponse.newOk(true)).promise;
+      .andThen((notification) =>
+        notification == null
+          ? Err(new InvalidArgumentError("Notification not found."))
+          : Ok(notification)
+      )
+      .map(notificationModelToResource).promise;
   }
 
   @AccessControlAuthorized({
