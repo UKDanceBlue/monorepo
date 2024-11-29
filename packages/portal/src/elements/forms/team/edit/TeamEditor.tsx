@@ -2,17 +2,17 @@ import { TeamLegacyStatus } from "@ukdanceblue/common";
 import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
 import type { UseQueryExecute } from "urql";
 
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
-
 import { TeamEditorFragment } from "#documents/team.js";
+import type { FragmentOf } from "#graphql/index.js";
+import { readFragment } from "#graphql/index.js";
+
 import { useTeamEditorForm } from "./useTeamEditorForm.js";
 
 export function TeamEditor({
   teamFragment,
   refetchTeam,
 }: {
-  teamFragment?: FragmentType<typeof TeamEditorFragment> | undefined;
+  teamFragment?: FragmentOf<typeof TeamEditorFragment> | undefined;
   refetchTeam?: UseQueryExecute | undefined;
 }) {
   const { message } = App.useApp();
@@ -23,7 +23,7 @@ export function TeamEditor({
     }
   });
 
-  const teamData = getFragmentData(TeamEditorFragment, teamFragment);
+  const teamData = readFragment(TeamEditorFragment, teamFragment);
 
   if (!teamData) {
     return <Empty description="Team not found" style={{ marginTop: "1em" }} />;

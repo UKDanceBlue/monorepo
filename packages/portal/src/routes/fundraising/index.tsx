@@ -6,37 +6,43 @@ import { useState } from "react";
 import { useQuery } from "urql";
 
 import { FundraisingReportDialog } from "#elements/components/fundraising/FundraisingReportDialog";
-import { FundraisingEntriesTable } from "#elements/tables/fundraising/FundraisingEntriesTable";
-import { graphql } from "#graphql/gql";
+import {
+  FundraisingEntriesTable,
+  FundraisingEntryTableFragment,
+} from "#elements/tables/fundraising/FundraisingEntriesTable";
+import { graphql } from "#graphql/index";
 import { useListQuery } from "#hooks/useListQuery";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 import { routerAuthCheck } from "#tools/routerAuthCheck";
 
-const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
-  query ViewFundraisingEntriesDocument(
-    $page: Int
-    $pageSize: Int
-    $sortBy: [String!]
-    $sortDirection: [SortDirection!]
-    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
-    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
-    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
-    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
-  ) {
-    fundraisingEntries(
-      page: $page
-      pageSize: $pageSize
-      sortBy: $sortBy
-      sortDirection: $sortDirection
-      dateFilters: $dateFilters
-      oneOfFilters: $oneOfFilters
-      stringFilters: $stringFilters
-      numericFilters: $numericFilters
+const ViewTeamFundraisingDocument = graphql(
+  /* GraphQL */ `
+    query ViewFundraisingEntriesDocument(
+      $page: Int
+      $pageSize: Int
+      $sortBy: [String!]
+      $sortDirection: [SortDirection!]
+      $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
+      $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
+      $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
+      $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
     ) {
-      ...FundraisingEntryTableFragment
+      fundraisingEntries(
+        page: $page
+        pageSize: $pageSize
+        sortBy: $sortBy
+        sortDirection: $sortDirection
+        dateFilters: $dateFilters
+        oneOfFilters: $oneOfFilters
+        stringFilters: $stringFilters
+        numericFilters: $numericFilters
+      ) {
+        ...FundraisingEntryTableFragment
+      }
     }
-  }
-`);
+  `,
+  [FundraisingEntryTableFragment]
+);
 
 export const Route = createFileRoute("/fundraising/")({
   component: RouteComponent,

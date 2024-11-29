@@ -8,7 +8,7 @@ import type { ListRenderItem } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 import type { FragmentType } from "@/graphql/index";
-import { getFragmentData } from "@/graphql/index";
+import { readFragment } from "@/graphql/index";
 import { EventScreenFragment } from "@/navigation/root/EventScreen/EventScreenFragment";
 
 import { RNCAL_DATE_FORMAT } from "./constants";
@@ -33,7 +33,7 @@ export const EventListRenderItem = ({
     occurrenceUuid: string
   ) => void;
 }) => {
-  const eventData = getFragmentData(EventScreenFragment, event);
+  const eventData = readFragment(EventScreenFragment, event);
 
   const now = useMemo(() => DateTime.now(), []);
 

@@ -3,8 +3,8 @@ import { MembershipPositionType } from "@ukdanceblue/common";
 import { useMutation } from "urql";
 
 import { type MemberOf } from "#graphql/graphql.js";
-import type { DocumentType, FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
+import type { DocumentType, FragmentOf } from "#graphql/index.js";
+import { readFragment } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import {
@@ -14,7 +14,7 @@ import {
 
 export function useFundraisingEntryEditorForm(
   fundraisingEntryFragment:
-    | FragmentType<typeof FundraisingEntryEditorFragment>
+    | FragmentOf<typeof FundraisingEntryEditorFragment>
     | undefined
     | null,
   afterSubmit:
@@ -27,7 +27,7 @@ export function useFundraisingEntryEditorForm(
       ) => void | Promise<void>)
     | undefined
 ) {
-  const fundraisingEntryData = getFragmentData(
+  const fundraisingEntryData = readFragment(
     FundraisingEntryEditorFragment,
     fundraisingEntryFragment
   );

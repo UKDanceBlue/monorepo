@@ -12,7 +12,7 @@ import { useMemo } from "react";
 import type { Client, OperationResult } from "urql";
 import { useQuery } from "urql";
 
-import type { LoginStateQuery } from "#graphql/graphql.js";
+import type { ResultOf, VariablesOf } from "#graphql/index.js";
 import { graphql } from "#graphql/index.js";
 
 const loginStateDocument = graphql(/* GraphQL */ `
@@ -47,8 +47,15 @@ export interface PortalAuthData {
 }
 
 function parseLoginState(
-  result: // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  { data?: OperationResult<LoginStateQuery, {}>["data"] } | undefined | null
+  result:
+    | {
+        data?: OperationResult<
+          ResultOf<typeof loginStateDocument>,
+          VariablesOf<typeof loginStateDocument>
+        >["data"];
+      }
+    | undefined
+    | null
 ): PortalAuthData {
   if (result?.data == null) {
     return {

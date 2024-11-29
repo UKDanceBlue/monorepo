@@ -1,7 +1,7 @@
 import { Image, type ImageProps } from "expo-image";
 
 import type { FragmentType } from "@/graphql/index";
-import { getFragmentData, graphql } from "@/graphql/index";
+import { graphql,readFragment } from "@/graphql/index";
 
 export const ImageViewFragment = graphql(/* GraphQL */ `
   fragment ImageViewFragment on ImageNode {
@@ -29,7 +29,7 @@ export default function ImageView({
   renderHeight,
   ...imageProps
 }: ImageViewProps) {
-  const imageData = getFragmentData(ImageViewFragment, imageFragment);
+  const imageData = readFragment(ImageViewFragment, imageFragment);
 
   let width = renderWidth;
   let height = renderHeight;

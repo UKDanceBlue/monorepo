@@ -5,7 +5,7 @@ import { ActivityIndicator } from "react-native";
 import { useQuery } from "urql";
 
 import { SimpleConfigFragment } from "@/common/fragments/Configuration";
-import { getFragmentData, graphql } from "@/graphql/index";
+import { graphql,readFragment } from "@/graphql/index";
 
 const stationNumberToName = (stationNumber: number) => {
   switch (stationNumber) {
@@ -56,13 +56,12 @@ export function TriviaCrack() {
   });
 
   const [spins, setSpins] = useState<number[] | null>(null);
-  const option = getFragmentData(
+  const option = readFragment(
     SimpleConfigFragment,
     data?.activeConfiguration.data
   );
 
   const { stationOrder, moraleTeamNumber } = useMemo(() => {
-     
     const value = JSON.parse(option?.value || "{}") as unknown;
     let stationOrder: [number, number, number, number, number, number] | null =
       null;

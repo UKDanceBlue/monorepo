@@ -12,8 +12,8 @@ import {
 } from "antd";
 import { useReducer, useRef, useState } from "react";
 
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
+import type { FragmentOf } from "#graphql/index.js";
+import { readFragment } from "#graphql/index.js";
 
 import { PointEntryCreatorFragment } from "../../../../documents/pointEntry.js";
 import { PointEntryOpportunityLookup } from "./PointEntryOpportunityLookup.js";
@@ -24,7 +24,7 @@ export function PointEntryCreator({
   team,
   refetch,
 }: {
-  team?: FragmentType<typeof PointEntryCreatorFragment>;
+  team?: FragmentOf<typeof PointEntryCreatorFragment>;
   refetch: () => void;
 }) {
   const { message } = App.useApp();
@@ -82,7 +82,7 @@ export function PointEntryCreator({
     },
   ];
 
-  const teamData = getFragmentData(PointEntryCreatorFragment, team);
+  const teamData = readFragment(PointEntryCreatorFragment, team);
 
   const [personLookupKey, resetLookup] = useReducer(
     (prev: number) => prev + 1,

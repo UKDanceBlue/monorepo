@@ -1,16 +1,23 @@
+import { PointEntryTableFragment } from "#elements/tables/point-entry/PointEntryTable.tsx";
+import { TeamViewerFragment } from "#elements/viewers/team/TeamViewer.tsx";
 import { graphql } from "#graphql/index.js";
 
-export const teamPageDocument = graphql(/* GraphQL */ `
-  query ViewTeamPage($teamUuid: GlobalId!) {
-    team(uuid: $teamUuid) {
-      ...PointEntryCreatorFragment
-      ...TeamViewerFragment
-      pointEntries {
-        ...PointEntryTableFragment
+import { PointEntryCreatorFragment } from "./pointEntry";
+
+export const teamPageDocument = graphql(
+  /* GraphQL */ `
+    query ViewTeamPage($teamUuid: GlobalId!) {
+      team(uuid: $teamUuid) {
+        ...PointEntryCreatorFragment
+        ...TeamViewerFragment
+        pointEntries {
+          ...PointEntryTableFragment
+        }
       }
     }
-  }
-`);
+  `,
+  [PointEntryCreatorFragment, TeamViewerFragment, PointEntryTableFragment]
+);
 
 export const teamCreatorDocument = graphql(/* GraphQL */ `
   mutation TeamCreator($input: CreateTeamInput!, $marathonUuid: GlobalId!) {

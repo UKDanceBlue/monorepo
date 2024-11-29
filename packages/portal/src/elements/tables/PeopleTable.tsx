@@ -10,7 +10,7 @@ import {
 import { Button, Flex, Table } from "antd";
 import { useQuery } from "urql";
 
-import { getFragmentData, graphql } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 import { useListQuery } from "#hooks/useListQuery.js";
 import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
@@ -29,34 +29,37 @@ const PeopleTableFragment = graphql(/* GraphQL */ `
   }
 `);
 
-const peopleTableDocument = graphql(/* GraphQL */ `
-  query PeopleTable(
-    $page: Int
-    $pageSize: Int
-    $sortBy: [String!]
-    $sortDirection: [SortDirection!]
-    $isNullFilters: [PersonResolverKeyedIsNullFilterItem!]
-    $oneOfFilters: [PersonResolverKeyedOneOfFilterItem!]
-    $stringFilters: [PersonResolverKeyedStringFilterItem!]
-  ) {
-    listPeople(
-      page: $page
-      pageSize: $pageSize
-      sortBy: $sortBy
-      sortDirection: $sortDirection
-      isNullFilters: $isNullFilters
-      oneOfFilters: $oneOfFilters
-      stringFilters: $stringFilters
+const peopleTableDocument = graphql(
+  /* GraphQL */ `
+    query PeopleTable(
+      $page: Int
+      $pageSize: Int
+      $sortBy: [String!]
+      $sortDirection: [SortDirection!]
+      $isNullFilters: [PersonResolverKeyedIsNullFilterItem!]
+      $oneOfFilters: [PersonResolverKeyedOneOfFilterItem!]
+      $stringFilters: [PersonResolverKeyedStringFilterItem!]
     ) {
-      page
-      pageSize
-      total
-      data {
-        ...PeopleTableFragment
+      listPeople(
+        page: $page
+        pageSize: $pageSize
+        sortBy: $sortBy
+        sortDirection: $sortDirection
+        isNullFilters: $isNullFilters
+        oneOfFilters: $oneOfFilters
+        stringFilters: $stringFilters
+      ) {
+        page
+        pageSize
+        total
+        data {
+          ...PeopleTableFragment
+        }
       }
     }
-  }
-`);
+  `,
+  [PeopleTableFragment]
+);
 
 export const PeopleTable = () => {
   const {
@@ -101,10 +104,9 @@ export const PeopleTable = () => {
     loadingMessage: "Loading people...",
   });
 
-  const listPeopleData = getFragmentData(
-    PeopleTableFragment,
-    peopleDocument?.listPeople.data
-  );
+  const listPeopleData =
+    peopleDocument?.listPeople.data &&
+    readFragment(PeopleTableFragment, peopleDocument.listPeople.data);
 
   return (
     <>

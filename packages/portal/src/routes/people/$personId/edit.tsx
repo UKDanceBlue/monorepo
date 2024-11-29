@@ -2,23 +2,27 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
+import { PersonEditorFragment, TeamNameFragment } from "#documents/person.ts";
 import { PersonEditor } from "#elements/forms/person/edit/PersonEditor.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
-const viewPersonPageDocument = graphql(/* GraphQL */ `
-  query EditPersonPage($uuid: GlobalId!) {
-    person(uuid: $uuid) {
-      ...PersonEditorFragment
-    }
-    teams(sendAll: true, sortBy: ["name"], sortDirection: [asc]) {
-      data {
-        ...TeamNameFragment
+const viewPersonPageDocument = graphql(
+  /* GraphQL */ `
+    query EditPersonPage($uuid: GlobalId!) {
+      person(uuid: $uuid) {
+        ...PersonEditorFragment
+      }
+      teams(sendAll: true, sortBy: ["name"], sortDirection: [asc]) {
+        data {
+          ...TeamNameFragment
+        }
       }
     }
-  }
-`);
+  `,
+  [PersonEditorFragment, TeamNameFragment]
+);
 
 export function EditPersonPage() {
   const { personId } = Route.useParams();

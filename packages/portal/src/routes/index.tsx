@@ -2,19 +2,25 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Typography } from "antd";
 import { useQuery } from "urql";
 
-import { PersonViewer } from "#elements/viewers/person/PersonViewer.js";
+import {
+  PersonViewer,
+  PersonViewerFragment,
+} from "#elements/viewers/person/PersonViewer.js";
 import { graphql } from "#graphql/index.js";
 import { useLoginState } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
-const ViewMePageDocument = graphql(/* GraphQL */ `
-  query HomePage {
-    me {
-      ...PersonViewerFragment
+const ViewMePageDocument = graphql(
+  /* GraphQL */ `
+    query HomePage {
+      me {
+        ...PersonViewerFragment
+      }
     }
-  }
-`);
+  `,
+  [PersonViewerFragment]
+);
 
 export const Route = createFileRoute("/")({
   component: HomePage,

@@ -11,8 +11,8 @@ import { DateTime } from "luxon";
 import { useEffect } from "react";
 import { useMutation } from "urql";
 
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
+import type { FragmentOf } from "#graphql/index.js";
+import { graphql,readFragment } from "#graphql/index.js";
 import type { UseListQueryHookReturn } from "#hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
@@ -116,7 +116,7 @@ export function FundraisingEntriesTable({
     never,
     never
   >;
-  data?: FragmentType<typeof FundraisingEntryTableFragment>;
+  data?: FragmentOf<typeof FundraisingEntryTableFragment>;
   loading: boolean;
   refresh: () => void;
   potentialAssignees?: { value: string; label: string }[];
@@ -149,7 +149,7 @@ export function FundraisingEntriesTable({
     clearFilter
   );
 
-  const fragmentData = getFragmentData(FundraisingEntryTableFragment, data);
+  const fragmentData = readFragment(FundraisingEntryTableFragment, data);
 
   return (
     <Table

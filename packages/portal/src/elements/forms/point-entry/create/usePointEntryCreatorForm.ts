@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form";
+import type { VariablesOf } from "gql.tada";
 import { useMutation } from "urql";
 
-import type { CreatePointEntryInput } from "#graphql/graphql.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import {
@@ -41,7 +41,10 @@ export function usePointEntryCreatorForm({
   });
 
   const Form = useForm<
-    Omit<CreatePointEntryInput, "teamUuid"> & { shouldAddToTeam: boolean }
+    Omit<
+      VariablesOf<typeof createPointEntryAndAssignDocument>["input"],
+      "teamUuid"
+    > & { shouldAddToTeam: boolean }
   >({
     defaultValues: {
       points: 0,

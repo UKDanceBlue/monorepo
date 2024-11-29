@@ -5,7 +5,7 @@ import { Button, Flex, Table } from "antd";
 import { DateTime } from "luxon";
 import { useQuery } from "urql";
 
-import { getFragmentData, graphql } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 import { useListQuery } from "#hooks/useListQuery.js";
 import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
@@ -22,36 +22,39 @@ const NotificationsTableFragment = graphql(/* GraphQL */ `
   }
 `);
 
-const notificationsTableQueryDocument = graphql(/* GraphQL */ `
-  query NotificationsTableQuery(
-    $page: Int
-    $pageSize: Int
-    $sortBy: [String!]
-    $sortDirection: [SortDirection!]
-    $dateFilters: [NotificationResolverKeyedDateFilterItem!]
-    $isNullFilters: [NotificationResolverKeyedIsNullFilterItem!]
-    $oneOfFilters: [NotificationResolverKeyedOneOfFilterItem!]
-    $stringFilters: [NotificationResolverKeyedStringFilterItem!]
-  ) {
-    notifications(
-      page: $page
-      pageSize: $pageSize
-      sortBy: $sortBy
-      sortDirection: $sortDirection
-      dateFilters: $dateFilters
-      isNullFilters: $isNullFilters
-      oneOfFilters: $oneOfFilters
-      stringFilters: $stringFilters
+const notificationsTableQueryDocument = graphql(
+  /* GraphQL */ `
+    query NotificationsTableQuery(
+      $page: Int
+      $pageSize: Int
+      $sortBy: [String!]
+      $sortDirection: [SortDirection!]
+      $dateFilters: [NotificationResolverKeyedDateFilterItem!]
+      $isNullFilters: [NotificationResolverKeyedIsNullFilterItem!]
+      $oneOfFilters: [NotificationResolverKeyedOneOfFilterItem!]
+      $stringFilters: [NotificationResolverKeyedStringFilterItem!]
     ) {
-      page
-      pageSize
-      total
-      data {
-        ...NotificationsTableFragment
+      notifications(
+        page: $page
+        pageSize: $pageSize
+        sortBy: $sortBy
+        sortDirection: $sortDirection
+        dateFilters: $dateFilters
+        isNullFilters: $isNullFilters
+        oneOfFilters: $oneOfFilters
+        stringFilters: $stringFilters
+      ) {
+        page
+        pageSize
+        total
+        data {
+          ...NotificationsTableFragment
+        }
       }
     }
-  }
-`);
+  `,
+  [NotificationsTableFragment]
+);
 
 export const NotificationsTable = () => {
   const {
@@ -97,10 +100,12 @@ export const NotificationsTable = () => {
     loadingMessage: "Loading notifications...",
   });
 
-  const listEventsData = getFragmentData(
-    NotificationsTableFragment,
-    notificationsDocument?.notifications.data
-  );
+  const listEventsData =
+    notificationsDocument?.notifications.data &&
+    readFragment(
+      NotificationsTableFragment,
+      notificationsDocument.notifications.data
+    );
 
   return (
     <>

@@ -17,6 +17,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@0no-co/graphqlsp@npm:^1.12.13":
+  version: 1.12.16
+  resolution: "@0no-co/graphqlsp@npm:1.12.16"
+  dependencies:
+    "@gql.tada/internal": "npm:^1.0.0"
+    graphql: "npm:^15.5.0 || ^16.0.0 || ^17.0.0"
+  peerDependencies:
+    graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
+    typescript: ^5.0.0
+  checksum: 10/2cff50e11ac07c202c9099958df7bf763d1028ab72b92c52e28fb8b14ab3aabd57f00e482ab613e6578aab56202c422c545981bae0eab5387ebbd04f58c016eb
+  languageName: node
+  linkType: hard
+
 "@ampproject/remapping@npm:^2.2.0, @ampproject/remapping@npm:^2.3.0":
   version: 2.3.0
   resolution: "@ampproject/remapping@npm:2.3.0"
@@ -3251,6 +3264,40 @@ __metadata:
   dependencies:
     type-fest: "npm:4.7.1"
   checksum: 10/c9473203cb3ad4710e3fdab4316ad7708a37f267b9fb13dedc1066c23f5915289073d08d671b629b73f7f9862f2df14088b1196734d772a13dc3ffb99b816c8c
+  languageName: node
+  linkType: hard
+
+"@gql.tada/cli-utils@npm:1.6.3":
+  version: 1.6.3
+  resolution: "@gql.tada/cli-utils@npm:1.6.3"
+  dependencies:
+    "@0no-co/graphqlsp": "npm:^1.12.13"
+    "@gql.tada/internal": "npm:1.0.8"
+    graphql: "npm:^15.5.0 || ^16.0.0 || ^17.0.0"
+  peerDependencies:
+    "@0no-co/graphqlsp": ^1.12.13
+    "@gql.tada/svelte-support": 1.0.1
+    "@gql.tada/vue-support": 1.0.1
+    graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
+    typescript: ^5.0.0
+  peerDependenciesMeta:
+    "@gql.tada/svelte-support":
+      optional: true
+    "@gql.tada/vue-support":
+      optional: true
+  checksum: 10/e9f9a295e7174ea54589408f7f2d0fa0c657e1f57c892463d028f98d370dbf27d248f44b7cb18b8448a15f5adb7ea302412b239b6d4d331d5373496cd332c85a
+  languageName: node
+  linkType: hard
+
+"@gql.tada/internal@npm:1.0.8, @gql.tada/internal@npm:^1.0.0":
+  version: 1.0.8
+  resolution: "@gql.tada/internal@npm:1.0.8"
+  dependencies:
+    "@0no-co/graphql.web": "npm:^1.0.5"
+  peerDependencies:
+    graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
+    typescript: ^5.0.0
+  checksum: 10/b1b85c05b7ccc0ee50820771db76c0191b14651d5c3528254cd6480227d2020517cee1977c7c731c646f259ab45049d90c0aebe34fcc2eb83b3cadf1dfe99d78
   languageName: node
   linkType: hard
 
@@ -9150,6 +9197,7 @@ __metadata:
     class-validator: "npm:^0.14.1"
     cypress: "npm:^13.15.2"
     cypress-vite: "npm:^1.5.0"
+    gql.tada: "npm:^1.8.10"
     graphql: "npm:^16.9.0"
     graphql-scalars: "npm:^1.23.0"
     lodash.isequal: "npm:^4.5.0"
@@ -15802,6 +15850,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"gql.tada@npm:^1.8.10":
+  version: 1.8.10
+  resolution: "gql.tada@npm:1.8.10"
+  dependencies:
+    "@0no-co/graphql.web": "npm:^1.0.5"
+    "@0no-co/graphqlsp": "npm:^1.12.13"
+    "@gql.tada/cli-utils": "npm:1.6.3"
+    "@gql.tada/internal": "npm:1.0.8"
+  peerDependencies:
+    typescript: ^5.0.0
+  bin:
+    gql-tada: bin/cli.js
+    gql.tada: bin/cli.js
+  checksum: 10/f62887df035c4b74c9601ae44c5a05d00a6ea80cb30875b19c3ad98f30706b289d183c63c4293a927aaab98c907058303a0c631e5be38940259eb442f1ba8134
+  languageName: node
+  linkType: hard
+
 "graceful-fs@npm:^4.1.11, graceful-fs@npm:^4.1.4, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.4, graceful-fs@npm:^4.2.6, graceful-fs@npm:^4.2.9":
   version: 4.2.11
   resolution: "graceful-fs@npm:4.2.11"
@@ -15895,7 +15960,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.9.0":
+"graphql@npm:^15.5.0 || ^16.0.0 || ^17.0.0, graphql@npm:^16.9.0":
   version: 16.9.0
   resolution: "graphql@npm:16.9.0"
   checksum: 10/5833f82bb6c31bec120bbf9cd400eda873e1bb7ef5c17974fa262cd82dc68728fda5d4cb859dc8aaa4c4fe4f6fe1103a9c47efc01a12c02ae5cb581d8e4029e2

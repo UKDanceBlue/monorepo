@@ -25,7 +25,7 @@ import { WebView } from "react-native-webview";
 import NativeBaseMarkdown from "@/common/components/NativeBaseMarkdown";
 import { Logger } from "@/common/logger/Logger";
 import { showMessage } from "@/common/util/alertUtils";
-import { getFragmentData } from "@/graphql/index";
+import { readFragment } from "@/graphql/index";
 
 import type { RootStackScreenProps } from "../../../types/navigationTypes";
 import { onAddToCalendar } from "./addToCalendar";
@@ -38,7 +38,7 @@ const EventScreen = () => {
 
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
-  const eventData = getFragmentData(EventScreenFragment, event);
+  const eventData = readFragment(EventScreenFragment, event);
 
   const maxHeight = useMemo(
     () =>

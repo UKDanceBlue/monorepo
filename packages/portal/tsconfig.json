@@ -27,7 +27,17 @@
       "#mocks/*": ["../mocks/*"]
     },
 
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+
+    "plugins": [
+      {
+        "name": "gql.tada/ts-plugin",
+        "schema": "../../schema.graphql",
+        "tadaOutputLocation": "./graphql/graphql-env.d.ts",
+        "shouldCheckForColocatedFragments": false,
+        "trackFieldUsage": false
+      }
+    ]
   },
   "include": ["./src", "./graphql", "./mocks", "./vite.config.ts"],
   "extends": "../../tsconfig.json"

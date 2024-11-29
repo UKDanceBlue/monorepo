@@ -9,8 +9,7 @@ import { Descriptions } from "antd";
 import { useQuery } from "urql";
 
 import { SpinningRibbon } from "#elements/components/design/RibbonSpinner";
-import { getFragmentData } from "#graphql/fragment-masking";
-import { graphql } from "#graphql/gql";
+import { graphql, readFragment } from "#graphql/index";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 import { routerAuthCheck } from "#tools/routerAuthCheck";
 
@@ -107,13 +106,16 @@ const ViewDdnFragment = graphql(/* GraphQL */ `
   }
 `);
 
-const viewDdnDocument = graphql(/* GraphQL */ `
-  query viewDdnDocument($id: GlobalId!) {
-    dailyDepartmentNotification(id: $id) {
-      ...ViewDdnFragment
+const viewDdnDocument = graphql(
+  /* GraphQL */ `
+    query viewDdnDocument($id: GlobalId!) {
+      dailyDepartmentNotification(id: $id) {
+        ...ViewDdnFragment
+      }
     }
-  }
-`);
+  `,
+  [ViewDdnFragment]
+);
 
 function RouteComponent() {
   const { ddnId } = useParams({
@@ -129,7 +131,7 @@ function RouteComponent() {
 
   useQueryStatusWatcher({ error, fetching });
 
-  const fragmentData = getFragmentData(
+  const fragmentData = readFragment(
     ViewDdnFragment,
     data?.dailyDepartmentNotification
   );

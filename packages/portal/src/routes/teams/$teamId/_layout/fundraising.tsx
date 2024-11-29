@@ -8,54 +8,60 @@ import { AutoComplete, Button, Flex, Form, Space } from "antd";
 import { useState } from "react";
 import { useMutation, useQuery } from "urql";
 
-import { FundraisingEntriesTable } from "#elements/tables/fundraising/FundraisingEntriesTable";
+import {
+  FundraisingEntriesTable,
+  FundraisingEntryTableFragment,
+} from "#elements/tables/fundraising/FundraisingEntriesTable";
 import { graphql } from "#graphql/index.js";
 import { useListQuery } from "#hooks/useListQuery.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
-const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
-  query ViewTeamFundraisingDocument(
-    $teamUuid: GlobalId!
-    $page: Int
-    $pageSize: Int
-    $sortBy: [String!]
-    $sortDirection: [SortDirection!]
-    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
-    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
-    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
-    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
-  ) {
-    team(uuid: $teamUuid) {
-      solicitationCode {
-        id
-        name
-        prefix
-        code
-      }
-      members {
-        person {
+const ViewTeamFundraisingDocument = graphql(
+  /* GraphQL */ `
+    query ViewTeamFundraisingDocument(
+      $teamUuid: GlobalId!
+      $page: Int
+      $pageSize: Int
+      $sortBy: [String!]
+      $sortDirection: [SortDirection!]
+      $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
+      $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
+      $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
+      $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
+    ) {
+      team(uuid: $teamUuid) {
+        solicitationCode {
           id
           name
-          linkblue
+          prefix
+          code
+        }
+        members {
+          person {
+            id
+            name
+            linkblue
+          }
+        }
+        fundraisingEntries(
+          page: $page
+          pageSize: $pageSize
+          sortBy: $sortBy
+          sortDirection: $sortDirection
+          dateFilters: $dateFilters
+          oneOfFilters: $oneOfFilters
+          stringFilters: $stringFilters
+          numericFilters: $numericFilters
+        ) {
+          ...FundraisingEntryTableFragment
         }
       }
-      fundraisingEntries(
-        page: $page
-        pageSize: $pageSize
-        sortBy: $sortBy
-        sortDirection: $sortDirection
-        dateFilters: $dateFilters
-        oneOfFilters: $oneOfFilters
-        stringFilters: $stringFilters
-        numericFilters: $numericFilters
-      ) {
-        ...FundraisingEntryTableFragment
-      }
     }
-  }
-`);
+  `,
+  [FundraisingEntryTableFragment]
+);
 
 const SolicitationCodesDocument = graphql(/* GraphQL */ `
   query SolicitationCodes {

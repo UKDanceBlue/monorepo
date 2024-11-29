@@ -4,21 +4,17 @@ import type { Interval } from "luxon";
 import type { UseQueryExecute } from "urql";
 import { useMutation } from "urql";
 
-import type {
-  SetEventInput,
-  SetEventOccurrenceInput,
-} from "#graphql/graphql.js";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
+import type { FragmentOf, VariablesOf } from "#graphql/index.js";
+import { readFragment } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import { eventEditorDocument, EventEditorFragment } from "./EventEditorGQL.js";
 
 export function useEventEditorForm(
-  eventFragment: FragmentType<typeof EventEditorFragment> | undefined,
+  eventFragment: FragmentOf<typeof EventEditorFragment> | undefined,
   refetchEvent: UseQueryExecute | undefined
 ) {
-  const eventData = getFragmentData(EventEditorFragment, eventFragment);
+  const eventData = readFragment(EventEditorFragment, eventFragment);
 
   // Form
   const [{ fetching, error }, setEvent] = useMutation(eventEditorDocument);
@@ -29,8 +25,11 @@ export function useEventEditorForm(
   });
 
   const Form = useForm<
-    Omit<SetEventInput, "occurrences"> & {
-      occurrences: (Omit<SetEventOccurrenceInput, "uuid" | "interval"> & {
+    Omit<VariablesOf<typeof eventEditorDocument>["input"], "occurrences"> & {
+      occurrences: (Omit<
+        VariablesOf<typeof eventEditorDocument>["input"]["occurrences"][number],
+        "uuid" | "interval"
+      > & {
         uuid?: string;
         interval: Interval;
       })[];

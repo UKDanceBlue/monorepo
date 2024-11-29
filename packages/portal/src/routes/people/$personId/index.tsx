@@ -3,19 +3,25 @@ import { useParams } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
-import { PersonViewer } from "#elements/viewers/person/PersonViewer.js";
+import {
+  PersonViewer,
+  PersonViewerFragment,
+} from "#elements/viewers/person/PersonViewer.js";
 import { graphql } from "#graphql/index.js";
 import { useLoginState } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
-const viewPersonPageDocument = graphql(/* GraphQL */ `
-  query ViewPersonPage($uuid: GlobalId!) {
-    person(uuid: $uuid) {
-      ...PersonViewerFragment
+const viewPersonPageDocument = graphql(
+  /* GraphQL */ `
+    query ViewPersonPage($uuid: GlobalId!) {
+      person(uuid: $uuid) {
+        ...PersonViewerFragment
+      }
     }
-  }
-`);
+  `,
+  [PersonViewerFragment]
+);
 
 function ViewPersonPage() {
   const { authorization } = useLoginState();

@@ -10,13 +10,11 @@ import { Button, Flex, Table } from "antd";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 
-import type { TeamsTableFragmentFragment } from "#graphql/graphql";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
+import { PaginationFragment } from "#documents/team.ts";
+import type { FragmentOf } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 import type { UseListQueryHookReturn } from "#hooks/useListQuery.js";
 import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps.js";
-
-import { PaginationFragment } from "#documents/team.ts";
 
 export const TeamsTableFragment = graphql(/* GraphQL */ `
   fragment TeamsTableFragment on TeamNode {
@@ -37,8 +35,8 @@ export const TeamsTable = ({
   additionalActions,
 }: {
   selectedMarathonId?: string | undefined;
-  dataFragment: readonly FragmentType<typeof TeamsTableFragment>[] | undefined;
-  paginationFragment?: FragmentType<typeof PaginationFragment> | undefined;
+  dataFragment: readonly FragmentOf<typeof TeamsTableFragment>[] | undefined;
+  paginationFragment?: FragmentOf<typeof PaginationFragment> | undefined;
   listQuery?:
     | UseListQueryHookReturn<
         "totalPoints" | "name" | "type" | "legacyStatus" | "marathonId",
@@ -53,7 +51,7 @@ export const TeamsTable = ({
   loading: boolean;
   additionalActions?: {
     icon: ReactNode;
-    onClick: (record: TeamsTableFragmentFragment) => void;
+    onClick: (record: { id: string }) => void;
     key?: string;
   }[];
 }) => {
@@ -74,8 +72,9 @@ export const TeamsTable = ({
     }
   }, [selectedMarathonId, listQuery]);
 
-  const data = getFragmentData(TeamsTableFragment, dataFragment);
-  const pagination = getFragmentData(PaginationFragment, paginationFragment);
+  const data = dataFragment && readFragment(TeamsTableFragment, dataFragment);
+  const pagination =
+    paginationFragment && readFragment(PaginationFragment, paginationFragment);
 
   return (
     <Table

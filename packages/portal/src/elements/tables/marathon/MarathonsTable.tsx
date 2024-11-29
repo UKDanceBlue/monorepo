@@ -1,7 +1,7 @@
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { Button, Empty, Table } from "antd";
 
-import type { FragmentType } from "#graphql/index.js";
+import type { FragmentOf } from "#graphql/index.js";
 import { graphql } from "#graphql/index.js";
 
 export const MarathonTableFragment = graphql(/* GraphQL */ `
@@ -17,7 +17,7 @@ export const MarathonsTable = ({
   marathons,
 }: {
   marathons?:
-    | readonly FragmentType<typeof MarathonTableFragment>[]
+    | readonly FragmentOf<typeof MarathonTableFragment>[]
     | null
     | undefined;
 }) => {

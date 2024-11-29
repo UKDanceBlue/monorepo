@@ -5,29 +5,31 @@ import { useState } from "react";
 import { useQuery } from "urql";
 
 import { TeamSelectFragment } from "#documents/team.ts";
-import { getFragmentData } from "#graphql/fragment-masking";
-import { graphql } from "#graphql/gql";
-import type { TeamSelectFragment as TeamSelectFragmentData } from "#graphql/graphql";
+import { graphql } from "#graphql/index";
+import { readFragment } from "#graphql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback";
 
-const teamSelectDocument = graphql(/* GraphQL */ `
-  query TeamSelect($search: String!) {
-    teams(
-      stringFilters: { comparison: SUBSTRING, value: $search, field: name }
-      sendAll: true
-    ) {
-      data {
-        ...TeamSelect
+const teamSelectDocument = graphql(
+  /* GraphQL */ `
+    query TeamSelect($search: String!) {
+      teams(
+        stringFilters: { comparison: SUBSTRING, value: $search, field: name }
+        sendAll: true
+      ) {
+        data {
+          ...TeamSelect
+        }
       }
     }
-  }
-`);
+  `,
+  [TeamSelectFragment]
+);
 
 export function TeamSelect({
   onSelect,
   ...props
 }: {
-  onSelect: (team: TeamSelectFragmentData) => Promise<void> | void;
+  onSelect: (team: { id: string }) => Promise<void> | void;
 } & Omit<
   AutoCompleteProps<string>,
   "options" | "onSelect" | "onSearch" | "suffixIcon"
@@ -39,9 +41,9 @@ export function TeamSelect({
     pause: search.length < 3,
   });
 
-  const fragmentData = getFragmentData(
+  const fragmentData = readFragment(
     TeamSelectFragment,
-    result.data?.teams.data
+    result.data?.teams.data ?? []
   );
 
   const { showErrorMessage } = useAntFeedback();
@@ -51,19 +53,15 @@ export function TeamSelect({
       placeholder="Search for a team"
       {...props}
       style={{ minWidth: 300, ...props.style }}
-      options={
-        search.length < 3
-          ? []
-          : fragmentData?.map((team) => ({
-              label: team.name,
-              value: team.id,
-            }))
-      }
+      options={fragmentData.map((team) => ({
+        label: team.name,
+        value: team.id,
+      }))}
       value={search}
       suffixIcon={result.fetching && <LoadingOutlined spin />}
       onSearch={setSearch}
       onSelect={(value) => {
-        const team = fragmentData?.find((team) => team.id === value);
+        const team = fragmentData.find((team) => team.id === value);
         if (team) {
           setSearch(team.name);
           Promise.resolve(onSelect(team))

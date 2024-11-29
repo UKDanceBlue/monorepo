@@ -3,10 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import type { Interval } from "luxon";
 import { useMutation } from "urql";
 
-import type {
-  SetEventInput,
-  SetEventOccurrenceInput,
-} from "#graphql/graphql.js";
+import type { InputOf } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import { eventCreatorDocument } from "./EventCreatorGQL.js";
@@ -22,8 +19,11 @@ export function useEventCreatorForm() {
   });
 
   const Form = useForm<
-    Omit<SetEventInput, "occurrences"> & {
-      occurrences: (Omit<SetEventOccurrenceInput, "uuid" | "interval"> & {
+    Omit<InputOf<typeof eventCreatorDocument>, "occurrences"> & {
+      occurrences: (Omit<
+        InputOf<typeof eventCreatorDocument>["occurrences"][number],
+        "uuid" | "interval"
+      > & {
         uuid?: string;
         interval: Interval;
       })[];

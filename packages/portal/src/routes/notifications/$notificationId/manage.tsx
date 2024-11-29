@@ -2,18 +2,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
+import { SingleNotificationFragment } from "#documents/notification.ts";
 import { ManageNotificationForm } from "#elements/forms/notification/manage/ManageNotificationForm.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
-const notificationManagerDocument = graphql(/* GraphQL */ `
-  query NotificationManager($uuid: GlobalId!) {
-    notification(uuid: $uuid) {
-      ...SingleNotificationFragment
+const notificationManagerDocument = graphql(
+  /* GraphQL */ `
+    query NotificationManager($uuid: GlobalId!) {
+      notification(uuid: $uuid) {
+        ...SingleNotificationFragment
+      }
     }
-  }
-`);
+  `,
+  [SingleNotificationFragment]
+);
 
 function ManageNotificationPage() {
   const { notificationId } = Route.useParams();
