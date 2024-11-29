@@ -5,6 +5,7 @@ import { Authorized } from "type-graphql";
 import type { Primitive } from "utility-types";
 
 import { parseGlobalId } from "../api/scalars/GlobalId.js";
+import type { InvalidArgumentError } from "../error/direct.js";
 import { InvariantError } from "../error/direct.js";
 import {
   type Authorization,
@@ -173,7 +174,7 @@ export function checkParam<RootType extends object = never>(
   root: RootType,
   args: ArgsDictionary,
   context: AccessControlContext
-): Result<boolean, InvariantError> {
+): Result<boolean, InvariantError | InvalidArgumentError> {
   if (rule.accessLevel != null) {
     if (rule.accessLevel > authorization.accessLevel) {
       return Ok(false);
@@ -207,9 +208,13 @@ export function checkParam<RootType extends object = never>(
       let argValue: Primitive | Primitive[];
       if (match.argument === "id") {
         // I think this code might be wrong, but I'm not 100% sure either way and don't have time to investigate
-        argValue = parseGlobalId(args.id as string)
-          .map(({ id: id }) => args[id] as Primitive | Primitive[])
-          .unwrapOr(null);
+        const parseReult = parseGlobalId(args.id as string).map(
+          ({ id: id }) => args[id] as Primitive | Primitive[]
+        );
+        if (parseReult.isErr()) {
+          return parseReult;
+        }
+        argValue = parseReult.value;
       } else if (typeof match.argument === "string") {
         argValue = args[match.argument] as Primitive | Primitive[];
       } else {

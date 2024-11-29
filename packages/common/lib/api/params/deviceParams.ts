@@ -3,15 +3,10 @@ import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { DeviceNode } from "../resources/Device.js";
 import { GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
-import {
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
-@ObjectType("GetDeviceByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<DeviceNode>,
-})
-export class GetDeviceByUuidResponse extends AbstractGraphQLOkResponse<DeviceNode> {
+@ObjectType("GetDeviceByUuidResponse")
+export class GetDeviceByUuidResponse {
   @Field(() => DeviceNode)
   data!: DeviceNode;
 }
@@ -22,18 +17,14 @@ export class ListDevicesResponse extends AbstractGraphQLPaginatedResponse<Device
   @Field(() => [DeviceNode])
   data!: DeviceNode[];
 }
-@ObjectType("RegisterDeviceResponse", {
-  implements: AbstractGraphQLOkResponse<DeviceNode>,
-})
-export class RegisterDeviceResponse extends AbstractGraphQLOkResponse<DeviceNode> {
+@ObjectType("RegisterDeviceResponse")
+export class RegisterDeviceResponse {
+  @Field(() => Boolean)
+  ok!: true;
+
   @Field(() => DeviceNode)
   data!: DeviceNode;
 }
-@ObjectType("DeleteDeviceResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class DeleteDeviceResponse extends AbstractGraphQLOkResponse<never> {}
-
 @InputType()
 export class RegisterDeviceInput {
   @Field(() => String, {

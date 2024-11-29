@@ -8,19 +8,8 @@ import {
 } from "../resources/Notification.js";
 import { TeamType } from "../resources/Team.js";
 import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
-import {
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
-@ObjectType("GetNotificationByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<NotificationNode>,
-})
-export class GetNotificationByUuidResponse extends AbstractGraphQLOkResponse<NotificationNode> {
-  @Field(() => NotificationNode)
-  data!: NotificationNode;
-}
 @ObjectType("ListNotificationsResponse", {
   implements: AbstractGraphQLPaginatedResponse<NotificationNode>,
 })
@@ -57,54 +46,6 @@ export class StageNotificationArgs {
 
   @Field(() => NotificationAudienceInput)
   audience!: NotificationAudienceInput;
-}
-
-@ObjectType("StageNotificationResponse", {
-  implements: AbstractGraphQLCreatedResponse<NotificationNode>,
-})
-export class StageNotificationResponse extends AbstractGraphQLCreatedResponse<NotificationNode> {
-  @Field(() => NotificationNode)
-  data!: NotificationNode;
-}
-
-@ObjectType("SendNotificationResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class SendNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
-
-@ObjectType("ScheduleNotificationResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class ScheduleNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
-
-@ObjectType("AcknowledgeDeliveryIssueResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class AcknowledgeDeliveryIssueResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
-
-@ObjectType("AbortScheduledNotificationResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class AbortScheduledNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
-
-@ObjectType("DeleteNotificationResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class DeleteNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
 }
 
 @ArgsType()
