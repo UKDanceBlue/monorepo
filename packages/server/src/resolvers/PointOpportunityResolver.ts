@@ -112,12 +112,12 @@ export class PointOpportunityResolver
       },
     ],
   })
-  @Mutation(() => CreatePointOpportunityResponse, {
+  @Mutation(() => PointOpportunityNode, {
     name: "createPointOpportunity",
   })
   async createPointOpportunity(
     @Arg("input") input: CreatePointOpportunityInput
-  ): Promise<CreatePointOpportunityResponse> {
+  ): Promise<PointOpportunityNode> {
     const row = await this.pointOpportunityRepository.createPointOpportunity({
       name: input.name,
       type: input.type,
@@ -126,9 +126,7 @@ export class PointOpportunityResolver
       marathon: { uuid: input.marathonUuid.id },
     });
 
-    return CreatePointOpportunityResponse.newCreated(
-      pointOpportunityModelToResource(row)
-    );
+    return pointOpportunityModelToResource(row);
   }
 
   @AccessControlAuthorized({
@@ -139,13 +137,13 @@ export class PointOpportunityResolver
       },
     ],
   })
-  @Mutation(() => SinglePointOpportunityResponse, {
+  @Mutation(() => PointOpportunityNode, {
     name: "setPointOpportunity",
   })
   async setPointOpportunity(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPointOpportunityInput
-  ): Promise<SinglePointOpportunityResponse> {
+  ): Promise<PointOpportunityNode> {
     const row = await this.pointOpportunityRepository.updatePointOpportunity(
       { uuid: id },
       {
@@ -163,9 +161,7 @@ export class PointOpportunityResolver
       );
     }
 
-    return SinglePointOpportunityResponse.newOk(
-      pointOpportunityModelToResource(row)
-    );
+    return pointOpportunityModelToResource(row);
   }
 
   @AccessControlAuthorized({
@@ -176,12 +172,12 @@ export class PointOpportunityResolver
       },
     ],
   })
-  @Mutation(() => DeletePointOpportunityResponse, {
+  @Mutation(() => PointOpportunityNode, {
     name: "deletePointOpportunity",
   })
   async deletePointOpportunity(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<DeletePointOpportunityResponse> {
+  ): Promise<PointOpportunityNode> {
     const row = await this.pointOpportunityRepository.deletePointOpportunity({
       uuid: id,
     });
@@ -193,7 +189,7 @@ export class PointOpportunityResolver
       );
     }
 
-    return DeletePointOpportunityResponse.newOk(true);
+    return pointOpportunityModelToResource(row);
   }
 
   @FieldResolver(() => EventNode, { nullable: true })

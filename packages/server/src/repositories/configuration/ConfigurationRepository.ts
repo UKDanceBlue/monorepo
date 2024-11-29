@@ -143,7 +143,7 @@ export class ConfigurationRepository {
       ([_, existing]) => !existing
     );
 
-    return this.prisma.configuration.createMany({
+    return this.prisma.configuration.createManyAndReturn({
       data: newConfigurations.map(([configuration]) => ({
         key: configuration.key,
         value: configuration.value,

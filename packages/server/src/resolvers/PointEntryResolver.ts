@@ -49,10 +49,10 @@ export class PointEntryResolver {
   @AccessControlAuthorized({
     accessLevel: AccessLevel.Committee,
   })
-  @Query(() => GetPointEntryByUuidResponse, { name: "pointEntry" })
+  @Query(() => PointEntryNode, { name: "pointEntry" })
   async getByUuid(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<GetPointEntryByUuidResponse> {
+  ): Promise<PointEntryNode> {
     const model = await this.pointEntryRepository.findPointEntryByUnique({
       uuid: id,
     });
@@ -61,7 +61,7 @@ export class PointEntryResolver {
       throw new LegacyError(LegacyErrorCode.NotFound, "PointEntry not found");
     }
 
-    return GetPointEntryByUuidResponse.newOk(pointEntryModelToResource(model));
+    return pointEntryModelToResource(model);
   }
 
   @AccessControlAuthorized({
@@ -106,10 +106,10 @@ export class PointEntryResolver {
       },
     ],
   })
-  @Mutation(() => CreatePointEntryResponse, { name: "createPointEntry" })
+  @Mutation(() => PointEntryNode, { name: "createPointEntry" })
   async create(
     @Arg("input") input: CreatePointEntryInput
-  ): Promise<CreatePointEntryResponse> {
+  ): Promise<PointEntryNode> {
     const model = await this.pointEntryRepository.createPointEntry({
       points: input.points,
       comment: input.comment,
@@ -122,9 +122,7 @@ export class PointEntryResolver {
       teamParam: { uuid: input.teamUuid.id },
     });
 
-    return CreatePointEntryResponse.newCreated(
-      pointEntryModelToResource(model)
-    );
+    return pointEntryModelToResource(model);
   }
 
   @AccessControlAuthorized({
@@ -135,13 +133,22 @@ export class PointEntryResolver {
       },
     ],
   })
-  @Mutation(() => DeletePointEntryResponse, { name: "deletePointEntry" })
+  @Mutation(() => PointEntryNode, { name: "deletePointEntry" })
   async delete(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<DeletePointEntryResponse> {
-    await this.pointEntryRepository.deletePointEntry({ uuid: id });
+  ): Promise<ConcreteResult<PointEntryNode>> {
+    const row = await this.pointEntryRepository.deletePointEntry({ uuid: id });
 
-    return DeletePointEntryResponse.newOk(true);
+    if (row == null) {
+      return Err(
+        new NotFoundError({
+          what: "PointEntry",
+          why: `couldn't find point entry ${id}`,
+        })
+      );
+    }
+
+    return Ok(pointEntryModelToResource(row));
   }
 
   @FieldResolver(() => PersonNode, { nullable: true })

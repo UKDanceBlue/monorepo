@@ -37,24 +37,22 @@ export class ImageResolver {
     private readonly fileManager: FileManager
   ) {}
 
-  @Query(() => GetImageByUuidResponse, { name: "image" })
+  @Query(() => ImageNode, { name: "image" })
   async getByUuid(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Ctx() { serverUrl }: GraphQLContext
-  ): Promise<GetImageByUuidResponse> {
+  ): Promise<ImageNode> {
     const result = await this.imageRepository.findImageByUnique({ uuid: id });
 
     if (result == null) {
       throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
     }
 
-    return GetImageByUuidResponse.newOk(
-      await imageModelToResource(
-        result,
-        result.file,
-        this.fileManager,
-        serverUrl
-      )
+    return imageModelToResource(
+      result,
+      result.file,
+      this.fileManager,
+      serverUrl
     );
   }
 
@@ -226,10 +224,11 @@ export class ImageResolver {
   @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
-  @Mutation(() => DeleteImageResponse, { name: "deleteImage" })
+  @Mutation(() => ImageNode, { name: "deleteImage" })
   async delete(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<DeleteImageResponse> {
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Ctx() { serverUrl }: GraphQLContext
+  ): Promise<ImageNode> {
     const result = await this.imageRepository.deleteImage({ uuid: id });
 
     if (result == null) {
@@ -238,7 +237,12 @@ export class ImageResolver {
 
     auditLogger.secure("Image deleted", { image: result });
 
-    return DeleteImageResponse.newOk(true);
+    return imageModelToResource(
+      result,
+      result.file,
+      this.fileManager,
+      serverUrl
+    );
   }
 }
 

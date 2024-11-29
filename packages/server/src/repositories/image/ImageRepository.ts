@@ -108,7 +108,11 @@ export class ImageRepository {
 
   deleteImage(param: UniqueImageParam) {
     try {
-      return this.prisma.image.delete({ where: param });
+      // TODO: Clean up orphaned files
+      return this.prisma.image.delete({
+        where: param,
+        include: { file: true },
+      });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

@@ -120,15 +120,14 @@ export class NodeResolver {
         return this.solicitationCodeResolver.solicitationCode(id);
       }
       case ConfigurationNode.constructor.name: {
-        const data = await this.configurationResolver.getByUuid(id);
-        return data.map(({ data }) => data);
+        return this.configurationResolver.getByUuid(id);
       }
       case DeviceNode.constructor.name: {
-        const { data } = await this.deviceResolver.getByUuid(id.id);
+        const data = await this.deviceResolver.getByUuid(id.id);
         return Ok(data);
       }
       case EventNode.constructor.name: {
-        const { data } = await this.eventResolver.getByUuid(id);
+        const data = await this.eventResolver.getByUuid(id);
         return Ok(data);
       }
       case FeedResolver.constructor.name: {
@@ -141,7 +140,7 @@ export class NodeResolver {
         return this.fundraisingEntryResolver.fundraisingEntry(id);
       }
       case ImageNode.constructor.name: {
-        const { data } = await this.imageResolver.getByUuid(id, ctx);
+        const data = await this.imageResolver.getByUuid(id, ctx);
         return Ok(data);
       }
       case MarathonHourNode.constructor.name: {
@@ -152,18 +151,17 @@ export class NodeResolver {
         return this.marathonResolver.marathon(id);
       }
       case NotificationNode.constructor.name: {
-        const result = await this.notificationResolver.getByUuid(id);
-        return result.map(({ data }) => data);
+        return this.notificationResolver.getByUuid(id);
       }
       case PersonNode.constructor.name: {
         return this.personResolver.getByUuid(id);
       }
       case PointOpportunityNode.constructor.name: {
-        const { data } = await this.pointOpportunityResolver.getByUuid(id);
+        const data = await this.pointOpportunityResolver.getByUuid(id);
         return Ok(data);
       }
       case PointEntryNode.constructor.name: {
-        const { data } = await this.pointEntryResolver.getByUuid(id);
+        const data = await this.pointEntryResolver.getByUuid(id);
         return Ok(data);
       }
       case TeamNode.constructor.name: {

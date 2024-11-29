@@ -57,19 +57,19 @@ export class ConfigurationResolver {
       );
     }
 
-    return Ok(
-      GetConfigurationResponse.newOk(configurationModelToResource(row))
-    );
+    const resp = new GetConfigurationResponse();
+    resp.data = configurationModelToResource(row);
+    return Ok(resp);
   }
 
   @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
-  @Query(() => GetConfigurationResponse, {
+  @Query(() => ConfigurationNode, {
     name: "configuration",
     description: "Get a particular configuration entry by UUID",
   })
   async getByUuid(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<GetConfigurationResponse>> {
+  ): Promise<ConcreteResult<ConfigurationNode>> {
     const row = await this.configurationRepository.findConfigurationByUnique({
       uuid: id,
     });
@@ -83,35 +83,31 @@ export class ConfigurationResolver {
       );
     }
 
-    return Ok(
-      GetConfigurationResponse.newOk(configurationModelToResource(row))
-    );
+    return Ok(configurationModelToResource(row));
   }
 
   @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
-  @Query(() => GetAllConfigurationsResponse, {
+  @Query(() => [ConfigurationNode], {
     name: "allConfigurations",
     description: "Get all configurations, irrespective of time",
   })
-  async getAll(): Promise<ConcreteResult<GetAllConfigurationsResponse>> {
+  async getAll(): Promise<ConcreteResult<ConfigurationNode[]>> {
     const rows = await this.configurationRepository.findConfigurations(null, [
       ["createdAt", SortDirection.desc],
     ]);
 
-    return Ok(
-      GetAllConfigurationsResponse.newOk(rows.map(configurationModelToResource))
-    );
+    return Ok(rows.map(configurationModelToResource));
   }
 
   @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
-  @Mutation(() => CreateConfigurationResponse, {
+  @Mutation(() => ConfigurationNode, {
     name: "createConfiguration",
     description:
       "Create a new configuration, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)",
   })
   async create(
     @Arg("input") input: CreateConfigurationInput
-  ): Promise<ConcreteResult<CreateConfigurationResponse>> {
+  ): Promise<ConcreteResult<ConfigurationNode>> {
     const row = await this.configurationRepository.createConfiguration({
       key: input.key,
       value: input.value,
@@ -121,13 +117,11 @@ export class ConfigurationResolver {
 
     auditLogger.dangerous("Configuration created", { configuration: row });
 
-    return Ok(
-      CreateConfigurationResponse.newCreated(configurationModelToResource(row))
-    );
+    return Ok(configurationModelToResource(row));
   }
 
   @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
-  @Mutation(() => CreateConfigurationResponse, {
+  @Mutation(() => [ConfigurationNode], {
     name: "createConfigurations",
     description:
       "Create multiple configurations, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)",
@@ -135,8 +129,7 @@ export class ConfigurationResolver {
   async batchCreate(
     @Arg("input", () => [CreateConfigurationInput])
     input: CreateConfigurationInput[]
-  ): Promise<ConcreteResult<CreateConfigurationsResponse>> {
-    // TODO: This should be converted into a batch operation
+  ): Promise<ConcreteResult<ConfigurationNode[]>> {
     const rows = await this.configurationRepository.bulkCreateConfigurations(
       input.map((i) => ({
         key: i.key,
@@ -150,17 +143,17 @@ export class ConfigurationResolver {
       configurations: rows,
     });
 
-    return Ok(CreateConfigurationsResponse.newOk(""));
+    return Ok(rows.map(configurationModelToResource));
   }
 
   @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
-  @Mutation(() => DeleteConfigurationResponse, {
+  @Mutation(() => ConfigurationNode, {
     name: "deleteConfiguration",
     description: "Delete a configuration by UUID",
   })
   async delete(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<DeleteConfigurationResponse>> {
+  ): Promise<ConcreteResult<ConfigurationNode>> {
     const row = await this.configurationRepository.deleteConfiguration(id);
 
     if (row == null) {
@@ -174,7 +167,7 @@ export class ConfigurationResolver {
 
     auditLogger.dangerous("Configuration deleted", { configuration: row });
 
-    return Ok(DeleteConfigurationResponse.newOk(true));
+    return Ok(configurationModelToResource(row));
   }
 
   @AccessControlAuthorized({ accessLevel: AccessLevel.SuperAdmin })

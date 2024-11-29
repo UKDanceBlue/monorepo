@@ -7,18 +7,15 @@ import {
   GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
-  NotificationDeliveryNode,
-  parseGlobalId,
-  PersonNode,
-  SortDirection,
-} from "@ukdanceblue/common";
-import {
-  GetDeviceByUuidResponse,
   ListDevicesArgs,
   ListDevicesResponse,
   NotificationDeliveriesArgs,
+  NotificationDeliveryNode,
+  parseGlobalId,
+  PersonNode,
   RegisterDeviceInput,
   RegisterDeviceResponse,
+  SortDirection,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
 import {
@@ -47,7 +44,7 @@ export class DeviceResolver {
     private readonly personRepository: PersonRepository
   ) {}
 
-  @Query(() => GetDeviceByUuidResponse, {
+  @Query(() => DeviceNode, {
     name: "device",
     description: "Get a device by it's UUID",
   })
@@ -56,7 +53,7 @@ export class DeviceResolver {
       description: "For legacy reasons, this can be a GlobalId or a raw UUID",
     })
     someId: string
-  ): Promise<GetDeviceByUuidResponse> {
+  ): Promise<DeviceNode> {
     const id = parseGlobalId(someId)
       .map((id) => id.id)
       .unwrapOr(someId);
@@ -66,7 +63,7 @@ export class DeviceResolver {
       throw new LegacyError(LegacyErrorCode.NotFound, "Device not found");
     }
 
-    return GetDeviceByUuidResponse.newOk(deviceModelToResource(row));
+    return deviceModelToResource(row);
   }
 
   @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
@@ -128,24 +125,27 @@ export class DeviceResolver {
       }
     );
 
-    return row.map((row) =>
-      RegisterDeviceResponse.newOk(deviceModelToResource(row))
-    );
+    return row.map((row) => {
+      const resp = new RegisterDeviceResponse();
+      resp.ok = true;
+      resp.data = deviceModelToResource(row);
+      return resp;
+    });
   }
 
   @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
-  @Mutation(() => DeleteDeviceResponse, {
+  @Mutation(() => DeviceNode, {
     name: "deleteDevice",
     description: "Delete a device by it's UUID",
   })
   async delete(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<DeleteDeviceResponse> {
-    await this.deviceRepository.deleteDevice({ uuid: id });
+  ): Promise<DeviceNode> {
+    const row = await this.deviceRepository.deleteDevice({ uuid: id });
 
     auditLogger.secure("Device deleted", { uuid: id });
 
-    return DeleteDeviceResponse.newOk(true);
+    return deviceModelToResource(row);
   }
 
   @FieldResolver(() => PersonNode, { nullable: true })
