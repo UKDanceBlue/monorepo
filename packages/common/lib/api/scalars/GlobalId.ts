@@ -55,10 +55,7 @@ export function isGlobalId(value: unknown): value is GlobalId {
   return false;
 }
 
-export const GlobalIdScalar = new GraphQLScalarType<
-  { typename: string; id: string },
-  string
->({
+export const GlobalIdScalar = new GraphQLScalarType({
   name: "GlobalId",
   description: "GlobalId custom scalar type",
   extensions: {},

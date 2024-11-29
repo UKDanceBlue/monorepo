@@ -40,7 +40,6 @@
     "@ant-design/icons": "^5.5.1",
     "@refinedev/antd": "^5.44.0",
     "@refinedev/core": "^4.56.0",
-    "@refinedev/graphql": "^7.0.0",
     "@sentry/react": "^8.38.0",
     "@sentry/vite-plugin": "^2.22.6",
     "@tanstack/react-form": "^0.36.0",

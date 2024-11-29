@@ -6796,25 +6796,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@refinedev/graphql@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "@refinedev/graphql@npm:7.0.0"
-  dependencies:
-    "@urql/core": "npm:^5.0.6"
-    camelcase: "npm:^6.2.0"
-    deepmerge: "npm:^4.3.1"
-    graphql: "npm:^15.6.1"
-    graphql-ws: "npm:^5.9.1"
-    lodash: "npm:^4.17.21"
-    pluralize: "npm:^8.0.0"
-  peerDependencies:
-    "@refinedev/core": ^4.54.1
-    "@urql/core": ^5.0.6
-    graphql-ws: ^5.9.1
-  checksum: 10/7dd9abfe5949e83902a1b76c2f5064bd154dbcb35d9f8f146de45a4354fd678b2abb1c58f122456462a8263c0b8b508356aeda4593c6247f388700a87ffe2819
-  languageName: node
-  linkType: hard
-
 "@refinedev/ui-types@npm:^1.22.9":
   version: 1.22.9
   resolution: "@refinedev/ui-types@npm:1.22.9"
@@ -9148,7 +9129,6 @@ __metadata:
     "@ant-design/icons": "npm:^5.5.1"
     "@refinedev/antd": "npm:^5.44.0"
     "@refinedev/core": "npm:^4.56.0"
-    "@refinedev/graphql": "npm:^7.0.0"
     "@sentry/react": "npm:^8.38.0"
     "@sentry/vite-plugin": "npm:^2.22.6"
     "@tanstack/react-form": "npm:^0.36.0"
@@ -15906,19 +15886,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-ws@npm:^5.14.0, graphql-ws@npm:^5.9.1":
+"graphql-ws@npm:^5.14.0":
   version: 5.16.0
   resolution: "graphql-ws@npm:5.16.0"
   peerDependencies:
     graphql: ">=0.11 <=16"
   checksum: 10/e56d903920c78fa88966e31940d281f8b35ef8c9f4543255bfe349e47a0e972c6ca746bcb52040b1c6938d22e42560228994399972abc473cfa6bcd183aca709
-  languageName: node
-  linkType: hard
-
-"graphql@npm:^15.6.1":
-  version: 15.9.0
-  resolution: "graphql@npm:15.9.0"
-  checksum: 10/ce1f50672bcb369395d07a47048bcbb429ed1ce06dbcafb7a0999df791cb7aa7206be21497907973dbc8a01df3cd7f632f43c583f248538f186f5adfa1a0d1c5
   languageName: node
   linkType: hard
 
