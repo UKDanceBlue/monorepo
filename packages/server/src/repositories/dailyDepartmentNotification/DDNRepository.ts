@@ -158,11 +158,13 @@ export class DailyDepartmentNotificationRepository {
 
   async findDDNByUnique(param: UniqueDailyDepartmentNotificationParam): Promise<
     Result<
-      DailyDepartmentNotification & {
-        batch: DailyDepartmentNotificationBatch;
-        donors: (DDNDonorLink & { donor: DDNDonor })[];
-        solicitationCode: SolicitationCode;
-      },
+      Option<
+        DailyDepartmentNotification & {
+          batch: DailyDepartmentNotificationBatch;
+          donors: (DDNDonorLink & { donor: DDNDonor })[];
+          solicitationCode: SolicitationCode;
+        }
+      >,
       RepositoryError
     >
   > {
@@ -180,9 +182,9 @@ export class DailyDepartmentNotificationRepository {
         },
       });
       if (!row) {
-        return Err(new NotFoundError({ what: "DDN" }));
+        return Ok(None);
       }
-      return Ok(row);
+      return Ok(Some(row));
     } catch (error) {
       return handleRepositoryError(error);
     }
@@ -512,13 +514,11 @@ export class DailyDepartmentNotificationRepository {
     data: Omit<DDNInit, "batchId">
   ): Promise<
     Result<
-      Option<
-        DailyDepartmentNotification & {
-          batch: DailyDepartmentNotificationBatch;
-          donors: (DDNDonorLink & { donor: DDNDonor })[];
-          solicitationCode: SolicitationCode;
-        }
-      >,
+      DailyDepartmentNotification & {
+        batch: DailyDepartmentNotificationBatch;
+        donors: (DDNDonorLink & { donor: DDNDonor })[];
+        solicitationCode: SolicitationCode;
+      },
       RepositoryError | InvalidArgumentError
     >
   > {
@@ -529,82 +529,40 @@ export class DailyDepartmentNotificationRepository {
       }
       return await this.parseDDNInit(data)
         .toAsyncResult()
-        .map(async (data) =>
-          Some(
-            await this.prisma.dailyDepartmentNotification.update({
-              where: param,
-              data: {
-                ...data.ddn,
-                solicitationCode: {
-                  upsert: {
-                    create: {
-                      prefix: data.solicitationCode.prefix,
-                      code: data.solicitationCode.code,
-                      name: data.solicitation,
-                    },
-                    where: {
-                      code: data.solicitationCode.code,
-                      prefix: data.solicitationCode.prefix,
-                    },
-                    update: {
-                      name: data.solicitation,
-                    },
-                  },
-                },
-                donors: {
-                  create: data.donors.map((donor) => ({
-                    amount: donor.amount,
-                    relation: donor.relation,
-                    donor: {
-                      connectOrCreate: {
-                        create: donor.donor,
-                        where: { donorId: donor.donor.donorId },
-                      },
-                    },
-                  })),
-                },
-              },
-              include: {
-                batch: true,
-                donors: {
-                  include: {
-                    donor: true,
-                  },
-                },
-                solicitationCode: true,
-              },
-            })
-          )
-        ).promise;
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return Ok(None);
-      } else {
-        return handleRepositoryError(error);
-      }
-    }
-  }
-
-  async deleteDDN(param: UniqueDailyDepartmentNotificationParam): Promise<
-    Result<
-      Option<
-        DailyDepartmentNotification & {
-          batch: DailyDepartmentNotificationBatch;
-          donors: (DDNDonorLink & { donor: DDNDonor })[];
-          solicitationCode: SolicitationCode;
-        }
-      >,
-      RepositoryError
-    >
-  > {
-    try {
-      return Ok(
-        Some(
-          await this.prisma.dailyDepartmentNotification.delete({
+        .map((data) =>
+          this.prisma.dailyDepartmentNotification.update({
             where: param,
+            data: {
+              ...data.ddn,
+              solicitationCode: {
+                upsert: {
+                  create: {
+                    prefix: data.solicitationCode.prefix,
+                    code: data.solicitationCode.code,
+                    name: data.solicitation,
+                  },
+                  where: {
+                    code: data.solicitationCode.code,
+                    prefix: data.solicitationCode.prefix,
+                  },
+                  update: {
+                    name: data.solicitation,
+                  },
+                },
+              },
+              donors: {
+                create: data.donors.map((donor) => ({
+                  amount: donor.amount,
+                  relation: donor.relation,
+                  donor: {
+                    connectOrCreate: {
+                      create: donor.donor,
+                      where: { donorId: donor.donor.donorId },
+                    },
+                  },
+                })),
+              },
+            },
             include: {
               batch: true,
               donors: {
@@ -615,14 +573,50 @@ export class DailyDepartmentNotificationRepository {
               solicitationCode: true,
             },
           })
-        )
+        ).promise;
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        return Err(new NotFoundError({ what: "DDN" }));
+      } else {
+        return handleRepositoryError(error);
+      }
+    }
+  }
+
+  async deleteDDN(param: UniqueDailyDepartmentNotificationParam): Promise<
+    Result<
+      DailyDepartmentNotification & {
+        batch: DailyDepartmentNotificationBatch;
+        donors: (DDNDonorLink & { donor: DDNDonor })[];
+        solicitationCode: SolicitationCode;
+      },
+      RepositoryError
+    >
+  > {
+    try {
+      return Ok(
+        await this.prisma.dailyDepartmentNotification.delete({
+          where: param,
+          include: {
+            batch: true,
+            donors: {
+              include: {
+                donor: true,
+              },
+            },
+            solicitationCode: true,
+          },
+        })
       );
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return Ok(None);
+        return Err(new NotFoundError({ what: "DDN" }));
       } else {
         return handleRepositoryError(error);
       }

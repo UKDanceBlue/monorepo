@@ -10,10 +10,6 @@ import {
 } from "@ukdanceblue/common";
 import {
   CreateConfigurationInput,
-  CreateConfigurationResponse,
-  CreateConfigurationsResponse,
-  DeleteConfigurationResponse,
-  GetAllConfigurationsResponse,
   GetConfigurationResponse,
 } from "@ukdanceblue/common";
 import {

@@ -16,9 +16,6 @@ import {
 } from "@ukdanceblue/common";
 import {
   CreatePointEntryInput,
-  CreatePointEntryResponse,
-  DeletePointEntryResponse,
-  GetPointEntryByUuidResponse,
   ListPointEntriesArgs,
   ListPointEntriesResponse,
 } from "@ukdanceblue/common";

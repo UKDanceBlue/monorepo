@@ -1,12 +1,12 @@
 import { Service } from "@freshgum/typedi";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   DailyDepartmentNotificationBatchNode,
   DailyDepartmentNotificationNode,
   fundraisingAccess,
   GlobalIdScalar,
-  AccessControlAuthorized,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -15,7 +15,7 @@ import {
   ListDailyDepartmentNotificationsResponse,
 } from "@ukdanceblue/common";
 import { ConcreteError, ConcreteResult } from "@ukdanceblue/common/error";
-import { AsyncResult, Ok, Result } from "ts-results-es";
+import { AsyncResult, Ok, Option, Result } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -34,10 +34,17 @@ import {
 import { DailyDepartmentNotificationRepository } from "#repositories/dailyDepartmentNotification/DDNRepository.js";
 
 import type { GraphQLContext } from "./context.js";
+import { StandardResolver } from "./standardResolver.js";
 
 @Resolver(() => DailyDepartmentNotificationNode)
 @Service([DailyDepartmentNotificationRepository])
-export class DailyDepartmentNotificationResolver {
+export class DailyDepartmentNotificationResolver
+  implements
+    StandardResolver<
+      DailyDepartmentNotificationNode,
+      "dailyDepartmentNotification"
+    >
+{
   constructor(
     private readonly dailyDepartmentNotificationRepository: DailyDepartmentNotificationRepository
   ) {}
@@ -51,13 +58,15 @@ export class DailyDepartmentNotificationResolver {
   @Query(() => DailyDepartmentNotificationNode)
   async dailyDepartmentNotification(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<DailyDepartmentNotificationNode>> {
+  ): Promise<ConcreteResult<Option<DailyDepartmentNotificationNode>>> {
     const dailyDepartmentNotification =
       await this.dailyDepartmentNotificationRepository.findDDNByUnique({
         uuid: id,
       });
-    return dailyDepartmentNotification.map(
-      dailyDepartmentNotificationModelToResource
+    return dailyDepartmentNotification.map((dailyDepartmentNotification) =>
+      dailyDepartmentNotification.map(
+        dailyDepartmentNotificationModelToResource
+      )
     );
   }
 
@@ -139,16 +148,14 @@ export class DailyDepartmentNotificationResolver {
   async setDailyDepartmentNotification(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: DailyDepartmentNotificationInput
-  ) {
+  ): Promise<ConcreteResult<DailyDepartmentNotificationNode>> {
     const dailyDepartmentNotification =
       await this.dailyDepartmentNotificationRepository.updateDDN(
         { uuid: id },
         input
       );
-    return dailyDepartmentNotification.map((dailyDepartmentNotification) =>
-      dailyDepartmentNotification.map(
-        dailyDepartmentNotificationModelToResource
-      )
+    return dailyDepartmentNotification.map(
+      dailyDepartmentNotificationModelToResource
     );
   }
 
@@ -189,10 +196,8 @@ export class DailyDepartmentNotificationResolver {
       await this.dailyDepartmentNotificationRepository.deleteDDN({
         uuid: id,
       });
-    return dailyDepartmentNotification.map((dailyDepartmentNotification) =>
-      dailyDepartmentNotification.map(
-        dailyDepartmentNotificationModelToResource
-      )
+    return dailyDepartmentNotification.map(
+      dailyDepartmentNotificationModelToResource
     );
   }
 

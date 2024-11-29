@@ -39,7 +39,6 @@ function isSuperAdmin(
   return (
     (typeof superAdminLinkblues !== "symbol" &&
       linkblue &&
-       
       superAdminLinkblues.includes(linkblue)) ||
     committeeRoles.some(
       (role) =>
@@ -170,7 +169,6 @@ export const graphqlContextFunction: ContextFunction<
     : undefined;
   if (!token) {
     let authorizationHeader =
-       
       req.headers.Authorization || req.headers.authorization;
     if (Array.isArray(authorizationHeader)) {
       authorizationHeader = authorizationHeader[0];

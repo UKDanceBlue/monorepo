@@ -2,6 +2,7 @@ import { Service } from "@freshgum/typedi";
 import { CommitteeRole } from "@prisma/client";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   CommitteeIdentifier,
   GlobalIdScalar,
@@ -9,7 +10,6 @@ import {
   LegacyError,
   LegacyErrorCode,
   MarathonHourNode,
-  AccessControlAuthorized,
 } from "@ukdanceblue/common";
 import {
   CreateMarathonHourInput,

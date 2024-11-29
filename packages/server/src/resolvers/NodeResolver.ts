@@ -2,6 +2,8 @@ import { Service } from "@freshgum/typedi";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
   ConfigurationNode,
+  DailyDepartmentNotificationBatchNode,
+  DailyDepartmentNotificationNode,
   DeviceNode,
   EventNode,
   FundraisingAssignmentNode,
@@ -15,10 +17,11 @@ import {
   PersonNode,
   PointEntryNode,
   PointOpportunityNode,
+  SolicitationCodeNode,
   TeamNode,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
-import { Ok } from "ts-results-es";
+import { Ok, Option } from "ts-results-es";
 import { Arg, Ctx, Query, Resolver } from "type-graphql";
 
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
@@ -26,7 +29,10 @@ import { DeviceResolver } from "#resolvers/DeviceResolver.js";
 import { EventResolver } from "#resolvers/EventResolver.js";
 // import { FeedResolver } from "#resolvers/FeedResolver.js";
 import { FundraisingAssignmentResolver } from "#resolvers/FundraisingAssignmentResolver.js";
-import { FundraisingEntryResolver } from "#resolvers/FundraisingEntryResolver.js";
+import {
+  FundraisingEntryResolver,
+  SolicitationCodeResolver,
+} from "#resolvers/FundraisingEntryResolver.js";
 import { ImageResolver } from "#resolvers/ImageResolver.js";
 import { MarathonHourResolver } from "#resolvers/MarathonHourResolver.js";
 import { MarathonResolver } from "#resolvers/MarathonResolver.js";
@@ -37,49 +43,82 @@ import { PointOpportunityResolver } from "#resolvers/PointOpportunityResolver.js
 import { TeamResolver } from "#resolvers/TeamResolver.js";
 
 import type { GraphQLContext } from "./context.js";
+import {
+  DailyDepartmentNotificationBatchResolver,
+  DailyDepartmentNotificationResolver,
+} from "./DailyDepartmentNotification.js";
 import { FeedResolver } from "./FeedResolver.js";
 
 @Resolver(() => Node)
 @Service([
   ConfigurationResolver,
   DeviceResolver,
+  DailyDepartmentNotificationResolver,
+  DailyDepartmentNotificationBatchResolver,
   EventResolver,
+  ImageResolver,
+  PersonResolver,
+  // MembershipResolver,
+  NotificationResolver,
+  // NotificationDeliveryResolver,
+  TeamResolver,
+  // LoginStateResolver,
+  PointEntryResolver,
+  PointOpportunityResolver,
+  MarathonHourResolver,
+  MarathonResolver,
   FeedResolver,
   FundraisingAssignmentResolver,
   FundraisingEntryResolver,
-  ImageResolver,
-  MarathonHourResolver,
-  MarathonResolver,
-  NotificationResolver,
-  PersonResolver,
-  PointOpportunityResolver,
-  PointEntryResolver,
-  TeamResolver,
+  // NodeResolver,
+  SolicitationCodeResolver,
+  // ReportResolver,
 ])
 export class NodeResolver {
   constructor(
     private readonly configurationResolver: ConfigurationResolver,
     private readonly deviceResolver: DeviceResolver,
+    private readonly dailyDepartmentNotificationResolver: DailyDepartmentNotificationResolver,
+    private readonly dailyDepartmentNotificationBatchResolver: DailyDepartmentNotificationBatchResolver,
     private readonly eventResolver: EventResolver,
+    private readonly imageResolver: ImageResolver,
+    private readonly personResolver: PersonResolver,
+    // private readonly membershipResolver: MembershipResolver,
+    private readonly notificationResolver: NotificationResolver,
+    // private readonly notificationDeliveryResolver: NotificationDeliveryResolver,
+    private readonly teamResolver: TeamResolver,
+    // private readonly loginStateResolver: LoginStateResolver,
+    private readonly pointEntryResolver: PointEntryResolver,
+    private readonly pointOpportunityResolver: PointOpportunityResolver,
+    private readonly marathonHourResolver: MarathonHourResolver,
+    private readonly marathonResolver: MarathonResolver,
     private readonly feedResolver: FeedResolver,
     private readonly fundraisingAssignmentResolver: FundraisingAssignmentResolver,
     private readonly fundraisingEntryResolver: FundraisingEntryResolver,
-    private readonly imageResolver: ImageResolver,
-    private readonly marathonHourResolver: MarathonHourResolver,
-    private readonly marathonResolver: MarathonResolver,
-    private readonly notificationResolver: NotificationResolver,
-    private readonly personResolver: PersonResolver,
-    private readonly pointOpportunityResolver: PointOpportunityResolver,
-    private readonly pointEntryResolver: PointEntryResolver,
-    private readonly teamResolver: TeamResolver
+    // private readonly nodeResolver: NodeResolver,
+    private readonly solicitationCodeResolver: SolicitationCodeResolver
+    // private readonly reportResolver: ReportResolver
   ) {}
 
   @Query(() => Node)
   async node(
     @Arg("id", () => GlobalIdScalar) id: GlobalId,
     @Ctx() ctx: GraphQLContext
-  ): Promise<ConcreteResult<Node>> {
+  ): Promise<ConcreteResult<Node> | ConcreteResult<Option<Node>>> {
     switch (id.typename) {
+      case DailyDepartmentNotificationNode.constructor.name: {
+        return this.dailyDepartmentNotificationResolver.dailyDepartmentNotification(
+          id
+        );
+      }
+      case DailyDepartmentNotificationBatchNode.constructor.name: {
+        return this.dailyDepartmentNotificationBatchResolver.dailyDepartmentNotificationBatch(
+          id
+        );
+      }
+      case SolicitationCodeNode.constructor.name: {
+        return this.solicitationCodeResolver.solicitationCode(id);
+      }
       case ConfigurationNode.constructor.name: {
         const data = await this.configurationResolver.getByUuid(id);
         return data.map(({ data }) => data);
@@ -128,8 +167,7 @@ export class NodeResolver {
         return Ok(data);
       }
       case TeamNode.constructor.name: {
-        const data = await this.teamResolver.getByUuid(id);
-        return data.map(({ data: team }) => team);
+        return this.teamResolver.team(id);
       }
       default: {
         throw new Error(`Unknown typename: ${id.typename}`);
