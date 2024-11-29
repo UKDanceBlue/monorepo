@@ -2,6 +2,7 @@ import { Service } from "@freshgum/typedi";
 import type { Prisma } from "@prisma/client";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   CommitteeRole,
   EventNode,
@@ -9,20 +10,13 @@ import {
   ImageNode,
   LegacyError,
   LegacyErrorCode,
-  AccessControlAuthorized,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
-  AddEventImageResponse,
   CreateEventInput,
-  CreateEventResponse,
-  DeleteEventResponse,
-  GetEventByUuidResponse,
   ListEventsArgs,
   ListEventsResponse,
-  RemoveEventImageResponse,
   SetEventInput,
-  SetEventResponse,
 } from "@ukdanceblue/common";
 import {
   Arg,

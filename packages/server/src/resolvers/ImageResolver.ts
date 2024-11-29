@@ -3,18 +3,16 @@ import { MIMEType } from "node:util";
 import { Service } from "@freshgum/typedi";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   GlobalIdScalar,
   ImageNode,
   LegacyError,
   LegacyErrorCode,
-  AccessControlAuthorized,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
   CreateImageInput,
-  DeleteImageResponse,
-  GetImageByUuidResponse,
   ListImagesArgs,
   ListImagesResponse,
 } from "@ukdanceblue/common";

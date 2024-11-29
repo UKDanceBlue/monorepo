@@ -14,12 +14,9 @@ import {
 } from "@ukdanceblue/common";
 import {
   CreatePointOpportunityInput,
-  CreatePointOpportunityResponse,
-  DeletePointOpportunityResponse,
   ListPointOpportunitiesArgs,
   ListPointOpportunitiesResponse,
   SetPointOpportunityInput,
-  SinglePointOpportunityResponse,
 } from "@ukdanceblue/common";
 import {
   Arg,
@@ -35,9 +32,18 @@ import { eventModelToResource } from "#repositories/event/eventModelToResource.j
 import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
 import { PointOpportunityRepository } from "#repositories/pointOpportunity/PointOpportunityRepository.js";
 
+import { StandardResolver } from "./standardResolver.js";
+
 @Resolver(() => PointOpportunityNode)
 @Service([PointOpportunityRepository])
-export class PointOpportunityResolver {
+export class PointOpportunityResolver
+  implements
+    StandardResolver<
+      PointOpportunityNode,
+      "pointOpportunity",
+      "pointOpportunities"
+    >
+{
   constructor(
     private readonly pointOpportunityRepository: PointOpportunityRepository
   ) {}
@@ -45,10 +51,10 @@ export class PointOpportunityResolver {
   @AccessControlAuthorized({
     accessLevel: AccessLevel.Committee,
   })
-  @Query(() => SinglePointOpportunityResponse, { name: "pointOpportunity" })
+  @Query(() => PointOpportunityNode, { name: "pointOpportunity" })
   async getByUuid(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<SinglePointOpportunityResponse> {
+  ): Promise<PointOpportunityNode> {
     const row =
       await this.pointOpportunityRepository.findPointOpportunityByUnique({
         uuid: id,
@@ -61,9 +67,7 @@ export class PointOpportunityResolver {
       );
     }
 
-    return SinglePointOpportunityResponse.newOk(
-      pointOpportunityModelToResource(row)
-    );
+    return pointOpportunityModelToResource(row);
   }
 
   @AccessControlAuthorized({
@@ -111,7 +115,7 @@ export class PointOpportunityResolver {
   @Mutation(() => CreatePointOpportunityResponse, {
     name: "createPointOpportunity",
   })
-  async create(
+  async createPointOpportunity(
     @Arg("input") input: CreatePointOpportunityInput
   ): Promise<CreatePointOpportunityResponse> {
     const row = await this.pointOpportunityRepository.createPointOpportunity({
@@ -138,7 +142,7 @@ export class PointOpportunityResolver {
   @Mutation(() => SinglePointOpportunityResponse, {
     name: "setPointOpportunity",
   })
-  async set(
+  async setPointOpportunity(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPointOpportunityInput
   ): Promise<SinglePointOpportunityResponse> {
@@ -175,7 +179,7 @@ export class PointOpportunityResolver {
   @Mutation(() => DeletePointOpportunityResponse, {
     name: "deletePointOpportunity",
   })
-  async delete(
+  async deletePointOpportunity(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<DeletePointOpportunityResponse> {
     const row = await this.pointOpportunityRepository.deletePointOpportunity({

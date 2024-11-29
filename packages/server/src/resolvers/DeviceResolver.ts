@@ -13,7 +13,6 @@ import {
   SortDirection,
 } from "@ukdanceblue/common";
 import {
-  DeleteDeviceResponse,
   GetDeviceByUuidResponse,
   ListDevicesArgs,
   ListDevicesResponse,

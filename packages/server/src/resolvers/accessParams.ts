@@ -1,5 +1,5 @@
 import { CommitteeRole } from "@prisma/client";
-import type { AccessControlParam} from "@ukdanceblue/common";
+import type { AccessControlParam } from "@ukdanceblue/common";
 import { CommitteeIdentifier } from "@ukdanceblue/common";
 
 /**

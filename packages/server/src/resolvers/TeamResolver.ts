@@ -13,7 +13,6 @@ import {
   AuthSource,
   BulkTeamInput,
   CommitteeRole,
-  CustomQueryAccessControl,
   GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
@@ -25,20 +24,16 @@ import {
 } from "@ukdanceblue/common";
 import {
   CreateTeamInput,
-  CreateTeamResponse,
   DbFundsTeamInfo,
-  DeleteTeamResponse,
   ListTeamsArgs,
   ListTeamsResponse,
   SetTeamInput,
-  SingleTeamResponse,
 } from "@ukdanceblue/common";
 import {
   ConcreteResult,
   FormattedConcreteError,
-  NotFoundError,
 } from "@ukdanceblue/common/error";
-import { AsyncResult, Err, Ok, Option } from "ts-results-es";
+import { AsyncResult, None, Ok, Option, Some } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -66,43 +61,47 @@ import { TeamRepository } from "#repositories/team/TeamRepository.js";
 import * as Context from "#resolvers/context.js";
 
 import { globalFundraisingAccessParam } from "./accessParams.js";
+import { StandardResolver } from "./standardResolver.js";
 
 @Resolver(() => TeamNode)
 @Service([TeamRepository, FundraisingEntryRepository, DBFundsRepository])
-export class TeamResolver {
+export class TeamResolver implements StandardResolver<TeamNode, "team"> {
   constructor(
     private teamRepository: TeamRepository,
     private fundraisingEntryRepository: FundraisingEntryRepository,
     private dbFundsRepository: DBFundsRepository
   ) {}
 
-  @CustomQueryAccessControl<never, SingleTeamResponse>((_, context, result) => {
-    return (
-      context.authorization.accessLevel > AccessLevel.Committee ||
-      context.teamMemberships.some(({ teamId, position }) =>
-        result.isNone()
-          ? false
-          : teamId === result.value.data.id.id &&
-            position === MembershipPositionType.Captain
-      )
-    );
+  @AccessControlAuthorized({
+    argumentMatch: [
+      {
+        extractor: ({ teamMemberships }) =>
+          teamMemberships
+            .filter(
+              ({ position }) => position === MembershipPositionType.Captain
+            )
+            .map(({ teamId }) => teamId),
+        // TODO: Figure out if this needs to be "uuid" or "id"
+        argument: "id",
+      },
+    ],
   })
-  @Query(() => SingleTeamResponse, { name: "team" })
-  async getByUuid(
+  @Query(() => TeamNode, { name: "team" })
+  async team(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<SingleTeamResponse>> {
+  ): Promise<ConcreteResult<Option<TeamNode>>> {
     const row = await this.teamRepository.findTeamByUnique({ uuid: id });
 
     if (row == null) {
-      return Err(new NotFoundError({ what: "Team" }));
+      return Ok(None);
     }
 
-    return Ok(SingleTeamResponse.newOk(teamModelToResource(row)));
+    return Ok(Some(teamModelToResource(row)));
   }
 
   @AccessControlAuthorized({ accessLevel: AccessLevel.Public })
   @Query(() => ListTeamsResponse, { name: "teams" })
-  async list(
+  async teams(
     @Args(() => ListTeamsArgs) query: ListTeamsArgs,
     @Ctx() ctx: Context.GraphQLContext
   ): Promise<ListTeamsResponse> {
@@ -167,11 +166,11 @@ export class TeamResolver {
       ],
     }
   )
-  @Mutation(() => CreateTeamResponse, { name: "createTeam" })
-  async create(
+  @Mutation(() => TeamNode, { name: "createTeam" })
+  async createTeam(
     @Arg("input") input: CreateTeamInput,
     @Arg("marathon", () => GlobalIdScalar) marathonUuid: GlobalId
-  ): Promise<CreateTeamResponse> {
+  ): Promise<TeamNode> {
     const row = await this.teamRepository.createTeam(
       {
         name: input.name,
@@ -181,7 +180,7 @@ export class TeamResolver {
       { uuid: marathonUuid.id }
     );
 
-    return CreateTeamResponse.newCreated(teamModelToResource(row));
+    return teamModelToResource(row);
   }
 
   @AccessControlAuthorized(
@@ -197,11 +196,11 @@ export class TeamResolver {
       ],
     }
   )
-  @Mutation(() => SingleTeamResponse, { name: "setTeam" })
-  async set(
+  @Mutation(() => TeamNode, { name: "setTeam" })
+  async setTeam(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetTeamInput
-  ): Promise<SingleTeamResponse> {
+  ): Promise<TeamNode> {
     const row = await this.teamRepository.updateTeam(
       { uuid: id },
       {
@@ -217,7 +216,7 @@ export class TeamResolver {
       throw new LegacyError(LegacyErrorCode.NotFound, "Team not found");
     }
 
-    return SingleTeamResponse.newOk(teamModelToResource(row));
+    return teamModelToResource(row);
   }
 
   @AccessControlAuthorized(
@@ -233,8 +232,8 @@ export class TeamResolver {
       ],
     }
   )
-  @Mutation(() => [TeamNode], { name: "bulkLoadTeams" })
-  async bulkLoad(
+  @Mutation(() => [TeamNode], { name: "createTeams" })
+  async createTeams(
     @Arg("teams", () => [BulkTeamInput]) teams: BulkTeamInput[],
     @Arg("marathonId", () => GlobalIdScalar) marathonId: GlobalId
   ): Promise<ConcreteResult<TeamNode[]>> {
@@ -258,17 +257,17 @@ export class TeamResolver {
       ],
     }
   )
-  @Mutation(() => DeleteTeamResponse, { name: "deleteTeam" })
-  async delete(
+  @Mutation(() => TeamNode, { name: "deleteTeam" })
+  async deleteTeam(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<DeleteTeamResponse> {
+  ): Promise<TeamNode> {
     const row = await this.teamRepository.deleteTeam({ uuid: id });
 
     if (row == null) {
       throw new LegacyError(LegacyErrorCode.NotFound, "Team not found");
     }
 
-    return DeleteTeamResponse.newOk(true);
+    return teamModelToResource(row);
   }
 
   @AccessControlAuthorized(
