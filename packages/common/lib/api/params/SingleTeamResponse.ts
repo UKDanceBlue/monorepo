@@ -6,19 +6,7 @@ import { OptionalToNullable } from "../../utility/primitive/TypeUtils.js";
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { TeamLegacyStatus, TeamNode, TeamType } from "../resources/Team.js";
 import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
-import {
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
-
-@ObjectType("SingleTeamResponse", {
-  implements: AbstractGraphQLOkResponse<TeamNode>,
-})
-export class SingleTeamResponse extends AbstractGraphQLOkResponse<TeamNode> {
-  @Field(() => TeamNode)
-  data!: TeamNode;
-}
+import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 @ObjectType("ListTeamsResponse", {
   implements: AbstractGraphQLPaginatedResponse<TeamNode>,
 })
@@ -26,17 +14,6 @@ export class ListTeamsResponse extends AbstractGraphQLPaginatedResponse<TeamNode
   @Field(() => [TeamNode])
   data!: TeamNode[];
 }
-@ObjectType("CreateTeamResponse", {
-  implements: AbstractGraphQLCreatedResponse<TeamNode>,
-})
-export class CreateTeamResponse extends AbstractGraphQLCreatedResponse<TeamNode> {
-  @Field(() => TeamNode)
-  data!: TeamNode;
-}
-@ObjectType("DeleteTeamResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class DeleteTeamResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
 export class CreateTeamInput implements OptionalToNullable<Partial<TeamNode>> {

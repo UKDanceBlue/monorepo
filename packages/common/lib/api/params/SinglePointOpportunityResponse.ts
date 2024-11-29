@@ -5,19 +5,8 @@ import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredList
 import { PointOpportunityNode } from "../resources/PointOpportunity.js";
 import { TeamType } from "../resources/Team.js";
 import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
-import {
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
-@ObjectType("SinglePointOpportunityResponse", {
-  implements: AbstractGraphQLOkResponse<PointOpportunityNode>,
-})
-export class SinglePointOpportunityResponse extends AbstractGraphQLOkResponse<PointOpportunityNode> {
-  @Field(() => PointOpportunityNode)
-  data!: PointOpportunityNode;
-}
 @ObjectType("ListPointOpportunitiesResponse", {
   implements: AbstractGraphQLPaginatedResponse<PointOpportunityNode>,
 })
@@ -25,17 +14,6 @@ export class ListPointOpportunitiesResponse extends AbstractGraphQLPaginatedResp
   @Field(() => [PointOpportunityNode])
   data!: PointOpportunityNode[];
 }
-@ObjectType("CreatePointOpportunityResponse", {
-  implements: AbstractGraphQLCreatedResponse<PointOpportunityNode>,
-})
-export class CreatePointOpportunityResponse extends AbstractGraphQLCreatedResponse<PointOpportunityNode> {
-  @Field(() => PointOpportunityNode)
-  data!: PointOpportunityNode;
-}
-@ObjectType("DeletePointOpportunityResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class DeletePointOpportunityResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
 export class CreatePointOpportunityInput {
