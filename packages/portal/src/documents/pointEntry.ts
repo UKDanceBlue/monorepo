@@ -14,9 +14,7 @@ export const PointEntryCreatorFragment = graphql(/* GraphQL */ `
 export const createPointEntryDocument = graphql(/* GraphQL */ `
   mutation CreatePointEntry($input: CreatePointEntryInput!) {
     createPointEntry(input: $input) {
-      data {
-        id
-      }
+      id
     }
   }
 `);
@@ -31,9 +29,7 @@ export const createPointEntryAndAssignDocument = graphql(/* GraphQL */ `
       id
     }
     createPointEntry(input: $input) {
-      data {
-        id
-      }
+      id
     }
   }
 `);

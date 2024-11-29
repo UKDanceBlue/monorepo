@@ -10,9 +10,7 @@ import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 const viewEventPageDocument = graphql(/* GraphQL */ `
   query ViewEventPage($uuid: GlobalId!) {
     event(uuid: $uuid) {
-      data {
-        ...EventViewerFragment
-      }
+      ...EventViewerFragment
     }
   }
 `);
@@ -33,7 +31,7 @@ export function ViewEvent() {
 
   return (
     <div>
-      <EventViewer eventFragment={data?.event.data} />
+      <EventViewer eventFragment={data?.event} />
     </div>
   );
 }

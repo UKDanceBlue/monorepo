@@ -28,32 +28,30 @@ const ViewTeamFundraisingDocument = graphql(/* GraphQL */ `
     $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
   ) {
     team(uuid: $teamUuid) {
-      data {
-        solicitationCode {
+      solicitationCode {
+        id
+        name
+        prefix
+        code
+      }
+      members {
+        person {
           id
           name
-          prefix
-          code
+          linkblue
         }
-        members {
-          person {
-            id
-            name
-            linkblue
-          }
-        }
-        fundraisingEntries(
-          page: $page
-          pageSize: $pageSize
-          sortBy: $sortBy
-          sortDirection: $sortDirection
-          dateFilters: $dateFilters
-          oneOfFilters: $oneOfFilters
-          stringFilters: $stringFilters
-          numericFilters: $numericFilters
-        ) {
-          ...FundraisingEntryTableFragment
-        }
+      }
+      fundraisingEntries(
+        page: $page
+        pageSize: $pageSize
+        sortBy: $sortBy
+        sortDirection: $sortDirection
+        dateFilters: $dateFilters
+        oneOfFilters: $oneOfFilters
+        stringFilters: $stringFilters
+        numericFilters: $numericFilters
+      ) {
+        ...FundraisingEntryTableFragment
       }
     }
   }
@@ -166,7 +164,7 @@ function ViewTeamFundraising() {
     label.toLowerCase().includes(solCodeSearch.toLowerCase())
   );
 
-  if (!canSetSolicitationCode && !data?.team.data.solicitationCode) {
+  if (!canSetSolicitationCode && !data?.team.solicitationCode) {
     return (
       <p>
         Please reach out to Dancer Relations and ask them to assign your team to
@@ -204,16 +202,13 @@ function ViewTeamFundraising() {
                 }
               }}
               value={
-                data?.team.data.solicitationCode
-                  ? `${data.team.data.solicitationCode.prefix}${data.team.data.solicitationCode.code
+                data?.team.solicitationCode
+                  ? `${data.team.solicitationCode.prefix}${data.team.solicitationCode.code
                       .toString()
-                      .padStart(
-                        4,
-                        "0"
-                      )} - ${data.team.data.solicitationCode.name}`
+                      .padStart(4, "0")} - ${data.team.solicitationCode.name}`
                   : undefined
               }
-              disabled={data?.team.data.solicitationCode != null}
+              disabled={data?.team.solicitationCode != null}
             />
             <Button
               danger
@@ -243,19 +238,17 @@ function ViewTeamFundraising() {
           </Space.Compact>
         </Form.Item>
         <FundraisingEntriesTable
-          data={data?.team.data.fundraisingEntries}
+          data={data?.team.fundraisingEntries}
           form={listQuery}
           refresh={() =>
             refreshFundraisingEntries({ requestPolicy: "network-only" })
           }
           loading={fetching}
           potentialAssignees={
-            data?.team.data.members.map(
-              ({ person: { id, linkblue, name } }) => ({
-                value: id,
-                label: name ?? linkblue ?? id,
-              })
-            ) ?? []
+            data?.team.members.map(({ person: { id, linkblue, name } }) => ({
+              value: id,
+              label: name ?? linkblue ?? id,
+            })) ?? []
           }
         />
       </Flex>

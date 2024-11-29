@@ -124,7 +124,7 @@ export class NodeResolver {
       }
       case DeviceNode.constructor.name: {
         const data = await this.deviceResolver.getByUuid(id.id);
-        return Ok(data);
+        return Ok(data.data);
       }
       case EventNode.constructor.name: {
         const data = await this.eventResolver.getByUuid(id);

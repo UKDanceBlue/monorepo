@@ -27,7 +27,7 @@ function ViewTeamPage() {
       <h1>View Team</h1>
       <Flex gap="1em" vertical>
         <h2>Team Details</h2>
-        <TeamViewer teamFragment={data?.team.data} />
+        <TeamViewer teamFragment={data?.team} />
         <Outlet />
       </Flex>
     </div>

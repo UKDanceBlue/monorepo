@@ -14,11 +14,11 @@ export const CreateNotificationForm = () => {
   const { appMessage, showErrorMessage } = useAntFeedback();
 
   const { formApi } = useNotificationCreator((data) => {
-    if (data?.uuid) {
+    if (data?.id) {
       navigate({
         to: "/notifications/$notificationId",
         params: {
-          notificationId: data.uuid,
+          notificationId: data.id,
         },
       }).catch((error: unknown) => console.error(error));
     }
