@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return */
 import type {
   BaseRecord,
   CreateManyParams,
   CreateParams,
   CustomParams,
+  DataProvider,
   DeleteManyParams,
   DeleteOneParams,
   GetListParams,
@@ -20,12 +20,13 @@ import type {
   LogicalFilter,
   Pagination,
 } from "@refinedev/core";
-import createDataProvider from "@refinedev/graphql";
 import { gql, type OperationResult } from "@urql/core";
 import camelcase from "camelcase";
 import {
   type DocumentNode,
   type FieldNode,
+  Kind,
+  OperationTypeNode,
   type SelectionSetNode,
   visit,
 } from "graphql";
@@ -34,7 +35,10 @@ import { singular } from "pluralize";
 
 import { urqlClient } from "./api";
 
-export const dataProvider = createDataProvider(urqlClient, {
+// We alias gql to gqlButDifferentName to avoid the GraphQL plugin giving us an error about the invalid syntax
+const gqlButDifferentName = gql;
+
+const options = {
   create: {
     dataMapper: (response: OperationResult, params: CreateParams<any>) => {
       const key = `createOne${camelcase(singular(params.resource), {
@@ -64,7 +68,8 @@ export const dataProvider = createDataProvider(urqlClient, {
       return {
         input: {
           [camelcase(params.resource)]:
-            params.variables ?? params.meta?.gqlVariables,
+            (params.variables as unknown[] | undefined) ??
+            params.meta?.gqlVariables,
         },
       };
     },
@@ -100,7 +105,7 @@ export const dataProvider = createDataProvider(urqlClient, {
 
       const operation = camelcase(singular(resource));
 
-      const query = gql`
+      const query = gqlButDifferentName`
         query Get${pascalCaseOperation}($id: ID!) {
           ${operation}(id: $id) {
             ${stringFields}
@@ -164,13 +169,13 @@ export const dataProvider = createDataProvider(urqlClient, {
       return params.ids.map((id) => ({ id }));
     },
     buildVariables: (params: UpdateManyParams<any>) => {
-      const { ids, variables } = params;
+      const { ids, variables, meta } = params;
 
       return {
         input: {
           filter: { id: { in: ids } },
           update: variables,
-          ...params.meta?.gqlVariables,
+          ...meta?.gqlVariables,
         },
       };
     },
@@ -199,27 +204,216 @@ export const dataProvider = createDataProvider(urqlClient, {
       return params.ids.map((id) => ({ id }));
     },
     buildVariables: (params: DeleteManyParams<any>) => {
-      const { ids } = params;
+      const { ids, meta } = params;
 
       return {
         input: {
           filter: {
             id: { in: ids },
           },
-          ...params.meta?.gqlVariables,
+          ...meta?.gqlVariables,
         },
       };
     },
   },
   custom: {
-    dataMapper: (response: OperationResult, params: CustomParams) =>
+    dataMapper: (response: OperationResult, _params: CustomParams) =>
       response.data ?? response.error?.message,
     buildVariables: (params: CustomParams) => ({
       ...params.meta?.variables,
       ...params.meta?.gqlVariables,
     }),
   },
-});
+};
+
+export const dataProvider: Required<DataProvider> = {
+  create: async (params) => {
+    const { meta } = params;
+
+    const gqlOperation = meta?.gqlMutation ?? meta?.gqlQuery;
+
+    if (!gqlOperation) {
+      throw new Error("Operation is required.");
+    }
+
+    const response = await urqlClient
+      .mutation(gqlOperation, options.create.buildVariables(params))
+      .toPromise();
+
+    const data = options.create.dataMapper(response, params);
+
+    return {
+      data,
+    };
+  },
+  createMany: async (params) => {
+    const { meta } = params;
+
+    const gqlOperation = meta?.gqlMutation ?? meta?.gqlQuery;
+
+    if (!gqlOperation) {
+      throw new Error("Operation is required.");
+    }
+
+    const response = await urqlClient.mutation<BaseRecord>(
+      gqlOperation,
+      options.createMany.buildVariables(params)
+    );
+
+    return {
+      data: options.createMany.dataMapper(response, params),
+    };
+  },
+  getOne: async (params) => {
+    const { id: _id, meta } = params;
+
+    const gqlOperation = meta?.gqlQuery ?? meta?.gqlMutation;
+
+    if (!gqlOperation) {
+      throw new Error("Operation is required.");
+    }
+
+    let query = gqlOperation;
+
+    if (isMutation(gqlOperation)) {
+      query = options.getOne.convertMutationToQuery(params);
+    }
+
+    const response = await urqlClient
+      .query(query, options.getOne.buildVariables(params))
+      .toPromise();
+
+    return {
+      data: options.getOne.dataMapper(response, params),
+    };
+  },
+  getList: async (params) => {
+    const { meta } = params;
+
+    if (!meta?.gqlQuery) {
+      throw new Error("Operation is required.");
+    }
+
+    const variables = options.getList.buildVariables(params);
+
+    const response = await urqlClient
+      .query(meta.gqlQuery, variables)
+      .toPromise();
+
+    return {
+      data: options.getList.dataMapper(response, params),
+      total: options.getList.getTotalCount(response, params),
+    };
+  },
+  getMany: async (params) => {
+    const { meta } = params;
+
+    if (!meta?.gqlQuery) {
+      throw new Error("Operation is required.");
+    }
+
+    const response = await urqlClient
+      .query(meta.gqlQuery, { filter: options.getMany.buildFilter(params) })
+      .toPromise();
+
+    return {
+      data: options.getMany.dataMapper(response, params),
+    };
+  },
+  update: async (params) => {
+    const { meta } = params;
+    const gqlOperation = meta?.gqlMutation ?? meta?.gqlQuery;
+
+    if (!gqlOperation) {
+      throw new Error("Operation is required.");
+    }
+
+    const response = await urqlClient
+      .mutation(gqlOperation, options.update.buildVariables(params))
+      .toPromise();
+
+    return {
+      data: options.update.dataMapper(response, params),
+    };
+  },
+  updateMany: async (params) => {
+    const { meta } = params;
+
+    if (!meta?.gqlMutation) {
+      throw new Error("Operation is required.");
+    }
+
+    const response = await urqlClient
+      .mutation(meta.gqlMutation, options.updateMany.buildVariables(params))
+      .toPromise();
+
+    return { data: options.updateMany.dataMapper(response, params) };
+  },
+  deleteOne: async (params) => {
+    const { meta } = params;
+
+    if (!meta?.gqlMutation) {
+      throw new Error("Operation is required.");
+    }
+
+    const response = await urqlClient
+      .mutation(meta.gqlMutation, options.deleteOne.buildVariables(params))
+      .toPromise();
+
+    return {
+      data: options.deleteOne.dataMapper(response, params),
+    };
+  },
+  deleteMany: async (params) => {
+    const { meta } = params;
+
+    if (!meta?.gqlMutation) {
+      throw new Error("Operation is required.");
+    }
+
+    const response = await urqlClient
+      .mutation(meta.gqlMutation, options.deleteMany.buildVariables(params))
+      .toPromise();
+
+    return {
+      data: options.deleteMany.dataMapper(response, params),
+    };
+  },
+  custom: async (params) => {
+    const { meta } = params;
+
+    const url = params.url !== "" ? params.url : undefined;
+
+    if (!meta?.gqlMutation && !meta?.gqlQuery) {
+      throw new Error("Operation is required.");
+    }
+
+    if (meta.gqlMutation) {
+      const response = await urqlClient
+        .mutation(
+          meta.gqlMutation,
+          options.custom.buildVariables(params),
+          JSON.parse(JSON.stringify({ url }))
+        )
+        .toPromise();
+
+      return { data: options.custom.dataMapper(response, params) };
+    }
+
+    const response = await urqlClient
+      .query(
+        meta.gqlQuery!,
+        options.custom.buildVariables(params),
+        JSON.parse(JSON.stringify({ url }))
+      )
+      .toPromise();
+
+    return { data: options.custom.dataMapper(response, params) };
+  },
+  getApiUrl: () => {
+    throw new Error("Not implemented on refine-graphql data provider.");
+  },
+};
 
 export const buildSorters = (sorters: CrudSort[] = []) => {
   return sorters.map((s) => ({
@@ -334,7 +528,7 @@ const operatorMapper = (
     return { notBetween: { lower: value[0], upper: value[1] } };
   }
 
-  return { [operatorMap[operator]]: value };
+  return { [operatorMap[operator]!]: value };
 };
 
 export const buildFilters = (filters: LogicalFilter[] | CrudFilter[] = []) => {
@@ -372,12 +566,6 @@ export const buildFilters = (filters: LogicalFilter[] | CrudFilter[] = []) => {
   return result;
 };
 
-const getChildNodesField = (node: FieldNode): FieldNode | undefined => {
-  return node.selectionSet?.selections.find(
-    (node) => node.kind === "Field" && node.name.value === "nodes"
-  ) as FieldNode;
-};
-
 export const getOperationFields = (documentNode: DocumentNode) => {
   const fieldLines: string[] = [];
   let isInitialEnter = true;
@@ -386,11 +574,13 @@ export const getOperationFields = (documentNode: DocumentNode) => {
 
   visit(documentNode, {
     Field: {
-      enter(node): SelectionSetNode | void {
+      enter(node): SelectionSetNode | undefined {
         if (isInitialEnter) {
           isInitialEnter = false;
 
-          const childNodesField = getChildNodesField(node);
+          const childNodesField = node.selectionSet?.selections.find(
+            (node) => node.kind === Kind.FIELD && node.name.value === "nodes"
+          ) as FieldNode | undefined;
 
           const nodeToReturn = childNodesField ?? node;
 
@@ -411,6 +601,8 @@ export const getOperationFields = (documentNode: DocumentNode) => {
           depth++;
           isNestedField = true;
         }
+
+        return undefined;
       },
       leave(node) {
         if (node.selectionSet) {
@@ -431,7 +623,7 @@ export const isMutation = (documentNode: DocumentNode) => {
   visit(documentNode, {
     OperationDefinition: {
       enter(node) {
-        if (node.operation === "mutation") {
+        if (node.operation === OperationTypeNode.MUTATION) {
           isMutation = true;
         }
       },
